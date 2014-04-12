@@ -413,3 +413,31 @@ class EvForm(object):
         "prints the form"
         return unicode(ANSIString("\n").join([line for line in self.form]))
 
+def _test():
+    "test evform"
+    form = EvForm("src.utils.evform_test")
+
+    # add data to each tagged form cell
+    form.map(cells={1: "{gTom the Bouncer{n",
+                    2: "{yGriatch{n",
+                    3: "A sturdy fellow",
+                    4: 12,
+                    5: 10,
+                    6:  5,
+                    7: 18,
+                    8: 10,
+                    9:  3})
+    # create the EvTables
+    tableA = EvTable("HP","MV","MP",
+                               table=[["**"], ["*****"], ["***"]],
+                               border="incols")
+    tableB = EvTable("Skill", "Value", "Exp",
+                               table=[["Shooting", "Herbalism", "Smithing"],
+                                      [12,14,9],["550/1200", "990/1400", "205/900"]],
+                               border="incols")
+    # add the tables to the proper ids in the form
+    form.map(tables={"A": tableA,
+                     "B": tableB})
+
+    # unicode is required since the example contains non-ascii characters
+    print unicode(form)

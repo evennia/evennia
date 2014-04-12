@@ -7,7 +7,7 @@ FORMCHAR = "x"
 TABLECHAR = "c"
 
 FORM = """
-{y.------------------------------------------------.
+.------------------------------------------------.
 |                                                |
 |  Name: xxxxx1xxxxx    Player: xxxxxxx2xxxxxxx  |
 |        xxxxxxxxxxx                             |
@@ -18,7 +18,7 @@ FORM = """
 |        xxxxx3xxxxx    INT: x6x    STA: x7x     |
 |        xxxxxxxxxxx    LUC: x8x    MAG: x9x     |
 |                                                |
- {b>----------------------------------------------<
+ >----------------------------------------------<
 |          |                                     |
 | cccccccc | ccccccccccccccccccccccccccccccccccc |
 | cccccccc | ccccccccccccccccccccccccccccccccccc |
@@ -26,7 +26,7 @@ FORM = """
 | cccccccc | ccccccccccccccccccccccccccccccccccc |
 | cccccccc | cccccccccccccccccBccccccccccccccccc |
 |          |                                     |
--------------------------------------------------
+ ------------------------------------------------
 """
 
 

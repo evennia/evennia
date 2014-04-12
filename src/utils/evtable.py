@@ -69,6 +69,12 @@ to a minimum width and height of 1.
 It is intended to be used with ANSIString for supporting
 ANSI-coloured string types.
 
+When a cell is auto-wrapped across multiple lines,
+ANSI-reset sequences will be put at the end of each
+wrapped line. This means that the colour of a wrapped
+cell will not "bleed", but it also means that eventual
+colour outside
+
 """
 #from textwrap import wrap
 from textwrap import TextWrapper
@@ -406,7 +412,7 @@ class Cell(object):
             if 0 < width < len(line):
                 # replace_whitespace=False, expand_tabs=False is a
                 # fix for ANSIString not supporting expand_tabs/translate
-                adjusted_data.extend([ANSIString(part )
+                adjusted_data.extend([ANSIString(part + ANSIString("{n"))
                     for part in wrap(line, width=width, drop_whitespace=False)])
             else:
                 adjusted_data.append(line)
@@ -1124,7 +1130,7 @@ class EvTable(object):
         self.corner_char = kwargs.get("corner_char", self.corner_char)
         self.header_line_char = kwargs.get("header_line_char", self.header_line_char)
 
-        self.corner_top_left = _to_ansi(kwargs.pop("corner_top_left", self.corner_top_leftorner_char))
+        self.corner_top_left = _to_ansi(kwargs.pop("corner_top_left", self.corner_char))
         self.corner_top_right = _to_ansi(kwargs.pop("corner_top_right", self.corner_char))
         self.corner_bottom_left = _to_ansi(kwargs.pop("corner_bottom_left", self.corner_char))
         self.corner_bottom_right = _to_ansi(kwargs.pop("corner_bottom_right", self.corner_char))
@@ -1144,4 +1150,15 @@ class EvTable(object):
 
     def __unicode__(self):
         return  unicode(ANSIString("\n").join([line for line in self._generate_lines()]))
+
+def _test():
+    "Test"
+    table = EvTable("{yHeading1{n", "{gHeading2{n", table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
+    table.add_column("{rThis is long data{n", "{bThis is even longer data{n")
+    table.add_row("This is a single row")
+    print unicode(table)
+    table.reformat(width=50)
+    print unicode(table)
+
+
 
