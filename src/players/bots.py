@@ -128,6 +128,12 @@ class Bot(Player):
         """
         pass
 
+    def at_server_shutdown(self):
+        "We need to handle this case manually since the shutdown may be a reset"
+        print "bots at_server_shutdown called"
+        for session in self.get_all_sessions():
+            session.sessionhandler.disconnect(session)
+
 
 # Bot implementations
 

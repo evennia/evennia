@@ -325,14 +325,15 @@ class Evennia(object):
                 # same as shutdown
                 yield [(o.typeclass, o.at_server_shutdown())
                                    for o in ObjectDB.get_all_cached_instances()]
+                yield [(p.typeclass, p.at_server_shutdown())
+                                       for p in PlayerDB.get_all_cached_instances()]
             else:  # shutdown
                 yield [_SA(p, "is_connected", False)
                                    for p in PlayerDB.get_all_cached_instances()]
                 yield [(o.typeclass, o.at_server_shutdown())
                                    for o in ObjectDB.get_all_cached_instances()]
-
-            yield [(p.typeclass, p.unpuppet_all(), p.at_server_shutdown())
-                                   for p in PlayerDB.get_all_cached_instances()]
+                yield [(p.typeclass, p.unpuppet_all(), p.at_server_shutdown())
+                                       for p in PlayerDB.get_all_cached_instances()]
             yield [(s.typeclass, s.at_server_shutdown())
                                    for s in ScriptDB.get_all_cached_instances()]
             yield ObjectDB.objects.clear_all_sessids()

@@ -81,7 +81,7 @@ class CmdReset(MuxCommand):
         """
         Reload the system.
         """
-        SESSIONS.announce_all(" Server restarting ...")
+        SESSIONS.announce_all(" Server resetting/restarting ...")
         SESSIONS.server.shutdown(mode='reset')
 
 
