@@ -39,6 +39,10 @@ where <language code> is the two-letter locale code for the language
 you want, like "sv" for Swedish, "es" for Spanish and so on. A new
 folder with the language code will have appeared. 
 
+Note that the command django-admin may not be available in your path. 
+If so, the easiest way is to search for it (it sits in the django 
+source tree) and run it as "python <absolute-path>/django-admin.py".
+
 
 Doing a translation / improving an existing one
 -----------------------------------------------
