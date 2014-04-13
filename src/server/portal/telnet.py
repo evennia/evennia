@@ -84,12 +84,12 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
     def connectionLost(self, reason):
         """
-        This is executed when the connection is lost for
-        whatever reason. It can also be called directly, from
+        this is executed when the connection is lost for
+        whatever reason. it can also be called directly, from
         the disconnect method
         """
         self.sessionhandler.disconnect(self)
-        self.transport.loseConnection()
+        self.transport.loseconnection()
 
     def dataReceived(self, data):
         """
@@ -97,6 +97,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         starts with IAC (a telnet command) or not. All other data will
         be handled in line mode. Some clients also sends an erroneous
         line break after IAC, which we must watch out for.
+
+        OOB protocols (MSDP etc) already intercept subnegotiations
+        on their own, never entering this method. They will relay
+        their parsed data directly to self.data_in.
+
         """
 
         if data and data[0] == IAC or self.iaw_mode:

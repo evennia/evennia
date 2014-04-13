@@ -23,8 +23,7 @@ import os
 SERVERNAME = "Evennia"
 # Activate telnet service
 TELNET_ENABLED = True
-# A list of ports the Evennia telnet server listens on
-# Can be one or many.
+# A list of ports the Evennia telnet server listens on Can be one or many.
 TELNET_PORTS = [4000]
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 TELNET_INTERFACES = ['0.0.0.0']
@@ -68,12 +67,18 @@ SSH_ENABLED = False
 SSH_PORTS = [8022]
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 SSH_INTERFACES = ['0.0.0.0']
-# Actiave SSL protocol (SecureSocketLibrary)
+# Activate SSL protocol (SecureSocketLibrary)
 SSL_ENABLED = False
 # Ports to use for SSL
 SSL_PORTS = [4001]
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 SSL_INTERFACES = ['0.0.0.0']
+# Activate Websocket support
+WEBSOCKET_ENABLED = False
+# Ports to use for Websockets
+WEBSOCKET_PORTS = [8021]
+# Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
+WEBSOCKET_INTERFACES = ['0.0.0.0.']
 # The path that contains this settings.py file (no trailing slash).
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Path to the src directory containing the bulk of the codebase's code.
