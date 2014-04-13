@@ -1872,13 +1872,20 @@ class CmdFind(MuxCommand):
         low = min(low, high)
         high = max(low, high)
 
-        if searchstring.startswith("*") or utils.dbref(searchstring):
-            # A player/dbref search.
-            # run a normal player- or dbref search. This should be unique.
+        is_dbref = utils.dbref(searchstring)
+        is_player = searchstring.startswith("*")
+
+        if is_dbref or is_player:
+
+            if is_dbref:
+                # a dbref search
+                result = caller.search(searchstring, global_search=True)
+            else:
+                # a player search
+                searchstring = searchstring.lstrip("*")
+                result = caller.search_player(searchstring)
 
             string = "{wMatch{n(#%i-#%i):" % (low, high)
-
-            result = caller.search(searchstring, global_search=True)
             if not result:
                 return
             if not low <= int(result.id) <= high:
