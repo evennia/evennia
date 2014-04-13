@@ -9,12 +9,21 @@ Thanks to Ricard Pillosu whose Evennia plugin inspired this module.
 Communication over the websocket interface is done with normal text
 communication. A special case is OOB-style communication; to do this
 the client must send data on the following form:
-    OOB(oobfunc, args, kwargs)
-    or
-    OOB[(oobfunc, args, kwargs), ...]
+
+    OOB{oobfunc:[[args], {kwargs}], ...}
+
 where the tuple/list is sent json-encoded. The initial OOB-prefix
 is used to identify this type of communication, all other data
 is considered plain text (command input).
+
+Example of call from javascript client:
+
+    websocket = new WeSocket("ws://localhost:8021")
+    var msg1 = "WebSocket Test"
+    websocket.send(msg1)
+    var msg2 = JSON.stringify({"testfunc":[[1,2,3], {"kwarg":"val"}]})
+    websocket.send("OOB" + msg2)
+    websocket.close()
 
 """
 import json
@@ -52,7 +61,7 @@ class WebSocketProtocol(Protocol, Session):
         the disconnect method
         """
         self.sessionhandler.disconnect(self)
-        self.transport.loseconnection()
+        self.transport.close()
 
     def dataReceived(self, string):
         """
@@ -62,11 +71,8 @@ class WebSocketProtocol(Protocol, Session):
         Type of data is identified by a 3-character
         prefix.
             OOB - This is an Out-of-band instruction. If so,
-                  the remaining string should either be
-                  a json packed tuple (oobfuncname, args, kwargs)
-                  or a json-packed list of tuples
-                  [(oobfuncname, args, kwargs), ...] to send to
-                  the OOBhandler.
+                  the remaining string should be a json-packed
+                  string on the form {oobfuncname: [[args], {kwargs}], ...}
             any other prefix (or lack of prefix) is considered
                   plain text data, to be treated like a game
                   input command.
@@ -75,18 +81,19 @@ class WebSocketProtocol(Protocol, Session):
             string = string[3:]
             try:
                 oobdata = json.loads(string)
-                if isinstance(oobdata, list):
-                    for oobtuple in oobdata:
-                        self.data_in(oob=oobtuple)
-                elif isinstance(oobdata, tuple):
-                    self.data_in(oob=oobtuple)
-                else:
-                    raise RuntimeError("OOB data is not list or tuple.")
-            except:
-                log_trace("Websocket malformed OOB request: %s" % oobdata)
+                for (key, argstuple) in oobdata.items():
+                    args = argstuple[0] if argstuple else []
+                    kwargs = argstuple[1] if len(argstuple) > 1 else {}
+                    self.data_in(oob=(key, args, kwargs))
+            except Exception:
+                log_trace("Websocket malformed OOB request: %s" % string)
         else:
             # plain text input
             self.data_in(text=string)
+
+    def sendLine(self, line):
+        "send data to client"
+        return self.transport.write(line)
 
     def data_in(self, text=None, **kwargs):
         """

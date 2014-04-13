@@ -285,10 +285,10 @@ if WEBSOCKET_ENABLED:
             ifacestr = "-%s" % interface
         for port in WEBSOCKET_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
-            factory = WebSocketFactory(protocol.ServerFactory())
+            factory = protocol.ServerFactory()
             factory.protocol = websocket.WebSocketProtocol
             factory.sessionhandler = PORTAL_SESSIONS
-            websocket_service = internet.TCPServer(port, factory, interface=interface)
+            websocket_service = internet.TCPServer(port, WebSocketFactory(factory), interface=interface)
             websocket_service.setName('EvenniaWebSocket%s' % pstring)
             PORTAL.services.addService(websocket_service)
 

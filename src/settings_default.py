@@ -78,7 +78,7 @@ WEBSOCKET_ENABLED = False
 # Ports to use for Websockets
 WEBSOCKET_PORTS = [8021]
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
-WEBSOCKET_INTERFACES = ['0.0.0.0.']
+WEBSOCKET_INTERFACES = ['0.0.0.0']
 # The path that contains this settings.py file (no trailing slash).
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Path to the src directory containing the bulk of the codebase's code.

@@ -210,7 +210,6 @@ def oob_error(oobhandler, session, errmsg, *args, **kwargs):
     """
     session.msg(oob=("send", {"ERROR": errmsg}))
 
-
 def list(oobhandler, session, mode, *args, **kwargs):
     """
     List available properties. Mode is the type of information

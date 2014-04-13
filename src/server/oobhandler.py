@@ -1,31 +1,36 @@
 """
 OOBHandler - Out Of Band Handler
 
-The OOBHandler is called directly by out-of-band protocols. It supplies three
-pieces of functionality:
+The OOBHandler.execute_cmd is called by the sessionhandler when it detects
+an OOB instruction (exactly how this looked depends on the protocol; at this
+point all oob calls should look the same)
+
+The handler pieces of functionality:
 
     function execution - the oob protocol can execute a function directly on
                          the server. The available functions must be defined
-                         as global functions via settings.OOB_PLUGIN_MODULES.
+                         as global functions in settings.OOB_PLUGIN_MODULES.
     repeat func execution - the oob protocol can request a given function be
                             executed repeatedly at a regular interval. This
                             uses an internal script pool.
     tracking - the oob protocol can request Evennia to track changes to
                fields on objects, as well as changes in Attributes. This is
                done by dynamically adding tracker-objects on entities. The
-               behaviour of those objects can be customized via
-               settings.OOB_PLUGIN_MODULES.
+               behaviour of those objects can be customized by adding new
+               tracker classes in settings.OOB_PLUGIN_MODULES.
 
-What goes into the OOB_PLUGIN_MODULES is a list of modules with input
-for the OOB system.
+What goes into the OOB_PLUGIN_MODULES is a (list of) modules that contains
+the working server-side code available to the OOB system: oob functions and
+tracker classes.
 
 oob functions have the following call signature:
-    function(caller, *args, **kwargs)
+    function(caller, session, *args, **kwargs)
 
-oob trackers should inherit from the OOBTracker class in this
-    module and implement a minimum of the same functionality.
+oob trackers should inherit from the OOBTracker class (in this
+    module) and implement a minimum of the same functionality.
 
-a global function oob_error will be used as optional error management.
+If a function named "oob_error" is given, this will be called with error
+messages.
 
 """
 
@@ -46,12 +51,18 @@ _SA = object.__setattr__
 _GA = object.__getattribute__
 _DA = object.__delattr__
 
-# load from plugin module
+# load resources from plugin module
 _OOB_FUNCS = {}
 for mod in make_iter(settings.OOB_PLUGIN_MODULES):
     _OOB_FUNCS.update(dict((key.lower(), func) for key, func in all_from_module(mod).items() if isfunction(func)))
+# get custom error method or use the default
 _OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
 
+if not _OOB_ERROR:
+    # create default oob error message function
+    def oob_error(oobhandler, session, errmsg, *args, **kwargs):
+        session.msg(oob=("send", {"ERROR": errmsg}))
+    _OOB_ERROR = oob_error
 
 class TrackerHandler(object):
     """
@@ -444,13 +455,13 @@ class OOBHandler(object):
                 _OOB_ERROR(self, session, errmsg, *args, **kwargs)
             else:
                 logger.log_trace(errmsg)
-            raise
+            raise KeyError(errmsg)
         except Exception, err:
             errmsg = "OOB Error: Exception in '%s'(%s, %s):\n%s" % (func_key, args, kwargs, err)
             if _OOB_ERROR:
                 _OOB_ERROR(self, session, errmsg, *args, **kwargs)
             else:
                 logger.log_trace(errmsg)
-            raise
+            raise Exception(errmsg)
 # access object
 OOB_HANDLER = OOBHandler()
