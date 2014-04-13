@@ -35,8 +35,8 @@ from django.utils.translation import ugettext as _
 
 __all__ = ("PlayerDB",)
 
-_ME = _("me")
-_SELF = _("self")
+#_ME = _("me")
+#_SELF = _("self")
 
 _SESSIONS = None
 _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
@@ -402,6 +402,7 @@ class PlayerDB(TypedObject, AbstractUser):
             return puppets and puppets[0] or None
         return puppets
     character = property(__get_single_puppet)
+    puppet = property(__get_single_puppet)
 
     # utility methods
 
@@ -442,34 +443,30 @@ class PlayerDB(TypedObject, AbstractUser):
         return cmdhandler.cmdhandler(self.typeclass, raw_string,
                                      callertype="player", sessid=sessid)
 
-    def search(self, ostring, return_puppet=False,
-               return_character=False, **kwargs):
+    def search(self, searchdata, return_puppet=False, **kwargs):
         """
         This is similar to the ObjectDB search method but will search for
         Players only. Errors will be echoed, and None returned if no Player
         is found.
-
-        return_character - will try to return the character the player controls
+        searchdata - search criterion, the Player's key or dbref to search for
+        return_puppet  - will try to return the object the player controls
                            instead of the Player object itself. If no
-                           Character exists (since Player is OOC), None will
+                           puppeted object exists (since Player is OOC), None will
                            be returned.
         Extra keywords are ignored, but are allowed in call in order to make
-                           API more consistent with objects.models.
-                           TypedObject.search.
+                           API more consistent with objects.models.TypedObject.search.
         """
-        if return_character:
+        #TODO deprecation
+        if "return_character" in kwargs:
             logger.log_depmsg("Player.search's 'return_character' keyword is deprecated. Use the return_puppet keyword instead.")
-            #return_puppet = return_character
-        # handle me, self
-        if ostring in (_ME, _SELF, '*' + _ME, '*' + _SELF):
-            return self
+            return_puppet = kwargs.get("return_character")
 
-        matches = _GA(self, "__class__").objects.player_search(ostring)
-        matches = _AT_SEARCH_RESULT(self, ostring, matches, global_search=True)
-        if matches and return_character:
+        matches = _GA(self, "__class__").objects.player_search(searchdata)
+        matches = _AT_SEARCH_RESULT(self, searchdata, matches, global_search=True)
+        if matches and return_puppet:
             try:
-                return _GA(matches, "character")
-            except:
-                pass
+                return _GA(matches, "puppet")
+            except AttributeError:
+                return None
         return matches
 

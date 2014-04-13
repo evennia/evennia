@@ -427,7 +427,7 @@ class ObjectDB(TypedObject):
         results = PlayerDB.objects.player_search(searchdata)
         if quiet:
             return results
-        return _AT_SEARCH_RESULT(self, searchdata, results, True)
+        return _AT_SEARCH_RESULT(self, searchdata, results, global_search=True)
 
     #
     # Execution/action methods

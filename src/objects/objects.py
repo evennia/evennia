@@ -297,7 +297,7 @@ class Object(TypeClass):
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("me", "self",):
                 return self.player
-        self.dbobj.search_player(searchdata, quiet=quiet)
+        return self.dbobj.search_player(searchdata, quiet=quiet)
 
     def execute_cmd(self, raw_string, sessid=None):
         """

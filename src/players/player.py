@@ -157,14 +157,25 @@ class Player(TypeClass):
         """
         return self.dbobj.execute_cmd(raw_string, sessid=sessid)
 
-    def search(self, ostring, return_character=False, **kwargs):
+    def search(self, searchdata, return_puppet=False, **kwargs):
         """
-        This method mimicks object.search if self.character is set. Otherwise only
-        other Players can be searched with this method.
-        extra keywords are accepted but ignored to make API more consistent with
-        TypedObject.search.
+        This is similar to the Object search method but will search for
+        Players only. Errors will be echoed, and None returned if no Player
+        is found.
+        searchdata - search criterion, the Player's key or dbref to search for
+        return_puppet  - will try to return the object the player controls
+                           instead of the Player object itself. If no
+                           puppeted object exists (since Player is OOC), None will
+                           be returned.
+        Extra keywords are ignored, but are allowed in call in order to make
+                           API more consistent with objects.models.TypedObject.search.
         """
-        return self.dbobj.search(ostring, return_character=return_character)
+        # handle me, self and *me, *self
+        if isinstance(searchdata, basestring):
+            # handle wrapping of common terms
+            if searchdata.lower() in ("me", "*me", "self", "*self",):
+                return self
+        return self.dbobj.search(searchdata, return_puppet=return_puppet, **kwargs)
 
     def is_typeclass(self, typeclass, exact=False):
         """
