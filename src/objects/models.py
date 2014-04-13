@@ -42,10 +42,6 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
 
-_ME = _("me")
-_SELF = _("self")
-_HERE = _("here")
-
 
 #------------------------------------------------------------
 #
@@ -367,12 +363,6 @@ class ObjectDB(TypedObject):
         """
         is_string = isinstance(searchdata, basestring)
 
-        # handle some common self-references:
-        if searchdata == _HERE:
-            return self.location
-        if searchdata in (_ME, _SELF):
-            return self.typeclass
-
         if use_nicks:
             # do nick-replacement on search
             searchdata = self.nicks.nickreplace(searchdata, categories=("object", "player"), include_player=True)
@@ -412,10 +402,28 @@ class ObjectDB(TypedObject):
 
     def search_player(self, searchdata, quiet=False):
         """
-        Simple wrapper of the player search also handling me, self
+        Simple shortcut wrapper to search for players, not characters.
+
+        searchdata - search criterion - the key or dbref of the player
+                     to search for. If this is "here" or "me", search
+                     for the player connected to this object.
+        quiet - return the results as a list rather than echo eventual
+                standard error messages.
+
+        Returns:
+            quiet=False (default):
+                no match or multimatch:
+                    auto-echoes errors to self.msg, then returns None
+                    (results are handled by settings.SEARCH_AT_RESULT
+                                 and settings.SEARCH_AT_MULTIMATCH_INPUT)
+                match:
+                    a unique player match
+            quiet=True:
+                no match or multimatch:
+                    returns None or list of multi-matches
+                match:
+                    a unique object match
         """
-        if searchdata in (_ME, _SELF) and _GA(self, "db_player"):
-            return _GA(self, "db_player")
         results = PlayerDB.objects.player_search(searchdata)
         if quiet:
             return results

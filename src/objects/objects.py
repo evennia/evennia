@@ -190,7 +190,7 @@ class Object(TypeClass):
 
     ## methods inherited from the database object (overload them here)
 
-    def search(self, ostring,
+    def search(self, searchdata,
                global_search=False,
                use_nicks=True,
                typeclass=None,
@@ -208,13 +208,14 @@ class Object(TypeClass):
 
         Inputs:
 
-        ostring (str): Primary search criterion. Will be matched against
+        searchdata (str): Primary search criterion. Will be matched against
                       object.key (with object.aliases second)
                        unless the keyword attribute_name specifies otherwise.
                        Special strings:
                         #<num> - search by unique dbref. This is always a
                                  global search.
                         me,self - self-reference to this object
+                        here - current location
                         <num>-<string> - can be used to differentiate between
                                          multiple same-named matches
         global_search (bool): Search all objects globally. This is overruled
@@ -252,7 +253,14 @@ class Object(TypeClass):
                     a unique object match
 
         """
-        return self.dbobj.search(ostring,
+        if isinstance(searchdata, basestring):
+            # searchdata is a string; wrap some common self-references
+            if searchdata.lower() in ("here", ):
+                return self.location
+            if searchdata.lower() in ("me", "self",):
+                return self
+
+        return self.dbobj.search(searchdata,
                global_search=global_search,
                use_nicks=use_nicks,
                typeclass=typeclass,
@@ -260,6 +268,36 @@ class Object(TypeClass):
                attribute_name=attribute_name,
                quiet=quiet,
                exact=exact)
+
+    def search_player(self, searchdata, quiet=False):
+        """
+        Simple shortcut wrapper to search for players, not characters.
+
+        searchdata - search criterion - the key or dbref of the player
+                     to search for. If this is "here" or "me", search
+                     for the player connected to this object.
+        quiet - return the results as a list rather than echo eventual
+                standard error messages.
+
+        Returns:
+            quiet=False (default):
+                no match or multimatch:
+                    auto-echoes errors to self.msg, then returns None
+                    (results are handled by settings.SEARCH_AT_RESULT
+                                 and settings.SEARCH_AT_MULTIMATCH_INPUT)
+                match:
+                    a unique player match
+            quiet=True:
+                no match or multimatch:
+                    returns None or list of multi-matches
+                match:
+                    a unique object match
+        """
+        if isinstance(searchdata, basestring):
+            # searchdata is a string; wrap some common self-references
+            if searchdata.lower() in ("me", "self",):
+                return self.player
+        self.dbobj.search_player(searchdata, quiet=quiet)
 
     def execute_cmd(self, raw_string, sessid=None):
         """
