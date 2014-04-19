@@ -21,7 +21,7 @@ class MsgAdmin(admin.ModelAdmin):
 
 
 class ChannelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'db_key', 'db_lock_storage')
+    list_display = ('id', 'db_key', 'db_lock_storage', "subscriptions")
     list_display_links = ("id", 'db_key')
     ordering = ["db_key"]
     search_fields = ['id', 'db_key', 'db_aliases']
@@ -29,7 +29,11 @@ class ChannelAdmin(admin.ModelAdmin):
     save_on_top = True
     list_select_related = True
     fieldsets = (
-        (None, {'fields': (('db_key',), 'db_lock_storage')}),
+        (None, {'fields': (('db_key',), 'db_lock_storage', 'db_subscriptions')}),
         )
+
+    def subscriptions(self, obj):
+        "Helper method to get subs from a channel"
+        return ", ".join([str(sub) for sub in obj.db_subscriptions.all()])
 
 admin.site.register(ChannelDB, ChannelAdmin)
