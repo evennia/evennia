@@ -375,7 +375,7 @@ class CmdObjects(MuxCommand):
         nobjs = nobjs or 1 # fix zero-div error with empty database
 
         # total object sum table
-        totaltable = EvTable("{wtype{n", "{wcomment{n", "{wcount{n", "{w%%{n", border="cells")
+        totaltable = EvTable("{wtype{n", "{wcomment{n", "{wcount{n", "{w%%{n", border="table", align="l")
         totaltable.align = 'l'
         totaltable.add_row("Characters", "(BASE_CHARACTER_TYPECLASS)", nchars, "%.2f" % ((float(nchars) / nobjs) * 100))
         totaltable.add_row("Rooms", "(location=None)", nrooms, "%.2f" % ((float(nrooms) / nobjs) * 100))
@@ -383,7 +383,7 @@ class CmdObjects(MuxCommand):
         totaltable.add_row("Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100))
 
         # typeclass table
-        typetable = EvTable("{wtypeclass{n", "{wcount{n", "{w%%{n", border="cells")
+        typetable = EvTable("{wtypeclass{n", "{wcount{n", "{w%%{n", border="table", align="l")
         typetable.align = 'l'
         dbtotals = ObjectDB.objects.object_totals()
         for path, count in dbtotals.items():
@@ -391,7 +391,7 @@ class CmdObjects(MuxCommand):
 
         # last N table
         objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim):]
-        latesttable = EvTable("{wcreated{n", "{wdbref{n", "{wname{n", "{wtypeclass{n", border="cells")
+        latesttable = EvTable("{wcreated{n", "{wdbref{n", "{wname{n", "{wtypeclass{n", align="l", border="table")
         latesttable.align = 'l'
         for obj in objs:
             latesttable.add_row(utils.datetime_format(obj.date_created),
