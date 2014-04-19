@@ -21,7 +21,7 @@ class MsgAdmin(admin.ModelAdmin):
 
 
 class ChannelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'db_key', 'db_lock_storage', "db_subscriptions")
+    list_display = ('id', 'db_key', 'db_lock_storage')
     list_display_links = ("id", 'db_key')
     ordering = ["db_key"]
     search_fields = ['id', 'db_key', 'db_aliases']
