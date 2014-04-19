@@ -372,6 +372,8 @@ class CmdObjects(MuxCommand):
         nexits = ObjectDB.objects.filter(db_location__isnull=False, db_destination__isnull=False).count()
         nother = nobjs - nchars - nrooms - nexits
 
+        nobjs = nobjs or 1 # fix zero-div error with empty database
+
         # total object sum table
         totaltable = EvTable("{wtype{n", "{wcomment{n", "{wcount{n", "{w%%{n", border="cells")
         totaltable.align = 'l'
