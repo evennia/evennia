@@ -8,6 +8,7 @@ from django.conf import settings
 from src.objects.models import ObjectDB
 from src.utils import create, utils, search
 from src.utils.ansi import raw
+from src.locks.lockhandler import LockException
 from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import get_and_merge_cmdsets
 
@@ -1555,7 +1556,10 @@ class CmdLock(ObjManipCommand):
             if not obj.access(caller, 'control'):
                 caller.msg("You are not allowed to do that.")
                 return
-            ok = obj.locks.add(lockdef, caller)
+            try:
+                ok = obj.locks.add(lockdef)
+            except LockException, e:
+                caller.msg(str(e))
             if ok:
                 caller.msg("Added lock '%s' to %s." % (lockdef, obj))
             return

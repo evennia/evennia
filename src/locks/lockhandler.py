@@ -115,7 +115,8 @@ __all__ = ("LockHandler", "LockException")
 
 
 #
-# Exception class
+# Exception class. This will be raised
+# by errors in lock definitions.
 #
 
 class LockException(Exception):
@@ -171,7 +172,6 @@ class LockHandler(object):
             _cache_lockfuncs()
         self.obj = obj
         self.locks = {}
-        self.log_obj = None
         self.reset()
 
     def __str__(self):
@@ -179,12 +179,7 @@ class LockHandler(object):
 
     def _log_error(self, message):
         "Try to log errors back to object"
-        if self.log_obj and hasattr(self.log_obj, 'msg'):
-            self.log_obj.msg(message)
-        elif hasattr(self.obj, 'msg'):
-            self.obj.msg(message)
-        else:
-            logger.log_errmsg("%s: %s" % (self.obj, message))
+        raise LockException(message)
 
     def _parse_lockstring(self, storage_lockstring):
         """
@@ -240,10 +235,9 @@ class LockHandler(object):
                 wlist.append(_("Lock: access type '%(access_type)s' changed from '%(source)s' to '%(goal)s' " % \
                                  {"access_type":access_type, "source":locks[access_type][2], "goal":raw_lockstring}))
             locks[access_type] = (evalstring, tuple(lock_funcs), raw_lockstring)
-        if wlist and self.log_obj:
+        if wlist:
             # a warning text was set, it's not an error, so only report
-            # if log_obj is available.
-            self._log_error("\n".join(wlist))
+            logger.log_warn("\n".join(wlist))
         if elist:
             # an error text was set, raise exception.
             raise LockException("\n".join(elist))
@@ -269,15 +263,12 @@ class LockHandler(object):
         """
         self.lock_bypass = hasattr(obj, "is_superuser") and obj.is_superuser
 
-    def add(self, lockstring, log_obj=None):
+    def add(self, lockstring):
         """
         Add a new lockstring on the form '<access_type>:<functions>'. Multiple
         access types should be separated by semicolon (;).
 
-        If log_obj is given, it will be fed error information.
         """
-        if log_obj:
-            self.log_obj = log_obj
         # sanity checks
         for lockdef in lockstring.split(';'):
             if not ':' in lockstring:
@@ -302,17 +293,16 @@ class LockHandler(object):
         # cache the locks will get rid of eventual doublets
         self._cache_locks(storage_lockstring)
         self._save_locks()
-        self.log_obj = None
         return True
 
-    def replace(self, lockstring, log_obj=None):
+    def replace(self, lockstring):
         "Replaces the lockstring entirely."
         old_lockstring = str(self)
         self.clear()
         try:
-            return self.add(lockstring, log_obj)
+            return self.add(lockstring)
         except LockException:
-            self.add(old_lockstring, log_obj)
+            self.add(old_lockstring)
             raise
 
     def get(self, access_type=None):

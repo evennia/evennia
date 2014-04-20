@@ -12,7 +12,7 @@ class TestLockHandler(unittest.TestCase):
 
     def test_add(self):
         # lock_handler = LockHandler(obj)
-        # self.assertEqual(expected, lock_handler.add(lockstring, log_obj))
+        # self.assertEqual(expected, lock_handler.add(lockstring))
         assert True # TODO: implement your test here
 
     def test_cache_lock_bypass(self):
@@ -47,7 +47,7 @@ class TestLockHandler(unittest.TestCase):
 
     def test_replace(self):
         # lock_handler = LockHandler(obj)
-        # self.assertEqual(expected, lock_handler.replace(lockstring, log_obj))
+        # self.assertEqual(expected, lock_handler.replace(lockstring))
         assert True # TODO: implement your test here
 
     def test_reset(self):
