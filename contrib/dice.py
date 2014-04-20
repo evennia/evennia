@@ -32,7 +32,7 @@ After a reload the dice (or roll) command will be available in-game.
 
 import re
 from random import randint
-from ev import default_cmds
+from ev import default_cmds, CmdSet
 
 
 def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=False):
@@ -125,7 +125,7 @@ class CmdDice(default_cmds.MuxCommand):
     """
 
     key = "dice"
-    aliases = ["roll"]
+    aliases = ["roll", "@dice"]
     locks = "cmd:all()"
 
     def func(self):
@@ -223,3 +223,12 @@ class CmdDice(default_cmds.MuxCommand):
             string = resultstring % (rolls, result)
             string += outcomestring
             self.caller.location.msg_contents(string)
+
+class DiceCmdSet(CmdSet):
+    """
+    a small cmdset for testing purposes.
+    Add with @py self.cmdset.add("contrib.dice.DiceCmdSet")
+    """
+    def at_cmdset_creation(self):
+        "Called when set is created"
+        self.add(CmdDice())
