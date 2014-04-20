@@ -186,11 +186,12 @@ CODE_INFO_HEADER = re.compile(r"\(.*?\)")
 def read_batchfile(pythonpath, file_ending='.py'):
     """
     This reads the contents of a batch-file.
-    Filename is considered to be the name of the batch file
+    Filename is considered to be a python path to a batch file
     relative the directory specified in settings.py.
 
     file_ending specify which batchfile ending should be
-    assumed (.ev or .py).
+    assumed (.ev or .py). The ending should not be included
+    in the python path.
     """
 
     # open the file

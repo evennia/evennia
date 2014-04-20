@@ -289,10 +289,17 @@ def get_evennia_version():
 def pypath_to_realpath(python_path, file_ending='.py'):
     """
     Converts a path on dot python form (e.g. 'src.objects.models') to
-    a system path ($BASE_PATH/src/objects/models.py). Calculates all paths as
-    absoulte paths starting from the evennia main directory.
+    a system path ($BASE_PATH/src/objects/models.py). Calculates all
+    paths as absoulte paths starting from the evennia main directory.
+
+    Since it seems to be a common mistake to include the file ending
+    when entering filename for things like batchprocess, we handle the
+    case of erroneously adding the file ending too.
     """
     pathsplit = python_path.strip().split('.')
+    if python_path.endswith(file_ending):
+        # this is actually a malformed path ...
+        pathsplit = pathsplit[:-1]
     if not pathsplit:
         return python_path
     path = settings.BASE_PATH
@@ -305,9 +312,9 @@ def pypath_to_realpath(python_path, file_ending='.py'):
 
 def dbref(dbref, reqhash=True):
     """
-    Converts/checks if input is a valid dbref.
-    If reqhash is set, only input strings on the form '#N', where N is an
-    integer is accepted. Otherwise strings '#N', 'N' and integers N are all
+    Converts/checks if input is a valid dbref.  If reqhash is set,
+    only input strings on the form '#N', where N is an integer is
+    accepted. Otherwise strings '#N', 'N' and integers N are all
     accepted.
      Output is the integer part.
     """
