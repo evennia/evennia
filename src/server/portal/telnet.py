@@ -89,7 +89,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         the disconnect method
         """
         self.sessionhandler.disconnect(self)
-        self.transport.close()
+        self.transport.loseConnection()
 
     def dataReceived(self, data):
         """

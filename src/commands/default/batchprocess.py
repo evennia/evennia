@@ -134,10 +134,10 @@ def batch_code_exec(caller):
     ptr = caller.ndb.batch_stackptr
     stack = caller.ndb.batch_stack
     debug = caller.ndb.batch_debug
-    codedict = stack[ptr]
+    code = stack[ptr]
 
-    caller.msg(format_header(caller, codedict['code']))
-    err = BATCHCODE.code_exec(codedict,
+    caller.msg(format_header(caller, code))
+    err = BATCHCODE.code_exec(code,
                               extra_environ={"caller": caller}, debug=debug)
     if err:
         caller.msg(format_code(err))
@@ -177,14 +177,8 @@ def show_curr(caller, showall=False):
 
     entry = stack[stackptr]
 
-    if type(entry) == dict:
-        # this is a batch-code entry
-        string = format_header(caller, entry['code'])
-        codeall = entry['code'].strip()
-    else:
-        # this is a batch-cmd entry
-        string = format_header(caller, entry)
-        codeall = entry.strip()
+    string = format_header(caller, entry)
+    codeall = entry.strip()
     string += "{G(hh for help)"
     if showall:
         for line in codeall.split('\n'):
@@ -349,10 +343,11 @@ class CmdBatchCode(MuxCommand):
             caller.msg("Usage: @batchcode[/interactive/debug] <path.to.file>")
             return
         python_path = self.args
+        debug = 'debug' in self.switches
 
         #parse indata file
         try:
-            codes = BATCHCODE.parse_file(python_path)
+            codes = BATCHCODE.parse_file(python_path, debug=debug)
         except UnicodeDecodeError, err:
             lnum = err.linenum
             caller.msg(_UTF8_ERROR % (python_path, lnum))
@@ -364,10 +359,6 @@ class CmdBatchCode(MuxCommand):
             caller.msg(string % (python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
         switches = self.switches
-
-        debug = False
-        if 'debug' in switches:
-            debug = True
 
         # Store work data in cache
         caller.ndb.batch_stack = codes
