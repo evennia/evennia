@@ -176,10 +176,10 @@ def create_object(typeclass=None, key=None, location=None,
         # we shouldn't need to handle dbref here (home handler should fix it), but some have
         # reported issues here (issue 446).
         try:
-            new_object.home = handle_dbref(settings.CHARACTER_DEFAULT_HOME, _ObjectDB) if not nohome else None
+            new_object.home = handle_dbref(settings.DEFAULT_HOME, _ObjectDB) if not nohome else None
         except _ObjectDB.DoesNotExist:
-            raise _ObjectDB.DoesNotExist("CHARACTER_DEFAULT_HOME (= '%s') does not exist, or the setting is malformed." %
-                                         settings.CHARACTER_DEFAULT_HOME)
+            raise _ObjectDB.DoesNotExist("settings.DEFAULT_HOME (= '%s') does not exist, or the setting is malformed." %
+                                         settings.DEFAULT_HOME)
 
     # perform a move_to in order to display eventual messages.
     if location:

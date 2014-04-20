@@ -582,7 +582,7 @@ class ObjectDB(TypedObject):
             if _GA(self, "home"):
                 source_location = _GA(self, "home")
             else:
-                default_home = ObjectDB.objects.get_id(settings.CHARACTER_DEFAULT_HOME)
+                default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
                 source_location = default_home
 
         # Call hook on source location
@@ -667,7 +667,7 @@ class ObjectDB(TypedObject):
         """
         # Gather up everything that thinks this is its location.
         objs = ObjectDB.objects.filter(db_location=self)
-        default_home_id = int(settings.CHARACTER_DEFAULT_HOME.lstrip("#"))
+        default_home_id = int(settings.DEFAULT_HOME.lstrip("#"))
         try:
             default_home = ObjectDB.objects.get(id=default_home_id)
             if default_home.dbid == _GA(self, "dbid"):

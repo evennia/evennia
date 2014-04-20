@@ -449,7 +449,8 @@ def error_check_python_modules():
         imp(path, split=False)
     # cmdsets
 
-    deprstring = "settings.%s should be renamed to %s. If defaults are used, their path/classname must be updated (see src/settings_default.py)."
+    deprstring = "settings.%s should be renamed to %s. If defaults are used, " \
+                 "their path/classname must be updated (see src/settings_default.py)."
     if hasattr(settings, "CMDSET_DEFAULT"):
         raise DeprecationWarning(deprstring % ("CMDSET_DEFAULT", "CMDSET_CHARACTER"))
     if hasattr(settings, "CMDSET_OOC"):
@@ -460,6 +461,9 @@ def error_check_python_modules():
         raise DeprecationWarning(deprstring % ("BASE_COMM_TYPECLASS", "BASE_CHANNEL_TYPECLASS"))
     if hasattr(settings, "COMM_TYPECLASS_PATHS"):
         raise DeprecationWarning(deprstring % ("COMM_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS"))
+    if hasattr(settings, "CHARACTER_DEFAULT_HOME"):
+        raise DeprecationWarning("settings.CHARACTER_DEFAULT_HOME should be renamed to DEFAULT_HOME. " \
+                "See also settings.START_LOCATION (see src/settings_default.py).")
 
     from src.commands import cmdsethandler
     if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None): print "Warning: CMDSET_UNLOGGED failed to load!"

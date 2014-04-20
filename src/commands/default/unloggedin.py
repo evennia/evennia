@@ -160,7 +160,7 @@ class CmdUnconnectedCreate(MuxCommand):
 
         # everything's ok. Create the new player account.
         try:
-            default_home = ObjectDB.objects.get_id(settings.CHARACTER_DEFAULT_HOME)
+            default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
 
             typeclass = settings.BASE_CHARACTER_TYPECLASS
             permissions = settings.PERMISSION_PLAYER_DEFAULT
@@ -190,8 +190,9 @@ class CmdUnconnectedCreate(MuxCommand):
             if MULTISESSION_MODE < 2:
                 # if we only allow one character, create one with the same name as Player
                 # (in mode 2, the character must be created manually once logging in)
+                start_location = settings.START_LOCATION
                 new_character = create.create_object(typeclass, key=playername,
-                                          location=default_home, home=default_home,
+                                          location=start_location, home=default_home,
                                           permissions=permissions)
                 # set playable character list
                 new_player.db._playable_characters.append(new_character)

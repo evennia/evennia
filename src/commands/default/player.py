@@ -181,12 +181,13 @@ class CmdCharCreate(MuxPlayerCommand):
         # create the character
         from src.objects.models import ObjectDB
 
-        default_home = ObjectDB.objects.get_id(settings.CHARACTER_DEFAULT_HOME)
+        start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
+        default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
         typeclass = settings.BASE_CHARACTER_TYPECLASS
         permissions = settings.PERMISSION_PLAYER_DEFAULT
 
         new_character = create.create_object(typeclass, key=key,
-                                             location=default_home,
+                                             location=start_location,
                                              home=default_home,
                                              permissions=permissions)
         # only allow creator (and immortals) to puppet this char

@@ -525,14 +525,15 @@ class CmdDestroy(MuxCommand):
             if not obj:
                 self.caller.msg(" (Objects to destroy must either be local or specified with a unique #dbref.)")
                 return ""
-            if (not "override" in self.switches and
-                obj.dbid == int(settings.CHARACTER_DEFAULT_HOME.lstrip("#"))):
-                return "\nYou are trying to delete CHARACTER_DEFAULT_HOME. If you want to do this, use the /override switch."
             objname = obj.name
             if not obj.access(caller, 'delete'):
                 return "\nYou don't have permission to delete %s." % objname
             if obj.player and not 'override' in self.switches:
                 return "\nObject %s is controlled by an active player. Use /override to delete anyway." % objname
+            if obj.dbid == int(settings.DEFAULT_HOME.lstrip("#")):
+                return "\nYou are trying to delete {c%s{n, which is set as DEFAULT_HOME. " \
+                        "Re-point settings.DEFAULT_HOME to another " \
+                        "object before continuing." % objname
 
             had_exits = hasattr(obj, "exits") and obj.exits
             had_objs = hasattr(obj, "contents") and any(obj for obj in obj.contents

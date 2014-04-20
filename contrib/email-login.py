@@ -200,7 +200,7 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
 
         # everything's ok. Create the new player account.
         try:
-            default_home = ObjectDB.objects.get_id(settings.CHARACTER_DEFAULT_HOME)
+            default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
 
             typeclass = settings.BASE_CHARACTER_TYPECLASS
             permissions = settings.PERMISSION_PLAYER_DEFAULT

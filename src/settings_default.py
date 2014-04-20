@@ -270,11 +270,14 @@ BASE_CHANNEL_TYPECLASS = "src.comms.comms.Channel"
 # Typeclass for Scripts (fallback). You usually don't need to change this
 # but create custom variations of scripts on a per-case basis instead.
 BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
-# The home location for new characters. This must be a unique
-# dbref (default is Limbo #2). If you want more advanced control over
-# start locations, copy the "create" command from
-# src/commands/default/unloggedin.py and customize.
-CHARACTER_DEFAULT_HOME = "#2"
+# The default home location used for all objects. This is used as a
+# fallback if an object's normal home location is deleted. Default
+# is Limbo (#2).
+DEFAULT_HOME = "#2"
+# The start position for new characters. Default is Limbo (#2).
+#  MULTISESSION_MODE = 0, 1 - used by default unloggedin create command
+#  MULTISESSION_MODE = 2 - used by default character_create command
+START_LOCATION = "#2"
 # Lookups of Attributes, Tags, Nicks, Aliases can be aggressively
 # cached to avoid repeated database hits. This often gives noticeable
 # performance gains since they are called so often. Drawback is that
@@ -377,6 +380,15 @@ CHANNEL_CONNECTINFO = ("MUDconnections", '', 'Connection log',
 # versa. Obs - make sure the IRC network allows bots.
 # When enabled, command @irc2chan will be available in-game
 IRC_ENABLED = False
+# RSS allows to connect RSS feeds (from forum updates, blogs etc) to
+# an in-game channel. The channel will be updated when the rss feed
+# updates. Use @rss2chan in game to connect if this setting is
+# active. OBS: RSS support requires the python-feedparser package to
+# be installed (through package manager or from the website
+# http://code.google.com/p/feedparser/)
+RSS_ENABLED=False
+RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
+
 # IMC (Inter-MUD communication) allows to connect an Evennia channel
 # to an IMC2 server. This lets them talk to people on other MUDs also
 # using IMC.  Evennia's IMC2 client was developed against MudByte's
@@ -389,19 +401,14 @@ IRC_ENABLED = False
 # command @imc2chan becomes available in-game and allows you to
 # connect Evennia channels to IMC channels on the network. The Evennia
 # discussion channel 'ievennia' is on server01.mudbytes.net:5000.
+
+# NOTE - IMC2 is currently NOT FUNCTIONAL due to lack of testing means.
 IMC2_ENABLED = False
 IMC2_NETWORK = "server01.mudbytes.net"
 IMC2_PORT = 5000 # this is the imc2 port, not on localhost
 IMC2_CLIENT_PWD = ""
 IMC2_SERVER_PWD = ""
-# RSS allows to connect RSS feeds (from forum updates, blogs etc) to
-# an in-game channel. The channel will be updated when the rss feed
-# updates. Use @rss2chan in game to connect if this setting is
-# active. OBS: RSS support requires the python-feedparser package to
-# be installed (through package manager or from the website
-# http://code.google.com/p/feedparser/)
-RSS_ENABLED=False
-RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
+
 
 ######################################################################
 # Django web features
