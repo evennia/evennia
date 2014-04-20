@@ -654,10 +654,8 @@ class ObjectDB(TypedObject):
         object as a destination.
         """
         for out_exit in [exi for exi in ObjectDB.objects.get_contents(self) if exi.db_destination]:
-            print "objects.clear_exits (out):", out_exit
             out_exit.delete()
         for in_exit in ObjectDB.objects.filter(db_destination=self):
-            print "objects.clear_exits (in):", in_exit
             in_exit.delete()
 
     def clear_contents(self):
@@ -679,7 +677,6 @@ class ObjectDB(TypedObject):
             default_home = None
 
         for obj in objs:
-            print "object.clear_contents:", obj
             home = obj.home
             # Obviously, we can't send it back to here.
             if not home or (home and home.dbid == _GA(self, "dbid")):
