@@ -13,7 +13,7 @@ from src.comms.models import ChannelDB, Msg
 from src.players.models import PlayerDB
 from src.players import bots
 from src.comms.channelhandler import CHANNELHANDLER
-from src.utils import create, utils, prettytable
+from src.utils import create, utils, prettytable, evtable
 from src.utils.utils import make_iter
 from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
@@ -276,13 +276,12 @@ class CmdChannels(MuxPlayerCommand):
 
         if self.cmdstring == "comlist":
             # just display the subscribed channels with no extra info
-            comtable = prettytable.PrettyTable(["{wchannel",
-                                                "{wmy aliases",
-                                                "{wdescription"])
+            comtable = evtable.EvTable("{wchannel{n", "{wmy aliases{n", "{wdescription{n", align="l", maxwidth=78)
+            #comtable = prettytable.PrettyTable(["{wchannel", "{wmy aliases", "{wdescription"])
             for chan in subs:
                 clower = chan.key.lower()
                 nicks = caller.nicks.get(category="channel")
-                comtable.add_row(["%s%s" % (chan.key, chan.aliases.all() and
+                comtable.add_row(*["%s%s" % (chan.key, chan.aliases.all() and
                                   "(%s)" % ",".join(chan.aliases.all()) or ""),
                                   "%s".join(nick for nick in make_iter(nicks)
                                   if nick and nick.lower() == clower),
@@ -290,16 +289,13 @@ class CmdChannels(MuxPlayerCommand):
             caller.msg("\n{wChannel subscriptions{n (use {w@channels{n to list all, {waddcom{n/{wdelcom{n to sub/unsub):{n\n%s" % comtable)
         else:
             # full listing (of channels caller is able to listen to)
-            comtable = prettytable.PrettyTable(["{wsub",
-                                                "{wchannel",
-                                                "{wmy aliases",
-                                                "{wlocks",
-                                                "{wdescription"])
+            comtable = evtable.EvTable("{wsub{n", "{wchannel{n", "{wmy aliases{n", "{wlocks{n", "{wdescription{n", maxwidth=78)
+            #comtable = prettytable.PrettyTable(["{wsub", "{wchannel", "{wmy aliases", "{wlocks", "{wdescription"])
             for chan in channels:
                 clower = chan.key.lower()
                 nicks = caller.nicks.get(category="channel")
                 nicks = nicks or []
-                comtable.add_row([chan in subs and "{gYes{n" or "{rNo{n",
+                comtable.add_row(*[chan in subs and "{gYes{n" or "{rNo{n",
                                   "%s%s" % (chan.key, chan.aliases.all() and
                                   "(%s)" % ",".join(chan.aliases.all()) or ""),
                                   "%s".join(nick for nick in make_iter(nicks)
@@ -798,7 +794,7 @@ class CmdIRC2Chan(MuxCommand):
             ircbots = [bot.typeclass for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
             if ircbots:
                 from src.utils.evtable import EvTable
-                table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", border="cells", maxwidth=78)
+                table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", maxwidth=78)
                 for ircbot in ircbots:
                     ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
                     table.add_row(ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo)

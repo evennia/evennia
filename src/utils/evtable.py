@@ -277,7 +277,7 @@ class Cell(object):
             hfill_char - character used for horizontal fill (default " ")
             vfill_char - character used for vertical fill (default " ")
 
-            align - "l", "r" or  "c", default is centered
+            align - "l", "r" or  "c", default is left-aligned
             valign - "t", "b" or "c", default is centered
 
             border_width -general border width. This is overruled
@@ -359,7 +359,7 @@ class Cell(object):
         self.corner_bottom_right = kwargs.get("corner_bottom_right", corner)
 
         # alignments
-        self.align = kwargs.get("align", "c")
+        self.align = kwargs.get("align", "l")
         self.valign = kwargs.get("valign", "c")
 
         #self.data = self._split_lines(unicode(data))
@@ -688,7 +688,7 @@ class EvTable(object):
                      Width is still given precedence. If
                      height is given, table cells will crop
                      text rather than expand vertically.
-            evenwidth - (default True). Used with the width keyword.
+            evenwidth - (default False). Used with the width keyword.
                      Adjusts collumns to have as even width as
                      possible. This often looks best also for
                      mixed-length tables.
@@ -747,7 +747,7 @@ class EvTable(object):
 
         self.width = kwargs.pop("width", None)
         self.height = kwargs.pop("height", None)
-        self.evenwidth = kwargs.pop("evenwidth", True)
+        self.evenwidth = kwargs.pop("evenwidth", False)
         self.maxwidth = kwargs.pop("maxwidth", None)
         if self.maxwidth and self.width and self.maxwidth < self.width:
             raise Exception("table maxwidth < table width!")
