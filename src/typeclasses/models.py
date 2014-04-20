@@ -1130,9 +1130,6 @@ class TypedObject(SharedMemoryModel):
 
     def delete(self):
         "Cleaning up handlers on the typeclass level"
-        _GA(self, "attributes").clear()
-        _GA(self, "nicks").clear()
-        _GA(self, "aliases").clear()
         _GA(self, "permissions").clear()
         super(TypedObject, self).delete()
 

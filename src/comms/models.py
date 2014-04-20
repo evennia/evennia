@@ -433,5 +433,7 @@ class ChannelDB(TypedObject):
         Deletes channel while also cleaning up channelhandler
         """
         super(ChannelDB, self).delete()
+        _GA(self, "attributes").clear()
+        _GA(self, "aliases").clear()
         from src.comms.channelhandler import CHANNELHANDLER
         CHANNELHANDLER.update()

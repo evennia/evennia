@@ -184,4 +184,5 @@ class ScriptDB(TypedObject):
         if self.delete_iter > 0:
             return
         self.delete_iter += 1
+        _GA(self, "attributes").clear()
         super(ScriptDB, self).delete()

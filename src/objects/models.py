@@ -780,6 +780,10 @@ class ObjectDB(TypedObject):
         _GA(self, "clear_exits")()
         # Clear out any non-exit objects located within the object
         _GA(self, "clear_contents")()
+        _GA(self, "attributes").clear()
+        _GA(self, "nicks").clear()
+        _GA(self, "aliases").clear()
+
         # Perform the deletion of the object
         super(ObjectDB, self).delete()
         return True
