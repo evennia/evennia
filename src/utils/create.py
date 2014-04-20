@@ -170,7 +170,6 @@ def create_object(typeclass=None, key=None, location=None,
     if aliases:
         new_object.aliases.add(aliases)
 
-    # perform a move_to in order to display eventual messages.
     if home:
         new_object.home = home
     else:
@@ -182,6 +181,7 @@ def create_object(typeclass=None, key=None, location=None,
             raise _ObjectDB.DoesNotExist("CHARACTER_DEFAULT_HOME (= '%s') does not exist, or the setting is malformed." %
                                          settings.CHARACTER_DEFAULT_HOME)
 
+    # perform a move_to in order to display eventual messages.
     if location:
         new_object.move_to(location, quiet=True)
     else:

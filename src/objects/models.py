@@ -102,7 +102,7 @@ class ObjectDB(TypedObject):
     # will automatically save and cache the data more efficiently.
 
     # If this is a character object, the player is connected here.
-    db_player = models.ForeignKey("players.PlayerDB", blank=True, null=True, verbose_name='player',
+    db_player = models.ForeignKey("players.PlayerDB", blank=True, null=True, verbose_name='player', on_delete=models.SET_NULL,
                                   help_text='a Player connected to this object, if any.')
     # the session id associated with this player, if any
     db_sessid = models.IntegerField(null=True, verbose_name="session id",
@@ -110,13 +110,13 @@ class ObjectDB(TypedObject):
     # The location in the game world. Since this one is likely
     # to change often, we set this with the 'location' property
     # to transparently handle Typeclassing.
-    db_location = models.ForeignKey('self', related_name="locations_set", db_index=True,
+    db_location = models.ForeignKey('self', related_name="locations_set", db_index=True, on_delete=models.SET_NULL,
                                      blank=True, null=True, verbose_name='game location')
     # a safety location, this usually don't change much.
-    db_home = models.ForeignKey('self', related_name="homes_set",
+    db_home = models.ForeignKey('self', related_name="homes_set", on_delete=models.SET_NULL,
                                  blank=True, null=True, verbose_name='home location')
     # destination of this object - primarily used by exits.
-    db_destination = models.ForeignKey('self', related_name="destinations_set", db_index=True,
+    db_destination = models.ForeignKey('self', related_name="destinations_set", db_index=True, on_delete=models.SET_NULL,
                                        blank=True, null=True, verbose_name='destination',
                                        help_text='a destination, used only by exit objects.')
     # database storage of persistant cmdsets.
@@ -654,8 +654,10 @@ class ObjectDB(TypedObject):
         object as a destination.
         """
         for out_exit in [exi for exi in ObjectDB.objects.get_contents(self) if exi.db_destination]:
+            print "objects.clear_exits (out):", out_exit
             out_exit.delete()
         for in_exit in ObjectDB.objects.filter(db_destination=self):
+            print "objects.clear_exits (in):", in_exit
             in_exit.delete()
 
     def clear_contents(self):
@@ -677,13 +679,15 @@ class ObjectDB(TypedObject):
             default_home = None
 
         for obj in objs:
+            print "object.clear_contents:", obj
             home = obj.home
             # Obviously, we can't send it back to here.
             if not home or (home and home.dbid == _GA(self, "dbid")):
                 obj.home = default_home
+                home = default_home
 
             # If for some reason it's still None...
-            if not obj.home:
+            if not home:
                 string = "Missing default home, '%s(#%d)' "
                 string += "now has a null location."
                 obj.location = None
@@ -738,6 +742,7 @@ class ObjectDB(TypedObject):
         objects to their respective home locations, as well as clean
         up all exits to/from the object.
         """
+        print "object.delete() 1:", self
         global _ScriptDB
         if not _ScriptDB:
             from src.scripts.models import ScriptDB as _ScriptDB
@@ -779,10 +784,6 @@ class ObjectDB(TypedObject):
         _GA(self, "clear_exits")()
         # Clear out any non-exit objects located within the object
         _GA(self, "clear_contents")()
-        #old_loc = _GA(self, "location")
         # Perform the deletion of the object
         super(ObjectDB, self).delete()
-        # clear object's old  location's content cache of this object
-        #if old_loc:
-        #    _GA(old_loc.dbobj, "contents_update")()
         return True

@@ -1003,12 +1003,6 @@ class TypedObject(SharedMemoryModel):
                                 _GA(cls, "__name__")) == typec
                                     for typec in typeclasses))))
 
-    def delete(self, *args, **kwargs):
-        """
-        Type-level cleanup
-        """
-        super(TypedObject, self).delete(*args, **kwargs)
-
     #
     # Object manipulation methods
     #
