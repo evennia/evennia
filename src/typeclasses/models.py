@@ -353,10 +353,13 @@ class AttributeHandler(object):
         given, check the 'attredit' lock on each Attribute before
         continuing. If not given, skip check.
         """
-        for attr in self.all(category=category, accessing_obj=accessing_obj, default_access=default_access):
-            if accessing_obj and not attr.access(accessing_obj, self._attredit, default=default_access):
-                continue
-            attr.delete()
+        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
+            self._recache()
+        if accessing_obj:
+            [attr.delete() for attr in self._cache.values()
+             if attr.access(accessing_obj, self._attredit, default=default_access)]
+        else:
+            [attr.delete() for attr in self._cache.values()]
         self._recache()
 
     def all(self, accessing_obj=None, default_access=True):
@@ -369,7 +372,11 @@ class AttributeHandler(object):
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
-        return self._cache.values()
+        if accessing_obj:
+            return [attr for attr in self._cache.values()
+                    if attr.access(accessing_obj, self._attredit, default=default_access)]
+        else:
+            return self._cache.values()
 
 class NickHandler(AttributeHandler):
     """
@@ -1120,6 +1127,14 @@ class TypedObject(SharedMemoryModel):
             return any(True for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
                        if hperm in perms and hpos > ppos)
         return False
+
+    def delete(self):
+        "Cleaning up handlers on the typeclass level"
+        _GA(self, "attributes").clear()
+        _GA(self, "nicks").clear()
+        _GA(self, "aliases").clear()
+        _GA(self, "permissions").clear()
+        super(TypedObject, self).delete()
 
     #
     # Memory management

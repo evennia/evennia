@@ -739,7 +739,6 @@ class ObjectDB(TypedObject):
         objects to their respective home locations, as well as clean
         up all exits to/from the object.
         """
-        print "object.delete() 1:", self
         global _ScriptDB
         if not _ScriptDB:
             from src.scripts.models import ScriptDB as _ScriptDB
