@@ -47,7 +47,7 @@ _UTF8_ERROR = \
  documentation of your text editor on how to do this, or switch to a
  better featured one) and try again.
 
- The (first) error was found with a character on line %s in the file.
+ Error reported was: '%s'
 """
 
 _PROCPOOL_BATCHCMD_SOURCE = """
@@ -244,15 +244,17 @@ class CmdBatchCommands(MuxCommand):
         try:
             commands = BATCHCMD.parse_file(python_path)
         except UnicodeDecodeError, err:
-            lnum = err.linenum
-            caller.msg(_UTF8_ERROR % (python_path, lnum))
+            caller.msg(_UTF8_ERROR % (python_path, err))
             return
-
-        if not commands:
+        except IOError:
             string = "'%s' not found.\nYou have to supply the python path "
             string += "of the file relative to \none of your batch-file directories (%s)."
             caller.msg(string % (python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
+        if not commands:
+            caller.msg("File %s seems empty of valid commands." % python_path)
+            return
+
         switches = self.switches
 
         # Store work data in cache
@@ -349,15 +351,17 @@ class CmdBatchCode(MuxCommand):
         try:
             codes = BATCHCODE.parse_file(python_path, debug=debug)
         except UnicodeDecodeError, err:
-            lnum = err.linenum
-            caller.msg(_UTF8_ERROR % (python_path, lnum))
+            caller.msg(_UTF8_ERROR % (python_path, err))
             return
-
-        if not codes:
+        except IOError:
             string = "'%s' not found.\nYou have to supply the python path "
             string += "of the file relative to \nyour batch-file directories (%s)."
             caller.msg(string % (python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
+        if not codes:
+            caller.msg("File %s seems empty of functional code." % python_path)
+            return
+
         switches = self.switches
 
         # Store work data in cache
