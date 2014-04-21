@@ -44,7 +44,7 @@ from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger
-from src.utils.utils import make_iter, is_iter, to_str
+from src.utils.utils import make_iter, is_iter, to_str, inherits_from
 from src.utils.dbserialize import to_pickle, from_pickle
 from src.utils.picklefield import PickledObjectField
 
@@ -1014,7 +1014,8 @@ class TypedObject(SharedMemoryModel):
     # Object manipulation methods
     #
 
-    def swap_typeclass(self, new_typeclass, clean_attributes=False, no_default=True):
+    def swap_typeclass(self, new_typeclass, clean_attributes=False,
+                       run_start_hooks=True, no_default=True):
         """
         This performs an in-situ swap of the typeclass. This means
         that in-game, this object will suddenly be something else.
@@ -1057,6 +1058,13 @@ class TypedObject(SharedMemoryModel):
         # Try to set the new path
         # this will automatically save to database
         old_typeclass_path = self.typeclass_path
+
+        if inherits_from(self, "src.scripts.models.ScriptDB"):
+            if self.interval > 0:
+                raise RuntimeError("Cannot use swap_typeclass on time-dependent " \
+                                   "Script '%s'.\nStop and start a new Script of the " \
+                                   "right type instead." % self.key)
+
         _SA(self, "typeclass_path", new_typeclass.strip())
         # this will automatically use a default class if
         # there is an error with the given typeclass.
@@ -1082,9 +1090,21 @@ class TypedObject(SharedMemoryModel):
                 for nattr in self.ndb.all:
                     del nattr
 
-        # run hooks for this new typeclass
-        new_typeclass.basetype_setup()
-        new_typeclass.at_object_creation()
+        if run_start_hooks:
+            # run hooks for this new typeclass
+            if inherits_from(self, "src.objects.models.ObjectDB"):
+                new_typeclass.basetype_setup()
+                new_typeclass.at_object_creation()
+            elif inherits_from(self, "src.players.models.PlayerDB"):
+                new_typeclass.basetype_setup()
+                new_typeclass.at_player_creation()
+            elif inherits_from(self, "src.scripts.models.ScriptDB"):
+                new_typeclass.at_script_creation()
+                new_typeclass.start()
+            elif inherits_from(self, "src.channels.models.Channel"):
+                # channels do no initial setup
+                pass
+
         return True
 
     #
