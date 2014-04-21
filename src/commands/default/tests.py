@@ -78,6 +78,7 @@ class CommandTest(TestCase):
     CID = 0 # we must set a different CID in every test to avoid unique-name collisions creating the objects
     def setUp(self):
         "sets up testing environment"
+        settings.DEFAULT_HOME = "#2"
         #print "creating player %i: %s" % (self.CID, self.__class__.__name__)
         self.player = create.create_player("TestPlayer%i" % self.CID, "test@test.com", "testpassword", typeclass=TestPlayerClass)
         self.player2 = create.create_player("TestPlayer%ib" % self.CID, "test@test.com", "testpassword", typeclass=TestPlayerClass)

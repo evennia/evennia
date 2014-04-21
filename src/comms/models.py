@@ -360,8 +360,8 @@ class ChannelDB(TypedObject):
 
     def __init__(self, *args, **kwargs):
         TypedObject.__init__(self, *args, **kwargs)
-        _SA(self, "attributes", AttributeHandler(self))
         _SA(self, "tags", TagHandler(self))
+        _SA(self, "attributes", AttributeHandler(self))
         _SA(self, "aliases", AliasHandler(self))
 
     class Meta:
@@ -432,8 +432,8 @@ class ChannelDB(TypedObject):
         """
         Deletes channel while also cleaning up channelhandler
         """
-        super(ChannelDB, self).delete()
         _GA(self, "attributes").clear()
         _GA(self, "aliases").clear()
+        super(ChannelDB, self).delete()
         from src.comms.channelhandler import CHANNELHANDLER
         CHANNELHANDLER.update()
