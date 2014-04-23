@@ -851,7 +851,6 @@ class TypedObject(SharedMemoryModel):
 
                 # try to import and analyze the result
                 typeclass = _GA(self, "_path_import")(tpath)
-                #print "typeclass:",typeclass,tpath
                 if callable(typeclass):
                     # we succeeded to import. Cache and return.
                     _SA(self, "typeclass_path", tpath)
@@ -868,13 +867,13 @@ class TypedObject(SharedMemoryModel):
                 elif hasattr(typeclass, '__file__'):
                     errstring += "\n%s seems to be just the path to a module. You need" % tpath
                     errstring +=  " to specify the actual typeclass name inside the module too."
-                else:
-                    errstring += "\n%s" % typeclass # this will hold a growing error message.
+                elif typeclass:
+                    errstring += "\n%s" % typeclass.strip()    # this will hold a growing error message.
+            errstring += "\nTypeclass failed to load. Falling back to default."
         # If we reach this point we couldn't import any typeclasses. Return
         # default. It's up to the calling method to use e.g. self.is_typeclass()
         # to detect that the result is not the one asked for.
-        _GA(self, "_display_errmsg")(errstring)
-        _SA(self, "typeclass_lasterrmsg", errstring)
+        _GA(self, "_display_errmsg")(errstring.strip())
         return _GA(self, "_get_default_typeclass")(cache=False, silent=False, save=False)
 
     #@typeclass.deleter
@@ -909,10 +908,11 @@ class TypedObject(SharedMemoryModel):
             if not trc.tb_next:
                 # we separate between not finding the module, and finding
                 # a buggy one.
-                errstring = "Typeclass not found trying path '%s'." % path
+                pass
+                #errstring = ""#Typeclass not found trying path '%s'." % path
             else:
                 # a bug in the module is reported normally.
-                trc = traceback.format_exc()
+                trc = traceback.format_exc().strip()
                 errstring = "\n%sError importing '%s'." % (trc, path)
         except (ValueError, TypeError):
             errstring = "Malformed typeclass path '%s'." % path
@@ -920,7 +920,7 @@ class TypedObject(SharedMemoryModel):
             errstring = "No class '%s' was found in module '%s'."
             errstring = errstring % (class_name, modpath)
         except Exception:
-            trc = traceback.format_exc()
+            trc = traceback.format_exc().strip()
             errstring = "\n%sException importing '%s'." % (trc, path)
         # return the error.
         return errstring
@@ -929,10 +929,11 @@ class TypedObject(SharedMemoryModel):
         """
         Helper function to display error.
         """
+        _SA(self, "typeclass_lasterrmsg", message)
         if ServerConfig.objects.conf("server_starting_mode"):
-            print message.strip()
+            print message
         else:
-            _SA(self, "typeclass_last_errmsg", message.strip())
+            logger.log_errmsg(message)
         return
 
     def _get_default_typeclass(self, cache=False, silent=False, save=False):
@@ -959,8 +960,8 @@ class TypedObject(SharedMemoryModel):
             if not silent:
                 #errstring = "  %s\n%s" % (typeclass, errstring)
                 errstring = "  Default class '%s' failed to load." % failpath
-                errstring += "\n  Using Evennia's default class '%s'." % defpath
-                _GA(self, "_display_errmsg")(errstring)
+                errstring += "\n  Using Evennia's default root '%s'." % defpath
+                _GA(self, "_display_errmsg")(errstring.strip())
         if not callable(typeclass):
             # if this is still giving an error, Evennia is wrongly
             # configured or buggy
