@@ -96,9 +96,10 @@ class Object(TypeClass):
 
         * Helper methods (see src.objects.objects.py for full headers)
 
-         search(ostring, global_search=False, global_dbref=False,
+         search(ostring, global_search=False, use_nicks=True,
+                typeclass=None,
                 attribute_name=None, use_nicks=True, location=None,
-                ignore_errors=False, player=False)
+                quiet=False, exact=False)
          execute_cmd(raw_string)
          msg(message, **kwargs)
          msg_contents(message, exclude=None, from_obj=None, **kwargs)
