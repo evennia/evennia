@@ -473,6 +473,9 @@ class ObjectDB(TypedObject):
         sessid (int): sessid to relay to, if any.
                       If set to 0 (default), use either from_obj.sessid (if set) or self.sessid automatically
                       If None, echo to all connected sessions
+
+        When this message is called, from_obj.at_msg_send and self.at_msg_receive are called.
+
         """
         global _SESSIONS
         if not _SESSIONS:
@@ -492,7 +495,13 @@ class ObjectDB(TypedObject):
             try:
                 _GA(from_obj, "at_msg_send")(text=text, to_obj=self, **kwargs)
             except Exception:
-                pass
+                logger.log_trace()
+        try:
+            if not _GA(_GA(self, "typeclass"), "at_msg_receive")(text=text, **kwargs):
+                # if at_msg_receive returns false, we abort message to this object
+                return
+        except Exception:
+            logger.log_trace()
 
         session = _SESSIONS.session_from_sessid(sessid if sessid else _GA(self, "sessid"))
         if session:
