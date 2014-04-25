@@ -251,6 +251,13 @@ class AttributeHandler(object):
         checked before displaying each looked-after Attribute. If no
         accessing_obj is given, no check will be done.
         """
+
+        class RetDefault(object):
+            "Holds default values"
+            def __init__(self):
+                self.value = default
+                self.strvalue = str(default)
+
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
         ret = []
@@ -270,7 +277,7 @@ class AttributeHandler(object):
                     if raise_exception:
                         raise AttributeError
                     else:
-                        ret.append(default)
+                        ret.append(RetDefault())
         if accessing_obj:
             # check 'attrread' locks
             ret = [attr for attr in ret if attr.access(accessing_obj, self._attrread, default=default_access)]
