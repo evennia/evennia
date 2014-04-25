@@ -258,7 +258,7 @@ class CmdExtendedLook(default_cmds.CmdLook):
         caller = self.caller
         args = self.args
         if args:
-            looking_at_obj = caller.search(args, use_nicks=True, ignore_errors=True)
+            looking_at_obj = caller.search(args, use_nicks=True, quiet=True)
             if not looking_at_obj:
                 # no object found. Check if there is a matching
                 # detail at location.
