@@ -190,7 +190,10 @@ class CmdUnconnectedCreate(MuxCommand):
             if MULTISESSION_MODE < 2:
                 # if we only allow one character, create one with the same name as Player
                 # (in mode 2, the character must be created manually once logging in)
-                start_location = settings.START_LOCATION
+                start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
+                if not start_location:
+                    start_location = default_home # fallback
+
                 new_character = create.create_object(typeclass, key=playername,
                                           location=start_location, home=default_home,
                                           permissions=permissions)
