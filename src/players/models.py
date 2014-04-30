@@ -243,7 +243,7 @@ class PlayerDB(TypedObject, AbstractUser):
         if from_obj:
             # call hook
             try:
-                _GA(from_obj, "at_msg_send")(text=text, to_obj=self, **kwargs)
+                _GA(from_obj, "at_msg_send")(text=text, to_obj=_GA(self, "typeclass"), **kwargs)
             except Exception:
                 pass
         session = _MULTISESSION_MODE == 2 and sessid and _GA(self, "get_session")(sessid) or None
@@ -320,7 +320,7 @@ class PlayerDB(TypedObject, AbstractUser):
         # server kill or similar
 
         if normal_mode:
-            _GA(obj.typeclass, "at_pre_puppet")(self.typeclass, sessid=sessid)
+            _GA(obj.typeclass, "at_pre_puppet")(_GA(self, "typeclass"), sessid=sessid)
         # do the connection
         obj.sessid = sessid
         obj.player = self
@@ -352,7 +352,7 @@ class PlayerDB(TypedObject, AbstractUser):
         del obj.dbobj.player
         session.puppet = None
         session.puid = None
-        _GA(obj.typeclass, "at_post_unpuppet")(self.typeclass, sessid=sessid)
+        _GA(obj.typeclass, "at_post_unpuppet")(_GA(self, "typeclass"), sessid=sessid)
         return True
 
     def unpuppet_all(self):
@@ -465,7 +465,7 @@ class PlayerDB(TypedObject, AbstractUser):
             return_puppet = kwargs.get("return_character")
 
         matches = _GA(self, "__class__").objects.player_search(searchdata)
-        matches = _AT_SEARCH_RESULT(self, searchdata, matches, global_search=True)
+        matches = _AT_SEARCH_RESULT(_GA(self, "typeclass"), searchdata, matches, global_search=True)
         if matches and return_puppet:
             try:
                 return _GA(matches, "puppet")
