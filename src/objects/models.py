@@ -493,7 +493,7 @@ class ObjectDB(TypedObject):
         if from_obj:
             # call hook
             try:
-                _GA(from_obj, "at_msg_send")(text=text, to_obj=self, **kwargs)
+                _GA(from_obj, "at_msg_send")(text=text, to_obj=self.typeclass, **kwargs)
             except Exception:
                 logger.log_trace()
         try:
@@ -575,7 +575,7 @@ class ObjectDB(TypedObject):
 
         # Before the move, call eventual pre-commands.
         try:
-            if not self.at_before_move(destination):
+            if not self.at_before_move(destination.typeclass):
                 return
         except Exception:
             logerr(errtxt % "at_before_move()")
@@ -596,7 +596,7 @@ class ObjectDB(TypedObject):
 
         # Call hook on source location
         try:
-            source_location.at_object_leave(self, destination)
+            source_location.at_object_leave(self.typeclass, destination.typeclass)
         except Exception:
             logerr(errtxt % "at_object_leave()")
             #emit_to_obj.msg(errtxt % "at_object_leave()")
@@ -606,7 +606,7 @@ class ObjectDB(TypedObject):
         if not quiet:
             #tell the old room we are leaving
             try:
-                self.announce_move_from(destination)
+                self.announce_move_from(destination.typeclass)
             except Exception:
                 logerr(errtxt % "at_announce_move()")
                 #emit_to_obj.msg(errtxt % "at_announce_move()" )
@@ -625,7 +625,7 @@ class ObjectDB(TypedObject):
         if not quiet:
             # Tell the new room we are there.
             try:
-                self.announce_move_to(source_location)
+                self.announce_move_to(source_location.typeclass)
             except Exception:
                 logerr(errtxt % "announce_move_to()")
                 #emit_to_obj.msg(errtxt % "announce_move_to()")
@@ -635,7 +635,7 @@ class ObjectDB(TypedObject):
         # Perform eventual extra commands on the receiving location
         # (the object has already arrived at this point)
         try:
-            destination.at_object_receive(self, source_location)
+            destination.at_object_receive(self.typeclass, source_location.typeclass)
         except Exception:
             logerr(errtxt % "at_object_receive()")
             #emit_to_obj.msg(errtxt % "at_object_receive()")
@@ -645,7 +645,7 @@ class ObjectDB(TypedObject):
         # Execute eventual extra commands on this object after moving it
         # (usually calling 'look')
         try:
-            self.at_after_move(source_location)
+            self.at_after_move(source_location.typeclass)
         except Exception:
             logerr(errtxt % "at_after_move")
             #emit_to_obj.msg(errtxt % "at_after_move()")
