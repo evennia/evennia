@@ -256,7 +256,7 @@ class AttributeHandler(object):
             "Holds default values"
             def __init__(self):
                 self.value = default
-                self.strvalue = str(default)
+                self.strvalue = str(default) if default is not None else None
 
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()

@@ -1,9 +1,12 @@
+# test with game/manage.py test
 import unittest
+
+from src.utils import utils
 
 class TestIsIter(unittest.TestCase):
     def test_is_iter(self):
-        # self.assertEqual(expected, is_iter(iterable))
-        assert True # TODO: implement your test here
+        self.assertEqual(True, utils.is_iter([1,2,3,4]))
+        self.assertEqual(False, utils.is_iter("This is not an iterable"))
 
 class TestCrop(unittest.TestCase):
     def test_crop(self):
