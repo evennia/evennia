@@ -14,11 +14,11 @@
       <p>Welcome to your new installation of <a href="http://evennia.com">Evennia</a>, your friendly
       neighborhood next-generation MUD development system and server. You are looking at Evennia's web
       presence, which can be expanded to a full-fledged site as
-      needed. Through the <a href="/admin">admin interface</a> you can view and edit the
+      needed. Through the <a href="{% url 'admin:index' %}">admin interface</a> you can view and edit the
       database without logging into the game.
         {% if webclient_enabled %}
         You can also connect to the game directly from your browser using our
-        <a href='/webclient'>online client</a>!<br></br>
+        <a href="{% url 'webclient:index' %}">online client</a>!<br></br>
         {% endif %}
       For more info, take your time to
       peruse our extensive online <a href="https://github.com/evennia/evennia/wiki">documentation</a>.

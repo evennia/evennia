@@ -33,7 +33,7 @@ def page_index(request):
     nplyrs_conn_recent = len(recent_users) or "none"
     nplyrs = PlayerDB.objects.num_total_players() or "none"
     nplyrs_reg_recent = len(PlayerDB.objects.get_recently_created_players()) or "none"
-    nsess = len(PlayerDB.objects.get_connected_players()) or "none"
+    nsess = len(PlayerDB.objects.get_connected_players()) or "no one"
 
     nobjs = ObjectDB.objects.all().count()
     nrooms = ObjectDB.objects.filter(db_location__isnull=True).exclude(db_typeclass_path=_BASE_CHAR_TYPECLASS).count()

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load staticfiles %}
 <html dir="ltr" lang="en">
   <head>
     <meta charset="utf-8" />
@@ -6,7 +7,7 @@
     <title>Evennia web MUD client</title>
 
     <!--CSS style sheet -->
-    <link rel='stylesheet' type="text/css" media="screen" href="/media/css/webclient.css">
+    <link rel='stylesheet' type="text/css" media="screen" href="{% static "webclient/css/webclient.css" %}">
 
     <!-- Importing the online jQuery javascript library -->
     <!--script src="http://code.jquery.com/jquery-1.6.1.js" type="text/javascript" charset="utf-8"></script-->
@@ -23,13 +24,12 @@
                 document.write("\<script src=\"/media/javascript/evennia_websocket_webclient.js\" type=\"text/javascript\" charset=\"utf-8\"\>\</script\>")}
             else {
                 <!-- No websocket support in browser. Importing the Evennia ajax webclient component (requires jQuery)  -->
-                document.write("\<script src=\"/media/javascript/evennia_ajax_webclient.js\" type=\"text/javascript\" charset=\"utf-8\"\>\</script\>")}
+                document.write("\<script src=\"{% static "webclient/js/evennia_ajax_webclient.js" %}\" type=\"text/javascript\" charset=\"utf-8\"\>\</script\>")}
         </script>
     {% else %}
             <!-- websocket not enabled; use ajax -->
             <script src="/media/javascript/evennia_ajax_webclient.js" type="text/javascript" charset="utf-8"></script>
     {% endif %}
-
 
   </head>
   <body>

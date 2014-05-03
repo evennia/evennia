@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
@@ -8,12 +9,12 @@
     <meta name="generator" content="haran" />
 
     {% if sidebar %}
-    <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/prosimii-screen-alt.css" media="screen" title="Prosimii (Sidebar)" />
+    <link rel="stylesheet" type="text/css" href="{% static "ev/css/prosimii-screen-alt.css" %}" media="screen" title="Prosimii (Sidebar)" />
     {% else %}
-    <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/prosimii-screen.css" media="screen" title="Prosimii" />
+    <link rel="stylesheet" type="text/css" href="{% static "ev/css/prosimii-screen.css" %}" media="screen" title="Prosimii" />
     {% endif %}
-    <link rel="stylesheet alternative" type="text/css" href="{{MEDIA_URL}}css/prosimii-print.css" media="screen" title="Print Preview" />
-    <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/prosimii-print.css" media="print" />
+    <link rel="stylesheet alternative" type="text/css" href="{% static "ev/css/prosimii-print.css" %}" media="screen" title="Print Preview" />
+    <link rel="stylesheet" type="text/css" href="{% static "ev/css/prosimii-print.css" %}" media="print" />
 
     {% block header_ext %}
     {% endblock %}
@@ -34,7 +35,7 @@
       </div>
 
       <div class="midHeader">
-        <img src="/media/images/evennia_logo_small.png" align='left'/> <h1 class="headerTitle" lang="la">{{game_name}}</h1>
+        <img src="{% static "ev/images/evennia_logo_small.png" %}" align='left'/> <h1 class="headerTitle" lang="la">{{game_name}}</h1>
         <div class="headerSubTitle" title="Slogan">
         <!-- Insert a slogan here if you want -->
         {{game_slogan}}			&nbsp;
@@ -45,13 +46,13 @@
         <div class="headerLinks">
           <span class="doNotDisplay">Tools:</span>
           {% if user.is_authenticated %}
-            <a href="/accounts/logout/">Log Out &laquo;</a>
+            <a href="{% url 'logout' %}">Log Out &laquo;</a>
             <span class="doNotDisplay">|</span>
             Logged in as {{user.username}} &laquo;
           {% else %}
-            <a href="/accounts/login/">Log In &laquo;</a>
+            <a href="{% url 'login' %}">Log In &laquo;</a>
             <span class="doNotDisplay">|</span>
-            <a href="/tbi">Register &laquo;</a>
+            <a href="{% url 'to_be_implemented' %}">Register &laquo;</a>
           {% endif %}
         </div>
       </div>
@@ -61,9 +62,9 @@
         <a href="/">Home</a> |
         <a href="https://github.com/evennia/evennia/wiki/Evennia-Introduction/">About</a> |
         <a href="https://github.com/evennia/evennia/wiki">Documentation</a> |
-        <a href="/admin/">Admin Interface</a>
+        <a href="{% url 'admin:index' %}">Admin Interface</a>
         {% if webclient_enabled %}
-         | <a href="/webclient">Play Online</a>
+         | <a href="{% url 'webclient:index' %}">Play Online</a>
         {% endif %}
         
       </div>
@@ -87,7 +88,7 @@
         title="Other designs by haran">haran</a>. 
         Powered by  
         <a href="http://evennia.com">Evennia.</a>
-        <br \>
+        <br />
       </span>
     </div>
   </body>

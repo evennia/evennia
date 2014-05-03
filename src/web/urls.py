@@ -24,18 +24,16 @@ admin.autodiscover()
 
 # Setup the root url tree from /
 
-urlpatterns = patterns('',
+urlpatterns = [
     # User Authentication
-    url(r'^accounts/login',  'django.contrib.auth.views.login'),
-    url(r'^accounts/logout', 'django.contrib.auth.views.logout'),
+    url(r'^accounts/login',  'django.contrib.auth.views.login', name="login"),
+    url(r'^accounts/logout', 'django.contrib.auth.views.logout', name="logout"),
 
-    # Front page
-    url(r'^', include('src.web.website.urls')),
     # News stuff
     # url(r'^news/', include('src.web.news.urls')),
 
     # Page place-holder for things that aren't implemented yet.
-    url(r'^tbi/', 'src.web.website.views.to_be_implemented'),
+    url(r'^tbi/', 'src.web.views.to_be_implemented', name='to_be_implemented'),
 
     # Admin interface
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -44,13 +42,16 @@ urlpatterns = patterns('',
     # favicon
     url(r'^favicon\.ico$',  RedirectView.as_view(url='/media/images/favicon.ico')),
 
-    # webclient stuff
-    url(r'^webclient/', include('src.web.webclient.urls')),
-)
+    # ajax stuff
+    url(r'^webclient/', include('src.web.webclient.urls', namespace='webclient', app_name='webclient')),
+
+    # Front page
+    url(r'^$', 'src.web.views.page_index', name="index")]
 
 # This sets up the server if the user want to run the Django
 # test server (this should normally not be needed).
 if settings.SERVE_MEDIA:
-    urlpatterns += patterns('',
-        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
-    )
+    urlpatterns.extend([
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+        url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT})
+    ])

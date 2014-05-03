@@ -411,6 +411,8 @@ if WEBSERVER_ENABLED:
     web_root = DjangoWebRoot(threads)
     # point our media resources to url /media
     web_root.putChild("media", static.File(settings.MEDIA_ROOT))
+    # point our static resources to url /static
+    web_root.putChild("static", static.File(settings.STATIC_ROOT))
     web_site = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
 
     for proxyport, serverport in WEBSERVER_PORTS:

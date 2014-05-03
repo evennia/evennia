@@ -480,7 +480,7 @@ LOCALE_PATHS = ["../locale/"]
 SERVE_MEDIA = False
 # The master urlconf file that contains all of the sub-branches to the
 # applications.
-ROOT_URLCONF = 'src.web.urls'
+ROOT_URLCONF = 'game.gamesrc.web.urls'
 # Where users are redirected after logging in via contrib.auth.login.
 LOGIN_REDIRECT_URL = '/'
 # Where to redirect users when using the @login_required decorator.
@@ -493,7 +493,13 @@ MEDIA_URL = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure
 # to use a trailing slash. Django1.4+ will look for admin files under
 # STATIC_URL/admin.
-STATIC_URL = '/media/'
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(GAME_DIR, "gamesrc", "web", "static")
+
+# Folders from which static files will be gathered from.
+STATICFILES_DIRS = (
+    os.path.join(SRC_DIR, "web", "static"),)
 # The name of the currently selected web template. This corresponds to the
 # directory names shown in the webtemplates directory.
 ACTIVE_TEMPLATE = 'prosimii'
@@ -540,6 +546,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.flatpages',
+    'django.contrib.staticfiles',
     'src.server',
     'src.typeclasses',
     'src.players',
@@ -548,7 +555,7 @@ INSTALLED_APPS = (
     'src.help',
     'src.scripts',
     'src.web.news',
-    'src.web.website',)
+    'src.web.webclient')
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
 AUTH_USER_MODEL = "players.PlayerDB"
