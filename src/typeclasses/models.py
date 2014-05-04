@@ -1159,6 +1159,8 @@ class TypedObject(SharedMemoryModel):
     def delete(self):
         "Cleaning up handlers on the typeclass level"
         _GA(self, "permissions").clear()
+        _SA(self, "_cached_typeclass", None)
+        _GA(self, "flush_from_cache")()
         super(TypedObject, self).delete()
 
     #
