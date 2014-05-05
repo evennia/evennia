@@ -10,8 +10,15 @@ class TestIsIter(unittest.TestCase):
 
 class TestCrop(unittest.TestCase):
     def test_crop(self):
-        # self.assertEqual(expected, crop(text, width, suffix))
-        assert True # TODO: implement your test here
+        # No text, return no text
+        self.assertEqual("", utils.crop("", width=10, suffix="[...]"))
+        # Input length equal to max width, no crop
+        self.assertEqual("0123456789", utils.crop("0123456789", width=10, suffix="[...]"))
+        # Input length greater than max width, crop (suffix included in width)
+        self.assertEqual("0123[...]", utils.crop("0123456789", width=9, suffix="[...]"))
+        # Input length less than desired width, no crop
+        self.assertEqual("0123", utils.crop("0123", width=9, suffix="[...]"))
+        self.assertEqual("[..", utils.crop("0123", width=3, suffix="[...]"))
 
 class TestDedent(unittest.TestCase):
     def test_dedent(self):
