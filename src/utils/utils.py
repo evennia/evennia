@@ -72,14 +72,15 @@ def crop(text, width=78, suffix="[...]"):
     """
     Crop text to a certain width, adding suffix to show the line
     continues. Cropping will be done so that the suffix will also fit
-    within the given width.
+    within the given width. If width is too small to fit both crop
+    and suffix, crop without the suffix.
     """
     ltext = len(to_str(text))
     if ltext <= width:
         return text
     else:
         lsuffix = len(suffix)
-        return "%s%s" % (text[:width - lsuffix], suffix)
+        return text[:width] if lsuffix >= width else "%s%s" % (text[:width - lsuffix], suffix)
 
 
 def dedent(text):

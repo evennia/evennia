@@ -18,7 +18,9 @@ class TestCrop(unittest.TestCase):
         self.assertEqual("0123[...]", utils.crop("0123456789", width=9, suffix="[...]"))
         # Input length less than desired width, no crop
         self.assertEqual("0123", utils.crop("0123", width=9, suffix="[...]"))
-        self.assertEqual("[..", utils.crop("0123", width=3, suffix="[...]"))
+        # Width too small or equal to width of suffix
+        self.assertEqual("012", utils.crop("0123", width=3, suffix="[...]"))
+        self.assertEqual("01234", utils.crop("0123456", width=5, suffix="[...]"))
 
 class TestDedent(unittest.TestCase):
     def test_dedent(self):
