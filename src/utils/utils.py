@@ -110,16 +110,20 @@ def list_to_string(inlist, endsep="and", addquote=False):
      with addquote and endsep
         [1,2,3] -> '"1", "2" and "3"'
     """
+    if not endsep:
+        endsep = ","
+    else:
+        endsep = " " + endsep
     if not inlist:
         return ""
     if addquote:
         if len(inlist) == 1:
             return "\"%s\"" % inlist[0]
-        return ", ".join("\"%s\"" % v for v in inlist[:-1]) + " %s %s" % (endsep, "\"%s\"" % inlist[-1])
+        return ", ".join("\"%s\"" % v for v in inlist[:-1]) + "%s %s" % (endsep, "\"%s\"" % inlist[-1])
     else:
         if len(inlist) == 1:
             return str(inlist[0])
-        return ", ".join(str(v) for v in inlist[:-1]) + " %s %s" % (endsep, inlist[-1])
+        return ", ".join(str(v) for v in inlist[:-1]) + "%s %s" % (endsep, inlist[-1])
 
 
 def wildcard_to_regexp(instring):
