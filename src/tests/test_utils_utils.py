@@ -24,13 +24,38 @@ class TestCrop(unittest.TestCase):
 
 class TestDedent(unittest.TestCase):
     def test_dedent(self):
-        # self.assertEqual(expected, dedent(text))
-        assert True # TODO: implement your test here
+        #print "Did TestDedent run?"
+        # Empty string, return empty string
+        self.assertEqual("", utils.dedent(""))
+        # No leading whitespace
+        self.assertEqual("TestDedent", utils.dedent("TestDedent"))
+        # Leading whitespace, single line
+        self.assertEqual("TestDedent", utils.dedent("   TestDedent"))
+        # Leading whitespace, multi line
+        input_string = "  hello\n  world"
+    	expected_string = "hello\nworld"
+    	self.assertEqual(expected_string, utils.dedent(input_string))        
 
 class TestListToString(unittest.TestCase):
+    """
+    Default function header from utils.py: 
+    	list_to_string(inlist, endsep="and", addquote=False)
+
+    Examples:
+     no endsep:
+        [1,2,3] -> '1, 2, 3'
+     with endsep=='and':
+        [1,2,3] -> '1, 2 and 3'
+     with addquote and endsep
+        [1,2,3] -> '"1", "2" and "3"'
+    """
+    #print "Did TestListToString run?"
     def test_list_to_string(self):
-        # self.assertEqual(expected, list_to_string(inlist, endsep, addquote))
-        assert True # TODO: implement your test here
+        self.assertEqual('1, 2, 3', utils.list_to_string([1,2,3], endsep=""))
+        self.assertEqual('"1", "2", "3"', utils.list_to_string([1,2,3], endsep="", addquote=True))
+        self.assertEqual('1, 2 and 3', utils.list_to_string([1,2,3]))
+        self.assertEqual('"1", "2" and "3"', utils.list_to_string([1,2,3], endsep="and", addquote=True))
+        
 
 class TestWildcardToRegexp(unittest.TestCase):
     def test_wildcard_to_regexp(self):
