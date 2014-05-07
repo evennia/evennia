@@ -22,6 +22,7 @@ _SESSIONS = None
 # attr-cache size in MB
 _ATTRIBUTE_CACHE_MAXSIZE = settings.ATTRIBUTE_CACHE_MAXSIZE
 
+
 class ExtendedLoopingCall(LoopingCall):
     """
     LoopingCall that can start at a delay different
@@ -50,7 +51,7 @@ class ExtendedLoopingCall(LoopingCall):
         assert not self.running, ("Tried to start an already running "
                                   "ExtendedLoopingCall.")
         if interval < 0:
-            raise ValueError, "interval must be >= 0"
+            raise ValueError("interval must be >= 0")
 
         self.running = True
         d = self.deferred = Deferred()
@@ -107,6 +108,7 @@ class ExtendedLoopingCall(LoopingCall):
             return self._expectNextCallAt - currentTime
         return None
 
+
 #
 # Base script, inherit from Script below instead.
 #
@@ -155,9 +157,10 @@ class ScriptBase(TypeClass):
     def _step_errback(self, e):
         "callback for runner errors"
         cname = self.__class__.__name__
-        estring = _("Script %(key)s(#%(dbid)i) of type '%(cname)s': at_repeat() error '%(err)s'.") % \
-                          {"key": self.key, "dbid": self.dbid, "cname": cname,
-                           "err": e.getErrorMessage()}
+        estring = _("Script %(key)s(#%(dbid)i) of type '%(cname)s': "
+                    "at_repeat() error '%(err)s'.") % \
+            {"key": self.key, "dbid": self.dbid,
+             "cname": cname, "err": e.getErrorMessage()}
         try:
             self.dbobj.db_obj.msg(estring)
         except Exception:
@@ -184,7 +187,8 @@ class ScriptBase(TypeClass):
     def _step_task(self):
         "Step task. This groups error handling."
         try:
-            return maybeDeferred(self._step_callback).addErrback(self._step_errback)
+            return maybeDeferred(
+                self._step_callback).addErrback(self._step_errback)
         except Exception:
             logger.log_trace()
 
@@ -207,7 +211,8 @@ class ScriptBase(TypeClass):
         return None
 
     def remaining_repeats(self):
-        "Get the number of returning repeats. Returns None if unlimited repeats."
+        "Get the number of returning repeats. Returns None if unlimited "
+        "repeats."
         task = self.ndb._task
         if task:
             return max(0, self.dbobj.db_repeats - task.callcount)
@@ -224,8 +229,9 @@ class ScriptBase(TypeClass):
                 Used in counting.
         """
 
-        #print "Script %s (%s) start (active:%s, force:%s) ..." % (self.key, id(self.dbobj),
-        #                                                         self.is_active, force_restart)
+        #print "Script %s (%s) start (active:%s, force:%s) ..." %
+        # (self.key, id(self.dbobj),
+        # self.is_active, force_restart)
 
         if self.dbobj.is_active and not force_restart:
             # script already runs and should not be restarted.
