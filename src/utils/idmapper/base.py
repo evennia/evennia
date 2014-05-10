@@ -10,6 +10,7 @@ Also adds cache_size() for monitoring the size of the cache.
 import os, threading
 #from twisted.internet import reactor
 #from twisted.internet.threads import blockingCallFromThread
+from weakref import WeakValueDictionary
 from twisted.internet.reactor import callFromThread
 from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.db.models.base import Model, ModelBase
@@ -70,7 +71,8 @@ class SharedMemoryModelBase(ModelBase):
 
 
     def _prepare(cls):
-        cls.__instance_cache__ = {}  #WeakValueDictionary()
+        cls.__instance_cache__ = WeakValueDictionary()
+        #cls.__instance_cache__ = {}  #WeakValueDictionary()
         super(SharedMemoryModelBase, cls)._prepare()
 
     def __new__(cls, classname, bases, classdict, *args, **kwargs):
@@ -247,7 +249,8 @@ class SharedMemoryModel(Model):
     flush_cached_instance = classmethod(flush_cached_instance)
 
     def flush_instance_cache(cls):
-        cls.__instance_cache__ = {} #WeakValueDictionary()
+        cls.__instance_cache__ = WeakValueDictionary()
+        #cls.__instance_cache__ = {} #WeakValueDictionary()
     flush_instance_cache = classmethod(flush_instance_cache)
 
     def save(cls, *args, **kwargs):

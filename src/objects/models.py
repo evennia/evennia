@@ -137,10 +137,10 @@ class ObjectDB(TypedObject):
         # handlers
         _SA(self, "cmdset", LazyLoadHandler(self, "cmdset", CmdSetHandler, True))
         _SA(self, "scripts", LazyLoadHandler(self, "scripts", ScriptHandler))
-        _SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
         _SA(self, "nicks", LazyLoadHandler(self, "nicks", NickHandler))
-        _SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
-        _SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
+        #_SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
+        #_SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
+        #_SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
         # make sure to sync the contents cache when initializing
         #_GA(self, "contents_update")()
 

@@ -102,7 +102,7 @@ class Msg(SharedMemoryModel):
 
     def __init__(self, *args, **kwargs):
         SharedMemoryModel.__init__(self, *args, **kwargs)
-        _SA(self, "locks", LazyLoadHandler(self, "locks", LockHandler))
+        #_SA(self, "locks", LazyLoadHandler(self, "locks", LockHandler))
         self.extra_senders = []
 
     class Meta:
