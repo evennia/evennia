@@ -235,6 +235,8 @@ CMDSET_SESSION = "src.commands.default.cmdset_session.SessionCmdSet"
 CMDSET_CHARACTER = "src.commands.default.cmdset_character.CharacterCmdSet"
 # Command set for players without a character (ooc)
 CMDSET_PLAYER = "src.commands.default.cmdset_player.PlayerCmdSet"
+# Location to search for cmdsets if full path not given
+CMDSET_PATHS = ["game.gamesrc.commands"]
 
 ######################################################################
 # Typeclasses and other paths

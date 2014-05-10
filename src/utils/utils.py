@@ -1081,3 +1081,16 @@ class LazyLoadHandler(object):
     def __unicode__(self):
         return str(_GA(self, "_instantiate")())
 
+class NonWeakLazyLoadHandler(LazyLoadHandler):
+    """
+    Variation of LazyLoadHandler that does not
+    create a weak reference when initiating.
+    """
+    def _instantiate(self):
+        """
+        Initialize handler as cls(obj, *args)
+        """
+        obj = _GA(self, "obj")()
+        instance = _GA(self, "cls")(obj, *_GA(self, "args"))
+        _SA(obj, _GA(self, "name"), instance)
+        return instance

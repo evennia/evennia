@@ -200,11 +200,10 @@ class CmdPy(MuxCommand):
                 errlist = errlist[4:]
             ret = "\n".join("{n<<< %s" % line for line in errlist if line)
 
-        if ret is not None:
-            try:
-                self.msg(ret, sessid=self.sessid)
-            except TypeError:
-                self.msg(ret)
+        try:
+            self.msg(ret, sessid=self.sessid)
+        except TypeError:
+            self.msg(ret)
 
 
 # helper function. Kept outside so it can be imported and run

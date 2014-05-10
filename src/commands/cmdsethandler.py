@@ -137,7 +137,7 @@ def import_cmdset(python_path, cmdsetobj, emit_to_obj=None, no_logging=False):
         if not no_logging:
             logger.log_trace(errstring)
             if emit_to_obj and not ServerConfig.objects.conf("server_starting_mode"):
-                object.__getattribute__(emit_to_obj, "msg")(errstring)
+                emit_to_obj.msg(errstring)
         err_cmdset = _ErrorCmdSet()
         err_cmdset.errmessage = errstring
         return err_cmdset
@@ -254,7 +254,7 @@ class CmdSetHandler(object):
                     elif path:
                         cmdset = self._import_cmdset(path)
                         if cmdset:
-                            cmdset.permanent = cmdset.key != '_ERROR_CMDSET'
+                            cmdset.permanent = cmdset.key != '_CMDSET_ERROR'
                             self.cmdset_stack.append(cmdset)
 
         # merge the stack into a new merged cmdset
@@ -290,9 +290,9 @@ class CmdSetHandler(object):
         handler. Not sure when this would be useful, but it's a 'quirk'
         that has to be documented.
         """
+        if not (isinstance(cmdset, basestring) or utils.inherits_from(cmdset, CmdSet)):
+            raise Exception(_("Only CmdSets can be added to the cmdsethandler!"))
         if callable(cmdset):
-            if not utils.inherits_from(cmdset, CmdSet):
-                raise Exception(_("Only CmdSets can be added to the cmdsethandler!"))
             cmdset = cmdset(self.obj)
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.
