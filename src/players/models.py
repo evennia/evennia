@@ -29,7 +29,7 @@ from src.scripts.scripthandler import ScriptHandler
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.utils import utils, logger
-from src.utils.utils import to_str, make_iter
+from src.utils.utils import to_str, make_iter, LazyLoadHandler
 
 from django.utils.translation import ugettext as _
 
@@ -115,13 +115,12 @@ class PlayerDB(TypedObject, AbstractUser):
         "Parent must be initiated first"
         TypedObject.__init__(self, *args, **kwargs)
         # handlers
-        _SA(self, "cmdset", CmdSetHandler(self))
-        _GA(self, "cmdset").update(init_mode=True)
-        _SA(self, "scripts", ScriptHandler(self))
-        _SA(self, "attributes", AttributeHandler(self))
-        _SA(self, "nicks", NickHandler(self))
-        _SA(self, "tags", TagHandler(self))
-        _SA(self, "aliases", AliasHandler(self))
+        _SA(self, "cmdset", LazyLoadHandler(self, "cmdset", CmdSetHandler, True))
+        _SA(self, "scripts", LazyLoadHandler(self, "scripts", ScriptHandler))
+        _SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
+        _SA(self, "nicks", LazyLoadHandler(self, "nicks", NickHandler))
+        _SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
+        _SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
 
     # alias to the objs property
     def __characters_get(self):

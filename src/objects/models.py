@@ -28,7 +28,7 @@ from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
 from src.utils.utils import (make_iter, to_str, to_unicode,
-                             variable_from_module, dbref)
+                             variable_from_module, dbref, LazyLoadHandler)
 
 from django.utils.translation import ugettext as _
 
@@ -135,13 +135,12 @@ class ObjectDB(TypedObject):
         "Parent must be initialized first."
         TypedObject.__init__(self, *args, **kwargs)
         # handlers
-        _SA(self, "cmdset", CmdSetHandler(self))
-        _GA(self, "cmdset").update(init_mode=True)
-        _SA(self, "scripts", ScriptHandler(self))
-        _SA(self, "attributes", AttributeHandler(self))
-        _SA(self, "nicks", NickHandler(self))
-        _SA(self, "tags", TagHandler(self))
-        _SA(self, "aliases", AliasHandler(self))
+        _SA(self, "cmdset", LazyLoadHandler(self, "cmdset", CmdSetHandler, True))
+        _SA(self, "scripts", LazyLoadHandler(self, "scripts", ScriptHandler))
+        _SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
+        _SA(self, "nicks", LazyLoadHandler(self, "nicks", NickHandler))
+        _SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
+        _SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
         # make sure to sync the contents cache when initializing
         #_GA(self, "contents_update")()
 

@@ -29,7 +29,7 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from src.typeclasses.models import TypedObject, TagHandler, AttributeHandler
 from src.scripts.manager import ScriptManager
-from src.utils.utils import dbref, to_str
+from src.utils.utils import dbref, to_str, LazyLoadHandler
 
 __all__ = ("ScriptDB",)
 _GA = object.__getattribute__
@@ -110,8 +110,8 @@ class ScriptDB(TypedObject):
 
     def __init__(self, *args, **kwargs):
         super(ScriptDB, self).__init__(*args, **kwargs)
-        _SA(self, "attributes", AttributeHandler(self))
-        _SA(self, "tags", TagHandler(self))
+        _SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
+        _SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
         #_SA(self, "aliases", AliasHandler(self))
 
 

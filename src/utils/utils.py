@@ -1028,3 +1028,56 @@ def get_evennia_pids():
     if server_pid and portal_pid:
         return int(server_pid), int(portal_pid)
     return None, None
+
+
+# lazy load handlers
+
+import weakref
+class LazyLoadHandler(object):
+    """
+    Load handlers only when they are actually accessed
+    """
+    def __init__(self, obj, name, cls, *args):
+        """
+        Set up a delayed load of a class. The 'name' must be named the
+        same as the variable to which the LazyLoadHandler is assigned.
+        """
+        _SA(self, "obj", weakref.ref(obj))
+        _SA(self, "name", name)
+        _SA(self, "cls", cls)
+        _SA(self, "args", args)
+
+    def _instantiate(self):
+        """
+        Initialize handler as cls(obj, *args)
+        """
+        obj = _GA(self, "obj")()
+        instance = _GA(self, "cls")(obj, *_GA(self, "args"))
+        _SA(obj, _GA(self, "name"), instance)
+        return instance
+
+    def __getattribute__(self, name):
+        """
+        Access means loading the handler
+        """
+        return getattr(_GA(self, "_instantiate")(), name)
+
+    def __setattr__(self, name, value):
+        """
+        Setting means loading the handler
+        """
+        setattr(_GA(self, "_instantiate")(), name, value)
+
+    def __delattr__(self, name):
+        """
+        Deleting also triggers loading of handler
+        """
+        delattr(_GA(self, "_instantiate")(), name)
+
+    def __repr__(self):
+        return repr(_GA(self, "_instantiate")())
+    def __str__(self):
+        return str(_GA(self, "_instantiate")())
+    def __unicode__(self):
+        return str(_GA(self, "_instantiate")())
+

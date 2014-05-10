@@ -14,6 +14,7 @@ from src.utils.idmapper.models import SharedMemoryModel
 from src.help.manager import HelpEntryManager
 from src.typeclasses.models import Tag, TagHandler
 from src.locks.lockhandler import LockHandler
+from src.utils.utils import LazyLoadHandler
 __all__ = ("HelpEntry",)
 
 
@@ -66,8 +67,8 @@ class HelpEntry(SharedMemoryModel):
 
     def __init__(self, *args, **kwargs):
         SharedMemoryModel.__init__(self, *args, **kwargs)
-        self.locks = LockHandler(self)
-        self.tags = TagHandler(self)
+        self.locks = LazyLoadHandler(self, "locks", LockHandler)
+        self.tags = LazyLoadHandler(self, "tags", TagHandler)
 
     class Meta:
         "Define Django meta options"

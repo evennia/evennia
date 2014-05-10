@@ -29,6 +29,7 @@ these to create custom managers.
 import sys
 import re
 import traceback
+import weakref
 
 from django.db import models
 from django.conf import settings
@@ -44,7 +45,7 @@ from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger
-from src.utils.utils import make_iter, is_iter, to_str, inherits_from
+from src.utils.utils import make_iter, is_iter, to_str, inherits_from, LazyLoadHandler
 from src.utils.dbserialize import to_pickle, from_pickle
 from src.utils.picklefield import PickledObjectField
 
@@ -706,9 +707,9 @@ class TypedObject(SharedMemoryModel):
         super(SharedMemoryModel, self).__init__(*args, **kwargs)
         #SharedMemoryModel.__init__(self, *args, **kwargs)
         _SA(self, "dbobj", self)   # this allows for self-reference
-        _SA(self, "locks", LockHandler(self))
-        _SA(self, "permissions", PermissionHandler(self))
-        _SA(self, "nattributes", NAttributeHandler(self))
+        _SA(self, "locks", LazyLoadHandler(self, "locks", LockHandler))
+        _SA(self, "permissions", LazyLoadHandler(self, "permissions", PermissionHandler))
+        _SA(self, "nattributes", LazyLoadHandler(self, "nattributes", NAttributeHandler))
 
     class Meta:
         """

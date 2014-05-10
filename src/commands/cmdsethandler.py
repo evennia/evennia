@@ -157,7 +157,7 @@ class CmdSetHandler(object):
     will re-calculate the 'current' cmdset.
     """
 
-    def __init__(self, obj):
+    def __init__(self, obj, init_true=True):
         """
         This method is called whenever an object is recreated.
 
@@ -178,7 +178,8 @@ class CmdSetHandler(object):
         # the subset of the cmdset_paths that are to be stored in the database
         self.permanent_paths = [""]
 
-        #self.update(init_mode=True) is then called from the object __init__.
+        if init_true:
+            self.update(init_mode=True) #is then called from the object __init__
 
     def __str__(self):
         "Display current commands"
