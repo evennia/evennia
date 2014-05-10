@@ -1052,7 +1052,7 @@ class LazyLoadHandler(object):
         Initialize handler as cls(obj, *args)
         """
         obj = _GA(self, "obj")()
-        instance = _GA(self, "cls")(obj, *_GA(self, "args"))
+        instance = _GA(self, "cls")(weakref.proxy(obj), *_GA(self, "args"))
         _SA(obj, _GA(self, "name"), instance)
         return instance
 

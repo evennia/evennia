@@ -7,7 +7,7 @@ All commands in Evennia inherit from the 'Command' class in this module.
 
 import re
 from src.locks.lockhandler import LockHandler
-from src.utils.utils import is_iter, fill
+from src.utils.utils import is_iter, fill, LazyLoadHandler
 
 
 def _init_command(mcs, **kwargs):
@@ -155,7 +155,7 @@ class Command(object):
         overloading evential same-named class properties."""
         if kwargs:
             _init_command(self, **kwargs)
-        self.lockhandler = LockHandler(self)
+        self.lockhandler = LazyLoadHandler(self, "lockhandler", LockHandler)
 
     def __str__(self):
         "Print the command"

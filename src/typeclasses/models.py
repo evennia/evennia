@@ -29,7 +29,6 @@ these to create custom managers.
 import sys
 import re
 import traceback
-import weakref
 
 from django.db import models
 from django.conf import settings
@@ -216,7 +215,7 @@ class AttributeHandler(object):
     def _recache(self):
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
                                        attr.db_category.lower() if attr.db_category else None), attr)
-                        for attr in _GA(self.obj, self._m2m_fieldname).filter(
+                        for attr in getattr(self.obj, self._m2m_fieldname).filter(
                             db_model=self._model, db_attrtype=self._attrtype))
         #set_attr_cache(self.obj, self._cache) # currently only for testing
 
@@ -319,7 +318,7 @@ class AttributeHandler(object):
             attr_obj = Attribute(db_key=key, db_category=category,
                                  db_model=self._model, db_attrtype=self._attrtype)
             attr_obj.save()  # important
-            _GA(self.obj, self._m2m_fieldname).add(attr_obj)
+            getattr(self.obj, self._m2m_fieldname).add(attr_obj)
             self._cache[cachekey] = attr_obj
         if lockstring:
             attr_obj.locks.add(lockstring)
@@ -540,7 +539,7 @@ class TagHandler(object):
     def _recache(self):
         "Update cache from database field"
         self._cache = dict(("%s-%s" % (tag.db_key, tag.db_category), tag)
-                            for tag in _GA(self.obj, self._m2m_fieldname).filter(
+                            for tag in getattr(self.obj, self._m2m_fieldname).filter(
                                          db_model=self._model, db_tagtype=self._tagtype))
 
     def add(self, tag, category=None, data=None):
@@ -556,7 +555,7 @@ class TagHandler(object):
             # considered part of making the tag unique)
             tagobj = Tag.objects.create_tag(key=tagstr, category=category, data=data,
                                             model=self._model, tagtype=self._tagtype)
-            _GA(self.obj, self._m2m_fieldname).add(tagobj)
+            getattr(self.obj, self._m2m_fieldname).add(tagobj)
             if self._cache is None:
                 self._recache()
             cachestring = "%s-%s" % (tagstr, category)
@@ -589,13 +588,13 @@ class TagHandler(object):
             # that when no objects reference the tag anymore (how to check)?
             tagobj = self.obj.db_tags.filter(db_key=tagstr, db_category=category)
             if tagobj:
-                _GA(self.obj, self._m2m_fieldname).remove(tagobj[0])
+                getattr(self.obj, self._m2m_fieldname).remove(tagobj[0])
         self._recache()
 
     def clear(self):
         "Remove all tags from the handler"
-        for tag in _GA(self.obj, self._m2m_fieldname).filter(db_model=self._model, db_tagtype=self._tagtype):
-            _GA(self.obj, self._m2m_fieldname).remove(tag)
+        for tag in getattr(self.obj, self._m2m_fieldname).filter(db_model=self._model, db_tagtype=self._tagtype):
+            getattr(self.obj, self._m2m_fieldname).remove(tag)
         self._recache()
 
     def all(self, category=None, return_key_and_category=False):
@@ -608,7 +607,7 @@ class TagHandler(object):
             self._recache()
         if category:
             category = category.strip().lower() if category is not None else None
-            matches = _GA(self.obj, self._m2m_fieldname).filter(db_category=category,
+            matches = getattr(self.obj, self._m2m_fieldname).filter(db_category=category,
                                                                 db_tagtype=self._tagtype,
                                                                 db_model=self._model).values_list("db_key")
         else:
@@ -621,7 +620,7 @@ class TagHandler(object):
                 return [to_str(p.db_key) for p in matches]
         return []
 
-        #return [to_str(p[0]) for p in _GA(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).values_list("db_key") if p[0]]
+        #return [to_str(p[0]) for p in getattr(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).values_list("db_key") if p[0]]
 
     def __str__(self):
         return ",".join(self.all())

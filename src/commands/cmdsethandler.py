@@ -179,7 +179,7 @@ class CmdSetHandler(object):
         self.permanent_paths = [""]
 
         if init_true:
-            self.update(init_mode=True) #is then called from the object __init__
+            self.update(init_mode=True) #is then called from the object __init__.
 
     def __str__(self):
         "Display current commands"

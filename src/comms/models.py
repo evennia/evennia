@@ -298,7 +298,7 @@ class TempMsg(object):
         self.header = header
         self.message = message
         self.lock_storage = lockstring
-        self.locks = LockHandler(self)
+        self.locks = LazyLoadHandler(self, "locks", LockHandler)
         self.hide_from = hide_from and make_iter(hide_from) or []
         self.date_sent = datetime.now()
 
@@ -360,9 +360,9 @@ class ChannelDB(TypedObject):
 
     def __init__(self, *args, **kwargs):
         TypedObject.__init__(self, *args, **kwargs)
-        _SA(self, "tags", TagHandler(self))
-        _SA(self, "attributes", AttributeHandler(self))
-        _SA(self, "aliases", AliasHandler(self))
+        _SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
+        _SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
+        _SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
 
     class Meta:
         "Define Django meta options"
