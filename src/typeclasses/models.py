@@ -65,7 +65,8 @@ _DA = object.__delattr__
 #
 #------------------------------------------------------------
 
-class Attribute(SharedMemoryModel):
+#class Attribute(SharedMemoryModel):
+class Attribute(models.Model):
     """
     Abstract django model.
 
@@ -115,12 +116,22 @@ class Attribute(SharedMemoryModel):
     # Lock handler self.locks
     def __init__(self, *args, **kwargs):
         "Initializes the parent first -important!"
-        SharedMemoryModel.__init__(self, *args, **kwargs)
+        #SharedMemoryModel.__init__(self, *args, **kwargs)
+        super(Attribute, self).__init__(*args, **kwargs)
         self.locks = LazyLoadHandler(self, "locks", LockHandler)
 
     class Meta:
         "Define Django meta options"
         verbose_name = "Evennia Attribute"
+
+    # read-only wrappers
+    key = property(lambda self: self.db_key)
+    strvalue = property(lambda self: self.db_strvalue)
+    category = property(lambda self: self.db_category)
+    lock_storage = property(lambda self: self.db_lockstorage)
+    model = property(lambda self: self.db_model)
+    attrtype = property(lambda self: self.db_attrtype)
+    date_created = property(lambda self: self.db_date_created)
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
@@ -148,9 +159,11 @@ class Attribute(SharedMemoryModel):
         see self.__value_get.
         """
         self.db_value = to_pickle(new_value)
-        self.save()
+        self.save(update_fields=["db_value"])
         try:
-            self._track_db_value_change.update(self.cached_value)
+            # eventual OOB hook
+            #self._track_db_value_change.update(self.cached_value)
+            self._track_db_value_change.update(self.new_value)
         except AttributeError:
             pass
         return
@@ -182,14 +195,8 @@ class Attribute(SharedMemoryModel):
         **kwargs - passed to at_access hook along with result.
         """
         result = self.locks.check(accessing_obj, access_type=access_type, default=default)
-        self.at_access(result, **kwargs)
+        #self.at_access(result, **kwargs)
         return result
-
-    def at_set(self, new_value):
-        """
-        Hook method called when the attribute changes value.
-        """
-        pass
 
 
 #
@@ -326,12 +333,11 @@ class AttributeHandler(object):
         # should catch all cases
         if strattr:
             # store as a simple string
-            attr_obj.strvalue = value
-            attr_obj.value = None
+            attr_obj.db_strvalue = value
+            attr_obj.save(update_fields=["db_strvalue"])
         else:
             # pickle arbitrary data
             attr_obj.value = value
-            attr_obj.strvalue = None
 
     def remove(self, key, raise_exception=False, category=None,
                accessing_obj=None, default_access=True):
