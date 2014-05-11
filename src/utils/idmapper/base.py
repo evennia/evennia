@@ -249,8 +249,8 @@ class SharedMemoryModel(Model):
     flush_cached_instance = classmethod(flush_cached_instance)
 
     def flush_instance_cache(cls):
-        cls.__instance_cache__ = WeakValueDictionary()
-        #cls.__instance_cache__ = {} #WeakValueDictionary()
+        #cls.__instance_cache__ = WeakValueDictionary()
+        cls.__instance_cache__ = {} #WeakValueDictionary()
     flush_instance_cache = classmethod(flush_instance_cache)
 
     def save(cls, *args, **kwargs):
