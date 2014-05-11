@@ -71,8 +71,8 @@ class SharedMemoryModelBase(ModelBase):
 
 
     def _prepare(cls):
-        cls.__instance_cache__ = WeakValueDictionary()
-        #cls.__instance_cache__ = {}  #WeakValueDictionary()
+        #cls.__instance_cache__ = WeakValueDictionary()
+        cls.__instance_cache__ = {}  #WeakValueDictionary()
         super(SharedMemoryModelBase, cls)._prepare()
 
     def __new__(cls, classname, bases, classdict, *args, **kwargs):
