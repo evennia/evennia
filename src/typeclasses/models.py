@@ -35,7 +35,7 @@ from django.conf import settings
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
 
-from src.utils.idmapper.models import SharedMemoryModel
+from src.utils.idmapper.models import SharedMemoryModel, WeakSharedMemoryModel
 from src.server.caches import get_prop_cache, set_prop_cache
 #from src.server.caches import set_attr_cache
 
@@ -44,7 +44,7 @@ from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger
-from src.utils.utils import make_iter, is_iter, to_str, inherits_from, LazyLoadHandler, NonWeakLazyLoadHandler
+from src.utils.utils import make_iter, is_iter, to_str, inherits_from, LazyLoadHandler
 from src.utils.dbserialize import to_pickle, from_pickle
 from src.utils.picklefield import PickledObjectField
 
@@ -66,7 +66,7 @@ _DA = object.__delattr__
 #------------------------------------------------------------
 
 #class Attribute(SharedMemoryModel):
-class Attribute(models.Model):
+class Attribute(WeakSharedMemoryModel):
     """
     Abstract django model.
 

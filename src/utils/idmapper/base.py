@@ -271,6 +271,27 @@ class SharedMemoryModel(Model):
             #blockingCallFromThread(reactor, _save_callback, cls, *args, **kwargs)
             callFromThread(_save_callback, cls, *args, **kwargs)
 
+
+class WeakSharedMemoryModelBase(SharedMemoryModelBase):
+    """
+    Uses a WeakValue dictionary for caching instead of a regular one
+    """
+    def _prepare(cls):
+        cls.__instance_cache__ = WeakValueDictionary()
+        super(WeakSharedMemoryModelBase, cls)._prepare()
+
+class WeakSharedMemoryModel(SharedMemoryModel):
+    """
+    Uses a WeakValue dictionary for caching instead of a regular one
+    """
+    __metaclass__ = WeakSharedMemoryModelBase
+    class Meta:
+        abstract = True
+    def flush_instance_cache(cls):
+        cls.__instance_cache__ = WeakValueDictionary()
+    flush_instance_cache = classmethod(flush_instance_cache)
+
+
 # Use a signal so we make sure to catch cascades.
 def flush_cache(**kwargs):
     def class_hierarchy(root):

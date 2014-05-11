@@ -35,6 +35,7 @@ command line. The process is as follows:
 
 """
 
+from weakref import WeakValueDictionary
 from copy import copy
 from traceback import format_exc
 from twisted.internet.defer import inlineCallbacks, returnValue
@@ -42,13 +43,13 @@ from django.conf import settings
 from src.comms.channelhandler import CHANNELHANDLER
 from src.utils import logger, utils
 from src.commands.cmdparser import at_multimatch_cmd
-from src.utils.utils import string_suggestions, make_iter, to_unicode
+from src.utils.utils import string_suggestions, to_unicode
 
 from django.utils.translation import ugettext as _
 
 __all__ = ("cmdhandler",)
 _GA = object.__getattribute__
-_CMDSET_MERGE_CACHE = {}
+_CMDSET_MERGE_CACHE = WeakValueDictionary()
 
 # This decides which command parser is to be used.
 # You have to restart the server for changes to take effect.
@@ -408,6 +409,13 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
                 caller.ndb.last_cmd = yield copy(cmd)
             else:
                 caller.ndb.last_cmd = None
+
+            # cleanup
+            del cmd.caller
+            del cmd.player
+            del cmd.session
+            del cmd.cmdset
+
             # Done! This returns a deferred. By default, Evennia does
             # not use this at all.
             returnValue(ret)
