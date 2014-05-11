@@ -389,7 +389,7 @@ class ObjectManager(TypedObjectManager):
             return None
 
         # copy over all attributes from old to new.
-        for attr in original_object.get_all_attributes():
+        for attr in original_object.attributes.all():
             new_object.attributes.add(attr.key, attr.value)
 
         # copy over all cmdsets, if any

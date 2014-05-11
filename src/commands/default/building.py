@@ -325,7 +325,7 @@ class CmdCpAttr(ObjManipCommand):
                 to_obj.attributes.add(to_attr, srcvalue)
                 if ("move" in self.switches and not (from_obj == to_obj and
                                                      from_attr == to_attr)):
-                    from_obj.del_attribute(from_attr)
+                    from_obj.attributes.remove(from_attr)
                     string += "\nMoved %s.%s -> %s.%s." % (from_obj.name,
                                                            from_attr,
                                                            to_obj_name, to_attr)

@@ -128,10 +128,19 @@ class Attribute(WeakSharedMemoryModel):
     key = property(lambda self: self.db_key)
     strvalue = property(lambda self: self.db_strvalue)
     category = property(lambda self: self.db_category)
-    lock_storage = property(lambda self: self.db_lockstorage)
     model = property(lambda self: self.db_model)
     attrtype = property(lambda self: self.db_attrtype)
     date_created = property(lambda self: self.db_date_created)
+
+    def __lock_storage_get(self):
+        return self.db_lock_storage
+    def __lock_storage_set(self, value):
+        self.db_lock_storage = value
+        self.save(update_fields=["db_lock_storage"])
+    def __lock_storage_del(self):
+        self.db_lock_storage = ""
+        self.save(update_fields=["db_lock_storage"])
+    lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
