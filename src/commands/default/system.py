@@ -620,7 +620,10 @@ class CmdServerLoad(MuxCommand):
     show server load and memory statistics
 
     Usage:
-       @serverload
+       @serverload[/mem]
+
+    Switch:
+        mem - return only a string of the current memory usage
 
     This command shows server load statistics and dynamic memory
     usage.
@@ -675,6 +678,10 @@ class CmdServerLoad(MuxCommand):
         pmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "%mem")).read())  # percent of resident memory to total
         rusage = resource.getrusage(resource.RUSAGE_SELF)
 
+        if "mem" in self.switches:
+            caller.msg("Memory usage: RMEM: {w%g{n MB (%g%%), VMEM (res+swap+cache): {w%g{n MB." % (rmem, pmem, vmem))
+            return
+
         # load table
         loadtable = prettytable.PrettyTable(["property", "statistic"])
         loadtable.align = 'l'
@@ -715,10 +722,11 @@ class CmdServerLoad(MuxCommand):
             # get sizes of other caches
             attr_cache_info, prop_cache_info = get_cache_sizes()
             string += "\n{w Entity idmapper cache usage:{n %5.2f MB (%i items)\n%s" % (totcache[1], totcache[0], memtable)
-            string += "\n{w On-entity Attribute cache usage:{n %5.2f MB (%i attrs)" % (attr_cache_info[1], attr_cache_info[0])
-            string += "\n{w On-entity Property cache usage:{n %5.2f MB (%i props)" % (prop_cache_info[1], prop_cache_info[0])
+            #string += "\n{w On-entity Attribute cache usage:{n %5.2f MB (%i attrs)" % (attr_cache_info[1], attr_cache_info[0])
+            #string += "\n{w On-entity Property cache usage:{n %5.2f MB (%i props)" % (prop_cache_info[1], prop_cache_info[0])
             base_mem = vmem - totcache[1] - attr_cache_info[1] - prop_cache_info[1]
-            string += "\n{w Base Server usage (virtmem-idmapper-attrcache-propcache):{n %5.2f MB" % base_mem
+            #string += "\n{w Base Server usage (virtmem-idmapper-attrcache-propcache):{n %5.2f MB" % base_mem
+            string += "\n{w Base Server usage (virtmem - cache):{n %5.2f MB" % base_mem
 
         caller.msg(string)
 

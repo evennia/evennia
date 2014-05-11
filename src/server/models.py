@@ -14,7 +14,7 @@ except ImportError:
     import pickle
 
 from django.db import models
-from src.utils.idmapper.models import SharedMemoryModel
+from src.utils.idmapper.models import WeakSharedMemoryModel
 from src.utils import logger, utils
 from src.server.manager import ServerConfigManager
 
@@ -25,7 +25,7 @@ from src.server.manager import ServerConfigManager
 #
 #------------------------------------------------------------
 
-class ServerConfig(SharedMemoryModel):
+class ServerConfig(WeakSharedMemoryModel):
     """
     On-the fly storage of global settings.
 
