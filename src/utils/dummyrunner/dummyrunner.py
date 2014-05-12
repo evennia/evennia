@@ -113,7 +113,9 @@ DEFAULT_TIMESTEP = 2
 CHANCE_OF_ACTION = 0.05
 # Port to use, if not specified on command line
 DEFAULT_PORT = settings.TELNET_PORTS[0]
-
+#
+NLOGGED_IN = 0
+NCLIENTS = 0
 
 #------------------------------------------------------------
 # Helper functions
@@ -198,9 +200,11 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         """
         if random.random() > CHANCE_OF_ACTION:
             return
+        global NLOGGED_IN
         if not self._cmdlist:
             # no cmdlist in store, get a new one
             if self.istep == 0:
+                NLOGGED_IN += 1
                 cfunc = self._actions[0]
             else: # random selection using cumulative probabilities
                 rand = random.random()
@@ -211,7 +215,8 @@ class DummyClient(telnet.StatefulTelnetProtocol):
             self._ncmds = len(self._cmdlist)
         # output
         if self.istep == 0 and not (self._echo_brief or self._echo_all):
-            print "client %i %s" % (self.cid, self._report)
+            # only print login
+            print "client %i %s (%i/%i)" % (self.cid, self._report, NLOGGED_IN, NCLIENTS)
         elif self.istep == 0 or self._echo_brief or self._echo_all:
             print "client %i %s (%i/%i)" % (self.cid, self._report, self._ncmds-(len(self._cmdlist)-1), self._ncmds)
         # launch the action by popping the first element from cmdlist (don't hide tracebacks)
@@ -234,6 +239,8 @@ class DummyFactory(protocol.ClientFactory):
 def start_all_dummy_clients(actions, nclients=1, timestep=5, telnet_port=4000, verbose=0):
 
     # validating and preparing the action tuple
+    global NCLIENTS
+    NCLIENTS = nclients
 
     # make sure the probabilities add up to 1
     pratio = 1.0 / sum(tup[0] for tup in actions[2:])
