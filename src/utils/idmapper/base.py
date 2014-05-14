@@ -19,31 +19,23 @@ from src.utils.utils import dbref, get_evennia_pids, to_str
 
 from manager import SharedMemoryManager
 
-_FIELD_CACHE_GET = None
-_FIELD_CACHE_SET = None
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
 
-# determine if our current pid is different from the server PID (i.e.
-# if we are in a subprocess or not); Changes are stored here so the
-# main process can be informed to update itself.
+# References to db-updated objects are stored here so the
+# main process can be informed to re-cache itself.
 PROC_MODIFIED_COUNT = 0
 PROC_MODIFIED_OBJS = WeakValueDictionary()
 
-# get info about the current process and thread
+# get info about the current process and thread; determine if our
+# current pid is different from the server PID (i.e.  # if we are in a
+# subprocess or not)
 _SELF_PID = os.getpid()
 _SERVER_PID, _PORTAL_PID = get_evennia_pids()
 _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and not _SELF_PID in (_SERVER_PID, _PORTAL_PID)
 _IS_MAIN_THREAD = threading.currentThread().getName() == "MainThread"
 
-
-
-#_SERVER_PID = None
-#_PORTAL_PID = None
-#        #global _SERVER_PID, _PORTAL_PID, _IS_SUBPROCESS, _SELF_PID
-#        if not _SERVER_PID and not _PORTAL_PID:
-#            _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and not _SELF_PID in (_SERVER_PID, _PORTAL_PID)
 
 class SharedMemoryModelBase(ModelBase):
     # CL: upstream had a __new__ method that skipped ModelBase's __new__ if
@@ -86,6 +78,7 @@ class SharedMemoryModelBase(ModelBase):
         already has a wrapper of the given name, the automatic creation is skipped. Note: Remember to
         document this auto-wrapping in the class header, this could seem very much like magic to the user otherwise.
         """
+
         def create_wrapper(cls, fieldname, wrappername, editable=True, foreignkey=False):
             "Helper method to create property wrappers with unique names (must be in separate call)"
             def _get(cls, fname):
@@ -184,6 +177,11 @@ class SharedMemoryModel(Model):
     class Meta:
         abstract = True
 
+    def __init__(cls, *args, **kwargs):
+        super(SharedMemoryModel, cls).__init__(*args, **kwargs)
+        "Setting flush info for idmapper cache"
+        _SA(cls, "_idmapper_cache_flush_safe", True)
+
     def _get_cache_key(cls, args, kwargs):
         """
         This method is used by the caching subsystem to infer the PK value from the constructor arguments.
@@ -214,13 +212,6 @@ class SharedMemoryModel(Model):
         return result
     _get_cache_key = classmethod(_get_cache_key)
 
-    def _flush_cached_by_key(cls, key):
-        try:
-            del cls.__instance_cache__[key]
-        except KeyError:
-            pass
-    _flush_cached_by_key = classmethod(_flush_cached_by_key)
-
     def get_cached_instance(cls, id):
         """
         Method to retrieve a cached instance by pk value. Returns None when not found
@@ -243,17 +234,38 @@ class SharedMemoryModel(Model):
         return cls.__instance_cache__.values()
     get_all_cached_instances = classmethod(get_all_cached_instances)
 
-    def flush_cached_instance(cls, instance):
+    def _flush_cached_by_key(cls, key, force=True):
+        "Remove the cached reference."
+        try:
+            if force or _GA(cls, "_idmapper_cache_flush_safe"):
+                del cls.__instance_cache__[key]
+        except KeyError:
+            pass
+    _flush_cached_by_key = classmethod(_flush_cached_by_key)
+
+    def _set_recache(cls, mode=True):
+        "set if this instance should be allowed to be recached."
+        _SA(cls, "_idmapper_cache_flush_safe", bool(mode))
+    _set_recache = classmethod(_set_recache)
+
+    def flush_cached_instance(cls, instance, force=True):
         """
-        Method to flush an instance from the cache. The instance will always be flushed from the cache,
-        since this is most likely called from delete(), and we want to make sure we don't cache dead objects.
+        Method to flush an instance from the cache. The instance will
+        always be flushed from the cache, since this is most likely
+        called from delete(), and we want to make sure we don't cache
+        dead objects.
+
         """
-        cls._flush_cached_by_key(instance._get_pk_val())
+        cls._flush_cached_by_key(instance._get_pk_val(), force=force)
     flush_cached_instance = classmethod(flush_cached_instance)
 
-    def flush_instance_cache(cls):
-        #cls.__instance_cache__ = WeakValueDictionary()
-        cls.__instance_cache__ = {} #WeakValueDictionary()
+    def flush_instance_cache(cls, force=False):
+        """
+        This will clean safe objects from the cache. Use force
+        keyword to remove all objects, safe or not.
+        """
+        for key in cls.__instance_cache__:
+            cls._flush_cached_by_key(key, force=force)
     flush_instance_cache = classmethod(flush_instance_cache)
 
     def save(cls, *args, **kwargs):
@@ -297,8 +309,15 @@ class WeakSharedMemoryModel(SharedMemoryModel):
     flush_instance_cache = classmethod(flush_instance_cache)
 
 
-# Use a signal so we make sure to catch cascades.
 def flush_cache(**kwargs):
+    """
+    Flush idmapper cache. When doing so the cache will
+    look for a property _idmapper_cache_flush_safe on the
+    class/subclass instance and only flush if this
+    is True.
+
+    Uses a signal so we make sure to catch cascades.
+    """
     def class_hierarchy(root):
         """Recursively yield a class hierarchy."""
         yield root
@@ -312,6 +331,9 @@ post_syncdb.connect(flush_cache)
 
 
 def flush_cached_instance(sender, instance, **kwargs):
+    """
+    Flush the idmapper cache only for a given instance
+    """
     # XXX: Is this the best way to make sure we can flush?
     if not hasattr(instance, 'flush_cached_instance'):
         return
@@ -319,6 +341,9 @@ def flush_cached_instance(sender, instance, **kwargs):
 pre_delete.connect(flush_cached_instance)
 
 def update_cached_instance(sender, instance, **kwargs):
+    """
+    Re-cache the given instance in the idmapper cache
+    """
     if not hasattr(instance, 'cache_instance'):
         return
     sender.cache_instance(instance)
