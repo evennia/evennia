@@ -32,9 +32,9 @@ from twisted.protocols import amp
 from twisted.internet import threads
 from contrib.procpools.ampoule.child import AMPChild
 from src.utils.dbserialize import to_pickle, from_pickle, do_pickle, do_unpickle
+from src.utils.idmapper.base import PROC_MODIFIED_OBJS
 from src.utils.utils import clean_object_caches, to_str
 from src.utils import logger
-from src import PROC_MODIFIED_OBJS
 
 
 #
@@ -140,7 +140,7 @@ class PythonProcPoolChild(AMPChild):
             exec source in available_vars
             ret = _return.get_returns()
         # get the list of affected objects to recache
-        objs = list(set(PROC_MODIFIED_OBJS))
+        objs = PROC_MODIFIED_OBJS.values()
         # we need to include the locations too, to update their content caches
         objs = objs + list(set([o.location for o in objs
                                 if hasattr(o, "location") and o.location]))
@@ -151,7 +151,8 @@ class PythonProcPoolChild(AMPChild):
         else:
             to_recache = ""
         # empty the list without loosing memory reference
-        PROC_MODIFIED_OBJS[:] = []
+        #PROC_MODIFIED_OBJS[:] = []
+        PROC_MODIFIED_OBJS.clear() #TODO - is this not messing anything up?
         return {'response': ret,
                 'recached': to_recache}
     ExecuteCode.responder(executecode)

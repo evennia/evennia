@@ -25,16 +25,19 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
 
-
 # determine if our current pid is different from the server PID (i.e.
-# if we are in a subprocess or not)
-from src import PROC_MODIFIED_OBJS
+# if we are in a subprocess or not); Changes are stored here so the
+# main process can be informed to update itself.
+PROC_MODIFIED_COUNT = 0
+PROC_MODIFIED_OBJS = WeakValueDictionary()
 
 # get info about the current process and thread
 _SELF_PID = os.getpid()
 _SERVER_PID, _PORTAL_PID = get_evennia_pids()
 _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and not _SELF_PID in (_SERVER_PID, _PORTAL_PID)
 _IS_MAIN_THREAD = threading.currentThread().getName() == "MainThread"
+
+
 
 #_SERVER_PID = None
 #_PORTAL_PID = None
@@ -259,7 +262,9 @@ class SharedMemoryModel(Model):
         if _IS_SUBPROCESS:
             # we keep a store of objects modified in subprocesses so
             # we know to update their caches in the central process
-            PROC_MODIFIED_OBJS.append(cls)
+            global PROC_MODIFIED_COUNT, PROC_MODIFIED_OBJS
+            PROC_MODIFIED_COUNT += 1
+            PROC_MODIFIED_OBJS[PROC_MODIFIED_COUNT] = cls
 
         if _IS_MAIN_THREAD:
             # in main thread - normal operation
