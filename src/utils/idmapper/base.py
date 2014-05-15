@@ -292,8 +292,9 @@ class WeakSharedMemoryModelBase(SharedMemoryModelBase):
     Uses a WeakValue dictionary for caching instead of a regular one
     """
     def _prepare(cls):
-        cls.__instance_cache__ = WeakValueDictionary()
         super(WeakSharedMemoryModelBase, cls)._prepare()
+        cls.__instance_cache__ = WeakValueDictionary()
+        cls._idmapper_recache_protection = False
 
 class WeakSharedMemoryModel(SharedMemoryModel):
     """
