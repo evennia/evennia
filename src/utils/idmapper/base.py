@@ -326,7 +326,7 @@ def flush_cache(**kwargs):
     for cls in class_hierarchy([SharedMemoryModel]):
         cls.flush_instance_cache()
     # run the python garbage collector
-    gc.collect()
+    return gc.collect()
 #request_finished.connect(flush_cache)
 post_syncdb.connect(flush_cache)
 

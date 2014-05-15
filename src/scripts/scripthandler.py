@@ -81,6 +81,13 @@ class ScriptHandler(object):
             num += script.start()
         return num
 
+    def get(self, scriptid):
+        """
+        Return one or all scripts on this object matching scriptid. Will return
+        a list.
+        """
+        return ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptid)
+
     def delete(self, scriptid=None):
         """
         Forcibly delete a script from this object.

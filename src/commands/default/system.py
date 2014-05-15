@@ -624,9 +624,11 @@ class CmdServerLoad(MuxCommand):
 
     Switch:
         mem - return only a string of the current memory usage
+        flushmem - flush the idmapper cache
 
     This command shows server load statistics and dynamic memory
-    usage.
+    usage. It also allows to flush the cache of accessed database
+    objects.
 
     Some Important statistics in the table:
 
@@ -641,9 +643,12 @@ class CmdServerLoad(MuxCommand):
     loaded by use of the idmapper functionality. This allows Evennia
     to maintain the same instances of an entity and allowing
     non-persistent storage schemes. The total amount of cached objects
-    are displayed plus a breakdown of database object types. Finally,
-    {wAttributes{n are cached on-demand for speed. The total amount of
-    memory used for this type of cache is also displayed.
+    are displayed plus a breakdown of database object types.
+
+    The {wflushmem{n switch allows to flush the object cache. Please
+    note that due to how Python's memory management works, releasing
+    caches may not show you a lower Residual/Virtual memory footprint,
+    the released memory will instead be re-used by the program.
 
     """
     key = "@server"
@@ -680,6 +685,9 @@ class CmdServerLoad(MuxCommand):
 
         if "mem" in self.switches:
             caller.msg("Memory usage: RMEM: {w%g{n MB (%g%%), VMEM (res+swap+cache): {w%g{n MB." % (rmem, pmem, vmem))
+            return
+        if "flushmem" in self.switches:
+            caller.msg("Flushed object idmapper cache. Python garbage collector recovered memory from %i objects." %  _idmapper.flush_cache())
             return
 
         # load table
