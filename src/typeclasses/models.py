@@ -719,7 +719,7 @@ class TypedObject(SharedMemoryModel):
     # lock handler self.locks
     def __init__(self, *args, **kwargs):
         "We must initialize the parent first - important!"
-        super(SharedMemoryModel, self).__init__(*args, **kwargs)
+        super(TypedObject, self).__init__(*args, **kwargs)
         #SharedMemoryModel.__init__(self, *args, **kwargs)
         _SA(self, "dbobj", self)   # this allows for self-reference
         _SA(self, "locks", LazyLoadHandler(self, "locks", LockHandler))

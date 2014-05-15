@@ -7,7 +7,7 @@ leave caching unexpectedly (no use of WeakRefs).
 Also adds cache_size() for monitoring the size of the cache.
 """
 
-import os, threading
+import os, threading, gc
 #from twisted.internet import reactor
 #from twisted.internet.threads import blockingCallFromThread
 from weakref import WeakValueDictionary
@@ -66,8 +66,8 @@ class SharedMemoryModelBase(ModelBase):
 
 
     def _prepare(cls):
-        #cls.__instance_cache__ = WeakValueDictionary()
-        cls.__instance_cache__ = {}  #WeakValueDictionary()
+        cls.__instance_cache__ = {}
+        cls._idmapper_cache_flush_safe = True
         super(SharedMemoryModelBase, cls)._prepare()
 
     def __new__(cls, classname, bases, classdict, *args, **kwargs):
@@ -177,11 +177,6 @@ class SharedMemoryModel(Model):
     class Meta:
         abstract = True
 
-    def __init__(cls, *args, **kwargs):
-        super(SharedMemoryModel, cls).__init__(*args, **kwargs)
-        "Setting flush info for idmapper cache"
-        _SA(cls, "_idmapper_cache_flush_safe", True)
-
     def _get_cache_key(cls, args, kwargs):
         """
         This method is used by the caching subsystem to infer the PK value from the constructor arguments.
@@ -237,7 +232,7 @@ class SharedMemoryModel(Model):
     def _flush_cached_by_key(cls, key, force=True):
         "Remove the cached reference."
         try:
-            if force or _GA(cls, "_idmapper_cache_flush_safe"):
+            if force or cls._idmapper_cache_flush_safe:
                 del cls.__instance_cache__[key]
         except KeyError:
             pass
@@ -245,7 +240,7 @@ class SharedMemoryModel(Model):
 
     def _set_recache(cls, mode=True):
         "set if this instance should be allowed to be recached."
-        _SA(cls, "_idmapper_cache_flush_safe", bool(mode))
+        cls._idmapper_cache_flush_safe = bool(mode)
     _set_recache = classmethod(_set_recache)
 
     def flush_cached_instance(cls, instance, force=True):
@@ -264,8 +259,11 @@ class SharedMemoryModel(Model):
         This will clean safe objects from the cache. Use force
         keyword to remove all objects, safe or not.
         """
-        for key in cls.__instance_cache__:
-            cls._flush_cached_by_key(key, force=force)
+        if force:
+            cls.__instance_cache__ = {}
+        else:
+            cls.__instance_cache__ = dict((key, obj) for key, obj in cls.__instance_cache__.items()
+                                                      if not obj._idmapper_cache_flush_safe)
     flush_instance_cache = classmethod(flush_instance_cache)
 
     def save(cls, *args, **kwargs):
@@ -304,10 +302,6 @@ class WeakSharedMemoryModel(SharedMemoryModel):
     __metaclass__ = WeakSharedMemoryModelBase
     class Meta:
         abstract = True
-    def flush_instance_cache(cls):
-        cls.__instance_cache__ = WeakValueDictionary()
-    flush_instance_cache = classmethod(flush_instance_cache)
-
 
 def flush_cache(**kwargs):
     """
@@ -318,14 +312,20 @@ def flush_cache(**kwargs):
 
     Uses a signal so we make sure to catch cascades.
     """
-    def class_hierarchy(root):
-        """Recursively yield a class hierarchy."""
-        yield root
-        for subcls in root.__subclasses__():
-            for cls in class_hierarchy(subcls):
+    def class_hierarchy(clslist):
+        """Recursively yield a class hierarchy"""
+        for cls in clslist:
+            subclass_list = cls.__subclasses__()
+            if subclass_list:
+                for subcls in class_hierarchy(subclass_list):
+                    yield subcls
+            else:
                 yield cls
-    for model in class_hierarchy(SharedMemoryModel):
-        model.flush_instance_cache()
+
+    for cls in class_hierarchy([SharedMemoryModel]):
+        cls.flush_instance_cache()
+    # run the python garbage collector
+    gc.collect()
 #request_finished.connect(flush_cache)
 post_syncdb.connect(flush_cache)
 

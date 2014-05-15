@@ -221,7 +221,7 @@ class ObjectDB(TypedObject):
             raise Exception(errmsg)
 
     def __location_del(self):
-        "Cleably delete the location reference"
+        "Cleanly delete the location reference"
         _SA(_GA(self, "dbobj"), "db_location", None)
         _GA(_GA(self, "dbobj"), "save")(upate_fields=["db_location"])
     location = property(__location_get, __location_set, __location_del)
