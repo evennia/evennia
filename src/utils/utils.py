@@ -1029,6 +1029,34 @@ def get_evennia_pids():
         return int(server_pid), int(portal_pid)
     return None, None
 
+from gc import get_referents
+from sys import getsizeof
+def deepsize(obj, max_depth=4):
+    """
+    Get not only size of the given object, but also the
+    size of objects referenced by the object, down to
+    max_depth distance from the object.
+
+    Note that this measure is necessarily approximate
+    since some memory is shared between objects. The
+    max_depth of 4 is roughly tested to give reasonable
+    size information about database models and their handlers.
+
+    Returns size in Bytes
+    """
+    def _recurse(o, dct, depth):
+        if max_depth >= 0 and depth > max_depth:
+            return
+        for ref in get_referents(o):
+            idr = id(ref)
+            if not idr in dct:
+                dct[idr] = (ref, getsizeof(ref, default=0))
+                _recurse(ref, dct, depth+1)
+    sizedict = {}
+    _recurse(obj, sizedict, 0)
+    #count = len(sizedict) + 1
+    size = getsizeof(obj) + sum([p[1] for p in sizedict.values()])
+    return size
 
 # lazy load handlers
 

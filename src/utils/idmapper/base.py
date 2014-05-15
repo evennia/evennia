@@ -378,4 +378,3 @@ def cache_size(mb=True):
     get_recurse(SharedMemoryModel.__subclasses__())
     sizedict["_total"] = tuple(sizedict["_total"])
     return sizedict
-
