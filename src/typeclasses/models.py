@@ -29,6 +29,7 @@ these to create custom managers.
 import sys
 import re
 import traceback
+import weakref
 
 from django.db import models
 from django.conf import settings
@@ -453,6 +454,7 @@ class NAttributeHandler(object):
     def __init__(self, obj):
         "initialized on the object"
         self._store = {}
+        self.obj = weakref.proxy(obj)
 
     def has(self, key):
         "Check if object has this attribute or not"
@@ -465,11 +467,13 @@ class NAttributeHandler(object):
     def add(self, key, value):
         "Add new key and value"
         self._store[key] = value
+        self.obj.set_recache_protection()
 
     def remove(self, key):
         "Remove key from storage"
         if key in self._store:
             del self._store[key]
+        self.obj.set_recache_protection(self._store)
 
     def all(self, return_tuples=False):
         "List all keys or (keys, values) stored, except _keys"

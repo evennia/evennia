@@ -67,7 +67,7 @@ class SharedMemoryModelBase(ModelBase):
 
     def _prepare(cls):
         cls.__instance_cache__ = {}
-        cls._idmapper_cache_flush_safe = True
+        cls._idmapper_recache_protection = False
         super(SharedMemoryModelBase, cls)._prepare()
 
     def __new__(cls, classname, bases, classdict, *args, **kwargs):
@@ -232,16 +232,16 @@ class SharedMemoryModel(Model):
     def _flush_cached_by_key(cls, key, force=True):
         "Remove the cached reference."
         try:
-            if force or cls._idmapper_cache_flush_safe:
+            if force or not cls._idmapper_recache_protection:
                 del cls.__instance_cache__[key]
         except KeyError:
             pass
     _flush_cached_by_key = classmethod(_flush_cached_by_key)
 
-    def _set_recache(cls, mode=True):
+    def set_recache_protection(cls, mode=True):
         "set if this instance should be allowed to be recached."
-        cls._idmapper_cache_flush_safe = bool(mode)
-    _set_recache = classmethod(_set_recache)
+        cls._idmapper_recache_protection = bool(mode)
+    set_recache_protection = classmethod(set_recache_protection)
 
     def flush_cached_instance(cls, instance, force=True):
         """
@@ -263,7 +263,7 @@ class SharedMemoryModel(Model):
             cls.__instance_cache__ = {}
         else:
             cls.__instance_cache__ = dict((key, obj) for key, obj in cls.__instance_cache__.items()
-                                                      if not obj._idmapper_cache_flush_safe)
+                                                      if obj._idmapper_recache_protection)
     flush_instance_cache = classmethod(flush_instance_cache)
 
     def save(cls, *args, **kwargs):
