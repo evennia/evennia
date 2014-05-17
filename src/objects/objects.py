@@ -1088,7 +1088,7 @@ class Exit(Object):
         if self.ndb.exit_reset or not self.cmdset.has_cmdset("_exitset", must_be_default=True):
             # we are resetting, or no exit-cmdset was set. Create one dynamically.
             self.cmdset.add_default(self.create_exit_cmdset(self.dbobj), permanent=False)
-            self.ndb.exit_reset = False
+            del self.ndb.exit_reset
 
     # this and other hooks are what usually can be modified safely.
 

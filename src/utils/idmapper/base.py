@@ -177,6 +177,10 @@ class SharedMemoryModel(Model):
     class Meta:
         abstract = True
 
+    #def __init__(cls, *args, **kwargs):
+    #    super(SharedMemoryModel, cls).__init__(*args, **kwargs)
+    #    cls._idmapper_recache_protection = False
+
     def _get_cache_key(cls, args, kwargs):
         """
         This method is used by the caching subsystem to infer the PK value from the constructor arguments.
@@ -238,11 +242,6 @@ class SharedMemoryModel(Model):
             pass
     _flush_cached_by_key = classmethod(_flush_cached_by_key)
 
-    def set_recache_protection(cls, mode=True):
-        "set if this instance should be allowed to be recached."
-        cls._idmapper_recache_protection = bool(mode)
-    set_recache_protection = classmethod(set_recache_protection)
-
     def flush_cached_instance(cls, instance, force=True):
         """
         Method to flush an instance from the cache. The instance will
@@ -253,6 +252,12 @@ class SharedMemoryModel(Model):
         """
         cls._flush_cached_by_key(instance._get_pk_val(), force=force)
     flush_cached_instance = classmethod(flush_cached_instance)
+
+    # per-instance methods
+
+    def set_recache_protection(cls, mode=True):
+        "set if this instance should be allowed to be recached."
+        cls._idmapper_recache_protection = bool(mode)
 
     def flush_instance_cache(cls, force=False):
         """
@@ -352,29 +357,30 @@ post_save.connect(update_cached_instance)
 
 def cache_size(mb=True):
     """
-    Returns a dictionary with estimates of the
-    cache size of each subclass.
+    Calculate statistics about the cache
 
     mb - return the result in MB.
+    Returns
+      total_num, total_size, {objclass:(total_num, total_size)}
     """
     import sys
-    sizedict = {"_total": [0, 0]}
+    totals = [0, 0] # totalnum, totalsize
+    sizedict = {}
     def getsize(model):
         instances = model.get_all_cached_instances()
-        linst = len(instances)
-        size = sum([sys.getsizeof(o) for o in instances])
-        size = (mb and size/1024.0) or size
-        return (linst, size)
+        num_inst = len(instances)
+        size = sum(sys.getsizeof(o) for o in instances)
+        size = size / 1000.0 if mb else size
+        return num_inst, size
     def get_recurse(submodels):
         for submodel in submodels:
             subclasses = submodel.__subclasses__()
             if not subclasses:
-                tup = getsize(submodel)
-                sizedict["_total"][0] += tup[0]
-                sizedict["_total"][1] += tup[1]
-                sizedict[submodel.__name__] = tup
+                num_inst, size = getsize(submodel)
+                totals[0] += num_inst
+                totals[1] += size
+                sizedict[submodel.__name__] = (num_inst, size)
             else:
                 get_recurse(subclasses)
     get_recurse(SharedMemoryModel.__subclasses__())
-    sizedict["_total"] = tuple(sizedict["_total"])
-    return sizedict
+    return totals[0], totals[1], sizedict

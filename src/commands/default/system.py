@@ -686,6 +686,7 @@ class CmdServerLoad(MuxCommand):
         if "mem" in self.switches:
             caller.msg("Memory usage: RMEM: {w%g{n MB (%g%%), VMEM (res+swap+cache): {w%g{n MB." % (rmem, pmem, vmem))
             return
+
         if "flushmem" in self.switches:
             caller.msg("Flushed object idmapper cache. Python garbage collector recovered memory from %i objects." %  _idmapper.flush_cache())
             return
@@ -712,29 +713,26 @@ class CmdServerLoad(MuxCommand):
             # because it lacks sys.getsizeof
 
             # object cache size
-            cachedict = _idmapper.cache_size()
-            totcache = cachedict["_total"]
+            total_num, total_size, cachedict = _idmapper.cache_size()
             sorted_cache = sorted([(key, tup[0], tup[1]) for key, tup in cachedict.items() if key !="_total" and tup[0] > 0],
                                     key=lambda tup: tup[2], reverse=True)
             memtable = prettytable.PrettyTable(["entity name",
                                                 "number",
-                                                "cache (MB)",
                                                 "idmapper %%"])
             memtable.align = 'l'
             for tup in sorted_cache:
                 memtable.add_row([tup[0],
                                  "%i" % tup[1],
-                                 "%5.2f" % tup[2],
-                                 "%.2f" % (float(tup[2] / totcache[1]) * 100)])
+                                 "%.2f" % (float(tup[1] / 1.0*total_num) * 100)])
 
             # get sizes of other caches
-            attr_cache_info, prop_cache_info = get_cache_sizes()
-            string += "\n{w Entity idmapper cache usage:{n %5.2f MB (%i items)\n%s" % (totcache[1], totcache[0], memtable)
+            #attr_cache_info, prop_cache_info = get_cache_sizes()
+            string += "\n{w Entity idmapper cache:{n %i items\n%s" % (total_num, memtable)
             #string += "\n{w On-entity Attribute cache usage:{n %5.2f MB (%i attrs)" % (attr_cache_info[1], attr_cache_info[0])
             #string += "\n{w On-entity Property cache usage:{n %5.2f MB (%i props)" % (prop_cache_info[1], prop_cache_info[0])
-            base_mem = vmem - totcache[1] - attr_cache_info[1] - prop_cache_info[1]
+            #base_mem = vmem - total_size - attr_cache_info[1] - prop_cache_info[1]
             #string += "\n{w Base Server usage (virtmem-idmapper-attrcache-propcache):{n %5.2f MB" % base_mem
-            string += "\n{w Base Server usage (virtmem - cache):{n %5.2f MB" % base_mem
+            #string += "\n{w Base Server usage (virtmem - cache):{n %5.2f MB" % base_mem
 
         caller.msg(string)
 

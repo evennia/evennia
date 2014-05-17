@@ -14,6 +14,7 @@ See CmdHandler for practical examples on how to apply cmdsets
 together to create interesting in-game effects.
 """
 
+from weakref import WeakKeyDictionary
 from django.utils.translation import ugettext as _
 from src.utils.utils import inherits_from, is_iter
 __all__ = ("CmdSet",)
@@ -159,7 +160,7 @@ class CmdSet(object):
 
         # initialize system
         self.at_cmdset_creation()
-        self._contains_cache = {}
+        self._contains_cache = WeakKeyDictionary()#{}
 
     # Priority-sensitive merge operations for cmdsets
 
