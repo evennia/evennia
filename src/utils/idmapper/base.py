@@ -357,30 +357,28 @@ post_save.connect(update_cached_instance)
 
 def cache_size(mb=True):
     """
-    Calculate statistics about the cache
+    Calculate statistics about the cache.
 
-    mb - return the result in MB.
+    Note: we cannot get reliable memory statistics from the cache -
+    whereas we could do getsizof each object in cache, the result is
+    highly imprecise and for a large number of object the result is
+    many times larger than the actual memory use of the entire server;
+    Python is clearly reusing memory behind the scenes that we cannot
+    catch in an easy way here.  Ideas are appreciated. /Griatch
+
     Returns
-      total_num, total_size, {objclass:(total_num, total_size)}
+      total_num, {objclass:total_num, ...}
     """
-    import sys
-    totals = [0, 0] # totalnum, totalsize
-    sizedict = {}
-    def getsize(model):
-        instances = model.get_all_cached_instances()
-        num_inst = len(instances)
-        size = sum(sys.getsizeof(o) for o in instances)
-        size = size / 1000.0 if mb else size
-        return num_inst, size
+    numtotal = [0] # use mutable to keep reference through recursion
+    classdict = {}
     def get_recurse(submodels):
         for submodel in submodels:
             subclasses = submodel.__subclasses__()
             if not subclasses:
-                num_inst, size = getsize(submodel)
-                totals[0] += num_inst
-                totals[1] += size
-                sizedict[submodel.__name__] = (num_inst, size)
+                num = len(submodel.get_all_cached_instances())
+                numtotal[0] += num
+                classdict[submodel.__name__] = num
             else:
                 get_recurse(subclasses)
     get_recurse(SharedMemoryModel.__subclasses__())
-    return totals[0], totals[1], sizedict
+    return numtotal[0], classdict

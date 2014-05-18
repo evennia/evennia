@@ -713,9 +713,9 @@ class CmdServerLoad(MuxCommand):
             # because it lacks sys.getsizeof
 
             # object cache size
-            total_num, total_size, cachedict = _idmapper.cache_size()
-            sorted_cache = sorted([(key, tup[0], tup[1]) for key, tup in cachedict.items() if key !="_total" and tup[0] > 0],
-                                    key=lambda tup: tup[2], reverse=True)
+            total_num, cachedict = _idmapper.cache_size()
+            sorted_cache = sorted([(key, num) for key, num in cachedict.items() if num > 0],
+                                    key=lambda tup: tup[1], reverse=True)
             memtable = prettytable.PrettyTable(["entity name",
                                                 "number",
                                                 "idmapper %%"])
@@ -723,16 +723,10 @@ class CmdServerLoad(MuxCommand):
             for tup in sorted_cache:
                 memtable.add_row([tup[0],
                                  "%i" % tup[1],
-                                 "%.2f" % (float(tup[1] / 1.0*total_num) * 100)])
+                                 "%.2f" % (float(tup[1]) / total_num * 100)])
 
             # get sizes of other caches
-            #attr_cache_info, prop_cache_info = get_cache_sizes()
             string += "\n{w Entity idmapper cache:{n %i items\n%s" % (total_num, memtable)
-            #string += "\n{w On-entity Attribute cache usage:{n %5.2f MB (%i attrs)" % (attr_cache_info[1], attr_cache_info[0])
-            #string += "\n{w On-entity Property cache usage:{n %5.2f MB (%i props)" % (prop_cache_info[1], prop_cache_info[0])
-            #base_mem = vmem - total_size - attr_cache_info[1] - prop_cache_info[1]
-            #string += "\n{w Base Server usage (virtmem-idmapper-attrcache-propcache):{n %5.2f MB" % base_mem
-            #string += "\n{w Base Server usage (virtmem - cache):{n %5.2f MB" % base_mem
 
         caller.msg(string)
 

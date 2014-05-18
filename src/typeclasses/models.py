@@ -467,7 +467,6 @@ class NAttributeHandler(object):
     def add(self, key, value):
         "Add new key and value"
         self._store[key] = value
-        print "set_recache_protection:", self.obj.key, key
         self.obj.set_recache_protection()
 
     def remove(self, key):
