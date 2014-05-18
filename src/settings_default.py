@@ -130,18 +130,25 @@ AMP_INTERFACE = '127.0.0.1'
 # limits the number of database accesses needed) and also allows for
 # storing temporary data on objects. It is however also the main memory
 # consumer of Evennia. With this setting the cache can be capped and
-# flushed when it reaches a certain size.
-# Empirically, N_objects_in_cache ~ (RMEM - 35) / 0.0157.
+# flushed when it reaches a certain size. Minimum is 50 MB but it is
+# not recommended to set this to less than 100 MB for a distribution
+# system.
+# Empirically, N_objects_in_cache ~ ((RMEM - 35) / 0.0157):
 #  mem(MB)   |  objs in cache   ||   mem(MB)   |   objs in cache
 #      50    |       ~1000      ||      800    |     ~49 000
 #     100    |       ~4000      ||     1200    |     ~75 000
 #     200    |      ~10 000     ||     1600    |    ~100 000
 #     500    |      ~30 000     ||     2000    |    ~125 000
-# Note that the exact memory usage is not exact, so err on the side of
-# caution if running on a server with limited memory.  How many objects
-# need to be in memory at any given time depends very much on each game
-# and how many players are active. Using None disables the cache cap.
-IDMAPPER_CACHE_MAXSIZE = 200
+# Note that the estimated memory usage is not exact (and the cap is only
+# checked every 5 minutes), so err on the side of caution if
+# running on a server with limited memory. Also note that Python
+# will not necessarily return the memory to the OS when the idmapper
+# flashes (the memory will be freed and made available to the Python
+# process only). How many objects need to be in memory at any given
+# time depends very much on your game so some experimentation may
+# be necessary (use @server to see how many objects are in the idmapper
+# cache at any time). Setting this to None disables the cache cap.
+IDMAPPER_CACHE_MAXSIZE = 200      # (MB)
 
 ######################################################################
 # Evennia Database config

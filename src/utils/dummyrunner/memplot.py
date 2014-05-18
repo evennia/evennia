@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     fig = pp.figure()
     ax1 = fig.add_subplot(111)
-    ax1.set_title("Memory usage (200 bots, auto-flush at RMEM ~ 200MB)")
+    ax1.set_title("200 bots, ~400 obj/min, IDMAPPER_CACHE_MAXSIZE=200")
     ax1.set_xlabel("Time (mins)")
     ax1.set_ylabel("Memory usage (MB)")
     ax1.plot(secs, rmem, "r", label="RMEM", lw=2)
