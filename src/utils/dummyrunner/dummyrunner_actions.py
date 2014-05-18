@@ -210,6 +210,4 @@ def c_moves(client):
 ## "heavy digger memory tester" definition
 ACTIONS = (c_login,
            c_logout,
-           (0.1, c_looks),
-           (0.1, c_creates_obj),
-           (0.8, c_digs))
+           (1.0, c_digs))

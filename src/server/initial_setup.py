@@ -161,7 +161,10 @@ def create_system_scripts():
     script2 = create.create_script(scripts.ValidateScripts)
     # update the channel handler to make sure it's in sync
     script3 = create.create_script(scripts.ValidateChannelHandler)
-    if not script1 or not script2 or not script3:
+    # flush the idmapper cache
+    script4 = create.create_script(scripts.ValidateIdmapperCache)
+
+    if not script1 or not script2 or not script3 or not script4:
         print " Error creating system scripts."
 
 

@@ -13,7 +13,7 @@ import twisted
 from time import time as timemeasure
 
 from django.conf import settings
-from src.server.caches import get_cache_sizes
+#from src.server.caches import get_cache_sizes
 from src.server.sessionhandler import SESSIONS
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
@@ -678,8 +678,8 @@ class CmdServerLoad(MuxCommand):
         loadavg = os.getloadavg()
         psize = _resource.getpagesize()
         pid = os.getpid()
-        rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rss")).read()) / 1024.0  # resident memory
-        vmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "vsz")).read()) / 1024.0  # virtual memory
+        rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rss")).read()) / 1000.0  # resident memory
+        vmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "vsz")).read()) / 1000.0  # virtual memory
         pmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "%mem")).read())  # percent of resident memory to total
         rusage = resource.getrusage(resource.RUSAGE_SELF)
 

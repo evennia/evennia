@@ -19,8 +19,6 @@ __all__ = ["Script", "DoNothing", "CheckSessions",
 
 _GA = object.__getattribute__
 _SESSIONS = None
-# attr-cache size in MB
-_ATTRIBUTE_CACHE_MAXSIZE = settings.ATTRIBUTE_CACHE_MAXSIZE
 
 class ExtendedLoopingCall(LoopingCall):
     """
@@ -155,7 +153,7 @@ class ScriptBase(TypeClass):
     def _step_errback(self, e):
         "callback for runner errors"
         cname = self.__class__.__name__
-        estring = _("Script %(key)s(#%(dbid)i) of type '%(cname)s': at_repeat() error '%(err)s'.") % \
+        estring = _("Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'.") % \
                           {"key": self.key, "dbid": self.dbid, "cname": cname,
                            "err": e.getErrorMessage()}
         try:
@@ -538,6 +536,24 @@ class CheckSessions(Script):
         #print "ValidateSessions run"
         _SESSIONS.validate_sessions()
 
+_FLUSH_CACHE = None
+_IDMAPPER_CACHE_MAX_MEMORY = settings.IDMAPPER_CACHE_MAXSIZE
+class ValidateIdmapperCache(Script):
+    """
+    Check memory use of idmapper cache
+    """
+    def at_script_creation(self):
+        self.key = "sys_cache_validate"
+        self.desc = _("Restrains size of idmapper cache.")
+        self.interval = 61 * 5 # staggered compared to session check
+        self.persistent = True
+
+    def at_repeat(self):
+        "Called every ~5 mins"
+        global _FLUSH_CACHE
+        if not _FLUSH_CACHE:
+            from src.utils.idmapper.base import conditional_flush as _FLUSH_CACHE
+        _FLUSH_CACHE(_IDMAPPER_CACHE_MAX_MEMORY)
 
 class ValidateScripts(Script):
     "Check script validation regularly"

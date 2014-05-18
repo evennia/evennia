@@ -7,7 +7,7 @@ leave caching unexpectedly (no use of WeakRefs).
 Also adds cache_size() for monitoring the size of the cache.
 """
 
-import os, threading, gc
+import os, threading, gc, time
 #from twisted.internet import reactor
 #from twisted.internet.threads import blockingCallFromThread
 from weakref import WeakValueDictionary
@@ -15,9 +15,12 @@ from twisted.internet.reactor import callFromThread
 from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.db.models.base import Model, ModelBase
 from django.db.models.signals import post_save, pre_delete, post_syncdb
+from src.utils import logger
 from src.utils.utils import dbref, get_evennia_pids, to_str
 
 from manager import SharedMemoryManager
+
+AUTO_FLUSH_MIN_INTERVAL = 60.0 * 5 # at least 5 mins between cache flushes
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -35,7 +38,6 @@ _SELF_PID = os.getpid()
 _SERVER_PID, _PORTAL_PID = get_evennia_pids()
 _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and not _SELF_PID in (_SERVER_PID, _PORTAL_PID)
 _IS_MAIN_THREAD = threading.currentThread().getName() == "MainThread"
-
 
 class SharedMemoryModelBase(ModelBase):
     # CL: upstream had a __new__ method that skipped ModelBase's __new__ if
@@ -225,6 +227,7 @@ class SharedMemoryModel(Model):
         Method to store an instance in the cache.
         """
         if instance._get_pk_val() is not None:
+
             cls.__instance_cache__[instance._get_pk_val()] = instance
     cache_instance = classmethod(cache_instance)
 
@@ -301,6 +304,7 @@ class WeakSharedMemoryModelBase(SharedMemoryModelBase):
         cls.__instance_cache__ = WeakValueDictionary()
         cls._idmapper_recache_protection = False
 
+
 class WeakSharedMemoryModel(SharedMemoryModel):
     """
     Uses a WeakValue dictionary for caching instead of a regular one
@@ -308,6 +312,7 @@ class WeakSharedMemoryModel(SharedMemoryModel):
     __metaclass__ = WeakSharedMemoryModelBase
     class Meta:
         abstract = True
+
 
 def flush_cache(**kwargs):
     """
@@ -346,6 +351,7 @@ def flush_cached_instance(sender, instance, **kwargs):
     sender.flush_cached_instance(instance)
 pre_delete.connect(flush_cached_instance)
 
+
 def update_cached_instance(sender, instance, **kwargs):
     """
     Re-cache the given instance in the idmapper cache
@@ -354,6 +360,66 @@ def update_cached_instance(sender, instance, **kwargs):
         return
     sender.cache_instance(instance)
 post_save.connect(update_cached_instance)
+
+
+LAST_FLUSH = None
+def conditional_flush(max_rmem, force=False):
+    """
+    Flush the cache if the estimated memory usage exceeds max_rmem.
+
+    The flusher has a timeout to avoid flushing over and over
+    in particular situations (this means that for some setups
+    the memory usage will exceed the requirement and a server with
+    more memory is probably required for the given game)
+
+    force - forces a flush, regardless of timeout.
+    """
+    global LAST_FLUSH
+
+    def mem2cachesize(desired_rmem):
+        """
+        Estimate the size of the idmapper cache based on the memory
+        desired. This is used to optionally cap the cache size.
+
+        desired_rmem - memory in MB (minimum 50MB)
+
+        The formula is empirically estimated from usage tests (Linux)
+        and is
+            Ncache = RMEM - 35.0 / 0.0157
+        where RMEM is given in MB and Ncache is the size of the cache
+        for this memory usage. VMEM tends to be about 100MB higher
+        than RMEM for large memory usage.
+        """
+        vmem = max(desired_rmem, 50.0)
+        Ncache = int(abs(float(vmem) - 35.0) / 0.0157)
+        return Ncache
+
+    if not max_rmem:
+        # auto-flush is disabled
+        return
+
+    now = time.time()
+    if not LAST_FLUSH:
+        # server is just starting
+        LAST_FLUSH = now
+        return
+
+    if ((now - LAST_FLUSH) < AUTO_FLUSH_MIN_INTERVAL) and not force:
+        # too soon after last flush.
+        logger.log_warnmsg("Warning: Idmapper flush called more than "\
+                            "once in %s min interval. Check memory usage." % (AUTO_FLUSH_MIN_INTERVAL/60.0))
+        return
+
+    # check actual memory usage
+    Ncache_max = mem2cachesize(max_rmem)
+    Ncache, _ = cache_size()
+    actual_rmem = float(os.popen('ps -p %d -o %s | tail -1' % (os.getpid(), "rss")).read()) / 1000.0  # resident memory
+
+    if Ncache >= Ncache_max and actual_rmem > max_rmem * 0.9:
+        # flush cache when number of objects in cache is big enough and our
+        # actual memory use is within 10% of our set max
+        flush_cache()
+        LAST_FLUSH = now
 
 def cache_size(mb=True):
     """

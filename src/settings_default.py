@@ -125,18 +125,23 @@ ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 AMP_HOST = 'localhost'
 AMP_PORT = 5000
 AMP_INTERFACE = '127.0.0.1'
-# Caching speeds up all forms of database access, often considerably. There
-# are (currently) only two settings, "local" or None, the latter of which turns
-# off all caching completely. Local caching stores data in the process. It's
-# very fast but will go out of sync if more than one process writes to the
-# database (such as when using procpool or an extensice web precense).
-GAME_CACHE_TYPE = "local"
-# Attributes on objects are cached aggressively for speed. If the number of
-# objects is large (and their attributes are often accessed) this can use up
-# a lot of memory. So every now and then Evennia checks the size of this
-# cache and resets it if it's too big. This variable sets the maximum
-# size (in MB).
-ATTRIBUTE_CACHE_MAXSIZE = 100
+# Database objects are cached in what is known as the idmapper. The idmapper
+# caching results in a massive speedup of the server (since it dramatically
+# limits the number of database accesses needed) and also allows for
+# storing temporary data on objects. It is however also the main memory
+# consumer of Evennia. With this setting the cache can be capped and
+# flushed when it reaches a certain size.
+# Empirically, N_objects_in_cache ~ (RMEM - 35) / 0.0157.
+#  mem(MB)   |  objs in cache   ||   mem(MB)   |   objs in cache
+#      50    |       ~1000      ||      800    |     ~49 000
+#     100    |       ~4000      ||     1200    |     ~75 000
+#     200    |      ~10 000     ||     1600    |    ~100 000
+#     500    |      ~30 000     ||     2000    |    ~125 000
+# Note that the exact memory usage is not exact, so err on the side of
+# caution if running on a server with limited memory.  How many objects
+# need to be in memory at any given time depends very much on each game
+# and how many players are active. Using None disables the cache cap.
+IDMAPPER_CACHE_MAXSIZE = 200
 
 ######################################################################
 # Evennia Database config
