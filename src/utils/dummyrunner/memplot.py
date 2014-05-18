@@ -34,7 +34,7 @@ class Memplot(ev.Script):
         t0 = (time.time() - self.db.starttime) / 60.0 # save in minutes
 
         with open(LOGFILE, "a") as f:
-            f.write("%s, %s, %s, %s\n" % (t0, rmem, vmem, total_num))
+            f.write("%s, %s, %s, %s\n" % (t0, rmem, vmem, int(total_num)))
 
 if __name__ == "__main__":
 
@@ -43,19 +43,14 @@ if __name__ == "__main__":
     from matplotlib import pyplot as pp
     import numpy
 
-    data = numpy.genfromtxt(LOGFILE, delimiter=",")
+    data = numpy.genfromtxt("../../../game/" + LOGFILE, delimiter=",")
     secs = data[:,0]
     rmem = data[:,1]
     vmem = data[:,2]
     nobj = data[:,3]
 
-    # correct for @reload
-    #secs[359:] = secs[359:] + secs[358]
-
     # count total amount of objects
-    ntot = data[:,3].copy()
-    #ntot[119:] = ntot[119:] + ntot[118] - ntot[119]
-    #ntot[359:] = ntot[359:] + ntot[358] - ntot[359]
+    #ntot = data[:,3].copy()
 
     fig = pp.figure()
     ax1 = fig.add_subplot(111)
@@ -68,7 +63,7 @@ if __name__ == "__main__":
 
     ax2 = ax1.twinx()
     ax2.plot(secs, nobj, "g--", label="objs in cache", lw=2)
-    ax2.plot(secs, ntot, "r--", label="objs total", lw=2)
+    #ax2.plot(secs, ntot, "r--", label="objs total", lw=2)
     ax2.set_ylabel("Number of objects")
     ax2.legend(loc="lower right")
     ax2.annotate("idmapper\nflush", xy=(70,480))
