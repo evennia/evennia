@@ -479,8 +479,8 @@ LOCALE_PATHS = ["../locale/"]
 # development webserver (normally Evennia runs its own server)
 SERVE_MEDIA = False
 # The master urlconf file that contains all of the sub-branches to the
-# applications.
-ROOT_URLCONF = 'game.gamesrc.web.urls'
+# applications. Change this to add your own URLs to the website.
+ROOT_URLCONF = 'src.web.urls'
 # Where users are redirected after logging in via contrib.auth.login.
 LOGIN_REDIRECT_URL = '/'
 # Where to redirect users when using the @login_required decorator.
@@ -497,14 +497,19 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(GAME_DIR, "gamesrc", "web", "static")
 
-# Folders from which static files will be gathered from.
+# Directories from which static files will be gathered from.
 STATICFILES_DIRS = (
+    os.path.join(GAME_DIR, "gamesrc", "web", "static_overrides"),
     os.path.join(SRC_DIR, "web", "static"),)
+# Patterns of files in the static directories. Used here to make sure that
+# its readme file is preserved but unused.
+STATICFILES_IGNORE_PATTERNS = ('README.md',)
 # The name of the currently selected web template. This corresponds to the
 # directory names shown in the webtemplates directory.
 ACTIVE_TEMPLATE = 'prosimii'
 # We setup the location of the website template as well as the admin site.
 TEMPLATE_DIRS = (
+    os.path.join(GAME_DIR, "gamesrc", "web", "templates"),
     os.path.join(SRC_DIR, "web", "templates", ACTIVE_TEMPLATE),
     os.path.join(SRC_DIR, "web", "templates"),)
 # List of callables that know how to import templates from various sources.

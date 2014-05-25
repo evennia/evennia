@@ -26,6 +26,10 @@ __pycache__
 *.restart
 *.db3
 
+# Installation-specific
+game/settings.py
+game/logs/*.log.*
+
 # Installer logs
 pip-log.txt
 
@@ -41,3 +45,6 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# PyCharm config
+.idea

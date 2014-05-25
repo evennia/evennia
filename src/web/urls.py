@@ -6,8 +6,8 @@
 # http://diveintopython.org/regular_expressions/street_addresses.html#re.matching.2.3
 #
 
-from django.conf.urls import *
 from django.conf import settings
+from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.generic import RedirectView
 
