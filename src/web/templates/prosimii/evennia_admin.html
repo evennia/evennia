@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Admin</h1>
+    Welcome to the Evennia Admin Page. Here, you can edit many facets of players, characters, and other parts of the game.
+
+    <h2><a href="{% url "admin:players_playerdb_changelist" %}">Players</a></h2>
+    Players are user accounts. Players can have several characters under them. A user's login and password information can be changed here.
+
+    <h2><a href="{% url "admin:objects_objectdb_changelist" %}">Objects</a></h2>
+    Objects include everything from characters to rooms to exits.
+
+    <h2><a href="{% url "admin:scripts_scriptdb_changelist" %}">Scripts</a></h2>
+    Scripts are meta objects used to store game information, handle special functionality or perform timed actions.
+
+    <h2><a href="{% url "admin:comms_channeldb_changelist" %}">Channels</a></h2>
+    Channels are used for player communications.
+
+    <h2><a href="{% url "admin:help_helpentry_changelist" %}">Help Topics</a></h2>
+
+    <p>If you are an advanced user who needs access to the raw Django Admin, it is available <a href="{% url "django_admin" %}">here</a>.
+        You can make this the default my changing <code>EVENNIA_ADMIN</code> to <code>False</code> in <code>settings.py</code> and reload.</p>
+{% endblock content %}

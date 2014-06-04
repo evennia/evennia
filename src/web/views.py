@@ -5,17 +5,17 @@ the other applications. Views are django's way of processing e.g. html
 templates on the fly.
 
 """
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-#from django.contrib.auth.models import User
+from django.contrib.admin.sites import site
 from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render
 
 from src.objects.models import ObjectDB
-#from src.typeclasses.models import TypedObject
 from src.players.models import PlayerDB
 from src.web.news.models import NewsEntry
 
 _BASE_CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
+
 
 def page_index(request):
     """
@@ -56,8 +56,8 @@ def page_index(request):
         "num_others": nothers or "no"
     }
 
-    context_instance = RequestContext(request)
-    return render_to_response('index.html', pagevars, context_instance)
+    return render(request, 'index.html', pagevars)
+
 
 def to_be_implemented(request):
     """
@@ -69,7 +69,21 @@ def to_be_implemented(request):
         "page_title": "To Be Implemented...",
     }
 
-    context_instance = RequestContext(request)
-    return render_to_response('tbi.html', pagevars, context_instance)
+    return render(request, 'tbi.html', pagevars)
 
 
+@staff_member_required
+def evennia_admin(request):
+    """
+    Helpful Evennia-specific admin page.
+    """
+    return render(
+        request, 'evennia_admin.html', {
+            'playerdb': PlayerDB})
+
+
+def admin_wrapper(request):
+    """
+    Wrapper that allows us to properly use the base Django admin site, if needed.
+    """
+    return staff_member_required(site.index)(request)

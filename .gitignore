@@ -29,6 +29,7 @@ __pycache__
 # Installation-specific
 game/settings.py
 game/logs/*.log.*
+game/gamesrc/web/static/*
 
 # Installer logs
 pip-log.txt

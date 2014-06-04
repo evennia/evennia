@@ -37,7 +37,6 @@ urlpatterns = [
 
     # Admin interface
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/', include(admin.site.urls)),
 
     # favicon
     url(r'^favicon\.ico$',  RedirectView.as_view(url='/media/images/favicon.ico')),
@@ -46,7 +45,22 @@ urlpatterns = [
     url(r'^webclient/', include('src.web.webclient.urls', namespace='webclient', app_name='webclient')),
 
     # Front page
-    url(r'^$', 'src.web.views.page_index', name="index")]
+    url(r'^$', 'src.web.views.page_index', name="index"),
+
+    # Django original admin page. Make this URL is always available, whether
+    # we've chosen to use Evennia's custom admin or not.
+    url(r'django_admin/', 'src.web.views.admin_wrapper', name="django_admin")]
+
+if settings.EVENNIA_ADMIN:
+    urlpatterns += [
+        # Our override for the admin.
+        url('^admin/$', 'src.web.views.evennia_admin', name="evennia_admin"),
+
+        # Makes sure that other admin pages get loaded.
+        url(r'^admin/', include(admin.site.urls))]
+else:
+    # Just include the normal Django admin.
+    urlpatterns += [url(r'^admin/', include(admin.site.urls))]
 
 # This sets up the server if the user want to run the Django
 # test server (this should normally not be needed).
