@@ -50,11 +50,12 @@ if __name__ == "__main__":
     nobj = data[:,3]
 
     # calculate derivative of obj creation
-    oderiv = (0.5*(nobj[2:] - nobj[:-2]) / (secs[2:] - secs[:-2])).copy()
+    #oderiv = (0.5*(nobj[2:] - nobj[:-2]) / (secs[2:] - secs[:-2])).copy()
+    #oderiv = (0.5*(rmem[2:] - rmem[:-2]) / (secs[2:] - secs[:-2])).copy()
 
     fig = pp.figure()
     ax1 = fig.add_subplot(111)
-    ax1.set_title("200 bots, ~400 obj/min, IDMAPPER_CACHE_MAXSIZE=200")
+    ax1.set_title("1000 bots (normal players with light building)")
     ax1.set_xlabel("Time (mins)")
     ax1.set_ylabel("Memory usage (MB)")
     ax1.plot(secs, rmem, "r", label="RMEM", lw=2)
@@ -64,10 +65,11 @@ if __name__ == "__main__":
     ax2 = ax1.twinx()
     ax2.plot(secs, nobj, "g--", label="objs in cache", lw=2)
     #ax2.plot(secs[:-2], oderiv/60.0, "g--", label="Objs/second", lw=2)
+    #ax2.plot(secs[:-2], oderiv, "g--", label="Objs/second", lw=2)
     ax2.set_ylabel("Number of objects")
     ax2.legend(loc="lower right")
-    #ax2.annotate("All bots\nfinished\nconnecting", xy=(10, 16900))
-    #ax2.annotate("idmapper\nflush", xy=(70,480))
+    ax2.annotate("First 500 bots\nconnecting", xy=(10, 4000))
+    ax2.annotate("Next 500 bots\nconnecting", xy=(350,10000))
     #ax2.annotate("@reload", xy=(185,600))
 
 #    # plot mem vs cachesize
