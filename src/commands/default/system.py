@@ -620,7 +620,7 @@ class CmdServerLoad(MuxCommand):
     show server load and memory statistics
 
     Usage:
-       @serverload[/mem]
+       @server[/mem]
 
     Switch:
         mem - return only a string of the current memory usage
