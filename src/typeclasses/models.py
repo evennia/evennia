@@ -629,7 +629,7 @@ class TagHandler(object):
             category = category.strip().lower() if category is not None else None
             matches = getattr(self.obj, self._m2m_fieldname).filter(db_category=category,
                                                                 db_tagtype=self._tagtype,
-                                                                db_model=self._model).values_list("db_key")
+                                                                db_model=self._model)
         else:
             matches = self._cache.values()
         if matches:
@@ -639,8 +639,6 @@ class TagHandler(object):
             else:
                 return [to_str(p.db_key) for p in matches]
         return []
-
-        #return [to_str(p[0]) for p in getattr(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).values_list("db_key") if p[0]]
 
     def __str__(self):
         return ",".join(self.all())
