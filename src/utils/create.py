@@ -145,7 +145,7 @@ def create_object(typeclass=None, key=None, location=None,
         # gave us a default
         SharedMemoryModel.delete(new_db_object)
         if report_to:
-            _GA(report_to, "msg")("Error creating %s (%s):\n%s" % (new_db_object.key, typeclass,
+            _GA(report_to, "msg")("Error creating %s (%s).\n%s" % (new_db_object.key, typeclass,
                                                                  _GA(new_db_object, "typeclass_last_errmsg")))
             return None
         else:

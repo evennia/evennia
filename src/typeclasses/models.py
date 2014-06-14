@@ -51,6 +51,8 @@ from src.utils.picklefield import PickledObjectField
 
 __all__ = ("Attribute", "TypeNick", "TypedObject")
 
+TICKER_HANDLER = None
+
 _PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 
@@ -841,6 +843,11 @@ class TypedObject(SharedMemoryModel):
         raise Exception("dbref cannot be deleted!")
     dbref = property(__dbref_get, __dbref_set, __dbref_del)
 
+    # the latest error string will be stored here for accessing methods to access.
+    # It is set by _display_errmsg, which will print to log if error happens
+    # during server startup.
+    typeclass_last_errmsg = ""
+
     # typeclass property
     #@property
     def __typeclass_get(self):
@@ -855,7 +862,6 @@ class TypedObject(SharedMemoryModel):
               of normal dot notation) is due to optimization: it avoids calling
               the custom self.__getattribute__ more than necessary.
         """
-
         path = _GA(self, "typeclass_path")
         typeclass = _GA(self, "_cached_typeclass")
         try:
@@ -898,7 +904,10 @@ class TypedObject(SharedMemoryModel):
                     errstring +=  " to specify the actual typeclass name inside the module too."
                 elif typeclass:
                     errstring += "\n%s" % typeclass.strip()    # this will hold a growing error message.
-            errstring += "\nTypeclass failed to load. Falling back to default."
+            if not errstring:
+                errstring = "\nMake sure the path is set correctly. Paths tested:\n"
+                errstring += ", ".join(typeclass_paths)
+            errstring += "\nTypeclass code was not found or failed to load."
         # If we reach this point we couldn't import any typeclasses. Return
         # default. It's up to the calling method to use e.g. self.is_typeclass()
         # to detect that the result is not the one asked for.
@@ -913,10 +922,6 @@ class TypedObject(SharedMemoryModel):
     # typeclass property
     typeclass = property(__typeclass_get, fdel=__typeclass_del)
 
-    # the last error string will be stored here for accessing methods to access.
-    # It is set by _display_errmsg, which will print to log if error happens
-    # during server startup.
-    typeclass_last_errmsg = ""
 
     def _path_import(self, path):
         """
@@ -938,7 +943,7 @@ class TypedObject(SharedMemoryModel):
                 # we separate between not finding the module, and finding
                 # a buggy one.
                 pass
-                #errstring = ""#Typeclass not found trying path '%s'." % path
+                #errstring = "Typeclass not found trying path '%s'." % path
             else:
                 # a bug in the module is reported normally.
                 trc = traceback.format_exc().strip()
@@ -958,7 +963,7 @@ class TypedObject(SharedMemoryModel):
         """
         Helper function to display error.
         """
-        _SA(self, "typeclass_lasterrmsg", message)
+        _SA(self, "typeclass_last_errmsg", message)
         if ServerConfig.objects.conf("server_starting_mode"):
             print message
         else:
@@ -1180,6 +1185,10 @@ class TypedObject(SharedMemoryModel):
 
     def delete(self):
         "Cleaning up handlers on the typeclass level"
+        global TICKER_HANDLER
+        if not TICKER_HANDLER:
+            from src.scripts.tickerhandler import TICKER_HANDLER
+        TICKER_HANDLER.remove(self) # removes all ticker subscriptions
         _GA(self, "permissions").clear()
         _SA(self, "_cached_typeclass", None)
         _GA(self, "flush_from_cache")()
