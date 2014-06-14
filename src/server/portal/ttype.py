@@ -65,7 +65,6 @@ class Ttype(object):
         certain piece of information about the client. All data is
         stored on protocol.protocol_flags under the TTYPE key.
         """
-
         options = self.protocol.protocol_flags.get('TTYPE')
 
         if options and options.get('init_done') or self.ttype_step > 3:
@@ -138,5 +137,5 @@ class Ttype(object):
                     self.protocol.protocol_flags['TTYPE'][option.upper()] = True
 
             self.protocol.protocol_flags['TTYPE']['init_done'] = True
-            #print "TTYPE final:", self.protocol.protocol_flags['TTYPE']
+            # print "TTYPE final:", self.protocol.protocol_flags['TTYPE']
         self.ttype_step += 1

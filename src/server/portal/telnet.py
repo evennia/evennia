@@ -32,10 +32,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.iaw_mode = False
         client_address = self.transport.client
         self.init_session("telnet", client_address, self.factory.sessionhandler)
-        # negotiate mccp (data compression)
-        self.mccp = Mccp(self)
         # negotiate ttype (client info)
+        # Obs: mudlet ttype does not seem to work if we start mccp before ttype. /Griatch
         self.ttype = ttype.Ttype(self)
+        # negotiate mccp (data compression) - turn this off for wireshark analysis
+        self.mccp = Mccp(self)
         # negotiate mssp (crawler communication)
         self.mssp = mssp.Mssp(self)
         # msdp
