@@ -14,12 +14,12 @@
 
 {% if app_list %}
 
-    {% for app in app_list %}        
+    {% for app in app_list %}
 
         {% if app.name in evennia_userapps %}
 
         {% if app.name == 'Players' %}
-        <h2>Admin</h2> 
+        <h2>Admin</h2>
         <p><i>Players are the out-of-character representation of a
         game account. A Player can potentially control any number of
         in-game character Objects (depending on game).</i></p>
@@ -49,7 +49,7 @@
                 <td>&nbsp;</td>
             {% endif %}
             </tr>
-            {% endif %} 
+            {% endif %}
 
         {% endfor %}
         </table>
@@ -58,15 +58,15 @@
         {% endif %}
     {% endfor %}
 
-        <h2>Game entities</h2> 
+        <h2>Game entities</h2>
 
-    {% for app in app_list %}        
+    {% for app in app_list %}
 
         {% if app.name in evennia_entityapps %}
 
-        {% if app.name == 'Comms' %}        
+        {% if app.name == 'Comms' %}
         <p><i>This defines entities that has an in-game precense or
-            effect of some kind.</i></p> 
+            effect of some kind.</i></p>
         {% endif %}
 
         <div class="module">
@@ -99,18 +99,18 @@
 
         {% endif %}
     {% endfor %}
- 
-
-    <h2>Website</h2> 
 
 
-    {% for app in app_list %}        
+    <h2>Website</h2>
+
+
+    {% for app in app_list %}
 
         {% if app.name in evennia_websiteapps %}
 
-        {% if app.name == 'Flatpages' %}        
+        {% if app.name == 'Flatpages' %}
         <p><i>Miscellaneous objects related to the running and
-        managing of the Web presence.</i></p> 
+        managing of the Web presence.</i></p>
         {% endif %}
 
         <div class="module">

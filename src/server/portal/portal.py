@@ -262,6 +262,12 @@ if WEBSERVER_ENABLED:
                 web_root.putChild("webclientdata", webclient)
                 webclientstr = "/client"
 
+                #from src.server.portal import websocket
+                #factory = protocol.ServerFactory()
+                #websocketclient = websocket.WebSocketProtocol()
+                #websocketclient.sessionhandler = PORTAL_SESSIONS
+                #web_root.putChild("websocket", websocketclient)
+
             web_root = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
             proxy_service = internet.TCPServer(proxyport,
                                                web_root,
@@ -269,7 +275,6 @@ if WEBSERVER_ENABLED:
             proxy_service.setName('EvenniaWebProxy%s' % pstring)
             PORTAL.services.addService(proxy_service)
             print "  webproxy%s%s:%s (<-> %s)" % (webclientstr, ifacestr, proxyport, serverport)
-
 
 if WEBSOCKET_ENABLED:
     # websocket support is experimental!

@@ -44,8 +44,8 @@ urlpatterns = patterns('',
     # favicon
     url(r'^favicon\.ico$',  RedirectView.as_view(url='/media/images/favicon.ico')),
 
-    # ajax stuff
-    url(r'^webclient/',include('src.web.webclient.urls')),
+    # webclient stuff
+    url(r'^webclient/', include('src.web.webclient.urls')),
 )
 
 # This sets up the server if the user want to run the Django

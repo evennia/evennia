@@ -1,9 +1,9 @@
 #
-# This file defines global variables that will always be 
+# This file defines global variables that will always be
 # available in a view context without having to repeatedly
-# include it. For this to work, this file is included in 
-# the settings file, in the TEMPLATE_CONTEXT_PROCESSORS 
-# tuple. 
+# include it. For this to work, this file is included in
+# the settings file, in the TEMPLATE_CONTEXT_PROCESSORS
+# tuple.
 #
 
 from django.db import models
@@ -19,8 +19,8 @@ except AttributeError:
 SERVER_VERSION = get_evennia_version()
 
 
-# Setup lists of the most relevant apps so 
-# the adminsite becomes more readable. 
+# Setup lists of the most relevant apps so
+# the adminsite becomes more readable.
 
 PLAYER_RELATED = ['Players']
 GAME_ENTITIES = ['Objects', 'Scripts', 'Comms', 'Help']
@@ -44,5 +44,6 @@ def general_context(request):
         'evennia_setupapps': GAME_SETUP,
         'evennia_connectapps': CONNECTIONS,
         'evennia_websiteapps':WEBSITE,
-        "webclient_enabled" : settings.WEBCLIENT_ENABLED
+        "webclient_enabled" : settings.WEBCLIENT_ENABLED,
+        "websocket_enabled" : settings.WEBSOCKET_ENABLED
     }

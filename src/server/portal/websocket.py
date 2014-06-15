@@ -37,6 +37,7 @@ class WebSocketProtocol(Protocol, Session):
     """
     This is called when the connection is first established
     """
+
     def connectionMade(self):
         """
         This is called when the connection is first established.

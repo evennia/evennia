@@ -61,6 +61,14 @@ WEBSERVER_THREADPOOL_LIMITS = (1, 20)
 # Start the evennia ajax client on /webclient
 # (the webserver must also be running)
 WEBCLIENT_ENABLED = True
+# Activate Websocket support. If this is on, the default webclient will use this
+# before going for the ajax implementation
+WEBSOCKET_ENABLED = True
+# Ports to use for Websockets. If this is changed, you must also update
+# src/web/media/javascript/evennia_websocket_webclient.js to match.
+WEBSOCKET_PORTS = [8001]
+# Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
+WEBSOCKET_INTERFACES = ['0.0.0.0']
 # Activate SSH protocol (SecureShell)
 SSH_ENABLED = False
 # Ports to use for SSH
@@ -73,12 +81,6 @@ SSL_ENABLED = False
 SSL_PORTS = [4001]
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 SSL_INTERFACES = ['0.0.0.0']
-# Activate Websocket support
-WEBSOCKET_ENABLED = False
-# Ports to use for Websockets
-WEBSOCKET_PORTS = [8021]
-# Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
-WEBSOCKET_INTERFACES = ['0.0.0.0']
 # The path that contains this settings.py file (no trailing slash).
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Path to the src directory containing the bulk of the codebase's code.
