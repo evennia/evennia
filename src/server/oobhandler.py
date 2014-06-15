@@ -61,8 +61,16 @@ _OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
 if not _OOB_ERROR:
     # create default oob error message function
     def oob_error(oobhandler, session, errmsg, *args, **kwargs):
+        "Error wrapper"
         session.msg(oob=("send", {"ERROR": errmsg}))
     _OOB_ERROR = oob_error
+
+
+#
+# TrackerHandler is assigned to objects that should notify themselves to
+# the OOB system when some property changes. This is never assigned manually
+# but automatically through the OOBHandler.
+#
 
 class TrackerHandler(object):
     """
@@ -123,6 +131,8 @@ class TrackerHandler(object):
                 logger.log_trace()
 
 
+# Tracker loaded by the TrackerHandler
+
 class TrackerBase(object):
     """
     Base class for OOB Tracker objects.
@@ -138,84 +148,7 @@ class TrackerBase(object):
         "Called when tracker is removed"
         pass
 
-
-#class _RepeaterScript(Script):
-#    """
-#    Repeating and subscription-enabled script for triggering OOB
-#    functions. Maintained in a _RepeaterPool.
-#    """
-#    def at_script_creation(self):
-#        "Called when script is initialized"
-#        self.key = "oob_func"
-#        self.desc = "OOB functionality script"
-#        self.persistent = False  # oob scripts should always be non-persistent
-#        self.ndb.subscriptions = {}
-#
-#    def at_repeat(self):
-#        """
-#        Calls subscriptions every self.interval seconds
-#        """
-#        for (func_key, sessid, interval, args, kwargs) in self.ndb.subscriptions.values():
-#            session = SESSIONS.session_from_sessid(sessid)
-#            OOB_HANDLER.execute_cmd(session, func_key, *args, **kwargs)
-#
-#    def subscribe(self, store_key, sessid, func_key, interval, *args, **kwargs):
-#        """
-#        Sign up a subscriber to this oobfunction. Subscriber is
-#        a database object with a dbref.
-#        """
-#        self.ndb.subscriptions[store_key] = (func_key, sessid, interval, args, kwargs)
-#
-#    def unsubscribe(self, store_key):
-#        """
-#        Unsubscribe from oobfunction. Returns True if removal was
-#        successful, False otherwise
-#        """
-#        self.ndb.subscriptions.pop(store_key, None)
-#
-#
-#class _RepeaterPool(object):
-#    """
-#    This maintains a pool of _RepeaterScript scripts, ordered one per
-#    interval. It will automatically cull itself once a given interval's
-#    script has no more subscriptions.
-#
-#    This is used and accessed from oobhandler.repeat/unrepeat
-#    """
-#
-#    def __init__(self):
-#        self.scripts = {}
-#
-#    def add(self, store_key, sessid, func_key, interval, *args, **kwargs):
-#        """
-#        Add a new tracking
-#        """
-#        if interval not in self.scripts:
-#            # if no existing interval exists, create new script to fill the gap
-#            new_tracker = create_script(_RepeaterScript,
-#                           key="oob_repeater_%is" % interval, interval=interval)
-#            self.scripts[interval] = new_tracker
-#        self.scripts[interval].subscribe(store_key, sessid, func_key,
-#                                                      interval, *args, **kwargs)
-#
-#    def remove(self, store_key, interval):
-#        """
-#        Remove tracking
-#        """
-#        if interval in self.scripts:
-#            self.scripts[interval].unsubscribe(store_key)
-#            if len(self.scripts[interval].ndb.subscriptions) == 0:
-#                # no more subscriptions for this interval. Clean out the script.
-#                self.scripts[interval].stop()
-#
-#    def stop(self):
-#        """
-#        Stop all scripts in pool. This is done at server reload since
-#        restoring the pool will automatically re-populate the pool.
-#        """
-#        for script in self.scripts.values():
-#            script.stop()
-
+# Ticker of auto-updating objects
 
 class OOBTicker(Ticker):
     """
@@ -244,6 +177,7 @@ class OOBTickerPool(TickerPool):
 class OOBTickerHandler(TickerHandler):
     ticker_pool_class = OOBTickerPool
 
+
 # Main OOB Handler
 
 class OOBHandler(object):
@@ -258,8 +192,6 @@ class OOBHandler(object):
         """
         self.sessionhandler = SESSIONS
         self.oob_tracker_storage = {}
-        #self.oob_repeat_storage = {}
-        #self.oob_tracker_pool = _RepeaterPool()
         self.tickerhandler = OOBTickerHandler("oob_ticker_storage")
 
     def save(self):
@@ -272,11 +204,6 @@ class OOBHandler(object):
             ServerConfig.objects.conf(key="oob_tracker_storage",
                                     value=dbserialize(self.oob_tracker_storage))
         self.tickerhandler.save()
-        #if  self.oob_repeat_storage:
-        #    #print "saved repeat_storage:", self.oob_repeat_storage
-        #    ServerConfig.objects.conf(key="oob_repeat_storage",
-        #                             value=dbserialize(self.oob_repeat_storage))
-        #self.oob_tracker_pool.stop()
 
     def restore(self):
         """
@@ -290,27 +217,17 @@ class OOBHandler(object):
             #print "recovered from tracker_storage:", self.oob_tracker_storage
             for (obj, sessid, fieldname, trackerclass, args, kwargs) in self.oob_tracker_storage.values():
                 self.track(unpack_dbobj(obj), sessid, fieldname, trackerclass, *args, **kwargs)
-            # make sure to purce the storage
+            # make sure to purge the storage
             ServerConfig.objects.conf(key="oob_tracker_storage", delete=True)
-
         self.tickerhandler.restore()
 
-        #repeat_storage = ServerConfig.objects.conf(key="oob_repeat_storage")
-        #if repeat_storage:
-        #    self.oob_repeat_storage = dbunserialize(repeat_storage)
-        #    #print "recovered from repeat_storage:", self.oob_repeat_storage
-        #    for (obj, sessid, func_key, interval, args, kwargs) in self.oob_repeat_storage.values():
-        #        self.repeat(unpack_dbobj(obj), sessid, func_key, interval, *args, **kwargs)
-        #    # make sure to purge the storage
-        #    ServerConfig.objects.conf(key="oob_repeat_storage", delete=True)
-
-    def track(self, obj, sessid, fieldname, trackerclass, *args, **kwargs):
+    def _track(self, obj, sessid, propname, trackerclass, *args, **kwargs):
         """
         Create an OOB obj of class _oob_MAPPING[tracker_key] on obj. args,
         kwargs will be used to initialize the OOB hook  before adding
         it to obj.
-        If property_key is not given, but the OOB has a class property
-        property_name, this will be used as the property name when assigning
+        If propname is not given, but the OOB has a class property
+        named as propname, this will be used as the property name when assigning
         the OOB to obj, otherwise tracker_key is used as the property name.
         """
         try:
@@ -322,15 +239,15 @@ class OOBHandler(object):
             # assign trackerhandler to object
             _SA(obj, "_trackerhandler", TrackerHandler(obj))
         # initialize object
-        tracker = trackerclass(self, fieldname, sessid, *args, **kwargs)
-        _GA(obj, "_trackerhandler").add(fieldname, tracker)
+        tracker = trackerclass(self, propname, sessid, *args, **kwargs)
+        _GA(obj, "_trackerhandler").add(propname, tracker)
         # store calling arguments as a pickle for retrieval later
         obj_packed = pack_dbobj(obj)
-        storekey = (obj_packed, sessid, fieldname)
-        stored = (obj_packed, sessid, fieldname, trackerclass,  args, kwargs)
+        storekey = (obj_packed, sessid, propname)
+        stored = (obj_packed, sessid, propname, trackerclass,  args, kwargs)
         self.oob_tracker_storage[storekey] = stored
 
-    def untrack(self, obj, sessid, fieldname, trackerclass, *args, **kwargs):
+    def _untrack(self, obj, sessid, propname, trackerclass, *args, **kwargs):
         """
         Remove the OOB from obj. If oob implements an
         at_delete hook, this will be called with args, kwargs
@@ -342,11 +259,11 @@ class OOBHandler(object):
 
         try:
             # call at_delete hook
-            _GA(obj, "_trackerhandler").remove(fieldname, trackerclass, *args, **kwargs)
+            _GA(obj, "_trackerhandler").remove(propname, trackerclass, *args, **kwargs)
         except AttributeError:
             pass
         # remove the pickle from storage
-        store_key = (pack_dbobj(obj), sessid, fieldname)
+        store_key = (pack_dbobj(obj), sessid, propname)
         self.oob_tracker_storage.pop(store_key, None)
 
     def get_all_tracked(self, session):
@@ -363,14 +280,14 @@ class OOBHandler(object):
         """
         # all database field names starts with db_*
         field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
-        self.track(obj, sessid, field_name, trackerclass)
+        self._track(obj, sessid, field_name, trackerclass)
 
     def untrack_field(self, obj, sessid, field_name):
         """
         Shortcut for untracking a database field. Uses OOBTracker by defualt
         """
         field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
-        self.untrack(obj, sessid, field_name)
+        self._untrack(obj, sessid, field_name)
 
     def track_attribute(self, obj, sessid, attr_name, trackerclass):
         """
@@ -385,7 +302,7 @@ class OOBHandler(object):
             pass
         attrobj = _GA(obj, "attributes").get(attr_name, return_obj=True)
         if attrobj:
-            self.track(attrobj, sessid, "db_value", trackerclass, attr_name)
+            self._track(attrobj, sessid, "db_value", trackerclass, attr_name)
 
     def untrack_attribute(self, obj, sessid, attr_name, trackerclass):
         """
@@ -397,7 +314,7 @@ class OOBHandler(object):
             pass
         attrobj = _GA(obj, "attributes").get(attr_name, return_obj=True)
         if attrobj:
-            self.untrack(attrobj, sessid, attr_name, trackerclass)
+            self._untrack(attrobj, sessid, attr_name, trackerclass)
 
     def repeat(self, obj, sessid, func_key, interval=20, *args, **kwargs):
         """
@@ -407,29 +324,13 @@ class OOBHandler(object):
         """
         if not func_key in _OOB_FUNCS:
             raise KeyError("%s is not a valid OOB function name.")
-        #try:
-        #    obj = obj.dbobj
-        #except AttributeError:
-        #    pass
         self.tickerhandler.add(self, obj, interval, func_key=func_key, sessid=sessid, *args, **kwargs)
-        #store_obj = pack_dbobj(obj)
-        #store_key = (store_obj, sessid, func_key, interval)
-        ## prepare to store
-        #self.oob_repeat_storage[store_key] = (store_obj, sessid, func_key, interval, args, kwargs)
-        #self.oob_tracker_pool.add(store_key, sessid, func_key, interval, *args, **kwargs)
 
     def unrepeat(self, obj, sessid, func_key, interval=20):
         """
         Stop a repeating action
         """
         self.tickerhandler.remove(self, obj, interval)
-        #try:
-        #    obj = obj.dbobj
-        #except AttributeError:
-        #    pass
-        #store_key = (pack_dbobj(obj), sessid, func_key, interval)
-        #self.oob_tracker_pool.remove(store_key, interval)
-        #self.oob_repeat_storage.pop(store_key, None)
 
     def msg(self, sessid, funcname, *args, **kwargs):
         "Shortcut to relay oob data back to portal. Used by oob functions."

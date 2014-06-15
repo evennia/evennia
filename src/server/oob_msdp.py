@@ -134,7 +134,9 @@ class TrackerBase(object):
         pass
 
 
-class OOBFieldTracker(TrackerBase):
+# Tracker objects stored on objects when using the MSDP report command
+
+class ReportFieldTracker(TrackerBase):
     """
     Tracker that passively sends data to a stored sessid whenever
     a named database field changes. The TrackerHandler calls this with
@@ -162,7 +164,7 @@ class OOBFieldTracker(TrackerBase):
                                                     new_value, *args, **kwargs)
 
 
-class OOBAttributeTracker(TrackerBase):
+class ReportAttributeTracker(TrackerBase):
     """
     Tracker that passively sends data to a stored sessid whenever
     the Attribute updates. Since the field here is always "db_key",
@@ -288,10 +290,10 @@ def report(oobhandler, session, *args, **kwargs):
             if key:
                 if key.startswith("db_"):
                     oobhandler.track_field(obj, session.sessid,
-                                           key, OOBFieldTracker)
+                                           key, ReportFieldTracker)
                 else:  # assume attribute
                     oobhandler.track_attribute(obj, session.sessid,
-                                               key, OOBAttributeTracker)
+                                               key, ReportAttributeTracker)
 
 
 def unreport(oobhandler, session, vartype="prop", *args, **kwargs):

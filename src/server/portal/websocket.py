@@ -84,7 +84,7 @@ class WebSocketProtocol(Protocol, Session):
                 for (key, argstuple) in oobdata.items():
                     args = argstuple[0] if argstuple else []
                     kwargs = argstuple[1] if len(argstuple) > 1 else {}
-                    self.data_in(oob=(key, args, kwargs))
+                    self.data_in(text=None, oob=(key, args, kwargs))
             except Exception:
                 log_trace("Websocket malformed OOB request: %s" % string)
         else:
