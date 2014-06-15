@@ -333,13 +333,13 @@ class CmdCdestroy(MuxPlayerCommand):
         if not channel.access(caller, 'control'):
             self.msg("You are not allowed to do that.")
             return
-
-        message = "%s is being destroyed. Make sure to change your aliases." % channel
+        channel_key = channel.key
+        message = "%s is being destroyed. Make sure to change your aliases." % channel_key
         msgobj = create.create_message(caller, message, channel)
         channel.msg(msgobj)
         channel.delete()
         CHANNELHANDLER.update()
-        self.msg("Channel '%s' was destroyed." % channel)
+        self.msg("Channel '%s' was destroyed." % channel_key)
 
 
 class CmdCBoot(MuxPlayerCommand):

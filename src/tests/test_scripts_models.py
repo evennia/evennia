@@ -18,7 +18,10 @@ class TestScriptDB(TestCase):
         self.scr = create_script(DoNothing)
 
     def tearDown(self):
-        self.scr.delete()
+        try:
+            self.scr.delete()
+        except ObjectDoesNotExist:
+            pass
         del self.scr
 
     def test_delete(self):
@@ -28,15 +31,16 @@ class TestScriptDB(TestCase):
 
     def test_double_delete(self):
         "What should happen? Isn't it already deleted?"
-        self.scr.delete()
-        self.scr.delete()
+        with self.assertRaises(ObjectDoesNotExist):
+            self.scr.delete()
+            self.scr.delete()
 
-    @unittest.skip("not implemented")
-    def test___init__fails(self):  # Users should be told not to do this
-        with self.assertRaises(Exception):
-            ScriptDB()
+    #@unittest.skip("not implemented")
+    #def test___init__fails(self):  # Users should be told not to do this
+    #                                  - No they should not; ScriptDB() is required internally. /Griatch
+    #    with self.assertRaises(Exception):
+    #        ScriptDB()
 
-    @unittest.skip("not implemented")
     def test_deleted_script_fails_start(self):
         "Would it ever be necessary to start a deleted script?"
         self.scr.delete()
@@ -44,14 +48,11 @@ class TestScriptDB(TestCase):
             self.scr.start()
         # Check the script is not recreated as a side-effect
         self.assertFalse(self.scr in ScriptDB.objects.get_all_scripts())
-        self.scr = create_script(DoNothing)  # for tearDown()
 
-    @unittest.skip("not implemented")
     def test_deleted_script_is_invalid(self):
         "Can deleted scripts be said to be valid?"
         self.scr.delete()
         self.assertFalse(self.scr.is_valid())  # assertRaises? See issue #509
-        self.scr = create_script(DoNothing)  # for tearDown()
 
 
 if __name__ == '__main__':

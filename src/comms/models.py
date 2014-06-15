@@ -99,6 +99,7 @@ class Msg(SharedMemoryModel):
 
     # Database manager
     objects = managers.MsgManager()
+    _is_deleted = False
 
     def __init__(self, *args, **kwargs):
         SharedMemoryModel.__init__(self, *args, **kwargs)

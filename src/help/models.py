@@ -64,6 +64,7 @@ class HelpEntry(SharedMemoryModel):
 
     # Database manager
     objects = HelpEntryManager()
+    _is_deleted = False
 
     def __init__(self, *args, **kwargs):
         SharedMemoryModel.__init__(self, *args, **kwargs)

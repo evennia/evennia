@@ -1206,7 +1206,7 @@ class TypedObject(SharedMemoryModel):
             _GA(self, "attributes").clear()
         if not isinstance(_GA(self, "aliases"), LazyLoadHandler):
             _GA(self, "aliases").clear()
-        if not isinstance(_GA(self, "nicks"), LazyLoadHandler):
+        if hasattr(self, "nicks") and not isinstance(_GA(self, "nicks"), LazyLoadHandler):
             _GA(self, "nicks").clear()
         _SA(self, "_cached_typeclass", None)
         _GA(self, "flush_from_cache")()
