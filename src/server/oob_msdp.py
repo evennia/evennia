@@ -311,3 +311,6 @@ def unreport(oobhandler, session, vartype="prop", *args, **kwargs):
                 else:  # assume attribute
                     oobhandler.untrack_attribute(obj, session.sessid, key)
 
+def echo(oobhandler, session, *args, **kwargs):
+    "Test function, returning the args, kwargs"
+    session.msg(oob=("send", args, kwargs))
