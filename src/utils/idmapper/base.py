@@ -86,9 +86,13 @@ class SharedMemoryModelBase(ModelBase):
             def _get(cls, fname):
                 "Wrapper for getting database field"
                 #print "_get:", fieldname, wrappername,_GA(cls,fieldname)
+                if _GA(cls, "_is_deleted"):
+                    raise ObjectDoesNotExist("Cannot access %s: Hosting object was already deleted." % fname)
                 return _GA(cls, fieldname)
             def _get_foreign(cls, fname):
                 "Wrapper for returing foreignkey fields"
+                if _GA(cls, "_is_deleted"):
+                    raise ObjectDoesNotExist("Cannot access %s: Hosting object was already deleted." % fname)
                 value = _GA(cls, fieldname)
                 #print "_get_foreign:value:", value
                 try:
@@ -100,6 +104,8 @@ class SharedMemoryModelBase(ModelBase):
                 raise FieldError("Field %s cannot be edited." % fname)
             def _set(cls, fname, value):
                 "Wrapper for setting database field"
+                if _GA(cls, "_is_deleted"):
+                    raise ObjectDoesNotExist("Cannot set %s to %s: Hosting object was already deleted!" % (fname, value))
                 _SA(cls, fname, value)
                 # only use explicit update_fields in save if we actually have a
                 # primary key assigned already (won't be set when first creating object)
@@ -107,6 +113,8 @@ class SharedMemoryModelBase(ModelBase):
                 _GA(cls, "save")(update_fields=update_fields)
             def _set_foreign(cls, fname, value):
                 "Setter only used on foreign key relations, allows setting with #dbref"
+                if _GA(cls, "_is_deleted"):
+                    raise ObjectDoesNotExist("Cannot set %s to %s: Hosting object was already deleted!" % (fname, value))
                 try:
                     value = _GA(value, "dbobj")
                 except AttributeError:
@@ -348,7 +356,7 @@ def flush_cached_instance(sender, instance, **kwargs):
     # XXX: Is this the best way to make sure we can flush?
     if not hasattr(instance, 'flush_cached_instance'):
         return
-    sender.flush_cached_instance(instance)
+    sender.flush_cached_instance(instance, force=True)
 pre_delete.connect(flush_cached_instance)
 
 

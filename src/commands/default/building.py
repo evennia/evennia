@@ -542,7 +542,7 @@ class CmdDestroy(MuxCommand):
             # do the deletion
             okay = obj.delete()
             if not okay:
-                string += "\nERROR: %s not deleted, probably because at_obj_delete() returned False." % objname
+                string += "\nERROR: %s not deleted, probably because delete() returned False." % objname
             else:
                 string += "\n%s was destroyed." % objname
                 if had_exits:

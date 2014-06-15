@@ -32,6 +32,7 @@ import traceback
 import weakref
 
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
@@ -1183,15 +1184,36 @@ class TypedObject(SharedMemoryModel):
                        if hperm in perms and hpos > ppos)
         return False
 
+    #
+    # Deletion methods
+    #
+
+    def _deleted(self, *args, **kwargs):
+        "Scrambling method for already deleted objects"
+        raise ObjectDoesNotExist("This object was already deleted!")
+
+    _is_deleted = False # this is checked by db_* wrappers
+
     def delete(self):
         "Cleaning up handlers on the typeclass level"
         global TICKER_HANDLER
         if not TICKER_HANDLER:
             from src.scripts.tickerhandler import TICKER_HANDLER
-        TICKER_HANDLER.remove(self) # removes all ticker subscriptions
-        _GA(self, "permissions").clear()
+        TICKER_HANDLER.remove(self) # removes objects' all ticker subscriptions
+        if not isinstance(_GA(self, "permissions"), LazyLoadHandler):
+            _GA(self, "permissions").clear()
+        if not isinstance(_GA(self, "attributes"), LazyLoadHandler):
+            _GA(self, "attributes").clear()
+        if not isinstance(_GA(self, "aliases"), LazyLoadHandler):
+            _GA(self, "aliases").clear()
+        if not isinstance(_GA(self, "nicks"), LazyLoadHandler):
+            _GA(self, "nicks").clear()
         _SA(self, "_cached_typeclass", None)
         _GA(self, "flush_from_cache")()
+
+        # scrambling properties
+        self.delete = self._deleted
+        self._is_deleted = True
         super(TypedObject, self).delete()
 
     #
