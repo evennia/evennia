@@ -50,7 +50,7 @@ function onMessage(evt) {
     var inmsg = evt.data
     if (inmsg.length > 3 && inmsg.substr(0, 3) == "OOB") {
         // dynamically call oob methods, if available
-        try {var oobtuples = JSON.parse(inmsg.slice(3));} // everything after OOB }
+        try {var oobtuples = JSON.parse(inmsg.slice(4));} // everything after OOB }
         catch(err) {
             // not JSON packed - a normal text
             msg_display('out', inmsg);
@@ -76,7 +76,12 @@ function doSend(){
     history_add(outmsg);
     HISTORY_POS = 0;
     $('#inputform')[0].reset();                     // clear input field
-    websocket.send(outmsg);
+
+    if (outmsg.length > 4 && outmsg.substr(0, 5) == "##OOB") {
+        // test OOB messaging
+        doOOB(JSON.parse(outmsg.slice(5))); }
+    else {
+        websocket.send(outmsg); }
 }
 
 function doOOB(ooblist){
