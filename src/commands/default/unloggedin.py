@@ -9,7 +9,7 @@ from src.objects.models import ObjectDB
 from src.server.models import ServerConfig
 from src.comms.models import ChannelDB
 
-from src.utils import create, logger, utils, ansi
+from src.utils import ansi, create, logger, search, utils
 from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import CMD_LOGINSTART
 
@@ -147,9 +147,8 @@ class CmdUnconnectedCreate(MuxCommand):
             return
         # strip excessive spaces in playername
         playername = re.sub(r"\s+", " ", playername).strip()
-        if PlayerDB.objects.filter(username__iexact=playername):
-            # player already exists (we also ignore capitalization here)
-            session.msg("Sorry, there is already a player with the name '%s'." % playername)
+        if search.object_search(playername) or search.player_search(playername):
+            session.msg("'{w%s{n' is already in use. Please choose a different name." % playername)
             return
         if not re.findall('^[\w. @+-]+$', password) or not (3 < len(password)):
             string = "\n\r Password should be longer than 3 characers. Letters, spaces, digits and @\.\+\-\_ only."

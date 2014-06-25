@@ -178,6 +178,12 @@ class CmdCharCreate(MuxPlayerCommand):
                 len(player.db._playable_characters) >= MAX_NR_CHARACTERS):
             self.msg("You may only create a maximum of %i characters." % MAX_NR_CHARACTERS)
             return
+        
+        # check for key collisions
+        if search.object_search(key) or search.player_search(key):
+            self.msg("'{w%s{n' is already in use. Please choose a different name." % key)
+            return
+
         # create the character
         from src.objects.models import ObjectDB
 
