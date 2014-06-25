@@ -104,7 +104,14 @@ class SessionHandler(object):
         """
          Helper method for each session to use to parse oob structures
          (The 'oob' kwarg of the msg() method)
+        ((cmdname, (args), {}), ...)
+
+
+         Allowed oob structures are:
          allowed oob structures are
+
+
+
                  cmdname
                 ((cmdname,), (cmdname,))
                 (cmdname,(arg, ))
@@ -134,10 +141,10 @@ class SessionHandler(object):
                     return (oobstruct[0].lower(), (), dict(oobstruct[1]))
                 elif isinstance(oobstruct[1], (tuple, list)):
                     # cmdname, (args,)
-                    return (oobstruct[0].lower(), tuple(oobstruct[1]), {})
+                    return (oobstruct[0].lower(), list(oobstruct[1]), {})
             else:
                 # cmdname, (args,), {kwargs}
-                return (oobstruct[0].lower(), tuple(oobstruct[1]), dict(oobstruct[2]))
+                return (oobstruct[0].lower(), list(oobstruct[1]), dict(oobstruct[2]))
 
         if hasattr(oobstruct, "__iter__"):
             # differentiate between (cmdname, cmdname),
@@ -145,12 +152,12 @@ class SessionHandler(object):
             # (cmdname,args,kwargs), ...)
 
             if oobstruct and isinstance(oobstruct[0], basestring):
-                return (tuple(_parse(oobstruct)),)
+                return (list(_parse(oobstruct)),)
             else:
                 out = []
                 for oobpart in oobstruct:
                     out.append(_parse(oobpart))
-                return (tuple(out),)
+                return (list(out),)
         return (_parse(oobstruct),)
 
 

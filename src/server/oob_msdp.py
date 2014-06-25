@@ -198,7 +198,7 @@ class ReportAttributeTracker(TrackerBase):
 # eventual args/kwargs. All functions defined globally in this
 # module will be made available to call by the oobhandler. Use
 # _funcname if you want to exclude one. To allow for python-names
-# like "list" here, these properties are read as being case-insensitive.
+# like "list" here, these properties are case-insensitive.
 #
 # All OOB commands must be on the form
 #      cmdname(oobhandler, session, *args, **kwargs)
@@ -212,7 +212,7 @@ def oob_error(oobhandler, session, errmsg, *args, **kwargs):
     """
     session.msg(oob=("send", {"ERROR": errmsg}))
 
-def list(oobhandler, session, mode, *args, **kwargs):
+def LIST(oobhandler, session, mode, *args, **kwargs):
     """
     List available properties. Mode is the type of information
     desired:
@@ -260,7 +260,7 @@ def list(oobhandler, session, mode, *args, **kwargs):
         session.msg(oob=("list", ("unsupported mode",)))
 
 
-def send(oobhandler, session, *args, **kwargs):
+def SEND(oobhandler, session, *args, **kwargs):
     """
     This function directly returns the value of the given variable to the
     session. vartype can be one of
@@ -278,7 +278,7 @@ def send(oobhandler, session, *args, **kwargs):
     session.msg(oob=("send", ret))
 
 
-def report(oobhandler, session, *args, **kwargs):
+def REPORT(oobhandler, session, *args, **kwargs):
     """
     This creates a tracker instance to track the data given in *args.
     vartype is one of "prop" (database fields) or "attr" (attributes)
@@ -296,7 +296,7 @@ def report(oobhandler, session, *args, **kwargs):
                                                key, ReportAttributeTracker)
 
 
-def unreport(oobhandler, session, vartype="prop", *args, **kwargs):
+def UNREPORT(oobhandler, session, vartype="prop", *args, **kwargs):
     """
     This removes tracking for the given data given in *args.
     vartype is one of of "prop" or "attr".
@@ -311,6 +311,7 @@ def unreport(oobhandler, session, vartype="prop", *args, **kwargs):
                 else:  # assume attribute
                     oobhandler.untrack_attribute(obj, session.sessid, key)
 
-def echo(oobhandler, session, *args, **kwargs):
+def ECHO(oobhandler, session, *args, **kwargs):
     "Test function, returning the args, kwargs"
-    session.msg(oob=("send", args, kwargs))
+    args = ["Return echo:"] + list(args)
+    session.msg(oob=("echo", args, kwargs))

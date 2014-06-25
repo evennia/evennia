@@ -73,7 +73,7 @@ class WebSocketProtocol(Protocol, Session):
         prefix.
             OOB - This is an Out-of-band instruction. If so,
                   the remaining string should be a json-packed
-                  string on the form {oobfuncname: [[args], {kwargs}], ...}
+                  string on the form {oobfuncname: [args, ], ...}
             any other prefix (or lack of prefix) is considered
                   plain text data, to be treated like a game
                   input command.
@@ -82,10 +82,8 @@ class WebSocketProtocol(Protocol, Session):
             string = string[3:]
             try:
                 oobdata = json.loads(string)
-                for (key, argstuple) in oobdata.items():
-                    args = argstuple[0] if argstuple else []
-                    kwargs = argstuple[1] if len(argstuple) > 1 else {}
-                    self.data_in(text=None, oob=(key, args, kwargs))
+                for (key, args) in oobdata.items():
+                    self.data_in(text=None, oob=(key, args))
             except Exception:
                 log_trace("Websocket malformed OOB request: %s" % string)
         else:

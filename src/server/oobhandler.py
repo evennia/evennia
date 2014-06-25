@@ -347,7 +347,7 @@ class OOBHandler(object):
         using *args and **kwargs
         """
         try:
-            #print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
+            print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
             oobfunc = _OOB_FUNCS[func_key]  # raise traceback if not found
             oobfunc(self, session, *args, **kwargs)
         except KeyError,e:

@@ -25,6 +25,7 @@ messages sent to the client is one of three modes:
 var wsurl = "ws://localhost:8001";
 
 function webclient_init(){
+    // initializing the client once the html page has loaded
     websocket = new WebSocket(wsurl);
     websocket.onopen = function(evt) { onOpen(evt) };
     websocket.onclose = function(evt) { onClose(evt) };
@@ -33,6 +34,7 @@ function webclient_init(){
 }
 
 function onOpen(evt) {
+    // client is just connecting
     $("#connecting").remove(); // remove the "connecting ..." message
     msg_display("sys", "Using websockets - connected to " + wsurl + ".")
 
@@ -42,24 +44,25 @@ function onOpen(evt) {
 }
 
 function onClose(evt) {
+    // client is closing
     CLIENT_HASH = 0;
     alert("Mud client connection was closed cleanly.");
 }
 
 function onMessage(evt) {
+    // outgoing message from server
     var inmsg = evt.data
     if (inmsg.length > 3 && inmsg.substr(0, 3) == "OOB") {
         // dynamically call oob methods, if available
-        try {var oobtuples = JSON.parse(inmsg.slice(4));} // everything after OOB }
+        try {var oobarray = JSON.parse(inmsg.slice(3));} // everything after OOB }
         catch(err) {
             // not JSON packed - a normal text
-            msg_display('out', inmsg);
+            msg_display('out', err + " " + inmsg);
             return;
         }
-
-        for (var oobtuple in oobtuples) {
-            try { window[oobtuple[0]](oobtuple[1]) }
-            catch(err) { msg_display("err", "Could not execute OOB function " + oobtuple[0] + "!") }
+        for (var ind in oobarray) {
+            try { window[oobarray[ind][0]](oobarray[ind][1]) }
+            catch(err) { msg_display("err", "Could not execute OOB function " + oobtuple[0] + "(" + oobtuple[1] + ")!") }
         }
     }
     else {
@@ -68,10 +71,12 @@ function onMessage(evt) {
 }
 
 function onError(evt) {
+    // client error message
     msg_display('err', "Error: Server returned an error. Try reloading the page.");
 }
 
 function doSend(){
+    // sending data from client to server
     outmsg = $("#inputfield").val();
     history_add(outmsg);
     HISTORY_POS = 0;
@@ -84,11 +89,22 @@ function doSend(){
         websocket.send(outmsg); }
 }
 
-function doOOB(ooblist){
-    // Takes an array on form [funcname, [args], funcname, [args], ... ]
-    var oobmsg = JSON.stringify(ooblist);
+function doOOB(oobdict){
+    // Handle OOB communication from client side
+    // Takes a dict on form {funcname:[args], funcname: [args], ... ]
+    msg_display("out", "into doOOB: " + oobdict)
+    msg_display("out", "stringify: " + JSON.stringify(oobdict))
+    var oobmsg = JSON.stringify(oobdict);
     websocket.send("OOB" + oobmsg);
 }
+
+
+//
+// OOB functions
+//
+
+function echo(message) {
+    msg_display("out", "ECHO return: " + message) }
 
 //
 // Display messages
