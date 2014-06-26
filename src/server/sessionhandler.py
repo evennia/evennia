@@ -103,15 +103,9 @@ class SessionHandler(object):
     def oobstruct_parser(self, oobstruct):
         """
          Helper method for each session to use to parse oob structures
-         (The 'oob' kwarg of the msg() method)
-        ((cmdname, (args), {}), ...)
+         (The 'oob' kwarg of the msg() method).
 
-
-         Allowed oob structures are:
-         allowed oob structures are
-
-
-
+         Allowed input oob structures are:
                  cmdname
                 ((cmdname,), (cmdname,))
                 (cmdname,(arg, ))

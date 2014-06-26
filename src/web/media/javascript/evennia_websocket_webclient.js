@@ -29,8 +29,6 @@ function echo(message) {
     doShow("out", "ECHO return: " + message) }
 
 
-
-
 // Webclient code
 
 function webclient_init(){
@@ -95,6 +93,7 @@ function doSend(){
 
     if (OOB_debug && outmsg.length > 4 && outmsg.substr(0, 5) == "##OOB") {
         // test OOB messaging
+        doShow("out", "OOB input: " + outmsg.slice(5))
         doOOB(JSON.parse(outmsg.slice(5))); }
     else {
         // normal output

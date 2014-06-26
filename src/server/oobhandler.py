@@ -45,7 +45,7 @@ from src.server.sessionhandler import SESSIONS
 from src.scripts.tickerhandler import Ticker, TickerPool, TickerHandler
 from src.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 from src.utils import logger
-from src.utils.utils import all_from_module, make_iter
+from src.utils.utils import all_from_module, make_iter, to_str
 
 _SA = object.__setattr__
 _GA = object.__getattribute__
@@ -55,9 +55,9 @@ _DA = object.__delattr__
 _OOB_FUNCS = {}
 for mod in make_iter(settings.OOB_PLUGIN_MODULES):
     _OOB_FUNCS.update(dict((key.lower(), func) for key, func in all_from_module(mod).items() if isfunction(func)))
-# get custom error method or use the default
-_OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
 
+# get custom error method or use the default
+_OOB_ERROR = _OOB_FUNCS.get("_OOB_ERROR", None)
 if not _OOB_ERROR:
     # create default oob error message function
     def oob_error(oobhandler, session, errmsg, *args, **kwargs):
@@ -131,11 +131,12 @@ class TrackerHandler(object):
                 logger.log_trace()
 
 
-# Tracker loaded by the TrackerHandler
+# On-object Trackers to load with TrackerHandler
 
 class TrackerBase(object):
     """
-    Base class for OOB Tracker objects.
+    Base class for OOB Tracker objects. Inherit from this
+    to define custom trackers.
     """
     def __init__(self, *args, **kwargs):
         pass
@@ -147,6 +148,61 @@ class TrackerBase(object):
     def at_remove(self, *args, **kwargs):
         "Called when tracker is removed"
         pass
+
+
+class ReportFieldTracker(TrackerBase):
+    """
+    Tracker that passively sends data to a stored sessid whenever
+    a named database field changes. The TrackerHandler calls this with
+    the correct arguments.
+    """
+    def __init__(self, oobhandler, fieldname, sessid, *args, **kwargs):
+        """
+        name - name of entity to track, such as "db_key"
+        sessid - sessid of session to report to
+        """
+        self.oobhandler = oobhandler
+        self.fieldname = fieldname
+        self.sessid = sessid
+
+    def update(self, new_value, *args, **kwargs):
+        "Called by cache when updating the tracked entitiy"
+        # use oobhandler to relay data
+        try:
+            # we must never relay objects across the amp, only text data.
+            new_value = new_value.key
+        except AttributeError:
+            new_value = to_str(new_value, force_string=True)
+        # this is a wrapper call for sending oob data back to session
+        self.oobhandler.msg(self.sessid, "report", self.fieldname,
+                                                    new_value, *args, **kwargs)
+
+
+class ReportAttributeTracker(TrackerBase):
+    """
+    Tracker that passively sends data to a stored sessid whenever
+    the Attribute updates. Since the field here is always "db_key",
+    we instead store the name of the attribute to return.
+    """
+    def __init__(self, oobhandler, fieldname, sessid, attrname, *args, **kwargs):
+        """
+        attrname - name of attribute to track
+        sessid - sessid of session to report to
+        """
+        self.oobhandler = oobhandler
+        self.attrname = attrname
+        self.sessid = sessid
+
+    def update(self, new_value, *args, **kwargs):
+        "Called by cache when attribute's db_value field updates"
+        try:
+            new_value = new_value.dbobj
+        except AttributeError:
+            new_value = to_str(new_value, force_string=True)
+        # this is a wrapper call for sending oob data back to session
+        self.oobhandler.msg(self.sessid, "report", self.attrname, new_value, *args, **kwargs)
+
+
 
 # Ticker of auto-updating objects
 
@@ -273,7 +329,7 @@ class OOBHandler(object):
         sessid = session.sessid
         return [key[2].lstrip("db_") for key in self.oob_tracker_storage.keys() if key[1] == sessid]
 
-    def track_field(self, obj, sessid, field_name, trackerclass):
+    def track_field(self, obj, sessid, field_name, trackerclass=ReportFieldTracker):
         """
         Shortcut wrapper method for specifically tracking a database field.
         Takes the tracker class as argument.
@@ -289,7 +345,7 @@ class OOBHandler(object):
         field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
         self._untrack(obj, sessid, field_name)
 
-    def track_attribute(self, obj, sessid, attr_name, trackerclass):
+    def track_attribute(self, obj, sessid, attr_name, trackerclass=ReportAttributeTracker):
         """
         Shortcut wrapper method for specifically tracking the changes of an
         Attribute on an object. Will create a tracker on the Attribute
@@ -332,12 +388,6 @@ class OOBHandler(object):
         """
         self.tickerhandler.remove(self, obj, interval)
 
-    def msg(self, sessid, funcname, *args, **kwargs):
-        "Shortcut to relay oob data back to portal. Used by oob functions."
-        session = self.sessionhandler.session_from_sessid(sessid)
-        #print "oobhandler msg:", sessid, session, funcname, args, kwargs
-        if session:
-            session.msg(oob=(funcname, args, kwargs))
 
     # access method - called from session.msg()
 
@@ -347,7 +397,7 @@ class OOBHandler(object):
         using *args and **kwargs
         """
         try:
-            print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
+            #print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
             oobfunc = _OOB_FUNCS[func_key]  # raise traceback if not found
             oobfunc(self, session, *args, **kwargs)
         except KeyError,e:
@@ -364,5 +414,14 @@ class OOBHandler(object):
             else:
                 logger.log_trace(errmsg)
             raise Exception(errmsg)
+
+    def msg(self, sessid, funcname, *args, **kwargs):
+        "Shortcut to force-send an OOB message through the oobhandler to a session"
+        session = self.sessionhandler.session_from_sessid(sessid)
+        #print "oobhandler msg:", sessid, session, funcname, args, kwargs
+        if session:
+            session.msg(oob=(funcname, args, kwargs))
+
+
 # access object
 OOB_HANDLER = OOBHandler()

@@ -230,7 +230,7 @@ LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
 # Module holding OOB (Out of Band) hook objects. This allows for customization
 # and expansion of which hooks OOB protocols are allowed to call on the server
 # protocols for attaching tracker hooks for when various object field change
-OOB_PLUGIN_MODULES = ["src.server.oob_msdp"]
+OOB_PLUGIN_MODULES = ["src.server.oob_cmds"]
 
 ######################################################################
 # Default command sets
