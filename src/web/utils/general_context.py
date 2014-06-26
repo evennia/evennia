@@ -6,7 +6,6 @@
 # tuple.
 #
 
-from django.db import models
 from django.conf import settings
 from src.utils.utils import get_evennia_version
 
@@ -30,6 +29,9 @@ WEBSITE = ['Flatpages', 'News', 'Sites']
 
 
 # The main context processor function
+WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
+WEBSOCKET_CLIENT_ENABLED = settings.WEBSOCKET_CLIENT_ENABLED
+WSURL = "%s:%s" % (settings.WEBSOCKET_CLIENT_URL, settings.WEBSOCKET_CLIENT_PORT)
 
 def general_context(request):
     """
@@ -44,6 +46,7 @@ def general_context(request):
         'evennia_setupapps': GAME_SETUP,
         'evennia_connectapps': CONNECTIONS,
         'evennia_websiteapps':WEBSITE,
-        "webclient_enabled" : settings.WEBCLIENT_ENABLED,
-        "websocket_enabled" : settings.WEBSOCKET_ENABLED
+        "webclient_enabled" : WEBCLIENT_ENABLED,
+        "websocket_enabled" : WEBSOCKET_CLIENT_ENABLED,
+        "websocket_url" : WSURL
     }

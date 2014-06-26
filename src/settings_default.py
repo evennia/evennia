@@ -58,18 +58,22 @@ UPSTREAM_IPS = ['127.0.0.1']
 # with server load. Set the minimum and maximum number of threads it
 # may use as (min, max) (must be > 0)
 WEBSERVER_THREADPOOL_LIMITS = (1, 20)
-# Start the evennia ajax client on /webclient
-# (the webserver must also be running)
+# Start the evennia webclient. This requires the webserver to be running and
+# offers the fallback ajax-based webclient backbone for browsers not supporting
+# the websocket one.
 WEBCLIENT_ENABLED = True
-# Activate Websocket support. If this is on, the default webclient will use this
-# before going for the ajax implementation
-WEBSOCKET_ENABLED = True
-# Ports to use for Websockets. If this is changed, you must also update
-# src/web/media/javascript/evennia_websocket_webclient.js to match.
-WEBSOCKET_PORTS = [8001]
+# Activate Websocket support for modern browsers. If this is on, the
+# default webclient will use this and only use the ajax version of the browser
+# is too old to support websockets. Requires WEBCLIENT_ENABLED.
+WEBSOCKET_CLIENT_ENABLED = True
+# Server-side websocket port to open for the webclient.
+WEBSOCKET_CLIENT_PORT = 8001
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
-WEBSOCKET_INTERFACES = ['0.0.0.0']
-# Activate SSH protocol (SecureShell)
+WEBSOCKET_CLIENT_INTERFACE = '0.0.0.0'
+# Actual URL for webclient component to reach the websocket. The first
+# port number in the WEBSOCKET_PORTS list will be automatically appended.
+WEBSOCKET_CLIENT_URL = "ws://localhost"
+# Activate SSH protocol communication (SecureShell)
 SSH_ENABLED = False
 # Ports to use for SSH
 SSH_PORTS = [8022]

@@ -1,8 +1,9 @@
 """
-Websockets Protocol
+Websocket-webclient
 
-This implements WebSockets (http://en.wikipedia.org/wiki/WebSocket)
-by use of the txws implementation (https://github.com/MostAwesomeDude/txWS).
+This implements a webclient with WebSockets (http://en.wikipedia.org/wiki/WebSocket)
+by use of the txws implementation (https://github.com/MostAwesomeDude/txWS). It is
+used together with src/web/media/javascript/evennia_websocket_webclient.js.
 
 Thanks to Ricard Pillosu whose Evennia plugin inspired this module.
 
@@ -10,13 +11,13 @@ Communication over the websocket interface is done with normal text
 communication. A special case is OOB-style communication; to do this
 the client must send data on the following form:
 
-    OOB{oobfunc:[[args], {kwargs}], ...}
+    OOB{"func1":[args], "func2":[args], ...}
 
-where the tuple/list is sent json-encoded. The initial OOB-prefix
+where the dict is JSON encoded. The initial OOB-prefix
 is used to identify this type of communication, all other data
 is considered plain text (command input).
 
-Example of call from javascript client:
+Example of call from a javascript client:
 
     websocket = new WeSocket("ws://localhost:8021")
     var msg1 = "WebSocket Test"
@@ -33,9 +34,10 @@ from src.utils.logger import log_trace
 from src.utils.utils import to_str
 from src.utils.text2html import parse_html
 
-class WebSocketProtocol(Protocol, Session):
+
+class WebSocketClient(Protocol, Session):
     """
-    This is called when the connection is first established
+    Implements the server-side of the Websocket connection.
     """
 
     def connectionMade(self):
