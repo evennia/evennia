@@ -712,7 +712,7 @@ class CmdPage(MuxPlayerCommand):
             if isinstance(receiver, basestring):
                 pobj = caller.search(receiver)
             elif hasattr(receiver, 'character'):
-                pobj = receiver.character
+                pobj = receiver
             else:
                 self.msg("Who do you want to page?")
                 return
@@ -741,13 +741,13 @@ class CmdPage(MuxPlayerCommand):
                 rstrings.append("You are not allowed to page %s." % pobj)
                 continue
             pobj.msg("%s %s" % (header, message))
-            if hasattr(pobj, 'has_player') and not pobj.has_player:
+            if hasattr(pobj, 'sessions') and not pobj.sessions:
                 received.append("{C%s{n" % pobj.name)
                 rstrings.append("%s is offline. They will see your message if they list their pages later." % received[-1])
             else:
                 received.append("{c%s{n" % pobj.name)
         if rstrings:
-            self.msg(rstrings="\n".join(rstrings))
+            self.msg("\n".join(rstrings))
         self.msg("You paged %s with: '%s'." % (", ".join(received), message))
 
 
