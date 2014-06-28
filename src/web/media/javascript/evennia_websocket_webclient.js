@@ -18,10 +18,12 @@ messages sent to the client is one of two modes:
 // prepending with ##OOB{}, for example ##OOB{"echo":[1,2,3,4]}
 var OOB_debug = true
 
+//
 // Custom OOB functions
 // functions defined here can be called by name by the server. For
-// example the OOB{"echo":(args),{kwargs}} will trigger a function named
-// echo(args, kwargs).
+// example input OOB{"echo":(args),{kwargs}} will trigger a function named
+// echo(args, kwargs). The commands the server understands is set by
+// settings.OOB_PLUGIN_MODULES
 
 
 function echo(args, kwargs) {
@@ -54,7 +56,9 @@ function err (args, kwargs) {
     doShow("err", args) }
 
 
+//
 // Webclient code
+//
 
 function webclient_init(){
     // called when client is just initializing
@@ -122,6 +126,19 @@ function doSend(){
     $('#inputform')[0].reset();                     // clear input field
 
     if (OOB_debug && outmsg.length > 4 && outmsg.substr(0, 5) == "##OOB") {
+        if (outmsg == "##OOBUNITTEST") {
+           // unittest mode
+           doShow("out", "OOB testing mode ...");
+           doOOB(JSON.parse('{"ECHO":"Echo test"}'));
+           doOOB(JSON.parse('{"LIST":"COMMANDS"}'));
+           doOOB(JSON.parse('{"SEND":"CHARACTER_NAME"}'));
+           doOOB(JSON.parse('{"REPORT":"TEST"}'));
+           doOOB(JSON.parse('{"UNREPORT":"TEST"}'));
+           doOOB(JSON.parse('{"REPEAT": 1}'));
+           doOOB(JSON.parse('{"UNREPEAT": 1}'));
+           doShow("out", "... OOB testing mode done.");
+           return
+        }
         // test OOB messaging
         try {
             doShow("out", "OOB input: " + outmsg.slice(5));
