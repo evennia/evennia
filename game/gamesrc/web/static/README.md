@@ -1,5 +1,7 @@
-This folder is used by Django's staticfiles application for gathering all static files (CSS, JS, etc) into one place
-from the various sources that they might be gathered from.
+If you want to override one of the static files (such as a CSS or JS file) used by Evennia or a Django app installed in your Evennia project, copy it into this folder, and it will be placed in the static folder when you run:
 
-Do not edit files in this directory. Instead, read up on Django's static file handling to learn how to create Django
-apps with their own static files.
+    python manage.py collectstatic
+
+or reload the server via the command line.
+
+Do note you may have to reproduce any preceeding directory structures for the file to end up in the right place.
