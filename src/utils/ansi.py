@@ -223,8 +223,11 @@ class ANSIParser(object):
         (r'%cn', ANSI_NORMAL),
         (r'%ch', ANSI_HILITE),
         (r'%r', ANSI_RETURN),
+        (r'%R', ANSI_RETURN),
         (r'%t', ANSI_TAB),
+        (r'%T', ANSI_TAB),
         (r'%b', ANSI_SPACE),
+        (r'%B', ANSI_SPACE),
         (r'%cf', ANSI_BLINK), # annoying and not supported by all clients
         (r'%ci', ANSI_INVERSE),
 
