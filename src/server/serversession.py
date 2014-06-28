@@ -206,6 +206,7 @@ class ServerSession(Session):
             if not _OOB_HANDLER:
                 from src.server.oobhandler import OOB_HANDLER as _OOB_HANDLER
             oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob", None))
+            #print "session.data_in: oobstruct:",oobstruct
             for (funcname, args, kwargs) in oobstruct:
                 if funcname:
                     _OOB_HANDLER.execute_cmd(self, funcname, *args, **kwargs)

@@ -36,7 +36,6 @@ messages.
 
 from inspect import isfunction
 from twisted.internet.defer import inlineCallbacks
-from twisted.internet.task import LoopingCall
 from django.conf import settings
 from src.server.models import ServerConfig
 from src.server.sessionhandler import SESSIONS
@@ -57,12 +56,12 @@ for mod in make_iter(settings.OOB_PLUGIN_MODULES):
     _OOB_FUNCS.update(dict((key.lower(), func) for key, func in all_from_module(mod).items() if isfunction(func)))
 
 # get custom error method or use the default
-_OOB_ERROR = _OOB_FUNCS.get("_OOB_ERROR", None)
+_OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
 if not _OOB_ERROR:
     # create default oob error message function
     def oob_error(oobhandler, session, errmsg, *args, **kwargs):
         "Error wrapper"
-        session.msg(oob=("send", {"ERROR": errmsg}))
+        session.msg(oob=("err", ("ERROR ", errmsg)))
     _OOB_ERROR = oob_error
 
 
@@ -105,16 +104,16 @@ class TrackerHandler(object):
 
     def remove(self, fieldname, trackerclass, *args, **kwargs):
         """
-        Remove tracker from handler. Raises KeyError if tracker
-        is not found.
+        Remove identified tracker from TrackerHandler.
+        Raises KeyError if tracker is not found.
         """
         trackerkey = trackerclass.__name__
         tracker = self.tracktargets[fieldname][trackerkey]
         try:
-            tracker.at_delete(*args, **kwargs)
+            tracker.at_remove(*args, **kwargs)
         except Exception:
             logger.log_trace()
-        del tracker
+        del self.tracktargets[fieldname][trackerkey]
         self.ntrackers -= 1
         if self.ntrackers <= 0:
             # if there are no more trackers, clean this handler
@@ -173,9 +172,9 @@ class ReportFieldTracker(TrackerBase):
             new_value = new_value.key
         except AttributeError:
             new_value = to_str(new_value, force_string=True)
+        kwargs[self.fieldname] = new_value
         # this is a wrapper call for sending oob data back to session
-        self.oobhandler.msg(self.sessid, "report", self.fieldname,
-                                                    new_value, *args, **kwargs)
+        self.oobhandler.msg(self.sessid, "report", *args, **kwargs)
 
 
 class ReportAttributeTracker(TrackerBase):
@@ -199,8 +198,9 @@ class ReportAttributeTracker(TrackerBase):
             new_value = new_value.dbobj
         except AttributeError:
             new_value = to_str(new_value, force_string=True)
+        kwargs[self.attrname] = new_value
         # this is a wrapper call for sending oob data back to session
-        self.oobhandler.msg(self.sessid, "report", self.attrname, new_value, *args, **kwargs)
+        self.oobhandler.msg(self.sessid, "report", *args, **kwargs)
 
 
 
@@ -208,24 +208,20 @@ class ReportAttributeTracker(TrackerBase):
 
 class OOBTicker(Ticker):
     """
-    Version of Ticker that calls OOB_FUNC rather than trying to call
+    Version of Ticker that executes an executable rather than trying to call
     a hook method.
     """
     @inlineCallbacks
-    def _callback(self, oobhandler, sessions):
+    def _callback(self):
         "See original for more info"
         for key, (_, args, kwargs) in self.subscriptions.items():
-            session = sessions.session_from_sessid(kwargs.get("sessid"))
+            # args = (sessid, callback_function)
+            session = SESSIONS.session_from_sessid(args[0])
             try:
-                oobhandler.execute_cmd(session, kwargs.get("func_key"), *args, **kwargs)
+                # execute the oob callback
+                yield args[1](OOB_HANDLER, session, *args[2:], **kwargs)
             except Exception:
                 logger.log_trace()
-
-    def __init__(self, interval):
-        "Sets up the Ticker"
-        self.interval = interval
-        self.subscriptions = {}
-        self.task = LoopingCall(self._callback, OOB_HANDLER, SESSIONS)
 
 class OOBTickerPool(TickerPool):
     ticker_class = OOBTicker
@@ -270,9 +266,9 @@ class OOBHandler(object):
         tracker_storage = ServerConfig.objects.conf(key="oob_tracker_storage")
         if tracker_storage:
             self.oob_tracker_storage = dbunserialize(tracker_storage)
-            #print "recovered from tracker_storage:", self.oob_tracker_storage
             for (obj, sessid, fieldname, trackerclass, args, kwargs) in self.oob_tracker_storage.values():
-                self.track(unpack_dbobj(obj), sessid, fieldname, trackerclass, *args, **kwargs)
+                #print "restoring tracking:",obj, sessid, fieldname, trackerclass
+                self._track(unpack_dbobj(obj), sessid, fieldname, trackerclass, *args, **kwargs)
             # make sure to purge the storage
             ServerConfig.objects.conf(key="oob_tracker_storage", delete=True)
         self.tickerhandler.restore()
@@ -302,6 +298,7 @@ class OOBHandler(object):
         storekey = (obj_packed, sessid, propname)
         stored = (obj_packed, sessid, propname, trackerclass,  args, kwargs)
         self.oob_tracker_storage[storekey] = stored
+        #print "_track:", obj, id(obj), obj.__dict__
 
     def _untrack(self, obj, sessid, propname, trackerclass, *args, **kwargs):
         """
@@ -312,9 +309,8 @@ class OOBHandler(object):
             obj = obj.dbobj
         except AttributeError:
             pass
-
         try:
-            # call at_delete hook
+            # call at_remove hook on the trackerclass
             _GA(obj, "_trackerhandler").remove(propname, trackerclass, *args, **kwargs)
         except AttributeError:
             pass
@@ -327,7 +323,7 @@ class OOBHandler(object):
         Get the names of all variables this session is tracking.
         """
         sessid = session.sessid
-        return [key[2].lstrip("db_") for key in self.oob_tracker_storage.keys() if key[1] == sessid]
+        return [stored for key, stored in self.oob_tracker_storage.items() if key[1] == sessid]
 
     def track_field(self, obj, sessid, field_name, trackerclass=ReportFieldTracker):
         """
@@ -336,14 +332,14 @@ class OOBHandler(object):
         """
         # all database field names starts with db_*
         field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
-        self._track(obj, sessid, field_name, trackerclass)
+        self._track(obj, sessid, field_name, trackerclass, field_name)
 
-    def untrack_field(self, obj, sessid, field_name):
+    def untrack_field(self, obj, sessid, field_name, trackerclass=ReportFieldTracker):
         """
         Shortcut for untracking a database field. Uses OOBTracker by defualt
         """
         field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
-        self._untrack(obj, sessid, field_name)
+        self._untrack(obj, sessid, field_name, trackerclass)
 
     def track_attribute(self, obj, sessid, attr_name, trackerclass=ReportAttributeTracker):
         """
@@ -353,14 +349,15 @@ class OOBHandler(object):
         """
         # get the attribute object if we can
         try:
-            obj = obj.dbobj
+            attrobj = obj.dbobj
         except AttributeError:
             pass
-        attrobj = _GA(obj, "attributes").get(attr_name, return_obj=True)
+        attrobj = obj.attributes.get(attr_name, return_obj=True)
+        #print "track_attribute attrobj:", attrobj, id(attrobj)
         if attrobj:
             self._track(attrobj, sessid, "db_value", trackerclass, attr_name)
 
-    def untrack_attribute(self, obj, sessid, attr_name, trackerclass):
+    def untrack_attribute(self, obj, sessid, attr_name, trackerclass=ReportAttributeTracker):
         """
         Shortcut for deactivating tracking for a given attribute.
         """
@@ -368,25 +365,24 @@ class OOBHandler(object):
             obj = obj.dbobj
         except AttributeError:
             pass
-        attrobj = _GA(obj, "attributes").get(attr_name, return_obj=True)
+        attrobj = obj.attributes.get(attr_name, return_obj=True)
         if attrobj:
-            self._untrack(attrobj, sessid, attr_name, trackerclass)
+            self._untrack(attrobj, sessid, "db_value", trackerclass, attr_name)
 
-    def repeat(self, obj, sessid, func_key, interval=20, *args, **kwargs):
+    def repeat(self, obj, sessid, interval=20, callback=None, *args, **kwargs):
         """
-        Start a repeating action. Every interval seconds,
-        the oobfunc corresponding to func_key is called with
-        args and kwargs.
+        Start a repeating action. Every interval seconds, trigger
+        callback(*args, **kwargs). The callback is called with
+        args and kwargs; note that *args and **kwargs may not contain
+        anything un-picklable (use dbrefs if wanting to use objects).
         """
-        if not func_key in _OOB_FUNCS:
-            raise KeyError("%s is not a valid OOB function name.")
-        self.tickerhandler.add(self, obj, interval, func_key=func_key, sessid=sessid, *args, **kwargs)
+        self.tickerhandler.add(obj, interval, sessid, callback, *args, **kwargs)
 
-    def unrepeat(self, obj, sessid, func_key, interval=20):
+    def unrepeat(self, obj, sessid, interval=20):
         """
         Stop a repeating action
         """
-        self.tickerhandler.remove(self, obj, interval)
+        self.tickerhandler.remove(obj, interval)
 
 
     # access method - called from session.msg()
@@ -396,23 +392,26 @@ class OOBHandler(object):
         Retrieve oobfunc from OOB_FUNCS and execute it immediately
         using *args and **kwargs
         """
-        try:
-            #print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
-            oobfunc = _OOB_FUNCS[func_key]  # raise traceback if not found
-            oobfunc(self, session, *args, **kwargs)
-        except KeyError,e:
-            errmsg = "OOB Error: function '%s' not recognized: %s" % (func_key, e)
+        oobfunc = _OOB_FUNCS.get(func_key, None)
+        if not oobfunc:
+            # function not found
+            errmsg = "OOB Error: function '%s' not recognized." % func_key
             if _OOB_ERROR:
                 _OOB_ERROR(self, session, errmsg, *args, **kwargs)
+                logger.log_trace()
             else:
                 logger.log_trace(errmsg)
-            raise KeyError(errmsg)
+            return
+
+        # execute the found function
+        try:
+            #print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
+            oobfunc(self, session, *args, **kwargs)
         except Exception, err:
             errmsg = "OOB Error: Exception in '%s'(%s, %s):\n%s" % (func_key, args, kwargs, err)
             if _OOB_ERROR:
                 _OOB_ERROR(self, session, errmsg, *args, **kwargs)
-            else:
-                logger.log_trace(errmsg)
+            logger.log_trace(errmsg)
             raise Exception(errmsg)
 
     def msg(self, sessid, funcname, *args, **kwargs):

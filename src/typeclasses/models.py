@@ -70,7 +70,7 @@ _DA = object.__delattr__
 #------------------------------------------------------------
 
 #class Attribute(SharedMemoryModel):
-class Attribute(WeakSharedMemoryModel):
+class Attribute(SharedMemoryModel):
     """
     Abstract django model.
 
@@ -173,13 +173,6 @@ class Attribute(WeakSharedMemoryModel):
         """
         self.db_value = to_pickle(new_value)
         self.save(update_fields=["db_value"])
-        try:
-            # eventual OOB hook
-            #self._track_db_value_change.update(self.cached_value)
-            self._track_db_value_change.update(self.new_value)
-        except AttributeError:
-            pass
-        return
 
     #@value.deleter
     def __value_del(self):

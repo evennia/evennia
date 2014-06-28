@@ -18,14 +18,19 @@ instance and session is the active session to get return data.
 The function names are not case-sensitive (this allows for names
 like "LIST" which would otherwise collide with Python builtins).
 
-A function named _OOB_ERROR will retrieve error strings if it is
+A function named OOB_ERROR will retrieve error strings if it is
 defined. It will get the error message as its 3rd argument.
+
+Data is usually returned via
+  session.msg(oob=(cmdname, (args,), {kwargs}))
+Note that args, kwargs must be iterable/dict, non-iterables will
+be interpreted as a new command name.
+
 """
 
 from django.conf import settings
 _GA = object.__getattribute__
 _SA = object.__setattr__
-_NA_REPORT = lambda o: (None, "N/A")
 _NA_SEND = lambda o: "N/A"
 
 #------------------------------------------------------------
@@ -33,26 +38,25 @@ _NA_SEND = lambda o: "N/A"
 #      cmdname(oobhandler, session, *args, **kwargs)
 #------------------------------------------------------------
 
-def _OOB_ERROR(oobhandler, session, errmsg, *args, **kwargs):
+def OOB_ERROR(oobhandler, session, errmsg, *args, **kwargs):
     """
     A function with this name is special and is called by the oobhandler when an error
     occurs already at the execution stage (such as the oob function
     not being recognized or having the wrong args etc).
     """
-    session.msg(oob=("send", {"ERROR": errmsg}))
+    session.msg(oob=("err", ("ERROR " + errmsg,)))
 
 
 def ECHO(oobhandler, session, *args, **kwargs):
     "Test/debug function, simply returning the args and kwargs"
     session.msg(oob=("echo", args, kwargs))
 
-
+##OOB{"SEND":"CHARACTER_NAME"}
 def SEND(oobhandler, session, *args, **kwargs):
     """
     This function directly returns the value of the given variable to the
     session.
     """
-    print "In SEND:", oobhandler, session, args
     obj = session.get_puppet_or_player()
     ret = {}
     if obj:
@@ -62,13 +66,17 @@ def SEND(oobhandler, session, *args, **kwargs):
                 ret[name] = value
             except Exception, e:
                 ret[name] = str(e)
-    # return result
-    session.msg(oob=("send", ret))
+        session.msg(oob=("send", ret))
+    else:
+        session.msg(oob=("err", ("You must log in first.",)))
 
-
+##OOB{"REPORT":"TEST"}
 def REPORT(oobhandler, session, *args, **kwargs):
     """
     This creates a tracker instance to track the data given in *args.
+
+    The tracker will return with a oob structure
+        oob={"report":["attrfieldname", (args,), {kwargs}}
 
     Note that the data name is assumed to be a field is it starts with db_*
     and an Attribute otherwise.
@@ -79,27 +87,37 @@ def REPORT(oobhandler, session, *args, **kwargs):
     obj = session.get_puppet_or_player()
     if obj:
         for name in (a.upper() for a in args if a):
-            typ, val = OOB_REPORTABLE.get(name, _NA_REPORT)(obj)
-            if typ == "field":
-                oobhandler.track_field(obj, session.sessid, name)
-            elif typ == "attribute":
-                oobhandler.track_attribute(obj, session.sessid, name)
+            trackname = OOB_REPORTABLE.get(name, None)
+            if not trackname:
+                session.msg(oob=("err", ("No Reportable property '%s'. Use LIST REPORTABLE_VARIABLES." % trackname,)))
+            elif trackname.startswith("db_"):
+                oobhandler.track_field(obj, session.sessid, trackname)
+            else:
+                oobhandler.track_attribute(obj, session.sessid, trackname)
+    else:
+        session.msg(oob=("err", ("You must log in first.",)))
 
 
-def UNREPORT(oobhandler, session, vartype="prop", *args, **kwargs):
+##OOB{"UNREPORT": "TEST"}
+def UNREPORT(oobhandler, session, *args, **kwargs):
     """
     This removes tracking for the given data given in *args.
     """
     obj = session.get_puppet_or_player()
     if obj:
         for name in (a.upper() for a in args if a):
-            typ, val = OOB_REPORTABLE.get(name, _NA_REPORT)
-            if typ == "field":
-                oobhandler.untrack_field(obj, session.sessid, name)
+            trackname = OOB_REPORTABLE.get(name, None)
+            if not trackname:
+                session.msg(oob=("err", ("No Un-Reportable property '%s'. Use LIST REPORTED_VALUES." % name,)))
+            elif trackname.startswith("db_"):
+                oobhandler.untrack_field(obj, session.sessid, trackname)
             else:  # assume attribute
-                oobhandler.untrack_attribute(obj, session.sessid, name)
+                oobhandler.untrack_attribute(obj, session.sessid, trackname)
+    else:
+        session.msg(oob=("err", ("You must log in first.",)))
 
 
+##OOB{"LIST":"COMMANDS"}
 def LIST(oobhandler, session, mode, *args, **kwargs):
     """
     List available properties. Mode is the type of information
@@ -135,15 +153,42 @@ def LIST(oobhandler, session, mode, *args, **kwargs):
         session.msg(oob=("list", ("REPORTABLE_VARIABLES",) +
                                   tuple(key for key in OOB_REPORTABLE.keys())))
     elif mode == "REPORTED_VARIABLES":
-        session.msg(oob=("list", ("REPORTED_VARIABLES",) +
-                                    tuple(oobhandler.get_all_tracked(session))))
+        # we need to check so as to use the right return value depending on if it is
+        # an Attribute (identified by tracking the db_value field) or a normal database field
+        reported = oobhandler.get_all_tracked(session)
+        reported = [stored[2] if stored[2] != "db_value" else stored[4][0] for stored in reported]
+        session.msg(oob=("list", ["REPORTED_VARIABLES"] + reported))
     elif mode == "SENDABLE_VARIABLES":
         session.msg(oob=("list", ("SENDABLE_VARIABLES",) +
                                   tuple(key for key in OOB_REPORTABLE.keys())))
-    #elif mode == "CONFIGURABLE_VARIABLES":
-    #    pass
+    elif mode == "CONFIGURABLE_VARIABLES":
+        # Not implemented (game specific)
+        pass
     else:
-        session.msg(oob=("list", ("unsupported mode",)))
+        session.msg(oob=("err", ("LIST", "Unsupported mode",)))
+
+def _repeat_callback(oobhandler, session, *args, **kwargs):
+    "Set up by REPEAT"
+    session.msg(oob=("repeat", ("Repeat!",)))
+
+##OOB{"REPEAT":10}
+def REPEAT(oobhandler, session, interval, *args, **kwargs):
+    """
+    Test command for the repeat functionality. Note that the args/kwargs
+    must not be db objects (or anything else non-picklable), rather use
+    dbrefs if so needed. The callback must be defined globally and
+    will be called as
+       callback(oobhandler, session, *args, **kwargs)
+    """
+    oobhandler.repeat(None, session.sessid, interval, _repeat_callback, *args, **kwargs)
+
+
+##OOB{"UNREPEAT":10}
+def UNREPEAT(oobhandler, session, interval):
+    """
+    Disable repeating callback
+    """
+    oobhandler.unrepeat(None, session.sessid, interval)
 
 
 # Mapping for how to retrieve each property name.
@@ -167,9 +212,10 @@ OOB_SENDABLE = {
         "UTF_8": lambda o: True
     }
 
-# mapping for which properties may be tracked. Each callable should return a tuple (type, value) where
-# the type is one of "field" or "attribute" depending on what is being tracked.
+# mapping for which properties may be tracked. Each value points either to a database field
+# (starting with db_*) or an Attribute name.
 OOB_REPORTABLE = {
-        "CHARACTER_NAME": lambda o: ("field", o.key),
-        "ROOM_NAME": lambda o: ("attribute", o.db_location.key)
+        "CHARACTER_NAME": "db_key",
+        "ROOM_NAME": "db_location",
+        "TEST" : "test"
         }

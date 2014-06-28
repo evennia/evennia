@@ -20,13 +20,38 @@ var OOB_debug = true
 
 // Custom OOB functions
 // functions defined here can be called by name by the server. For
-// example the OOB{"echo":arguments} will trigger a function named
-// echo(arguments).
+// example the OOB{"echo":(args),{kwargs}} will trigger a function named
+// echo(args, kwargs).
 
 
-function echo(message) {
+function echo(args, kwargs) {
     // example echo function.
-    doShow("out", "ECHO return: " + message) }
+    doShow("out", "ECHO return: " + args) }
+
+function list (args, kwargs) {
+    // show in main window
+    doShow("out", args) }
+
+function send (args, kwargs) {
+    // show in main window. SEND returns kwargs {name:value}.
+    for (sendvalue in kwargs) {
+        doShow("out", sendvalue + " = " + kwargs[sendvalue]);}
+}
+
+function report (args, kwargs) {
+    // show in main window. REPORT returns kwargs
+    // {attrfieldname:value}
+    for (name in kwargs) {
+        doShow("out", name + " = " + kwargs[name]) }
+}
+
+function repeat (args, kwargs) {
+    // called by repeating oob funcs
+    doShow("out", args) }
+
+function err (args, kwargs) {
+    // display error
+    doShow("err", args) }
 
 
 // Webclient code
@@ -61,15 +86,20 @@ function onMessage(evt) {
     var inmsg = evt.data
     if (inmsg.length > 3 && inmsg.substr(0, 3) == "OOB") {
         // dynamically call oob methods, if available
-        try {var oobarray = JSON.parse(inmsg.slice(3));} // everything after OOB }
+        try {
+            var oobarray = JSON.parse(inmsg.slice(3));} // everything after OOB }
         catch(err) {
             // not JSON packed - a normal text
-            doShow('out', err + " " + inmsg);
+            doShow('out', inmsg);
             return;
         }
-        for (var ind in oobarray) {
-            try { window[oobarray[ind][0]](oobarray[ind][1]) }
-            catch(err) { doShow("err", "Could not execute OOB function " + oobtuple[0] + "(" + oobtuple[1] + ")!") }
+        if (typeof oobarray != "undefined") {
+            for (var ind in oobarray) {
+                try {
+                    window[oobarray[ind][0]](oobarray[ind][1], oobarray[ind][2]) }
+                catch(err) {
+                    doShow("err", "Could not execute js OOB function '" + oobarray[ind][0] + "(" + oobarray[ind][1] + oobarray[ind][2] + ")'") }
+            }
         }
     }
     else {
@@ -93,8 +123,15 @@ function doSend(){
 
     if (OOB_debug && outmsg.length > 4 && outmsg.substr(0, 5) == "##OOB") {
         // test OOB messaging
-        doShow("out", "OOB input: " + outmsg.slice(5))
-        doOOB(JSON.parse(outmsg.slice(5))); }
+        try {
+            doShow("out", "OOB input: " + outmsg.slice(5));
+            if (outmsg.length == 5) {
+                doShow("err", "OOB testing syntax: ##OOB{\"cmdname:args, ...}"); }
+            else {
+                doOOB(JSON.parse(outmsg.slice(5))); } }
+        catch(err) {
+            doShow("err", err) }
+    }
     else {
         // normal output
         websocket.send(outmsg); }

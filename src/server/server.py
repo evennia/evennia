@@ -33,9 +33,9 @@ from src.server.sessionhandler import SESSIONS
 # setting up server-side field cache
 
 from django.db.models.signals import post_save
-from src.server.caches import field_pre_save
+from src.server.caches import field_post_save
 #pre_save.connect(field_pre_save, dispatch_uid="fieldcache")
-post_save.connect(field_pre_save, dispatch_uid="fieldcache")
+post_save.connect(field_post_save, dispatch_uid="fieldcache")
 
 #from src.server.caches import post_attr_update
 #from django.db.models.signals import m2m_changed

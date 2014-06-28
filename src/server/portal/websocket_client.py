@@ -31,7 +31,7 @@ import json
 from twisted.internet.protocol import Protocol
 from src.server.session import Session
 from src.utils.logger import log_trace
-from src.utils.utils import to_str
+from src.utils.utils import to_str, make_iter
 from src.utils.text2html import parse_html
 
 
@@ -85,7 +85,8 @@ class WebSocketClient(Protocol, Session):
             try:
                 oobdata = json.loads(string)
                 for (key, args) in oobdata.items():
-                    self.data_in(text=None, oob=(key, args))
+                    #print "oob data in:", (key, args)
+                    self.data_in(text=None, oob=(key, make_iter(args)))
             except Exception:
                 log_trace("Websocket malformed OOB request: %s" % string)
         else:
@@ -119,6 +120,7 @@ class WebSocketClient(Protocol, Session):
             self.sendLine(str(e))
         if "oob" in kwargs:
             oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob"))
+            #print "oob data_out:", "OOB" + json.dumps(oobstruct)
             self.sendLine("OOB" + json.dumps(oobstruct))
         raw = kwargs.get("raw", False)
         nomarkup = kwargs.get("nomarkup", False)
