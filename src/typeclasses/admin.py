@@ -1,12 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 from django.core.urlresolvers import reverse
-from django.forms import Textarea
 from src.typeclasses.models import Attribute, Tag
-
-
-class PickledWidget(Textarea):
-    pass
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -26,7 +21,7 @@ class AttributeInline(admin.TabularInline):
     """
     # Set this to the through model of your desired M2M when subclassing.
     model = None
-    extra = 3
+    extra = 1
     #form = AttributeForm
     fields = ('attribute', 'key', 'value', 'strvalue')
     raw_id_fields = ('attribute',)

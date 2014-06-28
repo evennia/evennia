@@ -161,7 +161,7 @@ class PickledFormField(CharField):
             value = 'None'
         try:
             return literal_eval(value)
-        except ValueError:
+        except (ValueError, SyntaxError):
             raise ValidationError(self.error_messages['invalid'])
 
 
