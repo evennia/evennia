@@ -28,15 +28,21 @@ Pickle field implementation for Django.
 Modified for Evennia by Griatch.
 
 """
+from ast import literal_eval
 
 from copy import deepcopy
 from base64 import b64encode, b64decode
 from zlib import compress, decompress
 #import six # this is actually a pypy component, not in default syslib
 import django
+from django.core.exceptions import ValidationError
 from django.db import models
 
 # django 1.5 introduces force_text instead of force_unicode
+from django.forms import CharField, Textarea
+from django.forms.util import flatatt
+from django.utils.html import format_html
+
 try:
     from django.utils.encoding import force_text
 except ImportError:
@@ -120,6 +126,45 @@ def _get_subfield_superclass():
     #return six.with_metaclass(models.SubfieldBase, models.Field)
 
 
+class PickledWidget(Textarea):
+    def render(self, name, value, attrs=None):
+        value = repr(value)
+        try:
+            literal_eval(value)
+        except ValueError:
+            return value
+
+        final_attrs = self.build_attrs(attrs, name=name)
+        return format_html('<textarea{0}>\r\n{1}</textarea>',
+                           flatatt(final_attrs),
+                           force_text(value))
+
+
+class PickledFormField(CharField):
+    widget = PickledWidget
+    default_error_messages = dict(CharField.default_error_messages)
+    default_error_messages['invalid'] = (
+        "This is not a Python Literal. You can store things like strings, "
+        "integers, or floats, but you must do it by typing them as you would "
+        "type them in the Python Interpreter. For instance, strings must be "
+        "surrounded by quote marks. We have converted it to a string for your "
+        "convenience. If it is acceptable, please hit save again.")
+
+    def __init__(self, *args, **kwargs):
+        # This needs to fall through to literal_eval.
+        kwargs['required'] = False
+        super(PickledFormField, self).__init__(*args, **kwargs)
+
+    def clean(self, value):
+        if value == '':
+            # Field was left blank. Make this None.
+            value = 'None'
+        try:
+            return literal_eval(value)
+        except ValueError:
+            raise ValidationError(self.error_messages['invalid'])
+
+
 class PickledObjectField(_get_subfield_superclass()):
     """
     A field that will accept *any* python object and store it in the
@@ -135,7 +180,6 @@ class PickledObjectField(_get_subfield_superclass()):
     def __init__(self, *args, **kwargs):
         self.compress = kwargs.pop('compress', False)
         self.protocol = kwargs.pop('protocol', DEFAULT_PROTOCOL)
-        kwargs.setdefault('editable', False)
         super(PickledObjectField, self).__init__(*args, **kwargs)
 
     def get_default(self):
@@ -179,6 +223,9 @@ class PickledObjectField(_get_subfield_superclass()):
                 if isinstance(value, _ObjectWrapper):
                     return value._obj
         return value
+
+    def formfield(self, **kwargs):
+        return PickledFormField(**kwargs)
 
     def pre_save(self, model_instance, add):
         value = super(PickledObjectField, self).pre_save(model_instance, add)
