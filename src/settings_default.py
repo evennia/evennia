@@ -457,14 +457,9 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = () #'Your Name', 'your_email@domain.com'),)
 # These guys get broken link notifications when SEND_BROKEN_LINK_EMAILS is True.
 MANAGERS = ADMINS
-# Absolute path to the directory that holds media (no trailing slash).
+# Absolute path to the directory that holds file uploads from web apps.
 # Example: "/home/media/media.lawrence.com"
-MEDIA_ROOT = os.path.join(SRC_DIR, 'web', 'media')
-# Absolute path to the directory that holds (usually links to) the
-# django admin media files. If the target directory does not exist, it
-# is created and linked by Evennia upon first start. Otherwise link it
-# manually to django/contrib/admin/media.
-ADMIN_MEDIA_ROOT = os.path.join(MEDIA_ROOT, 'admin')
+MEDIA_ROOT = os.path.join(GAME_DIR, "gamesrc", "web", "media")
 # It's safe to dis-regard this, as it's a Django feature we only half use as a
 # dependency, not actually what it's primarily meant for.
 SITE_ID = 1
