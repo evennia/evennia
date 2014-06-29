@@ -514,7 +514,7 @@ STATICFILES_IGNORE_PATTERNS = ('README.md',)
 ACTIVE_TEMPLATE = 'prosimii'
 # We setup the location of the website template as well as the admin site.
 TEMPLATE_DIRS = (
-    os.path.join(GAME_DIR, "gamesrc", "web", "templates"),
+    os.path.join(GAME_DIR, "gamesrc", "web", "template_overrides"),
     os.path.join(SRC_DIR, "web", "templates", ACTIVE_TEMPLATE),
     os.path.join(SRC_DIR, "web", "templates"),)
 # List of callables that know how to import templates from various sources.
