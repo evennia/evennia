@@ -18,6 +18,7 @@ found on http://localhost:8000/webclient.)
 """
 import time
 import json
+
 from hashlib import md5
 
 from twisted.web import server, resource
@@ -31,7 +32,6 @@ from src.server import session
 
 SERVERNAME = settings.SERVERNAME
 ENCODINGS = settings.ENCODINGS
-
 
 # defining a simple json encoder for returning
 # django data to the client. Might need to

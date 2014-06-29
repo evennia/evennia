@@ -58,10 +58,22 @@ UPSTREAM_IPS = ['127.0.0.1']
 # with server load. Set the minimum and maximum number of threads it
 # may use as (min, max) (must be > 0)
 WEBSERVER_THREADPOOL_LIMITS = (1, 20)
-# Start the evennia ajax client on /webclient
-# (the webserver must also be running)
+# Start the evennia webclient. This requires the webserver to be running and
+# offers the fallback ajax-based webclient backbone for browsers not supporting
+# the websocket one.
 WEBCLIENT_ENABLED = True
-# Activate SSH protocol (SecureShell)
+# Activate Websocket support for modern browsers. If this is on, the
+# default webclient will use this and only use the ajax version of the browser
+# is too old to support websockets. Requires WEBCLIENT_ENABLED.
+WEBSOCKET_CLIENT_ENABLED = True
+# Server-side websocket port to open for the webclient.
+WEBSOCKET_CLIENT_PORT = 8001
+# Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
+WEBSOCKET_CLIENT_INTERFACE = '0.0.0.0'
+# Actual URL for webclient component to reach the websocket. The first
+# port number in the WEBSOCKET_PORTS list will be automatically appended.
+WEBSOCKET_CLIENT_URL = "ws://localhost"
+# Activate SSH protocol communication (SecureShell)
 SSH_ENABLED = False
 # Ports to use for SSH
 SSH_PORTS = [8022]
@@ -79,6 +91,9 @@ WEBSOCKET_ENABLED = False
 WEBSOCKET_PORTS = [8021]
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSOCKET_INTERFACES = ['0.0.0.0']
+# This determine's whether Evennia's custom admin page is used, or if the
+# standard Django admin is used.
+EVENNIA_ADMIN = True
 # The path that contains this settings.py file (no trailing slash).
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Path to the src directory containing the bulk of the codebase's code.
@@ -98,7 +113,8 @@ CYCLE_LOGFILES = True
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 TIME_ZONE = 'UTC'
 # Authentication backends. This is the code used to authenticate a user.
-AUTHENTICATION_BACKENDS = ('src.web.backends.CaseInsensitiveModelBackend',)
+AUTHENTICATION_BACKENDS = (
+    'src.web.utils.backends.CaseInsensitiveModelBackend',)
 # Language code for this installation. All choices can be found here:
 # http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
 LANGUAGE_CODE = 'en-us'
@@ -224,7 +240,7 @@ LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
 # Module holding OOB (Out of Band) hook objects. This allows for customization
 # and expansion of which hooks OOB protocols are allowed to call on the server
 # protocols for attaching tracker hooks for when various object field change
-OOB_PLUGIN_MODULES = ["src.server.oob_msdp"]
+OOB_PLUGIN_MODULES = ["src.server.oob_cmds"]
 
 ######################################################################
 # Default command sets
@@ -441,14 +457,9 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = () #'Your Name', 'your_email@domain.com'),)
 # These guys get broken link notifications when SEND_BROKEN_LINK_EMAILS is True.
 MANAGERS = ADMINS
-# Absolute path to the directory that holds media (no trailing slash).
+# Absolute path to the directory that holds file uploads from web apps.
 # Example: "/home/media/media.lawrence.com"
-MEDIA_ROOT = os.path.join(SRC_DIR, 'web', 'media')
-# Absolute path to the directory that holds (usually links to) the
-# django admin media files. If the target directory does not exist, it
-# is created and linked by Evennia upon first start. Otherwise link it
-# manually to django/contrib/admin/media.
-ADMIN_MEDIA_ROOT = os.path.join(MEDIA_ROOT, 'admin')
+MEDIA_ROOT = os.path.join(GAME_DIR, "gamesrc", "web", "media")
 # It's safe to dis-regard this, as it's a Django feature we only half use as a
 # dependency, not actually what it's primarily meant for.
 SITE_ID = 1
@@ -473,7 +484,7 @@ LOCALE_PATHS = ["../locale/"]
 # development webserver (normally Evennia runs its own server)
 SERVE_MEDIA = False
 # The master urlconf file that contains all of the sub-branches to the
-# applications.
+# applications. Change this to add your own URLs to the website.
 ROOT_URLCONF = 'src.web.urls'
 # Where users are redirected after logging in via contrib.auth.login.
 LOGIN_REDIRECT_URL = '/'
@@ -487,12 +498,23 @@ MEDIA_URL = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure
 # to use a trailing slash. Django1.4+ will look for admin files under
 # STATIC_URL/admin.
-STATIC_URL = '/media/'
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(GAME_DIR, "gamesrc", "web", "static")
+
+# Directories from which static files will be gathered from.
+STATICFILES_DIRS = (
+    os.path.join(GAME_DIR, "gamesrc", "web", "static_overrides"),
+    os.path.join(SRC_DIR, "web", "static"),)
+# Patterns of files in the static directories. Used here to make sure that
+# its readme file is preserved but unused.
+STATICFILES_IGNORE_PATTERNS = ('README.md',)
 # The name of the currently selected web template. This corresponds to the
 # directory names shown in the webtemplates directory.
 ACTIVE_TEMPLATE = 'prosimii'
 # We setup the location of the website template as well as the admin site.
 TEMPLATE_DIRS = (
+    os.path.join(GAME_DIR, "gamesrc", "web", "templates"),
     os.path.join(SRC_DIR, "web", "templates", ACTIVE_TEMPLATE),
     os.path.join(SRC_DIR, "web", "templates"),)
 # List of callables that know how to import templates from various sources.
@@ -534,6 +556,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.flatpages',
+    'django.contrib.staticfiles',
     'src.server',
     'src.typeclasses',
     'src.players',
@@ -541,8 +564,7 @@ INSTALLED_APPS = (
     'src.comms',
     'src.help',
     'src.scripts',
-    'src.web.news',
-    'src.web.website',)
+    'src.web.webclient')
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
 AUTH_USER_MODEL = "players.PlayerDB"

@@ -14,11 +14,11 @@
       <p>Welcome to your new installation of <a href="http://evennia.com">Evennia</a>, your friendly
       neighborhood next-generation MUD development system and server. You are looking at Evennia's web
       presence, which can be expanded to a full-fledged site as
-      needed. Through the <a href="/admin">admin interface</a> you can view and edit the
+      needed. Through the <a href="{% url 'admin:index' %}">admin interface</a> you can view and edit the
       database without logging into the game.
         {% if webclient_enabled %}
         You can also connect to the game directly from your browser using our
-        <a href='/webclient'>online client</a>!<br></br>
+        <a href="{% url 'webclient:index' %}">online client</a>!<br></br>
         {% endif %}
       For more info, take your time to
       peruse our extensive online <a href="https://github.com/evennia/evennia/wiki">documentation</a>.
@@ -28,21 +28,6 @@
       <a href="https://groups.google.com/forum/#!forum/evennia">mailing list</a> or to come say hi in the <a href="http://webchat.freenode.net/?channels=evennia">developer chatroom</a>. If you find bugs, please report them to our <a href="https://github.com/evennia/evennia/issues">Issue tracker</a>.
       </p>
    </div>
-
-   <!-- news app commented out since there are no news in the database originally -->
-
-   <!--div class="oneThird">
-      <h1>Latest News</h1>
-      {% for entry in news_entries %}
-         <a href="/news/show/{{entry.id}}" class="newsHeading">{{entry.topic.name}}: {{entry.title}}</a>
-         <p class="newsDate">By {{entry.author.username}} on {{entry.date_posted|time}}</p>
-         <p class="newsSummary">{{entry.body|truncatewords:20}}</p>
-      {% endfor %}
-
-      <div class="more"><a href="/news/archive">More News &raquo;</a></div>
-
-      <p class="filler"><!-- Filler para to extend left vertical line--></p>
-   </div-->
 </div>
 
 <div class="rowOfBoxes dividingBorderAbove">

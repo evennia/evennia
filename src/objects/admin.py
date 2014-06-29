@@ -6,27 +6,16 @@
 from django import forms
 from django.conf import settings
 from django.contrib import admin
-from src.typeclasses.models import Attribute, Tag
+from src.typeclasses.admin import AttributeInline, TagInline
 from src.objects.models import ObjectDB
 
 
-class AttributeInline(admin.TabularInline):
-    # This class is currently not used, because PickleField objects are
-    # not editable. It's here for us to ponder making a way that allows
-    # them to be edited.
-    model = Attribute
-    fields = ('db_key', 'db_value')
-    extra = 0
+class ObjectAttributeInline(AttributeInline):
+    model = ObjectDB.db_attributes.through
 
 
-class TagInline(admin.TabularInline):
+class ObjectTagInline(TagInline):
     model = ObjectDB.db_tags.through
-    raw_id_fields = ('tag',)
-    extra = 0
-
-
-class TagAdmin(admin.ModelAdmin):
-    fields = ('db_key', 'db_category', 'db_data')
 
 
 class ObjectCreateForm(forms.ModelForm):
@@ -59,6 +48,7 @@ class ObjectEditForm(ObjectCreateForm):
 
 class ObjectDBAdmin(admin.ModelAdmin):
 
+    inlines = [ObjectTagInline, ObjectAttributeInline]
     list_display = ('id', 'db_key', 'db_player', 'db_typeclass_path')
     list_display_links = ('id', 'db_key')
     ordering = ['db_player', 'db_typeclass_path', 'id']
@@ -88,7 +78,6 @@ class ObjectDBAdmin(admin.ModelAdmin):
     #    )
 
     #deactivated temporarily, they cause empty objects to be created in admin
-    inlines = [TagInline]
 
     # Custom modification to give two different forms wether adding or not.
     add_form = ObjectCreateForm
@@ -135,4 +124,3 @@ class ObjectDBAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ObjectDB, ObjectDBAdmin)
-admin.site.register(Tag, TagAdmin)

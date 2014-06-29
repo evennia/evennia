@@ -2,16 +2,18 @@
 # This sets up how models are displayed
 # in the web admin interface.
 #
+from src.typeclasses.admin import AttributeInline, TagInline
 
-from src.typeclasses.models import Attribute
 from src.scripts.models import ScriptDB
 from django.contrib import admin
 
 
-class AttributeInline(admin.TabularInline):
-    model = Attribute
-    fields = ('db_key', 'db_value')
-    max_num = 1
+class ScriptTagInline(TagInline):
+    model = ScriptDB.db_tags.through
+
+
+class ScriptAttributeInline(AttributeInline):
+    model = ScriptDB.db_attributes.through
 
 
 class ScriptDBAdmin(admin.ModelAdmin):
@@ -32,7 +34,7 @@ class ScriptDBAdmin(admin.ModelAdmin):
                             'db_repeats', 'db_start_delay', 'db_persistent',
                             'db_obj')}),
         )
-    #inlines = [AttributeInline]
+    inlines = [ScriptTagInline, ScriptAttributeInline]
 
 
 admin.site.register(ScriptDB, ScriptDBAdmin)

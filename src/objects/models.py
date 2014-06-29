@@ -144,9 +144,9 @@ class ObjectDB(TypedObject):
         # make sure to sync the contents cache when initializing
         #_GA(self, "contents_update")()
 
-    def _at_db_player_presave(self):
+    def _at_db_player_postsave(self):
         """
-        This hook is called automatically just before the player field is saved.
+        This hook is called automatically after the player field is saved.
         """
         # we need to re-cache this for superusers to bypass.
         self.locks.cache_lock_bypass(self)

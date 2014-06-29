@@ -34,6 +34,7 @@ import weakref
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+from django.db.models import Q
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
 
@@ -46,7 +47,8 @@ from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger
-from src.utils.utils import make_iter, is_iter, to_str, inherits_from, LazyLoadHandler
+from src.utils.utils import (
+    make_iter, is_iter, to_str, inherits_from, LazyLoadHandler)
 from src.utils.dbserialize import to_pickle, from_pickle
 from src.utils.picklefield import PickledObjectField
 
@@ -69,8 +71,7 @@ _DA = object.__delattr__
 #
 #------------------------------------------------------------
 
-#class Attribute(SharedMemoryModel):
-class Attribute(WeakSharedMemoryModel):
+class Attribute(SharedMemoryModel):
     """
     Abstract django model.
 
@@ -99,20 +100,34 @@ class Attribute(WeakSharedMemoryModel):
     # These database fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
     db_key = models.CharField('key', max_length=255, db_index=True)
-    # access through the value property
-    db_value = PickledObjectField('value', null=True)
-    # string-specific storage for quick look-up
-    db_strvalue = models.TextField('strvalue', null=True, blank=True)
-    # optional categorization of attribute
-    db_category = models.CharField('category', max_length=128, db_index=True, blank=True, null=True)
+    db_value = PickledObjectField(
+        'value', null=True,
+        help_text="The data returned when the attribute is accessed. Must be "
+                  "written as a Python literal if editing through the admin "
+                  "interface. Attribute values which are not Python literals "
+                  "cannot be edited through the admin interface.")
+    db_strvalue = models.TextField(
+        'strvalue', null=True, blank=True,
+        help_text="String-specific storage for quick look-up")
+    db_category = models.CharField(
+        'category', max_length=128, db_index=True, blank=True, null=True,
+        help_text="Optional categorization of attribute.")
     # Lock storage
-    db_lock_storage = models.TextField('locks', blank=True)
-    # Which model of object this Attribute is attached to (A natural key like objects.dbobject)
-    db_model = models.CharField('model', max_length=32, db_index=True, blank=True, null=True)
+    db_lock_storage = models.TextField(
+        'locks', blank=True,
+        help_text="Lockstrings for this object are stored here.")
+    db_model = models.CharField(
+        'model', max_length=32, db_index=True, blank=True, null=True,
+        help_text="Which model of object this attribute is attached to (A "
+                  "natural key like objects.dbobject). You should not change "
+                  "this value unless you know what you are doing.")
     # subclass of Attribute (None or nick)
-    db_attrtype = models.CharField('attrtype', max_length=16, db_index=True, blank=True, null=True)
+    db_attrtype = models.CharField(
+        'attrtype', max_length=16, db_index=True, blank=True, null=True,
+        help_text="Subclass of Attribute (None or nick)")
     # time stamp
-    db_date_created = models.DateTimeField('date_created', editable=False, auto_now_add=True)
+    db_date_created = models.DateTimeField(
+        'date_created', editable=False, auto_now_add=True)
 
     # Database manager
     objects = managers.AttributeManager()
@@ -173,13 +188,6 @@ class Attribute(WeakSharedMemoryModel):
         """
         self.db_value = to_pickle(new_value)
         self.save(update_fields=["db_value"])
-        try:
-            # eventual OOB hook
-            #self._track_db_value_change.update(self.cached_value)
-            self._track_db_value_change.update(self.new_value)
-        except AttributeError:
-            pass
-        return
 
     #@value.deleter
     def __value_del(self):
@@ -233,10 +241,14 @@ class AttributeHandler(object):
         self._cache = None
 
     def _recache(self):
+        if not self._attrtype:
+            attrtype = Q(db_attrtype=None) | Q(db_attrtype='')
+        else:
+            attrtype = Q(db_attrtype=self._attrtype)
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
                                        attr.db_category.lower() if attr.db_category else None), attr)
                         for attr in getattr(self.obj, self._m2m_fieldname).filter(
-                            db_model=self._model, db_attrtype=self._attrtype))
+                            db_model=self._model).filter(attrtype))
         #set_attr_cache(self.obj, self._cache) # currently only for testing
 
     def has(self, key, category=None):
@@ -558,12 +570,16 @@ class TagHandler(object):
         self._model = "%s.%s" % ContentType.objects.get_for_model(obj).natural_key()
         self._cache = None
 
-
     def _recache(self):
         "Update cache from database field"
+        if not self._tagtype:
+            tagtype = Q(db_tagtype='') | Q(db_tagtype__isnull=True)
+        else:
+            tagtype = Q(db_tagtype=self._tagtype)
         self._cache = dict(("%s-%s" % (tag.db_key, tag.db_category), tag)
-                            for tag in getattr(self.obj, self._m2m_fieldname).filter(
-                                         db_model=self._model, db_tagtype=self._tagtype))
+                           for tag in getattr(
+                               self.obj, self._m2m_fieldname).filter(
+                                   db_model=self._model).filter(tagtype))
 
     def add(self, tag, category=None, data=None):
         "Add a new tag to the handler. Tag is a string or a list of strings."

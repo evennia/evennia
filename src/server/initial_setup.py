@@ -180,42 +180,6 @@ def start_game_time():
     gametime.init_gametime()
 
 
-def create_admin_media_links():
-    """
-    This traverses to src/web/media and tries to create a symbolic
-    link to the django media files from within the MEDIA_ROOT.
-    These are files we normally don't
-    want to mess with (use templates to customize the admin
-    look). Linking is needed since the Twisted webserver otherwise has no
-    notion of where the default files are - and we cannot hard-code it
-    since the django install may be at different locations depending
-    on system.
-    """
-    import django
-    import os
-
-    if django.get_version() < 1.4:
-        dpath = os.path.join(django.__path__[0], 'contrib', 'admin', 'media')
-    else:
-        dpath = os.path.join(django.__path__[0], 'contrib', 'admin', 'static', 'admin')
-    apath = os.path.join(settings.ADMIN_MEDIA_ROOT)
-    if os.path.isdir(apath):
-        print " ADMIN_MEDIA_ROOT already exists. Ignored."
-        return
-    if os.name == 'nt':
-        print " Admin-media files copied to ADMIN_MEDIA_ROOT (Windows mode)."
-        os.mkdir(apath)
-        os.system('xcopy "%s" "%s" /e /q /c' % (dpath, apath))
-    if os.name == 'posix':
-        try:
-            os.symlink(dpath, apath)
-            print " Admin-media symlinked to ADMIN_MEDIA_ROOT."
-        except OSError, e:
-            print " There was an error symlinking Admin-media to ADMIN_MEDIA_ROOT:\n  %s\n   -> \n  %s\n  (%s)\n  If you see issues, link manually." % (dpath, apath, e)
-    else:
-        print " Admin-media files should be copied manually to ADMIN_MEDIA_ROOT."
-
-
 def at_initial_setup():
     """
     Custom hook for users to overload some or all parts of the initial
@@ -269,7 +233,6 @@ def handle_setup(last_step):
         create_channels,
         create_system_scripts,
         start_game_time,
-        create_admin_media_links,
         at_initial_setup,
         reset_server
         ]

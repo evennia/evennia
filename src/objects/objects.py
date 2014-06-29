@@ -526,7 +526,6 @@ class Object(TypeClass):
         # commands may set this (create an item and you should be its
         # controller, for example)
 
-        dbref = self.dbobj.dbref
         self.locks.add(";".join([
             "control:perm(Immortals)",  # edit locks/permissions, delete
             "examine:perm(Builders)",   # examine properties
@@ -536,8 +535,7 @@ class Object(TypeClass):
             "get:all()",                # pick up object
             "call:true()",              # allow to call commands on this object
             "tell:perm(Wizards)",        # allow emits to this object
-             # restricts puppeting of this object
-            "puppet:pid(%s) or perm(Immortals) or pperm(Immortals)" % dbref]))
+            "puppet:pperm(Immortals)"])) # lock down puppeting only to staff by default
 
     def basetype_posthook_setup(self):
         """

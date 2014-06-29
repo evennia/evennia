@@ -1,8 +1,9 @@
 """
-Websockets Protocol
+Websocket-webclient
 
-This implements WebSockets (http://en.wikipedia.org/wiki/WebSocket)
-by use of the txws implementation (https://github.com/MostAwesomeDude/txWS).
+This implements a webclient with WebSockets (http://en.wikipedia.org/wiki/WebSocket)
+by use of the txws implementation (https://github.com/MostAwesomeDude/txWS). It is
+used together with src/web/media/javascript/evennia_websocket_webclient.js.
 
 Thanks to Ricard Pillosu whose Evennia plugin inspired this module.
 
@@ -10,13 +11,13 @@ Communication over the websocket interface is done with normal text
 communication. A special case is OOB-style communication; to do this
 the client must send data on the following form:
 
-    OOB{oobfunc:[[args], {kwargs}], ...}
+    OOB{"func1":[args], "func2":[args], ...}
 
-where the tuple/list is sent json-encoded. The initial OOB-prefix
+where the dict is JSON encoded. The initial OOB-prefix
 is used to identify this type of communication, all other data
 is considered plain text (command input).
 
-Example of call from javascript client:
+Example of call from a javascript client:
 
     websocket = new WeSocket("ws://localhost:8021")
     var msg1 = "WebSocket Test"
@@ -30,13 +31,15 @@ import json
 from twisted.internet.protocol import Protocol
 from src.server.session import Session
 from src.utils.logger import log_trace
-from src.utils.utils import to_str
+from src.utils.utils import to_str, make_iter
 from src.utils.text2html import parse_html
 
-class WebSocketProtocol(Protocol, Session):
+
+class WebSocketClient(Protocol, Session):
     """
-    This is called when the connection is first established
+    Implements the server-side of the Websocket connection.
     """
+
     def connectionMade(self):
         """
         This is called when the connection is first established.
@@ -72,7 +75,7 @@ class WebSocketProtocol(Protocol, Session):
         prefix.
             OOB - This is an Out-of-band instruction. If so,
                   the remaining string should be a json-packed
-                  string on the form {oobfuncname: [[args], {kwargs}], ...}
+                  string on the form {oobfuncname: [args, ], ...}
             any other prefix (or lack of prefix) is considered
                   plain text data, to be treated like a game
                   input command.
@@ -81,10 +84,9 @@ class WebSocketProtocol(Protocol, Session):
             string = string[3:]
             try:
                 oobdata = json.loads(string)
-                for (key, argstuple) in oobdata.items():
-                    args = argstuple[0] if argstuple else []
-                    kwargs = argstuple[1] if len(argstuple) > 1 else {}
-                    self.data_in(oob=(key, args, kwargs))
+                for (key, args) in oobdata.items():
+                    #print "oob data in:", (key, args)
+                    self.data_in(text=None, oob=(key, make_iter(args)))
             except Exception:
                 log_trace("Websocket malformed OOB request: %s" % string)
         else:
@@ -118,6 +120,7 @@ class WebSocketProtocol(Protocol, Session):
             self.sendLine(str(e))
         if "oob" in kwargs:
             oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob"))
+            #print "oob data_out:", "OOB" + json.dumps(oobstruct)
             self.sendLine("OOB" + json.dumps(oobstruct))
         raw = kwargs.get("raw", False)
         nomarkup = kwargs.get("nomarkup", False)
