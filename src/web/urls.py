@@ -29,9 +29,6 @@ urlpatterns = [
     url(r'^accounts/login',  'django.contrib.auth.views.login', name="login"),
     url(r'^accounts/logout', 'django.contrib.auth.views.logout', name="logout"),
 
-    # News stuff
-    # url(r'^news/', include('src.web.news.urls')),
-
     # Page place-holder for things that aren't implemented yet.
     url(r'^tbi/', 'src.web.views.to_be_implemented', name='to_be_implemented'),
 

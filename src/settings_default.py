@@ -569,7 +569,6 @@ INSTALLED_APPS = (
     'src.comms',
     'src.help',
     'src.scripts',
-    'src.web.news',
     'src.web.webclient')
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
