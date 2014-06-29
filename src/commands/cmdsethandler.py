@@ -103,7 +103,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
     """
 
     python_paths = [path] + ["%s.%s" % (prefix, path)
-                                    for prefix in _CMDSET_PATHS]
+                                    for prefix in _CMDSET_PATHS if not path.startswith(prefix)]
     errstring = ""
     for python_path in python_paths:
         try:
@@ -123,16 +123,19 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
                 cmdsetclass = cmdsetclass(cmdsetobj)
             return cmdsetclass
 
-        except ImportError:
-            errstring += _("Error loading cmdset: Couldn't import module '%s'.")
-            errstring = errstring % modulepath
+        except ImportError, e:
+            errstring += _("Error loading cmdset: Couldn't import module '%s': %s.")
+            errstring = errstring % (modulepath, e)
         except KeyError:
             errstring += _("Error in loading cmdset: No cmdset class '%(classname)s' in %(modulepath)s.")
             errstring = errstring % {"classname": classname,
                                      "modulepath": modulepath}
+        except SyntaxError, e:
+            errstring += _("SyntaxError encountered when loading cmdset '%s': %s.")
+            errstring = errstring % (modulepath, e)
         except Exception:
-            errstring += _("Compile/Run error when loading cmdset '%s'. Error was logged.")
-            errstring = errstring % (python_path)
+            errstring += _("Compile/Run error when loading cmdset '%s': %s.")
+            errstring = errstring % (python_path, e)
 
     if errstring:
         # returning an empty error cmdset
