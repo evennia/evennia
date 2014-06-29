@@ -197,23 +197,31 @@ class PlayerDBAdmin(BaseUserAdmin):
           'description': "<i>These account details are shared by the admin "
                          "system and the game.</i>"},),)
 
-    # TODO! Remove User reference!
-    def save_formset(self, request, form, formset, change):
-        """
-        Run all hooks on the player object
-        """
-        super(PlayerDBAdmin, self).save_formset(request, form, formset, change)
-        userobj = form.instance
-        userobj.name = userobj.username
+    def save_model(self, request, obj, form, change):
+        obj.save()
         if not change:
-            # uname, passwd, email = str(request.POST.get(u"username")), \
-            #     str(request.POST.get(u"password1")), \
-            #     str(request.POST.get(u"email"))
-            typeclass = str(request.POST.get(
-                u"playerdb_set-0-db_typeclass_path"))
-            create.create_player("", "", "",
-                                 user=userobj,
-                                 typeclass=typeclass,
-                                 player_dbobj=userobj)
+            #calling hooks for new player
+            ply = obj.typeclass
+            ply.basetype_setup()
+            ply.at_player_creation()
+
+    ## TODO! Remove User reference!
+    #def save_formset(self, request, form, formset, change):
+    #    """
+    #    Run all hooks on the player object
+    #    """
+    #    super(PlayerDBAdmin, self).save_formset(request, form, formset, change)
+    #    userobj = form.instance
+    #    userobj.name = userobj.username
+    #    if not change:
+    #        # uname, passwd, email = str(request.POST.get(u"username")), \
+    #        #     str(request.POST.get(u"password1")), \
+    #        #     str(request.POST.get(u"email"))
+    #        typeclass = str(request.POST.get(
+    #            u"playerdb_set-0-db_typeclass_path"))
+    #        create.create_player("", "", "",
+    #                             user=userobj,
+    #                             typeclass=typeclass,
+    #                             player_dbobj=userobj)
 
 admin.site.register(PlayerDB, PlayerDBAdmin)
