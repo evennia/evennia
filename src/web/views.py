@@ -12,7 +12,6 @@ from django.shortcuts import render
 
 from src.objects.models import ObjectDB
 from src.players.models import PlayerDB
-from src.web.news.models import NewsEntry
 
 _BASE_CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 
@@ -26,8 +25,6 @@ def page_index(request):
     fpage_player_limit = 4
     fpage_news_entries = 2
 
-    # A QuerySet of recent news entries.
-    news_entries = NewsEntry.objects.all().order_by('-date_posted')[:fpage_news_entries]
     # A QuerySet of the most recently connected players.
     recent_users = PlayerDB.objects.get_recently_connected_players()[:fpage_player_limit]
     nplyrs_conn_recent = len(recent_users) or "none"
@@ -43,7 +40,6 @@ def page_index(request):
 
     pagevars = {
         "page_title": "Front Page",
-        "news_entries": news_entries,
         "players_connected_recent": recent_users,
         "num_players_connected": nsess or "noone",
         "num_players_registered": nplyrs or "no",
