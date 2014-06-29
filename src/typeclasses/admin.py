@@ -54,6 +54,15 @@ class AttributeAdmin(ModelAdmin):
     """
     search_fields = ('db_key', 'db_strvalue', 'db_value')
     list_display = ('db_key', 'db_strvalue', 'db_value')
+    permitted_types = ('str', 'int', 'float', 'NoneType', 'bool')
+
+    fields = ('db_key', 'db_value', 'db_strvalue', 'db_category',
+              'db_lock_storage', 'db_model', 'db_attrtype')
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj.db_value.__class__.__name__ not in self.permitted_types:
+            return ['db_value']
+        return []
 
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Tag, TagAdmin)

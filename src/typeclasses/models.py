@@ -104,7 +104,8 @@ class Attribute(SharedMemoryModel):
         'value', null=True,
         help_text="The data returned when the attribute is accessed. Must be "
                   "written as a Python literal if editing through the admin "
-                  "interface.")
+                  "interface. Attribute values which are not Python literals "
+                  "cannot be edited through the admin interface.")
     db_strvalue = models.TextField(
         'strvalue', null=True, blank=True,
         help_text="String-specific storage for quick look-up")
