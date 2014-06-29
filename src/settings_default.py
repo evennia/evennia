@@ -113,7 +113,8 @@ CYCLE_LOGFILES = True
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 TIME_ZONE = 'UTC'
 # Authentication backends. This is the code used to authenticate a user.
-AUTHENTICATION_BACKENDS = ('src.web.backends.CaseInsensitiveModelBackend',)
+AUTHENTICATION_BACKENDS = (
+    'src.web.utils.backends.CaseInsensitiveModelBackend',)
 # Language code for this installation. All choices can be found here:
 # http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
 LANGUAGE_CODE = 'en-us'

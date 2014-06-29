@@ -21,14 +21,14 @@
             if ("WebSocket" in window) {
                 <!-- Importing the Evennia websocket webclient component (requires jQuery)  -->
                 var wsurl = "{{websocket_url}}";
-                document.write("\<script src=\"/media/javascript/evennia_websocket_webclient.js\" type=\"text/javascript\" charset=\"utf-8\"\>\</script\>")}
+                document.write("\<script src=\"{% static "webclient/js/evennia_websocket_webclient.js" %}\" type=\"text/javascript\" charset=\"utf-8\"\>\</script\>")}
             else {
                 <!-- No websocket support in browser. Importing the Evennia ajax webclient component (requires jQuery)  -->
                 document.write("\<script src=\"{% static "webclient/js/evennia_ajax_webclient.js" %}\" type=\"text/javascript\" charset=\"utf-8\"\>\</script\>")}
         </script>
     {% else %}
             <!-- websocket not enabled; use ajax -->
-            <script src="/media/javascript/evennia_ajax_webclient.js" type="text/javascript" charset="utf-8"></script>
+            <script src="{% static "webclient/js/evennia_ajax_webclient.js" %}" type="text/javascript" charset="utf-8"></script>
     {% endif %}
 
   </head>
