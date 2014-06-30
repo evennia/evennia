@@ -43,6 +43,8 @@ from django.forms import CharField, Textarea
 from django.forms.util import flatatt
 from django.utils.html import format_html
 
+from src.utils.dbserialize import from_pickle, to_pickle
+
 try:
     from django.utils.encoding import force_text
 except ImportError:

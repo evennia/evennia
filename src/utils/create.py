@@ -59,7 +59,12 @@ def handle_dbref(inp, objclass, raise_errors=True):
     objects.
     """
     if not (isinstance(inp, basestring) and inp.startswith("#")):
-        return inp
+        try:
+            return inp.dbobj
+        except AttributeError:
+            return inp
+
+    # a string, analyze it
     inp = inp.lstrip('#')
     try:
         if int(inp) < 0:
@@ -67,7 +72,7 @@ def handle_dbref(inp, objclass, raise_errors=True):
     except ValueError:
         return None
 
-    # if we get to this point, inp is an integer dbref
+    # if we get to this point, inp is an integer dbref; get the matching object
     try:
         return objclass.objects.get(id=inp)
     except Exception:
@@ -98,7 +103,7 @@ def create_object(typeclass=None, key=None, location=None,
               containing the error message. If set, this method will return
               None upon errors.
     nohome - this allows the creation of objects without a default home location;
-             this only used when creating default location itself or during unittests
+             this only used when creating the default location itself or during unittests
     """
     global _Object, _ObjectDB
     if not _Object:
@@ -122,7 +127,6 @@ def create_object(typeclass=None, key=None, location=None,
 
     location = handle_dbref(location, _ObjectDB)
     destination = handle_dbref(destination, _ObjectDB)
-    report_to = handle_dbref(report_to, _ObjectDB)
     home = handle_dbref(home, _ObjectDB)
     if not home:
         try:
@@ -136,9 +140,8 @@ def create_object(typeclass=None, key=None, location=None,
                               db_destination=destination, db_home=home,
                               db_typeclass_path=typeclass)
 
-    # the name/key is often set later in the typeclass. This
-    # is set here as a failsafe.
     if not key:
+        # the object should always have a key, so if not set we give a default
         new_db_object.key = "#%i" % new_db_object.dbid
 
     # this will either load the typeclass or the default one (will also save object)
@@ -149,6 +152,7 @@ def create_object(typeclass=None, key=None, location=None,
         # gave us a default
         SharedMemoryModel.delete(new_db_object)
         if report_to:
+            report_to = handle_dbref(report_to, _ObjectDB)
             _GA(report_to, "msg")("Error creating %s (%s).\n%s" % (new_db_object.key, typeclass,
                                                                  _GA(new_db_object, "typeclass_last_errmsg")))
             return None
@@ -162,9 +166,20 @@ def create_object(typeclass=None, key=None, location=None,
     # customization happens as the typeclass stores custom
     # things on its database object.
 
-    # note - this will override eventual custom keys, locations etc!
+    # note - this may override input keys, locations etc!
     new_object.basetype_setup()  # setup the basics of Exits, Characters etc.
     new_object.at_object_creation()
+
+    # we want the input to override that set in the hooks, so
+    # we re-apply those if needed
+    if new_object.key != key:
+        new_object.key = key
+    if new_object.location != location:
+        new_object.location = location
+    if new_object.home != home:
+        new_object.home = home
+    if new_object.destination != destination:
+        new_object.destination = destination
 
     # custom-given perms/locks do overwrite hooks
     if permissions:
@@ -174,7 +189,7 @@ def create_object(typeclass=None, key=None, location=None,
     if aliases:
         new_object.aliases.add(aliases)
 
-    # trigger relevant move_to hooks in order to display eventual messages.
+    # trigger relevant move_to hooks in order to display messages.
     if location:
         new_object.at_object_receive(new_object, None)
         new_object.at_after_move(new_object)
