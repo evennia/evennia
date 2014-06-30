@@ -116,28 +116,32 @@ def create_object(typeclass=None, key=None, location=None,
     elif isinstance(typeclass, _Object) or utils.inherits_from(typeclass, _Object):
         # this is already an object typeclass, extract its path
         typeclass = typeclass.path
+    typeclass = utils.to_unicode(typeclass)
 
-    # handle eventual #dbref input
+    # Setup input for the create command
+
     location = handle_dbref(location, _ObjectDB)
-    home = handle_dbref(home, _ObjectDB)
     destination = handle_dbref(destination, _ObjectDB)
     report_to = handle_dbref(report_to, _ObjectDB)
+    home = handle_dbref(home, _ObjectDB)
+    if not home:
+        try:
+            home = handle_dbref(settings.DEFAULT_HOME, _ObjectDB) if not nohome else None
+        except _ObjectDB.DoesNotExist:
+            raise _ObjectDB.DoesNotExist("settings.DEFAULT_HOME (= '%s') does not exist, or the setting is malformed." %
+                                         settings.DEFAULT_HOME)
 
-    # create new database object
-    new_db_object = _ObjectDB()
-
-    # assign the typeclass
-    typeclass = utils.to_unicode(typeclass)
-    new_db_object.typeclass_path = typeclass
+    # create new database object all in one go
+    new_db_object = _ObjectDB(db_key=key, db_location=location,
+                              db_destination=destination, db_home=home,
+                              db_typeclass_path=typeclass)
 
     # the name/key is often set later in the typeclass. This
     # is set here as a failsafe.
-    if key:
-        new_db_object.key = key
-    else:
+    if not key:
         new_db_object.key = "#%i" % new_db_object.dbid
 
-    # this will either load the typeclass or the default one
+    # this will either load the typeclass or the default one (will also save object)
     new_object = new_db_object.typeclass
 
     if not _GA(new_object, "is_typeclass")(typeclass, exact=True):
@@ -154,15 +158,15 @@ def create_object(typeclass=None, key=None, location=None,
     # from now on we can use the typeclass object
     # as if it was the database object.
 
-    new_object.destination = destination
-
-    # call the hook method. This is where all at_creation
+    # call the hook methods. This is where all at_creation
     # customization happens as the typeclass stores custom
     # things on its database object.
+
+    # note - this will override eventual custom keys, locations etc!
     new_object.basetype_setup()  # setup the basics of Exits, Characters etc.
     new_object.at_object_creation()
 
-    # custom-given perms/locks overwrite hooks
+    # custom-given perms/locks do overwrite hooks
     if permissions:
         new_object.permissions.add(permissions)
     if locks:
@@ -170,28 +174,14 @@ def create_object(typeclass=None, key=None, location=None,
     if aliases:
         new_object.aliases.add(aliases)
 
-    if home:
-        new_object.home = home
-    else:
-        # we shouldn't need to handle dbref here (home handler should fix it), but some have
-        # reported issues here (issue 446).
-        try:
-            new_object.home = handle_dbref(settings.DEFAULT_HOME, _ObjectDB) if not nohome else None
-        except _ObjectDB.DoesNotExist:
-            raise _ObjectDB.DoesNotExist("settings.DEFAULT_HOME (= '%s') does not exist, or the setting is malformed." %
-                                         settings.DEFAULT_HOME)
-
-    # perform a move_to in order to display eventual messages.
+    # trigger relevant move_to hooks in order to display eventual messages.
     if location:
-        new_object.move_to(location, quiet=True)
-    else:
-        # rooms would have location=None.
-        new_object.location = None
+        new_object.at_object_receive(new_object, None)
+        new_object.at_after_move(new_object)
 
     # post-hook setup (mainly used by Exits)
     new_object.basetype_posthook_setup()
 
-    new_object.save()
     return new_object
 
 #alias for create_object
