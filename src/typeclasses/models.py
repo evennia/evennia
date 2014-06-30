@@ -321,11 +321,6 @@ class AttributeHandler(object):
             return ret if len(key) > 1 else default
         return ret[0] if len(ret)==1 else ret
 
-    def batch_add(self, keys, values, categories=None, lockstrings=None,
-                  stratts=None, accessing_obj=None, default_access=True):
-        """
-        Batch version supporting the addition of more than one
-        """
 
     def add(self, key, value, category=None, lockstring="",
             strattr=False, accessing_obj=None, default_access=True):
@@ -338,11 +333,50 @@ class AttributeHandler(object):
         If accessing_obj is given, self.obj's  'attrcreate' lock access
         will be checked against it. If no accessing_obj is given, no check
         will be done.
+        """
+        if accessing_obj and not self.obj.access(accessing_obj,
+                                      self._attrcreate, default=default_access):
+            # check create access
+            return
+        if self._cache is None:
+            self._recache()
+        if not key:
+            return
 
-        The method also accepts multiple attributes (this is a faster way
-        to add attributes since it allows for some optimizations).
-        If so, key and value (or strvalue) must be iterables of the same length.
-        All batch-added Attributes will use the same category and lockstring.
+        category = category.strip().lower() if category is not None else None
+        keystr = key.strip().lower()
+        cachekey = "%s-%s" % (keystr, category)
+        attr_obj = self._cache.get(cachekey)
+
+        if attr_obj:
+            # update an existing attribute object
+            if strattr:
+                # store as a simple string (will not notify OOB handlers)
+                attr_obj.db_strvalue = value
+                attr_obj.save(update_fields=["db_strvalue"])
+            else:
+                # store normally (this will also notify OOB handlers)
+                attr_obj.value = value
+        else:
+            # create a new Attribute (no OOB handlers can be notified)
+            kwargs = {"db_key" : keystr, "db_category" : category,
+                      "db_model" : self._model, "db_attrtype" : self._attrtype,
+                      "db_value" : None if strattr else to_pickle(value),
+                      "db_strvalue" : value if strattr else None}
+            new_attr = Attribute(**kwargs)
+            new_attr.save()
+            getattr(self.obj, self._m2m_fieldname).add(new_attr)
+            self._cache[cachekey] = new_attr
+
+
+    def batch_add(self, key, value, category=None, lockstring="",
+            strattr=False, accessing_obj=None, default_access=True):
+        """
+        Batch-version of add(). This is more efficient than
+        repeat-calling add.
+
+        key and value must be sequences of the same length, each
+        representing a key-value pair.
 
         """
         if accessing_obj and not self.obj.access(accessing_obj,
@@ -388,6 +422,7 @@ class AttributeHandler(object):
             # Add new objects to m2m field all at once
             getattr(self.obj, self._m2m_fieldname).add(*new_attrobjs)
             self._recache()
+
 
     def remove(self, key, raise_exception=False, category=None,
                accessing_obj=None, default_access=True):
@@ -440,6 +475,7 @@ class AttributeHandler(object):
                     if attr.access(accessing_obj, self._attredit, default=default_access)]
         else:
             return self._cache.values()
+
 
 class NickHandler(AttributeHandler):
     """
