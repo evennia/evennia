@@ -84,16 +84,21 @@ _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 _handle_dbref = lambda inp: handle_dbref(inp, ObjectDB)
 
 
-def _get_prototype(dic, prot, protparents):
-    "Recursively traverse a prototype dictionary, including multiple inheritance"
+def _get_prototype(dic, prot, protparents, visited):
+    """
+    Recursively traverse a prototype dictionary,
+    including multiple inheritance and self-reference
+    detection
+    """
+    visited.append(id(dic))
     if "prototype" in dic:
         # move backwards through the inheritance
-        prototypes = dic["prototype"]
-        if not hasattr(prototypes, "__iter__"):
-            prototypes = (prototypes,)
-        for prototype in prototypes:
+        for prototype in make_iter(dic["prototype"]):
+            if id(prototype) in visited:
+                # a loop was detected. Don't self-reference.
+                continue
             # Build the prot dictionary in reverse order, overloading
-            new_prot = _get_prototype(protparents.get(prototype, {}), prot, protparents)
+            new_prot = _get_prototype(protparents.get(prototype, {}), prot, protparents, visited)
             prot.update(new_prot)
     prot.update(dic)
     prot.pop("prototype", None) # we don't need this anymore
@@ -181,7 +186,7 @@ def spawn(*prototypes, **kwargs):
     objsparams = []
     for prototype in prototypes:
 
-        prot = _get_prototype(prototype, {}, protparents)
+        prot = _get_prototype(prototype, {}, protparents, [])
         if not prot:
             continue
 
