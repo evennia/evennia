@@ -19,7 +19,7 @@ __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
            "CmdUnLink", "CmdSetHome", "CmdListCmdSets", "CmdName",
            "CmdOpen", "CmdSetAttribute", "CmdTypeclass", "CmdWipe",
            "CmdLock", "CmdExamine", "CmdFind", "CmdTeleport",
-           "CmdScript", "CmdTag")
+           "CmdScript", "CmdTag", "CmdSpawn")
 
 try:
     # used by @set
@@ -30,7 +30,7 @@ except ImportError:
 
 # used by @find
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
-
+_PROTOTYPE_PARENTS = None
 
 class ObjManipCommand(MuxCommand):
     """
@@ -2244,17 +2244,33 @@ class CmdTag(MuxCommand):
                 string = "No tags attached to %s." % obj
             self.caller.msg(string)
 
+#
+# To use the prototypes with the @spawn function, copy
+# game/gamesrc/world/examples/prototypes.py up one level
+# to game/gamesrc/world. Then add to game/settings.py the
+# line
+#   PROTOTYPE_MODULES = ["game.gamesrc.commands.prototypes"]
+# Reload the server and the prototypes should be available.
+#
+
 class CmdSpawn(MuxCommand):
     """
     spawn objects from prototype
 
     Usage:
-      @spawn {prototype dictionary}
+      @spawn[/switches] {prototype dictionary}
+
+    Switches:
+      noloc - allow location to None. Otherwise, location will default to
+              caller's current location
+      parents - show all available prototype parents
 
     Example:
       @spawn {"key":"goblin", "typeclass":"monster.Monster", "location":"#2"}
 
     Dictionary keys:
+      {wprototype  {n - name of parent prototype to use. Can be a list for
+                        multiple inheritance (inherits left to right)
       {wkey        {n - string, the main object identifier
       {wtypeclass  {n - string, if not set, will use settings.BASE_OBJECT_TYPECLASS
       {wlocation   {n - this should be a valid object or #dbref
@@ -2266,7 +2282,8 @@ class CmdSpawn(MuxCommand):
       {wndb_{n<name>  - value of a nattribute (ndb_ is stripped)
       any other keywords are interpreted as Attributes and their values.
 
-    This command can't access prototype inheritance.
+    The parent prototypes are taken as dictionaries defined globally in
+    the settings.PROTOTYPE_MODULES.
     """
 
     key = "@spawn"
@@ -2274,9 +2291,22 @@ class CmdSpawn(MuxCommand):
     help_category = "Building"
 
     def func(self):
-        "Implements the spawn"
+        "Implements the spawner"
+
+        global _PROTOTYPE_PARENTS
+        if _PROTOTYPE_PARENTS is None:
+            if hasattr(settings, "PROTOTYPE_MODULES"):
+                # read prototype parents from setting
+                _PROTOTYPE_PARENTS = {}
+                for prototype_module in utils.make_iter(settings.PROTOTYPE_MODULES):
+                    _PROTOTYPE_PARENTS.update(dict((key, val)
+                        for key, val in utils.all_from_module(prototype_module).items() if isinstance(val, dict)))
+
         if not self.args:
-            self.caller.msg("Usage: @spawn {key:value, key, value, ...}")
+            string = "Usage: @spawn {key:value, key, value, ...}\n" \
+                    "Available prototypes: %s"
+            self.caller.msg(string % ", ".join(_PROTOTYPE_PARENTS.keys())
+                            if _PROTOTYPE_PARENTS else None)
             return
         from src.utils.spawner import spawn
 
@@ -2297,7 +2327,10 @@ class CmdSpawn(MuxCommand):
             self.caller.msg("The prototype must be a Python dictionary.")
             return
 
-        for obj in spawn(prototype):
+        if not "noloc" in self.switches and not "location" in prototype:
+            prototype["location"] = self.caller.location
+
+        for obj in spawn(prototype, prototype_parents=_PROTOTYPE_PARENTS):
             self.caller.msg("Spawned %s." % obj.key)
 
 

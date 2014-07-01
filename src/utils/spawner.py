@@ -18,7 +18,7 @@ GOBLIN = {
  }
 
 Possible keywords are:
-    prototype - dict, parent prototype of this structure (see below)
+    prototype - string parent prototype
     key - string, the main object identifier
     typeclass - string, if not set, will use settings.BASE_OBJECT_TYPECLASS
     location - this should be a valid object or #dbref
@@ -83,16 +83,16 @@ _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 _handle_dbref = lambda inp: handle_dbref(inp, ObjectDB)
 
 
-def _get_prototype(dic, prot):
+def _get_prototype(dic, prot, protparents):
     "Recursively traverse a prototype dictionary, including multiple inheritance"
     if "prototype" in dic:
         # move backwards through the inheritance
         prototypes = dic["prototype"]
-        if isinstance(prototypes, dict):
+        if not hasattr(prototypes, "__iter__"):
             prototypes = (prototypes,)
         for prototype in prototypes:
             # Build the prot dictionary in reverse order, overloading
-            new_prot = _get_prototype(prototype, prot)
+            new_prot = _get_prototype(protparents.get(prototype, {}), prot, protparents)
             prot.update(new_prot)
     prot.update(dic)
     prot.pop("prototype", None) # we don't need this anymore
@@ -150,16 +150,21 @@ def _batch_create_object(*objparams):
     return objs
 
 
-def spawn(*prototypes):
+def spawn(*prototypes, **kwargs):
     """
     Spawn a number of prototyped objects. Each argument should be a
     prototype dictionary.
+
+    The keyword argument "prototype_parents" holds a dictionary of
+    prototype dictionaries, each with a unique key. The given
+    prototypes may call these as parents using the "prototype" key.
     """
     objsparams = []
 
     for prototype in prototypes:
+        protparents = kwargs.get("prototype_parents", None)
 
-        prot = _get_prototype(prototype, {})
+        prot = _get_prototype(prototype, {}, protparents)
         if not prot:
             continue
 
@@ -195,35 +200,32 @@ def spawn(*prototypes):
 if __name__ == "__main__":
     # testing
 
-    NOBODY = {}
-
-    GOBLIN = {
-     "key": "goblin grunt",
-     "health": lambda: randint(20,30),
-     "resists": ["cold", "poison"],
-     "attacks": ["fists"],
-     "weaknesses": ["fire", "light"]
-     }
-
-    GOBLIN_WIZARD = {
-     "prototype": GOBLIN,
-     "key": "goblin wizard",
-     "spells": ["fire ball", "lighting bolt"]
-     }
-
-    GOBLIN_ARCHER = {
-     "prototype": GOBLIN,
-     "key": "goblin archer",
-     "attacks": ["short bow"]
-    }
-
-    ARCHWIZARD = {
-     "attacks": ["archwizard staff"],
-    }
-
-    GOBLIN_ARCHWIZARD = {
-     "key": "goblin archwizard",
-     "prototype" : (GOBLIN_WIZARD, ARCHWIZARD)
-    }
+    protparents = {
+            "NOBODY": {},
+            "GOBLIN" : {
+             "key": "goblin grunt",
+             "health": lambda: randint(20,30),
+             "resists": ["cold", "poison"],
+             "attacks": ["fists"],
+             "weaknesses": ["fire", "light"]
+             },
+            "GOBLIN_WIZARD" : {
+             "prototype": "GOBLIN",
+             "key": "goblin wizard",
+             "spells": ["fire ball", "lighting bolt"]
+             },
+            "GOBLIN_ARCHER" : {
+             "prototype": "GOBLIN",
+             "key": "goblin archer",
+             "attacks": ["short bow"]
+            },
+            "ARCHWIZARD" : {
+             "attacks": ["archwizard staff"],
+            },
+            "GOBLIN_ARCHWIZARD" : {
+             "key": "goblin archwizard",
+             "prototype" : ("GOBLIN_WIZARD", "ARCHWIZARD")
+            }
+        }
     # test
-    print [o.key for o in spawn(GOBLIN, GOBLIN_ARCHWIZARD)]
+    print [o.key for o in spawn(protparents["GOBLIN"], protparents["GOBLIN_ARCHWIZARD"], prototype_parents=protparents)]
