@@ -6,11 +6,12 @@ Building and world design commands
 """
 from django.conf import settings
 from src.objects.models import ObjectDB
-from src.utils import create, utils, search
-from src.utils.ansi import raw
 from src.locks.lockhandler import LockException
 from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import get_and_merge_cmdsets
+from src.utils import create, utils, search
+from src.utils.spawner import spawn
+from src.utils.ansi import raw
 
 # limit symbol import for API
 __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
@@ -2258,14 +2259,16 @@ class CmdSpawn(MuxCommand):
     spawn objects from prototype
 
     Usage:
-      @spawn[/switches] {prototype dictionary}
+      @spawn
+      @spawn[/switch] prototype_name
+      @spawn[/switch] {prototype dictionary}
 
-    Switches:
-      noloc - allow location to None. Otherwise, location will default to
-              caller's current location
-      parents - show all available prototype parents
+    Switch:
+      noloc - allow location to be None if not specified explicitly. Otherwise,
+              location will default to caller's current location.
 
     Example:
+      @spawn GOBLIN
       @spawn {"key":"goblin", "typeclass":"monster.Monster", "location":"#2"}
 
     Dictionary keys:
@@ -2282,34 +2285,30 @@ class CmdSpawn(MuxCommand):
       {wndb_{n<name>  - value of a nattribute (ndb_ is stripped)
       any other keywords are interpreted as Attributes and their values.
 
-    The parent prototypes are taken as dictionaries defined globally in
-    the settings.PROTOTYPE_MODULES.
+    The available prototypes are defined globally in modules set in
+    settings.PROTOTYPE_MODULES. If @spawn is used without arguments it
+    displays a list of available prototypes.
     """
 
     key = "@spawn"
+    aliases = ["spawn"]
     locks = "cmd:perm(spawn) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
         "Implements the spawner"
 
-        global _PROTOTYPE_PARENTS
-        if _PROTOTYPE_PARENTS is None:
-            if hasattr(settings, "PROTOTYPE_MODULES"):
-                # read prototype parents from setting
-                _PROTOTYPE_PARENTS = {}
-                for prototype_module in utils.make_iter(settings.PROTOTYPE_MODULES):
-                    _PROTOTYPE_PARENTS.update(dict((key, val)
-                        for key, val in utils.all_from_module(prototype_module).items() if isinstance(val, dict)))
+        def _show_prototypes(prototypes):
+            "Helper to show a list of available prototypes"
+            string = "\nAvailable prototypes:\n %s"
+            string = string % utils.fill(", ".join(sorted(prototypes.keys())))
+            return string
 
+        prototypes = spawn(return_prototypes=True)
         if not self.args:
-            string = "Usage: @spawn {key:value, key, value, ...}\n" \
-                    "Available prototypes: %s"
-            self.caller.msg(string % ", ".join(_PROTOTYPE_PARENTS.keys())
-                            if _PROTOTYPE_PARENTS else None)
+            string = "Usage: @spawn {key:value, key, value, ... }"
+            self.caller.msg(string + _show_prototypes(prototypes))
             return
-        from src.utils.spawner import spawn
-
         try:
             # make use of _convert_from_string from the SetAttribute command
             prototype = _convert_from_string(self, self.args)
@@ -2323,14 +2322,22 @@ class CmdSpawn(MuxCommand):
             self.caller.msg(string)
             return
 
-        if not isinstance(prototype, dict):
-            self.caller.msg("The prototype must be a Python dictionary.")
+        if isinstance(prototype, basestring):
+            # A prototype key
+            keystr = prototype
+            prototype = prototypes.get(prototype, None)
+            if not prototype:
+                string = "No prototype named '%s'." % keystr
+                self.caller.msg(string + _show_prototypes(prototypes))
+                return
+        elif not isinstance(prototype, dict):
+            self.caller.msg("The prototype must be a prototype key or a Python dictionary.")
             return
 
         if not "noloc" in self.switches and not "location" in prototype:
             prototype["location"] = self.caller.location
 
-        for obj in spawn(prototype, prototype_parents=_PROTOTYPE_PARENTS):
+        for obj in spawn(prototype):
             self.caller.msg("Spawned %s." % obj.key)
 
 

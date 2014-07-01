@@ -77,6 +77,7 @@ from django.conf import settings
 from random import randint
 from src.objects.models import ObjectDB
 from src.utils.create import handle_dbref
+from src.utils.utils import make_iter, all_from_module
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 
@@ -155,14 +156,30 @@ def spawn(*prototypes, **kwargs):
     Spawn a number of prototyped objects. Each argument should be a
     prototype dictionary.
 
-    The keyword argument "prototype_parents" holds a dictionary of
-    prototype dictionaries, each with a unique key. The given
-    prototypes may call these as parents using the "prototype" key.
+    keyword args:
+        prototype_modules - a python-path to a
+            prototype module, or a list of such paths. These will be used
+            to build the global protparents dictionary accessible by the
+            input prototypes. If not given, it will instead look for modules
+            defined by settings.PROTOTYPE_MODULES.
+        return_prototypes - only return a list of the prototype-parents
+                            (no object creation happens)
     """
-    objsparams = []
 
+    protparents = {}
+    protmodules = make_iter(kwargs.get("prototype_modules", []))
+    if not protmodules and hasattr(settings, "PROTOTYPE_MODULES"):
+        protmodules = make_iter(settings.PROTOTYPE_MODULES)
+    for prototype_module in protmodules:
+        protparents.update(dict((key, val)
+                for key, val in all_from_module(prototype_module).items() if isinstance(val, dict)))
+
+    if "return_prototypes" in kwargs:
+        # only return the parents
+        return protparents
+
+    objsparams = []
     for prototype in prototypes:
-        protparents = kwargs.get("prototype_parents", None)
 
         prot = _get_prototype(prototype, {}, protparents)
         if not prot:
