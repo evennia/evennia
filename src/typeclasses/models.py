@@ -38,7 +38,7 @@ from django.db.models import Q
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
 
-from src.utils.idmapper.models import SharedMemoryModel, WeakSharedMemoryModel
+from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_prop_cache, set_prop_cache
 #from src.server.caches import set_attr_cache
 
@@ -237,19 +237,18 @@ class AttributeHandler(object):
     def __init__(self, obj):
         "Initialize handler"
         self.obj = obj
-        self._model = "%s.%s" % ContentType.objects.get_for_model(obj).natural_key()
+        self._objid = obj.id
+        self._model = to_str(ContentType.objects.get_for_model(obj).natural_key()[1])
         self._cache = None
 
     def _recache(self):
-        if not self._attrtype:
-            attrtype = Q(db_attrtype=None) | Q(db_attrtype='')
-        else:
-            attrtype = Q(db_attrtype=self._attrtype)
+        "Cache all attributes of this object"
+        query = {"%s__id" % self._model : self._objid,
+                 "attribute__db_attrtype" : self._attrtype}
+        attrs = [conn.attribute for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
-                                       attr.db_category.lower() if attr.db_category else None), attr)
-                        for attr in getattr(self.obj, self._m2m_fieldname).filter(
-                            db_model=self._model).filter(attrtype))
-        #set_attr_cache(self.obj, self._cache) # currently only for testing
+                                       attr.db_category.lower() if conn.attribute.db_category else None),
+                            attr) for attr in attrs)
 
     def has(self, key, category=None):
         """
@@ -412,7 +411,7 @@ class AttributeHandler(object):
             else:
                 # create a new Attribute (no OOB handlers can be notified)
                 kwargs = {"db_key" : keystr, "db_category" : category,
-                          "db_model" : self._model, "db_attrtype" : self._attrtype,
+                          "db_attrtype" : self._attrtype,
                           "db_value" : None if strattr else to_pickle(new_value),
                           "db_strvalue" : value if strattr else None}
                 new_attr = Attribute(**kwargs)
@@ -628,19 +627,18 @@ class TagHandler(object):
         and with a tagtype given by self.handlertype
         """
         self.obj = obj
-        self._model = "%s.%s" % ContentType.objects.get_for_model(obj).natural_key()
+        self._objid = obj.id
+        self._model = ContentType.objects.get_for_model(obj).natural_key()[1]
         self._cache = None
 
     def _recache(self):
-        "Update cache from database field"
-        if not self._tagtype:
-            tagtype = Q(db_tagtype='') | Q(db_tagtype__isnull=True)
-        else:
-            tagtype = Q(db_tagtype=self._tagtype)
-        self._cache = dict(("%s-%s" % (tag.db_key, tag.db_category), tag)
-                           for tag in getattr(
-                               self.obj, self._m2m_fieldname).filter(
-                                   db_model=self._model).filter(tagtype))
+        "Cache all tags of this object"
+        query = {"%s__id" % self._model : self._objid,
+                 "tag__db_tagtype" : self._tagtype}
+        tagobjs = [conn.tag for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
+        self._cache = dict(("%s-%s" % (to_str(tagobj.db_key).lower(),
+                                       tagobj.db_category.lower() if tagobj.db_category else None),
+                            tagobj) for tagobj in tagobjs)
 
     def add(self, tag=None, category=None, data=None):
         "Add a new tag to the handler. Tag is a string or a list of strings."
@@ -656,7 +654,7 @@ class TagHandler(object):
             # will overload data on an existing tag since that is not
             # considered part of making the tag unique)
             tagobj = Tag.objects.create_tag(key=tagstr, category=category, data=data,
-                                            model=self._model, tagtype=self._tagtype)
+                                            tagtype=self._tagtype)
             getattr(self.obj, self._m2m_fieldname).add(tagobj)
             if self._cache is None:
                 self._recache()
@@ -709,11 +707,10 @@ class TagHandler(object):
             self._recache()
         if category:
             category = category.strip().lower() if category is not None else None
-            matches = getattr(self.obj, self._m2m_fieldname).filter(db_category=category,
-                                                                db_tagtype=self._tagtype,
-                                                                db_model=self._model)
+            matches = [tag for tag in self._cache.values() if tag.db_category == category]
         else:
             matches = self._cache.values()
+
         if matches:
             if return_key_and_category:
                 # return tuple (key, category)

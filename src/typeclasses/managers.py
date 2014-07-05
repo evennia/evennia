@@ -70,24 +70,24 @@ class AttributeManager(models.Manager):
     @_attr_pickled
     def get(self, *args, **kwargs):
         return super(AttributeManager, self).get(*args, **kwargs)
-    @_attr_pickled
 
+    @_attr_pickled
     def filter(self,*args, **kwargs):
         return super(AttributeManager, self).filter(*args, **kwargs)
-    @_attr_pickled
 
+    @_attr_pickled
     def exclude(self,*args, **kwargs):
         return super(AttributeManager, self).exclude(*args, **kwargs)
-    @_attr_pickled
 
+    @_attr_pickled
     def values(self,*args, **kwargs):
         return super(AttributeManager, self).values(*args, **kwargs)
-    @_attr_pickled
 
+    @_attr_pickled
     def values_list(self,*args, **kwargs):
         return super(AttributeManager, self).values_list(*args, **kwargs)
-    @_attr_pickled
 
+    @_attr_pickled
     def exists(self,*args, **kwargs):
         return super(AttributeManager, self).exists(*args, **kwargs)
 
