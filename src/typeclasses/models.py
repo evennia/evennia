@@ -35,7 +35,6 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.encoding import smart_str
-from django.contrib.contenttypes.models import ContentType
 
 from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_prop_cache, set_prop_cache
@@ -58,7 +57,6 @@ TICKER_HANDLER = None
 _PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 
-_CTYPEGET = ContentType.objects.get
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
@@ -234,7 +232,7 @@ class AttributeHandler(object):
         "Initialize handler"
         self.obj = obj
         self._objid = obj.id
-        self._model = to_str(ContentType.objects.get_for_model(obj).natural_key()[1])
+        self._model = to_str(obj.__class__.__name__.lower())
         self._cache = None
 
     def _recache(self):
@@ -624,7 +622,7 @@ class TagHandler(object):
         """
         self.obj = obj
         self._objid = obj.id
-        self._model = ContentType.objects.get_for_model(obj).natural_key()[1]
+        self._model = obj.__class__.__name__.lower()
         self._cache = None
 
     def _recache(self):
