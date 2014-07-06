@@ -123,6 +123,8 @@ class ServerSession(Session):
             if not self.sessionhandler.sessions_from_player(player):
                 # no more sessions connected to this player
                 player.is_connected = False
+            # this may be used to e.g. delete player after disconnection etc
+            _GA(player.typeclass, "at_post_disconnect")()
 
     def get_player(self):
         """
