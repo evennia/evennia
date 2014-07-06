@@ -23,13 +23,12 @@ from django.utils.encoding import smart_str
 
 from src.players import manager
 from src.scripts.models import ScriptDB
-from src.typeclasses.models import (TypedObject, TagHandler, NickHandler,
-                                    AliasHandler, AttributeHandler)
+from src.typeclasses.models import (TypedObject, NickHandler)
 from src.scripts.scripthandler import ScriptHandler
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.utils import utils, logger
-from src.utils.utils import to_str, make_iter, LazyLoadHandler
+from src.utils.utils import to_str, make_iter, lazy_property
 
 from django.utils.translation import ugettext as _
 
@@ -111,15 +110,19 @@ class PlayerDB(TypedObject, AbstractUser):
         app_label = 'players'
         verbose_name = 'Player'
 
-    def __init__(self, *args, **kwargs):
-        "Parent must be initiated first"
-        TypedObject.__init__(self, *args, **kwargs)
-        # handlers
-        _SA(self, "cmdset", LazyLoadHandler(self, "cmdset", CmdSetHandler, True))
-        _SA(self, "scripts", LazyLoadHandler(self, "scripts", ScriptHandler))
-        _SA(self, "nicks", LazyLoadHandler(self, "nicks", NickHandler))
-        #_SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
-        #_SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
+    # lazy-loading of handlers
+    @lazy_property
+    def cmdset(self):
+        return CmdSetHandler(self, True)
+
+    @lazy_property
+    def scripts(self):
+        return ScriptHandler(self)
+
+    @lazy_property
+    def nicks(self):
+        return NickHandler(self)
+
 
     # alias to the objs property
     def __characters_get(self):

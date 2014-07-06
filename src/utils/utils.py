@@ -1060,67 +1060,38 @@ def deepsize(obj, max_depth=4):
     size = getsizeof(obj) + sum([p[1] for p in sizedict.values()])
     return size
 
-# lazy load handlers
-
-import weakref
-class LazyLoadHandler(object):
+# lazy load handler
+_missing = object()
+class lazy_property(object):
     """
-    Load handlers only when they are actually accessed
+    Delays loading of property until first access. Credit goes to
+    the Implementation in the werkzeug suite:
+    http://werkzeug.pocoo.org/docs/utils/#werkzeug.utils.cached_property
+
+    This should be used as a decorator in a class and is in Evennia
+    mainly used to lazy-load handlers:
+
+        @lazy_property
+        def attributes(self):
+            return AttributeHandler(self)
+
+    Once initialized, the AttributeHandler will be available
+    as a property "attributes" on the object.
+
     """
-    def __init__(self, obj, name, cls, *args):
-        """
-        Set up a delayed load of a class. The 'name' must be named the
-        same as the variable to which the LazyLoadHandler is assigned.
-        """
-        _SA(self, "obj", weakref.ref(obj))
-        _SA(self, "name", name)
-        _SA(self, "cls", cls)
-        _SA(self, "args", args)
+    def __init__(self, func, name=None, doc=None):
+        "Store all properties for now"
+        self.__name__ = name or func.__name__
+        self.__module__ = func.__module__
+        self.__doc__ = doc or func.__doc__
+        self.func = func
 
-    def _instantiate(self):
-        """
-        Initialize handler as cls(obj, *args)
-        """
-        obj = _GA(self, "obj")()
-        instance = _GA(self, "cls")(weakref.proxy(obj), *_GA(self, "args"))
-        _SA(obj, _GA(self, "name"), instance)
-        return instance
-
-    def __getattribute__(self, name):
-        """
-        Access means loading the handler
-        """
-        return getattr(_GA(self, "_instantiate")(), name)
-
-    def __setattr__(self, name, value):
-        """
-        Setting means loading the handler
-        """
-        setattr(_GA(self, "_instantiate")(), name, value)
-
-    def __delattr__(self, name):
-        """
-        Deleting also triggers loading of handler
-        """
-        delattr(_GA(self, "_instantiate")(), name)
-
-    def __repr__(self):
-        return repr(_GA(self, "_instantiate")())
-    def __str__(self):
-        return str(_GA(self, "_instantiate")())
-    def __unicode__(self):
-        return str(_GA(self, "_instantiate")())
-
-class NonWeakLazyLoadHandler(LazyLoadHandler):
-    """
-    Variation of LazyLoadHandler that does not
-    create a weak reference when initiating.
-    """
-    def _instantiate(self):
-        """
-        Initialize handler as cls(obj, *args)
-        """
-        obj = _GA(self, "obj")()
-        instance = _GA(self, "cls")(obj, *_GA(self, "args"))
-        _SA(obj, _GA(self, "name"), instance)
-        return instance
+    def __get__(self, obj, type=None):
+        "Triggers initialization"
+        if obj is None:
+            return self
+        value = obj.__dict__.get(self.__name__, _missing)
+        if value is _missing:
+            value = self.func(obj)
+        obj.__dict__[self.__name__] = value
+        return value

@@ -19,16 +19,15 @@ from django.db import models
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from src.typeclasses.models import (TypedObject, TagHandler, NickHandler,
-                                    AliasHandler, AttributeHandler)
+from src.typeclasses.models import TypedObject, NickHandler
 from src.objects.manager import ObjectManager
 from src.players.models import PlayerDB
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
-from src.utils.utils import (make_iter, to_str, to_unicode,
-                             variable_from_module, dbref, LazyLoadHandler)
+from src.utils.utils import (make_iter, to_str, to_unicode, lazy_property,
+                             variable_from_module, dbref)
 
 from django.utils.translation import ugettext as _
 
@@ -130,19 +129,18 @@ class ObjectDB(TypedObject):
     _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
     _default_typeclass_path = settings.BASE_OBJECT_TYPECLASS or "src.objects.objects.Object"
 
-    # Add the object-specific handlers
-    def __init__(self, *args, **kwargs):
-        "Parent must be initialized first."
-        TypedObject.__init__(self, *args, **kwargs)
-        # handlers
-        _SA(self, "cmdset", LazyLoadHandler(self, "cmdset", CmdSetHandler, True))
-        _SA(self, "scripts", LazyLoadHandler(self, "scripts", ScriptHandler))
-        _SA(self, "nicks", LazyLoadHandler(self, "nicks", NickHandler))
-        #_SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
-        #_SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
-        #_SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
-        # make sure to sync the contents cache when initializing
-        #_GA(self, "contents_update")()
+    # lazy-load handlers
+    @lazy_property
+    def cmdset(self):
+        return CmdSetHandler(self, True)
+
+    @lazy_property
+    def scripts(self):
+        return ScriptHandler(self)
+
+    @lazy_property
+    def nicks(self):
+        return NickHandler(self)
 
     def _at_db_player_postsave(self):
         """

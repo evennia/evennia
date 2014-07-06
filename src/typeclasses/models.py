@@ -34,7 +34,6 @@ import weakref
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-from django.db.models import Q
 from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
 
@@ -48,7 +47,7 @@ from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger
 from src.utils.utils import (
-    make_iter, is_iter, to_str, inherits_from, LazyLoadHandler)
+    make_iter, is_iter, to_str, inherits_from, lazy_property)
 from src.utils.dbserialize import to_pickle, from_pickle
 from src.utils.picklefield import PickledObjectField
 
@@ -132,12 +131,9 @@ class Attribute(SharedMemoryModel):
     # Database manager
     objects = managers.AttributeManager()
 
-    # Lock handler self.locks
-    def __init__(self, *args, **kwargs):
-        "Initializes the parent first -important!"
-        #SharedMemoryModel.__init__(self, *args, **kwargs)
-        super(Attribute, self).__init__(*args, **kwargs)
-        self.locks = LazyLoadHandler(self, "locks", LockHandler)
+    @lazy_property
+    def locks(self):
+        return LockHandler(self)
 
     class Meta:
         "Define Django meta options"
@@ -801,15 +797,33 @@ class TypedObject(SharedMemoryModel):
     def __init__(self, *args, **kwargs):
         "We must initialize the parent first - important!"
         super(TypedObject, self).__init__(*args, **kwargs)
-        #SharedMemoryModel.__init__(self, *args, **kwargs)
         _SA(self, "dbobj", self)   # this allows for self-reference
-        _SA(self, "locks", LazyLoadHandler(self, "locks", LockHandler))
-        _SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
-        _SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
-        _SA(self, "permissions", LazyLoadHandler(self, "permissions", PermissionHandler))
-        _SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
-        _SA(self, "nattributes", NAttributeHandler(self))
-        #_SA(self, "nattributes", LazyLoadHandler(self, "nattributes", NAttributeHandler))
+
+    # initialize all handlers in a lazy fashion
+    @lazy_property
+    def attributes(self):
+        return AttributeHandler(self)
+
+    @lazy_property
+    def locks(self):
+        return LockHandler(self)
+
+    @lazy_property
+    def tags(self):
+        return TagHandler(self)
+
+    @lazy_property
+    def aliases(self):
+        return AliasHandler(self)
+
+    @lazy_property
+    def permissions(self):
+        return PermissionHandler(self)
+
+    @lazy_property
+    def nattributes(self):
+        return NAttributeHandler(self)
+
 
     class Meta:
         """
@@ -1276,13 +1290,10 @@ class TypedObject(SharedMemoryModel):
         if not TICKER_HANDLER:
             from src.scripts.tickerhandler import TICKER_HANDLER
         TICKER_HANDLER.remove(self) # removes objects' all ticker subscriptions
-        if not isinstance(_GA(self, "permissions"), LazyLoadHandler):
-            _GA(self, "permissions").clear()
-        if not isinstance(_GA(self, "attributes"), LazyLoadHandler):
-            _GA(self, "attributes").clear()
-        if not isinstance(_GA(self, "aliases"), LazyLoadHandler):
-            _GA(self, "aliases").clear()
-        if hasattr(self, "nicks") and not isinstance(_GA(self, "nicks"), LazyLoadHandler):
+        _GA(self, "permissions").clear()
+        _GA(self, "attributes").clear()
+        _GA(self, "aliases").clear()
+        if hasattr(self, "nicks"):
             _GA(self, "nicks").clear()
         _SA(self, "_cached_typeclass", None)
         _GA(self, "flush_from_cache")()

@@ -141,7 +141,6 @@ class CmdClimb(Command):
         obj = self.caller.search(self.args.strip())
         if not obj:
             return
-        print "obj", "self.obj", obj, self
         if obj != self.obj:
             self.caller.msg("Try as you might, you cannot climb that.")
             return

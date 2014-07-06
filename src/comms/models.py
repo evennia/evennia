@@ -27,7 +27,7 @@ from src.utils.idmapper.models import SharedMemoryModel
 from src.comms import managers
 from src.comms.managers import identify_object
 from src.locks.lockhandler import LockHandler
-from src.utils.utils import crop, make_iter, LazyLoadHandler
+from src.utils.utils import crop, make_iter, lazy_property
 
 __all__ = ("Msg", "TempMsg", "ChannelDB")
 
@@ -103,7 +103,6 @@ class Msg(SharedMemoryModel):
 
     def __init__(self, *args, **kwargs):
         SharedMemoryModel.__init__(self, *args, **kwargs)
-        #_SA(self, "locks", LazyLoadHandler(self, "locks", LockHandler))
         self.extra_senders = []
 
     class Meta:
@@ -299,9 +298,12 @@ class TempMsg(object):
         self.header = header
         self.message = message
         self.lock_storage = lockstring
-        self.locks = LazyLoadHandler(self, "locks", LockHandler)
         self.hide_from = hide_from and make_iter(hide_from) or []
         self.date_sent = datetime.now()
+
+    @lazy_property
+    def locks(self):
+        return LockHandler(self)
 
     def __str__(self):
         "This handles what is shown when e.g. printing the message"
@@ -358,12 +360,6 @@ class ChannelDB(TypedObject):
 
     _typeclass_paths = settings.CHANNEL_TYPECLASS_PATHS
     _default_typeclass_path = settings.BASE_CHANNEL_TYPECLASS or "src.comms.comms.Channel"
-
-    def __init__(self, *args, **kwargs):
-        TypedObject.__init__(self, *args, **kwargs)
-        _SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
-        _SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
-        _SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
 
     class Meta:
         "Define Django meta options"

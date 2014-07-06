@@ -14,7 +14,7 @@ from src.utils.idmapper.models import SharedMemoryModel
 from src.help.manager import HelpEntryManager
 from src.typeclasses.models import Tag, TagHandler
 from src.locks.lockhandler import LockHandler
-from src.utils.utils import LazyLoadHandler
+from src.utils.utils import lazy_property
 __all__ = ("HelpEntry",)
 
 
@@ -66,10 +66,16 @@ class HelpEntry(SharedMemoryModel):
     objects = HelpEntryManager()
     _is_deleted = False
 
-    def __init__(self, *args, **kwargs):
-        SharedMemoryModel.__init__(self, *args, **kwargs)
-        self.locks = LazyLoadHandler(self, "locks", LockHandler)
-        self.tags = LazyLoadHandler(self, "tags", TagHandler)
+    # lazy-loaded handlers
+
+    @lazy_property
+    def locks(self):
+        return LockHandler(self)
+
+    @lazy_property
+    def tags(self):
+        return TagHandler(self)
+
 
     class Meta:
         "Define Django meta options"
