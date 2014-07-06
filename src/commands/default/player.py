@@ -378,9 +378,11 @@ class CmdWho(MuxPlayerCommand):
 
         nplayers = (SESSIONS.player_count())
         if show_session_data:
+            # privileged info
             table = prettytable.PrettyTable(["{wPlayer Name",
                                              "{wOn for",
                                              "{wIdle",
+                                             "{wPuppeting",
                                              "{wRoom",
                                              "{wCmds",
                                              "{wProtocol",
@@ -389,25 +391,27 @@ class CmdWho(MuxPlayerCommand):
                 if not session.logged_in: continue
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
-                plr_pobject = session.get_puppet()
-                plr_pobject = plr_pobject or session.get_player()
-                table.add_row([utils.crop(plr_pobject.name, width=25),
+                player = session.get_player()
+                puppet = session.get_puppet()
+                location = puppet.location.key if puppet else "None"
+                table.add_row([utils.crop(player.name, width=25),
                                utils.time_format(delta_conn, 0),
                                utils.time_format(delta_cmd, 1),
-                               hasattr(plr_pobject, "location") and plr_pobject.location and plr_pobject.location.key or "None",
+                               utils.crop(puppet.key if puppet else "None", width=25),
+                               utils.crop(location, width=25),
                                session.cmd_total,
                                session.protocol_key,
                                isinstance(session.address, tuple) and session.address[0] or session.address])
         else:
+            # unprivileged
             table = prettytable.PrettyTable(["{wPlayer name", "{wOn for", "{wIdle"])
             for session in session_list:
                 if not session.logged_in:
                     continue
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
-                plr_pobject = session.get_puppet()
-                plr_pobject = plr_pobject or session.get_player()
-                table.add_row([utils.crop(plr_pobject.name, width=25),
+                player = session.get_player()
+                table.add_row([utils.crop(player.key, width=25),
                                utils.time_format(delta_conn, 0),
                                utils.time_format(delta_cmd, 1)])
 
