@@ -383,6 +383,16 @@ class Player(TypeClass):
         reason = reason and "(%s)" % reason or ""
         self._send_to_connect_channel("{R%s disconnected %s{n" % (self.key, reason))
 
+    def at_post_disconnect(self):
+        """
+        This is called after disconnection is complete. No messages
+        can be relayed to the player from here. After this call, the
+        player should not be accessed any more, making this a good
+        spot for deleting it (in the case of a guest player account,
+        for example).
+        """
+        pass
+
     def at_message_receive(self, message, from_obj=None):
         """
         Called when any text is emitted to this

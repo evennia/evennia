@@ -13,8 +13,9 @@ from django.conf import settings
 #from src.scripts.models import ScriptDB
 from src.comms.models import ChannelDB
 from src.utils import logger, utils
-from src.utils.utils import make_iter, to_unicode, LazyLoadHandler
-from src.commands import cmdhandler, cmdsethandler
+from src.utils.utils import make_iter, to_unicode
+from src.commands.cmdhandler import cmdhandler
+from src.commands.cmdsethandler import CmdSetHandler
 from src.server.session import Session
 
 IDLE_COMMAND = settings.IDLE_COMMAND
@@ -49,7 +50,7 @@ class ServerSession(Session):
         self.puppet = None
         self.player = None
         self.cmdset_storage_string = ""
-        self.cmdset = LazyLoadHandler(self, "cmdset", cmdsethandler.CmdSetHandler, True)
+        self.cmdset = CmdSetHandler(self, True)
 
     def __cmdset_storage_get(self):
         return [path.strip() for path in self.cmdset_storage_string.split(',')]
@@ -103,7 +104,7 @@ class ServerSession(Session):
         self.player.save()
 
         # add the session-level cmdset
-        self.cmdset = LazyLoadHandler(self, "cmdset", cmdsethandler.CmdSetHandler, True)
+        self.cmdset = CmdSetHandler(self, True)
 
     def at_disconnect(self):
         """
@@ -122,6 +123,8 @@ class ServerSession(Session):
             if not self.sessionhandler.sessions_from_player(player):
                 # no more sessions connected to this player
                 player.is_connected = False
+            # this may be used to e.g. delete player after disconnection etc
+            _GA(player.typeclass, "at_post_disconnect")()
 
     def get_player(self):
         """
@@ -198,7 +201,7 @@ class ServerSession(Session):
                 else:
                     text = self.player.nicks.nickreplace(text,
                                 categories=("inputline", "channels"), include_player=False)
-            cmdhandler.cmdhandler(self, text, callertype="session", sessid=self.sessid)
+            cmdhandler(self, text, callertype="session", sessid=self.sessid)
             self.update_session_counters()
         if "oob" in kwargs:
             # handle oob instructions

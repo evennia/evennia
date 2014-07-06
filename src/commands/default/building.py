@@ -6,11 +6,12 @@ Building and world design commands
 """
 from django.conf import settings
 from src.objects.models import ObjectDB
-from src.utils import create, utils, search
-from src.utils.ansi import raw
 from src.locks.lockhandler import LockException
 from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import get_and_merge_cmdsets
+from src.utils import create, utils, search
+from src.utils.spawner import spawn
+from src.utils.ansi import raw
 
 # limit symbol import for API
 __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
@@ -19,7 +20,7 @@ __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
            "CmdUnLink", "CmdSetHome", "CmdListCmdSets", "CmdName",
            "CmdOpen", "CmdSetAttribute", "CmdTypeclass", "CmdWipe",
            "CmdLock", "CmdExamine", "CmdFind", "CmdTeleport",
-           "CmdScript", "CmdTag")
+           "CmdScript", "CmdTag", "CmdSpawn")
 
 try:
     # used by @set
@@ -30,7 +31,7 @@ except ImportError:
 
 # used by @find
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
-
+_PROTOTYPE_PARENTS = None
 
 class ObjManipCommand(MuxCommand):
     """
@@ -1169,6 +1170,74 @@ class CmdOpen(ObjManipCommand):
                                   back_exit_typeclass)
 
 
+def _convert_from_string(cmd, strobj):
+    """
+    Converts a single object in *string form* to its equivalent python
+    type.
+
+     Python earlier than 2.6:
+    Handles floats, ints, and limited nested lists and dicts
+    (can't handle lists in a dict, for example, this is mainly due to
+    the complexity of parsing this rather than any technical difficulty -
+    if there is a need for @set-ing such complex structures on the
+    command line we might consider adding it).
+     Python 2.6 and later:
+    Supports all Python structures through literal_eval as long as they
+    are valid Python syntax. If they are not (such as [test, test2], ie
+    withtout the quotes around the strings), the entire structure will
+    be converted to a string and a warning will be given.
+
+    We need to convert like this since all data being sent over the
+    telnet connection by the Player is text - but we will want to
+    store it as the "real" python type so we can do convenient
+    comparisons later (e.g.  obj.db.value = 2, if value is stored as a
+    string this will always fail).
+    """
+
+    def rec_convert(obj):
+        """
+        Helper function of recursive conversion calls. This is only
+        used for Python <=2.5. After that literal_eval is available.
+        """
+        # simple types
+        try:
+            return int(obj)
+        except ValueError:
+            pass
+        try:
+            return float(obj)
+        except ValueError:
+            pass
+        # iterables
+        if obj.startswith('[') and obj.endswith(']'):
+            "A list. Traverse recursively."
+            return [rec_convert(val) for val in obj[1:-1].split(',')]
+        if obj.startswith('(') and obj.endswith(')'):
+            "A tuple. Traverse recursively."
+            return tuple([rec_convert(val) for val in obj[1:-1].split(',')])
+        if obj.startswith('{') and obj.endswith('}') and ':' in obj:
+            "A dict. Traverse recursively."
+            return dict([(rec_convert(pair.split(":", 1)[0]),
+                          rec_convert(pair.split(":", 1)[1]))
+                         for pair in obj[1:-1].split(',') if ":" in pair])
+        # if nothing matches, return as-is
+        return obj
+
+    if _LITERAL_EVAL:
+        # Use literal_eval to parse python structure exactly.
+        try:
+            return _LITERAL_EVAL(strobj)
+        except (SyntaxError, ValueError):
+            # treat as string
+            string = "{RNote: Value was converted to string. If you don't want this, "
+            string += "use proper Python syntax, like enclosing strings in quotes.{n"
+            cmd.caller.msg(string)
+            return utils.to_str(strobj)
+    else:
+        # fall back to old recursive solution (does not support
+        # nested lists/dicts)
+        return rec_convert(strobj.strip())
+
 class CmdSetAttribute(ObjManipCommand):
     """
     set attribute on an object or player
@@ -1202,73 +1271,6 @@ class CmdSetAttribute(ObjManipCommand):
     locks = "cmd:perm(set) or perm(Builders)"
     help_category = "Building"
 
-    def convert_from_string(self, strobj):
-        """
-        Converts a single object in *string form* to its equivalent python
-        type.
-
-         Python earlier than 2.6:
-        Handles floats, ints, and limited nested lists and dicts
-        (can't handle lists in a dict, for example, this is mainly due to
-        the complexity of parsing this rather than any technical difficulty -
-        if there is a need for @set-ing such complex structures on the
-        command line we might consider adding it).
-         Python 2.6 and later:
-        Supports all Python structures through literal_eval as long as they
-        are valid Python syntax. If they are not (such as [test, test2], ie
-        withtout the quotes around the strings), the entire structure will
-        be converted to a string and a warning will be given.
-
-        We need to convert like this since all data being sent over the
-        telnet connection by the Player is text - but we will want to
-        store it as the "real" python type so we can do convenient
-        comparisons later (e.g.  obj.db.value = 2, if value is stored as a
-        string this will always fail).
-        """
-
-        def rec_convert(obj):
-            """
-            Helper function of recursive conversion calls. This is only
-            used for Python <=2.5. After that literal_eval is available.
-            """
-            # simple types
-            try:
-                return int(obj)
-            except ValueError:
-                pass
-            try:
-                return float(obj)
-            except ValueError:
-                pass
-            # iterables
-            if obj.startswith('[') and obj.endswith(']'):
-                "A list. Traverse recursively."
-                return [rec_convert(val) for val in obj[1:-1].split(',')]
-            if obj.startswith('(') and obj.endswith(')'):
-                "A tuple. Traverse recursively."
-                return tuple([rec_convert(val) for val in obj[1:-1].split(',')])
-            if obj.startswith('{') and obj.endswith('}') and ':' in obj:
-                "A dict. Traverse recursively."
-                return dict([(rec_convert(pair.split(":", 1)[0]),
-                              rec_convert(pair.split(":", 1)[1]))
-                             for pair in obj[1:-1].split(',') if ":" in pair])
-            # if nothing matches, return as-is
-            return obj
-
-        if _LITERAL_EVAL:
-            # Use literal_eval to parse python structure exactly.
-            try:
-                return _LITERAL_EVAL(strobj)
-            except (SyntaxError, ValueError):
-                # treat as string
-                string = "{RNote: Value was converted to string. If you don't want this, "
-                string += "use proper Python syntax, like enclosing strings in quotes.{n"
-                self.caller.msg(string)
-                return utils.to_str(strobj)
-        else:
-            # fall back to old recursive solution (does not support
-            # nested lists/dicts)
-            return rec_convert(strobj.strip())
 
     def func(self):
         "Implement the set attribute - a limited form of @py."
@@ -1295,7 +1297,7 @@ class CmdSetAttribute(ObjManipCommand):
             if self.rhs is None:
                 # no = means we inspect the attribute(s)
                 if not attrs:
-                    attrs = [attr.key for attr in obj.get_all_attributes()]
+                    attrs = [attr.key for attr in obj.attributes.all()]
                 for attr in attrs:
                     if obj.attributes.has(attr):
                         string += "\nAttribute %s/%s = %s" % (obj.name, attr,
@@ -1303,7 +1305,7 @@ class CmdSetAttribute(ObjManipCommand):
                     else:
                         string += "\n%s has no attribute '%s'." % (obj.name, attr)
                     # we view it without parsing markup.
-                self.caller.msg(string.strip(), data={"raw": True})
+                self.caller.msg(string.strip(), raw=True)
                 return
             else:
                 # deleting the attribute(s)
@@ -1318,7 +1320,7 @@ class CmdSetAttribute(ObjManipCommand):
             # setting attribute(s). Make sure to convert to real Python type before saving.
              for attr in attrs:
                 try:
-                    obj.attributes.add(attr, self.convert_from_string(value))
+                    obj.attributes.add(attr, _convert_from_string(self, value))
                     string += "\nCreated attribute %s/%s = %s" % (obj.name, attr, value)
                 except SyntaxError:
                     # this means literal_eval tried to parse a faulty string
@@ -2242,3 +2244,100 @@ class CmdTag(MuxCommand):
             else:
                 string = "No tags attached to %s." % obj
             self.caller.msg(string)
+
+#
+# To use the prototypes with the @spawn function, copy
+# game/gamesrc/world/examples/prototypes.py up one level
+# to game/gamesrc/world. Then add to game/settings.py the
+# line
+#   PROTOTYPE_MODULES = ["game.gamesrc.commands.prototypes"]
+# Reload the server and the prototypes should be available.
+#
+
+class CmdSpawn(MuxCommand):
+    """
+    spawn objects from prototype
+
+    Usage:
+      @spawn
+      @spawn[/switch] prototype_name
+      @spawn[/switch] {prototype dictionary}
+
+    Switch:
+      noloc - allow location to be None if not specified explicitly. Otherwise,
+              location will default to caller's current location.
+
+    Example:
+      @spawn GOBLIN
+      @spawn {"key":"goblin", "typeclass":"monster.Monster", "location":"#2"}
+
+    Dictionary keys:
+      {wprototype  {n - name of parent prototype to use. Can be a list for
+                        multiple inheritance (inherits left to right)
+      {wkey        {n - string, the main object identifier
+      {wtypeclass  {n - string, if not set, will use settings.BASE_OBJECT_TYPECLASS
+      {wlocation   {n - this should be a valid object or #dbref
+      {whome       {n - valid object or #dbref
+      {wdestination{n - only valid for exits (object or dbref)
+      {wpermissions{n - string or list of permission strings
+      {wlocks      {n - a lock-string
+      {waliases    {n - string or list of strings
+      {wndb_{n<name>  - value of a nattribute (ndb_ is stripped)
+      any other keywords are interpreted as Attributes and their values.
+
+    The available prototypes are defined globally in modules set in
+    settings.PROTOTYPE_MODULES. If @spawn is used without arguments it
+    displays a list of available prototypes.
+    """
+
+    key = "@spawn"
+    aliases = ["spawn"]
+    locks = "cmd:perm(spawn) or perm(Builders)"
+    help_category = "Building"
+
+    def func(self):
+        "Implements the spawner"
+
+        def _show_prototypes(prototypes):
+            "Helper to show a list of available prototypes"
+            string = "\nAvailable prototypes:\n %s"
+            string = string % utils.fill(", ".join(sorted(prototypes.keys())))
+            return string
+
+        prototypes = spawn(return_prototypes=True)
+        if not self.args:
+            string = "Usage: @spawn {key:value, key, value, ... }"
+            self.caller.msg(string + _show_prototypes(prototypes))
+            return
+        try:
+            # make use of _convert_from_string from the SetAttribute command
+            prototype = _convert_from_string(self, self.args)
+        except SyntaxError:
+            # this means literal_eval tried to parse a faulty string
+            string = "{RCritical Python syntax error in argument. "
+            string += "Only primitive Python structures are allowed. "
+            string += "\nYou also need to use correct Python syntax. "
+            string += "Remember especially to put quotes around all "
+            string += "strings inside lists and dicts.{n"
+            self.caller.msg(string)
+            return
+
+        if isinstance(prototype, basestring):
+            # A prototype key
+            keystr = prototype
+            prototype = prototypes.get(prototype, None)
+            if not prototype:
+                string = "No prototype named '%s'." % keystr
+                self.caller.msg(string + _show_prototypes(prototypes))
+                return
+        elif not isinstance(prototype, dict):
+            self.caller.msg("The prototype must be a prototype key or a Python dictionary.")
+            return
+
+        if not "noloc" in self.switches and not "location" in prototype:
+            prototype["location"] = self.caller.location
+
+        for obj in spawn(prototype):
+            self.caller.msg("Spawned %s." % obj.key)
+
+

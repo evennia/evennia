@@ -34,11 +34,9 @@ import weakref
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-from django.db.models import Q
 from django.utils.encoding import smart_str
-from django.contrib.contenttypes.models import ContentType
 
-from src.utils.idmapper.models import SharedMemoryModel, WeakSharedMemoryModel
+from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_prop_cache, set_prop_cache
 #from src.server.caches import set_attr_cache
 
@@ -48,7 +46,7 @@ from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger
 from src.utils.utils import (
-    make_iter, is_iter, to_str, inherits_from, LazyLoadHandler)
+    make_iter, is_iter, to_str, inherits_from, lazy_property)
 from src.utils.dbserialize import to_pickle, from_pickle
 from src.utils.picklefield import PickledObjectField
 
@@ -59,7 +57,6 @@ TICKER_HANDLER = None
 _PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 
-_CTYPEGET = ContentType.objects.get
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
@@ -132,12 +129,9 @@ class Attribute(SharedMemoryModel):
     # Database manager
     objects = managers.AttributeManager()
 
-    # Lock handler self.locks
-    def __init__(self, *args, **kwargs):
-        "Initializes the parent first -important!"
-        #SharedMemoryModel.__init__(self, *args, **kwargs)
-        super(Attribute, self).__init__(*args, **kwargs)
-        self.locks = LazyLoadHandler(self, "locks", LockHandler)
+    @lazy_property
+    def locks(self):
+        return LockHandler(self)
 
     class Meta:
         "Define Django meta options"
@@ -237,19 +231,18 @@ class AttributeHandler(object):
     def __init__(self, obj):
         "Initialize handler"
         self.obj = obj
-        self._model = "%s.%s" % ContentType.objects.get_for_model(obj).natural_key()
+        self._objid = obj.id
+        self._model = to_str(obj.__class__.__name__.lower())
         self._cache = None
 
     def _recache(self):
-        if not self._attrtype:
-            attrtype = Q(db_attrtype=None) | Q(db_attrtype='')
-        else:
-            attrtype = Q(db_attrtype=self._attrtype)
+        "Cache all attributes of this object"
+        query = {"%s__id" % self._model : self._objid,
+                 "attribute__db_attrtype" : self._attrtype}
+        attrs = [conn.attribute for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
-                                       attr.db_category.lower() if attr.db_category else None), attr)
-                        for attr in getattr(self.obj, self._m2m_fieldname).filter(
-                            db_model=self._model).filter(attrtype))
-        #set_attr_cache(self.obj, self._cache) # currently only for testing
+                                       attr.db_category.lower() if conn.attribute.db_category else None),
+                            attr) for attr in attrs)
 
     def has(self, key, category=None):
         """
@@ -321,6 +314,7 @@ class AttributeHandler(object):
             return ret if len(key) > 1 else default
         return ret[0] if len(ret)==1 else ret
 
+
     def add(self, key, value, category=None, lockstring="",
             strattr=False, accessing_obj=None, default_access=True):
         """
@@ -341,28 +335,87 @@ class AttributeHandler(object):
             self._recache()
         if not key:
             return
-        key = key.strip().lower()
+
         category = category.strip().lower() if category is not None else None
-        cachekey = "%s-%s" % (key, category)
+        keystr = key.strip().lower()
+        cachekey = "%s-%s" % (keystr, category)
         attr_obj = self._cache.get(cachekey)
-        if not attr_obj:
-            # no old attr available; create new.
-            attr_obj = Attribute(db_key=key, db_category=category,
-                                 db_model=self._model, db_attrtype=self._attrtype)
-            attr_obj.save()  # important
-            getattr(self.obj, self._m2m_fieldname).add(attr_obj)
-            self._cache[cachekey] = attr_obj
-        if lockstring:
-            attr_obj.locks.add(lockstring)
-        # we shouldn't need to fear stale objects, the field signalling
-        # should catch all cases
-        if strattr:
-            # store as a simple string
-            attr_obj.db_strvalue = value
-            attr_obj.save(update_fields=["db_strvalue"])
+
+        if attr_obj:
+            # update an existing attribute object
+            if strattr:
+                # store as a simple string (will not notify OOB handlers)
+                attr_obj.db_strvalue = value
+                attr_obj.save(update_fields=["db_strvalue"])
+            else:
+                # store normally (this will also notify OOB handlers)
+                attr_obj.value = value
         else:
-            # pickle arbitrary data
-            attr_obj.value = value
+            # create a new Attribute (no OOB handlers can be notified)
+            kwargs = {"db_key" : keystr, "db_category" : category,
+                      "db_model" : self._model, "db_attrtype" : self._attrtype,
+                      "db_value" : None if strattr else to_pickle(value),
+                      "db_strvalue" : value if strattr else None}
+            new_attr = Attribute(**kwargs)
+            new_attr.save()
+            getattr(self.obj, self._m2m_fieldname).add(new_attr)
+            self._cache[cachekey] = new_attr
+
+
+    def batch_add(self, key, value, category=None, lockstring="",
+            strattr=False, accessing_obj=None, default_access=True):
+        """
+        Batch-version of add(). This is more efficient than
+        repeat-calling add.
+
+        key and value must be sequences of the same length, each
+        representing a key-value pair.
+
+        """
+        if accessing_obj and not self.obj.access(accessing_obj,
+                                      self._attrcreate, default=default_access):
+            # check create access
+            return
+        if self._cache is None:
+            self._recache()
+        if not key:
+            return
+
+        keys, values= make_iter(key), make_iter(value)
+
+        if len(keys) != len(values):
+            raise RuntimeError("AttributeHandler.add(): key and value of different length: %s vs %s" % key, value)
+        category = category.strip().lower() if category is not None else None
+        new_attrobjs = []
+        for ikey, keystr in enumerate(keys):
+            keystr = keystr.strip().lower()
+            new_value = values[ikey]
+            cachekey = "%s-%s" % (keystr, category)
+            attr_obj = self._cache.get(cachekey)
+
+            if attr_obj:
+                # update an existing attribute object
+                if strattr:
+                    # store as a simple string (will not notify OOB handlers)
+                    attr_obj.db_strvalue = new_value
+                    attr_obj.save(update_fields=["db_strvalue"])
+                else:
+                    # store normally (this will also notify OOB handlers)
+                    attr_obj.value = new_value
+            else:
+                # create a new Attribute (no OOB handlers can be notified)
+                kwargs = {"db_key" : keystr, "db_category" : category,
+                          "db_attrtype" : self._attrtype,
+                          "db_value" : None if strattr else to_pickle(new_value),
+                          "db_strvalue" : value if strattr else None}
+                new_attr = Attribute(**kwargs)
+                new_attr.save()
+                new_attrobjs.append(new_attr)
+        if new_attrobjs:
+            # Add new objects to m2m field all at once
+            getattr(self.obj, self._m2m_fieldname).add(*new_attrobjs)
+            self._recache()
+
 
     def remove(self, key, raise_exception=False, category=None,
                accessing_obj=None, default_access=True):
@@ -415,6 +468,7 @@ class AttributeHandler(object):
                     if attr.access(accessing_obj, self._attredit, default=default_access)]
         else:
             return self._cache.values()
+
 
 class NickHandler(AttributeHandler):
     """
@@ -539,8 +593,8 @@ class Tag(models.Model):
     class Meta:
         "Define Django meta options"
         verbose_name = "Tag"
-        unique_together = (('db_key', 'db_category'),)
-        index_together = (('db_key', 'db_category'),)
+        unique_together = (('db_key', 'db_category', 'db_tagtype'),)
+        index_together = (('db_key', 'db_category', 'db_tagtype'),)
 
     def __unicode__(self):
         return u"%s" % self.db_key
@@ -567,22 +621,23 @@ class TagHandler(object):
         and with a tagtype given by self.handlertype
         """
         self.obj = obj
-        self._model = "%s.%s" % ContentType.objects.get_for_model(obj).natural_key()
+        self._objid = obj.id
+        self._model = obj.__class__.__name__.lower()
         self._cache = None
 
     def _recache(self):
-        "Update cache from database field"
-        if not self._tagtype:
-            tagtype = Q(db_tagtype='') | Q(db_tagtype__isnull=True)
-        else:
-            tagtype = Q(db_tagtype=self._tagtype)
-        self._cache = dict(("%s-%s" % (tag.db_key, tag.db_category), tag)
-                           for tag in getattr(
-                               self.obj, self._m2m_fieldname).filter(
-                                   db_model=self._model).filter(tagtype))
+        "Cache all tags of this object"
+        query = {"%s__id" % self._model : self._objid,
+                 "tag__db_tagtype" : self._tagtype}
+        tagobjs = [conn.tag for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
+        self._cache = dict(("%s-%s" % (to_str(tagobj.db_key).lower(),
+                                       tagobj.db_category.lower() if tagobj.db_category else None),
+                            tagobj) for tagobj in tagobjs)
 
-    def add(self, tag, category=None, data=None):
+    def add(self, tag=None, category=None, data=None):
         "Add a new tag to the handler. Tag is a string or a list of strings."
+        if not tag:
+            return
         for tagstr in make_iter(tag):
             if not tagstr:
                 continue
@@ -593,7 +648,7 @@ class TagHandler(object):
             # will overload data on an existing tag since that is not
             # considered part of making the tag unique)
             tagobj = Tag.objects.create_tag(key=tagstr, category=category, data=data,
-                                            model=self._model, tagtype=self._tagtype)
+                                            tagtype=self._tagtype)
             getattr(self.obj, self._m2m_fieldname).add(tagobj)
             if self._cache is None:
                 self._recache()
@@ -646,11 +701,10 @@ class TagHandler(object):
             self._recache()
         if category:
             category = category.strip().lower() if category is not None else None
-            matches = getattr(self.obj, self._m2m_fieldname).filter(db_category=category,
-                                                                db_tagtype=self._tagtype,
-                                                                db_model=self._model)
+            matches = [tag for tag in self._cache.values() if tag.db_category == category]
         else:
             matches = self._cache.values()
+
         if matches:
             if return_key_and_category:
                 # return tuple (key, category)
@@ -741,15 +795,33 @@ class TypedObject(SharedMemoryModel):
     def __init__(self, *args, **kwargs):
         "We must initialize the parent first - important!"
         super(TypedObject, self).__init__(*args, **kwargs)
-        #SharedMemoryModel.__init__(self, *args, **kwargs)
         _SA(self, "dbobj", self)   # this allows for self-reference
-        _SA(self, "locks", LazyLoadHandler(self, "locks", LockHandler))
-        _SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
-        _SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
-        _SA(self, "permissions", LazyLoadHandler(self, "permissions", PermissionHandler))
-        _SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
-        _SA(self, "nattributes", NAttributeHandler(self))
-        #_SA(self, "nattributes", LazyLoadHandler(self, "nattributes", NAttributeHandler))
+
+    # initialize all handlers in a lazy fashion
+    @lazy_property
+    def attributes(self):
+        return AttributeHandler(self)
+
+    @lazy_property
+    def locks(self):
+        return LockHandler(self)
+
+    @lazy_property
+    def tags(self):
+        return TagHandler(self)
+
+    @lazy_property
+    def aliases(self):
+        return AliasHandler(self)
+
+    @lazy_property
+    def permissions(self):
+        return PermissionHandler(self)
+
+    @lazy_property
+    def nattributes(self):
+        return NAttributeHandler(self)
+
 
     class Meta:
         """
@@ -1216,13 +1288,10 @@ class TypedObject(SharedMemoryModel):
         if not TICKER_HANDLER:
             from src.scripts.tickerhandler import TICKER_HANDLER
         TICKER_HANDLER.remove(self) # removes objects' all ticker subscriptions
-        if not isinstance(_GA(self, "permissions"), LazyLoadHandler):
-            _GA(self, "permissions").clear()
-        if not isinstance(_GA(self, "attributes"), LazyLoadHandler):
-            _GA(self, "attributes").clear()
-        if not isinstance(_GA(self, "aliases"), LazyLoadHandler):
-            _GA(self, "aliases").clear()
-        if hasattr(self, "nicks") and not isinstance(_GA(self, "nicks"), LazyLoadHandler):
+        _GA(self, "permissions").clear()
+        _GA(self, "attributes").clear()
+        _GA(self, "aliases").clear()
+        if hasattr(self, "nicks"):
             _GA(self, "nicks").clear()
         _SA(self, "_cached_typeclass", None)
         _GA(self, "flush_from_cache")()

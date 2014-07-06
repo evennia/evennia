@@ -70,24 +70,24 @@ class AttributeManager(models.Manager):
     @_attr_pickled
     def get(self, *args, **kwargs):
         return super(AttributeManager, self).get(*args, **kwargs)
-    @_attr_pickled
 
+    @_attr_pickled
     def filter(self,*args, **kwargs):
         return super(AttributeManager, self).filter(*args, **kwargs)
-    @_attr_pickled
 
+    @_attr_pickled
     def exclude(self,*args, **kwargs):
         return super(AttributeManager, self).exclude(*args, **kwargs)
-    @_attr_pickled
 
+    @_attr_pickled
     def values(self,*args, **kwargs):
         return super(AttributeManager, self).values(*args, **kwargs)
-    @_attr_pickled
 
+    @_attr_pickled
     def values_list(self,*args, **kwargs):
         return super(AttributeManager, self).values_list(*args, **kwargs)
-    @_attr_pickled
 
+    @_attr_pickled
     def exists(self,*args, **kwargs):
         return super(AttributeManager, self).exists(*args, **kwargs)
 
@@ -216,6 +216,56 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
     """
     Common ObjectManager for all dbobjects.
     """
+
+    # Attribute manager methods
+
+    # Tag manager methods
+
+    def get_tag(self, key=None, category=None, obj=None, tagtype=None):
+        """
+        Return Tag objects by key, by category, by object or
+        with a combination of those criteria.
+
+        tagtype - one of None (normal tags), "alias" or "permission"
+        """
+        query = [("tag__db_tagtype", tagtype)]
+        if obj:
+            query.append(("%s__id" % self.model.__name__.lower(), obj.id))
+        if key:
+            query.append(("tag__db_key", key))
+        if category:
+            query.append(("tag__db_category", category))
+        return self.model.db_tags.through.objects.filter(**dict(query))
+
+    def get_permission(self, key=None, category=None, obj=None):
+        return self.get_tag(key=key, category=category, obj=obj, tagtype="permission")
+
+    def get_alias(self, key=None, category=None, obj=None):
+        return self.get_tag(key=key, category=category, obj=obj, tagtype="alias")
+
+    @returns_typeclass
+    def get_by_tag(self, key=None, category=None, tagtype=None):
+        """
+        Return objects having tags with a given key or category or
+        combination of the two.
+
+        tagtype = None, alias or permission
+        """
+        query = [("db_tags__db_tagtype", tagtype)]
+        if key:
+            query.append(("db_tags__db_key", key))
+        if category:
+            query.append(("db_tags__db_category", category))
+        return self.filter(**dict(query))
+
+    def get_by_permission(self, key=None, category=None):
+        return self.get_by_tag(key=key, category=category, tagtype="permission")
+
+    def get_by_alias(self, key=None, category=None):
+        return self.get_by_tag(key=key, category=category, tagtype="alias")
+
+
+    # object-manager methods
 
     def dbref(self, dbref, reqhash=True):
         """
