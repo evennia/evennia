@@ -429,7 +429,6 @@ class Guest(Player):
     This class is used for guest logins. Unlike Players, Guests and their
     characters are deleted after disconnection. 
     """
-    print __doc__
     def at_post_login(self, sessid=None):
         """
         In theory, guests only have one character regardless of which
