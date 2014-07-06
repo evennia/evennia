@@ -162,7 +162,7 @@ class CmdCharCreate(MuxPlayerCommand):
     if you want.
     """
     key = "@charcreate"
-    locks = "cmd:all()"
+    locks = "cmd:pperm(Players)"
     help_category = "General"
 
     def func(self):
@@ -285,7 +285,7 @@ class CmdOOC(MuxPlayerCommand):
 
     key = "@ooc"
     # lock must be all(), for different puppeted objects to access it.
-    locks = "cmd:all()"
+    locks = "cmd:pperm(Players)"
     aliases = "@unpuppet"
     help_category = "General"
 
@@ -378,11 +378,9 @@ class CmdWho(MuxPlayerCommand):
 
         nplayers = (SESSIONS.player_count())
         if show_session_data:
-            # privileged info
             table = prettytable.PrettyTable(["{wPlayer Name",
                                              "{wOn for",
                                              "{wIdle",
-                                             "{wPuppeting",
                                              "{wRoom",
                                              "{wCmds",
                                              "{wProtocol",
@@ -391,27 +389,25 @@ class CmdWho(MuxPlayerCommand):
                 if not session.logged_in: continue
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
-                player = session.get_player()
-                puppet = session.get_puppet()
-                location = puppet.location.key if puppet else "None"
-                table.add_row([utils.crop(player.name, width=25),
+                plr_pobject = session.get_puppet()
+                plr_pobject = plr_pobject or session.get_player()
+                table.add_row([utils.crop(plr_pobject.name, width=25),
                                utils.time_format(delta_conn, 0),
                                utils.time_format(delta_cmd, 1),
-                               utils.crop(puppet.key if puppet else "None", width=25),
-                               utils.crop(location, width=25),
+                               hasattr(plr_pobject, "location") and plr_pobject.location and plr_pobject.location.key or "None",
                                session.cmd_total,
                                session.protocol_key,
                                isinstance(session.address, tuple) and session.address[0] or session.address])
         else:
-            # unprivileged
             table = prettytable.PrettyTable(["{wPlayer name", "{wOn for", "{wIdle"])
             for session in session_list:
                 if not session.logged_in:
                     continue
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
-                player = session.get_player()
-                table.add_row([utils.crop(player.key, width=25),
+                plr_pobject = session.get_puppet()
+                plr_pobject = plr_pobject or session.get_player()
+                table.add_row([utils.crop(plr_pobject.name, width=25),
                                utils.time_format(delta_conn, 0),
                                utils.time_format(delta_cmd, 1)])
 
@@ -491,7 +487,7 @@ class CmdPassword(MuxPlayerCommand):
     Changes your password. Make sure to pick a safe one.
     """
     key = "@password"
-    locks = "cmd:all()"
+    locks = "cmd:pperm(Players)"
 
     def func(self):
         "hook function."
@@ -650,7 +646,7 @@ class CmdQuell(MuxPlayerCommand):
 
     key = "@quell"
     aliases = ["@unquell"]
-    locks = "cmd:all()"
+    locks = "cmd:pperm(Players)"
     help_category = "General"
 
     def _recache_locks(self, player):
