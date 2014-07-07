@@ -463,11 +463,12 @@ class AttributeHandler(object):
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
+        attrs = sorted(self._cache.values(), key=lambda o: o.id)
         if accessing_obj:
-            return [attr for attr in self._cache.values()
+            return [attr for attr in attrs
                     if attr.access(accessing_obj, self._attredit, default=default_access)]
         else:
-            return self._cache.values()
+            return attrs
 
 
 class NickHandler(AttributeHandler):
@@ -706,6 +707,7 @@ class TagHandler(object):
             matches = self._cache.values()
 
         if matches:
+            matches = sorted(matches, key=lambda o: o.id)
             if return_key_and_category:
                 # return tuple (key, category)
                 return [(to_str(p.db_key), to_str(p.db_category)) for p in matches]
