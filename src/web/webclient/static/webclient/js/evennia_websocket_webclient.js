@@ -113,7 +113,7 @@ function onMessage(evt) {
 
 function onError(evt) {
     // called on a server error
-    doShow('err', "Error: Server returned an error. Try reloading the page.");
+    doShow('err', "Connection error trying to access websocket on " + wsurl + ". " + "Contact the admin and/or check settings.WEBSOCKET_CLIENT_URL.");
 }
 
 function doSend(){
