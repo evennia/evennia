@@ -444,7 +444,7 @@ class Guest(Player):
         """
         super(Guest, self).at_disconnect()
         characters = self.db._playable_characters
-        for character in characters:
+        for character in filter(None, characters):
             character.delete()
     
     def at_server_shutdown(self):
@@ -453,7 +453,7 @@ class Guest(Player):
         """
         super(Guest, self).at_server_shutdown()
         characters = self.db._playable_characters
-        for character in characters:
+        for character in filter(None, characters):
             character.delete()
             
     def at_post_disconnect(self):
