@@ -54,6 +54,7 @@ class CmdUnconnectedConnect(MuxCommand):
         other types of logged-in commands (this is because
         there is no object yet before the player has logged in)
         """
+        
         session = self.caller
         args = self.args
         # extract quoted parts
@@ -62,7 +63,7 @@ class CmdUnconnectedConnect(MuxCommand):
             # this was (hopefully) due to no quotes being found, or a guest login
             parts = parts[0].split(None, 1)
             # Guest login
-            if len(parts) == 1 and parts[0].lower() == "guest" and settings.GUEST_LIST:
+            if len(parts) == 1 and parts[0].lower() == "guest" and settings.GUEST_ENABLED:
                 try:
                     # Find an available guest name.
                     for playername in settings.GUEST_LIST:
@@ -225,63 +226,6 @@ class CmdUnconnectedCreate(MuxCommand):
             string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
             session.msg(string % (traceback.format_exc()))
             logger.log_errmsg(traceback.format_exc())
-            
-            
-def CreatePlayer(session, playername, password,
-                 default_home, permissions, typeclass=None):
-    """
-    Creates a player of the specified typeclass.
-    """
-    try:
-        new_player = create.create_player(playername, None, password,
-                                          permissions=permissions, typeclass=typeclass)
-
-    except Exception, e:
-        session.msg("There was an error creating the Player:\n%s\n If this problem persists, contact an admin." % e)
-        logger.log_trace()
-        return False
-
-    # This needs to be called so the engine knows this player is
-    # logging in for the first time. (so it knows to call the right
-    # hooks during login later)
-    utils.init_new_player(new_player)
-
-    # join the new player to the public channel
-    pchanneldef = settings.CHANNEL_PUBLIC
-    if pchanneldef:
-        pchannel = ChannelDB.objects.get_channel(pchanneldef[0])
-        if not pchannel.connect(new_player):
-            string = "New player '%s' could not connect to public channel!" % new_player.key
-            logger.log_errmsg(string)
-    return new_player
-
-def CreateCharacter(session, new_player, typeclass, start_location, home, permissions):
-    """
-    Creates a character based on a player's name. This is meant for Guest and
-    MULTISESSION_MODE <2 situations.
-    """
-    try:
-        if not start_location:
-            start_location = home # fallback
-        new_character = create.create_object(typeclass, key=new_player.key,
-                                  location=start_location, home=home,
-                                  permissions=permissions)
-        # set playable character list
-        new_player.db._playable_characters.append(new_character)
-    
-        # allow only the character itself and the player to puppet this character (and Immortals).
-        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
-                                (new_character.id, new_player.id))
-    
-        # If no description is set, set a default description
-        if not new_character.db.desc:
-            new_character.db.desc = "This is a Player."
-        # We need to set this to have @ic auto-connect to this character
-        new_player.db._last_puppet = new_character
-    except Exception, e:
-        session.msg("There was an error creating the Character:\n%s\n If this problem persists, contact an admin." % e)
-        logger.log_trace()
-        return False
 
 
 class CmdUnconnectedQuit(MuxCommand):
@@ -376,3 +320,61 @@ To login to the system, you need to do one of the following:
 You can use the {wlook{n command if you want to see the connect screen again.
 """
         self.caller.msg(string)
+
+
+def CreatePlayer(session, playername, password,
+                 default_home, permissions, typeclass=None):
+    """
+    Creates a player of the specified typeclass.
+    """
+    try:
+        new_player = create.create_player(playername, None, password,
+                                          permissions=permissions, typeclass=typeclass)
+
+    except Exception, e:
+        session.msg("There was an error creating the Player:\n%s\n If this problem persists, contact an admin." % e)
+        logger.log_trace()
+        return False
+
+    # This needs to be called so the engine knows this player is
+    # logging in for the first time. (so it knows to call the right
+    # hooks during login later)
+    utils.init_new_player(new_player)
+
+    # join the new player to the public channel
+    pchanneldef = settings.CHANNEL_PUBLIC
+    if pchanneldef:
+        pchannel = ChannelDB.objects.get_channel(pchanneldef[0])
+        if not pchannel.connect(new_player):
+            string = "New player '%s' could not connect to public channel!" % new_player.key
+            logger.log_errmsg(string)
+    return new_player
+
+
+def CreateCharacter(session, new_player, typeclass, start_location, home, permissions):
+    """
+    Creates a character based on a player's name. This is meant for Guest and
+    MULTISESSION_MODE <2 situations.
+    """
+    try:
+        if not start_location:
+            start_location = home # fallback
+        new_character = create.create_object(typeclass, key=new_player.key,
+                                  location=start_location, home=home,
+                                  permissions=permissions)
+        # set playable character list
+        new_player.db._playable_characters.append(new_character)
+    
+        # allow only the character itself and the player to puppet this character (and Immortals).
+        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
+                                (new_character.id, new_player.id))
+    
+        # If no description is set, set a default description
+        if not new_character.db.desc:
+            new_character.db.desc = "This is a Player."
+        # We need to set this to have @ic auto-connect to this character
+        new_player.db._last_puppet = new_character
+    except Exception, e:
+        session.msg("There was an error creating the Character:\n%s\n If this problem persists, contact an admin." % e)
+        logger.log_trace()
+        return False

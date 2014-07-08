@@ -306,6 +306,8 @@ BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
 # fallback if an object's normal home location is deleted. Default
 # is Limbo (#2).
 DEFAULT_HOME = "#2"
+# This enables guest logins.
+GUEST_ENABLED = True
 # The default home location used for guests.
 GUEST_HOME = "#2"
 # The start position for new characters. Default is Limbo (#2).
@@ -314,6 +316,10 @@ GUEST_HOME = "#2"
 START_LOCATION = "#2"
 # The start position used for guest characters.
 GUEST_START_LOCATION = "#2"
+# The naming convention for guest players/characters. The size of this list
+# also detemines how many guests may be on the game at once. The default is
+# a maximum of five guests, named Guest1 through Guest5.
+GUEST_LIST = ["Guest" + str(s+1) for s in range(9)]
 # Lookups of Attributes, Tags, Nicks, Aliases can be aggressively
 # cached to avoid repeated database hits. This often gives noticeable
 # performance gains since they are called so often. Drawback is that
@@ -384,11 +390,6 @@ PERMISSION_HIERARCHY = ("Players",
 PERMISSION_PLAYER_DEFAULT = "Players"
 # The permission given to guests
 PERMISSION_GUEST_DEFAULT = "Guests"
-# The naming convention for guest players/characters. The size of this list
-# also detemines how many guests may be on the game at once. The default is
-# a maximum of five guests, named Guest1 through Guest5.
-# Set to None to disable guest logins entirely.
-GUEST_LIST = ["Guest" + str(s+1) for s in range(5)]
 
 ######################################################################
 # In-game Channels created from server start
