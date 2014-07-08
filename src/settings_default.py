@@ -318,7 +318,7 @@ START_LOCATION = "#2"
 GUEST_START_LOCATION = "#2"
 # The naming convention for guest players/characters. The size of this list
 # also detemines how many guests may be on the game at once. The default is
-# a maximum of five guests, named Guest1 through Guest5.
+# a maximum of nine guests, named Guest1 through Guest9.
 GUEST_LIST = ["Guest" + str(s+1) for s in range(9)]
 # Lookups of Attributes, Tags, Nicks, Aliases can be aggressively
 # cached to avoid repeated database hits. This often gives noticeable
