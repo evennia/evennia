@@ -378,3 +378,4 @@ def CreateCharacter(session, new_player, typeclass, start_location, home, permis
         session.msg("There was an error creating the Character:\n%s\n If this problem persists, contact an admin." % e)
         logger.log_trace()
         return False
+    
