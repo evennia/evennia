@@ -54,7 +54,7 @@ class CmdUnconnectedConnect(MuxCommand):
         other types of logged-in commands (this is because
         there is no object yet before the player has logged in)
         """
-        
+
         session = self.caller
         args = self.args
         # extract quoted parts
