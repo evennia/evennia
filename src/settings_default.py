@@ -381,7 +381,8 @@ MAX_NR_CHARACTERS = 1
 # The access hiearchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()
 # lock functions.
-PERMISSION_HIERARCHY = ("Players",
+PERMISSION_HIERARCHY = ("Guests",
+                        "Players",
                         "PlayerHelpers",
                         "Builders",
                         "Wizards",
