@@ -306,14 +306,14 @@ BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
 # fallback if an object's normal home location is deleted. Default
 # is Limbo (#2).
 DEFAULT_HOME = "#2"
-# This enables guest logins.
-GUEST_ENABLED = True
-# The default home location used for guests.
-GUEST_HOME = "#2"
 # The start position for new characters. Default is Limbo (#2).
 #  MULTISESSION_MODE = 0, 1 - used by default unloggedin create command
 #  MULTISESSION_MODE = 2 - used by default character_create command
 START_LOCATION = "#2"
+# This enables guest logins.
+GUEST_ENABLED = True
+# The default home location used for guests.
+GUEST_HOME = "#2"
 # The start position used for guest characters.
 GUEST_START_LOCATION = "#2"
 # The naming convention for guest players/characters. The size of this list

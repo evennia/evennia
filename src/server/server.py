@@ -356,9 +356,9 @@ class Evennia(object):
             # flag to avoid loops.
             self.shutdown_complete = True
             reactor.callLater(0, reactor.stop)
-    
+
     # server start/stop hooks
-    
+
     def at_server_start(self):
         """
         This is called every time the server starts up, regardless of
@@ -366,8 +366,8 @@ class Evennia(object):
         """
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_start()
-    
-    
+
+
     def at_server_stop(self):
         """
         This is called just before a server is shut down, regardless
@@ -375,24 +375,24 @@ class Evennia(object):
         """
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_stop()
-    
-    
+
+
     def at_server_reload_start(self):
         """
         This is called only when server starts back up after a reload.
         """
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_reload_start()
-    
-    
+
+
     def at_server_reload_stop(self):
         """
         This is called only time the server stops before a reload.
         """
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_reload_stop()
-    
-    
+
+
     def at_server_cold_start(self):
         """
         This is called only when the server starts "cold", i.e. after a
@@ -405,7 +405,7 @@ class Evennia(object):
                 guest.delete()
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_cold_start()
-    
+
     def at_server_cold_stop(self):
         """
         This is called only when the server goes down due to a shutdown or reset.

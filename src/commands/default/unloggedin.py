@@ -73,21 +73,21 @@ class CmdUnconnectedConnect(MuxCommand):
                     if playername == None:
                         session.msg("All guest accounts are in use. Please try again later.")
                         return
-                    
+
                     password       = "%016x" % getrandbits(64)
                     home           = ObjectDB.objects.get_id(settings.GUEST_HOME)
                     permissions    = settings.PERMISSION_GUEST_DEFAULT
                     typeclass      = settings.BASE_CHARACTER_TYPECLASS
                     ptypeclass     = settings.BASE_GUEST_TYPECLASS
                     start_location = ObjectDB.objects.get_id(settings.GUEST_START_LOCATION)
-                    
-                    new_player = CreatePlayer(session, playername, password,
+
+                    new_player = _create_player(session, playername, password,
                                               home, permissions, ptypeclass)
                     if new_player:
-                        CreateCharacter(session, new_player, typeclass, start_location,
+                        _create_character(session, new_player, typeclass, start_location,
                                         home, permissions)
                         session.sessionhandler.login(session, new_player)
-                    
+
                 except Exception:
                 # We are in the middle between logged in and -not, so we have
                 # to handle tracebacks ourselves at this point. If we don't,
@@ -97,7 +97,7 @@ class CmdUnconnectedConnect(MuxCommand):
                     logger.log_errmsg(traceback.format_exc())
                 finally:
                     return
-                
+
         if len(parts) != 2:
             session.msg("\n\r Usage (without <>): connect <name> <password>")
             return
@@ -217,11 +217,11 @@ class CmdUnconnectedCreate(MuxCommand):
             default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
             permissions = settings.PERMISSION_PLAYER_DEFAULT
             typeclass = settings.BASE_CHARACTER_TYPECLASS
-            new_player = CreatePlayer(session, playername, password, default_home, permissions)
+            new_player = _create_player(session, playername, password, default_home, permissions)
             start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
             if new_player:
                 if MULTISESSION_MODE < 2:
-                    CreateCharacter(session, new_player, typeclass, start_location,
+                    _create_character(session, new_player, typeclass, start_location,
                                     default_home, permissions)
                 # tell the caller everything went well.
                 string = "A new account '%s' was created. Welcome!"
@@ -230,7 +230,7 @@ class CmdUnconnectedCreate(MuxCommand):
                 else:
                     string += "\n\nYou can now log with the command 'connect %s <your password>'."
                 session.msg(string % (playername, playername))
-            
+
         except Exception:
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
@@ -334,10 +334,10 @@ You can use the {wlook{n command if you want to see the connect screen again.
         self.caller.msg(string)
 
 
-def CreatePlayer(session, playername, password,
+def _create_player(session, playername, password,
                  default_home, permissions, typeclass=None):
     """
-    Creates a player of the specified typeclass.
+    Helper function, creates a player of the specified typeclass.
     """
     try:
         new_player = create.create_player(playername, None, password,
@@ -363,10 +363,10 @@ def CreatePlayer(session, playername, password,
     return new_player
 
 
-def CreateCharacter(session, new_player, typeclass, start_location, home, permissions):
+def _create_character(session, new_player, typeclass, start_location, home, permissions):
     """
-    Creates a character based on a player's name. This is meant for Guest and
-    MULTISESSION_MODE <2 situations.
+    Helper function, creates a character based on a player's name.
+    This is meant for Guest and MULTISESSION_MODE < 2 situations.
     """
     try:
         if not start_location:
@@ -376,11 +376,11 @@ def CreateCharacter(session, new_player, typeclass, start_location, home, permis
                                   permissions=permissions)
         # set playable character list
         new_player.db._playable_characters.append(new_character)
-    
+
         # allow only the character itself and the player to puppet this character (and Immortals).
         new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
                                 (new_character.id, new_player.id))
-    
+
         # If no description is set, set a default description
         if not new_character.db.desc:
             new_character.db.desc = "This is a Player."
@@ -390,4 +390,4 @@ def CreateCharacter(session, new_player, typeclass, start_location, home, permis
         session.msg("There was an error creating the Character:\n%s\n If this problem persists, contact an admin." % e)
         logger.log_trace()
         return False
-    
+
