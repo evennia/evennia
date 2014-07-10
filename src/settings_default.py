@@ -389,9 +389,9 @@ BASE_GUEST_TYPECLASS = "src.players.player.Guest"
 # The permission given to guests
 PERMISSION_GUEST_DEFAULT = "Guests"
 # The default home location used for guests.
-GUEST_HOME = "#2"
+GUEST_HOME = DEFAULT_HOME
 # The start position used for guest characters.
-GUEST_START_LOCATION = "#2"
+GUEST_START_LOCATION = START_LOCATION
 # The naming convention used for creating new guest
 # players/characters. The size of this list also detemines how many
 # guests may be on the game at once. The default is a maximum of nine
