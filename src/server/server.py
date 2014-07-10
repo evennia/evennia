@@ -73,6 +73,8 @@ AMP_INTERFACE = settings.AMP_INTERFACE
 WEBSERVER_PORTS = settings.WEBSERVER_PORTS
 WEBSERVER_INTERFACES = settings.WEBSERVER_INTERFACES
 
+GUEST_ENABLED = settings.GUEST_ENABLED
+
 # server-channel mappings
 WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER_INTERFACES
 IMC2_ENABLED = settings.IMC2_ENABLED
@@ -240,17 +242,16 @@ class Evennia(object):
         from src.scripts.tickerhandler import TICKER_HANDLER
         TICKER_HANDLER.restore()
 
-        if SERVER_STARTSTOP_MODULE:
-            # call correct server hook based on start file value
-            if mode in ('True', 'reload'):
-                # True was the old reload flag, kept for compatibilty
-                SERVER_STARTSTOP_MODULE.at_server_reload_start()
-            elif mode in ('reset', 'shutdown'):
-                SERVER_STARTSTOP_MODULE.at_server_cold_start()
-                # clear eventual lingering session storages
-                ObjectDB.objects.clear_all_sessids()
-            # always call this regardless of start type
-            SERVER_STARTSTOP_MODULE.at_server_start()
+        # call correct server hook based on start file value
+        if mode in ('True', 'reload'):
+            # True was the old reload flag, kept for compatibilty
+            self.at_server_reload_start()
+        elif mode in ('reset', 'shutdown'):
+            self.at_server_cold_start()
+            # clear eventual lingering session storages
+            ObjectDB.objects.clear_all_sessids()
+        # always call this regardless of start type
+        self.at_server_start()
 
     def set_restart_mode(self, mode=None):
         """
@@ -316,8 +317,7 @@ class Evennia(object):
             from src.scripts.tickerhandler import TICKER_HANDLER
             TICKER_HANDLER.save()
 
-            if SERVER_STARTSTOP_MODULE:
-                SERVER_STARTSTOP_MODULE.at_server_reload_stop()
+            self.at_server_reload_stop()
 
         else:
             if mode == 'reset':
@@ -339,15 +339,13 @@ class Evennia(object):
             yield ObjectDB.objects.clear_all_sessids()
             ServerConfig.objects.conf("server_restart_mode", "reset")
 
-            if SERVER_STARTSTOP_MODULE:
-                SERVER_STARTSTOP_MODULE.at_server_cold_stop()
+            self.at_server_cold_stop()
 
         # stopping time
         from src.utils import gametime
         gametime.save()
 
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_stop()
+        self.at_server_stop()
         # if _reactor_stopping is true, reactor does not need to
         # be stopped again.
         if os.name == 'nt' and os.path.exists(SERVER_PIDFILE):
@@ -358,6 +356,62 @@ class Evennia(object):
             # flag to avoid loops.
             self.shutdown_complete = True
             reactor.callLater(0, reactor.stop)
+    
+    # server start/stop hooks
+    
+    def at_server_start(self):
+        """
+        This is called every time the server starts up, regardless of
+        how it was shut down.
+        """
+        if SERVER_STARTSTOP_MODULE:
+            SERVER_STARTSTOP_MODULE.at_server_start()
+    
+    
+    def at_server_stop(self):
+        """
+        This is called just before a server is shut down, regardless
+        of it is fore a reload, reset or shutdown.
+        """
+        if SERVER_STARTSTOP_MODULE:
+            SERVER_STARTSTOP_MODULE.at_server_stop()
+    
+    
+    def at_server_reload_start(self):
+        """
+        This is called only when server starts back up after a reload.
+        """
+        if SERVER_STARTSTOP_MODULE:
+            SERVER_STARTSTOP_MODULE.at_server_reload_start()
+    
+    
+    def at_server_reload_stop(self):
+        """
+        This is called only time the server stops before a reload.
+        """
+        if SERVER_STARTSTOP_MODULE:
+            SERVER_STARTSTOP_MODULE.at_server_reload_stop()
+    
+    
+    def at_server_cold_start(self):
+        """
+        This is called only when the server starts "cold", i.e. after a
+        shutdown or a reset.
+        """
+        if GUEST_ENABLED:
+            for guest in PlayerDB.objects.all().filter(db_typeclass_path=settings.BASE_GUEST_TYPECLASS):
+                for character in filter(None, guest.db._playable_characters):
+                    character.delete()
+                guest.delete()
+        if SERVER_STARTSTOP_MODULE:
+            SERVER_STARTSTOP_MODULE.at_server_cold_start()
+    
+    def at_server_cold_stop(self):
+        """
+        This is called only when the server goes down due to a shutdown or reset.
+        """
+        if SERVER_STARTSTOP_MODULE:
+            SERVER_STARTSTOP_MODULE.at_server_cold_stop()
 
 #------------------------------------------------------------
 #

@@ -422,7 +422,7 @@ class CmdCemit(MuxPlayerCommand):
 
     key = "@cemit"
     aliases = ["@cmsg"]
-    locks = "cmd: not pperm(channel_banned)"
+    locks = "cmd: not pperm(channel_banned) and pperm(Players)"
     help_category = "Comms"
 
     def func(self):
@@ -498,7 +498,7 @@ class CmdChannelCreate(MuxPlayerCommand):
 
     key = "@ccreate"
     aliases = "channelcreate"
-    locks = "cmd:not pperm(channel_banned)"
+    locks = "cmd:not pperm(channel_banned) and pperm(Players)"
     help_category = "Comms"
 
     def func(self):

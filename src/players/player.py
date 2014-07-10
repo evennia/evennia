@@ -423,3 +423,43 @@ class Player(TypeClass):
         (i.e. not for a restart).
         """
         pass
+
+class Guest(Player):
+    """
+    This class is used for guest logins. Unlike Players, Guests and their
+    characters are deleted after disconnection. 
+    """
+    def at_post_login(self, sessid=None):
+        """
+        In theory, guests only have one character regardless of which
+        MULTISESSION_MODE we're in. They don't get a choice.
+        """
+        self._send_to_connect_channel("{G%s connected{n" % self.key)
+        self.execute_cmd("@ic", sessid=sessid)
+        
+    def at_disconnect(self):
+        """
+        A Guest's characters aren't meant to linger on the server. When a
+        Guest disconnects, we remove its character.
+        """
+        super(Guest, self).at_disconnect()
+        characters = self.db._playable_characters
+        for character in filter(None, characters):
+            character.delete()
+    
+    def at_server_shutdown(self):
+        """
+        We repeat at_disconnect() here just to be on the safe side.
+        """
+        super(Guest, self).at_server_shutdown()
+        characters = self.db._playable_characters
+        for character in filter(None, characters):
+            character.delete()
+            
+    def at_post_disconnect(self):
+        """
+        Guests aren't meant to linger on the server, either. We need to wait
+        until after the Guest disconnects to delete it, though.
+        """
+        super(Guest, self).at_post_disconnect()
+        self.delete()

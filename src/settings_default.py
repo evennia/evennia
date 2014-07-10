@@ -287,6 +287,8 @@ CHANNEL_TYPECLASS_PATHS = ["game.gamesrc.conf", "contrib"]
 
 # Typeclass for player objects (linked to a character) (fallback)
 BASE_PLAYER_TYPECLASS = "src.players.player.Player"
+# Typeclass for guest player objects (linked to a character)
+BASE_GUEST_TYPECLASS = "src.players.player.Guest"
 # Typeclass and base for all objects (fallback)
 BASE_OBJECT_TYPECLASS = "src.objects.objects.Object"
 # Typeclass for character objects linked to a player (fallback)
@@ -304,10 +306,20 @@ BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
 # fallback if an object's normal home location is deleted. Default
 # is Limbo (#2).
 DEFAULT_HOME = "#2"
+# This enables guest logins.
+GUEST_ENABLED = True
+# The default home location used for guests.
+GUEST_HOME = "#2"
 # The start position for new characters. Default is Limbo (#2).
 #  MULTISESSION_MODE = 0, 1 - used by default unloggedin create command
 #  MULTISESSION_MODE = 2 - used by default character_create command
 START_LOCATION = "#2"
+# The start position used for guest characters.
+GUEST_START_LOCATION = "#2"
+# The naming convention for guest players/characters. The size of this list
+# also detemines how many guests may be on the game at once. The default is
+# a maximum of nine guests, named Guest1 through Guest9.
+GUEST_LIST = ["Guest" + str(s+1) for s in range(9)]
 # Lookups of Attributes, Tags, Nicks, Aliases can be aggressively
 # cached to avoid repeated database hits. This often gives noticeable
 # performance gains since they are called so often. Drawback is that
@@ -369,13 +381,16 @@ MAX_NR_CHARACTERS = 1
 # The access hiearchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()
 # lock functions.
-PERMISSION_HIERARCHY = ("Players",
+PERMISSION_HIERARCHY = ("Guests",
+                        "Players",
                         "PlayerHelpers",
                         "Builders",
                         "Wizards",
                         "Immortals")
 # The default permission given to all new players
 PERMISSION_PLAYER_DEFAULT = "Players"
+# The permission given to guests
+PERMISSION_GUEST_DEFAULT = "Guests"
 
 ######################################################################
 # In-game Channels created from server start

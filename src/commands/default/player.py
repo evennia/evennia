@@ -162,7 +162,7 @@ class CmdCharCreate(MuxPlayerCommand):
     if you want.
     """
     key = "@charcreate"
-    locks = "cmd:all()"
+    locks = "cmd:pperm(Players)"
     help_category = "General"
 
     def func(self):
@@ -285,7 +285,7 @@ class CmdOOC(MuxPlayerCommand):
 
     key = "@ooc"
     # lock must be all(), for different puppeted objects to access it.
-    locks = "cmd:all()"
+    locks = "cmd:pperm(Players)"
     aliases = "@unpuppet"
     help_category = "General"
 
@@ -491,7 +491,7 @@ class CmdPassword(MuxPlayerCommand):
     Changes your password. Make sure to pick a safe one.
     """
     key = "@password"
-    locks = "cmd:all()"
+    locks = "cmd:pperm(Players)"
 
     def func(self):
         "hook function."
@@ -650,7 +650,7 @@ class CmdQuell(MuxPlayerCommand):
 
     key = "@quell"
     aliases = ["@unquell"]
-    locks = "cmd:all()"
+    locks = "cmd:pperm(Players)"
     help_category = "General"
 
     def _recache_locks(self, player):
