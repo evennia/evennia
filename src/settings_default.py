@@ -369,12 +369,12 @@ MAX_NR_CHARACTERS = 1
 # The access hiearchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()
 # lock functions.
-PERMISSION_HIERARCHY = ("Guests",
+PERMISSION_HIERARCHY = ["Guests", # note-only used if GUEST_ENABLED=True
                         "Players",
                         "PlayerHelpers",
                         "Builders",
                         "Wizards",
-                        "Immortals")
+                        "Immortals"]
 # The default permission given to all new players
 PERMISSION_PLAYER_DEFAULT = "Players"
 
@@ -383,7 +383,7 @@ PERMISSION_PLAYER_DEFAULT = "Players"
 ######################################################################
 
 # This enables guest logins, by default via "connect guest"
-GUEST_ENABLED = True
+GUEST_ENABLED = False
 # Typeclass for guest player objects (linked to a character)
 BASE_GUEST_TYPECLASS = "src.players.player.Guest"
 # The permission given to guests
