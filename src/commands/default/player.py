@@ -118,15 +118,16 @@ class CmdOOCLook(MuxPlayerCommand):
                          MAX_NR_CHARACTERS > 1 and " (%i/%i)" % (len(characters), MAX_NR_CHARACTERS) or "")
 
             for char in characters:
-                csessid = char.sessid
+                csessid = char.sessid.get()
                 if csessid:
                     # character is already puppeted
-                    sess = player.get_session(csessid)
-                    sid = sess in sessions and sessions.index(sess) + 1
-                    if sess and sid:
-                        string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
-                    else:
-                        string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
+                    sessi = player.get_session(csessid)
+                    for sess in utils.make_iter(sessi):
+                        sid = sess in sessions and sessions.index(sess) + 1
+                        if sess and sid:
+                            string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
+                        else:
+                            string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
                 else:
                     # character is "free to puppet"
                     string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions.all()))

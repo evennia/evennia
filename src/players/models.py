@@ -247,7 +247,7 @@ class PlayerDB(TypedObject, AbstractUser):
                 _GA(from_obj, "at_msg_send")(text=text, to_obj=_GA(self, "typeclass"), **kwargs)
             except Exception:
                 pass
-        session = _MULTISESSION_MODE == 2 and sessid and _GA(self, "get_session")(sessid) or None
+        session = _MULTISESSION_MODE > 1 and sessid and _GA(self, "get_session")(sessid) or None
         if session:
             obj = session.puppet
             if obj and not obj.at_msg_receive(text=text, **kwargs):
@@ -323,7 +323,7 @@ class PlayerDB(TypedObject, AbstractUser):
         if normal_mode:
             _GA(obj.typeclass, "at_pre_puppet")(_GA(self, "typeclass"), sessid=sessid)
         # do the connection
-        obj.sessid = sessid
+        obj.sessid.add(sessid)
         obj.player = self
         session.puid = obj.id
         session.puppet = obj
@@ -349,8 +349,9 @@ class PlayerDB(TypedObject, AbstractUser):
             return False
         # do the disconnect
         _GA(obj.typeclass, "at_pre_unpuppet")()
-        del obj.dbobj.sessid
-        del obj.dbobj.player
+        obj.dbobj.sessid.remove(sessid)
+        if not obj.dbobj.sessid.count():
+            del obj.dbobj.player
         session.puppet = None
         session.puid = None
         _GA(obj.typeclass, "at_post_unpuppet")(_GA(self, "typeclass"), sessid=sessid)

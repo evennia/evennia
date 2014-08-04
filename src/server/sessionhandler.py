@@ -15,7 +15,7 @@ There are two similar but separate stores of sessions:
 import time
 from django.conf import settings
 from src.commands.cmdhandler import CMD_LOGINSTART
-from src.utils.utils import variable_from_module
+from src.utils.utils import variable_from_module, is_iter
 try:
     import cPickle as pickle
 except ImportError:
@@ -416,12 +416,18 @@ class ServerSessionHandler(SessionHandler):
         """
         Return session based on sessid, or None if not found
         """
+        if is_iter(sessid):
+            return [self.sessions.get(sid) for sid in sessid if sid in self.sessions]
         return self.sessions.get(sessid)
 
     def session_from_player(self, player, sessid):
         """
         Given a player and a session id, return the actual session object
         """
+        if is_iter(sessid):
+            sessions = [self.sessions.get(sid) for sid in sessid]
+            s = [sess for sess in sessions if sess and sess.logged_in and player.uid == sess.uid]
+            return s
         session = self.sessions.get(sessid)
         return session and session.logged_in and player.uid == session.uid and session or None
 
