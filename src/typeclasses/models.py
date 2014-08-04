@@ -1204,16 +1204,14 @@ class TypedObject(SharedMemoryModel):
             # Clean out old attributes
             if is_iter(clean_attributes):
                 for attr in clean_attributes:
-                    self.attr(attr, delete=True)
+                    self.attributes.remove(attr)
                 for nattr in clean_attributes:
                     if hasattr(self.ndb, nattr):
-                        self.nattr(nattr, delete=True)
+                        self.nattributes.remove(nattr)
             else:
                 #print "deleting attrs ..."
-                for attr in self.get_all_attributes():
-                    attr.delete()
-                for nattr in self.ndb.all:
-                    del nattr
+                self.attributes.clear()
+                self.nattributes.clear()
 
         if run_start_hooks:
             # run hooks for this new typeclass
