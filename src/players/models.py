@@ -230,7 +230,7 @@ class PlayerDB(TypedObject, AbstractUser):
                  to all sessions connected to this player. This is usually only
                  relevant when using msg() directly from a player-command (from
                  a command on a Character, the character automatically stores
-                 and handles the sessid).
+                 and handles the sessid). Can also be a list of sessids.
         kwargs (dict) - All other keywords are parsed as extra data.
         """
         if "data" in kwargs:
@@ -247,13 +247,14 @@ class PlayerDB(TypedObject, AbstractUser):
                 _GA(from_obj, "at_msg_send")(text=text, to_obj=_GA(self, "typeclass"), **kwargs)
             except Exception:
                 pass
-        session = _MULTISESSION_MODE > 1 and sessid and _GA(self, "get_session")(sessid) or None
-        if session:
-            obj = session.puppet
-            if obj and not obj.at_msg_receive(text=text, **kwargs):
-                # if hook returns false, cancel send
-                return
-            session.msg(text=text, **kwargs)
+        sessions = _MULTISESSION_MODE > 1 and [sessid] and make_iter(_GA(self, "get_session")(sessid)) or None
+        if sessions:
+            for session in sessions:
+                obj = session.puppet
+                if obj and not obj.at_msg_receive(text=text, **kwargs):
+                    # if hook returns false, cancel send
+                    continue
+                session.msg(text=text, **kwargs)
         else:
             # if no session was specified, send to them all
             for sess in _GA(self, 'get_all_sessions')():
@@ -264,6 +265,7 @@ class PlayerDB(TypedObject, AbstractUser):
     def get_session(self, sessid):
         """
         Return session with given sessid connected to this player.
+        note that the sessionhandler also accepts sessid as an iterable.
         """
         global _SESSIONS
         if not _SESSIONS:
@@ -347,14 +349,14 @@ class PlayerDB(TypedObject, AbstractUser):
         obj = hasattr(session, "puppet") and session.puppet or None
         if not obj:
             return False
-        # do the disconnect
+        # do the disconnect, but only if we are the last session to puppet
         _GA(obj.typeclass, "at_pre_unpuppet")()
         obj.dbobj.sessid.remove(sessid)
         if not obj.dbobj.sessid.count():
             del obj.dbobj.player
+            _GA(obj.typeclass, "at_post_unpuppet")(_GA(self, "typeclass"), sessid=sessid)
         session.puppet = None
         session.puid = None
-        _GA(obj.typeclass, "at_post_unpuppet")(_GA(self, "typeclass"), sessid=sessid)
         return True
 
     def unpuppet_all(self):
