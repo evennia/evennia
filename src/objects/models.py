@@ -29,6 +29,7 @@ from src.utils import logger
 from src.utils.utils import (make_iter, to_str, to_unicode, lazy_property,
                              variable_from_module, dbref)
 
+MULTISESSION_MODE = settings.MULTISESSION_MODE
 from django.utils.translation import ugettext as _
 
 #__all__ = ("ObjectDB", )
@@ -42,7 +43,7 @@ _SA = object.__setattr__
 _DA = object.__delattr__
 
 # the sessid_max is based on the length of the db_sessid csv field (excluding commas)
-_SESSID_MAX = 16 if settings.MULTISESSION_MODE > 2 else 1
+_SESSID_MAX = 16 if MULTISESSION_MODE in (1, 3) else 1
 
 class SessidHandler(object):
     """
@@ -55,7 +56,7 @@ class SessidHandler(object):
         self._recache()
 
     def _recache(self):
-        self._cache = set(int(val) for val in (_GA(self.obj, "db_sessid") or "").split(",") if val)
+        self._cache = list(set(int(val) for val in (_GA(self.obj, "db_sessid") or "").split(",") if val))
 
     def get(self):
         "Returns a single integer or a list"
@@ -64,12 +65,12 @@ class SessidHandler(object):
     def add(self, sessid):
         "Add sessid to handler"
         _cache = self._cache
-        if len(_cache) >= _SESSID_MAX:
-            return False
-        _cache.add(int(sessid))
-        _SA(self.obj, "db_sessid", ",".join(str(val) for val in _cache))
-        _GA(self.obj, "save")(update_fields=["db_sessid"])
-        return True
+        if sessid not in _cache:
+            if len(_cache) >= _SESSID_MAX:
+                return
+            _cache.append(sessid)
+            _SA(self.obj, "db_sessid", ",".join(str(val) for val in _cache))
+            _GA(self.obj, "save")(update_fields=["db_sessid"])
 
     def remove(self, sessid):
         "Remove sessid from handler"
@@ -81,7 +82,7 @@ class SessidHandler(object):
 
     def clear(self):
         "Clear sessids"
-        self._cache = set()
+        self._cache = []
         _SA(self.obj, "db_sessid", None)
         _GA(self.obj, "save")(update_fields=["db_sessid"])
 

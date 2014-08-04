@@ -248,21 +248,21 @@ class CmdIC(MuxPlayerCommand):
                 self.msg("That is not a valid character choice.")
                 return
         # permission checks
-        if player.get_puppjet(sessid) == new_character:
+        if player.get_puppet(sessid) == new_character:
             self.msg("{RYou already act as {c%s{n." % new_character.name)
             return
         if new_character.player:
             # may not puppet an already puppeted character
             if new_character.sessid.count() and new_character.player == player:
                 # as a safeguard we allow "taking over" chars from your own sessions.
-                if MULTISESSION_MODE == 3:
+                if MULTISESSION_MODE in (1, 3):
                     txt = "{c%s{n{G is now shared from another of your sessions.{n"
                     txt2 =  "Sharing {c%s{n with another of your sessions."
                 else:
                     txt = "{c%s{n{R is now acted from another of your sessions.{n"
                     txt2 =  "Taking over {c%s{n from another of your sessions."
+                player.unpuppet_object(new_character.sessid.get())
                 player.msg(txt % (new_character.name), sessid=new_character.sessid.get())
-                player.unpuppet_object(new_character.sessid)
                 self.msg(txt2 % new_character.name)
             elif new_character.player != player and new_character.player.is_connected:
                 self.msg("{c%s{r is already acted by another player.{n" % new_character.name)

@@ -247,9 +247,9 @@ class PlayerDB(TypedObject, AbstractUser):
                 _GA(from_obj, "at_msg_send")(text=text, to_obj=_GA(self, "typeclass"), **kwargs)
             except Exception:
                 pass
-        sessions = _MULTISESSION_MODE > 1 and [sessid] and make_iter(_GA(self, "get_session")(sessid)) or None
+        sessions = _MULTISESSION_MODE > 1 and sessid and _GA(self, "get_session")(sessid) or None
         if sessions:
-            for session in sessions:
+            for session in make_iter(sessions):
                 obj = session.puppet
                 if obj and not obj.at_msg_receive(text=text, **kwargs):
                     # if hook returns false, cancel send
