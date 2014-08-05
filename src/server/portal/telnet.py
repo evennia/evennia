@@ -8,7 +8,7 @@ sessions etc.
 """
 
 import re
-from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE
+from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, GA
 from src.server.session import Session
 from src.server.portal import ttype, mssp, msdp
 from src.server.portal.mccp import Mccp, mccp_compress, MCCP
@@ -137,13 +137,21 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         #data = data.replace('\n', '\r\n')
         super(TelnetProtocol, self)._write(mccp_compress(self, data))
 
+    def send(self, text, prompt=False):
+        """
+        Writes text to the telnet connection.
+        """
+        text = text.replace(IAC, IAC + IAC).replace('\n', '\r\n')
+        if prompt:
+            text += IAC + GA
+        return self.transport.write(mccp_compress(self, text))
+
     def sendLine(self, line):
         "hook overloading the one used by linereceiver"
         #print "sendLine (%s):\n%s" % (self.state, line)
         #escape IAC in line mode, and correctly add \r\n
         line += self.delimiter
-        line = line.replace(IAC, IAC + IAC).replace('\n', '\r\n')
-        return self.transport.write(mccp_compress(self, line))
+        return self.send(line)
 
     def lineReceived(self, string):
         """
@@ -212,14 +220,19 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         useansi = kwargs.get("ansi", ttype and ttype.get('ANSI', False))
         raw = kwargs.get("raw", False)
         nomarkup = kwargs.get("nomarkup", not (xterm256 or useansi) or not ttype.get("init_done"))
+        prompt = kwargs.get("prompt", False)
 
         #print "telnet kwargs=%s, message=%s" % (kwargs, text)
         #print "xterm256=%s, useansi=%s, raw=%s, nomarkup=%s, init_done=%s" % (xterm256, useansi, raw, nomarkup, ttype.get("init_done"))
+
+        if not prompt:
+            text += self.delimiter
+
         if raw:
             # no processing whatsoever
-            self.sendLine(text)
+            self.send(text, prompt)
         else:
             # we need to make sure to kill the color at the end in order
             # to match the webclient output.
             # print "telnet data out:", self.protocol_flags, id(self.protocol_flags), id(self)
-            self.sendLine(ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256))
+            self.send(ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256), prompt)

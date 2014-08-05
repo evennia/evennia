@@ -556,6 +556,21 @@ class ObjectDB(TypedObject):
         for session in sessions:
             session.msg(text=text, **kwargs)
 
+    def prompt(self, text=None, sessid=0):
+        """
+        Sends a prompt text to the object.
+        """
+
+        global _SESSIONS
+        if not _SESSIONS:
+            from src.server.sessionhandler import SESSIONS as _SESSIONS
+
+        text = to_str(text, force_string=True) if text else ""
+
+        sessions = _SESSIONS.session_from_sessid([sessid] if sessid else make_iter(_GA(self, "sessid").get()))
+        for session in sessions:
+            session.prompt(text=text)
+
     def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):
         """
         Emits something to all objects inside an object.

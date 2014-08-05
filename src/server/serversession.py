@@ -260,6 +260,9 @@ class ServerSession(Session):
         "alias for at_data_out"
         self.data_out(text=text, **kwargs)
 
+    def prompt(self, text=''):
+        self.data_out(text=text, prompt=True)
+
     # Dummy API hooks for use during non-loggedin operation
 
     def at_cmdset_get(self):

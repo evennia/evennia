@@ -338,6 +338,16 @@ class Object(TypeClass):
 
         self.dbobj.msg(text=text, **kwargs)
 
+    def prompt(self, text=None, sessid=0):
+        """
+        Sends a prompt text to the object.
+
+        text (str): The prompt text to send
+        sessid: optional session target. If sessid=0, the session will
+                default to self.sessid or from_obj.sessid.
+        """
+        self.dbobj.prompt(text=text, sessid=sessid)
+
     def msg_contents(self, text=None, exclude=None, from_obj=None, **kwargs):
         """
         Emits something to all objects inside an object.
