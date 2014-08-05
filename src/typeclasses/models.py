@@ -517,7 +517,7 @@ class NickHandler(AttributeHandler):
 class NAttributeHandler(object):
     """
     This stand-alone handler manages non-database saving.
-    It is consistent with AttributeHandler and is used
+    It is similar to AttributeHandler and is used
     by the .ndb handler in the same way as .db does
     for the AttributeHandler.
     """
@@ -544,6 +544,10 @@ class NAttributeHandler(object):
         if key in self._store:
             del self._store[key]
         self.obj.set_recache_protection(self._store)
+
+    def clear(self):
+        "Remove all nattributes from handler"
+        self._store = {}
 
     def all(self, return_tuples=False):
         "List all keys or (keys, values) stored, except _keys"
