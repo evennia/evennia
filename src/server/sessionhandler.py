@@ -442,10 +442,10 @@ class ServerSessionHandler(SessionHandler):
         """
         Given a game character, return any matching sessions.
         """
-        sessid = character.sessid
-        if sessid:
-            return self.sessions.get(sessid)
-        return None
+        sessid = character.sessid.get()
+        if is_iter(sessid):
+            return [self.sessions.get(sess) for sess in sessid if sessid in self.sessions]
+        return self.sessions.get(sessid)
 
     def announce_all(self, message):
         """

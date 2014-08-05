@@ -1649,8 +1649,8 @@ class CmdExamine(ObjManipCommand):
         string = "\n{wName/key{n: {c%s{n (%s)" % (obj.name, obj.dbref)
         if hasattr(obj, "aliases") and obj.aliases.all():
             string += "\n{wAliases{n: %s" % (", ".join(utils.make_iter(str(obj.aliases))))
-        if hasattr(obj, "sessid") and obj.sessid:
-            string += "\n{wsession{n: %s" % obj.sessid
+        if hasattr(obj, "sessid") and obj.sessid.count():
+            string += "\n{wsession{n: %s" % obj.sessid.get()
         elif hasattr(obj, "sessions") and obj.sessions:
             string += "\n{wsession(s){n: %s" % (", ".join(str(sess.sessid)
                                                 for sess in obj.sessions))
@@ -1709,12 +1709,12 @@ class CmdExamine(ObjManipCommand):
             # if we merge on the object level.
             if hasattr(obj, "player") and obj.player:
                 all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in  obj.player.cmdset.all()])
-                if obj.sessid:
-                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.player.get_session(obj.sessid).cmdset.all()])
+                if obj.sessid.count():
+                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.player.get_session(obj.sessid.get()).cmdset.all()])
             else:
                 try:
                     # we have to protect this since many objects don't have sessions.
-                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.get_session(obj.sessid).cmdset.all()])
+                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.get_session(obj.sessid.get()).cmdset.all()])
                 except (TypeError, AttributeError):
                     pass
             all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
@@ -1818,7 +1818,7 @@ class CmdExamine(ObjManipCommand):
                     # we are only interested in specific attributes
                     caller.msg(self.format_attributes(obj, attrname, crop=False))
             else:
-                if hasattr(obj, "sessid") and obj.sessid:
+                if hasattr(obj, "sessid") and obj.sessid.count():
                     mergemode = "session"
                 elif self.player_mode:
                     mergemode = "player"
