@@ -8,7 +8,7 @@ sessions etc.
 """
 
 import re
-from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE
+from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, GA
 from src.server.session import Session
 from src.server.portal import ttype, mssp, msdp
 from src.server.portal.mccp import Mccp, mccp_compress, MCCP
@@ -212,6 +212,14 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         useansi = kwargs.get("ansi", ttype and ttype.get('ANSI', False))
         raw = kwargs.get("raw", False)
         nomarkup = kwargs.get("nomarkup", not (xterm256 or useansi) or not ttype.get("init_done"))
+        prompt = kwargs.get("prompt")
+
+        if prompt:
+            # Send prompt separately
+            prompt = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256)
+            prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
+            prompt += IAC + GA
+            self.transport.write(mccp_compress(self, prompt))
 
         #print "telnet kwargs=%s, message=%s" % (kwargs, text)
         #print "xterm256=%s, useansi=%s, raw=%s, nomarkup=%s, init_done=%s" % (xterm256, useansi, raw, nomarkup, ttype.get("init_done"))
