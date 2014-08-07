@@ -122,6 +122,8 @@ class WebSocketClient(Protocol, Session):
             oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob"))
             #print "oob data_out:", "OOB" + json.dumps(oobstruct)
             self.sendLine("OOB" + json.dumps(oobstruct))
+        if "prompt" in kwargs:
+            self.sendLine("PROMPT" + kwargs["prompt"])
         raw = kwargs.get("raw", False)
         nomarkup = kwargs.get("nomarkup", False)
         if raw:

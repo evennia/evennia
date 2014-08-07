@@ -45,6 +45,9 @@ div {margin:0px;}
 /* Error messages (red) */
 .err { color: #f00 }
 
+/* Prompt base (white) */
+.prompt {color: #fff }
+
 /* Style specific classes corresponding to formatted, narative text. */
 .red { color: red; }
 .maroon { color: maroon; }
@@ -107,7 +110,6 @@ div {margin:0px;}
   float: left;
   width: 87%;}
 
-
 #inputfield:focus {
   outline: 0 }
 
@@ -125,6 +127,10 @@ div {margin:0px;}
   padding: .4em .45em;
   font-size: 1.1em;
   font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace }
+
+/* prompt area above input field */
+#prompt {
+  margin-top: .8em;}
 
 /* No javascript warning */
 #connecting {

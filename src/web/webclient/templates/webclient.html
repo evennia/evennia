@@ -16,6 +16,10 @@
     <!--for offline testing, download the jquery library from jquery.com-->
     <!--script src="/media/javascript/jquery-1.11.1.js" type="text/javascript" charset="utf-8"></script-->
 
+    <script type="text/javascript" charset="utf-8">
+        if(!window.jQuery){document.write("<div class='err'>jQuery library not found or the online version could not be reached.</div>");}
+    </script>
+
     {% if websocket_enabled %}
         <script language="javascript" type="text/javascript">
             if ("WebSocket" in window) {
@@ -51,7 +55,8 @@
         </div>
       </div>
       <form id="inputform" action="javascript:void(0);">
-        <div id="playercount">Logged in Players: {{num_players_connected}}</div>
+        <div id="prompt"></div>
+        <div id="numplayers">Logged in Players: {{num_players_connected}}</div>
         <div id="inputcontrol"><input type="text" id="inputfield" autocomplete="off"><input id="inputsend" type="button" value="send" onClick="doSend()"/></div>
       </form>
     </div>

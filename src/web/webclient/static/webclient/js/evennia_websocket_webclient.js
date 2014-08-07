@@ -75,7 +75,7 @@ function onOpen(evt) {
     doShow("sys", "Using websockets - connected to " + wsurl + ".")
 
     setTimeout(function () {
-        $("#playercount").fadeOut('slow', doSetSizes);
+        $("#numplayers").fadeOut('slow', doSetSizes);
     }, 10000);
 }
 
@@ -105,6 +105,11 @@ function onMessage(evt) {
                     doShow("err", "Could not execute js OOB function '" + oobarray[ind][0] + "(" + oobarray[ind][1] + oobarray[ind][2] + ")'") }
             }
         }
+    }
+    else if (inmsg.length >= 6 && inmsg.substr(0, 6) == "PROMPT") {
+        // handle prompt
+        var game_prompt = inmsg.slice(6);
+        doPrompt("prompt", game_prompt);
     }
     else {
         // normal message
@@ -172,6 +177,11 @@ function doShow(type, msg){
     $('#messagewindow').animate({scrollTop: $('#messagewindow')[0].scrollHeight});
 }
 
+function doPrompt(type, msg){
+    // Display prompt
+    $('#prompt').replaceWith(
+            "<div id='prompt' class='msg "+ type +"'>" + msg + "</div>");
+}
 
 function doSetSizes() {
     // Sets the size of the message window
@@ -179,7 +189,6 @@ function doSetSizes() {
     //var win_w = $('#wrapper').width();
     var inp_h = $('#inputform').outerHeight(true);
     //var inp_w = $('#inputsend').outerWidth(true);
-
     $("#messagewindow").css({'height': win_h - inp_h - 1});
     //$("#inputfield").css({'width': win_w - inp_w - 20});
 }
