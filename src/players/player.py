@@ -371,7 +371,7 @@ class Player(TypeClass):
             # not perform any actions
             if not self.get_all_puppets():
                 self.execute_cmd("@ic", sessid=sessid)
-        elif _MULTISESSION_MODE == 2:
+        elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.
             self.execute_cmd("look", sessid=sessid)
@@ -427,7 +427,7 @@ class Player(TypeClass):
 class Guest(Player):
     """
     This class is used for guest logins. Unlike Players, Guests and their
-    characters are deleted after disconnection. 
+    characters are deleted after disconnection.
     """
     def at_post_login(self, sessid=None):
         """
@@ -436,7 +436,7 @@ class Guest(Player):
         """
         self._send_to_connect_channel("{G%s connected{n" % self.key)
         self.execute_cmd("@ic", sessid=sessid)
-        
+
     def at_disconnect(self):
         """
         A Guest's characters aren't meant to linger on the server. When a
@@ -446,7 +446,7 @@ class Guest(Player):
         characters = self.db._playable_characters
         for character in filter(None, characters):
             character.delete()
-    
+
     def at_server_shutdown(self):
         """
         We repeat at_disconnect() here just to be on the safe side.
@@ -455,7 +455,7 @@ class Guest(Player):
         characters = self.db._playable_characters
         for character in filter(None, characters):
             character.delete()
-            
+
     def at_post_disconnect(self):
         """
         Guests aren't meant to linger on the server, either. We need to wait
