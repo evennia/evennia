@@ -1710,7 +1710,11 @@ class CmdExamine(ObjManipCommand):
             if hasattr(obj, "player") and obj.player:
                 all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in  obj.player.cmdset.all()])
                 if obj.sessid.count():
-                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.player.get_session(obj.sessid.get()).cmdset.all()])
+                    # if there are more sessions than one on objects it's because of multisession mode 3.
+                    # we only show the first session's cmdset here (it is -in principle- possible that
+                    # different sessions have different cmdsets but for admins who want such madness
+                    # it is better that they overload with their own CmdExamine to handle it).
+                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.player.get_session(obj.sessid.get()[0]).cmdset.all()])
             else:
                 try:
                     # we have to protect this since many objects don't have sessions.
