@@ -428,8 +428,8 @@ class CmdNewPassword(MuxCommand):
         player = caller.search_player(self.lhs)
         if not player:
             return
-        player.user.set_password(self.rhs)
-        player.user.save()
+        player.set_password(self.rhs)
+        player.save()
         self.msg("%s - new password set to '%s'." % (player.name, self.rhs))
         if player.character != caller:
             player.msg("%s has changed your password to '%s'." % (caller.name,
