@@ -59,8 +59,8 @@ class SessidHandler(object):
         self._cache = list(set(int(val) for val in (_GA(self.obj, "db_sessid") or "").split(",") if val))
 
     def get(self):
-        "Returns a single integer or a list"
-        return self._cache if _SESSID_MAX > 1 else self._cache[0] if self._cache else None
+        "Returns a list of one or more session ids"
+        return self._cache
 
     def add(self, sessid):
         "Add sessid to handler"
