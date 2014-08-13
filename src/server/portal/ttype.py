@@ -101,7 +101,8 @@ class Ttype(object):
                                            "KILDCLIENT",    # > 2.2.0 (sep 2005)
                                            "MUDLET",        # > beta 15 (sep 2009)
                                            "MUSHCLIENT",    # > 4.02 (apr 2007)
-                                           "PUTTY"))        # > 0.58 (apr 2005)
+                                           "PUTTY",         # > 0.58 (apr 2005)
+                                           "BEIP"))         # > 2.00.206 (late 2009) (BeipMu)
 
             # all clients supporting TTYPE at all seem to support ANSI
             self.protocol.protocol_flags['TTYPE']['ANSI'] = True
