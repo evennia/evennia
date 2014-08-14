@@ -58,7 +58,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # until coming up with a more elegant solution /Griatch
 
         from src.utils.utils import delay
-        delay(5, callback=self.handshake_done, retval=True)
+        delay(2, callback=self.handshake_done, retval=True)
 
     def handshake_done(self, force=False):
         """
