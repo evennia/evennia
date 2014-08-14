@@ -60,13 +60,14 @@ class Msdp(object):
 
     def no_msdp(self, option):
         "No msdp supported or wanted"
-        pass
+        self.protocol.handshake_done()
 
     def do_msdp(self, option):
         """
         Called when client confirms that it can do MSDP.
         """
         self.protocol.protocol_flags['MSDP'] = True
+        self.protocol.handshake_done()
 
     def evennia_to_msdp(self, cmdname, *args, **kwargs):
         """

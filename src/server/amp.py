@@ -39,6 +39,7 @@ SDISCONNALL = chr(6)  # server session disconnect all
 SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server session sync
 SCONN = chr(9)        # server creating new connectiong (for irc/imc2 bots etc)
+PCONNSYNC = chr(10)   # portal post-syncing a session
 
 MAXLEN = 65535  # max allowed data length in AMP protocol
 _MSGBUFFER = defaultdict(list)
@@ -412,6 +413,9 @@ class AMPProtocol(amp.AMP):
                 # create a new session and sync it
                 server_sessionhandler.portal_connect(data)
 
+            elif operation == PCONNSYNC: #portal_session_sync
+                server_sessionhandler.portal_session_sync(data)
+
             elif operation == PDISCONN:  # portal_session_disconnect
                 # session closed from portal side
                 self.factory.server.sessions.portal_disconnect(sessid)
@@ -422,7 +426,7 @@ class AMPProtocol(amp.AMP):
                 # contains a dict {sessid: {arg1:val1,...}}
                 # representing the attributes to sync for each
                 # session.
-                server_sessionhandler.portal_session_sync(data)
+                server_sessionhandler.portal_sessions_sync(data)
             else:
                 raise Exception("operation %(op)s not recognized." % {'op': operation})
         return {}

@@ -54,6 +54,7 @@ class Ttype(object):
         Callback if ttype is not supported by client.
         """
         self.protocol.protocol_flags['TTYPE']["init_done"] = True
+        self.protocol.handshake_done()
 
     def will_ttype(self, option):
         """
@@ -139,4 +140,6 @@ class Ttype(object):
 
             self.protocol.protocol_flags['TTYPE']['init_done'] = True
             # print "TTYPE final:", self.protocol.protocol_flags['TTYPE']
+            # we must sync ttype once it'd done
+            self.protocol.handshake_done()
         self.ttype_step += 1

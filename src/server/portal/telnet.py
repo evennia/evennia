@@ -30,6 +30,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         # initialize the session
         self.iaw_mode = False
+        self.handshakes = 4 # ttype, mccp, mssp, msdp
         client_address = self.transport.client
         self.init_session("telnet", client_address, self.factory.sessionhandler)
         # negotiate ttype (client info)
@@ -43,6 +44,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.msdp = msdp.Msdp(self)
         # add this new connection to sessionhandler so
         # the Server becomes aware of it.
+        self.sessionhandler.connect(self)
 
         # This is a fix to make sure the connection does not
         # continue until the handshakes are done. This is a
@@ -54,9 +56,26 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # to their defaults since sessionhandler.connect will sync
         # before the handshakes have had time to finish. Keeping this patch
         # until coming up with a more elegant solution /Griatch
+
         from src.utils.utils import delay
-        delay(1, callback=self.sessionhandler.connect, retval=self)
-        #self.sessionhandler.connect(self)
+        delay(5, callback=self.handshake_done, retval=True)
+
+    def handshake_done(self, force=False):
+        """
+        This is called by all telnet extensions once they are finished.
+        When all have reported, a sync with the server is performed.
+        The system will force-call this sync after a small time to handle
+        clients that don't reply to handshakes at all.
+        info - debug text from the protocol calling
+        """
+        if self.handshakes > 0:
+            if force:
+                self.sessionhandler.sync(self)
+                return
+            self.handshakes -= 1
+            if self.handshakes <= 0:
+                # do the sync
+                self.sessionhandler.sync(self)
 
     def enableRemote(self, option):
         """
@@ -208,10 +227,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         # parse **kwargs, falling back to ttype if nothing is given explicitly
         ttype = self.protocol_flags.get('TTYPE', {})
-        xterm256 = kwargs.get("xterm256", ttype and ttype.get('256 COLORS', False))
-        useansi = kwargs.get("ansi", ttype and ttype.get('ANSI', False))
+        xterm256 = kwargs.get("xterm256", ttype.get('256 COLORS', False) if ttype.get("init_done") else True)
+        useansi = kwargs.get("ansi", ttype and ttype.get('ANSI', False) if ttype.get("init_done") else True)
         raw = kwargs.get("raw", False)
-        nomarkup = kwargs.get("nomarkup", not (xterm256 or useansi) or not ttype.get("init_done"))
+        nomarkup = kwargs.get("nomarkup", not (xterm256 or useansi))
         prompt = kwargs.get("prompt")
 
         if prompt:
@@ -229,5 +248,5 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         else:
             # we need to make sure to kill the color at the end in order
             # to match the webclient output.
-            # print "telnet data out:", self.protocol_flags, id(self.protocol_flags), id(self)
+            #print "telnet data out:", self.protocol_flags, id(self.protocol_flags), id(self), "nomarkup: %s, xterm256: %s" % (nomarkup, xterm256)
             self.sendLine(ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256))
