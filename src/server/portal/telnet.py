@@ -46,17 +46,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # the Server becomes aware of it.
         self.sessionhandler.connect(self)
 
-        # This is a fix to make sure the connection does not
-        # continue until the handshakes are done. This is a
-        # dumb delay of 1 second. This solution is not ideal (and
-        # potentially buggy for slow connections?) but
-        # adding a callback chain to all protocols (and notably
-        # to their handshakes, which in some cases are multi-part)
-        # is not trivial. Without it, the protocol will default
-        # to their defaults since sessionhandler.connect will sync
-        # before the handshakes have had time to finish. Keeping this patch
-        # until coming up with a more elegant solution /Griatch
-
+        # timeout the handshakes in case the client doesn't reply at all
         from src.utils.utils import delay
         delay(2, callback=self.handshake_done, retval=True)
 
