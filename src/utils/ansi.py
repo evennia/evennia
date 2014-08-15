@@ -356,7 +356,7 @@ def _spacing_preflight(func):
     def wrapped(self, width, fillchar=None):
         if fillchar is None:
             fillchar = " "
-        if (len(fillchar) != 1) or (not isinstance(fillchar, str)):
+        if (len(fillchar) != 1) or (not isinstance(fillchar, basestring)):
             raise TypeError("must be char, not %s" % type(fillchar))
         if not isinstance(width, int):
             raise TypeError("integer argument expected, got %s" % type(width))
