@@ -844,23 +844,23 @@ def string_from_module(module, variable=None, default=None):
     """
     This is a wrapper for variable_from_module that requires return
     value to be a string to pass. It's primarily used by login screen.
+    if variable is not set, returns a list of all string variables in
+    module
     """
     val = variable_from_module(module, variable=variable, default=default)
-    if isinstance(val, basestring):
-        return val
-    elif is_iter(val):
-        result = [v for v in val if isinstance(v, basestring)]
-        return result if result else default
+    if val:
+        if variable:
+            return val
+        else:
+            result = [v for v in make_iter(val) if isinstance(v, basestring)]
+            return result if result else default
     return default
 
 def random_string_from_module(module):
     """
     Returns a random global string from a module
     """
-    string = string_from_module(module)
-    if is_iter(string):
-        string = random.choice(string)
-    return string
+    return random.choice(string_from_module(module))
 
 def init_new_player(player):
     """

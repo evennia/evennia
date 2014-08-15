@@ -297,7 +297,7 @@ class CmdUnloggedinQuit(Command):
 
 # The login menu tree, using the commands above
 
-START = MenuNode("START", text=utils.string_from_module(CONNECTION_SCREEN_MODULE),
+START = MenuNode("START", text=utils.random_string_from_module(CONNECTION_SCREEN_MODULE),
                  links=["node1a", "node2a", "node3", "END"],
                  linktexts=["Log in with an existing account",
                             "Create a new account",
