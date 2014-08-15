@@ -118,15 +118,16 @@ class CmdOOCLook(MuxPlayerCommand):
                          MAX_NR_CHARACTERS > 1 and " (%i/%i)" % (len(characters), MAX_NR_CHARACTERS) or "")
 
             for char in characters:
-                csessid = char.sessid
+                csessid = char.sessid.get()
                 if csessid:
                     # character is already puppeted
-                    sess = player.get_session(csessid)
-                    sid = sess in sessions and sessions.index(sess) + 1
-                    if sess and sid:
-                        string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
-                    else:
-                        string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
+                    sessi = player.get_session(csessid)
+                    for sess in utils.make_iter(sessi):
+                        sid = sess in sessions and sessions.index(sess) + 1
+                        if sess and sid:
+                            string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
+                        else:
+                            string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
                 else:
                     # character is "free to puppet"
                     string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions.all()))
@@ -162,7 +163,7 @@ class CmdCharCreate(MuxPlayerCommand):
     if you want.
     """
     key = "@charcreate"
-    locks = "cmd:all()"
+    locks = "cmd:pperm(Players)"
     help_category = "General"
 
     def func(self):
@@ -196,7 +197,7 @@ class CmdCharCreate(MuxPlayerCommand):
         player.db._playable_characters.append(new_character)
         if desc:
             new_character.db.desc = desc
-        else:
+        elif not new_character.db.desc:
             new_character.db.desc = "This is a Player."
         self.msg("Created new character %s. Use {w@ic %s{n to enter the game as this character." % (new_character.key, new_character.key))
 
@@ -252,12 +253,17 @@ class CmdIC(MuxPlayerCommand):
             return
         if new_character.player:
             # may not puppet an already puppeted character
-            if new_character.sessid and new_character.player == player:
-                # as a safeguard we allow "taking over chars from
-                # your own sessions.
-                player.msg("{c%s{n{R is now acted from another of your sessions.{n" % (new_character.name), sessid=new_character.sessid)
-                player.unpuppet_object(new_character.sessid)
-                self.msg("Taking over {c%s{n from another of your sessions." % new_character.name)
+            if new_character.sessid.count() and new_character.player == player:
+                # as a safeguard we allow "taking over" chars from your own sessions.
+                if MULTISESSION_MODE in (1, 3):
+                    txt = "{c%s{n{G is now shared from another of your sessions.{n"
+                    txt2 =  "Sharing {c%s{n with another of your sessions."
+                else:
+                    txt = "{c%s{n{R is now acted from another of your sessions.{n"
+                    txt2 =  "Taking over {c%s{n from another of your sessions."
+                player.unpuppet_object(new_character.sessid.get())
+                player.msg(txt % (new_character.name), sessid=new_character.sessid.get())
+                self.msg(txt2 % new_character.name)
             elif new_character.player != player and new_character.player.is_connected:
                 self.msg("{c%s{r is already acted by another player.{n" % new_character.name)
                 return
@@ -285,7 +291,7 @@ class CmdOOC(MuxPlayerCommand):
 
     key = "@ooc"
     # lock must be all(), for different puppeted objects to access it.
-    locks = "cmd:all()"
+    locks = "cmd:pperm(Players)"
     aliases = "@unpuppet"
     help_category = "General"
 
@@ -378,9 +384,11 @@ class CmdWho(MuxPlayerCommand):
 
         nplayers = (SESSIONS.player_count())
         if show_session_data:
+            # privileged info
             table = prettytable.PrettyTable(["{wPlayer Name",
                                              "{wOn for",
                                              "{wIdle",
+                                             "{wPuppeting",
                                              "{wRoom",
                                              "{wCmds",
                                              "{wProtocol",
@@ -389,25 +397,27 @@ class CmdWho(MuxPlayerCommand):
                 if not session.logged_in: continue
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
-                plr_pobject = session.get_puppet()
-                plr_pobject = plr_pobject or session.get_player()
-                table.add_row([utils.crop(plr_pobject.name, width=25),
+                player = session.get_player()
+                puppet = session.get_puppet()
+                location = puppet.location.key if puppet else "None"
+                table.add_row([utils.crop(player.name, width=25),
                                utils.time_format(delta_conn, 0),
                                utils.time_format(delta_cmd, 1),
-                               hasattr(plr_pobject, "location") and plr_pobject.location and plr_pobject.location.key or "None",
+                               utils.crop(puppet.key if puppet else "None", width=25),
+                               utils.crop(location, width=25),
                                session.cmd_total,
                                session.protocol_key,
                                isinstance(session.address, tuple) and session.address[0] or session.address])
         else:
+            # unprivileged
             table = prettytable.PrettyTable(["{wPlayer name", "{wOn for", "{wIdle"])
             for session in session_list:
                 if not session.logged_in:
                     continue
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
-                plr_pobject = session.get_puppet()
-                plr_pobject = plr_pobject or session.get_player()
-                table.add_row([utils.crop(plr_pobject.name, width=25),
+                player = session.get_player()
+                table.add_row([utils.crop(player.key, width=25),
                                utils.time_format(delta_conn, 0),
                                utils.time_format(delta_cmd, 1)])
 
@@ -487,7 +497,7 @@ class CmdPassword(MuxPlayerCommand):
     Changes your password. Make sure to pick a safe one.
     """
     key = "@password"
-    locks = "cmd:all()"
+    locks = "cmd:pperm(Players)"
 
     def func(self):
         "hook function."
@@ -646,7 +656,7 @@ class CmdQuell(MuxPlayerCommand):
 
     key = "@quell"
     aliases = ["@unquell"]
-    locks = "cmd:all()"
+    locks = "cmd:pperm(Players)"
     help_category = "General"
 
     def _recache_locks(self, player):

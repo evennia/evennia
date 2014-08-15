@@ -80,6 +80,10 @@ class Ticker(object):
         """
         for key, (obj, args, kwargs) in self.subscriptions.items():
             hook_key = yield kwargs.get("hook_key", "at_tick")
+            if not obj:
+                # object was deleted between calls
+                self.validate()
+                continue
             try:
                 yield _GA(obj, hook_key)(*args, **kwargs)
             except Exception:
@@ -108,7 +112,7 @@ class Ticker(object):
             if not subs:
                 self.task.stop()
         elif subs:
-            print "starting with start_delay=", start_delay
+            #print "starting with start_delay=", start_delay
             self.task.start(self.interval, now=False, start_delay=start_delay)
 
     def add(self, store_key, obj, *args, **kwargs):
@@ -173,6 +177,7 @@ class TickerPool(object):
         else:
             for ticker in self.tickers.values():
                 ticker.stop()
+
 
 class TickerHandler(object):
     """
@@ -266,15 +271,31 @@ class TickerHandler(object):
             self.save()
         self.ticker_pool.add(store_key, obj, interval, *args, **kwargs)
 
-    def remove(self, obj, interval):
+    def remove(self, obj, interval=None):
         """
-        Remove object from ticker with given interval.
+        Remove object from ticker, or only this object ticking
+        at a given interval.
         """
-        isdb, store_key = self._store_key(obj, interval)
-        if isdb:
-            self.ticker_storage.pop(store_key, None)
-            self.save()
-        self.ticker_pool.remove(store_key, interval)
+        if interval:
+            isdb, store_key = self._store_key(obj, interval)
+            if isdb:
+                self.ticker_storage.pop(store_key, None)
+                self.save()
+            self.ticker_pool.remove(store_key, interval)
+        else:
+            # remove all objects with any intervals
+            intervals = self.ticker_pool.tickers.keys()
+            should_save = False
+            for interval in intervals:
+                isdb, store_key = self._store_key(obj, interval)
+                if isdb:
+                    self.ticker_storage.pop(store_key, None)
+                    should_save = True
+                self.ticker_pool.remove(store_key, interval)
+            if should_save:
+                self.save()
+
+
 
     def clear(self, interval=None):
         """
@@ -305,6 +326,7 @@ class TickerHandler(object):
             ticker = self.ticker_pool.tickers.get(interval, None)
             if ticker:
                 return ticker.subscriptions.values()
+
 
 # main tickerhandler
 TICKER_HANDLER = TickerHandler()

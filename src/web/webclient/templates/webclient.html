@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Evennia web MUD client</title>
+
+    <!--CSS style sheet -->
+    <link rel='stylesheet' type="text/css" media="screen" href="{% static "webclient/css/webclient.css" %}">
+
+    <!-- Importing the online jQuery javascript library -->
+    <!--script src="http://code.jquery.com/jquery-1.6.1.js" type="text/javascript" charset="utf-8"></script-->
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <!--for offline testing, download the jquery library from jquery.com-->
+    <!--script src="/media/javascript/jquery-1.11.1.js" type="text/javascript" charset="utf-8"></script-->
+
+    <script type="text/javascript" charset="utf-8">
+        if(!window.jQuery){document.write("<div class='err'>jQuery library not found or the online version could not be reached.</div>");}
+    </script>
+
+    {% if websocket_enabled %}
+        <script language="javascript" type="text/javascript">
+            if ("WebSocket" in window) {
+                <!-- Importing the Evennia websocket webclient component (requires jQuery)  -->
+                var wsurl = "{{websocket_url}}";
+                document.write("\<script src=\"{% static "webclient/js/evennia_websocket_webclient.js" %}\" type=\"text/javascript\" charset=\"utf-8\"\>\</script\>")}
+            else {
+                <!-- No websocket support in browser. Importing the Evennia ajax webclient component (requires jQuery)  -->
+                document.write("\<script src=\"{% static "webclient/js/evennia_ajax_webclient.js" %}\" type=\"text/javascript\" charset=\"utf-8\"\>\</script\>")}
+        </script>
+    {% else %}
+            <!-- websocket not enabled; use ajax -->
+            <script src="{% static "webclient/js/evennia_ajax_webclient.js" %}" type="text/javascript" charset="utf-8"></script>
+    {% endif %}
+
+  </head>
+  <body>
+
+    <div id="wrapper">
+      <div id="messagewindow">
+        <!--javascript kills this when page has finished loading: -->
+        <div id="connecting"> Connecting ...</div>
+        <!--this is supplied by django view - webclient/views.py: -->
+        <div id="noscript"><h3>Javascript Error: The Evennia MUD client requires that you have Javascript activated.</h3>
+          <p>Turn off eventual script blockers and/or switch to a web
+          browser supporting javascript.</p><p>For admins: The error
+          could also be due to not being able to access the online
+          jQuery javascript library. If you are testing the client
+          without an internet connection, you have to previously
+          download the jQuery library from http://code.jquery.com
+          (it's just one file) and then edit webclient.html to point
+          to the local copy.</p>
+        </div>
+      </div>
+      <form id="inputform" action="javascript:void(0);">
+        <div id="prompt"></div>
+        <div id="numplayers">Logged in Players: {{num_players_connected}}</div>
+        <div id="inputcontrol"><input type="text" id="inputfield" autocomplete="off"><input id="inputsend" type="button" value="send" onClick="doSend()"/></div>
+      </form>
+    </div>
+
+  </body>
+</html>

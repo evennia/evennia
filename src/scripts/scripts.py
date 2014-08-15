@@ -460,7 +460,7 @@ class Script(ScriptBase):
         Should return a boolean. The method is assumed to collect all needed
         information from its related self.obj.
         """
-        return True
+        return not self._is_deleted
 
     def at_start(self):
         """

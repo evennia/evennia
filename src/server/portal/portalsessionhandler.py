@@ -2,7 +2,7 @@
 Sessionhandler for portal sessions
 """
 import time
-from src.server.sessionhandler import SessionHandler, PCONN, PDISCONN
+from src.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PSYNC, PCONNSYNC
 
 _MOD_IMPORT = None
 
@@ -54,6 +54,19 @@ class PortalSessionHandler(SessionHandler):
             self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
                                                          operation=PCONN,
                                                          data=sessdata)
+    def sync(self, session):
+        """
+        Called by the protocol of an already connected session. This
+        can be used to sync the session info in a delayed manner,
+        such as when negotiation and handshakes are delayed.
+        """
+        if session.sessid:
+            # only use if session already has sessid (i.e. has already connected)
+            sessdata = session.get_sync_data()
+            if self.portal.amp_protocol:
+                self.portal.amp_protocol.call_remote_ServerAdmin(session.sessid,
+                                                                 operation=PCONNSYNC,
+                                                                 data=sessdata)
 
     def disconnect(self, session):
         """

@@ -54,6 +54,7 @@ class Mccp(object):
         if hasattr(self.protocol, 'zlib'):
             del self.protocol.zlib
         self.protocol.protocol_flags['MCCP'] = False
+        self.protocol.handshake_done()
 
     def do_mccp(self, option):
         """
@@ -63,3 +64,4 @@ class Mccp(object):
         self.protocol.protocol_flags['MCCP'] = True
         self.protocol.requestNegotiation(MCCP, '')
         self.protocol.zlib = zlib.compressobj(9)
+        self.protocol.handshake_done()

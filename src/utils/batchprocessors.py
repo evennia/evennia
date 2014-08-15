@@ -171,12 +171,16 @@ import traceback
 import sys
 #from traceback import format_exc
 from django.conf import settings
-from src.utils import logger
 from src.utils import utils
 #from game import settings as settings_module
 
 ENCODINGS = settings.ENCODINGS
 CODE_INFO_HEADER = re.compile(r"\(.*?\)")
+
+RE_INSERT = re.compile(r"^\#INSERT (.*?)", re.MULTILINE)
+RE_CLEANBLOCK = re.compile(r"^\#.*?$|^\s*$", re.MULTILINE)
+RE_CMD_SPLIT = re.compile(r"^\#.*?$", re.MULTILINE)
+RE_CODE_SPLIT = re.compile(r"(^\#CODE.*?$|^\#HEADER)$", re.MULTILINE)
 
 
 #------------------------------------------------------------
@@ -267,9 +271,11 @@ class BatchCommandProcessor(object):
             return "\#\n".join(self.parse_file(match.group()))
 
         # insert commands from inserted files
-        text = re.sub(r"^\#INSERT (.*?)", replace_insert, text, flags=re.MULTILINE)
+        text = RE_INSERT.sub(replace_insert, text)
+        #text = re.sub(r"^\#INSERT (.*?)", replace_insert, text, flags=re.MULTILINE)
         # get all commands
-        commands = re.split(r"^\#.*?$", text, flags=re.MULTILINE)
+        commands = RE_CMD_SPLIT.split(text)
+        #commands = re.split(r"^\#.*?$", text, flags=re.MULTILINE)
         #remove eventual newline at the end of commands
         commands = [c.strip('\r\n') for c in commands]
         commands = [c for c in commands if c]
@@ -318,15 +324,18 @@ class BatchCodeProcessor(object):
         text = "".join(read_batchfile(pythonpath, file_ending='.py'))
 
         def clean_block(text):
-            text = re.sub(r"^\#.*?$|^\s*$", "", text, flags=re.MULTILINE)
+            text = RE_CLEANBLOCK.sub("", text)
+            #text = re.sub(r"^\#.*?$|^\s*$", "", text, flags=re.MULTILINE)
             return "\n".join([line for line in text.split("\n") if line])
 
         def replace_insert(match):
             "Map replace entries"
             return "\#\n".join(self.parse_file(match.group()))
 
-        text = re.sub(r"^\#INSERT (.*?)", replace_insert, text, flags=re.MULTILINE)
-        blocks = re.split(r"(^\#CODE.*?$|^\#HEADER)$", text, flags=re.MULTILINE)
+        text = RE_INSERT.sub(replace_insert, text)
+        #text = re.sub(r"^\#INSERT (.*?)", replace_insert, text, flags=re.MULTILINE)
+        blocks = RE_CODE_SPLIT.split(text)
+        #blocks = re.split(r"(^\#CODE.*?$|^\#HEADER)$", text, flags=re.MULTILINE)
         headers = []
         codes = [] # list of tuples (code, info, objtuple)
         if blocks:

@@ -333,13 +333,13 @@ class CmdCdestroy(MuxPlayerCommand):
         if not channel.access(caller, 'control'):
             self.msg("You are not allowed to do that.")
             return
-
-        message = "%s is being destroyed. Make sure to change your aliases." % channel
+        channel_key = channel.key
+        message = "%s is being destroyed. Make sure to change your aliases." % channel_key
         msgobj = create.create_message(caller, message, channel)
         channel.msg(msgobj)
         channel.delete()
         CHANNELHANDLER.update()
-        self.msg("Channel '%s' was destroyed." % channel)
+        self.msg("Channel '%s' was destroyed." % channel_key)
 
 
 class CmdCBoot(MuxPlayerCommand):
@@ -422,7 +422,7 @@ class CmdCemit(MuxPlayerCommand):
 
     key = "@cemit"
     aliases = ["@cmsg"]
-    locks = "cmd: not pperm(channel_banned)"
+    locks = "cmd: not pperm(channel_banned) and pperm(Players)"
     help_category = "Comms"
 
     def func(self):
@@ -498,7 +498,7 @@ class CmdChannelCreate(MuxPlayerCommand):
 
     key = "@ccreate"
     aliases = "channelcreate"
-    locks = "cmd:not pperm(channel_banned)"
+    locks = "cmd:not pperm(channel_banned) and pperm(Players)"
     help_category = "Comms"
 
     def func(self):
@@ -712,7 +712,7 @@ class CmdPage(MuxPlayerCommand):
             if isinstance(receiver, basestring):
                 pobj = caller.search(receiver)
             elif hasattr(receiver, 'character'):
-                pobj = receiver.character
+                pobj = receiver
             else:
                 self.msg("Who do you want to page?")
                 return
@@ -741,13 +741,13 @@ class CmdPage(MuxPlayerCommand):
                 rstrings.append("You are not allowed to page %s." % pobj)
                 continue
             pobj.msg("%s %s" % (header, message))
-            if hasattr(pobj, 'has_player') and not pobj.has_player:
+            if hasattr(pobj, 'sessions') and not pobj.sessions:
                 received.append("{C%s{n" % pobj.name)
                 rstrings.append("%s is offline. They will see your message if they list their pages later." % received[-1])
             else:
                 received.append("{c%s{n" % pobj.name)
         if rstrings:
-            self.msg(rstrings="\n".join(rstrings))
+            self.msg("\n".join(rstrings))
         self.msg("You paged %s with: '%s'." % (", ".join(received), message))
 
 

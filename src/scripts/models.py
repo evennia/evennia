@@ -27,9 +27,9 @@ Common examples of uses of Scripts:
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
-from src.typeclasses.models import TypedObject, TagHandler, AttributeHandler
+from src.typeclasses.models import TypedObject
 from src.scripts.manager import ScriptManager
-from src.utils.utils import dbref, to_str, LazyLoadHandler
+from src.utils.utils import dbref, to_str
 
 __all__ = ("ScriptDB",)
 _GA = object.__getattribute__
@@ -107,13 +107,6 @@ class ScriptDB(TypedObject):
     class Meta:
         "Define Django meta options"
         verbose_name = "Script"
-
-    def __init__(self, *args, **kwargs):
-        super(ScriptDB, self).__init__(*args, **kwargs)
-        _SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
-        _SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
-        #_SA(self, "aliases", AliasHandler(self))
-
 
     #
     #

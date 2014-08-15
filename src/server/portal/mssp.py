@@ -47,6 +47,7 @@ class Mssp(object):
         """
         This is the normal operation.
         """
+        self.protocol.handshake_done()
         pass
 
     def do_mssp(self, option):
@@ -181,3 +182,4 @@ class Mssp(object):
 
         # send to crawler by subnegotiation
         self.protocol.requestNegotiation(MSSP, varlist)
+        self.protocol.handshake_done()

@@ -6,8 +6,8 @@
 # http://diveintopython.org/regular_expressions/street_addresses.html#re.matching.2.3
 #
 
-from django.conf.urls import *
 from django.conf import settings
+from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.generic import RedirectView
 
@@ -24,33 +24,45 @@ admin.autodiscover()
 
 # Setup the root url tree from /
 
-urlpatterns = patterns('',
+urlpatterns = [
     # User Authentication
-    url(r'^accounts/login',  'django.contrib.auth.views.login'),
-    url(r'^accounts/logout', 'django.contrib.auth.views.logout'),
-
-    # Front page
-    url(r'^', include('src.web.website.urls')),
-    # News stuff
-    # url(r'^news/', include('src.web.news.urls')),
+    url(r'^accounts/login',  'django.contrib.auth.views.login', name="login"),
+    url(r'^accounts/logout', 'django.contrib.auth.views.logout', name="logout"),
 
     # Page place-holder for things that aren't implemented yet.
-    url(r'^tbi/', 'src.web.website.views.to_be_implemented'),
+    url(r'^tbi/', 'src.web.views.to_be_implemented', name='to_be_implemented'),
 
     # Admin interface
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/', include(admin.site.urls)),
 
     # favicon
     url(r'^favicon\.ico$',  RedirectView.as_view(url='/media/images/favicon.ico')),
 
     # ajax stuff
-    url(r'^webclient/',include('src.web.webclient.urls')),
-)
+    url(r'^webclient/', include('src.web.webclient.urls', namespace='webclient', app_name='webclient')),
+
+    # Front page
+    url(r'^$', 'src.web.views.page_index', name="index"),
+
+    # Django original admin page. Make this URL is always available, whether
+    # we've chosen to use Evennia's custom admin or not.
+    url(r'django_admin/', 'src.web.views.admin_wrapper', name="django_admin")]
+
+if settings.EVENNIA_ADMIN:
+    urlpatterns += [
+        # Our override for the admin.
+        url('^admin/$', 'src.web.views.evennia_admin', name="evennia_admin"),
+
+        # Makes sure that other admin pages get loaded.
+        url(r'^admin/', include(admin.site.urls))]
+else:
+    # Just include the normal Django admin.
+    urlpatterns += [url(r'^admin/', include(admin.site.urls))]
 
 # This sets up the server if the user want to run the Django
 # test server (this should normally not be needed).
 if settings.SERVE_MEDIA:
-    urlpatterns += patterns('',
-        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
-    )
+    urlpatterns.extend([
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+        url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT})
+    ])

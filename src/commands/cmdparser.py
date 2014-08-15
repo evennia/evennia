@@ -262,7 +262,6 @@ def at_multimatch_cmd(caller, matches):
 
         id1 = ""
         id2 = ""
-        print "cmd.obj:", cmd, cmd.obj
         if (not (is_channel or is_exit) and
             (hasattr(cmd, 'obj') and cmd.obj != caller) and
              hasattr(cmd.obj, "key")):

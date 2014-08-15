@@ -371,7 +371,7 @@ class Player(TypeClass):
             # not perform any actions
             if not self.get_all_puppets():
                 self.execute_cmd("@ic", sessid=sessid)
-        elif _MULTISESSION_MODE == 2:
+        elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.
             self.execute_cmd("look", sessid=sessid)
@@ -382,6 +382,16 @@ class Player(TypeClass):
         """
         reason = reason and "(%s)" % reason or ""
         self._send_to_connect_channel("{R%s disconnected %s{n" % (self.key, reason))
+
+    def at_post_disconnect(self):
+        """
+        This is called after disconnection is complete. No messages
+        can be relayed to the player from here. After this call, the
+        player should not be accessed any more, making this a good
+        spot for deleting it (in the case of a guest player account,
+        for example).
+        """
+        pass
 
     def at_message_receive(self, message, from_obj=None):
         """
@@ -413,3 +423,43 @@ class Player(TypeClass):
         (i.e. not for a restart).
         """
         pass
+
+class Guest(Player):
+    """
+    This class is used for guest logins. Unlike Players, Guests and their
+    characters are deleted after disconnection.
+    """
+    def at_post_login(self, sessid=None):
+        """
+        In theory, guests only have one character regardless of which
+        MULTISESSION_MODE we're in. They don't get a choice.
+        """
+        self._send_to_connect_channel("{G%s connected{n" % self.key)
+        self.execute_cmd("@ic", sessid=sessid)
+
+    def at_disconnect(self):
+        """
+        A Guest's characters aren't meant to linger on the server. When a
+        Guest disconnects, we remove its character.
+        """
+        super(Guest, self).at_disconnect()
+        characters = self.db._playable_characters
+        for character in filter(None, characters):
+            character.delete()
+
+    def at_server_shutdown(self):
+        """
+        We repeat at_disconnect() here just to be on the safe side.
+        """
+        super(Guest, self).at_server_shutdown()
+        characters = self.db._playable_characters
+        for character in filter(None, characters):
+            character.delete()
+
+    def at_post_disconnect(self):
+        """
+        Guests aren't meant to linger on the server, either. We need to wait
+        until after the Guest disconnects to delete it, though.
+        """
+        super(Guest, self).at_post_disconnect()
+        self.delete()

@@ -1,7 +1,7 @@
 Evennia MUD/MU\* Creation System
 ================================
 
-*Evennia* is an open-source Python-based MUD/MU\* server/codebase using modern technologies. Evennia allows creators to design and flesh out text-based massively-multiplayer online games with great freedom.
+*Evennia* is a Python-based MUD/MU\* server/codebase using modern technologies. It is made available as open source under the very friendly [BSD license](https://github.com/evennia/evennia/wiki/Licensing). Evennia allows creators to design and flesh out text-based massively-multiplayer online games with great freedom.
 
 http://www.evennia.com is the main hub tracking all things Evennia. The documentation wiki is found [here](https://github.com/evennia/evennia/wiki).
 

@@ -366,7 +366,7 @@ class CmdSay(MuxCommand):
         caller.msg('You say, "%s{n"' % speech)
 
         # Build the string to emit to neighbors.
-        emit_string = '{c%s{n says, "%s{n"' % (caller.name,
+        emit_string = '%s says, "%s{n"' % (caller.name,
                                                speech)
         caller.location.msg_contents(emit_string,
                                      exclude=caller)

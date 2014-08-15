@@ -16,6 +16,8 @@ from optparse import OptionParser
 from subprocess import Popen
 
 # Set the Python path up so we can get to settings.py from here.
+from django.core import management
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 
@@ -264,6 +266,8 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART
                 return
             os.remove(pidfile)
         # set restart/norestart flag
+        if restart == 'reload':
+            management.call_command('collectstatic', interactive=False, verbosity=0)
         f = open(restart_file, 'w')
         f.write(str(restart))
         f.close()
@@ -389,11 +393,13 @@ def handle_args(options, mode, service):
             if inter:
                 cmdstr.append('--iportal')
             cmdstr.append('--noserver')
+            management.call_command('collectstatic', verbosity=1, interactive=False)
         else:  # all
             # for convenience we don't start logging of
             # portal, only of server with this command.
             if inter:
                 cmdstr.extend(['--iserver'])
+            management.call_command('collectstatic', verbosity=1, interactive=False)
         return cmdstr
 
     elif mode == 'reload':
@@ -424,6 +430,7 @@ def handle_args(options, mode, service):
             kill(PORTAL_PIDFILE, SIG, "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART, restart=False)
             kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', restart="shutdown")
     return None
+
 
 def error_check_python_modules():
     """
@@ -509,7 +516,7 @@ def main():
     if mode not in ['menu', 'start', 'reload', 'stop']:
         print "mode should be none, 'menu', 'start', 'reload' or 'stop'."
         sys.exit()
-    if  service not in ['server', 'portal', 'all']:
+    if service not in ['server', 'portal', 'all']:
         print "service should be none, 'server', 'portal' or 'all'."
         sys.exit()
 

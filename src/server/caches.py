@@ -80,28 +80,28 @@ def hashid(obj, suffix=""):
 #------------------------------------------------------------
 
 # callback to field pre_save signal (connected in src.server.server)
-def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwargs):
-    """
-    Called at the beginning of the field save operation. The save method
-    must be called with the update_fields keyword in order to be most efficient.
-    This method should NOT save; rather it is the save() that triggers this
-    function. Its main purpose is to allow to plug-in a save handler and oob
-    handlers.
-    """
-    if raw:
-        return
-    if update_fields:
-        # this is a list of strings at this point. We want field objects
-        update_fields = (_GA(_GA(instance, "_meta"), "get_field_by_name")(field)[0] for field in update_fields)
-    else:
-        # meta.fields are already field objects; get them all
-        update_fields = _GA(_GA(instance, "_meta"), "fields")
-    for field in update_fields:
-        fieldname = field.name
-        handlername = "_at_%s_presave" % fieldname
-        handler = _GA(instance, handlername) if handlername in _GA(sender, '__dict__') else None
-        if callable(handler):
-            handler()
+#def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwargs):
+#    """
+#    Called at the beginning of the field save operation. The save method
+#    must be called with the update_fields keyword in order to be most efficient.
+#    This method should NOT save; rather it is the save() that triggers this
+#    function. Its main purpose is to allow to plug-in a save handler and oob
+#    handlers.
+#    """
+#    if raw:
+#        return
+#    if update_fields:
+#        # this is a list of strings at this point. We want field objects
+#        update_fields = (_GA(_GA(instance, "_meta"), "get_field_by_name")(field)[0] for field in update_fields)
+#    else:
+#        # meta.fields are already field objects; get them all
+#        update_fields = _GA(_GA(instance, "_meta"), "fields")
+#    for field in update_fields:
+#        fieldname = field.name
+#        handlername = "_at_%s_presave" % fieldname
+#        handler = _GA(instance, handlername) if handlername in _GA(sender, '__dict__') else None
+#        if callable(handler):
+#            handler()
 
 
 def field_post_save(sender, instance=None, update_fields=None, raw=False, **kwargs):

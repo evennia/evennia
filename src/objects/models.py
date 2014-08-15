@@ -19,17 +19,17 @@ from django.db import models
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from src.typeclasses.models import (TypedObject, TagHandler, NickHandler,
-                                    AliasHandler, AttributeHandler)
+from src.typeclasses.models import TypedObject, NickHandler
 from src.objects.manager import ObjectManager
 from src.players.models import PlayerDB
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.scripts.scripthandler import ScriptHandler
 from src.utils import logger
-from src.utils.utils import (make_iter, to_str, to_unicode,
-                             variable_from_module, dbref, LazyLoadHandler)
+from src.utils.utils import (make_iter, to_str, to_unicode, lazy_property,
+                             variable_from_module, dbref)
 
+MULTISESSION_MODE = settings.MULTISESSION_MODE
 from django.utils.translation import ugettext as _
 
 #__all__ = ("ObjectDB", )
@@ -41,6 +41,54 @@ _SESSIONS = None
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
+
+# the sessid_max is based on the length of the db_sessid csv field (excluding commas)
+_SESSID_MAX = 16 if MULTISESSION_MODE in (1, 3) else 1
+
+class SessidHandler(object):
+    """
+    Handles the get/setting of the sessid
+    comma-separated integer field
+    """
+    def __init__(self, obj):
+        self.obj = obj
+        self._cache = set()
+        self._recache()
+
+    def _recache(self):
+        self._cache = list(set(int(val) for val in (_GA(self.obj, "db_sessid") or "").split(",") if val))
+
+    def get(self):
+        "Returns a list of one or more session ids"
+        return self._cache
+
+    def add(self, sessid):
+        "Add sessid to handler"
+        _cache = self._cache
+        if sessid not in _cache:
+            if len(_cache) >= _SESSID_MAX:
+                return
+            _cache.append(sessid)
+            _SA(self.obj, "db_sessid", ",".join(str(val) for val in _cache))
+            _GA(self.obj, "save")(update_fields=["db_sessid"])
+
+    def remove(self, sessid):
+        "Remove sessid from handler"
+        _cache = self._cache
+        if sessid in _cache:
+            _cache.remove(sessid)
+            _SA(self.obj, "db_sessid", ",".join(str(val) for val in _cache))
+            _GA(self.obj, "save")(update_fields=["db_sessid"])
+
+    def clear(self):
+        "Clear sessids"
+        self._cache = []
+        _SA(self.obj, "db_sessid", None)
+        _GA(self.obj, "save")(update_fields=["db_sessid"])
+
+    def count(self):
+        "Return amount of sessions connected"
+        return len(self._cache)
 
 
 #------------------------------------------------------------
@@ -102,11 +150,11 @@ class ObjectDB(TypedObject):
     # will automatically save and cache the data more efficiently.
 
     # If this is a character object, the player is connected here.
-    db_player = models.ForeignKey("players.PlayerDB", blank=True, null=True, verbose_name='player', on_delete=models.SET_NULL,
+    db_player = models.ForeignKey("players.PlayerDB", null=True, verbose_name='player', on_delete=models.SET_NULL,
                                   help_text='a Player connected to this object, if any.')
     # the session id associated with this player, if any
-    db_sessid = models.IntegerField(null=True, verbose_name="session id",
-                                    help_text="unique session id of connected Player, if any.")
+    db_sessid = models.CommaSeparatedIntegerField(null=True, max_length=32, verbose_name="session id",
+                                    help_text="csv list of session ids of connected Player, if any.")
     # The location in the game world. Since this one is likely
     # to change often, we set this with the 'location' property
     # to transparently handle Typeclassing.
@@ -130,23 +178,26 @@ class ObjectDB(TypedObject):
     _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
     _default_typeclass_path = settings.BASE_OBJECT_TYPECLASS or "src.objects.objects.Object"
 
-    # Add the object-specific handlers
-    def __init__(self, *args, **kwargs):
-        "Parent must be initialized first."
-        TypedObject.__init__(self, *args, **kwargs)
-        # handlers
-        _SA(self, "cmdset", LazyLoadHandler(self, "cmdset", CmdSetHandler, True))
-        _SA(self, "scripts", LazyLoadHandler(self, "scripts", ScriptHandler))
-        _SA(self, "nicks", LazyLoadHandler(self, "nicks", NickHandler))
-        #_SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
-        #_SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
-        #_SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
-        # make sure to sync the contents cache when initializing
-        #_GA(self, "contents_update")()
+    # lazy-load handlers
+    @lazy_property
+    def cmdset(self):
+        return CmdSetHandler(self, True)
 
-    def _at_db_player_presave(self):
+    @lazy_property
+    def scripts(self):
+        return ScriptHandler(self)
+
+    @lazy_property
+    def nicks(self):
+        return NickHandler(self)
+
+    @lazy_property
+    def sessid(self):
+        return SessidHandler(self)
+
+    def _at_db_player_postsave(self):
         """
-        This hook is called automatically just before the player field is saved.
+        This hook is called automatically after the player field is saved.
         """
         # we need to re-cache this for superusers to bypass.
         self.locks.cache_lock_bypass(self)
@@ -225,7 +276,6 @@ class ObjectDB(TypedObject):
         _SA(_GA(self, "dbobj"), "db_location", None)
         _GA(_GA(self, "dbobj"), "save")(upate_fields=["db_location"])
     location = property(__location_get, __location_set, __location_del)
-
 
     class Meta:
         "Define Django meta options"
@@ -502,8 +552,8 @@ class ObjectDB(TypedObject):
         except Exception:
             logger.log_trace()
 
-        session = _SESSIONS.session_from_sessid(sessid if sessid else _GA(self, "sessid"))
-        if session:
+        sessions = _SESSIONS.session_from_sessid([sessid] if sessid else make_iter(_GA(self, "sessid").get()))
+        for session in sessions:
             session.msg(text=text, **kwargs)
 
     def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):

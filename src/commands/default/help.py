@@ -263,4 +263,4 @@ class CmdSetHelp(MuxCommand):
             if new_entry:
                 self.msg("Topic '%s' was successfully created." % topicstr)
             else:
-                self.msg("Error when creating topic '%s'! Maybe it already exists?" % topicstr)
+                self.msg("Error when creating topic '%s'! Contact an admin." % topicstr)

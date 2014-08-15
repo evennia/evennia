@@ -23,13 +23,12 @@ from django.utils.encoding import smart_str
 
 from src.players import manager
 from src.scripts.models import ScriptDB
-from src.typeclasses.models import (TypedObject, TagHandler, NickHandler,
-                                    AliasHandler, AttributeHandler)
+from src.typeclasses.models import (TypedObject, NickHandler)
 from src.scripts.scripthandler import ScriptHandler
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.utils import utils, logger
-from src.utils.utils import to_str, make_iter, LazyLoadHandler
+from src.utils.utils import to_str, make_iter, lazy_property
 
 from django.utils.translation import ugettext as _
 
@@ -111,15 +110,19 @@ class PlayerDB(TypedObject, AbstractUser):
         app_label = 'players'
         verbose_name = 'Player'
 
-    def __init__(self, *args, **kwargs):
-        "Parent must be initiated first"
-        TypedObject.__init__(self, *args, **kwargs)
-        # handlers
-        _SA(self, "cmdset", LazyLoadHandler(self, "cmdset", CmdSetHandler, True))
-        _SA(self, "scripts", LazyLoadHandler(self, "scripts", ScriptHandler))
-        _SA(self, "nicks", LazyLoadHandler(self, "nicks", NickHandler))
-        #_SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
-        #_SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
+    # lazy-loading of handlers
+    @lazy_property
+    def cmdset(self):
+        return CmdSetHandler(self, True)
+
+    @lazy_property
+    def scripts(self):
+        return ScriptHandler(self)
+
+    @lazy_property
+    def nicks(self):
+        return NickHandler(self)
+
 
     # alias to the objs property
     def __characters_get(self):
@@ -227,7 +230,7 @@ class PlayerDB(TypedObject, AbstractUser):
                  to all sessions connected to this player. This is usually only
                  relevant when using msg() directly from a player-command (from
                  a command on a Character, the character automatically stores
-                 and handles the sessid).
+                 and handles the sessid). Can also be a list of sessids.
         kwargs (dict) - All other keywords are parsed as extra data.
         """
         if "data" in kwargs:
@@ -244,13 +247,14 @@ class PlayerDB(TypedObject, AbstractUser):
                 _GA(from_obj, "at_msg_send")(text=text, to_obj=_GA(self, "typeclass"), **kwargs)
             except Exception:
                 pass
-        session = _MULTISESSION_MODE == 2 and sessid and _GA(self, "get_session")(sessid) or None
-        if session:
-            obj = session.puppet
-            if obj and not obj.at_msg_receive(text=text, **kwargs):
-                # if hook returns false, cancel send
-                return
-            session.msg(text=text, **kwargs)
+        sessions = _MULTISESSION_MODE > 1 and sessid and _GA(self, "get_session")(sessid) or None
+        if sessions:
+            for session in make_iter(sessions):
+                obj = session.puppet
+                if obj and not obj.at_msg_receive(text=text, **kwargs):
+                    # if hook returns false, cancel send
+                    continue
+                session.msg(text=text, **kwargs)
         else:
             # if no session was specified, send to them all
             for sess in _GA(self, 'get_all_sessions')():
@@ -261,6 +265,7 @@ class PlayerDB(TypedObject, AbstractUser):
     def get_session(self, sessid):
         """
         Return session with given sessid connected to this player.
+        note that the sessionhandler also accepts sessid as an iterable.
         """
         global _SESSIONS
         if not _SESSIONS:
@@ -320,7 +325,7 @@ class PlayerDB(TypedObject, AbstractUser):
         if normal_mode:
             _GA(obj.typeclass, "at_pre_puppet")(_GA(self, "typeclass"), sessid=sessid)
         # do the connection
-        obj.sessid = sessid
+        obj.sessid.add(sessid)
         obj.player = self
         session.puid = obj.id
         session.puppet = obj
@@ -344,13 +349,14 @@ class PlayerDB(TypedObject, AbstractUser):
         obj = hasattr(session, "puppet") and session.puppet or None
         if not obj:
             return False
-        # do the disconnect
+        # do the disconnect, but only if we are the last session to puppet
         _GA(obj.typeclass, "at_pre_unpuppet")()
-        del obj.dbobj.sessid
-        del obj.dbobj.player
+        obj.dbobj.sessid.remove(sessid)
+        if not obj.dbobj.sessid.count():
+            del obj.dbobj.player
+            _GA(obj.typeclass, "at_post_unpuppet")(_GA(self, "typeclass"), sessid=sessid)
         session.puppet = None
         session.puid = None
-        _GA(obj.typeclass, "at_post_unpuppet")(_GA(self, "typeclass"), sessid=sessid)
         return True
 
     def unpuppet_all(self):

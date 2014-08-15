@@ -32,11 +32,11 @@ import traceback
 import weakref
 
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.encoding import smart_str
-from django.contrib.contenttypes.models import ContentType
 
-from src.utils.idmapper.models import SharedMemoryModel, WeakSharedMemoryModel
+from src.utils.idmapper.models import SharedMemoryModel
 from src.server.caches import get_prop_cache, set_prop_cache
 #from src.server.caches import set_attr_cache
 
@@ -45,16 +45,18 @@ from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils import logger
-from src.utils.utils import make_iter, is_iter, to_str, inherits_from, LazyLoadHandler
+from src.utils.utils import (
+    make_iter, is_iter, to_str, inherits_from, lazy_property)
 from src.utils.dbserialize import to_pickle, from_pickle
 from src.utils.picklefield import PickledObjectField
 
 __all__ = ("Attribute", "TypeNick", "TypedObject")
 
+TICKER_HANDLER = None
+
 _PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 
-_CTYPEGET = ContentType.objects.get
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
@@ -66,8 +68,7 @@ _DA = object.__delattr__
 #
 #------------------------------------------------------------
 
-#class Attribute(SharedMemoryModel):
-class Attribute(WeakSharedMemoryModel):
+class Attribute(SharedMemoryModel):
     """
     Abstract django model.
 
@@ -96,30 +97,41 @@ class Attribute(WeakSharedMemoryModel):
     # These database fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
     db_key = models.CharField('key', max_length=255, db_index=True)
-    # access through the value property
-    db_value = PickledObjectField('value', null=True)
-    # string-specific storage for quick look-up
-    db_strvalue = models.TextField('strvalue', null=True, blank=True)
-    # optional categorization of attribute
-    db_category = models.CharField('category', max_length=128, db_index=True, blank=True, null=True)
+    db_value = PickledObjectField(
+        'value', null=True,
+        help_text="The data returned when the attribute is accessed. Must be "
+                  "written as a Python literal if editing through the admin "
+                  "interface. Attribute values which are not Python literals "
+                  "cannot be edited through the admin interface.")
+    db_strvalue = models.TextField(
+        'strvalue', null=True, blank=True,
+        help_text="String-specific storage for quick look-up")
+    db_category = models.CharField(
+        'category', max_length=128, db_index=True, blank=True, null=True,
+        help_text="Optional categorization of attribute.")
     # Lock storage
-    db_lock_storage = models.TextField('locks', blank=True)
-    # Which model of object this Attribute is attached to (A natural key like objects.dbobject)
-    db_model = models.CharField('model', max_length=32, db_index=True, blank=True, null=True)
+    db_lock_storage = models.TextField(
+        'locks', blank=True,
+        help_text="Lockstrings for this object are stored here.")
+    db_model = models.CharField(
+        'model', max_length=32, db_index=True, blank=True, null=True,
+        help_text="Which model of object this attribute is attached to (A "
+                  "natural key like objects.dbobject). You should not change "
+                  "this value unless you know what you are doing.")
     # subclass of Attribute (None or nick)
-    db_attrtype = models.CharField('attrtype', max_length=16, db_index=True, blank=True, null=True)
+    db_attrtype = models.CharField(
+        'attrtype', max_length=16, db_index=True, blank=True, null=True,
+        help_text="Subclass of Attribute (None or nick)")
     # time stamp
-    db_date_created = models.DateTimeField('date_created', editable=False, auto_now_add=True)
+    db_date_created = models.DateTimeField(
+        'date_created', editable=False, auto_now_add=True)
 
     # Database manager
     objects = managers.AttributeManager()
 
-    # Lock handler self.locks
-    def __init__(self, *args, **kwargs):
-        "Initializes the parent first -important!"
-        #SharedMemoryModel.__init__(self, *args, **kwargs)
-        super(Attribute, self).__init__(*args, **kwargs)
-        self.locks = LazyLoadHandler(self, "locks", LockHandler)
+    @lazy_property
+    def locks(self):
+        return LockHandler(self)
 
     class Meta:
         "Define Django meta options"
@@ -170,13 +182,6 @@ class Attribute(WeakSharedMemoryModel):
         """
         self.db_value = to_pickle(new_value)
         self.save(update_fields=["db_value"])
-        try:
-            # eventual OOB hook
-            #self._track_db_value_change.update(self.cached_value)
-            self._track_db_value_change.update(self.new_value)
-        except AttributeError:
-            pass
-        return
 
     #@value.deleter
     def __value_del(self):
@@ -226,15 +231,18 @@ class AttributeHandler(object):
     def __init__(self, obj):
         "Initialize handler"
         self.obj = obj
-        self._model = "%s.%s" % ContentType.objects.get_for_model(obj).natural_key()
+        self._objid = obj.id
+        self._model = to_str(obj.__class__.__name__.lower())
         self._cache = None
 
     def _recache(self):
+        "Cache all attributes of this object"
+        query = {"%s__id" % self._model : self._objid,
+                 "attribute__db_attrtype" : self._attrtype}
+        attrs = [conn.attribute for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
-                                       attr.db_category.lower() if attr.db_category else None), attr)
-                        for attr in getattr(self.obj, self._m2m_fieldname).filter(
-                            db_model=self._model, db_attrtype=self._attrtype))
-        #set_attr_cache(self.obj, self._cache) # currently only for testing
+                                       attr.db_category.lower() if conn.attribute.db_category else None),
+                            attr) for attr in attrs)
 
     def has(self, key, category=None):
         """
@@ -306,6 +314,7 @@ class AttributeHandler(object):
             return ret if len(key) > 1 else default
         return ret[0] if len(ret)==1 else ret
 
+
     def add(self, key, value, category=None, lockstring="",
             strattr=False, accessing_obj=None, default_access=True):
         """
@@ -326,28 +335,87 @@ class AttributeHandler(object):
             self._recache()
         if not key:
             return
-        key = key.strip().lower()
+
         category = category.strip().lower() if category is not None else None
-        cachekey = "%s-%s" % (key, category)
+        keystr = key.strip().lower()
+        cachekey = "%s-%s" % (keystr, category)
         attr_obj = self._cache.get(cachekey)
-        if not attr_obj:
-            # no old attr available; create new.
-            attr_obj = Attribute(db_key=key, db_category=category,
-                                 db_model=self._model, db_attrtype=self._attrtype)
-            attr_obj.save()  # important
-            getattr(self.obj, self._m2m_fieldname).add(attr_obj)
-            self._cache[cachekey] = attr_obj
-        if lockstring:
-            attr_obj.locks.add(lockstring)
-        # we shouldn't need to fear stale objects, the field signalling
-        # should catch all cases
-        if strattr:
-            # store as a simple string
-            attr_obj.db_strvalue = value
-            attr_obj.save(update_fields=["db_strvalue"])
+
+        if attr_obj:
+            # update an existing attribute object
+            if strattr:
+                # store as a simple string (will not notify OOB handlers)
+                attr_obj.db_strvalue = value
+                attr_obj.save(update_fields=["db_strvalue"])
+            else:
+                # store normally (this will also notify OOB handlers)
+                attr_obj.value = value
         else:
-            # pickle arbitrary data
-            attr_obj.value = value
+            # create a new Attribute (no OOB handlers can be notified)
+            kwargs = {"db_key" : keystr, "db_category" : category,
+                      "db_model" : self._model, "db_attrtype" : self._attrtype,
+                      "db_value" : None if strattr else to_pickle(value),
+                      "db_strvalue" : value if strattr else None}
+            new_attr = Attribute(**kwargs)
+            new_attr.save()
+            getattr(self.obj, self._m2m_fieldname).add(new_attr)
+            self._cache[cachekey] = new_attr
+
+
+    def batch_add(self, key, value, category=None, lockstring="",
+            strattr=False, accessing_obj=None, default_access=True):
+        """
+        Batch-version of add(). This is more efficient than
+        repeat-calling add.
+
+        key and value must be sequences of the same length, each
+        representing a key-value pair.
+
+        """
+        if accessing_obj and not self.obj.access(accessing_obj,
+                                      self._attrcreate, default=default_access):
+            # check create access
+            return
+        if self._cache is None:
+            self._recache()
+        if not key:
+            return
+
+        keys, values= make_iter(key), make_iter(value)
+
+        if len(keys) != len(values):
+            raise RuntimeError("AttributeHandler.add(): key and value of different length: %s vs %s" % key, value)
+        category = category.strip().lower() if category is not None else None
+        new_attrobjs = []
+        for ikey, keystr in enumerate(keys):
+            keystr = keystr.strip().lower()
+            new_value = values[ikey]
+            cachekey = "%s-%s" % (keystr, category)
+            attr_obj = self._cache.get(cachekey)
+
+            if attr_obj:
+                # update an existing attribute object
+                if strattr:
+                    # store as a simple string (will not notify OOB handlers)
+                    attr_obj.db_strvalue = new_value
+                    attr_obj.save(update_fields=["db_strvalue"])
+                else:
+                    # store normally (this will also notify OOB handlers)
+                    attr_obj.value = new_value
+            else:
+                # create a new Attribute (no OOB handlers can be notified)
+                kwargs = {"db_key" : keystr, "db_category" : category,
+                          "db_attrtype" : self._attrtype,
+                          "db_value" : None if strattr else to_pickle(new_value),
+                          "db_strvalue" : value if strattr else None}
+                new_attr = Attribute(**kwargs)
+                new_attr.save()
+                new_attrobjs.append(new_attr)
+        if new_attrobjs:
+            # Add new objects to m2m field all at once
+            getattr(self.obj, self._m2m_fieldname).add(*new_attrobjs)
+            self._recache()
+
 
     def remove(self, key, raise_exception=False, category=None,
                accessing_obj=None, default_access=True):
@@ -395,11 +463,13 @@ class AttributeHandler(object):
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
+        attrs = sorted(self._cache.values(), key=lambda o: o.id)
         if accessing_obj:
-            return [attr for attr in self._cache.values()
+            return [attr for attr in attrs
                     if attr.access(accessing_obj, self._attredit, default=default_access)]
         else:
-            return self._cache.values()
+            return attrs
+
 
 class NickHandler(AttributeHandler):
     """
@@ -447,7 +517,7 @@ class NickHandler(AttributeHandler):
 class NAttributeHandler(object):
     """
     This stand-alone handler manages non-database saving.
-    It is consistent with AttributeHandler and is used
+    It is similar to AttributeHandler and is used
     by the .ndb handler in the same way as .db does
     for the AttributeHandler.
     """
@@ -474,6 +544,10 @@ class NAttributeHandler(object):
         if key in self._store:
             del self._store[key]
         self.obj.set_recache_protection(self._store)
+
+    def clear(self):
+        "Remove all nattributes from handler"
+        self._store = {}
 
     def all(self, return_tuples=False):
         "List all keys or (keys, values) stored, except _keys"
@@ -524,8 +598,8 @@ class Tag(models.Model):
     class Meta:
         "Define Django meta options"
         verbose_name = "Tag"
-        unique_together = (('db_key', 'db_category'),)
-        index_together = (('db_key', 'db_category'),)
+        unique_together = (('db_key', 'db_category', 'db_tagtype'),)
+        index_together = (('db_key', 'db_category', 'db_tagtype'),)
 
     def __unicode__(self):
         return u"%s" % self.db_key
@@ -552,18 +626,23 @@ class TagHandler(object):
         and with a tagtype given by self.handlertype
         """
         self.obj = obj
-        self._model = "%s.%s" % ContentType.objects.get_for_model(obj).natural_key()
+        self._objid = obj.id
+        self._model = obj.__class__.__name__.lower()
         self._cache = None
 
-
     def _recache(self):
-        "Update cache from database field"
-        self._cache = dict(("%s-%s" % (tag.db_key, tag.db_category), tag)
-                            for tag in getattr(self.obj, self._m2m_fieldname).filter(
-                                         db_model=self._model, db_tagtype=self._tagtype))
+        "Cache all tags of this object"
+        query = {"%s__id" % self._model : self._objid,
+                 "tag__db_tagtype" : self._tagtype}
+        tagobjs = [conn.tag for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
+        self._cache = dict(("%s-%s" % (to_str(tagobj.db_key).lower(),
+                                       tagobj.db_category.lower() if tagobj.db_category else None),
+                            tagobj) for tagobj in tagobjs)
 
-    def add(self, tag, category=None, data=None):
+    def add(self, tag=None, category=None, data=None):
         "Add a new tag to the handler. Tag is a string or a list of strings."
+        if not tag:
+            return
         for tagstr in make_iter(tag):
             if not tagstr:
                 continue
@@ -574,7 +653,7 @@ class TagHandler(object):
             # will overload data on an existing tag since that is not
             # considered part of making the tag unique)
             tagobj = Tag.objects.create_tag(key=tagstr, category=category, data=data,
-                                            model=self._model, tagtype=self._tagtype)
+                                            tagtype=self._tagtype)
             getattr(self.obj, self._m2m_fieldname).add(tagobj)
             if self._cache is None:
                 self._recache()
@@ -613,8 +692,7 @@ class TagHandler(object):
 
     def clear(self):
         "Remove all tags from the handler"
-        for tag in getattr(self.obj, self._m2m_fieldname).filter(db_model=self._model, db_tagtype=self._tagtype):
-            getattr(self.obj, self._m2m_fieldname).remove(tag)
+        getattr(self.obj, self._m2m_fieldname).clear()
         self._recache()
 
     def all(self, category=None, return_key_and_category=False):
@@ -627,20 +705,18 @@ class TagHandler(object):
             self._recache()
         if category:
             category = category.strip().lower() if category is not None else None
-            matches = getattr(self.obj, self._m2m_fieldname).filter(db_category=category,
-                                                                db_tagtype=self._tagtype,
-                                                                db_model=self._model).values_list("db_key")
+            matches = [tag for tag in self._cache.values() if tag.db_category == category]
         else:
             matches = self._cache.values()
+
         if matches:
+            matches = sorted(matches, key=lambda o: o.id)
             if return_key_and_category:
                 # return tuple (key, category)
                 return [(to_str(p.db_key), to_str(p.db_category)) for p in matches]
             else:
                 return [to_str(p.db_key) for p in matches]
         return []
-
-        #return [to_str(p[0]) for p in getattr(self.obj, self._m2m_fieldname).filter(db_category__startswith=self.prefix).values_list("db_key") if p[0]]
 
     def __str__(self):
         return ",".join(self.all())
@@ -724,15 +800,33 @@ class TypedObject(SharedMemoryModel):
     def __init__(self, *args, **kwargs):
         "We must initialize the parent first - important!"
         super(TypedObject, self).__init__(*args, **kwargs)
-        #SharedMemoryModel.__init__(self, *args, **kwargs)
         _SA(self, "dbobj", self)   # this allows for self-reference
-        _SA(self, "locks", LazyLoadHandler(self, "locks", LockHandler))
-        _SA(self, "tags", LazyLoadHandler(self, "tags", TagHandler))
-        _SA(self, "aliases", LazyLoadHandler(self, "aliases", AliasHandler))
-        _SA(self, "permissions", LazyLoadHandler(self, "permissions", PermissionHandler))
-        _SA(self, "attributes", LazyLoadHandler(self, "attributes", AttributeHandler))
-        _SA(self, "nattributes", NAttributeHandler(self))
-        #_SA(self, "nattributes", LazyLoadHandler(self, "nattributes", NAttributeHandler))
+
+    # initialize all handlers in a lazy fashion
+    @lazy_property
+    def attributes(self):
+        return AttributeHandler(self)
+
+    @lazy_property
+    def locks(self):
+        return LockHandler(self)
+
+    @lazy_property
+    def tags(self):
+        return TagHandler(self)
+
+    @lazy_property
+    def aliases(self):
+        return AliasHandler(self)
+
+    @lazy_property
+    def permissions(self):
+        return PermissionHandler(self)
+
+    @lazy_property
+    def nattributes(self):
+        return NAttributeHandler(self)
+
 
     class Meta:
         """
@@ -843,6 +937,11 @@ class TypedObject(SharedMemoryModel):
         raise Exception("dbref cannot be deleted!")
     dbref = property(__dbref_get, __dbref_set, __dbref_del)
 
+    # the latest error string will be stored here for accessing methods to access.
+    # It is set by _display_errmsg, which will print to log if error happens
+    # during server startup.
+    typeclass_last_errmsg = ""
+
     # typeclass property
     #@property
     def __typeclass_get(self):
@@ -857,7 +956,6 @@ class TypedObject(SharedMemoryModel):
               of normal dot notation) is due to optimization: it avoids calling
               the custom self.__getattribute__ more than necessary.
         """
-
         path = _GA(self, "typeclass_path")
         typeclass = _GA(self, "_cached_typeclass")
         try:
@@ -900,7 +998,10 @@ class TypedObject(SharedMemoryModel):
                     errstring +=  " to specify the actual typeclass name inside the module too."
                 elif typeclass:
                     errstring += "\n%s" % typeclass.strip()    # this will hold a growing error message.
-            errstring += "\nTypeclass failed to load. Falling back to default."
+            if not errstring:
+                errstring = "\nMake sure the path is set correctly. Paths tested:\n"
+                errstring += ", ".join(typeclass_paths)
+            errstring += "\nTypeclass code was not found or failed to load."
         # If we reach this point we couldn't import any typeclasses. Return
         # default. It's up to the calling method to use e.g. self.is_typeclass()
         # to detect that the result is not the one asked for.
@@ -915,10 +1016,6 @@ class TypedObject(SharedMemoryModel):
     # typeclass property
     typeclass = property(__typeclass_get, fdel=__typeclass_del)
 
-    # the last error string will be stored here for accessing methods to access.
-    # It is set by _display_errmsg, which will print to log if error happens
-    # during server startup.
-    typeclass_last_errmsg = ""
 
     def _path_import(self, path):
         """
@@ -940,7 +1037,7 @@ class TypedObject(SharedMemoryModel):
                 # we separate between not finding the module, and finding
                 # a buggy one.
                 pass
-                #errstring = ""#Typeclass not found trying path '%s'." % path
+                #errstring = "Typeclass not found trying path '%s'." % path
             else:
                 # a bug in the module is reported normally.
                 trc = traceback.format_exc().strip()
@@ -960,7 +1057,7 @@ class TypedObject(SharedMemoryModel):
         """
         Helper function to display error.
         """
-        _SA(self, "typeclass_lasterrmsg", message)
+        _SA(self, "typeclass_last_errmsg", message)
         if ServerConfig.objects.conf("server_starting_mode"):
             print message
         else:
@@ -1111,16 +1208,14 @@ class TypedObject(SharedMemoryModel):
             # Clean out old attributes
             if is_iter(clean_attributes):
                 for attr in clean_attributes:
-                    self.attr(attr, delete=True)
+                    self.attributes.remove(attr)
                 for nattr in clean_attributes:
                     if hasattr(self.ndb, nattr):
-                        self.nattr(nattr, delete=True)
+                        self.nattributes.remove(nattr)
             else:
                 #print "deleting attrs ..."
-                for attr in self.get_all_attributes():
-                    attr.delete()
-                for nattr in self.ndb.all:
-                    del nattr
+                self.attributes.clear()
+                self.nattributes.clear()
 
         if run_start_hooks:
             # run hooks for this new typeclass
@@ -1180,11 +1275,33 @@ class TypedObject(SharedMemoryModel):
                        if hperm in perms and hpos > ppos)
         return False
 
+    #
+    # Deletion methods
+    #
+
+    def _deleted(self, *args, **kwargs):
+        "Scrambling method for already deleted objects"
+        raise ObjectDoesNotExist("This object was already deleted!")
+
+    _is_deleted = False # this is checked by db_* wrappers
+
     def delete(self):
         "Cleaning up handlers on the typeclass level"
+        global TICKER_HANDLER
+        if not TICKER_HANDLER:
+            from src.scripts.tickerhandler import TICKER_HANDLER
+        TICKER_HANDLER.remove(self) # removes objects' all ticker subscriptions
         _GA(self, "permissions").clear()
+        _GA(self, "attributes").clear()
+        _GA(self, "aliases").clear()
+        if hasattr(self, "nicks"):
+            _GA(self, "nicks").clear()
         _SA(self, "_cached_typeclass", None)
         _GA(self, "flush_from_cache")()
+
+        # scrambling properties
+        self.delete = self._deleted
+        self._is_deleted = True
         super(TypedObject, self).delete()
 
     #

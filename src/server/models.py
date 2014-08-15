@@ -48,6 +48,7 @@ class ServerConfig(WeakSharedMemoryModel):
     db_value = models.TextField(blank=True)
 
     objects = ServerConfigManager()
+    _is_deleted = False
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
