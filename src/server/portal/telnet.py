@@ -197,6 +197,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             raw=True - pass string through without any ansi
                        processing (i.e. include Evennia ansi markers but do
                        not convert them into ansi tokens)
+            prompt=<string> - supply a prompt text which gets sent without a
+                              newline added to the end
 
         The telnet ttype negotiation flags, if any, are used if no kwargs
         are given.
@@ -223,20 +225,21 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         nomarkup = kwargs.get("nomarkup", not (xterm256 or useansi))
         prompt = kwargs.get("prompt")
 
-        if prompt:
-            # Send prompt separately
-            prompt = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256)
-            prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
-            prompt += IAC + GA
-            self.transport.write(mccp_compress(self, prompt))
-
         #print "telnet kwargs=%s, message=%s" % (kwargs, text)
         #print "xterm256=%s, useansi=%s, raw=%s, nomarkup=%s, init_done=%s" % (xterm256, useansi, raw, nomarkup, ttype.get("init_done"))
         if raw:
             # no processing whatsoever
             self.sendLine(text)
-        else:
+        elif text:
             # we need to make sure to kill the color at the end in order
             # to match the webclient output.
             #print "telnet data out:", self.protocol_flags, id(self.protocol_flags), id(self), "nomarkup: %s, xterm256: %s" % (nomarkup, xterm256)
             self.sendLine(ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256))
+
+        if prompt:
+            # Send prompt separately
+            prompt = ansi.parse_ansi(_RE_N.sub("", prompt) + "{n", strip_ansi=nomarkup, xterm256=xterm256)
+            prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
+            prompt += IAC + GA
+            self.transport.write(mccp_compress(self, prompt))
+
