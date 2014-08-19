@@ -39,7 +39,6 @@ class CmdHome(MuxCommand):
             caller.move_to(home)
             caller.msg("There's no place like home ...")
 
-
 class CmdLook(MuxCommand):
     """
     look at location or object
@@ -62,7 +61,6 @@ class CmdLook(MuxCommand):
         """
         caller = self.caller
         args = self.args
-
         if args:
             # Use search to handle duplicate/nonexistant results.
             looking_at_obj = caller.search(args, use_nicks=True)

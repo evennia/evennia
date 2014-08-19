@@ -122,9 +122,8 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             if callable(cmdsetclass):
                 cmdsetclass = cmdsetclass(cmdsetobj)
             return cmdsetclass
-
         except ImportError, e:
-            errstring += _("Error loading cmdset: Couldn't import module '%s': %s.")
+            errstring += _("Error loading cmdset '%s': %s.")
             errstring = errstring % (modulepath, e)
         except KeyError:
             errstring += _("Error in loading cmdset: No cmdset class '%(classname)s' in %(modulepath)s.")
@@ -133,7 +132,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
         except SyntaxError, e:
             errstring += _("SyntaxError encountered when loading cmdset '%s': %s.")
             errstring = errstring % (modulepath, e)
-        except Exception:
+        except Exception, e:
             errstring += _("Compile/Run error when loading cmdset '%s': %s.")
             errstring = errstring % (python_path, e)
 
@@ -144,7 +143,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             if emit_to_obj and not ServerConfig.objects.conf("server_starting_mode"):
                 emit_to_obj.msg(errstring)
         err_cmdset = _ErrorCmdSet()
-        err_cmdset.errmessage = errstring
+        err_cmdset.errmessage = errstring +  _("\n (See log for details.)")
         return err_cmdset
 
 # classes
