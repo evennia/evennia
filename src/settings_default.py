@@ -379,6 +379,11 @@ PERMISSION_HIERARCHY = ["Guests", # note-only used if GUEST_ENABLED=True
                         "Immortals"]
 # The default permission given to all new players
 PERMISSION_PLAYER_DEFAULT = "Players"
+# Default sizes for client window (in number of characters), if client
+# is not supplying this on its own
+CLIENT_DEFAULT_WIDTH = 78
+CLIENT_DEFAULT_HEIGHT = 45 # telnet standard is 24 but does anyone use such
+                           # low-res displays anymore?
 
 ######################################################################
 # Guest accounts

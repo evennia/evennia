@@ -162,6 +162,17 @@ class ServerSession(Session):
                 pass
         logger.log_infomsg(message)
 
+    def get_client_size(self):
+        """
+        Return eventual eventual width and height reported by the
+        client. Note that this currently only deals with a single
+        client window (windowID==0) as in traditional telnet session
+        """
+        flags = self.protocol_flags
+        width = flags.get('SCREENWIDTH', {}).get(0, settings.CLIENT_DEFAULT_WIDTH)
+        height = flags.get('SCREENHEIGHT', {}).get(0, settings.CLIENT_DEFAULT_HEIGHT)
+        return width, height
+
     def update_session_counters(self, idle=False):
         """
         Hit this when the user enters a command in order to update idle timers

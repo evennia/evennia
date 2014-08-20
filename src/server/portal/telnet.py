@@ -10,7 +10,7 @@ sessions etc.
 import re
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, GA
 from src.server.session import Session
-from src.server.portal import ttype, mssp, msdp
+from src.server.portal import ttype, mssp, msdp, naws
 from src.server.portal.mccp import Mccp, mccp_compress, MCCP
 from src.utils import utils, ansi, logger
 
@@ -30,9 +30,14 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         # initialize the session
         self.iaw_mode = False
-        self.handshakes = 4 # ttype, mccp, mssp, msdp
         client_address = self.transport.client
+        # this number is counted down for every handshake that completes.
+        # when it reaches 0 the portal/server syncs their data
+        self.handshakes = 5 # naws, ttype, mccp, mssp, msdp
         self.init_session("telnet", client_address, self.factory.sessionhandler)
+
+        # negotiate client size
+        self.naws = naws.Naws(self)
         # negotiate ttype (client info)
         # Obs: mudlet ttype does not seem to work if we start mccp before ttype. /Griatch
         self.ttype = ttype.Ttype(self)
@@ -71,8 +76,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         This sets up the remote-activated options we allow for this protocol.
         """
+        pass
         return (option == LINEMODE or
                 option == ttype.TTYPE or
+                option == naws.NAWS or
                 option == MCCP or
                 option == mssp.MSSP)
 
