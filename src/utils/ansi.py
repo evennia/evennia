@@ -189,6 +189,9 @@ class ANSIParser(object):
         if not string:
             return ''
 
+        # remove hard-coded strings
+        string = self.strip_raw_codes(string)
+
         # check cached parsings
         global _PARSE_CACHE
         cachekey = "%s-%s-%s" % (string, strip_ansi, xterm256)
