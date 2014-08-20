@@ -5,20 +5,32 @@ Evennia translations
 
 This folder contains data for translating Evennia's 
 core messages to different languages. Note that commands
-are not covered here at this time. 
-
+are not covered here at this time. Note that translations
+only cover "core" texts (things "hard coded" from the server)
+and not command returns - the latter each game developer needs to 
+translate manually (since commands will most likely be 
+customized for each game anyway). 
 
 
 Changing server language
 ------------------------
 
-To change the server to use a supported language,
+First you must compile all available languages. Place yourself
+in Evennia's root (the one  containing locale/) and run:
+
+django-admin.py compilemessages
+
+(it could also be just django-admin depending on your system)
+This will compile the language .po files into .mo files which
+Evennia/Django uses at runtime.
+
+To configure the server to use a different language,
 edit your settings file and add the following: 
 
  USE_I18N = True 
  LANGUAGE_CODE = 'en'
 
-Change 'en' to a translated language (see which are available
+Change 'en' to a translated language code (see which are available
 in evennia/locale/). Restart Server and Portal. 
 
 
