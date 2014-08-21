@@ -1095,3 +1095,10 @@ class lazy_property(object):
             value = self.func(obj)
         obj.__dict__[self.__name__] = value
         return value
+
+_RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([unichr(c) for c in range(0,32) + range(127,160)])))
+def escape_control_sequences(string):
+    """
+    remove non-print text sequences from string.
+    """
+    return _RE_CONTROL_CHAR.sub('', string)
