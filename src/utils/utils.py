@@ -1096,9 +1096,13 @@ class lazy_property(object):
         obj.__dict__[self.__name__] = value
         return value
 
+_STRIP_ANSI = None
 _RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([unichr(c) for c in range(0,32) + range(127,160)])))
 def escape_control_sequences(string):
     """
     remove non-print text sequences from string.
     """
-    return _RE_CONTROL_CHAR.sub('', string)
+    global _STRIP_ANSI
+    if not _STRIP_ANSI:
+        from src.utils.ansi import strip_raw_ansi as _STRIP_ANSI
+    return _RE_CONTROL_CHAR.sub('', _STRIP_ANSI(string))
