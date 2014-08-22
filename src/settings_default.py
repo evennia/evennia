@@ -85,7 +85,9 @@ SSL_ENABLED = False
 SSL_PORTS = [4001]
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 SSL_INTERFACES = ['0.0.0.0']
-# Activate Websocket support
+# Activate custom websocket support. This is unrelated to the websocket client!
+# This is intended to be used by optional third-party connections/applications
+# or clients.
 WEBSOCKET_ENABLED = False
 # Ports to use for Websockets
 WEBSOCKET_PORTS = [8021]

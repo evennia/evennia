@@ -247,6 +247,7 @@ if WEBSERVER_ENABLED:
 
     # Start a reverse proxy to relay data to the Server-side webserver
 
+    websocket_started = False
     for interface in WEBSERVER_INTERFACES:
         ifacestr = ""
         if interface not in ('0.0.0.0', '::') or len(WEBSERVER_INTERFACES) > 1:
@@ -264,8 +265,9 @@ if WEBSERVER_ENABLED:
                 web_root.putChild("webclientdata", webclient)
                 webclientstr = "\n   + client (ajax only)"
 
-                if WEBSOCKET_CLIENT_ENABLED:
+                if WEBSOCKET_CLIENT_ENABLED and not websocket_started:
                     # start websocket client port for the webclient
+                    # we only support one websocket client
                     from src.server.portal import websocket_client
                     from src.utils.txws import WebSocketFactory
 
@@ -281,7 +283,7 @@ if WEBSERVER_ENABLED:
                     websocket_service = internet.TCPServer(port, WebSocketFactory(factory), interface=interface)
                     websocket_service.setName('EvenniaWebSocket%s' % pstring)
                     PORTAL.services.addService(websocket_service)
-
+                    websocket_started = True
                     webclientstr = webclientstr[:-11] + "(%s:%s)" % (WEBSOCKET_CLIENT_URL, port)
 
             web_root = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
