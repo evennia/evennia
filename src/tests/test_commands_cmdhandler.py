@@ -7,7 +7,7 @@ class TestGetAndMergeCmdsets(unittest.TestCase):
 
 class TestCmdhandler(unittest.TestCase):
     def test_cmdhandler(self):
-        # self.assertEqual(expected, cmdhandler(called_by, raw_string, testing, callertype, sessid))
+        # self.assertEqual(expected, cmdhandler(called_by, raw_string, _testing, callertype, sessid))
         assert True # TODO: implement your test here
 
 if __name__ == '__main__':

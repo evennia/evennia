@@ -251,13 +251,13 @@ def get_and_merge_cmdsets(caller, session, player, obj,
 # Main command-handler function
 
 @inlineCallbacks
-def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessid=None, **kwargs):
+def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sessid=None, **kwargs):
     """
     This is the main function to handle any string sent to the engine.
 
     called_by - object on which this was called from. This is either a Session, a Player or an Object.
     raw_string - the command string given on the command line
-    testing - if we should actually execute the command or not.
+    _testing - if we should actually execute the command or not.
               if True, the command instance will be returned instead.
     callertype - this is one of "session", "player" or "object", in decending
                  order. So when the Session is the caller, it will merge its
@@ -392,7 +392,7 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
                 # we make sure to validate its scripts.
                 yield cmd.obj.scripts.validate()
 
-            if testing:
+            if _testing:
                 # only return the command instance
                 returnValue(cmd)
 
@@ -446,7 +446,7 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
                     # we make sure to validate its scripts.
                     yield syscmd.obj.scripts.validate()
 
-                if testing:
+                if _testing:
                     # only return the command instance
                     returnValue(syscmd)
 
