@@ -326,7 +326,7 @@ class Object(TypeClass):
             useful for coders intending to implement some sort of nested
             command structure.
         """
-        return self.dbobj.execute_cmd(raw_string, sessid=sessid)
+        return self.dbobj.execute_cmd(raw_string, sessid=sessid, **kwargs)
 
     def msg(self, text=None, from_obj=None, sessid=None, **kwargs):
         """
