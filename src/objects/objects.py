@@ -300,7 +300,7 @@ class Object(TypeClass):
                 return self.player
         return self.dbobj.search_player(searchdata, quiet=quiet)
 
-    def execute_cmd(self, raw_string, sessid=None):
+    def execute_cmd(self, raw_string, sessid=None, **kwargs):
         """
         Do something as this object. This command transparently
         lets its typeclass execute the command. This method is
@@ -311,6 +311,10 @@ class Object(TypeClass):
         raw_string (string) - raw command input
         sessid (int) - id of session executing the command. This sets the
                      sessid property on the command.
+        **kwargs - other keyword arguments will be added to the found command
+                   object instace as variables before it executes. This is
+                   unused by default Evennia but may be used to set flags and
+                   change operating paramaters for commands at run-time.
 
         Returns Deferred - this is an asynchronous Twisted object that will
             not fire until the command has actually finished executing. To

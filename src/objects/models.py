@@ -482,7 +482,7 @@ class ObjectDB(TypedObject):
     # Execution/action methods
     #
 
-    def execute_cmd(self, raw_string, sessid=None):
+    def execute_cmd(self, raw_string, sessid=None, **kwargs):
         """
         Do something as this object. This method is a copy of the execute_
         cmd method on the session. This is never called normally, it's only
@@ -492,6 +492,10 @@ class ObjectDB(TypedObject):
         Argument:
         raw_string (string) - raw command input
         sessid (int) - optional session id to return results to
+        **kwargs - other keyword arguments will be added to the found command
+                   object instace as variables before it executes. This is
+                   unused by default Evennia but may be used to set flags and
+                   change operating paramaters for commands at run-time.
 
         Returns Deferred - this is an asynchronous Twisted object that will
             not fire until the command has actually finished executing. To
@@ -509,7 +513,7 @@ class ObjectDB(TypedObject):
         raw_string = to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string,
                      categories=("inputline", "channel"), include_player=True)
-        return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, callertype="object", sessid=sessid)
+        return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, callertype="object", sessid=sessid, **kwargs)
 
     def msg(self, text=None, from_obj=None, sessid=0, **kwargs):
         """

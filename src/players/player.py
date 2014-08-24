@@ -133,7 +133,7 @@ class Player(TypeClass):
         """
         return self.dbobj.swap_character(new_character, delete_old_character=delete_old_character)
 
-    def execute_cmd(self, raw_string, sessid=None):
+    def execute_cmd(self, raw_string, sessid=None, **kwargs):
         """
         Do something as this object. This command transparently
         lets its typeclass execute the command. This method
@@ -144,6 +144,10 @@ class Player(TypeClass):
         raw_string (string) - raw command input
         sessid (int) - id of session executing the command. This sets the
                        sessid property on the command
+        **kwargs - other keyword arguments will be added to the found command
+                   object instace as variables before it executes. This is
+                   unused by default Evennia but may be used to set flags and
+                   change operating paramaters for commands at run-time.
 
         Returns Deferred - this is an asynchronous Twisted object that will
             not fire until the command has actually finished executing. To
@@ -155,7 +159,7 @@ class Player(TypeClass):
             be useful for coders intending to implement some sort of nested
             command structure.
         """
-        return self.dbobj.execute_cmd(raw_string, sessid=sessid)
+        return self.dbobj.execute_cmd(raw_string, sessid=sessid, **kwargs)
 
     def search(self, searchdata, return_puppet=False, **kwargs):
         """

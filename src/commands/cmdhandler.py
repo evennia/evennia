@@ -251,7 +251,7 @@ def get_and_merge_cmdsets(caller, session, player, obj,
 # Main command-handler function
 
 @inlineCallbacks
-def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessid=None):
+def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessid=None, **kwargs):
     """
     This is the main function to handle any string sent to the engine.
 
@@ -268,6 +268,10 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
                  giving them precendence for same-name and same-prio commands.
     sessid - Relevant if callertype is "player" - the session id will help
              retrieve the correct cmdsets from puppeted objects.
+    **kwargs - other keyword arguments will be assigned as named variables on the
+               retrieved command object *before* it is executed. This is unuesed
+               in default Evennia but may be used by code to set custom flags or
+               special operating conditions for a command as it executes.
 
     Note that this function returns a deferred!
     """
@@ -391,6 +395,10 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
             if testing:
                 # only return the command instance
                 returnValue(cmd)
+
+            # assign custom kwargs to found cmd object
+            for key, val in kwargs.items():
+                setattr(cmd, key, val)
 
             # pre-command hook
             yield cmd.at_pre_cmd()

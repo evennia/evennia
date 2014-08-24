@@ -426,7 +426,7 @@ class PlayerDB(TypedObject, AbstractUser):
         _GA(self, "aliases").clear()
         super(PlayerDB, self).delete(*args, **kwargs)
 
-    def execute_cmd(self, raw_string, sessid=None):
+    def execute_cmd(self, raw_string, sessid=None, **kwargs):
         """
         Do something as this player. This method is never called normally,
         but only when the player object itself is supposed to execute the
@@ -434,6 +434,11 @@ class PlayerDB(TypedObject, AbstractUser):
         eventual puppets.
 
         raw_string - raw command input coming from the command line.
+        sessid - the optional session id to be responsible for the command-send
+        **kwargs - other keyword arguments will be added to the found command
+                   object instace as variables before it executes. This is
+                   unused by default Evennia but may be used to set flags and
+                   change operating paramaters for commands at run-time.
         """
         raw_string = utils.to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string,
@@ -448,7 +453,7 @@ class PlayerDB(TypedObject, AbstractUser):
                 # this can happen for bots
                 sessid = None
         return cmdhandler.cmdhandler(self.typeclass, raw_string,
-                                     callertype="player", sessid=sessid)
+                                     callertype="player", sessid=sessid, **kwargs)
 
     def search(self, searchdata, return_puppet=False, **kwargs):
         """
