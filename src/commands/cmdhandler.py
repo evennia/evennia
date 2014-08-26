@@ -401,7 +401,10 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 setattr(cmd, key, val)
 
             # pre-command hook
-            yield cmd.at_pre_cmd()
+            abort = yield cmd.at_pre_cmd()
+            if abort:
+                # abort sequence
+                returnValue(abort)
 
             # Parse and execute
             yield cmd.parse()

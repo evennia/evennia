@@ -255,7 +255,9 @@ class Command(object):
 
     def at_pre_cmd(self):
         """
-        This hook is called before self.parse() on all commands
+        This hook is called before self.parse() on all commands.
+        If this hook returns anything but False/None, the command
+        sequence is aborted.
         """
         pass
 
