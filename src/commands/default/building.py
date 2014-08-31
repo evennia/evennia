@@ -392,13 +392,13 @@ class CmdCreate(ObjManipCommand):
 
     Creates one or more new objects. If typeclass is given, the object
     is created as a child of this typeclass. The typeclass script is
-    assumed to be located under game/gamesrc/types and any further
+    assumed to be located under game/gamesrc/objects and any further
     directory structure is given in Python notation. So if you have a
-    correct typeclass object defined in
-    game/gamesrc/types/examples/red_button.py, you could create a new
+    correct typeclass 'RedButton' defined in
+    game/gamesrc/objects/examples/red_button.py, you could create a new
     object of this type like this:
 
-       @create button;red : examples.red_button.RedButton
+       @create/drop button;red : examples.red_button.RedButton
 
     """
 
