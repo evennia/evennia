@@ -84,26 +84,38 @@ _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 _handle_dbref = lambda inp: handle_dbref(inp, ObjectDB)
 
 
-def _get_prototype(dic, prot, protparents, visited):
+def _validate_prototype(key, prototype, protparents, visited):
+    "Run validation on a prototype, checking for inifinite regress"
+    assert isinstance(prototype, dict)
+    if id(prototype) in visited:
+        raise RuntimeError("%s has infinite nesting of prototypes." % key or prototype)
+    visited.append(id(prototype))
+    protstrings = prototype.get("prototype")
+    if protstrings:
+        for protstring in make_iter(protstrings):
+            if key is not None and protstring == key:
+                raise RuntimeError("%s tries to prototype itself." % key or prototype)
+            protparent = protparents.get(protstring)
+            if not protparent:
+                raise RuntimeError("%s's prototype '%s' was not found." % (key or prototype, protstring))
+            _validate_prototype(protstring, protparent, protparents, visited)
+
+
+def _get_prototype(dic, prot, protparents):
     """
     Recursively traverse a prototype dictionary,
-    including multiple inheritance and self-reference
-    detection
+    including multiple inheritance. Use _validate_prototype
+    before this, we don't check for infinite recursion here.
     """
-    visited.append(id(dic))
     if "prototype" in dic:
         # move backwards through the inheritance
         for prototype in make_iter(dic["prototype"]):
-            if id(prototype) in visited:
-                # a loop was detected. Don't self-reference.
-                continue
             # Build the prot dictionary in reverse order, overloading
-            new_prot = _get_prototype(protparents.get(prototype, {}), prot, protparents, visited)
+            new_prot = _get_prototype(protparents.get(prototype, {}), prot, protparents)
             prot.update(new_prot)
     prot.update(dic)
     prot.pop("prototype", None) # we don't need this anymore
     return prot
-
 
 def _batch_create_object(*objparams):
     """
@@ -167,6 +179,8 @@ def spawn(*prototypes, **kwargs):
             to build the global protparents dictionary accessible by the
             input prototypes. If not given, it will instead look for modules
             defined by settings.PROTOTYPE_MODULES.
+        prototype_parents - a dictionary holding a custom prototype-parent dictionary. Will
+                      overload same-named prototypes from prototype_modules.
         return_prototypes - only return a list of the prototype-parents
                             (no object creation happens)
     """
@@ -178,6 +192,10 @@ def spawn(*prototypes, **kwargs):
     for prototype_module in protmodules:
         protparents.update(dict((key, val)
                 for key, val in all_from_module(prototype_module).items() if isinstance(val, dict)))
+    #overload module's protparents with specifically given protparents
+    protparents.update(kwargs.get("prototype_parents", {}))
+    for key, prototype in protparents.items():
+        _validate_prototype(key, prototype, protparents, [])
 
     if "return_prototypes" in kwargs:
         # only return the parents
@@ -186,7 +204,8 @@ def spawn(*prototypes, **kwargs):
     objsparams = []
     for prototype in prototypes:
 
-        prot = _get_prototype(prototype, {}, protparents, [])
+        _validate_prototype(None, prototype, protparents, [])
+        prot = _get_prototype(prototype, {}, protparents)
         if not prot:
             continue
 
@@ -224,6 +243,9 @@ if __name__ == "__main__":
 
     protparents = {
             "NOBODY": {},
+            #"INFINITE" : {
+            #    "prototype":"INFINITE"
+            #},
             "GOBLIN" : {
              "key": "goblin grunt",
              "health": lambda: randint(20,30),
