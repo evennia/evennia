@@ -411,7 +411,7 @@ class ChannelDB(TypedObject):
         if not disconnect:
             return False
         # disconnect
-        self.db_subscriptions.remove(player)
+        self.db_subscriptions.remove(player.dbobj)
         # post-disconnect hook
         self.typeclass.post_leave_channel(player.dbobj)
         return True
