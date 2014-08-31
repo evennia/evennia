@@ -1,8 +1,8 @@
 """
 The default command parser. Use your own by assigning
 settings.ALTERNATE_PARSER to a Python path to a module containing the
-replacing cmdparser function. The replacement parser must
-return a CommandCandidates object.
+replacing cmdparser function. The replacement parser must matches
+on the sme form as the default cmdparser.
 """
 
 from src.utils.logger import log_trace
@@ -11,8 +11,13 @@ from django.utils.translation import ugettext as _
 def cmdparser(raw_string, cmdset, caller, match_index=None):
     """
     This function is called by the cmdhandler once it has
-    gathered all valid cmdsets for the calling player. raw_string
-    is the unparsed text entered by the caller.
+    gathered and merged all valid cmdsets valid for this particular parsing.
+
+    raw_string - the unparsed text entered by the caller.
+    cmdset - the merged, currently valid cmdset
+    caller - the caller triggering this parsing
+    match_index - an optional integer index to pick a given match in a
+                  list of same-named command matches.
 
     The cmdparser understand the following command combinations (where
     [] marks optional parts.
@@ -20,7 +25,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
     [cmdname[ cmdname2 cmdname3 ...] [the rest]
 
     A command may consist of any number of space-separated words of any
-    length, and contain any character.
+    length, and contain any character. It may also be empty.
 
     The parser makes use of the cmdset to find command candidates. The
     parser return a list of matches. Each match is a tuple with its
@@ -109,17 +114,16 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
 #
 # Default functions for formatting and processing searches.
 #
-# This is in its own module due to them being possible to
-# replace from the settings file by setting the variables
+# You can replace these from the settings file by setting the variables
 #
 # SEARCH_AT_RESULTERROR_HANDLER
 # SEARCH_MULTIMATCH_PARSER
 #
-# The the replacing modules must have the same inputs and outputs as
+# The the replacing functions must have the same inputs and outputs as
 # those in this module.
 #
 def at_search_result(msg_obj, ostring, results, global_search=False,
-                     nofound_string=None, multimatch_string=None):
+                     nofound_string=None, multimatch_string=None, quiet=False):
     """
     Called by search methods after a result of any type has been found.
 
@@ -134,6 +138,8 @@ def at_search_result(msg_obj, ostring, results, global_search=False,
             dbrefs instead of only numbers)
     nofound_string - optional custom string for not-found error message.
     multimatch_string - optional custom string for multimatch error header
+    quiet - work normally, but don't echo to caller, just return the
+            results.
 
     Multiple matches are returned to the searching object
     as
@@ -182,7 +188,7 @@ def at_search_result(msg_obj, ostring, results, global_search=False,
         # we have exactly one match.
         results = results[0]
 
-    if string:
+    if string and not quiet:
         msg_obj.msg(string.strip())
     return results
 
