@@ -327,7 +327,7 @@ class CmdGive(MuxCommand):
             caller.msg("You are not holding %s." % to_give.key)
             return
         # give object
-        to_give.location = target
+        to_give.move_to(target, quiet=True)
         caller.msg("You give %s to %s." % (to_give.key, target.key))
         target.msg("%s gives you %s." % (caller.key, to_give.key))
 
