@@ -69,7 +69,7 @@ many traits with a normal goblin.
 
 """
 
-import os, sys
+import os, sys, copy
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 
@@ -199,7 +199,7 @@ def spawn(*prototypes, **kwargs):
 
     if "return_prototypes" in kwargs:
         # only return the parents
-        return protparents
+        return copy.deepcopy(protparents)
 
     objsparams = []
     for prototype in prototypes:
