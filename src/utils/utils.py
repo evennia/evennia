@@ -664,6 +664,10 @@ def check_evennia_dependencies():
             no_error = False
         elif django_min <= dversion < django_rec:
             errstring += "\n NOTE: Django %s found. This will work, but v%s is recommended for production." % (dversion, django_rec)
+        elif dversion_main >= '1.7':
+            errstring += "\n NOTE: Django 1.7+ found. Evennia is not yet tested with this version of django and due " \
+                         "\n       to the changes to migrations in 1.7 it is not likely to work yet. Revert to 1.6+ if you have " \
+                         "\n       any problems."
         elif django_rec < dversion_main:
             errstring += "\n NOTE: Django %s found. This is newer than Evennia's recommended version (v%s). It will"
             errstring += "\n       probably work, but may be new enough not to be fully tested yet. Report any issues." % (dversion, django_rec)
