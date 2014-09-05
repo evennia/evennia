@@ -665,8 +665,8 @@ def check_evennia_dependencies():
         elif django_min <= dversion < django_rec:
             errstring += "\n NOTE: Django %s found. This will work, but v%s is recommended for production." % (dversion, django_rec)
         elif django_rec < dversion_main:
-            errstring += "\n NOTE: Django %s found. This is newer than Evennia's recommended version. It will"
-            errstring += "\n       probably work, but may be new enough not to be fully tested yet. Report any issues."
+            errstring += "\n NOTE: Django %s found. This is newer than Evennia's recommended version (v%s). It will"
+            errstring += "\n       probably work, but may be new enough not to be fully tested yet. Report any issues." % (dversion, django_rec)
     except ImportError:
         errstring += "\n ERROR: Django does not seem to be installed."
         no_error = False
