@@ -729,7 +729,7 @@ class Object(TypeClass):
         Called after move has completed, regardless of quiet mode or not.
         Allows changes to the object due to the location it is now in.
 
-        source_location - where we came from
+        source_location - where we came from. This may be None.
         """
         pass
 

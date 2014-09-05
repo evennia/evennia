@@ -195,8 +195,8 @@ def create_object(typeclass=None, key=None, location=None,
 
     # trigger relevant move_to hooks in order to display messages.
     if location:
-        new_object.at_object_receive(new_object, None)
-        new_object.at_after_move(new_object)
+        location.at_object_receive(new_object, None)
+        new_object.at_after_move(None)
 
     # post-hook setup (mainly used by Exits)
     new_object.basetype_posthook_setup()
