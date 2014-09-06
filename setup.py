@@ -21,5 +21,8 @@ setup(name='remarkdown',
           'md2latex = remarkdown.scripts:md2latex',
           'md2xetex = remarkdown.scripts:md2xetex',
       ]},
+      package_data = {
+           '': ['*.parsley']
+      },
       packages=['remarkdown']
      )
