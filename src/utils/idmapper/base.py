@@ -418,6 +418,10 @@ def conditional_flush(max_rmem, force=False):
                             "once in %s min interval. Check memory usage." % (AUTO_FLUSH_MIN_INTERVAL/60.0))
         return
 
+    if os.name == "nt":
+        # we can't look for mem info in Windows at the moment
+        return
+
     # check actual memory usage
     Ncache_max = mem2cachesize(max_rmem)
     Ncache, _ = cache_size()

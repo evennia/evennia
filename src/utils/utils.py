@@ -274,6 +274,9 @@ def datetime_format(dtobj):
 def host_os_is(osname):
     """
     Check to see if the host OS matches the query.
+    Common osnames are
+      posix
+      nt
     """
     if os.name == osname:
         return True
