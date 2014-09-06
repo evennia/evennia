@@ -268,9 +268,6 @@ class Player(TypeClass):
         changing this method.
 
         """
-        # the text encoding to use.
-        self.db.encoding = "utf-8"
-
         # A basic security setup
         lockstring = "examine:perm(Wizards);edit:perm(Wizards);delete:perm(Wizards);boot:perm(Wizards);msg:all()"
         self.locks.add(lockstring)

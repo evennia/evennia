@@ -334,6 +334,69 @@ You can use the {wlook{n command if you want to see the connect screen again.
         self.caller.msg(string)
 
 
+class CmdUnconnectedEncoding(MuxCommand):
+    """
+    set which text encoding to use in unconnected-in state
+
+    Usage:
+      @encoding/switches [<encoding>]
+
+    Switches:
+      clear - clear your custom encoding
+
+
+    This sets the text encoding for communicating with Evennia. This is mostly
+    an issue only if you want to use non-ASCII characters (i.e. letters/symbols
+    not found in English). If you see that your characters look strange (or you
+    get encoding errors), you should use this command to set the server
+    encoding to be the same used in your client program.
+
+    Common encodings are utf-8 (default), latin-1, ISO-8859-1 etc.
+
+    If you don't submit an encoding, the current encoding will be displayed
+    instead.
+  """
+
+    key = "@encoding"
+    aliases = "@encode"
+    locks = "cmd:all()"
+
+    def func(self):
+        """
+        Sets the encoding.
+        """
+
+        if self.session is None:
+            return
+
+        if 'clear' in self.switches:
+            # remove customization
+            old_encoding = self.session.encoding
+            if old_encoding:
+                string = "Your custom text encoding ('%s') was cleared." % old_encoding
+            else:
+                string = "No custom encoding was set."
+            self.session.encoding = "utf-8"
+        elif not self.args:
+            # just list the encodings supported
+            pencoding = self.session.encoding
+            string = ""
+            if pencoding:
+                string += "Default encoding: {g%s{n (change with {w@encoding <encoding>{n)" % pencoding
+            encodings = settings.ENCODINGS
+            if encodings:
+                string += "\nServer's alternative encodings (tested in this order):\n   {g%s{n" % ", ".join(encodings)
+            if not string:
+                string = "No encodings found."
+        else:
+            # change encoding
+            old_encoding = self.session.encoding
+            encoding = self.args
+            self.session.encoding = encoding
+            string = "Your custom text encoding was changed from '%s' to '%s'." % (old_encoding, encoding)
+        self.caller.msg(string.strip())
+
+
 def _create_player(session, playername, password,
                  default_home, permissions, typeclass=None):
     """
