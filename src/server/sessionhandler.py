@@ -15,7 +15,8 @@ There are two similar but separate stores of sessions:
 import time
 from django.conf import settings
 from src.commands.cmdhandler import CMD_LOGINSTART
-from src.utils.utils import variable_from_module, is_iter
+from src.utils.utils import variable_from_module, is_iter, \
+                            to_str, to_unicode, strip_control_sequences
 try:
     import cPickle as pickle
 except ImportError:
@@ -469,6 +470,7 @@ class ServerSessionHandler(SessionHandler):
         """
         Sending data Server -> Portal
         """
+        text = text and to_str(to_unicode(text), encoding=session.encoding)
         self.server.amp_protocol.call_remote_MsgServer2Portal(sessid=session.sessid,
                                                               msg=text,
                                                               data=kwargs)
@@ -479,6 +481,7 @@ class ServerSessionHandler(SessionHandler):
         """
         session = self.sessions.get(sessid, None)
         if session:
+            text = text and to_unicode(strip_control_sequences(text), encoding=session.encoding)
             session.data_in(text=text, **kwargs)
 
 SESSIONS = ServerSessionHandler()

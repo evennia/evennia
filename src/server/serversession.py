@@ -13,7 +13,7 @@ from django.conf import settings
 #from src.scripts.models import ScriptDB
 from src.comms.models import ChannelDB
 from src.utils import logger, utils
-from src.utils.utils import make_iter, to_unicode, to_str, escape_control_sequences
+from src.utils.utils import make_iter
 from src.commands.cmdhandler import cmdhandler
 from src.commands.cmdsethandler import CmdSetHandler
 from src.server.session import Session
@@ -198,7 +198,7 @@ class ServerSession(Session):
         """
         if text:
             # this is treated as a command input
-            text = to_unicode(escape_control_sequences(text), encoding=self.encoding)
+            #text = to_unicode(escape_control_sequences(text), encoding=self.encoding)
             # handle the 'idle' command
             if text.strip() == IDLE_COMMAND:
                 self.update_session_counters(idle=True)
@@ -231,11 +231,12 @@ class ServerSession(Session):
         """
         Send Evennia -> User
         """
-        if text is None:
-            text = ""
-        else:
-            text = to_unicode(text)
-            text = to_str(text, self.encoding)
+        text = text if text else ""
+        #if text is None:
+        #    text = ""
+        #else:
+        #    text = to_unicode(text)
+        #    text = to_str(text, self.encoding)
 
         self.sessionhandler.data_out(self, text=text, **kwargs)
 
