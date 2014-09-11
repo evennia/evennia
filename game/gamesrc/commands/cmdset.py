@@ -32,7 +32,7 @@ from ev import default_cmds
 #from contrib import misc_commands
 #from contrib import chargen
 
-from game.gamesrc.commands.command import CmdEcho
+from game.gamesrc.commands.command import CmdUse
 
 class ExampleCmdSet(CmdSet):
     """
@@ -77,7 +77,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         #self.add(menusystem.CmdMenuTest())
         #self.add(lineeditor.CmdEditor())
         #self.add(misc_commands.CmdQuell())
-        self.add(CmdEcho())
+        self.add(CmdUse())
 
 class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     """

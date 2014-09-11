@@ -8,12 +8,12 @@ examples/cmdset.py)
 
 """
 
-from ev import Command as BaseCommand
+from ev import Command
 from ev import default_cmds
 from ev import utils
 
 
-class Command(BaseCommand):
+class Command(Command):
     """
     Inherit from this if you want to create your own
     command styles. Note that Evennia's default commands
@@ -131,13 +131,36 @@ class MuxCommand(default_cmds.MuxCommand):
         # printing the ingoing variables as a demo.
         super(MuxCommand, self).func()
 
-class CmdEcho(default_cmds.MuxCommand):
-    """Echo command repeats everything"""
-    key = "echo"
-    locks = "cmd:all()"
-    def func(self):
-       if not self.args:
-           self.caller.msg("You didn't enter anything!")
-       else:
-           self.caller.msg("%s ... %s ... %s ... %s" % (self.args.upper(), self.args.upper(), self.args, self.args))
+class CmdUse(default_cmds.MuxCommand):
+    """
+    Use command
 
+    Usage:
+        use object [, another object, another object, ...]
+
+        Use object or objects. If more than one object is listed,
+        the use command combines all objects to produce one or more
+        new objects.
+
+    """
+    key = "use"
+    locks = "cmd:all()"
+    arg_regex = r"\s.*?|$"
+
+    def func(self):
+        targets = [t for t in self.lhslist if len(t) > 0]
+        if len(targets) == 0:
+            self.caller.msg("Use what?")
+            return
+        objs = []
+        for t in targets:
+            obj = self.caller.search(t)
+            if obj:
+                objs.append(obj)
+        if len(objs) != len(targets):
+            self.caller.msg("You can't use something you don't have");
+            return
+        for obj in objs:
+            if not obj.is_typeclass("game.gamesrc.objects.usable_object.UsableObject"):
+                self.caller.msg("You shake the '{0}' but nothing happens so you give up trying the others.".format(obj))
+                return
