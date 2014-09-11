@@ -457,19 +457,21 @@ class CmdEncoding(MuxPlayerCommand):
         """
         Sets the encoding.
         """
-        player = self.player
+
+        if self.session is None:
+            return
 
         if 'clear' in self.switches:
             # remove customization
-            old_encoding = player.db.encoding
+            old_encoding = self.session.encoding
             if old_encoding:
                 string = "Your custom text encoding ('%s') was cleared." % old_encoding
             else:
                 string = "No custom encoding was set."
-            del player.db.encoding
+            self.session.encoding = "utf-8"
         elif not self.args:
             # just list the encodings supported
-            pencoding = player.db.encoding
+            pencoding = self.session.encoding
             string = ""
             if pencoding:
                 string += "Default encoding: {g%s{n (change with {w@encoding <encoding>{n)" % pencoding
@@ -480,9 +482,9 @@ class CmdEncoding(MuxPlayerCommand):
                 string = "No encodings found."
         else:
             # change encoding
-            old_encoding = player.db.encoding
+            old_encoding = self.session.encoding
             encoding = self.args
-            player.db.encoding = encoding
+            self.session.encoding = encoding
             string = "Your custom text encoding was changed from '%s' to '%s'." % (old_encoding, encoding)
         self.msg(string.strip())
 

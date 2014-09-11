@@ -364,7 +364,7 @@ class AMPProtocol(amp.AMP):
         """
         #print "msg portal->server (portal side):", sessid, msg, data
         return self.safe_send(MsgPortal2Server, sessid,
-                              msg=to_str(msg) if msg is not None else "",
+                              msg=msg if msg is not None else "",
                               data=dumps(data))
 
     # Server -> Portal message
@@ -389,7 +389,7 @@ class AMPProtocol(amp.AMP):
         """
         #print "msg server->portal (server side):", sessid, msg, data
         return self.safe_send(MsgServer2Portal, sessid,
-                              msg=to_str(msg) if msg is not None else "",
+                              msg=msg if msg is not None else "",
                               data=dumps(data))
 
     # Server administration from the Portal side

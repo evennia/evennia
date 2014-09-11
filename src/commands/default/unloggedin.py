@@ -303,25 +303,27 @@ class CmdUnconnectedHelp(MuxCommand):
         string = \
             """
 You are not yet logged into the game. Commands available at this point:
-  {wcreate, connect, look, help, quit{n
 
-To login to the system, you need to do one of the following:
+  {wcreate{n - create a new account
+  {wconnect{n - connect with an existing account
+  {wlook{n - re-show the connection screen
+  {whelp{n - show this help
+  {wencoding{n - change the text encoding to match your client
+  {wquit{n - abort the connection
 
-{w1){n If you have no previous account, you need to use the 'create'
-   command.
+To login, first create an account
 
      {wcreate Anna c67jHL8p{n
 
-   Note that if you use spaces in your name, you have to enclose in quotes.
+   Note that if you use spaces in your name, you have to enclose in quotes:
 
      {wcreate "Anna the Barbarian"  c67jHL8p{n
 
    It's always a good idea (not only here, but everywhere on the net)
    to not use a regular word for your password. Make it longer than
-   6 characters or write a passphrase.
+   6 characters or write a full passphrase.
 
-{w2){n If you have an account already, either because you just created
-   one in {w1){n above or you are returning, use the 'connect' command:
+Once you have an account, connect using your password
 
      {wconnect Anna c67jHL8p{n
 
@@ -330,8 +332,72 @@ To login to the system, you need to do one of the following:
    to get more aid. Hope you enjoy your stay!
 
 You can use the {wlook{n command if you want to see the connect screen again.
+
 """
         self.caller.msg(string)
+
+
+class CmdUnconnectedEncoding(MuxCommand):
+    """
+    set which text encoding to use in unconnected-in state
+
+    Usage:
+      encoding/switches [<encoding>]
+
+    Switches:
+      clear - clear your custom encoding
+
+
+    This sets the text encoding for communicating with Evennia. This is mostly
+    an issue only if you want to use non-ASCII characters (i.e. letters/symbols
+    not found in English). If you see that your characters look strange (or you
+    get encoding errors), you should use this command to set the server
+    encoding to be the same used in your client program.
+
+    Common encodings are utf-8 (default), latin-1, ISO-8859-1 etc.
+
+    If you don't submit an encoding, the current encoding will be displayed
+    instead.
+  """
+
+    key = "encoding"
+    aliases = "@encoding, @encode"
+    locks = "cmd:all()"
+
+    def func(self):
+        """
+        Sets the encoding.
+        """
+
+        if self.session is None:
+            return
+
+        if 'clear' in self.switches:
+            # remove customization
+            old_encoding = self.session.encoding
+            if old_encoding:
+                string = "Your custom text encoding ('%s') was cleared." % old_encoding
+            else:
+                string = "No custom encoding was set."
+            self.session.encoding = "utf-8"
+        elif not self.args:
+            # just list the encodings supported
+            pencoding = self.session.encoding
+            string = ""
+            if pencoding:
+                string += "Default encoding: {g%s{n (change with {w@encoding <encoding>{n)" % pencoding
+            encodings = settings.ENCODINGS
+            if encodings:
+                string += "\nServer's alternative encodings (tested in this order):\n   {g%s{n" % ", ".join(encodings)
+            if not string:
+                string = "No encodings found."
+        else:
+            # change encoding
+            old_encoding = self.session.encoding
+            encoding = self.args
+            self.session.encoding = encoding
+            string = "Your custom text encoding was changed from '%s' to '%s'." % (old_encoding, encoding)
+        self.caller.msg(string.strip())
 
 
 def _create_player(session, playername, password,
