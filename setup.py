@@ -5,7 +5,7 @@ File: setup.py
 Author: Steve Genoud
 Date: 2013-08-25
 '''
-from distutils.core import setup
+from setuptools import setup
 import remarkdown
 
 setup(name='remarkdown',
@@ -21,5 +21,8 @@ setup(name='remarkdown',
           'md2latex = remarkdown.scripts:md2latex',
           'md2xetex = remarkdown.scripts:md2xetex',
       ]},
+      package_data = {
+           '': ['*.parsley']
+      },
       packages=['remarkdown']
      )
