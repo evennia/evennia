@@ -5,6 +5,7 @@ Building and world design commands
 
 """
 from django.conf import settings
+from django.db.models import Q
 from src.objects.models import ObjectDB
 from src.locks.lockhandler import LockException
 from src.commands.default.muxcommand import MuxCommand
@@ -1902,11 +1903,14 @@ class CmdFind(MuxCommand):
             else:
                 string += "\n{g   %s(%s) - %s{n" % (result.key, result.dbref,
                                                     result.typeclass.path)
+            if len(switches)>0:
+                string += "\n\n   {RFilter ignored (while searching for dbref or player).{n"
         else:
             # Not a player/dbref search but a wider search; build a queryset.
-
-            results = ObjectDB.objects.filter(db_key__istartswith=searchstring,
-                                              id__gte=low, id__lte=high)
+            # Searchs for key and aliases
+            results = ObjectDB.objects.filter(Q(db_key__istartswith=searchstring,
+                                              id__gte=low, id__lte=high) | Q(db_tags__db_key__istartswith=searchstring, db_tags__db_tagtype__iexact="alias"))
+                                              
             if "room" in switches:
                 results = results.filter(db_location__isnull=True)
             if "exit" in switches:
@@ -1914,18 +1918,6 @@ class CmdFind(MuxCommand):
             if "char" in switches:
                 results = results.filter(db_typeclass_path=CHAR_TYPECLASS)
             nresults = results.count()
-            if not nresults:
-                # no matches on the keys. Try aliases instead.
-                results = ObjectDB.objects.filter(db_tags__db_key__iexact=searchstring, db_tags__db_tagtype__iexact="alias")
-                if "room" in switches:
-                    results = results.filter(db_location__isnull=True)
-                if "exit" in switches:
-                    results = results.filter(db_destination__isnull=False)
-                if "char" in switches:
-                    results = results.filter(db_typeclass_path=CHAR_TYPECLASS)
-                # we have to parse alias -> real object here
-                results = [result.dbobj for result in results]
-                nresults = len(results)
 
             restrictions = ""
             if self.switches:
