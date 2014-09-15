@@ -229,7 +229,7 @@ class CmdAllCom(MuxPlayerCommand):
                 string += "No channels."
             for channel in channels:
                 string += "\n{w%s:{n\n" % channel.key
-                subs = channel.subscriptions.all()
+                subs = channel.db_subscriptions.all()
                 if subs:
                     string += "  " + ", ".join([player.key for player in subs])
                 else:
