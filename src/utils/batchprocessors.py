@@ -330,7 +330,7 @@ class BatchCodeProcessor(object):
 
         def replace_insert(match):
             "Map replace entries"
-            return "\#\n".join(self.parse_file(match.group()))
+            return "\#\n".join(self.parse_file(match.group(1)))
 
         text = RE_INSERT.sub(replace_insert, text)
         #text = re.sub(r"^\#INSERT (.*?)", replace_insert, text, flags=re.MULTILINE)
