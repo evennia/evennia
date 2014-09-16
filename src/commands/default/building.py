@@ -1914,9 +1914,10 @@ class CmdFind(MuxCommand):
 
             if not result:
                 string += "\n   {RNo match found.{n"
-            elif not low <= int(result.id) <= high:
+            elif not low <= int(result[0].id) <= high:
                 string += "\n   {RNo match found for '%s' in #dbref interval.{n" % (searchstring)
             else:
+                result=result[0]
                 string += "\n{g   %s(%s) - %s{n" % (result.key, result.dbref,
                                                     result.typeclass.path)
         else:
@@ -1926,7 +1927,7 @@ class CmdFind(MuxCommand):
             keyquery =  Q(db_key__istartswith=searchstring, id__gte=low, id__lte=high)
             aliasquery = Q(db_tags__db_key__istartswith=searchstring, db_tags__db_tagtype__iexact="alias",
                            id__gte=low, id__lte=high)
-            results = ObjectDB.objects.filter(keyquery | aliasquery)
+            results = ObjectDB.objects.filter(keyquery | aliasquery).distinct()
             nresults = results.count()
 
             if nresults:
