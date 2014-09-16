@@ -1848,6 +1848,7 @@ class CmdFind(MuxCommand):
       room - only look for rooms (location=None)
       exit - only look for exits (destination!=None)
       char - only look for characters (BASE_CHARACTER_TYPECLASS)
+      exact- only exact matches are returned.
 
     Searches the database for an object of a particular name or exact #dbref.
     Use *playername to search for a player. The switches allows for
@@ -1922,10 +1923,12 @@ class CmdFind(MuxCommand):
         else:
             # Not a player/dbref search but a wider search; build a queryset.
             # Searchs for key and aliases
-
-            keyquery =  Q(db_key__istartswith=searchstring, id__gte=low, id__lte=high)
-            aliasquery = Q(db_tags__db_key__istartswith=searchstring, db_tags__db_tagtype__iexact="alias",
-                           id__gte=low, id__lte=high)
+            if "exact" in switches:
+                keyquery = Q(db_key__iexact=searchstring, id__gte=low, id__lte=high)
+                aliasquery = Q(db_tags__db_key__iexact=searchstring, db_tags__db_tagtype__iexact="alias",id__gte=low, id__lte=high)
+            else:
+                keyquery =  Q(db_key__istartswith=searchstring, id__gte=low, id__lte=high)
+                aliasquery = Q(db_tags__db_key__istartswith=searchstring, db_tags__db_tagtype__iexact="alias", id__gte=low, id__lte=high)
             results = ObjectDB.objects.filter(keyquery | aliasquery)
             nresults = results.count()
 
