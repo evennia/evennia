@@ -11,6 +11,8 @@ class HelpEntryForm(forms.ModelForm):
     "Defines how to display the help entry"
     class Meta:
         model = HelpEntry
+        fields = '__all__'
+
     db_help_category = forms.CharField(label="Help category", initial='General',
                                        help_text="organizes help entries in lists")
     db_lock_storage = forms.CharField(label="Locks", initial='view:all()',required=False,

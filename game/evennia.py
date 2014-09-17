@@ -14,6 +14,7 @@ import sys
 import signal
 from optparse import OptionParser
 from subprocess import Popen
+import django
 
 # Set the Python path up so we can get to settings.py from here.
 from django.core import management
@@ -28,6 +29,9 @@ if not os.path.exists('settings.py'):
     # this triggers the settings file creation.
     import game.manage
     sys.exit()
+
+# required since django1.7.
+django.setup()
 
 # signal processing
 SIG = signal.SIGINT

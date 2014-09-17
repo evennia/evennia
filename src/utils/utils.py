@@ -633,9 +633,8 @@ def check_evennia_dependencies():
     nt_python_min = '2.7'
     nt_stop_python_min = "2.6"
     twisted_min = '11.0'
-    django_min = '1.5'
-    django_rec = '1.6'
-    south_min = '0.8.4'
+    django_min = '1.7'
+    django_rec = '1.7'
 
     errstring = ""
     no_error = True
@@ -667,10 +666,6 @@ def check_evennia_dependencies():
             no_error = False
         elif django_min <= dversion < django_rec:
             errstring += "\n NOTE: Django %s found. This will work, but v%s is recommended for production." % (dversion, django_rec)
-        elif dversion_main >= '1.7':
-            errstring += "\n NOTE: Django 1.7+ found. Evennia is not yet tested with this version of django and due " \
-                         "\n       to the changes to migrations in 1.7 it is not likely to work yet. Revert to 1.6+ if you have " \
-                         "\n       any problems."
         elif django_rec < dversion_main:
             errstring += "\n NOTE: Django %s found. This is newer than Evennia's recommended version (v%s). It will"
             errstring += "\n       probably work, but may be new enough not to be fully tested yet. Report any issues." % (dversion, django_rec)
@@ -679,12 +674,8 @@ def check_evennia_dependencies():
         no_error = False
     # South
     try:
-        import south
-        sversion = south.__version__
-        if sversion < south_min:
-            errstring += "\n WARNING: South %s found. Evennia recommends version %s or higher." % (sversion, south_min)
-        if sversion in ("0.8.2", "0.8.3"):
-            errstring += "\n ERROR: South %s found. This has known issues. Please upgrade." % sversion
+        if 'south' in settings.INSTALLED_APPS:
+            errstring += "\n ERROR: 'south' found in settings.INSTALLED_APPS. South is no longer used. If this was added manually, remove."
             no_error = False
     except ImportError:
         errstring += "\n ERROR: South (django-south) does not seem to be installed."
