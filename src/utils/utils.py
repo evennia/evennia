@@ -668,12 +668,8 @@ def check_evennia_dependencies():
         errstring += "\n ERROR: Django does not seem to be installed."
         no_error = False
     # South
-    try:
-        if 'south' in settings.INSTALLED_APPS:
-            errstring += "\n ERROR: 'south' found in settings.INSTALLED_APPS. South is no longer used. If this was added manually, remove."
-            no_error = False
-    except ImportError:
-        errstring += "\n ERROR: South (django-south) does not seem to be installed."
+    if 'south' in settings.INSTALLED_APPS:
+        errstring += "\n ERROR: 'south' found in settings.INSTALLED_APPS. South is no longer used. If this was added manually, remove it."
         no_error = False
     # IRC support
     if settings.IRC_ENABLED:
