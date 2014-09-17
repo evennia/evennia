@@ -613,13 +613,6 @@ try:
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
 except ImportError:
     pass
-# South handles automatic database scheme migrations when evennia
-# updates
-try:
-    import south
-    INSTALLED_APPS = INSTALLED_APPS + ('south',)
-except ImportError:
-    pass
 
 #######################################################################
 # SECRET_KEY
