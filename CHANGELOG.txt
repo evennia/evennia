@@ -1,8 +1,16 @@
 Changelog
 ---------
 
+Sept 2014:
+Updated to Django 1.7+ which means South dependency was dropped and
+minimum Python version upped to 2.7. MULTISESSION_MODE=3 was added
+and the web customization system was overhauled using the latest 
+functionality of django. Otherwise, mostly bug-fixes and 
+implementation of various smaller feature requests as we got used
+to github. Many new users have appeared. 
+
 Jan 2014:
-Moved EVennia project from Google Code to github.com/evennia/evennia.
+Moved Evennia project from Google Code to github.com/evennia/evennia.
 
 Nov 2013:
 Moved the internal webserver into the Server and added support for
