@@ -88,7 +88,7 @@ class CmdUsernameSelect(Command):
         else:
             # store the player so next step can find it
             self.menutree.player = player
-            self.caller.msg("", switchecho="off")
+            self.caller.msg("", echo=False)
             self.menutree.goto("node1b")
 
 
@@ -104,7 +104,7 @@ class CmdPasswordSelectBack(Command):
     def func(self):
         "Execute the command"
         self.menutree.goto("node1a")
-        self.caller.msg("", switchecho="on")
+        self.caller.msg("", echo=True)
 
 
 class CmdPasswordSelect(Command):
@@ -116,7 +116,7 @@ class CmdPasswordSelect(Command):
 
     def func(self):
         "Execute the command"
-        self.caller.msg("", switchecho="on")
+        self.caller.msg("", echo=True)
         if not hasattr(self.menutree, "player"):
             self.caller.msg("{rSomething went wrong! The player was not remembered from last step!{n")
             self.menutree.goto("node1a")
@@ -181,7 +181,7 @@ its and @/./+/-/_ only.{n") # this echoes the restrictions made by django's auth
             return
         # store the name for the next step
         self.menutree.playername = playername
-        self.caller.msg("", switchecho="off")
+        self.caller.msg("", echo=False)
         self.menutree.goto("node2b")
 
 
@@ -194,7 +194,7 @@ class CmdPasswordCreateBack(Command):
 
     def func(self):
         "Execute the command"
-        self.caller.msg("", switchecho="on")
+        self.caller.msg("", echo=True)
         self.menutree.goto("node2a")
 
 
@@ -206,7 +206,7 @@ class CmdPasswordCreate(Command):
     def func(self):
         "Execute  the command"
         password = self.args
-        self.caller.msg("", switchecho="on")
+        self.caller.msg("", echo=False)
         if not hasattr(self.menutree, 'playername'):
             self.caller.msg("{rSomething went wrong! Playername not remembered from previous step!{n")
             self.menutree.goto("node2a")

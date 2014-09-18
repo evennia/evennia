@@ -209,7 +209,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                        not convert them into ansi tokens)
             prompt=<string> - supply a prompt text which gets sent without a
                               newline added to the end
-            switchecho="on"/"off"
+            echo=True/False
         The telnet ttype negotiation flags, if any, are used if no kwargs
         are given.
         """
@@ -234,7 +234,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         raw = kwargs.get("raw", False)
         nomarkup = kwargs.get("nomarkup", not (xterm256 or useansi))
         prompt = kwargs.get("prompt")
-        switchecho = kwargs.get("switchecho")
+        echo = kwargs.get("echo", None)
         #print "telnet kwargs=%s, message=%s" % (kwargs, text)
         #print "xterm256=%s, useansi=%s, raw=%s, nomarkup=%s, init_done=%s" % (xterm256, useansi, raw, nomarkup, ttype.get("init_done"))
         if raw:
@@ -252,9 +252,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
             prompt += IAC + GA
             self.transport.write(mccp_compress(self, prompt))
-        if switchecho:
-            if switchecho == "on": 
-                self.transport.write(mccp_compress(self, IAC+WONT+ECHO))
-            if switchecho == "off":
-                self.transport.write(mccp_compress(self, IAC+WILL+ECHO))
+        if echo:
+            self.transport.write(mccp_compress(self, IAC+WONT+ECHO))
+        elif echo== False:
+            self.transport.write(mccp_compress(self, IAC+WILL+ECHO))
                 
