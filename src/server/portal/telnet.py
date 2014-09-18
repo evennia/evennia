@@ -8,7 +8,7 @@ sessions etc.
 """
 
 import re
-from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, GA
+from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, GA, WILL, WONT, ECHO
 from src.server.session import Session
 from src.server.portal import ttype, mssp, msdp, naws
 from src.server.portal.mccp import Mccp, mccp_compress, MCCP
@@ -87,16 +87,19 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         Call to allow the activation of options for this protocol
         """
-        return option == MCCP
+        return (option == MCCP or option==ECHO)
 
     def disableLocal(self, option):
         """
         Disable a given option
         """
+        if option == ECHO:
+            return True
         if option == MCCP:
             self.mccp.no_mccp(option)
             return True
         else:
+            
             return super(TelnetProtocol, self).disableLocal(option)
 
     def connectionLost(self, reason):
@@ -206,7 +209,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                        not convert them into ansi tokens)
             prompt=<string> - supply a prompt text which gets sent without a
                               newline added to the end
-
+            switchecho="on"/"off"
         The telnet ttype negotiation flags, if any, are used if no kwargs
         are given.
         """
@@ -231,7 +234,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         raw = kwargs.get("raw", False)
         nomarkup = kwargs.get("nomarkup", not (xterm256 or useansi))
         prompt = kwargs.get("prompt")
-
+        switchecho = kwargs.get("switchecho")
         #print "telnet kwargs=%s, message=%s" % (kwargs, text)
         #print "xterm256=%s, useansi=%s, raw=%s, nomarkup=%s, init_done=%s" % (xterm256, useansi, raw, nomarkup, ttype.get("init_done"))
         if raw:
@@ -249,4 +252,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
             prompt += IAC + GA
             self.transport.write(mccp_compress(self, prompt))
-
+        if switchecho:
+            if switchecho == "on": 
+                self.transport.write(mccp_compress(self, IAC+WONT+ECHO))
+            if switchecho == "off":
+                self.transport.write(mccp_compress(self, IAC+WILL+ECHO))
+                
