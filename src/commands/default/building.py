@@ -1563,6 +1563,7 @@ class CmdLock(ObjManipCommand):
             if not obj.access(caller, 'control'):
                 caller.msg("You are not allowed to do that.")
                 return
+            ok = False
             try:
                 ok = obj.locks.add(lockdef)
             except LockException, e:
