@@ -219,7 +219,6 @@ class CmdUse(default_cmds.MuxCommand):
                 self.caller.msg("... {0}!!! \n{1}".format(random.choice(voila_msgs), prod_obj.db.successfully_used_msg))
                 if prod_obj.is_typeclass(Room):
                     # a room, teleport into it
-                    self.caller.msg(prod_obj.db.usable_room_msg)
                     self.caller.move_to(prod_obj, quiet = True)
                     return
                 elif prod_obj.db.is_portable:
