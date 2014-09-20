@@ -11,7 +11,7 @@ examples/cmdset.py)
 from ev import Command
 from ev import default_cmds
 from ev import utils
-
+import random
 
 class Command(Command):
     """
@@ -152,15 +152,20 @@ class CmdUse(default_cmds.MuxCommand):
         if len(targets) == 0:
             self.caller.msg("Use what?")
             return
+        msgs = ["You look at {0} closely but you can't figure what to do with it.", \
+                "You turn {0} around but it does not fit the others.", \
+                "You hurt your finger trying to use {0}.", \
+                "As you shake {0}, it makes a rattling noise but nothing else happens."]
         objs = []
         for t in targets:
-            obj = self.caller.search(t)
-            if obj:
-                objs.append(obj)
-        if len(objs) != len(targets):
-            self.caller.msg("You can't use something you don't have");
-            return
-        for obj in objs:
-            if not obj.is_typeclass("game.gamesrc.objects.usable_object.UsableObject"):
-                self.caller.msg("You shake the '{0}' but nothing happens so you give up trying the others.".format(obj))
+            obj = self.caller.search(t, quiet = True)
+            if not obj:
+                self.caller.msg("You don't have any {0}".format(t))
                 return
+            elif obj.db.usages or len(obj.db.usages) == 0:
+                self.caller.msg(random.choice(msgs).format(obj.name))
+                return
+            else:
+                objs.append(obj)
+         for obj in objs:
+             print obj
