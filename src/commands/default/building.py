@@ -159,13 +159,20 @@ class CmdSetObjAlias(MuxCommand):
         old_aliases = obj.aliases.all()
         new_aliases = [alias.strip().lower() for alias in self.rhs.split(',')
                        if alias.strip()]
+
         # make the aliases only appear once
         old_aliases.extend(new_aliases)
         aliases = list(set(old_aliases))
+
         # save back to object.
         obj.aliases.add(aliases)
-        # we treat this as a re-caching (relevant for exits to re-build their
-        # exit commands with the correct aliases)
+
+        # we need to trigger this here, since this will force
+        # (default) Exits to rebuild their Exit commands with the new
+        # aliases
+        obj.at_cmdset_get(force_init=True)
+
+        # report all aliases on the object
         caller.msg("Alias(es) for '%s' set to %s." % (obj.key, str(obj.aliases)))
 
 

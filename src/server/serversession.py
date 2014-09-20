@@ -280,7 +280,7 @@ class ServerSession(Session):
 
     # Dummy API hooks for use during non-loggedin operation
 
-    def at_cmdset_get(self):
+    def at_cmdset_get(self, **kwargs):
         "dummy hook all objects with cmdsets need to have"
         pass
 

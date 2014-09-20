@@ -129,8 +129,9 @@ class Object(TypeClass):
 
          at_init()            called whenever typeclass is cached from
                               memory, at least once every server restart/reload
-         at_cmdset_get()      - this is called just before the command
-                                handler requests a cmdset from this objecth
+         at_cmdset_get(**kwargs) - this is called just before the command
+                                handler requests a cmdset from this object, usually
+                                without any kwargs
          at_pre_puppet(player)- (player-controlled objects only) called just
                                  before puppeting
          at_post_puppet()     - (player-controlled objects only) called just
@@ -576,12 +577,15 @@ class Object(TypeClass):
         pass
 
 
-    def at_cmdset_get(self):
+    def at_cmdset_get(self, **kwargs):
         """
         Called just before cmdsets on this object are requested by the
-        command handler. If changes need to be done on the fly to the cmdset
-        before passing them on to the cmdhandler, this is the place to do it.
-        This is called also if the object currently have no cmdsets.
+        command handler. If changes need to be done on the fly to the
+        cmdset before passing them on to the cmdhandler, this is the
+        place to do it.  This is called also if the object currently
+        have no cmdsets.  **kwargs are usually not set but could be
+        used e.g. to force rebuilding of a dynamically created cmdset
+        or similar.
         """
         pass
 
@@ -1080,17 +1084,19 @@ class Exit(Object):
         if self.dbobj.location:
             self.destination = self.dbobj.location
 
-    def at_cmdset_get(self):
+    def at_cmdset_get(self, **kwargs):
         """
         Called when the cmdset is requested from this object, just before the
         cmdset is actually extracted. If no Exit-cmdset is cached, create
         it now.
+
+        kwargs:
+          force_init=True - force a re-build of the cmdset (for example to update aliases)
         """
 
-        if self.ndb.exit_reset or not self.cmdset.has_cmdset("_exitset", must_be_default=True):
+        if "force_init" in kwargs or not self.cmdset.has_cmdset("_exitset", must_be_default=True):
             # we are resetting, or no exit-cmdset was set. Create one dynamically.
             self.cmdset.add_default(self.create_exit_cmdset(self.dbobj), permanent=False)
-            del self.ndb.exit_reset
 
     # this and other hooks are what usually can be modified safely.
 

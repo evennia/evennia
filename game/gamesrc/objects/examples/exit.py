@@ -26,10 +26,11 @@ class Exit(DefaultExit):
     following methods:
 
      basetype_setup() - sets default exit locks (to change, use at_object_creation instead)
-     at_cmdset_get() - this auto-creates and caches a command and a command set on itself
-                     with the same name as the Exit object. This
-                     allows users to use the exit by only giving its
-                     name alone on the command line.
+     at_cmdset_get(**kwargs) - this is called when the cmdset is accessed and should
+                              rebuild the Exit cmdset along with a command matching the name
+                              of the Exit object. Conventionally, a kwarg 'force_init'
+                              should force a rebuild of the cmdset, this is triggered
+                              by the @alias command when aliases are changed.
      at_failed_traverse() - gives a default error message ("You cannot
                             go there") if exit traversal fails and an
                             attribute err_traverse is not defined.

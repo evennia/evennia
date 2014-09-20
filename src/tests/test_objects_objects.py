@@ -62,7 +62,7 @@ class TestObject(unittest.TestCase):
 
     def test_at_cmdset_get(self):
         # object = Object(dbobj)
-        # self.assertEqual(expected, object.at_cmdset_get())
+        # self.assertEqual(expected, object.at_cmdset_get(**kwargs))
         assert True # TODO: implement your test here
 
     def test_at_desc(self):
@@ -270,7 +270,7 @@ class TestExit(unittest.TestCase):
 
     def test_at_cmdset_get(self):
         # exit = Exit()
-        # self.assertEqual(expected, exit.at_cmdset_get())
+        # self.assertEqual(expected, exit.at_cmdset_get(**kwargs))
         assert True # TODO: implement your test here
 
     def test_at_failed_traverse(self):

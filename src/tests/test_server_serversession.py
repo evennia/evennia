@@ -27,7 +27,7 @@ class TestServerSession(unittest.TestCase):
 
     def test_at_cmdset_get(self):
         # server_session = ServerSession()
-        # self.assertEqual(expected, server_session.at_cmdset_get())
+        # self.assertEqual(expected, server_session.at_cmdset_get(**kwargs))
         assert True # TODO: implement your test here
 
     def test_at_disconnect(self):
