@@ -11,6 +11,7 @@ examples/cmdset.py)
 from ev import Command
 from ev import default_cmds
 from ev import utils
+from ev import Room
 import random
 
 class Command(Command):
@@ -149,23 +150,90 @@ class CmdUse(default_cmds.MuxCommand):
 
     def func(self):
         targets = [t for t in self.lhslist if len(t) > 0]
+
+        # no arguments
         if len(targets) == 0:
             self.caller.msg("Use what?")
             return
-        msgs = ["You look at {0} closely but you can't figure what to do with it.", \
-                "You turn {0} around but it does not fit the others.", \
-                "You hurt your finger trying to use {0}.", \
-                "As you shake {0}, it makes a rattling noise but nothing else happens."]
-        objs = []
+
+        bad_msgs = ["You hurt your finger trying to use {0}.",
+                    "As you try to use {0} with the others, it drops and hurts your left foot.", 
+                    "While trying to hold {0} steady, it slips and hits you in the face."]
+        good_msgs = ["You look closely at {0} but you can't figure out what to do next.",
+                "You examine {0} but you have no clue how to go about.",
+                "As you shake {0}, you hear rattling noises but nothing else happens."]
+
+        usable_objs = set()
         for t in targets:
-            obj = self.caller.search(t, quiet = True)
-            if not obj:
+            objs = self.caller.search(t, quiet = True)
+            if not objs:
+                # caller doesn't have it or it's not in caller's location
                 self.caller.msg("You don't have any {0}".format(t))
                 return
-            elif obj.db.usages or len(obj.db.usages) == 0:
-                self.caller.msg(random.choice(msgs).format(obj.name))
-                return
             else:
-                objs.append(obj)
-         for obj in objs:
-             print obj
+                if len(objs) > 1:
+                    # too many matches
+                    self.caller.msg("Among {0} ...".format(",".join([o.name for o in objs])))
+                    self.caller.msg("Which one in particular?")
+                    return
+                else:
+                    # one match
+                    obj = objs[0]
+                    if obj.db.usages and len(obj.db.usages) > 0:
+                        # it's usable - somehow
+                        usable_objs.add(objs[0])
+                    else:
+                        # it has no usages
+                        self.caller.msg(random.choice(bad_msgs).format(obj))
+                        return
+
+        # combine usages (set intersection) to see if they can be used together
+        usages = random.choice(list(usable_objs)).db.usages # start with one object usages
+        objs_avail = set()
+        for uobj in usable_objs:
+            print "object:", uobj, "usages:", usages
+            usages &= uobj.db.usages
+            objs_avail.add(uobj.dbref)
+        print "produced usages:", usages
+        print "objects avail:", objs_avail
+        for usage in usages:
+            # usage is the dbref of the object produced 
+            # by combining all usable_objs
+            prod_obj = self.caller.search(usage)
+            objs_needed = prod_obj.db.objs_needed
+            usable_objs_names = ", ".join([uo.name for uo in usable_objs])
+            if objs_avail.issuperset(objs_needed):
+                # all needed are avail (perhaps even some extras)
+                for uo in usable_objs:
+                    # must put uo inside prod_obj to "hide" it 
+                    if uo.dbref in objs_needed:
+                        uo.move_to(prod_obj, quiet = True)
+                # show success message
+                self.caller.msg("You start experimenting with {0} in multiple ways ...".format(usable_objs_names))
+                if len(usable_objs) > 1:
+                    list_usable_objs = list(usable_objs)
+                    self.caller.msg("First {0} ... ".format(list_usable_objs[0].name))
+                    for i in range(1, len(list_usable_objs)):
+                        self.caller.msg("... then {0} ... ".format(list_usable_objs[i].name))
+                voila_msgs = ["Voila", "Eureka", "Awesome", "Genius"]
+                self.caller.msg("... {0}!!! \n{1}".format(random.choice(voila_msgs), prod_obj.db.successfully_used_msg))
+                if prod_obj.is_typeclass(Room):
+                    # a room, teleport into it
+                    self.caller.msg(prod_obj.db.usable_room_msg)
+                    self.caller.move_to(prod_obj, quiet = True)
+                    return
+                elif prod_obj.db.is_portable:
+                    # portable can be carried around
+                    self.caller.msg("You now have {0}.".format(prod_obj.name))
+                    prod_obj.move_to(self.caller, quiet = True)
+                    return
+                else:
+                    # let it appear here
+                    self.caller.msg("{0} is here now.".format(prod_obj.name))
+                    prod_obj.move_to(self.caller.location, quiet = True)
+                    return
+            else:
+                # something's missing
+                self.caller.msg(random.choice(good_msgs).format(usable_objs_names))
+                self.caller.msg("You are sure that something is missing.")
+                return

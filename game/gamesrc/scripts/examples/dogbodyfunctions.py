@@ -28,15 +28,15 @@ class DogBodyFunctions(Script):
         #self.repeats = 5  # repeat only a certain number of times
         self.start_delay = True  # wait self.interval until first call
         self.persistent = True
-        self.delay_counter = 0
+        self.db.delay_counter = 0
 
     def at_repeat(self):
         """
         This gets called every self.interval seconds. We make
         a random check here so as to only return 33% of the time.
         """
-        if self.delay_counter > 0:
-            self.delay_counter -= 1
+        if self.db.delay_counter > 0:
+            self.db.delay_counter -= 1
             if random.random() < 0.1:
                 self.obj.location.msg_contents("{0} is here but it pays no attention to you".format(self.obj))
             return
@@ -79,7 +79,7 @@ class DogBodyFunctions(Script):
             else:
                 self.obj.location.msg_contents("{0} grabs {1} ... runs around with it ... stops and buries it".format(self.obj.name, bone.name))
             bone.move_to(limbo, quiet = True)
-            self.delay_counter = 10
+            self.db.delay_counter = 10
         else:
             self.obj.location.msg_contents("{0} {1}".format(self.obj.name, string))
 
