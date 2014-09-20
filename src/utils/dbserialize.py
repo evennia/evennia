@@ -278,7 +278,7 @@ def to_pickle(data):
     return process_item(data)
 
 
-@transaction.autocommit
+#@transaction.autocommit
 def from_pickle(data, db_obj=None):
     """
     This should be fed a just de-pickled data object. It will be converted back

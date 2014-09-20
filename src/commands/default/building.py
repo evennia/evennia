@@ -5,11 +5,13 @@ Building and world design commands
 
 """
 from django.conf import settings
+from django.db.models import Q
 from src.objects.models import ObjectDB
 from src.locks.lockhandler import LockException
 from src.commands.default.muxcommand import MuxCommand
 from src.commands.cmdhandler import get_and_merge_cmdsets
 from src.utils import create, utils, search
+from src.utils.utils import inherits_from
 from src.utils.spawner import spawn
 from src.utils.ansi import raw
 
@@ -31,6 +33,9 @@ except ImportError:
 
 # used by @find
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
+ROOM_TYPECLASS = settings.BASE_ROOM_TYPECLASS
+EXIT_TYPECLASS = settings.BASE_EXIT_TYPECLASS
+
 _PROTOTYPE_PARENTS = None
 
 class ObjManipCommand(MuxCommand):
@@ -1558,6 +1563,7 @@ class CmdLock(ObjManipCommand):
             if not obj.access(caller, 'control'):
                 caller.msg("You are not allowed to do that.")
                 return
+            ok = False
             try:
                 ok = obj.locks.add(lockdef)
             except LockException, e:
@@ -1843,11 +1849,12 @@ class CmdFind(MuxCommand):
       room - only look for rooms (location=None)
       exit - only look for exits (destination!=None)
       char - only look for characters (BASE_CHARACTER_TYPECLASS)
+      exact- only exact matches are returned.
 
-    Searches the database for an object of a particular name or dbref.
+    Searches the database for an object of a particular name or exact #dbref.
     Use *playername to search for a player. The switches allows for
     limiting object matches to certain game entities. Dbrefmin and dbrefmax
-    limits matches to within the given dbrefs, or above/below if only
+    limits matches to within the given dbrefs range, or above/below if only
     one is given.
     """
 
@@ -1870,10 +1877,10 @@ class CmdFind(MuxCommand):
         if self.rhs:
             if "-" in self.rhs:
                 # also support low-high syntax
-                limlist = [part.strip() for part in self.rhs.split("-", 1)]
+                limlist = [part.lstrip("#").strip() for part in self.rhs.split("-", 1)]
             else:
                 # otherwise split by space
-                limlist = self.rhs.split(None, 1)
+                limlist = [part.lstrip("#") for part in self.rhs.split(None, 1)]
             if limlist and limlist[0].isdigit():
                 low = max(low, int(limlist[0]))
             if len(limlist) > 1 and limlist[1].isdigit():
@@ -1884,55 +1891,65 @@ class CmdFind(MuxCommand):
         is_dbref = utils.dbref(searchstring)
         is_player = searchstring.startswith("*")
 
+        restrictions = ""
+        if self.switches:
+            restrictions = ", %s" % (",".join(self.switches))
+
         if is_dbref or is_player:
 
             if is_dbref:
                 # a dbref search
-                result = caller.search(searchstring, global_search=True)
+                result = caller.search(searchstring, global_search=True, quiet=True)
+                string = "{wExact dbref match{n(#%i-#%i%s):" % (low, high, restrictions)
             else:
                 # a player search
                 searchstring = searchstring.lstrip("*")
-                result = caller.search_player(searchstring)
+                result = caller.search_player(searchstring, quiet=True)
+                string = "{wMatch{n(#%i-#%i%s):" % (low, high, restrictions)
 
-            string = "{wMatch{n(#%i-#%i):" % (low, high)
+            if "room" in switches:
+                result = result if inherits_from(result, ROOM_TYPECLASS) else None
+            if "exit" in switches:
+                result = result if inherits_from(result, EXIT_TYPECLASS) else None
+            if "char" in switches:
+                result = result if inherits_from(result, CHAR_TYPECLASS) else None
+
             if not result:
-                return
-            if not low <= int(result.id) <= high:
-                string += "\n   {RNo match found for '%s' within the given dbref limits.{n" % searchstring
+                string += "\n   {RNo match found.{n"
+            elif not low <= int(result[0].id) <= high:
+                string += "\n   {RNo match found for '%s' in #dbref interval.{n" % (searchstring)
             else:
+                result=result[0]
                 string += "\n{g   %s(%s) - %s{n" % (result.key, result.dbref,
                                                     result.typeclass.path)
         else:
             # Not a player/dbref search but a wider search; build a queryset.
+            # Searchs for key and aliases
+            if "exact" in switches:
+                keyquery = Q(db_key__iexact=searchstring, id__gte=low, id__lte=high)
+                aliasquery = Q(db_tags__db_key__iexact=searchstring,
+                               db_tags__db_tagtype__iexact="alias",id__gte=low, id__lte=high)
+            else:
+                keyquery = Q(db_key__istartswith=searchstring, id__gte=low, id__lte=high)
+                aliasquery = Q(db_tags__db_key__istartswith=searchstring,
+                               db_tags__db_tagtype__iexact="alias", id__gte=low, id__lte=high)
 
-            results = ObjectDB.objects.filter(db_key__istartswith=searchstring,
-                                              id__gte=low, id__lte=high)
-            if "room" in switches:
-                results = results.filter(db_location__isnull=True)
-            if "exit" in switches:
-                results = results.filter(db_destination__isnull=False)
-            if "char" in switches:
-                results = results.filter(db_typeclass_path=CHAR_TYPECLASS)
+            results = ObjectDB.objects.filter(keyquery | aliasquery).distinct()
             nresults = results.count()
-            if not nresults:
-                # no matches on the keys. Try aliases instead.
-                results = ObjectDB.objects.filter(db_tags__db_key__iexact=searchstring, db_tags__db_tagtype__iexact="alias")
-                if "room" in switches:
-                    results = results.filter(db_location__isnull=True)
-                if "exit" in switches:
-                    results = results.filter(db_destination__isnull=False)
-                if "char" in switches:
-                    results = results.filter(db_typeclass_path=CHAR_TYPECLASS)
-                # we have to parse alias -> real object here
-                results = [result.dbobj for result in results]
-                nresults = len(results)
 
-            restrictions = ""
-            if self.switches:
-                restrictions = ", %s" % (",".join(self.switches))
             if nresults:
                 # convert result to typeclasses.
                 results = [result.typeclass for result in results]
+                if "room" in switches:
+                    results = [obj for obj in results if inherits_from(obj, ROOM_TYPECLASS)]
+                if "exit" in switches:
+                    results = [obj for obj in results if inherits_from(obj, EXIT_TYPECLASS)]
+                if "char" in switches:
+                    results = [obj for obj in results if inherits_from(obj, CHAR_TYPECLASS)]
+                nresults = len(results)
+
+            # still results after type filtering?
+            if nresults:
                 if nresults > 1:
                     string = "{w%i Matches{n(#%i-#%i%s):" % (nresults, low, high, restrictions)
                     for res in results:

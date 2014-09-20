@@ -560,7 +560,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',  # 1.4?
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.doc.XViewMiddleware',
+    'django.contrib.admindocs.middleware.XViewMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',)
 # Context processors define context variables, generally for the template
 # system to use.
@@ -611,13 +611,6 @@ TEST_RUNNER = 'src.server.tests.EvenniaTestSuiteRunner'
 try:
     import django_extensions
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
-except ImportError:
-    pass
-# South handles automatic database scheme migrations when evennia
-# updates
-try:
-    import south
-    INSTALLED_APPS = INSTALLED_APPS + ('south',)
 except ImportError:
     pass
 

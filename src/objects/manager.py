@@ -216,7 +216,8 @@ class ObjectManager(TypedObjectManager):
             key_candidates = self.filter(type_restriction & (Q(db_key__istartswith=ostring) | Q(db_tags__db_key__istartswith=ostring))).distinct()
             candidates_id = [_GA(obj, "id") for obj in key_candidates]
         # fuzzy matching
-        key_strings = key_candidates.values_list("db_key", flat=True)
+        key_strings = key_candidates.values_list("db_key", flat=True).order_by("id")
+
         index_matches = string_partial_matching(key_strings, ostring, ret_index=True)
         if index_matches:
             return [obj for ind, obj in enumerate(key_candidates) if ind in index_matches]

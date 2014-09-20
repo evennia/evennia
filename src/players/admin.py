@@ -18,6 +18,7 @@ class PlayerDBChangeForm(UserChangeForm):
 
     class Meta:
         model = PlayerDB
+        fields = '__all__'
 
     username = forms.RegexField(
         label="Username",
@@ -45,6 +46,7 @@ class PlayerDBCreationForm(UserCreationForm):
 
     class Meta:
         model = PlayerDB
+        fields = '__all__'
 
     username = forms.RegexField(
         label="Username",
@@ -72,6 +74,7 @@ class PlayerForm(forms.ModelForm):
     """
     class Meta:
         model = PlayerDB
+        fields = '__all__'
 
     db_key = forms.RegexField(
         label="Username",

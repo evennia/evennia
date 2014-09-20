@@ -18,6 +18,8 @@ from twisted.web import server, static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
 import django
+django.setup()
+
 from django.db import connection
 from django.conf import settings
 

@@ -11,11 +11,11 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.generic import RedirectView
 
-# fix to resolve lazy-loading bug
-# https://code.djangoproject.com/ticket/10405#comment:11
-from django.db.models.loading import cache as model_cache
-if not model_cache.loaded:
-    model_cache.get_models()
+## fix to resolve lazy-loading bug
+## https://code.djangoproject.com/ticket/10405#comment:11
+#from django.db.models.loading import cache as model_cache
+#if not model_cache.loaded:
+#    model_cache.get_models()
 
 # loop over all settings.INSTALLED_APPS and execute code in
 # files named admin.py in each such app (this will add those

@@ -1,154 +1,41 @@
-# encoding: utf-8
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-try:
-    from django.contrib.auth import get_user_model
-except ImportError: # django < 1.5
-    from django.contrib.auth.models import User
-else:
-    User = get_user_model()
-
-user_orm_label = '%s.%s' % (User._meta.app_label, User._meta.object_name)
-user_model_label = '%s.%s' % (User._meta.app_label, User._meta.module_name)
-user_ptr_name = '%s_ptr' % User._meta.object_name.lower()
-
-class Migration(SchemaMigration):
-    
-    depends_on = (
-        ('objects', '0001_initial'),)
-
-    def forwards(self, orm):
-        
-        # Adding model 'ScriptAttribute'
-        db.create_table('scripts_scriptattribute', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('db_key', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('db_value', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('db_mode', self.gf('django.db.models.fields.CharField')(max_length=20, null=True, blank=True)),
-            ('db_lock_storage', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('db_date_created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('db_obj', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['scripts.ScriptDB'])),
-        ))
-        db.send_create_signal('scripts', ['ScriptAttribute'])
-
-        # Adding model 'ScriptDB'
-        db.create_table('scripts_scriptdb', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('db_key', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('db_typeclass_path', self.gf('django.db.models.fields.CharField')(max_length=255, null=True)),
-            ('db_date_created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('db_permissions', self.gf('django.db.models.fields.CharField')(max_length=512, blank=True)),
-            ('db_lock_storage', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('db_desc', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('db_obj', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['objects.ObjectDB'], null=True, blank=True)),
-            ('db_interval', self.gf('django.db.models.fields.IntegerField')(default=-1)),
-            ('db_start_delay', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('db_repeats', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('db_persistent', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('db_is_active', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('scripts', ['ScriptDB'])
+from django.db import models, migrations
+from django.conf import settings
 
 
-    def backwards(self, orm):
-        
-        # Deleting model 'ScriptAttribute'
-        db.delete_table('scripts_scriptattribute')
+class Migration(migrations.Migration):
 
-        # Deleting model 'ScriptDB'
-        db.delete_table('scripts_scriptdb')
+    dependencies = [
+        ('objects', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('typeclasses', '0001_initial'),
+    ]
 
-
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        user_model_label: {
-            'Meta': {'object_name': User.__name__, 'db_table': "'%s'" % User._meta.db_table},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'objects.objectdb': {
-            'Meta': {'object_name': 'ObjectDB'},
-            'db_cmdset_storage': ('django.db.models.fields.TextField', [], {'null': 'True'}),
-            'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'db_home': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'homes_set'", 'null': 'True', 'to': "orm['objects.ObjectDB']"}),
-            'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'db_location': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'locations_set'", 'null': 'True', 'to': "orm['objects.ObjectDB']"}),
-            'db_lock_storage': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'db_permissions': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
-            'db_player': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['players.PlayerDB']", 'null': 'True', 'blank': 'True'}),
-            'db_typeclass_path': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        'players.playerdb': {
-            'Meta': {'object_name': 'PlayerDB'},
-            'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'db_lock_storage': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'db_obj': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['objects.ObjectDB']", 'null': 'True'}),
-            'db_permissions': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
-            'db_typeclass_path': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['%s']" % user_orm_label, 'unique': 'True'})
-        },
-        'scripts.scriptattribute': {
-            'Meta': {'object_name': 'ScriptAttribute'},
-            'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'db_lock_storage': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'db_mode': ('django.db.models.fields.CharField', [], {'max_length': '20', 'null': 'True', 'blank': 'True'}),
-            'db_obj': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['scripts.ScriptDB']"}),
-            'db_value': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        'scripts.scriptdb': {
-            'Meta': {'object_name': 'ScriptDB'},
-            'db_date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'db_desc': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'db_interval': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
-            'db_is_active': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'db_key': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'db_lock_storage': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'db_obj': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['objects.ObjectDB']", 'null': 'True', 'blank': 'True'}),
-            'db_permissions': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
-            'db_persistent': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'db_repeats': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'db_start_delay': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'db_typeclass_path': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        }
-    }
-
-    complete_apps = ['scripts']
+    operations = [
+        migrations.CreateModel(
+            name='ScriptDB',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('db_key', models.CharField(max_length=255, verbose_name=b'key', db_index=True)),
+                ('db_typeclass_path', models.CharField(help_text=b"this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.", max_length=255, null=True, verbose_name=b'typeclass')),
+                ('db_date_created', models.DateTimeField(auto_now_add=True, verbose_name=b'creation date')),
+                ('db_lock_storage', models.TextField(help_text=b"locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.", verbose_name=b'locks', blank=True)),
+                ('db_desc', models.CharField(max_length=255, verbose_name=b'desc', blank=True)),
+                ('db_interval', models.IntegerField(default=-1, help_text=b'how often to repeat script, in seconds. -1 means off.', verbose_name=b'interval')),
+                ('db_start_delay', models.BooleanField(default=False, help_text=b'pause interval seconds before starting.', verbose_name=b'start delay')),
+                ('db_repeats', models.IntegerField(default=0, help_text=b'0 means off.', verbose_name=b'number of repeats')),
+                ('db_persistent', models.BooleanField(default=False, verbose_name=b'survive server reboot')),
+                ('db_is_active', models.BooleanField(default=False, verbose_name=b'script active')),
+                ('db_attributes', models.ManyToManyField(help_text=b'attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).', to='typeclasses.Attribute', null=True)),
+                ('db_obj', models.ForeignKey(blank=True, to='objects.ObjectDB', help_text=b'the object to store this script on, if not a global script.', null=True, verbose_name=b'scripted object')),
+                ('db_player', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, help_text=b'the player to store this script on (should not be set if obj is set)', null=True, verbose_name=b'scripted player')),
+                ('db_tags', models.ManyToManyField(help_text=b'tags on this object. Tags are simple string markers to identify, group and alias objects.', to='typeclasses.Tag', null=True)),
+            ],
+            options={
+                'verbose_name': 'Script',
+            },
+            bases=(models.Model,),
+        ),
+    ]

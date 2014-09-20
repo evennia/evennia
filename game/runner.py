@@ -19,6 +19,7 @@ import sys
 from optparse import OptionParser
 from subprocess import Popen
 import Queue, thread
+import django
 
 try:
     # check if launched with pypy
@@ -44,6 +45,8 @@ if not os.path.exists('settings.py'):
 
     print "No settings.py file found. Run evennia.py to create it."
     sys.exit()
+
+django.setup()
 
 # Get the settings
 from django.conf import settings

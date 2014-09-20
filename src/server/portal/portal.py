@@ -18,6 +18,10 @@ from src.server.webserver import EvenniaReverseProxyResource
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor
 from twisted.web import server
+import django
+
+django.setup()
+
 from django.conf import settings
 from src.utils.utils import get_evennia_version, mod_import, make_iter
 from src.server.portal.portalsessionhandler import PORTAL_SESSIONS

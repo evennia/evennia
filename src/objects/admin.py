@@ -22,6 +22,7 @@ class ObjectCreateForm(forms.ModelForm):
     "This form details the look of the fields"
     class Meta:
         model = ObjectDB
+        fields = '__all__'
     db_key = forms.CharField(label="Name/Key",
                              widget=forms.TextInput(attrs={'size': '78'}),
                              help_text="Main identifier, like 'apple', 'strong guy', 'Elizabeth' etc. If creating a Character, check so the name is unique among characters!",)
@@ -40,6 +41,8 @@ class ObjectCreateForm(forms.ModelForm):
 class ObjectEditForm(ObjectCreateForm):
     "Form used for editing. Extends the create one with more fields"
 
+    class Meta:
+        fields = '__all__'
     db_lock_storage = forms.CharField(label="Locks",
                                       required=False,
                                       widget=forms.Textarea(attrs={'cols':'100', 'rows':'2'}),
