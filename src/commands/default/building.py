@@ -1765,11 +1765,11 @@ class CmdExamine(ObjManipCommand):
                 else:
                     things.append(content)
             if exits:
-                string += "\n{wExits{n: %s" % ", ".join([exit.name for exit in exits])
+                string += "\n{wExits{n: %s" % ", ".join(["%s(%s)" % (exit.name, exit.dbref) for exit in exits])
             if pobjs:
-                string += "\n{wCharacters{n: %s" % ", ".join(["{c%s{n" % pobj.name for pobj in pobjs])
+                string += "\n{wCharacters{n: %s" % ", ".join(["{c%s{n(%s)" % (pobj.name, pobj.dbref) for pobj in pobjs])
             if things:
-                string += "\n{wContents{n: %s" % ", ".join([cont.name for cont in obj.contents
+                string += "\n{wContents{n: %s" % ", ".join(["%s(%s)" % (cont.name, cont.dbref) for cont in obj.contents
                                                             if cont not in exits and cont not in pobjs])
         separator = "-" * 78
         #output info
