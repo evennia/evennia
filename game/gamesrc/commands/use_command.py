@@ -22,7 +22,7 @@ edges to all the produced objects it's part of, this set is named
 'usages'. 
 
 Appart from set of edges, a produced object has 2 special persisted 
-attributes: 'is_portable' and 'successfully_completed_msg'. 
+attributes: 'is_portable' and 'successfully_used_msg'. 
 The first one defines if the object can be added to the inventory 
 of the command caller. The second attribute is a message displayed 
 to the caller when all parts needed are present and listed in the 
@@ -63,7 +63,7 @@ of snow' are used to produce a 'large snowball'.
 @py ev.search_object("#327")[0].db.is_portable = True
 
 # Declare the success message when the produced object is materialized
-@py ev.search_object("#327")[0].db.successfully_produced_msg = 
+@py ev.search_object("#327")[0].db.successfully_used_msg = 
     "Though you feel your fingers tickling after a while, you manage to 
     roll a large snowball"
 
