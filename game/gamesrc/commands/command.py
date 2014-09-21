@@ -185,17 +185,15 @@ class CmdUse(default_cmds.MuxCommand):
                     else:
                         # it has no usages
                         self.caller.msg(random.choice(bad_msgs).format(obj))
+                        self.caller.msg("You are sure this has no use.")
                         return
 
         # combine usages (set intersection) to see if they can be used together
         usages = random.choice(list(usable_objs)).db.usages # start with one object usages
         objs_avail = set()
         for uobj in usable_objs:
-            print "object:", uobj, "usages:", usages
             usages &= uobj.db.usages
             objs_avail.add(uobj.dbref)
-        print "produced usages:", usages
-        print "objects avail:", objs_avail
         for usage in usages:
             # usage is the dbref of the object produced 
             # by combining all usable_objs
