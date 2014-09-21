@@ -1,10 +1,93 @@
 """
-Example command module template
+Use Command. 
 
-Copy this module up one level to gamesrc/commands/ and name it as
-befits your use.  You can then use it as a template to define your new
-commands. To use them you also need to group them in a CommandSet (see
-examples/cmdset.py)
+The use command allows to combine multiple objects, the parts, and materialize a new one, the produced object.
+
+The USE relationship:
+
+The incarnation of one use is represented by a directed graph.
+In this object graph, there are two types of nodes: one node that 
+represents the produced object, and one or mode nodes that represent 
+the constituting objects, the parts. Any object can be a produced 
+object, but also a part in another graph. Multiple graphs can have nodes
+that act as parts and/or produced objects. In other words, a single 
+object can be produced by different combinations of parts and a single
+part can be used to produced multiple objects.
+
+A graph has two types of directed edges: 'usages' and 'objs_needed'. 
+Each edge is represented by the 'dbref' of the destination object-node. 
+The produced object has a set 'objs_needed' that represents edges 
+from itself to its parts. At the same time, each part has a set of 
+edges to all the produced objects it's part of, this set is named 
+'usages'. 
+
+Appart from set of edges, a produced object has 2 special persisted 
+attributes: 'is_portable' and 'successfully_completed_msg'. 
+The first one defines if the object can be added to the inventory 
+of the command caller. The second attribute is a message displayed 
+to the caller when all parts needed are present and listed in the 
+invocation of the use command. Parts must be either at the caller's 
+location or in the caller's inventory.
+
+Creating one USE relationship graph:
+
+The following snippet of MUX commands depics the creation of a 
+USE relationship graph. All objects must be created before the use 
+command graph can be defined; this is because each object's 'dbref' 
+is used as edge. In this example, a 'pile of snow', and a 'bunch
+of snow' are used to produce a 'large snowball'.
+
+# Create all objects participating
+
+# The parts
+@create/drop bunch of snow
+@find bunch of snow
+    bunch of snow(#325) - src.objects.objects.Object
+@create/drop pile of snow
+@find pile of snow
+    pile of snow(#326) - src.objects.objects.Object
+
+# The produced object
+@create large snowball
+@find large snowball
+    large snowball(#327) - src.objects.objects.Object
+
+# Declare the 'usages' edges 
+@py ev.search_object("#325")[0].db.usages = set(["#327"])
+@py ev.search_object("#326")[0].db.usages = set(["#327"])
+
+# Declare the 'objs_needed' edges 
+@py ev.search_object("#327")[0].db.objs_needed = set(["#325", "#326"])
+
+# Declare if the produced object can be carried around (added to inventory)
+@py ev.search_object("#327")[0].db.is_portable = True
+
+# Declare the success message when the produced object is materialized
+@py ev.search_object("#327")[0].db.successfully_produced_msg = 
+    "Though you feel your fingers tickling after a while, you manage to 
+    roll a large snowball"
+
+Notes about the produced object, its parts, and locations:
+
+Given that all objects must exists prior defining their use
+relationship, it's imperative that all appropriate locks are in placed
+to prevent that a produced object can be found without its parts being
+used. Hence, it's strongly recommended that the initial location of the 
+produced object is one that the users have no access to. Under this 
+condition, the only viable means to materialize the produced object would
+be by invoking the use command with all its parts available.
+
+Also, once the produced object is materialized, all its parts are 
+placed in its contents. This is to prevent that the same parts are 
+used by someone else later to produce the same object and remove it
+from its current owner inventary. Once again, appropriate locks must be 
+added to all objects so the extraction of the parts is not possible. 
+
+Finally, rooms can participate in any USE relationship graph. Either 
+as a part or as a produced object. If the room is a part, the 
+caller of the command would need to list the current room in the use
+command. When the produced object is a room, the caller would be 
+automatically teleported to the room. 
 
 """
 
@@ -14,134 +97,24 @@ from ev import utils
 from ev import Room
 import random
 
-class Command(Command):
-    """
-    Inherit from this if you want to create your own
-    command styles. Note that Evennia's default commands
-    use MuxCommand instead (next in this module)
-
-    Note that the class's __doc__ string (this text) is
-    used by Evennia to create the automatic help entry for
-    the command, so make sure to document consistently here.
-
-    """
-    # these need to be specified
-
-    key = "MyCommand"
-    aliases = ["mycmd", "myc"]
-    locks = "cmd:all()"
-    help_category = "General"
-
-    # auto_help = False      # uncomment to deactive auto-help for this command.
-    # arg_regex = r"\s.*?|$" # optional regex detailing how the part after
-                             # the cmdname must look to match this command.
-
-    # (we don't implement hook method access() here, you don't need to
-    #  modify that unless you want to change how the lock system works
-    #  (in that case see src.commands.command.Command))
-
-    def at_pre_cmd(self):
-        """
-        This hook is called before self.parse() on all commands
-        """
-        pass
-
-    def parse(self):
-        """
-        This method is called by the cmdhandler once the command name
-        has been identified. It creates a new set of member variables
-        that can be later accessed from self.func() (see below)
-
-        The following variables are available to us:
-           # class variables:
-
-           self.key - the name of this command ('mycommand')
-           self.aliases - the aliases of this cmd ('mycmd','myc')
-           self.locks - lock string for this command ("cmd:all()")
-           self.help_category - overall category of command ("General")
-
-           # added at run-time by cmdhandler:
-
-           self.caller - the object calling this command
-           self.cmdstring - the actual command name used to call this
-                            (this allows you to know which alias was used,
-                             for example)
-           self.args - the raw input; everything following self.cmdstring.
-           self.cmdset - the cmdset from which this command was picked. Not
-                         often used (useful for commands like 'help' or to
-                         list all available commands etc)
-           self.obj - the object on which this command was defined. It is often
-                         the same as self.caller.
-        """
-        pass
-
-    def func(self):
-        """
-        This is the hook function that actually does all the work. It is called
-         by the cmdhandler right after self.parser() finishes, and so has access
-         to all the variables defined therein.
-        """
-        self.caller.msg("Command called!")
-
-    def at_post_cmd(self):
-        """
-        This hook is called after self.func().
-        """
-        pass
-
-
-class MuxCommand(default_cmds.MuxCommand):
-    """
-    This sets up the basis for a Evennia's 'MUX-like' command
-    style. The idea is that most other Mux-related commands should
-    just inherit from this and don't have to implement parsing of
-    their own unless they do something particularly advanced.
-
-    A MUXCommand command understands the following possible syntax:
-
-      name[ with several words][/switch[/switch..]] arg1[,arg2,...] [[=|,] arg[,..]]
-
-    The 'name[ with several words]' part is already dealt with by the
-    cmdhandler at this point, and stored in self.cmdname. The rest is stored
-    in self.args.
-
-    The MuxCommand parser breaks self.args into its constituents and stores them
-    in the following variables:
-      self.switches = optional list of /switches (without the /)
-      self.raw = This is the raw argument input, including switches
-      self.args = This is re-defined to be everything *except* the switches
-      self.lhs = Everything to the left of = (lhs:'left-hand side'). If
-                 no = is found, this is identical to self.args.
-      self.rhs: Everything to the right of = (rhs:'right-hand side').
-                If no '=' is found, this is None.
-      self.lhslist - self.lhs split into a list by comma
-      self.rhslist - list of self.rhs split into a list by comma
-      self.arglist = list of space-separated args (including '=' if it exists)
-
-      All args and list members are stripped of excess whitespace around the
-      strings, but case is preserved.
-      """
-
-    def func(self):
-        """
-        This is the hook function that actually does all the work. It is called
-        by the cmdhandler right after self.parser() finishes, and so has access
-        to all the variables defined therein.
-        """
-        # this can be removed in your child class, it's just
-        # printing the ingoing variables as a demo.
-        super(MuxCommand, self).func()
-
 class CmdUse(default_cmds.MuxCommand):
     """
     Use command
 
     Usage:
-        use object [, another object, another object, ...]
+        use <object> [, another object [, another object [, ...]]]
 
-        Use object or objects. If more than one object is listed,
-        the use command combines all objects to produce one or more
-        new objects.
+        Use an object or a group of objects. If more than one object 
+        is listed, the use command combines all objects to 
+        materialize a new object.
+
+        The current room may be listed as argument.
+        Example: 
+        Cliff
+            use jetpack, here
+        You strap the jetpack to your back, press the ignition button
+        and SHMM ... you are flying over the chasm to the other edge 
+        of the cliff
 
     """
     key = "use"
@@ -165,7 +138,10 @@ class CmdUse(default_cmds.MuxCommand):
 
         usable_objs = set()
         for t in targets:
-            objs = self.caller.search(t, quiet = True)
+            if t.lower() == "here":
+                objs = [self.caller.location];
+            else:
+                objs = self.caller.search(t, quiet = True)
             if not objs:
                 # caller doesn't have it or it's not in caller's location
                 self.caller.msg("You don't have any {0}".format(t))
@@ -232,5 +208,5 @@ class CmdUse(default_cmds.MuxCommand):
             else:
                 # something's missing
                 self.caller.msg(random.choice(good_msgs).format(usable_objs_names))
-                self.caller.msg("You are sure that something is missing.")
+                self.caller.msg("You are sure that something else is missing.")
                 return
