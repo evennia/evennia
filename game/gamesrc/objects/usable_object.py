@@ -17,11 +17,10 @@ this change, you have to convert them manually e.g. with the
 @typeclass command.
 
 """
-from ev import Object as DefaultObject
+from ev import Object
 
 
-class Object(DefaultObject):
-    """
+"""
     This is the root typeclass object, implementing an in-game Evennia
     game object, such as having a location, being able to be
     manipulated or looked at, etc. If you create a new typeclass, it
@@ -162,14 +161,20 @@ class Object(DefaultObject):
      at_say(speaker, message)  - by default, called if an object inside this
                                  object speaks
 
-     """
-    pass
+ """
 
 class UsableObject(Object):
     """
     An object that can be used
     """
     def at_object_creation(self): 
-        self.db.is_usable = True
+        self.db.successfully_used_msg = ""
+        self.db.is_portable = False
 
-
+    def add_as_part(self, another_object):
+        if self.db.objs_needed == None:
+            self.db.objs_needed = set()
+        self.db.objs_needed.add(another_object.dbref)
+        if another_object.db.usages == None:
+            another_object.db.usages = set()
+        another_object.db.usages.add(self.dbref)
