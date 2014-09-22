@@ -499,7 +499,7 @@ class LineEditor(object):
             return ""
         return "Exited editor."
 
-    def save_buffer(self, quitting):
+    def save_buffer(self, *quitting):
         """
             Saves the content of the buffer. The 'quitting' argument is a bool
         indicating whether or not the editor intends to exit after saving.
