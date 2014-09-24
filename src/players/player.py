@@ -91,7 +91,7 @@ class Player(TypeClass):
 
          at_init()
          at_access()
-         at_cmdset_get()
+         at_cmdset_get(**kwargs)
          at_first_login()
          at_post_login(sessid=None)
          at_disconnect()
@@ -315,12 +315,14 @@ class Player(TypeClass):
         """
         pass
 
-    def at_cmdset_get(self):
+    def at_cmdset_get(self, **kwargs):
         """
         Called just before cmdsets on this player are requested by the
-        command handler. If changes need to be done on the fly to the cmdset
-        before passing them on to the cmdhandler, this is the place to do it.
-        This is called also if the player currently have no cmdsets.
+        command handler. If changes need to be done on the fly to the
+        cmdset before passing them on to the cmdhandler, this is the
+        place to do it.  This is called also if the player currently
+        have no cmdsets.  kwargs are usually not used unless the
+        cmdset is generated dynamically.
         """
         pass
 

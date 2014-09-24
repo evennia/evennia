@@ -109,8 +109,10 @@ class Object(DefaultObject):
 
      at_init()            - called whenever typeclass is cached from memory,
                             at least once every server restart/reload
-     at_cmdset_get()      - this is called just before the command handler
-                            requests a cmdset from this object
+     at_cmdset_get(**kwargs) - this is called just before the command handler
+                            requests a cmdset from this object. The kwargs are
+                            not normally used unless the cmdset is created
+                            dynamically (see e.g. Exits).
      at_pre_puppet(player)- (player-controlled objects only) called just
                             before puppeting
      at_post_puppet()     - (player-controlled objects only) called just

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Connect screen module template
 
@@ -8,16 +9,16 @@ Then you set settings.CONNECTION_SCREEN_MODULE to point to your
 new module.
 
 
- This module holds textual connection screen definitions.  All global
+ This module holds textual connection screen definitions. All global
  string variables (only) in this module are read by Evennia and
  assumed to define a Connection screen.
 
- The names of the string variables doesn't matter (except they
- shouldn't start with _), but each should hold a string defining a
- connection screen - as seen when first connecting to the game
- (before having logged in).
+ The names of the string variables doesn't matter (but names starting
+ with an underscore will be ignored), but each should hold a string
+ defining a connection screen - as seen when first connecting to the
+ game (before having logged in).
 
- OBS - If there are more than one string variable viable in this
+ OBS - If there are more than one global string variable in this
  module, a random one is picked!
 
  After adding new connection screens to this module you must either
@@ -25,13 +26,14 @@ new module.
 
 """
 
+# comment this out if wanting to completely remove the default screen
 from src.commands.connection_screen import DEFAULT_SCREEN
 
-## uncomment these for the name and version
+## uncomment these for showing the name and version
 # from django.conf import settings
 # from src.utils import utils
 
-# # A copy of the default screen to modify
+## A copy of the default screen to modify
 
 # CUSTOM_SCREEN = \
 #"""{b=============================================================={n
@@ -47,22 +49,7 @@ from src.commands.connection_screen import DEFAULT_SCREEN
 #{b=============================================================={n""" \
 # % (settings.SERVERNAME, utils.get_evennia_version())
 
-# # Mux-like alternative screen for contrib/mux_login.py
-
-# MUX_SCREEN = \
-# """{b=============================================================={n
-# Welcome to {g%s{n, version %s!
-#
-# If you have an existing account, connect to it by typing:
-#      {wconnect <email> <password>{n
-# If you need to create an account, type (without the <>'s):
-#      {wcreate \"<username>\" <email> <password>{n
-#
-# Enter {whelp{n for more info. {wlook{n will re-load this screen.
-#{b=============================================================={n""" \
-# % (settings.SERVERNAME, utils.get_evennia_version())
-
-# # Menu login minimal header for contrib/menu_login.py
+## Minimal header for use with contrib/menu_login.py
 
 # MENU_SCREEN = \
 # """{b=============================================================={n

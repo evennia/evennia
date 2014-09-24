@@ -99,7 +99,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.mccp.no_mccp(option)
             return True
         else:
-            
             return super(TelnetProtocol, self).disableLocal(option)
 
     def connectionLost(self, reason):
@@ -235,6 +234,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         nomarkup = kwargs.get("nomarkup", not (xterm256 or useansi))
         prompt = kwargs.get("prompt")
         echo = kwargs.get("echo", None)
+
         #print "telnet kwargs=%s, message=%s" % (kwargs, text)
         #print "xterm256=%s, useansi=%s, raw=%s, nomarkup=%s, init_done=%s" % (xterm256, useansi, raw, nomarkup, ttype.get("init_done"))
         if raw:
@@ -254,6 +254,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.transport.write(mccp_compress(self, prompt))
         if echo:
             self.transport.write(mccp_compress(self, IAC+WONT+ECHO))
-        elif echo== False:
+        elif echo == False:
             self.transport.write(mccp_compress(self, IAC+WILL+ECHO))
-                
+

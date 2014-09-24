@@ -159,13 +159,20 @@ class CmdSetObjAlias(MuxCommand):
         old_aliases = obj.aliases.all()
         new_aliases = [alias.strip().lower() for alias in self.rhs.split(',')
                        if alias.strip()]
+
         # make the aliases only appear once
         old_aliases.extend(new_aliases)
         aliases = list(set(old_aliases))
+
         # save back to object.
         obj.aliases.add(aliases)
-        # we treat this as a re-caching (relevant for exits to re-build their
-        # exit commands with the correct aliases)
+
+        # we need to trigger this here, since this will force
+        # (default) Exits to rebuild their Exit commands with the new
+        # aliases
+        obj.at_cmdset_get(force_init=True)
+
+        # report all aliases on the object
         caller.msg("Alias(es) for '%s' set to %s." % (obj.key, str(obj.aliases)))
 
 
@@ -1563,6 +1570,7 @@ class CmdLock(ObjManipCommand):
             if not obj.access(caller, 'control'):
                 caller.msg("You are not allowed to do that.")
                 return
+            ok = False
             try:
                 ok = obj.locks.add(lockdef)
             except LockException, e:
@@ -1757,11 +1765,11 @@ class CmdExamine(ObjManipCommand):
                 else:
                     things.append(content)
             if exits:
-                string += "\n{wExits{n: %s" % ", ".join([exit.name for exit in exits])
+                string += "\n{wExits{n: %s" % ", ".join(["%s(%s)" % (exit.name, exit.dbref) for exit in exits])
             if pobjs:
-                string += "\n{wCharacters{n: %s" % ", ".join(["{c%s{n" % pobj.name for pobj in pobjs])
+                string += "\n{wCharacters{n: %s" % ", ".join(["{c%s{n(%s)" % (pobj.name, pobj.dbref) for pobj in pobjs])
             if things:
-                string += "\n{wContents{n: %s" % ", ".join([cont.name for cont in obj.contents
+                string += "\n{wContents{n: %s" % ", ".join(["%s(%s)" % (cont.name, cont.dbref) for cont in obj.contents
                                                             if cont not in exits and cont not in pobjs])
         separator = "-" * 78
         #output info

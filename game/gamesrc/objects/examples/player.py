@@ -78,7 +78,7 @@ class Player(DefaultPlayer):
        usually handled on the character level:
 
      at_init()
-     at_cmdset_get()
+     at_cmdset_get(**kwargs)
      at_first_login()
      at_post_login(sessid=None)
      at_disconnect()
