@@ -558,11 +558,6 @@ class CmdAbout(MuxCommand):
 
     def func(self):
         "Show the version"
-        try:
-            import south
-            sversion = "{wSouth{n %s" % south.__version__
-        except ImportError:
-            sversion = "{wSouth{n <not installed>"
 
         string = """
          {cEvennia{n %s{n
@@ -579,13 +574,11 @@ class CmdAbout(MuxCommand):
          {wPython{n %s
          {wTwisted{n %s
          {wDjango{n %s
-         %s
         """ % (utils.get_evennia_version(),
                os.name,
                sys.version.split()[0],
                twisted.version.short(),
-               django.get_version(),
-               sversion)
+               django.get_version())
         self.caller.msg(string)
 
 
