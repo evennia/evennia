@@ -421,12 +421,6 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             else:
                 caller.ndb.last_cmd = None
 
-            # cleanup
-            del cmd.caller
-            del cmd.player
-            del cmd.session
-            del cmd.cmdset
-
             # Done! This returns a deferred. By default, Evennia does
             # not use this at all.
             returnValue(ret)
