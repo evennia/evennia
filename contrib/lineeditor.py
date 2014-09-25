@@ -226,7 +226,7 @@ class CmdEditorGroup(CmdEditorBase):
             # quit. If not saved, will ask
             if self.editor.unsaved:
                 prompt_yesno(caller, "Save before quitting?",
-                             yescode = "self.caller.ndb._lineeditor.save_buffer(quitting=True)\nself.caller.ndb._lineeditor.quit()",
+                             yescode = "self.caller.ndb._lineeditor.save_buffer()\nself.caller.ndb._lineeditor.quit()",
                              nocode = "self.caller.msg(self.caller.ndb._lineeditor.quit())", default="Y")
             else:
                 string = editor.quit()
