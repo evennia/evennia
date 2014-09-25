@@ -36,12 +36,13 @@ import os
 ######################################################################
 
 try:
-    f = open(os.path.dirname(os.path.abspath(__file__)) + os.sep + "VERSION", 'r')
-    __version__ = "Evennia %s-r%s" % (f.read().strip(), os.popen("hg id -i").read().strip())
-    f.close()
-    del f
+    __version__ = "Evennia"
+    with open(os.path.dirname(os.path.abspath(__file__)) + os.sep + "VERSION.txt", 'r') as f:
+        __version__ += " %s" % f.read().strip()
+    rev = (os.popen("git rev-parse --short HEAD").read().strip())
+    __version__ += "-%s" % (rev or "(unknown revision)")
 except IOError:
-    __version__ = "Evennia (unknown version)"
+    __version__ += " (unknown version)"
 
 ######################################################################
 # Stop erroneous direct run (would give a traceback since django is

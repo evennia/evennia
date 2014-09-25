@@ -101,7 +101,7 @@ class Object(TypeClass):
                 attribute_name=None, use_nicks=True, location=None,
                 quiet=False, exact=False)
          execute_cmd(raw_string)
-         msg(message, **kwargs)
+         msg(text=None, from_obj=None, sessid=0, **kwargs)
          msg_contents(message, exclude=None, from_obj=None, **kwargs)
          move_to(destination, quiet=False, emit_to_obj=None,
                  use_destination=True, to_none=False)
@@ -341,7 +341,7 @@ class Object(TypeClass):
                 default to self.sessid or from_obj.sessid.
         """
 
-        self.dbobj.msg(text=text, **kwargs)
+        self.dbobj.msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
 
     def msg_contents(self, text=None, exclude=None, from_obj=None, **kwargs):
         """

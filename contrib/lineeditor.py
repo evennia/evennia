@@ -14,6 +14,13 @@ Features of the editor:
  search&replace text anywhere in buffer
  formatting of buffer, or selection, to certain width + indentations
  allow to echo the input or not depending on your client.
+
+
+Whereas the editor is intended to be called from other commands that
+requires more elaborate text editing of data, there is also a
+stand-alone editor command for editing Attributes at the end of this
+module. To use it just import and add it to your default cmdset.
+
 """
 
 import re
@@ -624,9 +631,9 @@ class CmdEditor(Command):
     Usage:
       @editor <obj>/<attr>
 
-    This will start Evennia's powerful line editor, which
-    has a host of commands on its own. Use :h for a list
-    of commands.
+    This will start Evennia's powerful line editor to edit an
+    Attribute. The editor has a host of commands on its own. Use :h
+    for a list of commands.
 
     """
 
