@@ -506,7 +506,7 @@ class LineEditor(object):
             return ""
         return "Exited editor."
 
-    def save_buffer(self):
+    def save_buffer(self, *quitting):
         """
             Saves the content of the buffer. The 'quitting' argument is a bool
         indicating whether or not the editor intends to exit after saving.
@@ -669,14 +669,19 @@ class CmdEditor(Command):
             return True if successful and also report its status.
             """
             self.obj.attributes.add(self.attrname, self.editor.buffer)
-            self.caller.msg("Saved.")
+            
+            # Using HACK
+            self.savedcaller.msg("Saved.")
             return True
 
         def quit_hook():
             "Example quit hook. Since it's given, it's responsible for giving feedback messages."
-            self.caller.msg("Exited Editor.")
+            self.savedcaller.msg("Exited Editor.")
 
         editor_key = "%s/%s" % (self.objname, self.attrname)
+        
+        #HACK: self.caller is lost after this call
+        self.savedcaller=self.caller
         # start editor, it will handle things from here.
         self.editor = LineEditor(self.caller,
                                  loadfunc=load_attr,
