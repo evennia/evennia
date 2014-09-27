@@ -31,7 +31,7 @@ from ev import default_cmds
 #from contrib import menusystem, lineeditor
 #from contrib import misc_commands
 #from contrib import chargen
-
+#from contrib import usable_objects
 
 class ExampleCmdSet(CmdSet):
     """
@@ -76,6 +76,8 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         #self.add(menusystem.CmdMenuTest())
         #self.add(lineeditor.CmdEditor())
         #self.add(misc_commands.CmdQuell())
+        #self.add(usable_objects.UseCmd())
+        #self.add(usable_objects.MakeUsableCmd())
 
 
 class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
