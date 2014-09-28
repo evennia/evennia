@@ -85,8 +85,6 @@ SECRET_KEY = '%s'
 
     Once you are ready to continue, (re)run
         python manage.py syncdb
-    followed by
-        python manage.py migrate
     """
 
 
