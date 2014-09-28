@@ -196,7 +196,9 @@ class ServerSession(Session):
         oob - this should hold a dictionary of oob command calls from
               the oob-supporting protocol.
         """
-        if text:
+        #explicitly check for None since text can be an empty string, which is
+        #also valid
+        if text is not None:
             # this is treated as a command input
             #text = to_unicode(escape_control_sequences(text), encoding=self.encoding)
             # handle the 'idle' command
