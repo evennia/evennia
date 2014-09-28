@@ -165,7 +165,6 @@ except DatabaseError, e:
     Please run:
 
        python manage.py syncdb
-       python manage.py migrate
 
     When you have a database set up, rerun evennia.py.
     """ % e
