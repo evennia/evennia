@@ -4,13 +4,10 @@ Slow Exit typeclass
 Contribution - Griatch 2014
 
 
-This is an example of an Exit-type that delays its traversal. This
-simulates slow movement, common in many different types of games. This
-implementation is efficient but not persistent; so incomplete movement
-will be lost in a server reload. This is acceptable for most game
-types - to simulate longer travel times (more than the couple of
-seconds assumed here), a more persistent variant using Scripts or the
-TickerHandler might be better.
+This is an example of an Exit-type that delays its traversal.This
+simulates slow movement, common in many different types of games. The
+contrib also contains two commands, CmdSetSpeed and CmdStop for changing
+the movement speed and abort an ongoing traversal, respectively.
 
 To try out an exit of this type, you could connect two existing rooms
 using something like this:
@@ -29,6 +26,14 @@ To get the ability to change your speed and abort your movement,
 simply import and add CmdSetSpeed and CmdStop from this module to your
 default cmdset (see tutorials on how to do this if you are unsure).
 
+Notes:
+
+This implementation is efficient but not persistent; so incomplete
+movement will be lost in a server reload. This is acceptable for most
+game types - to simulate longer travel times (more than the couple of
+seconds assumed here), a more persistent variant using Scripts or the
+TickerHandler might be better.
+
 """
 
 from ev import Exit, utils, Command
@@ -44,7 +49,7 @@ class SlowExit(Exit):
     """
     def at_traverse(self, traversing_object, target_location):
         """
-        Implements the actual traversal. It just sets a 4-second
+        Implements the actual traversal, using utils.delay to delay the move_to.
         """
 
         # if the traverser has an Attribute move_speed, use that,
@@ -98,7 +103,7 @@ class CmdSetSpeed(Command):
 
     def func(self):
         """
-        Simply sets an Attribute used by the DelayedExit above.
+        Simply sets an Attribute used by the SlowExit above.
         """
         speed = self.args.lower().strip()
         if speed not in SPEED_DESCS:
