@@ -159,6 +159,8 @@ class CmdUse(default_cmds.MuxCommand):
         for t in targets:
             if t.lower() == "here":
                 objs = [self.caller.location];
+            elif t.lower() in ["self", "me"]:
+                objs = [self.caller]
             else:
                 objs = self.caller.search(t, quiet = True)
             if not objs:
