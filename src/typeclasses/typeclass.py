@@ -119,8 +119,9 @@ class TypeClass(object):
 
     def __setattr__(self, propname, value):
         """
-        Transparently save data to the dbobj object in
-        all situations. Note that this does not
+        Transparently save data. Use property on Typeclass only if
+        that property is already defined, otherwise relegate to the
+        dbobj object in all situations. Note that this does not
         necessarily mean storing it to the database.
         """
         #print "set %s -> %s" % (propname, value)
@@ -130,15 +131,18 @@ class TypeClass(object):
             log_errmsg(string % (self.name, propname))
             return
         try:
-            dbobj = _GA(self, 'dbobj')
-        except AttributeError:
-            dbobj = None
-            log_trace("This is probably due to an unsafe reload.")
-        if dbobj:
-            _SA(dbobj, propname, value)
-        else:
-            # only as a last resort do we save on the typeclass object
+            _GA(self, propname)
             _SA(self, propname, value)
+        except AttributeError:
+            try:
+                dbobj = _GA(self, 'dbobj')
+            except AttributeError:
+                dbobj = None
+            if dbobj:
+                _SA(dbobj, propname, value)
+            else:
+                # only as a last resort do we save on the typeclass object
+                _SA(self, propname, value)
 
     def __eq__(self, other):
         """

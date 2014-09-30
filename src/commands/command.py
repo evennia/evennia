@@ -242,13 +242,12 @@ class Command(object):
             if hasattr(to_obj, "sessid"):
                 # this is the case when to_obj is e.g. a Character
                 toobj_sessions = to_obj.sessid.get()
-                
+
                 # If to_obj has more than one session MULTISESSION_MODE=3
-                # we need to send to every session. 
+                # we need to send to every session.
                 #(setting it to None, does it)
-                if len(toobj_sessions)>1:
-                    session_tosend=None
-                else:
+                session_tosend = None
+                if len(toobj_sessions) == 1:
                     session_tosend=toobj_sessions[0]
                 sessid = all_sessions and None or session_tosend
             elif to_obj == self.caller:
