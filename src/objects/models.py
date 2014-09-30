@@ -325,6 +325,7 @@ class ObjectDB(TypedObject):
         exclude is one or more objects to not return
         """
         if exclude:
+            exclude = [obj.dbobj for obj in make_iter(exclude)]
             return ObjectDB.objects.get_contents(self, excludeobj=exclude)
         return ObjectDB.objects.get_contents(self)
     contents = property(contents_get)
