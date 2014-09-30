@@ -1092,7 +1092,7 @@ class EvTable(object):
 
         ypos = kwargs.get("ypos", None)
         row = [Cell(data, **options) for data in args]
-        htable = len(self.table[0]) # assuming balanced table
+        htable = len(self.table[0]) if len(self.table)>0 else 0 # assuming balanced table
         excess = len(row) - len(self.table)
 
         if excess > 0:
