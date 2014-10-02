@@ -757,7 +757,7 @@ class EvTable(object):
     """
     Table class.
 
-    The table contains of a list of EvColumns, each consisting of EvCells so
+    The table holds a list of EvColumns, each consisting of EvCells so
     that the result is a 2D matrix.
     """
 
@@ -881,9 +881,8 @@ class EvTable(object):
         # save options
         self.options = kwargs
 
-        # use the temporary table to generate the table on the fly, as a list of EvColumns.
-        # If the input is not iterable we assume it is an EvColumn.
-        self.table = [col if isinstance(col, EvColumn) else EvColumn(*col, **kwargs) for col in table]
+        # use the temporary table to generate the table on the fly, as a list of EvColumns
+        self.table = [EvColumn(*col, **kwargs) for col in table]
 
         # this is the actual working table
         self.worktable = None
@@ -1166,10 +1165,7 @@ class EvTable(object):
         options = dict(self.options.items() + kwargs.items())
 
         xpos = kwargs.get("xpos", None)
-        if args and isinstance(args[0], EvColumn):
-            column = args[0]
-        else:
-            column = EvColumn(*args, **options)
+        column = EvColumn(*args, **options)
         htable = self.nrows
         excess = self.ncols - htable
 
@@ -1295,10 +1291,10 @@ def _test():
     table = EvTable("{yHeading1{n", "{gHeading2{n", table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
     table.add_column("{rThis is long data{n", "{bThis is even longer data{n")
     table.add_row("This is a single row")
-    col = EvColumn("Test1", "Test3", "Test4", width=10)
-    table.add_column(col)
     print unicode(table)
     table.reformat(width=50)
+    print unicode(table)
+    table.reformat_column(3, width=30, align='r')
     print unicode(table)
     return table
 
