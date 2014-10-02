@@ -30,15 +30,17 @@ Result:
 | This is a single row |          |   |                          |
 +----------------------+----------+---+--------------------------+
 
-As seen, the table will automatically expand with empty cells to
-make the table symmetric.
+As seen, the table will automatically expand with empty cells to make
+the table symmetric.
 
 Tables can be restricted to a given width.
 
 table.reformat(width=50, align="l")
 
-(We could just have added these keywords to the table
-creation call) yields the following result:
+(We could just have added these keywords to the table creation call)
+
+This yields the following result:
+
 +-----------+------------+-----------+-----------+
 | Heading1  | Heading2   |           |           |
 +~~~~~~~~~~~+~~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~+
@@ -57,23 +59,45 @@ creation call) yields the following result:
 | row       |            |           |           |
 +-----------+------------+-----------+-----------+
 
-When adding new rows/columns their data can have its
-own alignments (left/center/right, top/center/bottom).
+Table-columns can be individually formatted. Note that if an
+individual column is set with a specific width, table auto-balancing
+will not affect this column (this may lead to the full table being too
+wide, so be careful mixing fixed-width columns with auto- balancing).
+Here we change the width and alignment of the column at index 3
+(Python starts from 0):
 
-If the height is restricted, cells will be restricted
-from expanding vertically. This will lead to text
-contents being cropped. Each cell can only shrink
-to a minimum width and height of 1.
+table.reformat_column(3, width=30, align="r")
+print table
 
++-----------+-------+-----+-----------------------------+---------+
+| Heading1  | Headi |     |                             |         |
+|           | ng2   |     |                             |         |
++~~~~~~~~~~~+~~~~~~~+~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~+
+| 1         | 4     | 7   |           This is long data | Test1   |
++-----------+-------+-----+-----------------------------+---------+
+| 2         | 5     | 8   |    This is even longer data | Test3   |
++-----------+-------+-----+-----------------------------+---------+
+| 3         | 6     | 9   |                             | Test4   |
++-----------+-------+-----+-----------------------------+---------+
+| This is a |       |     |                             |         |
+|  single   |       |     |                             |         |
+| row       |       |     |                             |         |
++-----------+-------+-----+-----------------------------+---------+
 
-It is intended to be used with ANSIString for supporting
+When adding new rows/columns their data can have its own alignments
+(left/center/right, top/center/bottom).
+
+If the height is restricted, cells will be restricted from expanding
+vertically. This will lead to text contents being cropped. Each cell
+can only shrink to a minimum width and height of 1.
+
+EvTable is intended to be used with ANSIString for supporting
 ANSI-coloured string types.
 
-When a cell is auto-wrapped across multiple lines,
-ANSI-reset sequences will be put at the end of each
-wrapped line. This means that the colour of a wrapped
-cell will not "bleed", but it also means that eventual
-colour outside
+When a cell is auto-wrapped across multiple lines, ANSI-reset
+sequences will be put at the end of each wrapped line. This means that
+the colour of a wrapped cell will not "bleed", but it also means that
+eventual colour outside
 
 """
 #from textwrap import wrap
@@ -241,9 +265,9 @@ def fill(text, width=70, **kwargs):
     w = ANSITextWrapper(width=width, **kwargs)
     return w.fill(text)
 
-# Cell class (see further down for the EvTable itself)
+# EvCell class (see further down for the EvTable itself)
 
-class Cell(object):
+class EvCell(object):
     """
     Holds a single data cell for the table. A cell has a certain width
     and height and contains one or more lines of data. It can shrink
@@ -287,11 +311,6 @@ class Cell(object):
             border_top - top border width
             border_bottom - bottom border width
 
-            crop_string - string to use when cropping sideways,
-                          default is '[...]'
-            crop - crop content of cell rather than expand vertically,
-                   default=False
-
             border_char - this will use a single border char for all borders.
                           overruled by individual settings below
             border_left_char - char used for left border
@@ -302,10 +321,16 @@ class Cell(object):
             corner_char - character used when two borders cross.
                           (default is ""). This is overruled by
                           individual settings below.
-            corner_top_left
-            corner_top_right
-            corner_bottom_left
-            corner_bottom_right
+            corner_top_left_char  - char used for "nw" corner
+            corner_top_right_char   - char used for "nw" corner
+            corner_bottom_left_char  - char used for "sw" corner
+            corner_bottom_right_char - char used for "se" corner
+
+            crop_string - string to use when cropping sideways,
+                          default is '[...]'
+            crop - crop content of cell rather than expand vertically,
+                   default=False
+
 
             enforce_size - if true, the width/height of the
                            cell is strictly enforced and
@@ -352,11 +377,11 @@ class Cell(object):
         self.border_top_char = kwargs.get("border_topchar", borderchar if borderchar else "-")
         self.border_bottom_char = kwargs.get("border_bottom_char", borderchar if borderchar else "-")
 
-        corner = kwargs.get("corner_char", "+")
-        self.corner_top_left = kwargs.get("corner_top_left", corner)
-        self.corner_top_right = kwargs.get("corner_top_right", corner)
-        self.corner_bottom_left = kwargs.get("corner_bottom_left", corner)
-        self.corner_bottom_right = kwargs.get("corner_bottom_right", corner)
+        corner_char = kwargs.get("corner_char", "+")
+        self.corner_top_left_char = kwargs.get("corner_top_left_char", corner_char)
+        self.corner_top_right_char = kwargs.get("corner_top_right_char", corner_char)
+        self.corner_bottom_left_char = kwargs.get("corner_bottom_left_char", corner_char)
+        self.corner_bottom_right_char = kwargs.get("corner_bottom_right_char", corner_char)
 
         # alignments
         self.align = kwargs.get("align", "l")
@@ -504,14 +529,14 @@ class Cell(object):
         cwidth = self.width + self.pad_left + self.pad_right + \
                  max(0,self.border_left-1) + max(0, self.border_right-1)
 
-        vfill = self.corner_top_left if left else ""
+        vfill = self.corner_top_left_char if left else ""
         vfill += cwidth * self.border_top_char
-        vfill += self.corner_top_right if right else ""
+        vfill += self.corner_top_right_char if right else ""
         top = [vfill for i in range(self.border_top)]
 
-        vfill = self.corner_bottom_left if left else ""
+        vfill = self.corner_bottom_left_char if left else ""
         vfill += cwidth * self.border_bottom_char
-        vfill += self.corner_bottom_right if right else ""
+        vfill += self.corner_bottom_right_char if right else ""
         bottom = [vfill for i in range(self.border_bottom)]
 
         return top + [left + line + right for line in data] + bottom
@@ -552,7 +577,7 @@ class Cell(object):
 
     def reformat(self, **kwargs):
         """
-        Reformat the Cell with new options
+        Reformat the EvCell with new options
         kwargs:
             as the class __init__
         """
@@ -590,11 +615,11 @@ class Cell(object):
         self.border_top_char = kwargs.get("border_topchar", borderchar if borderchar else self.border_top_char)
         self.border_bottom_char = kwargs.get("border_bottom_char", borderchar if borderchar else self.border_bottom_char)
 
-        corner = kwargs.get("corner_char", None)
-        self.corner_top_left = kwargs.get("corner_top_left", corner if corner is not None else self.corner_top_left)
-        self.corner_top_right = kwargs.get("corner_top_right", corner if corner is not None else self.corner_top_right)
-        self.corner_bottom_left = kwargs.get("corner_bottom_left", corner if corner is not None else self.corner_bottom_left)
-        self.corner_bottom_right = kwargs.get("corner_bottom_right", corner if corner is not None else self.corner_bottom_right)
+        corner_char = kwargs.get("corner_char", None)
+        self.corner_top_left_char = kwargs.get("corner_top_left", corner_char if corner_char is not None else self.corner_top_left_char)
+        self.corner_top_right_char = kwargs.get("corner_top_right", corner_char if corner_char is not None else self.corner_top_right_char)
+        self.corner_bottom_left_char = kwargs.get("corner_bottom_left", corner_char if corner_char is not None else self.corner_bottom_left_char)
+        self.corner_bottom_right_char = kwargs.get("corner_bottom_right", corner_char if corner_char is not None else self.corner_bottom_right_char)
 
         # fill all other properties
         for key, value in kwargs.items():
@@ -621,6 +646,9 @@ class Cell(object):
         """
         return self.formatted
 
+    def __repr__(self):
+        return ANSIString("EvCel<%s>" % self.formatted)
+
     def __str__(self):
         "returns cell contents on string form"
         return ANSIString("\n").join(self.formatted)
@@ -630,14 +658,107 @@ class Cell(object):
         return unicode(ANSIString("\n").join(self.formatted))
 
 
+## EvColumn class
+
+class EvColumn(object):
+    """
+    Column class
+
+    This class holds a list of Cells to represent a column of a table.
+    It holds operations and settings that affect *all* cells in the
+    column.
+
+    Columns are not intended to be used stand-alone; they should be
+    incorporated into an EvTable (like EvCells)
+    """
+    def __init__(self, *args,  **kwargs):
+        """
+        Args:
+            Data for each row in the column
+        Keywords:
+            width - If set, this column will be hardcoded to have
+                    this width, regardless of the length of data in
+                    each individual cell. The cells will adjust
+                    or not depending on other settings. The
+                    EvTable will not be allowed to auto-adjust
+                    the width of EvColumns with their width set.
+            All EvCell keywords are available, these settings
+            will be applied to every Cell in the column.
+        """
+        self.width = kwargs.get("width", None)
+        self.options = kwargs
+        self.column = [EvCell(data, **kwargs) for data in args]
+        self._normalize_width()
+
+    def _normalize_width(self):
+        """
+        Make sure to adjust the width of all cells so we form
+        a coherent and lined-up column.
+        """
+        col = self.column
+        noptions = copy(self.options)
+        # use fixed width or adjust to the largest cell
+        noptions["width"] = self.width or noptions.get("width") or max(cell.get_width() for cell in col) if col else 0
+        [cell.reformat(**noptions) for cell in col]
+
+    def add_rows(self, *args, **kwargs):
+        """
+        Add new cells to column. They will be inserted as
+        a series of rows. It will inherit the options
+        of the rest of the column's cells (use update to change
+        options).
+
+        Args:
+            data for the new cells
+        Keywords:
+            ypos - index position in table before which to insert the
+                   new column. Uses Python indexing, so to insert at the top,
+                   use ypos=0. If not given, data will be inserted at the end
+                   of the column.
+        """
+        ypos = kwargs.get("ypos", None)
+        if ypos is None or ypos > len(self.column):
+            # add to the end
+            self.column.extend([EvCell(data, **self.options) for data in args])
+        else:
+            # insert cells before given index
+            ypos = min(len(self.column)-1, max(0, int(ypos)))
+            new_cells = [EvCell(data, **self.options) for data in args]
+            self.column = self.column[:ypos] + new_cells + self.column[ypos:]
+        self._normalize_width()
+
+    def reformat(self, force_width=False, **kwargs):
+        """
+        Change the options for the collumn. Will not change width unless
+        the force_width keyword is passed (this is only sent by the
+        EvTable.reformat_column() method)
+        """
+        self.width = kwargs.get("width", self.width) if force_width else self.width
+        self.options.update(kwargs)
+        self._normalize_width()
+
+    def __repr__(self):
+        return "EvColumn<%i cels>" % len(self.column)
+    def __len__(self):
+        return len(self.column)
+    def __iter__(self):
+        return iter(self.column)
+    def __getitem__(self, index):
+        return self.column[index]
+    def __setitem__(self, index, value):
+        self.column[index] = value
+    def __delitem__(self, index):
+        del self.column[index]
+
+
 ## Main Evtable class
 
 class EvTable(object):
     """
     Table class.
 
-    This table implements an ordered grid of Cells, with
-    all cell boundaries lining up.
+    The table contains of a list of EvColumns, each consisting of EvCells so
+    that the result is a 2D matrix.
     """
 
     def __init__(self, *args, **kwargs):
@@ -646,7 +767,7 @@ class EvTable(object):
             headers for the table
 
          Keywords:
-            table - list of columns (list of lists) for seeding
+            table - list of columns (lists of lists, or lists of EvColumns) for seeding
                     the table. If not given, the table will start
                     out empty
             header - True/False - turn off header being treated
@@ -667,11 +788,11 @@ class EvTable(object):
                           corners. Default is 1.
             corner_char - character to use in corners when border is
                           active.
-            corner_top_left - character to use in upper left corner of table
+            corner_top_left_char - character to use in upper left corner of table
                                 (defaults to corner_char)
-            corner_top_right
-            corner_bottom_left
-            corner_bottom_right
+            corner_top_right_char
+            corner_bottom_left_char
+            corner_bottom_right_char
             pretty_corners - (default True): use custom characters to make
                              the table corners look "rounded". Uses UTF-8
                              characters.
@@ -701,16 +822,16 @@ class EvTable(object):
             to each cell in the table.
 
         """
-        # table itself is a 2D grid - a list of columns
+        # at this point table is a 2D grid - a list of columns
         # x is the column position, y the row
-        self.table = kwargs.pop("table", [])
+        table = kwargs.pop("table", [])
 
         # header is a list of texts. We merge it to the table's top
         header = list(args)
         self.header = header != []
         if self.header:
-            if self.table:
-                excess = len(header) - len(self.table)
+            if table:
+                excess = len(header) - len(table)
                 if excess > 0:
                     # header bigger than table
                     self.table.extend([] for i in range(excess))
@@ -718,9 +839,9 @@ class EvTable(object):
                     # too short header
                     header.extend(_to_ansi(["" for i in range(abs(excess))]))
                 for ix, heading in enumerate(header):
-                    self.table[ix].insert(0, heading)
+                    table[ix].insert(0, heading)
             else:
-                self.table = [[heading] for heading in header]
+                table = [[heading] for heading in header]
         # even though we inserted the header, we can still turn off
         # header border underling etc. We only allow this if a header
         # was actually set
@@ -740,10 +861,10 @@ class EvTable(object):
         self.border_width = kwargs.get("border_width", 1)
         self.corner_char = kwargs.get("corner_char", "+")
         pcorners = kwargs.pop("pretty_corners", False)
-        self.corner_top_left = _to_ansi(kwargs.pop("corner_top_left", '.' if pcorners else  self.corner_char))
-        self.corner_top_right = _to_ansi(kwargs.pop("corner_top_right", '.' if pcorners else self.corner_char))
-        self.corner_bottom_left = _to_ansi(kwargs.pop("corner_bottom_left", ' ' if pcorners else self.corner_char))
-        self.corner_bottom_right = _to_ansi(kwargs.pop("corner_bottom_right", ' ' if pcorners else self.corner_char))
+        self.corner_top_left_char = _to_ansi(kwargs.pop("corner_top_left_char", '.' if pcorners else  self.corner_char))
+        self.corner_top_right_char = _to_ansi(kwargs.pop("corner_top_right_char", '.' if pcorners else self.corner_char))
+        self.corner_bottom_left_char = _to_ansi(kwargs.pop("corner_bottom_left_char", ' ' if pcorners else self.corner_char))
+        self.corner_bottom_right_char = _to_ansi(kwargs.pop("corner_bottom_right_char", ' ' if pcorners else self.corner_char))
 
         self.width = kwargs.pop("width", None)
         self.height = kwargs.pop("height", None)
@@ -760,9 +881,9 @@ class EvTable(object):
         # save options
         self.options = kwargs
 
-        if self.table:
-            # generate the table on the fly
-            self.table = [[Cell(data, **kwargs) for data in col] for col in self.table]
+        # use the temporary table to generate the table on the fly, as a list of EvColumns.
+        # If the input is not iterable we assume it is an EvColumn.
+        self.table = [col if isinstance(col, EvColumn) else EvColumn(*col, **kwargs) for col in table]
 
         # this is the actual working table
         self.worktable = None
@@ -784,13 +905,13 @@ class EvTable(object):
         def corners(ret):
             "Handle corners of table"
             if ix == 0 and iy == 0:
-                ret["corner_top_left"] = self.corner_top_left
+                ret["corner_top_left_char"] = self.corner_top_left_char
             if ix == nx and iy == 0:
-                ret["corner_top_right"] = self.corner_top_right
+                ret["corner_top_right_char"] = self.corner_top_right_char
             if ix == 0 and iy == ny:
-                ret["corner_bottom_left"] = self.corner_bottom_left
+                ret["corner_bottom_left_char"] = self.corner_bottom_left_char
             if ix == nx and iy == ny:
-                ret["corner_bottom_right"] = self.corner_bottom_right
+                ret["corner_bottom_right_char"] = self.corner_bottom_right_char
             return ret
 
         def left_edge(ret):
@@ -885,15 +1006,15 @@ class EvTable(object):
         self.worktable = deepcopy(self.table)
         options = copy(self.options)
 
-        # balance number of rows
+        # balance number of rows to make a rectangular table
         ncols = len(self.worktable)
         nrows = [len(col) for col in self.worktable]
         nrowmax = max(nrows) if nrows else 0
         for icol, nrow in enumerate(nrows):
             if nrow < nrowmax:
-                # add more rows
-                self.worktable[icol].extend([Cell("", **self.options) for i in range(nrowmax-nrow)])
-
+                # add more rows to too-short columns
+                empty_rows = ["" for i in range(nrowmax-nrow)]
+                self.worktable[icol].add_rows(*empty_rows)
         self.ncols = ncols
         self.nrows = nrowmax
 
@@ -938,12 +1059,11 @@ class EvTable(object):
 
         # reformat worktable (for width align)
         for ix, col in enumerate(self.worktable):
-            for iy, cell in enumerate(col):
-                try:
-                    cell.reformat(width=cwidths[ix], **options)
-                except Exception, e:
-                    msg = "ix=%s, iy=%s, width=%s: %s" % (ix, iy, cwidths[ix], e.message)
-                    raise Exception ("Error in horizontal allign:\n %s" % msg)
+            try:
+                col.reformat(width=cwidths[ix], **options)
+            except Exception, e:
+                msg = "ix=%s, width=%s: %s" % (ix, cwidths[ix], e.message)
+                raise #Exception ("Error in horizontal allign:\n %s" % msg)
 
         # equalize heights for each row (we must do this here, since it may have changed to fit new widths)
         cheights = [max(cell.get_height() for cell in (col[iy] for col in self.worktable)) for iy in range(nrowmax)]
@@ -1031,6 +1151,9 @@ class EvTable(object):
         empty rows in the other columns. If too few,
         the new column with get new empty rows. All
         filling rows are added to the end.
+        Args:
+            Either a single EvColumn instance or
+            a number of data to be used to create a new column
         keyword-
             header - the header text for the column
             xpos - index position in table before which
@@ -1043,25 +1166,30 @@ class EvTable(object):
         options = dict(self.options.items() + kwargs.items())
 
         xpos = kwargs.get("xpos", None)
-        column = [Cell(data, **options) for data in args]
+        if args and isinstance(args[0], EvColumn):
+            column = args[0]
+        else:
+            column = EvColumn(*args, **options)
         htable = self.nrows
         excess = self.ncols - htable
 
         if excess > 0:
             # we need to add new rows to table
             for col in self.table:
-                col.extend([Cell("", **options) for i in range(excess)])
+                empty_rows = ["" for i in range(excess)]
+                col.add_rows(*empty_rows, **options)
         elif excess < 0:
             # we need to add new rows to new column
-            column.extend([Cell("", **options) for i in range(abs(excess))])
+            empty_rows = ["" for i in range(abs(excess))]
+            column.add_rows(*empty_rows, **options)
 
         header = kwargs.get("header", None)
         if header:
-            column.insert(0, Cell(unicode(header), **options))
+            column.add_rows(unicode(header), ypos=0, **options)
             self.header = True
         elif self.header:
             # we have a header already. Offset
-            column.insert(0, Cell("", **options))
+            column.add_rows("", ypos=0, **options)
         if xpos is None or xpos > len(self.table) - 1:
             # add to the end
             self.table.append(column)
@@ -1085,32 +1213,33 @@ class EvTable(object):
                  input new row. If not given, will be added
                  to the end. Uses Python indexing (so first row is
                  ypos=0)
-        See Cell class for other keyword arguments
+        See EvCell class for other keyword arguments
         """
         # this will replace default options with new ones without changing default
+        row = list(args)
         options = dict(self.options.items() + kwargs.items())
 
         ypos = kwargs.get("ypos", None)
-        row = [Cell(data, **options) for data in args]
         htable = len(self.table[0]) if len(self.table)>0 else 0 # assuming balanced table
         excess = len(row) - len(self.table)
 
         if excess > 0:
             # we need to add new empty columns to table
-            self.table.extend([[Cell("", **options) for i in range(htable)] for k in range(excess)])
+            empty_rows = ["" for i in range(htable)]
+            self.table.extend([EvColumn(*empty_rows, **options) for i in range(excess)])
         elif excess < 0:
             # we need to add more cells to row
-            row.extend([Cell("", **options) for i in range(abs(excess))])
+            row.extend(["" for i in range(abs(excess))])
 
         if ypos is None or ypos > htable - 1:
             # add new row to the end
             for icol, col in enumerate(self.table):
-                col.append(row[icol])
+                col.add_rows(row[icol], **options)
         else:
             # insert row elsewhere
             ypos = min(htable-1, max(0, int(ypos)))
             for icol, col in enumerate(self.table):
-                col.insert(ypos, row[icol])
+                col.add_rows(row[icol], ypos=ypos, **options)
         self._balance()
 
     def reformat(self, **kwargs):
@@ -1124,18 +1253,28 @@ class EvTable(object):
 
         hchar = kwargs.pop("header_line_char", self.header_line_char)
 
-        # border settings are also passed on into Cells (so kwargs.get, not kwargs.pop)
+        # border settings are also passed on into EvCells (so kwargs.get, not kwargs.pop)
         self.header_line_char = hchar[0] if hchar else self.header_line_char
         self.border_width = kwargs.get("border_width", self.border_width)
         self.corner_char = kwargs.get("corner_char", self.corner_char)
         self.header_line_char = kwargs.get("header_line_char", self.header_line_char)
 
-        self.corner_top_left = _to_ansi(kwargs.pop("corner_top_left", self.corner_char))
-        self.corner_top_right = _to_ansi(kwargs.pop("corner_top_right", self.corner_char))
-        self.corner_bottom_left = _to_ansi(kwargs.pop("corner_bottom_left", self.corner_char))
-        self.corner_bottom_right = _to_ansi(kwargs.pop("corner_bottom_right", self.corner_char))
+        self.corner_top_left_char = _to_ansi(kwargs.pop("corner_top_left_char", self.corner_char))
+        self.corner_top_right_char = _to_ansi(kwargs.pop("corner_top_right_char", self.corner_char))
+        self.corner_bottom_left_char = _to_ansi(kwargs.pop("corner_bottom_left_char", self.corner_char))
+        self.corner_bottom_right_char = _to_ansi(kwargs.pop("corner_bottom_right_char", self.corner_char))
 
         self.options.update(kwargs)
+        self._balance()
+
+    def reformat_column(self, index, **kwargs):
+        """
+        Sends custom options to a specific column in the table. The column
+        is identified by its index in the table (0-Ncol)
+        """
+        if index > len(self.table):
+            raise Exception("Not a valid column index")
+        self.table[index].reformat(force_width=True, **kwargs)
         self._balance()
 
     def get(self):
@@ -1156,9 +1295,12 @@ def _test():
     table = EvTable("{yHeading1{n", "{gHeading2{n", table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
     table.add_column("{rThis is long data{n", "{bThis is even longer data{n")
     table.add_row("This is a single row")
+    col = EvColumn("Test1", "Test3", "Test4", width=10)
+    table.add_column(col)
     print unicode(table)
     table.reformat(width=50)
     print unicode(table)
+    return table
 
 
 

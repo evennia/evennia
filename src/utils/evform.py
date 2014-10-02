@@ -1,11 +1,6 @@
 # coding=utf-8
 """
-Mudform - a way to create advanced ascii forms
-
-WARNING: UNDER DEVELOPMENT. Evform does currently NOT support
-colour ANSI markers in the table. Non-colour forms should
-work fully (so make issues if they don't).
-
+EvForm - a way to create advanced ascii forms
 
 This is intended for creating advanced ascii game forms, such as a
 large pretty character sheet or info document.
@@ -14,7 +9,7 @@ The system works on the basis of a readin template that is given in a
 separate python file imported into the handler. This file contains
 some optional settings and a string mapping out the form. The template
 has markers in it to denounce fields to fill. The markers map the
-absolute size of the field and will be filled with an evtable.Cell
+absolute size of the field and will be filled with an evtable.EvCell
 object when displaying the form.
 
 Note, when printing examples with ANSI color, you need to wrap
@@ -119,7 +114,7 @@ This produces the following result:
 |          |                                     |
  ------------------------------------------------
 
-The marked forms have been replaced with Cells of text and with
+The marked forms have been replaced with EvCells of text and with
 EvTables. The form can be updated by simply re-applying form.map()
 with the updated data.
 
@@ -136,7 +131,7 @@ form will raise an error.
 
 import re
 import copy
-from src.utils.evtable import Cell, EvTable
+from src.utils.evtable import EvCell, EvTable
 from src.utils.utils import all_from_module, to_str, to_unicode
 from src.utils.ansi import ANSIString
 
@@ -160,7 +155,7 @@ class EvForm(object):
     This object is instantiated with a text file and parses
     it for rectangular form fields. It can then be fed a
     mapping so as to populate the fields with fixed-width
-    Cell or Tablets.
+    EvCell or Tablets.
 
     """
     def __init__(self, filename=None, cells=None, tables=None, form=None, **kwargs):
@@ -176,8 +171,8 @@ class EvForm(object):
             cells - a dictionary mapping of {id:text}
             tables -  dictionary mapping of {id:EvTable}
 
-        other kwargs are fed as options to the Cells and EvTables
-        (see evtablet.Cell and evtable.EvTable for more info).
+        other kwargs are fed as options to the EvCells and EvTables
+        (see evtablet.EvCell and evtable.EvTable for more info).
 
         """
         self.filename = filename
@@ -246,7 +241,7 @@ class EvForm(object):
         #print "cell_coords:", cell_coords
         #print "table_coords:", table_coords
 
-        # get rectangles and assign Cells
+        # get rectangles and assign EvCells
         for key, (iy, leftix, rightix) in cell_coords.items():
 
             # scan up to find top of rectangle
@@ -268,13 +263,13 @@ class EvForm(object):
                     else:
                         break
 
-            #  we have our rectangle. Calculate size of Cell.
+            #  we have our rectangle. Calculate size of EvCell.
             iyup = iy - dy_up
             iydown = iy + dy_down
             width = rightix - leftix
             height = abs(iyup - iydown) + 1
 
-            # we have all the coordinates we need. Create Cell.
+            # we have all the coordinates we need. Create EvCell.
             data = self.cells_mapping.get(key, "")
             #if key == "1":
             #    print "creating cell '%s' (%s):" % (key, data)
@@ -285,7 +280,7 @@ class EvForm(object):
             #if key=="4":
             #print "options:", options
 
-            mapping[key] = (iyup, leftix, width, height, Cell(data, width=width, height=height,**options))
+            mapping[key] = (iyup, leftix, width, height, EvCell(data, width=width, height=height,**options))
 
         # get rectangles and assign Tables
         for key, (iy, leftix, rightix) in table_coords.items():
@@ -355,7 +350,7 @@ class EvForm(object):
         tables - a dictionary of {identifier:table}
 
         kwargs will be forwarded to tables/cells. See
-        evtable.Cell and evtable.EvTable for info.
+        evtable.EvCell and evtable.EvTable for info.
 
         """
         # clean kwargs (these cannot be overridden)
@@ -441,3 +436,4 @@ def _test():
 
     # unicode is required since the example contains non-ascii characters
     print unicode(form)
+    return form
