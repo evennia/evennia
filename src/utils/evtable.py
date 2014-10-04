@@ -586,15 +586,17 @@ class EvCell(object):
 
         padwidth = kwargs.get("pad_width", None)
         padwidth = int(padwidth) if padwidth is not None else None
-        self.pad_left = int(kwargs.get("pad_left", padwidth if padwidth is not None else self.pad_left))
-        self.pad_right = int(kwargs.get("pad_right", padwidth if padwidth is not None else self.pad_right))
-        self.pad_top = int( kwargs.get("pad_top", padwidth if padwidth is not None else self.pad_top))
-        self.pad_bottom = int(kwargs.get("pad_bottom", padwidth if padwidth is not None else self.pad_bottom))
+        self.pad_left = int(kwargs.pop("pad_left", padwidth if padwidth is not None else self.pad_left))
+        self.pad_right = int(kwargs.pop("pad_right", padwidth if padwidth is not None else self.pad_right))
+        self.pad_top = int( kwargs.pop("pad_top", padwidth if padwidth is not None else self.pad_top))
+        self.pad_bottom = int(kwargs.pop("pad_bottom", padwidth if padwidth is not None else self.pad_bottom))
 
-        padchar = kwargs.pop("pad_char", None)
-        hpad_char = kwargs.pop("hpad_char", padchar)
+        self.enforce_size = kwargs.get("enforce_size", False)
+
+        pad_char = kwargs.pop("pad_char", None)
+        hpad_char = kwargs.pop("hpad_char", pad_char)
         self.hpad_char = hpad_char[0] if hpad_char else self.hpad_char
-        vpad_char = kwargs.pop("vpad_char", padchar)
+        vpad_char = kwargs.pop("vpad_char", pad_char)
         self.vpad_char = vpad_char[0] if vpad_char else self.vpad_char
 
         fillchar = kwargs.pop("fill_char", None)
@@ -605,21 +607,21 @@ class EvCell(object):
 
         borderwidth = kwargs.get("border_width", None)
         self.border_left = kwargs.pop("border_left", borderwidth if borderwidth is not None else self.border_left)
-        self.border_right = kwargs.get("border_right", borderwidth if borderwidth is not None else self.border_right)
-        self.border_top = kwargs.get("border_top", borderwidth if borderwidth is not None else self.border_top)
-        self.border_bottom = kwargs.get("border_bottom", borderwidth if borderwidth is not None else self.border_bottom)
+        self.border_right = kwargs.pop("border_right", borderwidth if borderwidth is not None else self.border_right)
+        self.border_top = kwargs.pop("border_top", borderwidth if borderwidth is not None else self.border_top)
+        self.border_bottom = kwargs.pop("border_bottom", borderwidth if borderwidth is not None else self.border_bottom)
 
         borderchar = kwargs.get("border_char", None)
-        self.border_left_char = kwargs.get("border_left_char", borderchar if borderchar else self.border_left_char)
-        self.border_right_char = kwargs.get("border_right_char", borderchar if borderchar else self.border_right_char)
-        self.border_top_char = kwargs.get("border_topchar", borderchar if borderchar else self.border_top_char)
-        self.border_bottom_char = kwargs.get("border_bottom_char", borderchar if borderchar else self.border_bottom_char)
+        self.border_left_char = kwargs.pop("border_left_char", borderchar if borderchar else self.border_left_char)
+        self.border_right_char = kwargs.pop("border_right_char", borderchar if borderchar else self.border_right_char)
+        self.border_top_char = kwargs.pop("border_topchar", borderchar if borderchar else self.border_top_char)
+        self.border_bottom_char = kwargs.pop("border_bottom_char", borderchar if borderchar else self.border_bottom_char)
 
         corner_char = kwargs.get("corner_char", None)
-        self.corner_top_left_char = kwargs.get("corner_top_left", corner_char if corner_char is not None else self.corner_top_left_char)
-        self.corner_top_right_char = kwargs.get("corner_top_right", corner_char if corner_char is not None else self.corner_top_right_char)
-        self.corner_bottom_left_char = kwargs.get("corner_bottom_left", corner_char if corner_char is not None else self.corner_bottom_left_char)
-        self.corner_bottom_right_char = kwargs.get("corner_bottom_right", corner_char if corner_char is not None else self.corner_bottom_right_char)
+        self.corner_top_left_char = kwargs.pop("corner_top_left", corner_char if corner_char is not None else self.corner_top_left_char)
+        self.corner_top_right_char = kwargs.pop("corner_top_right", corner_char if corner_char is not None else self.corner_top_right_char)
+        self.corner_bottom_left_char = kwargs.pop("corner_bottom_left", corner_char if corner_char is not None else self.corner_bottom_left_char)
+        self.corner_bottom_right_char = kwargs.pop("corner_bottom_right", corner_char if corner_char is not None else self.corner_bottom_right_char)
 
         # fill all other properties
         for key, value in kwargs.items():
@@ -676,30 +678,24 @@ class EvColumn(object):
         Args:
             Data for each row in the column
         Keywords:
-            width - If set, this column will be hardcoded to have
-                    this width, regardless of the length of data in
-                    each individual cell. The cells will adjust
-                    or not depending on other settings. The
-                    EvTable will not be allowed to auto-adjust
-                    the width of EvColumns with their width set.
             All EvCell keywords are available, these settings
-            will be applied to every Cell in the column.
+            will be persistently applied to every Cell in the column.
         """
-        self.width = kwargs.get("width", None)
-        self.options = kwargs
+        self.options = kwargs  # column-specific options
         self.column = [EvCell(data, **kwargs) for data in args]
-        self._normalize_width()
+        self._balance()
 
-    def _normalize_width(self):
+    def _balance(self, **kwargs):
         """
-        Make sure to adjust the width of all cells so we form
-        a coherent and lined-up column.
+        Make sure to adjust the width of all cells so we form a
+        coherent and lined-up column. Will enforce column-specific
+        options to cells.
         """
         col = self.column
-        noptions = copy(self.options)
+        kwargs.update(self.options)
         # use fixed width or adjust to the largest cell
-        noptions["width"] = self.width or noptions.get("width") or max(cell.get_width() for cell in col) if col else 0
-        [cell.reformat(**noptions) for cell in col]
+        kwargs["width"] = kwargs.get("width") or max(cell.get_width() for cell in col) if col else 0
+        [cell.reformat(**kwargs) for cell in col]
 
     def add_rows(self, *args, **kwargs):
         """
@@ -708,7 +704,7 @@ class EvColumn(object):
         of the rest of the column's cells (use update to change
         options).
 
-        Args:
+        Args:j
             data for the new cells
         Keywords:
             ypos - index position in table before which to insert the
@@ -725,17 +721,21 @@ class EvColumn(object):
             ypos = min(len(self.column)-1, max(0, int(ypos)))
             new_cells = [EvCell(data, **self.options) for data in args]
             self.column = self.column[:ypos] + new_cells + self.column[ypos:]
-        self._normalize_width()
+        self._balance(**kwargs)
 
-    def reformat(self, force_width=False, **kwargs):
+    def reformat(self, **kwargs):
         """
-        Change the options for the collumn. Will not change width unless
-        the force_width keyword is passed (this is only sent by the
-        EvTable.reformat_column() method)
+        Change the options for the collumn.
         """
-        self.width = kwargs.get("width", self.width) if force_width else self.width
-        self.options.update(kwargs)
-        self._normalize_width()
+        self._balance(**kwargs)
+
+    def reformat_cell(self, index, **kwargs):
+        """
+        reformat cell at given index, keeping column
+        options if necessary
+        """
+        kwargs.update(self.options)
+        self.column[index].reformat(**kwargs)
 
     def __repr__(self):
         return "EvColumn<%i cels>" % len(self.column)
@@ -989,7 +989,7 @@ class EvTable(object):
         options = self.options
         for ix, col in enumerate(self.worktable):
             for iy, cell in enumerate(col):
-                cell.reformat(**self._cellborders(ix,iy,nx,ny,options))
+                col.reformat_cell(iy, **self._cellborders(ix,iy,nx,ny,options))
 
     def _balance(self):
         """
@@ -1108,7 +1108,7 @@ class EvTable(object):
         for ix, col in enumerate(self.worktable):
             for iy, cell in enumerate(col):
                 try:
-                    cell.reformat(height=cheights[iy], **options)
+                    col.reformat_cell(iy, height=cheights[iy], **options)
                 except Exception, e:
                     msg = "ix=%s, iy=%s, height=%s: %s" % (ix, iy, cheights[iy], e.message)
                     raise Exception ("Error in vertical allign:\n %s" % msg)
@@ -1270,7 +1270,8 @@ class EvTable(object):
         """
         if index > len(self.table):
             raise Exception("Not a valid column index")
-        self.table[index].reformat(force_width=True, **kwargs)
+        self.table[index].options.update(kwargs)
+        self.table[index].reformat(**kwargs)
         self._balance()
 
     def get(self):
@@ -1288,7 +1289,7 @@ class EvTable(object):
 
 def _test():
     "Test"
-    table = EvTable("{yHeading1{n", "{gHeading2{n", table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
+    table = EvTable("{yHeading1{n", "{gHeading2{n", table=[[1,2,3],[4,5,6],[7,8,9]], border="cells", align="l")
     table.add_column("{rThis is long data{n", "{bThis is even longer data{n")
     table.add_row("This is a single row")
     print unicode(table)
