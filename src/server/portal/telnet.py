@@ -12,6 +12,7 @@ from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, 
 from src.server.session import Session
 from src.server.portal import ttype, mssp, msdp, naws
 from src.server.portal.mccp import Mccp, mccp_compress, MCCP
+from src.server.portal.mxp import MXP, Mxp, mxp_parse
 from src.utils import utils, ansi, logger
 
 _RE_N = re.compile(r"\{n$")
@@ -47,6 +48,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.mssp = mssp.Mssp(self)
         # msdp
         self.msdp = msdp.Msdp(self)
+        # mxp support
+        self.mxp = Mxp(self)
         # add this new connection to sessionhandler so
         # the Server becomes aware of it.
         self.sessionhandler.connect(self)
@@ -199,6 +202,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                                   given, ttype result is used. If
                                   client does not suport xterm256, the
                                   ansi fallback will be used
+            mxp=True/False - enforce mxp setting. If not given, enables if we
+                             detected client support for it
             ansi=True/False - enforce ansi setting. If not given,
                               ttype result is used.
             nomarkup=True - strip all ansi markup (this is the same as
@@ -234,6 +239,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         nomarkup = kwargs.get("nomarkup", not (xterm256 or useansi))
         prompt = kwargs.get("prompt")
         echo = kwargs.get("echo", None)
+        mxp = kwargs.get("mxp", "MXP" in self.protocol_flags)
 
         #print "telnet kwargs=%s, message=%s" % (kwargs, text)
         #print "xterm256=%s, useansi=%s, raw=%s, nomarkup=%s, init_done=%s" % (xterm256, useansi, raw, nomarkup, ttype.get("init_done"))
@@ -244,7 +250,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             # we need to make sure to kill the color at the end in order
             # to match the webclient output.
             #print "telnet data out:", self.protocol_flags, id(self.protocol_flags), id(self), "nomarkup: %s, xterm256: %s" % (nomarkup, xterm256)
-            self.sendLine(ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256))
+            linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256, mxp=mxp)
+            if mxp:
+                linetosend = mxp_parse(linetosend)
+            self.sendLine(linetosend)
 
         if prompt:
             # Send prompt separately

@@ -313,9 +313,9 @@ class MenuNode(object):
             choice = ""
             if self.keywords[ilink]:
                 if self.keywords[ilink] not in (CMD_NOMATCH, CMD_NOINPUT):
-                    choice += "{g%s{n" % self.keywords[ilink]
+                    choice += "{g{lc%s{lt%s{le{n" % (self.keywords[ilink], self.keywords[ilink])
             else:
-                choice += "{g %i{n" % (ilink + 1)
+                choice += "{g {lc%i{lt%i{le{n" % ((ilink + 1), (ilink + 1))
             if self.linktexts[ilink]:
                 choice += " - %s" % self.linktexts[ilink]
             choices.append(choice)

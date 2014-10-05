@@ -77,6 +77,7 @@ class TextToHTMLparser(object):
     re_hilite = re.compile("(?:%s)(.*)(?=%s)" % (hilite.replace("[", r"\["), fgstop))
     re_uline = re.compile("(?:%s)(.*?)(?=%s)" % (ANSI_UNDERLINE.replace("[", r"\["), fgstop))
     re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space> [ \t]+)|(?P<lineend>\r\n|\r|\n)', re.S|re.M|re.I)
+    re_link =  re.compile(r'\{lc(.*?)\{lt(.*?)\{le', re.DOTALL)
 
     def re_color(self, text):
         """
@@ -119,6 +120,13 @@ class TextToHTMLparser(object):
         # change pages (and losing our webclient session).
         return re.sub(regexp, r'<a href="\1" target="_blank">\1</a>', text)
 
+    def convert_links(self, text):
+        """
+        Replaces links with HTML code
+        """
+        html = "<a href='#' onclick='websocket.send(\"\\1\"); return false;'>\\2</a>"
+        return self.re_link.sub(html, text)
+
     def do_sub(self, m):
         "Helper method to be passed to re.sub."
         c = m.groupdict()
@@ -139,7 +147,7 @@ class TextToHTMLparser(object):
         ansi codes into html statements.
         """
         # parse everything to ansi first
-        text = parse_ansi(text, strip_ansi=strip_ansi, xterm256=False)
+        text = parse_ansi(text, strip_ansi=strip_ansi, xterm256=False, mxp=True)
         # convert all ansi to html
         result = re.sub(self.re_string, self.do_sub, text)
         result = self.re_color(result)
@@ -149,6 +157,7 @@ class TextToHTMLparser(object):
         result = self.convert_linebreaks(result)
         result = self.remove_backspaces(result)
         result = self.convert_urls(result)
+        result = self.convert_links(result)
         # clean out eventual ansi that was missed
         #result = parse_ansi(result, strip_ansi=True)
 
