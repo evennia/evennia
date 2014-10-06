@@ -34,7 +34,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         client_address = self.transport.client
         # this number is counted down for every handshake that completes.
         # when it reaches 0 the portal/server syncs their data
-        self.handshakes = 5 # naws, ttype, mccp, mssp, msdp
+        self.handshakes = 6 # naws, ttype, mccp, mssp, msdp, mxp
         self.init_session("telnet", client_address, self.factory.sessionhandler)
 
         # negotiate client size
