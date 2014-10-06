@@ -12,7 +12,7 @@ from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, 
 from src.server.session import Session
 from src.server.portal import ttype, mssp, msdp, naws
 from src.server.portal.mccp import Mccp, mccp_compress, MCCP
-from src.server.portal.mxp import MXP, Mxp, mxp_parse
+from src.server.portal.mxp import Mxp, mxp_parse
 from src.utils import utils, ansi, logger
 
 _RE_N = re.compile(r"\{n$")
@@ -239,7 +239,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         nomarkup = kwargs.get("nomarkup", not (xterm256 or useansi))
         prompt = kwargs.get("prompt")
         echo = kwargs.get("echo", None)
-        mxp = kwargs.get("mxp", "MXP" in self.protocol_flags)
+        mxp = kwargs.get("mxp", self.protocol_flags.get("MXP", False))
 
         #print "telnet kwargs=%s, message=%s" % (kwargs, text)
         #print "xterm256=%s, useansi=%s, raw=%s, nomarkup=%s, init_done=%s" % (xterm256, useansi, raw, nomarkup, ttype.get("init_done"))
