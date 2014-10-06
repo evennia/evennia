@@ -32,5 +32,5 @@ a global function oob_error will be used as optional error management.
 """
 
 # import the contents of the default msdp module
-from src.server/oob_msdp import *
+from src.server.oob_cmds import *
 
