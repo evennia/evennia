@@ -74,12 +74,10 @@ HELP_ENTRY = \
 """
                                          (version %s)
 
-All functionality of the launcher can also be accessed directly from
-the command line. Use  "python evennia.py -h" for command line
-options.
+All launcher functionality can be accessed directly from the command
+line. See python evennia.py -h for options.
 
-Evennia consists of two separate parts that both must be running
-for the server to work as it should:
+Evennia has two parts that both must run:
 
 Portal - the connection to the outside world (via telnet, web, ssh
          etc). This is normally running as a daemon and don't need to
@@ -89,15 +87,15 @@ Server - the game server itself. This will often need to be reloaded
          as you develop your game. The Portal will auto-connect to the
          Server whenever the Server activates.
 
-In a production environment you will want to run with the default
-option (1), which runs as much as possible as a background process.
-When developing your game it is however convenient to directly see
-tracebacks on standard output, so starting with options 2-4 may be a
-good bet. As you make changes to your code, reload the server (option
-5) to make changes appear in the game.
+Use option (1) in a production environment.  During development (2) is
+usually enough, portal debugging is usually only useful if you are
+adding new protocols or are debugging an Evennia bug.
 
-Reload and stop is not well supported in Windows. If you have issues,
-log into the game to stop or restart the server instead.
+Reload with (5) to update the server with your changes without
+disconnecting any players.
+
+Reload and stop are sometimes poorly supported in Windows. If you have
+issues, log into the game to stop or restart the server instead.
 """
 
 MENU = \
@@ -114,7 +112,7 @@ MENU = \
 +--- Restarting ------------------------------------------------------------+
 |                                                                           |
 |  5) Reload the Server                                                     |
-|  6) Reload the Portal (only works when portal outputs to terminal).       |
+|  6) Reload the Portal (only works with portal/full debug)                 |
 |                                                                           |
 +--- Stopping --------------------------------------------------------------+
 |                                                                           |
