@@ -423,6 +423,16 @@ def attr_ne(accessing_obj, accessed_obj, *args, **kwargs):
     return attr(accessing_obj, accessed_obj, *args, **{'compare': 'ne'})
 
 
+def inside(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage:
+       inside()
+
+    Only true if accessing_obj is "inside" accessed_obj
+    """
+    return accessing_obj.location == accessed_obj
+
+
 def holds(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
