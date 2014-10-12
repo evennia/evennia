@@ -1,0 +1,238 @@
+from contextlib import contextmanager
+import itertools
+import os.path
+
+from docutils import parsers, nodes
+from CommonMark import DocParser
+from warnings import warn
+
+__all__ = ['MarkdownParser']
+
+def flatten(iterator):
+    return itertools.chain.from_iterable(iterator)
+
+
+class _SectionHandler(object):
+    def __init__(self, document):
+        self._level_to_elem = {0: document}
+
+    def _parent_elem(self, child_level):
+        parent_level = max(level for level in self._level_to_elem
+                           if child_level > level)
+        return self._level_to_elem[parent_level]
+
+    def _prune_levels(self, limit_level):
+        self._level_to_elem = dict((level, elem)
+                                   for level, elem in self._level_to_elem.items()
+                                   if level <= limit_level)
+
+    def add_new_section(self, section, level):
+        parent = self._parent_elem(level)
+        parent.append(section)
+        self._level_to_elem[level] = section
+        self._prune_levels(level)
+
+
+class MarkdownParser(object, parsers.Parser):
+    supported = ('md', 'markdown')
+
+    def convert_blocks(self, blocks):
+        for block in blocks:
+            self.convert_block(block)
+
+    def convert_block(self, block):
+        tag = attr = info_words = None
+
+        if (block.t == "Document"):
+            self.convert_blocks(block.children)
+        elif (block.t == "ATXHeader") or (block.t == "SetextHeader"):
+            self.section(block)
+        elif (block.t == "Paragraph"):
+            self.paragraph(block)
+        elif (block.t == "BlockQuote"):
+            self.blockquote(block)
+        elif (block.t == "ListItem"):
+            self.list_item(block)
+        elif (block.t == "List"):
+            self.list_block(block)
+        elif (block.t == "IndentedCode"):
+            self.verbatim(block.string_content)
+        elif (block.t == "FencedCode"):
+            #FIXME: add pygment support as done in code_role in rst/roles.py
+            self.verbatim(block.string_content)
+        elif (block.t == "ReferenceDef"):
+            self.reference(block)
+        elif (block.t == "HorizontalRule"):
+            self.horizontal_rule()
+        # elif (block.t == "HtmlBlock"):
+        else:
+            warn("Unsupported block type" + block.t)
+
+    def parse(self, inputstring, document):
+        self.setup_parse(inputstring, document)
+
+        self.document = document
+        self.current_node = document
+        self.section_handler = _SectionHandler(document)
+
+        parser = DocParser()
+
+        ast = parser.parse(inputstring + '\n')
+
+        self.convert_block(ast)
+
+        self.finish_parse()
+
+    @contextmanager
+    def _temp_current_node(self, current_node):
+        saved_node = self.current_node
+        self.current_node = current_node
+        yield
+        self.current_node = saved_node
+
+    # Blocks
+    def section(self, block):
+        new_section = nodes.section()
+        new_section['level'] = block.level
+
+        title_node = nodes.title()
+        append_inlines(title_node, block.inline_content)
+        new_section.append(title_node)
+
+        self.section_handler.add_new_section(new_section, block.level)
+        self.current_node = new_section
+
+    def verbatim(self, text):
+        verbatim_node = nodes.literal_block()
+        text = ''.join(flatten(text))
+        if text.endswith('\n'):
+            text = text[:-1]
+        verbatim_node.append(nodes.Text(text))
+        self.current_node.append(verbatim_node)
+
+    def paragraph(self, block):
+        p = nodes.paragraph()
+        append_inlines(p, block.inline_content)
+        self.current_node.append(p)
+
+    def blockquote(self, block):
+        q = nodes.block_quote()
+
+        with self._temp_current_node(q):
+            self.convert_blocks(block.children)
+
+        self.current_node.append(q)
+
+    def list_item(self, block):
+        node = nodes.list_item()
+
+        with self._temp_current_node(node):
+            self.convert_blocks(block)
+
+        self.current_node.append(node)
+
+    def list_block(self, block):
+        list_node = None
+        if (block.list_data['type'] == "Bullet"):
+            list_node = nodes.bullet_list()
+        else:
+            list_node = nodes.enumerated_list()
+
+        with self._temp_current_node(list_node):
+            self.current_node.append(node)
+
+        self.current_node.append(list_node)
+
+    def horizontal_rule(self):
+        self.current_node.append(nodes.transition())
+
+    def reference(self, block):
+        target_node = nodes.target()
+
+        target_node['names'].append(make_refname(block.label))
+
+        target_node['refuri'] = block.destination
+
+        if title:
+            target_node['title'] = block.title
+
+        self.current_node.append(target_node)
+
+def make_refname(label):
+    return text_only(label).lower()
+
+def text_only(nodes):
+    return "".join(s.c if s.t == "Str" else text_only(s.children)
+                   for s in nodes)
+
+# Inlines
+def emph(inlines):
+    emph_node = nodes.emphasis()
+    append_inlines(emph_node, inlines)
+    return emph_node
+
+def strong(inlines):
+    strong_node = nodes.strong()
+    append_inlines(strong_node, inlines)
+    return strong_node
+
+def inline_code(inline):
+    literal_node = nodes.literal()
+    append_inlines(literal_node, inline.inline_content)
+    return literal_node
+
+def reference(block):
+    ref_node = nodes.reference()
+
+    label = make_refname(block.label)
+
+    ref_node['name'] = label
+    if block.destination is not None:
+        ref_node['refuri'] = block.destination
+    else:
+        ref_node['refname'] = label
+        self.document.note_refname(ref_node)
+
+    if block.title:
+        ref_node['title'] = block.title
+
+    append_inlines(ref_node, block.label)
+    return ref_node
+
+def image(block):
+    img_node = nodes.image()
+
+    label = make_refname(block.label)
+    img_node['uri'] = uri
+
+    if block.title:
+        img_node['title'] = block.title
+
+    img_node['alt'] = text_only(block.label)
+    return img_node
+
+def parse_inline(parent_node, inline):
+    node = None
+    if (inline.t == "Str"):
+        node = nodes.Text(inline.c)
+    elif (inline.t == "Softbreak"):
+        node = nodes.Text('\n')
+    elif inline.t == "Emph":
+        node = emph(inline.c)
+    elif inline.t == "Strong":
+        node = strong(inline.c)
+    elif inline.t == "Link":
+        node = reference(inline)
+    elif inline.t == "Image":
+        node = image(inline)
+    elif inline.t == "Code":
+        node = inline_code(inline)
+    else:
+        warn("Unsupported inline type " + inline.t)
+        return
+    parent_node.append(node)
+
+def append_inlines(parent_node, inlines):
+    for i in range(len(inlines)):
+        parse_inline(parent_node, inlines[i])
+
