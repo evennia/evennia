@@ -305,11 +305,15 @@ def create_script(typeclass, key=None, obj=None, player=None, locks=None,
     if persistent is not None:
         new_script.persistent = persistent
 
+    # must do this before starting the script since some
+    # scripts may otherwise run for a very short time and
+    # try to delete itself before we have a time to save it.
+    new_db_script.save()
+
     # a new created script should usually be started.
     if autostart:
         new_script.start()
 
-    new_db_script.save()
     return new_script
 #alias
 script = create_script
