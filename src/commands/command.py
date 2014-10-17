@@ -62,8 +62,6 @@ def _init_command(mcs, **kwargs):
 
     if hasattr(mcs, 'arg_regex') and isinstance(mcs.arg_regex, basestring):
         mcs.arg_regex = re.compile(r"%s" % mcs.arg_regex, re.I)
-    else:
-        mcs.arg_regex = None
     if not hasattr(mcs, "auto_help"):
         mcs.auto_help = True
     if not hasattr(mcs, 'is_exit'):
@@ -140,14 +138,16 @@ class Command(object):
     locks = ""
     # used by the help system to group commands in lists.
     help_category = "general"
-
     # This allows to turn off auto-help entry creation for individual commands.
     auto_help = True
+    # optimization for quickly separating exit-commands from normal commands
+    is_exit = False
+    # define the command not only by key but by the regex form of its arguments
+    arg_regex = None
+
     # auto-set (by Evennia on command instantiation) are:
     #   obj - which object this command is defined on
-    #   sessid - which session-id (if any) is responsible for
-    # triggering this command
-    #
+    #   sessid - which session-id (if any) is responsible for triggering this command
 
     def __init__(self, **kwargs):
         """the lockhandler works the same as for objects.
