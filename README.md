@@ -1,31 +1,35 @@
-# remarkdown
+# recommonmark
 
-A markdown parser based on `docutils`
+A `docutils`-compatibility bridge to [CommonMark][cm] derived from
+[remarkdown][rmd].
 
-**Note that this code is still alpha, some markdown features might not work yet**
+## Why a bridge?
 
-## Why another markdown library?
+Many python tools (mostly for documentation creation) rely on `docutils`.
+But [docutils][dc] only supports a ReStructuredText syntax.
 
-remarkdown is not just only another markdown library. It mostly contains a parser
-that outputs a [`docutils` document tree][docutils]. The different scripts
-bundled then use `docutils` for generation of different types of documents.
+For instance [this issue][sphinx-issue] and [this StackOverflow
+question][so-question] show that there is an interest in allowing `docutils`
+to use markdown as an alternative syntax.
 
-Why is this important? Many python tools (mostly for documentation creation)
-rely on `docutils`. But `docutils` only supports a ReStructuredText syntax. For
-instance [this issue][sphinx-issue] and [this StackOverflow
-question][so-question] show that there is an interest in allowing `docutils` to
-use markdown as an alternative syntax.
+## Why another bridge to docutils?
 
-[docutils]: http://docutils.sourceforge.net/docs/ref/doctree.html
-[sphinx-issue]: https://bitbucket.org/birkenfeld/sphinx/issue/825/markdown-capable-sphinx
-[so-question]: http://stackoverflow.com/questions/2471804/using-sphinx-with-markdown-instead-of-rst
+recommonmark uses the [python implementation][pcm] of [CommonMark][cm] while
+[remarkdown][rmd] implements a stand-alone parser leveraging [parsley][prs].
+
+Both output a [`docutils` document tree][dc] and provide scripts
+that leverage `docutils` for generation of different types of documents.
 
 ## Acknowledgement
 
-The remarkdown PEG is heavily inspired by [peg-markdown by John
-MacFarlane][peg-md].
+recommonmark is mainly derived from [remarkdown][rmd] by Steve Genoud and
+leverages the python CommonMark implementation.
 
+[cm]: http://commonmark.org
+[pcm]: https://github.com/rolandshoemaker/CommonMark-py
+[rmd]: https://github.com/sgenoud/remarkdown
+[prs]: https://github.com/python-parsley/parsley
 
-[peg-md]: https://github.com/jgm/peg-markdown
-
-
+[dc]: http://docutils.sourceforge.net/docs/ref/doctree.html
+[sphinx-issue]: https://bitbucket.org/birkenfeld/sphinx/issue/825/markdown-capable-sphinx
+[so-question]: http://stackoverflow.com/questions/2471804/using-sphinx-with-markdown-instead-of-rst

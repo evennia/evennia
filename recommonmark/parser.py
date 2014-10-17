@@ -6,7 +6,7 @@ from docutils import parsers, nodes
 from CommonMark import DocParser
 from warnings import warn
 
-__all__ = ['MarkdownParser']
+__all__ = ['CommonMarkParser']
 
 def flatten(iterator):
     return itertools.chain.from_iterable(iterator)
@@ -33,7 +33,7 @@ class _SectionHandler(object):
         self._prune_levels(level)
 
 
-class MarkdownParser(object, parsers.Parser):
+class CommonMarkParser(object, parsers.Parser):
     supported = ('md', 'markdown')
 
     def convert_blocks(self, blocks):
@@ -153,7 +153,7 @@ class MarkdownParser(object, parsers.Parser):
 
         target_node['refuri'] = block.destination
 
-        if title:
+        if block.title:
             target_node['title'] = block.title
 
         self.current_node.append(target_node)

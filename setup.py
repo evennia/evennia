@@ -2,27 +2,25 @@
 # -*- coding: utf-8 -*-
 '''
 File: setup.py
-Author: Steve Genoud
-Date: 2013-08-25
+Author: Steve Genoud and Luca Barbato
+Date: 2014-10-17
 '''
 from setuptools import setup
-import remarkdown
+import recommonmark
 
-setup(name='remarkdown',
-      version=remarkdown.__version__,
+setup(name='recommonmark',
+      version=recommonmark.__version__,
       install_requires=[
-          'Parsley>= 1.2',
+          'commonmark>= 0.5.4',
           'docutils>=0.11'
       ],
       entry_points={'console_scripts': [
-          'md2html = remarkdown.scripts:md2html',
-          'md2xml = remarkdown.scripts:md2xml',
-          'md2pseudoxml = remarkdown.scripts:md2pseudoxml',
-          'md2latex = remarkdown.scripts:md2latex',
-          'md2xetex = remarkdown.scripts:md2xetex',
+          'cm2html = recommonmark.scripts:cm2html',
+          'cm2latex = recommonmark.scripts:cm2latex',
+          'cm2man = recommonmark.scripts:cm2man',
+          'cm2pseudoxml = recommonmark.scripts:cm2pseudoxml',
+          'cm2xetex = recommonmark.scripts:cm2xetex',
+          'cm2xml = recommonmark.scripts:cm2xml',
       ]},
-      package_data = {
-           '': ['*.parsley']
-      },
-      packages=['remarkdown']
+      packages=['recommonmark']
      )

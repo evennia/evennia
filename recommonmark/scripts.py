@@ -15,40 +15,53 @@ except:
     pass
 
 from docutils.core import publish_cmdline, default_description
-from remarkdown.parser import MarkdownParser
+from recommonmark.parser import CommonMarkParser
 
 
-def md2html():
+def cm2html():
     description = ('Generate html document from markdown sources. '
                 + default_description)
     publish_cmdline(writer_name='html',
-                    parser=MarkdownParser(),
+                    parser=CommonMarkParser(),
                     description=description)
 
-def md2xml():
+
+def cm2man():
+    description = ('Generate a manpage from markdown sources. '
+                + default_description)
+    publish_cmdline(writer_name='manpage',
+                    parser=CommonMarkParser(),
+                    description=description)
+
+
+def cm2xml():
     description = ('Generate XML document from markdown sources. '
                 + default_description)
     publish_cmdline(writer_name='xml',
-                    parser=MarkdownParser(),
+                    parser=CommonMarkParser(),
                     description=description)
-def md2pseudoxml():
+
+
+def cm2pseudoxml():
     description = ('Generate pseudo-XML document from markdown sources. '
                 + default_description)
     publish_cmdline(writer_name='pseudoxml',
-                    parser=MarkdownParser(),
+                    parser=CommonMarkParser(),
                     description=description)
 
-def md2latex():
+
+def cm2latex():
     description = ('Generate latex document from markdown sources. '
                 + default_description)
     publish_cmdline(writer_name='latex',
-                    parser=MarkdownParser(),
+                    parser=CommonMarkParser(),
                     description=description)
 
-def md2xetex():
+
+def cm2xetex():
     description = ('Generate xetex document from markdown sources. '
                 + default_description)
     publish_cmdline(writer_name='latex',
-                    parser=MarkdownParser(),
+                    parser=CommonMarkParser(),
                     description=description)
 
