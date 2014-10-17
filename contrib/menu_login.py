@@ -346,7 +346,7 @@ node3 = MenuNode("node3", text=LOGIN_SCREEN_HELP,
 
 class UnloggedInCmdSet(CmdSet):
     "Cmdset for the unloggedin state"
-    key = "UnloggedinState"
+    key = "DefaultUnloggedin"
     priority = 0
 
     def at_cmdset_creation(self):
@@ -361,6 +361,7 @@ class CmdUnloggedinLook(Command):
     to the menu's own look command..
     """
     key = CMD_LOGINSTART
+    aliases = ["look", "l"]
     locks = "cmd:all()"
 
     def func(self):

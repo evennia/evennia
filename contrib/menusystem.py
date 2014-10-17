@@ -150,7 +150,7 @@ class MenuTree(object):
     tree as needed. For safety, being in a menu will not survive a
     server reboot.
 
-    A menutree have two special node keys given by 'startnode' and
+    A menutree has two special node keys given by 'startnode' and
     'endnode' arguments. The startnode is where the user will start
     upon first entering the menu.  The endnode need not actually
     exist, the moment it is linked to and that link is used, the menu
@@ -188,7 +188,6 @@ class MenuTree(object):
         Add a menu node object to the tree. Each node itself keeps
         track of which nodes it is connected to.
         """
-        menunode.init(self)
         self.tree[menunode.key] = menunode
 
     def goto(self, key):
@@ -206,6 +205,8 @@ class MenuTree(object):
         # not exiting, look for a valid code.
         node = self.tree.get(key, None)
         if node:
+            # initialize - this creates new cmdset
+            node.init(self)
             if node.code:
                 # Execute eventual code active on this
                 # node. self.caller is available at this point.
@@ -266,7 +267,7 @@ class MenuNode(object):
                     code block, as well as ev.
         nodefaultcmds - if true, don't offer the default help and look commands
                     in the node
-        separator - this string will be put on the line between menu nodes5B.
+        separator - this string will be put on the line between menu nodes.
         """
         self.key = key
         self.cmdset = None
