@@ -64,6 +64,14 @@ class PortalSessionHandler(SessionHandler):
             # only use if session already has sessid (i.e. has already connected)
             sessdata = session.get_sync_data()
             if self.portal.amp_protocol:
+                # we remove sessdata that could already have changed on the
+                # server level
+                sessdata = dict((key, val) for key, val in sessdata.items() if key in ("protocol_key",
+                                                                                       "address",
+                                                                                       "suid",
+                                                                                       "conn_time",
+                                                                                       "protocol_flags",
+                                                                                       "server_data",))
                 self.portal.amp_protocol.call_remote_ServerAdmin(session.sessid,
                                                                  operation=PCONNSYNC,
                                                                  data=sessdata)
