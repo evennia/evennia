@@ -51,6 +51,7 @@ class Mxp(object):
         Client does not support MXP.
         """
         self.protocol.protocol_flags["MXP"] = False
+        self.protocol.handshake_done()
 
     def do_mxp(self, option):
         """

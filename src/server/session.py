@@ -95,7 +95,7 @@ class Session(object):
         and loads it into the correct properties of the session.
         """
         for propname, value in sessdata.items():
-            self.__dict__[propname] = value
+            setattr(self, propname, value)
 
     def at_sync(self):
         """

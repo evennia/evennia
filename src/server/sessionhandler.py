@@ -344,7 +344,7 @@ class ServerSessionHandler(SessionHandler):
 
         session.logged_in = True
         # sync the portal to the session
-        sessdata = session.get_sync_data()
+        sessdata = {"logged_in": True}
         if not testmode:
             self.server.amp_protocol.call_remote_PortalAdmin(session.sessid,
                                                          operation=SLOGIN,
