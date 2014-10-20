@@ -237,9 +237,11 @@ class TickerHandler(object):
             start_delays = dict((interval, ticker.task.next_call_time())
                                  for interval, ticker in self.ticker_pool.tickers.items())
             # update the timers for the tickers
-            for (obj, interval, idstring), (args, kwargs) in self.ticker_storage.items():
+            #for (obj, interval, idstring), (args, kwargs) in self.ticker_storage.items():
+            for store_key, (args, kwargs) in self.ticker_storage.items():
+                interval = store_key[1]
+                # this is a mutable, so it's updated in-place in ticker_storage
                 kwargs["_start_delay"] = start_delays.get(interval, None)
-
             ServerConfig.objects.conf(key=self.save_name,
                                     value=dbserialize(self.ticker_storage))
         else:
@@ -256,7 +258,7 @@ class TickerHandler(object):
             #print "restore:", self.ticker_storage
             for store_key, (args, kwargs) in self.ticker_storage.items():
                 if len(store_key) == 2:
-                    # old form of store_key
+                    # old form of store_key - update it
                     store_key = (store_key[0], store_key[1], "")
                 obj, interval, idstring = store_key
                 obj = unpack_dbobj(obj)
