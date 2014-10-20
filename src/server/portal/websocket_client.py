@@ -46,6 +46,8 @@ class WebSocketClient(Protocol, Session):
         """
         client_address = self.transport.client
         self.init_session("websocket", client_address, self.factory.sessionhandler)
+        # watch for dead links
+        self.transport.setTcpKeepAlive(1)
         self.sessionhandler.connect(self)
 
     def disconnect(self, reason=None):

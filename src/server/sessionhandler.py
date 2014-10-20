@@ -412,7 +412,7 @@ class ServerSessionHandler(SessionHandler):
     def validate_sessions(self):
         """
         Check all currently connected sessions (logged in and not)
-        and see if any are dead.
+        and see if any are dead or idle
         """
         tcurr = time.time()
         reason = _("Idle timeout exceeded, disconnecting.")
