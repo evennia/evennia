@@ -778,7 +778,8 @@ def mod_import(module):
 
 def all_from_module(module):
     """
-    Return all global-level variables from a module as a dict
+    Return all global-level variables from a module as a dict.
+    Ignores modules and variable names starting with an underscore.
     """
     mod = mod_import(module)
     if not mod:
