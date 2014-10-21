@@ -64,8 +64,9 @@ def fill(text, width=78, indent=0):
     """
     if not text:
         return ""
+    text = to_unicode(text)
     indent = " " * indent
-    return textwrap.fill(str(text), width, subsequent_indent=indent)
+    return to_str(textwrap.fill(text, width, subsequent_indent=indent))
 
 
 def crop(text, width=78, suffix="[...]"):
@@ -75,12 +76,15 @@ def crop(text, width=78, suffix="[...]"):
     within the given width. If width is too small to fit both crop
     and suffix, crop without the suffix.
     """
-    ltext = len(to_str(text))
+
+    utext = to_unicode(text)
+    ltext = len(utext)
     if ltext <= width:
         return text
     else:
         lsuffix = len(suffix)
-        return text[:width] if lsuffix >= width else "%s%s" % (text[:width - lsuffix], suffix)
+        utext = utext[:width] if lsuffix >= width else "%s%s" % (utext[:width - lsuffix], suffix)
+        return to_str(utext)
 
 
 def dedent(text):
