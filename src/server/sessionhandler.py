@@ -220,6 +220,11 @@ class ServerSessionHandler(SessionHandler):
         sessid = portalsessiondata.get("sessid")
         session = self.sessions.get(sessid)
         if session:
+            # since some of the session properties may have had
+            # a chance to change already before the portal gets here
+            # the portal doesn't send all sessiondata here, but only
+            # ones which should only be changed from portal (like
+            # protocol_flags etc)
             session.load_sync_data(portalsessiondata)
 
     def portal_disconnect(self, sessid):
@@ -339,7 +344,7 @@ class ServerSessionHandler(SessionHandler):
 
         session.logged_in = True
         # sync the portal to the session
-        sessdata = session.get_sync_data()
+        sessdata = {"logged_in": True}
         if not testmode:
             self.server.amp_protocol.call_remote_PortalAdmin(session.sessid,
                                                          operation=SLOGIN,
@@ -407,7 +412,7 @@ class ServerSessionHandler(SessionHandler):
     def validate_sessions(self):
         """
         Check all currently connected sessions (logged in and not)
-        and see if any are dead.
+        and see if any are dead or idle
         """
         tcurr = time.time()
         reason = _("Idle timeout exceeded, disconnecting.")

@@ -50,6 +50,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.msdp = msdp.Msdp(self)
         # mxp support
         self.mxp = Mxp(self)
+        # keepalive watches for dead links
+        self.transport.setTcpKeepAlive(1)
         # add this new connection to sessionhandler so
         # the Server becomes aware of it.
         self.sessionhandler.connect(self)
@@ -258,6 +260,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         if prompt:
             # Send prompt separately
             prompt = ansi.parse_ansi(_RE_N.sub("", prompt) + "{n", strip_ansi=nomarkup, xterm256=xterm256)
+            if mxp:
+                prompt = mxp_parse(prompt)
             prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
             prompt += IAC + GA
             self.transport.write(mccp_compress(self, prompt))

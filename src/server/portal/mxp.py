@@ -28,6 +28,10 @@ def mxp_parse(text):
     """
     Replaces links to the correct format for MXP.
     """
+    text = text.replace("&", "&amp;") \
+               .replace("<", "&lt;") \
+               .replace(">", "&gt;")
+
     text = LINKS_SUB.sub(MXP_SEND, text)
     return text
 
@@ -47,6 +51,7 @@ class Mxp(object):
         Client does not support MXP.
         """
         self.protocol.protocol_flags["MXP"] = False
+        self.protocol.handshake_done()
 
     def do_mxp(self, option):
         """

@@ -195,7 +195,7 @@ class TickerHandler(object):
         self.save_name = save_name
         self.ticker_pool = self.ticker_pool_class()
 
-    def _store_key(self, obj, interval):
+    def _store_key(self, obj, interval, idstring=""):
         """
         Tries to create a store_key for the object.
         Returns a tuple (isdb, store_key) where isdb
@@ -224,7 +224,7 @@ class TickerHandler(object):
                 objkey = id(obj)
             isdb = False
         # return sidb and store_key
-        return isdb, (objkey, interval)
+        return isdb, (objkey, interval, idstring)
 
     def save(self):
         """
@@ -237,9 +237,11 @@ class TickerHandler(object):
             start_delays = dict((interval, ticker.task.next_call_time())
                                  for interval, ticker in self.ticker_pool.tickers.items())
             # update the timers for the tickers
-            for (obj, interval), (args, kwargs) in self.ticker_storage.items():
+            #for (obj, interval, idstring), (args, kwargs) in self.ticker_storage.items():
+            for store_key, (args, kwargs) in self.ticker_storage.items():
+                interval = store_key[1]
+                # this is a mutable, so it's updated in-place in ticker_storage
                 kwargs["_start_delay"] = start_delays.get(interval, None)
-
             ServerConfig.objects.conf(key=self.save_name,
                                     value=dbserialize(self.ticker_storage))
         else:
@@ -254,30 +256,34 @@ class TickerHandler(object):
         if ticker_storage:
             self.ticker_storage = dbunserialize(ticker_storage)
             #print "restore:", self.ticker_storage
-            for (obj, interval), (args, kwargs) in self.ticker_storage.items():
+            for store_key, (args, kwargs) in self.ticker_storage.items():
+                if len(store_key) == 2:
+                    # old form of store_key - update it
+                    store_key = (store_key[0], store_key[1], "")
+                obj, interval, idstring = store_key
                 obj = unpack_dbobj(obj)
-                _, store_key = self._store_key(obj, interval)
+                _, store_key = self._store_key(obj, interval, idstring)
                 self.ticker_pool.add(store_key, obj, interval, *args, **kwargs)
 
-    def add(self, obj, interval, *args, **kwargs):
+    def add(self, obj, interval, idstring="", *args, **kwargs):
         """
         Add object to tickerhandler. The object must have an at_tick
         method. This will be called every interval seconds until the
         object is unsubscribed from the ticker.
         """
-        isdb, store_key = self._store_key(obj, interval)
+        isdb, store_key = self._store_key(obj, interval, idstring)
         if isdb:
             self.ticker_storage[store_key] = (args, kwargs)
             self.save()
         self.ticker_pool.add(store_key, obj, interval, *args, **kwargs)
 
-    def remove(self, obj, interval=None):
+    def remove(self, obj, interval=None, idstring=""):
         """
         Remove object from ticker, or only this object ticking
         at a given interval.
         """
         if interval:
-            isdb, store_key = self._store_key(obj, interval)
+            isdb, store_key = self._store_key(obj, interval, idstring)
             if isdb:
                 self.ticker_storage.pop(store_key, None)
                 self.save()
@@ -287,7 +293,7 @@ class TickerHandler(object):
             intervals = self.ticker_pool.tickers.keys()
             should_save = False
             for interval in intervals:
-                isdb, store_key = self._store_key(obj, interval)
+                isdb, store_key = self._store_key(obj, interval, idstring)
                 if isdb:
                     self.ticker_storage.pop(store_key, None)
                     should_save = True

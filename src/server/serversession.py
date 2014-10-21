@@ -234,12 +234,6 @@ class ServerSession(Session):
         Send Evennia -> User
         """
         text = text if text else ""
-        #if text is None:
-        #    text = ""
-        #else:
-        #    text = to_unicode(text)
-        #    text = to_str(text, self.encoding)
-
         self.sessionhandler.data_out(self, text=text, **kwargs)
 
     def __eq__(self, other):
