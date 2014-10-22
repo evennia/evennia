@@ -27,10 +27,11 @@ this custom module.
 The test command is also a good example of how to use this module in code.
 
 """
+from types import MethodType
 from ev import syscmdkeys
 
 from ev import Command, CmdSet, utils
-from ev import default_cmds
+from ev import default_cmds, logger
 
 # imported only to make it available during execution of code blocks
 import ev
@@ -53,11 +54,20 @@ class CmdMenuNode(Command):
     help_category = "Menu"
 
     menutree = None
+    callback = None
+    # deprecated
     code = None
 
     def func(self):
         "Execute a selection"
-        if self.code:
+
+        if self.callback:
+            try:
+                self.callback()
+            except Exception, e:
+                self.caller.msg("%s\n{rThere was an error with this selection.{n" % e)
+        elif self.code:
+            ev.logger.log_depmsg("menusystem.code is deprecated. Use menusystem.func.")
             try:
                 exec(self.code)
             except Exception, e:
@@ -132,6 +142,10 @@ class MenuCmdSet(CmdSet):
     key = "menucmdset"
     priority = 1
     mergetype = "Replace"
+    # secure the menu against local cmdsets (but leave channels)
+    no_objs = True
+    no_exits = True
+    no_channels = False
 
     def at_cmdset_creation(self):
         "populate cmdset"
@@ -204,16 +218,25 @@ class MenuTree(object):
             return
         # not exiting, look for a valid code.
         node = self.tree.get(key, None)
+        # make caller available on node
+        node.caller = self.caller
         if node:
-            # initialize - this creates new cmdset
-            node.init(self)
+            # call on-node callback
+            if node.callback:
+                try:
+                    node.callback()
+                except Exception:
+                    logger.log_trace()
+                    self.caller.msg("{rNode callback could not be executed for node %s. Continuing anyway.{n" % key)
             if node.code:
-                # Execute eventual code active on this
-                # node. self.caller is available at this point.
+                # Execute eventual code active on this node. self.caller is available at this point.
+                ev.logger.log_depmsg("menusystem.code is deprecated. Use menusystem.callback.")
                 try:
                     exec(node.code)
                 except Exception:
                     self.caller.msg("{rCode could not be executed for node %s. Continuing anyway.{n" % key)
+            # initialize - this creates new cmdset
+            node.init(self)
             # clean old menu cmdset and replace with the new one
             self.caller.cmdset.delete("menucmdset")
             self.caller.cmdset.add(node.cmdset)
@@ -235,7 +258,7 @@ class MenuNode(object):
     """
     def __init__(self, key, text="", links=None, linktexts=None,
                  keywords=None, cols=1, helptext=None,
-                 selectcmds=None, code="", nodefaultcmds=False, separator=""):
+                 selectcmds=None, callback=None, code="", nodefaultcmds=False, separator=""):
         """
         key       - the unique identifier of this node.
         text      - is the text that will be displayed at top when viewing this
@@ -261,10 +284,13 @@ class MenuNode(object):
                     CMD_NOENTRY, in which case no text will be generated. These
                     commands have access to self.menutree and so can be used to
                     select nodes.
-        code      - functional code. This will be executed just before this
+        code      - functional code. Deprecated. This will be executed just before this
                     node is loaded (i.e. as soon after it's been selected from
                     another node). self.caller is available to call from this
                     code block, as well as ev.
+        callback  - function callback. This will be called as callback(currentnode) just
+                    before this node is loaded (i.e. as soon as possible as it's
+                    been selected from another node). currentnode.caller is available.
         nodefaultcmds - if true, don't offer the default help and look commands
                     in the node
         separator - this string will be put on the line between menu nodes.
@@ -277,9 +303,13 @@ class MenuNode(object):
         self.cols = cols
         self.selectcmds = selectcmds
         self.code = code
+        self.callback = MethodType(callback, self, MenuNode) if callback else None
         self.nodefaultcmds = nodefaultcmds
         self.separator = separator
         Nlinks = len(self.links)
+
+        if code:
+            ev.logger.log_depmsg("menusystem.code is deprecated. Use menusystem.callback.")
 
         # validate the input
         if not self.links:
@@ -351,10 +381,13 @@ class MenuNode(object):
             if self.selectcmds[i]:
                 cmd = self.selectcmds[i]()
             else:
+                # this is the operable command, it moves us to the next node.
                 cmd = CmdMenuNode()
                 cmd.key = str(i + 1)
-                # this is the operable command, it moves us to the next node.
-                cmd.code = "self.menutree.goto('%s')" % link
+                cmd.link = link
+                def _callback(self):
+                    self.menutree.goto(self.link)
+                cmd.callback = MethodType(_callback, cmd, CmdMenuNode)
             # also custom commands get access to the menutree.
             cmd.menutree = menutree
             if self.keywords[i] and cmd.key not in (CMD_NOMATCH, CMD_NOINPUT):
@@ -372,34 +405,55 @@ class MenuNode(object):
 # make use the node system since there is only one level of choice.
 #
 
-def prompt_yesno(caller, question="", yescode="", nocode="", default="N"):
+def prompt_yesno(caller, question="", yesfunc=None, nofunc=None, yescode="", nocode="", default="N"):
     """
-    This sets up a simple yes/no questionnaire. Question will
-    be asked, followed by a Y/[N] prompt where the [x] signifies
-    the default selection.
+    This sets up a simple yes/no questionnaire. Question will be
+    asked, followed by a Y/[N] prompt where the [x] signifies the
+    default selection. Note that this isn't making use of the menu
+    node system.
+
+    yesfunc - function callback to be called as yesfunc(self) when choosing yes (self.caller is available)
+    nofunc - function callback to be called as yesfunc(self) when choosing no (self.caller is available)
+    yescode - deprecated, executable code
+    nocode  -            "
     """
 
     # creating and defining commands
-    cmdyes = CmdMenuNode()
-    cmdyes.key = "yes"
-    cmdyes.aliases = ["y"]
-    # this will be executed in the context of the yes command (so
-    # self.caller will be available)
-    cmdyes.code = yescode + "\nself.caller.cmdset.delete('menucmdset')\ndel self.caller.db._menu_data"
+    cmdyes = CmdMenuNode(key="yes", aliases=["y"])
+    if yesfunc:
+        cmdyes.yesfunc = yesfunc
+        def _yesfunc(self):
+            self.yesfunc(self)
+            self.caller.cmdset.delete('menucmdset')
+            del self.caller.db._menu_data
+        cmdyes.callback = MethodType(_yesfunc, cmdyes, CmdMenuNode)
 
-    cmdno = CmdMenuNode()
-    cmdno.key = "no"
-    cmdno.aliases = ["n"]
-    # this will be executed in the context of the no command
-    cmdno.code = nocode + "\nself.caller.cmdset.delete('menucmdset')\ndel self.caller.db._menu_data"
+    cmdno = CmdMenuNode(key="no", aliases=["n"])
+    if nofunc:
+        cmdno.nofunc = nofunc
+        def _nofunc(self):
+            self.nofunc(self) if self.nofunc else None
+            self.caller.cmdset.delete('menucmdset')
+            del self.caller.db._menu_data
+        cmdno.callback = MethodType(_nofunc, cmdno, CmdMenuNode)
 
-    errorcmd = CmdMenuNode()
-    errorcmd.key = CMD_NOMATCH
-    errorcmd.code = "self.caller.msg('Please choose either Yes or No.')"
+    errorcmd = CmdMenuNode(key=CMD_NOMATCH)
+    def _errorcmd(self):
+        self.caller.msg("Please choose either Yes or No.")
+    errorcmd.callback = MethodType(_errorcmd, errorcmd, CmdMenuNode)
 
-    defaultcmd = CmdMenuNode()
-    defaultcmd.key = CMD_NOINPUT
-    defaultcmd.code = "self.caller.execute_cmd('%s')" % default
+    defaultcmd = CmdMenuNode(key=CMD_NOINPUT)
+    def _defaultcmd(self):
+        self.caller.execute_cmd('%s' % default)
+    defaultcmd.callback = MethodType(_defaultcmd, defaultcmd, CmdMenuNode)
+
+    # code exec is deprecated:
+    if yescode:
+        ev.logger.log_depmsg("yesnosystem.code is deprecated. Use yesnosystem.callback.")
+        cmdyes.code = yescode + "\nself.caller.cmdset.delete('menucmdset')\ndel self.caller.db._menu_data"
+    if nocode:
+        ev.logger.log_depmsg("yesnosystem.code is deprecated. Use yesnosystem.callback.")
+        cmdno.code = nocode + "\nself.caller.cmdset.delete('menucmdset')\ndel self.caller.db._menu_data"
 
     # creating cmdset (this will already have look/help commands)
     yesnocmdset = MenuCmdSet()
@@ -407,6 +461,8 @@ def prompt_yesno(caller, question="", yescode="", nocode="", default="N"):
     yesnocmdset.add(cmdno)
     yesnocmdset.add(errorcmd)
     yesnocmdset.add(defaultcmd)
+    yesnocmdset.add(CmdMenuLook())
+    yesnocmdset.add(CmdMenuHelp())
 
     # assinging menu data flags to caller.
     caller.db._menu_data = {"help": "Please select Yes or No.",
@@ -446,7 +502,13 @@ class CmdMenuTest(Command):
     def func(self):
         "Testing the menu system"
 
-        if not self.args or self.args != "yesno":
+        if self.args.strip() == "yesno":
+            "Testing the yesno question"
+            prompt_yesno(self.caller, question="Please answer yes or no - Are you the master of this mud or not?",
+                         yesfunc=lambda self: self.caller.msg('{gGood for you!{n'),
+                         nofunc=lambda self: self.caller.msg('{GNow you are just being modest ...{n'),
+                         default="N")
+        else:
             # testing the full menu-tree system
 
             node0 = MenuNode("START", text="Start node. Select one of the links below. Here the links are ordered in one column.",
@@ -458,18 +520,12 @@ class CmdMenuTest(Command):
             node3 = MenuNode("node3", text="Attribute 'menutest' set on you. You can examine it (only works if you are allowed to use the examine command) or remove it. You can also quit and examine it manually.",
                              links=["node4", "node5", "node2", "END"], linktexts=["Remove attribute", "Examine attribute",
                                                                                   "Back to second node", "Quit menu"], cols=2,
-                             code="self.caller.db.menutest='Testing!'")
+                             callback=lambda self: self.caller.attributes.add("menutest",'Testing!'))
             node4 = MenuNode("node4", text="Attribute 'menutest' removed again.",
                              links=["node2"], linktexts=["Back to second node."], cols=2,
-                             code="del self.caller.db.menutest")
+                             callback=lambda self: self.caller.attributes.remove("menutest"))
             node5 = MenuNode("node5", links=["node4", "node2"], linktexts=["Remove attribute", "Back to second node."], cols=2,
-                             code="self.caller.msg('%s/%s = %s' % (self.caller.key, 'menutest', self.caller.db.menutest))")
+                    callback=lambda self: self.caller.msg('%s/%s = %s' % (self.caller.key, 'menutest', self.caller.db.menutest)))
 
             menu = MenuTree(self.caller, nodes=(node0, node1, node2, node3, node4, node5))
             menu.start()
-        else:
-            "Testing the yesno question"
-            prompt_yesno(self.caller, question="Please answer yes or no - Are you the master of this mud or not?",
-                         yescode="self.caller.msg('{gGood for you!{n')",
-                         nocode="self.caller.msg('{GNow you are just being modest ...{n')",
-                         default="N")

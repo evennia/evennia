@@ -147,14 +147,6 @@ class CmdPasswordSelect(Command):
         # abort menu, do cleanup.
         self.menutree.goto("END")
 
-        # we are logged in. Look around.
-        character = player.character
-        if character:
-            character.execute_cmd("look")
-        else:
-            # we have no character yet; use player's look, if it exists
-            player.execute_cmd("look")
-
 
 # Menu entry 2a - Creating a Username
 
@@ -331,7 +323,7 @@ node2a = MenuNode("node2a", text="Please enter your desired account name (empty 
                   nodefaultcmds=True)
 node2b = MenuNode("node2b", text="Please enter your password (empty to go back).",
                   links=["node2a", "START"],
-                  helptext="Your password cannot contain any characters.",
+                  helptext="Try to pick a long and hard-to-guess password.",
                   keywords=[CMD_NOINPUT, CMD_NOMATCH],
                   selectcmds=[CmdPasswordCreateBack, CmdPasswordCreate],
                   nodefaultcmds=True)
