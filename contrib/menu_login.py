@@ -363,7 +363,7 @@ class CmdUnloggedinLook(Command):
     key = CMD_LOGINSTART
     aliases = ["look, l"]
     locks = "cmd:all()"
-    arg_regex = r"\s.*?|$"
+    arg_regex = r"^$"
 
     def func(self):
         "Execute the menu"
