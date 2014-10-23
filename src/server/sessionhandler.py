@@ -237,7 +237,7 @@ class ServerSessionHandler(SessionHandler):
             return
         player = session.player
         if player:
-            nsess = len(self.sessions_from_player(player))
+            nsess = len(self.sessions_from_player(player)) - 1
             remaintext = nsess and "%i session%s remaining" % (nsess, nsess > 1 and "s" or "") or "no more sessions"
             session.log(_('Connection dropped: %s %s (%s)' % (session.player, session.address, remaintext)))
         session.at_disconnect()
