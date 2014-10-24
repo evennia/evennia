@@ -16,7 +16,7 @@ from src.server.portal.mxp import Mxp, mxp_parse
 from src.utils import utils, ansi, logger
 
 _RE_N = re.compile(r"\{n$")
-
+_RE_LEND = re.compile(r"\n$|\r$", re.MULTILINE)
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
@@ -31,6 +31,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         # initialize the session
         self.iaw_mode = False
+        self.no_lb_mode = False
         client_address = self.transport.client
         # this number is counted down for every handshake that completes.
         # when it reaches 0 the portal/server syncs their data
@@ -147,9 +148,20 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 out = "Telnet Error (%s): %s (%s)" % (err1, data, conv)
                 logger.log_trace(out)
                 return
-        # if we get to this point the command must end with a linebreak.
+
+        if self.no_lb_mode and _RE_LEND.match(data):
+            # we are in no_lb_mode and we get a single line break
+            # - this line break should have come with the previous
+            # command - it was already added so we drop it here
+            self.no_lb_mode = False
+            return
+        elif not _RE_LEND.search(data):
+            # no line break at the end of the command, note this.
+            data = data.rstrip("\r\n") + "\n"
+            self.no_lb_mode = True
+
+        # if we get to this point the command should end with a linebreak.
         # We make sure to add it, to fix some clients messing this up.
-        data = data.rstrip("\r\n") + "\n"
         #print "line data in:", repr(data)
         StatefulTelnetProtocol.dataReceived(self, data)
 
