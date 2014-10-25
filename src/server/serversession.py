@@ -13,6 +13,7 @@ from django.conf import settings
 #from src.scripts.models import ScriptDB
 from src.comms.models import ChannelDB
 from src.utils import logger, utils
+from src.utils.inlinefunc import parse_inlinefunc
 from src.utils.utils import make_iter
 from src.commands.cmdhandler import cmdhandler
 from src.commands.cmdsethandler import CmdSetHandler
@@ -26,6 +27,7 @@ _OOB_HANDLER = None
 # load optional out-of-band function module (this acts as a verification)
 OOB_PLUGIN_MODULES = [utils.mod_import(mod)
                       for mod in make_iter(settings.OOB_PLUGIN_MODULES) if mod]
+INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -234,6 +236,8 @@ class ServerSession(Session):
         Send Evennia -> User
         """
         text = text if text else ""
+        if INLINEFUNC_ENABLED and not "raw" in kwargs:
+            text = parse_inlinefunc(text, strip="strip_inlinefunc" in kwargs)
         self.sessionhandler.data_out(self, text=text, **kwargs)
 
     def __eq__(self, other):
