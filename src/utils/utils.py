@@ -53,7 +53,7 @@ def make_iter(obj):
     return not hasattr(obj, '__iter__') and [obj] or obj
 
 
-def fill(text, width=78, indent=0):
+def wrap(text, width=78, indent=0):
     """
     Safely wrap text to a certain number of characters.
 
@@ -67,7 +67,22 @@ def fill(text, width=78, indent=0):
     text = to_unicode(text)
     indent = " " * indent
     return to_str(textwrap.fill(text, width, subsequent_indent=indent))
+# alias - fill
+fill = wrap
 
+def pad(text, width=78, align="c", fillchar=" "):
+    """
+    Pads to a given width, align is one of c,l,r
+    and fillchar defaults to the empty string
+    """
+    align = align if align in ('c', 'l', 'r') else 'c'
+    fillchar = fillchar[0] if fillchar else " "
+    if align == 'l':
+        return text.ljust(width, fillchar)
+    elif align == 'r':
+        return text.rjust(width, fillchar)
+    else:
+        return text.center(width, fillchar)
 
 def crop(text, width=78, suffix="[...]"):
     """

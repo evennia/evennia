@@ -348,6 +348,19 @@ TIME_WEEK_PER_MONTH = 4
 TIME_MONTH_PER_YEAR = 12
 
 ######################################################################
+# Inlinefunc
+######################################################################
+# Evennia supports inline function preprocessing. This allows
+# users to supply {func() ... {/func in text, performing dynamic
+# text formatting and manipulation on the fly. If disabled, such
+# inline functions will not be parsed.
+INLINEFUNC_ENABLED = False
+# Only functions defined globally (and not starting with '_') in
+# these modules will be considered valid inlinefuncs. The list
+# is loaded from left-to-right, same-named functions will overload
+INLINEFUNC_MODULES = ["src.utils.inlinefunc"]
+
+######################################################################
 # Default Player setup and access
 ######################################################################
 
