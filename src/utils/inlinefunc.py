@@ -4,6 +4,8 @@ Inlinefunc
 This is a simple inline text language for use to custom-format text
 in Evennia. It is applied BEFORE ANSI/MUX parsing is applied.
 
+To activate Inlinefunc, settings.INLINEFUNC_ENABLED must be set.
+
 The format is straightforward:
 
 
@@ -18,7 +20,7 @@ Example:
 This can be inserted in any text, operated on by the parse_inlinefunc
 function.  funcname() (no space is allowed between the name and the
 argument tuple) is picked from a selection of valid functions from
-settings.INLINETEXT_FUNC_MODULES.
+settings.INLINEFUNC_MODULES.
 
 Commands can be nested, and will applied inside-out. For correct
 parsing their end-tags must match the starting tags in reverse order.
