@@ -98,11 +98,13 @@ def time(text, *args):
         strformat = str(args[0])
     return time.strftime(strformat)
 
+
 # load functions from module (including this one, if using default settings)
 _INLINE_FUNCS = {}
 for module in utils.make_iter(settings.INLINEFUNC_MODULES):
     _INLINE_FUNCS.update(utils.all_from_module(module))
 _INLINE_FUNCS.pop("inline_func_parse", None)
+
 
 # dynamically build regexes for found functions
 _RE_FUNCFULL = r"\{%s\((.*?)\)(.*?){/%s"
@@ -143,11 +145,11 @@ def parse_inlinefunc(text, strip=False):
     """
     Parse inline function-replacement.
 
-    Default is to ignore such functions,
-    use strip=False to leave them in.
+    strip - remove all supported inlinefuncs from text
     """
 
     if strip:
+        # strip all functions
         return _FUNCCLEAN_REGEX.sub("", text)
 
     stack = []
@@ -169,8 +171,9 @@ def parse_inlinefunc(text, strip=False):
     return "".join(stack)
 
 def _test():
-    # this should pad everything
-    s = "This is a {crop()text at {time(){/time with a{pad(78,r,-)text {pad(5)of{/pad {pad(8)nice{/pad size{/pad inside {pad(4,l)it{/pad.{/crop"
-    print " intext:", s
+    # this should all be handled
+    s = "This is a text with a{pad(78,c,-)text {pad(5)of{/pad {pad(30)nice{/pad size{/pad inside {pad(4,l)it{/pad."
+    s2 = "This is a text with a----------------text   of               nice              size---------------- inside it  ."
     t = parse_inlinefunc(s)
-    print "outtext:", t
+    assert(t == s2)
+    return t
