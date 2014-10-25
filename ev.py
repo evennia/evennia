@@ -121,9 +121,6 @@ from src.comms.comms import Channel
 # objects
 from src.objects.objects import Object, Character, Room, Exit
 
-# extras
-from src.typeclasses.models import Attribute, Tag
-
 # utils
 
 from src.utils.search import *

@@ -127,7 +127,7 @@ class Attribute(SharedMemoryModel):
         'date_created', editable=False, auto_now_add=True)
 
     # Database manager
-    objects = managers.AttributeManager()
+    #objects = managers.AttributeManager()
 
     @lazy_property
     def locks(self):
@@ -589,11 +589,10 @@ class Tag(models.Model):
                                    help_text="tag category", db_index=True)
     db_data = models.TextField('data', null=True, blank=True,
                                help_text="optional data field with extra information. This is not searched for.")
-    # this is "objects.objectdb" etc
+    # this is "objectdb" etc. Required behind the scenes
     db_model = models.CharField('model', max_length=32, null=True, help_text="database model to Tag", db_index=True)
     # this is None, alias or permission
     db_tagtype = models.CharField('tagtype', max_length=16, null=True, help_text="overall type of Tag", db_index=True)
-    objects = managers.TagManager()
 
     class Meta:
         "Define Django meta options"
@@ -652,7 +651,7 @@ class TagHandler(object):
             # this will only create tag if no matches existed beforehand (it
             # will overload data on an existing tag since that is not
             # considered part of making the tag unique)
-            tagobj = Tag.objects.create_tag(key=tagstr, category=category, data=data,
+            tagobj = self.obj.__class__.objects.create_tag(key=tagstr, category=category, data=data,
                                             tagtype=self._tagtype)
             getattr(self.obj, self._m2m_fieldname).add(tagobj)
             if self._cache is None:

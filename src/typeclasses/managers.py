@@ -4,16 +4,13 @@ abstract models in dbobjects.py (and which are thus shared by
 all Attributes and TypedObjects).
 """
 from functools import update_wrapper
-from django.db import models
 from django.db.models import Q
-from django.contrib.contenttypes.models import ContentType
 from src.utils import idmapper
 from src.utils.utils import make_iter, variable_from_module
-from src.utils.dbserialize import to_pickle
 
 __all__ = ("AttributeManager", "TypedObjectManager")
 _GA = object.__getattribute__
-_ObjectDB = None
+_Tag = None
 
 #
 # helper functions for the TypedObjectManager.
@@ -50,181 +47,66 @@ def returns_typeclass(method):
 
 # Managers
 
-def _attr_pickled(method):
-    """
-    decorator for safely handling attribute searches
-    - db_value is a pickled field and this is required
-    in order to be able for pickled django objects directly.
-    """
-    def wrapper(self, *args, **kwargs):
-        "wrap all queries searching the db_value field in some way"
-        self.__doc__ = method.__doc__
-        for key in (key for key in kwargs if key.startswith('db_value')):
-            kwargs[key] = to_pickle(kwargs[key])
-        return method(self, *args, **kwargs)
-    return update_wrapper(wrapper, method)
 
-
-class AttributeManager(models.Manager):
-    "Manager for handling Attributes."
-    @_attr_pickled
-    def get(self, *args, **kwargs):
-        return super(AttributeManager, self).get(*args, **kwargs)
-
-    @_attr_pickled
-    def filter(self,*args, **kwargs):
-        return super(AttributeManager, self).filter(*args, **kwargs)
-
-    @_attr_pickled
-    def exclude(self,*args, **kwargs):
-        return super(AttributeManager, self).exclude(*args, **kwargs)
-
-    @_attr_pickled
-    def values(self,*args, **kwargs):
-        return super(AttributeManager, self).values(*args, **kwargs)
-
-    @_attr_pickled
-    def values_list(self,*args, **kwargs):
-        return super(AttributeManager, self).values_list(*args, **kwargs)
-
-    @_attr_pickled
-    def exists(self,*args, **kwargs):
-        return super(AttributeManager, self).exists(*args, **kwargs)
-
-    def get_attrs_on_obj(self, searchstr, obj, category=None, exact_match=True):
-        """
-        Searches the object's attributes for attribute key matches.
-
-        searchstr: (str) A string to search for.
-        """
-        # Retrieve the list of attributes for this object.
-
-        category_cond = Q(db_category__iexact=category) if category else Q()
-        if exact_match:
-            return _GA("obj", "db_attributes").filter(db_key__iexact=searchstr & category_cond)
-        else:
-            return _GA("obj", "db_attributes").filter(db_key__icontains=searchstr & category_cond)
-
-    def attr_namesearch(self, *args, **kwargs):
-        "alias wrapper for backwards compatability"
-        return self.get_attrs_on_obj(*args, **kwargs)
-
-    def get_attr_by_value(self, searchstr, obj=None):
-        """
-        Searches obj for Attributes with a given value.
-        searchstr - value to search for. This may be any suitable object.
-        obj - limit to a given object instance
-
-        If no restraint is given, all Attributes on all types of objects
-                will be searched. It's highly recommended to at least
-                supply the objclass argument (DBObject, DBScript or DBPlayer)
-                to restrict this lookup.
-        """
-        if obj:
-            return _GA(obj, "db_attributes").filter(db_value=searchstr)
-        return self.filter(db_value=searchstr)
-
-    def attr_valuesearch(self, *args, **kwargs):
-        "alias wrapper for backwards compatability"
-        return self.get_attr_by_value(self, *args, **kwargs)
-
-#
-# TagManager
-#
-
-class TagManager(models.Manager):
-    """
-    Extra manager methods for Tags
-    """
-    def get_tags_on_obj(self, obj, key=None, category=None):
-        """
-        Get all tags on obj, optionally limited by key and/or category
-        """
-        tags = _GA(obj, "db_tags").all()
-        if key:
-            tags = tags.filter(db_key__iexact=key.lower().strip())
-        if category:
-            tags = tags.filter(db_category__iexact=category.lower().strip())
-        return list(tags)
-
-    def get_tag(self, key=None, category=None, model="objects.objectdb", tagtype=None):
-        """
-        Search and return all tags matching any combination of
-        the search criteria.
-         search_key (string) - the tag identifier
-         category (string) - the tag category
-         model - the type of object tagged, on naturalkey form, like "objects.objectdb"
-         tagtype - None, alias or permission
-
-        Returns a single Tag (or None) if both key and category is given,
-        otherwise it will return a list.
-        """
-        key_cands = Q(db_key__iexact=key.lower().strip()) if key is not None else Q()
-        cat_cands = Q(db_category__iexact=category.lower().strip()) if category is not None else Q()
-        tags = self.filter(db_model=model, db_tagtype=tagtype).filter(key_cands & cat_cands)
-        if key and category:
-            return tags[0] if tags else None
-        else:
-            return list(tags)
-
-    @returns_typeclass_list
-    def get_objs_with_tag(self, key=None, category=None, model="objects.objectdb", tagtype=None):
-        """
-        Search and return all objects of objclass that has tags matching
-        the given search criteria.
-         key (string) - the tag identifier
-         category (string) - the tag category
-         model (string) - tag model name. Defaults to "ObjectDB"
-         tagtype (string) - None, alias or permission
-         objclass (dbmodel) - the object class to search. If not given, use ObjectDB.
-        """
-        objclass = ContentType.objects.get_by_natural_key(*model.split(".", 1)).model_class()
-        key_cands = Q(db_tags__db_key__iexact=key.lower().strip()) if key is not None else Q()
-        cat_cands = Q(db_tags__db_category__iexact=category.lower().strip()) if category is not None else Q()
-        tag_crit = Q(db_tags__db_model=model, db_tags__db_tagtype=tagtype)
-        return objclass.objects.filter(tag_crit & key_cands & cat_cands)
-
-    def create_tag(self, key=None, category=None, data=None, model="objects.objectdb", tagtype=None):
-        """
-        Create a tag. This makes sure the create case-insensitive tags.
-        Note that if the exact same tag configuration (key+category+model+tagtype)
-        exists, it will be re-used. A data keyword will overwrite existing
-        data on a tag (it is not part of what makes the tag unique).
-
-        """
-        data = str(data) if data is not None else None
-
-        tag = self.get_tag(key=key, category=category, model=model, tagtype=tagtype)
-        if tag and data is not None:
-            tag.db_data = data
-            tag.save()
-        elif not tag:
-            tag = self.create(db_key=key.lower().strip() if key is not None else None,
-                              db_category=category.lower().strip() if category and key is not None else None,
-                              db_data=str(data) if data is not None else None,
-                              db_model=model,
-                              db_tagtype=tagtype)
-            tag.save()
-        return make_iter(tag)[0]
-
-
-
-
-#class TypedObjectManager(idmap.CachingManager):
-#class TypedObjectManager(models.Manager):
 class TypedObjectManager(idmapper.manager.SharedMemoryManager):
     """
     Common ObjectManager for all dbobjects.
     """
 
     # Attribute manager methods
+    def get_attribute(self, key=None, category=None, value=None, strvalue=None, obj=None, attrtype=None):
+        """
+        Return Attribute objects by key, by category, by value, by
+        strvalue, by object (it is stored on) or with a combination of
+        those criteria.
+
+        attrtype - one of None (normal Attributes) or "nick"
+        """
+        query = [("attribute__db_attrtype", attrtype)]
+        if obj:
+            query.append(("%s__id" % self.model.__name__.lower(), obj.id))
+        if key:
+            query.append(("attribute__db_key", key))
+        if category:
+            query.append(("attribute__db_category", category))
+        if strvalue:
+            query.append(("attribute__db_strvalue", value))
+        elif value:
+            # strvalue and value are mutually exclusive
+            query.append(("attribute__db_value", value))
+        return [th.attribute for th in self.model.db_attributes.through.objects.filter(**dict(query))]
+
+    def get_nick(self, key=None, category=None, value=None, strvalue=None, obj=None):
+        return self.get_attribute(key=key, category=category, value=value, strvalue=strvalue, obj=obj)
+
+    @returns_typeclass_list
+    def get_by_attribute(self, key=None, category=None, value=None, strvalue=None, attrtype=None):
+        """
+        Return objects having attributes with the given key, category, value,
+        strvalue or combination of those criteria.
+        """
+        query = [("db_attributes__db_attrtype", attrtype)]
+        if key:
+            query.append(("db_attributes__db_key", key))
+        if category:
+            query.append(("db_attributes__db_category", category))
+        if strvalue:
+            query.append(("db_attributes__db_strvalue", value))
+        elif value:
+            # strvalue and value are mutually exclusive
+            query.append(("db_attributes__db_value", value))
+        return self.filter(**dict(query))
+
+    def get_by_nick(self, key=None, nick=None, category="inputline"):
+        "Get object based on its key or nick."
+        return self.get_by_attribute(key=key, category=category, strvalue=nick, attrtype="nick")
 
     # Tag manager methods
 
     def get_tag(self, key=None, category=None, obj=None, tagtype=None):
         """
-        Return Tag objects by key, by category, by object or
-        with a combination of those criteria.
+        Return Tag objects by key, by category, by object (it is
+        stored on) or with a combination of those criteria.
 
         tagtype - one of None (normal tags), "alias" or "permission"
         """
@@ -235,7 +117,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             query.append(("tag__db_key", key))
         if category:
             query.append(("tag__db_category", category))
-        return self.model.db_tags.through.objects.filter(**dict(query))
+        return [th.tag for th in self.model.db_tags.through.objects.filter(**dict(query))]
 
     def get_permission(self, key=None, category=None, obj=None):
         return self.get_tag(key=key, category=category, obj=obj, tagtype="permission")
@@ -243,7 +125,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
     def get_alias(self, key=None, category=None, obj=None):
         return self.get_tag(key=key, category=category, obj=obj, tagtype="alias")
 
-    @returns_typeclass
+    @returns_typeclass_list
     def get_by_tag(self, key=None, category=None, tagtype=None):
         """
         Return objects having tags with a given key or category or
@@ -264,6 +146,34 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
     def get_by_alias(self, key=None, category=None):
         return self.get_by_tag(key=key, category=category, tagtype="alias")
 
+    def create_tag(self, key=None, category=None, data=None, tagtype=None):
+        """
+        Create a new Tag of the base type associated with this typedobject.
+        This makes sure to create case-insensitive tags. If the exact same
+        tag configuration (key+category+tagtype) exists on the model, a
+        new tag will not be created, but an old one returned.  A data
+        keyword is not part of the uniqueness of the tag and setting one
+        on an existing tag will overwrite the old data field.
+        """
+        data = str(data) if data is not None else None
+        # try to get old tag
+        tag = self.get_tag(key=key, category=category, tagtype=tagtype)
+        if tag and data is not None:
+            # overload data on tag
+            tag.db_data = data
+            tag.save()
+        elif not tag:
+            # create a new tag
+            global _Tag
+            if not _Tag:
+                from src.typeclasses.models import Tag as _Tag
+            tag = _Tag.objects.create(
+                db_key=key.strip().lower() if key is not None else None,
+                db_category=category.strip().lower() if category and key is not None else None,
+                db_data=data,
+                db_tagtype=tagtype.strip().lower() if tagtype is not None else None)
+            tag.save()
+        return make_iter(tag)[0]
 
     # object-manager methods
 

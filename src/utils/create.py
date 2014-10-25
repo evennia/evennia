@@ -40,7 +40,6 @@ _PlayerDB = None
 _to_object = None
 _ChannelDB = None
 _channelhandler = None
-_Tag = None
 
 
 # limit symbol import from API
@@ -449,18 +448,6 @@ def create_channel(key, aliases=None, desc=None,
 
 channel = create_channel
 
-
-def create_tag(self, key=None, category=None, data=None):
-    """
-    Create a tag. This makes sure to create case-insensitive tags.
-    Note that if the exact same tag configuration (key+category)
-    exists, it will be re-used. A data keyword will overwrite existing
-    data on a tag (it is not part of what makes the tag unique).
-    """
-    global _Tag
-    if not _Tag:
-        from src.typeclasses.models import Tag as _Tag
-    return _Tag.objects.create_tag(key=key, category=category, data=data)
 
 
 #

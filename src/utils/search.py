@@ -180,34 +180,48 @@ help_entry_search = search_help_entry
 help_entries = search_help_entries
 
 
+# Locate Attributes
+
+#    search_object_attribute(key, category, value, strvalue) (also search_attribute works)
+#    search_player_attribute(key, category, value, strvalue) (also search_attribute works)
+#    search_script_attribute(key, category, value, strvalue) (also search_attribute works)
+#    search_channel_attribute(key, category, value, strvalue) (also search_attribute works)
+
+# Note that these return the object attached to the Attribute,
+# not the attribute object itself (this is usually what you want)
+
+def search_object_attribute(key=None, category=None, value=None, strvalue=None):
+    return ObjectDB.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
+def search_player_attribute(key=None, category=None, value=None, strvalue=None):
+    return PlayerDB.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
+def search_script_attribute(key=None, category=None, value=None, strvalue=None):
+    return ScriptDB.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
+def search_channel_attribute(key=None, category=None, value=None, strvalue=None):
+    return Channel.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
+
+# search for attribute objects
+search_attribute_object = ObjectDB.objects.get_attribute
+
 # Locate Tags
 
-#    search_object_tag(key, category=None) (also search_tag works)
-#    search_player_tag(key, category=None)
-#    search_script_tag(key, category=None)
-#    search_channel_tag(key, category=None)
+#    search_object_tag(key=None, category=None) (also search_tag works)
+#    search_player_tag(key=None, category=None)
+#    search_script_tag(key=None, category=None)
+#    search_channel_tag(key=None, category=None)
 
-# Note that this returns the object attached to the tag, not the tag itself
-# (this is usually what you want)
-search_tag = Tag.objects.get_objs_with_tag
-def search_object_tag(key, category=None): return Tag.objects.get_objs_with_tag(key, category, model="objects.objectdb")
-def search_player_tag(key, category=None): return Tag.objects.get_objs_with_tag(key, category, model="players.playerdb")
-def search_script_tag(key, category=None): return Tag.objects.get_objs_with_tag(key, category, model="scripts.scriptdb")
-def search_channel_tag(key, category=None): return Tag.objects.get_objs_with_tag(key, category, model="comms.channeldb")
+# Note that this returns the object attached to the tag, not the tag
+# object itself (this is usually what you want)
+def search_object_tag(key=None, category=None):
+    return ObjectDB.objects.get_by_tag(key=key, category=category)
+search_tag = search_object_tag # this is the most common case
+def search_player_tag(key=None, category=None):
+    return PlayerDB.objects.get_by_tag(key=key, category=category)
+def search_script_tag(key=None, category=None):
+    return ScriptDB.objects.get_by_tag(key=key, category=category)
+def search_channel_tag(key=None, category=None):
+    return Channel.objects.get_by_tag(key=key, category=category)
 
-#        """
-#        Search and return all tags matching any combination of
-#        the search criteria.
-#         search_key (string) - the tag identifier
-#         category (string) - the tag category
-#         model - one of
-#              "objects.objectdb" (default), "players.playerdb",
-#              "scripts.scriptdb" or "comms.channeldb"
-#
-#        Returns a single Tag (or None) if both key and category is given,
-#        otherwise it will return a list.
-#        """
-# This returns the tag object itself.
-search_tag_object = Tag.objects.get_tag
+# search for tag objects
+search_tag_object = ObjectDB.objects.get_tag
 
 
