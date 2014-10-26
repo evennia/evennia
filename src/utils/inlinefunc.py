@@ -116,12 +116,14 @@ _INLINE_FUNCS.pop("inline_func_parse", None)
 
 # dynamically build regexes for found functions
 _RE_FUNCFULL = r"\{%s\((.*?)\)(.*?){/%s"
+_RE_FUNCFULL_SINGLE = r"\{%s\((.*?)\)"
 _RE_FUNCSTART = r"\{((?:%s))"
 _RE_FUNCEND = r"\{/((?:%s))"
 _RE_FUNCSPLIT = r"(\{/*(?:%s)(?:\(.*?\))*)"
 _RE_FUNCCLEAN = r"\{%s\(.*?\)|\{/%s"
 
-_INLINE_FUNCS = dict((key, (func, re.compile(_RE_FUNCFULL % (key, key), re.DOTALL &  re.MULTILINE)))
+_INLINE_FUNCS = dict((key, (func, re.compile(_RE_FUNCFULL % (key, key), re.DOTALL &  re.MULTILINE),
+                                  re.compile(_RE_FUNCFULL_SINGLE % key, re.DOTALL & re.MULTILINE)))
                           for key, func in _INLINE_FUNCS.items() if callable(func))
 _FUNCSPLIT_REGEX = re.compile(_RE_FUNCSPLIT % r"|".join([key for key in _INLINE_FUNCS]), re.DOTALL & re.MULTILINE)
 _FUNCSTART_REGEX = re.compile(_RE_FUNCSTART % r"|".join([key for key in _INLINE_FUNCS]), re.DOTALL & re.MULTILINE)
@@ -149,6 +151,17 @@ def _execute_inline_function(funcname, text, session):
         return _INLINE_FUNCS[funcname][0](intext, *args, **kwargs)
     return _INLINE_FUNCS[funcname][1].sub(subfunc, text)
 
+def _execute_inline_single_function(funcname, text, session):
+    """
+    Get the arguments of a single function call (no matching end tag)
+    and execute it with an empty text input.
+    """
+    def subfunc(match):
+        "replace the single call with the result of the function call"
+        args = [part.strip() for part in match.group(1).split(",")]
+        kwargs = {"session":session}
+        return _INLINE_FUNCS[funcname][0]("", *args, **kwargs)
+    return _INLINE_FUNCS[funcname][2].sub(subfunc, text)
 
 def parse_inlinefunc(text, strip=False, session=None):
     """
@@ -178,7 +191,17 @@ def parse_inlinefunc(text, strip=False, session=None):
                         part = _execute_inline_function(startname, part, session)
                         break
         stack.append(part)
-    return "".join(stack)
+    # handle single functions without matching end tags; these are treated
+    # as being called with an empty string as text argument.
+    outstack = []
+    for part in _FUNCSPLIT_REGEX.split("".join(stack)):
+        starttag = _FUNCSTART_REGEX.match(part)
+        if starttag:
+            startname = starttag.group(1)
+            part = _execute_inline_single_function(startname, part, session)
+        outstack.append(part)
+
+    return "".join(outstack)
 
 def _test():
     # this should all be handled
