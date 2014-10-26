@@ -353,7 +353,7 @@ class CmdUnloggedinLook(Command):
     to the menu's own look command..
     """
     key = CMD_LOGINSTART
-    aliases = ["look, l"]
+    aliases = ["look", "l"]
     locks = "cmd:all()"
     arg_regex = r"^$"
 
