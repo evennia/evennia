@@ -237,7 +237,7 @@ class ServerSession(Session):
         """
         text = text if text else ""
         if INLINEFUNC_ENABLED and not "raw" in kwargs:
-            text = parse_inlinefunc(text, strip="strip_inlinefunc" in kwargs)
+            text = parse_inlinefunc(text, strip="strip_inlinefunc" in kwargs, session=self)
         self.sessionhandler.data_out(self, text=text, **kwargs)
 
     def __eq__(self, other):

@@ -50,7 +50,7 @@ from src.utils import utils
 
 # inline functions
 
-def pad(text, *args):
+def pad(text, *args, **kwargs):
     "Pad to width. pad(text, width=78, align='c', fillchar=' ')"
     width = 78
     align = 'c'
@@ -66,7 +66,7 @@ def pad(text, *args):
             break
     return utils.pad(text, width=width, align=align, fillchar=fillchar)
 
-def crop(text, *args):
+def crop(text, *args, **kwargs):
     "Crop to width. crop(text, width=78, suffix='[...]')"
     width = 78
     suffix = "[...]"
@@ -79,7 +79,7 @@ def crop(text, *args):
             break
     return utils.crop(text, width=width, suffix=suffix)
 
-def wrap(text, *args):
+def wrap(text, *args, **kwargs):
     "Wrap/Fill text to width. fill(text, width=78, indent=0)"
     width = 78
     indent = 0
@@ -90,13 +90,21 @@ def wrap(text, *args):
             indent = int(arg) if arg.isdigit() else indent
     return utils.wrap(text, width=width, indent=indent)
 
-def time(text, *args):
+def time(text, *args, **kwargs):
     "Inserts current time"
     import time
     strformat = "%h %d, %H:%M"
     if args and args[0]:
         strformat = str(args[0])
     return time.strftime(strformat)
+
+def you(text, *args, **kwargs):
+    "Inserts your name"
+    name = "You"
+    sess = kwargs.get("session")
+    if sess and sess.puppet:
+        name = sess.puppet.key
+    return name
 
 
 # load functions from module (including this one, if using default settings)
@@ -123,7 +131,7 @@ _FUNCCLEAN_REGEX = re.compile("|".join([_RE_FUNCCLEAN % (key, key) for key in _I
 
 # inline parser functions
 
-def _execute_inline_function(funcname, text):
+def _execute_inline_function(funcname, text, session):
     """
     Get the enclosed text between {funcname(...) and {/funcname
     and execute the inline function to replace the whole block
@@ -137,15 +145,17 @@ def _execute_inline_function(funcname, text):
         "replace the entire block with the result of the function call"
         args = [part.strip() for part in match.group(1).split(",")]
         intext = match.group(2)
-        return _INLINE_FUNCS[funcname][0](intext, *args)
+        kwargs = {"session":session}
+        return _INLINE_FUNCS[funcname][0](intext, *args, **kwargs)
     return _INLINE_FUNCS[funcname][1].sub(subfunc, text)
 
 
-def parse_inlinefunc(text, strip=False):
+def parse_inlinefunc(text, strip=False, session=None):
     """
     Parse inline function-replacement.
 
     strip - remove all supported inlinefuncs from text
+    session - session calling for the parsing
     """
 
     if strip:
@@ -165,7 +175,7 @@ def parse_inlinefunc(text, strip=False):
                 if starttag:
                     startname = starttag.group(1)
                     if startname == endname:
-                        part = _execute_inline_function(startname, part)
+                        part = _execute_inline_function(startname, part, session)
                         break
         stack.append(part)
     return "".join(stack)
