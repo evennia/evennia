@@ -127,6 +127,7 @@ class ChannelHandler(object):
                              locks="cmd:all();%s" % channel.locks,
                              help_category="Channel names",
                              obj=channel,
+                             arg_regex=r"\s.*?",
                              is_channel=True)
         self.cached_channel_cmds.append(cmd)
         self.cached_cmdsets = {}
