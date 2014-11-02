@@ -1053,7 +1053,7 @@ class Exit(Object):
                           locks=str(exidbobj.locks),
                           auto_help=False,
                           destination=exidbobj.db_destination,
-                          arg_regex=r"$",
+                          arg_regex=r"^$",
                           is_exit=True,
                           obj=exidbobj)
         # create a cmdset

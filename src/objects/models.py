@@ -389,9 +389,10 @@ class ObjectDB(TypedObject):
                       equal to searchdata. A special use is to search for
                       "key" here if you want to do a key-search without
                       including aliases.
-        quiet (bool) - don't display default error messages - return multiple
-                      matches as a list and no matches as None. If not
-                      set (default), will echo error messages and return None.
+        quiet (bool) - don't display default error messages - this tells the
+                      search method that the user wants to handle all errors
+                      themselves. It also changes the return value type, see
+                      below.
         exact (bool) - if unset (default) - prefers to match to beginning of
                       string rather than not matching at all. If set, requires
                       exact mathing of entire string.
@@ -405,10 +406,7 @@ class ObjectDB(TypedObject):
                 match:
                     a unique object match
             quiet=True:
-                no match or multimatch:
-                    returns None or list of multi-matches
-                match:
-                    a unique object match
+                returns a list of 0, 1 or more matches
 
         """
         is_string = isinstance(searchdata, basestring)

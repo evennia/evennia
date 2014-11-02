@@ -116,8 +116,8 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
 #
 # You can replace these from the settings file by setting the variables
 #
-# SEARCH_AT_RESULTERROR_HANDLER
-# SEARCH_MULTIMATCH_PARSER
+# SEARCH_AT_RESULT
+# SEARCH_AT_MULTIMATCH_INPUT
 #
 # The the replacing functions must have the same inputs and outputs as
 # those in this module.
