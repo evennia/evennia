@@ -276,6 +276,45 @@ class CmdCpAttr(ObjManipCommand):
     locks = "cmd:perm(cpattr) or perm(Builders)"
     help_category = "Building"
 
+    def check_from_attr(self, obj, attr, clear=False):
+        """
+        Hook for overriding on subclassed commands. Checks to make sure a
+        caller can copy the attr from the object in question. If not, return a
+        false value and the command will abort. An error message should be
+        provided by this function.
+
+        If clear is True, user is attempting to move the attribute.
+        """
+        return True
+
+    def check_to_attr(self, obj, attr):
+        """
+        Hook for overriding on subclassed commands. Checks to make sure a
+        caller can write to the specified attribute on the specified object.
+        If not, return a false value and the attribute will be skipped. An
+        error message should be provided by this function.
+        """
+        return True
+
+    def check_has_attr(self, obj, attr):
+        """
+        Hook for overriding on subclassed commands. Do any preprocessing
+        required and verify an object has an attribute.
+        """
+        if not obj.attributes.has(attr):
+            self.caller.msg(
+                "%s doesn't have an attribute %s."
+                % (obj.name, attr))
+            return False
+        return True
+
+    def get_attr(self, obj, attr):
+        """
+        Hook for overriding on subclassed commands. Do any preprocessing
+        required and get the attribute from the object.
+        """
+        return obj.attributes.get(attr)
+
     def func(self):
         """
         Do the copying.
@@ -301,25 +340,28 @@ class CmdCpAttr(ObjManipCommand):
             # name on self.
             from_obj_attrs = [from_obj_name]
             from_obj = self.caller
-            from_obj_name = self.caller.name
         else:
             from_obj = caller.search(from_obj_name)
         if not from_obj or not to_objs:
             caller.msg("You have to supply both source object and target(s).")
             return
-        if not from_obj.attributes.has(from_obj_attrs[0]):
-            caller.msg("%s doesn't have an attribute %s." % (from_obj_name,
-                                                             from_obj_attrs[0]))
-            return
-        srcvalue = from_obj.attributes.get(from_obj_attrs[0])
-
         #copy to all to_obj:ects
         if "move" in self.switches:
-            string = "Moving "
+            clear = True
         else:
-            string = "Copying "
-        string += "%s/%s (with value %s) ..." % (from_obj_name,
-                                                 from_obj_attrs[0], srcvalue)
+            clear = False
+        if not self.check_from_attr(from_obj, from_obj_attrs[0], clear=clear):
+            return
+
+        for attr in from_obj_attrs:
+            if not self.check_has_attr(from_obj, attr):
+                return
+
+        if (len(from_obj_attrs) != len(set(from_obj_attrs))) and clear:
+            self.caller.msg("{RCannot have duplicate source names when moving!")
+            return
+
+        string = ""
 
         for to_obj in to_objs:
             to_obj_name = to_obj['name']
@@ -335,18 +377,24 @@ class CmdCpAttr(ObjManipCommand):
                     # if there are too few attributes given
                     # on the to_obj, we copy the original name instead.
                     to_attr = from_attr
-                to_obj.attributes.add(to_attr, srcvalue)
-                if ("move" in self.switches and not (from_obj == to_obj and
+                if not self.check_to_attr(to_obj, to_attr):
+                    continue
+                value = self.get_attr(from_obj, from_attr)
+                to_obj.attributes.add(to_attr, value)
+                if (clear and not (from_obj == to_obj and
                                                      from_attr == to_attr)):
                     from_obj.attributes.remove(from_attr)
-                    string += "\nMoved %s.%s -> %s.%s." % (from_obj.name,
-                                                           from_attr,
-                                                           to_obj_name, to_attr)
+                    string += "\nMoved %s.%s -> %s.%s. (value: %s)" % (from_obj.name,
+                                                                       from_attr,
+                                                                       to_obj_name,
+                                                                       to_attr,
+                                                                       repr(value))
                 else:
-                    string += "\nCopied %s.%s -> %s.%s." % (from_obj.name,
+                    string += "\nCopied %s.%s -> %s.%s. (value: %s)" % (from_obj.name,
                                                             from_attr,
                                                             to_obj_name,
-                                                            to_attr)
+                                                            to_attr,
+                                                            repr(value))
         caller.msg(string)
 
 
@@ -1283,6 +1331,61 @@ class CmdSetAttribute(ObjManipCommand):
     locks = "cmd:perm(set) or perm(Builders)"
     help_category = "Building"
 
+    def check_obj(self, obj):
+        """
+        This may be overridden by subclasses in case restrictions need to be
+        placed on whether certain objects can have attributes set by certain
+        players.
+
+        This function is expected to display its own error message.
+
+        Returning False will abort the command.
+        """
+        return True
+
+    def check_attr(self, obj, attr_name):
+        """
+        This may be overridden by subclasses in case restrictions need to be
+        placed on what attributes can be set by who beyond the normal lock.
+
+        This functions is expected to display its own error message. It is
+        run once for every attribute that is checked, blocking only those
+        attributes which are not permitted and letting the others through.
+        """
+        return attr_name
+
+    def view_attr(self, obj, attr):
+        """
+        Look up the value of an attribute and return a string displaying it.
+        """
+        if obj.attributes.has(attr):
+            return "\nAttribute %s/%s = %s" % (obj.name, attr,
+                                               obj.attributes.get(attr))
+        else:
+            return "\n%s has no attribute '%s'." % (obj.name, attr)
+
+    def rm_attr(self, obj, attr):
+        """
+        Remove an attribute from the object, and report back.
+        """
+        if obj.attributes.has(attr):
+            val = obj.attributes.has(attr)
+            obj.attributes.remove(attr)
+            return "\nDeleted attribute '%s' (= %s) from %s." % (attr, val, obj.name)
+        else:
+            return "\n%s has no attribute '%s'." % (obj.name, attr)
+
+    def set_attr(self, obj, attr, value):
+        try:
+            obj.attributes.add(attr, value)
+            return "\nCreated attribute %s/%s = %s" % (obj.name, attr, value)
+        except SyntaxError:
+            # this means literal_eval tried to parse a faulty string
+            return ("\n{RCritical Python syntax error in your value. Only "
+                    "primitive Python structures are allowed.\nYou also "
+                    "need to use correct Python syntax. Remember especially "
+                    "to put quotes around all strings inside lists and "
+                    "dicts.{n")
 
     def func(self):
         "Implement the set attribute - a limited form of @py."
@@ -1304,6 +1407,9 @@ class CmdSetAttribute(ObjManipCommand):
         if not obj:
             return
 
+        if not self.check_obj(obj):
+            return
+
         string = ""
         if not value:
             if self.rhs is None:
@@ -1311,36 +1417,25 @@ class CmdSetAttribute(ObjManipCommand):
                 if not attrs:
                     attrs = [attr.key for attr in obj.attributes.all()]
                 for attr in attrs:
-                    if obj.attributes.has(attr):
-                        string += "\nAttribute %s/%s = %s" % (obj.name, attr,
-                                                      obj.attributes.get(attr))
-                    else:
-                        string += "\n%s has no attribute '%s'." % (obj.name, attr)
-                    # we view it without parsing markup.
+                    if not self.check_attr(obj, attr):
+                        continue
+                    string += self.view_attr(obj, attr)
+                # we view it without parsing markup.
                 self.caller.msg(string.strip(), raw=True)
                 return
             else:
                 # deleting the attribute(s)
                 for attr in attrs:
-                    if obj.attributes.has(attr):
-                        val = obj.attributes.has(attr)
-                        obj.attributes.remove(attr)
-                        string += "\nDeleted attribute '%s' (= %s) from %s." % (attr, val, obj.name)
-                    else:
-                        string += "\n%s has no attribute '%s'." % (obj.name, attr)
+                    if not self.check_attr(obj, attr):
+                        continue
+                    string += self.rm_attr(obj, attr)
         else:
             # setting attribute(s). Make sure to convert to real Python type before saving.
-             for attr in attrs:
-                try:
-                    obj.attributes.add(attr, _convert_from_string(self, value))
-                    string += "\nCreated attribute %s/%s = %s" % (obj.name, attr, value)
-                except SyntaxError:
-                    # this means literal_eval tried to parse a faulty string
-                    string = "{RCritical Python syntax error in your value. "
-                    string += "Only primitive Python structures are allowed. "
-                    string += "\nYou also need to use correct Python syntax. "
-                    string += "Remember especially to put quotes around all "
-                    string += "strings inside lists and dicts.{n"
+            for attr in attrs:
+                if not self.check_attr(obj, attr):
+                    continue
+                value = _convert_from_string(self, value)
+                string += self.set_attr(obj, attr, value)
         # send feedback
         caller.msg(string.strip('\n'))
 
