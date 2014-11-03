@@ -149,9 +149,15 @@ class TagHandler(object):
                 getattr(self.obj, self._m2m_fieldname).remove(tagobj[0])
         self._recache()
 
-    def clear(self):
-        "Remove all tags from the handler"
-        getattr(self.obj, self._m2m_fieldname).clear()
+    def clear(self, category=None):
+        """
+        Remove all tags from the handle. Optionally, only remove those within
+        a certain category.
+        """
+        if not category:
+            getattr(self.obj, self._m2m_fieldname).clear()
+        else:
+            getattr(self.obj, self._m2m_fieldname).filter(db_category=category).delete()
         self._recache()
 
     def all(self, category=None, return_key_and_category=False):
