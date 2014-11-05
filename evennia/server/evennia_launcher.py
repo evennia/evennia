@@ -646,8 +646,10 @@ def init_game_directory(path, check_db=True):
     # Add gamedir to python path
     sys.path.insert(1, GAMEDIR)
 
-    # Prepare django; set the settings location
-    os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
+    if sys.argv[1] == 'test':
+        os.environ['DJANGO_SETTINGS_MODULE'] = 'evennia.settings_default'
+    else:
+        os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
 
     # required since django1.7
     django.setup()

@@ -1217,10 +1217,10 @@ class DefaultObject(ObjectDB):
             else:
                 things.append(key)
         # get description, build string
-        string = "{c%s{n" % self.key
+        string = "{c%s{n\n" % self.key
         desc = self.db.desc
         if desc:
-            string += "\n %s" % desc
+            string += "%s" % desc
         if exits:
             string += "\n{wExits:{n " + ", ".join(exits)
         if users or things:

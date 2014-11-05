@@ -20,6 +20,13 @@ import os
 ######################################################################
 
 # This is the name of your game. Make it catchy!
+import sys
+
+try:
+    test = sys.argv[1] == 'test'
+except IndexError:
+    test = False
+
 SERVERNAME = "Evennia"
 # Activate telnet service
 TELNET_ENABLED = True
@@ -97,11 +104,20 @@ WEBSOCKET_INTERFACES = ['0.0.0.0']
 # standard Django admin is used.
 EVENNIA_ADMIN = True
 # The path to the root directory
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if test:
+    # Tests must be run within a migrated initialized game.
+    ROOT_DIR = os.getcwd()
+else:
+    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # Path to the lib directory containing the bulk of the codebase's code.
 EVENNIA_DIR = os.path.join(ROOT_DIR, 'evennia')
 # Path to the game directory (containing the database file if using sqlite).
-GAME_DIR = os.path.join(ROOT_DIR, 'game_template')
+if test:
+    GAME_DIR = ROOT_DIR
+else:
+    GAME_DIR = os.path.join(ROOT_DIR, 'game_template')
+
 # Place to put log files
 LOG_DIR = os.path.join(GAME_DIR, 'server', 'logs')
 SERVER_LOG_FILE = os.path.join(LOG_DIR, 'server.log')
@@ -186,7 +202,7 @@ IDMAPPER_CACHE_MAXSIZE = 200      # (MB)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(GAME_DIR, 'evennia.db3'),
+        'NAME': os.path.join(GAME_DIR, 'server', 'evennia.db3'),
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
