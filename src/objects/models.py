@@ -445,6 +445,8 @@ class ObjectDB(TypedObject):
                                                  candidates=candidates,
                                                  exact=exact)
         if quiet:
+            if len(results) == 1:
+                return results[0]
             return results
         return  _AT_SEARCH_RESULT(self, searchdata, results, global_search)
 
