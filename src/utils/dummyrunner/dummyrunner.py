@@ -111,6 +111,9 @@ DEFAULT_TIMESTEP = 2
 # chance of a client performing an action, per timestep. This helps to
 # spread out usage randomly, like it would be in reality.
 CHANCE_OF_ACTION = 0.05
+# spread out the login action separately, having many players create accounts
+# and connect simultaneously is generally unlikely.
+CHANCE_OF_LOGIN = 0.5
 # Port to use, if not specified on command line
 DEFAULT_PORT = settings.TELNET_PORTS[0]
 #
@@ -167,7 +170,9 @@ class DummyClient(telnet.StatefulTelnetProtocol):
 
         # start client tick
         d = LoopingCall(self.step)
-        d.start(self.factory.timestep, now=True).addErrback(self.error)
+        # dissipate exact step by up to +/- 0.5 second
+        timestep = self.factory.timestep + (-0.5 + (random.random()*1.0))
+        d.start(timestep, now=True).addErrback(self.error)
 
     def dataReceived(self, data):
         "Echo incoming data to stdout"
@@ -198,8 +203,11 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         and causes the client to issue commands to the server.
         This holds all "intelligence" of the dummy client.
         """
-        if random.random() > CHANCE_OF_ACTION:
+        if self.istep == 0 and random.random() > CHANCE_OF_LOGIN:
             return
+        elif random.random() > CHANCE_OF_ACTION:
+            return
+
         global NLOGGED_IN
         if not self._cmdlist:
             # no cmdlist in store, get a new one

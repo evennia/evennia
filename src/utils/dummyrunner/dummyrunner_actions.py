@@ -76,6 +76,14 @@ def c_login(client):
 
     return cmd, "logs in as %s ..." % cname
 
+def c_login_nodig(client):
+    "logins, don't dig its own room"
+    cname = "Dummy-%s-%i" % (RUNID, client.cid)
+    cpwd = "%s-%s" % (RUNID, client.cid)
+    cmd = ('create %s %s' % (cname, cpwd),
+           'connect %s %s' % (cname, cpwd))
+    return cmd, "logs in as %s ..." % cname
+
 def c_logout(client):
     "logouts of the game"
     return "@quit", "logs out"
@@ -149,6 +157,15 @@ def c_moves(client):
     if not cmd: cmd = "look"
     return cmd, "moves ..."
 
+def c_moves_n(client):
+    "move through north exit if available"
+    cmd = ("north",)
+    return cmd, "moves n..."
+
+def c_moves_s(client):
+    "move through north exit if available"
+    cmd = ("north",)
+    return cmd, "moves s..."
 
 # Action tuple (required)
 #
@@ -160,7 +177,7 @@ def c_moves(client):
 # otherwise the system will normalize them.
 #
 
-## "normal builder" definition
+## "normal builder" definitionj
 #ACTIONS = ( c_login,
 #            c_logout,
 #            (0.5, c_looks),
@@ -196,6 +213,9 @@ ACTIONS = ( c_login,
             (0.39, c_looks),
             (0.2, c_help),
             (0.4, c_moves))
+#ACTIONS = (c_login_nodig,
+#           c_logout,
+#           (1.0, c_moves_n))
 ## "socializing heavy builder" definition
 #ACTIONS = (c_login,
 #           c_logout,
