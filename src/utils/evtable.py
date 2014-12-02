@@ -649,11 +649,11 @@ class EvCell(object):
         return self.formatted
 
     def __repr__(self):
-        return ANSIString("EvCel<%s>" % self.formatted)
+        return unicode(ANSIString("EvCel<%s>" % self.formatted))
 
     def __str__(self):
         "returns cell contents on string form"
-        return ANSIString("\n").join(self.formatted)
+        return str(unicode(ANSIString("\n").join(self.formatted)))
 
     def __unicode__(self):
         "returns cell contents"
@@ -1282,7 +1282,7 @@ class EvTable(object):
 
     def __str__(self):
         "print table"
-        return  ANSIString("\n").join([line for line in self._generate_lines()])
+        return  str(unicode(ANSIString("\n").join([line for line in self._generate_lines()])))
 
     def __unicode__(self):
         return  unicode(ANSIString("\n").join([line for line in self._generate_lines()]))
