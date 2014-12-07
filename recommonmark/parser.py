@@ -178,7 +178,7 @@ def strong(inlines):
 
 def inline_code(inline):
     literal_node = nodes.literal()
-    append_inlines(literal_node, inline.inline_content)
+    literal_node.append(nodes.Text(inline.c))
     return literal_node
 
 def reference(block):
