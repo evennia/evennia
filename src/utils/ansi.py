@@ -317,11 +317,9 @@ class ANSIParser(object):
     mxp_re = r'\{lc(.*?)\{lt(.*?)\{le'
 
     # prepare regex matching
-    #ansi_sub = [(re.compile(sub[0], re.DOTALL), sub[1])
-    #                 for sub in ansi_map]
     xterm256_sub = re.compile(r"|".join([tup[0] for tup in xterm256_map]), re.DOTALL)
     ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in mux_ansi_map + ext_ansi_map]), re.DOTALL)
-    mxp_sub =  re.compile(mxp_re, re.DOTALL)
+    mxp_sub = re.compile(mxp_re, re.DOTALL)
 
     # used by regex replacer to correctly map ansi sequences
     ansi_map = dict(mux_ansi_map + ext_ansi_map)
@@ -436,7 +434,10 @@ def _transform(func_name):
             elif index in self._char_indexes:
                 to_string.append(replacement_string[char_counter])
                 char_counter += 1
-        return ANSIString(''.join(to_string), decoded=True)
+        return ANSIString(
+            ''.join(to_string), decoded=True,
+            code_indexes=self._code_indexes, char_indexes=self._char_indexes,
+            clean_string=replacement_string)
     return wrapped
 
 
@@ -452,8 +453,8 @@ class ANSIMeta(type):
                 'rfind', 'rindex', '__len__']:
             setattr(cls, func_name, _query_super(func_name))
         for func_name in [
-                '__mul__', '__mod__', 'expandtabs', '__rmul__',
-                'decode', 'replace', 'format', 'encode']:
+                '__mod__', 'expandtabs', 'decode', 'replace', 'format',
+                'encode']:
             setattr(cls, func_name, _on_raw(func_name))
         for func_name in [
                 'capitalize', 'translate', 'lower', 'upper', 'swapcase']:
@@ -485,19 +486,38 @@ class ANSIString(unicode):
         the same attributes as the standard one, and you may declare the
         string to be handled as already decoded. It is important not to double
         decode strings, as escapes can only be respected once.
+
+        Internally, ANSIString can also passes itself precached code/character
+        indexes and clean strings to avoid doing extra work when combining
+        ANSIStrings.
         """
         string = args[0]
         if not isinstance(string, basestring):
             string = to_str(string, force_string=True)
         parser = kwargs.get('parser', ANSI_PARSER)
         decoded = kwargs.get('decoded', False) or hasattr(string, '_raw_string')
+        code_indexes = kwargs.pop('code_indexes', None)
+        char_indexes = kwargs.pop('char_indexes', None)
+        clean_string = kwargs.pop('clean_string', None)
+        # All True, or All False, not just one.
+        checks = map(lambda x: x is None, [code_indexes, char_indexes, clean_string])
+        if not len(set(checks)) == 1:
+            raise ValueError("You must specify code_indexes, char_indexes, "
+                             "and clean_string together, or not at all.")
+        if not all(checks):
+            decoded = True
         if not decoded:
             # Completely new ANSI String
             clean_string = to_unicode(parser.parse_ansi(string, strip_ansi=True))
             string = parser.parse_ansi(string)
+        elif clean_string is not None:
+            # We have an explicit clean string.
+            pass
         elif hasattr(string, '_clean_string'):
             # It's already an ANSIString
             clean_string = string._clean_string
+            code_indexes = string._code_indexes
+            char_indexes = string._char_indexes
             string = string._raw_string
         else:
             # It's a string that has been pre-ansi decoded.
@@ -505,12 +525,12 @@ class ANSIString(unicode):
 
         if not isinstance(string, unicode):
             string = string.decode('utf-8')
-        else:
-            # Do this to prevent recursive ANSIStrings.
-            string = unicode(string)
+
         ansi_string = super(ANSIString, cls).__new__(ANSIString, to_str(clean_string), "utf-8")
         ansi_string._raw_string = string
         ansi_string._clean_string = clean_string
+        ansi_string._code_indexes = code_indexes
+        ansi_string._char_indexes = char_indexes
         return ansi_string
 
     def __str__(self):
@@ -559,7 +579,34 @@ class ANSIString(unicode):
         """
         self.parser = kwargs.pop('parser', ANSI_PARSER)
         super(ANSIString, self).__init__()
-        self._code_indexes, self._char_indexes = self._get_indexes()
+        if self._code_indexes is None:
+            self._code_indexes, self._char_indexes = self._get_indexes()
+
+    @staticmethod
+    def _shifter(iterable, offset):
+        """
+        Takes a list of integers, and produces a new one incrementing all
+        by a number.
+        """
+        return [i + offset for i in iterable]
+
+    @classmethod
+    def _adder(cls, first, second):
+        """
+        Joins two ANSIStrings, preserving calculated info.
+        """
+
+        raw_string = first._raw_string + second._raw_string
+        clean_string = first._clean_string + second._clean_string
+        code_indexes = first._code_indexes[:]
+        char_indexes = first._char_indexes[:]
+        code_indexes.extend(
+            cls._shifter(second._code_indexes, len(first._raw_string)))
+        char_indexes.extend(
+            cls._shifter(second._code_indexes, len(first._raw_string)))
+        return ANSIString(raw_string, code_indexes=code_indexes,
+                          char_indexes=char_indexes,
+                          clean_string=clean_string)
 
     def __add__(self, other):
         """
@@ -569,8 +616,9 @@ class ANSIString(unicode):
         """
         if not isinstance(other, basestring):
             return NotImplemented
-        return ANSIString(self._raw_string + getattr(
-            other, '_raw_string', other), decoded=True)
+        if not isinstance(other, ANSIString):
+            other = ANSIString(other)
+        return self._adder(self, other)
 
     def __radd__(self, other):
         """
@@ -578,8 +626,9 @@ class ANSIString(unicode):
         """
         if not isinstance(other, basestring):
             return NotImplemented
-        return ANSIString(getattr(
-            other, '_raw_string', other) + self._raw_string, decoded=True)
+        if not isinstance(other, ANSIString):
+            other = ANSIString(other)
+        return self._adder(other, self)
 
     def __getslice__(self, i, j):
         """
@@ -615,7 +664,7 @@ class ANSIString(unicode):
         # Check between the slice intervals for escape sequences.
         i = None
         for i in slice_indexes[1:]:
-            for index in range(last_mark, i):
+            for index in xrange(last_mark, i):
                 if index in self._code_indexes:
                     string += self._raw_string[index]
             last_mark = i
@@ -654,7 +703,7 @@ class ANSIString(unicode):
         result = ''
         # Get the character they're after, and replay all escape sequences
         # previous to it.
-        for index in range(0, item + 1):
+        for index in xrange(0, item + 1):
             if index in self._code_indexes:
                 result += self._raw_string[index]
         return ANSIString(result + clean + append_tail, decoded=True)
@@ -711,13 +760,6 @@ class ANSIString(unicode):
         It's possible that only one of these tables is actually needed, the
         other assumed to be what isn't in the first.
         """
-        # These are all the indexes which hold code characters.
-        #matches = [(match.start(), match.end())
-        #            for match in self.parser.ansi_regex.finditer(self._raw_string)]
-        #code_indexes = []
-        #         # These are all the indexes which hold code characters.
-        #for start, end in matches:
-        #    code_indexes.extend(range(start, end))
 
         code_indexes = []
         for match in self.parser.ansi_regex.finditer(self._raw_string):
@@ -775,6 +817,28 @@ class ANSIString(unicode):
         res.append(self[start:len(self)])
         return res
 
+    def __mul__(self, other):
+        """
+        Multiplication method. Implemented for performance reasons.
+        """
+        if not isinstance(other, int):
+            return NotImplemented
+        raw_string = self._raw_string * other
+        clean_string = self._clean_string * other
+        code_indexes = self._code_indexes[:]
+        char_indexes = self._char_indexes[:]
+        for i in range(1, other + 1):
+            code_indexes.extend(
+                self._shifter(self._code_indexes, i * len(self._raw_string)))
+            char_indexes.extend(
+                self._shifter(self._char_indexes, i * len(self._raw_string)))
+        return ANSIString(
+            raw_string, code_indexes=code_indexes, char_indexes=char_indexes,
+            clean_string=clean_string)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
     def rsplit(self, by, maxsplit=-1):
         """
         Stolen from PyPy's pure Python string implementation, tweaked for
@@ -810,11 +874,39 @@ class ANSIString(unicode):
         last_item = None
         for item in iterable:
             if last_item is not None:
-                result += self
+                result += self._raw_string
+            if not isinstance(item, ANSIString):
+                item = ANSIString(item)
             result += item
             last_item = item
         return result
 
+    def _filler(self, char, amount):
+        """
+        Generate a line of characters in a more efficient way than just adding
+        ANSIStrings.
+        """
+        if not isinstance(char, ANSIString):
+            line = char * amount
+            return ANSIString(
+                char * amount, code_indexes=[], char_indexes=range(0, len(line)),
+                clean_string=char)
+        try:
+            start = char._code_indexes[0]
+        except IndexError:
+            start = None
+        end = char._char_indexes[0]
+        prefix = char._raw_string[start:end]
+        postfix = char._raw_string[end + 1:]
+        line = char._clean_string * amount
+        code_indexes = [i for i in range(0, len(prefix))]
+        length = len(prefix) + len(line)
+        code_indexes.extend([i for i in range(length, length + len(postfix))])
+        char_indexes = self._shifter(xrange(0, len(line)), len(prefix))
+        raw_string = prefix + line + postfix
+        return ANSIString(
+            raw_string, clean_string=line, char_indexes=char_indexes,
+            code_indexes=code_indexes)
 
     @_spacing_preflight
     def center(self, width, fillchar, difference):
@@ -823,8 +915,8 @@ class ANSIString(unicode):
         """
         remainder = difference % 2
         difference /= 2
-        spacing = difference * fillchar
-        result = spacing + self + spacing + (remainder * fillchar)
+        spacing = self._filler(fillchar, difference)
+        result = spacing + self + spacing + self._filler(fillchar, remainder)
         return result
 
     @_spacing_preflight
@@ -832,11 +924,11 @@ class ANSIString(unicode):
         """
         Left justify some text.
         """
-        return self + (difference * fillchar)
+        return self + self._filler(fillchar, difference)
 
     @_spacing_preflight
     def rjust(self, width, fillchar, difference):
         """
         Right justify some text.
         """
-        return (difference * fillchar) + self
+        return self._filler(fillchar, difference) + self
