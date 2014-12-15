@@ -704,7 +704,7 @@ class EvColumn(object):
         of the rest of the column's cells (use update to change
         options).
 
-        Args:j
+        Args:
             data for the new cells
         Keywords:
             ypos - index position in table before which to insert the
@@ -1167,16 +1167,16 @@ class EvTable(object):
         xpos = kwargs.get("xpos", None)
         column = EvColumn(*args, **options)
         htable = self.nrows
-        excess = self.ncols - htable
+        excess = len(column.column) - htable
 
         if excess > 0:
             # we need to add new rows to table
             for col in self.table:
-                empty_rows = ["" for i in range(excess)]
+                empty_rows = ["" for i in xrange(excess)]
                 col.add_rows(*empty_rows, **options)
         elif excess < 0:
             # we need to add new rows to new column
-            empty_rows = ["" for i in range(abs(excess))]
+            empty_rows = ["" for i in xrange(abs(excess))]
             column.add_rows(*empty_rows, **options)
 
         header = kwargs.get("header", None)
