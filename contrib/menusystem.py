@@ -490,8 +490,9 @@ def prompt_choice(caller, question="", prompts=None, choicefunc=None, force_choo
     making use of the menu node system.
     
     prompts - prompts of choices
-    funcs - functions callback to be called as func(self) when make choice (self.caller is available)
-    no_choice - user can make no choice and exit
+    choicefunc - functions callback to be called as func(self) when make choice (self.caller is available)
+                 The function's definision should be like func(self, menu_node), and menu_node.key is user's choice.
+    force_choose - force user to make a choice or not
     """
     
     # creating and defining commands
