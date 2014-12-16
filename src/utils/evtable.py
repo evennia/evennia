@@ -1250,7 +1250,7 @@ class EvTable(object):
 
         if excess > 0:
             # we need to add new empty columns to table
-            empty_rows = ["" for i in range(htable)]
+            empty_rows = ["" for i in xrange(htable)]
             self.table.extend([EvColumn(*empty_rows, **options) for i in xrange(excess)])
             self.ncols += excess
         elif excess < 0:
