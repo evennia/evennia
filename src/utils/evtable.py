@@ -393,6 +393,10 @@ class EvCell(object):
         self.raw_width = max(len(line) for line in self.data)
         self.raw_height = len(self.data)
 
+        # this is extra trimming required for cels in the middle of a table only
+        self.trim_horizontal = 0
+        self.trim_vertical = 0
+
         # width/height is given without left/right or top/bottom padding
         if "width" in kwargs:
             width = kwargs.pop("width")
@@ -624,6 +628,11 @@ class EvCell(object):
         self.corner_bottom_left_char = kwargs.pop("corner_bottom_left", corner_char if corner_char is not None else self.corner_bottom_left_char)
         self.corner_bottom_right_char = kwargs.pop("corner_bottom_right", corner_char if corner_char is not None else self.corner_bottom_right_char)
 
+        # this is used by the table to adjust size of cells with borders in the middle
+        # of the table
+        self.trim_horizontal = kwargs.pop("trim_horizontal", self.trim_horizontal)
+        self.trim_vertical = kwargs.pop("trim_vertical", self.trim_vertical)
+
         # fill all other properties
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -631,12 +640,12 @@ class EvCell(object):
         # Handle sizes
         if "width" in kwargs:
             width = kwargs.pop("width")
-            self.width = width - self.pad_left - self.pad_right - self.border_left - self.border_right
+            self.width = width - self.pad_left - self.pad_right - self.border_left - self.border_right + self.trim_horizontal
             if self.width <= 0:
                 raise Exception("Cell width too small, no room for data.")
         if "height" in kwargs:
             height = kwargs.pop("height")
-            self.height = height - self.pad_top - self.pad_bottom - self.border_top - self.border_bottom
+            self.height = height - self.pad_top - self.pad_bottom - self.border_top - self.border_bottom + self.trim_vertical
             if self.height <= 0:
                 raise Exception("Cell height too small, no room for data.")
 
@@ -900,13 +909,20 @@ class EvTable(object):
     def _cellborders(self, ix, iy, nx, ny, kwargs):
         """
         Adds borders to the table by adjusting the input
-        kwarg to instruct cells to build a border in
+        kwarg to instjruct cells to build a border in
         the right positions. Returns a copy of the
         kwarg to return to the cell. This is called
         by self._borders.
         """
 
         ret = kwargs.copy()
+
+        # handle the various border modes
+        border = self.border
+        header = self.header
+
+        bwidth = self.border_width
+        headchar = self.header_line_char
 
         def corners(ret):
             "Handle corners of table"
@@ -924,24 +940,28 @@ class EvTable(object):
             "add vertical border along left table edge"
             if ix == 0:
                 ret["border_left"] = bwidth
+                ret["trim_horizontal"] = bwidth
             return ret
 
         def top_edge(ret):
             "add border along top table edge"
             if iy == 0:
                 ret["border_top"] = bwidth
+                #ret["trim_vertical"] = bwidth
             return ret
 
         def right_edge(ret):
             "add vertical border along right table edge"
             if ix == nx:# and 0 < iy < ny:
                 ret["border_right"] = bwidth
+                #ret["trim_horizontal"] = 0
             return ret
 
         def bottom_edge(ret):
             "add border along bottom table edge"
             if iy == ny:
                 ret["border_bottom"] = bwidth
+                #ret["trim_vertical"] = bwidth
             return ret
 
         def cols(ret):
@@ -963,14 +983,6 @@ class EvTable(object):
                 ret["border_bottom"] = bwidth
                 ret["border_bottom_char"] = headchar
             return ret
-
-
-        # handle the various border modes
-        border = self.border
-        header = self.header
-
-        bwidth = self.border_width
-        headchar = self.header_line_char
 
         # use the helper functions to define various
         # table "styles"
@@ -1018,7 +1030,7 @@ class EvTable(object):
         nrows = [len(col) for col in self.worktable]
         nrowmax = max(nrows) if nrows else 0
         for icol, nrow in enumerate(nrows):
-            self.worktable[icol].reformat()
+            self.worktable[icol].reformat(**options)
             if nrow < nrowmax:
                 # add more rows to too-short columns
                 empty_rows = ["" for i in xrange(nrowmax-nrow)]
