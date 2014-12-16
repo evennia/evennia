@@ -489,7 +489,8 @@ def prompt_choice(caller, question="", prompts=None, choicefunc=None, force_choo
     asked, followed by a serie of prompts. Note that this isn't
     making use of the menu node system.
 
-    questions=
+    caller - the object calling and being offered the choice
+    question - text describing the offered choice
     prompts - list of choices
     choicefunc - functions callback to be called as func(self) when
                  make choice (self.caller is available) The function's definision
