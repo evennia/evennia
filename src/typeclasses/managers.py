@@ -51,6 +51,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         Overload the standard get. This will limit itself to only
         return the current typeclass.
         """
+        print self.model
         kwargs.update({"db_typeclass_path":self.model.path})
         return super(TypedObjectManager, self).get(**kwargs)
 
@@ -68,7 +69,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         return super(TypedObjectManager, self).all(**kwargs).filter(db_typeclass_path=self.model.path)
 
-    def get_inherit(self, **kwargs):
+    def get_family(self, **kwargs):
         """
         Variation of get that not only returns the current
         typeclass but also all subclasses of that typeclass.
@@ -78,7 +79,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         kwargs.update({"db_typeclass_path__in":paths})
         return super(TypedObjectManager, self).get(**kwargs)
 
-    def filter_inherit(self, **kwargs):
+    def filter_family(self, **kwargs):
         """
         Variation of filter that allows results both from typeclass
         and from subclasses of typeclass
@@ -89,7 +90,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         kwargs.update({"db_typeclass_path__in":paths})
         return super(TypedObjectManager, self).filter(**kwargs)
 
-    def all_inherit(self, **kwargs):
+    def all_family(self, **kwargs):
         """
         Return all matches, allowing matches from all subclasses of
         the typeclass.

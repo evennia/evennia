@@ -425,22 +425,12 @@ class SharedMemoryModelBase(ModelBase):
         new_class._meta.apps.register_model(new_class._meta.app_label, new_class)
         return new_class
 
-class TypeclassModelBase(SharedMemoryModelBase):
-    """
-    Metaclass for typeclasses
-    """
     def __init__(cls, *args, **kwargs):
         """
-        We must define our Typeclasses as proxies. We also store the path
-        directly on the class, this is useful for managers.
+        This is for the typeclass system.
         """
-        super(TypeclassModelBase, cls).__init__(*args, **kwargs)
-        class Meta:
-            proxy = True
-        cls.Meta = Meta
         cls.typename = cls.__name__
         cls.path = "%s.%s" % (cls.__module__, cls.__name__)
-
 
 class SharedMemoryModel(Model):
     # CL: setting abstract correctly to allow subclasses to inherit the default
