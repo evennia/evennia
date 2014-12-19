@@ -12,6 +12,7 @@ import imp
 import types
 import math
 import re
+import importlib
 import textwrap
 import datetime
 import random
@@ -871,6 +872,30 @@ def random_string_from_module(module):
     """
     return random.choice(string_from_module(module))
 
+def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
+    """
+    Import a variable based on a fuzzy path. First the literal
+    path will be tried, then all given defaultdirs will be
+    prepended to see a match is found.
+
+    path - full or partial python path
+    variable - name of variable to import from module
+    defaultpaths - an iterable of python paths to attempt
+                   in order if importing directly from
+                   path does not work.
+    """
+    paths = [path] + make_iter(defaultpaths)
+    for modpath in paths:
+        try:
+            mod = importlib.import_module(path)
+        except ImportError, ex:
+            if not str(ex) == "No module named %s" % path:
+                # this means the module was found but it
+                # triggers an ImportError on import.
+                raise ex
+            return getattr(mod, variable, default)
+    return default
+
 def init_new_player(player):
     """
     Helper method to call all hooks, set flags etc on a newly created
@@ -1012,7 +1037,6 @@ def format_table(table, extra_space=1):
         ftable.append([str(col[irow]).ljust(max_widths[icol]) + " " * extra_space
                        for icol, col in enumerate(table)])
     return ftable
-
 
 def get_evennia_pids():
     """
