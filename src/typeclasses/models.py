@@ -742,23 +742,6 @@ class PermissionHandler(TagHandler):
 # imported for access by other
 from src.utils.idmapper.base import SharedMemoryModelBase
 
-class TypeclassModelBase(SharedMemoryModelBase):
-    """
-    Metaclass for typeclasses
-    """
-    def __init__(cls, *args, **kwargs):
-        """
-        We must define our Typeclasses as proxies. We also store the path
-        directly on the class, this is useful for managers.
-        """
-        super(TypeclassModelBase, cls).__init__(*args, **kwargs)
-        class Meta:
-            proxy = True
-        cls.Meta = Meta
-        cls.typename = cls.__name__
-        cls.path = "%s.%s" % (cls.__module__, cls.__name__)
-
-
 class TypeclassBase(SharedMemoryModelBase):
     """
     Metaclass which should be set for the root of model proxies
@@ -775,8 +758,8 @@ class TypeclassBase(SharedMemoryModelBase):
             proxy = True
         cls.Meta = Meta
         # convenience for manager methods
-        cls.typename = cls.__name__
-        cls.path = "%s.%s" % (cls.__module__, cls.__name__)
+        #cls.typename = cls.__name__
+        #cls.path = "%s.%s" % (cls.__module__, cls.__name__)
 
 
 class TypedObject(SharedMemoryModel):

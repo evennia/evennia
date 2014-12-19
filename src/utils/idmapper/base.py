@@ -429,6 +429,7 @@ class SharedMemoryModelBase(ModelBase):
         """
         This is for the typeclass system.
         """
+        super(SharedMemoryModelBase, cls).__init__(*args, **kwargs)
         cls.typename = cls.__name__
         cls.path = "%s.%s" % (cls.__module__, cls.__name__)
 
