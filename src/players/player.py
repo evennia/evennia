@@ -13,7 +13,8 @@ instead for most things).
 
 import datetime
 from django.conf import settings
-from src.typeclasses.typeclass import TypeClass
+from src.players.models import PlayerDB
+from src.typeclasses.models import TypeclassBase
 from src.comms.models import ChannelDB
 from src.utils import logger
 __all__ = ("Player",)
@@ -23,10 +24,12 @@ _CMDSET_PLAYER = settings.CMDSET_PLAYER
 _CONNECT_CHANNEL = None
 
 
-class Player(TypeClass):
+class Player(PlayerDB):
     """
     Base typeclass for all Players.
     """
+    __metaclass__ = TypeclassBase
+
     def __init__(self, dbobj):
         """
         This is the base Typeclass for all Players. Players represent

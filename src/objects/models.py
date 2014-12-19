@@ -134,7 +134,6 @@ class ObjectDB(TypedObject):
       contents - other objects having this object as location
       exits - exits from this object
     """
-
     #
     # ObjectDB Database model setup
     #

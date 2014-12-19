@@ -9,7 +9,7 @@ from twisted.internet.defer import Deferred, maybeDeferred
 from twisted.internet.task import LoopingCall
 from django.conf import settings
 from django.utils.translation import ugettext as _
-from src.typeclasses.typeclass import TypeClass
+from src.typeclasses.models import TypeclassBase
 from src.scripts.models import ScriptDB
 from src.comms import channelhandler
 from src.utils import logger
@@ -108,11 +108,12 @@ class ExtendedLoopingCall(LoopingCall):
 #
 # Base script, inherit from Script below instead.
 #
-class ScriptBase(TypeClass):
+class ScriptBase(ScriptDB):
     """
     Base class for scripts. Don't inherit from this, inherit
     from the class 'Script'  instead.
     """
+    __metaclass__ = TypeclassBase
     # private methods
 
     def __eq__(self, other):

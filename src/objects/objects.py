@@ -16,7 +16,8 @@ they control by simply linking to a new object's user property.
 """
 
 from django.conf import settings
-from src.typeclasses.typeclass import TypeClass
+from src.objects.models import ObjectDB
+from src.typeclasses.models import TypeclassBase
 from src.commands import cmdset, command
 from src.utils.logger import log_depmsg
 
@@ -31,11 +32,12 @@ _DA = object.__delattr__
 # Base class to inherit from.
 #
 
-class Object(TypeClass):
+class Object(ObjectDB):
     """
     This is the base class for all in-game objects.  Inherit from this
     to create different types of objects in the game.
     """
+    __metaclass__ = TypeclassBase
     # __init__ is only defined here in order to present docstring to API.
     def __init__(self, dbobj):
         """

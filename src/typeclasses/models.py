@@ -30,6 +30,7 @@ import sys
 import re
 import traceback
 import weakref
+from importlib import import_module
 
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
@@ -738,6 +739,45 @@ class PermissionHandler(TagHandler):
 #
 #------------------------------------------------------------
 
+# imported for access by other
+from src.utils.idmapper.base import SharedMemoryModelBase
+
+class TypeclassModelBase(SharedMemoryModelBase):
+    """
+    Metaclass for typeclasses
+    """
+    def __init__(cls, *args, **kwargs):
+        """
+        We must define our Typeclasses as proxies. We also store the path
+        directly on the class, this is useful for managers.
+        """
+        super(TypeclassModelBase, cls).__init__(*args, **kwargs)
+        class Meta:
+            proxy = True
+        cls.Meta = Meta
+        cls.typename = cls.__name__
+        cls.path = "%s.%s" % (cls.__module__, cls.__name__)
+
+
+class TypeclassBase(SharedMemoryModelBase):
+    """
+    Metaclass which should be set for the root of model proxies
+    that don't define any new fields, like Object, Script etc.
+    """
+    def __init__(cls, *args, **kwargs):
+        """
+        We must define our Typeclasses as proxies. We also store the path
+        directly on the class, this is useful for managers.
+        """
+        super(TypeclassBase, cls).__init__(*args, **kwargs)
+        class Meta:
+            # this is the important bit
+            proxy = True
+        cls.Meta = Meta
+        # convenience for manager methods
+        cls.typename = cls.__name__
+        cls.path = "%s.%s" % (cls.__module__, cls.__name__)
+
 
 class TypedObject(SharedMemoryModel):
     """
@@ -795,11 +835,23 @@ class TypedObject(SharedMemoryModel):
     # quick on-object typeclass cache for speed
     _cached_typeclass = None
 
-    # lock handler self.locks
+    # typeclass mechanism
+
+    def _import_class(self, path):
+        path, clsname = path.rsplit(".", 1)
+        mod = import_module(path)
+        return getattr(mod, clsname)
+
     def __init__(self, *args, **kwargs):
-        "We must initialize the parent first - important!"
+        typeclass_path = kwargs.pop("typeclass", None)
         super(TypedObject, self).__init__(*args, **kwargs)
-        _SA(self, "dbobj", self)   # this allows for self-reference
+        if typeclass_path:
+            self.__class__ = self._import_class(typeclass_path)
+            self.db_typclass_path = typeclass_path
+        elif self.db_typeclass_path:
+            self.__class__ = self._import_class(self.db_typeclass_path)
+        else:
+            self.db_typeclass_path = "%s.%s" % (self.__module__, self.__class__.__name__)
 
     # initialize all handlers in a lazy fashion
     @lazy_property
@@ -872,37 +924,6 @@ class TypedObject(SharedMemoryModel):
     def __unicode__(self):
         return u"%s" % _GA(self, "db_key")
 
-    def __getattribute__(self, propname):
-        """
-        Will predominantly look for an attribute
-        on this object, but if not found we will
-        check if it might exist on the typeclass instead. Since
-        the typeclass refers back to the databaseobject as well, we
-        have to be very careful to avoid loops.
-        """
-        try:
-            return _GA(self, propname)
-        except AttributeError:
-            if propname.startswith('_'):
-                # don't relay private/special varname lookups to the typeclass
-                raise AttributeError("private property %s not found on db model (typeclass not searched)." % propname)
-            # check if the attribute exists on the typeclass instead
-            # (we make sure to not incur a loop by not triggering the
-            # typeclass' __getattribute__, since that one would
-            # try to look back to this very database object.)
-            return _GA(_GA(self, 'typeclass'), propname)
-
-    def _hasattr(self, obj, attrname):
-        """
-        Loop-safe version of hasattr, to avoid running a lookup that
-        will be rerouted up the typeclass. Returns True/False.
-        """
-        try:
-            _GA(obj, attrname)
-            return True
-        except AttributeError:
-            return False
-
     #@property
     def __dbid_get(self):
         """
@@ -935,208 +956,6 @@ class TypedObject(SharedMemoryModel):
     def __dbref_del(self):
         raise Exception("dbref cannot be deleted!")
     dbref = property(__dbref_get, __dbref_set, __dbref_del)
-
-    # the latest error string will be stored here for accessing methods to access.
-    # It is set by _display_errmsg, which will print to log if error happens
-    # during server startup.
-    typeclass_last_errmsg = ""
-
-    # typeclass property
-    #@property
-    def __typeclass_get(self):
-        """
-        Getter. Allows for value = self.typeclass.
-        The typeclass is a class object found at self.typeclass_path;
-        it allows for extending the Typed object for all different
-        types of objects that the game needs. This property
-        handles loading and initialization of the typeclass on the fly.
-
-        Note: The liberal use of _GA and __setattr__ (instead
-              of normal dot notation) is due to optimization: it avoids calling
-              the custom self.__getattribute__ more than necessary.
-        """
-        path = _GA(self, "typeclass_path")
-        typeclass = _GA(self, "_cached_typeclass")
-        try:
-            if typeclass and _GA(typeclass, "path") == path:
-                # don't call at_init() when returning from cache
-                return typeclass
-        except AttributeError:
-            pass
-        errstring = ""
-        if not path:
-            # this means we should get the default obj without giving errors.
-            return _GA(self, "_get_default_typeclass")(cache=True, silent=True, save=True)
-        else:
-            # handle loading/importing of typeclasses, searching all paths.
-            # (self._typeclass_paths is a shortcut to settings.TYPECLASS_*_PATHS
-            # where '*' is either OBJECT, SCRIPT or PLAYER depending on the
-            # typed entities).
-            typeclass_paths = [path] + ["%s.%s" % (prefix, path)
-                                    for prefix in _GA(self, '_typeclass_paths')]
-
-            for tpath in typeclass_paths:
-
-                # try to import and analyze the result
-                typeclass = _GA(self, "_path_import")(tpath)
-                if callable(typeclass):
-                    # we succeeded to import. Cache and return.
-                    _SA(self, "typeclass_path", tpath)
-                    typeclass = typeclass(self)
-                    _SA(self, "_cached_typeclass", typeclass)
-                    try:
-                        typeclass.at_init()
-                    except AttributeError:
-                        logger.log_trace("\n%s: Error initializing typeclass %s. Using default." % (self, tpath))
-                        break
-                    except Exception:
-                        logger.log_trace()
-                    return typeclass
-                elif hasattr(typeclass, '__file__'):
-                    errstring += "\n%s seems to be just the path to a module. You need" % tpath
-                    errstring +=  " to specify the actual typeclass name inside the module too."
-                elif typeclass:
-                    errstring += "\n%s" % typeclass.strip()    # this will hold a growing error message.
-            if not errstring:
-                errstring = "\nMake sure the path is set correctly. Paths tested:\n"
-                errstring += ", ".join(typeclass_paths)
-            errstring += "\nTypeclass code was not found or failed to load."
-        # If we reach this point we couldn't import any typeclasses. Return
-        # default. It's up to the calling method to use e.g. self.is_typeclass()
-        # to detect that the result is not the one asked for.
-        _GA(self, "_display_errmsg")(errstring.strip())
-        return _GA(self, "_get_default_typeclass")(cache=False, silent=False, save=False)
-
-    #@typeclass.deleter
-    def __typeclass_del(self):
-        "Deleter. Disallow 'del self.typeclass'"
-        raise Exception("The typeclass property should never be deleted, only changed in-place!")
-
-    # typeclass property
-    typeclass = property(__typeclass_get, fdel=__typeclass_del)
-
-
-    def _path_import(self, path):
-        """
-        Import a class from a python path of the
-        form src.objects.object.Object
-        """
-        errstring = ""
-        if not path:
-            # this needs not be bad, it just means
-            # we should use defaults.
-            return None
-        try:
-            modpath, class_name = path.rsplit('.', 1)
-            module = __import__(modpath, fromlist=["none"])
-            return module.__dict__[class_name]
-        except ImportError:
-            trc = sys.exc_traceback
-            if not trc.tb_next:
-                # we separate between not finding the module, and finding
-                # a buggy one.
-                pass
-                #errstring = "Typeclass not found trying path '%s'." % path
-            else:
-                # a bug in the module is reported normally.
-                trc = traceback.format_exc().strip()
-                errstring = "\n%sError importing '%s'." % (trc, path)
-        except (ValueError, TypeError):
-            errstring = "Malformed typeclass path '%s'." % path
-        except KeyError:
-            errstring = "No class '%s' was found in module '%s'."
-            errstring = errstring % (class_name, modpath)
-        except Exception:
-            trc = traceback.format_exc().strip()
-            errstring = "\n%sException importing '%s'." % (trc, path)
-        # return the error.
-        return errstring
-
-    def _display_errmsg(self, message):
-        """
-        Helper function to display error.
-        """
-        _SA(self, "typeclass_last_errmsg", message)
-        if ServerConfig.objects.conf("server_starting_mode"):
-            print message
-        else:
-            logger.log_errmsg(message)
-        return
-
-    def _get_default_typeclass(self, cache=False, silent=False, save=False):
-        """
-        This is called when a typeclass fails to
-        load for whatever reason.
-        Overload this in different entities.
-
-        Default operation is to load a default typeclass.
-        """
-        defpath = _GA(self, "_default_typeclass_path")
-        typeclass = _GA(self, "_path_import")(defpath)
-        # if not silent:
-        #     #errstring = "\n\nUsing Default class '%s'." % defpath
-        #     _GA(self, "_display_errmsg")(errstring)
-
-        if not callable(typeclass):
-            # if typeclass still doesn't exist at this point, we're in trouble.
-            # fall back to hardcoded core class which is wrong for e.g.
-            # scripts/players etc.
-            failpath = defpath
-            defpath = "src.objects.objects.Object"
-            typeclass = _GA(self, "_path_import")(defpath)
-            if not silent:
-                #errstring = "  %s\n%s" % (typeclass, errstring)
-                errstring = "  Default class '%s' failed to load." % failpath
-                errstring += "\n  Using Evennia's default root '%s'." % defpath
-                _GA(self, "_display_errmsg")(errstring.strip())
-        if not callable(typeclass):
-            # if this is still giving an error, Evennia is wrongly
-            # configured or buggy
-            raise Exception("CRITICAL ERROR: The final fallback typeclass %s cannot load!!" % defpath)
-        typeclass = typeclass(self)
-        if save:
-            _SA(self, 'db_typeclass_path', defpath)
-            _GA(self, 'save')()
-        if cache:
-            _SA(self, "_cached_db_typeclass_path", defpath)
-
-            _SA(self, "_cached_typeclass", typeclass)
-        try:
-            typeclass.at_init()
-        except Exception:
-            logger.log_trace()
-        return typeclass
-
-    def is_typeclass(self, typeclass, exact=True):
-        """
-        Returns true if this object has this type
-          OR has a typeclass which is an subclass of
-          the given typeclass. This operates on the actually
-          loaded typeclass (this is important since a failing
-          typeclass may instead have its default currently loaded)
-
-        typeclass - can be a class object or the
-                python path to such an object to match against.
-
-        exact - returns true only if the object's
-               type is exactly this typeclass, ignoring
-               parents.
-        """
-        try:
-            typeclass = _GA(typeclass, "path")
-        except AttributeError:
-            pass
-        typeclasses = [typeclass] + ["%s.%s" % (path, typeclass)
-                                     for path in _GA(self, "_typeclass_paths")]
-        if exact:
-            current_path = _GA(self.typeclass, "path") #"_GA(self, "_cached_db_typeclass_path")
-            return typeclass and any((current_path == typec for typec in typeclasses))
-        else:
-            # check parent chain
-            return any((cls for cls in self.typeclass.__class__.mro()
-                        if any(("%s.%s" % (_GA(cls, "__module__"),
-                                _GA(cls, "__name__")) == typec
-                                    for typec in typeclasses))))
 
     #
     # Object manipulation methods
@@ -1427,169 +1246,4 @@ class TypedObject(SharedMemoryModel):
         "Stop accidental deletion."
         raise Exception("Cannot delete the ndb object!")
     ndb = property(__ndb_get, __ndb_set, __ndb_del)
-
-#    #
-#    # ***** DEPRECATED METHODS BELOW   *******
-#    #
-#
-#    #
-#    # Full attr_obj attributes. You usually access these
-#    # through the obj.db.attrname method.
-#
-#    # Helper methods for attr_obj attributes
-#
-#    def has_attribute(self, attribute_name):
-#        """
-#        See if we have an attribute set on the object.
-#
-#        attribute_name: (str) The attribute's name.
-#        """
-#        logger.log_depmsg("obj.has_attribute() is deprecated. Use obj.attributes.has().")
-#        return _GA(self, "attributes").has(attribute_name)
-#
-#    def set_attribute(self, attribute_name, new_value=None, lockstring=""):
-#        """
-#        Sets an attribute on an object. Creates the attribute if need
-#        be.
-#
-#        attribute_name: (str) The attribute's name.
-#        new_value: (python obj) The value to set the attribute to. If this is not
-#                                a str, the object will be stored as a pickle.
-#        lockstring - this sets an access restriction on the attribute object. Note that
-#                     this is normally NOT checked - use the secureattr() access method
-#                     below to perform access-checked modification of attributes. Lock
-#                     types checked by secureattr are 'attrread','attredit','attrcreate'.
-#        """
-#        logger.log_depmsg("obj.set_attribute() is deprecated. Use obj.db.attr=value or obj.attributes.add().")
-#        _GA(self, "attributes").add(attribute_name, new_value, lockstring=lockstring)
-#
-#    def get_attribute_obj(self, attribute_name, default=None):
-#        """
-#        Get the actual attribute object named attribute_name
-#        """
-#        logger.log_depmsg("obj.get_attribute_obj() is deprecated. Use obj.attributes.get(..., return_obj=True)")
-#        return _GA(self, "attributes").get(attribute_name, default=default, return_obj=True)
-#
-#    def get_attribute(self, attribute_name, default=None, raise_exception=False):
-#        """
-#        Returns the value of an attribute on an object. You may need to
-#        type cast the returned value from this function since the attribute
-#        can be of any type. Returns default if no match is found.
-#
-#        attribute_name: (str) The attribute's name.
-#        default: What to return if no attribute is found
-#        raise_exception (bool) - raise an exception if no object exists instead of returning default.
-#        """
-#        logger.log_depmsg("obj.get_attribute() is deprecated. Use obj.db.attr or obj.attributes.get().")
-#        return _GA(self, "attributes").get(attribute_name, default=default, raise_exception=raise_exception)
-#
-#    def del_attribute(self, attribute_name, raise_exception=False):
-#        """
-#        Removes an attribute entirely.
-#
-#        attribute_name: (str) The attribute's name.
-#        raise_exception (bool) - raise exception if attribute to delete
-#                                 could not be found
-#        """
-#        logger.log_depmsg("obj.del_attribute() is deprecated. Use del obj.db.attr or obj.attributes.remove().")
-#        _GA(self, "attributes").remove(attribute_name, raise_exception=raise_exception)
-#
-#    def get_all_attributes(self):
-#        """
-#        Returns all attributes defined on the object.
-#        """
-#        logger.log_depmsg("obj.get_all_attributes() is deprecated. Use obj.db.all() or obj.attributes.all().")
-#        return _GA(self, "attributes").all()
-#
-#    def attr(self, attribute_name=None, value=None, delete=False):
-#        """
-#        This is a convenient wrapper for
-#        get_attribute, set_attribute, del_attribute
-#        and get_all_attributes.
-#        If value is None, attr will act like
-#        a getter, otherwise as a setter.
-#        set delete=True to delete the named attribute.
-#
-#        Note that you cannot set the attribute
-#        value to None using this method. Use set_attribute.
-#        """
-#        logger.log_depmsg("obj.attr() is deprecated. Use handlers obj.db or obj.attributes.")
-#        if attribute_name is None:
-#            # act as a list method
-#            return _GA(self, "attributes").all()
-#        elif delete is True:
-#            _GA(self, "attributes").remove(attribute_name)
-#        elif value is None:
-#            # act as a getter.
-#            return _GA(self, "attributes").get(attribute_name)
-#        else:
-#            # act as a setter
-#            self._GA(self, "attributes").add(attribute_name, value)
-#
-#    def secure_attr(self, accessing_object, attribute_name=None, value=None, delete=False,
-#                    default_access_read=True, default_access_edit=True, default_access_create=True):
-#        """
-#        This is a version of attr that requires the accessing object
-#        as input and will use that to check eventual access locks on
-#        the Attribute before allowing any changes or reads.
-#
-#        In the cases when this method wouldn't return, it will return
-#        True for a successful operation, None otherwise.
-#
-#        locktypes checked on the Attribute itself:
-#            attrread - control access to reading the attribute value
-#            attredit - control edit/delete access
-#        locktype checked on the object on which the Attribute is/will be stored:
-#            attrcreate - control attribute create access (this is checked *on the object*  not on the Attribute!)
-#
-#        default_access_* defines which access is assumed if no
-#        suitable lock is defined on the Atttribute.
-#
-#        """
-#        logger.log_depmsg("obj.secure_attr() is deprecated. Use obj.attributes methods, giving accessing_obj keyword.")
-#        if attribute_name is None:
-#            return _GA(self, "attributes").all(accessing_obj=accessing_object, default_access=default_access_read)
-#        elif delete is True:
-#            # act as deleter
-#            _GA(self, "attributes").remove(attribute_name, accessing_obj=accessing_object, default_access=default_access_edit)
-#        elif value is None:
-#            # act as getter
-#            return _GA(self, "attributes").get(attribute_name, accessing_obj=accessing_object, default_access=default_access_read)
-#        else:
-#            # act as setter
-#            attr = _GA(self, "attributes").get(attribute_name, return_obj=True)
-#            if attr:
-#               # attribute already exists
-#                _GA(self, "attributes").add(attribute_name, value, accessing_obj=accessing_object, default_access=default_access_edit)
-#            else:
-#                # creating a new attribute - check access on storing object!
-#                _GA(self, "attributes").add(attribute_name, value, accessing_obj=accessing_object, default_access=default_access_create)
-#
-#    def nattr(self, attribute_name=None, value=None, delete=False):
-#        """
-#        This allows for assigning non-persistent data on the object using
-#        a method call. Will return None if trying to access a non-existing property.
-#        """
-#        logger.log_depmsg("obj.nattr() is deprecated. Use obj.nattributes instead.")
-#        if attribute_name is None:
-#            # act as a list method
-#            if callable(self.ndb.all):
-#                return self.ndb.all()
-#            else:
-#                return [val for val in self.ndb.__dict__.keys()
-#                        if not val.startswith['_']]
-#        elif delete is True:
-#            if hasattr(self.ndb, attribute_name):
-#                _DA(_GA(self, "ndb"), attribute_name)
-#        elif value is None:
-#            # act as a getter.
-#            if hasattr(self.ndb, attribute_name):
-#                _GA(_GA(self, "ndb"), attribute_name)
-#            else:
-#                return None
-#        else:
-#            # act as a setter
-#            _SA(self.ndb, attribute_name, value)
-#
-#
 

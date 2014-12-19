@@ -13,45 +13,91 @@ _GA = object.__getattribute__
 _Tag = None
 
 #
-# helper functions for the TypedObjectManager.
+# Decorators
 #
 
 def returns_typeclass_list(method):
     """
-    Decorator: Changes return of the decorated method (which are
-    TypeClassed objects) into object_classes(s) instead.  Will always
-    return a list (may be empty).
+    Decorator: Always returns a list, even
+    if it is empty.
     """
     def func(self, *args, **kwargs):
-        "decorator. Returns a list."
         self.__doc__ = method.__doc__
-        matches = make_iter(method(self, *args, **kwargs))
-        return [(hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj
-                                               for dbobj in make_iter(matches)]
+        return list(method(self, *args, **kwargs))
     return update_wrapper(func, method)
 
 
 def returns_typeclass(method):
     """
-    Decorator: Will always return a single typeclassed result or None.
+    Decorator: Returns a single match or None
     """
     def func(self, *args, **kwargs):
-        "decorator. Returns result or None."
         self.__doc__ = method.__doc__
-        matches = method(self, *args, **kwargs)
-        dbobj = matches and make_iter(matches)[0] or None
-        if dbobj:
-            return (hasattr(dbobj, "typeclass") and dbobj.typeclass) or dbobj
-        return None
+        query = method(self, *args, **kwargs)
+        return list(query)[0] if query else None
     return update_wrapper(func, method)
 
 # Managers
-
 
 class TypedObjectManager(idmapper.manager.SharedMemoryManager):
     """
     Common ObjectManager for all dbobjects.
     """
+    # common methods for all typed managers. These are used
+    # in other methods. Returns querysets.
+
+    def get(self, **kwargs):
+        """
+        Overload the standard get. This will limit itself to only
+        return the current typeclass.
+        """
+        kwargs.update({"db_typeclass_path":self.model.path})
+        return super(TypedObjectManager, self).get(**kwargs)
+
+    def filter(self, **kwargs):
+        """
+        Overload of the standard filter function. This filter will
+        limit itself to only the current typeclass.
+        """
+        kwargs.update({"db_typeclass_path":self.model.path})
+        return super(TypedObjectManager, self).filter(**kwargs)
+
+    def all(self, **kwargs):
+        """
+        Overload method to return all matches, filtering for typeclass
+        """
+        return super(TypedObjectManager, self).all(**kwargs).filter(db_typeclass_path=self.model.path)
+
+    def get_inherit(self, **kwargs):
+        """
+        Variation of get that not only returns the current
+        typeclass but also all subclasses of that typeclass.
+        """
+        paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
+                         for cls in self.model.__subclasses__()]
+        kwargs.update({"db_typeclass_path__in":paths})
+        return super(TypedObjectManager, self).get(**kwargs)
+
+    def filter_inherit(self, **kwargs):
+        """
+        Variation of filter that allows results both from typeclass
+        and from subclasses of typeclass
+        """
+        # query, including all subclasses
+        paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
+                         for cls in self.model.__subclasses__()]
+        kwargs.update({"db_typeclass_path__in":paths})
+        return super(TypedObjectManager, self).filter(**kwargs)
+
+    def all_inherit(self, **kwargs):
+        """
+        Return all matches, allowing matches from all subclasses of
+        the typeclass.
+        """
+        paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
+                         for cls in self.model.__subclasses__()]
+        return super(TypedObjectManager, self).all(**kwargs).filter(db_typeclass_path__in=paths)
+
 
     # Attribute manager methods
     def get_attribute(self, key=None, category=None, value=None, strvalue=None, obj=None, attrtype=None):
