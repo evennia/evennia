@@ -8,6 +8,7 @@ It also defines a few common scripts.
 from twisted.internet.defer import Deferred, maybeDeferred
 from twisted.internet.task import LoopingCall
 from django.conf import settings
+from src.typeclasses.models import TypeclassBase
 from django.utils.translation import ugettext as _
 from src.scripts.models import ScriptDB
 from src.comms import channelhandler
@@ -112,7 +113,7 @@ class ScriptBase(ScriptDB):
     Base class for scripts. Don't inherit from this, inherit
     from the class 'Script'  instead.
     """
-    _is_typeclass = True
+    __metaclass__ = TypeclassBase
 
     def __eq__(self, other):
         """
