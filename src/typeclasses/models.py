@@ -42,10 +42,10 @@ from src.server.caches import get_prop_cache, set_prop_cache
 #from src.server.caches import set_attr_cache
 
 #from src.server.caches import call_ndb_hooks
-from src.server.models import ServerConfig
+#from src.server.models import ServerConfig
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
-from src.utils import logger
+#from src.utils import logger
 from django.db.models.base import ModelBase
 from src.utils.utils import (
     make_iter, is_iter, to_str, inherits_from, lazy_property)
@@ -752,7 +752,7 @@ from django.db.models.base import subclass_exception
 import warnings
 from django.db.models.options import Options
 from django.utils.deprecation import RemovedInDjango19Warning
-from django.core.exceptions import MultipleObjectsReturned
+from django.core.exceptions import MultipleObjectsReturned, FieldError
 from django.apps.config import MODELS_MODULE_NAME
 from django.db.models.fields.related import OneToOneField
 #/ django patch imports

@@ -22,19 +22,6 @@ from manager import SharedMemoryManager
 
 AUTO_FLUSH_MIN_INTERVAL = 60.0 * 5 # at least 5 mins between cache flushes
 
-# django patch imports
-import copy
-import sys
-from django.apps import apps
-from django.db.models.base import subclass_exception
-import warnings
-from django.db.models.options import Options
-from django.utils.deprecation import RemovedInDjango19Warning
-from django.core.exceptions import MultipleObjectsReturned
-from django.apps.config import MODELS_MODULE_NAME
-from django.db.models.fields.related import OneToOneField
-#/ django patch imports
-
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -94,6 +81,10 @@ class SharedMemoryModelBase(ModelBase):
         already has a wrapper of the given name, the automatic creation is skipped. Note: Remember to
         document this auto-wrapping in the class header, this could seem very much like magic to the user otherwise.
         """
+
+        attrs["typename"] = cls.__name__
+        attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
+
         # set up the typeclass handling only if a variable _is_typeclass is set on the class
         def create_wrapper(cls, fieldname, wrappername, editable=True, foreignkey=False):
             "Helper method to create property wrappers with unique names (must be in separate call)"
