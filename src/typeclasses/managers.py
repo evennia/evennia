@@ -8,7 +8,7 @@ from django.db.models import Q
 from src.utils import idmapper
 from src.utils.utils import make_iter, variable_from_module
 
-__all__ = ("AttributeManager", "TypedObjectManager")
+__all__ = ("TypedObjectManager", )
 _GA = object.__getattribute__
 _Tag = None
 

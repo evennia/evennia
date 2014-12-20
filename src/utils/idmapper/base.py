@@ -95,7 +95,6 @@ class SharedMemoryModelBase(ModelBase):
         already has a wrapper of the given name, the automatic creation is skipped. Note: Remember to
         document this auto-wrapping in the class header, this could seem very much like magic to the user otherwise.
         """
-
         def create_wrapper(cls, fieldname, wrappername, editable=True, foreignkey=False):
             "Helper method to create property wrappers with unique names (must be in separate call)"
             def _get(cls, fname):
@@ -189,7 +188,6 @@ class SharedMemoryModelBase(ModelBase):
                 # makes sure not to overload manually created wrappers on the model
                 #print "wrapping %s -> %s" % (fieldname, wrappername)
                 create_wrapper(cls, fieldname, wrappername, editable=field.editable, foreignkey=foreignkey)
-
 
         # django patch
         # Evennia mod, based on Django Ticket #11560: https://code.djangoproject.com/ticket/11560
@@ -432,6 +430,7 @@ class SharedMemoryModelBase(ModelBase):
         super(SharedMemoryModelBase, cls).__init__(*args, **kwargs)
         cls.typename = cls.__name__
         cls.path = "%s.%s" % (cls.__module__, cls.__name__)
+        print "shared __init__", cls
 
 class SharedMemoryModel(Model):
     # CL: setting abstract correctly to allow subclasses to inherit the default

@@ -37,9 +37,21 @@ class Object(ObjectDB):
     This is the base class for all in-game objects.  Inherit from this
     to create different types of objects in the game.
     """
-    __metaclass__ = TypeclassBase
+    def __new__(cls, *args, **kwargs):
+        """
+        We must define our Typeclasses as proxies. We also store the path
+        directly on the class, this is useful for managers.
+        """
+        if hasattr(cls, "Meta"):
+            cls.Meta.proxy = True
+        else:
+            class Meta:
+                proxy = True
+            cls.Meta = Meta
+        return super(Object, cls).__new__(*args, **kwargs)
+
     # __init__ is only defined here in order to present docstring to API.
-    def __init__(self, dbobj):
+    def __init__(self):
         """
         This is the root typeclass object, representing all entities
         that have an actual presence in-game. Objects generally have a
@@ -190,7 +202,7 @@ class Object(ObjectDB):
                                      this object speaks
 
          """
-        super(Object, self).__init__(dbobj)
+        super(Object, self).__init__()
 
     ## methods inherited from the database object (overload them here)
 

@@ -162,11 +162,6 @@ class PlayerDB(TypedObject, AbstractUser):
         _GA(self, "save")()
     cmdset_storage = property(cmdset_storage_get, cmdset_storage_set, cmdset_storage_del)
 
-    class Meta:
-        "Define Django meta options"
-        verbose_name = "Player"
-        verbose_name_plural = "Players"
-
     #
     # PlayerDB main class properties and methods
     #

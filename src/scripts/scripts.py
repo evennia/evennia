@@ -113,8 +113,21 @@ class ScriptBase(ScriptDB):
     Base class for scripts. Don't inherit from this, inherit
     from the class 'Script'  instead.
     """
-    __metaclass__ = TypeclassBase
+    #__metaclass__ = TypeclassBase
     # private methods
+
+    def __new__(cls, *args, **kwargs):
+        """
+        We must define our Typeclasses as proxies. We also store the path
+        directly on the class, this is useful for managers.
+        """
+        if hasattr(cls, "Meta"):
+            cls.Meta.proxy = True
+        else:
+            class Meta:
+                proxy = True
+            cls.Meta = Meta
+        return super(ScriptBase, cls).__new__(*args, **kwargs)
 
     def __eq__(self, other):
         """
@@ -355,7 +368,7 @@ class Script(ScriptBase):
     the hooks called by the script machinery.
     """
 
-    def __init__(self, dbobj):
+    def __init__(self):
         """
         This is the base TypeClass for all Scripts. Scripts describe events,
         timers and states in game, they can have a time component or describe
@@ -442,7 +455,7 @@ class Script(ScriptBase):
 
 
           """
-        super(Script, self).__init__(dbobj)
+        super(Script, self).__init__()
 
     def at_script_creation(self):
         """

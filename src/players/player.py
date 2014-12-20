@@ -14,7 +14,6 @@ instead for most things).
 import datetime
 from django.conf import settings
 from src.players.models import PlayerDB
-from src.typeclasses.models import TypeclassBase
 from src.comms.models import ChannelDB
 from src.utils import logger
 __all__ = ("Player",)
@@ -28,9 +27,20 @@ class Player(PlayerDB):
     """
     Base typeclass for all Players.
     """
-    __metaclass__ = TypeclassBase
+    def __new__(cls, *args, **kwargs):
+        """
+        We must define our Typeclasses as proxies. We also store the path
+        directly on the class, this is useful for managers.
+        """
+        if hasattr(cls, "Meta"):
+            cls.Meta.proxy = True
+        else:
+            class Meta:
+                proxy = True
+            cls.Meta = Meta
+        return super(Player, cls).__new__(*args, **kwargs)
 
-    def __init__(self, dbobj):
+    def __init__(self):
         """
         This is the base Typeclass for all Players. Players represent
         the person playing the game and tracks account info, password
@@ -104,7 +114,7 @@ class Player(PlayerDB):
          at_server_shutdown()
 
          """
-        super(Player, self).__init__(dbobj)
+        super(Player, self).__init__()
 
     ## methods inherited from database model
 
