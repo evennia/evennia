@@ -82,8 +82,8 @@ class SharedMemoryModelBase(ModelBase):
         document this auto-wrapping in the class header, this could seem very much like magic to the user otherwise.
         """
 
-        attrs["typename"] = cls.__name__
-        attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
+        #attrs["typename"] = cls.__name__
+        #attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
 
         # set up the typeclass handling only if a variable _is_typeclass is set on the class
         def create_wrapper(cls, fieldname, wrappername, editable=True, foreignkey=False):

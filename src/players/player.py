@@ -29,7 +29,7 @@ class Player(PlayerDB):
     """
     __metaclass__ = TypeclassBase
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """
         This is the base Typeclass for all Players. Players represent
         the person playing the game and tracks account info, password
@@ -103,7 +103,7 @@ class Player(PlayerDB):
          at_server_shutdown()
 
          """
-        super(Player, self).__init__()
+        super(Player, self).__init__(*args, **kwargs)
 
     ## methods inherited from database model
 

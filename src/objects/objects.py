@@ -41,7 +41,7 @@ class Object(ObjectDB):
     __metaclass__ = TypeclassBase
 
     # __init__ is only defined here in order to present docstring to API.
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """
         This is the root typeclass object, representing all entities
         that have an actual presence in-game. Objects generally have a
@@ -192,7 +192,7 @@ class Object(ObjectDB):
                                      this object speaks
 
          """
-        super(Object, self).__init__()
+        super(Object, self).__init__(*args, **kwargs)
 
     ## methods inherited from the database object (overload them here)
 

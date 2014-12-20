@@ -764,11 +764,16 @@ class TypeclassBase(SharedMemoryModelBase):
     Metaclass which should be set for the root of model proxies
     that don't define any new fields, like Object, Script etc.
     """
+
     def __new__(cls, name, bases, attrs):
         """
         We must define our Typeclasses as proxies. We also store the path
         directly on the class, this is useful for managers.
         """
+
+        attrs["typename"] = cls.__name__
+        attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
+
         # typeclass proxy setup
         if "Meta" in attrs:
             attrs["Meta"].proxy = True

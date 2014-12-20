@@ -354,7 +354,7 @@ class Script(ScriptBase):
     the hooks called by the script machinery.
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """
         This is the base TypeClass for all Scripts. Scripts describe events,
         timers and states in game, they can have a time component or describe
@@ -441,7 +441,7 @@ class Script(ScriptBase):
 
 
           """
-        super(Script, self).__init__()
+        super(Script, self).__init__(*args, **kwargs)
 
     def at_script_creation(self):
         """
