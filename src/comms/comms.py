@@ -4,7 +4,6 @@ Default Typeclass for Comms.
 See objects.objects for more information on Typeclassing.
 """
 from src.comms.models import Msg, TempMsg, ChannelDB
-from src.typeclasses.models import TypeclassBase
 from src.utils import logger
 from src.utils.utils import make_iter
 
@@ -14,19 +13,7 @@ class Channel(ChannelDB):
     This is the base class for all Comms. Inherit from this to create different
     types of communication channels.
     """
-
-    def __new__(cls, *args, **kwargs):
-        """
-        We must define our Typeclasses as proxies. We also store the path
-        directly on the class, this is useful for managers.
-        """
-        if hasattr(cls, "Meta"):
-            cls.Meta.proxy = True
-        else:
-            class Meta:
-                proxy = True
-            cls.Meta = Meta
-        return super(TypeclassBase, cls).__new__(*args, **kwargs)
+    _is_typeclass = True
 
     # helper methods, for easy overloading
 

@@ -51,7 +51,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         Overload the standard get. This will limit itself to only
         return the current typeclass.
         """
-        print self.model
         kwargs.update({"db_typeclass_path":self.model.path})
         return super(TypedObjectManager, self).get(**kwargs)
 

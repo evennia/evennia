@@ -17,7 +17,6 @@ they control by simply linking to a new object's user property.
 
 from django.conf import settings
 from src.objects.models import ObjectDB
-from src.typeclasses.models import TypeclassBase
 from src.commands import cmdset, command
 from src.utils.logger import log_depmsg
 
@@ -37,18 +36,7 @@ class Object(ObjectDB):
     This is the base class for all in-game objects.  Inherit from this
     to create different types of objects in the game.
     """
-    def __new__(cls, *args, **kwargs):
-        """
-        We must define our Typeclasses as proxies. We also store the path
-        directly on the class, this is useful for managers.
-        """
-        if hasattr(cls, "Meta"):
-            cls.Meta.proxy = True
-        else:
-            class Meta:
-                proxy = True
-            cls.Meta = Meta
-        return super(Object, cls).__new__(*args, **kwargs)
+    _is_typeclass = True
 
     # __init__ is only defined here in order to present docstring to API.
     def __init__(self):

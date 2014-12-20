@@ -740,7 +740,7 @@ class PermissionHandler(TagHandler):
 #------------------------------------------------------------
 
 # imported for access by other
-from src.utils.idmapper.base import SharedMemoryModelBase
+#from src.utils.idmapper.base import SharedMemoryModelBase
 
 #class TypeclassBase(SharedMemoryModelBase):
 #    """

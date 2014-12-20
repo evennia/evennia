@@ -22,23 +22,11 @@ _MULTISESSION_MODE = settings.MULTISESSION_MODE
 _CMDSET_PLAYER = settings.CMDSET_PLAYER
 _CONNECT_CHANNEL = None
 
-
 class Player(PlayerDB):
     """
     Base typeclass for all Players.
     """
-    def __new__(cls, *args, **kwargs):
-        """
-        We must define our Typeclasses as proxies. We also store the path
-        directly on the class, this is useful for managers.
-        """
-        if hasattr(cls, "Meta"):
-            cls.Meta.proxy = True
-        else:
-            class Meta:
-                proxy = True
-            cls.Meta = Meta
-        return super(Player, cls).__new__(*args, **kwargs)
+    _is_typeclass = True
 
     def __init__(self):
         """

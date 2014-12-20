@@ -9,7 +9,6 @@ from twisted.internet.defer import Deferred, maybeDeferred
 from twisted.internet.task import LoopingCall
 from django.conf import settings
 from django.utils.translation import ugettext as _
-from src.typeclasses.models import TypeclassBase
 from src.scripts.models import ScriptDB
 from src.comms import channelhandler
 from src.utils import logger
@@ -113,21 +112,7 @@ class ScriptBase(ScriptDB):
     Base class for scripts. Don't inherit from this, inherit
     from the class 'Script'  instead.
     """
-    #__metaclass__ = TypeclassBase
-    # private methods
-
-    def __new__(cls, *args, **kwargs):
-        """
-        We must define our Typeclasses as proxies. We also store the path
-        directly on the class, this is useful for managers.
-        """
-        if hasattr(cls, "Meta"):
-            cls.Meta.proxy = True
-        else:
-            class Meta:
-                proxy = True
-            cls.Meta = Meta
-        return super(ScriptBase, cls).__new__(*args, **kwargs)
+    _is_typeclass = True
 
     def __eq__(self, other):
         """

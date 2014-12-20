@@ -30,8 +30,7 @@ from django.db.models.base import subclass_exception
 import warnings
 from django.db.models.options import Options
 from django.utils.deprecation import RemovedInDjango19Warning
-from django.core.exceptions import (ObjectDoesNotExist,
-    MultipleObjectsReturned, FieldError)
+from django.core.exceptions import MultipleObjectsReturned
 from django.apps.config import MODELS_MODULE_NAME
 from django.db.models.fields.related import OneToOneField
 #/ django patch imports
@@ -95,6 +94,15 @@ class SharedMemoryModelBase(ModelBase):
         already has a wrapper of the given name, the automatic creation is skipped. Note: Remember to
         document this auto-wrapping in the class header, this could seem very much like magic to the user otherwise.
         """
+        # set up the typeclass handling only if a variable _is_typeclass is set on the class
+        if "_is_typeclass" in attrs:
+            if "Meta" in attrs:
+                attrs["Meta"].proxy = True
+            else:
+                class Meta:
+                    proxy = True
+                attrs["Meta"] = Meta
+
         def create_wrapper(cls, fieldname, wrappername, editable=True, foreignkey=False):
             "Helper method to create property wrappers with unique names (must be in separate call)"
             def _get(cls, fname):
@@ -189,9 +197,8 @@ class SharedMemoryModelBase(ModelBase):
                 #print "wrapping %s -> %s" % (fieldname, wrappername)
                 create_wrapper(cls, fieldname, wrappername, editable=field.editable, foreignkey=foreignkey)
 
-        # django patch
-        # Evennia mod, based on Django Ticket #11560: https://code.djangoproject.com/ticket/11560
-        # The actual patch is small and further down.
+        # patch start
+
         super_new = super(ModelBase, cls).__new__
 
         # Also ensure initialization is only performed for subclasses of Model
@@ -319,16 +326,14 @@ class SharedMemoryModelBase(ModelBase):
                         raise TypeError("Abstract base class containing model fields not permitted for proxy model '%s'." % name)
                     else:
                         continue
-                # Evennia mod, based on Django Ticket #11560: https://code.djangoproject.com/ticket/11560
-                # This allows multiple inheritance for proxy models
-                while parent._meta.proxy:
-                    parent = parent._meta.proxy_for_model
-                if base is not None and base is not parent:
-                #if base is not None:
+                if base is not None:
                     raise TypeError("Proxy model '%s' has more than one non-abstract model base class." % name)
                 else:
                     base = parent
-            if base is None:
+            #if base is None:                                  # patch
+            while parent._meta.proxy:                          # patch
+                parent = parent._meta.proxy_for_model          # patch
+            if base is not None and base is not parent:        # patch
                 raise TypeError("Proxy model '%s' has no non-abstract model base class." % name)
             new_class._meta.setup_proxy(base)
             new_class._meta.concrete_model = base._meta.concrete_model
@@ -423,14 +428,10 @@ class SharedMemoryModelBase(ModelBase):
         new_class._meta.apps.register_model(new_class._meta.app_label, new_class)
         return new_class
 
-    def __init__(cls, *args, **kwargs):
-        """
-        This is for the typeclass system.
-        """
-        super(SharedMemoryModelBase, cls).__init__(*args, **kwargs)
-        cls.typename = cls.__name__
-        cls.path = "%s.%s" % (cls.__module__, cls.__name__)
-        print "shared __init__", cls
+
+        # /patch end
+        #return super(SharedMemoryModelBase, cls).__new__(cls, name, bases, attrs, *args, **kwargs)
+
 
 class SharedMemoryModel(Model):
     # CL: setting abstract correctly to allow subclasses to inherit the default
