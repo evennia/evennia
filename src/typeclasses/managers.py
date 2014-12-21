@@ -68,13 +68,22 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         return super(TypedObjectManager, self).all(**kwargs).filter(db_typeclass_path=self.model.path)
 
+    def _get_subclasses(self, cls):
+        """
+        Recursively get all subclasses to a class
+        """
+        all_subclasses = cls.__subclasses__()
+        for subclass in all_subclasses:
+            all_subclasses.extend(self._get_subclasses(subclass))
+        return all_subclasses
+
     def get_family(self, **kwargs):
         """
         Variation of get that not only returns the current
         typeclass but also all subclasses of that typeclass.
         """
         paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
-                         for cls in self.model.__subclasses__()]
+                         for cls in self._get_subclasses(self.model)]
         kwargs.update({"db_typeclass_path__in":paths})
         return super(TypedObjectManager, self).get(**kwargs)
 
@@ -85,7 +94,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         # query, including all subclasses
         paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
-                         for cls in self.model.__subclasses__()]
+                         for cls in self._get_subclasses(self.model)]
         kwargs.update({"db_typeclass_path__in":paths})
         return super(TypedObjectManager, self).filter(**kwargs)
 
@@ -95,7 +104,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         the typeclass.
         """
         paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
-                         for cls in self.model.__subclasses__()]
+                         for cls in self._get_subclasses(self.model)]
         return super(TypedObjectManager, self).all(**kwargs).filter(db_typeclass_path__in=paths)
 
 

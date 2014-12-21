@@ -230,8 +230,7 @@ class ObjectDB(TypedObject):
     # location getsetter
     def __location_get(self):
         "Get location"
-        loc = _GA(_GA(self, "dbobj"), "db_location")
-        return _GA(loc, "typeclass") if loc else loc
+        return self.db_location
 
     def __location_set(self, location):
         "Set location, checking for loops and allowing dbref"
