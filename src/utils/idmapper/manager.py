@@ -15,11 +15,15 @@ class SharedMemoryManager(Manager):
     #     rel_obj = rel_mgr.using(db).get(**params)
     # We need to handle using, or the get method will be called on a vanilla
     # queryset, and we won't get a change to use the cache.
-    def using(self, alias):
-        if alias == router.db_for_read(self.model):
-            return self
-        else:
-            return super(SharedMemoryManager, self).using(alias)
+
+    #TODO - removing this for django1.7 - the call mentioned above doesn't happen
+    # anymore but is the cache still used? /Griatch
+    #def using(self, alias):
+    #    if alias == router.db_for_read(self.model):
+    #        # this should return a queryset!
+    #        return self
+    #    else:
+    #        return super(SharedMemoryManager, self).using(alias)
 
     # TODO: improve on this implementation
     # We need a way to handle reverse lookups so that this model can
