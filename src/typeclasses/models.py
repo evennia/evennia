@@ -775,13 +775,12 @@ class TypeclassBase(SharedMemoryModelBase):
         attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
 
         # typeclass proxy setup
-        if "Meta" in attrs:
-            attrs["Meta"].proxy = True
-        else:
+        if not "Meta" in attrs:
             class Meta:
                 proxy = True
             attrs["Meta"] = Meta
-
+        attrs["Meta"].proxy = True
+        attrs["Meta"].app_label = attrs["path"]
 
         # patch start - django multi-inheritance
         # this is a copy of django.db.models.base.__new__
