@@ -69,8 +69,22 @@ class SharedMemoryModelBase(ModelBase):
 
 
     def _prepare(cls):
-        cls.__instance_cache__ = {}
-        cls._idmapper_recache_protection = False
+        """
+        Prepare the cache, making sure that proxies of the same db base
+        share the same cache.
+        """
+        def prep(dbmodel):
+            if not hasattr(dbmodel, "__instance_cache__"):
+                dbmodel.__instance_cache__ = {}
+                dbmodel.__idmapper_recache_protection = False
+        if not cls._meta.proxy:
+            # non-proxy models get the full cache
+            prep(cls)
+        else:
+            # proxies get a reference to the cache
+            dbmodel = cls._meta.proxy_for_model
+            prep(dbmodel)
+            cls.__instance_cache__ = dbmodel.__instance_cache__
         super(SharedMemoryModelBase, cls)._prepare()
 
     def __new__(cls, name, bases, attrs):
@@ -197,6 +211,7 @@ class SharedMemoryModel(Model):
     #    super(SharedMemoryModel, cls).__init__(*args, **kwargs)
     #    cls._idmapper_recache_protection = False
 
+    @classmethod
     def _get_cache_key(cls, args, kwargs):
         """
         This method is used by the caching subsystem to infer the PK value from the constructor arguments.
@@ -225,8 +240,9 @@ class SharedMemoryModel(Model):
             # if the pk value happens to be a model instance (which can happen wich a FK), we'd rather use its own pk as the key
             result = result._get_pk_val()
         return result
-    _get_cache_key = classmethod(_get_cache_key)
+    #_get_cache_key = classmethod(_get_cache_key)
 
+    @classmethod
     def get_cached_instance(cls, id):
         """
         Method to retrieve a cached instance by pk value. Returns None when not found
@@ -234,8 +250,9 @@ class SharedMemoryModel(Model):
         note that the lookup will be done even when instance caching is disabled.
         """
         return cls.__instance_cache__.get(id)
-    get_cached_instance = classmethod(get_cached_instance)
+    #get_cached_instance = classmethod(get_cached_instance)
 
+    @classmethod
     def cache_instance(cls, instance):
         """
         Method to store an instance in the cache.
@@ -243,13 +260,15 @@ class SharedMemoryModel(Model):
         if instance._get_pk_val() is not None:
 
             cls.__instance_cache__[instance._get_pk_val()] = instance
-    cache_instance = classmethod(cache_instance)
+    #cache_instance = classmethod(cache_instance)
 
+    @classmethod
     def get_all_cached_instances(cls):
         "return the objects so far cached by idmapper for this class."
         return cls.__instance_cache__.values()
-    get_all_cached_instances = classmethod(get_all_cached_instances)
+    #get_all_cached_instances = classmethod(get_all_cached_instances)
 
+    @classmethod
     def _flush_cached_by_key(cls, key, force=True):
         "Remove the cached reference."
         try:
@@ -257,8 +276,9 @@ class SharedMemoryModel(Model):
                 del cls.__instance_cache__[key]
         except KeyError:
             pass
-    _flush_cached_by_key = classmethod(_flush_cached_by_key)
+    #_flush_cached_by_key = classmethod(_flush_cached_by_key)
 
+    @classmethod
     def flush_cached_instance(cls, instance, force=True):
         """
         Method to flush an instance from the cache. The instance will
@@ -268,14 +288,9 @@ class SharedMemoryModel(Model):
 
         """
         cls._flush_cached_by_key(instance._get_pk_val(), force=force)
-    flush_cached_instance = classmethod(flush_cached_instance)
+    #flush_cached_instance = classmethod(flush_cached_instance)
 
-    # per-instance methods
-
-    def set_recache_protection(cls, mode=True):
-        "set if this instance should be allowed to be recached."
-        cls._idmapper_recache_protection = bool(mode)
-
+    @classmethod
     def flush_instance_cache(cls, force=False):
         """
         This will clean safe objects from the cache. Use force
@@ -286,7 +301,13 @@ class SharedMemoryModel(Model):
         else:
             cls.__instance_cache__ = dict((key, obj) for key, obj in cls.__instance_cache__.items()
                                                       if obj._idmapper_recache_protection)
-    flush_instance_cache = classmethod(flush_instance_cache)
+    #flush_instance_cache = classmethod(flush_instance_cache)
+
+    # per-instance methods
+
+    def set_recache_protection(cls, mode=True):
+        "set if this instance should be allowed to be recached."
+        cls._idmapper_recache_protection = bool(mode)
 
     def save(cls, *args, **kwargs):
         "save method tracking process/thread issues"
@@ -305,7 +326,6 @@ class SharedMemoryModel(Model):
             # in another thread; make sure to save in reactor thread
             def _save_callback(cls, *args, **kwargs):
                 super(SharedMemoryModel, cls).save(*args, **kwargs)
-            #blockingCallFromThread(reactor, _save_callback, cls, *args, **kwargs)
             callFromThread(_save_callback, cls, *args, **kwargs)
 
 
