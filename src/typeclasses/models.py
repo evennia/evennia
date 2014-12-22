@@ -628,7 +628,7 @@ class TagHandler(object):
         """
         self.obj = obj
         self._objid = obj.id
-        self._model = obj.__class__.__name__.lower()
+        self._model = obj.__dbclass__.__name__.lower()
         self._cache = None
 
     def _recache(self):
@@ -661,7 +661,7 @@ class TagHandler(object):
             cachestring = "%s-%s" % (tagstr, category)
             self._cache[cachestring] = tagobj
 
-    def get(self, key, category="", return_tagobj=False):
+    def get(self, key, category=None, return_tagobj=False):
         """
         Get the tag for the given key or list of tags. If
         return_data=True, return the matching Tag objects instead.
