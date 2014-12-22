@@ -169,8 +169,8 @@ class Channel(ChannelDB):
         this channel, and sending them a message.
         """
         # get all players connected to this channel and send to them
-        for player in self.dbobj.db_subscriptions.all():
-            player = player.typeclass
+        for player in self.db_subscriptions.all():
+            player = player
             try:
                 # note our addition of the from_channel keyword here. This could be checked
                 # by a custom player.msg() to treat channel-receives differently.
@@ -222,7 +222,7 @@ class Channel(ChannelDB):
                 msgobj = TempMsg()
             msgobj.header = header
             msgobj.message = msg
-            msgobj.channels = [self.dbobj]  # add this channel
+            msgobj.channels = [self]  # add this channel
 
         if not msgobj.senders:
             msgobj.senders = senders

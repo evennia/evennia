@@ -115,18 +115,18 @@ class ServerSession(Session):
         if self.logged_in:
             sessid = self.sessid
             player = self.player
-            _GA(player.dbobj, "unpuppet_object")(sessid)
-            uaccount = player.dbobj
+            player.unpuppet_object(sessid)
+            uaccount = player
             uaccount.last_login = datetime.now()
             uaccount.save()
             # calling player hook
-            _GA(player.typeclass, "at_disconnect")()
+            player.at_disconnect()
             self.logged_in = False
             if not self.sessionhandler.sessions_from_player(player):
                 # no more sessions connected to this player
                 player.is_connected = False
             # this may be used to e.g. delete player after disconnection etc
-            _GA(player.typeclass, "at_post_disconnect")()
+            player.at_post_disconnect()
 
     def get_player(self):
         """

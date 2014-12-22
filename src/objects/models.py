@@ -547,7 +547,7 @@ class ObjectDB(TypedObject):
             except Exception:
                 logger.log_trace()
         try:
-            if not self.at_msg_receive(text=text, **kwargs)
+            if not self.at_msg_receive(text=text, **kwargs):
                 # if at_msg_receive returns false, we abort message to this object
                 return
         except Exception:

@@ -121,9 +121,9 @@ class Msg(SharedMemoryModel):
     #@property
     def __senders_get(self):
         "Getter. Allows for value = self.sender"
-        return  list(self.db_sender_players.all()) +
-                list(self.db_sender_objects.all()) +
-                self.extra_senders]
+        return  list(self.db_sender_players.all()) + \
+                list(self.db_sender_objects.all()) + \
+                self.extra_senders
 
     #@sender.setter
     def __senders_set(self, value):

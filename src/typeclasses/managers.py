@@ -34,7 +34,7 @@ def returns_typeclass(method):
     def func(self, *args, **kwargs):
         self.__doc__ = method.__doc__
         query = method(self, *args, **kwargs)
-        return list(query)[0] if query else None
+        return query
     return update_wrapper(func, method)
 
 # Managers
