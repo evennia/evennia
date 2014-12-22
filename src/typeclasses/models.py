@@ -234,7 +234,7 @@ class AttributeHandler(object):
         "Initialize handler"
         self.obj = obj
         self._objid = obj.id
-        self._model = to_str(obj.__class__.__name__.lower())
+        self._model = to_str(obj.__dbclass__.__name__.lower())
         self._cache = None
 
     def _recache(self):
@@ -1091,6 +1091,7 @@ class TypedObject(SharedMemoryModel):
     def __init__(self, *args, **kwargs):
         typeclass_path = kwargs.pop("typeclass", None)
         super(TypedObject, self).__init__(*args, **kwargs)
+        self.__dbclass__ = self._meta.proxy_for_model
         if typeclass_path:
             self.__class__ = self._import_class(typeclass_path)
             self.db_typclass_path = typeclass_path
@@ -1367,6 +1368,13 @@ class TypedObject(SharedMemoryModel):
         self.delete = self._deleted
         self._is_deleted = True
         super(TypedObject, self).delete()
+
+    def save(self, *args, **kwargs):
+        "Block saving non-proxy typeclassed objects"
+        if not self._meta.proxy:
+            raise RuntimeError("Don't create instances of %s, "
+                               "use its child typeclasses instead." % self.__class__.__name__)
+        super(TypedObject, self).save(*args, **kwargs)
 
     #
     # Memory management

@@ -312,11 +312,6 @@ class SharedMemoryModel(Model):
     def save(self, *args, **kwargs):
         "save method tracking process/thread issues"
 
-        # don't allow saving base objects
-        if not self._meta.proxy:
-            raise RuntimeError("Don't create instances of %s, "
-                               "use its child typeclasses instead." % self.__class__.__name__)
-
         if _IS_SUBPROCESS:
             # we keep a store of objects modified in subprocesses so
             # we know to update their caches in the central process

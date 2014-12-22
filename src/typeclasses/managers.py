@@ -279,6 +279,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
 
 class TypeclassManager(TypedObjectManager):
+
     def get(self, **kwargs):
         """
         Overload the standard get. This will limit itself to only
