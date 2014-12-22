@@ -174,8 +174,7 @@ class Msg(SharedMemoryModel):
         Getter. Allows for value = self.receivers.
         Returns three lists of receivers: players, objects and channels.
         """
-        return [hasattr(o, "typeclass") and o.typeclass or o for o in
-                list(self.db_receivers_players.all()) + list(self.db_receivers_objects.all())]
+        return list(self.db_receivers_players.all()) + list(self.db_receivers_objects.all())
 
     #@receivers.setter
     def __receivers_set(self, value):
@@ -371,7 +370,7 @@ class ChannelDB(TypedObject):
     #
 
     def __str__(self):
-        return "Channel '%s' (%s)" % (self.key, self.typeclass.db.desc)
+        return "Channel '%s' (%s)" % (self.key, self.db.desc)
 
     def has_connection(self, player):
         """
@@ -387,33 +386,31 @@ class ChannelDB(TypedObject):
         "Connect the user to this channel. This checks access."
         if hasattr(player, "player"):
             player = player.player
-        player = player.typeclass
         # check access
         if not self.access(player, 'listen'):
             return False
         # pre-join hook
-        connect = self.typeclass.pre_join_channel(player)
+        connect = self.pre_join_channel(player)
         if not connect:
             return False
         # subscribe
         self.db_subscriptions.add(player.dbobj)
         # post-join hook
-        self.typeclass.post_join_channel(player)
+        self.post_join_channel(player)
         return True
 
     def disconnect(self, player):
         "Disconnect user from this channel."
         if hasattr(player, "player"):
             player = player.player
-        player = player.typeclass
         # pre-disconnect hook
-        disconnect = self.typeclass.pre_leave_channel(player)
+        disconnect = self.pre_leave_channel(player)
         if not disconnect:
             return False
         # disconnect
         self.db_subscriptions.remove(player.dbobj)
         # post-disconnect hook
-        self.typeclass.post_leave_channel(player.dbobj)
+        self.post_leave_channel(player.dbobj)
         return True
 
     def access(self, accessing_obj, access_type='listen', default=False):

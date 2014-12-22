@@ -302,49 +302,6 @@ class ChannelDBManager(TypedObjectManager):
         """
         return player.dbobj.subscription_set.all()
 
-
-#    def del_channel(self, channelkey):
-#        """
-#        Delete channel matching channelkey.
-#        Also cleans up channelhandler.
-#        """
-#        channels = self.filter(db_key__iexact=channelkey)
-#        if not channels:
-#            # no aliases allowed for deletion.
-#            return False
-#        for channel in channels:
-#            channel.delete()
-#        from src.comms.channelhandler import CHANNELHANDLER
-#        CHANNELHANDLER.update()
-#        return None
-
-#    def get_all_connections(self, channel, online=False):
-#        """
-#        Return the connections of all players listening
-#        to this channel. If Online is true, it only returns
-#        connected players.
-#        """
-#        global _SESSIONS
-#        if not _SESSIONS:
-#            from src.server.sessionhandler import SESSIONS as _SESSIONS
-#
-#        PlayerChannelConnection = ContentType.objects.get(app_label="comms",
-#                                                          model="playerchannelconnection").model_class()
-#        players = []
-#        if online:
-#            session_list = _SESSIONS.get_sessions()
-#            unique_online_users = set(sess.uid for sess in session_list if sess.logged_in)
-#            online_players = (sess.get_player() for sess in session_list if sess.uid in unique_online_users)
-#            for player in online_players:
-#                players.extend(PlayerChannelConnection.objects.filter(
-#                    db_player=player.dbobj, db_channel=channel.dbobj))
-#        else:
-#            players.extend(PlayerChannelConnection.objects.get_all_connections(channel))
-#
-#        external_connections = ExternalChannelConnection.objects.get_all_connections(channel)
-#
-#        return itertools.chain(players, external_connections)
-
     @returns_typeclass_list
     def channel_search(self, ostring, exact=True):
         """
@@ -376,72 +333,5 @@ class ChannelDBManager(TypedObjectManager):
 
 class ChannelManager(ChannelDBManager, TypeclassManager):
     pass
-
-
-#
-# PlayerChannelConnection manager
-#
-class PlayerChannelConnectionManager(models.Manager):
-    """
-    This PlayerChannelConnectionManager implements methods for searching
-    and manipulating PlayerChannelConnections directly from the database.
-
-    These methods will all return database objects
-    (or QuerySets) directly.
-
-    A PlayerChannelConnection defines a user's subscription to an in-game
-    channel - deleting the connection object will disconnect the player
-    from the channel.
-
-    Evennia-specific:
-    get_all_player_connections
-    has_connection
-    get_all_connections
-    create_connection
-    break_connection
-
-    """
-    @returns_typeclass_list
-    def get_all_player_connections(self, player):
-        "Get all connections that the given player has."
-        player = to_object(player)
-        return self.filter(db_player=player)
-
-    def has_player_connection(self, player, channel):
-        "Checks so a connection exists player<->channel"
-        if player and channel:
-            return self.filter(db_player=player.dbobj).filter(
-                db_channel=channel.dbobj).count() > 0
-        return False
-
-    def get_all_connections(self, channel):
-        """
-        Get all connections for a channel
-        """
-        channel = to_object(channel, objtype='channel')
-        return self.filter(db_channel=channel)
-
-    def create_connection(self, player, channel):
-        """
-        Connect a player to a channel. player and channel
-        can be actual objects or keystrings.
-        """
-        player = to_object(player)
-        channel = to_object(channel, objtype='channel')
-        if not player or not channel:
-            raise CommError("NOTFOUND")
-        new_connection = self.model(db_player=player, db_channel=channel)
-        new_connection.save()
-        return new_connection
-
-    def break_connection(self, player, channel):
-        "Remove link between player and channel"
-        player = to_object(player)
-        channel = to_object(channel, objtype='channel')
-        if not player or not channel:
-            raise CommError("NOTFOUND")
-        conns = self.filter(db_player=player).filter(db_channel=channel)
-        for conn in conns:
-            conn.delete()
 
 
