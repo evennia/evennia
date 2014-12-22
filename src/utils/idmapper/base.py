@@ -266,7 +266,6 @@ class SharedMemoryModel(Model):
     def get_all_cached_instances(cls):
         "return the objects so far cached by idmapper for this class."
         return cls.__instance_cache__.values()
-    #get_all_cached_instances = classmethod(get_all_cached_instances)
 
     @classmethod
     def _flush_cached_by_key(cls, key, force=True):
@@ -276,7 +275,6 @@ class SharedMemoryModel(Model):
                 del cls.__instance_cache__[key]
         except KeyError:
             pass
-    #_flush_cached_by_key = classmethod(_flush_cached_by_key)
 
     @classmethod
     def flush_cached_instance(cls, instance, force=True):

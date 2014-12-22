@@ -124,8 +124,7 @@ class ScriptDB(TypedObject):
         obj = _GA(self, "db_player")
         if not obj:
             obj = _GA(self, "db_obj")
-        if obj:
-            return obj.typeclass
+        return obj
 
     def __set_obj(self, value):
         """
