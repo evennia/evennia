@@ -1091,7 +1091,6 @@ class TypedObject(SharedMemoryModel):
     def __init__(self, *args, **kwargs):
         typeclass_path = kwargs.pop("typeclass", None)
         super(TypedObject, self).__init__(*args, **kwargs)
-        self.__dbclass__ = self._meta.proxy_for_model
         if typeclass_path:
             self.__class__ = self._import_class(typeclass_path)
             self.db_typclass_path = typeclass_path
@@ -1099,6 +1098,8 @@ class TypedObject(SharedMemoryModel):
             self.__class__ = self._import_class(self.db_typeclass_path)
         else:
             self.db_typeclass_path = "%s.%s" % (self.__module__, self.__class__.__name__)
+        # important to put this at the end since _meta is based on the set __class__
+        self.__dbclass__ = self._meta.proxy_for_model
 
     # initialize all handlers in a lazy fashion
     @lazy_property
