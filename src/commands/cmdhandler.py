@@ -130,7 +130,7 @@ def get_and_merge_cmdsets(caller, session, player, obj,
         if location and not obj_cmdset.no_objs:
             # Gather all cmdsets stored on objects in the room and
             # also in the caller's inventory and the location itself
-            local_objlist = yield (location.contents_get(exclude=obj.dbobj) +
+            local_objlist = yield (location.contents_get(exclude=obj) +
                                    obj.contents +
                                    [location])
             for lobj in local_objlist:
@@ -283,11 +283,11 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
         session = called_by
         player = session.player
         if player:
-            obj = yield _GA(player.dbobj, "get_puppet")(session.sessid)
+            obj = yield player.get_puppet(session.sessid)
     elif callertype == "player":
         player = called_by
         if sessid:
-            obj = yield _GA(player.dbobj, "get_puppet")(sessid)
+            obj = yield player.get_puppet(sessid)
     elif callertype == "object":
         obj = called_by
     else:

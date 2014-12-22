@@ -252,14 +252,14 @@ class ObjectDB(TypedObject):
                     raise RuntimeError
                 elif loc == None:
                     raise RuntimeWarning
-                return is_loc_loop(_GA(_GA(loc, "dbobj"), "db_location"), depth + 1)
+                return is_loc_loop(loc.db_location, depth + 1)
             try:
                 is_loc_loop(location)
             except RuntimeWarning:
                 pass
             # actually set the field
-            _SA(_GA(self, "dbobj"), "db_location", _GA(location, "dbobj") if location else location)
-            _GA(_GA(self, "dbobj"), "save")(update_fields=["db_location"])
+            self.db_location = location
+            self.save(update_fields=["db_location"])
         except RuntimeError:
             errmsg = "Error: %s.location = %s creates a location loop." % (self.key, location)
             logger.log_errmsg(errmsg)
@@ -271,8 +271,8 @@ class ObjectDB(TypedObject):
 
     def __location_del(self):
         "Cleanly delete the location reference"
-        _SA(_GA(self, "dbobj"), "db_location", None)
-        _GA(_GA(self, "dbobj"), "save")(upate_fields=["db_location"])
+        self.db_location = None
+        self.save(update_fields=["db_location"])
     location = property(__location_get, __location_set, __location_del)
 
     class Meta:
@@ -323,8 +323,7 @@ class ObjectDB(TypedObject):
         exclude is one or more objects to not return
         """
         if exclude:
-            exclude = [obj.dbobj for obj in make_iter(exclude)]
-            return ObjectDB.objects.get_contents(self, excludeobj=exclude)
+            return ObjectDB.objects.get_contents(self, excludeobj=make_iter(exclude))
         return ObjectDB.objects.get_contents(self)
     contents = property(contents_get)
 
@@ -423,7 +422,7 @@ class ObjectDB(TypedObject):
             # location(s) were given
             candidates = []
             for obj in make_iter(location):
-                candidates.extend([o.dbobj for o in obj.contents])
+                candidates.extend(obj.contents)
         else:
             # local search. Candidates are self.contents, self.location
             # and self.location.contents
@@ -434,8 +433,6 @@ class ObjectDB(TypedObject):
             else:
                 # normally we are included in location.contents
                 candidates.append(self)
-            # db manager expects database objects
-            candidates = [obj.dbobj for obj in candidates]
 
         results = ObjectDB.objects.object_search(searchdata,
                                                  attribute_name=attribute_name,

@@ -44,7 +44,6 @@ class ScriptDBManager(TypedObjectManager):
         """
         if not obj:
             return []
-        obj = obj.dbobj
         player = _GA(_GA(obj, "__class__"), "__name__") == "PlayerDB"
         if key:
             dbref = self.dbref(key)
@@ -161,7 +160,7 @@ class ScriptDBManager(TypedObjectManager):
             # turn off the activity flag for all remaining scripts
             scripts = self.get_all_scripts()
             for script in scripts:
-                script.dbobj.is_active = False
+                script.is_active = False
 
         elif not scripts:
             # normal operation
@@ -180,7 +179,7 @@ class ScriptDBManager(TypedObjectManager):
 
         #print "scripts to validate: [%s]" % (", ".join(script.key for script in scripts))
         for script in scripts:
-            #print "validating %s (%i) (init_mode=%s)" % (script.key, id(script.dbobj), init_mode)
+            #print "validating %s (%i) (init_mode=%s)" % (script.key, id(script), init_mode)
             if script.is_valid():
                 nr_started += script.start(force_restart=init_mode)
                 #print "back from start. nr_started=", nr_started
@@ -212,7 +211,7 @@ class ScriptDBManager(TypedObjectManager):
                 return [dbref_match]
 
         # not a dbref; normal search
-        obj_restriction = obj and Q(db_obj=obj.dbobj) or Q()
+        obj_restriction = obj and Q(db_obj=obj) or Q()
         timed_restriction = only_timed and Q(interval__gt=0) or Q()
         scripts = self.filter(timed_restriction & obj_restriction & Q(db_key__iexact=ostring))
         return scripts

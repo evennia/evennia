@@ -268,7 +268,7 @@ class Object(ObjectDB):
             if searchdata.lower() in ("me", "self",):
                 return self
 
-        return self.dbobj.search(searchdata,
+        return super(Object, self).search(searchdata,
                global_search=global_search,
                use_nicks=use_nicks,
                typeclass=typeclass,
@@ -305,7 +305,7 @@ class Object(ObjectDB):
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("me", "self",):
                 return self.player
-        return self.dbobj.search_player(searchdata, quiet=quiet)
+        return super(Object, self).search_player(searchdata, quiet=quiet)
 
     def execute_cmd(self, raw_string, sessid=None, **kwargs):
         """
@@ -333,7 +333,7 @@ class Object(ObjectDB):
             useful for coders intending to implement some sort of nested
             command structure.
         """
-        return self.dbobj.execute_cmd(raw_string, sessid=sessid, **kwargs)
+        return super(Object, self).execute_cmd(raw_string, sessid=sessid, **kwargs)
 
     def msg(self, text=None, from_obj=None, sessid=None, **kwargs):
         """
@@ -347,7 +347,7 @@ class Object(ObjectDB):
                 default to self.sessid or from_obj.sessid.
         """
 
-        self.dbobj.msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
+        super(Object, self).msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
 
     def msg_contents(self, text=None, exclude=None, from_obj=None, **kwargs):
         """
@@ -356,7 +356,7 @@ class Object(ObjectDB):
         exclude is a list of objects not to send to. See self.msg() for
                 more info.
         """
-        self.dbobj.msg_contents(text, exclude=exclude,
+        super(Object, self).msg_contents(text, exclude=exclude,
                                 from_obj=from_obj, **kwargs)
 
     def move_to(self, destination, quiet=False,
@@ -387,7 +387,7 @@ class Object(ObjectDB):
                emit_to_obj.
 
         """
-        return self.dbobj.move_to(destination, quiet=quiet,
+        return super(Object, self).move_to(destination, quiet=quiet,
                                   emit_to_obj=emit_to_obj,
                                   use_destination=use_destination)
 
@@ -402,7 +402,7 @@ class Object(ObjectDB):
                            <old_key>_copy by default.
         Returns: Object (copy of this one)
         """
-        return self.dbobj.copy(new_key=new_key)
+        return super(Object, self).copy(new_key=new_key)
 
     def delete(self):
         """
@@ -415,7 +415,7 @@ class Object(ObjectDB):
                  were errors during deletion or deletion otherwise
                  failed.
         """
-        return self.dbobj.delete()
+        return super(Object, self).delete()
 
     # methods inherited from the typeclass system
 
@@ -434,7 +434,7 @@ class Object(ObjectDB):
 
         Returns: Boolean
         """
-        return self.dbobj.is_typeclass(typeclass, exact=exact)
+        return super(Object, self).is_typeclass(typeclass, exact=exact)
 
     def swap_typeclass(self, new_typeclass, clean_attributes=False, no_default=True):
         """
@@ -470,7 +470,7 @@ class Object(ObjectDB):
 
 
         """
-        return self.dbobj.swap_typeclass(new_typeclass,
+        return super(Object, self).swap_typeclass(new_typeclass,
                        clean_attributes=clean_attributes, no_default=no_default)
 
     def access(self, accessing_obj, access_type='read', default=False, **kwargs):
@@ -483,7 +483,7 @@ class Object(ObjectDB):
           default (bool) - what to return if no lock of access_type was found
           **kwargs - passed to at_access hook along with result,accessing_obj and access_type
         """
-        result = self.dbobj.access(accessing_obj, access_type=access_type, default=default)
+        result = super(Object, self).access(accessing_obj, access_type=access_type, default=default)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 
@@ -504,7 +504,7 @@ class Object(ObjectDB):
                               permission on the object.
                               (example: 'Builders')
         """
-        return self.dbobj.check_permstring(permstring)
+        return super(Object, self).check_permstring(permstring)
 
     def __eq__(self, other):
         """
