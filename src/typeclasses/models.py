@@ -1263,7 +1263,7 @@ class TypedObject(SharedMemoryModel):
         _SA(self, "typeclass_path", new_typeclass.strip())
         # this will automatically use a default class if
         # there is an error with the given typeclass.
-        new_typeclass = self.typeclass
+        new_typeclass = self
         if self.typeclass_path != new_typeclass.path and no_default:
             # something went wrong; the default was loaded instead,
             # and we don't allow that; instead we return to previous.
