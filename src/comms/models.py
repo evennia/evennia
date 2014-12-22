@@ -121,8 +121,7 @@ class Msg(SharedMemoryModel):
     #@property
     def __senders_get(self):
         "Getter. Allows for value = self.sender"
-        return [hasattr(o, "typeclass") and o.typeclass or o for o in
-                list(self.db_sender_players.all()) +
+        return  list(self.db_sender_players.all()) +
                 list(self.db_sender_objects.all()) +
                 self.extra_senders]
 

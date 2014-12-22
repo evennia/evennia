@@ -510,7 +510,7 @@ class ObjectDB(TypedObject):
         raw_string = to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string,
                      categories=("inputline", "channel"), include_player=True)
-        return cmdhandler.cmdhandler(_GA(self, "typeclass"), raw_string, callertype="object", sessid=sessid, **kwargs)
+        return cmdhandler.cmdhandler(self, raw_string, callertype="object", sessid=sessid, **kwargs)
 
     def msg(self, text=None, from_obj=None, sessid=0, **kwargs):
         """
@@ -543,11 +543,11 @@ class ObjectDB(TypedObject):
         if from_obj:
             # call hook
             try:
-                _GA(from_obj, "at_msg_send")(text=text, to_obj=_GA(self, "typeclass"), **kwargs)
+                from_obj.at_msg_send(text=text, to_obj=self, **kwargs)
             except Exception:
                 logger.log_trace()
         try:
-            if not _GA(_GA(self, "typeclass"), "at_msg_receive")(text=text, **kwargs):
+            if not self.at_msg_receive(text=text, **kwargs)
                 # if at_msg_receive returns false, we abort message to this object
                 return
         except Exception:
@@ -625,7 +625,7 @@ class ObjectDB(TypedObject):
 
         # Before the move, call eventual pre-commands.
         try:
-            if not self.at_before_move(_GA(destination, "typeclass")):
+            if not self.at_before_move(destination):
                 return
         except Exception:
             logerr(errtxt % "at_before_move()")
@@ -646,7 +646,7 @@ class ObjectDB(TypedObject):
 
         # Call hook on source location
         try:
-            source_location.at_object_leave(_GA(self, "typeclass"), _GA(destination, "typeclass"))
+            source_location.at_object_leave(self, destination)
         except Exception:
             logerr(errtxt % "at_object_leave()")
             #emit_to_obj.msg(errtxt % "at_object_leave()")
@@ -656,7 +656,7 @@ class ObjectDB(TypedObject):
         if not quiet:
             #tell the old room we are leaving
             try:
-                self.announce_move_from(_GA(destination, "typeclass"))
+                self.announce_move_from(destination)
             except Exception:
                 logerr(errtxt % "at_announce_move()")
                 #emit_to_obj.msg(errtxt % "at_announce_move()" )
@@ -675,7 +675,7 @@ class ObjectDB(TypedObject):
         if not quiet:
             # Tell the new room we are there.
             try:
-                self.announce_move_to(_GA(source_location, "typeclass"))
+                self.announce_move_to(source_location)
             except Exception:
                 logerr(errtxt % "announce_move_to()")
                 #emit_to_obj.msg(errtxt % "announce_move_to()")
@@ -685,7 +685,7 @@ class ObjectDB(TypedObject):
         # Perform eventual extra commands on the receiving location
         # (the object has already arrived at this point)
         try:
-            destination.at_object_receive(_GA(self, "typeclass"), _GA(source_location, "typeclass"))
+            destination.at_object_receive(self, source_location)
         except Exception:
             logerr(errtxt % "at_object_receive()")
             #emit_to_obj.msg(errtxt % "at_object_receive()")
@@ -695,7 +695,7 @@ class ObjectDB(TypedObject):
         # Execute eventual extra commands on this object after moving it
         # (usually calling 'look')
         try:
-            self.at_after_move(_GA(source_location, "typeclass"))
+            self.at_after_move(source_location)
         except Exception:
             logerr(errtxt % "at_after_move")
             #emit_to_obj.msg(errtxt % "at_after_move()")

@@ -239,7 +239,7 @@ class PlayerDB(TypedObject, AbstractUser):
         if from_obj:
             # call hook
             try:
-                _GA(from_obj, "at_msg_send")(text=text, to_obj=_GA(self, "typeclass"), **kwargs)
+                _GA(from_obj, "at_msg_send")(text=text, to_obj=self, **kwargs)
             except Exception:
                 pass
         sessions = _MULTISESSION_MODE > 1 and sessid and _GA(self, "get_session")(sessid) or None
@@ -318,7 +318,7 @@ class PlayerDB(TypedObject, AbstractUser):
         # server kill or similar
 
         if normal_mode:
-            _GA(obj.typeclass, "at_pre_puppet")(_GA(self, "typeclass"), sessid=sessid)
+            obj.at_pre_puppet(self, sessid=sessid)
         # do the connection
         obj.sessid.add(sessid)
         obj.player = self
@@ -327,7 +327,7 @@ class PlayerDB(TypedObject, AbstractUser):
         # validate/start persistent scripts on object
         ScriptDB.objects.validate(obj=obj)
         if normal_mode:
-            _GA(obj.typeclass, "at_post_puppet")()
+            obj.at_post_puppet()
         return True
 
     def unpuppet_object(self, sessid):
@@ -345,11 +345,11 @@ class PlayerDB(TypedObject, AbstractUser):
         if not obj:
             return False
         # do the disconnect, but only if we are the last session to puppet
-        _GA(obj.typeclass, "at_pre_unpuppet")()
+        obj.at_pre_unpuppet()
         obj.dbobj.sessid.remove(sessid)
         if not obj.dbobj.sessid.count():
             del obj.dbobj.player
-            _GA(obj.typeclass, "at_post_unpuppet")(_GA(self, "typeclass"), sessid=sessid)
+            obj.at_post_unpuppet(self, sessid=sessid)
         session.puppet = None
         session.puid = None
         return True
@@ -377,7 +377,7 @@ class PlayerDB(TypedObject, AbstractUser):
             return None
         if return_dbobj:
             return session.puppet
-        return session.puppet and session.puppet.typeclass or None
+        return session.puppet and session.puppet or None
 
     def get_all_puppets(self, return_dbobj=False):
         """
@@ -387,7 +387,7 @@ class PlayerDB(TypedObject, AbstractUser):
                                                             if session.puppet]
         if return_dbobj:
             return puppets
-        return [puppet.typeclass for puppet in puppets]
+        return [puppet for puppet in puppets]
 
     def __get_single_puppet(self):
         """
@@ -447,7 +447,7 @@ class PlayerDB(TypedObject, AbstractUser):
             except IndexError:
                 # this can happen for bots
                 sessid = None
-        return cmdhandler.cmdhandler(self.typeclass, raw_string,
+        return cmdhandler.cmdhandler(self, raw_string,
                                      callertype="player", sessid=sessid, **kwargs)
 
     def search(self, searchdata, return_puppet=False, **kwargs):
@@ -469,7 +469,7 @@ class PlayerDB(TypedObject, AbstractUser):
             return_puppet = kwargs.get("return_character")
 
         matches = _GA(self, "__class__").objects.player_search(searchdata)
-        matches = _AT_SEARCH_RESULT(_GA(self, "typeclass"), searchdata, matches, global_search=True)
+        matches = _AT_SEARCH_RESULT(self, searchdata, matches, global_search=True)
         if matches and return_puppet:
             try:
                 return _GA(matches, "puppet")
