@@ -305,28 +305,33 @@ class SharedMemoryModel(Model):
 
     # per-instance methods
 
-    def set_recache_protection(cls, mode=True):
+    def set_recache_protection(self, mode=True):
         "set if this instance should be allowed to be recached."
-        cls._idmapper_recache_protection = bool(mode)
+        self._idmapper_recache_protection = bool(mode)
 
-    def save(cls, *args, **kwargs):
+    def save(self, *args, **kwargs):
         "save method tracking process/thread issues"
+
+        # don't allow saving base objects
+        if not self._meta.proxy:
+            raise RuntimeError("Don't create instances of %s, "
+                               "use its child typeclasses instead." % self.__class__.__name__)
 
         if _IS_SUBPROCESS:
             # we keep a store of objects modified in subprocesses so
             # we know to update their caches in the central process
             global PROC_MODIFIED_COUNT, PROC_MODIFIED_OBJS
             PROC_MODIFIED_COUNT += 1
-            PROC_MODIFIED_OBJS[PROC_MODIFIED_COUNT] = cls
+            PROC_MODIFIED_OBJS[PROC_MODIFIED_COUNT] = self
 
         if _IS_MAIN_THREAD:
             # in main thread - normal operation
-            super(SharedMemoryModel, cls).save(*args, **kwargs)
+            super(SharedMemoryModel, self).save(*args, **kwargs)
         else:
             # in another thread; make sure to save in reactor thread
             def _save_callback(cls, *args, **kwargs):
                 super(SharedMemoryModel, cls).save(*args, **kwargs)
-            callFromThread(_save_callback, cls, *args, **kwargs)
+            callFromThread(_save_callback, self, *args, **kwargs)
 
 
 class WeakSharedMemoryModelBase(SharedMemoryModelBase):
