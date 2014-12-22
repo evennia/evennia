@@ -5,7 +5,8 @@ The managers for the custom Player object and permissions.
 import datetime
 from django.contrib.auth.models import UserManager
 #from functools import update_wrapper
-from src.typeclasses.managers import returns_typeclass_list, returns_typeclass, TypedObjectManager
+from src.typeclasses.managers import (returns_typeclass_list, returns_typeclass,
+                                      TypedObjectManager, TypeclassManager)
 #from src.utils import logger
 __all__ = ("PlayerManager",)
 
@@ -14,7 +15,7 @@ __all__ = ("PlayerManager",)
 # Player Manager
 #
 
-class PlayerManager(TypedObjectManager, UserManager):
+class PlayerDBManager(TypedObjectManager, UserManager):
     """
     This PlayerManager implements methods for searching
     and manipulating Players directly from the database.
@@ -149,3 +150,6 @@ class PlayerManager(TypedObjectManager, UserManager):
         if old_character and delete_old_character:
             old_character.delete()
         return True
+
+class PlayerManager(PlayerDBManager, TypeclassManager):
+    pass

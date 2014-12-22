@@ -5,7 +5,7 @@ from itertools import chain
 from django.db.models import Q
 from django.conf import settings
 from django.db.models.fields import exceptions
-from src.typeclasses.managers import TypedObjectManager
+from src.typeclasses.managers import TypedObjectManager, TypeclassManager
 from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
 from src.utils import utils
 from src.utils.utils import to_unicode, is_iter, make_iter, string_partial_matching
@@ -22,7 +22,7 @@ _ATTR = None
 _AT_MULTIMATCH_INPUT = utils.variable_from_module(*settings.SEARCH_AT_MULTIMATCH_INPUT.rsplit('.', 1))
 
 
-class ObjectManager(TypedObjectManager):
+class ObjectDBManager(TypedObjectManager):
     """
     This ObjectManager implementes methods for searching
     and manipulating Objects directly from the database.
@@ -413,3 +413,6 @@ class ObjectManager(TypedObjectManager):
         """
         self.filter(db_sessid__isnull=False).update(db_sessid=None)
 
+
+class ObjectManager(ObjectDBManager, TypeclassManager):
+    pass

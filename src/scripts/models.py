@@ -28,7 +28,7 @@ from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from src.typeclasses.models import TypedObject
-from src.scripts.manager import ScriptManager
+from src.scripts.manager import ScriptDBManager
 from src.utils.utils import dbref, to_str
 
 __all__ = ("ScriptDB",)
@@ -98,7 +98,7 @@ class ScriptDB(TypedObject):
     db_is_active = models.BooleanField('script active', default=False)
 
     # Database manager
-    objects = ScriptManager()
+    objects = ScriptDBManager()
 
     # caches for quick lookups
     _typeclass_paths = settings.SCRIPT_TYPECLASS_PATHS

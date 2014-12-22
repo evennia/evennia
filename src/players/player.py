@@ -14,6 +14,7 @@ instead for most things).
 import datetime
 from django.conf import settings
 from src.typeclasses.models import TypeclassBase
+from src.players.manager import PlayerManager
 from src.players.models import PlayerDB
 from src.comms.models import ChannelDB
 from src.utils import logger
@@ -28,6 +29,7 @@ class Player(PlayerDB):
     Base typeclass for all Players.
     """
     __metaclass__ = TypeclassBase
+    objects = PlayerManager()
 
     def __init__(self, *args, **kwargs):
         """

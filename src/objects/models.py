@@ -20,7 +20,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
 from src.typeclasses.models import TypedObject, NickHandler
-from src.objects.manager import ObjectManager
+from src.objects.manager import ObjectDBManager
 from src.players.models import PlayerDB
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
@@ -171,7 +171,7 @@ class ObjectDB(TypedObject):
                                          help_text="optional python path to a cmdset class.")
 
     # Database manager
-    objects = ObjectManager()
+    objects = ObjectDBManager()
 
     # caches for quick lookups of typeclass loading.
     _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS

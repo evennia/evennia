@@ -46,67 +46,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
     # common methods for all typed managers. These are used
     # in other methods. Returns querysets.
 
-    def get(self, **kwargs):
-        """
-        Overload the standard get. This will limit itself to only
-        return the current typeclass.
-        """
-        kwargs.update({"db_typeclass_path":self.model.path})
-        return super(TypedObjectManager, self).get(**kwargs)
-
-    def filter(self, **kwargs):
-        """
-        Overload of the standard filter function. This filter will
-        limit itself to only the current typeclass.
-        """
-        kwargs.update({"db_typeclass_path":self.model.path})
-        return super(TypedObjectManager, self).filter(**kwargs)
-
-    def all(self, **kwargs):
-        """
-        Overload method to return all matches, filtering for typeclass
-        """
-        return super(TypedObjectManager, self).all(**kwargs).filter(db_typeclass_path=self.model.path)
-
-    def _get_subclasses(self, cls):
-        """
-        Recursively get all subclasses to a class
-        """
-        all_subclasses = cls.__subclasses__()
-        for subclass in all_subclasses:
-            all_subclasses.extend(self._get_subclasses(subclass))
-        return all_subclasses
-
-    def get_family(self, **kwargs):
-        """
-        Variation of get that not only returns the current
-        typeclass but also all subclasses of that typeclass.
-        """
-        paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
-                         for cls in self._get_subclasses(self.model)]
-        kwargs.update({"db_typeclass_path__in":paths})
-        return super(TypedObjectManager, self).get(**kwargs)
-
-    def filter_family(self, **kwargs):
-        """
-        Variation of filter that allows results both from typeclass
-        and from subclasses of typeclass
-        """
-        # query, including all subclasses
-        paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
-                         for cls in self._get_subclasses(self.model)]
-        kwargs.update({"db_typeclass_path__in":paths})
-        return super(TypedObjectManager, self).filter(**kwargs)
-
-    def all_family(self, **kwargs):
-        """
-        Return all matches, allowing matches from all subclasses of
-        the typeclass.
-        """
-        paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
-                         for cls in self._get_subclasses(self.model)]
-        return super(TypedObjectManager, self).all(**kwargs).filter(db_typeclass_path__in=paths)
-
 
     # Attribute manager methods
     def get_attribute(self, key=None, category=None, value=None, strvalue=None, obj=None, attrtype=None):
@@ -337,3 +276,68 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                     query = query | Q(db_typeclass_path__exact=parent.path)
         # actually query the database
         return self.filter(query)
+
+
+class TypeclassManager(TypedObjectManager):
+    def get(self, **kwargs):
+        """
+        Overload the standard get. This will limit itself to only
+        return the current typeclass.
+        """
+        kwargs.update({"db_typeclass_path":self.model.path})
+        return super(TypedObjectManager, self).get(**kwargs)
+
+    def filter(self, **kwargs):
+        """
+        Overload of the standard filter function. This filter will
+        limit itself to only the current typeclass.
+        """
+        kwargs.update({"db_typeclass_path":self.model.path})
+        return super(TypedObjectManager, self).filter(**kwargs)
+
+    def all(self, **kwargs):
+        """
+        Overload method to return all matches, filtering for typeclass
+        """
+        return super(TypedObjectManager, self).all(**kwargs).filter(db_typeclass_path=self.model.path)
+
+    def _get_subclasses(self, cls):
+        """
+        Recursively get all subclasses to a class
+        """
+        all_subclasses = cls.__subclasses__()
+        for subclass in all_subclasses:
+            all_subclasses.extend(self._get_subclasses(subclass))
+        return all_subclasses
+
+    def get_family(self, **kwargs):
+        """
+        Variation of get that not only returns the current
+        typeclass but also all subclasses of that typeclass.
+        """
+        paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
+                         for cls in self._get_subclasses(self.model)]
+        kwargs.update({"db_typeclass_path__in":paths})
+        return super(TypedObjectManager, self).get(**kwargs)
+
+    def filter_family(self, **kwargs):
+        """
+        Variation of filter that allows results both from typeclass
+        and from subclasses of typeclass
+        """
+        # query, including all subclasses
+        paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
+                         for cls in self._get_subclasses(self.model)]
+        kwargs.update({"db_typeclass_path__in":paths})
+        return super(TypedObjectManager, self).filter(**kwargs)
+
+    def all_family(self, **kwargs):
+        """
+        Return all matches, allowing matches from all subclasses of
+        the typeclass.
+        """
+        paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
+                         for cls in self._get_subclasses(self.model)]
+        return super(TypedObjectManager, self).all(**kwargs).filter(db_typeclass_path__in=paths)
+
+

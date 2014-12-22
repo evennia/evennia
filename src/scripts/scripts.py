@@ -11,6 +11,7 @@ from django.conf import settings
 from src.typeclasses.models import TypeclassBase
 from django.utils.translation import ugettext as _
 from src.scripts.models import ScriptDB
+from src.scripts.manager import ScriptManager
 from src.comms import channelhandler
 from src.utils import logger
 
@@ -114,6 +115,7 @@ class ScriptBase(ScriptDB):
     from the class 'Script'  instead.
     """
     __metaclass__ = TypeclassBase
+    objects = ScriptManager()
 
     def __eq__(self, other):
         """

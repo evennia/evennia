@@ -21,7 +21,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.encoding import smart_str
 
-from src.players import manager
+from src.players.manager import PlayerDBManager
 from src.scripts.models import ScriptDB
 from src.typeclasses.models import (TypedObject, NickHandler)
 from src.scripts.scripthandler import ScriptHandler
@@ -100,7 +100,7 @@ class PlayerDB(TypedObject, AbstractUser):
     db_is_bot = models.BooleanField(default=False, verbose_name="is_bot", help_text="Used to identify irc/imc2/rss bots")
 
     # Database manager
-    objects = manager.PlayerManager()
+    objects = PlayerDBManager()
 
     # caches for quick lookups
     _typeclass_paths = settings.PLAYER_TYPECLASS_PATHS

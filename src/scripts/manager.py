@@ -3,7 +3,7 @@ The custom manager for Scripts.
 """
 
 from django.db.models import Q
-from src.typeclasses.managers import TypedObjectManager
+from src.typeclasses.managers import TypedObjectManager, TypeclassManager
 from src.typeclasses.managers import returns_typeclass_list
 from src.utils.utils import make_iter
 __all__ = ("ScriptManager",)
@@ -12,7 +12,7 @@ _GA = object.__getattribute__
 VALIDATE_ITERATION = 0
 
 
-class ScriptManager(TypedObjectManager):
+class ScriptDBManager(TypedObjectManager):
     """
     This Scriptmanager implements methods for searching
     and manipulating Scripts directly from the database.
@@ -230,3 +230,6 @@ class ScriptManager(TypedObjectManager):
         new_script = create.create_script(typeclass, key=new_key, obj=new_obj,
                                           locks=new_locks, autostart=True)
         return new_script
+
+class ScriptManager(ScriptDBManager, TypeclassManager):
+    pass

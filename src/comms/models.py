@@ -22,7 +22,7 @@ be able to delete connections on the fly).
 from datetime import datetime
 from django.conf import settings
 from django.db import models
-from src.typeclasses.models import TypedObject, TagHandler, AttributeHandler, AliasHandler
+from src.typeclasses.models import TypedObject
 from src.utils.idmapper.models import SharedMemoryModel
 from src.comms import managers
 from src.comms.managers import identify_object
@@ -356,7 +356,7 @@ class ChannelDB(TypedObject):
                        related_name="subscription_set", null=True, verbose_name='subscriptions', db_index=True)
 
     # Database manager
-    objects = managers.ChannelManager()
+    objects = managers.ChannelDBManager()
 
     _typeclass_paths = settings.CHANNEL_TYPECLASS_PATHS
     _default_typeclass_path = settings.BASE_CHANNEL_TYPECLASS or "src.comms.comms.Channel"

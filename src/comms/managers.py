@@ -4,7 +4,8 @@ These managers handles the
 
 from django.db import models
 from django.db.models import Q
-from src.typeclasses.managers import TypedObjectManager, returns_typeclass_list, returns_typeclass
+from src.typeclasses.managers import (TypedObjectManager, TypeclassManager,
+                                      returns_typeclass_list, returns_typeclass)
 
 _GA = object.__getattribute__
 _PlayerDB = None
@@ -251,7 +252,7 @@ class MsgManager(models.Manager):
 # Channel manager
 #
 
-class ChannelManager(TypedObjectManager):
+class ChannelDBManager(TypedObjectManager):
     """
     This ChannelManager implements methods for searching
     and manipulating Channels directly from the database.
@@ -372,6 +373,9 @@ class ChannelManager(TypedObjectManager):
                         if ostring.lower() in [a.lower
                             for a in channel.aliases.all()]]
         return channels
+
+class ChannelManager(ChannelDBManager, TypeclassManager):
+    pass
 
 
 #

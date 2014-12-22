@@ -17,6 +17,7 @@ they control by simply linking to a new object's user property.
 
 from django.conf import settings
 from src.typeclasses.models import TypeclassBase
+from src.objects.manager import ObjectTypeclassManager
 from src.objects.models import ObjectDB
 from src.commands import cmdset, command
 from src.utils.logger import log_depmsg
@@ -39,6 +40,7 @@ class Object(ObjectDB):
 
     """
     __metaclass__ = TypeclassBase
+    objects = ObjectTypeclassManager()
 
     # __init__ is only defined here in order to present docstring to API.
     def __init__(self, *args, **kwargs):

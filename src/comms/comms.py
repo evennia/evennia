@@ -5,6 +5,7 @@ See objects.objects for more information on Typeclassing.
 """
 from src.typeclasses.models import TypeclassBase
 from src.comms.models import Msg, TempMsg, ChannelDB
+from src.comms.managers import ChannelManager
 from src.utils import logger
 from src.utils.utils import make_iter
 
@@ -15,6 +16,7 @@ class Channel(ChannelDB):
     types of communication channels.
     """
     __metaclass__ = TypeclassBase
+    objects = ChannelManager()
 
     # helper methods, for easy overloading
 
