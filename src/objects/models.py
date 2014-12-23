@@ -843,3 +843,4 @@ class ObjectDB(TypedObject):
         # Perform the deletion of the object
         super(ObjectDB, self).delete()
         return True
+

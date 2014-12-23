@@ -24,7 +24,7 @@ _MULTISESSION_MODE = settings.MULTISESSION_MODE
 _CMDSET_PLAYER = settings.CMDSET_PLAYER
 _CONNECT_CHANNEL = None
 
-class Player(PlayerDB):
+class DefaultPlayer(PlayerDB):
     """
     Base typeclass for all Players.
     """
@@ -105,7 +105,7 @@ class Player(PlayerDB):
          at_server_shutdown()
 
          """
-        super(Player, self).__init__(*args, **kwargs)
+        super(DefaultPlayer, self).__init__(*args, **kwargs)
 
     ## methods inherited from database model
 
@@ -116,7 +116,7 @@ class Player(PlayerDB):
         the server.
 
         text (string) - text data to send
-        from_obj (Object/Player) - source object of message to send
+        from_obj (Object/DefaultPlayer) - source object of message to send
         sessid - the session id of the session to send to. If not given,
           return to all sessions connected to this player. This is usually only
           relevant when using msg() directly from a player-command (from
@@ -124,7 +124,7 @@ class Player(PlayerDB):
           handles the sessid).
         kwargs - extra data to send through protocol
         """
-        super(Player, self).msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
+        super(DefaultPlayer, self).msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
 
     def swap_character(self, new_character, delete_old_character=False):
         """
@@ -135,7 +135,7 @@ class Player(PlayerDB):
 
         Returns: True/False depending on if swap suceeded or not.
         """
-        return super(Player, self).swap_character(new_character, delete_old_character=delete_old_character)
+        return super(DefaultPlayer, self).swap_character(new_character, delete_old_character=delete_old_character)
 
     def execute_cmd(self, raw_string, sessid=None, **kwargs):
         """
@@ -163,7 +163,7 @@ class Player(PlayerDB):
             be useful for coders intending to implement some sort of nested
             command structure.
         """
-        return super(Player, self).execute_cmd(raw_string, sessid=sessid, **kwargs)
+        return super(DefaultPlayer, self).execute_cmd(raw_string, sessid=sessid, **kwargs)
 
     def search(self, searchdata, return_puppet=False, **kwargs):
         """
@@ -183,7 +183,7 @@ class Player(PlayerDB):
             # handle wrapping of common terms
             if searchdata.lower() in ("me", "*me", "self", "*self",):
                 return self
-        return super(Player, self).search(searchdata, return_puppet=return_puppet, **kwargs)
+        return super(DefaultPlayer, self).search(searchdata, return_puppet=return_puppet, **kwargs)
 
     def is_typeclass(self, typeclass, exact=False):
         """
@@ -200,7 +200,7 @@ class Player(PlayerDB):
 
         Returns: Boolean
         """
-        return super(Player, self).is_typeclass(typeclass, exact=exact)
+        return super(DefaultPlayer, self).is_typeclass(typeclass, exact=exact)
 
     def swap_typeclass(self, new_typeclass, clean_attributes=False, no_default=True):
         """
@@ -235,7 +235,7 @@ class Player(PlayerDB):
           boolean True/False depending on if the swap worked or not.
 
         """
-        super(Player, self).swap_typeclass(new_typeclass,
+        super(DefaultPlayer, self).swap_typeclass(new_typeclass,
                     clean_attributes=clean_attributes, no_default=no_default)
 
     def access(self, accessing_obj, access_type='read', default=False, **kwargs):
@@ -248,7 +248,7 @@ class Player(PlayerDB):
           default (bool) - what to return if no lock of access_type was found
           **kwargs - passed to the at_access hook along with the result.
         """
-        result = super(Player, self).access(accessing_obj, access_type=access_type, default=default)
+        result = super(DefaultPlayer, self).access(accessing_obj, access_type=access_type, default=default)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 
@@ -261,7 +261,7 @@ class Player(PlayerDB):
                               on the object. (example: 'Builders')
         Note that this method does -not- call the at_access hook.
         """
-        return super(Player, self).check_permstring(permstring)
+        return super(DefaultPlayer, self).check_permstring(permstring)
 
     ## player hooks
 
@@ -431,7 +431,7 @@ class Player(PlayerDB):
         """
         pass
 
-class Guest(Player):
+class Guest(DefaultPlayer):
     """
     This class is used for guest logins. Unlike Players, Guests and their
     characters are deleted after disconnection.

@@ -33,7 +33,7 @@ _DA = object.__delattr__
 # Base class to inherit from.
 #
 
-class Object(ObjectDB):
+class DefaultObject(ObjectDB):
     """
     This is the base class for all in-game objects.  Inherit from this
     to create different types of objects in the game.
@@ -194,7 +194,7 @@ class Object(ObjectDB):
                                      this object speaks
 
          """
-        super(Object, self).__init__(*args, **kwargs)
+        super(DefaultObject, self).__init__(*args, **kwargs)
 
     ## methods inherited from the database object (overload them here)
 
@@ -268,7 +268,7 @@ class Object(ObjectDB):
             if searchdata.lower() in ("me", "self",):
                 return self
 
-        return super(Object, self).search(searchdata,
+        return super(DefaultObject, self).search(searchdata,
                global_search=global_search,
                use_nicks=use_nicks,
                typeclass=typeclass,
@@ -305,7 +305,7 @@ class Object(ObjectDB):
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("me", "self",):
                 return self.player
-        return super(Object, self).search_player(searchdata, quiet=quiet)
+        return super(DefaultObject, self).search_player(searchdata, quiet=quiet)
 
     def execute_cmd(self, raw_string, sessid=None, **kwargs):
         """
@@ -333,7 +333,7 @@ class Object(ObjectDB):
             useful for coders intending to implement some sort of nested
             command structure.
         """
-        return super(Object, self).execute_cmd(raw_string, sessid=sessid, **kwargs)
+        return super(DefaultObject, self).execute_cmd(raw_string, sessid=sessid, **kwargs)
 
     def msg(self, text=None, from_obj=None, sessid=None, **kwargs):
         """
@@ -347,7 +347,7 @@ class Object(ObjectDB):
                 default to self.sessid or from_obj.sessid.
         """
 
-        super(Object, self).msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
+        super(DefaultObject, self).msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
 
     def msg_contents(self, text=None, exclude=None, from_obj=None, **kwargs):
         """
@@ -356,7 +356,7 @@ class Object(ObjectDB):
         exclude is a list of objects not to send to. See self.msg() for
                 more info.
         """
-        super(Object, self).msg_contents(text, exclude=exclude,
+        super(DefaultObject, self).msg_contents(text, exclude=exclude,
                                 from_obj=from_obj, **kwargs)
 
     def move_to(self, destination, quiet=False,
@@ -387,7 +387,7 @@ class Object(ObjectDB):
                emit_to_obj.
 
         """
-        return super(Object, self).move_to(destination, quiet=quiet,
+        return super(DefaultObject, self).move_to(destination, quiet=quiet,
                                   emit_to_obj=emit_to_obj,
                                   use_destination=use_destination)
 
@@ -400,9 +400,9 @@ class Object(ObjectDB):
         new_key (string) - new key/name of copied object. If new_key is not
                            specified, the copy will be named
                            <old_key>_copy by default.
-        Returns: Object (copy of this one)
+        Returns: DefaultObject (copy of this one)
         """
-        return super(Object, self).copy(new_key=new_key)
+        return super(DefaultObject, self).copy(new_key=new_key)
 
     def delete(self):
         """
@@ -415,7 +415,7 @@ class Object(ObjectDB):
                  were errors during deletion or deletion otherwise
                  failed.
         """
-        return super(Object, self).delete()
+        return super(DefaultObject, self).delete()
 
     # methods inherited from the typeclass system
 
@@ -434,7 +434,7 @@ class Object(ObjectDB):
 
         Returns: Boolean
         """
-        return super(Object, self).is_typeclass(typeclass, exact=exact)
+        return super(DefaultObject, self).is_typeclass(typeclass, exact=exact)
 
     def swap_typeclass(self, new_typeclass, clean_attributes=False, no_default=True):
         """
@@ -470,7 +470,7 @@ class Object(ObjectDB):
 
 
         """
-        return super(Object, self).swap_typeclass(new_typeclass,
+        return super(DefaultObject, self).swap_typeclass(new_typeclass,
                        clean_attributes=clean_attributes, no_default=no_default)
 
     def access(self, accessing_obj, access_type='read', default=False, **kwargs):
@@ -483,7 +483,7 @@ class Object(ObjectDB):
           default (bool) - what to return if no lock of access_type was found
           **kwargs - passed to at_access hook along with result,accessing_obj and access_type
         """
-        result = super(Object, self).access(accessing_obj, access_type=access_type, default=default)
+        result = super(DefaultObject, self).access(accessing_obj, access_type=access_type, default=default)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 
@@ -504,7 +504,7 @@ class Object(ObjectDB):
                               permission on the object.
                               (example: 'Builders')
         """
-        return super(Object, self).check_permstring(permstring)
+        return super(DefaultObject, self).check_permstring(permstring)
 
     def __eq__(self, other):
         """
@@ -901,11 +901,12 @@ class Object(ObjectDB):
         """
         return message
 
+
 #
 # Base Character object
 #
 
-class Character(Object):
+class DefaultCharacter(DefaultObject):
     """
     This is just like the Object except it implements its own
     version of the at_object_creation to set up the script
@@ -921,7 +922,7 @@ class Character(Object):
         you want to fundamentally change how a Character object works).
 
         """
-        super(Character, self).basetype_setup()
+        super(DefaultCharacter, self).basetype_setup()
         self.locks.add(";".join(["get:false()",  # noone can pick up the character
                                  "call:false()"])) # no commands can be called on character from outside
         # add the default cmdset
@@ -982,7 +983,7 @@ class Character(Object):
 # Base Room object
 #
 
-class Room(Object):
+class DefaultRoom(DefaultObject):
     """
     This is the base room object. It's just like any Object except its
     location is None.
@@ -993,7 +994,7 @@ class Room(Object):
         (since default is None anyway)
         """
 
-        super(Room, self).basetype_setup()
+        super(DefaultRoom, self).basetype_setup()
         self.locks.add(";".join(["get:false()",
                                  "puppet:false()"])) # would be weird to puppet a room ...
         self.location = None
@@ -1003,7 +1004,7 @@ class Room(Object):
 # Base Exit object
 #
 
-class Exit(Object):
+class DefaultExit(DefaultObject):
     """
     This is the base exit object - it connects a location to another.
     This is done by the exit assigning a "command" on itself with the
@@ -1079,7 +1080,7 @@ class Exit(Object):
         You should normally not need to overload this - if you do make sure you
         include all the functionality in this method.
         """
-        super(Exit, self).basetype_setup()
+        super(DefaultExit, self).basetype_setup()
 
         # setting default locks (overload these in at_object_creation()
         self.locks.add(";".join(["puppet:false()", # would be weird to puppet an exit ...

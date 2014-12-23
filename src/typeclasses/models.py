@@ -780,7 +780,6 @@ class TypeclassBase(SharedMemoryModelBase):
                 proxy = True
             attrs["Meta"] = Meta
         attrs["Meta"].proxy = True
-        attrs["Meta"].app_label = attrs["path"]
 
         # patch start - django multi-inheritance
         # this is a copy of django.db.models.base.__new__
@@ -1086,7 +1085,10 @@ class TypedObject(SharedMemoryModel):
     def _import_class(self, path):
         path, clsname = path.rsplit(".", 1)
         mod = import_module(path)
-        return getattr(mod, clsname)
+        try:
+            return getattr(mod, clsname)
+        except AttributeError:
+            raise AttributeError("module '%s' has no attribute '%s'" % (path, clsname))
 
     def __init__(self, *args, **kwargs):
         typeclass_path = kwargs.pop("typeclass", None)

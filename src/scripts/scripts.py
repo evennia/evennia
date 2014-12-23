@@ -345,7 +345,6 @@ class ScriptBase(ScriptDB):
         "called when typeclass re-caches. Usually not used for scripts."
         pass
 
-
 #
 # Base Script - inherit from this
 #

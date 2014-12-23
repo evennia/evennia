@@ -100,7 +100,7 @@ from src.help.models import HelpEntry
 
 from src.typeclasses.models import Attribute
 # players
-from src.players.player import Player
+from src.players.player import DefaultPlayer
 from src.players.models import PlayerDB
 
 # commands
@@ -119,7 +119,7 @@ from src.comms.models import Msg, ChannelDB
 from src.comms.comms import Channel
 
 # objects
-from src.objects.objects import Object, Character, Room, Exit
+from src.objects.objects import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
 
 # utils
 

@@ -288,17 +288,17 @@ PLAYER_TYPECLASS_PATHS = ["game.gamesrc.objects", "contrib"]
 CHANNEL_TYPECLASS_PATHS = ["game.gamesrc.conf", "contrib"]
 
 # Typeclass for player objects (linked to a character) (fallback)
-BASE_PLAYER_TYPECLASS = "src.players.player.Player"
+BASE_PLAYER_TYPECLASS = "src.players.player.DefaultPlayer"
 # Typeclass and base for all objects (fallback)
-BASE_OBJECT_TYPECLASS = "src.objects.objects.Object"
+BASE_OBJECT_TYPECLASS = "src.objects.objects.DefaultObject"
 # Typeclass for character objects linked to a player (fallback)
-BASE_CHARACTER_TYPECLASS = "src.objects.objects.Character"
+BASE_CHARACTER_TYPECLASS = "src.objects.objects.DefaultCharacter"
 # Typeclass for rooms (fallback)
-BASE_ROOM_TYPECLASS = "src.objects.objects.Room"
+BASE_ROOM_TYPECLASS = "src.objects.objects.DefaultRoom"
 # Typeclass for Exit objects (fallback).
-BASE_EXIT_TYPECLASS = "src.objects.objects.Exit"
+BASE_EXIT_TYPECLASS = "src.objects.objects.DefaultExit"
 # Typeclass for Channel (fallback).
-BASE_CHANNEL_TYPECLASS = "src.comms.comms.Channel"
+BASE_CHANNEL_TYPECLASS = "src.comms.comms.DefaultChannel"
 # Typeclass for Scripts (fallback). You usually don't need to change this
 # but create custom variations of scripts on a per-case basis instead.
 BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
