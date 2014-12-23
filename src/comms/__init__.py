@@ -8,7 +8,7 @@ src.comms.channelmanager.
 
 """
 
-from src.comms.models import *
+#from src.comms.models import *
 
-msgmanager = Msg.objects
-channelmanager = ChannelDB.objects
+#msgmanager = Msg.objects
+#channelmanager = ChannelDB.objects

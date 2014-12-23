@@ -18,7 +18,8 @@ they control by simply linking to a new object's user property.
 import traceback
 from django.conf import settings
 
-from src.typeclasses.models import TypeclassBase, NickHandler
+from src.typeclasses.models import TypeclassBase
+from src.typeclasses.attributes import NickHandler
 from src.objects.manager import ObjectManager
 from src.objects.models import ObjectDB
 from src.scripts.scripthandler import ScriptHandler

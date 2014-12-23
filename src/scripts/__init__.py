@@ -10,6 +10,6 @@ Also, the initiated object manager is available as src.scripts.manager.
 # Note - we MUST NOT import src.scripts.scripts here, or
 # proxy models will fall under Django migrations.
 #from src.scripts.scripts import *
-from src.scripts.models import ScriptDB
+#from src.scripts.models import ScriptDB
 
-manager = ScriptDB.objects
+#manager = ScriptDB.objects

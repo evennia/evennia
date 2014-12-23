@@ -23,7 +23,8 @@ from django.utils.encoding import smart_str
 
 from src.players.manager import PlayerDBManager
 from src.scripts.models import ScriptDB
-from src.typeclasses.models import (TypedObject, NickHandler)
+from src.typeclasses.models import TypedObject
+from src.typeclasses.attributes import NickHandler
 from src.scripts.scripthandler import ScriptHandler
 from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler

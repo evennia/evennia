@@ -78,7 +78,6 @@ def create_objects():
 
     god_character.save()
     god_player.attributes.add("_first_login", True)
-    print god_character
     god_player.attributes.add("_last_puppet", god_character)
     god_player.db._playable_characters.append(god_character)
 

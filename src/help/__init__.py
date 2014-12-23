@@ -6,6 +6,6 @@ Also, the initiated object manager is available as src.help.manager.
 
 """
 
-from src.help.models import *
-
-manager = HelpEntry.objects
+#from src.help.models import *
+#
+#manager = HelpEntry.objects
