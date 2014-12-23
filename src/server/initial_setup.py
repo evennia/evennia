@@ -9,10 +9,10 @@ Everything starts at handle_setup()
 import django
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext as _
 from src.server.models import ServerConfig
 from src.utils import create
-from django.utils.translation import ugettext as _
-
+from src.utils.utils import class_from_module
 
 def create_config_values():
     """
@@ -26,10 +26,10 @@ def get_god_player():
     """
     Creates the god user.
     """
-    PlayerDB = get_user_model()
+    Player = class_from_module(settings.BASE_PLAYER_TYPECLASS)
     try:
-        god_player = PlayerDB.objects.get(id=1)
-    except PlayerDB.DoesNotExist:
+        god_player = Player.objects.get(id=1)
+    except Player.DoesNotExist:
         txt = "\n\nNo superuser exists yet. The superuser is the 'owner'"
         txt += "\account on the Evennia server. Create a new superuser using"
         txt += "\nthe command"
@@ -78,6 +78,7 @@ def create_objects():
 
     god_character.save()
     god_player.attributes.add("_first_login", True)
+    print god_character
     god_player.attributes.add("_last_puppet", god_character)
     god_player.db._playable_characters.append(god_character)
 

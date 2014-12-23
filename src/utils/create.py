@@ -25,12 +25,12 @@ from django.conf import settings
 from django.db import IntegrityError
 from src.utils.idmapper.models import SharedMemoryModel
 from src.utils import utils, logger
-from src.utils.utils import make_iter
+from src.utils.utils import make_iter, class_from_module, dbid_to_obj
 
 # delayed imports
 _User = None
-_Object = None
 _ObjectDB = None
+_Object = None
 _Script = None
 _ScriptDB = None
 _HelpEntry = None
@@ -58,11 +58,7 @@ def handle_dbref(inp, objclass, raise_errors=True):
     objects.
     """
     if not (isinstance(inp, basestring) and inp.startswith("#")):
-        try:
-            return inp.dbobj
-        except AttributeError:
-            return inp
-
+        return inp
     # a string, analyze it
     inp = inp.lstrip('#')
     try:
@@ -87,119 +83,54 @@ def create_object(typeclass=None, key=None, location=None,
                   home=None, permissions=None, locks=None,
                   aliases=None, destination=None, report_to=None, nohome=False):
     """
-    Create a new in-game object. Any game object is a combination
-    of a database object that stores data persistently to
-    the database, and a typeclass, which on-the-fly 'decorates'
-    the database object into whataver different type of object
-    it is supposed to be in the game.
 
-    See src.objects.managers for methods to manipulate existing objects
-    in the database. src.objects.objects holds the base typeclasses
-    and src.objects.models hold the database model.
+    Create a new in-game object.
 
-    report_to is an optional object for reporting errors to in string form.
-              If report_to is not set, errors will be raised as en Exception
-              containing the error message. If set, this method will return
-              None upon errors.
-    nohome - this allows the creation of objects without a default home location;
-             this only used when creating the default location itself or during unittests
+    keywords:
+        typeclass - class or python path to a typeclass
+        key - name of the new object. If not set, a name of #dbref will be set.
+        home - obj or #dbref to use as the object's home location
+        permissions - a comma-separated string of permissions
+        locks - one or more lockstrings, separated by semicolons
+        aliases - a list of alternative keys
+        destination - obj or #dbref to use as an Exit's target
+
+        nohome - this allows the creation of objects without a default home location;
+                 only used when creating the default location itself or during unittests
     """
-    global _Object, _ObjectDB
-    if not _Object:
-        from src.objects.objects import Object as _Object
-    if not _ObjectDB:
-        from src.objects.models import ObjectDB as _ObjectDB
+    typeclass = typeclass if typeclass else settings.BASE_OBJECT_TYPECLASS
 
-    # input validation
+    if isinstance(typeclass, basestring):
+        # a path is given. Load the actual typeclass
+        typeclass = class_from_module(typeclass, settings.OBJECT_TYPECLASS_PATHS)
 
-    if not typeclass:
-        typeclass = settings.BASE_OBJECT_TYPECLASS
-    elif isinstance(typeclass, _ObjectDB):
-        # this is already an objectdb instance, extract its typeclass
-        typeclass = typeclass.typeclass.path
-    elif isinstance(typeclass, _Object) or utils.inherits_from(typeclass, _Object):
-        # this is already an object typeclass, extract its path
-        typeclass = typeclass.path
-    typeclass = utils.to_unicode(typeclass)
+    # Setup input for the create command. We use ObjectDB as baseclass here
+    # to give us maximum freedom (the typeclasses will load
+    # correctly when each object is recovered).
 
-    # Setup input for the create command
-
-    location = handle_dbref(location, _ObjectDB)
-    destination = handle_dbref(destination, _ObjectDB)
-    home = handle_dbref(home, _ObjectDB)
+    location = dbid_to_obj(location, _ObjectDB)
+    destination = dbid_to_obj(destination, _ObjectDB)
+    home = dbid_to_obj(home, _ObjectDB)
     if not home:
         try:
-            home = handle_dbref(settings.DEFAULT_HOME, _ObjectDB) if not nohome else None
+            home = dbid_to_obj(settings.DEFAULT_HOME, _ObjectDB) if not nohome else None
         except _ObjectDB.DoesNotExist:
             raise _ObjectDB.DoesNotExist("settings.DEFAULT_HOME (= '%s') does not exist, or the setting is malformed." %
                                          settings.DEFAULT_HOME)
 
-    # create new database object all in one go
-    new_db_object = _ObjectDB(db_key=key, db_location=location,
+    # create new instance
+    new_object = typeclass(db_key=key, db_location=location,
                               db_destination=destination, db_home=home,
-                              db_typeclass_path=typeclass)
-
-    if not key:
-        # the object should always have a key, so if not set we give a default
-        new_db_object.key = "#%i" % new_db_object.dbid
-
-    # this will either load the typeclass or the default one (will also save object)
-    new_object = new_db_object.typeclass
-
-    if not _GA(new_object, "is_typeclass")(typeclass, exact=True):
-        # this will fail if we gave a typeclass as input and it still
-        # gave us a default
-        try:
-            SharedMemoryModel.delete(new_db_object)
-        except AssertionError:
-            # this happens if object was never created
-            pass
-        if report_to:
-            report_to = handle_dbref(report_to, _ObjectDB)
-            _GA(report_to, "msg")("Error creating %s (%s).\n%s" % (new_db_object.key, typeclass,
-                                                                 _GA(new_db_object, "typeclass_last_errmsg")))
-            return None
-        else:
-            raise Exception(_GA(new_db_object, "typeclass_last_errmsg"))
-
-    # from now on we can use the typeclass object
-    # as if it was the database object.
-
-    # call the hook methods. This is where all at_creation
-    # customization happens as the typeclass stores custom
-    # things on its database object.
-
-    # note - this may override input keys, locations etc!
-    new_object.basetype_setup()  # setup the basics of Exits, Characters etc.
-    new_object.at_object_creation()
-
-    # we want the input to override that set in the hooks, so
-    # we re-apply those if needed
-    if new_object.key != key:
-        new_object.key = key
-    if new_object.location != location:
-        new_object.location = location
-    if new_object.home != home:
-        new_object.home = home
-    if new_object.destination != destination:
-        new_object.destination = destination
-
-    # custom-given perms/locks do overwrite hooks
-    if permissions:
-        new_object.permissions.add(permissions)
-    if locks:
-        new_object.locks.add(locks)
-    if aliases:
-        new_object.aliases.add(aliases)
-
-    # trigger relevant move_to hooks in order to display messages.
-    if location:
-        location.at_object_receive(new_object, None)
-        new_object.at_after_move(None)
-
-    # post-hook setup (mainly used by Exits)
-    new_object.basetype_posthook_setup()
-
+                              db_typeclass_path=typeclass.path)
+    # store the call signature for the signal
+    new_object._createdict = {"key":key, "location":location, "destination":destination,
+                              "home":home, "typeclass":typeclass.path, "permissions":permissions,
+                              "locks":locks, "aliases":aliases, "destination":destination,
+                              "report_to":report_to, "nohome":nohome}
+    # this will trigger the save signal which in turn calls the
+    # at_instance_creation hook on the typeclass, where the _createdict can be
+    # used.
+    new_object.save()
     return new_object
 
 #alias for create_object

@@ -5,7 +5,7 @@ Player that are  controlled by the server.
 """
 
 from django.conf import settings
-from src.players.player import Player
+from src.players.player import DefaultPlayer
 from src.scripts.scripts import Script
 from src.commands.command import Command
 from src.commands.cmdset import CmdSet
@@ -87,7 +87,7 @@ class BotCmdSet(CmdSet):
 
 # Bot base class
 
-class Bot(Player):
+class Bot(DefaultPlayer):
     """
     A Bot will start itself when the server
     starts (it will generally not do so

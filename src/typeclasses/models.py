@@ -30,7 +30,9 @@ import sys
 import re
 import traceback
 import weakref
-from importlib import import_module
+
+from django.db.models import signals
+from django.dispatch import dispatcher
 
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
@@ -38,6 +40,7 @@ from django.conf import settings
 from django.utils.encoding import smart_str
 
 from src.utils.idmapper.models import SharedMemoryModel
+from src.utils.idmapper.base import SharedMemoryModelBase
 from src.server.caches import get_prop_cache, set_prop_cache
 #from src.server.caches import set_attr_cache
 
@@ -48,13 +51,16 @@ from src.locks.lockhandler import LockHandler
 #from src.utils import logger
 from django.db.models.base import ModelBase
 from src.utils.utils import (
-    make_iter, is_iter, to_str, inherits_from, lazy_property)
+    make_iter, is_iter, to_str, inherits_from, lazy_property,
+    class_from_module)
 from src.utils.dbserialize import to_pickle, from_pickle
 from src.utils.picklefield import PickledObjectField
 
 __all__ = ("Attribute", "TypeNick", "TypedObject")
 
 TICKER_HANDLER = None
+
+_DB_REGEX = re.compile(r"db$")
 
 _PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
@@ -757,7 +763,16 @@ from django.apps.config import MODELS_MODULE_NAME
 from django.db.models.fields.related import OneToOneField
 #/ django patch imports
 
-from src.utils.idmapper.base import SharedMemoryModelBase
+
+# signal receivers. Assigned in __new__
+def post_save(sender, instance, created, **kwargs):
+    """
+    Is called Receive a signal just after the object is saved.
+    """
+    if created:
+        instance.at_instance_creation()
+    #TODO - put OOB handler here?
+
 
 class TypeclassBase(SharedMemoryModelBase):
     """
@@ -1013,10 +1028,14 @@ class TypeclassBase(SharedMemoryModelBase):
 
         new_class._prepare()
         new_class._meta.apps.register_model(new_class._meta.app_label, new_class)
-        return new_class
+
+        #return new_class
 
         # /patch end
 
+        # attach signal
+        signals.post_save.connect(post_save, sender=new_class)
+        return new_class
 
 
 #
@@ -1082,22 +1101,14 @@ class TypedObject(SharedMemoryModel):
 
     # typeclass mechanism
 
-    def _import_class(self, path):
-        path, clsname = path.rsplit(".", 1)
-        mod = import_module(path)
-        try:
-            return getattr(mod, clsname)
-        except AttributeError:
-            raise AttributeError("module '%s' has no attribute '%s'" % (path, clsname))
-
     def __init__(self, *args, **kwargs):
         typeclass_path = kwargs.pop("typeclass", None)
         super(TypedObject, self).__init__(*args, **kwargs)
         if typeclass_path:
-            self.__class__ = self._import_class(typeclass_path)
+            self.__class__ = class_from_module(typeclass_path)
             self.db_typclass_path = typeclass_path
         elif self.db_typeclass_path:
-            self.__class__ = self._import_class(self.db_typeclass_path)
+            self.__class__ = class_from_module(self.db_typeclass_path)
         else:
             self.db_typeclass_path = "%s.%s" % (self.__module__, self.__class__.__name__)
         # important to put this at the end since _meta is based on the set __class__
@@ -1372,12 +1383,12 @@ class TypedObject(SharedMemoryModel):
         self._is_deleted = True
         super(TypedObject, self).delete()
 
-    def save(self, *args, **kwargs):
-        "Block saving non-proxy typeclassed objects"
-        if not self._meta.proxy:
-            raise RuntimeError("Don't create instances of %s, "
-                               "use its child typeclasses instead." % self.__class__.__name__)
-        super(TypedObject, self).save(*args, **kwargs)
+    #def save(self, *args, **kwargs):
+    #    "Block saving non-proxy typeclassed objects"
+    #    if not self._meta.proxy:
+    #        raise RuntimeError("Don't create instances of %s, "
+    #                           "use its child typeclasses instead." % self.__class__.__name__)
+    #    super(TypedObject, self).save(*args, **kwargs)
 
     #
     # Memory management

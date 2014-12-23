@@ -7,6 +7,5 @@ Also, the initiated object manager is available as src.objects.manager.
 """
 
 #from src.objects.objects import *
-from src.objects.models import ObjectDB
-
-manager = ObjectDB.objects
+#from src.objects.models import ObjectDB
+#manager = ObjectDB.objects

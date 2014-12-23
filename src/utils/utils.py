@@ -12,11 +12,11 @@ import imp
 import types
 import math
 import re
-import importlib
 import textwrap
 import datetime
 import random
 import traceback
+from importlib import import_module
 from inspect import ismodule
 from collections import defaultdict
 from twisted.internet import threads, defer, reactor
@@ -347,15 +347,42 @@ def dbref(dbref, reqhash=True):
      Output is the integer part.
     """
     if reqhash:
-        return (int(dbref.lstrip('#')) if (isinstance(dbref, basestring) and
+        num = (int(dbref.lstrip('#')) if (isinstance(dbref, basestring) and
                                            dbref.startswith("#") and
                                            dbref.lstrip('#').isdigit())
                                        else None)
+        return num if num > 0 else None
     elif isinstance(dbref, basestring):
         dbref = dbref.lstrip('#')
-        return int(dbref) if dbref.isdigit() else None
-    return dbref if isinstance(dbref, int) else None
+        return int(dbref) if dbref.isdigit() and int(dbref) > 0 else None
+    else:
+        return dbref if isinstance(dbref, int) else None
 
+
+def dbid_to_obj(inp, objclass, raise_errors=True):
+    """
+    Convert a #dbid to a valid object of objclass. objclass
+    should be a valid object class to filter against (objclass.filter ...)
+    If not raise_errors is set, this will swallow errors of non-existing
+    objects.
+    """
+    dbid = dbref(inp)
+    if not dbid:
+        # we only convert #dbrefs
+        return inp
+    try:
+        if int(inp) < 0:
+            return None
+    except ValueError:
+        return None
+
+    # if we get to this point, inp is an integer dbref; get the matching object
+    try:
+        return objclass.objects.get(id=inp)
+    except Exception:
+        if raise_errors:
+            raise
+        return inp
 
 def to_unicode(obj, encoding='utf-8', force_string=False):
     """
@@ -887,14 +914,47 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
     paths = [path] + make_iter(defaultpaths)
     for modpath in paths:
         try:
-            mod = importlib.import_module(path)
+            mod = import_module(path)
         except ImportError, ex:
-            if not str(ex) == "No module named %s" % path:
+            if not str(ex).startswith ("No module named %s" % path):
                 # this means the module was found but it
                 # triggers an ImportError on import.
                 raise ex
             return getattr(mod, variable, default)
     return default
+
+def class_from_module(path, defaultpaths=None):
+    """
+    Return a class from a module, given the module's path. This is
+    primarily used to convert db_typeclass_path:s to classes.
+
+    if a list of defaultpaths is given, try subsequent runs by
+    prepending those paths to the given path.
+    """
+    cls = None
+    if defaultpaths:
+        paths = [path] + make_iter(defaultpaths) if defaultpaths else []
+    else:
+        paths = [path]
+
+    for path in paths:
+        path, clsname = path.rsplit(".", 1)
+        try:
+            mod = import_module(path)
+        except ImportError, ex:
+            # normally this is due to a not-found property
+            if not str(ex).startswith ("No module named %s" % path):
+                raise ex
+        try:
+            cls = getattr(mod, clsname)
+            break
+        except AttributeError, ex:
+            if not str(ex).startswith("Object 'module' has no attribute '%s'" % clsname):
+                raise ex
+    if not cls:
+        raise ImportError("Could not load typeclass '%s'." % path)
+    return cls
+
 
 def init_new_player(player):
     """
