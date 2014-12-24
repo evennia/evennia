@@ -56,6 +56,8 @@ TICKER_HANDLER = None
 
 _PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
+_GA = object.__getattribute__
+_SA = object.__setattr__
 
 #------------------------------------------------------------
 #
@@ -150,16 +152,12 @@ class TypedObject(SharedMemoryModel):
     # Main identifier of the object, for searching. Is accessed with self.key
     # or self.name
     db_key = models.CharField('key', max_length=255, db_index=True)
-    # This is the python path to the type class this object is tied to the
+    # This is the python path to the type class this object is tied to. The
     # typeclass is what defines what kind of Object this is)
     db_typeclass_path = models.CharField('typeclass', max_length=255, null=True,
             help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
     # Creation date. This is not changed once the object is created.
     db_date_created = models.DateTimeField('creation date', editable=False, auto_now_add=True)
-    # Permissions (access these through the 'permissions' property)
-    #db_permissions = models.CharField('permissions', max_length=255, blank=True,
-    #     help_text="a comma-separated list of text strings checked by
-    # in-game locks. They are often used for hierarchies, such as letting a Player have permission 'Wizards', 'Builders' etc. Character objects use 'Players' by default. Most other objects don't have any permissions.")
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True,
             help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
@@ -178,6 +176,11 @@ class TypedObject(SharedMemoryModel):
     # typeclass mechanism
 
     def __init__(self, *args, **kwargs):
+        """
+        This is the main function of the typeclass system -
+        to dynamically re-apply a class based on the
+        db_typeclass_path rather than use the one in the model.
+        """
         typeclass_path = kwargs.pop("typeclass", None)
         super(TypedObject, self).__init__(*args, **kwargs)
         if typeclass_path:
@@ -249,8 +252,6 @@ class TypedObject(SharedMemoryModel):
     # TypedObject main class methods and properties
     #
     #
-
-    _typeclass_paths = settings.OBJECT_TYPECLASS_PATHS
 
     def __eq__(self, other):
         return other and hasattr(other, 'dbid') and self.dbid == other.dbid
@@ -332,16 +333,13 @@ class TypedObject(SharedMemoryModel):
           boolean True/False depending on if the swap worked or not.
 
         """
-        if callable(new_typeclass):
-            # this is an actual class object - build the path
-            cls = new_typeclass
-            new_typeclass = "%s.%s" % (cls.__module__, cls.__name__)
-        else:
-            new_typeclass = "%s" % to_str(new_typeclass)
 
-        # Try to set the new path
-        # this will automatically save to database
-        old_typeclass_path = self.typeclass_path
+        if not callable(new_typeclass):
+            # this is an actual class object - build the path
+            new_typeclass = class_from_module(new_typeclass)
+
+        # if we get to this point, the class is ok.
+
 
         if inherits_from(self, "src.scripts.models.ScriptDB"):
             if self.interval > 0:
@@ -349,15 +347,7 @@ class TypedObject(SharedMemoryModel):
                                    "Script '%s'.\nStop and start a new Script of the " \
                                    "right type instead." % self.key)
 
-        self.typeclass_path = new_typeclass.strip()
-        # this will automatically use a default class if
-        # there is an error with the given typeclass.
-        new_typeclass = self
-        if self.typeclass_path != new_typeclass.path and no_default:
-            # something went wrong; the default was loaded instead,
-            # and we don't allow that; instead we return to previous.
-            self.typeclass_path = old_typeclass_path
-            return False
+        self.typeclass_path = new_typeclass.path
 
         if clean_attributes:
             # Clean out old attributes
@@ -373,21 +363,7 @@ class TypedObject(SharedMemoryModel):
                 self.nattributes.clear()
 
         if run_start_hooks:
-            # run hooks for this new typeclass
-            if inherits_from(self, "src.objects.models.ObjectDB"):
-                new_typeclass.basetype_setup()
-                new_typeclass.at_object_creation()
-            elif inherits_from(self, "src.players.models.PlayerDB"):
-                new_typeclass.basetype_setup()
-                new_typeclass.at_player_creation()
-            elif inherits_from(self, "src.scripts.models.ScriptDB"):
-                new_typeclass.at_script_creation()
-                new_typeclass.start()
-            elif inherits_from(self, "src.channels.models.Channel"):
-                # channels do no initial setup
-                pass
-
-        return True
+            self.at_instance_creation()
 
     #
     # Lock / permission methods
@@ -493,25 +469,25 @@ class TypedObject(SharedMemoryModel):
             class DbHolder(object):
                 "Holder for allowing property access of attributes"
                 def __init__(self, obj):
-                    self.attrhandler = obj.attributes
+                    _SA(self, "attrhandler", obj.attributes)
 
                 def __getattribute__(self, attrname):
                     if attrname == 'all':
                         # we allow to overload our default .all
-                        attr = self.attrhandler.get("all")
+                        attr = _GA(self, "attrhandler").get("all")
                         if attr:
                             return attr
                         return self.all
-                    return self.attrhandler.get(attrname)
+                    return _GA(self, "attrhandler").get(attrname)
 
                 def __setattr__(self, attrname, value):
-                    self.attrhandler.add(attrname, value)
+                    _GA(self, "attrhandler").add(attrname, value)
 
                 def __delattr__(self, attrname):
-                    self.attrhandler.remove(attrname)
+                    _GA(self, "attrhandler").remove(attrname)
 
                 def get_all(self):
-                    return self.attrhandler.all()
+                    return _GA(self, "attrhandler").all()
                 all = property(get_all)
             self._db_holder = DbHolder(self)
             return self._db_holder
@@ -547,25 +523,25 @@ class TypedObject(SharedMemoryModel):
             class NDbHolder(object):
                 "Holder for allowing property access of attributes"
                 def __init__(self, obj):
-                    self.nattrhandler = obj.nattributes
+                    _SA(self, "nattrhandler", obj.nattributes)
 
                 def __getattribute__(self, attrname):
                     if attrname == 'all':
                         # we allow to overload our default .all
-                        attr = self.nattrhandler.get('all')
+                        attr = _GA(self, "nattrhandler").get('all')
                         if attr:
                             return attr
                         return self.all
-                    return self.nattrhandler.get(attrname)
+                    return _GA(self, "nattrhandler").get(attrname)
 
                 def __setattr__(self, attrname, value):
-                    self.nattrhandler.add(attrname, value)
+                    _GA(self, "nattrhandler").add(attrname, value)
 
                 def __delattr__(self, attrname):
-                    self.nattrhandler.remove(attrname)
+                    _GA(self, "nattrhandler").remove(attrname)
 
                 def get_all(self):
-                    return self.nattrhandler.all()
+                    return _GA(self, "nattrhandler").all()
                 all = property(get_all)
             self._ndb_holder = NDbHolder(self)
             return self._ndb_holder

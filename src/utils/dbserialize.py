@@ -216,7 +216,7 @@ def pack_dbobj(item):
     _init_globals()
     obj = hasattr(item, 'dbobj') and item.dbobj or item
     natural_key = _FROM_MODEL_MAP[hasattr(obj, "id") and hasattr(obj, "db_date_created") and
-                                  hasattr(obj, '__class__') and obj.__class__.__name__.lower()]
+                                  hasattr(obj, '__dbclass__') and obj.__dbclass__.__name__.lower()]
     # build the internal representation as a tuple
     #  ("__packed_dbobj__", key, creation_time, id)
     return natural_key and ('__packed_dbobj__', natural_key,

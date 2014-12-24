@@ -823,6 +823,7 @@ class DefaultObject(ObjectDB):
         return True
         # methods inherited from the typeclass system
 
+
     def __eq__(self, other):
         """
         Checks for equality against an id string or another object or user.

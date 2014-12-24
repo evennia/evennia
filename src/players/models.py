@@ -24,12 +24,9 @@ from django.utils.encoding import smart_str
 from src.players.manager import PlayerDBManager
 from src.scripts.models import ScriptDB
 from src.typeclasses.models import TypedObject
-from src.typeclasses.attributes import NickHandler
-from src.scripts.scripthandler import ScriptHandler
-from src.commands.cmdsethandler import CmdSetHandler
 from src.commands import cmdhandler
 from src.utils import utils, logger
-from src.utils.utils import to_str, make_iter, lazy_property
+from src.utils.utils import to_str, make_iter
 
 from django.utils.translation import ugettext as _
 
@@ -111,20 +108,6 @@ class PlayerDB(TypedObject, AbstractUser):
         app_label = 'players'
         verbose_name = 'Player'
 
-    # lazy-loading of handlers
-    @lazy_property
-    def cmdset(self):
-        return CmdSetHandler(self, True)
-
-    @lazy_property
-    def scripts(self):
-        return ScriptHandler(self)
-
-    @lazy_property
-    def nicks(self):
-        return NickHandler(self)
-
-
     # alias to the objs property
     def __characters_get(self):
         return self.objs
@@ -143,7 +126,7 @@ class PlayerDB(TypedObject, AbstractUser):
         """
         Getter. Allows for value = self.name. Returns a list of cmdset_storage.
         """
-        storage = _GA(self, "db_cmdset_storage")
+        storage = self.db_cmdset_storage
         # we need to check so storage is not None
         return [path.strip() for path in storage.split(',')] if storage else []
 
@@ -168,20 +151,22 @@ class PlayerDB(TypedObject, AbstractUser):
     #
 
     def __str__(self):
-        return smart_str("%s(player %s)" % (_GA(self, "name"), _GA(self, "dbid")))
+        return smart_str("%s(player %s)" % (self.name, self.dbid))
 
     def __unicode__(self):
-        return u"%s(player#%s)" % (_GA(self, "name"), _GA(self, "dbid"))
+        return u"%s(player#%s)" % (self.name, self.dbid)
 
     #@property
     def __username_get(self):
-        return _GA(self, "username")
+        return self.username
 
     def __username_set(self, value):
-        _SA(self, "username", value)
+        self.username = value
+        self.save(update_fields=["username"])
 
     def __username_del(self):
-        _DA(self, "username")
+        del self.username
+
     # aliases
     name = property(__username_get, __username_set, __username_del)
     key = property(__username_get, __username_set, __username_del)
@@ -198,63 +183,9 @@ class PlayerDB(TypedObject, AbstractUser):
         raise Exception("User id cannot be deleted!")
     uid = property(__uid_get, __uid_set, __uid_del)
 
-    #@property
-    #def __is_superuser_get(self):
-    #    "Superusers have all permissions."
-    #    return self.db_is_superuser
-    #    #is_suser = get_prop_cache(self, "_is_superuser")
-    #    #if is_suser == None:
-    #    #    is_suser = _GA(self, "user").is_superuser
-    #    #    set_prop_cache(self, "_is_superuser", is_suser)
-    #    #return is_suser
-    #is_superuser = property(__is_superuser_get)
-
     #
     # PlayerDB class access methods
     #
-
-    def msg(self, text=None, from_obj=None, sessid=None, **kwargs):
-        """
-        Evennia -> User
-        This is the main route for sending data back to the user from the
-        server.
-
-        outgoing_string (string) - text data to send
-        from_obj (Object/Player) - source object of message to send. Its
-                 at_msg_send() hook will be called.
-        sessid - the session id of the session to send to. If not given, return
-                 to all sessions connected to this player. This is usually only
-                 relevant when using msg() directly from a player-command (from
-                 a command on a Character, the character automatically stores
-                 and handles the sessid). Can also be a list of sessids.
-        kwargs (dict) - All other keywords are parsed as extra data.
-        """
-        if "data" in kwargs:
-            # deprecation warning
-            logger.log_depmsg("PlayerDB:msg() 'data'-dict keyword is deprecated. Use **kwargs instead.")
-            data = kwargs.pop("data")
-            if isinstance(data, dict):
-                kwargs.update(data)
-
-        text = to_str(text, force_string=True) if text else ""
-        if from_obj:
-            # call hook
-            try:
-                _GA(from_obj, "at_msg_send")(text=text, to_obj=self, **kwargs)
-            except Exception:
-                pass
-        sessions = _MULTISESSION_MODE > 1 and sessid and _GA(self, "get_session")(sessid) or None
-        if sessions:
-            for session in make_iter(sessions):
-                obj = session.puppet
-                if obj and not obj.at_msg_receive(text=text, **kwargs):
-                    # if hook returns false, cancel send
-                    continue
-                session.msg(text=text, **kwargs)
-        else:
-            # if no session was specified, send to them all
-            for sess in _GA(self, 'get_all_sessions')():
-                sess.msg(text=text, **kwargs)
 
     # session-related methods
 

@@ -18,7 +18,13 @@ from src.players.manager import PlayerManager
 from src.players.models import PlayerDB
 from src.comms.models import ChannelDB
 from src.utils import logger
-__all__ = ("Player",)
+from src.utils.utils import lazy_property, to_str, make_iter
+from src.typeclasses.attributes import NickHandler
+from src.scripts.scripthandler import ScriptHandler
+from src.commands.cmdsethandler import CmdSetHandler
+
+
+__all__ = ("DefaultPlayer",)
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 _CMDSET_PLAYER = settings.CMDSET_PLAYER
@@ -26,105 +32,140 @@ _CONNECT_CHANNEL = None
 
 class DefaultPlayer(PlayerDB):
     """
-    Base typeclass for all Players.
-    """
+    This is the base Typeclass for all Players. Players represent
+    the person playing the game and tracks account info, password
+    etc. They are OOC entities without presence in-game. A Player
+    can connect to a Character Object in order to "enter" the
+    game.
+
+    Player Typeclass API:
+
+    * Available properties (only available on initiated typeclass objects)
+
+     key (string) - name of player
+     name (string)- wrapper for user.username
+     aliases (list of strings) - aliases to the object. Will be saved to
+                        database as AliasDB entries but returned as strings.
+     dbref (int, read-only) - unique #id-number. Also "id" can be used.
+     dbobj (Player, read-only) - link to database model. dbobj.typeclass
+                                 points back to this class
+     typeclass (Player, read-only) - this links back to this class as an
+                      identified only. Use self.swap_typeclass() to switch.
+     date_created (string) - time stamp of object creation
+     permissions (list of strings) - list of permission strings
+
+     user (User, read-only) - django User authorization object
+     obj (Object) - game object controlled by player. 'character' can also
+                    be used.
+     sessions (list of Sessions) - sessions connected to this player
+     is_superuser (bool, read-only) - if the connected user is a superuser
+
+    * Handlers
+
+     locks - lock-handler: use locks.add() to add new lock strings
+     db - attribute-handler: store/retrieve database attributes on this
+                             self.db.myattr=val, val=self.db.myattr
+     ndb - non-persistent attribute handler: same as db but does not
+                                 create a database entry when storing data
+     scripts - script-handler. Add new scripts to object with scripts.add()
+     cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
+     nicks - nick-handler. New nicks with nicks.add().
+
+    * Helper methods
+
+     msg(outgoing_string, from_obj=None, **kwargs)
+     swap_character(new_character, delete_old_character=False)
+     execute_cmd(raw_string)
+     search(ostring, global_search=False, attribute_name=None,
+                     use_nicks=False, location=None,
+                     ignore_errors=False, player=False)
+     is_typeclass(typeclass, exact=False)
+     swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
+     access(accessing_obj, access_type='read', default=False)
+     check_permstring(permstring)
+
+    * Hook methods
+
+     basetype_setup()
+     at_player_creation()
+
+     - note that the following hooks are also found on Objects and are
+       usually handled on the character level:
+
+     at_init()
+     at_access()
+     at_cmdset_get(**kwargs)
+     at_first_login()
+     at_post_login(sessid=None)
+     at_disconnect()
+     at_message_receive()
+     at_message_send()
+     at_server_reload()
+     at_server_shutdown()
+
+     """
+
     __metaclass__ = TypeclassBase
     objects = PlayerManager()
 
-    def __init__(self, *args, **kwargs):
-        """
-        This is the base Typeclass for all Players. Players represent
-        the person playing the game and tracks account info, password
-        etc. They are OOC entities without presence in-game. A Player
-        can connect to a Character Object in order to "enter" the
-        game.
+    # properties
+    @lazy_property
+    def cmdset(self):
+        return CmdSetHandler(self, True)
 
-        Player Typeclass API:
+    @lazy_property
+    def scripts(self):
+        return ScriptHandler(self)
 
-        * Available properties (only available on initiated typeclass objects)
+    @lazy_property
+    def nicks(self):
+        return NickHandler(self)
 
-         key (string) - name of player
-         name (string)- wrapper for user.username
-         aliases (list of strings) - aliases to the object. Will be saved to
-                            database as AliasDB entries but returned as strings.
-         dbref (int, read-only) - unique #id-number. Also "id" can be used.
-         dbobj (Player, read-only) - link to database model. dbobj.typeclass
-                                     points back to this class
-         typeclass (Player, read-only) - this links back to this class as an
-                          identified only. Use self.swap_typeclass() to switch.
-         date_created (string) - time stamp of object creation
-         permissions (list of strings) - list of permission strings
-
-         user (User, read-only) - django User authorization object
-         obj (Object) - game object controlled by player. 'character' can also
-                        be used.
-         sessions (list of Sessions) - sessions connected to this player
-         is_superuser (bool, read-only) - if the connected user is a superuser
-
-        * Handlers
-
-         locks - lock-handler: use locks.add() to add new lock strings
-         db - attribute-handler: store/retrieve database attributes on this
-                                 self.db.myattr=val, val=self.db.myattr
-         ndb - non-persistent attribute handler: same as db but does not
-                                     create a database entry when storing data
-         scripts - script-handler. Add new scripts to object with scripts.add()
-         cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
-         nicks - nick-handler. New nicks with nicks.add().
-
-        * Helper methods
-
-         msg(outgoing_string, from_obj=None, **kwargs)
-         swap_character(new_character, delete_old_character=False)
-         execute_cmd(raw_string)
-         search(ostring, global_search=False, attribute_name=None,
-                         use_nicks=False, location=None,
-                         ignore_errors=False, player=False)
-         is_typeclass(typeclass, exact=False)
-         swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
-         access(accessing_obj, access_type='read', default=False)
-         check_permstring(permstring)
-
-        * Hook methods
-
-         basetype_setup()
-         at_player_creation()
-
-         - note that the following hooks are also found on Objects and are
-           usually handled on the character level:
-
-         at_init()
-         at_access()
-         at_cmdset_get(**kwargs)
-         at_first_login()
-         at_post_login(sessid=None)
-         at_disconnect()
-         at_message_receive()
-         at_message_send()
-         at_server_reload()
-         at_server_shutdown()
-
-         """
-        super(DefaultPlayer, self).__init__(*args, **kwargs)
 
     ## methods inherited from database model
 
     def msg(self, text=None, from_obj=None, sessid=None, **kwargs):
         """
         Evennia -> User
-        This is the main route for sending data back to the user from
-        the server.
+        This is the main route for sending data back to the user from the
+        server.
 
-        text (string) - text data to send
-        from_obj (Object/DefaultPlayer) - source object of message to send
-        sessid - the session id of the session to send to. If not given,
-          return to all sessions connected to this player. This is usually only
-          relevant when using msg() directly from a player-command (from
-          a command on a Character, the character automatically stores and
-          handles the sessid).
-        kwargs - extra data to send through protocol
+        outgoing_string (string) - text data to send
+        from_obj (Object/Player) - source object of message to send. Its
+                 at_msg_send() hook will be called.
+        sessid - the session id of the session to send to. If not given, return
+                 to all sessions connected to this player. This is usually only
+                 relevant when using msg() directly from a player-command (from
+                 a command on a Character, the character automatically stores
+                 and handles the sessid). Can also be a list of sessids.
+        kwargs (dict) - All other keywords are parsed as extra data.
         """
-        super(DefaultPlayer, self).msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
+        if "data" in kwargs:
+            # deprecation warning
+            logger.log_depmsg("PlayerDB:msg() 'data'-dict keyword is deprecated. Use **kwargs instead.")
+            data = kwargs.pop("data")
+            if isinstance(data, dict):
+                kwargs.update(data)
+
+        text = to_str(text, force_string=True) if text else ""
+        if from_obj:
+            # call hook
+            try:
+                from_obj.at_msg_send(text=text, to_obj=self, **kwargs)
+            except Exception:
+                pass
+        sessions = _MULTISESSION_MODE > 1 and sessid and self.get_session(sessid) or None
+        if sessions:
+            for session in make_iter(sessions):
+                obj = session.puppet
+                if obj and not obj.at_msg_receive(text=text, **kwargs):
+                    # if hook returns false, cancel send
+                    continue
+                session.msg(text=text, **kwargs)
+        else:
+            # if no session was specified, send to them all
+            for sess in self.get_all_sessions():
+                sess.msg(text=text, **kwargs)
 
     def swap_character(self, new_character, delete_old_character=False):
         """

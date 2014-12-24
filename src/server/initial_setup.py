@@ -10,6 +10,7 @@ import django
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
+from src.players.models import PlayerDB
 from src.server.models import ServerConfig
 from src.utils import create
 from src.utils.utils import class_from_module
@@ -26,15 +27,14 @@ def get_god_player():
     """
     Creates the god user.
     """
-    Player = class_from_module(settings.BASE_PLAYER_TYPECLASS)
     try:
-        god_player = Player.objects.get(id=1)
-    except Player.DoesNotExist:
-        txt = "\n\nNo superuser exists yet. The superuser is the 'owner'"
-        txt += "\account on the Evennia server. Create a new superuser using"
-        txt += "\nthe command"
-        txt += "\n\n  python manage.py createsuperuser"
-        txt += "\n\nFollow the prompts, then restart the server."
+        god_player = PlayerDB.objects.get(id=1)
+    except PlayerDB.DoesNotExist:
+        txt = "\n\nNo superuser exists yet. The superuser is the 'owner'\n" \
+              "account on the Evennia server. Create a new superuser using\n" \
+              "the command\n\n" \
+              "  python manage.py createsuperuser\n\n" \
+              "Follow the prompts, then restart the server."
         raise Exception(txt)
     return god_player
 
@@ -56,7 +56,7 @@ def create_objects():
 
     # run all creation hooks on god_player (we must do so manually
     # since the manage.py command does not)
-    god_player.typeclass_path = player_typeclass
+    god_player.swap_typeclass(player_typeclass, clean_attributes=True)
     god_player.basetype_setup()
     god_player.at_player_creation()
     god_player.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all()")
