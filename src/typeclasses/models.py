@@ -46,7 +46,7 @@ from src.server.caches import get_prop_cache, set_prop_cache
 from src.typeclasses import managers
 from src.locks.lockhandler import LockHandler
 from src.utils.utils import (
-    is_iter, to_str, inherits_from, lazy_property,
+    is_iter, inherits_from, lazy_property,
     class_from_module)
 from src.typeclasses.django_new_patch import patched_new
 
@@ -191,7 +191,7 @@ class TypedObject(SharedMemoryModel):
         else:
             self.db_typeclass_path = "%s.%s" % (self.__module__, self.__class__.__name__)
         # important to put this at the end since _meta is based on the set __class__
-        self.__dbclass__ = self._meta.proxy_for_model
+        self.__dbclass__ = self._meta.proxy_for_model or self.__class__
 
     # initialize all handlers in a lazy fashion
     @lazy_property
@@ -348,6 +348,7 @@ class TypedObject(SharedMemoryModel):
                                    "right type instead." % self.key)
 
         self.typeclass_path = new_typeclass.path
+        self.__class__ = new_typeclass
 
         if clean_attributes:
             # Clean out old attributes

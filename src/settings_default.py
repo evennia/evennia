@@ -298,7 +298,7 @@ BASE_ROOM_TYPECLASS = "src.objects.objects.DefaultRoom"
 # Typeclass for Exit objects (fallback).
 BASE_EXIT_TYPECLASS = "src.objects.objects.DefaultExit"
 # Typeclass for Channel (fallback).
-BASE_CHANNEL_TYPECLASS = "src.comms.comms.DefaultChannel"
+BASE_CHANNEL_TYPECLASS = "src.comms.comms.Channel"
 # Typeclass for Scripts (fallback). You usually don't need to change this
 # but create custom variations of scripts on a per-case basis instead.
 BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"

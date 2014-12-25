@@ -933,24 +933,29 @@ def class_from_module(path, defaultpaths=None):
     """
     cls = None
     if defaultpaths:
-        paths = [path] + make_iter(defaultpaths) if defaultpaths else []
+        paths = [path] + ["%s.%s" % (dpath, path) for dpath in make_iter(defaultpaths)] if defaultpaths else []
     else:
         paths = [path]
 
-    for path in paths:
-        path, clsname = path.rsplit(".", 1)
+    for testpath in paths:
+        if "." in path:
+            testpath, clsname = testpath.rsplit(".", 1)
+        else:
+            testpath, clsname = ".", testpath
         try:
-            mod = import_module(path)
+            mod = import_module(testpath)
         except ImportError, ex:
             # normally this is due to a not-found property
-            if not str(ex).startswith ("No module named %s" % path):
-                raise ex
+            if not str(ex).startswith("No module named"):
+                exc = sys.exc_info()
+                raise exc[1], None, exc[2]
         try:
             cls = getattr(mod, clsname)
             break
         except AttributeError, ex:
-            if not str(ex).startswith("Object 'module' has no attribute '%s'" % clsname):
-                raise ex
+            if not str(ex).startswith("'module' object has no attribute '%s'" % clsname):
+                exc = sys.exc_info()
+                raise exc[1], None, exc[2]
     if not cls:
         raise ImportError("Could not load typeclass '%s'." % path)
     return cls
