@@ -271,33 +271,23 @@ def create_channel(key, aliases=None, desc=None,
     aliases - list of alternative (likely shorter) keynames.
     locks - lock string definitions
     """
-    global _ChannelDB, _channelhandler
-    if not _ChannelDB:
-        from src.comms.models import ChannelDB as _ChannelDB
-    if not _channelhandler:
-        from src.comms import channelhandler as _channelhandler
-    if not typeclass:
-        typeclass = settings.BASE_CHANNEL_TYPECLASS
-    try:
-        new_channel = _ChannelDB(typeclass=typeclass, db_key=key)
-        new_channel.save()
-        new_channel = new_channel.typeclass
-        if aliases:
-            if not utils.is_iter(aliases):
-                aliases = [aliases]
-            new_channel.aliases.add(aliases)
-        new_channel.save()
-        new_channel.db.desc = desc
-        new_channel.db.keep_log = keep_log
-    except IntegrityError:
-        string = "Could not add channel: key '%s' already exists." % key
-        logger.log_errmsg(string)
-        return None
-    if locks:
-        new_channel.locks.add(locks)
+    typeclass = typeclass if typeclass else settings.BASE_CHANNEL_TYPECLASS
+
+    if isinstance(typeclass, basestring):
+        # a path is given. Load the actual typeclass
+        typeclass = class_from_module(typeclass, settings.CHANNEL_TYPECLASS_PATHS)
+
+    # create new instance
+    new_channel = typeclass(db_key=key)
+
+    # store call signature for the signal
+    new_channel._createdict = {"key":key, "aliases":aliases,
+            "desc":desc, "locks":locks, "keep_log":keep_log}
+
+    # this will trigger the save signal which in turn calls the
+    # at_first_save hook on the typeclass, where the _createdict can be
+    # used.
     new_channel.save()
-    _channelhandler.CHANNELHANDLER.add_channel(new_channel)
-    new_channel.at_channel_create()
     return new_channel
 
 channel = create_channel

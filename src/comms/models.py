@@ -346,7 +346,6 @@ class ChannelDB(TypedObject):
       key - main name for channel
       desc - optional description of channel
       aliases - alternative names for the channel
-      keep_log - bool if the channel should remember messages
       permissions - perm strings
 
     """

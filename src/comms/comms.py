@@ -18,6 +18,34 @@ class Channel(ChannelDB):
     __metaclass__ = TypeclassBase
     objects = ChannelManager()
 
+    def at_first_save(self):
+        """
+        Called by the typeclass system the very first time the channel
+        is saved to the database. Generally, don't overload this but
+        the hooks called by this method.
+        """
+        self.at_channel_creation()
+
+        if hasattr(self, "_createdict"):
+            # this is only set if the channel was created
+            # with the utils.create.create_channel function.
+            cdict = self._createdict
+            if not cdict["key"]:
+                self.db_key = "#i" % self.dbid
+            elif cdict["key"] and self.key != cdict["key"]:
+                self.key = cdict["key"]
+            if cdict["keep_log"]:
+                self.db_keep_log = cdict["keep_log"]
+            if cdict["aliases"]:
+                self.aliases.add(cdict["aliases"])
+            if cdict["locks"]:
+                self.locks.add(cdict["locks"])
+            if cdict["keep_log"]:
+                self.attributes.add("keep_log", cdict["keep_log"])
+            if cdict["desc"]:
+                self.attributes.add("desc", cdict["desc"])
+
+
     # helper methods, for easy overloading
 
     def channel_prefix(self, msg=None, emit=False):
