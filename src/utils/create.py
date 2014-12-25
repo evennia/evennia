@@ -48,33 +48,6 @@ __all__ = ("create_object", "create_script", "create_help_entry",
 
 _GA = object.__getattribute__
 
-# Helper function
-
-def handle_dbref(inp, objclass, raise_errors=True):
-    """
-    Convert a #dbid to a valid object of objclass. objclass
-    should be a valid object class to filter against (objclass.filter ...)
-    If not raise_errors is set, this will swallow errors of non-existing
-    objects.
-    """
-    if not (isinstance(inp, basestring) and inp.startswith("#")):
-        return inp
-    # a string, analyze it
-    inp = inp.lstrip('#')
-    try:
-        if int(inp) < 0:
-            return None
-    except ValueError:
-        return None
-
-    # if we get to this point, inp is an integer dbref; get the matching object
-    try:
-        return objclass.objects.get(id=inp)
-    except Exception:
-        if raise_errors:
-            raise
-        return inp
-
 #
 # Game Object creation
 #
@@ -128,7 +101,7 @@ def create_object(typeclass=None, key=None, location=None,
                               "locks":locks, "aliases":aliases, "destination":destination,
                               "report_to":report_to, "nohome":nohome}
     # this will trigger the save signal which in turn calls the
-    # at_instance_creation hook on the typeclass, where the _createdict can be
+    # at_first_save hook on the typeclass, where the _createdict can be
     # used.
     new_object.save()
     return new_object
@@ -168,83 +141,33 @@ def create_script(typeclass, key=None, obj=None, player=None, locks=None,
               error will be raised. If set, this method will
               return None upon errors.
     """
-    global _Script, _ScriptDB
-    if not _Script:
-        from src.scripts.scripts import Script as _Script
-    if not _ScriptDB:
-        from src.scripts.models import ScriptDB as _ScriptDB
+    typeclass = typeclass if typeclass else settings.BASE_SCRIPT_TYPECLASS
 
-    if not typeclass:
-        typeclass = settings.BASE_SCRIPT_TYPECLASS
-    elif isinstance(typeclass, _ScriptDB):
-        # this is already an scriptdb instance, extract its typeclass
-        typeclass = typeclass.typeclass.path
-    elif isinstance(typeclass, _Script) or utils.inherits_from(typeclass, _Script):
-        # this is already an object typeclass, extract its path
-        typeclass = typeclass.path
+    if isinstance(typeclass, basestring):
+        # a path is given. Load the actual typeclass
+        typeclass = class_from_module(typeclass, settings.SCRIPT_TYPECLASS_PATHS)
 
-    # create new database script
-    new_db_script = _ScriptDB()
+    # validate input
+    player = dbid_to_obj(player)
+    obj = dbid_to_obj(obj)
 
-    # assign the typeclass
-    typeclass = utils.to_unicode(typeclass)
-    new_db_script.typeclass_path = typeclass
+    # create new instance
+    new_script = typeclass(db_key=key, db_obj=obj, db_player=player,
+                           db_interval=interval, db_start_delay=start_delay,
+                            db_repeats=repeats, db_peristent=persistent)
+    # store the call signature for the signal
+    new_script._createdict = {"key":key, "obj":obj, "player":player,
+                              "locks":locks, "interval":interval,
+                              "start_delay":start_delay, "repeats":repeats,
+                              "persistent":persistent, "autostart":autostart,
+                              "report_to":report_to}
 
-    # the name/key is often set later in the typeclass. This
-    # is set here as a failsafe.
-    if key:
-        new_db_script.key = key
-    else:
-        new_db_script.key = "#%i" % new_db_script.id
-
-    # this will either load the typeclass or the default one
-    new_script = new_db_script.typeclass
-
-    if not _GA(new_db_script, "is_typeclass")(typeclass, exact=True):
-        # this will fail if we gave a typeclass as input and it still
-        # gave us a default
-        SharedMemoryModel.delete(new_db_script)
-        if report_to:
-            _GA(report_to, "msg")("Error creating %s (%s): %s" % (new_db_script.key, typeclass,
-                                                                 _GA(new_db_script, "typeclass_last_errmsg")))
-            return None
-        else:
-            raise Exception(_GA(new_db_script, "typeclass_last_errmsg"))
-
-    if obj:
-        new_script.obj = obj
-    if player:
-        new_script.player = player
-
-    # call the hook method. This is where all at_creation
-    # customization happens as the typeclass stores custom
-    # things on its database object.
-    new_script.at_script_creation()
-
-    # custom-given variables override the hook
-    if key:
-        new_script.key = key
-    if locks:
-        new_script.locks.add(locks)
-    if interval is not None:
-        new_script.interval = interval
-    if start_delay is not None:
-        new_script.start_delay = start_delay
-    if repeats is not None:
-        new_script.repeats = repeats
-    if persistent is not None:
-        new_script.persistent = persistent
-
-    # must do this before starting the script since some
-    # scripts may otherwise run for a very short time and
-    # try to delete itself before we have a time to save it.
-    new_db_script.save()
-
-    # a new created script should usually be started.
-    if autostart:
-        new_script.start()
-
+    # this will trigger the save signal which in turn calls the
+    # at_first_save hook on the tyepclass, where the _createdict
+    # can be used.
+    new_script.save()
     return new_script
+
 #alias
 script = create_script
 
@@ -413,11 +336,16 @@ def create_player(key, email, password,
      operations and is thus not suitable for play-testing the game.
 
     """
-    global _PlayerDB, _Player
-    if not _PlayerDB:
-        from src.players.models import PlayerDB as _PlayerDB
-    if not _Player:
-        from src.players.player import Player as _Player
+    typeclass = typeclass if typeclass else settings.BASE_PLAYER_TYPECLASS
+
+    if isinstance(typeclass, basestring):
+        # a path is given. Load the actual typeclass.
+        typeclass = class_from_module(typeclass, settings.OBJECT_TYPECLASS_PATHS)
+    typeclass_path = typeclass.path
+
+    # setup input for the create command. We use PlayerDB as baseclass
+    # here to give us maximum freedom (the typeclasses will load
+    # correctly when each object is recovered).
 
     if not email:
         email = "dummy@dummy.com"
@@ -425,69 +353,23 @@ def create_player(key, email, password,
         raise ValueError("A Player with the name '%s' already exists." % key)
 
     # this handles a given dbref-relocate to a player.
-    report_to = handle_dbref(report_to, _PlayerDB)
+    report_to = dbid_to_obj(report_to, _PlayerDB)
 
-    try:
+    # create the correct player object
+    if is_superuser:
+        new_player = _PlayerDB.objects.create_superuser(key, email, password)
+    else:
+        new_player = _PlayerDB.objects.create_user(key, email, password)
+    new_player.db_typeclass_path = typeclass_path
+    # store the call signature for the signal
+    new_player._createdict = {"locks":locks, "permissions":permissions,
+                              "report_to":report_to}
 
-        # create the correct Player object
-        if is_superuser:
-            new_db_player = _PlayerDB.objects.create_superuser(key, email, password)
-        else:
-            new_db_player = _PlayerDB.objects.create_user(key, email, password)
-
-        if not typeclass:
-            typeclass = settings.BASE_PLAYER_TYPECLASS
-        elif isinstance(typeclass, _PlayerDB):
-            # this is an PlayerDB instance, extract its typeclass path
-            typeclass = typeclass.typeclass.path
-        elif isinstance(typeclass, _Player) or utils.inherits_from(typeclass, _Player):
-            # this is Player object typeclass, extract its path
-            typeclass = typeclass.path
-
-        # assign the typeclass
-        typeclass = utils.to_unicode(typeclass)
-        new_db_player.typeclass_path = typeclass
-
-        # this will either load the typeclass or the default one
-        new_player = new_db_player.typeclass
-
-        if not _GA(new_db_player, "is_typeclass")(typeclass, exact=True):
-            # this will fail if we gave a typeclass as input
-            # and it still gave us a default
-            SharedMemoryModel.delete(new_db_player)
-            if report_to:
-                _GA(report_to, "msg")("Error creating %s (%s):\n%s" % (new_db_player.key, typeclass,
-                                                                  _GA(new_db_player, "typeclass_last_errmsg")))
-                return None
-            else:
-                raise Exception(_GA(new_db_player, "typeclass_last_errmsg"))
-
-        new_player.basetype_setup()  # setup the basic locks and cmdset
-        # call hook method (may override default permissions)
-        new_player.at_player_creation()
-
-        # custom given arguments potentially overrides the hook
-        if permissions:
-            new_player.permissions.add(permissions)
-        elif not new_player.permissions:
-            new_player.permissions.add(settings.PERMISSION_PLAYER_DEFAULT)
-        if locks:
-            new_player.locks.add(locks)
-        return new_player
-
-    except Exception:
-        # a failure in creating the player; we try to clean
-        # up as much as we can
-        logger.log_trace()
-        try:
-            new_player.delete()
-        except Exception:
-            pass
-        try:
-            del new_player
-        except Exception:
-            pass
-        raise
+    # saving will trigger the signal that calls the
+    # at_first_save hook on the typeclass, where the _createdict
+    # can be used.
+    new_player.save()
+    return new_player
 
 # alias
 player = create_player

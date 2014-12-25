@@ -74,10 +74,10 @@ _SA = object.__setattr__
 # signal receivers. Assigned in __new__
 def post_save(sender, instance, created, **kwargs):
     """
-    Is called Receive a signal just after the object is saved.
+    Receives a signal just after the object is saved.
     """
     if created:
-        instance.at_instance_creation()
+        instance.at_first_save()
     #TODO - put OOB handler here?
 
 
@@ -363,7 +363,8 @@ class TypedObject(SharedMemoryModel):
                 self.nattributes.clear()
 
         if run_start_hooks:
-            self.at_instance_creation()
+            # fake this call to mimic the first save
+            self.at_first_save()
 
     #
     # Lock / permission methods

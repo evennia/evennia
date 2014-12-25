@@ -351,109 +351,146 @@ class ScriptBase(ScriptDB):
 
 class Script(ScriptBase):
     """
-    This is the class you should inherit from, it implements
-    the hooks called by the script machinery.
+    This is the base TypeClass for all Scripts. Scripts describe events,
+    timers and states in game, they can have a time component or describe
+    a state that changes under certain conditions.
+
+    Script API:
+
+    * Available properties (only available on initiated Typeclass objects)
+
+     key (string) - name of object
+     name (string)- same as key
+     aliases (list of strings) - aliases to the object. Will be saved to
+     database as AliasDB entries but returned as strings.
+     dbref (int, read-only) - unique #id-number. Also "id" can be used.
+     dbobj (Object, read-only) - link to database model. dbobj.typeclass
+           points back to this class
+     typeclass (Object, read-only) - this links back to this class as an
+             identified only. Use self.swap_typeclass() to switch.
+     date_created (string) - time stamp of object creation
+     permissions (list of strings) - list of permission strings
+
+     desc (string)      - optional description of script, shown in listings
+     obj (Object)       - optional object that this script is connected to
+                          and acts on (set automatically
+                          by obj.scripts.add())
+     interval (int)     - how often script should run, in seconds.
+                          <=0 turns off ticker
+     start_delay (bool) - if the script should start repeating right
+                          away or wait self.interval seconds
+     repeats (int)      - how many times the script should repeat before
+                          stopping. <=0 means infinite repeats
+     persistent (bool)  - if script should survive a server shutdown or not
+     is_active (bool)   - if script is currently running
+
+    * Handlers
+
+     locks - lock-handler: use locks.add() to add new lock strings
+     db - attribute-handler: store/retrieve database attributes on this
+          self.db.myattr=val, val=self.db.myattr
+     ndb - non-persistent attribute handler: same as db but does not
+           create a database entry when storing data
+
+    * Helper methods
+
+     start() - start script (this usually happens automatically at creation
+               and obj.script.add() etc)
+     stop()  - stop script, and delete it
+     pause() - put the script on hold, until unpause() is called. If script
+               is persistent, the pause state will survive a shutdown.
+     unpause() - restart a previously paused script. The script will
+                 continue as if it was never paused.
+     force_repeat() - force-step the script, regardless of how much remains
+                until next step. This counts like a normal firing in all ways.
+     time_until_next_repeat() - if a timed script (interval>0), returns
+                time until next tick
+     remaining_repeats() - number of repeats remaining, if limited
+
+    * Hook methods
+
+     at_script_creation() - called only once, when an object of this
+                            class is first created.
+     is_valid() - is called to check if the script is valid to be running
+                  at the current time. If is_valid() returns False, the
+                  running script is stopped and removed from the game. You
+                  can use this to check state changes (i.e. an script
+                  tracking some combat stats at regular intervals is only
+                  valid to run while there is actual combat going on).
+      at_start() - Called every time the script is started, which for
+                  persistent scripts is at least once every server start.
+                  Note that this is unaffected by self.delay_start, which
+                  only delays the first call to at_repeat(). It will also
+                  be called after a pause, to allow for setting up the script.
+      at_repeat() - Called every self.interval seconds. It will be called
+                  immediately upon launch unless self.delay_start is True,
+                  which will delay the first call of this method by
+                  self.interval seconds. If self.interval<=0, this method
+                  will never be called.
+      at_stop() - Called as the script object is stopped and is about to
+                  be removed from the game, e.g. because is_valid()
+                  returned False or self.stop() was called manually.
+      at_server_reload() - Called when server reloads. Can be used to save
+                  temporary variables you want should survive a reload.
+      at_server_shutdown() - called at a full server shutdown.
+
     """
-
-    def __init__(self, *args, **kwargs):
+    def at_first_save(self):
         """
-        This is the base TypeClass for all Scripts. Scripts describe events,
-        timers and states in game, they can have a time component or describe
-        a state that changes under certain conditions.
+        This is called after very first time this object is saved.
+        Generally, you don't need to overload this, but only the hooks
+        called by this method.
+        """
+        self.at_script_creation(self)
 
-        Script API:
+        if hasattr(self, "_createdict"):
+            # this will only be set if the utils.create_script
+            # function was used to create the object. We want
+            # the create call's kwargs to override the values
+            # set by hooks.
+            cdict = self._createdict
+            updates = []
+            if not cdict["key"]:
+                self.db_key = "#%i" % self.dbid
+                updates.append("db_key")
+            elif self.key != cdict["db_key"]:
+                self.db_key = cdict["key"]
+                updates.append("db_key")
+            if cdict["interval"] and self.interval != cdict["interval"]:
+                self.db_interval = cdict["interval"]
+                updates.append("db_interval")
+            if cdict["start_delay"] and self.start_delay != cdict["start_delay"]:
+                self.db_start_delay = cdict["start_delay"]
+                updates.append("db_start_delay")
+            if cdict["repeats"] and self.repeats != cdict["repeats"]:
+                self.db_repeats = cdict["repeats"]
+                updates.append("db_repeats")
+            if cdict["persistent"] and self.persistent != cdict["persistent"]:
+                self.db_persistent = cdict["persistent"]
+                updates.append("db_persistent")
+            if updates:
+                self.save(update_fields=updates)
 
-        * Available properties (only available on initiated Typeclass objects)
+            if cdict["permissions"]:
+                self.permissions.add(cdict["permissions"])
+            if cdict["locks"]:
+                self.locks.add(cdict["locks"])
+            if cdict["aliases"]:
+                self.aliases.add(cdict["aliases"])
 
-         key (string) - name of object
-         name (string)- same as key
-         aliases (list of strings) - aliases to the object. Will be saved to
-         database as AliasDB entries but returned as strings.
-         dbref (int, read-only) - unique #id-number. Also "id" can be used.
-         dbobj (Object, read-only) - link to database model. dbobj.typeclass
-               points back to this class
-         typeclass (Object, read-only) - this links back to this class as an
-                 identified only. Use self.swap_typeclass() to switch.
-         date_created (string) - time stamp of object creation
-         permissions (list of strings) - list of permission strings
+            if not cdict["autostart"]:
+                # don't auto-start the script
+                return
 
-         desc (string)      - optional description of script, shown in listings
-         obj (Object)       - optional object that this script is connected to
-                              and acts on (set automatically
-                              by obj.scripts.add())
-         interval (int)     - how often script should run, in seconds.
-                              <=0 turns off ticker
-         start_delay (bool) - if the script should start repeating right
-                              away or wait self.interval seconds
-         repeats (int)      - how many times the script should repeat before
-                              stopping. <=0 means infinite repeats
-         persistent (bool)  - if script should survive a server shutdown or not
-         is_active (bool)   - if script is currently running
+        # auto-start script (default)
+        self.start()
 
-        * Handlers
-
-         locks - lock-handler: use locks.add() to add new lock strings
-         db - attribute-handler: store/retrieve database attributes on this
-              self.db.myattr=val, val=self.db.myattr
-         ndb - non-persistent attribute handler: same as db but does not
-               create a database entry when storing data
-
-        * Helper methods
-
-         start() - start script (this usually happens automatically at creation
-                   and obj.script.add() etc)
-         stop()  - stop script, and delete it
-         pause() - put the script on hold, until unpause() is called. If script
-                   is persistent, the pause state will survive a shutdown.
-         unpause() - restart a previously paused script. The script will
-                     continue as if it was never paused.
-         force_repeat() - force-step the script, regardless of how much remains
-                    until next step. This counts like a normal firing in all ways.
-         time_until_next_repeat() - if a timed script (interval>0), returns
-                    time until next tick
-         remaining_repeats() - number of repeats remaining, if limited
-
-        * Hook methods
-
-         at_script_creation() - called only once, when an object of this
-                                class is first created.
-         is_valid() - is called to check if the script is valid to be running
-                      at the current time. If is_valid() returns False, the
-                      running script is stopped and removed from the game. You
-                      can use this to check state changes (i.e. an script
-                      tracking some combat stats at regular intervals is only
-                      valid to run while there is actual combat going on).
-          at_start() - Called every time the script is started, which for
-                      persistent scripts is at least once every server start.
-                      Note that this is unaffected by self.delay_start, which
-                      only delays the first call to at_repeat(). It will also
-                      be called after a pause, to allow for setting up the script.
-          at_repeat() - Called every self.interval seconds. It will be called
-                      immediately upon launch unless self.delay_start is True,
-                      which will delay the first call of this method by
-                      self.interval seconds. If self.interval<=0, this method
-                      will never be called.
-          at_stop() - Called as the script object is stopped and is about to
-                      be removed from the game, e.g. because is_valid()
-                      returned False or self.stop() was called manually.
-          at_server_reload() - Called when server reloads. Can be used to save
-                      temporary variables you want should survive a reload.
-          at_server_shutdown() - called at a full server shutdown.
-
-
-          """
-        super(Script, self).__init__(*args, **kwargs)
 
     def at_script_creation(self):
         """
         Only called once, by the create function.
         """
-        self.key = "<unnamed>"
-        self.desc = ""
-        self.interval = 0  # infinite
-        self.start_delay = False
-        self.repeats = 0  # infinite
-        self.persistent = False
+        pass
 
     def is_valid(self):
         """

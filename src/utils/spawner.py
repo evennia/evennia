@@ -76,12 +76,11 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 from django.conf import settings
 from random import randint
 from src.objects.models import ObjectDB
-from src.utils.create import handle_dbref
-from src.utils.utils import make_iter, all_from_module
+from src.utils.utils import make_iter, all_from_module, dbid_to_obj
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 
-_handle_dbref = lambda inp: handle_dbref(inp, ObjectDB)
+_handle_dbref = lambda inp: dbid_to_obj(inp, ObjectDB)
 
 
 def _validate_prototype(key, prototype, protparents, visited):

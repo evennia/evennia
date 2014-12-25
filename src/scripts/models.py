@@ -158,23 +158,23 @@ class ScriptDB(TypedObject):
     object = property(__get_obj, __set_obj)
 
 
-    def at_typeclass_error(self):
-        """
-        If this is called, it means the typeclass has a critical
-        error and cannot even be loaded. We don't allow a script
-        to be created under those circumstances. Already created,
-        permanent scripts are set to already be active so they
-        won't get activated now (next reboot the bug might be fixed)
-        """
-        # By setting is_active=True, we trick the script not to run "again".
-        self.is_active = True
-        return super(ScriptDB, self).at_typeclass_error()
-
-    delete_iter = 0
-    def delete(self):
-        "Delete script"
-        if self.delete_iter > 0:
-            return
-        self.delete_iter += 1
-        _GA(self, "attributes").clear()
-        super(ScriptDB, self).delete()
+#    def at_typeclass_error(self):
+#        """
+#        If this is called, it means the typeclass has a critical
+#        error and cannot even be loaded. We don't allow a script
+#        to be created under those circumstances. Already created,
+#        permanent scripts are set to already be active so they
+#        won't get activated now (next reboot the bug might be fixed)
+#        """
+#        # By setting is_active=True, we trick the script not to run "again".
+#        self.is_active = True
+#        return super(ScriptDB, self).at_typeclass_error()
+#
+#    delete_iter = 0
+#    def delete(self):
+#        "Delete script"
+#        if self.delete_iter > 0:
+#            return
+#        self.delete_iter += 1
+#        _GA(self, "attributes").clear()
+#        super(ScriptDB, self).delete()

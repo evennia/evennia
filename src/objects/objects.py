@@ -840,7 +840,7 @@ class DefaultObject(ObjectDB):
             except AttributeError:
                 return False
 
-    def at_instance_creation(self):
+    def at_first_save(self):
         """
         This is called by the typeclass system whenever an instance of
         this class is saved for the first time. It is a generic hook
@@ -874,6 +874,7 @@ class DefaultObject(ObjectDB):
                 updates.append("db_destination")
             if updates:
                 self.save(update_fields=updates)
+
             if cdict["permissions"]:
                 self.permissions.add(cdict["permissions"])
             if cdict["locks"]:
@@ -883,6 +884,7 @@ class DefaultObject(ObjectDB):
             if cdict["location"]:
                 cdict["location"].at_object_receive(self, None)
                 self.at_after_move(None)
+            del self._createdict
 
         self.basetype_posthook_setup()
 

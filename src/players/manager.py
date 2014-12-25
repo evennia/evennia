@@ -37,7 +37,7 @@ class PlayerDBManager(TypedObjectManager, UserManager):
     get_player_from_uid
     get_player_from_name
     player_search (equivalent to ev.search_player)
-    swap_character
+    #swap_character
 
     """
     def num_total_players(self):
@@ -123,33 +123,33 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         else:
             return self.filter(username__icontains=ostring)
 
-    def swap_character(self, player, new_character, delete_old_character=False):
-        """
-        This disconnects a player from the current character (if any) and
-        connects to a new character object.
-
-        """
-
-        if new_character.player:
-            # the new character is already linked to a player!
-            return False
-
-        # do the swap
-        old_character = player.character
-        if old_character:
-            old_character.player = None
-        try:
-            player.character = new_character
-            new_character.player = player
-        except Exception:
-            # recover old setup
-            if old_character:
-                old_character.player = player
-                player.character = old_character
-            return False
-        if old_character and delete_old_character:
-            old_character.delete()
-        return True
+#    def swap_character(self, player, new_character, delete_old_character=False):
+#        """
+#        This disconnects a player from the current character (if any) and
+#        connects to a new character object.
+#
+#        """
+#
+#        if new_character.player:
+#            # the new character is already linked to a player!
+#            return False
+#
+#        # do the swap
+#        old_character = player.character
+#        if old_character:
+#            old_character.player = None
+#        try:
+#            player.character = new_character
+#            new_character.player = player
+#        except Exception:
+#            # recover old setup
+#            if old_character:
+#                old_character.player = player
+#                player.character = old_character
+#            return False
+#        if old_character and delete_old_character:
+#            old_character.delete()
+#        return True
 
 class PlayerManager(PlayerDBManager, TypeclassManager):
     pass

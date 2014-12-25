@@ -22,21 +22,14 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.encoding import smart_str
 
 from src.players.manager import PlayerDBManager
-from src.scripts.models import ScriptDB
 from src.typeclasses.models import TypedObject
-from src.commands import cmdhandler
-from src.utils import utils, logger
-from src.utils.utils import to_str, make_iter
-
-from django.utils.translation import ugettext as _
+from src.utils.utils import make_iter
 
 __all__ = ("PlayerDB",)
 
 #_ME = _("me")
 #_SELF = _("self")
 
-_SESSIONS = None
-_AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
 _GA = object.__getattribute__
@@ -147,7 +140,7 @@ class PlayerDB(TypedObject, AbstractUser):
     cmdset_storage = property(cmdset_storage_get, cmdset_storage_set, cmdset_storage_del)
 
     #
-    # PlayerDB main class properties and methods
+    # property/field access
     #
 
     def __str__(self):
@@ -182,230 +175,3 @@ class PlayerDB(TypedObject, AbstractUser):
     def __uid_del(self):
         raise Exception("User id cannot be deleted!")
     uid = property(__uid_get, __uid_set, __uid_del)
-
-    #
-    # PlayerDB class access methods
-    #
-
-    # session-related methods
-
-    def get_session(self, sessid):
-        """
-        Return session with given sessid connected to this player.
-        note that the sessionhandler also accepts sessid as an iterable.
-        """
-        global _SESSIONS
-        if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
-        return _SESSIONS.session_from_player(self, sessid)
-
-    def get_all_sessions(self):
-        "Return all sessions connected to this player"
-        global _SESSIONS
-        if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
-        return _SESSIONS.sessions_from_player(self)
-    sessions = property(get_all_sessions)  # alias shortcut
-
-    def disconnect_session_from_player(self, sessid):
-        """
-        Access method for disconnecting a given session from the player
-        (connection happens automatically in the sessionhandler)
-        """
-        # this should only be one value, loop just to make sure to
-        # clean everything
-        sessions = (session for session in self.get_all_sessions()
-                    if session.sessid == sessid)
-        for session in sessions:
-            # this will also trigger unpuppeting
-            session.sessionhandler.disconnect(session)
-
-    # puppeting operations
-
-    def puppet_object(self, sessid, obj, normal_mode=True):
-        """
-        Use the given session to control (puppet) the given object (usually
-        a Character type). Note that we make no puppet checks here, that must
-        have been done before calling this method.
-
-        sessid - session id of session to connect
-        obj - the object to connect to
-        normal_mode - trigger hooks and extra checks - this is turned off when
-                     the server reloads, to quickly re-connect puppets.
-
-        returns True if successful, False otherwise
-        """
-        session = self.get_session(sessid)
-        if not session:
-            return False
-        if normal_mode and session.puppet:
-            # cleanly unpuppet eventual previous object puppeted by this session
-            self.unpuppet_object(sessid)
-        if obj.player and obj.player.is_connected and obj.player != self:
-            # we don't allow to puppet an object already controlled by an active
-            # player. To kick a player, call unpuppet_object on them explicitly.
-            return
-        # if we get to this point the character is ready to puppet or it
-        # was left with a lingering player/sessid reference from an unclean
-        # server kill or similar
-
-        if normal_mode:
-            obj.at_pre_puppet(self, sessid=sessid)
-        # do the connection
-        obj.sessid.add(sessid)
-        obj.player = self
-        session.puid = obj.id
-        session.puppet = obj
-        # validate/start persistent scripts on object
-        ScriptDB.objects.validate(obj=obj)
-        if normal_mode:
-            obj.at_post_puppet()
-        return True
-
-    def unpuppet_object(self, sessid):
-        """
-        Disengage control over an object
-
-        sessid - the session id to disengage
-
-        returns True if successful
-        """
-        session = self.get_session(sessid)
-        if not session:
-            return False
-        obj = hasattr(session, "puppet") and session.puppet or None
-        if not obj:
-            return False
-        # do the disconnect, but only if we are the last session to puppet
-        obj.at_pre_unpuppet()
-        obj.dbobj.sessid.remove(sessid)
-        if not obj.dbobj.sessid.count():
-            del obj.dbobj.player
-            obj.at_post_unpuppet(self, sessid=sessid)
-        session.puppet = None
-        session.puid = None
-        return True
-
-    def unpuppet_all(self):
-        """
-        Disconnect all puppets. This is called by server
-        before a reset/shutdown.
-        """
-        for session in self.get_all_sessions():
-            self.unpuppet_object(session.sessid)
-
-    def get_puppet(self, sessid, return_dbobj=False):
-        """
-        Get an object puppeted by this session through this player. This is
-        the main method for retrieving the puppeted object from the
-        player's end.
-
-        sessid - return character connected to this sessid,
-        character - return character if connected to this player, else None.
-
-        """
-        session = self.get_session(sessid)
-        if not session:
-            return None
-        if return_dbobj:
-            return session.puppet
-        return session.puppet and session.puppet or None
-
-    def get_all_puppets(self, return_dbobj=False):
-        """
-        Get all currently puppeted objects as a list
-        """
-        puppets = [session.puppet for session in self.get_all_sessions()
-                                                            if session.puppet]
-        if return_dbobj:
-            return puppets
-        return [puppet for puppet in puppets]
-
-    def __get_single_puppet(self):
-        """
-        This is a legacy convenience link for users of
-        MULTISESSION_MODE 0 or 1. It will return
-        only the first puppet. For mode 2, this returns
-        a list of all characters.
-        """
-        puppets = self.get_all_puppets()
-        if _MULTISESSION_MODE in (0, 1):
-            return puppets and puppets[0] or None
-        return puppets
-    character = property(__get_single_puppet)
-    puppet = property(__get_single_puppet)
-
-    # utility methods
-
-    def delete(self, *args, **kwargs):
-        """
-        Deletes the player permanently.
-        """
-        for session in self.get_all_sessions():
-            # unpuppeting all objects and disconnecting the user, if any
-            # sessions remain (should usually be handled from the
-            # deleting command)
-            self.unpuppet_object(session.sessid)
-            session.sessionhandler.disconnect(session, reason=_("Player being deleted."))
-        self.scripts.stop()
-        _GA(self, "attributes").clear()
-        _GA(self, "nicks").clear()
-        _GA(self, "aliases").clear()
-        super(PlayerDB, self).delete(*args, **kwargs)
-
-    def execute_cmd(self, raw_string, sessid=None, **kwargs):
-        """
-        Do something as this player. This method is never called normally,
-        but only when the player object itself is supposed to execute the
-        command. It takes player nicks into account, but not nicks of
-        eventual puppets.
-
-        raw_string - raw command input coming from the command line.
-        sessid - the optional session id to be responsible for the command-send
-        **kwargs - other keyword arguments will be added to the found command
-                   object instace as variables before it executes. This is
-                   unused by default Evennia but may be used to set flags and
-                   change operating paramaters for commands at run-time.
-        """
-        raw_string = utils.to_unicode(raw_string)
-        raw_string = self.nicks.nickreplace(raw_string,
-                          categories=("inputline", "channel"), include_player=False)
-        if not sessid and _MULTISESSION_MODE in (0, 1):
-            # in this case, we should either have only one sessid, or the sessid
-            # should not matter (since the return goes to all of them we can
-            # just use the first one as the source)
-            try:
-                sessid = self.get_all_sessions()[0].sessid
-            except IndexError:
-                # this can happen for bots
-                sessid = None
-        return cmdhandler.cmdhandler(self, raw_string,
-                                     callertype="player", sessid=sessid, **kwargs)
-
-    def search(self, searchdata, return_puppet=False, **kwargs):
-        """
-        This is similar to the ObjectDB search method but will search for
-        Players only. Errors will be echoed, and None returned if no Player
-        is found.
-        searchdata - search criterion, the Player's key or dbref to search for
-        return_puppet  - will try to return the object the player controls
-                           instead of the Player object itself. If no
-                           puppeted object exists (since Player is OOC), None will
-                           be returned.
-        Extra keywords are ignored, but are allowed in call in order to make
-                           API more consistent with objects.models.TypedObject.search.
-        """
-        #TODO deprecation
-        if "return_character" in kwargs:
-            logger.log_depmsg("Player.search's 'return_character' keyword is deprecated. Use the return_puppet keyword instead.")
-            return_puppet = kwargs.get("return_character")
-
-        matches = _GA(self, "__class__").objects.player_search(searchdata)
-        matches = _AT_SEARCH_RESULT(self, searchdata, matches, global_search=True)
-        if matches and return_puppet:
-            try:
-                return _GA(matches, "puppet")
-            except AttributeError:
-                return None
-        return matches
-
