@@ -69,7 +69,8 @@ def create_objects():
     # it to exist in Limbo.
     character_typeclass = settings.BASE_CHARACTER_TYPECLASS
     god_character = create.create_object(character_typeclass,
-                                           key=god_player.username, nohome=True)
+                                         key=god_player.username,
+                                         nohome=True)
 
     god_character.id = 1
     god_character.db.desc = _('This is User #1.')
@@ -84,14 +85,13 @@ def create_objects():
     room_typeclass = settings.BASE_ROOM_TYPECLASS
     limbo_obj = create.create_object(room_typeclass, _('Limbo'), nohome=True)
     limbo_obj.id = 2
-    string = " ".join([
-        "Welcome to your new {wEvennia{n-based game. From here you are ready",
-        "to begin development. Visit http://evennia.com if you should need",
-        "help or would like to participate in community discussions. If you",
-        "are logged in as User #1 you can create a demo/tutorial area with",
-        "'@batchcommand contrib.tutorial_world.build'. Log out and create",
-        "a new non-admin account at the login screen to play the tutorial",
-        "properly."])
+    string = \
+        "Welcome to your new {wEvennia{n-based game. From here you are ready " \
+        "to begin development. Visit http://evennia.com if you should need " \
+        "help or would like to participate in community discussions. If you " \
+        "are logged in as user #1 you can create a demo/tutorial area with " \
+        "{w@batchcommand contrib.tutorial_world.build{n. Use {w@quell{n or login " \
+        "as normal player to play the demo properly."
     string = _(string)
     limbo_obj.db.desc = string
     limbo_obj.save()

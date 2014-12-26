@@ -135,7 +135,7 @@ class ScriptBase(ScriptDB):
         if self.db._paused_time:
             # the script was paused; restarting
             callcount = self.db._paused_callcount or 0
-            self.ndb._task.start(self.dbobj.db_interval,
+            self.ndb._task.start(self.db_interval,
                                  now=False,
                                  start_delay=self.db._paused_time,
                                  count_start=callcount)
@@ -143,8 +143,8 @@ class ScriptBase(ScriptDB):
             del self.db._paused_repeats
         else:
             # starting script anew
-            self.ndb._task.start(self.dbobj.db_interval,
-                                 now=not self.dbobj.db_start_delay)
+            self.ndb._task.start(self.db_interval,
+                                 now=not self.db_start_delay)
 
     def _stop_task(self):
         "stop task runner"
@@ -159,7 +159,7 @@ class ScriptBase(ScriptDB):
                           {"key": self.key, "dbid": self.dbid, "cname": cname,
                            "err": e.getErrorMessage()}
         try:
-            self.dbobj.db_obj.msg(estring)
+            self.db_obj.msg(estring)
         except Exception:
             pass
         logger.log_errmsg(estring)
@@ -176,7 +176,7 @@ class ScriptBase(ScriptDB):
 
         # check repeats
         callcount = self.ndb._task.callcount
-        maxcount = self.dbobj.db_repeats
+        maxcount = self.db_repeats
         if maxcount > 0 and maxcount <= callcount:
             #print "stopping script!"
             self.stop()
@@ -210,7 +210,7 @@ class ScriptBase(ScriptDB):
         "Get the number of returning repeats. Returns None if unlimited repeats."
         task = self.ndb._task
         if task:
-            return max(0, self.dbobj.db_repeats - task.callcount)
+            return max(0, self.db_repeats - task.callcount)
 
     def start(self, force_restart=False):
         """
@@ -224,10 +224,7 @@ class ScriptBase(ScriptDB):
                 Used in counting.
         """
 
-        #print "Script %s (%s) start (active:%s, force:%s) ..." % (self.key, id(self.dbobj),
-        #                                                         self.is_active, force_restart)
-
-        if self.dbobj.is_active and not force_restart:
+        if self.is_active and not force_restart:
             # script already runs and should not be restarted.
             return 0
 
@@ -235,11 +232,11 @@ class ScriptBase(ScriptDB):
         if obj:
             # check so the scripted object is valid and initalized
             try:
-                _GA(obj.dbobj, 'cmdset')
+                obj.cmdset
             except AttributeError:
                 # this means the object is not initialized.
                 logger.log_trace()
-                self.dbobj.is_active = False
+                self.is_active = False
                 return 0
 
         # try to restart a paused script
@@ -247,13 +244,13 @@ class ScriptBase(ScriptDB):
             return 1
 
         # start the script from scratch
-        self.dbobj.is_active = True
+        self.is_active = True
         try:
             self.at_start()
         except Exception:
             logger.log_trace()
 
-        if self.dbobj.db_interval > 0:
+        if self.db_interval > 0:
             self._start_task()
         return 1
 
@@ -274,7 +271,7 @@ class ScriptBase(ScriptDB):
                 logger.log_trace()
         self._stop_task()
         try:
-            self.dbobj.delete()
+            self.delete()
         except AssertionError:
             logger.log_trace()
             return 0
@@ -292,7 +289,7 @@ class ScriptBase(ScriptDB):
                 self.db._paused_time = task.next_call_time()
                 self.db._paused_callcount = task.callcount
                 self._stop_task()
-            self.dbobj.is_active = False
+            self.is_active = False
 
     def unpause(self):
         """
@@ -300,7 +297,7 @@ class ScriptBase(ScriptDB):
         """
         if self.db._paused_time:
             # only unpause if previously paused
-            self.dbobj.is_active = True
+            self.is_active = True
 
             try:
                 self.at_start()
@@ -364,10 +361,6 @@ class Script(ScriptBase):
      aliases (list of strings) - aliases to the object. Will be saved to
      database as AliasDB entries but returned as strings.
      dbref (int, read-only) - unique #id-number. Also "id" can be used.
-     dbobj (Object, read-only) - link to database model. dbobj.typeclass
-           points back to this class
-     typeclass (Object, read-only) - this links back to this class as an
-             identified only. Use self.swap_typeclass() to switch.
      date_created (string) - time stamp of object creation
      permissions (list of strings) - list of permission strings
 
@@ -441,7 +434,7 @@ class Script(ScriptBase):
         Generally, you don't need to overload this, but only the hooks
         called by this method.
         """
-        self.at_script_creation(self)
+        self.at_script_creation()
 
         if hasattr(self, "_createdict"):
             # this will only be set if the utils.create_script
@@ -470,14 +463,6 @@ class Script(ScriptBase):
                 updates.append("db_persistent")
             if updates:
                 self.save(update_fields=updates)
-
-            if cdict["permissions"]:
-                self.permissions.add(cdict["permissions"])
-            if cdict["locks"]:
-                self.locks.add(cdict["locks"])
-            if cdict["aliases"]:
-                self.aliases.add(cdict["aliases"])
-
             if not cdict["autostart"]:
                 # don't auto-start the script
                 return

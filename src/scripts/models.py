@@ -73,7 +73,7 @@ class ScriptDB(TypedObject):
     #
     # ScriptDB Database Model setup
     #
-    # These databse fields are all set using their corresponding properties,
+    # These database fields are all set using their corresponding properties,
     # named same as the field, but withtou the db_* prefix.
 
     # inherited fields (from TypedObject):
@@ -99,10 +99,6 @@ class ScriptDB(TypedObject):
 
     # Database manager
     objects = ScriptDBManager()
-
-    # caches for quick lookups
-    _typeclass_paths = settings.SCRIPT_TYPECLASS_PATHS
-    _default_typeclass_path = settings.BASE_SCRIPT_TYPECLASS or "src.scripts.scripts.DoNothing"
 
     class Meta:
         "Define Django meta options"

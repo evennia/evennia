@@ -23,8 +23,7 @@ Models covered:
 """
 from django.conf import settings
 from django.db import IntegrityError
-from src.utils.idmapper.models import SharedMemoryModel
-from src.utils import utils, logger
+from src.utils import logger
 from src.utils.utils import make_iter, class_from_module, dbid_to_obj
 
 # delayed imports
@@ -71,6 +70,11 @@ def create_object(typeclass=None, key=None, location=None,
         nohome - this allows the creation of objects without a default home location;
                  only used when creating the default location itself or during unittests
     """
+    global _ObjectDB
+    if not _ObjectDB:
+        from src.objects.models import ObjectDB as _ObjectDB
+
+
     typeclass = typeclass if typeclass else settings.BASE_OBJECT_TYPECLASS
 
     if isinstance(typeclass, basestring):
@@ -141,6 +145,10 @@ def create_script(typeclass, key=None, obj=None, player=None, locks=None,
               error will be raised. If set, this method will
               return None upon errors.
     """
+    global _ScriptDB
+    if not _ScriptDB:
+        from src.scripts.models import ScriptDB as _ScriptDB
+
     typeclass = typeclass if typeclass else settings.BASE_SCRIPT_TYPECLASS
 
     if isinstance(typeclass, basestring):
@@ -148,13 +156,18 @@ def create_script(typeclass, key=None, obj=None, player=None, locks=None,
         typeclass = class_from_module(typeclass, settings.SCRIPT_TYPECLASS_PATHS)
 
     # validate input
-    player = dbid_to_obj(player)
-    obj = dbid_to_obj(obj)
+    kwarg = {}
+    if key: kwarg["db_key"] = key
+    if player: kwarg["db_player"] = dbid_to_obj(player, _ScriptDB)
+    if obj: kwarg["db_obj"] = dbid_to_obj(obj, _ScriptDB)
+    if interval: kwarg["db_interval"] = interval
+    if start_delay: kwarg["db_start_delay"] = start_delay
+    if repeats: kwarg["db_repeats"] = repeats
+    if persistent: kwarg["db_persistent"] = persistent
 
     # create new instance
-    new_script = typeclass(db_key=key, db_obj=obj, db_player=player,
-                           db_interval=interval, db_start_delay=start_delay,
-                            db_repeats=repeats, db_peristent=persistent)
+    new_script = typeclass(**kwarg)
+
     # store the call signature for the signal
     new_script._createdict = {"key":key, "obj":obj, "player":player,
                               "locks":locks, "interval":interval,
@@ -326,6 +339,10 @@ def create_player(key, email, password,
      operations and is thus not suitable for play-testing the game.
 
     """
+    global _PlayerDB
+    if not _PlayerDB:
+        from src.players.models import PlayerDB as _PlayerDB
+
     typeclass = typeclass if typeclass else settings.BASE_PLAYER_TYPECLASS
 
     if isinstance(typeclass, basestring):
