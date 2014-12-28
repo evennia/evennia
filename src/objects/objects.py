@@ -289,8 +289,7 @@ class DefaultObject(ObjectDB):
         return self.db_player and self.db_player.is_superuser \
                 and not self.db_player.attributes.get("_quell")
 
-    @property
-    def contents(self):
+    def contents_get(self, exclude=None):
         """
         Returns the contents of this object, i.e. all
         objects that has this object set as its location.
@@ -298,7 +297,9 @@ class DefaultObject(ObjectDB):
 
         exclude is one or more objects to not return
         """
-        return ObjectDB.objects.get_contents(self)
+        return ObjectDB.objects.get_contents(self, excludeobj=exclude)
+    contents = property(contents_get)
+
 
     @property
     def exits(self):

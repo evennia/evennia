@@ -221,9 +221,9 @@ class DefaultPlayer(PlayerDB):
             return False
         # do the disconnect, but only if we are the last session to puppet
         obj.at_pre_unpuppet()
-        obj.dbobj.sessid.remove(sessid)
-        if not obj.dbobj.sessid.count():
-            del obj.dbobj.player
+        obj.sessid.remove(sessid)
+        if not obj.sessid.count():
+            del obj.player
             obj.at_post_unpuppet(self, sessid=sessid)
         session.puppet = None
         session.puid = None
@@ -244,7 +244,6 @@ class DefaultPlayer(PlayerDB):
         player's end.
 
         sessid - return character connected to this sessid,
-        character - return character if connected to this player, else None.
 
         """
         session = self.get_session(sessid)

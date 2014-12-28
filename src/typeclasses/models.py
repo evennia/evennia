@@ -286,7 +286,7 @@ class TypedObject(SharedMemoryModel):
         """
         Returns the object's dbref on the form #NN.
         """
-        return "#%s" % GA(self, "_TypedObject__dbid_get")()
+        return "#%s" % self.dbid
 
     def __dbref_set(self):
         raise Exception("dbref cannot be set!")
