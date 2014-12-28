@@ -538,7 +538,7 @@ def create_player(key, email, password,
         # custom given arguments potentially overrides the hook
         if permissions:
             new_player.permissions.add(permissions)
-        elif not new_player.permissions:
+        elif not new_player.permissions.all():
             new_player.permissions.add(settings.PERMISSION_PLAYER_DEFAULT)
         if locks:
             new_player.locks.add(locks)
