@@ -444,9 +444,10 @@ class Script(ScriptBase):
             cdict = self._createdict
             updates = []
             if not cdict["key"]:
-                self.db_key = "#%i" % self.dbid
-                updates.append("db_key")
-            elif self.key != cdict["db_key"]:
+                if not self.db_key:
+                    self.db_key = "#%i" % self.dbid
+                    updates.append("db_key")
+            elif self.db_key != cdict["db_key"]:
                 self.db_key = cdict["key"]
                 updates.append("db_key")
             if cdict["interval"] and self.interval != cdict["interval"]:

@@ -31,7 +31,8 @@ class Channel(ChannelDB):
             # with the utils.create.create_channel function.
             cdict = self._createdict
             if not cdict["key"]:
-                self.db_key = "#i" % self.dbid
+                if not self.db_key:
+                    self.db_key = "#i" % self.dbid
             elif cdict["key"] and self.key != cdict["key"]:
                 self.key = cdict["key"]
             if cdict["keep_log"]:
