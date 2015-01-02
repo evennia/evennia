@@ -125,7 +125,7 @@ def self(accessing_obj, accessed_obj, *args, **kwargs):
     This can be used to lock specifically only to
     the same object that the lock is defined on.
     """
-    return accessing_obj.typeclass == accessed_obj.typeclass
+    return accessing_obj == accessed_obj
 
 
 def perm(accessing_obj, accessed_obj, *args, **kwargs):

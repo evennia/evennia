@@ -55,10 +55,6 @@ class DefaultPlayer(PlayerDB):
      aliases (list of strings) - aliases to the object. Will be saved to
                         database as AliasDB entries but returned as strings.
      dbref (int, read-only) - unique #id-number. Also "id" can be used.
-     dbobj (Player, read-only) - link to database model. dbobj.typeclass
-                                 points back to this class
-     typeclass (Player, read-only) - this links back to this class as an
-                      identified only. Use self.swap_typeclass() to switch.
      date_created (string) - time stamp of object creation
      permissions (list of strings) - list of permission strings
 

@@ -104,7 +104,6 @@ class AttackTimer(Script):
         "Called every self.interval seconds."
         if self.obj.db.inactive:
             return
-        #print "attack timer: at_repeat", self.dbobj.id, self.ndb.twisted_task,
         # id(self.ndb.twisted_task)
         if self.obj.db.roam_mode:
             self.obj.roam()

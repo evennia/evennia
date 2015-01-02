@@ -115,10 +115,6 @@ class DefaultObject(ObjectDB):
      aliases (list of strings) - aliases to the object. Will be saved to
                  database as AliasDB entries but returned as strings.
      dbref (int, read-only) - unique #id-number. Also "id" can be used.
-     dbobj (Object, read-only) - link to database model. dbobj.typeclass
-                 points back to this class
-     typeclass (Object, read-only) - this links back to this class as an
-                 identified only. Use self.swap_typeclass() to switch.
      date_created (string) - time stamp of object creation
      permissions (list of strings) - list of permission strings
 
@@ -886,6 +882,16 @@ class DefaultObject(ObjectDB):
             if cdict.get("location"):
                 cdict["location"].at_object_receive(self, None)
                 self.at_after_move(None)
+
+            if cdict.get("attributes"):
+                # this should be a dict of attrname:value
+                keys, values = cdict["attributes"].keys(), cdict["attributes"].values()
+                self.attributes.batch_add(keys, values)
+            if cdict.get("nattributes"):
+                # this should be a dict of nattrname:value
+                for key, value in cdict["nattributes"].items():
+                    self.nattributes.add(key, value)
+
             del self._createdict
 
         self.basetype_posthook_setup()
@@ -1437,8 +1443,8 @@ class DefaultExit(DefaultObject):
                                  "get:false()"]))   # noone can pick up the exit
 
         # an exit should have a destination (this is replaced at creation time)
-        if self.dbobj.location:
-            self.destination = self.dbobj.location
+        if self.location:
+            self.destination = self.location
 
     def at_cmdset_get(self, **kwargs):
         """
@@ -1452,7 +1458,7 @@ class DefaultExit(DefaultObject):
 
         if "force_init" in kwargs or not self.cmdset.has_cmdset("_exitset", must_be_default=True):
             # we are resetting, or no exit-cmdset was set. Create one dynamically.
-            self.cmdset.add_default(self.create_exit_cmdset(self.dbobj), permanent=False)
+            self.cmdset.add_default(self.create_exit_cmdset(self), permanent=False)
 
     # this and other hooks are what usually can be modified safely.
 

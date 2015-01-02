@@ -156,8 +156,6 @@ class ObjectDBManager(TypedObjectManager):
         if isinstance(property_name, basestring):
             if not property_name.startswith('db_'):
                 property_name = "db_%s" % property_name
-        if hasattr(property_value, 'dbobj'):
-            property_value = property_value.dbobj
         querykwargs = {property_name:property_value}
         cand_restriction = candidates != None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
@@ -299,7 +297,7 @@ class ObjectDBManager(TypedObjectManager):
 
         if candidates:
             # Convenience check to make sure candidates are really dbobjs
-            candidates = [cand.dbobj for cand in make_iter(candidates) if cand]
+            candidates = [cand for cand in make_iter(candidates) if cand]
             if typeclass:
                 candidates = [cand for cand in candidates
                                 if _GA(cand, "db_typeclass_path") in typeclass]
@@ -309,7 +307,7 @@ class ObjectDBManager(TypedObjectManager):
             # Easiest case - dbref matching (always exact)
             dbref_match = self.dbref_search(dbref)
             if dbref_match:
-                if not candidates or dbref_match.dbobj in candidates:
+                if not candidates or dbref_match in candidates:
                     return [dbref_match]
                 else:
                     return []
@@ -402,7 +400,7 @@ class ObjectDBManager(TypedObjectManager):
 
         # copy over all scripts, if any
         for script in original_object.scripts.all():
-            ScriptDB.objects.copy_script(script, new_obj=new_object.dbobj)
+            ScriptDB.objects.copy_script(script, new_obj=new_object)
 
         return new_object
 

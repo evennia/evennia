@@ -137,33 +137,17 @@ def _batch_create_object(*objparams):
     #dbobjs = _ObjectDB.objects.bulk_create(dbobjs)
 
     objs = []
-    for iobj, dbobj in enumerate(dbobjs):
+    for iobj, obj in enumerate(dbobjs):
         # call all setup hooks on each object
         objparam = objparams[iobj]
-        obj = dbobj.typeclass # this saves dbobj if not done already
-        obj.basetype_setup()
-        obj.at_object_creation()
-
-        if objparam[1]:
-            # permissions
-            obj.permissions.add(objparam[1])
-        if objparam[2]:
-            # locks
-            obj.locks.add(objparam[2])
-        if objparam[3]:
-            # aliases
-            obj.aliases.add(objparam[3])
-        if objparam[4]:
-            # nattributes
-            for key, value in objparam[4].items():
-                obj.nattributes.add(key, value)
-        if objparam[5]:
-            # attributes
-            keys, values = objparam[5].keys(), objparam[5].values()
-            obj.attributes.batch_add(keys, values)
-
-        obj.basetype_posthook_setup()
-        objs.append(obj)
+        # setup
+        obj._createdict = {"pernmissions": objparam[1],
+                           "locks": objparam[2],
+                           "aliases": objparam[3],
+                           "attributes": objparam[4],
+                           "nattributes": objparam[5]}
+        # this triggers all hooks
+        obj.save()
     return objs
 
 

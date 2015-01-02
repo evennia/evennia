@@ -83,10 +83,6 @@ class TrackerHandler(object):
         This is initiated and stored on the object as a
         property _trackerhandler.
         """
-        try:
-            obj = obj.dbobj
-        except AttributeError:
-            pass
         self.obj = obj
         self.ntrackers = 0
         # initiate store only with valid on-object fieldnames
@@ -194,10 +190,6 @@ class ReportAttributeTracker(TrackerBase):
 
     def update(self, new_value, *args, **kwargs):
         "Called by cache when attribute's db_value field updates"
-        try:
-            new_value = new_value.dbobj
-        except AttributeError:
-            new_value = to_str(new_value, force_string=True)
         kwargs[self.attrname] = new_value
         # this is a wrapper call for sending oob data back to session
         self.oobhandler.msg(self.sessid, "report", *args, **kwargs)
@@ -282,11 +274,6 @@ class OOBHandler(object):
         named as propname, this will be used as the property name when assigning
         the OOB to obj, otherwise tracker_key is used as the property name.
         """
-        try:
-            obj = obj.dbobj
-        except AttributeError:
-            pass
-
         if not "_trackerhandler" in _GA(obj, "__dict__"):
             # assign trackerhandler to object
             _SA(obj, "_trackerhandler", TrackerHandler(obj))
@@ -305,10 +292,6 @@ class OOBHandler(object):
         Remove the OOB from obj. If oob implements an
         at_delete hook, this will be called with args, kwargs
         """
-        try:
-            obj = obj.dbobj
-        except AttributeError:
-            pass
         try:
             # call at_remove hook on the trackerclass
             _GA(obj, "_trackerhandler").remove(propname, trackerclass, *args, **kwargs)
@@ -348,10 +331,6 @@ class OOBHandler(object):
         Object and name in a way the Attribute expects.
         """
         # get the attribute object if we can
-        try:
-            attrobj = obj.dbobj
-        except AttributeError:
-            pass
         attrobj = obj.attributes.get(attr_name, return_obj=True)
         #print "track_attribute attrobj:", attrobj, id(attrobj)
         if attrobj:
@@ -361,10 +340,6 @@ class OOBHandler(object):
         """
         Shortcut for deactivating tracking for a given attribute.
         """
-        try:
-            obj = obj.dbobj
-        except AttributeError:
-            pass
         attrobj = obj.attributes.get(attr_name, return_obj=True)
         if attrobj:
             self._untrack(attrobj, sessid, "db_value", trackerclass, attr_name)

@@ -584,7 +584,6 @@ def clean_object_caches(obj):
     #print "recaching:", obj
     if not obj:
         return
-    obj = hasattr(obj, "dbobj") and obj.dbobj or obj
     # contents cache
     try:
         _SA(obj, "_contents_cache", None)

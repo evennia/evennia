@@ -75,7 +75,7 @@ class Attribute(SharedMemoryModel):
     db_model = models.CharField(
         'model', max_length=32, db_index=True, blank=True, null=True,
         help_text="Which model of object this attribute is attached to (A "
-                  "natural key like objects.dbobject). You should not change "
+                  "natural key like 'objects.dbobject'). You should not change "
                   "this value unless you know what you are doing.")
     # subclass of Attribute (None or nick)
     db_attrtype = models.CharField(

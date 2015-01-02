@@ -223,8 +223,9 @@ class Msg(SharedMemoryModel):
     def __channels_set(self, value):
         """
         Setter. Allows for self.channels = value.
-        Requires a channel to be added."""
-        for val in (v.dbobj for v in make_iter(value) if v):
+        Requires a channel to be added.
+        """
+        for val in (v for v in make_iter(value) if v):
             self.db_receivers_channels.add(val)
 
     #@channels.deleter

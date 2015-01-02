@@ -202,19 +202,10 @@ class TickerHandler(object):
         is a boolean True if obj was a database object,
         False otherwise.
         """
-        try:
-            obj = obj.typeclass
-        except AttributeError:
-            pass
-        dbobj = None
-        try:
-            dbobj = obj.dbobj
-        except AttributeError:
-            pass
-        isdb = True
-        if dbobj:
+        if hasattr(obj, "db_key"):
             # create a store_key using the database representation
-            objkey = pack_dbobj(dbobj)
+            objkey = pack_dbobj(obj)
+            isdb = True
         else:
             # non-db object, look for a property "key" on it, otherwise
             # use its memory location.

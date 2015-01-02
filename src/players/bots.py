@@ -76,7 +76,7 @@ class CmdBotListen(Command):
     key = "bot_data_in"
     def func(self):
         "Relay to typeclass"
-        self.obj.typeclass.execute_cmd(self.args.strip(), sessid=self.sessid)
+        self.obj.execute_cmd(self.args.strip(), sessid=self.sessid)
 
 class BotCmdSet(CmdSet):
     "Holds the BotListen command"
@@ -196,9 +196,9 @@ class IRCBot(Bot):
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
         if "from_channel" in kwargs and text and self.ndb.ev_channel.dbid == kwargs["from_channel"]:
-            if "from_obj" not in kwargs or kwargs["from_obj"] != [self.dbobj.id]:
+            if "from_obj" not in kwargs or kwargs["from_obj"] != [self.id]:
                 text = "bot_data_out %s" % text
-                self.dbobj.msg(text=text)
+                self.msg(text=text)
 
     def execute_cmd(self, text=None, sessid=None):
         """
@@ -209,7 +209,7 @@ class IRCBot(Bot):
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
         if self.ndb.ev_channel:
-            self.ndb.ev_channel.msg(text, senders=self.dbobj.id)
+            self.ndb.ev_channel.msg(text, senders=self.id)
 
 
 # RSS
@@ -258,7 +258,7 @@ class RSSBot(Bot):
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
         if self.ndb.ev_channel:
-            self.ndb.ev_channel.msg(text, senders=self.dbobj.id)
+            self.ndb.ev_channel.msg(text, senders=self.id)
 
 class IMC2Bot(Bot):
     """
@@ -318,9 +318,9 @@ class IMC2Bot(Bot):
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
         if "from_channel" in kwargs and text and self.ndb.ev_channel.dbid == kwargs["from_channel"]:
-            if "from_obj" not in kwargs or kwargs["from_obj"] != [self.dbobj.id]:
+            if "from_obj" not in kwargs or kwargs["from_obj"] != [self.id]:
                 text = "bot_data_out %s" % text
-                self.dbobj.msg(text=text)
+                self.msg(text=text)
 
     def execute_cmd(self, text=None, sessid=None):
         """
@@ -330,5 +330,5 @@ class IMC2Bot(Bot):
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
         if self.ndb.ev_channel:
-            self.ndb.ev_channel.msg(text, senders=self.dbobj.id)
+            self.ndb.ev_channel.msg(text, senders=self.id)
 

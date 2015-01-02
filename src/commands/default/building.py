@@ -150,7 +150,7 @@ class CmdSetObjAlias(MuxCommand):
             old_aliases = obj.aliases.all()
             if old_aliases:
                 caller.msg("Cleared aliases from %s: %s" % (obj.key, ", ".join(old_aliases)))
-                obj.dbobj.aliases.clear()
+                obj.aliases.clear()
             else:
                 caller.msg("No aliases to clear.")
             return
@@ -447,10 +447,10 @@ class CmdCreate(ObjManipCommand):
                 continue
             if aliases:
                 string = "You create a new %s: %s (aliases: %s)."
-                string = string % (obj.typeclass.typename, obj.name, ", ".join(aliases))
+                string = string % (obj.typename, obj.name, ", ".join(aliases))
             else:
                 string = "You create a new %s: %s."
-                string = string % (obj.typeclass.typename, obj.name)
+                string = string % (obj.typename, obj.name)
             # set a default desc
             if not obj.db.desc:
                 obj.db.desc = "You see nothing special."
@@ -1401,7 +1401,7 @@ class CmdTypeclass(MuxCommand):
             # current one instead.
             if hasattr(obj, "typeclass"):
                 string = "%s's current typeclass is '%s' (%s)." % (obj.name,
-                                    obj.typeclass.typename, obj.typeclass.path)
+                                    obj.typename, obj.path)
             else:
                 string = "%s is not a typed object." % obj.name
             caller.msg(string)
@@ -1427,7 +1427,7 @@ class CmdTypeclass(MuxCommand):
             ok = obj.swap_typeclass(typeclass, clean_attributes=reset)
             if ok:
                 if is_same:
-                    string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.typeclass.path)
+                    string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.path)
                 else:
                     string = "%s changed typeclass from %s to %s.\n" % (obj.name,
                                                              old_typeclass_path,
@@ -1677,7 +1677,7 @@ class CmdExamine(ObjManipCommand):
             string += "\n{wPlayer Perms{n: %s" % (", ".join(perms))
             if obj.player.attributes.has("_quell"):
                 string += " {r(quelled){n"
-        string += "\n{wTypeclass{n: %s (%s)" % (obj.typeclass.typename,
+        string += "\n{wTypeclass{n: %s (%s)" % (obj.typename,
                                                 obj.typeclass_path)
         if hasattr(obj, "location"):
             string += "\n{wLocation{n: %s" % obj.location
@@ -1928,7 +1928,7 @@ class CmdFind(MuxCommand):
             else:
                 result=result[0]
                 string += "\n{g   %s(%s) - %s{n" % (result.key, result.dbref,
-                                                    result.typeclass.path)
+                                                    result.path)
         else:
             # Not a player/dbref search but a wider search; build a queryset.
             # Searchs for key and aliases
@@ -1946,7 +1946,7 @@ class CmdFind(MuxCommand):
 
             if nresults:
                 # convert result to typeclasses.
-                results = [result.typeclass for result in results]
+                results = [result for result in results]
                 if "room" in switches:
                     results = [obj for obj in results if inherits_from(obj, ROOM_TYPECLASS)]
                 if "exit" in switches:

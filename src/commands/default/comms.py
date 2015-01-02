@@ -792,7 +792,7 @@ class CmdIRC2Chan(MuxCommand):
 
         if 'list' in self.switches:
             # show all connections
-            ircbots = [bot.typeclass for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
+            ircbots = [bot for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
             if ircbots:
                 from src.utils.evtable import EvTable
                 table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", maxwidth=78)
@@ -842,7 +842,7 @@ class CmdIRC2Chan(MuxCommand):
         bot = PlayerDB.objects.filter(username__iexact=botname)
         if bot:
             # re-use an existing bot
-            bot = bot[0].typeclass
+            bot = bot[0]
             if not bot.is_bot:
                 self.msg("Player '%s' already exists and is not a bot." % botname)
                 return
@@ -901,7 +901,7 @@ class CmdRSS2Chan(MuxCommand):
 
         if 'list' in self.switches:
             # show all connections
-            rssbots = [bot.typeclass for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="rssbot-")]
+            rssbots = [bot for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="rssbot-")]
             if rssbots:
                 from src.utils.evtable import EvTable
                 table = EvTable("{wdbid{n", "{wupdate rate{n", "{wev-channel", "{wRSS feed URL{n", border="cells", maxwidth=78)
@@ -938,7 +938,7 @@ class CmdRSS2Chan(MuxCommand):
         bot = PlayerDB.objects.filter(username__iexact=botname)
         if bot:
             # re-use existing bot
-            bot = bot[0].typeclass
+            bot = bot[0]
             if not bot.is_bot:
                 self.msg("Player '%s' already exists and is not a bot." % botname)
                 return

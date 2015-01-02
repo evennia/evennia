@@ -42,7 +42,6 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _FROM_MODEL_MAP = None
 _TO_MODEL_MAP = None
-_TO_TYPECLASS = lambda o: hasattr(o, 'typeclass') and o.typeclass or o
 _IS_PACKED_DBOBJ = lambda o: type(o) == tuple and len(o) == 4 and o[0] == '__packed_dbobj__'
 if uses_database("mysql") and ServerConfig.objects.get_mysql_db_version() < '5.6.4':
     # mysql <5.6.4 don't support millisecond precision
@@ -214,7 +213,7 @@ def pack_dbobj(item):
       ("__packed_dbobj__", key, creation_time, id)
     """
     _init_globals()
-    obj = hasattr(item, 'dbobj') and item.dbobj or item
+    obj = item
     natural_key = _FROM_MODEL_MAP[hasattr(obj, "id") and hasattr(obj, "db_date_created") and
                                   hasattr(obj, '__dbclass__') and obj.__dbclass__.__name__.lower()]
     # build the internal representation as a tuple
@@ -232,16 +231,12 @@ def unpack_dbobj(item):
     """
     _init_globals()
     try:
-        obj = item[3] and _TO_TYPECLASS(_TO_MODEL_MAP[item[1]].objects.get(id=item[3]))
+        obj = item[3] and _TO_MODEL_MAP[item[1]].objects.get(id=item[3])
     except ObjectDoesNotExist:
         return None
     # even if we got back a match, check the sanity of the date (some
     # databases may 're-use' the id)
-    try:
-        dbobj = obj.dbobj
-    except AttributeError:
-        dbobj = obj
-    return _TO_DATESTRING(dbobj) == item[2] and obj or None
+    return _TO_DATESTRING(obj) == item[2] and obj or None
 
 #
 # Access methods

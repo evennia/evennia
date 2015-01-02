@@ -204,7 +204,7 @@ class PlayerDBAdmin(BaseUserAdmin):
         obj.save()
         if not change:
             #calling hooks for new player
-            ply = obj.typeclass
+            ply = obj
             ply.basetype_setup()
             ply.at_player_creation()
 

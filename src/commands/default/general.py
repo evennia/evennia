@@ -155,7 +155,6 @@ class CmdNick(MuxCommand):
         string = ""
         for switch in switches:
             oldnick = caller.nicks.get(key=nick, category=switch)
-            #oldnick = Nick.objects.filter(db_obj=caller.dbobj, db_nick__iexact=nick, db_type__iexact=switch)
             if not real:
                 # removal of nick
                 if oldnick:

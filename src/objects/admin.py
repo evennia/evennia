@@ -119,7 +119,6 @@ class ObjectDBAdmin(admin.ModelAdmin):
         obj.save()
         if not change:
             # adding a new object
-            obj = obj.typeclass
             obj.basetype_setup()
             obj.basetype_posthook_setup()
             obj.at_object_creation()
