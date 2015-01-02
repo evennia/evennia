@@ -394,7 +394,7 @@ class CmdObjects(MuxCommand):
         latesttable.align = 'l'
         for obj in objs:
             latesttable.add_row(utils.datetime_format(obj.date_created),
-                                obj.dbref, obj.key, obj.typeclass.path)
+                                obj.dbref, obj.key, obj.path)
 
         string = "\n{wObject subtype totals (out of %i Objects):{n\n%s" % (nobjs, totaltable)
         string += "\n{wObject typeclass distribution:{n\n%s" % typetable
@@ -437,7 +437,7 @@ class CmdPlayers(MuxCommand):
         plyrs = PlayerDB.objects.all().order_by("db_date_created")[max(0, nplayers - nlim):]
         latesttable = EvTable("{wcreated{n", "{wdbref{n", "{wname{n", "{wtypeclass{n", border="cells", align="l")
         for ply in plyrs:
-            latesttable.add_row(utils.datetime_format(ply.date_created), ply.dbref, ply.key, ply.typeclass.path)
+            latesttable.add_row(utils.datetime_format(ply.date_created), ply.dbref, ply.key, ply.path)
 
         string = "\n{wPlayer typeclass distribution:{n\n%s" % typetable
         string += "\n{wLast %s Players created:{n\n%s" % (min(nplayers, nlim), latesttable)

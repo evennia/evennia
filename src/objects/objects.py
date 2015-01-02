@@ -283,11 +283,11 @@ class DefaultObject(ObjectDB):
         """
         return any(self.sessions)
 
-    @property
-    def is_superuser(self):
-        "Check if user has a player, and if so, if it is a superuser."
-        return self.db_player and self.db_player.is_superuser \
-                and not self.db_player.attributes.get("_quell")
+    #@property
+    #def is_superuser(self):
+    #    "Check if user has a player, and if so, if it is a superuser."
+    #    return self.db_player and self.db_player.is_superuser \
+    #            and not self.db_player.attributes.get("_quell")
 
     def contents_get(self, exclude=None):
         """
@@ -858,32 +858,32 @@ class DefaultObject(ObjectDB):
             # call's kwargs to override the values set by hooks.
             cdict = self._createdict
             updates = []
-            if not cdict["key"]:
+            if not cdict.get("key"):
                 if not self.db_key:
                     self.db_key = "#%i" % self.dbid
                     updates.append("db_key")
-            elif self.key != cdict["key"]:
+            elif self.key != cdict.get("key"):
                 updates.append("db_key")
                 self.db_key = cdict["key"]
-            if cdict["location"] and self.location != cdict["location"]:
+            if cdict.get("location") and self.location != cdict["location"]:
                 self.db_location = cdict["location"]
                 updates.append("db_location")
-            if cdict["home"] and self.home != cdict["home"]:
+            if cdict.get("home") and self.home != cdict["home"]:
                 self.home = cdict["home"]
                 updates.append("db_home")
-            if cdict["destination"] and self.destination != cdict["destination"]:
+            if cdict.get("destination") and self.destination != cdict["destination"]:
                 self.destination = cdict["destination"]
                 updates.append("db_destination")
             if updates:
                 self.save(update_fields=updates)
 
-            if cdict["permissions"]:
+            if cdict.get("permissions"):
                 self.permissions.add(cdict["permissions"])
-            if cdict["locks"]:
+            if cdict.get("locks"):
                 self.locks.add(cdict["locks"])
-            if cdict["aliases"]:
+            if cdict.get("aliases"):
                 self.aliases.add(cdict["aliases"])
-            if cdict["location"]:
+            if cdict.get("location"):
                 cdict["location"].at_object_receive(self, None)
                 self.at_after_move(None)
             del self._createdict

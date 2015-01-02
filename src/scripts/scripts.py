@@ -443,28 +443,28 @@ class Script(ScriptBase):
             # set by hooks.
             cdict = self._createdict
             updates = []
-            if not cdict["key"]:
+            if not cdict.get("key"):
                 if not self.db_key:
                     self.db_key = "#%i" % self.dbid
                     updates.append("db_key")
-            elif self.db_key != cdict["db_key"]:
+            elif self.db_key != cdict["key"]:
                 self.db_key = cdict["key"]
                 updates.append("db_key")
-            if cdict["interval"] and self.interval != cdict["interval"]:
+            if cdict.get("interval") and self.interval != cdict["interval"]:
                 self.db_interval = cdict["interval"]
                 updates.append("db_interval")
-            if cdict["start_delay"] and self.start_delay != cdict["start_delay"]:
+            if cdict.get("start_delay") and self.start_delay != cdict["start_delay"]:
                 self.db_start_delay = cdict["start_delay"]
                 updates.append("db_start_delay")
-            if cdict["repeats"] and self.repeats != cdict["repeats"]:
+            if cdict.get("repeats") and self.repeats != cdict["repeats"]:
                 self.db_repeats = cdict["repeats"]
                 updates.append("db_repeats")
-            if cdict["persistent"] and self.persistent != cdict["persistent"]:
+            if cdict.get("persistent") and self.persistent != cdict["persistent"]:
                 self.db_persistent = cdict["persistent"]
                 updates.append("db_persistent")
             if updates:
                 self.save(update_fields=updates)
-            if not cdict["autostart"]:
+            if not cdict.get("autostart"):
                 # don't auto-start the script
                 return
 

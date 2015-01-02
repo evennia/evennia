@@ -535,9 +535,9 @@ class DefaultPlayer(PlayerDB):
             # this will only be set if the utils.create_player
             # function was used to create the object.
             cdict = self._createdict
-            if "locks" in cdict:
+            if cdict.get("locks"):
                 self.locks.add(cdict["locks"])
-            if "permissions" in cdict:
+            if cdict.get("permissions"):
                 permissions = cdict["permissions"]
             del self._createdict
 

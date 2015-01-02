@@ -23,6 +23,7 @@ Models covered:
 """
 from django.conf import settings
 from django.db import IntegrityError
+from django.utils import timezone
 from src.utils import logger
 from src.utils.utils import make_iter, class_from_module, dbid_to_obj
 
@@ -348,7 +349,6 @@ def create_player(key, email, password,
     if isinstance(typeclass, basestring):
         # a path is given. Load the actual typeclass.
         typeclass = class_from_module(typeclass, settings.OBJECT_TYPECLASS_PATHS)
-    typeclass_path = typeclass.path
 
     # setup input for the create command. We use PlayerDB as baseclass
     # here to give us maximum freedom (the typeclasses will load
@@ -362,16 +362,16 @@ def create_player(key, email, password,
     # this handles a given dbref-relocate to a player.
     report_to = dbid_to_obj(report_to, _PlayerDB)
 
-    # create the correct player object
-    if is_superuser:
-        new_player = _PlayerDB.objects.create_superuser(key, email, password)
-    else:
-        new_player = _PlayerDB.objects.create_user(key, email, password)
-    new_player.db_typeclass_path = typeclass_path
-    # store the call signature for the signal
+    # create the correct player entity, using the setup from
+    # base django auth.
+    now = timezone.now()
+    email = typeclass.objects.normalize_email(email)
+    new_player = typeclass(username=key, email=email,
+                           is_staff=is_superuser, is_superuser=is_superuser,
+                           last_login=now, date_joined=now)
+    new_player.set_password(password)
     new_player._createdict = {"locks":locks, "permissions":permissions,
                               "report_to":report_to}
-
     # saving will trigger the signal that calls the
     # at_first_save hook on the typeclass, where the _createdict
     # can be used.

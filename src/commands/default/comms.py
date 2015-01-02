@@ -386,7 +386,7 @@ class CmdCBoot(MuxPlayerCommand):
             string = "You don't control this channel."
             self.msg(string)
             return
-        if not player.dbobj in channel.db_subscriptions.all():
+        if not player in channel.db_subscriptions.all():
             string = "Player %s is not connected to channel %s." % (player.key, channel.key)
             self.msg(string)
             return

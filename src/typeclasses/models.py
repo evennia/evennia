@@ -325,6 +325,8 @@ class TypedObject(SharedMemoryModel):
                            sure nothing in the new typeclass clashes
                            with the old one. If you supply a list,
                            only those named attributes will be cleared.
+        run_start_hooks - trigger the start hooks of the object, as if
+                          it was created for the first time.
         no_default - if this is active, the swapper will not allow for
                      swapping to a default typeclass in case the given
                      one fails for some reason. Instead the old one

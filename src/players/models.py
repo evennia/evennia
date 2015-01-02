@@ -93,10 +93,6 @@ class PlayerDB(TypedObject, AbstractUser):
     # Database manager
     objects = PlayerDBManager()
 
-    # caches for quick lookups
-    _typeclass_paths = settings.PLAYER_TYPECLASS_PATHS
-    _default_typeclass_path = settings.BASE_PLAYER_TYPECLASS or "src.players.player.Player"
-
     class Meta:
         app_label = 'players'
         verbose_name = 'Player'

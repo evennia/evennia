@@ -30,20 +30,20 @@ class Channel(ChannelDB):
             # this is only set if the channel was created
             # with the utils.create.create_channel function.
             cdict = self._createdict
-            if not cdict["key"]:
+            if not cdict.get("key"):
                 if not self.db_key:
                     self.db_key = "#i" % self.dbid
             elif cdict["key"] and self.key != cdict["key"]:
                 self.key = cdict["key"]
-            if cdict["keep_log"]:
+            if cdict.get("keep_log"):
                 self.db_keep_log = cdict["keep_log"]
-            if cdict["aliases"]:
+            if cdict.get("aliases"):
                 self.aliases.add(cdict["aliases"])
-            if cdict["locks"]:
+            if cdict.get("locks"):
                 self.locks.add(cdict["locks"])
-            if cdict["keep_log"]:
+            if cdict.get("keep_log"):
                 self.attributes.add("keep_log", cdict["keep_log"])
-            if cdict["desc"]:
+            if cdict.get("desc"):
                 self.attributes.add("desc", cdict["desc"])
 
     def at_channel_creation(self):
@@ -61,7 +61,6 @@ class Channel(ChannelDB):
         """
         if hasattr(player, "player"):
             player = player.player
-        player = player.dbobj
         return player in self.db_subscriptions.all()
 
     def connect(self, player):
@@ -90,9 +89,9 @@ class Channel(ChannelDB):
         if not disconnect:
             return False
         # disconnect
-        self.db_subscriptions.remove(player.dbobj)
+        self.db_subscriptions.remove(player)
         # post-disconnect hook
-        self.post_leave_channel(player.dbobj)
+        self.post_leave_channel(player)
         return True
 
     def access(self, accessing_obj, access_type='listen', default=False):

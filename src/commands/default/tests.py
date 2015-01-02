@@ -16,8 +16,8 @@ import re
 from django.conf import settings
 from django.utils.unittest import TestCase
 from src.server.serversession import ServerSession
-from src.objects.objects import Object, Character
-from src.players.player import Player
+from src.objects.objects import DefaultObject, DefaultCharacter
+from src.players.player import DefaultPlayer
 from src.utils import create, ansi
 from src.server.sessionhandler import SESSIONS
 
@@ -41,13 +41,13 @@ SESSIONS.data_out = dummy
 SESSIONS.disconnect = dummy
 
 
-class TestObjectClass(Object):
+class TestObjectClass(DefaultObject):
     def msg(self, text="", **kwargs):
         "test message"
         pass
 
 
-class TestCharacterClass(Character):
+class TestCharacterClass(DefaultCharacter):
     def msg(self, text="", **kwargs):
         "test message"
         if self.player:
@@ -58,17 +58,18 @@ class TestCharacterClass(Character):
             self.ndb.stored_msg.append(text)
 
 
-class TestPlayerClass(Player):
+class TestPlayerClass(DefaultPlayer):
     def msg(self, text="", **kwargs):
         "test message"
         if not self.ndb.stored_msg:
             self.ndb.stored_msg = []
         self.ndb.stored_msg.append(text)
 
-    def _get_superuser(self):
-        "test with superuser flag"
-        return self.ndb.is_superuser
-    is_superuser = property(_get_superuser)
+    # not supported to overload is_superuser field with property.
+    #def _get_superuser(self):
+    #    "test with superuser flag"
+    #    return self.ndb.is_superuser
+    #is_superuser = property(_get_superuser)
 
 
 class CommandTest(TestCase):
@@ -81,10 +82,10 @@ class CommandTest(TestCase):
         #print "creating player %i: %s" % (self.CID, self.__class__.__name__)
         self.player = create.create_player("TestPlayer%i" % self.CID, "test@test.com", "testpassword", typeclass=TestPlayerClass)
         self.player2 = create.create_player("TestPlayer%ib" % self.CID, "test@test.com", "testpassword", typeclass=TestPlayerClass)
-        self.room1 = create.create_object("src.objects.objects.Room", key="Room%i"%self.CID, nohome=True)
+        self.room1 = create.create_object("src.objects.objects.DefaultRoom", key="Room%i"%self.CID, nohome=True)
         self.room1.db.desc = "room_desc"
         settings.DEFAULT_HOME = "#%i" % self.room1.id # we must have a default home
-        self.room2 = create.create_object("src.objects.objects.Room", key="Room%ib" % self.CID)
+        self.room2 = create.create_object("src.objects.objects.DefaultRoom", key="Room%ib" % self.CID)
         self.obj1 = create.create_object(TestObjectClass, key="Obj%i" % self.CID, location=self.room1, home=self.room1)
         self.obj2 = create.create_object(TestObjectClass, key="Obj%ib" % self.CID, location=self.room1, home=self.room1)
         self.char1 = create.create_object(TestCharacterClass, key="Char%i" % self.CID, location=self.room1, home=self.room1)
