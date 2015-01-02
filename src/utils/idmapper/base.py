@@ -187,6 +187,7 @@ class SharedMemoryModelBase(ModelBase):
         for fieldname, field in ((fname, field) for fname, field in attrs.items()
                                   if fname.startswith("db_") and type(field).__name__ != "ManyToManyField"):
             foreignkey = type(field).__name__ == "ForeignKey"
+            #print fieldname, type(field).__name__, field
             wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "", 1)
             #print fieldname, wrappername
             if wrappername not in attrs:

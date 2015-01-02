@@ -300,7 +300,7 @@ class ChannelDBManager(TypedObjectManager):
         """
         Return all channels a given player is subscribed to
         """
-        return player.__dbclass__.subscription_set.all()
+        return player.player.subscription_set.all()
 
     @returns_typeclass_list
     def channel_search(self, ostring, exact=True):

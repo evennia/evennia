@@ -94,7 +94,7 @@ class TypeclassBase(SharedMemoryModelBase):
         """
 
         # storage of stats
-        attrs["typename"] = cls.__name__
+        attrs["typename"] = name#cls.__name__
         attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
 
         # typeclass proxy setup

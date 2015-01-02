@@ -232,7 +232,7 @@ from src.commands.default import building
 class TestBuilding(CommandTest):
     CID = 6
     def test_cmds(self):
-        self.call(building.CmdCreate(), "/drop TestObj1", "You create a new Object: TestObj1.")
+        self.call(building.CmdCreate(), "/drop TestObj1", "You create a new DefaultObject: TestObj1.")
         self.call(building.CmdExamine(), "TestObj1", "Name/key: TestObj1")
         self.call(building.CmdSetObjAlias(), "TestObj1 = TestObj1b","Alias(es) for 'TestObj1' set to testobj1b.")
         self.call(building.CmdCopy(), "TestObj1 = TestObj2;TestObj2b, TestObj3;TestObj3b", "Copied TestObj1 to 'TestObj3' (aliases: ['TestObj3b']")
