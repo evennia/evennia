@@ -5,7 +5,7 @@ Room Typeclasses for the TutorialWorld.
 """
 
 import random
-from ev import CmdSet, Script, Command, Room
+from ev import CmdSet, Script, Command, DefaultRoom
 from ev import utils, create_object, search_object
 from contrib.tutorial_world import scripts as tut_scripts
 from contrib.tutorial_world.objects import LightSource, TutorialObject
@@ -67,7 +67,7 @@ class TutorialRoomCmdSet(CmdSet):
         self.add(CmdTutorial())
 
 
-class TutorialRoom(Room):
+class TutorialRoom(DefaultRoom):
     """
     This is the base room type for all rooms in the tutorial world.
     It defines a cmdset on itself for reading tutorial info about the location.

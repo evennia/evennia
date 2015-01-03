@@ -23,7 +23,7 @@ import time
 import random
 
 from ev import create_object
-from ev import Object, Exit, Command, CmdSet, Script
+from ev import DefaultObject, DefaultExit, Command, CmdSet, Script
 
 #------------------------------------------------------------
 #
@@ -42,7 +42,7 @@ from ev import Object, Exit, Command, CmdSet, Script
 #------------------------------------------------------------
 
 
-class TutorialObject(Object):
+class TutorialObject(DefaultObject):
     """
     This is the baseclass for all objects in the tutorial.
     """
@@ -558,7 +558,7 @@ class CmdSetCrumblingWall(CmdSet):
         self.add(CmdPressButton())
 
 
-class CrumblingWall(TutorialObject, Exit):
+class CrumblingWall(TutorialObject, DefaultExit):
     """
     The CrumblingWall can be examined in various
     ways, but only if a lit light source is in the room. The traversal
