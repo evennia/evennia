@@ -1353,6 +1353,7 @@ class CmdTypeclass(MuxCommand):
       @typclass[/switch] <object> [= <typeclass.path>]
       @type                     ''
       @parent                   ''
+      @swap - this is a shorthand for using /force/reset flags.
 
     Switch:
       reset - clean out *all* the attributes on the object -
@@ -1407,6 +1408,10 @@ class CmdTypeclass(MuxCommand):
             caller.msg(string)
             return
 
+        if self.cmdstring == "@swap":
+            self.switches.append("force")
+            self.switches.append("reset")
+
         # we have an =, a typeclass was supplied.
         typeclass = self.rhs
 
@@ -1414,7 +1419,7 @@ class CmdTypeclass(MuxCommand):
             caller.msg("You are not allowed to do that.")
             return
 
-        if not hasattr(obj, 'swap_typeclass') or not hasattr(obj, 'typeclass'):
+        if not hasattr(obj, 'swap_typeclass'):
             caller.msg("This object cannot have a type at all!")
             return
 
@@ -1424,25 +1429,23 @@ class CmdTypeclass(MuxCommand):
         else:
             reset = "reset" in self.switches
             old_typeclass_path = obj.typeclass_path
-            ok = obj.swap_typeclass(typeclass, clean_attributes=reset)
-            if ok:
-                if is_same:
-                    string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.path)
-                else:
-                    string = "%s changed typeclass from %s to %s.\n" % (obj.name,
-                                                             old_typeclass_path,
-                                                             obj.typeclass_path)
-                string += "Creation hooks were run."
-                if reset:
-                    string += " All old attributes where deleted before the swap."
-                else:
-                    string += " Note that the typeclassed object could have ended up with a mixture of old"
-                    string += "\nand new attributes. Use /reset to remove old attributes if you don't want this."
+
+            # we let this raise exception if needed
+            obj.swap_typeclass(typeclass, clean_attributes=reset)
+
+            if is_same:
+                string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.path)
             else:
-                string = obj.typeclass_last_errmsg
-                string += "\nCould not swap '%s' (%s) to typeclass '%s'." % (obj.name,
-                                                             old_typeclass_path,
-                                                             typeclass)
+                string = "%s changed typeclass from %s to %s.\n" % (obj.name,
+                                                         old_typeclass_path,
+                                                         obj.typeclass_path)
+            string += "Creation hooks were run."
+            if reset:
+                string += " All old attributes where deleted before the swap."
+            else:
+                string += " Note that the typeclassed object could have ended up with a mixture of old"
+                string += "\nand new attributes. Use /reset to remove old attributes if you don't want this."
+
         caller.msg(string)
 
 

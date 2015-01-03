@@ -299,6 +299,30 @@ class TypedObject(SharedMemoryModel):
     # Object manipulation methods
     #
 
+    def is_typeclass(self, typeclass, exact=True):
+        """
+        Returns true if this object has this type OR has a typeclass
+        which is an subclass of the given typeclass. This operates on
+        the actually loaded typeclass (this is important since a
+        failing typeclass may instead have its default currently
+        loaded) typeclass - can be a class object or the python path
+        to such an object to match against.
+
+        typeclass - a class or the full python path to the class
+        exact - returns true only
+                if the object's type is exactly this typeclass, ignoring
+                parents.
+        """
+        if not isinstance(typeclass, basestring):
+            typeclass = typeclass.path
+
+        if exact:
+            return typeclass == self.path
+        else:
+            # check parent chain
+            selfpath = self.path
+            return any(cls for cls in self.__class__.mro() if cls.path == selfpath)
+
     def swap_typeclass(self, new_typeclass, clean_attributes=False,
                        run_start_hooks=True, no_default=True):
         """

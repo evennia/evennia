@@ -1,9 +1,5 @@
-try:
-    # this is an optimized version only available in later Django versions
-    from django.utils.unittest import TestCase
-except ImportError:
-    # if the first fails, we use the old version
-    from django.test import TestCase
+# this is an optimized version only available in later Django versions
+from django.utils.unittest import TestCase
 
 from src.scripts.models import ScriptDB, ObjectDoesNotExist
 from src.utils.create import create_script

@@ -183,11 +183,11 @@ class MuxPlayerCommand(MuxCommand):
         """
         super(MuxPlayerCommand, self).parse()
 
-        if utils.inherits_from(self.caller, "src.objects.objects.Object"):
+        if utils.inherits_from(self.caller, "src.objects.objects.DefaultObject"):
             # caller is an Object/Character
             self.character = self.caller
             self.caller = self.caller.player
-        elif utils.inherits_from(self.caller, "src.players.players.Player"):
+        elif utils.inherits_from(self.caller, "src.players.players.DefaultPlayer"):
             # caller was already a Player
             self.character = self.caller.get_puppet(self.sessid)
         else:

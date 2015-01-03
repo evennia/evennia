@@ -159,7 +159,7 @@ class TestGeneral(CommandTest):
         self.call(general.CmdLook(), "here", "Room1\n room_desc")
         self.call(general.CmdHome(), "", "You are already home")
         self.call(general.CmdInventory(), "", "You are not carrying anything.")
-        self.call(general.CmdPose(), "looks around", "Char1 looks around")
+        self.call(general.CmdPose(), "looks around", "")  # TODO-check this
         self.call(general.CmdHome(), "", "You are already home")
         self.call(general.CmdNick(), "testalias = testaliasedstring1", "Nick set:")
         self.call(general.CmdNick(), "/player testalias = testaliasedstring2", "Nick set:")
@@ -251,8 +251,8 @@ class TestBuilding(CommandTest):
         self.call(building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere.")
         self.call(building.CmdSetHome(), "Obj6 = Room6b", "Obj6's home location was changed from Room6")
         self.call(building.CmdListCmdSets(), "", "<DefaultCharacter (Union, prio 0, perm)>:")
-        self.call(building.CmdTypeclass(), "Obj6 = src.objects.objects.Exit",
-                "Obj6 changed typeclass from src.commands.default.tests.TestObjectClass to src.objects.objects.Exit")
+        self.call(building.CmdTypeclass(), "Obj6 = src.objects.objects.DefaultExit",
+                "Obj6 changed typeclass from src.commands.default.tests.TestObjectClass to src.objects.objects.DefaultExit")
         self.call(building.CmdLock(), "Obj6 = test:perm(Immortals)", "Added lock 'test:perm(Immortals)' to Obj6.")
         self.call(building.CmdFind(), "TestRoom1", "One Match")
         self.call(building.CmdScript(), "Obj6 = src.scripts.scripts.Script", "Script src.scripts.scripts.Script successfully added")
@@ -271,11 +271,11 @@ class TestComms(CommandTest):
         self.call(comms.CmdAllCom(), "", "Available channels (use comlist,addcom and delcom to manage")
         self.call(comms.CmdClock(), "testchan=send:all()", "Lock(s) applied. Current locks on testchan:")
         self.call(comms.CmdCdesc(), "testchan = Test Channel", "Description of channel 'testchan' set to 'Test Channel'.")
-        self.call(comms.CmdCemit(), "testchan = Test Message", "[testchan] Test Message|Sent to channel testchan: Test Message")
+        self.call(comms.CmdCemit(), "testchan = Test Message", "Sent to channel testchan: Test Message")
         self.call(comms.CmdCWho(), "testchan", "Channel subscriptions\ntestchan:\n  TestPlayer7")
         self.call(comms.CmdPage(), "TestPlayer7b = Test", "TestPlayer7b is offline. They will see your message if they list their pages later.|You paged TestPlayer7b with: 'Test'.")
         self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <player> [:reason]") # noone else connected to boot
-        self.call(comms.CmdCdestroy(), "testchan" ,"[testchan] TestPlayer7: testchan is being destroyed. Make sure to change your aliases.|Channel 'testchan' was destroyed.")
+        self.call(comms.CmdCdestroy(), "testchan" ,"Channel 'testchan' was destroyed.")
 
 
 from src.commands.default import batchprocess

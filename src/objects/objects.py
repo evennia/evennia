@@ -279,11 +279,11 @@ class DefaultObject(ObjectDB):
         """
         return any(self.sessions)
 
-    #@property
-    #def is_superuser(self):
-    #    "Check if user has a player, and if so, if it is a superuser."
-    #    return self.db_player and self.db_player.is_superuser \
-    #            and not self.db_player.attributes.get("_quell")
+    @property
+    def is_superuser(self):
+        "Check if user has a player, and if so, if it is a superuser."
+        return self.db_player and self.db_player.is_superuser \
+                and not self.db_player.attributes.get("_quell")
 
     def contents_get(self, exclude=None):
         """

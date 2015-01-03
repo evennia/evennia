@@ -53,25 +53,20 @@ def identify_object(inp):
         from src.objects.models import ObjectDB as _ObjectDB
     if not _ChannelDB:
         from src.comms.models import ChannelDB as _ChannelDB
+
     if not inp:
         return inp, None
-    # try to identify the type
-    try:
-        obj = _GA(inp, "dbobj")  # this works for all typeclassed entities
-    except AttributeError:
-        obj = inp
-    typ = type(obj)
-    if typ == _PlayerDB:
-        return obj, "player"
-    elif typ == _ObjectDB:
-        return obj, "object"
-    elif typ == _ChannelDB:
-        return obj, "channel"
-    elif dbref(obj):
-        return dbref(obj), "dbref"
-    elif typ == basestring:
-        return obj, "string"
-    return obj, None   # Something else
+    if isinstance(inp, basestring):
+        return inp, "string"
+    elif inp.is_typeclass(_PlayerDB, exact=False):
+        return inp, "player"
+    elif inp.is_typeclass(_ObjectDB, exact=False):
+        return inp, "object"
+    elif inp.is_typeclass(_ChannelDB, exact=False):
+        return inp, "channel"
+    elif dbref(inp):
+        return dbref(inp), "dbref"
+    return inp, None # something else
 
 
 def to_object(inp, objtype='player'):
@@ -300,7 +295,7 @@ class ChannelDBManager(TypedObjectManager):
         """
         Return all channels a given player is subscribed to
         """
-        return player.player.subscription_set.all()
+        return player.subscription_set.all()
 
     @returns_typeclass_list
     def channel_search(self, ostring, exact=True):

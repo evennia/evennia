@@ -257,7 +257,6 @@ class Channel(ChannelDB):
         """
         # get all players connected to this channel and send to them
         for player in self.db_subscriptions.all():
-            player = player
             try:
                 # note our addition of the from_channel keyword here. This could be checked
                 # by a custom player.msg() to treat channel-receives differently.
