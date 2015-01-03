@@ -199,6 +199,8 @@ class DefaultPlayer(PlayerDB):
         ScriptDB.objects.validate(obj=obj)
         if normal_mode:
             obj.at_post_puppet()
+        # re-cache locks to make sure superuser bypass is updated
+        obj.locks.cache_lock_bypass(obj)
         return True
 
     def unpuppet_object(self, sessid):

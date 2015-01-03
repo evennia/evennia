@@ -106,14 +106,6 @@ class ObjectDB(TypedObject):
     # Database manager
     objects = ObjectDBManager()
 
-    # field-related field-related properties
-    def _at_db_player_postsave(self):
-        """
-        This hook is called automatically after the player field is saved.
-        """
-        # we need to re-cache this for superusers to bypass.
-        self.locks.cache_lock_bypass(self)
-
     # cmdset_storage property handling
     def __cmdset_storage_get(self):
         "getter"
