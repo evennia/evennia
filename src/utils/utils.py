@@ -948,6 +948,7 @@ def class_from_module(path, defaultpaths=None):
             if not str(ex).startswith("No module named"):
                 exc = sys.exc_info()
                 raise exc[1], None, exc[2]
+            continue
         try:
             cls = getattr(mod, clsname)
             break
