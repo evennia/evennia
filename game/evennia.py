@@ -20,15 +20,101 @@ import django
 from django.core import management
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 
+# Check/Create settings
+
+_CREATED_SETTINGS = False
 if not os.path.exists('settings.py'):
-    # make sure we have a settings.py file.
-    print "    No settings.py file found. launching manage.py ..."
+    # If settings.py doesn't already exist, create it and populate it with some
+    # basic stuff.
 
-    # this triggers the settings file creation.
-    import game.manage
+    # make random secret_key.
+    import random
+    import string
+    secret_key = list((string.letters +
+        string.digits + string.punctuation).replace("\\", "").replace("'", '"'))
+    random.shuffle(secret_key)
+    secret_key = "".join(secret_key[:40])
+
+    settings_file = open('settings.py', 'w')
+    _CREATED_SETTINGS = True
+
+    string = \
+    """
+######################################################################
+# Evennia MU* server configuration file
+#
+# You may customize your setup by copy&pasting the variables you want
+# to change from the master config file src/settings_default.py to
+# this file. Try to *only* copy over things you really need to customize
+# and do *not* make any changes to src/settings_default.py directly.
+# This way you'll always have a sane default to fall back on
+# (also, the master config file may change with server updates).
+#
+######################################################################
+
+from src.settings_default import *
+
+######################################################################
+# Custom settings
+######################################################################
+
+
+######################################################################
+# SECRET_KEY was randomly seeded when settings.py was first created.
+# Don't share this with anybody. It is used by Evennia to handle
+# cryptographic hashing for things like cookies on the web side.
+######################################################################
+SECRET_KEY = '%s'
+
+""" % secret_key
+
+    settings_file.write(string)
+    settings_file.close()
+
+    print """
+    Welcome to Evennia!
+
+    No previous setting file was found so we created a fresh
+    settings.py file for you. No database was created.  You may edit
+    the settings file now if you like, but you don't have to touch
+    anything if you just want to quickly get started.
+
+    Once you are ready to continue, run evennia.py again to
+    initialize the database and a third time to start the server.
+
+    The first time the server starts it will set things up for you.
+    Make sure to create a superuser when asked. The superuser's
+    email-address does not have to exist.
+    """
     sys.exit()
+
+#------------------------------------------------------------
+# Test the import of the settings file
+#------------------------------------------------------------
+try:
+    from game import settings
+except Exception:
+    import traceback
+    string = "\n" + traceback.format_exc()
+
+    # note - if this fails, ugettext will also fail, so we cannot translate this string.
+
+    string += """\n
+    Error: Couldn't import the file 'settings.py' in the directory containing %(file)r.
+    There are usually two reasons for this:
+    1) The settings module contains errors. Review the traceback above to resolve the
+       problem, then try again.
+    2) If you get errors on finding DJANGO_SETTINGS_MODULE you might have set up django
+       wrong in some way. If you run a virtual machine, it might be worth to restart it
+       to see if this resolves the issue. Evennia should not require you to define any
+       environment variables manually.
+    """ % {'file': __file__}
+    print string
+    sys.exit(1)
+
+# set the settings location
+os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 
 # required since django1.7.
 django.setup()
@@ -149,29 +235,6 @@ PORTAL_PY_FILE = os.path.join(settings.SRC_DIR, 'server/portal.py')
 # Get logfile names
 SERVER_LOGFILE = settings.SERVER_LOG_FILE
 PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
-
-# Check so a database exists and is accessible
-from django.db import DatabaseError
-from src.players.models import PlayerDB
-try:
-    superuser = PlayerDB.objects.get(id=1)
-except DatabaseError, e:
-    print """
-    Your database does not seem to be set up correctly.
-    (error was '%s')
-
-    Please run:
-
-       python manage.py syncdb
-
-    When you have a database set up, rerun evennia.py.
-    """ % e
-    sys.exit()
-except PlayerDB.DoesNotExist:
-    # no superuser yet. We need to create it.
-    from django.core.management import call_command
-    print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
-    call_command("createsuperuser", interactive=True)
 
 # Add this to the environmental variable for the 'twistd' command.
 currpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -485,13 +548,49 @@ def error_check_python_modules():
     imp(settings.BASE_EXIT_TYPECLASS)
     imp(settings.BASE_SCRIPT_TYPECLASS)
 
+def create_database():
+    from django.core.management import call_command
+    print "\nCreating a database ...\n"
+    call_command("migrate", interactive=False)
+    print "\n ... database initialized.\n"
+
+def create_superuser():
+    from django.core.management import call_command
+    print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
+    call_command("createsuperuser", interactive=True)
+
+def check_database(automigrate=False):
+    # Check so a database exists and is accessible
+    from django.db import DatabaseError
+    from src.players.models import PlayerDB
+    try:
+        superuser = PlayerDB.objects.get(id=1)
+    except DatabaseError, e:
+        if automigrate:
+            create_database()
+            create_superuser()
+        else:
+            print """
+            Your database does not seem to be set up correctly.
+            (error was '%s')
+
+            Try to run
+
+               python evennia.py
+
+            to initialize the database according to your settings.
+            """ % e
+            sys.exit()
+    except PlayerDB.DoesNotExist:
+        # no superuser yet. We need to create it.
+        create_superuser()
 
 def main():
     """
     This handles command line input.
     """
 
-    parser = OptionParser(usage="%prog [-i] start|stop|reload|menu [server|portal]",
+    parser = OptionParser(usage="%prog [-i] start|stop|reload|menu [server|portal]|manager args",
                           description=CMDLINE_HELP)
     parser.add_option('-i', '--interactive', action='store_true',
                       dest='interactive', default=False,
@@ -514,8 +613,14 @@ def main():
     if len(args) > 1:
         service = args[1]
 
+    if mode in ["start", "menu"]:
+        check_database(True)
+    elif mode not in ["stop"]:
+        check_database(False)
+
     if mode not in ['menu', 'start', 'reload', 'stop']:
-        print "mode should be none, 'menu', 'start', 'reload' or 'stop'."
+        from django.core.management import call_command
+        call_command(mode)
         sys.exit()
     if service not in ['server', 'portal', 'all']:
         print "service should be none, 'server', 'portal' or 'all'."
@@ -534,6 +639,19 @@ def main():
 
 if __name__ == '__main__':
     # start Evennia
+
+    if _CREATED_SETTINGS:
+        # if settings were created, info has already been printed.
+        sys.exit()
+
     from src.utils.utils import check_evennia_dependencies
     if check_evennia_dependencies():
+        if len(sys.argv) > 1 and sys.argv[1] in ('runserver', 'testserver'):
+            print """
+            WARNING: There is no need to run the Django development
+            webserver to test out Evennia web features (the web client
+            will in fact not work since the Django test server knows
+            nothing about MUDs).  Instead, just start Evennia with the
+            webserver component active (this is the default).
+            """
         main()

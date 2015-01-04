@@ -76,7 +76,7 @@ class SharedMemoryModelBase(ModelBase):
         def prep(dbmodel):
             if not hasattr(dbmodel, "__instance_cache__"):
                 dbmodel.__instance_cache__ = {}
-                dbmodel.__idmapper_recache_protection = False
+                dbmodel._idmapper_recache_protection = False
         if not cls._meta.proxy:
             # non-proxy models get the full cache
             prep(cls)
@@ -85,6 +85,7 @@ class SharedMemoryModelBase(ModelBase):
             dbmodel = cls._meta.proxy_for_model
             prep(dbmodel)
             cls.__instance_cache__ = dbmodel.__instance_cache__
+            cls._idmapper_recache_protection = False
         super(SharedMemoryModelBase, cls)._prepare()
 
     def __new__(cls, name, bases, attrs):
@@ -210,7 +211,7 @@ class SharedMemoryModel(Model):
 
     #def __init__(cls, *args, **kwargs):
     #    super(SharedMemoryModel, cls).__init__(*args, **kwargs)
-    #    cls._idmapper_recache_protection = False
+    #    cls.__idmapper_recache_protection = False
 
     @classmethod
     def _get_cache_key(cls, args, kwargs):

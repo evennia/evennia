@@ -12,16 +12,6 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 #------------------------------------------------------------
-# Get Evennia version
-#------------------------------------------------------------
-try:
-    f = open(os.pardir + os.sep + 'VERSION.txt', 'r''')
-    VERSION = "%s" % f.read().strip()
-    f.close()
-except IOError:
-    VERSION = "Unknown version"
-
-#------------------------------------------------------------
 # Check so session file exists in the current dir- if not, create it.
 #------------------------------------------------------------
 
@@ -80,20 +70,20 @@ SECRET_KEY = '%s'
 
     This looks like your first startup, so we created a fresh
     game/settings.py file for you. No database has yet been created.
-    You may edit the settings file now if you like, but you don't 
+    You may edit the settings file now if you like, but you don't
     have to touch anything if you just want to quickly get started.
-    
+
     Once you are ready to continue, run
 
         python manage.py migrate
-    
-    This will initialize the database. When that is done you can 
+
+    This will initialize the database. When that is done you can
     start Evennia itself with
-    
+
         python evennia.py -i start
-        
-    The first time the server starts it will set things up for you. 
-    Make sure to create a superuser when asked. The superuser's 
+
+    The first time the server starts it will set things up for you.
+    Make sure to create a superuser when asked. The superuser's
     email-address does not have to exist.
     """
 
@@ -144,5 +134,6 @@ if __name__ == "__main__":
             nothing about MUDs).  Instead, just start Evennia with the
             webserver component active (this is the default).
             """
+        print sys.argv
         from django.core.management import execute_from_command_line
         execute_from_command_line(sys.argv)
