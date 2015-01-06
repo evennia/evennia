@@ -277,9 +277,8 @@ def init_game_directory(path):
 
     # check all dependencies
     from evennia.utils.utils import check_evennia_dependencies
-    if not check_evennia_
-
-
+    if not check_evennia_dependencies:
+        sys.exit()
 
     # test existence of settings module
     try:
