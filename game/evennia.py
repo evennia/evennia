@@ -8,71 +8,70 @@ Sets the appropriate environmental variables and launches the server
 and portal through the runner. Run without arguments to get a
 menu. Run the script with the -h flag to see usage information.
 
+Usage:
+
+    evennia init <path> - creates a new game location, sets up a custom
+                          settings file and copies all templates to <path>
+    evennia [settings][options] - handles server start/stop/restart if called
+                                  from the game folder. Can be called outside
+                                  the game folder if called with the path
+                                  to the settings file.
+
 """
 import os
 import sys
 import signal
-from optparse import OptionParser
-from subprocess import Popen
+import shutil
+import importlib
 import django
-
-# Set the Python path up so we can get to settings.py from here.
+from argparse import ArgumentParser
+from subprocess import Popen
 from django.core import management
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Signal processing
+SIG = signal.SIGINT
 
-# Check/Create settings
+# Set up the main python paths to Evennia
+EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+EVENNIA_BIN = os.path.join(EVENNIA_ROOT, "bin")
+EVENNIA_LIB = os.path.join(EVENNIA_ROOT, "lib")
+EVENNIA_RUNNER = os.path.join(EVENNIA_BIN, "runner.py")
+EVENNIA_TEMPLATE = os.path.join(EVENNIA_ROOT, "game_template")
 
-_CREATED_SETTINGS = False
-if not os.path.exists('settings.py'):
-    # If settings.py doesn't already exist, create it and populate it with some
-    # basic stuff.
+EVENNIA_VERSION = "Unknown"
+TWISTED_BINARY = "twistd"
 
-    # make random secret_key.
-    import random
-    import string
-    secret_key = list((string.letters +
-        string.digits + string.punctuation).replace("\\", "").replace("'", '"'))
-    random.shuffle(secret_key)
-    secret_key = "".join(secret_key[:40])
+# Game directory structure
+SETTINGFILE = "settings.py"
+SERVERDIR = "server"
+CONFDIR = os.path.join(SERVERDIR, "conf")
+SETTINGS_PATH = os.path.join(CONFDIR, SETTINGFILE)
+SETTINGS_DOTPATH = "server.conf.settings"
+CURRENT_DIR = os.getcwd()
+GAMEDIR = CURRENT_DIR
 
-    settings_file = open('settings.py', 'w')
-    _CREATED_SETTINGS = True
+# Operational setup
+SERVER_LOGFILE = None
+PORTAL_LOGFILE = None
+SERVER_PIDFILE = None
+PORTAL_PIDFILE = None
+SERVER_RESTART = None
+PORTAL_RESTART = None
+SERVER_PY_FILE = None
+PORTAL_PY_FILE = None
 
-    string = \
+# add Evennia root and bin dir to PYTHONPATH
+sys.path.insert(0, EVENNIA_ROOT)
+
+
+#------------------------------------------------------------
+#
+# Messages
+#
+#------------------------------------------------------------
+
+WELCOME_MESSAGE = \
     """
-######################################################################
-# Evennia MU* server configuration file
-#
-# You may customize your setup by copy&pasting the variables you want
-# to change from the master config file src/settings_default.py to
-# this file. Try to *only* copy over things you really need to customize
-# and do *not* make any changes to src/settings_default.py directly.
-# This way you'll always have a sane default to fall back on
-# (also, the master config file may change with server updates).
-#
-######################################################################
-
-from src.settings_default import *
-
-######################################################################
-# Custom settings
-######################################################################
-
-
-######################################################################
-# SECRET_KEY was randomly seeded when settings.py was first created.
-# Don't share this with anybody. It is used by Evennia to handle
-# cryptographic hashing for things like cookies on the web side.
-######################################################################
-SECRET_KEY = '%s'
-
-""" % secret_key
-
-    settings_file.write(string)
-    settings_file.close()
-
-    print """
     Welcome to Evennia!
 
     No previous setting file was found so we created a fresh
@@ -87,81 +86,101 @@ SECRET_KEY = '%s'
     Make sure to create a superuser when asked. The superuser's
     email-address does not have to exist.
     """
-    sys.exit()
 
-#------------------------------------------------------------
-# Test the import of the settings file
-#------------------------------------------------------------
-try:
-    from game import settings
-except Exception:
-    import traceback
-    string = "\n" + traceback.format_exc()
+WARNING_RUNSERVER = \
+    """
+    WARNING: There is no need to run the Django development
+    webserver to test out Evennia web features (the web client
+    will in fact not work since the Django test server knows
+    nothing about MUDs).  Instead, just start Evennia with the
+    webserver component active (this is the default).
+    """
 
-    # note - if this fails, ugettext will also fail, so we cannot translate this string.
-
-    string += """\n
-    Error: Couldn't import the file 'settings.py' in the directory containing %(file)r.
+ERROR_SETTINGS = \
+    """
+    ERROR: Could not import the file {settingsfile} from {settingspath}.
     There are usually two reasons for this:
-    1) The settings module contains errors. Review the traceback above to resolve the
-       problem, then try again.
-    2) If you get errors on finding DJANGO_SETTINGS_MODULE you might have set up django
-       wrong in some way. If you run a virtual machine, it might be worth to restart it
-       to see if this resolves the issue. Evennia should not require you to define any
-       environment variables manually.
-    """ % {'file': __file__}
-    print string
-    sys.exit(1)
+        1) The settings file is a normal Python module. It may contain a syntax error.
+           Resolve the problem and try again.
+        2) Django is not correctly installed. This usually shows by errors involving
+           'DJANGO_SETTINGS_MODULE'. If you run a virtual machine, it might be worth to restart it
+           to see if this resolves the issue.
+    """.format(settingsfile=SETTINGFILE, settingspath=SETTINGS_PATH)
 
-# set the settings location
-os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
+ERROR_DATABASE = \
+    """
+    Your database does not seem to be set up correctly.
+    (error was '{traceback}')
 
-# required since django1.7.
-django.setup()
+    Try to run
 
-# signal processing
-SIG = signal.SIGINT
+       python evennia.py
 
+    to initialize the database according to your settings.
+    """
+
+ERROR_WINDOWS_WIN32API = \
+    """
+    ERROR: Unable to import win32api, which Twisted requires to run.
+    You may download it from:
+
+    http://sourceforge.net/projects/pywin32
+      or
+    http://starship.python.net/crew/mhammond/win32/Downloads.html
+    """
+
+INFO_WINDOWS_BATFILE = \
+    """
+    INFO: Since you are running Windows, a file 'twistd.bat' was
+    created for you. This is a simple batch file that tries to call
+    the twisted executable. Evennia determined this to be:
+
+       %(twistd_path)s
+
+    If you run into errors at startup you might need to edit
+    twistd.bat to point to the actual location of the Twisted
+    executable (usually called twistd.py) on your machine.
+
+    This procedure is only done once. Run evennia.py again when you
+    are ready to start the server.
+    """
 
 CMDLINE_HELP = \
-"""
-Main Evennia launcher. When starting in interactive (-i) mode, only
-the Server will do so since this is the most commonly useful setup. To
-activate interactive mode also for the Portal, use the menu or launch
-the two services one after the other as two separate calls to this
-program.
-"""
+    """
+    Main Evennia launcher. When starting in interactive (-i) mode, only
+    the Server will do so since this is the most commonly useful setup. To
+    activate interactive mode also for the Portal, use the menu or launch
+    the two services one after the other as two separate calls to this
+    program.
+    """
 
 
 VERSION_INFO = \
-"""
- Evennia {version}
- {about}
- OS: {os}
- Python: {python}
- Twisted: {twisted}
- Django: {django}
- {south}
-"""
+    """
+    Evennia {version}
+    {about}
+    OS: {os}
+    Python: {python}
+    Twisted: {twisted}
+    Django: {django}
+    """
 
 ABOUT_INFO= \
-"""
- MUD/MUX/MU* development system
+    """
+    Evennia MUD/MUX/MU* development system
 
- Licence: BSD 3-Clause Licence
- Web: http://www.evennia.com
- Irc: #evennia on FreeNode
- Forum: http://www.evennia.com/discussions
- Maintainer (2010-):   Griatch (griatch AT gmail DOT com)
- Maintainer (2006-10): Greg Taylor
-"""
+    Licence: BSD 3-Clause Licence
+    Web: http://www.evennia.com
+    Irc: #evennia on FreeNode
+    Forum: http://www.evennia.com/discussions
+    Maintainer (2010-):   Griatch (griatch AT gmail DOT com)
+    Maintainer (2006-10): Greg Taylor
+    """
 
 HELP_ENTRY = \
 """
-                                         (version %s)
-
-All launcher functionality can be accessed directly from the command
-line. See python evennia.py -h for options.
+See python evennia.py -h for controlling Evennia directly from
+the command line.
 
 Evennia has two parts that both must run:
 
@@ -212,88 +231,184 @@ MENU = \
 """
 
 
+#------------------------------------------------------------
 #
-# System Configuration and setup
+# Functions
 #
+#------------------------------------------------------------
 
-SERVER_PIDFILE = "server.pid"
-PORTAL_PIDFILE = "portal.pid"
-
-SERVER_RESTART = "server.restart"
-PORTAL_RESTART = "portal.restart"
-
-# Get the settings
-from django.conf import settings
-
-from src.utils.utils import get_evennia_version
-EVENNIA_VERSION = get_evennia_version()
-
-# Setup access of the evennia server itself
-SERVER_PY_FILE = os.path.join(settings.SRC_DIR, 'server/server.py')
-PORTAL_PY_FILE = os.path.join(settings.SRC_DIR, 'server/portal.py')
-
-# Get logfile names
-SERVER_LOGFILE = settings.SERVER_LOG_FILE
-PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
-
-# Add this to the environmental variable for the 'twistd' command.
-currpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if 'PYTHONPATH' in os.environ:
-    os.environ['PYTHONPATH'] += (":%s" % currpath)
-else:
-    os.environ['PYTHONPATH'] = currpath
-
-TWISTED_BINARY = 'twistd'
-if os.name == 'nt':
-    # Windows needs more work to get the correct binary
+def evennia_version():
+    """
+    Get the Evennia version info from the main package.
+    """
+    version = "Unknown"
+    with open(os.path.join(EVENNIA_ROOT, "VERSION.txt"), 'r') as f:
+        version = f.read().strip()
     try:
-        # Test for for win32api
-        import win32api
-    except ImportError:
-        print """
-    ERROR: Unable to import win32api, which Twisted requires to run.
-    You may download it from:
+        version = "%s(GIT %s)" % (version, os.popen("git rev-parse --short HEAD").read().strip())
+    except IOError:
+        pass
+    return version
 
-    http://sourceforge.net/projects/pywin32
-      or
-    http://starship.python.net/crew/mhammond/win32/Downloads.html"""
+
+def init_game_directory(path):
+    """
+    Try to analyze the given path to find settings.py - this defines
+    the game directory and also sets PYTHONPATH as well as the
+    django path.
+    """
+    global GAMEDIR
+    if os.path.exists(os.path.join(path, SETTINGFILE)):
+        # path given to server/conf/
+        GAMEDIR = os.path.dirname(os.path.dirname(os.path.dirname(path)))
+    elif os.path.exists(SETTINGS_PATH):
+        # path given to somewhere else in gamedir
+        GAMEDIR = os.path.dirname(os.path.dirname(path))
+    else:
+        # Assume path given to root game dir
+        GAMEDIR = path
+
+    # set pythonpath to gamedir
+    sys.path.insert(0, GAMEDIR)
+    # set the settings location
+    os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
+    # required since django1.7.
+    django.setup()
+
+    # check all dependencies
+    from evennia.utils.utils import check_evennia_dependencies
+    if not check_evennia_
+
+
+
+    # test existence of settings module
+    try:
+        settings = importlib.import_module(SETTINGS_DOTPATH)
+    except Exception:
+        import traceback
+        print "\n" + traceback.format_exc()
+        print ERROR_SETTINGS
         sys.exit()
 
-    if not os.path.exists('twistd.bat'):
-        # Test for executable twisted batch file. This calls the twistd.py
-        # executable that is usually not found on the path in Windows.
-        # It's not enough to locate scripts.twistd, what we want is the
-        # executable script C:\PythonXX/Scripts/twistd.py. Alas we cannot
-        # hardcode this location since we don't know if user has Python
-        # in a non-standard location, so we try to figure it out.
-        from twisted.scripts import twistd
-        twistd_path = os.path.abspath(
-            os.path.join(os.path.dirname(twistd.__file__),
-                         os.pardir, os.pardir, os.pardir, os.pardir,
-                         'scripts', 'twistd.py'))
-        bat_file = open('twistd.bat', 'w')
-        bat_file.write("@\"%s\" \"%s\" %%*" % (sys.executable, twistd_path))
-        bat_file.close()
-        print """
-    INFO: Since you are running Windows, a file 'twistd.bat' was
-    created for you. This is a simple batch file that tries to call
-    the twisted executable. Evennia determined this to be:
+    # set up the Evennia executables and log file locations
+    global SERVER_PY_FILE, PORTAL_PY_FILE
+    global SERVER_LOGFILE, PORTAL_LOGFILE
+    global SERVER_PIDFILE, PORTAL_PIDFILE
+    global SERVER_RESTART, PORTAL_RESTART
+    global EVENNIA_VERSION
 
-       %(twistd_path)s
+    SERVER_PY_FILE = os.path.join(settings.LIB_DIR, "server/server.py")
+    PORTAL_PY_FILE = os.path.join(settings.LIB_DIR, "portal/server.py")
 
-    If you run into errors at startup you might need to edit
-    twistd.bat to point to the actual location of the Twisted
-    executable (usually called twistd.py) on your machine.
+    SERVER_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "server.pid")
+    PORTAL_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "portal.pid")
 
-    This procedure is only done once. Run evennia.py again when you
-    are ready to start the server.
-    """ % {'twistd_path': twistd_path}
-        sys.exit()
+    SERVER_RESTART = os.path.join(GAMEDIR, SERVERDIR, "server.restart")
+    PORTAL_RESTART = os.path.join(GAMEDIR, SERVERDIR, "portal.restart")
 
-    TWISTED_BINARY = 'twistd.bat'
+    SERVER_LOGFILE = settings.SERVER_LOG_FILE
+    PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
+
+    # This also tests the library access
+    from evennia.utils.utils import get_evennia_version
+    EVENNIA_VERSION = get_evennia_version()
+
+    # set up twisted
+    if os.name == 'nt':
+        # We need to handle Windows twisted separately. We create a
+        # batchfile in game/server, linking to the actual binary
+
+        global TWISTED_BINARY
+        TWISTED_BINARY = "twistd.bat"
+
+        # add path so system can find the batfile
+        sys.path.insert(0, os.path.join(GAMEDIR, SERVERDIR))
+
+        try:
+            importlib.import_module("win32api")
+        except ImportError:
+            print ERROR_WINDOWS_WIN32API
+            sys.exit()
+
+        if not os.path.exists(os.path.join(EVENNIA_BIN, TWISTED_BINARY)):
+            # Test for executable twisted batch file. This calls the
+            # twistd.py executable that is usually not found on the
+            # path in Windows.  It's not enough to locate
+            # scripts.twistd, what we want is the executable script
+            # C:\PythonXX/Scripts/twistd.py. Alas we cannot hardcode
+            # this location since we don't know if user has Python in
+            # a non-standard location. So we try to figure it out.
+            twistd = importlib.import_module("twisted.scripts.twistd")
+            twistd_dir = os.path.dirname(twistd.__file__)
+
+            # note that we hope the twistd package won't change here, since we
+            # try to get to the executable by relative path.
+            twistd_path = os.path.abspath(os.path.join(twistd_dir,
+                            os.pardir, os.pardir, os.pardir, os.pardir,
+                            'scripts', 'twistd.py'))
+
+            with open('twistd.bat', 'w') as bat_file:
+                # build a custom bat file for windows
+                bat_file.write("@\"%s\" \"%s\" %%*" % (sys.executable, twistd_path))
+
+            print INFO_WINDOWS_BATFILE.format(twistd_path=twistd_path)
+
+
+#
+# Check/Create settings
+#
+
+def create_secret_key():
+    """
+    Randomly create the secret key for the settings file
+    """
+    import random
+    import string
+    secret_key = list((string.letters +
+        string.digits + string.punctuation).replace("\\", "").replace("'", '"'))
+    random.shuffle(secret_key)
+    secret_key = "".join(secret_key[:40])
+    return secret_key
+
+
+def create_settings_file():
+    """
+    Uses the template settings file to build a working
+    settings file.
+    """
+    settings_path = os.path.join(GAMEDIR, "server", "conf", "settings.py")
+    with open(settings_path, 'r') as f:
+        settings_string = f.read()
+
+    # tweak the settings
+    setting_dict = {"servername":"Evennia",
+                    "secret_key":create_secret_key}
+
+    # modify the settings
+    settings_string.format(**setting_dict)
+
+    with open(settings_path, 'w') as f:
+        f.write(settingsj_string)
 
 
 # Functions
+
+def create_game_directory(dirname):
+    """
+    Initialize a new game directory named dirname
+    at the current path. This means copying the
+    template directory from evennia's root.
+    """
+    global GAMEDIR
+    GAMEDIR = os.abspath(os.path.join(CURRENT_DIR, dirname))
+    if os.path.exists(GAMEDIR):
+        print "Cannot create new Evennia game dir: '%s' already exists." % dirname
+        sys.exit()
+    # copy template directory
+    shutil.copytree(EVENNIA_TEMPLATE, GAMEDIR)
+    # pre-build settings file in the new GAMEDIR
+    create_settings_file()
+
 
 def get_pid(pidfile):
     """
@@ -351,25 +466,19 @@ def show_version_info(about=False):
     import os, sys
     import twisted
     import django
-    try:
-        import south
-        sversion = "South %s" % south.__version__
-    except ImportError:
-        sversion = "South <not installed>"
 
     return VERSION_INFO.format(version=EVENNIA_VERSION,
                              about=ABOUT_INFO if about else "",
                              os=os.name, python=sys.version.split()[0],
                              twisted=twisted.version.short(),
-                             django=django.get_version(),
-                             south=sversion)
+                             django=django.get_version())
 
 def run_menu():
     """
     This launches an interactive menu.
     """
 
-    cmdstr = [sys.executable, "runner.py"]
+    cmdstr = [sys.executable, EVENNIA_RUNNER]
 
     while True:
         # menu loop
@@ -405,7 +514,10 @@ def run_menu():
                 cmdstr.extend(['--iportal'])
             elif inp == 4:
                 cmdstr.extend(['--iserver', '--iportal'])
-            return cmdstr
+            # start server
+            cmdstr.append("start")
+            Popen(cmdstr)
+            return
         elif inp < 10:
             if inp == 5:
                 if os.name == 'nt':
@@ -427,20 +539,18 @@ def run_menu():
             return
         else:
             print "Not a valid option."
-    return None
 
 
-def handle_args(options, mode, service):
+def server_operation(mode, service, interactive):
     """
     Handle argument options given on the command line.
 
-    options - parsed object for command line
     mode - str; start/stop etc
     service - str; server, portal or all
+    interactive - bool; use interactive mode or daemon
     """
 
-    inter = options.interactive
-    cmdstr = [sys.executable, "runner.py"]
+    cmdstr = [sys.executable, EVENNIA_RUNNER]
     errmsg = "The %s does not seem to be running."
 
     if mode == 'start':
@@ -450,21 +560,23 @@ def handle_args(options, mode, service):
 
         # starting one or many services
         if service == 'server':
-            if inter:
+            if interactive:
                 cmdstr.append('--iserver')
             cmdstr.append('--noportal')
         elif service == 'portal':
-            if inter:
+            if interactive:
                 cmdstr.append('--iportal')
             cmdstr.append('--noserver')
             management.call_command('collectstatic', verbosity=1, interactive=False)
         else:  # all
             # for convenience we don't start logging of
             # portal, only of server with this command.
-            if inter:
+            if interactive:
                 cmdstr.extend(['--iserver'])
             management.call_command('collectstatic', verbosity=1, interactive=False)
-        return cmdstr
+        # start the server
+        cmdstr.append("start")
+        Popen(cmdstr)
 
     elif mode == 'reload':
         # restarting services
@@ -493,7 +605,6 @@ def handle_args(options, mode, service):
         else:
             kill(PORTAL_PIDFILE, SIG, "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART, restart=False)
             kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', restart="shutdown")
-    return None
 
 
 def error_check_python_modules():
@@ -504,20 +615,16 @@ def error_check_python_modules():
     the python source files themselves). Best they fail already here
     before we get any further.
     """
-    def imp(path, split=True):
-        mod, fromlist = path, "None"
-        if split:
-            mod, fromlist = path.rsplit('.', 1)
-        __import__(mod, fromlist=[fromlist])
+    from django.conf import settings
 
     # core modules
-    imp(settings.COMMAND_PARSER)
-    imp(settings.SEARCH_AT_RESULT)
-    imp(settings.SEARCH_AT_MULTIMATCH_INPUT)
-    imp(settings.CONNECTION_SCREEN_MODULE, split=False)
+    importlib.import_module(settings.COMMAND_PARSER)
+    importlib.import_module(settings.SEARCH_AT_RESULT)
+    importlib.import_module(settings.SEARCH_AT_MULTIMATCH_INPUT)
+    importlib.import_module(settings.CONNECTION_SCREEN_MODULE, split=False)
     #imp(settings.AT_INITIAL_SETUP_HOOK_MODULE, split=False)
     for path in settings.LOCK_FUNC_MODULES:
-        imp(path, split=False)
+        importlib.import_module(path, split=False)
     # cmdsets
 
     deprstring = "settings.%s should be renamed to %s. If defaults are used, " \
@@ -541,12 +648,13 @@ def error_check_python_modules():
     if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None): print "Warning: CMDSET_CHARACTER failed to load"
     if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None): print "Warning: CMDSET_PLAYER failed to load"
     # typeclasses
-    imp(settings.BASE_PLAYER_TYPECLASS)
-    imp(settings.BASE_OBJECT_TYPECLASS)
-    imp(settings.BASE_CHARACTER_TYPECLASS)
-    imp(settings.BASE_ROOM_TYPECLASS)
-    imp(settings.BASE_EXIT_TYPECLASS)
-    imp(settings.BASE_SCRIPT_TYPECLASS)
+    importlib.import_module(settings.BASE_PLAYER_TYPECLASS)
+    importlib.import_module(settings.BASE_OBJECT_TYPECLASS)
+    importlib.import_module(settings.BASE_CHARACTER_TYPECLASS)
+    importlib.import_module(settings.BASE_ROOM_TYPECLASS)
+    importlib.import_module(settings.BASE_EXIT_TYPECLASS)
+    importlib.import_module(settings.BASE_SCRIPT_TYPECLASS)
+
 
 def create_database():
     from django.core.management import call_command
@@ -554,32 +662,25 @@ def create_database():
     call_command("migrate", interactive=False)
     print "\n ... database initialized.\n"
 
+
 def create_superuser():
     from django.core.management import call_command
     print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
     call_command("createsuperuser", interactive=True)
+
 
 def check_database(automigrate=False):
     # Check so a database exists and is accessible
     from django.db import DatabaseError
     from src.players.models import PlayerDB
     try:
-        superuser = PlayerDB.objects.get(id=1)
+        PlayerDB.objects.get(id=1)
     except DatabaseError, e:
         if automigrate:
             create_database()
             create_superuser()
         else:
-            print """
-            Your database does not seem to be set up correctly.
-            (error was '%s')
-
-            Try to run
-
-               python evennia.py
-
-            to initialize the database according to your settings.
-            """ % e
+            print ERROR_DATABASE.format(traceback=e)
             sys.exit()
     except PlayerDB.DoesNotExist:
         # no superuser yet. We need to create it.
@@ -587,71 +688,60 @@ def check_database(automigrate=False):
 
 def main():
     """
-    This handles command line input.
+    Run the evennia main program.
     """
 
-    parser = OptionParser(usage="%prog [-i] start|stop|reload|menu [server|portal]|manager args",
+    # set up argument parser
+
+    parser = ArgumentParser(#usage="%prog [-i] start|stop|reload|menu [server|portal]|manager args",
                           description=CMDLINE_HELP)
-    parser.add_option('-i', '--interactive', action='store_true',
+    parser.add_argument('-i', '--interactive', action='store_true',
                       dest='interactive', default=False,
                       help="Start given processes in interactive mode.")
-    parser.add_option('-v', '--version', action='store_true',
+    parser.add_argument('-v', '--version', action='store_true',
                       dest='show_version', default=False,
                       help="Show version info.")
+    parser.add_argument('--init', action='store', dest="init", metavar="dirname")
+    parser.add_argument('-c', '--config', action='store', dest="config", default=None)
+    parser.add_argument("mode", default="menu")
+    parser.add_argument("service", choices=["all", "server", "portal"], default="all")
 
-    options, args = parser.parse_args()
+    args = parser.parse_args()
 
-    if not args:
-        if options.show_version:
-            print show_version_info()
-            return
-        mode = "menu"
-        service = 'all'
-    if args:
-        mode = args[0]
-        service = "all"
-    if len(args) > 1:
-        service = args[1]
+    # handle arguments
 
-    if mode in ["start", "menu"]:
-        check_database(True)
-    elif mode not in ["stop"]:
-        check_database(False)
+    if args.show_version:
+        print show_version_info()
 
-    if mode not in ['menu', 'start', 'reload', 'stop']:
-        from django.core.management import call_command
-        call_command(mode)
+    mode, service = args.mode, args.service
+
+    if args.init:
+        create_game_directory(args.init)
         sys.exit()
-    if service not in ['server', 'portal', 'all']:
-        print "service should be none, 'server', 'portal' or 'all'."
-        sys.exit()
+
+    # this must be done first - it sets up all the global properties
+    # and initializes django for the game directory
+    init_game_directory(CURRENT_DIR)
 
     if mode == 'menu':
-        # launch menu
-        cmdstr = run_menu()
+        # launch menu for operation
+        check_database(True)
+        run_menu()
+    elif mode in ('start', 'reload', 'stop'):
+        # operate the server directly
+        if mode != "stop":
+            check_database(False)
+        server_operation(mode, service, args.interactive)
     else:
-        # handle command-line arguments
-        cmdstr = handle_args(options, mode, service)
-    if cmdstr:
-        # call the runner.
-        cmdstr.append('start')
-        Popen(cmdstr)
+        # pass-through to django manager
+        from django.core.management import call_command
+        call_command(mode)
+
 
 if __name__ == '__main__':
-    # start Evennia
+    # start Evennia from the command line
 
-    if _CREATED_SETTINGS:
-        # if settings were created, info has already been printed.
-        sys.exit()
-
-    from src.utils.utils import check_evennia_dependencies
     if check_evennia_dependencies():
         if len(sys.argv) > 1 and sys.argv[1] in ('runserver', 'testserver'):
-            print """
-            WARNING: There is no need to run the Django development
-            webserver to test out Evennia web features (the web client
-            will in fact not work since the Django test server knows
-            nothing about MUDs).  Instead, just start Evennia with the
-            webserver component active (this is the default).
-            """
+            print WARNING_RUNSERVER
         main()
