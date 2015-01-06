@@ -1,0 +1,150 @@
+/* ---
+
+  Style sheet for Evennia's web client.
+
+  This should possibly somehow be incoorporated with the
+  overall website theme in the future?
+
+--- */
+
+/* Overall element look */
+html, body { height: 100% }
+body {
+  margin: 0;
+  padding: 0;
+  background: #000;
+  color: #ccc;
+  font-size: .9em;
+  font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
+  line-height: 1.6em }
+
+
+a:link, a:visited { color: #fff }
+a:hover, a:active { color: #ccc }
+
+/* Set this to e.g. bolder if wanting to have ansi-highlights bolden
+ * stand-alone text.*/
+strong {font-weight:normal;}
+
+div {margin:0px;}
+/* Base style for new messages in the main message area */
+/*.msg {
+  white-space: pre-wrap; }
+  padding: .5em .9em;} */
+  /*border-bottom: 1px dotted #222 } /*optional line between messages */
+
+/* Utility messages (green) */
+.sys { color: #0f0 }
+
+/* Messages echoed back after input */
+.inp { color: #555 }
+
+/* Messages returned from the server (most messages) */
+.out { color: #aaa }
+
+/* Error messages (red) */
+.err { color: #f00 }
+
+/* Prompt base (white) */
+.prompt {color: #fff }
+
+/* Style specific classes corresponding to formatted, narative text. */
+.red { color: red; }
+.maroon { color: maroon; }
+.lime { color: lime; }
+.green { color: green; }
+.yellow { color: yellow; }
+.olive { color: olive; }
+.blue { color: blue; }
+.navy { color: navy; }
+.magenta { color: #FF00FF; }
+.purple { color: purple; }
+.cyan { color: #00FFFF; }
+.teal { color: teal; }
+.white { color: white; }
+.gray { color: gray; }
+.dimgray {color: #696969;}
+.black {color: black;}
+.underline { text-decoration: underline; }
+
+.bgred { background-color: red;}
+.bgmaroon { background-color: maroon;}
+.bglime { background-color: lime;}
+.bggreen { background-color: green;}
+.bgyellow { background-color: yellow;}
+.bgolive { background-color: olive;}
+.bgblue { background-color: blue;}
+.bgnavy { background-color: navy;}
+.bgmagenta { background-color: #FF00FF;}
+.bgpurple { background-color: purple;}
+.bgcyan { background-color: #00FFFF;}
+.bgteal { background-color: teal;}
+.bgwhite { background-color: white;}
+.bggray { background-color: gray;}
+.bgdimgray { background-color: #696969;}
+.bgblack { background-color: black;}
+
+/* Container surrounding entire chat */
+#wrapper {
+  position: relative;
+  height: 100% }
+
+/* Main scrolling message area */
+#messagewindow {
+  height: 93%;
+  overflow: auto }
+
+/* Input area containing input field and button */
+#inputform {
+  position: absolute;
+  width: 100%;
+  padding: .8em 0;
+  bottom: 0 }
+
+#inputcontrol {
+  padding: 0 .8em;
+  overflow: auto }
+
+/* Input field */
+#inputfield {
+  float: left;
+  width: 87%;}
+
+#inputfield:focus {
+  outline: 0 }
+
+/* Input 'send' button */
+#inputsend {
+  float: left;
+  width: 8% }
+
+#inputfield { margin-right: .5em }
+
+#inputfield, #inputsend {
+  border: 1px solid #555;
+  background: #000;
+  color: #fff;
+  padding: .4em .45em;
+  font-size: 1.1em;
+  font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace }
+
+/* prompt area above input field */
+#prompt {
+  margin-top: .8em;}
+
+/* No javascript warning */
+#connecting {
+  padding: .5em .9em }
+
+/*Example player count display */
+#playercount { margin-left: .8em }
+
+/* Testing */
+/*#inputform {
+  outline: 1px dotted blue }
+
+#messagewindow {
+  outline: 1px dotted red }
+
+#wrapper {
+  outline: 1px dotted green }*/
