@@ -8,15 +8,6 @@ Sets the appropriate environmental variables and launches the server
 and portal through the runner. Run without arguments to get a
 menu. Run the script with the -h flag to see usage information.
 
-Usage:
-
-    evennia init <path> - creates a new game location, sets up a custom
-                          settings file and copies all templates to <path>
-    evennia [settings][options] - handles server start/stop/restart if called
-                                  from the game folder. Can be called outside
-                                  the game folder if called with the path
-                                  to the settings file.
-
 """
 import os
 import sys
@@ -98,13 +89,19 @@ WARNING_RUNSERVER = \
 
 ERROR_SETTINGS = \
     """
-    ERROR: Could not import the file {settingsfile} from {settingspath}.
-    There are usually two reasons for this:
-        1) The settings file is a normal Python module. It may contain a syntax error.
-           Resolve the problem and try again.
-        2) Django is not correctly installed. This usually shows by errors involving
-           'DJANGO_SETTINGS_MODULE'. If you run a virtual machine, it might be worth to restart it
-           to see if this resolves the issue.
+    There was an error importing Evennia's config file {settingsfile}. There are usually
+    one of three reasons for this:
+        1) You are not running this command from your game's
+           directory. Change directory to your game directory and try
+           again (or start anew by creating a new game directory using
+           evennia --init <gamename>)
+        2) The settings file is a normal Python module. It may contain
+           a syntax error.  Review the traceback above, resolve the
+           problem and try again.
+        3) Django is not correctly installed. This usually means
+           errors involving 'DJANGO_SETTINGS_MODULE'. If you run a
+           virtual machine, it might be worth to restart it to see if
+           this resolves the issue.
     """.format(settingsfile=SETTINGFILE, settingspath=SETTINGS_PATH)
 
 ERROR_DATABASE = \
@@ -147,11 +144,8 @@ INFO_WINDOWS_BATFILE = \
 
 CMDLINE_HELP = \
     """
-    Main Evennia launcher. When starting in interactive (-i) mode, only
-    the Server will do so since this is the most commonly useful setup. To
-    activate interactive mode also for the Portal, use the menu or launch
-    the two services one after the other as two separate calls to this
-    program.
+    Starts or operates the Evennia MU* server. Also allows for
+    initializing a new game directory and manage the game database.
     """
 
 
@@ -272,6 +266,16 @@ def init_game_directory(path):
     sys.path.insert(0, GAMEDIR)
     # set the settings location
     os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
+
+    # test existence of settings module
+    try:
+        settings = importlib.import_module(SETTINGS_DOTPATH)
+    except Exception:
+        import traceback
+        print traceback.format_exc().strip()
+        print ERROR_SETTINGS
+        sys.exit()
+
     # required since django1.7.
     django.setup()
 
@@ -280,14 +284,6 @@ def init_game_directory(path):
     if not check_evennia_dependencies:
         sys.exit()
 
-    # test existence of settings module
-    try:
-        settings = importlib.import_module(SETTINGS_DOTPATH)
-    except Exception:
-        import traceback
-        print "\n" + traceback.format_exc()
-        print ERROR_SETTINGS
-        sys.exit()
 
     # set up the Evennia executables and log file locations
     global SERVER_PY_FILE, PORTAL_PY_FILE
@@ -380,14 +376,16 @@ def create_settings_file():
         settings_string = f.read()
 
     # tweak the settings
-    setting_dict = {"servername":"Evennia",
+    setting_dict = {"settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
+                    "servername":GAMEDIR.rsplit(os.path.sep, 1)[0],
                     "secret_key":create_secret_key}
 
     # modify the settings
     settings_string.format(**setting_dict)
 
+    print "settings_string:", settings_string
     with open(settings_path, 'w') as f:
-        f.write(settingsj_string)
+        f.write(settings_string)
 
 
 # Functions
@@ -399,7 +397,7 @@ def create_game_directory(dirname):
     template directory from evennia's root.
     """
     global GAMEDIR
-    GAMEDIR = os.abspath(os.path.join(CURRENT_DIR, dirname))
+    GAMEDIR = os.path.abspath(os.path.join(CURRENT_DIR, dirname))
     if os.path.exists(GAMEDIR):
         print "Cannot create new Evennia game dir: '%s' already exists." % dirname
         sys.exit()
@@ -692,18 +690,19 @@ def main():
 
     # set up argument parser
 
-    parser = ArgumentParser(#usage="%prog [-i] start|stop|reload|menu [server|portal]|manager args",
-                          description=CMDLINE_HELP)
+    parser = ArgumentParser(description=CMDLINE_HELP)
     parser.add_argument('-i', '--interactive', action='store_true',
                       dest='interactive', default=False,
                       help="Start given processes in interactive mode.")
     parser.add_argument('-v', '--version', action='store_true',
                       dest='show_version', default=False,
                       help="Show version info.")
-    parser.add_argument('--init', action='store', dest="init", metavar="dirname")
-    parser.add_argument('-c', '--config', action='store', dest="config", default=None)
-    parser.add_argument("mode", default="menu")
-    parser.add_argument("service", choices=["all", "server", "portal"], default="all")
+    parser.add_argument('--init', action='store', dest="init", metavar="name",
+                        help="Creates a new game directory 'name' at the current location.")
+    parser.add_argument("mode", metavar="arg", nargs='?', default="menu",
+                        help="Main operation command or management option. Common options are start|stop|reload.")
+    parser.add_argument("service", nargs='?', choices=["all", "server", "portal"], default="all",
+                        help="Optionally defines which server component to operate on. Defaults to all.")
 
     args = parser.parse_args()
 
@@ -733,14 +732,12 @@ def main():
         server_operation(mode, service, args.interactive)
     else:
         # pass-through to django manager
+        if mode in ('runserver', 'testserver'):
+            print WARNING_RUNSERVER
         from django.core.management import call_command
         call_command(mode)
 
 
 if __name__ == '__main__':
     # start Evennia from the command line
-
-    if check_evennia_dependencies():
-        if len(sys.argv) > 1 and sys.argv[1] in ('runserver', 'testserver'):
-            print WARNING_RUNSERVER
-        main()
+    main()
