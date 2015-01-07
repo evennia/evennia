@@ -14,7 +14,6 @@ import sys
 import signal
 import shutil
 import importlib
-import django
 from argparse import ArgumentParser
 from subprocess import Popen
 from django.core import management
@@ -51,6 +50,11 @@ PORTAL_RESTART = None
 SERVER_PY_FILE = None
 PORTAL_PY_FILE = None
 
+PYTHON_MIN = '2.7'
+TWISTED_MIN = '12.0'
+DJANGO_MIN = '1.7'
+DJANGO_REC = '1.7'
+
 # add Evennia root and bin dir to PYTHONPATH
 sys.path.insert(0, EVENNIA_ROOT)
 
@@ -78,6 +82,15 @@ WELCOME_MESSAGE = \
     email-address does not have to exist.
     """
 
+CREATED_NEW_GAMEDIR = \
+    """
+    ... Created new Evennia game directory '{gamedir}'.
+
+    Inside your new game directory, edit {settings_path} to suit your
+    setup, then run this command again from inside the game directory
+    to start the server.
+    """
+
 WARNING_RUNSERVER = \
     """
     WARNING: There is no need to run the Django development
@@ -89,17 +102,15 @@ WARNING_RUNSERVER = \
 
 ERROR_SETTINGS = \
     """
-    There was an error importing Evennia's config file {settingsfile}. There are usually
+    There was an error importing Evennia's config file {settingspath}. There is usually
     one of three reasons for this:
-        1) You are not running this command from your game's
-           directory. Change directory to your game directory and try
-           again (or start anew by creating a new game directory using
-           evennia --init <gamename>)
-        2) The settings file is a normal Python module. It may contain
-           a syntax error.  Review the traceback above, resolve the
-           problem and try again.
-        3) Django is not correctly installed. This usually means
-           errors involving 'DJANGO_SETTINGS_MODULE'. If you run a
+        1) You are not running this command from your game directory.
+           Change directory to your game directory and try again (or
+           create a new game directory using evennia --init <dirname>)
+        2) The settings file contains a syntax error. If you see a
+           traceback above, review it, resolve the problem and try again.
+        3) Django is not correctly installed. This usually shows as
+           errors mentioning 'DJANGO_SETTINGS_MODULE'. If you run a
            virtual machine, it might be worth to restart it to see if
            this resolves the issue.
     """.format(settingsfile=SETTINGFILE, settingspath=SETTINGS_PATH)
@@ -224,12 +235,93 @@ MENU = \
 +---------------------------------------------------------------------------+
 """
 
+ERROR_PYTHON_VERSION = \
+    """
+    ERROR: Python {pversion} used. Evennia requires version
+    {python_min} or higher (but not 3.x).
+    """
+
+WARNING_TWISTED_VERSION = \
+    """
+    WARNING: Twisted {tversion} found. Evennia recommends
+    v{twisted_min} or higher."
+    """
+
+ERROR_NOTWISTED = \
+    """
+    ERROR: Twisted does not seem to be installed.
+    """
+
+ERROR_DJANGO_MIN = \
+    """
+    ERROR: Django {dversion} found. Evennia requires version
+    {django_min} or higher.
+    """
+
+NOTE_DJANGO_MIN = \
+    """
+    NOTE: Django {dversion} found. This will work, but v{django_rec}
+    is recommended for production.
+    """
+
+NOTE_DJANGO_NEW = \
+    """
+    NOTE: Django {dversion} found. This is newer than Evennia's
+    recommended version (v{django_rec}). It will probably work, but
+    may be new enough not to be fully tested yet. Report any issues."
+    """
+
+ERROR_NODJANGO = \
+    """
+    ERROR: Django does not seem to be installed.
+    """
 
 #------------------------------------------------------------
 #
 # Functions
 #
 #------------------------------------------------------------
+
+def check_main_evennia_dependencies():
+    """
+    Checks and imports the Evennia dependencies. This must be done
+    already before the paths are set up.
+    """
+    error = False
+
+    # Python
+    pversion = ".".join(str(num) for num in sys.version_info if type(num) == int)
+    if pversion < PYTHON_MIN:
+        print ERROR_PYTHON_VERSION.format(pversion=pversion, python_min=PYTHON_MIN)
+        error = True
+    # Twisted
+    try:
+        import twisted
+        tversion = twisted.version.short()
+        if tversion < TWISTED_MIN:
+            print WARNING_TWISTED_VERSION.format(tversion=tversion, twisted_min=TWISTED_MIN)
+    except ImportError:
+        print ERROR_NOTWISTED
+        error = True
+    # Django
+    try:
+        import django
+        dversion = ".".join(str(num) for num in django.VERSION if type(num) == int)
+        # only the main version (1.5, not 1.5.4.0)
+        dversion_main = ".".join(dversion.split(".")[:2])
+        if dversion < DJANGO_MIN:
+            print ERROR_DJANGO_MIN.format(dversion=dversion_main, django_min=DJANGO_MIN)
+            error = True
+        elif DJANGO_MIN <= dversion < DJANGO_REC:
+            print NOTE_DJANGO_MIN.format(dversion=dversion_main, django_rec=DJANGO_REC)
+        elif DJANGO_REC < dversion_main:
+            print NOTE_DJANGO_NEW.format(dversion=dversion_main, django_rec=DJANGO_REC)
+    except ImportError:
+        print ERROR_NODJANGO
+        error = True
+    if error:
+        sys.exit()
+
 
 def evennia_version():
     """
@@ -245,6 +337,58 @@ def evennia_version():
     return version
 
 
+def create_secret_key():
+    """
+    Randomly create the secret key for the settings file
+    """
+    import random
+    import string
+    secret_key = list((string.letters +
+        string.digits + string.punctuation).replace("\\", "").replace("'", '"'))
+    random.shuffle(secret_key)
+    secret_key = "".join(secret_key[:40])
+    return secret_key
+
+
+def create_settings_file():
+    """
+    Uses the template settings file to build a working
+    settings file.
+    """
+    settings_path = os.path.join(GAMEDIR, "server", "conf", "settings.py")
+    with open(settings_path, 'r') as f:
+        settings_string = f.read()
+
+    # tweak the settings
+    setting_dict = {"settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
+                    "servername":"\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1].capitalize(),
+                    "game_dir":"\"%s\"" % GAMEDIR,
+                    "secret_key":"\'%s\'" % create_secret_key()}
+
+    # modify the settings
+    settings_string = settings_string.format(**setting_dict)
+
+    with open(settings_path, 'w') as f:
+        f.write(settings_string)
+
+
+def create_game_directory(dirname):
+    """
+    Initialize a new game directory named dirname
+    at the current path. This means copying the
+    template directory from evennia's root.
+    """
+    global GAMEDIR
+    GAMEDIR = os.path.abspath(os.path.join(CURRENT_DIR, dirname))
+    if os.path.exists(GAMEDIR):
+        print "Cannot create new Evennia game dir: '%s' already exists." % dirname
+        sys.exit()
+    # copy template directory
+    shutil.copytree(EVENNIA_TEMPLATE, GAMEDIR)
+    # pre-build settings file in the new GAMEDIR
+    create_settings_file()
+
+
 def init_game_directory(path):
     """
     Try to analyze the given path to find settings.py - this defines
@@ -255,27 +399,29 @@ def init_game_directory(path):
     if os.path.exists(os.path.join(path, SETTINGFILE)):
         # path given to server/conf/
         GAMEDIR = os.path.dirname(os.path.dirname(os.path.dirname(path)))
-    elif os.path.exists(SETTINGS_PATH):
+    elif os.path.exists(os.path.join(path, os.path.sep, SETTINGS_PATH)):
         # path given to somewhere else in gamedir
         GAMEDIR = os.path.dirname(os.path.dirname(path))
     else:
         # Assume path given to root game dir
         GAMEDIR = path
 
-    # set pythonpath to gamedir
+    # Add gamedir to python path
     sys.path.insert(0, GAMEDIR)
-    # set the settings location
-    os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
 
-    # test existence of settings module
+    # test existence of the settings module
     try:
         settings = importlib.import_module(SETTINGS_DOTPATH)
-    except Exception:
-        import traceback
-        print traceback.format_exc().strip()
+    except Exception, ex:
+        if not str(ex).startswith("No module named"):
+            import traceback
+            print traceback.format_exc().strip()
         print ERROR_SETTINGS
         sys.exit()
 
+    # Prepare djangO; set the settings location
+    os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
+    import django
     # required since django1.7.
     django.setup()
 
@@ -292,8 +438,8 @@ def init_game_directory(path):
     global SERVER_RESTART, PORTAL_RESTART
     global EVENNIA_VERSION
 
-    SERVER_PY_FILE = os.path.join(settings.LIB_DIR, "server/server.py")
-    PORTAL_PY_FILE = os.path.join(settings.LIB_DIR, "portal/server.py")
+    SERVER_PY_FILE = os.path.join(settings.SRC_DIR, "server/server.py")
+    PORTAL_PY_FILE = os.path.join(settings.SRC_DIR, "portal/server.py")
 
     SERVER_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "server.pid")
     PORTAL_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "portal.pid")
@@ -349,62 +495,35 @@ def init_game_directory(path):
             print INFO_WINDOWS_BATFILE.format(twistd_path=twistd_path)
 
 
-#
-# Check/Create settings
-#
-
-def create_secret_key():
-    """
-    Randomly create the secret key for the settings file
-    """
-    import random
-    import string
-    secret_key = list((string.letters +
-        string.digits + string.punctuation).replace("\\", "").replace("'", '"'))
-    random.shuffle(secret_key)
-    secret_key = "".join(secret_key[:40])
-    return secret_key
+def create_database():
+    from django.core.management import call_command
+    print "\nCreating a database ...\n"
+    call_command("migrate", interactive=False)
+    print "\n ... database initialized.\n"
 
 
-def create_settings_file():
-    """
-    Uses the template settings file to build a working
-    settings file.
-    """
-    settings_path = os.path.join(GAMEDIR, "server", "conf", "settings.py")
-    with open(settings_path, 'r') as f:
-        settings_string = f.read()
-
-    # tweak the settings
-    setting_dict = {"settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
-                    "servername":GAMEDIR.rsplit(os.path.sep, 1)[0],
-                    "secret_key":create_secret_key}
-
-    # modify the settings
-    settings_string.format(**setting_dict)
-
-    print "settings_string:", settings_string
-    with open(settings_path, 'w') as f:
-        f.write(settings_string)
+def create_superuser():
+    from django.core.management import call_command
+    print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
+    call_command("createsuperuser", interactive=True)
 
 
-# Functions
-
-def create_game_directory(dirname):
-    """
-    Initialize a new game directory named dirname
-    at the current path. This means copying the
-    template directory from evennia's root.
-    """
-    global GAMEDIR
-    GAMEDIR = os.path.abspath(os.path.join(CURRENT_DIR, dirname))
-    if os.path.exists(GAMEDIR):
-        print "Cannot create new Evennia game dir: '%s' already exists." % dirname
-        sys.exit()
-    # copy template directory
-    shutil.copytree(EVENNIA_TEMPLATE, GAMEDIR)
-    # pre-build settings file in the new GAMEDIR
-    create_settings_file()
+def check_database(automigrate=False):
+    # Check so a database exists and is accessible
+    from django.db import DatabaseError
+    from src.players.models import PlayerDB
+    try:
+        PlayerDB.objects.get(id=1)
+    except DatabaseError, e:
+        if automigrate:
+            create_database()
+            create_superuser()
+        else:
+            print ERROR_DATABASE.format(traceback=e)
+            sys.exit()
+    except PlayerDB.DoesNotExist:
+        # no superuser yet. We need to create it.
+        create_superuser()
 
 
 def get_pid(pidfile):
@@ -653,35 +772,6 @@ def error_check_python_modules():
     importlib.import_module(settings.BASE_SCRIPT_TYPECLASS)
 
 
-def create_database():
-    from django.core.management import call_command
-    print "\nCreating a database ...\n"
-    call_command("migrate", interactive=False)
-    print "\n ... database initialized.\n"
-
-
-def create_superuser():
-    from django.core.management import call_command
-    print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
-    call_command("createsuperuser", interactive=True)
-
-
-def check_database(automigrate=False):
-    # Check so a database exists and is accessible
-    from django.db import DatabaseError
-    from src.players.models import PlayerDB
-    try:
-        PlayerDB.objects.get(id=1)
-    except DatabaseError, e:
-        if automigrate:
-            create_database()
-            create_superuser()
-        else:
-            print ERROR_DATABASE.format(traceback=e)
-            sys.exit()
-    except PlayerDB.DoesNotExist:
-        # no superuser yet. We need to create it.
-        create_superuser()
 
 def main():
     """
@@ -699,10 +789,10 @@ def main():
                       help="Show version info.")
     parser.add_argument('--init', action='store', dest="init", metavar="name",
                         help="Creates a new game directory 'name' at the current location.")
-    parser.add_argument("mode", metavar="arg", nargs='?', default="menu",
-                        help="Main operation command or management option. Common options are start|stop|reload.")
-    parser.add_argument("service", nargs='?', choices=["all", "server", "portal"], default="all",
-                        help="Optionally defines which server component to operate on. Defaults to all.")
+    parser.add_argument("mode", metavar="option", nargs='?', default="menu",
+                        help="Operational mode or management option. Commonly start, stop, reload, migrate, or menu (default).")
+    parser.add_argument("service", metavar="component", nargs='?', choices=["all", "server", "portal"], default="all",
+                        help="Which server component to operate on. One of server, portal or all (default).")
 
     args = parser.parse_args()
 
@@ -713,8 +803,12 @@ def main():
 
     mode, service = args.mode, args.service
 
+    check_main_evennia_dependencies()
+
     if args.init:
         create_game_directory(args.init)
+        print CREATED_NEW_GAMEDIR.format(gamedir=args.init,
+                                         settings_path=SETTINGS_PATH)
         sys.exit()
 
     # this must be done first - it sets up all the global properties

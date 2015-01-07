@@ -20,10 +20,10 @@ dropped connections etc.
 
 """
 
-from ev import Script as BaseScript
+from evennia import Script
 
 
-class ExampleScript(BaseScript):
+class ExampleScript(Script):
     """
     A script type is customized by redefining some or all of its hook
     methods and variables.

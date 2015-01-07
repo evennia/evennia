@@ -17,7 +17,7 @@ this change, you have to convert them manually e.g. with the
 
 """
 
-from ev import Room as DefaultRoom
+from evennia import DefaultRoom
 
 
 class Room(DefaultRoom):

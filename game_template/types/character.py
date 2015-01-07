@@ -16,7 +16,7 @@ this change, you have to convert them manually e.g. with the
 @typeclass command.
 
 """
-from ev import Character as DefaultCharacter
+from evennia import DefaultCharacter
 
 
 class Character(DefaultCharacter):

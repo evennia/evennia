@@ -16,7 +16,7 @@ this change, you have to convert them manually e.g. with the
 @typeclass command.
 
 """
-from ev import Player as DefaultPlayer
+from evennia import DefaultPlayer
 
 
 class Player(DefaultPlayer):

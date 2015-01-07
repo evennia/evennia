@@ -8,9 +8,9 @@ examples/cmdset.py)
 
 """
 
-from ev import Command as BaseCommand
-from ev import default_cmds
-from ev import utils
+from evennia import Command as BaseCommand
+from evennia import default_cmds
+from evennia import utils
 
 
 class Command(BaseCommand):

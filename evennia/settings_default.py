@@ -96,12 +96,12 @@ WEBSOCKET_INTERFACES = ['0.0.0.0']
 # This determine's whether Evennia's custom admin page is used, or if the
 # standard Django admin is used.
 EVENNIA_ADMIN = True
-# The path that contains this settings.py file (no trailing slash).
-BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The path to the root directory
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Path to the src directory containing the bulk of the codebase's code.
-SRC_DIR = os.path.join(BASE_PATH, 'src')
+EVENNIA_DIR = os.path.join(ROOT_DIR, 'evennia')
 # Path to the game directory (containing the database file if using sqlite).
-GAME_DIR = os.path.join(BASE_PATH, 'game')
+GAME_DIR = os.path.join(ROOT_DIR, 'game_template')
 # Place to put log files
 LOG_DIR = os.path.join(GAME_DIR, 'logs')
 SERVER_LOG_FILE = os.path.join(LOG_DIR, 'server.log')
@@ -116,7 +116,7 @@ CYCLE_LOGFILES = True
 TIME_ZONE = 'UTC'
 # Authentication backends. This is the code used to authenticate a user.
 AUTHENTICATION_BACKENDS = (
-    'src.web.utils.backends.CaseInsensitiveModelBackend',)
+    'evennia.web.utils.backends.CaseInsensitiveModelBackend',)
 # Language code for this installation. All choices can be found here:
 # http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
 LANGUAGE_CODE = 'en-us'
@@ -172,7 +172,7 @@ IDMAPPER_CACHE_MAXSIZE = 200      # (MB)
 # Evennia Database config
 ######################################################################
 
-# Database config syntax for Django 1.2+.
+# Database config syntax:
 # ENGINE - path to the the database backend. Possible choices are:
 #            'django.db.backends.sqlite3', (default)
 #            'django.db.backends.mysql',
@@ -202,47 +202,47 @@ DATABASES = {
 
 # The command parser module to use. See the default module for which
 # functions it must implement
-COMMAND_PARSER = "src.commands.cmdparser.cmdparser"
+COMMAND_PARSER = "commands.cmdparser"
 # The handler that outputs errors when searching
 # objects using object.search().
-SEARCH_AT_RESULT = "src.commands.cmdparser.at_search_result"
+SEARCH_AT_RESULT = "commands.at_search_result"
 # The parser used in order to separate multiple
 # object matches (so you can separate between same-named
 # objects without using dbrefs).
-SEARCH_AT_MULTIMATCH_INPUT = "src.commands.cmdparser.at_multimatch_input"
+SEARCH_AT_MULTIMATCH_INPUT = "commands.at_multimatch_input"
 # The module holding text strings for the connection screen.
 # This module should contain one or more variables
 # with strings defining the look of the screen.
-CONNECTION_SCREEN_MODULE = "src.commands.connection_screen"
+CONNECTION_SCREEN_MODULE = "world.connection_screen"
 # An optional module that, if existing, must hold a function
 # named at_initial_setup(). This hook method can be used to customize
 # the server's initial setup sequence (the very first startup of the system).
 # The check will fail quietly if module doesn't exist or fails to load.
-AT_INITIAL_SETUP_HOOK_MODULE = ""
+AT_INITIAL_SETUP_HOOK_MODULE = "server.conf.at_initial_setup_hook"
 # Module containing your custom at_server_start(), at_server_reload() and
 # at_server_stop() methods. These methods will be called every time
 # the server starts, reloads and resets/stops respectively.
-AT_SERVER_STARTSTOP_MODULE = ""
+AT_SERVER_STARTSTOP_MODULE = "server.conf.at_server_startstop"
 # List of one or more module paths to modules containing a function start_
 # plugin_services(application). This module will be called with the main
 # Evennia Server application when the Server is initiated.
 # It will be called last in the startup sequence.
-SERVER_SERVICES_PLUGIN_MODULES = []
+SERVER_SERVICES_PLUGIN_MODULES = ["server.conf.server_services_plugins"]
 # List of one or more module paths to modules containing a function
 # start_plugin_services(application). This module will be called with the
 # main Evennia Portal application when the Portal is initiated.
 # It will be called last in the startup sequence.
-PORTAL_SERVICES_PLUGIN_MODULES = []
+PORTAL_SERVICES_PLUGIN_MODULES = ["server.conf.portal_services_plugins"]
 # Module holding MSSP meta data. This is used by MUD-crawlers to determine
 # what type of game you are running, how many players you have etc.
 MSSP_META_MODULE = ""
 # Tuple of modules implementing lock functions. All callable functions
 # inside these modules will be available as lock functions.
-LOCK_FUNC_MODULES = ("src.locks.lockfuncs",)
+LOCK_FUNC_MODULES = ("src.locks.lockfuncs", "server.conf.lockfuncs",)
 # Module holding OOB (Out of Band) hook objects. This allows for customization
 # and expansion of which hooks OOB protocols are allowed to call on the server
 # protocols for attaching tracker hooks for when various object field change
-OOB_PLUGIN_MODULES = ["src.server.oob_cmds"]
+OOB_PLUGIN_MODULES = ["src.server.oob_cmds", "server.conf.oob_cmds"]
 
 ######################################################################
 # Default command sets
@@ -258,50 +258,46 @@ OOB_PLUGIN_MODULES = ["src.server.oob_cmds"]
 # (or copy/paste from the default modules in src/ if you prefer).
 
 # Command set used on session before player has logged in
-CMDSET_UNLOGGEDIN = "src.commands.default.cmdset_unloggedin.UnloggedinCmdSet"
+CMDSET_UNLOGGEDIN = "commands.default_cmdsets.UnloggedinCmdSet"
 # Command set used on the logged-in session
-CMDSET_SESSION = "src.commands.default.cmdset_session.SessionCmdSet"
+CMDSET_SESSION = "commands.default_cmdsets.SessionCmdSet"
 # Default set for logged in player with characters (fallback)
-CMDSET_CHARACTER = "src.commands.default.cmdset_character.CharacterCmdSet"
+CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
 # Command set for players without a character (ooc)
-CMDSET_PLAYER = "src.commands.default.cmdset_player.PlayerCmdSet"
+CMDSET_PLAYER = "commands.default_cmdsets.PlayerCmdSet"
 # Location to search for cmdsets if full path not given
-CMDSET_PATHS = ["game.gamesrc.commands"]
+CMDSET_PATHS = ["commands"]
 
 ######################################################################
 # Typeclasses and other paths
 ######################################################################
 
-# Server-side session class used.
+# Server-side session class used. #TODO
 SERVER_SESSION_CLASS = "src.server.serversession.ServerSession"
 
 # Base paths for typeclassed object classes. These paths must be
 # defined relative evennia's root directory. They will be searched in
 # order to find relative typeclass paths.
-OBJECT_TYPECLASS_PATHS = ["game.gamesrc.objects",
-                          "game.gamesrc.objects.examples",
-                          "contrib"]
-SCRIPT_TYPECLASS_PATHS = ["game.gamesrc.scripts",
-                          "game.gamesrc.scripts.examples",
-                          "contrib"]
-PLAYER_TYPECLASS_PATHS = ["game.gamesrc.objects", "contrib"]
-CHANNEL_TYPECLASS_PATHS = ["game.gamesrc.conf", "contrib"]
+OBJECT_TYPECLASS_PATHS = ["types", "contrib"]
+SCRIPT_TYPECLASS_PATHS = ["types" "contrib"]
+PLAYER_TYPECLASS_PATHS = ["types", "contrib"]
+CHANNEL_TYPECLASS_PATHS = ["types", "contrib"]
 
 # Typeclass for player objects (linked to a character) (fallback)
-BASE_PLAYER_TYPECLASS = "src.players.player.DefaultPlayer"
+BASE_PLAYER_TYPECLASS = "types.player.Player"
 # Typeclass and base for all objects (fallback)
-BASE_OBJECT_TYPECLASS = "src.objects.objects.DefaultObject"
+BASE_OBJECT_TYPECLASS = "types.object.Object"
 # Typeclass for character objects linked to a player (fallback)
-BASE_CHARACTER_TYPECLASS = "src.objects.objects.DefaultCharacter"
+BASE_CHARACTER_TYPECLASS = "types.character.Character"
 # Typeclass for rooms (fallback)
-BASE_ROOM_TYPECLASS = "src.objects.objects.DefaultRoom"
+BASE_ROOM_TYPECLASS = "types.room.Room"
 # Typeclass for Exit objects (fallback).
-BASE_EXIT_TYPECLASS = "src.objects.objects.DefaultExit"
+BASE_EXIT_TYPECLASS = "types.exit.Exit"
 # Typeclass for Channel (fallback).
-BASE_CHANNEL_TYPECLASS = "src.comms.comms.Channel"
+BASE_CHANNEL_TYPECLASS = "type.channel.Channel"
 # Typeclass for Scripts (fallback). You usually don't need to change this
 # but create custom variations of scripts on a per-case basis instead.
-BASE_SCRIPT_TYPECLASS = "src.scripts.scripts.DoNothing"
+BASE_SCRIPT_TYPECLASS = "type.scripts.Script"
 # The default home location used for all objects. This is used as a
 # fallback if an object's normal home location is deleted. Default
 # is Limbo (#2).
@@ -325,7 +321,7 @@ TYPECLASS_AGGRESSIVE_CACHE = True
 
 # Python path to a directory to be searched for batch scripts
 # for the batch processors (.ev and/or .py files).
-BASE_BATCHPROCESS_PATHS = ['game.gamesrc.world', 'contrib']
+BASE_BATCHPROCESS_PATHS = ['world', 'contrib']
 
 ######################################################################
 # Game Time setup
@@ -358,7 +354,7 @@ INLINEFUNC_ENABLED = False
 # Only functions defined globally (and not starting with '_') in
 # these modules will be considered valid inlinefuncs. The list
 # is loaded from left-to-right, same-named functions will overload
-INLINEFUNC_MODULES = ["src.utils.inlinefunc"]
+INLINEFUNC_MODULES = ["server.conf.inlinefunc"]
 
 ######################################################################
 # Default Player setup and access
@@ -407,7 +403,7 @@ CLIENT_DEFAULT_HEIGHT = 45 # telnet standard is 24 but does anyone use such
 # This enables guest logins, by default via "connect guest"
 GUEST_ENABLED = False
 # Typeclass for guest player objects (linked to a character)
-BASE_GUEST_TYPECLASS = "src.players.player.Guest"
+BASE_GUEST_TYPECLASS = "types.player.Guest"
 # The permission given to guests
 PERMISSION_GUEST_DEFAULT = "Guests"
 # The default home location used for guests.
@@ -522,13 +518,13 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # to load the internationalization machinery.
 USE_I18N = False
 # Where to find locales (no need to change this, most likely)
-LOCALE_PATHS = ["../locale/"]
+LOCALE_PATHS = [os.path.join(ROOT_DIR, "locale/")]
 # This should be turned off unless you want to do tests with Django's
 # development webserver (normally Evennia runs its own server)
 SERVE_MEDIA = False
 # The master urlconf file that contains all of the sub-branches to the
 # applications. Change this to add your own URLs to the website.
-ROOT_URLCONF = 'src.web.urls'
+ROOT_URLCONF = 'web.urls' #src.web.urls?
 # Where users are redirected after logging in via contrib.auth.login.
 LOGIN_REDIRECT_URL = '/'
 # Where to redirect users when using the @login_required decorator.
@@ -548,7 +544,7 @@ STATIC_ROOT = os.path.join(GAME_DIR, "gamesrc", "web", "static")
 # Directories from which static files will be gathered from.
 STATICFILES_DIRS = (
     os.path.join(GAME_DIR, "gamesrc", "web", "static_overrides"),
-    os.path.join(SRC_DIR, "web", "static"),)
+    os.path.join(EVENNIA_DIR, "web", "static"),)
 # Patterns of files in the static directories. Used here to make sure that
 # its readme file is preserved but unused.
 STATICFILES_IGNORE_PATTERNS = ('README.md',)
@@ -558,8 +554,8 @@ ACTIVE_TEMPLATE = 'prosimii'
 # We setup the location of the website template as well as the admin site.
 TEMPLATE_DIRS = (
     os.path.join(GAME_DIR, "gamesrc", "web", "template_overrides"),
-    os.path.join(SRC_DIR, "web", "templates", ACTIVE_TEMPLATE),
-    os.path.join(SRC_DIR, "web", "templates"),)
+    os.path.join(EVENNIA_DIR, "web", "templates", ACTIVE_TEMPLATE),
+    os.path.join(EVENNIA_DIR, "web", "templates"),)
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -583,7 +579,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.media',
     'django.core.context_processors.debug',
-    'src.web.utils.general_context.general_context',)
+    'evennia.web.utils.general_context.general_context',)
 
 ######################################################################
 # Evennia components
@@ -600,20 +596,20 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.flatpages',
     'django.contrib.staticfiles',
-    'src.server',
-    'src.typeclasses',
-    'src.players',
-    'src.objects',
-    'src.comms',
-    'src.help',
-    'src.scripts',
-    'src.web.webclient')
+    'evennia.server',
+    'evennia.typeclasses',
+    'evennia.players',
+    'evennia.objects',
+    'evennia.comms',
+    'evennia.help',
+    'evennia.scripts',
+    'evennia.web.webclient')
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
 AUTH_USER_MODEL = "players.PlayerDB"
 #AUTH_PROFILE_MODULE = "players.PlayerDB"
 # Use a custom test runner that just tests Evennia-specific apps.
-TEST_RUNNER = 'src.server.tests.EvenniaTestSuiteRunner'
+TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'
 
 ######################################################################
 # Django extensions

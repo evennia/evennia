@@ -17,7 +17,7 @@ this change, you have to convert them manually e.g. with the
 @typeclass command.
 
 """
-from ev import Object as DefaultObject
+from evennia import DefaultObject
 
 
 class Object(DefaultObject):
