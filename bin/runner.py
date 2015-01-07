@@ -16,10 +16,9 @@ matter the value of this file.
 """
 import os
 import sys
-from optparse import OptionParser
+from argparse import ArgumentParser
 from subprocess import Popen
 import Queue, thread
-import django
 
 try:
     # check if launched with pypy
@@ -27,64 +26,53 @@ try:
 except ImportError:
     is_pypy = False
 
-#
-# System Configuration
-#
+SERVER = None
+PORTAL = None
 
-SERVER_PIDFILE = "server.pid"
-PORTAL_PIDFILE = "portal.pid"
+EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+EVENNIA_BIN = os.path.join(EVENNIA_ROOT, "bin")
+EVENNIA_LIB = os.path.join(EVENNIA_ROOT, "evennia")
 
-SERVER_RESTART = "server.restart"
-PORTAL_RESTART = "portal.restart"
+SERVER_PY_FILE = os.path.join(EVENNIA_LIB,'server', 'server.py')
+PORTAL_PY_FILE = os.path.join(EVENNIA_LIB, 'server', 'portal', 'portal.py')
 
-# Set the Python path up so we can get to settings.py from here.
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
+GAMEDIR = None
+SERVERDIR = "server"
+SERVER_PIDFILE = None
+PORTAL_PIDFILE = None
+SERVER_RESTART = None
+PORTAL_RESTART = None
+SERVER_LOGFILE = None
+PORTAL_LOGFILE = None
+HTTP_LOGFILE = None
 
-if not os.path.exists('settings.py'):
+# messages
 
-    print "No settings.py file found. Run evennia.py to create it."
-    sys.exit()
+CMDLINE_HELP = \
+    """
+    This program manages the running Evennia processes. It is called
+    by evennia and should not be started manually. Its main task is to
+    sit and watch the Server and restart it whenever the user reloads.
+    The runner depends on four files for its operation, two PID files
+    and two RESTART files for Server and Portal respectively; these
+    are stored in the game's server/ directory.
+    """
 
-django.setup()
+PROCESS_ERROR = \
+    """
+    {component} process error: {traceback}.
+    """
 
-# Get the settings
-from django.conf import settings
+PROCESS_IOERROR = \
+    """
+    {component} IOError: {traceback}
+    One possible explanation is that 'twistd' was not found.
+    """
 
-# Setup access of the evennia server itself
-SERVER_PY_FILE = os.path.join(settings.LIB_DIR, 'server/server.py')
-PORTAL_PY_FILE = os.path.join(settings.LIB_DIR, 'server/portal/portal.py')
+PROCESS_RESTART = "{component} restarting ..."
 
-# Get logfile names
-SERVER_LOGFILE = settings.SERVER_LOG_FILE
-PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
-HTTP_LOGFILE = settings.HTTP_LOG_FILE.strip()
-
-CYCLE_LOGFILES = settings.CYCLE_LOGFILES
-
-# Add this to the environmental variable for the 'twistd' command.
-currpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if 'PYTHONPATH' in os.environ:
-    os.environ['PYTHONPATH'] += (":%s" % currpath)
-else:
-    os.environ['PYTHONPATH'] = currpath
-
-TWISTED_BINARY = 'twistd'
-if os.name == 'nt':
-    TWISTED_BINARY = 'twistd.bat'
-    err = False
-    try:
-        import win32api  # Test for for win32api
-    except ImportError:
-        err = True
-    if not os.path.exists(TWISTED_BINARY):
-        err = True
-    if err:
-        print "Twisted binary for Windows is not ready to use. Please run evennia.py."
-        sys.exit()
 
 # Functions
-
 
 def set_restart_mode(restart_file, flag="reload"):
     """
@@ -130,9 +118,6 @@ def cycle_logfile(logfile):
 
 # Start program management
 
-SERVER = None
-PORTAL = None
-
 
 def start_services(server_argv, portal_argv):
     """
@@ -146,7 +131,7 @@ def start_services(server_argv, portal_argv):
         try:
             rc = Popen(server_argv).wait()
         except Exception, e:
-            print "Server process error: %(e)s" % {'e': e}
+            print PROCESS_ERROR.format(component="Server", traceback=e)
             return
         # this signals the controller that the program finished
         queue.put(("server_stopped", rc))
@@ -155,7 +140,7 @@ def start_services(server_argv, portal_argv):
         try:
             rc = Popen(portal_argv).wait()
         except Exception, e:
-            print "Portal process error: %(e)s" % {'e': e}
+            print PROCESS_ERROR.format(component="Portal", traceback=e)
             return
         # this signals the controller that the program finished
         queue.put(("portal_stopped", rc))
@@ -170,7 +155,7 @@ def start_services(server_argv, portal_argv):
                 # we don't care to monitor it for restart
                 PORTAL = Popen(portal_argv)
         except IOError, e:
-            print "Portal IOError: %s\nA possible explanation for this is that 'twistd' is not found." % e
+            print PROCESS_IOERROR.format(component="Portal", traceback=e)
             return
 
     try:
@@ -178,7 +163,7 @@ def start_services(server_argv, portal_argv):
             # start server as a reloadable thread
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
     except IOError, e:
-        print "Server IOError: %s\nA possible explanation for this is that 'twistd' is not found." % e
+        print PROCESS_IOERROR.format(component="Server", traceback=e)
         return
 
     # Reload loop
@@ -190,53 +175,64 @@ def start_services(server_argv, portal_argv):
         # restart only if process stopped cleanly
         if (message == "server_stopped" and int(rc) == 0 and
              get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
-            print "Evennia Server stopped. Restarting ..."
+            print PROCESS_RESTART.format(component="Server")
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
             continue
 
         # normally the portal is not reloaded since it's run as a daemon.
         if (message == "portal_stopped" and int(rc) == 0 and
               get_restart_mode(PORTAL_RESTART) == "True"):
-            print "Evennia Portal stopped in interactive mode. Restarting ..."
+            print PROCESS_RESTART.format(component="Portal")
             PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
             continue
         break
 
-# Setup signal handling
 
 def main():
     """
-    This handles the command line input of the runner
-    (it's most often called by evennia.py)
+    This handles the command line input of the runner, usually created by
+    the evennia launcher
     """
 
-    parser = OptionParser(usage="%prog [options] start",
-      description="This runner should normally *not* be called directly - it is called automatically from the evennia.py main program. It manages the Evennia game server and portal processes an hosts a threaded loop to restart the Server whenever it is stopped (this constitues Evennia's reload mechanism).")
-    parser.add_option('-s', '--noserver', action='store_true',
-                      dest='noserver', default=False,
-                      help='Do not start Server process')
-    parser.add_option('-p', '--noportal', action='store_true',
-                      dest='noportal', default=False,
-                      help='Do not start Portal process')
-    parser.add_option('-i', '--iserver', action='store_true',
-                      dest='iserver', default=False,
-                      help='output server log to stdout instead of logfile')
-    parser.add_option('-d', '--iportal', action='store_true',
-                      dest='iportal', default=False,
-                      help='output portal log to stdout. Does not make portal a daemon.')
-    parser.add_option('-S', '--profile-server', action='store_true',
-                      dest='sprof', default=False,
-                      help='run server under cProfile')
-    parser.add_option('-P', '--profile-portal', action='store_true',
-                      dest='pprof', default=False,
-                      help='run portal under cProfile')
+    parser = ArgumentParser(description=CMDLINE_HELP)
+    parser.add_argument('--noserver', action='store_true', dest='noserver',
+                        default=False, help='Do not start Server process')
+    parser.add_argument('--noportal', action='store_true', dest='noportal',
+                        default=False, help='Do not start Portal process')
+    parser.add_argument('--iserver', action='store_true', dest='iserver',
+                        default=False, help='Server in interactive mode')
+    parser.add_argument('--iportal', action='store_true', dest='iportal',
+                        default=False, help='Portal in interactive mode')
+    parser.add_argument('--pserver', action='store_true', dest='pserver',
+                        default=False, help='Profile Server')
+    parser.add_argument('--pportal', action='store_true', dest='pportal',
+                        default=False, help='Profile Portal')
+    parser.add_argument('--nologcycle', action='store_false', dest='nologcycle',
+                        default=True, help='Do not cycle log files')
+    parser.add_argument('gamedir', help="path to game dir")
+    parser.add_argument('twistdbinary', help="path to twistd binary")
+    parser.add_argument('slogfile', help="path to server log file")
+    parser.add_argument('plogfile', help="path to portal log file")
+    parser.add_argument('hlogfile', help="path to http log file")
 
-    options, args = parser.parse_args()
+    args = parser.parse_args()
 
-    if not args or args[0] != 'start':
-        # this is so as to avoid runner.py be accidentally launched manually.
-        parser.print_help()
-        sys.exit()
+    global GAMEDIR
+    global SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE
+    global SERVER_PIDFILE, PORTAL_PIDFILE
+    global SERVER_RESTART, PORTAL_RESTART
+
+    GAMEDIR = args.gamedir
+    sys.path.insert(0, os.path.join(GAMEDIR, SERVERDIR))
+
+    SERVER_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "server.pid")
+    PORTAL_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "portal.pid")
+    SERVER_RESTART = os.path.join(GAMEDIR, SERVERDIR, "server.restart")
+    PORTAL_RESTART = os.path.join(GAMEDIR, SERVERDIR, "portal.restart")
+    SERVER_LOGFILE = args.slogfile
+    PORTAL_LOGFILE = args.plogfile
+    HTTP_LOGFILE = args.hlogfile
+    TWISTED_BINARY = args.twistdbinary
 
     # set up default project calls
     server_argv = [TWISTED_BINARY,
@@ -251,57 +247,57 @@ def main():
 
     # Profiling settings (read file from python shell e.g with
     # p = pstats.Stats('server.prof')
-    sprof_argv = ['--savestats',
-                  '--profiler=cprofile',
-                  '--profile=server.prof']
-    pprof_argv = ['--savestats',
-                  '--profiler=cprofile',
-                  '--profile=portal.prof']
+    pserver_argv = ['--savestats',
+                    '--profiler=cprofile',
+                    '--profile=server.prof']
+    pportal_argv = ['--savestats',
+                    '--profiler=cprofile',
+                    '--profile=portal.prof']
 
     # Server
 
     pid = get_pid(SERVER_PIDFILE)
-    if pid and not options.noserver:
+    if pid and not args.noserver:
             print "\nEvennia Server is already running as process %(pid)s. Not restarted." % {'pid': pid}
-            options.noserver = True
-    if options.noserver:
+            args.noserver = True
+    if args.noserver:
         server_argv = None
     else:
         set_restart_mode(SERVER_RESTART, "shutdown")
-        if options.iserver:
+        if args.iserver:
             # don't log to server logfile
             del server_argv[2]
             print "\nStarting Evennia Server (output to stdout)."
         else:
-            if CYCLE_LOGFILES:
+            if not args.nologcycle:
                 cycle_logfile(SERVER_LOGFILE)
             print "\nStarting Evennia Server (output to server logfile)."
-        if options.sprof:
-            server_argv.extend(sprof_argv)
+        if args.pserver:
+            server_argv.extend(pserver_argv)
             print "\nRunning Evennia Server under cProfile."
 
     # Portal
 
     pid = get_pid(PORTAL_PIDFILE)
-    if pid and not options.noportal:
+    if pid and not args.noportal:
         print "\nEvennia Portal is already running as process %(pid)s. Not restarted." % {'pid': pid}
-        options.noportal = True
-    if options.noportal:
+        args.noportal = True
+    if args.noportal:
         portal_argv = None
     else:
-        if options.iportal:
+        if args.iportal:
             # make portal interactive
             portal_argv[1] = '--nodaemon'
             set_restart_mode(PORTAL_RESTART, True)
             print "\nStarting Evennia Portal in non-Daemon mode (output to stdout)."
         else:
-            if CYCLE_LOGFILES:
+            if not args.nologcycle:
                 cycle_logfile(PORTAL_LOGFILE)
                 cycle_logfile(HTTP_LOGFILE)
             set_restart_mode(PORTAL_RESTART, False)
             print "\nStarting Evennia Portal in Daemon mode (output to portal logfile)."
-        if options.pprof:
-            portal_argv.extend(pprof_argv)
+        if args.pportal:
+            portal_argv.extend(pportal_argv)
             print "\nRunning Evennia Portal under cProfile."
 
     # Windows fixes (Windows don't support pidfiles natively)
@@ -315,6 +311,4 @@ def main():
     start_services(server_argv, portal_argv)
 
 if __name__ == '__main__':
-    from evennia.utils.utils import check_evennia_dependencies
-    if check_evennia_dependencies():
-        main()
+    main()

@@ -24,7 +24,7 @@ SIG = signal.SIGINT
 # Set up the main python paths to Evennia
 EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EVENNIA_BIN = os.path.join(EVENNIA_ROOT, "bin")
-EVENNIA_LIB = os.path.join(EVENNIA_ROOT, "lib")
+EVENNIA_LIB = os.path.join(EVENNIA_ROOT, "evennia")
 EVENNIA_RUNNER = os.path.join(EVENNIA_BIN, "runner.py")
 EVENNIA_TEMPLATE = os.path.join(EVENNIA_ROOT, "game_template")
 
@@ -43,6 +43,7 @@ GAMEDIR = CURRENT_DIR
 # Operational setup
 SERVER_LOGFILE = None
 PORTAL_LOGFILE = None
+HTTP_LOGFILE = None
 SERVER_PIDFILE = None
 PORTAL_PIDFILE = None
 SERVER_RESTART = None
@@ -457,13 +458,13 @@ def init_game_directory(path):
 
     # set up the Evennia executables and log file locations
     global SERVER_PY_FILE, PORTAL_PY_FILE
-    global SERVER_LOGFILE, PORTAL_LOGFILE
+    global SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE
     global SERVER_PIDFILE, PORTAL_PIDFILE
     global SERVER_RESTART, PORTAL_RESTART
     global EVENNIA_VERSION
 
-    SERVER_PY_FILE = os.path.join(settings.LIB_DIR, "server/server.py")
-    PORTAL_PY_FILE = os.path.join(settings.LIB_DIR, "portal/server.py")
+    SERVER_PY_FILE = os.path.join(EVENNIA_LIB, "server", "server.py")
+    PORTAL_PY_FILE = os.path.join(EVENNIA_LIB, "portal", "portal", "portal.py")
 
     SERVER_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "server.pid")
     PORTAL_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "portal.pid")
@@ -473,6 +474,7 @@ def init_game_directory(path):
 
     SERVER_LOGFILE = settings.SERVER_LOG_FILE
     PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
+    HTTP_LOGFILE = settings.HTTP_LOG_FILE
 
     # This also tests the library access
     from evennia.utils.utils import get_evennia_version
@@ -681,13 +683,14 @@ def run_menu():
             print "Not a valid option."
 
 
-def server_operation(mode, service, interactive):
+def server_operation(mode, service, interactive, profiler):
     """
     Handle argument options given on the command line.
 
     mode - str; start/stop etc
     service - str; server, portal or all
     interactive - bool; use interactive mode or daemon
+    profiler - run the service under the profiler
     """
 
     cmdstr = [sys.executable, EVENNIA_RUNNER]
@@ -700,10 +703,14 @@ def server_operation(mode, service, interactive):
 
         # starting one or many services
         if service == 'server':
+            if profiler:
+                cmdstr.append('--pserver')
             if interactive:
                 cmdstr.append('--iserver')
             cmdstr.append('--noportal')
         elif service == 'portal':
+            if profiler:
+                cmdstr.append('--pportal')
             if interactive:
                 cmdstr.append('--iportal')
             cmdstr.append('--noserver')
@@ -711,11 +718,13 @@ def server_operation(mode, service, interactive):
         else:  # all
             # for convenience we don't start logging of
             # portal, only of server with this command.
+            if profiler:
+                cmdstr.append('--profile-server') # this is the common case
             if interactive:
-                cmdstr.extend(['--iserver'])
+                cmdstr.append('--iserver')
             management.call_command('collectstatic', verbosity=1, interactive=False)
+        cmdstr.extend([GAMEDIR, TWISTED_BINARY, SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE])
         # start the server
-        cmdstr.append("start")
         Popen(cmdstr)
 
     elif mode == 'reload':
@@ -805,14 +814,16 @@ def main():
     # set up argument parser
 
     parser = ArgumentParser(description=CMDLINE_HELP)
-    parser.add_argument('-i', '--interactive', action='store_true',
-                      dest='interactive', default=False,
-                      help="Start given processes in interactive mode.")
     parser.add_argument('-v', '--version', action='store_true',
                       dest='show_version', default=False,
                       help="Show version info.")
+    parser.add_argument('-i', '--interactive', action='store_true',
+                      dest='interactive', default=False,
+                      help="Start given processes in interactive mode.")
     parser.add_argument('--init', action='store', dest="init", metavar="name",
                         help="Creates a new game directory 'name' at the current location.")
+    parser.add_argument('-p', '--prof', action='store_true', dest='profiler', default=False,
+                      help="Start given server component under the Python profiler.")
     parser.add_argument("mode", metavar="option", nargs='?', default="menu",
                         help="Operational mode or management option. Commonly start, stop, reload, migrate, or menu (default).")
     parser.add_argument("service", metavar="component", nargs='?', choices=["all", "server", "portal"], default="all",
@@ -847,7 +858,7 @@ def main():
         # operate the server directly
         if mode != "stop":
             check_database(False)
-        server_operation(mode, service, args.interactive)
+        server_operation(mode, service, args.interactive, args.profiler)
     else:
         # pass-through to django manager
         if mode in ('runserver', 'testserver'):
