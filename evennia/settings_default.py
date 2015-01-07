@@ -268,8 +268,8 @@ CMDSET_PATHS = ["commands"]
 # Typeclasses and other paths
 ######################################################################
 
-# Server-side session class used. #TODO
-SERVER_SESSION_CLASS = "server.serversession.ServerSession"
+# Server-side session class used.
+SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
 
 # Base paths for typeclassed object classes. These paths must be
 # defined relative evennia's root directory. They will be searched in
