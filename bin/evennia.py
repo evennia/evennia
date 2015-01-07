@@ -5,7 +5,7 @@ EVENNIA SERVER STARTUP SCRIPT
 This is the start point for running Evennia.
 
 Sets the appropriate environmental variables and launches the server
-and portal through the runner. Run without arguments to get a
+and portal through the evennia_runner. Run without arguments to get a
 menu. Run the script with the -h flag to see usage information.
 
 """
@@ -25,7 +25,7 @@ SIG = signal.SIGINT
 EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EVENNIA_BIN = os.path.join(EVENNIA_ROOT, "bin")
 EVENNIA_LIB = os.path.join(EVENNIA_ROOT, "evennia")
-EVENNIA_RUNNER = os.path.join(EVENNIA_BIN, "runner.py")
+EVENNIA_RUNNER = os.path.join(EVENNIA_BIN, "evennia_runner.py")
 EVENNIA_TEMPLATE = os.path.join(EVENNIA_ROOT, "game_template")
 
 EVENNIA_VERSION = "Unknown"
