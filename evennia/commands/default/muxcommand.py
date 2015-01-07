@@ -3,8 +3,8 @@ The command template for the default MUX-style command set. There
 is also an Player/OOC version that makes sure caller is a Player object.
 """
 
-from src.utils import utils
-from src.commands.command import Command
+from evennia.utils import utils
+from evennia.commands.command import Command
 
 # limit symbol import for API
 __all__ = ("MuxCommand", "MuxPlayerCommand")
@@ -183,11 +183,11 @@ class MuxPlayerCommand(MuxCommand):
         """
         super(MuxPlayerCommand, self).parse()
 
-        if utils.inherits_from(self.caller, "src.objects.objects.DefaultObject"):
+        if utils.inherits_from(self.caller, "evennia.objects.objects.DefaultObject"):
             # caller is an Object/Character
             self.character = self.caller
             self.caller = self.caller.player
-        elif utils.inherits_from(self.caller, "src.players.players.DefaultPlayer"):
+        elif utils.inherits_from(self.caller, "evennia.players.players.DefaultPlayer"):
             # caller was already a Player
             self.character = self.caller.get_puppet(self.sessid)
         else:

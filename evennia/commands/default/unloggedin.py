@@ -5,14 +5,14 @@ import re
 from random import getrandbits
 import traceback
 from django.conf import settings
-from src.players.models import PlayerDB
-from src.objects.models import ObjectDB
-from src.server.models import ServerConfig
-from src.comms.models import ChannelDB
+from evennia.players.models import PlayerDB
+from evennia.objects.models import ObjectDB
+from evennia.server.models import ServerConfig
+from evennia.comms.models import ChannelDB
 
-from src.utils import create, logger, utils, ansi
-from src.commands.default.muxcommand import MuxCommand
-from src.commands.cmdhandler import CMD_LOGINSTART
+from evennia.utils import create, logger, utils, ansi
+from evennia.commands.default.muxcommand import MuxCommand
+from evennia.commands.cmdhandler import CMD_LOGINSTART
 
 # limit symbol import for API
 __all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",

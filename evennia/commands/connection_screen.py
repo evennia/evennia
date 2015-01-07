@@ -1,10 +1,10 @@
 #
 # This is Evennia's default connection screen. It is imported
-# and run from game/gamesrc/world/connection_screens.py.
+# and run from world/connection_screens.py.
 #
 
 from django.conf import settings
-from src.utils import utils
+from evennia.utils import utils
 
 DEFAULT_SCREEN = \
 """{b=============================================================={n

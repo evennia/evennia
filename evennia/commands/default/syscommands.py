@@ -18,17 +18,17 @@ line with a command (if there is no match to a known command,
 the line is just added to the editor buffer).
 """
 
-from src.comms.models import ChannelDB
-from src.utils import create
+from evennia.comms.models import ChannelDB
+from evennia.utils import create
 
 # The command keys the engine is calling
 # (the actual names all start with __)
-from src.commands.cmdhandler import CMD_NOINPUT
-from src.commands.cmdhandler import CMD_NOMATCH
-from src.commands.cmdhandler import CMD_MULTIMATCH
-from src.commands.cmdhandler import CMD_CHANNEL
+from evennia.commands.cmdhandler import CMD_NOINPUT
+from evennia.commands.cmdhandler import CMD_NOMATCH
+from evennia.commands.cmdhandler import CMD_MULTIMATCH
+from evennia.commands.cmdhandler import CMD_CHANNEL
 
-from src.commands.default.muxcommand import MuxCommand
+from evennia.commands.default.muxcommand import MuxCommand
 
 # Command called when there is no input at line
 # (i.e. an lone return key)
@@ -76,7 +76,7 @@ class SystemMultimatch(MuxCommand):
 
       matches = [(candidate, cmd) , (candidate, cmd), ...],
 
-    where candidate is an instance of src.commands.cmdparser.CommandCandidate
+    where candidate is an instance of evennia.commands.cmdparser.CommandCandidate
     and cmd is an an instantiated Command object matching the candidate.
     """
     key = CMD_MULTIMATCH
@@ -87,7 +87,7 @@ class SystemMultimatch(MuxCommand):
         Format multiple command matches to a useful error.
 
         This is copied directly from the default method in
-        src.commands.cmdhandler.
+        evennia.commands.cmdhandler.
 
         """
         string = "There were multiple matches:"

@@ -9,9 +9,9 @@ function, all commands in this cmdset should use the self.msg()
 command method rather than caller.msg().
 """
 
-from src.commands.cmdset import CmdSet
-from src.commands.default import help, comms, admin, system
-from src.commands.default import building, player
+from evennia.commands.cmdset import CmdSet
+from evennia.commands.default import help, comms, admin, system
+from evennia.commands.default import building, player
 
 
 class PlayerCmdSet(CmdSet):

@@ -5,8 +5,8 @@ replacing cmdparser function. The replacement parser must matches
 on the sme form as the default cmdparser.
 """
 
-from src.utils.logger import log_trace
 from django.utils.translation import ugettext as _
+from evennia.utils.logger import log_trace
 
 def cmdparser(raw_string, cmdset, caller, match_index=None):
     """

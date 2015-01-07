@@ -64,9 +64,9 @@ example, you can have a 'On a boat' set, onto which you then tack on
 the 'Fishing' set. Fishing from a boat? No problem!
 """
 from django.conf import settings
-from src.utils import logger, utils
-from src.commands.cmdset import CmdSet
-from src.server.models import ServerConfig
+from evennia.utils import logger, utils
+from evennia.commands.cmdset import CmdSet
+from evennia.server.models import ServerConfig
 
 from django.utils.translation import ugettext as _
 __all__ = ("import_cmdset", "CmdSetHandler")

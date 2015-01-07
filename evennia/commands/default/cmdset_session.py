@@ -1,8 +1,8 @@
 """
 This module stores session-level commands.
 """
-from src.commands.cmdset import CmdSet
-from src.commands.default import player
+from evennia.commands.cmdset import CmdSet
+from evennia.commands.default import player
 
 class SessionCmdSet(CmdSet):
     """

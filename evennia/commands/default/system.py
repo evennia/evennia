@@ -13,15 +13,15 @@ import twisted
 from time import time as timemeasure
 
 from django.conf import settings
-#from src.server.caches import get_cache_sizes
-from src.server.sessionhandler import SESSIONS
-from src.scripts.models import ScriptDB
-from src.objects.models import ObjectDB
-from src.players.models import PlayerDB
-from src.utils import logger, utils, gametime, create, is_pypy, prettytable
-from src.utils.evtable import EvTable
-from src.utils.utils import crop
-from src.commands.default.muxcommand import MuxCommand
+#from evennia.server.caches import get_cache_sizes
+from evennia.server.sessionhandler import SESSIONS
+from evennia.scripts.models import ScriptDB
+from evennia.objects.models import ObjectDB
+from evennia.players.models import PlayerDB
+from evennia.utils import logger, utils, gametime, create, is_pypy, prettytable
+from evennia.utils.evtable import EvTable
+from evennia.utils.utils import crop
+from evennia.commands.default.muxcommand import MuxCommand
 
 # delayed imports
 _resource = None
@@ -665,7 +665,7 @@ class CmdServerLoad(MuxCommand):
         if not _resource:
             import resource as _resource
         if not _idmapper:
-            from src.utils.idmapper import base as _idmapper
+            from evennia.utils.idmapper import base as _idmapper
 
         import resource
         loadavg = os.getloadavg()

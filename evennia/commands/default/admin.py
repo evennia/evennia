@@ -7,10 +7,10 @@ Admin commands
 import time
 import re
 from django.conf import settings
-from src.server.sessionhandler import SESSIONS
-from src.server.models import ServerConfig
-from src.utils import prettytable, search
-from src.commands.default.muxcommand import MuxCommand
+from evennia.server.sessionhandler import SESSIONS
+from evennia.server.models import ServerConfig
+from evennia.utils import prettytable, search
+from evennia.commands.default.muxcommand import MuxCommand
 
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 

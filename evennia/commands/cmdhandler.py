@@ -40,10 +40,10 @@ from copy import copy
 from traceback import format_exc
 from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
-from src.comms.channelhandler import CHANNELHANDLER
-from src.utils import logger, utils
-from src.commands.cmdparser import at_multimatch_cmd
-from src.utils.utils import string_suggestions, to_unicode
+from evennia.comms.channelhandler import CHANNELHANDLER
+from evennia.utils import logger, utils
+from evennia.commands.cmdparser import at_multimatch_cmd
+from evennia.utils.utils import string_suggestions, to_unicode
 
 from django.utils.translation import ugettext as _
 

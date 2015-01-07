@@ -4,10 +4,10 @@ available (i.e. IC commands). Note that some commands, such as
 communication-commands are instead put on the player level, in the
 Player cmdset. Player commands remain available also to Characters.
 """
-from src.commands.cmdset import CmdSet
-from src.commands.default import general, help, admin, system
-from src.commands.default import building
-from src.commands.default import batchprocess
+from evennia.commands.cmdset import CmdSet
+from evennia.commands.default import general, help, admin, system
+from evennia.commands.default import building
+from evennia.commands.default import batchprocess
 
 
 class CharacterCmdSet(CmdSet):

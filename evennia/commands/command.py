@@ -6,8 +6,8 @@ All commands in Evennia inherit from the 'Command' class in this module.
 """
 
 import re
-from src.locks.lockhandler import LockHandler
-from src.utils.utils import is_iter, fill, lazy_property
+from evennia.locks.lockhandler import LockHandler
+from evennia.utils.utils import is_iter, fill, lazy_property
 
 
 def _init_command(mcs, **kwargs):

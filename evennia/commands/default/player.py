@@ -21,9 +21,9 @@ method. Otherwise all text will be returned to all connected sessions.
 """
 import time
 from django.conf import settings
-from src.server.sessionhandler import SESSIONS
-from src.commands.default.muxcommand import MuxPlayerCommand
-from src.utils import utils, create, search, prettytable
+from evennia.server.sessionhandler import SESSIONS
+from evennia.commands.default.muxcommand import MuxPlayerCommand
+from evennia.utils import utils, create, search, prettytable
 
 from settings import MAX_NR_CHARACTERS, MULTISESSION_MODE
 # limit symbol import for API
@@ -141,7 +141,7 @@ class CmdOOCLook(MuxPlayerCommand):
             string = "You are out-of-character (OOC).\nUse {w@ic{n to get back into the game."
             self.msg(string)
             return
-        if utils.inherits_from(self.caller, "src.objects.objects.Object"):
+        if utils.inherits_from(self.caller, "evennia.objects.objects.Object"):
             # An object of some type is calling. Use default look instead.
             super(CmdOOCLook, self).func()
         elif self.args:
@@ -180,7 +180,7 @@ class CmdCharCreate(MuxPlayerCommand):
             self.msg("You may only create a maximum of %i characters." % MAX_NR_CHARACTERS)
             return
         # create the character
-        from src.objects.models import ObjectDB
+        from evennia.objects.models import ObjectDB
 
         start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
         default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
@@ -596,7 +596,7 @@ class CmdColorTest(MuxPlayerCommand):
 
         if self.args.startswith("a"):
             # show ansi 16-color table
-            from src.utils import ansi
+            from evennia.utils import ansi
             ap = ansi.ANSI_PARSER
             # ansi colors
             # show all ansi color-related codes

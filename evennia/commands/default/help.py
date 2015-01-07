@@ -7,12 +7,12 @@ creation of other help topics such as RP help or game-world aides.
 """
 
 from collections import defaultdict
-from src.utils.utils import fill, dedent
-from src.commands.command import Command
-from src.help.models import HelpEntry
-from src.utils import create
-from src.utils.utils import string_suggestions
-from src.commands.default.muxcommand import MuxCommand
+from evennia.utils.utils import fill, dedent
+from evennia.commands.command import Command
+from evennia.help.models import HelpEntry
+from evennia.utils import create
+from evennia.utils.utils import string_suggestions
+from evennia.commands.default.muxcommand import MuxCommand
 
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")

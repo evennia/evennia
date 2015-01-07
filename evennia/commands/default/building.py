@@ -6,14 +6,14 @@ Building and world design commands
 """
 from django.conf import settings
 from django.db.models import Q
-from src.objects.models import ObjectDB
-from src.locks.lockhandler import LockException
-from src.commands.default.muxcommand import MuxCommand
-from src.commands.cmdhandler import get_and_merge_cmdsets
-from src.utils import create, utils, search
-from src.utils.utils import inherits_from
-from src.utils.spawner import spawn
-from src.utils.ansi import raw
+from evennia.objects.models import ObjectDB
+from evennia.locks.lockhandler import LockException
+from evennia.commands.default.muxcommand import MuxCommand
+from evennia.commands.cmdhandler import get_and_merge_cmdsets
+from evennia.utils import create, utils, search
+from evennia.utils.utils import inherits_from
+from evennia.utils.spawner import spawn
+from evennia.utils.ansi import raw
 
 # limit symbol import for API
 __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
@@ -404,10 +404,10 @@ class CmdCreate(ObjManipCommand):
 
     Creates one or more new objects. If typeclass is given, the object
     is created as a child of this typeclass. The typeclass script is
-    assumed to be located under game/gamesrc/objects and any further
+    assumed to be located under types/ and any further
     directory structure is given in Python notation. So if you have a
     correct typeclass 'RedButton' defined in
-    game/gamesrc/objects/examples/red_button.py, you could create a new
+    types/examples/red_button.py, you could create a new
     object of this type like this:
 
        @create/drop button;red : examples.red_button.RedButton
@@ -1814,7 +1814,7 @@ class CmdExamine(ObjManipCommand):
             obj_name = objdef['name']
             obj_attrs = objdef['attrs']
 
-            self.player_mode = utils.inherits_from(caller, "src.players.player.Player") or \
+            self.player_mode = utils.inherits_from(caller, "evennia.players.player.Player") or \
                            "player" in self.switches or obj_name.startswith('*')
             if self.player_mode:
                 try:
@@ -2123,7 +2123,7 @@ class CmdScript(MuxCommand):
                 string += "No scripts defined on %s." % obj.key
             elif not self.switches:
                 # view all scripts
-                from src.commands.default.system import format_script_list
+                from evennia.commands.default.system import format_script_list
                 string += format_script_list(scripts)
             elif "start" in self.switches:
                 num = sum([obj.scripts.start(script.key) for script in scripts])
@@ -2277,11 +2277,8 @@ class CmdTag(MuxCommand):
             self.caller.msg(string)
 
 #
-# To use the prototypes with the @spawn function, copy
-# game/gamesrc/world/examples/prototypes.py up one level
-# to game/gamesrc/world. Then add to game/settings.py the
-# line
-#   PROTOTYPE_MODULES = ["game.gamesrc.commands.prototypes"]
+# To use the prototypes with the @spawn function set
+#   PROTOTYPE_MODULES = ["commands.prototypes"]
 # Reload the server and the prototypes should be available.
 #
 

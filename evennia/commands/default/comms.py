@@ -8,14 +8,14 @@ for easy handling.
 
 """
 from django.conf import settings
-from src.comms.models import ChannelDB, Msg
-#from src.comms import irc, imc2, rss
-from src.players.models import PlayerDB
-from src.players import bots
-from src.comms.channelhandler import CHANNELHANDLER
-from src.utils import create, utils, prettytable, evtable
-from src.utils.utils import make_iter
-from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
+from evennia.comms.models import ChannelDB, Msg
+#from evennia.comms import irc, imc2, rss
+from evennia.players.models import PlayerDB
+from evennia.players import bots
+from evennia.comms.channelhandler import CHANNELHANDLER
+from evennia.utils import create, utils, prettytable, evtable
+from evennia.utils.utils import make_iter
+from evennia.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
 # limit symbol import for API
 __all__ = ("CmdAddCom", "CmdDelCom", "CmdAllCom",
@@ -794,7 +794,7 @@ class CmdIRC2Chan(MuxCommand):
             # show all connections
             ircbots = [bot for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
             if ircbots:
-                from src.utils.evtable import EvTable
+                from evennia.utils.evtable import EvTable
                 table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", maxwidth=78)
                 for ircbot in ircbots:
                     ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
@@ -903,7 +903,7 @@ class CmdRSS2Chan(MuxCommand):
             # show all connections
             rssbots = [bot for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="rssbot-")]
             if rssbots:
-                from src.utils.evtable import EvTable
+                from evennia.utils.evtable import EvTable
                 table = EvTable("{wdbid{n", "{wupdate rate{n", "{wev-channel", "{wRSS feed URL{n", border="cells", maxwidth=78)
                 for rssbot in rssbots:
                     table.add_row(rssbot.id, rssbot.db.rss_rate, rssbot.db.ev_channel, rssbot.db.rss_url)
@@ -1061,8 +1061,8 @@ class CmdRSS2Chan(MuxCommand):
 #        if "update" in self.switches:
 #            # update the lists
 #            import time
-#            from src.comms.imc2lib import imc2_packets as pck
-#            from src.comms.imc2 import IMC2_MUDLIST, IMC2_CHANLIST, IMC2_CLIENT
+#            from evennia.comms.imc2lib import imc2_packets as pck
+#            from evennia.comms.imc2 import IMC2_MUDLIST, IMC2_CHANLIST, IMC2_CLIENT
 #            # update connected muds
 #            IMC2_CLIENT.send_packet(pck.IMC2PacketKeepAliveRequest())
 #            # prune inactive muds
@@ -1076,7 +1076,7 @@ class CmdRSS2Chan(MuxCommand):
 #        elif("games" in self.switches or "muds" in self.switches
 #                                            or self.cmdstring == "@imclist"):
 #            # list muds
-#            from src.comms.imc2 import IMC2_MUDLIST
+#            from evennia.comms.imc2 import IMC2_MUDLIST
 #
 #            muds = IMC2_MUDLIST.get_mud_list()
 #            networks = set(mud.networkname for mud in muds)
@@ -1096,7 +1096,7 @@ class CmdRSS2Chan(MuxCommand):
 #            if not self.args:
 #                self.msg("Usage: @imcwhois <playername>")
 #                return
-#            from src.comms.imc2 import IMC2_CLIENT
+#            from evennia.comms.imc2 import IMC2_CLIENT
 #            self.msg("Sending IMC whois request. If you receive no response, no matches were found.")
 #            IMC2_CLIENT.msg_imc2(None,
 #                                 from_obj=self.caller,
@@ -1106,7 +1106,7 @@ class CmdRSS2Chan(MuxCommand):
 #        elif(not self.switches or "channels" in self.switches or
 #                                              self.cmdstring == "@imcchanlist"):
 #            # show channels
-#            from src.comms.imc2 import IMC2_CHANLIST, IMC2_CLIENT
+#            from evennia.comms.imc2 import IMC2_CHANLIST, IMC2_CLIENT
 #
 #            channels = IMC2_CHANLIST.get_channel_list()
 #            string = ""
@@ -1151,7 +1151,7 @@ class CmdRSS2Chan(MuxCommand):
 #            self.msg(string)
 #            return
 #
-#        from src.comms.imc2 import IMC2_CLIENT
+#        from evennia.comms.imc2 import IMC2_CLIENT
 #
 #        if not self.args or not '@' in self.lhs or not self.rhs:
 #            string = "Usage: imctell User@Mud = <msg>"

@@ -2,7 +2,7 @@
 Batch processors
 
 These commands implements the 'batch-command' and 'batch-code'
-processors, using the functionality in src.utils.batchprocessors.
+processors, using the functionality in evennia.utils.batchprocessors.
 They allow for offline world-building.
 
 Batch-command is the simpler system. This reads a file (*.ev)
@@ -10,23 +10,19 @@ containing a list of in-game commands and executes them in sequence as
 if they had been entered in the game (including permission checks
 etc).
 
-Example batch-command file: game/gamesrc/commands/examples/batch_cmds.ev
-
 Batch-code is a full-fledged python code interpreter that reads blocks
 of python code (*.py) and executes them in sequence. This allows for
 much more power than Batch-command, but requires knowing Python and
 the Evennia API.  It is also a severe security risk and should
 therefore always be limited to superusers only.
 
-Example batch-code file: game/gamesrc/commands/examples/batch_code.py
-
 """
 from traceback import format_exc
 from django.conf import settings
-from src.utils.batchprocessors import BATCHCMD, BATCHCODE
-from src.commands.cmdset import CmdSet
-from src.commands.default.muxcommand import MuxCommand
-from src.utils import utils
+from evennia.utils.batchprocessors import BATCHCMD, BATCHCODE
+from evennia.commands.cmdset import CmdSet
+from evennia.commands.default.muxcommand import MuxCommand
+from evennia.utils import utils
 
 # limit symbols for API inclusion
 __all__ = ("CmdBatchCommands", "CmdBatchCode")
@@ -51,7 +47,7 @@ _UTF8_ERROR = \
 """
 
 _PROCPOOL_BATCHCMD_SOURCE = """
-from src.commands.default.batchprocess import batch_cmd_exec, step_pointer, BatchSafeCmdSet
+from evennia.commands.default.batchprocess import batch_cmd_exec, step_pointer, BatchSafeCmdSet
 caller.ndb.batch_stack = commands
 caller.ndb.batch_stackptr = 0
 caller.ndb.batch_batchmode = "batch_commands"
@@ -65,7 +61,7 @@ for inum in range(len(commands)):
 print "leaving run ..."
 """
 _PROCPOOL_BATCHCODE_SOURCE = """
-from src.commands.default.batchprocess import batch_code_exec, step_pointer, BatchSafeCmdSet
+from evennia.commands.default.batchprocess import batch_code_exec, step_pointer, BatchSafeCmdSet
 caller.ndb.batch_stack = codes
 caller.ndb.batch_stackptr = 0
 caller.ndb.batch_batchmode = "batch_code"

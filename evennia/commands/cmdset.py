@@ -16,7 +16,7 @@ together to create interesting in-game effects.
 
 from weakref import WeakKeyDictionary
 from django.utils.translation import ugettext as _
-from src.utils.utils import inherits_from, is_iter
+from evennia.utils.utils import inherits_from, is_iter
 __all__ = ("CmdSet",)
 
 
@@ -345,7 +345,7 @@ class CmdSet(object):
         existing ones to make a unique set.
         """
 
-        if inherits_from(cmd, "src.commands.cmdset.CmdSet"):
+        if inherits_from(cmd, "evennia.commands.cmdset.CmdSet"):
             # cmd is a command set so merge all commands in that set
             # to this one. We raise a visible error if we created
             # an infinite loop (adding cmdset to itself somehow)

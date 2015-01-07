@@ -6,7 +6,7 @@
 This is part of the Evennia unittest framework, for testing the
 stability and integrity of the codebase during updates. This module
 test the default command set. It is instantiated by the
-src/objects/tests.py module, which in turn is run by as part of the
+evennia/objects/tests.py module, which in turn is run by as part of the
 main test suite started with
  > python game/manage.py test.
 
@@ -15,14 +15,14 @@ main test suite started with
 import re
 from django.conf import settings
 from django.utils.unittest import TestCase
-from src.server.serversession import ServerSession
-from src.objects.objects import DefaultObject, DefaultCharacter
-from src.players.player import DefaultPlayer
-from src.utils import create, ansi
-from src.server.sessionhandler import SESSIONS
+from evennia.server.serversession import ServerSession
+from evennia.objects.objects import DefaultObject, DefaultCharacter
+from evennia.players.player import DefaultPlayer
+from evennia.utils import create, ansi
+from evennia.server.sessionhandler import SESSIONS
 
 from django.db.models.signals import post_save
-from src.server.caches import field_post_save
+from evennia.server.caches import field_post_save
 post_save.connect(field_post_save, dispatch_uid="fieldcache")
 
 # set up signal here since we are not starting the server
@@ -82,10 +82,10 @@ class CommandTest(TestCase):
         #print "creating player %i: %s" % (self.CID, self.__class__.__name__)
         self.player = create.create_player("TestPlayer%i" % self.CID, "test@test.com", "testpassword", typeclass=TestPlayerClass)
         self.player2 = create.create_player("TestPlayer%ib" % self.CID, "test@test.com", "testpassword", typeclass=TestPlayerClass)
-        self.room1 = create.create_object("src.objects.objects.DefaultRoom", key="Room%i"%self.CID, nohome=True)
+        self.room1 = create.create_object("evennia.objects.objects.DefaultRoom", key="Room%i"%self.CID, nohome=True)
         self.room1.db.desc = "room_desc"
         settings.DEFAULT_HOME = "#%i" % self.room1.id # we must have a default home
-        self.room2 = create.create_object("src.objects.objects.DefaultRoom", key="Room%ib" % self.CID)
+        self.room2 = create.create_object("evennia.objects.objects.DefaultRoom", key="Room%ib" % self.CID)
         self.obj1 = create.create_object(TestObjectClass, key="Obj%i" % self.CID, location=self.room1, home=self.room1)
         self.obj2 = create.create_object(TestObjectClass, key="Obj%ib" % self.CID, location=self.room1, home=self.room1)
         self.char1 = create.create_object(TestCharacterClass, key="Char%i" % self.CID, location=self.room1, home=self.room1)
@@ -93,7 +93,7 @@ class CommandTest(TestCase):
         self.char2 = create.create_object(TestCharacterClass, key="Char%ib" % self.CID, location=self.room1, home=self.room1)
         self.char1.player = self.player
         self.char2.player = self.player2
-        self.script = create.create_script("src.scripts.scripts.Script", key="Script%i" % self.CID)
+        self.script = create.create_script("evennia.scripts.scripts.Script", key="Script%i" % self.CID)
         self.player.permissions.add("Immortals")
 
         # set up a fake session
@@ -151,7 +151,7 @@ class CommandTest(TestCase):
 # Individual module Tests
 #------------------------------------------------------------
 
-from src.commands.default import general
+from evennia.commands.default import general
 class TestGeneral(CommandTest):
     CID = 1
 
@@ -173,8 +173,8 @@ class TestGeneral(CommandTest):
         self.call(general.CmdAccess(), "", "Permission Hierarchy (climbing):")
 
 
-from src.commands.default import help
-from src.commands.default.cmdset_character import CharacterCmdSet
+from evennia.commands.default import help
+from evennia.commands.default.cmdset_character import CharacterCmdSet
 class TestHelp(CommandTest):
     CID = 2
     def test_cmds(self):
@@ -183,7 +183,7 @@ class TestHelp(CommandTest):
         self.call(help.CmdHelp(), "testhelp", "Help topic for testhelp", cmdset=CharacterCmdSet())
 
 
-from src.commands.default import system
+from evennia.commands.default import system
 class TestSystem(CommandTest):
     CID = 3
     def test_cmds(self):
@@ -196,7 +196,7 @@ class TestSystem(CommandTest):
         self.call(system.CmdServerLoad(), "", "Server CPU and Memory load:")
 
 
-from src.commands.default import admin
+from evennia.commands.default import admin
 class TestAdmin(CommandTest):
     CID = 4
     def test_cmds(self):
@@ -208,7 +208,7 @@ class TestAdmin(CommandTest):
         self.call(admin.CmdBan(), "Char4", "NameBan char4 was added.")
 
 
-from src.commands.default import player
+from evennia.commands.default import player
 class TestPlayer(CommandTest):
    CID = 5
    def test_cmds(self):
@@ -228,7 +228,7 @@ class TestPlayer(CommandTest):
         self.call(player.CmdQuell(), "", "Quelling to current puppet's permissions (immortals).", caller=self.player)
 
 
-from src.commands.default import building
+from evennia.commands.default import building
 class TestBuilding(CommandTest):
     CID = 6
     def test_cmds(self):
@@ -251,15 +251,15 @@ class TestBuilding(CommandTest):
         self.call(building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere.")
         self.call(building.CmdSetHome(), "Obj6 = Room6b", "Obj6's home location was changed from Room6")
         self.call(building.CmdListCmdSets(), "", "<DefaultCharacter (Union, prio 0, perm)>:")
-        self.call(building.CmdTypeclass(), "Obj6 = src.objects.objects.DefaultExit",
-                "Obj6 changed typeclass from src.commands.default.tests.TestObjectClass to src.objects.objects.DefaultExit")
+        self.call(building.CmdTypeclass(), "Obj6 = evennia.objects.objects.DefaultExit",
+                "Obj6 changed typeclass from evennia.commands.default.tests.TestObjectClass to evennia.objects.objects.DefaultExit")
         self.call(building.CmdLock(), "Obj6 = test:perm(Immortals)", "Added lock 'test:perm(Immortals)' to Obj6.")
         self.call(building.CmdFind(), "TestRoom1", "One Match")
-        self.call(building.CmdScript(), "Obj6 = src.scripts.scripts.Script", "Script src.scripts.scripts.Script successfully added")
+        self.call(building.CmdScript(), "Obj6 = evennia.scripts.scripts.Script", "Script evennia.scripts.scripts.Script successfully added")
         self.call(building.CmdTeleport(), "TestRoom1", "TestRoom1\nExits: back|Teleported to TestRoom1.")
 
 
-from src.commands.default import comms
+from evennia.commands.default import comms
 class TestComms(CommandTest):
     CID = 7
     def test_cmds(self):
@@ -278,7 +278,7 @@ class TestComms(CommandTest):
         self.call(comms.CmdCdestroy(), "testchan" ,"Channel 'testchan' was destroyed.")
 
 
-from src.commands.default import batchprocess
+from evennia.commands.default import batchprocess
 class TestBatchProcess(CommandTest):
     CID = 8
     def test_cmds(self):

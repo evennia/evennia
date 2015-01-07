@@ -2,8 +2,8 @@
 General Character commands usually availabe to all characters
 """
 from django.conf import settings
-from src.utils import utils, prettytable
-from src.commands.default.muxcommand import MuxCommand
+from evennia.utils import utils, prettytable
+from evennia.commands.default.muxcommand import MuxCommand
 
 
 # limit symbol import for API
