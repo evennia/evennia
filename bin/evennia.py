@@ -91,6 +91,12 @@ CREATED_NEW_GAMEDIR = \
     to start the server.
     """
 
+ERROR_NO_GAMEDIR = \
+    """
+    No Evennia settings file was found. You must run this command from
+    inside a valid game directory first created with --init.
+    """
+
 WARNING_RUNSERVER = \
     """
     WARNING: There is no need to run the Django development
@@ -323,6 +329,28 @@ def check_main_evennia_dependencies():
         sys.exit()
 
 
+def set_gamedir(path):
+    """
+    Set GAMEDIR based on path, by figuring out where the setting file
+    is inside the directory tree.
+    """
+
+    global GAMEDIR
+    if os.path.exists(os.path.join(path, SETTINGS_PATH)):
+        # path at root of game dir
+        GAMEDIR = os.path.abspath(path)
+    elif os.path.exists(os.path.join(path, os.path.pardir, SETTINGS_PATH)):
+        # path given to somewhere else in gamedir
+        GAMEDIR = os.path.dirname(os.path.dirname(path))
+    elif os.path.exists(os.path.join(path, os.path.pardir, os.path.pardir, SETTINGS_PATH)):
+        # path given to somwhere two levels down
+        GAMEDIR = os.path.dirname(os.path.dirname(os.path.dirname(path)))
+    else:
+        # Assume path given to root game dir
+        print ERROR_NO_GAMEDIR
+        sys.exit()
+
+
 def evennia_version():
     """
     Get the Evennia version info from the main package.
@@ -395,16 +423,8 @@ def init_game_directory(path):
     the game directory and also sets PYTHONPATH as well as the
     django path.
     """
-    global GAMEDIR
-    if os.path.exists(os.path.join(path, SETTINGFILE)):
-        # path given to server/conf/
-        GAMEDIR = os.path.dirname(os.path.dirname(os.path.dirname(path)))
-    elif os.path.exists(os.path.join(path, os.path.sep, SETTINGS_PATH)):
-        # path given to somewhere else in gamedir
-        GAMEDIR = os.path.dirname(os.path.dirname(path))
-    else:
-        # Assume path given to root game dir
-        GAMEDIR = path
+    # set the GAMEDIR path
+    set_gamedir(path)
 
     # Add gamedir to python path
     sys.path.insert(0, GAMEDIR)
