@@ -90,7 +90,7 @@ It seems the bottom of the box is a bit loose.
 # close the @drop command since it's the end of the file)
 -------------------------
 
-An example batch file is game/gamesrc/commands/examples/batch_example.ev.
+An example batch file is contribs/examples/batch_example.ev.
 
 
 ==========================================================================
@@ -144,8 +144,8 @@ Example batch.py file
 
 import traceback
 from django.config import settings
-from src.utils import create
-from game.gamesrc.typeclasses import basetypes
+from evennia.utils import create
+from types import basetypes
 
 GOLD = 10
 
@@ -171,7 +171,7 @@ import traceback
 import sys
 #from traceback import format_exc
 from django.conf import settings
-from src.utils import utils
+from evennia.utils import utils
 #from game import settings as settings_module
 
 ENCODINGS = settings.ENCODINGS
@@ -199,7 +199,7 @@ def read_batchfile(pythonpath, file_ending='.py'):
     """
 
     # open the file
-    if pythonpath and not (pythonpath.startswith('src.') or pythonpath.startswith('game.')
+    if pythonpath and not (pythonpath.startswith('evennia.') or pythonpath.startswith('game.')
                            or pythonpath.startswith('contrib.')):
         abspaths = []
         for basepath in settings.BASE_BATCHPROCESS_PATHS:

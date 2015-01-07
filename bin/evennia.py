@@ -462,8 +462,8 @@ def init_game_directory(path):
     global SERVER_RESTART, PORTAL_RESTART
     global EVENNIA_VERSION
 
-    SERVER_PY_FILE = os.path.join(settings.SRC_DIR, "server/server.py")
-    PORTAL_PY_FILE = os.path.join(settings.SRC_DIR, "portal/server.py")
+    SERVER_PY_FILE = os.path.join(settings.LIB_DIR, "server/server.py")
+    PORTAL_PY_FILE = os.path.join(settings.LIB_DIR, "portal/server.py")
 
     SERVER_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "server.pid")
     PORTAL_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "portal.pid")
@@ -535,7 +535,7 @@ def create_superuser():
 def check_database(automigrate=False):
     # Check so a database exists and is accessible
     from django.db import DatabaseError
-    from src.players.models import PlayerDB
+    from evennia.players.models import PlayerDB
     try:
         PlayerDB.objects.get(id=1)
     except DatabaseError, e:
@@ -768,7 +768,7 @@ def error_check_python_modules():
     # cmdsets
 
     deprstring = "settings.%s should be renamed to %s. If defaults are used, " \
-                 "their path/classname must be updated (see src/settings_default.py)."
+                 "their path/classname must be updated (see evennia/settings_default.py)."
     if hasattr(settings, "CMDSET_DEFAULT"):
         raise DeprecationWarning(deprstring % ("CMDSET_DEFAULT", "CMDSET_CHARACTER"))
     if hasattr(settings, "CMDSET_OOC"):
@@ -781,9 +781,9 @@ def error_check_python_modules():
         raise DeprecationWarning(deprstring % ("COMM_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS"))
     if hasattr(settings, "CHARACTER_DEFAULT_HOME"):
         raise DeprecationWarning("settings.CHARACTER_DEFAULT_HOME should be renamed to DEFAULT_HOME. " \
-                "See also settings.START_LOCATION (see src/settings_default.py).")
+                "See also settings.START_LOCATION (see evennia/settings_default.py).")
 
-    from src.commands import cmdsethandler
+    from evennia.commands import cmdsethandler
     if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None): print "Warning: CMDSET_UNLOGGED failed to load!"
     if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None): print "Warning: CMDSET_CHARACTER failed to load"
     if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None): print "Warning: CMDSET_PLAYER failed to load"

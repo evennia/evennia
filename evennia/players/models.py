@@ -21,9 +21,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.encoding import smart_str
 
-from src.players.manager import PlayerDBManager
-from src.typeclasses.models import TypedObject
-from src.utils.utils import make_iter
+from evennia.players.manager import PlayerDBManager
+from evennia.typeclasses.models import TypedObject
+from evennia.utils.utils import make_iter
 
 __all__ = ("PlayerDB",)
 

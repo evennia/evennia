@@ -8,7 +8,7 @@ object based on that mobile class.
 import random, time
 from django.conf import settings
 
-from ev import search_object, utils, Script
+from evennia import search_object, utils, Script
 from contrib.tutorial_world import objects as tut_objects
 from contrib.tutorial_world import scripts as tut_scripts
 

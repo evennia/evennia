@@ -8,8 +8,8 @@ total runtime of the server and the current uptime.
 
 from time import time
 from django.conf import settings
-from src.scripts.scripts import Script
-from src.utils.create import create_script
+from evennia.scripts.scripts import Script
+from evennia.utils.create import create_script
 
 GAMETIME_SCRIPT_NAME = "sys_game_time"
 
@@ -75,12 +75,12 @@ class GameTime(Script):
 
 def save():
     "Force save of time. This is called by server when shutting down/reloading."
-    from src.scripts.models import ScriptDB
+    from evennia.scripts.models import ScriptDB
     try:
         script = ScriptDB.objects.get(db_key=GAMETIME_SCRIPT_NAME)
         script.at_repeat()
     except Exception:
-        from src.utils import logger
+        from evennia.utils import logger
         logger.log_trace()
 
 def _format(seconds, *divisors) :

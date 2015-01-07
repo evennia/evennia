@@ -10,8 +10,8 @@ from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 
-from src.objects.models import ObjectDB
-from src.players.models import PlayerDB
+from evennia.objects.models import ObjectDB
+from evennia.players.models import PlayerDB
 
 _BASE_CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 

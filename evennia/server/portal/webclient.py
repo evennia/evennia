@@ -26,9 +26,9 @@ from twisted.web import server, resource
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
 from django.conf import settings
-from src.utils import utils, logger
-from src.utils.text2html import parse_html
-from src.server import session
+from evennia.utils import utils, logger
+from evennia.utils.text2html import parse_html
+from evennia.server import session
 
 SERVERNAME = settings.SERVERNAME
 ENCODINGS = settings.ENCODINGS

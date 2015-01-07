@@ -11,9 +11,9 @@ Create this button with
 Note that you must drop the button before you can see its messages!
 """
 import random
-from ev import Object
-from game.gamesrc.scripts.examples import red_button_scripts as scriptexamples
-from game.gamesrc.commands.examples import cmdset_red_button as cmdsetexamples
+from evennia import Object
+from contrib.examples import red_button_scripts as scriptexamples
+from contrib.examples import cmdset_red_button as cmdsetexamples
 
 #
 # Definition of the object itself
@@ -23,7 +23,7 @@ from game.gamesrc.commands.examples import cmdset_red_button as cmdsetexamples
 class RedButton(Object):
     """
     This class describes an evil red button.  It will use the script
-    definition in game/gamesrc/events/example.py to blink at regular
+    definition in contrib/examples/red_button_scripts to blink at regular
     intervals.  It also uses a series of script and commands to handle
     pushing the button and causing effects when doing so.
 

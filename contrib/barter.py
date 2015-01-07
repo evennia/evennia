@@ -94,7 +94,7 @@ in-game.
 
 """
 
-from ev import Command, Script, CmdSet
+from evennia import Command, Script, CmdSet
 
 TRADE_TIMEOUT = 60  # timeout for B to accept trade
 

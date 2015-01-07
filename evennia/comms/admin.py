@@ -4,8 +4,8 @@
 #
 
 from django.contrib import admin
-from src.comms.models import ChannelDB
-from src.typeclasses.admin import AttributeInline, TagInline
+from evennia.comms.models import ChannelDB
+from evennia.typeclasses.admin import AttributeInline, TagInline
 
 
 class ChannelAttributeInline(AttributeInline):

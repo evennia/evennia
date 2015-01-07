@@ -3,9 +3,9 @@ The custom manager for Scripts.
 """
 
 from django.db.models import Q
-from src.typeclasses.managers import TypedObjectManager, TypeclassManager
-from src.typeclasses.managers import returns_typeclass_list
-from src.utils.utils import make_iter
+from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
+from evennia.typeclasses.managers import returns_typeclass_list
+from evennia.utils.utils import make_iter
 __all__ = ("ScriptManager",)
 _GA = object.__getattribute__
 
@@ -225,7 +225,7 @@ class ScriptDBManager(TypedObjectManager):
         new_obj = new_obj if new_obj is not None else original_script.obj
         new_locks = new_locks if new_locks is not None else original_script.db_lock_storage
 
-        from src.utils import create
+        from evennia.utils import create
         new_script = create.create_script(typeclass, key=new_key, obj=new_obj,
                                           locks=new_locks, autostart=True)
         return new_script

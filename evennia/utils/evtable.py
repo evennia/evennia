@@ -103,8 +103,8 @@ eventual colour outside
 #from textwrap import wrap
 from textwrap import TextWrapper
 from copy import deepcopy, copy
-from src.utils.utils import to_unicode
-from src.utils.ansi import ANSIString
+from evennia.utils.utils import to_unicode
+from evennia.utils.ansi import ANSIString
 
 def make_iter(obj):
     "Makes sure that the object is always iterable."

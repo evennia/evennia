@@ -3,7 +3,7 @@ Websocket-webclient
 
 This implements a webclient with WebSockets (http://en.wikipedia.org/wiki/WebSocket)
 by use of the txws implementation (https://github.com/MostAwesomeDude/txWS). It is
-used together with src/web/media/javascript/evennia_websocket_webclient.js.
+used together with evennia/web/media/javascript/evennia_websocket_webclient.js.
 
 Thanks to Ricard Pillosu whose Evennia plugin inspired this module.
 
@@ -29,10 +29,10 @@ Example of call from a javascript client:
 """
 import json
 from twisted.internet.protocol import Protocol
-from src.server.session import Session
-from src.utils.logger import log_trace
-from src.utils.utils import to_str, make_iter
-from src.utils.text2html import parse_html
+from evennia.server.session import Session
+from evennia.utils.logger import log_trace
+from evennia.utils.utils import to_str, make_iter
+from evennia.utils.text2html import parse_html
 
 
 class WebSocketClient(Protocol, Session):

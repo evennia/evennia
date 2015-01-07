@@ -3,7 +3,7 @@
 Evennia websocket webclient (javascript component)
 
 The client is composed of two parts:
- src/server/portal/websocket_client.py - the portal-side component
+ /server/portal/websocket_client.py - the portal-side component
  this file - the javascript component handling dynamic content
 
 messages sent to the client is one of two modes:

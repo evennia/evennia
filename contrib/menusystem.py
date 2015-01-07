@@ -18,20 +18,14 @@ There is also a simple Yes/No function supplied. This will create a
 one-off Yes/No question and executes a given code depending on which
 choice was made.
 
-To test, make sure to follow the instructions in
-game/gamesrc/commands/examples/cmdset.py (copy the template up one level
-and change settings to point to the relevant cmdsets within). If you
-already have such a module, you can of course use that. Next you
-import and add the CmdTestMenu command to the end of the default cmdset in
-this custom module.
-The test command is also a good example of how to use this module in code.
+To test, add this to the default cmdset
 
 """
 from types import MethodType
-from ev import syscmdkeys
+from evennia import syscmdkeys
 
-from ev import Command, CmdSet, utils
-from ev import default_cmds, logger
+from evennia import Command, CmdSet, utils
+from evennia import default_cmds, logger
 
 # imported only to make it available during execution of code blocks
 import ev

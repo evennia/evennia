@@ -2,12 +2,12 @@
 Example of scripts.
 
 These are scripts intended for a particular object - the
-red_button object type in gamesrc/types/examples. A few variations
+red_button object type in contrib/examples. A few variations
 on uses of scripts are included.
 
 """
-from ev import Script
-from game.gamesrc.commands.examples import cmdset_red_button as cmdsetexamples
+from evennia import Script
+from contrib.examples import cmdset_red_button as cmdsetexamples
 
 #
 # Scripts as state-managers

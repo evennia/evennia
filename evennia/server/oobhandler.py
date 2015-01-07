@@ -37,14 +37,12 @@ messages.
 from inspect import isfunction
 from twisted.internet.defer import inlineCallbacks
 from django.conf import settings
-from src.server.models import ServerConfig
-from src.server.sessionhandler import SESSIONS
-#from src.scripts.scripts import Script
-#from src.utils.create import create_script
-from src.scripts.tickerhandler import Ticker, TickerPool, TickerHandler
-from src.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
-from src.utils import logger
-from src.utils.utils import all_from_module, make_iter, to_str
+from evennia.server.models import ServerConfig
+from evennia.server.sessionhandler import SESSIONS
+from evennia.scripts.tickerhandler import Ticker, TickerPool, TickerHandler
+from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
+from evennia.utils import logger
+from evennia.utils.utils import all_from_module, make_iter, to_str
 
 _SA = object.__setattr__
 _GA = object.__getattribute__

@@ -22,12 +22,12 @@ be able to delete connections on the fly).
 from datetime import datetime
 from django.conf import settings
 from django.db import models
-from src.typeclasses.models import TypedObject
-from src.utils.idmapper.models import SharedMemoryModel
-from src.comms import managers
-from src.comms.managers import identify_object
-from src.locks.lockhandler import LockHandler
-from src.utils.utils import crop, make_iter, lazy_property
+from evennia.typeclasses.models import TypedObject
+from evennia.utils.idmapper.models import SharedMemoryModel
+from evennia.comms import managers
+from evennia.comms.managers import identify_object
+from evennia.locks.lockhandler import LockHandler
+from evennia.utils.utils import crop, make_iter, lazy_property
 
 __all__ = ("Msg", "TempMsg", "ChannelDB")
 
@@ -357,7 +357,7 @@ class ChannelDB(TypedObject):
     objects = managers.ChannelDBManager()
 
     _typeclass_paths = settings.CHANNEL_TYPECLASS_PATHS
-    _default_typeclass_path = settings.BASE_CHANNEL_TYPECLASS or "src.comms.comms.Channel"
+    _default_typeclass_path = settings.BASE_CHANNEL_TYPECLASS or "evennia.comms.comms.Channel"
 
     class Meta:
         "Define Django meta options"

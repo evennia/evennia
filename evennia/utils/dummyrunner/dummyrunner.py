@@ -52,7 +52,7 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "game.settings"
 #    del settings2
 
 from django.conf import settings
-from src.utils import utils
+from evennia.utils import utils
 
 HELPTEXT = """
 
@@ -299,7 +299,7 @@ if __name__ == '__main__':
         action_modpath = settings.DUMMYRUNNER_ACTIONS_MODULE
     except AttributeError:
         # use default
-        action_modpath = "src.utils.dummyrunner.dummyrunner_actions"
+        action_modpath = "evennia.utils.dummyrunner.dummyrunner_actions"
     actions = utils.variable_from_module(action_modpath, "ACTIONS")
 
     print "Connecting %i dummy client(s) to port %i using a %i second timestep ... " % (nclients, port, timestep)

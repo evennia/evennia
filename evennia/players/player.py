@@ -13,19 +13,19 @@ instead for most things).
 
 import datetime
 from django.conf import settings
-from src.typeclasses.models import TypeclassBase
-from src.players.manager import PlayerManager
-from src.players.models import PlayerDB
-from src.comms.models import ChannelDB
-from src.commands import cmdhandler
-from src.scripts.models import ScriptDB
-from src.utils import logger
-from src.utils.utils import (lazy_property, to_str,
+from evennia.typeclasses.models import TypeclassBase
+from evennia.players.manager import PlayerManager
+from evennia.players.models import PlayerDB
+from evennia.comms.models import ChannelDB
+from evennia.commands import cmdhandler
+from evennia.scripts.models import ScriptDB
+from evennia.utils import logger
+from evennia.utils.utils import (lazy_property, to_str,
                              make_iter, to_unicode,
                              variable_from_module)
-from src.typeclasses.attributes import NickHandler
-from src.scripts.scripthandler import ScriptHandler
-from src.commands.cmdsethandler import CmdSetHandler
+from evennia.typeclasses.attributes import NickHandler
+from evennia.scripts.scripthandler import ScriptHandler
+from evennia.commands.cmdsethandler import CmdSetHandler
 
 from django.utils.translation import ugettext as _
 
@@ -135,14 +135,14 @@ class DefaultPlayer(PlayerDB):
         """
         global _SESSIONS
         if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
+            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         return _SESSIONS.session_from_player(self, sessid)
 
     def get_all_sessions(self):
         "Return all sessions connected to this player"
         global _SESSIONS
         if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
+            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         return _SESSIONS.sessions_from_player(self)
     sessions = property(get_all_sessions)  # alias shortcut
 

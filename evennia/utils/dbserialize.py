@@ -28,9 +28,9 @@ except ImportError:
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
-from src.server.models import ServerConfig
-from src.utils.utils import to_str, uses_database
-from src.utils import logger
+from evennia.server.models import ServerConfig
+from evennia.utils.utils import to_str, uses_database
+from evennievenniautils import logger
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle")
 

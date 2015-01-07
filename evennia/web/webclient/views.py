@@ -6,7 +6,7 @@ page and serve it eventual static content.
 """
 from django.shortcuts import render
 
-from src.players.models import PlayerDB
+from evennia.players.models import PlayerDB
 
 
 def webclient(request):

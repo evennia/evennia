@@ -18,16 +18,16 @@ they control by simply linking to a new object's user property.
 import traceback
 from django.conf import settings
 
-from src.typeclasses.models import TypeclassBase
-from src.typeclasses.attributes import NickHandler
-from src.objects.manager import ObjectManager
-from src.objects.models import ObjectDB
-from src.scripts.scripthandler import ScriptHandler
-from src.commands import cmdset, command
-from src.commands.cmdsethandler import CmdSetHandler
-from src.commands import cmdhandler
-from src.utils.logger import log_depmsg, log_trace, log_errmsg
-from src.utils.utils import (variable_from_module, lazy_property,
+from evennia.typeclasses.models import TypeclassBase
+from evennia.typeclasses.attributes import NickHandler
+from evennia.objects.manager import ObjectManager
+from evennia.objects.models import ObjectDB
+from evennia.scripts.scripthandler import ScriptHandler
+from evennia.commands import cmdset, command
+from evennia.commands.cmdsethandler import CmdSetHandler
+from evennia.commands import cmdhandler
+from evennia.utils.logger import log_depmsg, log_trace, log_errmsg
+from evennia.utils.utils import (variable_from_module, lazy_property,
                              make_iter, to_str, to_unicode)
 
 MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -145,7 +145,7 @@ class DefaultObject(ObjectDB):
      cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
      nicks - nick-handler. New nicks with nicks.add().
 
-    * Helper methods (see src.objects.objects.py for full headers)
+    * Helper methods (see evennia.objects.objects.py for full headers)
 
      search(ostring, global_search=False, use_nicks=True,
             typeclass=None,
@@ -504,7 +504,7 @@ class DefaultObject(ObjectDB):
         """
         global _SESSIONS
         if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
+            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
 
         text = to_str(text, force_string=True) if text else ""
 
@@ -772,7 +772,7 @@ class DefaultObject(ObjectDB):
         """
         global _ScriptDB
         if not _ScriptDB:
-            from src.scripts.models import ScriptDB as _ScriptDB
+            from evennia.scripts.models import ScriptDB as _ScriptDB
 
         if self.delete_iter > 0:
             # make sure to only call delete once on this object

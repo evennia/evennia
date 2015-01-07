@@ -98,7 +98,7 @@ WEBSOCKET_INTERFACES = ['0.0.0.0']
 EVENNIA_ADMIN = True
 # The path to the root directory
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# Path to the src directory containing the bulk of the codebase's code.
+# Path to the lib directory containing the bulk of the codebase's code.
 EVENNIA_DIR = os.path.join(ROOT_DIR, 'evennia')
 # Path to the game directory (containing the database file if using sqlite).
 GAME_DIR = os.path.join(ROOT_DIR, 'game_template')
@@ -198,7 +198,7 @@ DATABASES = {
 ######################################################################
 # Plugin modules extend Evennia in various ways. In the cases with no
 # existing default, there are examples of many of these modules
-# in game/gamesrc/conf/examples.
+# in contrib/examples.
 
 # The command parser module to use. See the default module for which
 # functions it must implement
@@ -238,11 +238,11 @@ PORTAL_SERVICES_PLUGIN_MODULES = ["server.conf.portal_services_plugins"]
 MSSP_META_MODULE = ""
 # Tuple of modules implementing lock functions. All callable functions
 # inside these modules will be available as lock functions.
-LOCK_FUNC_MODULES = ("src.locks.lockfuncs", "server.conf.lockfuncs",)
+LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs",)
 # Module holding OOB (Out of Band) hook objects. This allows for customization
 # and expansion of which hooks OOB protocols are allowed to call on the server
 # protocols for attaching tracker hooks for when various object field change
-OOB_PLUGIN_MODULES = ["src.server.oob_cmds", "server.conf.oob_cmds"]
+OOB_PLUGIN_MODULES = ["evennia.server.oob_cmds", "server.conf.oob_cmds"]
 
 ######################################################################
 # Default command sets
@@ -251,11 +251,7 @@ OOB_PLUGIN_MODULES = ["src.server.oob_cmds", "server.conf.oob_cmds"]
 # stored anywhere in the databse), changing these paths will only affect
 # NEW created characters/objects, not those already in play. So if you plan to
 # change this, it's recommended you do it before having created a lot of objects
-# (or simply reset the database after the change for simplicity). Remember
-# that you should never edit things in src/. Instead copy out the examples
-# in game/gamesrc/commands/examples up one level and re-point these settings
-# to point to these copies instead - these you can then change as you please
-# (or copy/paste from the default modules in src/ if you prefer).
+# (or simply reset the database after the change for simplicity).
 
 # Command set used on session before player has logged in
 CMDSET_UNLOGGEDIN = "commands.default_cmdsets.UnloggedinCmdSet"
@@ -273,7 +269,7 @@ CMDSET_PATHS = ["commands"]
 ######################################################################
 
 # Server-side session class used. #TODO
-SERVER_SESSION_CLASS = "src.server.serversession.ServerSession"
+SERVER_SESSION_CLASS = "server.serversession.ServerSession"
 
 # Base paths for typeclassed object classes. These paths must be
 # defined relative evennia's root directory. They will be searched in
@@ -328,7 +324,7 @@ BASE_BATCHPROCESS_PATHS = ['world', 'contrib']
 ######################################################################
 
 # You don't actually have to use this, but it affects the routines in
-# src.utils.gametime.py and allows for a convenient measure to
+# evennia.utils.gametime.py and allows for a convenient measure to
 # determine the current in-game time. You can of course interpret
 # "week", "month" etc as your own in-game time units as desired.
 
@@ -498,7 +494,7 @@ ADMINS = () #'Your Name', 'your_email@domain.com'),)
 MANAGERS = ADMINS
 # Absolute path to the directory that holds file uploads from web apps.
 # Example: "/home/media/media.lawrence.com"
-MEDIA_ROOT = os.path.join(GAME_DIR, "gamesrc", "web", "media")
+MEDIA_ROOT = os.path.join(GAME_DIR, "web", "media")
 # It's safe to dis-regard this, as it's a Django feature we only half use as a
 # dependency, not actually what it's primarily meant for.
 SITE_ID = 1
@@ -539,11 +535,11 @@ MEDIA_URL = '/media/'
 # STATIC_URL/admin.
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(GAME_DIR, "gamesrc", "web", "static")
+STATIC_ROOT = os.path.join(GAME_DIR, "web", "static")
 
 # Directories from which static files will be gathered from.
 STATICFILES_DIRS = (
-    os.path.join(GAME_DIR, "gamesrc", "web", "static_overrides"),
+    os.path.join(GAME_DIR, "web", "static_overrides"),
     os.path.join(EVENNIA_DIR, "web", "static"),)
 # Patterns of files in the static directories. Used here to make sure that
 # its readme file is preserved but unused.
@@ -553,7 +549,7 @@ STATICFILES_IGNORE_PATTERNS = ('README.md',)
 ACTIVE_TEMPLATE = 'prosimii'
 # We setup the location of the website template as well as the admin site.
 TEMPLATE_DIRS = (
-    os.path.join(GAME_DIR, "gamesrc", "web", "template_overrides"),
+    os.path.join(GAME_DIR, "web", "template_overrides"),
     os.path.join(EVENNIA_DIR, "web", "templates", ACTIVE_TEMPLATE),
     os.path.join(EVENNIA_DIR, "web", "templates"),)
 # List of callables that know how to import templates from various sources.

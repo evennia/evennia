@@ -30,12 +30,12 @@ except ImportError:
 
 from django.conf import settings
 from django.test.simple import DjangoTestSuiteRunner
-from src.utils.utils import mod_import
+from evennia.utils.utils import mod_import
 
 
 class EvenniaTestSuiteRunner(DjangoTestSuiteRunner):
     """
-    This test runner only runs tests on the apps specified in src/ and game/ to
+    This test runner only runs tests on the apps specified in evennia/ and game/ to
      avoid running the large number of tests defined by Django
     """
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
@@ -45,7 +45,7 @@ class EvenniaTestSuiteRunner(DjangoTestSuiteRunner):
         """
         if not test_labels:
             test_labels = [applabel.rsplit('.', 1)[1] for applabel in settings.INSTALLED_APPS
-                           if (applabel.startswith('src.') or applabel.startswith('game.'))]
+                           if (applabel.startswith('evennia.') or applabel.startswith('game.'))]
         return super(EvenniaTestSuiteRunner, self).build_suite(test_labels, extra_tests=extra_tests, **kwargs)
 
 
@@ -54,9 +54,9 @@ def suite():
     This function is called automatically by the django test runner.
     This also collates tests from packages that are not formally django applications.
     """
-    from src.locks import tests as locktests
-    from src.utils import tests as utiltests
-    from src.commands.default import tests as commandtests
+    from evennia.locks import tests as locktests
+    from evennia.utils import tests as utiltests
+    from evennia.commands.default import tests as commandtests
 
     tsuite = unittest.TestSuite()
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__]))
@@ -66,11 +66,11 @@ def suite():
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(locktests))
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(utiltests))
 
-    for path in glob.glob("../src/tests/test_*.py"):
+    for path in glob.glob("../evennia/tests/test_*.py"):
         testmod = mod_import(path)
         tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(testmod))
 
-    #from src.tests import test_commands_cmdhandler
+    #from evennia.tests import test_commands_cmdhandler
     #tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(test_commands_cmdhandler))
 
     return tsuite

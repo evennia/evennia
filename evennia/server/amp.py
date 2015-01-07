@@ -26,7 +26,7 @@ except ImportError:
 from twisted.protocols import amp
 from twisted.internet import protocol
 from twisted.internet.defer import Deferred
-from src.utils.utils import to_str, variable_from_module
+from evennia.utils.utils import to_str, variable_from_module
 
 # communication bits
 

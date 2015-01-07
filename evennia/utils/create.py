@@ -24,8 +24,8 @@ Models covered:
 from django.conf import settings
 from django.db import IntegrityError
 from django.utils import timezone
-from src.utils import logger
-from src.utils.utils import make_iter, class_from_module, dbid_to_obj
+from evennia.utils import logger
+from evennia.utils.utils import make_iter, class_from_module, dbid_to_obj
 
 # delayed imports
 _User = None
@@ -73,7 +73,7 @@ def create_object(typeclass=None, key=None, location=None,
     """
     global _ObjectDB
     if not _ObjectDB:
-        from src.objects.models import ObjectDB as _ObjectDB
+        from evennia.objects.models import ObjectDB as _ObjectDB
 
 
     typeclass = typeclass if typeclass else settings.BASE_OBJECT_TYPECLASS
@@ -138,7 +138,7 @@ def create_script(typeclass, key=None, obj=None, player=None, locks=None,
     same key to all scripts of the same type). Set obj
     to tie this script to a particular object.
 
-    See src.scripts.manager for methods to manipulate existing
+    See evennia.scripts.manager for methods to manipulate existing
     scripts in the database.
 
     report_to is an obtional object to receive error messages.
@@ -148,7 +148,7 @@ def create_script(typeclass, key=None, obj=None, player=None, locks=None,
     """
     global _ScriptDB
     if not _ScriptDB:
-        from src.scripts.models import ScriptDB as _ScriptDB
+        from evennia.scripts.models import ScriptDB as _ScriptDB
 
     typeclass = typeclass if typeclass else settings.BASE_SCRIPT_TYPECLASS
 
@@ -200,7 +200,7 @@ def create_help_entry(key, entrytext, category="General", locks=None):
     """
     global _HelpEntry
     if not _HelpEntry:
-        from src.help.models import HelpEntry as _HelpEntry
+        from evennia.help.models import HelpEntry as _HelpEntry
 
     try:
         new_help = _HelpEntry()
@@ -250,7 +250,7 @@ def create_message(senderobj, message, channels=None,
     """
     global _Msg
     if not _Msg:
-        from src.comms.models import Msg as _Msg
+        from evennia.comms.models import Msg as _Msg
     if not message:
         # we don't allow empty messages.
         return
@@ -342,7 +342,7 @@ def create_player(key, email, password,
     """
     global _PlayerDB
     if not _PlayerDB:
-        from src.players.models import PlayerDB as _PlayerDB
+        from evennia.players.models import PlayerDB as _PlayerDB
 
     typeclass = typeclass if typeclass else settings.BASE_PLAYER_TYPECLASS
 

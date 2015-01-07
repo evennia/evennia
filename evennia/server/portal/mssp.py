@@ -11,7 +11,7 @@ active players and so on.
 
 """
 from django.conf import settings
-from src.utils import utils
+from evennia.utils import utils
 
 MSSP = chr(70)
 MSSP_VAR = chr(1)

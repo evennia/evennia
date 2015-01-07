@@ -8,12 +8,10 @@ Everything starts at handle_setup()
 
 import django
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
-from src.players.models import PlayerDB
-from src.server.models import ServerConfig
-from src.utils import create
-from src.utils.utils import class_from_module
+from evennia.players.models import PlayerDB
+from evennia.server.models import ServerConfig
+from evennia.utils import create
 
 def create_config_values():
     """
@@ -151,7 +149,7 @@ def create_system_scripts():
     Setup the system repeat scripts. They are automatically started
     by the create_script function.
     """
-    from src.scripts import scripts
+    from evennia.scripts import scripts
 
     print " Creating and starting global scripts ..."
 
@@ -176,7 +174,7 @@ def start_game_time():
     (the uptime can also be found directly from the server though).
     """
     print " Starting in-game time ..."
-    from src.utils import gametime
+    from evennia.utils import gametime
     gametime.init_gametime()
 
 
@@ -206,7 +204,7 @@ def reset_server():
     ones, particularly it cleans all caches for the special objects.
     It also checks so the warm-reset mechanism works as it should.
     """
-    from src.server.sessionhandler import SESSIONS
+    from evennia.server.sessionhandler import SESSIONS
     print " Initial setup complete. Restarting Server once."
     SESSIONS.server.shutdown(mode='reset')
 
@@ -250,15 +248,15 @@ def handle_setup(last_step):
             setup_func()
         except Exception:
             if last_step + num == 2:
-                from src.players.models import PlayerDB
-                from src.objects.models import ObjectDB
+                from evennia.players.models import PlayerDB
+                from evennia.objects.models import ObjectDB
 
                 for obj in ObjectDB.objects.all():
                     obj.delete()
                 for profile in PlayerDB.objects.all():
                     profile.delete()
             elif last_step + num == 3:
-                from src.comms.models import ChannelDB
+                from evennia.comms.models import ChannelDB
                 ChannelDB.objects.all().delete()
             raise
         ServerConfig.objects.conf("last_initial_setup_step", last_step + num + 1)

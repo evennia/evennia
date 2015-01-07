@@ -33,22 +33,22 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.encoding import smart_str
 
-from src.typeclasses.attributes import Attribute, AttributeHandler, NAttributeHandler
-from src.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHandler
+from evennia.typeclasses.attributes import Attribute, AttributeHandler, NAttributeHandler
+from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHandler
 
-from src.utils.idmapper.models import SharedMemoryModel
-from src.utils.idmapper.base import SharedMemoryModelBase
-from src.server.caches import get_prop_cache, set_prop_cache
-#from src.server.caches import set_attr_cache
+from evennia.utils.idmapper.models import SharedMemoryModel
+from evennia.utils.idmapper.base import SharedMemoryModelBase
+from evennia.server.caches import get_prop_cache, set_prop_cache
+#from evennia.server.caches import set_attr_cache
 
-#from src.server.caches import call_ndb_hooks
-#from src.server.models import ServerConfig
-from src.typeclasses import managers
-from src.locks.lockhandler import LockHandler
-from src.utils.utils import (
+#from evennia.server.caches import call_ndb_hooks
+#from evennia.server.models import ServerConfig
+from evennia.typeclasses import managers
+from evennia.locks.lockhandler import LockHandler
+from evennia.utils.utils import (
     is_iter, inherits_from, lazy_property,
     class_from_module)
-from src.typeclasses.django_new_patch import patched_new
+from evennia.typeclasses.django_new_patch import patched_new
 
 __all__ = ("Attribute", "TypeNick", "TypedObject")
 
@@ -367,7 +367,7 @@ class TypedObject(SharedMemoryModel):
         # if we get to this point, the class is ok.
 
 
-        if inherits_from(self, "src.scripts.models.ScriptDB"):
+        if inherits_from(self, "evennia.scripts.models.ScriptDB"):
             if self.interval > 0:
                 raise RuntimeError("Cannot use swap_typeclass on time-dependent " \
                                    "Script '%s'.\nStop and start a new Script of the " \
@@ -448,7 +448,7 @@ class TypedObject(SharedMemoryModel):
         "Cleaning up handlers on the typeclass level"
         global TICKER_HANDLER
         if not TICKER_HANDLER:
-            from src.scripts.tickerhandler import TICKER_HANDLER
+            from evennia.scripts.tickerhandler import TICKER_HANDLER
         TICKER_HANDLER.remove(self) # removes objects' all ticker subscriptions
         self.permissions.clear()
         self.attributes.clear()

@@ -4,7 +4,7 @@ These managers handles the
 
 from django.db import models
 from django.db.models import Q
-from src.typeclasses.managers import (TypedObjectManager, TypeclassManager,
+from evennia.typeclasses.managers import (TypedObjectManager, TypeclassManager,
                                       returns_typeclass_list, returns_typeclass)
 
 _GA = object.__getattribute__
@@ -48,11 +48,11 @@ def identify_object(inp):
     # load global stores
     global _PlayerDB, _ObjectDB, _ChannelDB
     if not _PlayerDB:
-        from src.players.models import PlayerDB as _PlayerDB
+        from evennia.players.models import PlayerDB as _PlayerDB
     if not _ObjectDB:
-        from src.objects.models import ObjectDB as _ObjectDB
+        from evennia.objects.models import ObjectDB as _ObjectDB
     if not _ChannelDB:
-        from src.comms.models import ChannelDB as _ChannelDB
+        from evennia.comms.models import ChannelDB as _ChannelDB
 
     if not inp:
         return inp, None

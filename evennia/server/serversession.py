@@ -10,14 +10,14 @@ are stored on the Portal side)
 import time
 from datetime import datetime
 from django.conf import settings
-#from src.scripts.models import ScriptDB
-from src.comms.models import ChannelDB
-from src.utils import logger, utils
-from src.utils.inlinefunc import parse_inlinefunc
-from src.utils.utils import make_iter
-from src.commands.cmdhandler import cmdhandler
-from src.commands.cmdsethandler import CmdSetHandler
-from src.server.session import Session
+#from evennia.scripts.models import ScriptDB
+from evennia.comms.models import ChannelDB
+from evennia.utils import logger, utils
+from evennia.utils.inlinefunc import parse_inlinefunc
+from evennia.utils.utils import make_iter
+from evennia.commands.cmdhandler import cmdhandler
+from evennia.commands.cmdsethandler import CmdSetHandler
+from evennia.server.session import Session
 
 IDLE_COMMAND = settings.IDLE_COMMAND
 _GA = object.__getattribute__
@@ -72,7 +72,7 @@ class ServerSession(Session):
         """
         global _ObjectDB
         if not _ObjectDB:
-            from src.objects.models import ObjectDB as _ObjectDB
+            from evennia.objects.models import ObjectDB as _ObjectDB
 
         if not self.logged_in:
             # assign the unloggedin-command set.
@@ -222,7 +222,7 @@ class ServerSession(Session):
             # handle oob instructions
             global _OOB_HANDLER
             if not _OOB_HANDLER:
-                from src.server.oobhandler import OOB_HANDLER as _OOB_HANDLER
+                from evennia.server.oobhandler import OOB_HANDLER as _OOB_HANDLER
             oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob", None))
             #print "session.data_in: oobstruct:",oobstruct
             for (funcname, args, kwargs) in oobstruct:

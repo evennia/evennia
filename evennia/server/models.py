@@ -14,9 +14,9 @@ except ImportError:
     import pickle
 
 from django.db import models
-from src.utils.idmapper.models import WeakSharedMemoryModel
-from src.utils import logger, utils
-from src.server.manager import ServerConfigManager
+from evennia.utils.idmapper.models import WeakSharedMemoryModel
+from evennia.utils import logger, utils
+from evennia.server.manager import ServerConfigManager
 
 
 #------------------------------------------------------------

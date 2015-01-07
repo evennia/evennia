@@ -11,7 +11,7 @@ server reloads and be started automaticall on boot.
 
 Example:
 
-    from src.scripts.tickerhandler import TICKER_HANDLER
+    from evennia.scripts.tickerhandler import TICKER_HANDLER
 
     # tick myobj every 15 seconds
     TICKER_HANDLER.add(myobj, 15)
@@ -49,10 +49,10 @@ call the handler's save() and restore() methods when the server reboots.
 
 """
 from twisted.internet.defer import inlineCallbacks
-from src.scripts.scripts import ExtendedLoopingCall
-from src.server.models import ServerConfig
-from src.utils.logger import log_trace
-from src.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
+from evennia.scripts.scripts import ExtendedLoopingCall
+from evennia.server.models import ServerConfig
+from evennia.utils.logger import log_trace
+from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 
 _GA = object.__getattribute__
 _SA = object.__setattr__

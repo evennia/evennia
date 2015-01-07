@@ -18,7 +18,7 @@ while puppeting a Character already before.
 
 Installation:
 
-Read the instructions in game/gamesrc/commands/examples/cmdset.py in
+Read the instructions in contrib/examples/cmdset.py in
 order to create a new default cmdset module for Evennia to use (copy
 the template up one level, and change the settings file's relevant
 variables to point to the cmdsets inside). If you already have such
@@ -32,8 +32,8 @@ following line to the end of OOCCmdSet's at_cmdset_creation():
 """
 
 from django.conf import settings
-from ev import Command, create_object, utils
-from ev import default_cmds, managers
+from evennia import Command, create_object, utils
+from evennia import default_cmds, managers
 
 CHARACTER_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 
@@ -72,7 +72,7 @@ class CmdOOCLook(default_cmds.CmdLook):
 
         # making sure caller is really a player
         self.character = None
-        if utils.inherits_from(self.caller, "src.objects.objects.Object"):
+        if utils.inherits_from(self.caller, "evennia.objects.objects.Object"):
             # An object of some type is calling. Convert to player.
             #print self.caller, self.caller.__class__
             self.character = self.caller
@@ -149,7 +149,7 @@ class CmdOOCCharacterCreate(Command):
 
         # making sure caller is really a player
         self.character = None
-        if utils.inherits_from(self.caller, "src.objects.objects.Object"):
+        if utils.inherits_from(self.caller, "evennia.objects.objects.Object"):
             # An object of some type is calling. Convert to player.
             #print self.caller, self.caller.__class__
             self.character = self.caller

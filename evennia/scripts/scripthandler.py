@@ -5,9 +5,9 @@ An scripthandler is automatically added to all game objects. You
 access it through the property 'scripts' on the game object.
 """
 
-from src.scripts.models import ScriptDB
-from src.utils import create
-from src.utils import logger
+from evennia.scripts.models import ScriptDB
+from evennia.utils import create
+from evennia.utils import logger
 
 from django.utils.translation import ugettext as _
 

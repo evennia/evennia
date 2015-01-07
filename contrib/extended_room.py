@@ -23,7 +23,7 @@ time comes.
 
 An updated @desc command allows for setting seasonal descriptions.
 
-The room uses the src.utils.gametime.GameTime global script. This is
+The room uses the evennia.utils.gametime.GameTime global script. This is
 started by default, but if you have deactivated it, you need to
 supply your own time keeping mechanism.
 
@@ -69,10 +69,10 @@ Installation/testing:
 
 import re
 from django.conf import settings
-from ev import Room
-from ev import gametime
-from ev import default_cmds
-from ev import utils
+from evennia import Room
+from evennia import gametime
+from evennia import default_cmds
+from evennia import utils
 
 # error return function, needed by Extended Look command
 _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))

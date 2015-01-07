@@ -11,7 +11,7 @@ contains the respective handlers.
 
 from django.conf import settings
 from django.db import models
-from src.utils.utils import to_str, make_iter
+from evennia.utils.utils import to_str, make_iter
 
 
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE

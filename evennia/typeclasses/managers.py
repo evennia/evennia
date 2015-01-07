@@ -5,8 +5,8 @@ all Attributes and TypedObjects).
 """
 from functools import update_wrapper
 from django.db.models import Q
-from src.utils import idmapper
-from src.utils.utils import make_iter, variable_from_module
+from evennia.utils import idmapper
+from evennia.utils.utils import make_iter, variable_from_module
 
 __all__ = ("TypedObjectManager", )
 _GA = object.__getattribute__
@@ -160,7 +160,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             # create a new tag
             global _Tag
             if not _Tag:
-                from src.typeclasses.models import Tag as _Tag
+                from evennia.typeclasses.models import Tag as _Tag
             tag = _Tag.objects.create(
                 db_key=key.strip().lower() if key is not None else None,
                 db_category=category.strip().lower() if category and key is not None else None,

@@ -10,11 +10,11 @@ game world, policy info, rules and similar.
 
 """
 from django.db import models
-from src.utils.idmapper.models import SharedMemoryModel
-from src.help.manager import HelpEntryManager
-from src.typeclasses.models import Tag, TagHandler
-from src.locks.lockhandler import LockHandler
-from src.utils.utils import lazy_property
+from evennia.utils.idmapper.models import SharedMemoryModel
+from evennia.help.manager import HelpEntryManager
+from evennia.typeclasses.models import Tag, TagHandler
+from evennia.locks.lockhandler import LockHandler
+from evennia.utils.utils import lazy_property
 __all__ = ("HelpEntry",)
 
 

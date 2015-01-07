@@ -8,12 +8,12 @@ It also defines a few common scripts.
 from twisted.internet.defer import Deferred, maybeDeferred
 from twisted.internet.task import LoopingCall
 from django.conf import settings
-from src.typeclasses.models import TypeclassBase
 from django.utils.translation import ugettext as _
-from src.scripts.models import ScriptDB
-from src.scripts.manager import ScriptManager
-from src.comms import channelhandler
-from src.utils import logger
+from evennia.typeclasses.models import TypeclassBase
+from evennia.scripts.models import ScriptDB
+from evennia.scripts.manager import ScriptManager
+from evennia.comms import channelhandler
+from evennia.utils import logger
 
 __all__ = ["Script", "DoNothing", "CheckSessions",
            "ValidateScripts", "ValidateChannelHandler"]
@@ -555,7 +555,7 @@ class CheckSessions(Script):
         "called every 60 seconds"
         global _SESSIONS
         if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
+            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         #print "session check!"
         #print "ValidateSessions run"
         _SESSIONS.validate_sessions()
@@ -576,7 +576,7 @@ class ValidateIdmapperCache(Script):
         "Called every ~5 mins"
         global _FLUSH_CACHE
         if not _FLUSH_CACHE:
-            from src.utils.idmapper.base import conditional_flush as _FLUSH_CACHE
+            from evennia.utils.idmapper.base import conditional_flush as _FLUSH_CACHE
         _FLUSH_CACHE(_IDMAPPER_CACHE_MAX_MEMORY)
 
 class ValidateScripts(Script):

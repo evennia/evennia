@@ -3,11 +3,11 @@ Default Typeclass for Comms.
 
 See objects.objects for more information on Typeclassing.
 """
-from src.typeclasses.models import TypeclassBase
-from src.comms.models import Msg, TempMsg, ChannelDB
-from src.comms.managers import ChannelManager
-from src.utils import logger
-from src.utils.utils import make_iter
+from evennia.typeclasses.models import TypeclassBase
+from evennia.comms.models import Msg, TempMsg, ChannelDB
+from evennia.comms.managers import ChannelManager
+from evennia.utils import logger
+from evennia.utils.utils import make_iter
 
 
 class Channel(ChannelDB):
@@ -110,7 +110,7 @@ class Channel(ChannelDB):
         self.attributes.clear()
         self.aliases.clear()
         super(Channel, self).delete()
-        from src.comms.channelhandler import CHANNELHANDLER
+        from evennia.comms.channelhandler import CHANNELHANDLER
         CHANNELHANDLER.update()
 
     def channel_prefix(self, msg=None, emit=False):

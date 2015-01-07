@@ -5,8 +5,8 @@ Room Typeclasses for the TutorialWorld.
 """
 
 import random
-from ev import CmdSet, Script, Command, DefaultRoom
-from ev import utils, create_object, search_object
+from evennia import CmdSet, Script, Command, DefaultRoom
+from evennia import utils, create_object, search_object
 from contrib.tutorial_world import scripts as tut_scripts
 from contrib.tutorial_world.objects import LightSource, TutorialObject
 
@@ -210,8 +210,8 @@ class CmdDarkHelp(Command):
 
 # the nomatch system command will give a suitable error when we cannot find
 # the normal commands.
-from src.commands.default.syscommands import CMD_NOMATCH
-from src.commands.default.general import CmdSay
+from evennia.commands.default.syscommands import CMD_NOMATCH
+from evennia.commands.default.general import CmdSay
 
 
 class CmdDarkNoMatch(Command):

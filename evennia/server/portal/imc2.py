@@ -8,10 +8,10 @@ from twisted.application import internet
 from twisted.internet import protocol
 from twisted.conch import telnet
 
-from src.server.session import Session
-from src.utils import logger, utils
-from src.server.portal.imc2lib import imc2_ansi
-from src.server.portal.imc2lib import imc2_packets as pck
+from evennia.server.session import Session
+from evennia.utils import logger, utils
+from evennia.server.portal.imc2lib import imc2_ansi
+from evennia.server.portal.imc2lib import imc2_packets as pck
 
 from django.utils.translation import ugettext as _
 
@@ -337,7 +337,7 @@ class IMC2Bot(telnet.StatefulTelnetProtocol, Session):
 class IMC2BotFactory(protocol.ReconnectingClientFactory):
     """
     Creates instances of the IMC2Protocol. Should really only ever
-    need to create one connection. Tied in via src/server.py.
+    need to create one connection. Tied in via evennia/server.py.
     """
     initialDelay = 1
     factor = 1.5

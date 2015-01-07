@@ -32,7 +32,7 @@ After a reload the dice (or roll) command will be available in-game.
 
 import re
 from random import randint
-from ev import default_cmds, CmdSet
+from evennia import default_cmds, CmdSet
 
 
 def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=False):

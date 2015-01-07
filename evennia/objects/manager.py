@@ -5,10 +5,10 @@ from itertools import chain
 from django.db.models import Q
 from django.conf import settings
 from django.db.models.fields import exceptions
-from src.typeclasses.managers import TypedObjectManager, TypeclassManager
-from src.typeclasses.managers import returns_typeclass, returns_typeclass_list
-from src.utils import utils
-from src.utils.utils import to_unicode, is_iter, make_iter, string_partial_matching
+from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
+from evennia.typeclasses.managers import returns_typeclass, returns_typeclass_list
+from evennia.utils import utils
+from evennia.utils.utils import to_unicode, is_iter, make_iter, string_partial_matching
 
 __all__ = ("ObjectManager",)
 _GA = object.__getattribute__
@@ -124,7 +124,7 @@ class ObjectDBManager(TypedObjectManager):
             # We have to loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.
             global _ATTR
             if not _ATTR:
-                from src.typeclasses.models import Attribute as _ATTR
+                from evennia.typeclasses.models import Attribute as _ATTR
             cands = list(self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name)))
             results = [attr.objectdb_set.all() for attr in _ATTR.objects.filter(objectdb__in=cands, db_value=attribute_value)]
             return chain(*results)
@@ -164,7 +164,7 @@ class ObjectDBManager(TypedObjectManager):
         except exceptions.FieldError:
             return []
         except ValueError:
-            from src.utils import logger
+            from evennia.utils import logger
             logger.log_errmsg("The property '%s' does not support search criteria of the type %s." % (property_name, type(property_value)))
             return []
 
@@ -374,8 +374,8 @@ class ObjectDBManager(TypedObjectManager):
             new_destination = original_object.destination
 
         # create new object
-        from src.utils import create
-        from src.scripts.models import ScriptDB
+        from evennia.utils import create
+        from evennia.scripts.models import ScriptDB
         new_object = create.create_object(typeclass_path,
                                           key=new_key,
                                           location=new_location,

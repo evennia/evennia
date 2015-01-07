@@ -1,7 +1,7 @@
 # test with game/manage.py test
 import unittest
 
-from src.utils import utils
+from evennia.utils import utils
 
 class TestIsIter(unittest.TestCase):
     def test_is_iter(self):
@@ -33,13 +33,13 @@ class TestDedent(unittest.TestCase):
         self.assertEqual("TestDedent", utils.dedent("   TestDedent"))
         # Leading whitespace, multi line
         input_string = "  hello\n  world"
-    	expected_string = "hello\nworld"
-    	self.assertEqual(expected_string, utils.dedent(input_string))        
+        expected_string = "hello\nworld"
+        self.assertEqual(expected_string, utils.dedent(input_string))
 
 class TestListToString(unittest.TestCase):
     """
-    Default function header from utils.py: 
-    	list_to_string(inlist, endsep="and", addquote=False)
+    Default function header from utils.py:
+    list_to_string(inlist, endsep="and", addquote=False)
 
     Examples:
      no endsep:
@@ -55,7 +55,7 @@ class TestListToString(unittest.TestCase):
         self.assertEqual('"1", "2", "3"', utils.list_to_string([1,2,3], endsep="", addquote=True))
         self.assertEqual('1, 2 and 3', utils.list_to_string([1,2,3]))
         self.assertEqual('"1", "2" and "3"', utils.list_to_string([1,2,3], endsep="and", addquote=True))
-        
+
 
 class TestWildcardToRegexp(unittest.TestCase):
     def test_wildcard_to_regexp(self):

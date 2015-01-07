@@ -3,7 +3,7 @@ This defines some generally useful scripts for the tutorial world.
 """
 
 import random
-from ev import Script
+from evennia import Script
 
 
 #------------------------------------------------------------

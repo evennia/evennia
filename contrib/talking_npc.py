@@ -23,7 +23,7 @@ mob implementation.
 
 """
 
-from ev import Object, CmdSet, default_cmds
+from evennia import Object, CmdSet, default_cmds
 from contrib import menusystem
 
 

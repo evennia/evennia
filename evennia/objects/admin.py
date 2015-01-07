@@ -6,8 +6,8 @@
 from django import forms
 from django.conf import settings
 from django.contrib import admin
-from src.typeclasses.admin import AttributeInline, TagInline
-from src.objects.models import ObjectDB
+from evennia.typeclasses.admin import AttributeInline, TagInline
+from evennia.objects.models import ObjectDB
 
 
 class ObjectAttributeInline(AttributeInline):

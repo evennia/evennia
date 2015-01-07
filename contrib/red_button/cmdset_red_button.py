@@ -8,7 +8,7 @@ cmdset - this way you can often re-use the commands too.
 """
 
 import random
-from ev import Command, CmdSet
+from evennia import Command, CmdSet
 
 # Some simple commands for the red button
 
@@ -312,8 +312,8 @@ class BlindCmdSet(CmdSet):
 
     def at_cmdset_creation(self):
         "Setup the blind cmdset"
-        from src.commands.default.general import CmdSay
-        from src.commands.default.general import CmdPose
+        from evennia.commands.default.general import CmdSay
+        from evennia.commands.default.general import CmdPose
         self.add(CmdSay())
         self.add(CmdPose())
         self.add(CmdBlindLook())

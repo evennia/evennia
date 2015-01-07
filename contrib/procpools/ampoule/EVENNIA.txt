@@ -16,5 +16,5 @@ down the line.
 
 Changes made by Evennia are minor - it's mainly limiting spam to the
 log and an added ability to turn this on/off through settings. Most
-Evennia related code are found in src/server/procpool.py and
-src/server/server.py.
+Evennia related code are found in evennia/server/procpool.py and
+evennia/server/server.py.

@@ -5,7 +5,7 @@ Evennia ajax webclient (javascript component)
 The client is composed of several parts:
  templates/webclient.html - the main page
  webclient/views.py - the django view serving the template (based on urls.py pattern)
- src/server/webclient.py - the server component receiving requests from the client
+ evennia/server/webclient.py - the server component receiving requests from the client
  this file - the javascript component handling dynamic ajax content
 
 This implements an ajax mud client for use with Evennia, using jQuery

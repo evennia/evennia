@@ -9,7 +9,7 @@ etc.
 
 """
 import re
-from src.utils.utils import to_str
+from evennia.utils.utils import to_str
 
 # MSDP-relevant telnet cmd/opt-codes
 MSDP = chr(69)

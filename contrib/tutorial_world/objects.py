@@ -22,8 +22,8 @@ WeaponRack
 import time
 import random
 
-from ev import create_object
-from ev import DefaultObject, DefaultExit, Command, CmdSet, Script
+from evennia import create_object
+from evennia import DefaultObject, DefaultExit, Command, CmdSet, Script
 
 #------------------------------------------------------------
 #

@@ -14,7 +14,7 @@ if os.name == 'nt':
     # For Windows batchfile we need an extra path insertion here.
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(
                 os.path.dirname(os.path.abspath(__file__))))))
-from src.server.webserver import EvenniaReverseProxyResource
+from evennia.server.webserver import EvenniaReverseProxyResource
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor
 from twisted.web import server
@@ -23,8 +23,8 @@ import django
 django.setup()
 
 from django.conf import settings
-from src.utils.utils import get_evennia_version, mod_import, make_iter
-from src.server.portal.portalsessionhandler import PORTAL_SESSIONS
+from evennia.utils.utils import get_evennia_version, mod_import, make_iter
+from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
 
 PORTAL_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)]
 
@@ -164,7 +164,7 @@ if AMP_ENABLED:
     # the portal and the mud server. Only reason to ever deactivate
     # it would be during testing and debugging.
 
-    from src.server import amp
+    from evennia.server import amp
 
     print '  amp (to Server): %s' % AMP_PORT
 
@@ -181,7 +181,7 @@ if TELNET_ENABLED:
 
     # Start telnet game connections
 
-    from src.server.portal import telnet
+    from evennia.server.portal import telnet
 
     for interface in TELNET_INTERFACES:
         ifacestr = ""
@@ -203,7 +203,7 @@ if SSL_ENABLED:
 
     # Start SSL game connection (requires PyOpenSSL).
 
-    from src.server.portal import ssl
+    from evennia.server.portal import ssl
 
     for interface in SSL_INTERFACES:
         ifacestr = ""
@@ -229,7 +229,7 @@ if SSH_ENABLED:
     # Start SSH game connections. Will create a keypair in
     # evennia/game if necessary.
 
-    from src.server.portal import ssh
+    from evennia.server.portal import ssh
 
     for interface in SSH_INTERFACES:
         ifacestr = ""
@@ -262,7 +262,7 @@ if WEBSERVER_ENABLED:
             webclientstr = ""
             if WEBCLIENT_ENABLED:
                 # create ajax client processes at /webclientdata
-                from src.server.portal.webclient import WebClient
+                from evennia.server.portal.webclient import WebClient
 
                 webclient = WebClient()
                 webclient.sessionhandler = PORTAL_SESSIONS
@@ -272,8 +272,8 @@ if WEBSERVER_ENABLED:
                 if WEBSOCKET_CLIENT_ENABLED and not websocket_started:
                     # start websocket client port for the webclient
                     # we only support one websocket client
-                    from src.server.portal import websocket_client
-                    from src.utils.txws import WebSocketFactory
+                    from evennia.server.portal import websocket_client
+                    from evennia.utils.txws import WebSocketFactory
 
                     interface = WEBSOCKET_CLIENT_INTERFACE
                     port = WEBSOCKET_CLIENT_PORT

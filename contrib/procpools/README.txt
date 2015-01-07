@@ -25,7 +25,7 @@ python_procpool.py - this implements a way to execute arbitrary python
            code on the procpool. Import run_async() from this
            module in order to use this functionality in-code
            (this is a replacement to the in-process run_async
-           found in src.utils.utils).
+           found in evennia.utils.utils).
 python_procpool_plugin.py - this is a plugin module for the python
            procpool, to start and add it to the server. Adding it 
            is a single line in your settings file - see the header

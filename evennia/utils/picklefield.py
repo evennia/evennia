@@ -43,7 +43,7 @@ from django.forms import CharField, Textarea
 from django.forms.util import flatatt
 from django.utils.html import format_html
 
-from src.utils.dbserialize import from_pickle, to_pickle
+from evennia.utils.dbserialize import from_pickle, to_pickle
 
 try:
     from django.utils.encoding import force_text
@@ -276,4 +276,4 @@ try:
 except ImportError:
     pass
 else:
-    add_introspection_rules([], [r"^src\.utils\.picklefield\.PickledObjectField"])
+    add_introspection_rules([], [r"^evennia\.utils\.picklefield\.PickledObjectField"])

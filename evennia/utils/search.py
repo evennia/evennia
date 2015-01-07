@@ -5,7 +5,7 @@ search methods for the various database tables.
 
 It is intended to be used e.g. as
 
-> from src.utils import search
+> from evennia.utils import search
 > match = search.objects(...)
 
 Note that this is not intended to be a complete listing of all search
@@ -17,9 +17,9 @@ Also remember that all commands in this file return lists (also if
 there is only one match) unless noted otherwise.
 
 Example: To reach the search method 'get_object_with_player'
-         in src/objects/managers.py:
+         in evennia/objects/managers.py:
 
-> from src.objects.models import ObjectDB
+> from evennia.objects.models import ObjectDB
 > match = Object.objects.get_object_with_player(...)
 
 

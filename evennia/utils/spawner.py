@@ -9,7 +9,7 @@ The main function is spawn(*prototype), where the prototype
 is a dictionary like this:
 
 GOBLIN = {
- "typeclass": "game.gamesrc.objects.objects.Monster",
+ "typeclass": "types.objects.Monster",
  "key": "goblin grunt",
  "health": lambda: randint(20,30),
  "resists": ["cold", "poison"],
@@ -75,8 +75,8 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 
 from django.conf import settings
 from random import randint
-from src.objects.models import ObjectDB
-from src.utils.utils import make_iter, all_from_module, dbid_to_obj
+from evennia.objects.models import ObjectDB
+from evennia.utils.utils import make_iter, all_from_module, dbid_to_obj
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 

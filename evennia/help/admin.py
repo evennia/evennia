@@ -3,7 +3,7 @@ This defines how to edit help entries in Admin.
 """
 from django import forms
 from django.contrib import admin
-from src.help.models import HelpEntry
+from evennia.help.models import HelpEntry
 
 
 

@@ -108,7 +108,7 @@ to any other identifier you can use.
 import re
 import inspect
 from django.conf import settings
-from src.utils import logger, utils
+from evennia.utils import logger, utils
 from django.utils.translation import ugettext as _
 
 __all__ = ("LockHandler", "LockException")

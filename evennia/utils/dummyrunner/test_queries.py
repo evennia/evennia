@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     setup_string = \
 """
-from src.objects.models import ObjectDB
+from evennia.objects.models import ObjectDB
 g = ObjectDB.objects.get(db_key="Griatch")
 """
     exec_string = \

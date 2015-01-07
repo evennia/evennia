@@ -7,7 +7,7 @@
 #
 
 from django.conf import settings
-from src.utils.utils import get_evennia_version
+from evennia.utils.utils import get_evennia_version
 
 # Determine the site name and server version
 

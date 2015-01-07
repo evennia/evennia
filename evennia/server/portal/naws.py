@@ -11,7 +11,6 @@ it when the size changes
 
 """
 from django.conf import settings
-from src.utils import utils
 
 NAWS = chr(31)
 IS = chr(0)

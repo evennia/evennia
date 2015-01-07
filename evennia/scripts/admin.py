@@ -2,9 +2,9 @@
 # This sets up how models are displayed
 # in the web admin interface.
 #
-from src.typeclasses.admin import AttributeInline, TagInline
+from evennia.typeclasses.admin import AttributeInline, TagInline
 
-from src.scripts.models import ScriptDB
+from evennia.scripts.models import ScriptDB
 from django.contrib import admin
 
 

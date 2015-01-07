@@ -36,7 +36,7 @@ TickerHandler might be better.
 
 """
 
-from ev import Exit, utils, Command
+from evennia import Exit, utils, Command
 
 MOVE_DELAY = {"stroll": 6,
               "walk": 4,

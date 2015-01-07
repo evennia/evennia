@@ -27,9 +27,9 @@ Common examples of uses of Scripts:
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
-from src.typeclasses.models import TypedObject
-from src.scripts.manager import ScriptDBManager
-from src.utils.utils import dbref, to_str
+from evennia.typeclasses.models import TypedObject
+from evennia.scripts.manager import ScriptDBManager
+from evennia.utils.utils import dbref, to_str
 
 __all__ = ("ScriptDB",)
 _GA = object.__getattribute__
@@ -132,7 +132,7 @@ class ScriptDB(TypedObject):
         except AttributeError:
             pass
         if isinstance(value, (basestring, int)):
-            from src.objects.models import ObjectDB
+            from evennia.objects.models import ObjectDB
             value = to_str(value, force_string=True)
             if (value.isdigit() or value.startswith("#")):
                 dbid = dbref(value, reqhash=False)

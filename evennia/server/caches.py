@@ -8,8 +8,8 @@ import os
 import threading
 from collections import defaultdict
 
-from src.server.models import ServerConfig
-from src.utils.utils import uses_database, to_str, get_evennia_pids
+from evennia.server.models import ServerConfig
+from evennia.utils.utils import uses_database, to_str, get_evennia_pids
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -79,7 +79,7 @@ def hashid(obj, suffix=""):
 # Cache callback handlers
 #------------------------------------------------------------
 
-# callback to field pre_save signal (connected in src.server.server)
+# callback to field pre_save signal (connected in evennia.server.server)
 #def field_pre_save(sender, instance=None, update_fields=None, raw=False, **kwargs):
 #    """
 #    Called at the beginning of the field save operation. The save method

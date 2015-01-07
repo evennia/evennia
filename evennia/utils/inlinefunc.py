@@ -45,7 +45,7 @@ should be returned. The inlinefunc should never cause a traceback.
 
 import re
 from django.conf import settings
-from src.utils import utils
+from evennia.utils import utils
 
 
 # inline functions

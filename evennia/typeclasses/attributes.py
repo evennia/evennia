@@ -15,11 +15,11 @@ from django.db import models
 from django.conf import settings
 from django.utils.encoding import smart_str
 
-from src.locks.lockhandler import LockHandler
-from src.utils.idmapper.models import SharedMemoryModel
-from src.utils.dbserialize import to_pickle, from_pickle
-from src.utils.picklefield import PickledObjectField
-from src.utils.utils import lazy_property, to_str, make_iter
+from evennia.locks.lockhandler import LockHandler
+from evennia.utils.idmapper.models import SharedMemoryModel
+from evennia.utils.dbserialize import to_pickle, from_pickle
+from evennia.utils.picklefield import PickledObjectField
+from evennia.utils.utils import lazy_property, to_str, make_iter
 
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 

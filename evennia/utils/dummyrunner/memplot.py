@@ -11,7 +11,7 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 import ev
-from src.utils.idmapper import base as _idmapper
+from evennia.utils.idmapper import base as _idmapper
 
 LOGFILE = "logs/memoryusage.log"
 INTERVAL = 30 # log every 30 seconds

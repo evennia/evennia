@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^accounts/logout', 'django.contrib.auth.views.logout', name="logout"),
 
     # Page place-holder for things that aren't implemented yet.
-    url(r'^tbi/', 'src.web.views.to_be_implemented', name='to_be_implemented'),
+    url(r'^tbi/', 'evennia.web.views.to_be_implemented', name='to_be_implemented'),
 
     # Admin interface
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -39,19 +39,19 @@ urlpatterns = [
     url(r'^favicon\.ico$',  RedirectView.as_view(url='/media/images/favicon.ico')),
 
     # ajax stuff
-    url(r'^webclient/', include('src.web.webclient.urls', namespace='webclient', app_name='webclient')),
+    url(r'^webclient/', include('evennia.web.webclient.urls', namespace='webclient', app_name='webclient')),
 
     # Front page
-    url(r'^$', 'src.web.views.page_index', name="index"),
+    url(r'^$', 'evennia.web.views.page_index', name="index"),
 
     # Django original admin page. Make this URL is always available, whether
     # we've chosen to use Evennia's custom admin or not.
-    url(r'django_admin/', 'src.web.views.admin_wrapper', name="django_admin")]
+    url(r'django_admin/', 'evennia.web.views.admin_wrapper', name="django_admin")]
 
 if settings.EVENNIA_ADMIN:
     urlpatterns += [
         # Our override for the admin.
-        url('^admin/$', 'src.web.views.evennia_admin', name="evennia_admin"),
+        url('^admin/$', 'evennia.web.views.evennia_admin', name="evennia_admin"),
 
         # Makes sure that other admin pages get loaded.
         url(r'^admin/', include(admin.site.urls))]

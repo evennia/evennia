@@ -12,11 +12,6 @@ SERVER_SERVICES_PLUGIN_MODULES.append("contrib.procpools.python_procpool_plugin"
 
 Next reboot the server and the new service will be available.
 
-If you want to adjust the defaults, copy this file to
-game/gamesrc/conf/ and re-point
-settings.SERVER_SERVICES_PLUGINS_MODULES to that file instead.  This
-is to avoid clashes with eventual upstream modifications to this file.
-
 It is not recommended to use this with an SQLite3 database, at least
 if you plan to do many out-of-process database writes. SQLite3 does
 not work very well with a high frequency of off-process writes due to

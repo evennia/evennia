@@ -5,11 +5,11 @@ Player that are  controlled by the server.
 """
 
 from django.conf import settings
-from src.players.player import DefaultPlayer
-from src.scripts.scripts import Script
-from src.commands.command import Command
-from src.commands.cmdset import CmdSet
-from src.utils import search
+from evennia.players.player import DefaultPlayer
+from evennia.scripts.scripts import Script
+from evennia.commands.command import Command
+from evennia.commands.cmdset import CmdSet
+from evennia.utils import search
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 
@@ -50,7 +50,7 @@ class BotStarter(Script):
         """
         global _SESSIONS
         if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
+            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         for session in _SESSIONS.sessions_from_player(self.player):
             session.update_session_counters(idle=True)
 
@@ -155,7 +155,7 @@ class IRCBot(Bot):
         """
         global _SESSIONS
         if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
+            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
 
         # if keywords are given, store (the BotStarter script
         # will not give any keywords, so this should normally only
@@ -186,7 +186,7 @@ class IRCBot(Bot):
                       "channel": self.db.irc_channel ,
                       "network": self.db.irc_network,
                       "port": self.db.irc_port}
-        _SESSIONS.start_bot_session("src.server.portal.irc.IRCBotFactory", configdict)
+        _SESSIONS.start_bot_session("evennia.server.portal.irc.IRCBotFactory", configdict)
 
     def msg(self, text=None, **kwargs):
         """
@@ -229,7 +229,7 @@ class RSSBot(Bot):
         """
         global _SESSIONS
         if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
+            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
 
         if ev_channel:
             # connect to Evennia channel
@@ -247,7 +247,7 @@ class RSSBot(Bot):
         configdict = {"uid": self.dbid,
                       "url": self.db.rss_url,
                       "rate": self.db.rss_rate}
-        _SESSIONS.start_bot_session("src.server.portal.rss.RSSBotFactory", configdict)
+        _SESSIONS.start_bot_session("evennia.server.portal.rss.RSSBotFactory", configdict)
 
     def execute_cmd(self, text=None, sessid=None):
         """
@@ -277,7 +277,7 @@ class IMC2Bot(Bot):
         """
         global _SESSIONS
         if not _SESSIONS:
-            from src.server.sessionhandler import SESSIONS as _SESSIONS
+            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         if ev_channel:
             # connect to Evennia channel
             channel = search.channel_search(ev_channel)
@@ -308,7 +308,7 @@ class IMC2Bot(Bot):
                       "client_pwd": self.db.client_pwd,
                       "server_pwd": self.db.server_pwd}
 
-        _SESSIONS.start_bot_session("src.server.portal.imc2.IMC2BotFactory", configdict)
+        _SESSIONS.start_bot_session("evennia.server.portal.imc2.IMC2BotFactory", configdict)
 
     def msg(self, text=None, **kwargs):
         """

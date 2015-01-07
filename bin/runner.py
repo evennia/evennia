@@ -52,8 +52,8 @@ django.setup()
 from django.conf import settings
 
 # Setup access of the evennia server itself
-SERVER_PY_FILE = os.path.join(settings.SRC_DIR, 'server/server.py')
-PORTAL_PY_FILE = os.path.join(settings.SRC_DIR, 'server/portal/portal.py')
+SERVER_PY_FILE = os.path.join(settings.LIB_DIR, 'server/server.py')
+PORTAL_PY_FILE = os.path.join(settings.LIB_DIR, 'server/portal/portal.py')
 
 # Get logfile names
 SERVER_LOGFILE = settings.SERVER_LOG_FILE
@@ -315,6 +315,6 @@ def main():
     start_services(server_argv, portal_argv)
 
 if __name__ == '__main__':
-    from src.utils.utils import check_evennia_dependencies
+    from evennia.utils.utils import check_evennia_dependencies
     if check_evennia_dependencies():
         main()

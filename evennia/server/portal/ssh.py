@@ -24,9 +24,9 @@ from twisted.internet import defer
 from twisted.conch import interfaces as iconch
 from twisted.python import components
 from django.conf import settings
-from src.server import session
-from src.players.models import PlayerDB
-from src.utils import ansi, utils
+from evennia.server import session
+from evennia.players.models import PlayerDB
+from evennia.utils import ansi, utils
 
 ENCODINGS = settings.ENCODINGS
 

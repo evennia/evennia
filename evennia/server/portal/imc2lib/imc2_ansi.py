@@ -6,7 +6,7 @@ This is a IMC2 complacent version.
 """
 
 import re
-from src.utils import ansi
+from evennia.utils import ansi
 
 
 class IMCANSIParser(ansi.ANSIParser):

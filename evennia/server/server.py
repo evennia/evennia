@@ -23,23 +23,23 @@ django.setup()
 from django.db import connection
 from django.conf import settings
 
-from src.players.models import PlayerDB
-from src.scripts.models import ScriptDB
-from src.server.models import ServerConfig
-from src.server import initial_setup
+from evennia.players.models import PlayerDB
+from evennia.scripts.models import ScriptDB
+from evennia.server.models import ServerConfig
+from evennia.server import initial_setup
 
-from src.utils.utils import get_evennia_version, mod_import, make_iter
-from src.comms import channelhandler
-from src.server.sessionhandler import SESSIONS
+from evennia.utils.utils import get_evennia_version, mod_import, make_iter
+from evennia.comms import channelhandler
+from evennia.server.sessionhandler import SESSIONS
 
 # setting up server-side field cache
 
 from django.db.models.signals import post_save
-from src.server.caches import field_post_save
+from evennia.server.caches import field_post_save
 #pre_save.connect(field_pre_save, dispatch_uid="fieldcache")
 post_save.connect(field_post_save, dispatch_uid="fieldcache")
 
-#from src.server.caches import post_attr_update
+#from evennia.server.caches import post_attr_update
 #from django.db.models.signals import m2m_changed
 
 # connect to attribute cache signal
@@ -169,9 +169,9 @@ class Evennia(object):
         if len(mismatches):  # can't use any() since mismatches may be [0] which reads as False for any()
             # we have a changed default. Import relevant objects and
             # run the update
-            from src.objects.models import ObjectDB
-            from src.comms.models import ChannelDB
-            #from src.players.models import PlayerDB
+            from evennia.objects.models import ObjectDB
+            from evennia.comms.models import ChannelDB
+            #from evennia.players.models import PlayerDB
             for i, prev, curr in ((i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches):
                 # update the database
                 print " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..." % (settings_names[i], prev, curr)
@@ -225,8 +225,8 @@ class Evennia(object):
         """
         Called every server start
         """
-        from src.objects.models import ObjectDB
-        #from src.players.models import PlayerDB
+        from evennia.objects.models import ObjectDB
+        #from evennia.players.models import PlayerDB
 
         #update eventual changed defaults
         self.update_defaults()
@@ -238,10 +238,10 @@ class Evennia(object):
         with open(SERVER_RESTART, 'r') as f:
             mode = f.read()
         if mode in ('True', 'reload'):
-            from src.server.oobhandler import OOB_HANDLER
+            from evennia.server.oobhandler import OOB_HANDLER
             OOB_HANDLER.restore()
 
-        from src.scripts.tickerhandler import TICKER_HANDLER
+        from evennia.scripts.tickerhandler import TICKER_HANDLER
         TICKER_HANDLER.restore()
 
         # call correct server hook based on start file value
@@ -299,9 +299,9 @@ class Evennia(object):
         mode = self.set_restart_mode(mode)
         # call shutdown hooks on all cached objects
 
-        from src.objects.models import ObjectDB
-        #from src.players.models import PlayerDB
-        from src.server.models import ServerConfig
+        from evennia.objects.models import ObjectDB
+        #from evennia.players.models import PlayerDB
+        from evennia.server.models import ServerConfig
 
         if mode == 'reload':
             # call restart hooks
@@ -312,9 +312,9 @@ class Evennia(object):
             yield self.sessions.all_sessions_portal_sync()
             ServerConfig.objects.conf("server_restart_mode", "reload")
 
-            from src.server.oobhandler import OOB_HANDLER
+            from evennia.server.oobhandler import OOB_HANDLER
             OOB_HANDLER.save()
-            from src.scripts.tickerhandler import TICKER_HANDLER
+            from evennia.scripts.tickerhandler import TICKER_HANDLER
             TICKER_HANDLER.save()
 
             self.at_server_reload_stop()
@@ -337,7 +337,7 @@ class Evennia(object):
             self.at_server_cold_stop()
 
         # stopping time
-        from src.utils import gametime
+        from evennia.utils import gametime
         gametime.save()
 
         self.at_server_stop()
@@ -439,7 +439,7 @@ if AMP_ENABLED:
         ifacestr = "-%s" % AMP_INTERFACE
     print '  amp (to Portal)%s: %s' % (ifacestr, AMP_PORT)
 
-    from src.server import amp
+    from evennia.server import amp
 
     factory = amp.AmpServerFactory(EVENNIA)
     amp_service = internet.TCPServer(AMP_PORT, factory, interface=AMP_INTERFACE)
@@ -451,7 +451,7 @@ if WEBSERVER_ENABLED:
     # Start a django-compatible webserver.
 
     from twisted.python import threadpool
-    from src.server.webserver import DjangoWebRoot, WSGIWebServer
+    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer
 
     # start a thread pool and define the root url (/) as a wsgi resource
     # recognized by Django

@@ -7,8 +7,8 @@ more Evennia channels.
 from twisted.application import internet
 from twisted.words.protocols import irc
 from twisted.internet import protocol
-from src.server.session import Session
-from src.utils import logger
+from evennia.server.session import Session
+from evennia.utils import logger
 
 
 # IRC bot

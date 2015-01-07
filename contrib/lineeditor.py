@@ -24,8 +24,8 @@ module. To use it just import and add it to your default cmdset.
 """
 
 import re
-from ev import Command, CmdSet, utils
-from ev import syscmdkeys
+from evennia import Command, CmdSet, utils
+from evennia import syscmdkeys
 from contrib.menusystem import prompt_yesno
 
 CMD_NOMATCH = syscmdkeys.CMD_NOMATCH

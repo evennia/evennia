@@ -316,8 +316,8 @@ def get_evennia_version():
 
 def pypath_to_realpath(python_path, file_ending='.py'):
     """
-    Converts a path on dot python form (e.g. 'src.objects.models') to
-    a system path ($BASE_PATH/src/objects/models.py). Calculates all
+    Converts a path on dot python form (e.g. 'evennia.objects.models') to
+    a system path ($BASE_PATH/evennia/objects/models.py). Calculates all
     paths as absoulte paths starting from the evennia main directory.
 
     Since it seems to be a common mistake to include the file ending
@@ -523,7 +523,7 @@ def server_services():
     since services are launced in memory, this function will
     only return any results if called from inside the game.
     """
-    from src.server.sessionhandler import SESSIONS
+    from evennia.server.sessionhandler import SESSIONS
     if hasattr(SESSIONS, "server") and hasattr(SESSIONS.server, "services"):
         server = SESSIONS.server.services.namedServices
     else:
@@ -577,9 +577,9 @@ def clean_object_caches(obj):
     """
     global _TYPECLASSMODELS, _OBJECTMODELS
     if not _TYPECLASSMODELS:
-        from src.typeclasses import models as _TYPECLASSMODELS
+        from evennia.typeclasses import models as _TYPECLASSMODELS
     #if not _OBJECTMODELS:
-    #    from src.objects import models as _OBJECTMODELS
+    #    from evennia.objects import models as _OBJECTMODELS
 
     #print "recaching:", obj
     if not obj:
@@ -751,8 +751,8 @@ def mod_import(module):
 
     Args:
         module - this can be either a Python path (dot-notation like
-                 src.objects.models), an absolute path
-                 (e.g. /home/eve/evennia/src/objects.models.py)
+                 evennia.objects.models), an absolute path
+                 (e.g. /home/eve/evennia/evennia/objects.models.py)
                  or an already import module object (e.g. models)
     Returns:
         an imported module. If the input argument was already a model,
@@ -1067,7 +1067,7 @@ def string_partial_matching(alternatives, inp, ret_index=True):
 
 def format_table(table, extra_space=1):
     """
-    Note: src.utils.prettytable is more powerful than this, but this
+    Note: evennia.utils.prettytable is more powerful than this, but this
     function can be useful when the number of columns and rows are
     unknown and must be calculated on the fly.
 
@@ -1202,5 +1202,5 @@ def strip_control_sequences(string):
     """
     global _STRIP_ANSI
     if not _STRIP_ANSI:
-        from src.utils.ansi import strip_raw_ansi as _STRIP_ANSI
+        from evennia.utils.ansi import strip_raw_ansi as _STRIP_ANSI
     return _RE_CONTROL_CHAR.sub('', _STRIP_ANSI(string))

@@ -4,7 +4,7 @@
 #
 
 from django.contrib import admin
-from src.server.models import ServerConfig
+from evennia.server.models import ServerConfig
 
 
 class ServerConfigAdmin(admin.ModelAdmin):

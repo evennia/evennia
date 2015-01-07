@@ -18,10 +18,10 @@ from django.db import models
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from src.typeclasses.models import TypedObject
-from src.objects.manager import ObjectDBManager
-from src.utils import logger
-from src.utils.utils import (make_iter, dbref)
+from evennia.typeclasses.models import TypedObject
+from evennia.objects.manager import ObjectDBManager
+from evennia.utils import logger
+from evennia.utils.utils import (make_iter, dbref)
 
 
 #------------------------------------------------------------

@@ -145,7 +145,7 @@ class DefaultCmds(_EvContainer):
     """
     This container holds direct shortcuts to all default commands in Evennia.
 
-    To access in code, do 'from ev import default_cmds' then
+    To access in code, do 'from evennia import default_cmds' then
     access the properties on the imported default_cmds object.
 
     """
@@ -163,7 +163,7 @@ class DefaultCmds(_EvContainer):
             cmdlist = utils.variable_from_module(module, module.__all__)
             self.__dict__.update(dict([(c.__name__, c) for c in cmdlist]))
 
-        from src.commands.default import (admin, batchprocess,
+        from commands.default import (admin, batchprocess,
                                           building, comms, general,
                                           player, help, system, unloggedin)
         add_cmds(admin)
@@ -195,11 +195,11 @@ class SystemCmds(_EvContainer):
                      first command when a player connects to
                      the server.
 
-    To access in code, do 'from ev import syscmdkeys' then
+    To access in code, do 'from evennia import syscmdkeys' then
     access the properties on the imported syscmdkeys object.
 
     """
-    from src.commands import cmdhandler
+    from commands import cmdhandler
     CMD_NOINPUT = cmdhandler.CMD_NOINPUT
     CMD_NOMATCH = cmdhandler.CMD_NOMATCH
     CMD_MULTIMATCH = cmdhandler.CMD_MULTIMATCH

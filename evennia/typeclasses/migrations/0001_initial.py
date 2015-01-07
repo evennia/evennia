@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import src.utils.picklefield
+import evennia.utils.picklefield
 
 
 class Migration(migrations.Migration):
@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('db_key', models.CharField(max_length=255, verbose_name=b'key', db_index=True)),
-                ('db_value', src.utils.picklefield.PickledObjectField(help_text=b'The data returned when the attribute is accessed. Must be written as a Python literal if editing through the admin interface. Attribute values which are not Python literals cannot be edited through the admin interface.', null=True, verbose_name=b'value')),
+                ('db_value', evennia.utils.picklefield.PickledObjectField(help_text=b'The data returned when the attribute is accessed. Must be written as a Python literal if editing through the admin interface. Attribute values which are not Python literals cannot be edited through the admin interface.', null=True, verbose_name=b'value')),
                 ('db_strvalue', models.TextField(help_text=b'String-specific storage for quick look-up', null=True, verbose_name=b'strvalue', blank=True)),
                 ('db_category', models.CharField(max_length=128, blank=True, help_text=b'Optional categorization of attribute.', null=True, verbose_name=b'category', db_index=True)),
                 ('db_lock_storage', models.TextField(help_text=b'Lockstrings for this object are stored here.', verbose_name=b'locks', blank=True)),

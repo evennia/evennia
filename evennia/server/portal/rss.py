@@ -8,8 +8,8 @@ to the channel whenever the feed updates.
 
 from twisted.internet import task, threads
 from django.conf import settings
-from src.server.session import Session
-from src.utils import logger
+from evennia.server.session import Session
+from evennia.utils import logger
 
 RSS_ENABLED = settings.RSS_ENABLED
 #RETAG = re.compile(r'<[^>]*?>')

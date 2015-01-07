@@ -1,9 +1,9 @@
 # this is an optimized version only available in later Django versions
 from django.utils.unittest import TestCase
 
-from src.scripts.models import ScriptDB, ObjectDoesNotExist
-from src.utils.create import create_script
-from src.scripts import DoNothing
+from evennia.scripts.models import ScriptDB, ObjectDoesNotExist
+from evennia.utils.create import create_script
+from evennia.scripts import DoNothing
 import unittest
 from django.conf import settings
 

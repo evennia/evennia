@@ -15,8 +15,8 @@ from twisted.internet.reactor import callFromThread
 from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.db.models.base import Model, ModelBase
 from django.db.models.signals import post_save, pre_delete, post_syncdb
-from src.utils import logger
-from src.utils.utils import dbref, get_evennia_pids, to_str
+from evennia.utils import logger
+from evennia.utils.utils import dbref, get_evennia_pids, to_str
 
 from manager import SharedMemoryManager
 

@@ -24,24 +24,21 @@ That's it. Reload the server and try to log in to see it.
 
 The initial login "graphic" will still not mention email addresses
 after this change. The login splash screen is taken from strings in
-the module given by settings.CONNECTION_SCREEN_MODULE. You will want
-to copy the template file in game/gamesrc/conf/examples up one level
-and re-point the settings file to this custom module. The "MUX_SCREEN"
-example in that file is the recommended one to use with this module.
+the module given by settings.CONNECTION_SCREEN_MODULE.
 
 """
 import re
 import traceback
 from django.conf import settings
-from src.players.models import PlayerDB
-from src.objects.models import ObjectDB
-from src.server.models import ServerConfig
-from src.comms.models import ChannelDB
+from evennia.players.models import PlayerDB
+from evennia.objects.models import ObjectDB
+from evennia.server.models import ServerConfig
+from evennia.comms.models import ChannelDB
 
-from src.commands.cmdset import CmdSet
-from src.utils import create, logger, utils, ansi
-from src.commands.default.muxcommand import MuxCommand
-from src.commands.cmdhandler import CMD_LOGINSTART
+from evennia.commands.cmdset import CmdSet
+from evennia.utils import create, logger, utils, ansi
+from evennia.commands.default.muxcommand import MuxCommand
+from evennia.commands.cmdhandler import CMD_LOGINSTART
 
 # limit symbol import for API
 __all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",

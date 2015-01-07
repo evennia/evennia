@@ -82,14 +82,14 @@ DefaultLock:   Exits:          controls who may traverse the exit to
 """
 
 from django.conf import settings
-from src.utils import utils
+from evennia.utils import utils
 
 _PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
 
 def _to_player(accessing_obj):
     "Helper function. Makes sure an accessing object is a player object"
-    if utils.inherits_from(accessing_obj, "src.objects.objects.Object"):
+    if utils.inherits_from(accessing_obj, "evennia.objects.objects.Object"):
         # an object. Convert to player.
         accessing_obj = accessing_obj.player
     return accessing_obj
@@ -158,7 +158,7 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     except (AttributeError, IndexError):
         return False
 
-    if utils.inherits_from(accessing_obj, "src.objects.objects.Object") and accessing_obj.player:
+    if utils.inherits_from(accessing_obj, "evennia.objects.objects.Object") and accessing_obj.player:
         player = accessing_obj.player
         perms_player = [p.lower() for p in player.permissions.all()]
         is_quell = player.attributes.get("_quell")
@@ -503,7 +503,7 @@ def serversetting(accessing_obj, accessed_obj, *args, **kwargs):
 
     Usage:
       serversetting(IRC_ENABLED)
-      serversetting(BASE_SCRIPT_PATH, [game.gamesrc.scripts])
+      serversetting(BASE_SCRIPT_PATH, ['types'])
 
     A given True/False or integers will be converted properly.
     """

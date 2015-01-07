@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 from django.core.urlresolvers import reverse
-from src.typeclasses.models import Attribute, Tag
+from evennia.typeclasses.models import Attribute, Tag
 
 
 class TagAdmin(admin.ModelAdmin):

@@ -40,7 +40,7 @@ import textwrap
 import itertools
 import unicodedata
 
-from src.utils.ansi import parse_ansi
+from evennia.utils.ansi import parse_ansi
 
 py3k = sys.version_info[0] >= 3
 if py3k:

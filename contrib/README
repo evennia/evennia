@@ -12,7 +12,7 @@ Modules in this folder is distributed under the same licence as
 Evennia unless noted differently in the individual module. 
 
 If you want to edit, tweak or expand on this code you should copy the
-things you want from here into game/gamesrc and change them there.
+things you want from here into your game folder and change them there.
 
 * Evennia MenuSystem (Griatch 2011) - A base set of classes and
       cmdsets for creating in-game multiple-choice menus in

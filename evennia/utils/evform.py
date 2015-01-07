@@ -131,9 +131,9 @@ form will raise an error.
 
 import re
 import copy
-from src.utils.evtable import EvCell, EvTable
-from src.utils.utils import all_from_module, to_str, to_unicode
-from src.utils.ansi import ANSIString
+from evennia.utils.evtable import EvCell, EvTable
+from evennia.utils.utils import all_from_module, to_str, to_unicode
+from evennia.utils.ansi import ANSIString
 
 # non-valid form-identifying characters (which can thus be
 # used as separators between forms without being detected
@@ -410,7 +410,7 @@ class EvForm(object):
 
 def _test():
     "test evform"
-    form = EvForm("src.utils.evform_test")
+    form = EvForm("evennia.utils.evform_test")
 
     # add data to each tagged form cell
     form.map(cells={1: "{gTom the Bouncer{n",

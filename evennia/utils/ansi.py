@@ -14,8 +14,8 @@ user.
 
 """
 import re
-from src.utils import utils
-from src.utils.utils import to_str, to_unicode
+from evennia.utils import utils
+from evennia.utils.utils import to_str, to_unicode
 
 # ANSI definitions
 

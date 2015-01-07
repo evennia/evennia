@@ -14,8 +14,8 @@ There are two similar but separate stores of sessions:
 
 import time
 from django.conf import settings
-from src.commands.cmdhandler import CMD_LOGINSTART
-from src.utils.utils import variable_from_module, is_iter, \
+from evennia.commands.cmdhandler import CMD_LOGINSTART
+from evennia.utils.utils import variable_from_module, is_iter, \
                             to_str, to_unicode, strip_control_sequences
 try:
     import cPickle as pickle
@@ -57,11 +57,11 @@ def delayed_import():
         modulename, classname = settings.SERVER_SESSION_CLASS.rsplit(".", 1)
         _ServerSession = variable_from_module(modulename, classname)
     if not _PlayerDB:
-        from src.players.models import PlayerDB as _PlayerDB
+        from evennia.players.models import PlayerDB as _PlayerDB
     if not _ServerConfig:
-        from src.server.models import ServerConfig as _ServerConfig
+        from evennia.server.models import ServerConfig as _ServerConfig
     if not _ScriptDB:
-        from src.scripts.models import ScriptDB as _ScriptDB
+        from evennia.scripts.models import ScriptDB as _ScriptDB
     # including once to avoid warnings in Python syntax checkers
     _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
 
@@ -285,7 +285,7 @@ class ServerSessionHandler(SessionHandler):
         This method allows the server-side to force the Portal to create
         a new bot session using the protocol specified by protocol_path,
         which should be the full python path to the class, including the
-        class name, like "src.server.portal.irc.IRCClient".
+        class name, like "evennia.server.portal.irc.IRCClient".
         The new session will use the supplied player-bot uid to
         initiate an already logged-in connection. The Portal will
         treat this as a normal connection and henceforth so will the

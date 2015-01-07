@@ -20,23 +20,18 @@ CMDSET_UNLOGGEDIN = "contrib.menu_login.UnloggedInCmdSet"
 That's it. Reload the server and try to log in to see it.
 
 The initial login "graphic" is taken from strings in the module given
-by settings.CONNECTION_SCREEN_MODULE. You will want to copy the
-template file in game/gamesrc/conf/examples up one level and re-point
-the settings file to this custom module. you can then edit the string
-in that module (at least comment out the default string that mentions
-commands that are not available) and add something more suitable for
-the initial splash screen.
+by settings.CONNECTION_SCREEN_MODULE.
 
 """
 
 import re
 import traceback
 from django.conf import settings
-from ev import managers
-from ev import utils, logger, create_player
-from ev import Command, CmdSet
-from ev import syscmdkeys
-from src.server.models import ServerConfig
+from evennia import managers
+from evennia import utils, logger, create_player
+from evennia import Command, CmdSet
+from evennia import syscmdkeys
+from evennia.server.models import ServerConfig
 
 from contrib.menusystem import MenuNode, MenuTree
 

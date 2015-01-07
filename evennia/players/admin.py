@@ -8,9 +8,9 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
-from src.players.models import PlayerDB
-from src.typeclasses.admin import AttributeInline, TagInline
-from src.utils import create
+from evennia.players.models import PlayerDB
+from evennia.typeclasses.admin import AttributeInline, TagInline
+from evennia.utils import create
 
 
 # handle the custom User editor

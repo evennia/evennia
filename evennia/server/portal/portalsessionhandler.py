@@ -2,7 +2,7 @@
 Sessionhandler for portal sessions
 """
 import time
-from src.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PSYNC, PCONNSYNC
+from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PSYNC, PCONNSYNC
 
 _MOD_IMPORT = None
 
@@ -100,7 +100,7 @@ class PortalSessionHandler(SessionHandler):
 
         protocol_path - full python path to the class factory
                     for the protocol used, eg
-                    'src.server.portal.irc.IRCClientFactory'
+                    'evennia.server.portal.irc.IRCClientFactory'
         config - dictionary of configuration options, fed as **kwarg
                  to protocol class' __init__ method.
 
@@ -109,7 +109,7 @@ class PortalSessionHandler(SessionHandler):
         """
         global _MOD_IMPORT
         if not _MOD_IMPORT:
-            from src.utils.utils import variable_from_module as _MOD_IMPORT
+            from evennia.utils.utils import variable_from_module as _MOD_IMPORT
         path, clsname = protocol_path.rsplit(".", 1)
         cls = _MOD_IMPORT(path, clsname)
         if not cls:

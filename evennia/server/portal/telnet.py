@@ -9,11 +9,11 @@ sessions etc.
 
 import re
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, GA, WILL, WONT, ECHO
-from src.server.session import Session
-from src.server.portal import ttype, mssp, msdp, naws
-from src.server.portal.mccp import Mccp, mccp_compress, MCCP
-from src.server.portal.mxp import Mxp, mxp_parse
-from src.utils import utils, ansi, logger
+from evennia.server.session import Session
+from evennia.server.portal import ttype, mssp, msdp, naws
+from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
+from evennia.server.portal.mxp import Mxp, mxp_parse
+from evennia.utils import utils, ansi, logger
 
 _RE_N = re.compile(r"\{n$")
 _RE_LEND = re.compile(r"\n$|\r$", re.MULTILINE)
@@ -58,7 +58,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.sessionhandler.connect(self)
 
         # timeout the handshakes in case the client doesn't reply at all
-        from src.utils.utils import delay
+        from evennia.utils.utils import delay
         delay(2, callback=self.handshake_done, retval=True)
 
     def handshake_done(self, force=False):

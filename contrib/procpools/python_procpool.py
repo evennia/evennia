@@ -14,7 +14,7 @@ The python_process pool is a service activated with the instructions
 in python_procpool_plugin.py.
 
 To use, import run_async from this module and use instead of the
-in-process version found in src.utils.utils. Note that this is a much
+in-process version found in evennia.utils.utils. Note that this is a much
 more complex function than the default run_async, so make sure to read
 the header carefully.
 
@@ -31,10 +31,10 @@ _return statement, to test it really is asynchronous.
 from twisted.protocols import amp
 from twisted.internet import threads
 from contrib.procpools.ampoule.child import AMPChild
-from src.utils.dbserialize import to_pickle, from_pickle, do_pickle, do_unpickle
-from src.utils.idmapper.base import PROC_MODIFIED_OBJS
-from src.utils.utils import clean_object_caches, to_str
-from src.utils import logger
+from evennia.utils.dbserialize import to_pickle, from_pickle, do_pickle, do_unpickle
+from evennia.utils.idmapper.base import PROC_MODIFIED_OBJS
+from evennia.utils.utils import clean_object_caches, to_str
+from evennia.utils import logger
 
 
 #
@@ -250,7 +250,7 @@ def run_async(to_execute, *args, **kwargs):
 
     if _PPOOL is None:
         # Try to load process Pool
-        from src.server.sessionhandler import SESSIONS as _SESSIONS
+        from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         try:
             _PPOOL = _SESSIONS.server.services.namedServices.get(procpool_name).pool
         except AttributeError:
