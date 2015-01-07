@@ -1,16 +1,12 @@
 """
-Example command module template
+Commands
 
-Copy this module up one level to gamesrc/commands/ and name it as
-befits your use.  You can then use it as a template to define your new
-commands. To use them you also need to group them in a CommandSet (see
-examples/cmdset.py)
+Commands describe the input the player can do to the game.
 
 """
 
 from evennia import Command as BaseCommand
 from evennia import default_cmds
-from evennia import utils
 
 
 class Command(BaseCommand):
@@ -31,13 +27,14 @@ class Command(BaseCommand):
     locks = "cmd:all()"
     help_category = "General"
 
+    # optional
     # auto_help = False      # uncomment to deactive auto-help for this command.
     # arg_regex = r"\s.*?|$" # optional regex detailing how the part after
                              # the cmdname must look to match this command.
 
     # (we don't implement hook method access() here, you don't need to
     #  modify that unless you want to change how the lock system works
-    #  (in that case see src.commands.command.Command))
+    #  (in that case see evennia.commands.command.Command))
 
     def at_pre_cmd(self):
         """

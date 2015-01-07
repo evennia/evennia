@@ -1,22 +1,14 @@
 """
+Scripts
 
-Template module for Scripts
+Scripts are powerful jacks-of-all-trades. They have no in-game
+existence and can be used to represent persistent game systems in some
+circumstances. Scripts can also have a time component that allows them
+to "fire" regularly or a limited number of times.
 
-Copy this module up one level to gamesrc/scripts and name it
-appropriately, then use that as a template to create your own script.
-
-Test scripts in-game e.g. with the @script command. In code you can
-create new scripts of a given class with
-  script = ev.create.script("path.to.module.and.class")
-
-Scripts are objects that handle everything in the game having
-a time-component (i.e. that may change with time, with or without
-a player being involved in the change). Scripts can work like "events",
-in that they are triggered at regular intervals to do a certain script,
-but an Script set on an object can also be responsible for silently
-checking if its state changes, so as to update it. Evennia use several
-in-built scripts to keep track of things like time, to clean out
-dropped connections etc.
+There is generally no "tree" of Scripts inheriting from each other.
+Rather, each script tends to inherit from the base Script class and
+just overloads its hooks to have it perform its function.
 
 """
 

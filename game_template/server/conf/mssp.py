@@ -1,22 +1,16 @@
 """
 
-MSSP module template
+MSSP (Mud Server Status Protocol) meta information
 
-Copy this module one level up, to gamesrc/conf/, name it
-what you want and edit it to your satisfaction.
+MUD website listings (that you have registered with) can use this
+information to keep up-to-date with your game stats as you change
+them. Also number of currently active players and uptime will
+automatically be reported. You don't have to fill in everything
+(and most are not used by all crawlers); leave the default
+if so needed. You need to @reload the game before updated
+information is made available to crawlers (reloading does not
+affect uptime).
 
-Then change settings.MSSP_META_MODULE to point to your new module.
-
- MSSP (Mud Server Status Protocol) meta information
-
- MUD website listings (that you have registered with) can use this
- information to keep up-to-date with your game stats as you change
- them. Also number of currently active players and uptime will
- automatically be reported. You don't have to fill in everything
- (and most are not used by all crawlers); leave the default
- if so needed. You need to @reload the game before updated
- information is made available to crawlers (reloading does not
- affect uptime).
 """
 
 MSSPTable =  {

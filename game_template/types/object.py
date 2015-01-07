@@ -1,24 +1,16 @@
 """
+Object
 
-Template for Objects
+The Object is the "naked" base class for things in the game world.
 
-Copy this module up one level and name it as you like, then
-use it as a template to create your own Objects.
-
-To make the default commands default to creating objects of your new
-type (and also change the "fallback" object used when typeclass
-creation fails), change settings.BASE_OBJECT_TYPECLASS to point to
-your new class, e.g.
-
-settings.BASE_OBJECT_TYPECLASS = "game.gamesrc.objects.myobj.MyObj"
-
-Note that objects already created in the database will not notice
-this change, you have to convert them manually e.g. with the
-@typeclass command.
+Note that the default Character, Room and Exit does not inherit from
+this Object, but from their respective default implementations in the
+evennia library. If you want to use this class as a parent to change
+the other types, you can do so by adding this as a multiple
+inheritance.
 
 """
 from evennia import DefaultObject
-
 
 class Object(DefaultObject):
     """

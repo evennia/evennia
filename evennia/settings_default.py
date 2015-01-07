@@ -202,14 +202,14 @@ DATABASES = {
 
 # The command parser module to use. See the default module for which
 # functions it must implement
-COMMAND_PARSER = "commands.cmdparser"
+COMMAND_PARSER = "evennia.commands.cmdparser.cmdparser"
 # The handler that outputs errors when searching
 # objects using object.search().
-SEARCH_AT_RESULT = "commands.at_search_result"
+SEARCH_AT_RESULT = "evennia.commands.cmdparser.at_search_result"
 # The parser used in order to separate multiple
 # object matches (so you can separate between same-named
 # objects without using dbrefs).
-SEARCH_AT_MULTIMATCH_INPUT = "commands.at_multimatch_input"
+SEARCH_AT_MULTIMATCH_INPUT = "evennia.commands.cmdparser.at_multimatch_input"
 # The module holding text strings for the connection screen.
 # This module should contain one or more variables
 # with strings defining the look of the screen.
@@ -235,7 +235,7 @@ SERVER_SERVICES_PLUGIN_MODULES = ["server.conf.server_services_plugins"]
 PORTAL_SERVICES_PLUGIN_MODULES = ["server.conf.portal_services_plugins"]
 # Module holding MSSP meta data. This is used by MUD-crawlers to determine
 # what type of game you are running, how many players you have etc.
-MSSP_META_MODULE = ""
+MSSP_META_MODULE = "server.conf.mssp"
 # Tuple of modules implementing lock functions. All callable functions
 # inside these modules will be available as lock functions.
 LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs",)
@@ -350,7 +350,7 @@ INLINEFUNC_ENABLED = False
 # Only functions defined globally (and not starting with '_') in
 # these modules will be considered valid inlinefuncs. The list
 # is loaded from left-to-right, same-named functions will overload
-INLINEFUNC_MODULES = ["server.conf.inlinefunc"]
+INLINEFUNC_MODULES = ["evennia.utils.inlinefunc", "server.conf.inlinefunc"]
 
 ######################################################################
 # Default Player setup and access

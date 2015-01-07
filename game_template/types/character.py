@@ -1,31 +1,20 @@
 """
+Characters
 
-Template for Characters
-
-Copy this module up one level and name it as you like, then
-use it as a template to create your own Character class.
-
-To make new logins default to creating characters
-of your new type, change settings.BASE_CHARACTER_TYPECLASS to point to
-your new class, e.g.
-
-settings.BASE_CHARACTER_TYPECLASS = "game.gamesrc.objects.mychar.MyChar"
-
-Note that objects already created in the database will not notice
-this change, you have to convert them manually e.g. with the
-@typeclass command.
+Characters are (by default) Objects setup to be puppeted by Players.
+They are what you "see" in game. The Character class in this module
+is setup to be the "default" character type created by the default
+creation commands.
 
 """
 from evennia import DefaultCharacter
 
-
 class Character(DefaultCharacter):
     """
-    The Character is like any normal Object (see example/object.py for
-    a list of properties and methods), except it actually implements
-    some of its hook methods to do some work:
+    The Character defaults to implementing some of its hook methods with the
+    following standard functionality:
 
-    at_basetype_setup - always assigns the default_cmdset to this object type
+    at_basetype_setup - always assigns the DefaultCmdSet to this object type
                     (important!)sets locks so character cannot be picked up
                     and its commands only be called by itself, not anyone else.
                     (to change things, use at_object_creation() instead)

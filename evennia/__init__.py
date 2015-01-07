@@ -153,6 +153,7 @@ class DefaultCmds(_EvContainer):
     from commands.default.cmdset_character import CharacterCmdSet
     from commands.default.cmdset_player import PlayerCmdSet
     from commands.default.cmdset_unloggedin import UnloggedinCmdSet
+    from commands.default.cmdset_session import SessionCmdSet
     from commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
     def __init__(self):

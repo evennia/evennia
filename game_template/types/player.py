@@ -1,21 +1,13 @@
 """
+Player
 
-Template module for Players
-
-Copy this module up one level and name it as you like, then
-use it as a template to create your own Player class.
-
-To make the default account login default to using a Player
-of your new type, change settings.BASE_PLAYER_TYPECLASS to point to
-your new class, e.g.
-
-settings.BASE_PLAYER_TYPECLASS = "game.gamesrc.objects.myplayer.MyPlayer"
-
-Note that objects already created in the database will not notice
-this change, you have to convert them manually e.g. with the
-@typeclass command.
+The Player represents the game "account" and each login has only one
+Player object. A Player is what chats on default channels but has no
+other in-game-world existance. Rather the Player puppets Objects (such
+as Characters) in order to actually participate in the game world.
 
 """
+
 from evennia import DefaultPlayer
 
 

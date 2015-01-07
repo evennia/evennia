@@ -1,6 +1,6 @@
 """
 The default command parser. Use your own by assigning
-settings.ALTERNATE_PARSER to a Python path to a module containing the
+settings.COMMAND_PARSER to a Python path to a module containing the
 replacing cmdparser function. The replacement parser must matches
 on the sme form as the default cmdparser.
 """

@@ -1,23 +1,12 @@
 """
+Exits
 
-Template module for Exits
-
-Copy this module up one level and name it as you like, then
-use it as a template to create your own Exits.
-
-To make the default commands (such as @dig/@open) default to creating exits
-of your new type, change settings.BASE_EXIT_TYPECLASS to point to
-your new class, e.g.
-
-settings.BASE_EXIT_TYPECLASS = "game.gamesrc.objects.myexit.MyExit"
-
-Note that objects already created in the database will not notice
-this change, you have to convert them manually e.g. with the
-@typeclass command.
+Exits are connectors between Rooms. An exit always has a destination property
+set and has a single command defined on itself with the same name as its key,
+for allowing Characters to traverse the exit to its destination.
 
 """
 from evennia import DefaultExit
-
 
 class Exit(DefaultExit):
     """

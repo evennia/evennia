@@ -1,21 +1,11 @@
 """
+Server startstop hooks
 
-At_server_startstop module template
+This module contains functions called by Evennia at various
+points during its startup, reload and shutdown sequence. It
+allows for customizing the server operation as desired.
 
-Copy this module one level up, to gamesrc/conf/, name it what you
-will and use it as a template for your modifications.
-
-Then edit settings.AT_SERVER_STARTSTOP_MODULE to point to your new
-module.
-
-This module contains functions that are imported and called by the
-server whenever it changes its running status. At the point these
-functions are run, all applicable hooks on individual objects have
-already been executed. The main purpose of this is module is to have a
-safe place to initialize eventual custom modules that your game needs
-to start up or load.
-
-The module should define at least these global functions:
+This module must contain at least these global functions:
 
 at_server_start()
 at_server_stop()
@@ -37,8 +27,8 @@ def at_server_start():
 
 def at_server_stop():
     """
-    This is called just before a server is shut down, regardless
-    of it is fore a reload, reset or shutdown.
+    This is called just before the server is shut down, regardless
+    of it is for a reload, reset or shutdown.
     """
     pass
 
@@ -67,6 +57,7 @@ def at_server_cold_start():
 
 def at_server_cold_stop():
     """
-    This is called only when the server goes down due to a shutdown or reset.
+    This is called only when the server goes down due to a shutdown or
+    reset.
     """
     pass
