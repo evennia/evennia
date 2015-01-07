@@ -430,6 +430,9 @@ def init_game_directory(path):
     # Add gamedir to python path
     sys.path.insert(0, GAMEDIR)
 
+    # Prepare django; set the settings location
+    os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
+
     # testing the main library import. If there are errors in importing
     # the main library, it should show here.
     importlib.import_module("evennia")
@@ -444,8 +447,6 @@ def init_game_directory(path):
         print ERROR_SETTINGS
         sys.exit()
 
-    # Prepare django; set the settings location
-    os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
     import django
     # required since django1.7.
     django.setup()
