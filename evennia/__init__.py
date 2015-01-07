@@ -1,5 +1,15 @@
 """
 Evennia MUD/MUX/MU* creation system
+
+This is the main top-level API for Evennia. You can also explore the
+evennia library by accessing evennia.<subpackage> directly.
+
+For full functionality you need to explore this module via a django-
+aware shell. Go to your game directory and use the command 'evennia.py shell'
+to launch such a shell (using python or ipython depending on your install).
+
+See www.evennia.com for full documentation.
+
 """
 
 ######################################################################
@@ -12,7 +22,6 @@ try:
         __version__ += " %s" % f.read().strip()
 except IOError:
     __version__ += " (unknown version)"
-
 del os
 
 ######################################################################
