@@ -16,7 +16,7 @@ import shutil
 import importlib
 from argparse import ArgumentParser
 from subprocess import Popen
-from django.core import management
+import django
 
 # Signal processing
 SIG = signal.SIGINT
@@ -87,9 +87,9 @@ CREATED_NEW_GAMEDIR = \
     """
     ... Created new Evennia game directory '{gamedir}'.
 
-    Inside your new game directory, edit {settings_path} to suit your
-    setup, then run this command again from inside the game directory
-    to start the server.
+    Inside your new game directory, you can now optionally edit
+    {settings_path} to suit your setup. Then run this command again
+    from inside the game directory to start the server.
     """
 
 ERROR_NO_GAMEDIR = \
@@ -433,13 +433,12 @@ def init_game_directory(path):
     # Prepare django; set the settings location
     os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
 
-    # testing the main library import. If there are errors in importing
-    # the main library, it should show here.
-    importlib.import_module("evennia")
+    # required since django1.7
+    django.setup()
 
     # test existence of the settings module
     try:
-        settings = importlib.import_module(SETTINGS_DOTPATH)
+        from django.conf import settings
     except Exception, ex:
         if not str(ex).startswith("No module named"):
             import traceback
@@ -447,15 +446,14 @@ def init_game_directory(path):
         print ERROR_SETTINGS
         sys.exit()
 
-    import django
-    # required since django1.7.
-    django.setup()
+    # testing the main library import. If there are errors in importing
+    # the main library, it should show here.
+    importlib.import_module("evennia")
 
     # check all dependencies
     from evennia.utils.utils import check_evennia_dependencies
     if not check_evennia_dependencies:
         sys.exit()
-
 
     # set up the Evennia executables and log file locations
     global SERVER_PY_FILE, PORTAL_PY_FILE
@@ -523,16 +521,14 @@ def init_game_directory(path):
 
 
 def create_database():
-    from django.core.management import call_command
     print "\nCreating a database ...\n"
-    call_command("migrate", interactive=False)
+    django.core.management.call_command("migrate", interactive=False)
     print "\n ... database initialized.\n"
 
 
 def create_superuser():
-    from django.core.management import call_command
     print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
-    call_command("createsuperuser", interactive=True)
+    django.core.management.call_command("createsuperuser", interactive=True)
 
 
 def check_database(automigrate=False):
@@ -589,7 +585,7 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART
             os.remove(pidfile)
         # set restart/norestart flag
         if restart == 'reload':
-            management.call_command('collectstatic', interactive=False, verbosity=0)
+            django.core.management.call_command('collectstatic', interactive=False, verbosity=0)
         f = open(restart_file, 'w')
         f.write(str(restart))
         f.close()
@@ -715,7 +711,7 @@ def server_operation(mode, service, interactive, profiler):
             if interactive:
                 cmdstr.append('--iportal')
             cmdstr.append('--noserver')
-            management.call_command('collectstatic', verbosity=1, interactive=False)
+            django.core.management.call_command('collectstatic', verbosity=1, interactive=False)
         else:  # all
             # for convenience we don't start logging of
             # portal, only of server with this command.
@@ -723,7 +719,7 @@ def server_operation(mode, service, interactive, profiler):
                 cmdstr.append('--profile-server') # this is the common case
             if interactive:
                 cmdstr.append('--iserver')
-            management.call_command('collectstatic', verbosity=1, interactive=False)
+            django.core.management.call_command('collectstatic', verbosity=1, interactive=False)
         cmdstr.extend([GAMEDIR, TWISTED_BINARY, SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE])
         # start the server
         Popen(cmdstr)
@@ -766,15 +762,20 @@ def error_check_python_modules():
     before we get any further.
     """
     from django.conf import settings
+    def imp(path, split=True):
+        mod, fromlist = path, "None"
+        if split:
+            mod, fromlist = path.rsplit('.', 1)
+            __import__(mod, fromlist=[fromlist])
 
     # core modules
-    importlib.import_module(settings.COMMAND_PARSER)
-    importlib.import_module(settings.SEARCH_AT_RESULT)
-    importlib.import_module(settings.SEARCH_AT_MULTIMATCH_INPUT)
-    importlib.import_module(settings.CONNECTION_SCREEN_MODULE, split=False)
+    imp(settings.COMMAND_PARSER)
+    imp(settings.SEARCH_AT_RESULT)
+    imp(settings.SEARCH_AT_MULTIMATCH_INPUT)
+    imp(settings.CONNECTION_SCREEN_MODULE, split=False)
     #imp(settings.AT_INITIAL_SETUP_HOOK_MODULE, split=False)
     for path in settings.LOCK_FUNC_MODULES:
-        importlib.import_module(path, split=False)
+        imp(path, split=False)
     # cmdsets
 
     deprstring = "settings.%s should be renamed to %s. If defaults are used, " \
@@ -798,12 +799,12 @@ def error_check_python_modules():
     if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None): print "Warning: CMDSET_CHARACTER failed to load"
     if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None): print "Warning: CMDSET_PLAYER failed to load"
     # typeclasses
-    importlib.import_module(settings.BASE_PLAYER_TYPECLASS)
-    importlib.import_module(settings.BASE_OBJECT_TYPECLASS)
-    importlib.import_module(settings.BASE_CHARACTER_TYPECLASS)
-    importlib.import_module(settings.BASE_ROOM_TYPECLASS)
-    importlib.import_module(settings.BASE_EXIT_TYPECLASS)
-    importlib.import_module(settings.BASE_SCRIPT_TYPECLASS)
+    imp(settings.BASE_PLAYER_TYPECLASS)
+    imp(settings.BASE_OBJECT_TYPECLASS)
+    imp(settings.BASE_CHARACTER_TYPECLASS)
+    imp(settings.BASE_ROOM_TYPECLASS)
+    imp(settings.BASE_EXIT_TYPECLASS)
+    imp(settings.BASE_SCRIPT_TYPECLASS)
 
 
 
@@ -864,8 +865,7 @@ def main():
         # pass-through to django manager
         if mode in ('runserver', 'testserver'):
             print WARNING_RUNSERVER
-        from django.core.management import call_command
-        call_command(mode)
+        django.core.management.call_command(mode)
 
 
 if __name__ == '__main__':

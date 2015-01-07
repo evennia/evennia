@@ -274,26 +274,26 @@ SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
 # Base paths for typeclassed object classes. These paths must be
 # defined relative evennia's root directory. They will be searched in
 # order to find relative typeclass paths.
-OBJECT_TYPECLASS_PATHS = ["types", "contrib"]
-SCRIPT_TYPECLASS_PATHS = ["types" "contrib"]
-PLAYER_TYPECLASS_PATHS = ["types", "contrib"]
-CHANNEL_TYPECLASS_PATHS = ["types", "contrib"]
+OBJECT_TYPECLASS_PATHS = ["typeclasses", "contrib"]
+SCRIPT_TYPECLASS_PATHS = ["typeclasses" "contrib"]
+PLAYER_TYPECLASS_PATHS = ["typeclasses", "contrib"]
+CHANNEL_TYPECLASS_PATHS = ["typeclasses", "contrib"]
 
 # Typeclass for player objects (linked to a character) (fallback)
-BASE_PLAYER_TYPECLASS = "types.player.Player"
+BASE_PLAYER_TYPECLASS = "typeclasses.player.Player"
 # Typeclass and base for all objects (fallback)
-BASE_OBJECT_TYPECLASS = "types.object.Object"
+BASE_OBJECT_TYPECLASS = "typeclasses.object.Object"
 # Typeclass for character objects linked to a player (fallback)
-BASE_CHARACTER_TYPECLASS = "types.character.Character"
+BASE_CHARACTER_TYPECLASS = "typeclasses.character.Character"
 # Typeclass for rooms (fallback)
-BASE_ROOM_TYPECLASS = "types.room.Room"
+BASE_ROOM_TYPECLASS = "typeclasses.room.Room"
 # Typeclass for Exit objects (fallback).
-BASE_EXIT_TYPECLASS = "types.exit.Exit"
+BASE_EXIT_TYPECLASS = "typeclasses.exit.Exit"
 # Typeclass for Channel (fallback).
-BASE_CHANNEL_TYPECLASS = "type.channel.Channel"
+BASE_CHANNEL_TYPECLASS = "typeclasses.channel.Channel"
 # Typeclass for Scripts (fallback). You usually don't need to change this
 # but create custom variations of scripts on a per-case basis instead.
-BASE_SCRIPT_TYPECLASS = "type.scripts.Script"
+BASE_SCRIPT_TYPECLASS = "typeclasses.scripts.Script"
 # The default home location used for all objects. This is used as a
 # fallback if an object's normal home location is deleted. Default
 # is Limbo (#2).
@@ -399,7 +399,7 @@ CLIENT_DEFAULT_HEIGHT = 45 # telnet standard is 24 but does anyone use such
 # This enables guest logins, by default via "connect guest"
 GUEST_ENABLED = False
 # Typeclass for guest player objects (linked to a character)
-BASE_GUEST_TYPECLASS = "types.player.Guest"
+BASE_GUEST_TYPECLASS = "typeclasses.player.Guest"
 # The permission given to guests
 PERMISSION_GUEST_DEFAULT = "Guests"
 # The default home location used for guests.

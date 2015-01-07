@@ -308,7 +308,7 @@ def get_evennia_version():
     Check for the evennia version info.
     """
     try:
-        f = open(settings.BASE_PATH + os.sep + "VERSION.txt", 'r')
+        f = open(settings.ROOT_DIR + os.sep + "VERSION.txt", 'r')
         return "%s-%s" % (f.read().strip(), os.popen("git rev-parse --short HEAD").read().strip())
     except IOError:
         return "Unknown version"
@@ -317,7 +317,7 @@ def get_evennia_version():
 def pypath_to_realpath(python_path, file_ending='.py'):
     """
     Converts a path on dot python form (e.g. 'evennia.objects.models') to
-    a system path ($BASE_PATH/evennia/objects/models.py). Calculates all
+    a system path ($ROOT_DIR/evennia/objects/models.py). Calculates all
     paths as absoulte paths starting from the evennia main directory.
 
     Since it seems to be a common mistake to include the file ending
@@ -330,7 +330,7 @@ def pypath_to_realpath(python_path, file_ending='.py'):
         pathsplit = pathsplit[:-1]
     if not pathsplit:
         return python_path
-    path = settings.BASE_PATH
+    path = settings.ROOT_DIR
     for directory in pathsplit:
         path = os.path.join(path, directory)
     if file_ending:
