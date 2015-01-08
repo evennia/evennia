@@ -291,6 +291,22 @@ ERROR_NODJANGO = \
 #
 #------------------------------------------------------------
 
+def evennia_version():
+    """
+    Get the Evennia version info from the main package.
+    """
+    version = "Unknown"
+    with open(os.path.join(EVENNIA_ROOT, "VERSION.txt"), 'r') as f:
+        version = f.read().strip()
+    try:
+        version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=EVENNIA_ROOT).strip())
+    except IOError:
+        pass
+    return version
+
+EVENNIA_VERSION = evennia_version()
+
+
 def check_main_evennia_dependencies():
     """
     Checks and imports the Evennia dependencies. This must be done
@@ -354,22 +370,6 @@ def set_gamedir(path):
         sys.exit()
 
 
-def evennia_version():
-    """
-    Get the Evennia version info from the main package.
-    """
-    version = "Unknown"
-    with open(os.path.join(EVENNIA_ROOT, "VERSION.txt"), 'r') as f:
-        version = f.read().strip()
-    try:
-        version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=EVENNIA_ROOT).strip())
-    except IOError:
-        pass
-    return version
-
-EVENNIA_VERSION = evennia_version()
-
-
 def create_secret_key():
     """
     Randomly create the secret key for the settings file
@@ -422,6 +422,166 @@ def create_game_directory(dirname):
     create_settings_file()
 
 
+def create_superuser():
+    print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
+    django.core.management.call_command("createsuperuser", interactive=True)
+
+
+def check_database(exit_on_error=False):
+    """
+    Check database exists and has a superuser
+    """
+    # Check so a database exists and is accessible
+    from django.db import connection
+    tables = connection.introspection.get_table_list(connection.cursor())
+    if tables and u'players_playerdb' in tables:
+        # database exists and seems set up. Initialize evennia.
+        import evennia
+        evennia.init()
+    else:
+        if exit_on_error:
+            print ERROR_DATABASE.format(traceback=e)
+            sys.exit()
+        return False
+
+    # Try to get Player#1
+    from evennia.players.models import PlayerDB
+    try:
+        PlayerDB.objects.get(id=1)
+    except PlayerDB.DoesNotExist:
+        # no superuser yet. We need to create it.
+        create_superuser()
+    return True
+
+
+def getenv():
+    """
+    Get current environment and add PYTHONPATH
+    """
+    sep = ";" if os.name == 'nt' else ":"
+    env = os.environ.copy()
+    env['PYTHONPATH'] = sep.join(sys.path)
+    return env
+
+
+def get_pid(pidfile):
+    """
+    Get the PID (Process ID) by trying to access
+    an PID file.
+    """
+    pid = None
+    if os.path.exists(pidfile):
+        f = open(pidfile, 'r')
+        pid = f.read()
+    return pid
+
+
+def del_pid(pidfile):
+    """
+    The pidfile should normally be removed after a process has finished, but
+    when sending certain signals they remain, so we need to clean them manually.
+    """
+    if os.path.exists(pidfile):
+        os.remove(pidfile)
+
+
+def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART, restart="reload"):
+    """
+    Send a kill signal to a process based on PID. A customized success/error
+    message will be returned. If clean=True, the system will attempt to manually
+    remove the pid file.
+    """
+    pid = get_pid(pidfile)
+    if pid:
+        if os.name == 'nt':
+            if sys.version < "2.7":
+                print "Windows requires Python 2.7 or higher for this operation."
+                return
+            os.remove(pidfile)
+        # set restart/norestart flag
+        if restart == 'reload':
+            django.core.management.call_command('collectstatic', interactive=False, verbosity=0)
+        with open(restart_file, 'w') as f:
+            f.write(str(restart))
+        try:
+            os.kill(int(pid), signal)
+        except OSError:
+            print "Process %(pid)s could not be signalled. The PID file '%(pidfile)s' seems stale. Try removing it." % {'pid': pid, 'pidfile': pidfile}
+            return
+        print "Evennia:", succmsg
+        return
+    print "Evennia:", errmsg
+
+
+def show_version_info(about=False):
+    """
+    Display version info
+    """
+    import os, sys
+    import twisted
+    import django
+
+    return VERSION_INFO.format(version=EVENNIA_VERSION,
+                             about=ABOUT_INFO if about else "",
+                             os=os.name, python=sys.version.split()[0],
+                             twisted=twisted.version.short(),
+                             django=django.get_version())
+
+
+def error_check_python_modules():
+    """
+    Import settings modules in settings. This will raise exceptions on
+    pure python-syntax issues which are hard to catch gracefully
+    with exceptions in the engine (since they are formatting errors in
+    the python source files themselves). Best they fail already here
+    before we get any further.
+    """
+    from django.conf import settings
+    def imp(path, split=True):
+        mod, fromlist = path, "None"
+        if split:
+            mod, fromlist = path.rsplit('.', 1)
+        __import__(mod, fromlist=[fromlist])
+
+    # core modules
+    imp(settings.COMMAND_PARSER)
+    imp(settings.SEARCH_AT_RESULT)
+    imp(settings.SEARCH_AT_MULTIMATCH_INPUT)
+    imp(settings.CONNECTION_SCREEN_MODULE)
+    #imp(settings.AT_INITIAL_SETUP_HOOK_MODULE, split=False)
+    for path in settings.LOCK_FUNC_MODULES:
+        imp(path, split=False)
+    # cmdsets
+
+    deprstring = "settings.%s should be renamed to %s. If defaults are used, " \
+                 "their path/classname must be updated (see evennia/settings_default.py)."
+    if hasattr(settings, "CMDSET_DEFAULT"):
+        raise DeprecationWarning(deprstring % ("CMDSET_DEFAULT", "CMDSET_CHARACTER"))
+    if hasattr(settings, "CMDSET_OOC"):
+        raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_PLAYER"))
+    if settings.WEBSERVER_ENABLED and not isinstance(settings.WEBSERVER_PORTS[0], tuple):
+        raise DeprecationWarning("settings.WEBSERVER_PORTS must be on the form [(proxyport, serverport), ...]")
+    if hasattr(settings, "BASE_COMM_TYPECLASS"):
+        raise DeprecationWarning(deprstring % ("BASE_COMM_TYPECLASS", "BASE_CHANNEL_TYPECLASS"))
+    if hasattr(settings, "COMM_TYPECLASS_PATHS"):
+        raise DeprecationWarning(deprstring % ("COMM_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS"))
+    if hasattr(settings, "CHARACTER_DEFAULT_HOME"):
+        raise DeprecationWarning("settings.CHARACTER_DEFAULT_HOME should be renamed to DEFAULT_HOME. " \
+                "See also settings.START_LOCATION (see evennia/settings_default.py).")
+
+    from evennia.commands import cmdsethandler
+    if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None): print "Warning: CMDSET_UNLOGGED failed to load!"
+    if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None): print "Warning: CMDSET_CHARACTER failed to load"
+    if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None): print "Warning: CMDSET_PLAYER failed to load"
+    # typeclasses
+    imp(settings.BASE_PLAYER_TYPECLASS)
+    imp(settings.BASE_OBJECT_TYPECLASS)
+    imp(settings.BASE_CHARACTER_TYPECLASS)
+    imp(settings.BASE_ROOM_TYPECLASS)
+    imp(settings.BASE_EXIT_TYPECLASS)
+    imp(settings.BASE_SCRIPT_TYPECLASS)
+
+
 def init_game_directory(path):
     """
     Try to analyze the given path to find settings.py - this defines
@@ -450,12 +610,8 @@ def init_game_directory(path):
         print ERROR_SETTINGS
         sys.exit()
 
-    # testing the main library import. If there are errors in importing
-    # the main library, it should show here.
-    evennia = importlib.import_module("evennia")
-
-    if check_database():
-        evennia.init()
+    # this will both check the database and initialize the evennia dir.
+    check_database()
 
     # set up the Evennia executables and log file locations
     global SERVER_PY_FILE, PORTAL_PY_FILE
@@ -517,107 +673,6 @@ def init_game_directory(path):
             print INFO_WINDOWS_BATFILE.format(twistd_path=twistd_path)
 
 
-def getenv():
-    """
-    Get current environment and add PYTHONPATH
-    """
-    sep = ";" if os.name == 'nt' else ":"
-    env = os.environ.copy()
-    env['PYTHONPATH'] = sep.join(sys.path)
-    return env
-
-
-def create_database():
-    print "\nCreating a database ...\n"
-    django.core.management.call_command("migrate", interactive=False)
-    print "\n ... database initialized.\n"
-
-
-def create_superuser():
-    print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
-    django.core.management.call_command("createsuperuser", interactive=True)
-
-
-def check_database(exit_on_error=False):
-    # Check so a database exists and is accessible
-    from django.db import DatabaseError
-    from evennia.players.models import PlayerDB
-    try:
-        PlayerDB.objects.get(id=1)
-    except DatabaseError, e:
-        if exit_on_error:
-            print ERROR_DATABASE.format(traceback=e)
-            sys.exit()
-            return False
-    except PlayerDB.DoesNotExist:
-        # no superuser yet. We need to create it.
-        create_superuser()
-    return True
-
-
-def get_pid(pidfile):
-    """
-    Get the PID (Process ID) by trying to access
-    an PID file.
-    """
-    pid = None
-    if os.path.exists(pidfile):
-        f = open(pidfile, 'r')
-        pid = f.read()
-    return pid
-
-
-def del_pid(pidfile):
-    """
-    The pidfile should normally be removed after a process has finished, but
-    when sending certain signals they remain, so we need to clean them manually.
-    """
-    if os.path.exists(pidfile):
-        os.remove(pidfile)
-
-
-def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART, restart="reload"):
-    """
-    Send a kill signal to a process based on PID. A customized success/error
-    message will be returned. If clean=True, the system will attempt to manually
-    remove the pid file.
-    """
-    pid = get_pid(pidfile)
-    if pid:
-        if os.name == 'nt':
-            if sys.version < "2.7":
-                print "Windows requires Python 2.7 or higher for this operation."
-                return
-            os.remove(pidfile)
-        # set restart/norestart flag
-        if restart == 'reload':
-            django.core.management.call_command('collectstatic', interactive=False, verbosity=0)
-        f = open(restart_file, 'w')
-        f.write(str(restart))
-        f.close()
-        try:
-            os.kill(int(pid), signal)
-        except OSError:
-            print "Process %(pid)s could not be signalled. The PID file '%(pidfile)s' seems stale. Try removing it." % {'pid': pid, 'pidfile': pidfile}
-            return
-        print "Evennia:", succmsg
-        return
-    print "Evennia:", errmsg
-
-def show_version_info(about=False):
-    """
-    Display version info
-    """
-    import os, sys
-    import twisted
-    import django
-
-    return VERSION_INFO.format(version=EVENNIA_VERSION,
-                             about=ABOUT_INFO if about else "",
-                             os=os.name, python=sys.version.split()[0],
-                             twisted=twisted.version.short(),
-                             django=django.get_version())
-
 def run_menu():
     """
     This launches an interactive menu.
@@ -668,19 +723,19 @@ def run_menu():
                 if os.name == 'nt':
                     print "This operation is not supported under Windows. Log into the game to restart/reload the server."
                     return
-                kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % "Server", restart="reload")
+                kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % "Server", SERVER_RESTART, restart="reload")
             elif inp == 6:
                 if os.name == 'nt':
                     print "This operation is not supported under Windows."
                     return
-                kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped if in daemon mode).", errmsg % "Portal", restart=True)
+                kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped if in daemon mode).", errmsg % "Portal", PORTAL_RESTART, restart=True)
             elif inp == 7:
-                kill(SERVER_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART, restart=False)
-                kill(PORTAL_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", restart="shutdown")
+                kill(PORTAL_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART, restart=False)
+                kill(SERVER_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", SERVER_RESTART, restart="shutdown")
             elif inp == 8:
-                kill(PORTAL_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", restart="shutdown")
+                kill(SERVER_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", SERVER_RESTART, restart="shutdown")
             elif inp == 9:
-                kill(SERVER_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART, restart=False)
+                kill(PORTAL_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART, restart=False)
             return
         else:
             print "Not a valid option."
@@ -736,81 +791,27 @@ def server_operation(mode, service, interactive, profiler):
             print "Restarting from command line is not supported under Windows. Log into the game to restart."
             return
         if service == 'server':
-            kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % 'Server', restart="reload")
+            kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % 'Server', SERVER_RESTART, restart="reload")
         elif service == 'portal':
             print """
           Note: Portal usually don't need to be reloaded unless you are debugging in interactive mode.
           If Portal was running in default Daemon mode, it cannot be restarted. In that case you have
           to restart it manually with 'evennia.py start portal'
           """
-            kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped, if it was in daemon mode).", errmsg % 'Portal', PORTAL_RESTART)
+            kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped, if it was in daemon mode).", errmsg % 'Portal', PORTAL_RESTART, restart="reload")
         else: # all
             # default mode, only restart server
-            kill(SERVER_PIDFILE, SIG, "Server reload.", errmsg % 'Server', restart="reload")
+            kill(SERVER_PIDFILE, SIG, "Server reload.", errmsg % 'Server', SERVER_RESTART, restart="reload")
 
     elif mode == 'stop':
         # stop processes, avoiding reload
         if service == 'server':
-            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', restart="shutdown")
+            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', SERVER_RESTART, restart="shutdown")
         elif service == 'portal':
             kill(PORTAL_PIDFILE, SIG, "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART, restart=False)
         else:
             kill(PORTAL_PIDFILE, SIG, "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART, restart=False)
-            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', restart="shutdown")
-
-
-def error_check_python_modules():
-    """
-    Import settings modules in settings. This will raise exceptions on
-    pure python-syntax issues which are hard to catch gracefully
-    with exceptions in the engine (since they are formatting errors in
-    the python source files themselves). Best they fail already here
-    before we get any further.
-    """
-    from django.conf import settings
-    def imp(path, split=True):
-        mod, fromlist = path, "None"
-        if split:
-            mod, fromlist = path.rsplit('.', 1)
-        __import__(mod, fromlist=[fromlist])
-
-    # core modules
-    imp(settings.COMMAND_PARSER)
-    imp(settings.SEARCH_AT_RESULT)
-    imp(settings.SEARCH_AT_MULTIMATCH_INPUT)
-    imp(settings.CONNECTION_SCREEN_MODULE)
-    #imp(settings.AT_INITIAL_SETUP_HOOK_MODULE, split=False)
-    for path in settings.LOCK_FUNC_MODULES:
-        imp(path, split=False)
-    # cmdsets
-
-    deprstring = "settings.%s should be renamed to %s. If defaults are used, " \
-                 "their path/classname must be updated (see evennia/settings_default.py)."
-    if hasattr(settings, "CMDSET_DEFAULT"):
-        raise DeprecationWarning(deprstring % ("CMDSET_DEFAULT", "CMDSET_CHARACTER"))
-    if hasattr(settings, "CMDSET_OOC"):
-        raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_PLAYER"))
-    if settings.WEBSERVER_ENABLED and not isinstance(settings.WEBSERVER_PORTS[0], tuple):
-        raise DeprecationWarning("settings.WEBSERVER_PORTS must be on the form [(proxyport, serverport), ...]")
-    if hasattr(settings, "BASE_COMM_TYPECLASS"):
-        raise DeprecationWarning(deprstring % ("BASE_COMM_TYPECLASS", "BASE_CHANNEL_TYPECLASS"))
-    if hasattr(settings, "COMM_TYPECLASS_PATHS"):
-        raise DeprecationWarning(deprstring % ("COMM_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS"))
-    if hasattr(settings, "CHARACTER_DEFAULT_HOME"):
-        raise DeprecationWarning("settings.CHARACTER_DEFAULT_HOME should be renamed to DEFAULT_HOME. " \
-                "See also settings.START_LOCATION (see evennia/settings_default.py).")
-
-    from evennia.commands import cmdsethandler
-    if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None): print "Warning: CMDSET_UNLOGGED failed to load!"
-    if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None): print "Warning: CMDSET_CHARACTER failed to load"
-    if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None): print "Warning: CMDSET_PLAYER failed to load"
-    # typeclasses
-    imp(settings.BASE_PLAYER_TYPECLASS)
-    imp(settings.BASE_OBJECT_TYPECLASS)
-    imp(settings.BASE_CHARACTER_TYPECLASS)
-    imp(settings.BASE_ROOM_TYPECLASS)
-    imp(settings.BASE_EXIT_TYPECLASS)
-    imp(settings.BASE_SCRIPT_TYPECLASS)
+            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', SERVER_RESTART, restart="shutdown")
 
 
 

@@ -34,7 +34,7 @@ PORTAL_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(set
 
 if os.name == 'nt':
     # For Windows we need to handle pid files manually.
-    PORTAL_PIDFILE = os.path.join(settings.GAME_DIR, 'portal.pid')
+    PORTAL_PIDFILE = os.path.join(settings.GAME_DIR, "server", 'portal.pid')
 
 #------------------------------------------------------------
 # Evennia Portal settings
@@ -44,7 +44,7 @@ VERSION = get_evennia_version()
 
 SERVERNAME = settings.SERVERNAME
 
-PORTAL_RESTART = os.path.join(settings.GAME_DIR, 'portal.restart')
+PORTAL_RESTART = os.path.join(settings.GAME_DIR, "server", 'portal.restart')
 
 TELNET_PORTS = settings.TELNET_PORTS
 SSL_PORTS = settings.SSL_PORTS

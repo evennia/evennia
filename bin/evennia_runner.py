@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
 
-This runner is controlled by evennia.py and should normally not be
- launched directly.  It manages the two main Evennia processes (Server
- and Portal) and most importanly runs a passive, threaded loop that
- makes sure to restart Server whenever it shuts down.
+This runner is controlled by the evennia launcher and should normally
+not be launched directly.  It manages the two main Evennia processes
+(Server and Portal) and most importanly runs a passive, threaded loop
+that makes sure to restart Server whenever it shuts down.
 
 Since twistd does not allow for returning an optional exit code we
 need to handle the current reload state for server and portal with
@@ -183,14 +183,14 @@ def start_services(server_argv, portal_argv):
         message, rc = processes.get()
 
         # restart only if process stopped cleanly
-        if (message == "server_stopped" and int(rc) == 0 and
+        if (message == "server_stopped" and not rc.returncode and
              get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
             print PROCESS_RESTART.format(component="Server")
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
             continue
 
         # normally the portal is not reloaded since it's run as a daemon.
-        if (message == "portal_stopped" and int(rc) == 0 and
+        if (message == "portal_stopped" and not rc.returncode and
               get_restart_mode(PORTAL_RESTART) == "True"):
             print PROCESS_RESTART.format(component="Portal")
             PORTAL = thread.start_new_thread(portal_waiter, (processes, ))

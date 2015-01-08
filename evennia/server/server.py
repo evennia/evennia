@@ -53,10 +53,10 @@ _SA = object.__setattr__
 
 if os.name == 'nt':
     # For Windows we need to handle pid files manually.
-    SERVER_PIDFILE = os.path.join(settings.GAME_DIR, 'server.pid')
+    SERVER_PIDFILE = os.path.join(settings.GAME_DIR, "server", 'server.pid')
 
 # a file with a flag telling the server to restart after shutdown or not.
-SERVER_RESTART = os.path.join(settings.GAME_DIR, 'server.restart')
+SERVER_RESTART = os.path.join(settings.GAME_DIR, "server", 'server.restart')
 
 # module containing hook methods called during start_stop
 SERVER_STARTSTOP_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)

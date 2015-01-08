@@ -10,7 +10,7 @@ from evennia.utils import logger
 from evennia.utils.utils import make_iter
 
 
-class Channel(ChannelDB):
+class DefaultChannel(ChannelDB):
     """
     This is the base class for all Comms. Inherit from this to create different
     types of communication channels.
@@ -113,78 +113,6 @@ class Channel(ChannelDB):
         from evennia.comms.channelhandler import CHANNELHANDLER
         CHANNELHANDLER.update()
 
-    def channel_prefix(self, msg=None, emit=False):
-        """
-        How the channel should prefix itself for users. Return a string.
-        """
-        return '[%s] ' % self.key
-
-    def format_senders(self, senders=None):
-        """
-        Function used to format a list of sender names.
-
-        This function exists separately so that external sources can use
-        it to format source names in the same manner as normal object/player
-        names.
-        """
-        if not senders:
-            return ''
-        return ', '.join(senders)
-
-    def pose_transform(self, msg, sender_string):
-        """
-        Detects if the sender is posing, and modifies the message accordingly.
-        """
-        pose = False
-        message = msg.message
-        message_start = message.lstrip()
-        if message_start.startswith((':', ';')):
-            pose = True
-            message = message[1:]
-            if not message.startswith((':', "'", ',')):
-                if not message.startswith(' '):
-                    message = ' ' + message
-        if pose:
-            return '%s%s' % (sender_string, message)
-        else:
-            return '%s: %s' % (sender_string, message)
-
-    def format_external(self, msg, senders, emit=False):
-        """
-        Used for formatting external messages. This is needed as a separate
-        operation because the senders of external messages may not be in-game
-        objects/players, and so cannot have things like custom user
-        preferences.
-
-        senders should be a list of strings, each containing a sender.
-        msg should contain the body of the message to be sent.
-        """
-        if not senders:
-            emit = True
-        if emit:
-            return msg.message
-        senders = ', '.join(senders)
-        return self.pose_transform(msg, senders)
-
-    def format_message(self, msg, emit=False):
-        """
-        Formats a message body for display.
-
-        If emit is True, it means the message is intended to be posted detached
-        from an identity.
-        """
-        # We don't want to count things like external sources as senders for
-        # the purpose of constructing the message string.
-        senders = [sender for sender in msg.senders if hasattr(sender, 'key')]
-        if not senders:
-            emit = True
-        if emit:
-            return msg.message
-        else:
-            senders = [sender.key for sender in msg.senders]
-            senders = ', '.join(senders)
-            return self.pose_transform(msg, senders)
-
     def message_transform(self, msg, emit=False, prefix=True,
                           sender_strings=None, external=False):
         """
@@ -198,57 +126,6 @@ class Channel(ChannelDB):
             body = "%s%s" % (self.channel_prefix(msg, emit=emit), body)
         msg.message = body
         return msg
-
-    def pre_join_channel(self, joiner):
-        """
-        Run right before a channel is joined. If this returns a false value,
-        channel joining is aborted.
-        """
-        return True
-
-    def post_join_channel(self, joiner):
-        """
-        Run right after an object or player joins a channel.
-        """
-        return True
-
-    def pre_leave_channel(self, leaver):
-        """
-        Run right before a user leaves a channel. If this returns a false
-        value, leaving the channel will be aborted.
-        """
-        return True
-
-    def post_leave_channel(self, leaver):
-        """
-        Run right after an object or player leaves a channel.
-        """
-        pass
-
-    def pre_send_message(self, msg):
-        """
-        Run before a message is sent to the channel.
-
-        This should return the message object, after any transformations.
-        If the message is to be discarded, return a false value.
-        """
-        return msg
-
-    def post_send_message(self, msg):
-        """
-        Run after a message is sent to the channel.
-        """
-        pass
-
-    def at_init(self):
-        """
-        This is always called whenever this channel is initiated --
-        that is, whenever it its typeclass is cached from memory. This
-        happens on-demand first time the channel is used or activated
-        in some way after being created but also after each server
-        restart or reload.
-        """
-        pass
 
     def distribute_message(self, msg, online=False):
         """
@@ -327,4 +204,132 @@ class Channel(ChannelDB):
         A wrapper for sending non-persistent messages.
         """
         self.msg(message, senders=senders, header=header, persistent=False)
+
+
+    # hooks
+
+    def channel_prefix(self, msg=None, emit=False):
+
+        """
+        How the channel should prefix itself for users. Return a string.
+        """
+        return '[%s] ' % self.key
+
+    def format_senders(self, senders=None):
+        """
+        Function used to format a list of sender names.
+
+        This function exists separately so that external sources can use
+        it to format source names in the same manner as normal object/player
+        names.
+        """
+        if not senders:
+            return ''
+        return ', '.join(senders)
+
+    def pose_transform(self, msg, sender_string):
+        """
+        Detects if the sender is posing, and modifies the message accordingly.
+        """
+        pose = False
+        message = msg.message
+        message_start = message.lstrip()
+        if message_start.startswith((':', ';')):
+            pose = True
+            message = message[1:]
+            if not message.startswith((':', "'", ',')):
+                if not message.startswith(' '):
+                    message = ' ' + message
+        if pose:
+            return '%s%s' % (sender_string, message)
+        else:
+            return '%s: %s' % (sender_string, message)
+
+    def format_external(self, msg, senders, emit=False):
+        """
+        Used for formatting external messages. This is needed as a separate
+        operation because the senders of external messages may not be in-game
+        objects/players, and so cannot have things like custom user
+        preferences.
+
+        senders should be a list of strings, each containing a sender.
+        msg should contain the body of the message to be sent.
+        """
+        if not senders:
+            emit = True
+        if emit:
+            return msg.message
+        senders = ', '.join(senders)
+        return self.pose_transform(msg, senders)
+
+    def format_message(self, msg, emit=False):
+        """
+        Formats a message body for display.
+
+        If emit is True, it means the message is intended to be posted detached
+        from an identity.
+        """
+        # We don't want to count things like external sources as senders for
+        # the purpose of constructing the message string.
+        senders = [sender for sender in msg.senders if hasattr(sender, 'key')]
+        if not senders:
+            emit = True
+        if emit:
+            return msg.message
+        else:
+            senders = [sender.key for sender in msg.senders]
+            senders = ', '.join(senders)
+            return self.pose_transform(msg, senders)
+
+    def pre_join_channel(self, joiner):
+        """
+        Run right before a channel is joined. If this returns a false value,
+        channel joining is aborted.
+        """
+        return True
+
+    def post_join_channel(self, joiner):
+        """
+        Run right after an object or player joins a channel.
+        """
+        return True
+
+    def pre_leave_channel(self, leaver):
+        """
+        Run right before a user leaves a channel. If this returns a false
+        value, leaving the channel will be aborted.
+        """
+        return True
+
+    def post_leave_channel(self, leaver):
+        """
+        Run right after an object or player leaves a channel.
+        """
+        pass
+
+    def pre_send_message(self, msg):
+        """
+        Run before a message is sent to the channel.
+
+        This should return the message object, after any transformations.
+        If the message is to be discarded, return a false value.
+        """
+        return msg
+
+    def post_send_message(self, msg):
+        """
+        Run after a message is sent to the channel.
+        """
+        pass
+
+    def at_init(self):
+        """
+        This is always called whenever this channel is initiated --
+        that is, whenever it its typeclass is cached from memory. This
+        happens on-demand first time the channel is used or activated
+        in some way after being created but also after each server
+        restart or reload.
+        """
+        pass
+
 

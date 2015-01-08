@@ -242,7 +242,7 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs",)
 # Module holding OOB (Out of Band) hook objects. This allows for customization
 # and expansion of which hooks OOB protocols are allowed to call on the server
 # protocols for attaching tracker hooks for when various object field change
-OOB_PLUGIN_MODULES = ["evennia.server.oob_cmds", "server.conf.oob_cmds"]
+OOB_PLUGIN_MODULES = ["evennia.server.oob_cmds", "server.conf.oobfuncs"]
 
 ######################################################################
 # Default command sets
