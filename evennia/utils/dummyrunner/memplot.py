@@ -8,8 +8,9 @@ Call this module directly to plot the log (requires matplotlib and numpy).
 """
 import os, sys
 import time
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
+#TODO!
+#sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+#os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 import ev
 from evennia.utils.idmapper import base as _idmapper
 

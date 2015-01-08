@@ -20,9 +20,10 @@ from twisted.web.proxy import ReverseProxyResource
 from twisted.web.server import NOT_DONE_YET
 
 from twisted.web.wsgi import WSGIResource
+from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 
-from settings import UPSTREAM_IPS
+UPSTREAM_IPS = settings.UPSTREAM_IPS
 
 
 #

@@ -70,8 +70,9 @@ many traits with a normal goblin.
 """
 
 import os, sys, copy
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
+#TODO
+#sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+#os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 
 from django.conf import settings
 from random import randint

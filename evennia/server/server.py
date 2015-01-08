@@ -10,15 +10,19 @@ by game/evennia.py).
 import time
 import sys
 import os
-if os.name == 'nt':
-    # For Windows batchfile we need an extra path insertion here.
-    sys.path.insert(0, os.path.dirname(os.path.dirname(
+
+# add core Evennia directory
+sys.path.insert(1, os.path.dirname(os.path.dirname(
                 os.path.dirname(os.path.abspath(__file__)))))
+
 from twisted.web import server, static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
 import django
 django.setup()
+
+import evennia
+evennia.init()
 
 from django.db import connection
 from django.conf import settings
@@ -103,7 +107,7 @@ class Evennia(object):
         application - an instantiated Twisted application
 
         """
-        sys.path.append('.')
+        sys.path.insert(1, '.')
 
         # create a store of services
         self.services = service.IServiceCollection(application)

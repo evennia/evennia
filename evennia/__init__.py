@@ -54,7 +54,6 @@ create_message = None
 lockfuncs = None
 tickerhandler = None
 logger = None
-utils = None
 gametime = None
 ansi = None
 spawn = None
@@ -125,7 +124,6 @@ def init():
     from locks import lockfuncs
     from scripts.tickerhandler import TICKER_HANDLER as tickerhandler
     from utils import logger
-    from utils import utils
     from utils import gametime
     from utils import ansi
     from utils.spawner import spawn

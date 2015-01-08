@@ -10,21 +10,25 @@ by game/evennia.py).
 
 import sys
 import os
-if os.name == 'nt':
-    # For Windows batchfile we need an extra path insertion here.
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(
-                os.path.dirname(os.path.abspath(__file__))))))
-from evennia.server.webserver import EvenniaReverseProxyResource
+
+# add core Evennia directory
+sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(
+             os.path.dirname(os.path.abspath(__file__))))))
+sys.path.insert(1, os.getcwd())
+
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor
 from twisted.web import server
 import django
-
 django.setup()
-
 from django.conf import settings
+
+import evennia
+evennia.init()
+
 from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
+from evennia.server.webserver import EvenniaReverseProxyResource
 
 PORTAL_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)]
 

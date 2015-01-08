@@ -16,6 +16,7 @@ import textwrap
 import datetime
 import random
 import traceback
+from subprocess import check_output
 from importlib import import_module
 from inspect import ismodule
 from collections import defaultdict
@@ -304,6 +305,17 @@ def host_os_is(osname):
 
 
 def get_evennia_version():
+    """
+    Get the Evennia version info from the main package.
+    """
+    version = "Unknown"
+    with open(os.path.join(settings.ROOT_DIR, "VERSION.txt"), 'r') as f:
+        version = f.read().strip()
+    try:
+        version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=settings.ROOT_DIR).strip())
+    except IOError:
+        pass
+    return version
     """
     Check for the evennia version info.
     """

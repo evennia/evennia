@@ -15,7 +15,7 @@ import signal
 import shutil
 import importlib
 from argparse import ArgumentParser
-from subprocess import Popen
+from subprocess import Popen, check_output
 import django
 
 # Signal processing
@@ -28,7 +28,6 @@ EVENNIA_LIB = os.path.join(EVENNIA_ROOT, "evennia")
 EVENNIA_RUNNER = os.path.join(EVENNIA_BIN, "evennia_runner.py")
 EVENNIA_TEMPLATE = os.path.join(EVENNIA_ROOT, "game_template")
 
-EVENNIA_VERSION = "Unknown"
 TWISTED_BINARY = "twistd"
 
 # Game directory structure
@@ -57,8 +56,10 @@ DJANGO_MIN = '1.7'
 DJANGO_REC = '1.7'
 
 # add Evennia root and bin dir to PYTHONPATH
-sys.path.insert(0, EVENNIA_ROOT)
-
+# note that we want to remove bin/ (path[0]) from
+# pythonpath since there is otherwise a clash over
+# the name evennia
+sys.path[0] = EVENNIA_ROOT
 
 #------------------------------------------------------------
 #
@@ -66,30 +67,29 @@ sys.path.insert(0, EVENNIA_ROOT)
 #
 #------------------------------------------------------------
 
-WELCOME_MESSAGE = \
-    """
-    Welcome to Evennia!
-
-    No previous setting file was found so we created a fresh
-    settings.py file for you. No database was created.  You may edit
-    the settings file now if you like, but you don't have to touch
-    anything if you just want to quickly get started.
-
-    Once you are ready to continue, run evennia.py again to
-    initialize the database and a third time to start the server.
-
-    The first time the server starts it will set things up for you.
-    Make sure to create a superuser when asked. The superuser's
-    email-address does not have to exist.
-    """
-
 CREATED_NEW_GAMEDIR = \
     """
-    ... Created new Evennia game directory '{gamedir}'.
+    Welcome to Evennia!
+    Created a new Evennia game directory '{gamedir}'.
 
-    Inside your new game directory, you can now optionally edit
-    {settings_path} to suit your setup. Then run this command again
-    from inside the game directory to start the server.
+    You can now optionally edit your new settings file
+    at {settings_path}. If you don't, the defaults
+    will work out of the box. When ready to continue, 'cd' to your
+    game directory and run:
+
+       evennia migrate
+
+    This initializes the database. To start the server for the first
+    time, run:
+
+       evennia -i start
+
+    Make sure to create a superuser when asked for it. You should now
+    be able to (by default) connect to your server on server
+    'localhost', port 4000 using a telnet/mud client or
+    http://localhost:8000 using your web browser. If things don't
+    work, check so those ports are open.
+
     """
 
 ERROR_NO_GAMEDIR = \
@@ -127,11 +127,11 @@ ERROR_DATABASE = \
     Your database does not seem to be set up correctly.
     (error was '{traceback}')
 
-    Try to run
+    Standing in your game directory, try to run
 
-       python evennia.py
+       evennia migrate
 
-    to initialize the database according to your settings.
+    to initialize/update the database according to your settings.
     """
 
 ERROR_WINDOWS_WIN32API = \
@@ -169,8 +169,8 @@ CMDLINE_HELP = \
 
 VERSION_INFO = \
     """
-    Evennia {version}
     {about}
+    Evennia {version}
     OS: {os}
     Python: {python}
     Twisted: {twisted}
@@ -187,6 +187,8 @@ ABOUT_INFO= \
     Forum: http://www.evennia.com/discussions
     Maintainer (2010-):   Griatch (griatch AT gmail DOT com)
     Maintainer (2006-10): Greg Taylor
+
+    Use -h for command line options.
     """
 
 HELP_ENTRY = \
@@ -360,10 +362,12 @@ def evennia_version():
     with open(os.path.join(EVENNIA_ROOT, "VERSION.txt"), 'r') as f:
         version = f.read().strip()
     try:
-        version = "%s(GIT %s)" % (version, os.popen("git rev-parse --short HEAD").read().strip())
+        version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=EVENNIA_ROOT).strip())
     except IOError:
         pass
     return version
+
+EVENNIA_VERSION = evennia_version()
 
 
 def create_secret_key():
@@ -428,7 +432,7 @@ def init_game_directory(path):
     set_gamedir(path)
 
     # Add gamedir to python path
-    sys.path.insert(0, GAMEDIR)
+    sys.path.insert(1, GAMEDIR)
 
     # Prepare django; set the settings location
     os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
@@ -449,7 +453,9 @@ def init_game_directory(path):
     # testing the main library import. If there are errors in importing
     # the main library, it should show here.
     evennia = importlib.import_module("evennia")
-    evennia.init()
+
+    if check_database(automigrate=False, exit_on_error=False):
+        evennia.init()
 
     # check all dependencies
     from evennia.utils.utils import check_evennia_dependencies
@@ -477,10 +483,6 @@ def init_game_directory(path):
     PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
     HTTP_LOGFILE = settings.HTTP_LOG_FILE
 
-    # This also tests the library access
-    from evennia.utils.utils import get_evennia_version
-    EVENNIA_VERSION = get_evennia_version()
-
     # set up twisted
     if os.name == 'nt':
         # We need to handle Windows twisted separately. We create a
@@ -490,7 +492,7 @@ def init_game_directory(path):
         TWISTED_BINARY = "twistd.bat"
 
         # add path so system can find the batfile
-        sys.path.insert(0, os.path.join(GAMEDIR, SERVERDIR))
+        sys.path.insert(1, os.path.join(GAMEDIR, SERVERDIR))
 
         try:
             importlib.import_module("win32api")
@@ -522,6 +524,16 @@ def init_game_directory(path):
             print INFO_WINDOWS_BATFILE.format(twistd_path=twistd_path)
 
 
+def getenv():
+    """
+    Get current environment and add PYTHONPATH
+    """
+    sep = ";" if os.name == 'nt' else ":"
+    env = os.environ.copy()
+    env['PYTHONPATH'] = sep.join(sys.path)
+    return env
+
+
 def create_database():
     print "\nCreating a database ...\n"
     django.core.management.call_command("migrate", interactive=False)
@@ -533,7 +545,7 @@ def create_superuser():
     django.core.management.call_command("createsuperuser", interactive=True)
 
 
-def check_database(automigrate=False):
+def check_database(automigrate=False, exit_on_error=True):
     # Check so a database exists and is accessible
     from django.db import DatabaseError
     from evennia.players.models import PlayerDB
@@ -544,11 +556,14 @@ def check_database(automigrate=False):
             create_database()
             create_superuser()
         else:
-            print ERROR_DATABASE.format(traceback=e)
-            sys.exit()
+            if exit_on_error:
+                print ERROR_DATABASE.format(traceback=e)
+                sys.exit()
+            return False
     except PlayerDB.DoesNotExist:
         # no superuser yet. We need to create it.
         create_superuser()
+    return True
 
 
 def get_pid(pidfile):
@@ -657,7 +672,7 @@ def run_menu():
                 cmdstr.extend(['--iserver', '--iportal'])
             # start server
             cmdstr.append("start")
-            Popen(cmdstr)
+            Popen(cmdstr, env=getenv())
             return
         elif inp < 10:
             if inp == 5:
@@ -724,7 +739,7 @@ def server_operation(mode, service, interactive, profiler):
             django.core.management.call_command('collectstatic', verbosity=1, interactive=False)
         cmdstr.extend([GAMEDIR, TWISTED_BINARY, SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE])
         # start the server
-        Popen(cmdstr)
+        Popen(cmdstr, env=getenv())
 
     elif mode == 'reload':
         # restarting services
@@ -828,7 +843,7 @@ def main():
                         help="Creates a new game directory 'name' at the current location.")
     parser.add_argument('-p', '--prof', action='store_true', dest='profiler', default=False,
                       help="Start given server component under the Python profiler.")
-    parser.add_argument("mode", metavar="option", nargs='?', default="menu",
+    parser.add_argument("mode", metavar="option", nargs='?', default="help",
                         help="Operational mode or management option. Commonly start, stop, reload, migrate, or menu (default).")
     parser.add_argument("service", metavar="component", nargs='?', choices=["all", "server", "portal"], default="all",
                         help="Which server component to operate on. One of server, portal or all (default).")
@@ -837,9 +852,6 @@ def main():
 
     # handle arguments
 
-    if args.show_version:
-        print show_version_info()
-
     mode, service = args.mode, args.service
 
     check_main_evennia_dependencies()
@@ -847,7 +859,14 @@ def main():
     if args.init:
         create_game_directory(args.init)
         print CREATED_NEW_GAMEDIR.format(gamedir=args.init,
-                                         settings_path=SETTINGS_PATH)
+                                         settings_path=os.path.join(args.init, SETTINGS_PATH))
+        sys.exit()
+
+    if args.show_version:
+        print show_version_info(mode=="help")
+        sys.exit()
+    if mode == "help":
+        print ABOUT_INFO
         sys.exit()
 
     # this must be done first - it sets up all the global properties
@@ -856,7 +875,6 @@ def main():
 
     if mode == 'menu':
         # launch menu for operation
-        check_database(True)
         run_menu()
     elif mode in ('start', 'reload', 'stop'):
         # operate the server directly

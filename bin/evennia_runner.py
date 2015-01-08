@@ -82,6 +82,16 @@ def set_restart_mode(restart_file, flag="reload"):
         f.write(str(flag))
 
 
+def getenv():
+    """
+    Get current environment and add PYTHONPATH
+    """
+    sep = ";" if os.name == "nt" else ":"
+    env = os.environ.copy()
+    env['PYTHONPATH'] = sep.join(sys.path)
+    return env
+
+
 def get_restart_mode(restart_file):
     """
     Parse the server/portal restart status
@@ -129,7 +139,7 @@ def start_services(server_argv, portal_argv):
 
     def server_waiter(queue):
         try:
-            rc = Popen(server_argv).wait()
+            rc = Popen(server_argv, env=getenv())
         except Exception, e:
             print PROCESS_ERROR.format(component="Server", traceback=e)
             return
@@ -138,7 +148,7 @@ def start_services(server_argv, portal_argv):
 
     def portal_waiter(queue):
         try:
-            rc = Popen(portal_argv).wait()
+            rc = Popen(portal_argv, env=getenv())
         except Exception, e:
             print PROCESS_ERROR.format(component="Portal", traceback=e)
             return
@@ -153,7 +163,7 @@ def start_services(server_argv, portal_argv):
             else:
                 # normal operation: start portal as a daemon;
                 # we don't care to monitor it for restart
-                PORTAL = Popen(portal_argv)
+                PORTAL = Popen(portal_argv, env=getenv())
         except IOError, e:
             print PROCESS_IOERROR.format(component="Portal", traceback=e)
             return
@@ -223,7 +233,7 @@ def main():
     global SERVER_RESTART, PORTAL_RESTART
 
     GAMEDIR = args.gamedir
-    sys.path.insert(0, os.path.join(GAMEDIR, SERVERDIR))
+    sys.path.insert(1, os.path.join(GAMEDIR, SERVERDIR))
 
     SERVER_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "server.pid")
     PORTAL_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "portal.pid")

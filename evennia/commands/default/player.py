@@ -25,7 +25,8 @@ from evennia.server.sessionhandler import SESSIONS
 from evennia.commands.default.muxcommand import MuxPlayerCommand
 from evennia.utils import utils, create, search, prettytable
 
-from settings import MAX_NR_CHARACTERS, MULTISESSION_MODE
+MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
+MULTISESSION_MODE = settings.MULTISESSION_MODE
 
 # limit symbol import for API
 __all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit",
