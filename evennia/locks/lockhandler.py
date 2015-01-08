@@ -135,7 +135,6 @@ def _cache_lockfuncs():
     global _LOCKFUNCS
     _LOCKFUNCS = {}
     for modulepath in settings.LOCK_FUNC_MODULES:
-        modulepath = utils.pypath_to_realpath(modulepath)
         mod = utils.mod_import(modulepath)
         if mod:
             for tup in (tup for tup in inspect.getmembers(mod) if callable(tup[1])):

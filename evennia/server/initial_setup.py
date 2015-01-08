@@ -74,8 +74,8 @@ def create_objects():
     god_character.db.desc = _('This is User #1.')
     god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
     god_character.permissions.add("Immortals")
-
     god_character.save()
+
     god_player.attributes.add("_first_login", True)
     god_player.attributes.add("_last_puppet", god_character)
     god_player.db._playable_characters.append(god_character)
@@ -248,13 +248,9 @@ def handle_setup(last_step):
             setup_func()
         except Exception:
             if last_step + num == 2:
-                from evennia.players.models import PlayerDB
                 from evennia.objects.models import ObjectDB
-
                 for obj in ObjectDB.objects.all():
                     obj.delete()
-                for profile in PlayerDB.objects.all():
-                    profile.delete()
             elif last_step + num == 3:
                 from evennia.comms.models import ChannelDB
                 ChannelDB.objects.all().delete()

@@ -878,8 +878,6 @@ def main():
         run_menu()
     elif mode in ('start', 'reload', 'stop'):
         # operate the server directly
-        if mode != "stop":
-            check_database(False)
         server_operation(mode, service, args.interactive, args.profiler)
     else:
         # pass-through to django manager
