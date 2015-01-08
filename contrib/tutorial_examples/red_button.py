@@ -11,16 +11,16 @@ Create this button with
 Note that you must drop the button before you can see its messages!
 """
 import random
-from evennia import Object
-from contrib.examples import red_button_scripts as scriptexamples
-from contrib.examples import cmdset_red_button as cmdsetexamples
+from evennia import DefaultObject
+from contrib.tutorial_examples import red_button_scripts as scriptexamples
+from contrib.tutorial_examples import cmdset_red_button as cmdsetexamples
 
 #
 # Definition of the object itself
 #
 
 
-class RedButton(Object):
+class RedButton(DefaultObject):
     """
     This class describes an evil red button.  It will use the script
     definition in contrib/examples/red_button_scripts to blink at regular

@@ -162,11 +162,12 @@ class CmdPy(MuxCommand):
         # check if caller is a player
 
         # import useful variables
-        import ev
+        import evennia
         available_vars = {'self': caller,
                           'me': caller,
                           'here': hasattr(caller, "location") and caller.location or None,
-                          'ev': ev,
+                          'evennia': evennia,
+                          'ev': evennia,
                           'inherits_from': utils.inherits_from}
 
         try:

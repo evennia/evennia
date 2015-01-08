@@ -33,6 +33,7 @@ Msg = None
 
 # commands
 Command = None
+CmdSet = None
 default_cmds = None
 syscmdkeys = None
 
@@ -68,7 +69,6 @@ except IOError:
     __version__ += " (unknown version)"
 del os
 
-
 def init():
     """
     This is called only after Evennia has fully initialized all its models.
@@ -83,7 +83,7 @@ def init():
     global DefaultPlayer, DefaultObject, DefaultGuest, DefaultCharacter, \
            DefaultRoom, DefaultExit, DefaultChannel, Script
     global ObjectDB, PlayerDB, ScriptDB, ChannelDB, Msg
-    global Command, default_cmds, syscmdkeys
+    global Command, CmdSet, default_cmds, syscmdkeys
     global search_object, search_script, search_player, search_channel, search_help
     global create_object, create_script, create_player, create_channel, create_message
     global lockfuncs, tickerhandler, logger, utils, gametime, ansi, spawn, managers
@@ -106,6 +106,7 @@ def init():
 
     # commands
     from commands.command import Command
+    from commands.cmdset import CmdSet
 
     # search functions
     from utils.search import search_object
@@ -256,4 +257,3 @@ def init():
     syscmdkeys = SystemCmds()
     del SystemCmds
     del _EvContainer
-

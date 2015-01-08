@@ -15,6 +15,8 @@ main test suite started with
 import re
 from django.conf import settings
 from django.utils.unittest import TestCase
+import evennia
+evennia.init()
 from evennia.server.serversession import ServerSession
 from evennia.objects.objects import DefaultObject, DefaultCharacter
 from evennia.players.players import DefaultPlayer
@@ -232,7 +234,7 @@ from evennia.commands.default import building
 class TestBuilding(CommandTest):
     CID = 6
     def test_cmds(self):
-        self.call(building.CmdCreate(), "/drop TestObj1", "You create a new DefaultObject: TestObj1.")
+        self.call(building.CmdCreate(), "/drop TestObj1", "You create a new Object: TestObj1.")
         self.call(building.CmdExamine(), "TestObj1", "Name/key: TestObj1")
         self.call(building.CmdSetObjAlias(), "TestObj1 = TestObj1b","Alias(es) for 'TestObj1' set to testobj1b.")
         self.call(building.CmdCopy(), "TestObj1 = TestObj2;TestObj2b, TestObj3;TestObj3b", "Copied TestObj1 to 'TestObj3' (aliases: ['TestObj3b']")
@@ -283,5 +285,5 @@ class TestBatchProcess(CommandTest):
     CID = 8
     def test_cmds(self):
         # cannot test batchcode here, it must run inside the server process
-        self.call(batchprocess.CmdBatchCommands(), "examples.batch_cmds", "Running Batchcommand processor  Automatic mode for examples.batch_cmds")
+        self.call(batchprocess.CmdBatchCommands(), "contrib.tutorial_examples.batch_cmds", "Running Batchcommand processor  Automatic mode for contrib.tutorial_examples.batch_cmds")
         #self.call(batchprocess.CmdBatchCode(), "examples.batch_code", "")

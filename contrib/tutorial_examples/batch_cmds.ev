@@ -17,7 +17,7 @@
 
 # This creates a red button
 
-@create button:examples.red_button.RedButton
+@create button:tutorial_examples.red_button.RedButton
 
 # This comment ends input for @create
 # Next command:

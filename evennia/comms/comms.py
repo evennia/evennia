@@ -109,7 +109,7 @@ class DefaultChannel(ChannelDB):
         """
         self.attributes.clear()
         self.aliases.clear()
-        super(Channel, self).delete()
+        super(DefaultChannel, self).delete()
         from evennia.comms.channelhandler import CHANNELHANDLER
         CHANNELHANDLER.update()
 
