@@ -663,7 +663,7 @@ class DefaultPlayer(PlayerDB):
         pass
 
 
-class Guest(DefaultPlayer):
+class DefaultGuest(DefaultPlayer):
     """
     This class is used for guest logins. Unlike Players, Guests and their
     characters are deleted after disconnection.
@@ -681,7 +681,7 @@ class Guest(DefaultPlayer):
         A Guest's characters aren't meant to linger on the server. When a
         Guest disconnects, we remove its character.
         """
-        super(Guest, self).at_disconnect()
+        super(DefaultGuest, self).at_disconnect()
         characters = self.db._playable_characters
         for character in filter(None, characters):
             character.delete()
@@ -690,7 +690,7 @@ class Guest(DefaultPlayer):
         """
         We repeat at_disconnect() here just to be on the safe side.
         """
-        super(Guest, self).at_server_shutdown()
+        super(DefaultGuest, self).at_server_shutdown()
         characters = self.db._playable_characters
         for character in filter(None, characters):
             character.delete()
@@ -700,5 +700,5 @@ class Guest(DefaultPlayer):
         Guests aren't meant to linger on the server, either. We need to wait
         until after the Guest disconnects to delete it, though.
         """
-        super(Guest, self).at_post_disconnect()
+        super(DefaultGuest, self).at_post_disconnect()
         self.delete()

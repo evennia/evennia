@@ -6,10 +6,23 @@ Player object. A Player is what chats on default channels but has no
 other in-game-world existance. Rather the Player puppets Objects (such
 as Characters) in order to actually participate in the game world.
 
+
+Guest
+
+Guest players are simple low-level accounts that are created/deleted
+on the fly and allows users to test the game without the committment
+of a full registration. Guest accounts are deactivated by default; to
+activate them, add the following line to your settings file:
+
+    GUEST_ENABLED = True
+
+You will also need to modify the connection screen to reflect the
+possibility to connect with a guest account. The setting file accepts
+several more options for customizing the Guest account system.
+
 """
 
-from evennia import DefaultPlayer
-
+from evennia import DefaultPlayer, DefaultGuest
 
 class Player(DefaultPlayer):
     """
@@ -77,5 +90,13 @@ class Player(DefaultPlayer):
      at_server_reload()
      at_server_shutdown()
 
+    """
+    pass
+
+
+class Guest(DefaultGuest):
+    """
+    This class is used for guest logins. Unlike Players, Guests and their
+    characters are deleted after disconnection.
     """
     pass

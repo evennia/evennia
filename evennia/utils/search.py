@@ -174,10 +174,11 @@ channels = search_channels
 #     category - limit the search to a particular help topic
 #     """
 
-search_help_entry = HelpEntry.objects.search_help
-search_help_entries = search_help_entry
-help_entry_search = search_help_entry
-help_entries = search_help_entries
+search_help = HelpEntry.objects.search_help
+search_help_entry = search_help
+search_help_entries = search_help
+help_entry_search = search_help
+help_entries = search_help
 
 
 # Locate Attributes

@@ -280,17 +280,17 @@ PLAYER_TYPECLASS_PATHS = ["typeclasses", "contrib"]
 CHANNEL_TYPECLASS_PATHS = ["typeclasses", "contrib"]
 
 # Typeclass for player objects (linked to a character) (fallback)
-BASE_PLAYER_TYPECLASS = "typeclasses.player.Player"
+BASE_PLAYER_TYPECLASS = "typeclasses.players.Player"
 # Typeclass and base for all objects (fallback)
-BASE_OBJECT_TYPECLASS = "typeclasses.object.Object"
+BASE_OBJECT_TYPECLASS = "typeclasses.objects.Object"
 # Typeclass for character objects linked to a player (fallback)
-BASE_CHARACTER_TYPECLASS = "typeclasses.character.Character"
+BASE_CHARACTER_TYPECLASS = "typeclasses.characters.Character"
 # Typeclass for rooms (fallback)
-BASE_ROOM_TYPECLASS = "typeclasses.room.Room"
+BASE_ROOM_TYPECLASS = "typeclasses.rooms.Room"
 # Typeclass for Exit objects (fallback).
-BASE_EXIT_TYPECLASS = "typeclasses.exit.Exit"
+BASE_EXIT_TYPECLASS = "typeclasses.exits.Exit"
 # Typeclass for Channel (fallback).
-BASE_CHANNEL_TYPECLASS = "typeclasses.channel.Channel"
+BASE_CHANNEL_TYPECLASS = "typeclasses.channels.Channel"
 # Typeclass for Scripts (fallback). You usually don't need to change this
 # but create custom variations of scripts on a per-case basis instead.
 BASE_SCRIPT_TYPECLASS = "typeclasses.scripts.Script"
@@ -399,7 +399,7 @@ CLIENT_DEFAULT_HEIGHT = 45 # telnet standard is 24 but does anyone use such
 # This enables guest logins, by default via "connect guest"
 GUEST_ENABLED = False
 # Typeclass for guest player objects (linked to a character)
-BASE_GUEST_TYPECLASS = "typeclasses.player.Guest"
+BASE_GUEST_TYPECLASS = "typeclasses.players.Guest"
 # The permission given to guests
 PERMISSION_GUEST_DEFAULT = "Guests"
 # The default home location used for guests.

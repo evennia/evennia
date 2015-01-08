@@ -12,54 +12,117 @@ See www.evennia.com for full documentation.
 
 """
 
-if False:
+# Delayed loading of properties
 
-    ######################################################################
-    # set Evennia version in __version__ property
-    ######################################################################
-    import os
-    try:
-        __version__ = "Evennia"
-        with os.path.join(open(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "VERSION.txt", 'r') as f:
-            __version__ += " %s" % f.read().strip()
-    except IOError:
-        __version__ += " (unknown version)"
-    del os
+# Typeclasses
+DefaultPlayer = None
+DefaultGuest = None
+DefaultObject = None
+DefaultCharacter = None
+DefaultRoom = None
+DefaultExit = None
+Channel = None
+Script = None
 
-    ######################################################################
-    # Start Evennia API
-    # (easiest is to import this module interactively to explore it)
-    ######################################################################
+# Database models
+ObjectDB = None
+PlayerDB = None
+ScriptDB = None
+ChannelDB = None
+Msg = None
 
-    # help entries
-    from help.models import HelpEntry
+# commands
+Command = None
+default_cmds = None
+syscmdkeys = None
 
-    # players
-    from players.player import DefaultPlayer
+# search functions
+search_object = None
+search_script = None
+search_player = None
+search_channel = None
+search_help = None
+
+# create functions
+create_object = None
+create_script = None
+create_player = None
+create_channel = None
+create_message = None
+
+# utilities
+lockfuncs = None
+tickerhandler = None
+logger = None
+utils = None
+gametime = None
+ansi = None
+spawn = None
+managers = None
+
+import os
+try:
+    __version__ = "Evennia"
+    with os.path.join(open(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "VERSION.txt", 'r') as f:
+        __version__ += " %s" % f.read().strip()
+except IOError:
+    __version__ += " (unknown version)"
+del os
+
+
+def init():
+    """
+    This is called only after Evennia has fully initialized all its models.
+    """
+    def imp(path, variable=True):
+        "Helper function"
+        mod, fromlist = path, "None"
+        if variable:
+            mod, fromlist = path.rsplit('.', 1)
+        return __import__(mod, fromlist=[fromlist])
+
+    global DefaultPlayer, DefaultObject, DefaultGuest, DefaultCharacter, DefaultRoom, DefaultExit, Channel, Script
+    global ObjectDB, PlayerDB, ScriptDB, ChannelDB, Msg
+    global Command, default_cmds, syscmdkeys
+    global search_object, search_script, search_player, search_channel, search_help
+    global create_object, create_script, create_player, create_channel, create_message
+    global lockfuncs, tickerhandler, logger, utils, gametime, ansi, spawn, managers
+
+    from players.players import DefaultPlayer
+    from players.players import DefaultGuest
+    from objects.objects import DefaultObject
+    from objects.objects import DefaultCharacter
+    from objects.objects import DefaultRoom
+    from objects.objects import DefaultExit
+    from comms.comms import Channel
+    from scripts.scripts import Script
+
+    # Database models
+    from objects.models import ObjectDB
     from players.models import PlayerDB
+    from scripts.models import ScriptDB
+    from comms.models import ChannelDB
+    from comms.models import Msg
 
     # commands
     from commands.command import Command
-    from commands.cmdset import CmdSet
-    # (default_cmds is created below)
 
-    # locks
+    # search functions
+    from utils.search import search_object
+    from utils.search import search_script
+    from utils.search import search_player
+    from utils.search import search_channel
+    from utils.search import search_help
+
+    # create functions
+    from utils.create import create_object
+    from utils.create import create_script
+    from utils.create import create_player
+    from utils.create import create_channel
+    from utils.create import create_message
+
+    # utilities
     from locks import lockfuncs
-
-    # scripts
-    from scripts.scripts import Script
-
-    # comms
-    from comms.models import Msg, ChannelDB
-    from comms.comms import Channel
-
-    # objects
-    from objects.objects import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
-
-    # utils
-
-    from utils.search import *
-    from utils.create import *
     from scripts.tickerhandler import TICKER_HANDLER as tickerhandler
     from utils import logger
     from utils import utils
@@ -67,25 +130,7 @@ if False:
     from utils import ansi
     from utils.spawner import spawn
 
-    ######################################################################
-    # API containers and helper functions
-    ######################################################################
-
-    def help(header=False):
-        """
-        Main Evennia API.
-           ev.help() views API contents
-           ev.help(True) or ev.README shows module instructions
-
-           See www.evennia.com for the full documentation.
-        """
-        if header:
-            return __doc__
-        else:
-            import ev
-            names = [str(var) for var in ev.__dict__ if not var.startswith('_')]
-            return ", ".join(names)
-
+    # API containers
 
     class _EvContainer(object):
         """

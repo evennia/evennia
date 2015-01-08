@@ -448,12 +448,14 @@ def init_game_directory(path):
 
     # testing the main library import. If there are errors in importing
     # the main library, it should show here.
-    importlib.import_module("evennia")
+    evennia = importlib.import_module("evennia")
+    evennia.init()
 
     # check all dependencies
     from evennia.utils.utils import check_evennia_dependencies
     if not check_evennia_dependencies:
         sys.exit()
+
 
     # set up the Evennia executables and log file locations
     global SERVER_PY_FILE, PORTAL_PY_FILE
@@ -766,13 +768,13 @@ def error_check_python_modules():
         mod, fromlist = path, "None"
         if split:
             mod, fromlist = path.rsplit('.', 1)
-            __import__(mod, fromlist=[fromlist])
+        __import__(mod, fromlist=[fromlist])
 
     # core modules
     imp(settings.COMMAND_PARSER)
     imp(settings.SEARCH_AT_RESULT)
     imp(settings.SEARCH_AT_MULTIMATCH_INPUT)
-    imp(settings.CONNECTION_SCREEN_MODULE, split=False)
+    imp(settings.CONNECTION_SCREEN_MODULE)
     #imp(settings.AT_INITIAL_SETUP_HOOK_MODULE, split=False)
     for path in settings.LOCK_FUNC_MODULES:
         imp(path, split=False)

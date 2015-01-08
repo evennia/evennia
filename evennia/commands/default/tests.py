@@ -17,7 +17,7 @@ from django.conf import settings
 from django.utils.unittest import TestCase
 from evennia.server.serversession import ServerSession
 from evennia.objects.objects import DefaultObject, DefaultCharacter
-from evennia.players.player import DefaultPlayer
+from evennia.players.players import DefaultPlayer
 from evennia.utils import create, ansi
 from evennia.server.sessionhandler import SESSIONS
 

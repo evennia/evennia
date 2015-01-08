@@ -1814,7 +1814,7 @@ class CmdExamine(ObjManipCommand):
             obj_name = objdef['name']
             obj_attrs = objdef['attrs']
 
-            self.player_mode = utils.inherits_from(caller, "evennia.players.player.Player") or \
+            self.player_mode = utils.inherits_from(caller, "evennia.players.players.Player") or \
                            "player" in self.switches or obj_name.startswith('*')
             if self.player_mode:
                 try:

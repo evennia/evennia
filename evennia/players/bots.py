@@ -5,7 +5,7 @@ Player that are  controlled by the server.
 """
 
 from django.conf import settings
-from evennia.players.player import DefaultPlayer
+from evennia.players.players import DefaultPlayer
 from evennia.scripts.scripts import Script
 from evennia.commands.command import Command
 from evennia.commands.cmdset import CmdSet
