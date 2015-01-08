@@ -139,7 +139,7 @@ def start_services(server_argv, portal_argv):
 
     def server_waiter(queue):
         try:
-            rc = Popen(server_argv, env=getenv())
+            rc = Popen(server_argv, env=getenv()).wait()
         except Exception, e:
             print PROCESS_ERROR.format(component="Server", traceback=e)
             return
@@ -148,7 +148,7 @@ def start_services(server_argv, portal_argv):
 
     def portal_waiter(queue):
         try:
-            rc = Popen(portal_argv, env=getenv())
+            rc = Popen(portal_argv, env=getenv()).wait()
         except Exception, e:
             print PROCESS_ERROR.format(component="Portal", traceback=e)
             return
@@ -183,14 +183,14 @@ def start_services(server_argv, portal_argv):
         message, rc = processes.get()
 
         # restart only if process stopped cleanly
-        if (message == "server_stopped" and not rc.returncode and
+        if (message == "server_stopped" and int(rc) == 0 and
              get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
             print PROCESS_RESTART.format(component="Server")
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
             continue
 
         # normally the portal is not reloaded since it's run as a daemon.
-        if (message == "portal_stopped" and not rc.returncode and
+        if (message == "portal_stopped" and int(rc) == 0 and
               get_restart_mode(PORTAL_RESTART) == "True"):
             print PROCESS_RESTART.format(component="Portal")
             PORTAL = thread.start_new_thread(portal_waiter, (processes, ))

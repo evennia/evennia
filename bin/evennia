@@ -478,35 +478,38 @@ def get_pid(pidfile):
 
 def del_pid(pidfile):
     """
-    The pidfile should normally be removed after a process has finished, but
-    when sending certain signals they remain, so we need to clean them manually.
+    The pidfile should normally be removed after a process has
+    finished, but when sending certain signals they remain, so we need
+    to clean them manually.
     """
     if os.path.exists(pidfile):
         os.remove(pidfile)
 
 
-def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART, restart="reload"):
+def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART, restart=False):
     """
-    Send a kill signal to a process based on PID. A customized success/error
-    message will be returned. If clean=True, the system will attempt to manually
-    remove the pid file.
+    Send a kill signal to a process based on PID. A customized
+    success/error message will be returned. If clean=True, the system
+    will attempt to manually remove the pid file.
     """
     pid = get_pid(pidfile)
     if pid:
         if os.name == 'nt':
-            if sys.version < "2.7":
-                print "Windows requires Python 2.7 or higher for this operation."
-                return
             os.remove(pidfile)
         # set restart/norestart flag
-        if restart == 'reload':
+        if restart:
             django.core.management.call_command('collectstatic', interactive=False, verbosity=0)
-        with open(restart_file, 'w') as f:
-            f.write(str(restart))
+            with open(restart_file, 'w') as f:
+                f.write("reload")
+        else:
+            with open(restart_file, 'w') as f:
+                f.write("shutdown")
         try:
             os.kill(int(pid), signal)
         except OSError:
-            print "Process %(pid)s could not be signalled. The PID file '%(pidfile)s' seems stale. Try removing it." % {'pid': pid, 'pidfile': pidfile}
+            print "Process %(pid)s cannot be stopped. "\
+                  "The PID file 'server/%(pidfile)s' seems stale. "\
+                  "Try removing it." % {'pid': pid, 'pidfile': pidfile}
             return
         print "Evennia:", succmsg
         return
@@ -723,19 +726,19 @@ def run_menu():
                 if os.name == 'nt':
                     print "This operation is not supported under Windows. Log into the game to restart/reload the server."
                     return
-                kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % "Server", SERVER_RESTART, restart="reload")
+                kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % "Server", SERVER_RESTART, restart=True)
             elif inp == 6:
                 if os.name == 'nt':
                     print "This operation is not supported under Windows."
                     return
                 kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped if in daemon mode).", errmsg % "Portal", PORTAL_RESTART, restart=True)
             elif inp == 7:
-                kill(PORTAL_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART, restart=False)
-                kill(SERVER_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", SERVER_RESTART, restart="shutdown")
+                kill(PORTAL_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART)
+                kill(SERVER_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", SERVER_RESTART)
             elif inp == 8:
-                kill(SERVER_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", SERVER_RESTART, restart="shutdown")
+                kill(SERVER_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", SERVER_RESTART)
             elif inp == 9:
-                kill(PORTAL_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART, restart=False)
+                kill(PORTAL_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART)
             return
         else:
             print "Not a valid option."
@@ -791,27 +794,27 @@ def server_operation(mode, service, interactive, profiler):
             print "Restarting from command line is not supported under Windows. Log into the game to restart."
             return
         if service == 'server':
-            kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % 'Server', SERVER_RESTART, restart="reload")
+            kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % 'Server', SERVER_RESTART, restart=True)
         elif service == 'portal':
             print """
-          Note: Portal usually don't need to be reloaded unless you are debugging in interactive mode.
+          Note: Portal usually doesnt't need to be reloaded unless you are debugging in interactive mode.
           If Portal was running in default Daemon mode, it cannot be restarted. In that case you have
           to restart it manually with 'evennia.py start portal'
           """
-            kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped, if it was in daemon mode).", errmsg % 'Portal', PORTAL_RESTART, restart="reload")
+            kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped, if it was in daemon mode).", errmsg % 'Portal', PORTAL_RESTART, restart=True)
         else: # all
             # default mode, only restart server
-            kill(SERVER_PIDFILE, SIG, "Server reload.", errmsg % 'Server', SERVER_RESTART, restart="reload")
+            kill(SERVER_PIDFILE, SIG, "Server reload.", errmsg % 'Server', SERVER_RESTART, restart=True)
 
     elif mode == 'stop':
         # stop processes, avoiding reload
         if service == 'server':
-            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', SERVER_RESTART, restart="shutdown")
+            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', SERVER_RESTART)
         elif service == 'portal':
-            kill(PORTAL_PIDFILE, SIG, "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART, restart=False)
+            kill(PORTAL_PIDFILE, SIG, "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART)
         else:
-            kill(PORTAL_PIDFILE, SIG, "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART, restart=False)
-            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', SERVER_RESTART, restart="shutdown")
+            kill(PORTAL_PIDFILE, SIG, "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART)
+            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', SERVER_RESTART)
 
 
 
