@@ -454,14 +454,8 @@ def init_game_directory(path):
     # the main library, it should show here.
     evennia = importlib.import_module("evennia")
 
-    if check_database(automigrate=False, exit_on_error=False):
+    if check_database():
         evennia.init()
-
-    # check all dependencies
-    from evennia.utils.utils import check_evennia_dependencies
-    if not check_evennia_dependencies:
-        sys.exit()
-
 
     # set up the Evennia executables and log file locations
     global SERVER_PY_FILE, PORTAL_PY_FILE
@@ -483,7 +477,6 @@ def init_game_directory(path):
     PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
     HTTP_LOGFILE = settings.HTTP_LOG_FILE
 
-    # set up twisted
     if os.name == 'nt':
         # We need to handle Windows twisted separately. We create a
         # batchfile in game/server, linking to the actual binary
@@ -545,20 +538,16 @@ def create_superuser():
     django.core.management.call_command("createsuperuser", interactive=True)
 
 
-def check_database(automigrate=False, exit_on_error=True):
+def check_database(exit_on_error=False):
     # Check so a database exists and is accessible
     from django.db import DatabaseError
     from evennia.players.models import PlayerDB
     try:
         PlayerDB.objects.get(id=1)
     except DatabaseError, e:
-        if automigrate:
-            create_database()
-            create_superuser()
-        else:
-            if exit_on_error:
-                print ERROR_DATABASE.format(traceback=e)
-                sys.exit()
+        if exit_on_error:
+            print ERROR_DATABASE.format(traceback=e)
+            sys.exit()
             return False
     except PlayerDB.DoesNotExist:
         # no superuser yet. We need to create it.
