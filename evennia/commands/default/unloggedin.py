@@ -20,14 +20,6 @@ __all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
 
 MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
-CONNECTION_SCREEN = ""
-try:
-    CONNECTION_SCREEN = ansi.parse_ansi(utils.random_string_from_module(CONNECTION_SCREEN_MODULE))
-except Exception:
-    pass
-if not CONNECTION_SCREEN:
-    CONNECTION_SCREEN = "\nEvennia: Error in CONNECTION_SCREEN MODULE (randomly picked connection screen variable is not a string). \nEnter 'help' for aid."
-
 
 class CmdUnconnectedConnect(MuxCommand):
     """
@@ -280,7 +272,10 @@ class CmdUnconnectedLook(MuxCommand):
 
     def func(self):
         "Show the connect screen."
-        self.caller.msg(CONNECTION_SCREEN)
+        connection_screen = ansi.parse_ansi(utils.random_string_from_module(CONNECTION_SCREEN_MODULE))
+        if not connection_screen:
+            connection_screen = "No connection screen found. Please contact an admin."
+        self.caller.msg(connection_screen)
 
 
 class CmdUnconnectedHelp(MuxCommand):

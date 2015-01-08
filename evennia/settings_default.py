@@ -213,7 +213,7 @@ SEARCH_AT_MULTIMATCH_INPUT = "evennia.commands.cmdparser.at_multimatch_input"
 # The module holding text strings for the connection screen.
 # This module should contain one or more variables
 # with strings defining the look of the screen.
-CONNECTION_SCREEN_MODULE = "world.connection_screen"
+CONNECTION_SCREEN_MODULE = "server.conf.connection_screens"
 # An optional module that, if existing, must hold a function
 # named at_initial_setup(). This hook method can be used to customize
 # the server's initial setup sequence (the very first startup of the system).
