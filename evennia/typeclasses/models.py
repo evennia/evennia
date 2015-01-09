@@ -50,7 +50,7 @@ from evennia.utils.utils import (
     class_from_module)
 from evennia.typeclasses.django_new_patch import patched_new
 
-__all__ = ("Attribute", "TypeNick", "TypedObject")
+__all__ = ("TypedObject", )
 
 TICKER_HANDLER = None
 
@@ -84,7 +84,8 @@ def post_save(sender, instance, created, **kwargs):
 class TypeclassBase(SharedMemoryModelBase):
     """
     Metaclass which should be set for the root of model proxies
-    that don't define any new fields, like Object, Script etc.
+    that don't define any new fields, like Object, Script etc. This
+    is the basis for the typeclassing system.
     """
 
     def __new__(cls, name, bases, attrs):
