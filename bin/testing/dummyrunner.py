@@ -234,6 +234,9 @@ class DummyClient(telnet.StatefulTelnetProtocol):
                     NLOGGED_IN += 1 # this is for book-keeping
                     print "connecting client %s (%i/%i)..." % (self.key, NLOGGED_IN, NCLIENTS)
                     self._loggedin = True
+                else:
+                    # no login yet, so cmdlist not yet set
+                    return
             else:
                 # we always pick a cumulatively random function
                 crand = random.random()
