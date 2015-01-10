@@ -70,7 +70,9 @@ INFO_STARTING = \
     """
     Dummyrunner starting using {N} dummy player(s). If you don't see
     any connection messages, make sure that the Evennia server is
-    running.
+    running. If you intend the dummies to work fully, set
+    settings.PERMISSION_PLAYER_DEFAULT appropriately (if so it is
+    recommended that you use a temporary testing database).
 
     Use Ctrl-C to stop/disconnect clients.
     """
@@ -141,7 +143,7 @@ def gidcounter():
     "makes globally unique ids"
     global GCOUNT
     GCOUNT += 1
-    return "%s-%s" % (time.strftime(DATESTRING), ICOUNT)
+    return "%s-%s" % (time.strftime(DATESTRING), GCOUNT)
 
 
 def makeiter(obj):
@@ -178,7 +180,6 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         self._login = self.factory.actions[0]
         self._logout = self.factory.actions[1]
         self._actions = self.factory.actions[2:]
-        print "_actions:", self._actions
 
         reactor.addSystemEventTrigger('before', 'shutdown', self.logout)
 
@@ -236,7 +237,6 @@ class DummyClient(telnet.StatefulTelnetProtocol):
             else:
                 # we always pick a cumulatively random function
                 crand = random.random()
-                print "actions:", self._actions
                 cfunc = [func for (cprob, func) in self._actions if cprob >= crand][0]
                 self._cmdlist = list(makeiter(cfunc(self)))
 
@@ -274,8 +274,7 @@ def start_all_dummy_clients(nclients):
     # create cumulative probabilies for the random actions
     cprobs = [sum(v for i,v in enumerate(probs) if i<=k) for k in range(len(probs))]
     # rebuild a new, optimized action structure
-    print "cprobs, cfuncs:", cprobs, cfuncs
-    actions = (flogin, flogout, zip(cprobs, cfuncs))
+    actions = (flogin, flogout) + tuple(zip(cprobs, cfuncs))
 
     # setting up all clients (they are automatically started)
     factory = DummyFactory(actions)

@@ -104,8 +104,8 @@ def c_login(client):
 
     cmds = ('create %s %s' % (cname, cpwd),
            'connect %s %s' % (cname, cpwd),
-           '@dig %s' % START_ROOM % client.cid,
-           '@teleport %s' % START_ROOM % client.cid,
+           '@dig %s' % START_ROOM % client.gid,
+           '@teleport %s' % START_ROOM % client.gid,
            '@dig %s = %s, %s' % (roomname, exitname1, exitname2)
            )
     return cmds
