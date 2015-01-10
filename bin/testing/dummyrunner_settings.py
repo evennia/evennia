@@ -240,18 +240,18 @@ def c_moves_s(client):
 #            #(0.1, c_creates_button),
 #            #(0.4, c_moves))
 ## "normal player" definition
-#ACTIONS = ( c_login,
-#            c_logout,
-#            (0.01, c_digs),
-#            (0.39, c_looks),
-#            (0.2, c_help),
-#            (0.4, c_moves))
+ACTIONS = ( c_login,
+            c_logout,
+            (0.01, c_digs),
+            (0.39, c_looks),
+            (0.2, c_help),
+            (0.4, c_moves))
 # walking tester. This requires a pre-made
 # "loop" of multiple rooms that ties back
 # to limbo (using @tunnel and @open)
-ACTIONS = (c_login_nodig,
-           c_logout,
-           (1.0, c_moves_n))
+#ACTIONS = (c_login_nodig,
+#           c_logout,
+#           (1.0, c_moves_n))
 ## "socializing heavy builder" definition
 #ACTIONS = (c_login,
 #           c_logout,
