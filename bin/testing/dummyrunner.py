@@ -38,7 +38,7 @@ from twisted.internet import reactor, protocol
 from twisted.internet.task import LoopingCall
 
 from django.conf import settings
-from evennia.utils import mod_import
+from evennia.utils import mod_import, time_format
 
 # Load the dummyrunner settings module
 
@@ -68,16 +68,18 @@ NLOGGED_IN = 0
 
 INFO_STARTING = \
     """
-    Dummyrunner starting, {N} dummy player(s).
+    Dummyrunner starting using {N} dummy player(s). If you don't see
+    any connection messages, make sure that the Evennia server is
+    running.
 
     Use Ctrl-C to stop/disconnect clients.
     """
 
 ERROR_FEW_ACTIONS = \
-"""
-Dummyrunner error: The ACTIONS tuple is too short: it must contain at
-least login- and logout functions.
-"""
+    """
+    Dummyrunner settings error: The ACTIONS tuple is too short: it must
+    contain at least login- and logout functions.
+    """
 
 
 HELPTEXT = """
@@ -97,25 +99,27 @@ Setup:
   1) setup a fresh/clean database (if using sqlite, just safe-copy
      away your real evennia.db3 file and create a new one with
      manage.py)
-  2) in game/settings.py, add
+  2) in server/conf/settings.py, add
 
         PERMISSION_PLAYER_DEFAULT="Builders"
 
-        You can also customize the dummyrunner by modifying
-        a setting file specified by DUMMYRUNNER_SETTINGS_MODULE
+     This is so that the dummy players can test building operations.
+     You can also customize the dummyrunner by modifying a setting
+     file specified by DUMMYRUNNER_SETTINGS_MODULE
 
   3) Start Evennia like normal, optionally with profiling (--profile)
-  4) run this dummy runner via the evennia launcher:
+  4) Run this dummy runner via the evennia launcher:
 
         evennia --dummyrunner <nr_of_clients>
 
   5) Log on and determine if game remains responsive despite the
      heavier load. Note that if you do profiling, there is an
-     additional overhead from the profiler too!
+     additional overhead from the profiler too!j
   6) If you use profiling, let the game run long enough to gather
-     data, then stop the server, ideally from inside it with
-     @shutdown. You can inspect the server.prof file from a python
-     prompt (see Python's manual on cProfiler).
+     data, then stop the server cleanly using evennia stop or @shutdown.
+     @shutdown. The profile appears as
+     server/logs/server.prof/portal.prof (see Python's manual on
+     cProfiler).
 
 """
 
@@ -164,18 +168,17 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         self.key = "Dummy-%s" % self.cid
         self.gid = "%s-%s" % (time.strftime(DATESTRING), self.cid)
         self.istep = 0
-        self.loggedin = False
         self.exits = [] # exit names created
         self.objs = [] # obj names created
 
+        self._loggedin = False
+        self._logging_out = False
         self._report = ""
         self._cmdlist = [] # already stepping in a cmd definition
-        nactions = len(self.factory.actions) # this has already been normalized
-        if nactions < 2:
-            raise RuntimeError(ERROR_FEW_ACTIONS)
         self._login = self.factory.actions[0]
         self._logout = self.factory.actions[1]
         self._actions = self.factory.actions[2:]
+        print "_actions:", self._actions
 
         reactor.addSystemEventTrigger('before', 'shutdown', self.logout)
 
@@ -192,6 +195,8 @@ class DummyClient(telnet.StatefulTelnetProtocol):
 
     def connectionLost(self, reason):
         "loosing the connection"
+        if not self._logging_out:
+            print "client %s(%s) lost connection (%s)" % (self.key, self.cid, reason)
 
     def error(self, err):
         "error callback"
@@ -203,6 +208,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
 
     def logout(self):
         "Causes the client to log out of the server. Triggered by ctrl-c signal."
+        self._logging_out = True
         cmd = self._logout(self)
         print "client %s(%s) logout (%s actions)" % (self.key, self.cid, self.istep)
         self.sendLine(cmd)
@@ -220,17 +226,18 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         if not self._cmdlist:
             # no commands ready. Load some.
 
-            if not self.loggedin:
+            if not self._loggedin:
                 if rand < CHANCE_OF_LOGIN:
                     # get the login commands
                     self._cmdlist = list(makeiter(self._login(self)))
                     NLOGGED_IN += 1 # this is for book-keeping
                     print "connecting client %s (%i/%i)..." % (self.key, NLOGGED_IN, NCLIENTS)
-                    self.loggedin = True
+                    self._loggedin = True
             else:
                 # we always pick a cumulatively random function
                 crand = random.random()
-                cfunc = [func for cprob, func in self._actions if cprob >= crand][0]
+                print "actions:", self._actions
+                cfunc = [func for (cprob, func) in self._actions if cprob >= crand][0]
                 self._cmdlist = list(makeiter(cfunc(self)))
 
         # at this point we always have a list of commands
@@ -257,12 +264,17 @@ def start_all_dummy_clients(nclients):
     NCLIENTS = int(nclients)
     actions = DUMMYRUNNER_SETTINGS.ACTIONS
 
+    if len(actions) < 2:
+        print ERROR_FEW_ACTIONS
+        return
+
     # make sure the probabilities add up to 1
     pratio = 1.0 / sum(tup[0] for tup in actions[2:])
     flogin, flogout, probs, cfuncs = actions[0], actions[1], [tup[0] * pratio for tup in actions[2:]], [tup[1] for tup in actions[2:]]
     # create cumulative probabilies for the random actions
     cprobs = [sum(v for i,v in enumerate(probs) if i<=k) for k in range(len(probs))]
     # rebuild a new, optimized action structure
+    print "cprobs, cfuncs:", cprobs, cfuncs
     actions = (flogin, flogout, zip(cprobs, cfuncs))
 
     # setting up all clients (they are automatically started)
@@ -286,7 +298,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     print INFO_STARTING.format(N=args.nclients[0])
+
+    # run the dummyrunner
     t0 = time.time()
     start_all_dummy_clients(nclients=args.nclients[0])
     ttot = time.time() - t0
-    print "... dummy client runner stopped after %i seconds." % ttot
+
+    # output runtime
+    print "... dummy client runner stopped after %s." % time_format(ttot, style=3)

@@ -16,6 +16,7 @@ historical, back-compatible reasons.
 
 """
 
+import os
 from datetime import datetime
 from traceback import format_exc
 from twisted.python import log
@@ -112,7 +113,7 @@ LOG_FILE_HANDLES = {} # holds open log handles
 def log_file(msg, filename="game.log"):
     """
     Arbitrary file logger using threads.  Filename defaults to
-    'game.log'. All logs will appear in game/logs directory and log
+    'game.log'. All logs will appear in the logs directory and log
     entries will start on new lines following datetime info.
     """
     global LOG_FILE_HANDLES
@@ -129,8 +130,8 @@ def log_file(msg, filename="game.log"):
         "Catching errors to normal log"
         log_trace()
 
-    # save to game/logs/ directory
-    filename = "logs/" + filename
+    # save to server/logs/ directory
+    filename = os.path.join("server", "logs", filename)
 
     if filename in LOG_FILE_HANDLES:
         filehandle = LOG_FILE_HANDLES[filename]

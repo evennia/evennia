@@ -178,7 +178,8 @@ def time_format(seconds, style=0):
 
     Style 0: 1d 08:30
     Style 1: 1d
-    Style 2: 1 day, 8 hours, 30 minutes, 10 seconds
+    Style 2: 1 day, 8 hours, 30 minutes
+    Style 3: 1 day, 8 hours, 30 minutes, 10 seconds
     """
     if seconds < 0:
         seconds = 0
@@ -263,7 +264,7 @@ def time_format(seconds, style=0):
                 seconds_str = '%i seconds ' % seconds
         retval = '%s%s%s%s' % (days_str, hours_str, minutes_str, seconds_str)
 
-    return retval
+    return retval.strip()
 
 
 def datetime_format(dtobj):

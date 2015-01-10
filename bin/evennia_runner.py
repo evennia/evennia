@@ -45,6 +45,8 @@ PORTAL_RESTART = None
 SERVER_LOGFILE = None
 PORTAL_LOGFILE = None
 HTTP_LOGFILE = None
+PPROFILER_LOGFILE = None
+SPROFILER_LOGFILE = None
 
 # messages
 
@@ -231,6 +233,7 @@ def main():
     global SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE
     global SERVER_PIDFILE, PORTAL_PIDFILE
     global SERVER_RESTART, PORTAL_RESTART
+    global SPROFILER_LOGFILE, PPROFILER_LOGFILE
 
     GAMEDIR = args.gamedir
     sys.path.insert(1, os.path.join(GAMEDIR, SERVERDIR))
@@ -243,6 +246,8 @@ def main():
     PORTAL_LOGFILE = args.plogfile
     HTTP_LOGFILE = args.hlogfile
     TWISTED_BINARY = args.twistdbinary
+    SPROFILER_LOGFILE = os.path.join(GAMEDIR, SERVERDIR, "logs", "server.prof")
+    PPROFILER_LOGFILE = os.path.join(GAMEDIR, SERVERDIR, "logs", "portal.prof")
 
     # set up default project calls
     server_argv = [TWISTED_BINARY,
@@ -259,10 +264,10 @@ def main():
     # p = pstats.Stats('server.prof')
     pserver_argv = ['--savestats',
                     '--profiler=cprofile',
-                    '--profile=server.prof']
+                    '--profile=%s' % SPROFILER_LOGFILE]
     pportal_argv = ['--savestats',
                     '--profiler=cprofile',
-                    '--profile=portal.prof']
+                    '--profile=%s' % PPROFILER_LOGFILE]
 
     # Server
 
