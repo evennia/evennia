@@ -15,7 +15,7 @@ import signal
 import shutil
 import importlib
 from argparse import ArgumentParser
-from subprocess import Popen, check_output
+from subprocess import Popen, check_output, call
 import django
 
 # Signal processing
@@ -27,6 +27,8 @@ EVENNIA_BIN = os.path.join(EVENNIA_ROOT, "bin")
 EVENNIA_LIB = os.path.join(EVENNIA_ROOT, "evennia")
 EVENNIA_RUNNER = os.path.join(EVENNIA_BIN, "evennia_runner.py")
 EVENNIA_TEMPLATE = os.path.join(EVENNIA_ROOT, "game_template")
+EVENNIA_BINTESTING = os.path.join(EVENNIA_BIN, "testing")
+EVENNIA_DUMMYRUNNER = os.path.join(EVENNIA_BINTESTING, "dummyrunner.py")
 
 TWISTED_BINARY = "twistd"
 
@@ -675,6 +677,22 @@ def init_game_directory(path):
 
             print INFO_WINDOWS_BATFILE.format(twistd_path=twistd_path)
 
+def run_dummyrunner(number_of_dummies):
+    """
+    Start an instance of the dummyrunner
+
+    The dummy players' behavior can be customized by adding a
+    dummyrunner_settings.py config file in the game's conf directory.
+    """
+    number_of_dummies = str(int(number_of_dummies)) if number_of_dummies else 1
+    cmdstr = [sys.executable, EVENNIA_DUMMYRUNNER, "-N", number_of_dummies]
+    config_file  = os.path.join(SETTINGS_PATH, "dummyrunner_settings.py")
+    if os.path.exists(config_file):
+        cmdstr.extend(["--config", config_file])
+    try:
+        call(cmdstr, env=getenv())
+    except KeyboardInterrupt:
+        pass
 
 def run_menu():
     """
@@ -834,8 +852,10 @@ def main():
                       help="Start given processes in interactive mode.")
     parser.add_argument('--init', action='store', dest="init", metavar="name",
                         help="Creates a new game directory 'name' at the current location.")
-    parser.add_argument('-p', '--prof', action='store_true', dest='profiler', default=False,
+    parser.add_argument('--profile', action='store_true', dest='profiler', default=False,
                       help="Start given server component under the Python profiler.")
+    parser.add_argument('--dummyrunner', nargs=1, action='store', dest='dummyrunner', metavar="N",
+                        help="Tests a running server by connecting N dummy players to it.")
     parser.add_argument("mode", metavar="option", nargs='?', default="help",
                         help="Operational mode or management option. Commonly start, stop, reload, migrate, or menu (default).")
     parser.add_argument("service", metavar="component", nargs='?', choices=["all", "server", "portal"], default="all",
@@ -858,7 +878,7 @@ def main():
     if args.show_version:
         print show_version_info(mode=="help")
         sys.exit()
-    if mode == "help":
+    if mode == "help" and not args.dummyrunner:
         print ABOUT_INFO
         sys.exit()
 
@@ -866,7 +886,10 @@ def main():
     # and initializes django for the game directory
     init_game_directory(CURRENT_DIR)
 
-    if mode == 'menu':
+    if args.dummyrunner:
+        # launch the dummy runner
+        run_dummyrunner(args.dummyrunner[0])
+    elif mode == 'menu':
         # launch menu for operation
         run_menu()
     elif mode in ('start', 'reload', 'stop'):

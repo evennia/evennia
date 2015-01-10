@@ -243,6 +243,9 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs",)
 # and expansion of which hooks OOB protocols are allowed to call on the server
 # protocols for attaching tracker hooks for when various object field change
 OOB_PLUGIN_MODULES = ["evennia.server.oob_cmds", "server.conf.oobfuncs"]
+# Module holding settings/actions for the dummyrunner program (see the
+# dummyrunner for more information)
+DUMMYRUNNER_SETTINGS_MODULE = os.path.join(ROOT_DIR, "bin/testing/dummyrunner_settings")
 
 ######################################################################
 # Default command sets

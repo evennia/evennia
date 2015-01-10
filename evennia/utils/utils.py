@@ -765,7 +765,7 @@ def mod_import(module):
         module - this can be either a Python path (dot-notation like
                  evennia.objects.models), an absolute path
                  (e.g. /home/eve/evennia/evennia/objects.models.py)
-                 or an already import module object (e.g. models)
+                 or an already imported module object (e.g. models)
     Returns:
         an imported module. If the input argument was already a model,
         this is returned as-is, otherwise the path is parsed and imported.
