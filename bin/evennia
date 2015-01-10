@@ -165,7 +165,8 @@ INFO_WINDOWS_BATFILE = \
 CMDLINE_HELP = \
     """
     Starts or operates the Evennia MU* server. Also allows for
-    initializing a new game directory and manage the game database.
+    initializing a new game directory and managing the game's
+    database.
     """
 
 
