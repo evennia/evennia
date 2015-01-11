@@ -103,7 +103,7 @@ EVENNIA_DIR = os.path.join(ROOT_DIR, 'evennia')
 # Path to the game directory (containing the database file if using sqlite).
 GAME_DIR = os.path.join(ROOT_DIR, 'game_template')
 # Place to put log files
-LOG_DIR = os.path.join(GAME_DIR, 'logs')
+LOG_DIR = os.path.join(GAME_DIR, 'server', 'logs')
 SERVER_LOG_FILE = os.path.join(LOG_DIR, 'server.log')
 PORTAL_LOG_FILE = os.path.join(LOG_DIR, 'portal.log')
 HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
