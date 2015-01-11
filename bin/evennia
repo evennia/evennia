@@ -362,13 +362,16 @@ def set_gamedir(path):
         # path at root of game dir
         GAMEDIR = os.path.abspath(path)
     elif os.path.exists(os.path.join(path, os.path.pardir, SETTINGS_PATH)):
-        # path given to somewhere else in gamedir
-        GAMEDIR = os.path.dirname(os.path.dirname(path))
+        # path given to somewhere one level down
+        GAMEDIR = os.path.dirname(path)
     elif os.path.exists(os.path.join(path, os.path.pardir, os.path.pardir, SETTINGS_PATH)):
         # path given to somwhere two levels down
+        GAMEDIR = os.path.dirname(os.path.dirname(path))
+    elif os.path.exists(os.path.join(path, os.path.pardir, os.path. pardir, os.path.pardir, SETTINGS_PATH)):
+        # path given to somewhere three levels down (custom directories)
         GAMEDIR = os.path.dirname(os.path.dirname(os.path.dirname(path)))
     else:
-        # Assume path given to root game dir
+        # we don't look further down than this ...
         print ERROR_NO_GAMEDIR
         sys.exit()
 
