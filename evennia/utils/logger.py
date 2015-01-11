@@ -1,18 +1,15 @@
 """
 Logging facilities
 
-These are thin wrappers on top of Twisted's
-logging facilities; logs are all directed
-either to stdout (if Evennia is running in
+These are thin wrappers on top of Twisted's logging facilities; logs
+are all directed either to stdout (if Evennia is running in
 interactive mode) or to game/logs.
 
-The log_file() function uses its own threading
-system to log to arbitrary files in game/logs.
+The log_file() function uses its own threading system to log to
+arbitrary files in game/logs.
 
-Note:
-All logging functions have two aliases,
-log_type() and log_typemsg(). This is for
-historical, back-compatible reasons.
+Note: All logging functions have two aliases, log_type() and
+log_typemsg(). This is for historical, back-compatible reasons.
 
 """
 
@@ -22,6 +19,7 @@ from traceback import format_exc
 from twisted.python import log
 from twisted.internet.threads import deferToThread
 
+_LOGDIR = None
 
 def log_trace(errmsg=None):
     """
@@ -116,7 +114,11 @@ def log_file(msg, filename="game.log"):
     'game.log'. All logs will appear in the logs directory and log
     entries will start on new lines following datetime info.
     """
-    global LOG_FILE_HANDLES
+    global LOG_FILE_HANDLES, _LOGDIR
+
+    if not _LOGDIR:
+        from django.conf import settings
+        _LOGDIR = settings.LOG_DIR
 
     def callback(filehandle, msg):
         "Writing to file and flushing result"
@@ -131,7 +133,7 @@ def log_file(msg, filename="game.log"):
         log_trace()
 
     # save to server/logs/ directory
-    filename = os.path.join("server", "logs", filename)
+    filename = os.path.join(_LOGDIR, filename)
 
     if filename in LOG_FILE_HANDLES:
         filehandle = LOG_FILE_HANDLES[filename]
