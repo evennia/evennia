@@ -306,25 +306,8 @@ def host_os_is(osname):
 
 
 def get_evennia_version():
-    """
-    Get the Evennia version info from the main package.
-    """
-    version = "Unknown"
-    with open(os.path.join(settings.ROOT_DIR, "VERSION.txt"), 'r') as f:
-        version = f.read().strip()
-    try:
-        version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=settings.ROOT_DIR).strip())
-    except IOError:
-        pass
-    return version
-    """
-    Check for the evennia version info.
-    """
-    try:
-        f = open(settings.ROOT_DIR + os.sep + "VERSION.txt", 'r')
-        return "%s-%s" % (f.read().strip(), os.popen("git rev-parse --short HEAD").read().strip())
-    except IOError:
-        return "Unknown version"
+    import evennia
+    return evennia.__version__
 
 
 def pypath_to_realpath(python_path, file_ending='.py'):
@@ -343,7 +326,7 @@ def pypath_to_realpath(python_path, file_ending='.py'):
         pathsplit = pathsplit[:-1]
     if not pathsplit:
         return python_path
-    path = settings.ROOT_DIR
+    path = settings.EVENNIA_DIR
     for directory in pathsplit:
         path = os.path.join(path, directory)
     if file_ending:

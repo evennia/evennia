@@ -15,6 +15,7 @@ See www.evennia.com for full documentation.
 # Delayed loading of properties
 
 # Typeclasses
+
 DefaultPlayer = None
 DefaultGuest = None
 DefaultObject = None
@@ -61,13 +62,21 @@ spawn = None
 managers = None
 
 import os
+from subprocess import check_output, CalledProcessError, STDOUT
+
+__version__ = "Unknown"
+
+root = os.path.dirname(os.path.abspath(__file__))
 try:
-    __version__ = "Evennia"
-    with os.path.join(open(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "VERSION.txt", 'r') as f:
-        __version__ += " %s" % f.read().strip()
-except IOError:
-    __version__ += " (unknown version)"
-del os
+    with open(os.path.join(root, "VERSION.txt"), 'r') as f:
+        __version__ = f.read().strip()
+except IOError as err:
+    print err
+try:
+    __version__ = "%s" % (check_output("git rev-parse --short HEAD", shell=True, cwd=root, stderr=STDOUT).strip())
+except (IOError, CalledProcessError):
+    pass
+
 
 def init():
     """

@@ -15,7 +15,7 @@ import signal
 import shutil
 import importlib
 from argparse import ArgumentParser
-from subprocess import Popen, check_output, call
+from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
 import django
 
 # Signal processing
@@ -24,9 +24,11 @@ SIG = signal.SIGINT
 # Set up the main python paths to Evennia
 EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EVENNIA_BIN = os.path.join(EVENNIA_ROOT, "bin")
-EVENNIA_LIB = os.path.join(EVENNIA_ROOT, "evennia")
+
+import evennia
+EVENNIA_LIB = os.path.join(os.path.dirname(os.path.abspath(evennia.__file__)))
 EVENNIA_RUNNER = os.path.join(EVENNIA_BIN, "evennia_runner.py")
-EVENNIA_TEMPLATE = os.path.join(EVENNIA_ROOT, "game_template")
+EVENNIA_TEMPLATE = os.path.join(EVENNIA_ROOT, "share", "evennia", "game_template")
 EVENNIA_BINTESTING = os.path.join(EVENNIA_BIN, "testing")
 EVENNIA_DUMMYRUNNER = os.path.join(EVENNIA_BINTESTING, "dummyrunner.py")
 
@@ -299,11 +301,14 @@ def evennia_version():
     Get the Evennia version info from the main package.
     """
     version = "Unknown"
-    with open(os.path.join(EVENNIA_ROOT, "VERSION.txt"), 'r') as f:
-        version = f.read().strip()
     try:
-        version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=EVENNIA_ROOT).strip())
-    except IOError:
+        import evennia
+        version = evennia.__version__
+    except ImportError:
+        pass
+    try:
+        version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip())
+    except (IOError, CalledProcessError):
         pass
     return version
 

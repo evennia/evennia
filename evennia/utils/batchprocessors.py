@@ -90,7 +90,7 @@ It seems the bottom of the box is a bit loose.
 # close the @drop command since it's the end of the file)
 -------------------------
 
-An example batch file is contribs/examples/batch_example.ev.
+An example batch file is contrib/examples/batch_example.ev.
 
 
 ==========================================================================

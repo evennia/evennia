@@ -19,6 +19,7 @@ import sys
 from argparse import ArgumentParser
 from subprocess import Popen
 import Queue, thread
+import evennia
 
 try:
     # check if launched with pypy
@@ -31,7 +32,7 @@ PORTAL = None
 
 EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EVENNIA_BIN = os.path.join(EVENNIA_ROOT, "bin")
-EVENNIA_LIB = os.path.join(EVENNIA_ROOT, "evennia")
+EVENNIA_LIB = os.path.dirname(evennia.__file__)
 
 SERVER_PY_FILE = os.path.join(EVENNIA_LIB,'server', 'server.py')
 PORTAL_PY_FILE = os.path.join(EVENNIA_LIB, 'server', 'portal', 'portal.py')

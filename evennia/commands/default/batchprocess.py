@@ -242,7 +242,7 @@ class CmdBatchCommands(MuxCommand):
         except UnicodeDecodeError, err:
             caller.msg(_UTF8_ERROR % (python_path, err))
             return
-        except IOError:
+        except IOError as err:
             string = "'%s' not found.\nYou have to supply the python path "
             string += "of the file relative to \none of your batch-file directories (%s)."
             caller.msg(string % (python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
