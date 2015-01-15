@@ -277,10 +277,10 @@ SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
 # Base paths for typeclassed object classes. These paths must be
 # defined relative evennia's root directory. They will be searched in
 # order to find relative typeclass paths.
-OBJECT_TYPECLASS_PATHS = ["typeclasses", "contrib"]
-SCRIPT_TYPECLASS_PATHS = ["typeclasses" "contrib"]
-PLAYER_TYPECLASS_PATHS = ["typeclasses", "contrib"]
-CHANNEL_TYPECLASS_PATHS = ["typeclasses", "contrib"]
+OBJECT_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
+SCRIPT_TYPECLASS_PATHS = ["typeclasses" "evennia.contrib", "evennia.contrib.tutorial_examples"]
+PLAYER_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
+CHANNEL_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 
 # Typeclass for player objects (linked to a character) (fallback)
 BASE_PLAYER_TYPECLASS = "typeclasses.players.Player"
@@ -320,7 +320,7 @@ TYPECLASS_AGGRESSIVE_CACHE = True
 
 # Python path to a directory to be searched for batch scripts
 # for the batch processors (.ev and/or .py files).
-BASE_BATCHPROCESS_PATHS = ['world', 'contrib']
+BASE_BATCHPROCESS_PATHS = ['world', 'evennia.contrib']
 
 ######################################################################
 # Game Time setup

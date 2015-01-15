@@ -936,12 +936,12 @@ def class_from_module(path, defaultpaths=None):
         if "." in path:
             testpath, clsname = testpath.rsplit(".", 1)
         else:
-            testpath, clsname = ".", testpath
+            raise ImportError("the path '%s' is not on the form modulepath.Classname." % path)
         try:
-            mod = import_module(testpath)
+            mod = import_module(testpath, package="evennia")
         except ImportError, ex:
             # normally this is due to a not-found property
-            if not str(ex).startswith("No module named"):
+            if not str(ex).startswith("No module named"):# %s" % path):
                 exc = sys.exc_info()
                 raise exc[1], None, exc[2]
             continue
@@ -953,7 +953,12 @@ def class_from_module(path, defaultpaths=None):
                 exc = sys.exc_info()
                 raise exc[1], None, exc[2]
     if not cls:
-        raise ImportError("Could not load typeclass '%s'." % path)
+        err = "Could not load typeclass '%s'" % path
+        if defaultpaths:
+            err += " (paths searched: %s)" % ", ".join(paths)
+        else:
+            err += "."
+        raise ImportError(err)
     return cls
 
 
