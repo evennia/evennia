@@ -180,17 +180,17 @@ class Evennia(object):
                 # update the database
                 print " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..." % (settings_names[i], prev, curr)
                 if i == 0:
-                    [obj.__setattr__("cmdset_storage", curr) for obj in ObjectDB.objects.filter(db_cmdset_storage__exact=prev)]
+                    ObjectDB.objects.filter(db_cmdset_storage__exact=prev).update(db_cmdset_storage=curr)
                 if i == 1:
-                    [ply.__setattr__("cmdset_storage", curr) for ply in PlayerDB.objects.filter(db_cmdset_storage__exact=prev)]
+                    PlayerDB.objects.filter(db_cmdset_storage__exact=prev).update(db_cmdset_storage=curr)
                 if i == 2:
-                    [ply.__setattr__("typeclass_path", curr) for ply in PlayerDB.objects.filter(db_typeclass_path__exact=prev)]
+                    PlayerDB.objects.filter(db_typeclass_path__exact=prev).update(db_typeclass_path=curr)
                 if i in (3, 4, 5, 6):
-                    [obj.__setattr__("typeclass_path", curr) for obj in ObjectDB.objects.filter(db_typeclass_path__exact=prev)]
+                    ObjectDB.objects.filter(db_typeclass_path__exact=prev).update(db_typeclass_path=curr)
                 if i == 7:
-                    [scr.__setattr__("typeclass_path", curr) for scr in ScriptDB.objects.filter(db_typeclass_path__exact=prev)]
+                    ScriptDB.objects.filter(db_typeclass_path__exact=prev).update(db_typeclass_path=curr)
                 if i == 8:
-                    [scr.__setattr__("typeclass_path", curr) for scr in ChannelDB.objects.filter(db_typeclass_path__exact=prev)]
+                    ChannelDB.objects.filter(db_typeclass_path__exact=prev).update(db_typeclass_path=curr)
                 # store the new default and clean caches
                 ServerConfig.objects.conf(settings_names[i], curr)
                 ObjectDB.flush_instance_cache()
