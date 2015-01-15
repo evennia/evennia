@@ -18,7 +18,7 @@ import random
 import traceback
 from subprocess import check_output
 from importlib import import_module
-from inspect import ismodule
+from inspect import ismodule, trace
 from collections import defaultdict
 from twisted.internet import threads, defer, reactor
 from django.conf import settings
@@ -939,23 +939,27 @@ def class_from_module(path, defaultpaths=None):
             raise ImportError("the path '%s' is not on the form modulepath.Classname." % path)
         try:
             mod = import_module(testpath, package="evennia")
-        except ImportError, ex:
-            # normally this is due to a not-found property
-            if not str(ex).startswith("No module named"):# %s" % path):
+        except ImportError:
+            if len(trace()) > 2:
+                # this means the error happened within the called module and
+                # we must not hide it.
                 exc = sys.exc_info()
                 raise exc[1], None, exc[2]
-            continue
+            else:
+                # otherwise, try the next suggested path
+                continue
         try:
             cls = getattr(mod, clsname)
             break
-        except AttributeError, ex:
-            if not str(ex).startswith("'module' object has no attribute '%s'" % clsname):
+        except AttributeError:
+            if len(trace()) > 2:
+                # AttributeError within the module, don't hide it
                 exc = sys.exc_info()
                 raise exc[1], None, exc[2]
     if not cls:
         err = "Could not load typeclass '%s'" % path
         if defaultpaths:
-            err += " (paths searched: %s)" % ", ".join(paths)
+            err += "\nPaths searched:\n    %s" % "\n    ".join(paths)
         else:
             err += "."
         raise ImportError(err)

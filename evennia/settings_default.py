@@ -278,7 +278,7 @@ SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
 # defined relative evennia's root directory. They will be searched in
 # order to find relative typeclass paths.
 OBJECT_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
-SCRIPT_TYPECLASS_PATHS = ["typeclasses" "evennia.contrib", "evennia.contrib.tutorial_examples"]
+SCRIPT_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 PLAYER_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 CHANNEL_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 
