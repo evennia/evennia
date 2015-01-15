@@ -18,7 +18,7 @@
 # comment line  begins. Extra whitespace is removed; an empty
 # line in a command definition translates into a newline.
 # 
-# See <evennia-root>/contrib/tutorial_examples/batch_cmds.ev for
+# See evennia/contrib/tutorial_examples/batch_cmds.ev for
 # an example of a batch-command code. See also the batch-code
 # system for loading python-code in this way.
 #
