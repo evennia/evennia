@@ -60,6 +60,8 @@ gametime = None
 ansi = None
 spawn = None
 managers = None
+contrib = None
+
 
 import os
 from subprocess import check_output, CalledProcessError, STDOUT
@@ -96,6 +98,7 @@ def init():
     global search_object, search_script, search_player, search_channel, search_help
     global create_object, create_script, create_player, create_channel, create_message
     global lockfuncs, tickerhandler, logger, utils, gametime, ansi, spawn, managers
+    global contrib
 
     from players.players import DefaultPlayer
     from players.players import DefaultGuest
@@ -138,6 +141,7 @@ def init():
     from utils import gametime
     from utils import ansi
     from utils.spawner import spawn
+    import contrib
 
     # API containers
 
