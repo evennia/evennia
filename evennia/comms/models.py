@@ -25,7 +25,6 @@ from django.db import models
 from evennia.typeclasses.models import TypedObject
 from evennia.utils.idmapper.models import SharedMemoryModel
 from evennia.comms import managers
-from evennia.comms.managers import identify_object
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import crop, make_iter, lazy_property
 
@@ -70,16 +69,22 @@ class Msg(SharedMemoryModel):
     # Sender is either a player, an object or an external sender, like
     # an IRC channel; normally there is only one, but if co-modification of
     # a message is allowed, there may be more than one "author"
-    db_sender_players = models.ManyToManyField("players.PlayerDB", related_name='sender_player_set', null=True, verbose_name='sender(player)', db_index=True)
-    db_sender_objects = models.ManyToManyField("objects.ObjectDB", related_name='sender_object_set', null=True, verbose_name='sender(object)', db_index=True)
+    db_sender_players = models.ManyToManyField("players.PlayerDB", related_name='sender_player_set',
+                                               null=True, verbose_name='sender(player)', db_index=True)
+    db_sender_objects = models.ManyToManyField("objects.ObjectDB", related_name='sender_object_set',
+                                               null=True, verbose_name='sender(object)', db_index=True)
     db_sender_external = models.CharField('external sender', max_length=255, null=True, db_index=True,
-          help_text="identifier for external sender, for example a sender over an IRC connection (i.e. someone who doesn't have an exixtence in-game).")
+          help_text="identifier for external sender, for example a sender over an "
+                    "IRC connection (i.e. someone who doesn't have an exixtence in-game).")
     # The destination objects of this message. Stored as a
     # comma-separated string of object dbrefs. Can be defined along
     # with channels below.
-    db_receivers_players = models.ManyToManyField('players.PlayerDB', related_name='receiver_player_set', null=True, help_text="player receivers")
-    db_receivers_objects = models.ManyToManyField('objects.ObjectDB', related_name='receiver_object_set', null=True, help_text="object receivers")
-    db_receivers_channels = models.ManyToManyField("ChannelDB", related_name='channel_set', null=True, help_text="channel recievers")
+    db_receivers_players = models.ManyToManyField('players.PlayerDB', related_name='receiver_player_set',
+                                                  null=True, help_text="player receivers")
+    db_receivers_objects = models.ManyToManyField('objects.ObjectDB', related_name='receiver_object_set',
+                                                  null=True, help_text="object receivers")
+    db_receivers_channels = models.ManyToManyField("ChannelDB", related_name='channel_set',
+                                                   null=True, help_text="channel recievers")
 
     # header could be used for meta-info about the message if your system needs
     # it, or as a separate store for the mail subject line maybe.
@@ -126,21 +131,23 @@ class Msg(SharedMemoryModel):
                 self.extra_senders
 
     #@sender.setter
-    def __senders_set(self, value):
+    def __senders_set(self, senders):
         "Setter. Allows for self.sender = value"
-        for val in (v for v in make_iter(value) if v):
-            obj, typ = identify_object(val)
-            if typ == 'player':
-                self.db_sender_players.add(obj)
-            elif typ == 'object':
-                self.db_sender_objects.add(obj)
-            elif isinstance(typ, basestring):
-                self.db_sender_external = obj
-            elif not obj:
-                return
-            else:
-                raise ValueError(obj)
-            self.save()
+        for sender in make_iter(senders):
+            if not sender:
+                continue
+            if isinstance(sender, basestring):
+                self.db_sender_external = sender
+                self.extra_senders.append(sender)
+                self.save(update_fields=["db_sender_external"])
+                continue
+            if not hasattr(sender, "__dbclass__"):
+                raise ValueError("This is a not a typeclassed object!")
+            clsname = sender.__dbclass__.__name__
+            if clsname == "ObjectDB":
+                self.db_sender_objects.add(sender)
+            elif clsname == "PlayerDB":
+                self.db_sender_players.add(sender)
 
     #@sender.deleter
     def __senders_del(self):
@@ -152,19 +159,21 @@ class Msg(SharedMemoryModel):
         self.save()
     senders = property(__senders_get, __senders_set, __senders_del)
 
-    def remove_sender(self, value):
+    def remove_sender(self, senders):
         "Remove a single sender or a list of senders"
-        for val in make_iter(value):
-            obj, typ = identify_object(val)
-            if typ == 'player':
-                self.db_sender_players.remove(obj)
-            elif typ == 'object':
-                self.db_sender_objects.remove(obj)
-            elif isinstance(obj, basestring):
-                self.db_sender_external = obj
-            else:
-                raise ValueError(obj)
-            self.save()
+        for sender in make_iter(senders):
+            if not sender:
+                continue
+            if isinstance(sender, basestring):
+                self.db_sender_external = ""
+                self.save(update_fields=["db_sender_external"])
+            if not hasattr(sender, "__dbclass__"):
+                raise ValueError("This is a not a typeclassed object!")
+            clsname = sender.__dbclass__.__name__
+            if clsname == "ObjectDB":
+                self.db_sender_objects.remove(sender)
+            elif clsname == "PlayerDB":
+                self.db_sender_players.remove(sender)
 
     # receivers property
     #@property
@@ -176,42 +185,42 @@ class Msg(SharedMemoryModel):
         return list(self.db_receivers_players.all()) + list(self.db_receivers_objects.all())
 
     #@receivers.setter
-    def __receivers_set(self, value):
+    def __receivers_set(self, receivers):
         """
         Setter. Allows for self.receivers = value.
         This appends a new receiver to the message.
         """
-        for val in (v for v in make_iter(value) if v):
-            obj, typ = identify_object(val)
-            if typ == 'player':
-                self.db_receivers_players.add(obj)
-            elif typ == 'object':
-                self.db_receivers_objects.add(obj)
-            elif not obj:
-                return
-            else:
-                raise ValueError
-            self.save()
+        for receiver in make_iter(receivers):
+            if not receiver:
+                continue
+            if not hasattr(receiver, "__dbclass__"):
+                raise ValueError("This is a not a typeclassed object!")
+            clsname = receiver.__dbclass__.__name__
+            if clsname == "ObjectDB":
+                self.db_receiver_objects.add(receiver)
+            elif clsname == "PlayerDB":
+                self.db_receiver_players.add(receiver)
 
     #@receivers.deleter
     def __receivers_del(self):
         "Deleter. Clears all receivers"
         self.db_receivers_players.clear()
         self.db_receivers_objects.clear()
-        self.extra_senders = []
         self.save()
     receivers = property(__receivers_get, __receivers_set, __receivers_del)
 
-    def remove_receiver(self, obj):
-        "Remove a single recevier"
-        obj, typ = identify_object(obj)
-        if typ == 'player':
-            self.db_receivers_players.remove(obj)
-        elif typ == 'object':
-            self.db_receivers_objects.remove(obj)
-        else:
-            raise ValueError
-        self.save()
+    def remove_receiver(self, receivers):
+        "Remove a single receiver or a list of receivers"
+        for receiver in make_iter(receivers):
+            if not receiver:
+                continue
+            if not hasattr(receiver, "__dbclass__"):
+                raise ValueError("This is a not a typeclassed object!")
+            clsname = receiver.__dbclass__.__name__
+            if clsname == "ObjectDB":
+                self.db_receiver_objects.remove(receiver)
+            elif clsname == "PlayerDB":
+                self.db_receiver_players.remove(receiver)
 
     # channels property
     #@property
@@ -243,18 +252,20 @@ class Msg(SharedMemoryModel):
         return self.db_hide_from_players.all(), self.db_hide_from_objects.all(), self.db_hide_from_channels.all()
 
     #@hide_from_sender.setter
-    def __hide_from_set(self, value):
+    def __hide_from_set(self, hiders):
         "Setter. Allows for self.hide_from = value. Will append to hiders"
-        obj, typ = identify_object(value)
-        if typ == "player":
-            self.db_hide_from_players.add(obj)
-        elif typ == "object":
-            self.db_hide_from_objects.add(obj)
-        elif typ == "channel":
-            self.db_hide_from_channels.add(obj)
-        else:
-            raise ValueError
-        self.save()
+        for hider in make_iter(hiders):
+            if not hider:
+                continue
+            if not hasattr(hider, "__dbclass__"):
+                raise ValueError("This is a not a typeclassed object!")
+            clsname = hider.__dbclass__.__name__
+            if clsname == "PlayerDB":
+                self.db_hide_from_players.add(hider.__dbclass__)
+            elif clsname == "ObjectDB":
+                self.db_hide_from_objects.add(hider.__dbclass__)
+            elif clsname == "ChannelDB":
+                self.db_hide_from_channels.add(hider.__dbclass__)
 
     #@hide_from_sender.deleter
     def __hide_from_del(self):
