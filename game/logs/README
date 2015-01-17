@@ -1,8 +1,0 @@
-This directory holds log files for the server.
-
-portal.log        - logs from Portal (if run in daemon mode)
-server.log        - logs from Server (if run in daemon mode)
-http_requests.log - http request info (if running webserver/client)
-
-All log files are rotated to their *.old version when the server is fully
-stopped, then restarted again (i.e. not on normal reloads).
