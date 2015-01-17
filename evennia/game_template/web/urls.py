@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 
-from src.web.urls import urlpatterns
+from evennia.web.urls import urlpatterns
 
 #
 # File that determines what each URL points to. This uses _Python_ regular

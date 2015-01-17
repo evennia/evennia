@@ -28,7 +28,7 @@ EVENNIA_BIN = os.path.join(EVENNIA_ROOT, "bin")
 import evennia
 EVENNIA_LIB = os.path.join(os.path.dirname(os.path.abspath(evennia.__file__)))
 EVENNIA_RUNNER = os.path.join(EVENNIA_BIN, "evennia_runner.py")
-EVENNIA_TEMPLATE = os.path.join(EVENNIA_ROOT, "share", "evennia", "game_template")
+EVENNIA_TEMPLATE = os.path.join(EVENNIA_LIB, "game_template")
 EVENNIA_BINTESTING = os.path.join(EVENNIA_BIN, "testing")
 EVENNIA_DUMMYRUNNER = os.path.join(EVENNIA_BINTESTING, "dummyrunner.py")
 

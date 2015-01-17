@@ -45,28 +45,20 @@ def dbref(dbref, reqhash=True):
 
 def identify_object(inp):
     "identify if an object is a player or an object; return its database model"
-    # load global stores
-    global _PlayerDB, _ObjectDB, _ChannelDB
-    if not _PlayerDB:
-        from evennia.players.models import PlayerDB as _PlayerDB
-    if not _ObjectDB:
-        from evennia.objects.models import ObjectDB as _ObjectDB
-    if not _ChannelDB:
-        from evennia.comms.models import ChannelDB as _ChannelDB
-
-    if not inp:
-        return inp, None
+    if hasattr(inp, "__dbclass__"):
+        clsname = inp.__dbclass__.__name__
+        if clsname == "PlayerDB":
+            return "player"
+        elif clsname == "ObjectDB":
+            return "object"
+        elif clsname == "ChannelDB":
+            return "channel"
     if isinstance(inp, basestring):
         return inp, "string"
-    elif inp.is_typeclass(_PlayerDB, exact=False):
-        return inp, "player"
-    elif inp.is_typeclass(_ObjectDB, exact=False):
-        return inp, "object"
-    elif inp.is_typeclass(_ChannelDB, exact=False):
-        return inp, "channel"
     elif dbref(inp):
         return dbref(inp), "dbref"
-    return inp, None # something else
+    else:
+        return inp, None
 
 
 def to_object(inp, objtype='player'):
