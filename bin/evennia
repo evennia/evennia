@@ -450,6 +450,14 @@ def check_database(exit_on_error=False):
             sys.exit()
         return False
     return True
+    ## Try to get Player#1
+    #from evennia.players.models import PlayerDB
+    #try:
+    #    PlayerDB.objects.get(id=1)
+    #except PlayerDB.DoesNotExist:
+    #    # no superuser yet. We need to create it.
+    #    create_superuser()
+    #return True
 
 
 def getenv():
