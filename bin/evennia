@@ -424,6 +424,7 @@ def create_game_directory(dirname):
 
 
 def create_superuser():
+    "Create the superuser player"
     print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
     django.core.management.call_command("createsuperuser", interactive=True)
 
