@@ -58,12 +58,12 @@ TIMESTEP = 2
 
 # Chance of a dummy actually performing an action on a given tick.
 # This spreads out usage randomly, like it would be in reality.
-CHANCE_OF_ACTION = 1.0#0.05
+CHANCE_OF_ACTION = 0.20
 
 # Chance of a currently unlogged-in dummy performing its login
 # action every tick. This emulates not all players logging in
 # at exactly the same time.
-CHANCE_OF_LOGIN = 0.33
+CHANCE_OF_LOGIN = 0.10
 
 # Which telnet port to connect to. If set to None, uses the first
 # default telnet port of the running server.
