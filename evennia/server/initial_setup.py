@@ -24,13 +24,15 @@ def get_god_player():
     """
     Creates the god user and don't take no for an answer.
     """
-    god_player = None
-    while not god_player:
-        try:
-            god_player = PlayerDB.objects.get(id=1)
-        except PlayerDB.DoesNotExist:
-            print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
-            django.core.management.call_command("createsuperuser", interactive=True)
+    try:
+        god_player = PlayerDB.objects.get(id=1)
+    except PlayerDB.DoesNotExist:
+        txt = "\n\nNo superuser exists yet. The superuser is the 'owner'\n" \
+              "account on the Evennia server. Create a new superuser using\n" \
+              "the command\n\n" \
+              " evennia createsuperuser\n\n" \
+              "Follow the prompts, then restart the server."
+        raise Exception(txt)
     return god_player
 
 
