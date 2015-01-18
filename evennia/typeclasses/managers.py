@@ -97,21 +97,38 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
     # Tag manager methods
 
-    def get_tag(self, key=None, category=None, obj=None, tagtype=None):
+    def get_tag(self, key=None, category=None, obj=None, tagtype=None, global_search=False):
         """
         Return Tag objects by key, by category, by object (it is
         stored on) or with a combination of those criteria.
 
         tagtype - one of None (normal tags), "alias" or "permission"
+        global_search - include all possible tags, not just tags on
+                        this object
         """
-        query = [("tag__db_tagtype", tagtype)]
-        if obj:
-            query.append(("%s__id" % self.model.__name__.lower(), obj.id))
-        if key:
-            query.append(("tag__db_key", key))
-        if category:
-            query.append(("tag__db_category", category))
-        return [th.tag for th in self.model.db_tags.through.objects.filter(**dict(query))]
+        global _Tag
+        if not _Tag:
+            from evennia.typeclasses.models import Tag as _Tag
+        if global_search:
+            # search all tags using the Tag model
+            query = [("db_tagtype", tagtype)]
+            if obj:
+                query.append(("id", obj.id))
+            if key:
+                query.append(("db_key", key))
+            if category:
+                query.append(("db_category", category))
+            return _Tag.objects.filter(**dict(query))
+        else:
+            # search only among tags stored on on this model
+            query = [("tag__db_tagtype", tagtype)]
+            if obj:
+                query.append(("%s__id" % self.model.__name__.lower(), obj.id))
+            if key:
+                query.append(("tag__db_key", key))
+            if category:
+                query.append(("tag__db_category", category))
+            return [th.tag for th in self.model.db_tags.through.objects.filter(**dict(query))]
 
     def get_permission(self, key=None, category=None, obj=None):
         return self.get_tag(key=key, category=category, obj=obj, tagtype="permission")
@@ -151,7 +168,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         data = str(data) if data is not None else None
         # try to get old tag
-        tag = self.get_tag(key=key, category=category, tagtype=tagtype)
+
+        tag = self.get_tag(key=key, category=category, tagtype=tagtype, global_search=True)
         if tag and data is not None:
             # overload data on tag
             tag.db_data = data
