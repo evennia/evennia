@@ -316,7 +316,8 @@ class DefaultObject(ObjectDB):
                location=None,
                attribute_name=None,
                quiet=False,
-               exact=False):
+               exact=False,
+               candidates=None):
         """
         Returns the typeclass of an Object matching a search string/condition
 
@@ -361,6 +362,11 @@ class DefaultObject(ObjectDB):
         exact (bool) - if unset (default) - prefers to match to beginning of
                       string rather than not matching at all. If set, requires
                       exact mathing of entire string.
+        candidates (list of objects) - this is an optional custom list of objects
+                    to search (filter) between. It is ignored if global_search
+                    is given. If not set, this list will automatically be defined
+                    to include the location, the contents of location and the
+                    caller's contents (inventory).
 
         Returns:
             quiet=False (default):
@@ -387,27 +393,30 @@ class DefaultObject(ObjectDB):
             # do nick-replacement on search
             searchdata = self.nicks.nickreplace(searchdata, categories=("object", "player"), include_player=True)
 
-        candidates=None
         if(global_search or (is_string and searchdata.startswith("#") and
                     len(searchdata) > 1 and searchdata[1:].isdigit())):
             # only allow exact matching if searching the entire database
             # or unique #dbrefs
             exact = True
-        elif location:
-            # location(s) were given
-            candidates = []
-            for obj in make_iter(location):
-                candidates.extend(obj.contents)
-        else:
-            # local search. Candidates are self.contents, self.location
-            # and self.location.contents
-            location = self.location
-            candidates = self.contents
+        elif not candidates:
+            # no custom candidates given - get them automatically
             if location:
-                candidates = candidates + [location] + location.contents
+                # location(s) were given
+                candidates = []
+                for obj in make_iter(location):
+                    candidates.extend(obj.contents)
             else:
-                # normally we are included in location.contents
-                candidates.append(self)
+                # local search. Candidates are taken from
+                # self.contents, self.location and
+                # self.location.contents
+                location = self.location
+                candidates = self.contents
+                if location:
+                    candidates = candidates + [location] + location.contents
+                else:
+                    # normally we don't need this since we are
+                    # included in location.contents
+                    candidates.append(self)
 
         results = ObjectDB.objects.object_search(searchdata,
                                                  attribute_name=attribute_name,
