@@ -26,6 +26,7 @@ class CharacterCmdSet(CmdSet):
         self.add(general.CmdInventory())
         self.add(general.CmdPose())
         self.add(general.CmdNick())
+        self.add(general.CmdDesc())
         self.add(general.CmdGet())
         self.add(general.CmdDrop())
         self.add(general.CmdGive())
