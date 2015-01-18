@@ -8,6 +8,9 @@ def convert_defaults(apps, schema_editor):
     for script in ScriptDB.objects.filter(db_typeclass_path="src.scripts.scripts.Script"):
         script.db_typeclass_path = "typeclasses.scripts.Script"
         script.save()
+    for script in ScriptDB.objects.filter(db_typeclass_path="src.utils.gametime.GameTime"):
+        script.db_typeclass_path = "evennia.utils.gametime.GameTime"
+        script.save()
 
 class Migration(migrations.Migration):
 

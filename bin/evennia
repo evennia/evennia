@@ -168,7 +168,9 @@ CMDLINE_HELP = \
     """
     Starts or operates the Evennia MU* server. Also allows for
     initializing a new game directory and managing the game's
-    database.
+    database. You can also pass django manage.py arguments through
+    this launcher. If you need manage.py --options, use djangoadmin
+    directly instead.
     """
 
 
@@ -338,7 +340,6 @@ def check_main_evennia_dependencies():
         error = True
     # Django
     try:
-        import django
         dversion = ".".join(str(num) for num in django.VERSION if type(num) == int)
         # only the main version (1.5, not 1.5.4.0)
         dversion_main = ".".join(dversion.split(".")[:2])
@@ -433,6 +434,11 @@ def create_game_directory(dirname):
     create_settings_file()
 
 
+def create_superuser():
+    print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
+    django.core.management.call_command("createsuperuser", interactive=True)
+
+
 def check_database(exit_on_error=False):
     """
     Check database exists
@@ -450,14 +456,14 @@ def check_database(exit_on_error=False):
             sys.exit()
         return False
     return True
-    ## Try to get Player#1
-    #from evennia.players.models import PlayerDB
-    #try:
-    #    PlayerDB.objects.get(id=1)
-    #except PlayerDB.DoesNotExist:
-    #    # no superuser yet. We need to create it.
-    #    create_superuser()
-    #return True
+    # Try to get Player#1
+    from evennia.players.models import PlayerDB
+    try:
+        PlayerDB.objects.get(id=1)
+    except PlayerDB.DoesNotExist:
+        # no superuser yet. We need to create it.
+        create_superuser()
+    return True
 
 
 def getenv():
@@ -591,7 +597,7 @@ def error_check_python_modules():
     imp(settings.BASE_SCRIPT_TYPECLASS)
 
 
-def init_game_directory(path):
+def init_game_directory(path, check_db=True):
     """
     Try to analyze the given path to find settings.py - this defines
     the game directory and also sets PYTHONPATH as well as the
@@ -620,7 +626,8 @@ def init_game_directory(path):
         sys.exit()
 
     # this will both check the database and initialize the evennia dir.
-    check_database()
+    if check_db:
+        check_database()
 
     # set up the Evennia executables and log file locations
     global SERVER_PY_FILE, PORTAL_PY_FILE
@@ -885,10 +892,11 @@ def main():
     if mode == "help" and not args.dummyrunner:
         print ABOUT_INFO
         sys.exit()
+    check_db = not mode == "migrate"
 
     # this must be done first - it sets up all the global properties
     # and initializes django for the game directory
-    init_game_directory(CURRENT_DIR)
+    init_game_directory(CURRENT_DIR, check_db=check_db)
 
     if args.dummyrunner:
         # launch the dummy runner
