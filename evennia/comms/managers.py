@@ -48,11 +48,11 @@ def identify_object(inp):
     if hasattr(inp, "__dbclass__"):
         clsname = inp.__dbclass__.__name__
         if clsname == "PlayerDB":
-            return "player"
+            return inp, "player"
         elif clsname == "ObjectDB":
-            return "object"
+            return inp ,"object"
         elif clsname == "ChannelDB":
-            return "channel"
+            return inp, "channel"
     if isinstance(inp, basestring):
         return inp, "string"
     elif dbref(inp):
