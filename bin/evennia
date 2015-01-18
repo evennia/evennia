@@ -433,14 +433,9 @@ def create_game_directory(dirname):
     create_settings_file()
 
 
-def create_superuser():
-    print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
-    django.core.management.call_command("createsuperuser", interactive=True)
-
-
 def check_database(exit_on_error=False):
     """
-    Check database exists and has a superuser
+    Check database exists
     """
     # Check so a database exists and is accessible
     from django.db import connection
@@ -454,14 +449,6 @@ def check_database(exit_on_error=False):
             print ERROR_DATABASE.format(traceback=e)
             sys.exit()
         return False
-
-    # Try to get Player#1
-    from evennia.players.models import PlayerDB
-    try:
-        PlayerDB.objects.get(id=1)
-    except PlayerDB.DoesNotExist:
-        # no superuser yet. We need to create it.
-        create_superuser()
     return True
 
 

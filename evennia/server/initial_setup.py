@@ -20,20 +20,17 @@ def create_config_values():
     ServerConfig.objects.conf("site_name", settings.SERVERNAME)
     ServerConfig.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
 
-
 def get_god_player():
     """
-    Creates the god user.
+    Creates the god user and don't take no for an answer.
     """
-    try:
-        god_player = PlayerDB.objects.get(id=1)
-    except PlayerDB.DoesNotExist:
-        txt = "\n\nNo superuser exists yet. The superuser is the 'owner'\n" \
-              "account on the Evennia server. Create a new superuser using\n" \
-              "the command\n\n" \
-              "  python manage.py createsuperuser\n\n" \
-              "Follow the prompts, then restart the server."
-        raise Exception(txt)
+    god_player = None
+    while not god_player:
+        try:
+            god_player = PlayerDB.objects.get(id=1)
+        except PlayerDB.DoesNotExist:
+            print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
+            django.core.management.call_command("createsuperuser", interactive=True)
     return god_player
 
 
