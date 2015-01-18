@@ -199,57 +199,46 @@ ABOUT_INFO= \
     """
 
 HELP_ENTRY = \
-"""
-See python evennia.py -h for controlling Evennia directly from
-the command line.
+    """
+    Enter 'evennia -h' for command-line options.
 
-Evennia has two parts that both must run:
+    Use option (1) in a production environment.  During development (2) is
+    usually enough, portal debugging is usually only useful if you are
+    adding new protocols or are debugging Evennia itself.
 
-Portal - the connection to the outside world (via telnet, web, ssh
-         etc). This is normally running as a daemon and don't need to
-         be reloaded unless you are debugging a new connection
-         protocol.
-Server - the game server itself. This will often need to be reloaded
-         as you develop your game. The Portal will auto-connect to the
-         Server whenever the Server activates.
+    Reload with (5) to update the server with your changes without
+    disconnecting any players.
 
-Use option (1) in a production environment.  During development (2) is
-usually enough, portal debugging is usually only useful if you are
-adding new protocols or are debugging an Evennia bug.
-
-Reload with (5) to update the server with your changes without
-disconnecting any players.
-
-Reload and stop are sometimes poorly supported in Windows. If you have
-issues, log into the game to stop or restart the server instead.
-"""
+    Note: Reload and stop are sometimes poorly supported in Windows. If you have
+    issues, log into the game to stop or restart the server instead.
+    """
 
 MENU = \
-"""
-+----Evennia Launcher-------------------------------------------------------+
-|                                                                           |
-+--- Starting --------------------------------------------------------------+
-|                                                                           |
-|  1) (default):      All output to logfiles.                               |
-|  2) (game debug):   Server outputs to terminal instead of to logfile.     |
-|  3) (portal debug): Portal outputs to terminal instead of to logfile.     |
-|  4) (full debug):   Both Server and Portal output to terminal             |
-|                                                                           |
-+--- Restarting ------------------------------------------------------------+
-|                                                                           |
-|  5) Reload the Server                                                     |
-|  6) Reload the Portal (only works with portal/full debug)                 |
-|                                                                           |
-+--- Stopping --------------------------------------------------------------+
-|                                                                           |
-|  7) Stopping both Portal and Server.                                      |
-|  8) Stopping only Server.                                                 |
-|  9) Stopping only Portal.                                                 |
-|                                                                           |
-+---------------------------------------------------------------------------+
-|  h) Help                     i) About info                      q) Abort  |
-+---------------------------------------------------------------------------+
-"""
+    """
+    +----Evennia Launcher-------------------------------------------+
+    |                                                               |
+    +--- Starting --------------------------------------------------+
+    |                                                               |
+    |  1) (normal):       All output to logfiles                    |
+    |  2) (server devel): Server logs to terminal (-i option)       |
+    |  3) (portal devel): Portal logs to terminal                   |
+    |  4) (full devel):   Both Server and Portal logs to terminal   |
+    |                                                               |
+    +--- Restarting ------------------------------------------------+
+    |                                                               |
+    |  5) Reload the Server                                         |
+    |  6) Reload the Portal (only works with portal/full debug)     |
+    |                                                               |
+    +--- Stopping --------------------------------------------------+
+    |                                                               |
+    |  7) Stopping both Portal and Server                           |
+    |  8) Stopping only Server                                      |
+    |  9) Stopping only Portal                                      |
+    |                                                               |
+    +---------------------------------------------------------------+
+    |  h) Help              i) About info               q) Abort    |
+    +---------------------------------------------------------------+
+    """
 
 ERROR_PYTHON_VERSION = \
     """
@@ -709,9 +698,6 @@ def run_menu():
     """
     This launches an interactive menu.
     """
-
-    cmdstr = [sys.executable, EVENNIA_RUNNER]
-
     while True:
         # menu loop
 
@@ -720,9 +706,9 @@ def run_menu():
 
         # quitting and help
         if inp.lower() == 'q':
-            sys.exit()
+            return
         elif inp.lower() == 'h':
-            print HELP_ENTRY % EVENNIA_VERSION
+            print HELP_ENTRY
             raw_input("press <return> to continue ...")
             continue
         elif inp.lower() in ('v', 'i', 'a'):
@@ -736,41 +722,39 @@ def run_menu():
         except ValueError:
             print "Not a valid option."
             continue
-        errmsg = "The %s does not seem to be running."
-        if inp < 5:
-            if inp == 1:
-                pass  # default operation
-            elif inp == 2:
-                cmdstr.extend(['--iserver'])
-            elif inp == 3:
-                cmdstr.extend(['--iportal'])
-            elif inp == 4:
-                cmdstr.extend(['--iserver', '--iportal'])
-            # start server
-            cmdstr.append("start")
-            Popen(cmdstr, env=getenv())
-            return
-        elif inp < 10:
-            if inp == 5:
-                if os.name == 'nt':
-                    print "This operation is not supported under Windows. Log into the game to restart/reload the server."
-                    return
-                kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % "Server", SERVER_RESTART, restart=True)
-            elif inp == 6:
-                if os.name == 'nt':
-                    print "This operation is not supported under Windows."
-                    return
-                kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped if in daemon mode).", errmsg % "Portal", PORTAL_RESTART, restart=True)
-            elif inp == 7:
-                kill(PORTAL_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART)
-                kill(SERVER_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", SERVER_RESTART)
-            elif inp == 8:
-                kill(SERVER_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", SERVER_RESTART)
-            elif inp == 9:
-                kill(PORTAL_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART)
-            return
+        if inp == 1:
+            # start everything, log to log files
+            server_operation("start", "all", False, False)
+        elif inp == 2:
+            # start everything, server interactive start
+            server_operation("start", "all", True, False)
+        elif inp == 3:
+            # start everything, portal interactive start
+            server_operation("start", "server", False, False)
+            server_operation("start", "portal", True, False)
+        elif inp == 4:
+            # start both server and portal interactively
+            server_operation("start", "server", True, False)
+            server_operation("start", "portal", True, False)
+        elif inp == 5:
+            # reload the server
+            server_operation("reload", "server", None, None)
+        elif inp == 6:
+            # reload the portal
+            server_operation("reload", "portal", None, None)
+        elif inp == 7:
+            # stop server and portal
+            server_operation("stop", "all", None, None)
+        elif inp == 8:
+            # stop server
+            server_operation("stop", "server", None, None)
+        elif inp == 9:
+            # stop portal
+            server_operation("stop", "portal", None, None)
         else:
             print "Not a valid option."
+            continue
+        return
 
 
 def server_operation(mode, service, interactive, profiler):
