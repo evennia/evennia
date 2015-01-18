@@ -197,9 +197,9 @@ class Msg(SharedMemoryModel):
                 raise ValueError("This is a not a typeclassed object!")
             clsname = receiver.__dbclass__.__name__
             if clsname == "ObjectDB":
-                self.db_receiver_objects.add(receiver)
+                self.db_receivers_objects.add(receiver)
             elif clsname == "PlayerDB":
-                self.db_receiver_players.add(receiver)
+                self.db_receivers_players.add(receiver)
 
     #@receivers.deleter
     def __receivers_del(self):
@@ -218,9 +218,9 @@ class Msg(SharedMemoryModel):
                 raise ValueError("This is a not a typeclassed object!")
             clsname = receiver.__dbclass__.__name__
             if clsname == "ObjectDB":
-                self.db_receiver_objects.remove(receiver)
+                self.db_receivers_objects.remove(receiver)
             elif clsname == "PlayerDB":
-                self.db_receiver_players.remove(receiver)
+                self.db_receivers_players.remove(receiver)
 
     # channels property
     #@property
