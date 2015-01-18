@@ -16,6 +16,7 @@ Guidelines:
  methods assert*() are used to test the behaviour.
 """
 
+import os
 import sys
 import glob
 
@@ -45,7 +46,7 @@ class EvenniaTestSuiteRunner(DjangoTestSuiteRunner):
         """
         if not test_labels:
             test_labels = [applabel.rsplit('.', 1)[1] for applabel in settings.INSTALLED_APPS
-                           if (applabel.startswith('evennia.') or applabel.startswith('game.'))]
+                           if applabel.startswith('evennia.')]
         return super(EvenniaTestSuiteRunner, self).build_suite(test_labels, extra_tests=extra_tests, **kwargs)
 
 
@@ -66,7 +67,7 @@ def suite():
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(locktests))
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(utiltests))
 
-    for path in glob.glob("../evennia/tests/test_*.py"):
+    for path in glob.glob(os.path.join(settings.EVENNIA_DIR, "tests", "*.py")):
         testmod = mod_import(path)
         tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(testmod))
 
