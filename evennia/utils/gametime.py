@@ -8,7 +8,7 @@ total runtime of the server and the current uptime.
 
 from time import time
 from django.conf import settings
-from evennia.scripts.scripts import Script
+from evennia.scripts.scripts import DefaultScript
 from evennia.utils.create import create_script
 
 GAMETIME_SCRIPT_NAME = "sys_game_time"
@@ -40,7 +40,7 @@ SERVER_STARTTIME = time()
 SERVER_RUNTIME = 0.0
 
 
-class GameTime(Script):
+class GameTime(DefaultScript):
     """
     This script repeatedly saves server times so
     it can be retrieved after server downtime.

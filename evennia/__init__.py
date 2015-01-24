@@ -23,7 +23,7 @@ DefaultCharacter = None
 DefaultRoom = None
 DefaultExit = None
 DefaultChannel = None
-Script = None
+DefaultScript = None
 
 # Database models
 ObjectDB = None
@@ -92,7 +92,7 @@ def init():
         return __import__(mod, fromlist=[fromlist])
 
     global DefaultPlayer, DefaultObject, DefaultGuest, DefaultCharacter, \
-           DefaultRoom, DefaultExit, DefaultChannel, Script
+           DefaultRoom, DefaultExit, DefaultChannel, DefaultScript
     global ObjectDB, PlayerDB, ScriptDB, ChannelDB, Msg
     global Command, CmdSet, default_cmds, syscmdkeys
     global search_object, search_script, search_player, search_channel, search_help
@@ -107,7 +107,7 @@ def init():
     from objects.objects import DefaultRoom
     from objects.objects import DefaultExit
     from comms.comms import DefaultChannel
-    from scripts.scripts import Script
+    from scripts.scripts import DefaultScript
 
     # Database models
     from objects.models import ObjectDB

@@ -6,7 +6,7 @@ Player that are  controlled by the server.
 
 from django.conf import settings
 from evennia.players.players import DefaultPlayer
-from evennia.scripts.scripts import Script
+from evennia.scripts.scripts import DefaultScript
 from evennia.commands.command import Command
 from evennia.commands.cmdset import CmdSet
 from evennia.utils import search
@@ -18,7 +18,7 @@ _SESSIONS = None
 
 # Bot helper utilities
 
-class BotStarter(Script):
+class BotStarter(DefaultScript):
     """
     This non-repeating script has the
     sole purpose of kicking its bot

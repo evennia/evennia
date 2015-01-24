@@ -3,7 +3,7 @@ This defines some generally useful scripts for the tutorial world.
 """
 
 import random
-from evennia import Script
+from evennia import DefaultScript
 
 
 #------------------------------------------------------------
@@ -18,7 +18,7 @@ from evennia import Script
 #
 #------------------------------------------------------------
 
-class IrregularEvent(Script):
+class IrregularEvent(DefaultScript):
     """
     This script, which should be tied to a particular object upon
     instantiation, calls update_irregular on the object at random
@@ -88,7 +88,7 @@ class FastIrregularEvent(IrregularEvent):
 # RESET_SUBSCRIBERS = ["examples.tutorial_world.p_weapon_rack",
 #                      "examples.tutorial_world.p_mob"]
 
-# class EventResetTutorialWorld(Script):
+# class EventResetTutorialWorld(DefaultScript):
 #     """
 #     This calls the reset function on all subscribed objects
 #     """
