@@ -26,17 +26,10 @@ def get_scripts():
     Determine which executable scripts should be added. For Windows,
     this means creating a .bat file.
     """
-    execlist = []
     if os.name == "nt":
-        # Windows
-        with open(os.path.join("bin", "evennia.bat"), "w") as bat_file:
-            bat_file.write("@\"%s\" \"%s\" %%*" % (sys.executable, "evennia"))
-        execlist.extend(["bin/evennia.bat", "bin/evennia"])
+        return [os.path.join("bin", "windows", "evennia.bat"), os.path.join("bin", "windows", "evennia.py")]
     else:
-        # Linux, Mac
-        execlist.append("bin/evennia")
-    execlist.append("bin/evennia_runner.py")
-    return execlist
+        return [os.path.join("bin", "unix", "evennia")]
 
 
 def get_version():

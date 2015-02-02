@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-EVENNIA SERVER STARTUP SCRIPT
+EVENNIA SERVER LAUNCHER SCRIPT
 
 This is the start point for running Evennia.
 
@@ -22,15 +22,15 @@ import django
 SIG = signal.SIGINT
 
 # Set up the main python paths to Evennia
-EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-EVENNIA_BIN = os.path.join(EVENNIA_ROOT, "bin")
+EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import evennia
 EVENNIA_LIB = os.path.join(os.path.dirname(os.path.abspath(evennia.__file__)))
-EVENNIA_RUNNER = os.path.join(EVENNIA_BIN, "evennia_runner.py")
+EVENNIA_SERVER = os.path.join(EVENNIA_LIB, "server")
+EVENNIA_RUNNER = os.path.join(EVENNIA_SERVER, "evennia_runner.py")
 EVENNIA_TEMPLATE = os.path.join(EVENNIA_LIB, "game_template")
-EVENNIA_BINTESTING = os.path.join(EVENNIA_BIN, "testing")
-EVENNIA_DUMMYRUNNER = os.path.join(EVENNIA_BINTESTING, "dummyrunner.py")
+EVENNIA_TESTING = os.path.join(EVENNIA_SERVER, "testing")
+EVENNIA_DUMMYRUNNER = os.path.join(EVENNIA_TESTING, "dummyrunner.py")
 
 TWISTED_BINARY = "twistd"
 
@@ -59,11 +59,6 @@ TWISTED_MIN = '12.0'
 DJANGO_MIN = '1.7'
 DJANGO_REC = '1.7'
 
-# add Evennia root to PYTHONPATH note that bin/evennia.py is
-# automatically added to sys.modules  and will be imported first, which
-# is not what we want. So we remove it manually and set the path so
-# the root/evennia package is found first instead.
-del sys.modules["evennia"]
 sys.path[0] = EVENNIA_ROOT
 
 #------------------------------------------------------------
@@ -656,7 +651,7 @@ def init_game_directory(path, check_db=True):
             print ERROR_WINDOWS_WIN32API
             sys.exit()
 
-        if not os.path.exists(os.path.join(EVENNIA_BIN, TWISTED_BINARY)):
+        if not os.path.exists(os.path.join(EVENNIA_SERVER, TWISTED_BINARY)):
             # Test for executable twisted batch file. This calls the
             # twistd.py executable that is usually not found on the
             # path in Windows.  It's not enough to locate
