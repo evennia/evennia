@@ -29,7 +29,7 @@ def get_scripts():
     execlist = []
     if os.name == "nt":
         # Windows
-        with open(os.path("bin", "evennia.bat"), "w") as bat_file:
+        with open(os.path.join("bin", "evennia.bat"), "w") as bat_file:
             bat_file.write("@\"%s\" \"%s\" %%*" % (sys.executable, os.path.join("bin/python.py")))
         execlist.append("bin/evennia.bat")
     else:
