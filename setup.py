@@ -28,7 +28,7 @@ def get_scripts():
     """
     if os.name == "nt":
         batpath = os.path.join("bin", "windows", "evennia.bat")
-        scriptpath = os.path.join(sys.prefix, "bin", "windows", "evennia.py")
+        scriptpath = os.path.join(sys.prefix, "Lib", "site-packages", "evennia", "server", "evennia_launcher.py")
         with open(batpath, "w") as batfile:
             batfile.write("@\"%s\" \"%s\" %%*" % (sys.executable, scriptpath))
         return [batpath]
@@ -54,15 +54,20 @@ def package_data():
     for root, dirs, files in os.walk('evennia'):
         for f in files:
             if '.git' in f.split(os.path.normpath(os.path.join(root, f))):
-                # Prevent the repo from bing added.
+                # Prevent the repo from being added.
                 continue
             file_name = os.path.relpath(os.path.join(root, f), 'evennia')
             file_set.append(file_name)
     return file_set
 
+# setup the package
 setup(
     name='evennia',
     version=get_version(),
+    author = "Evennia community",
+    maintainer = "Griatch",
+    maintainer_email = "griatch AT gmail DOT com",
+    url = "http://www.evennia.com",
     description='A full-featured MUD building toolkit.',
     packages=find_packages(),
     scripts=get_scripts(),
