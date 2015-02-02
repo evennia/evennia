@@ -245,7 +245,7 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs",)
 OOB_PLUGIN_MODULES = ["evennia.server.oob_cmds", "server.conf.oobfuncs"]
 # Module holding settings/actions for the dummyrunner program (see the
 # dummyrunner for more information)
-DUMMYRUNNER_SETTINGS_MODULE = os.path.join(ROOT_DIR, "bin/testing/dummyrunner_settings")
+DUMMYRUNNER_SETTINGS_MODULE = os.path.join(EVENNIA_DIR, "server/testing/dummyrunner_settings")
 
 ######################################################################
 # Default command sets
