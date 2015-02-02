@@ -1,7 +1,10 @@
 import os
+import sys
 from setuptools import setup, find_packages
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+VERSION_PATH = os.path.join('evennia', 'VERSION.txt')
 
 
 def get_requirements():
@@ -17,7 +20,23 @@ def get_requirements():
             reqs.append(line)
     return reqs
 
-VERSION_PATH = os.path.join('evennia', 'VERSION.txt')
+
+def get_scripts():
+    """
+    Determine which executable scripts should be added. For Windows,
+    this means creating a .bat file.
+    """
+    execlist = []
+    if os.name == "nt":
+        # Windows
+        with open(os.path("bin", "evennia.bat"), "w") as bat_file:
+            bat_file.write("@\"%s\" \"%s\" %%*" % (sys.executable, os.path.join("bin/python.py")))
+        execlist.append("bin/evennia.bat")
+    else:
+        # Linux, Mac
+        execlist.append("bin/evennia")
+    execlist.append("bin/evennia_runner.py")
+    return execlist
 
 
 def get_version():
@@ -49,7 +68,7 @@ setup(
     version=get_version(),
     description='A full-featured MUD building toolkit.',
     packages=find_packages(),
-    scripts=['bin/evennia', 'bin/evennia.bat', 'bin/evennia_runner.py'],
+    scripts=get_scripts(),
     install_requires=get_requirements(),
     package_data={'': package_data()},
     zip_safe=False

@@ -1,1 +1,0 @@
-@"python" "bin\evennia.py" %*
