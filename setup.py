@@ -27,7 +27,10 @@ def get_scripts():
     this means creating a .bat file.
     """
     if os.name == "nt":
-        return [os.path.join("bin", "windows", "evennia.bat"), os.path.join("bin", "windows", "evennia.py")]
+        batpath = os.path.join("bin", "windows", "evennia.bat")
+        with open(batpath, "w") as batfile:
+            batfile.write("@\"%s\" \"%s\" %%*" % (sys.executable, batpath))
+        return [batpath]
     else:
         return [os.path.join("bin", "unix", "evennia")]
 
