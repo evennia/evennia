@@ -49,7 +49,7 @@ setup(
     version=get_version(),
     description='A full-featured MUD building toolkit.',
     packages=find_packages(),
-    scripts=['bin/evennia', 'bin/evennia_runner.py'],
+    scripts=['bin/evennia', 'bin/evennia.py', 'bin/evennia_runner.py'],
     install_requires=get_requirements(),
     package_data={'': package_data()},
     zip_safe=False
