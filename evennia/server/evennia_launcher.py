@@ -139,9 +139,14 @@ ERROR_WINDOWS_WIN32API = \
     ERROR: Unable to import win32api, which Twisted requires to run.
     You may download it from:
 
-    http://sourceforge.net/projects/pywin32
-      or
-    http://starship.python.net/crew/mhammond/win32/Downloads.html
+    http://sourceforge.net/projects/pywin32/files/pywin32/
+
+    If you are running in a virtual environment, browse to the
+    location of the latest win32api exe file for your computer and
+    Python version and copy the url to it; then paste it into a call
+    to easy_install:
+
+        easy_install http://<url to win32api exe>
     """
 
 INFO_WINDOWS_BATFILE = \
@@ -150,7 +155,7 @@ INFO_WINDOWS_BATFILE = \
     created for you. This is a simple batch file that tries to call
     the twisted executable. Evennia determined this to be:
 
-       %(twistd_path)s
+       {twistd_path}
 
     If you run into errors at startup you might need to edit
     twistd.bat to point to the actual location of the Twisted
@@ -651,7 +656,8 @@ def init_game_directory(path, check_db=True):
             print ERROR_WINDOWS_WIN32API
             sys.exit()
 
-        if not os.path.exists(os.path.join(EVENNIA_SERVER, TWISTED_BINARY)):
+        batpath = os.path.join(EVENNIA_SERVER, TWISTED_BINARY)
+        if not os.path.exists(batpath):
             # Test for executable twisted batch file. This calls the
             # twistd.py executable that is usually not found on the
             # path in Windows.  It's not enough to locate
@@ -668,7 +674,7 @@ def init_game_directory(path, check_db=True):
                             os.pardir, os.pardir, os.pardir, os.pardir,
                             'scripts', 'twistd.py'))
 
-            with open('twistd.bat', 'w') as bat_file:
+            with open(batpath, 'w') as bat_file:
                 # build a custom bat file for windows
                 bat_file.write("@\"%s\" \"%s\" %%*" % (sys.executable, twistd_path))
 
