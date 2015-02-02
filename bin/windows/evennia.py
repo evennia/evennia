@@ -1,3 +1,4 @@
+#! /usr/bin/python
 """
 Windows launcher. This is called by a dynamically created .bat file in
 the python bin directory and makes the 'evennia' program available on
