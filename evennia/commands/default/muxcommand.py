@@ -12,7 +12,7 @@ __all__ = ("MuxCommand", "MuxPlayerCommand")
 class MuxCommand(Command):
     """
     This sets up the basis for a MUX command. The idea
-    is tkhat most other Mux-related commands should just
+    is that most other Mux-related commands should just
     inherit from this and don't have to implement much
     parsing of their own unless they do something particularly
     advanced.
