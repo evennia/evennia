@@ -292,7 +292,6 @@ class CmdOOC(MuxPlayerCommand):
     """
 
     key = "@ooc"
-    # lock must be all(), for different puppeted objects to access it.
     locks = "cmd:pperm(Players)"
     aliases = "@unpuppet"
     help_category = "General"
