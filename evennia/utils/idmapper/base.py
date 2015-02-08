@@ -73,19 +73,13 @@ class SharedMemoryModelBase(ModelBase):
         Prepare the cache, making sure that proxies of the same db base
         share the same cache.
         """
-        def prep(dbmodel):
-            if not hasattr(dbmodel, "__instance_cache__"):
-                dbmodel.__instance_cache__ = {}
-                dbmodel._idmapper_recache_protection = False
-        if not cls._meta.proxy:
-            # non-proxy models get the full cache
-            prep(cls)
-        else:
-            # proxies get a reference to the cache
-            dbmodel = cls._meta.proxy_for_model
-            prep(dbmodel)
-            cls.__instance_cache__ = dbmodel.__instance_cache__
-            cls._idmapper_recache_protection = False
+        # the dbmodel is either the proxy base or ourselves
+        dbmodel = cls._meta.proxy_for_model if cls._meta.proxy else cls
+        cls.__dbclass__ = dbmodel
+        dbmodel._idmapper_recache_protection = False
+        if not hasattr(dbmodel, "__instance_cache__"):
+            # we store __instance_cache__ only on the dbmodel base
+            dbmodel.__instance_cache__ = {}
         super(SharedMemoryModelBase, cls)._prepare()
 
     def __new__(cls, name, bases, attrs):
@@ -99,6 +93,7 @@ class SharedMemoryModelBase(ModelBase):
 
         attrs["typename"] = cls.__name__
         attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
+        attrs["_is_deleted"] = False
 
         # set up the typeclass handling only if a variable _is_typeclass is set on the class
         def create_wrapper(cls, fieldname, wrappername, editable=True, foreignkey=False):
@@ -113,12 +108,7 @@ class SharedMemoryModelBase(ModelBase):
                 "Wrapper for returing foreignkey fields"
                 if _GA(cls, "_is_deleted"):
                     raise ObjectDoesNotExist("Cannot access %s: Hosting object was already deleted." % fname)
-                value = _GA(cls, fieldname)
-                #print "_get_foreign:value:", value
-                try:
-                    return _GA(value, "typeclass")
-                except:
-                    return value
+                return _GA(cls, fieldname)
             def _set_nonedit(cls, fname, value):
                 "Wrapper for blocking editing of field"
                 raise FieldError("Field %s cannot be edited." % fname)
@@ -200,6 +190,9 @@ class SharedMemoryModelBase(ModelBase):
 
 
 class SharedMemoryModel(Model):
+    """
+    Base class for idmapped objects. Inherit from this.
+    """
     # CL: setting abstract correctly to allow subclasses to inherit the default
     # manager.
     __metaclass__ = SharedMemoryModelBase
@@ -208,10 +201,6 @@ class SharedMemoryModel(Model):
 
     class Meta:
         abstract = True
-
-    #def __init__(cls, *args, **kwargs):
-    #    super(SharedMemoryModel, cls).__init__(*args, **kwargs)
-    #    cls.__idmapper_recache_protection = False
 
     @classmethod
     def _get_cache_key(cls, args, kwargs):
@@ -244,6 +233,8 @@ class SharedMemoryModel(Model):
         return result
     #_get_cache_key = classmethod(_get_cache_key)
 
+
+
     @classmethod
     def get_cached_instance(cls, id):
         """
@@ -251,8 +242,7 @@ class SharedMemoryModel(Model):
         (which will always be the case when caching is disabled for this class). Please
         note that the lookup will be done even when instance caching is disabled.
         """
-        return cls.__instance_cache__.get(id)
-    #get_cached_instance = classmethod(get_cached_instance)
+        return cls.__dbclass__.__instance_cache__.get(id)
 
     @classmethod
     def cache_instance(cls, instance):
@@ -260,21 +250,19 @@ class SharedMemoryModel(Model):
         Method to store an instance in the cache.
         """
         if instance._get_pk_val() is not None:
-
-            cls.__instance_cache__[instance._get_pk_val()] = instance
-    #cache_instance = classmethod(cache_instance)
+            cls.__dbclass__.__instance_cache__[instance._get_pk_val()] = instance
 
     @classmethod
     def get_all_cached_instances(cls):
         "return the objects so far cached by idmapper for this class."
-        return cls.__instance_cache__.values()
+        return cls.__dbclass__.__instance_cache__.values()
 
     @classmethod
     def _flush_cached_by_key(cls, key, force=True):
         "Remove the cached reference."
         try:
             if force or not cls._idmapper_recache_protection:
-                del cls.__instance_cache__[key]
+                del cls.__dbclass__.__instance_cache__[key]
         except KeyError:
             pass
 
@@ -297,17 +285,32 @@ class SharedMemoryModel(Model):
         keyword to remove all objects, safe or not.
         """
         if force:
-            cls.__instance_cache__ = {}
+            cls.__dbclass__.__instance_cache__ = {}
         else:
-            cls.__instance_cache__ = dict((key, obj) for key, obj in cls.__instance_cache__.items()
+            cls.__dbclass__.__instance_cache__ = dict((key, obj) for key, obj in cls.__dbclass__.__instance_cache__.items()
                                                       if obj._idmapper_recache_protection)
     #flush_instance_cache = classmethod(flush_instance_cache)
 
     # per-instance methods
 
+    def flush_from_cache(self, force=False):
+        """
+        Flush this instance from the instance cache. Use
+        force to override recache_protection for the object.
+        """
+        if self.pk and (force or not self._idmapper_recache_protection):
+            self.__class__.__dbclass__.__instance_cache__.pop(self.pk, None)
+
     def set_recache_protection(self, mode=True):
         "set if this instance should be allowed to be recached."
         self._idmapper_recache_protection = bool(mode)
+
+    def delete(self, *args, **kwargs):
+        """
+        Delete the object, clearing cache
+        """
+        self.flush_from_cache()
+        super(SharedMemoryModel, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         "save method tracking process/thread issues"
@@ -335,7 +338,7 @@ class WeakSharedMemoryModelBase(SharedMemoryModelBase):
     """
     def _prepare(cls):
         super(WeakSharedMemoryModelBase, cls)._prepare()
-        cls.__instance_cache__ = WeakValueDictionary()
+        cls.__dbclass__.__instance_cache__ = WeakValueDictionary()
         cls._idmapper_recache_protection = False
 
 
@@ -367,7 +370,9 @@ def flush_cache(**kwargs):
             else:
                 yield cls
 
+    #print "start flush ..."
     for cls in class_hierarchy([SharedMemoryModel]):
+        #print cls
         cls.flush_instance_cache()
     # run the python garbage collector
     return gc.collect()
