@@ -553,7 +553,7 @@ class CmdQuit(MuxPlayerCommand):
                 player.msg("{RQuitting{n. %i session are still connected." % (nsess-1), sessid=self.sessid)
             else:
                 # we are quitting the last available session
-                player.msg("{RQuitting{n. Hope to see you soon again.", sessid=self.sessid)
+                player.msg("{RQuitting{n. Hope to see you again, soon.", sessid=self.sessid)
             player.disconnect_session_from_player(self.sessid)
 
 
