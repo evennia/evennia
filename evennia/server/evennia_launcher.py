@@ -95,8 +95,8 @@ CREATED_NEW_GAMEDIR = \
 ERROR_INPUT = \
     """
     The argument(s)
-        {args}
-    is not recognized by Evennia nor Django. Use -h for help.
+        {args} {kwargs}
+    is/are not recognized by Evennia nor Django. Use -h for help.
     """
 
 ERROR_NO_GAMEDIR = \
@@ -188,10 +188,9 @@ INFO_WINDOWS_BATFILE = \
 CMDLINE_HELP = \
     """
     Starts or operates the Evennia MU* server. Also allows for
-    initializing a new game directory and managing the game's
-    database. You can also pass django manage.py arguments through
-    this launcher. If you need manage.py --options, use djangoadmin
-    directly instead.
+    initializing a new game directory and manages the game's database.
+    You can also pass most standard django-admin arguments and
+    options.
     """
 
 
@@ -902,9 +901,11 @@ def main():
     parser.add_argument('--dummyrunner', nargs=1, action='store', dest='dummyrunner', metavar="N",
                         help="Tests a running server by connecting N dummy players to it.")
     parser.add_argument("option", nargs='?', default="noop",
-                        help="Operational mode or management option.")
+                        help="Operational mode: 'start', 'stop', 'restart' or 'menu'.")
     parser.add_argument("service", metavar="component", nargs='?', default="all",
-                        help="Which server component to operate on. One of server, portal or all (default).")
+                        help="Server component to operate on: 'server', 'portal' or 'all' (default).")
+    parser.epilog = "Example django-admin commands: 'migrate', 'flush', 'shell' and 'dbshell'. " \
+                    "See the django documentation for more django-admin commands."
 
     args, unknown_args = parser.parse_known_args()
 
@@ -914,7 +915,10 @@ def main():
 
     check_main_evennia_dependencies()
 
-    if args.init:
+    if not args:
+        print CMDLINE_HELP
+        sys.exit()
+    elif args.init:
         create_game_directory(args.init)
         print CREATED_NEW_GAMEDIR.format(gamedir=args.init,
                                          settings_path=os.path.join(args.init, SETTINGS_PATH))
@@ -922,9 +926,6 @@ def main():
 
     if args.show_version:
         print show_version_info(option=="help")
-        sys.exit()
-    if option == "help" and not args.dummyrunner:
-        print ABOUT_INFO
         sys.exit()
 
     if args.dummyrunner:
@@ -957,7 +958,12 @@ def main():
         try:
             django.core.management.call_command(*args, **kwargs)
         except django.core.management.base.CommandError:
-            print ERROR_INPUT.format(args=" ".join(args))
+            args = ", ".join(args)
+            kwargs = ", ".join(["--%s" % kw for kw in kwargs])
+            print ERROR_INPUT.format(args=args, kwargs=kwargs)
+    else:
+        # no input; print evennia info
+        print ABOUT_INFO
 
 
 if __name__ == '__main__':
