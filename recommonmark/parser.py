@@ -36,6 +36,9 @@ class _SectionHandler(object):
 class CommonMarkParser(object, parsers.Parser):
     supported = ('md', 'markdown')
 
+    def __init__(self, env=None):
+        self.env = env
+
     def convert_blocks(self, blocks):
         for block in blocks:
             self.convert_block(block)
@@ -66,8 +69,10 @@ class CommonMarkParser(object, parsers.Parser):
             self.horizontal_rule()
         elif (block.t == "HtmlBlock"):
             self.html_block(block)
+        elif (block.t == "ExtensionBlock"):
+            self.extension_block(block)
         else:
-            warn("Unsupported block type" + block.t)
+            warn("Unsupported block type: " + block.t)
 
     def parse(self, inputstring, document):
         self.setup_parse(inputstring, document)
@@ -154,6 +159,30 @@ class CommonMarkParser(object, parsers.Parser):
         raw_node = nodes.raw('', block.string_content, format='html')
         raw_node.line = block.start_line
         self.current_node.append(raw_node)
+
+    def extension_block(self, block):
+        rst_template = '.. {name}:: {arguments}'
+        rst_options_template = '   :{arg}: {value}'
+
+        to_parse = rst_template.format(
+            name=block.title,
+            arguments=block.attributes.pop('arguments', ''),
+            )
+        to_parse += "\n"
+        for arg, value in block.attributes.items():
+            to_parse += rst_options_template.format(
+                arg=arg,
+                value=value,
+                )
+        to_parse += "\n\n"
+        for line in block.strings:
+            to_parse += "   {}\n".format(line)
+
+        print "Sphinx Directive:\n[\n%s\n]\n" % to_parse
+        document = self.env.node_from_directive(to_parse)
+        for node in document.children:
+            self.current_node.append(node)
+
 
     def horizontal_rule(self):
         transition_node = nodes.transition()
