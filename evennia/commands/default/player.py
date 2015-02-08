@@ -223,7 +223,7 @@ class CmdIC(MuxPlayerCommand):
     """
 
     key = "@ic"
-    # lockmust be all() for different puppeted objects to access it.
+    # lock must be all() for different puppeted objects to access it.
     locks = "cmd:all()"
     aliases = "@puppet"
     help_category = "General"
