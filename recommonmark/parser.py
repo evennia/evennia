@@ -64,7 +64,8 @@ class CommonMarkParser(object, parsers.Parser):
             self.reference(block)
         elif (block.t == "HorizontalRule"):
             self.horizontal_rule()
-        # elif (block.t == "HtmlBlock"):
+        elif (block.t == "HtmlBlock"):
+            self.html_block(block)
         else:
             warn("Unsupported block type" + block.t)
 
@@ -131,6 +132,14 @@ class CommonMarkParser(object, parsers.Parser):
 
         self.current_node.append(node)
 
+    def html_block(self, block):
+        node = nodes.paragraph()
+
+        with self._temp_current_node(node):
+            self.convert_blocks(block.children)
+
+        self.current_node.append(node)
+
     def list_block(self, block):
         list_node = None
         if (block.list_data['type'] == "Bullet"):
@@ -139,7 +148,7 @@ class CommonMarkParser(object, parsers.Parser):
             list_node = nodes.enumerated_list()
 
         with self._temp_current_node(list_node):
-            self.current_node.append(node)
+            self.current_node.append(nodes.list_item())
 
         self.current_node.append(list_node)
 
@@ -181,6 +190,10 @@ def inline_code(inline):
     literal_node.append(nodes.Text(inline.c))
     return literal_node
 
+def inline_html(inline):
+    literal_node = nodes.raw('', inline.c, format='html')
+    return literal_node
+
 def reference(block):
     ref_node = nodes.reference()
 
@@ -203,7 +216,7 @@ def image(block):
     img_node = nodes.image()
 
     label = make_refname(block.label)
-    img_node['uri'] = uri
+    img_node['uri'] = block.destination
 
     if block.title:
         img_node['title'] = block.title
@@ -227,6 +240,8 @@ def parse_inline(parent_node, inline):
         node = image(inline)
     elif inline.t == "Code":
         node = inline_code(inline)
+    elif inline.t == "Html":
+        node = inline_html(inline)
     else:
         warn("Unsupported inline type " + inline.t)
         return
