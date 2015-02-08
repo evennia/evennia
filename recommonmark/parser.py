@@ -94,9 +94,11 @@ class CommonMarkParser(object, parsers.Parser):
     # Blocks
     def section(self, block):
         new_section = nodes.section()
+        new_section.line = block.start_line
         new_section['level'] = block.level
 
         title_node = nodes.title()
+        title_node.line = block.start_line
         append_inlines(title_node, block.inline_content)
         new_section.append(title_node)
 
@@ -113,11 +115,13 @@ class CommonMarkParser(object, parsers.Parser):
 
     def paragraph(self, block):
         p = nodes.paragraph()
+        p.line = block.start_line
         append_inlines(p, block.inline_content)
         self.current_node.append(p)
 
     def blockquote(self, block):
         q = nodes.block_quote()
+        q.line = block.start_line
 
         with self._temp_current_node(q):
             self.convert_blocks(block.children)
@@ -126,14 +130,7 @@ class CommonMarkParser(object, parsers.Parser):
 
     def list_item(self, block):
         node = nodes.list_item()
-
-        with self._temp_current_node(node):
-            self.convert_blocks(block)
-
-        self.current_node.append(node)
-
-    def html_block(self, block):
-        node = nodes.paragraph()
+        node.line = block.start_line
 
         with self._temp_current_node(node):
             self.convert_blocks(block.children)
@@ -146,17 +143,25 @@ class CommonMarkParser(object, parsers.Parser):
             list_node = nodes.bullet_list()
         else:
             list_node = nodes.enumerated_list()
+        list_node.line = block.start_line
 
         with self._temp_current_node(list_node):
-            self.current_node.append(nodes.list_item())
+            self.convert_blocks(block.children)
 
         self.current_node.append(list_node)
 
+    def html_block(self, block):
+        raw_node = nodes.raw('', block.string_content, format='html')
+        raw_node.line = block.start_line
+        self.current_node.append(raw_node)
+
     def horizontal_rule(self):
-        self.current_node.append(nodes.transition())
+        transition_node = nodes.transition()
+        self.current_node.append(transition_node)
 
     def reference(self, block):
         target_node = nodes.target()
+        target_node.line = block.start_line
 
         target_node['names'].append(make_refname(block.label))
 
@@ -228,20 +233,28 @@ def parse_inline(parent_node, inline):
     node = None
     if (inline.t == "Str"):
         node = nodes.Text(inline.c)
+        node.line = inline.start_line
     elif (inline.t == "Softbreak"):
         node = nodes.Text('\n')
+        node.line = inline.start_line
     elif inline.t == "Emph":
         node = emph(inline.c)
+        node.line = inline.start_line
     elif inline.t == "Strong":
         node = strong(inline.c)
+        node.line = inline.start_line
     elif inline.t == "Link":
         node = reference(inline)
+        node.line = inline.start_line
     elif inline.t == "Image":
         node = image(inline)
+        node.line = inline.start_line
     elif inline.t == "Code":
         node = inline_code(inline)
+        node.line = inline.start_line
     elif inline.t == "Html":
         node = inline_html(inline)
+        node.line = inline.start_line
     else:
         warn("Unsupported inline type " + inline.t)
         return
