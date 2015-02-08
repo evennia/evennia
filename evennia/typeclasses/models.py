@@ -438,8 +438,6 @@ class TypedObject(SharedMemoryModel):
         "Scrambling method for already deleted objects"
         raise ObjectDoesNotExist("This object was already deleted!")
 
-    _is_deleted = False # this is checked by db_* wrappers
-
     def delete(self):
         "Cleaning up handlers on the typeclass level"
         global TICKER_HANDLER
@@ -455,7 +453,6 @@ class TypedObject(SharedMemoryModel):
 
         # scrambling properties
         self.delete = self._deleted
-        self._is_deleted = True
         super(TypedObject, self).delete()
 
     #

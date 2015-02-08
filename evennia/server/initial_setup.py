@@ -70,10 +70,10 @@ def create_objects():
                                          nohome=True)
 
     god_character.id = 1
+    god_character.save()
     god_character.db.desc = _('This is User #1.')
     god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
     god_character.permissions.add("Immortals")
-    god_character.save()
 
     god_player.attributes.add("_first_login", True)
     god_player.attributes.add("_last_puppet", god_character)
@@ -82,6 +82,7 @@ def create_objects():
     room_typeclass = settings.BASE_ROOM_TYPECLASS
     limbo_obj = create.create_object(room_typeclass, _('Limbo'), nohome=True)
     limbo_obj.id = 2
+    limbo_obj.save()
     string = \
         "Welcome to your new {wEvennia{n-based game. From here you are ready " \
         "to begin development. Visit http://evennia.com if you should need " \

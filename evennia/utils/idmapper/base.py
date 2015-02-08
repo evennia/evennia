@@ -310,6 +310,7 @@ class SharedMemoryModel(Model):
         Delete the object, clearing cache
         """
         self.flush_from_cache()
+        self._is_deleted = True
         super(SharedMemoryModel, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):

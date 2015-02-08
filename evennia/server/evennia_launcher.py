@@ -92,10 +92,30 @@ CREATED_NEW_GAMEDIR = \
 
     """
 
+ERROR_INPUT = \
+    """
+    The argument(s)
+        {args}
+    is not recognized by Evennia nor Django. Use -h for help.
+    """
+
 ERROR_NO_GAMEDIR = \
     """
     No Evennia settings file was found. You must run this command from
     inside a valid game directory first created with --init.
+    """
+
+WARNING_MOVING_SUPERUSER = \
+    """
+    Evennia expects a Player superuser with id=1. No such Player was
+    found. However, another superuser ('{other_key}', id={other_id})
+    was found in the database. If you just created this superuser and
+    still see this text it is probably due to the database being
+    flushed recently - in this case the database's internal
+    auto-counter might just start from some value higher than one.
+
+    We will fix this by assigning the id 1 to Player '{other_key}'.
+    Please confirm this is acceptable before continuing.
     """
 
 WARNING_RUNSERVER = \
@@ -127,7 +147,7 @@ ERROR_DATABASE = \
     Your database does not seem to be set up correctly.
     (error was '{traceback}')
 
-    Standing in your game directory, try to run
+    Standing in your game directory, run
 
        evennia migrate
 
@@ -430,7 +450,7 @@ def create_superuser():
     django.core.management.call_command("createsuperuser", interactive=True)
 
 
-def check_database(exit_on_error=False):
+def check_database():
     """
     Check database exists
     """
@@ -441,19 +461,46 @@ def check_database(exit_on_error=False):
         # database exists and seems set up. Initialize evennia.
         import evennia
         evennia.init()
-    else:
-        if exit_on_error:
-            print ERROR_DATABASE.format(traceback=e)
-            sys.exit()
-        return False
-    return True
     # Try to get Player#1
     from evennia.players.models import PlayerDB
     try:
         PlayerDB.objects.get(id=1)
+    except django.db.utils.OperationalError, e:
+        print ERROR_DATABASE.format(traceback=e)
+        sys.exit()
     except PlayerDB.DoesNotExist:
         # no superuser yet. We need to create it.
-        create_superuser()
+
+        other_superuser = PlayerDB.objects.filter(is_superuser=True)
+        if other_superuser:
+             # Another superuser was found, but not with id=1. This may
+             # happen if using flush (the auto-id starts at a higher
+             # value). Wwe copy this superuser into id=1. To do
+             # this we must deepcopy it, delete it then save the copy
+             # with the new id. This allows us to avoid the UNIQUE
+             # constraint on usernames.
+            other = other_superuser[0]
+            other_id = other.id
+            other_key = other.username
+            print WARNING_MOVING_SUPERUSER.format(other_key=other_key,
+                                                 other_id=other_id)
+            res = ""
+            while res.upper() != "Y":
+                # ask for permission
+                res = raw_input("Continue [Y]/N: ")
+                if res.upper() == "N":
+                    sys.exit()
+                elif not res:
+                    break
+            # continue with the
+            from copy import deepcopy
+            new = deepcopy(other)
+            other.delete()
+            new.id = 1
+            new.save()
+        else:
+            create_superuser()
+            check_database()
     return True
 
 
@@ -854,16 +901,16 @@ def main():
                       help="Start given server component under the Python profiler.")
     parser.add_argument('--dummyrunner', nargs=1, action='store', dest='dummyrunner', metavar="N",
                         help="Tests a running server by connecting N dummy players to it.")
-    parser.add_argument("mode", metavar="option", nargs='?', default="help",
-                        help="Operational mode or management option. Commonly start, stop, reload, migrate, or menu (default).")
-    parser.add_argument("service", metavar="component", nargs='?', choices=["all", "server", "portal"], default="all",
+    parser.add_argument("option", nargs='?', default="noop",
+                        help="Operational mode or management option.")
+    parser.add_argument("service", metavar="component", nargs='?', default="all",
                         help="Which server component to operate on. One of server, portal or all (default).")
 
-    args = parser.parse_args()
+    args, unknown_args = parser.parse_known_args()
 
     # handle arguments
 
-    mode, service = args.mode, args.service
+    option, service = args.option, args.service
 
     check_main_evennia_dependencies()
 
@@ -874,31 +921,43 @@ def main():
         sys.exit()
 
     if args.show_version:
-        print show_version_info(mode=="help")
+        print show_version_info(option=="help")
         sys.exit()
-    if mode == "help" and not args.dummyrunner:
+    if option == "help" and not args.dummyrunner:
         print ABOUT_INFO
         sys.exit()
-    check_db = not mode == "migrate"
-
-    # this must be done first - it sets up all the global properties
-    # and initializes django for the game directory
-    init_game_directory(CURRENT_DIR, check_db=check_db)
 
     if args.dummyrunner:
         # launch the dummy runner
+        init_game_directory(CURRENT_DIR, check_db=True)
         run_dummyrunner(args.dummyrunner[0])
-    elif mode == 'menu':
+    elif option == 'menu':
         # launch menu for operation
+        init_game_directory(CURRENT_DIR, check_db=True)
         run_menu()
-    elif mode in ('start', 'reload', 'stop'):
+    elif option in ('start', 'reload', 'stop'):
         # operate the server directly
-        server_operation(mode, service, args.interactive, args.profiler)
-    else:
+        init_game_directory(CURRENT_DIR, check_db=True)
+        server_operation(option, service, args.interactive, args.profiler)
+    elif option != "noop":
         # pass-through to django manager
-        if mode in ('runserver', 'testserver'):
+        init_game_directory(CURRENT_DIR, check_db=False)
+        if option in ('runserver', 'testserver'):
             print WARNING_RUNSERVER
-        django.core.management.call_command(mode)
+        args = [option]
+        kwargs = {}
+        if service not in ("all", "server", "portal"):
+            args.append(service)
+        if unknown_args:
+            for arg in unknown_args:
+                if arg.startswith("--"):
+                    kwargs[arg.lstrip("--")] = True
+                else:
+                    args.append(arg)
+        try:
+            django.core.management.call_command(*args, **kwargs)
+        except django.core.management.base.CommandError:
+            print ERROR_INPUT.format(args=" ".join(args))
 
 
 if __name__ == '__main__':
