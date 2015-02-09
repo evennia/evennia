@@ -5,7 +5,7 @@ Thanks for helping us improve Evennia! Please use the issue templates below to k
  * [Issue/Bug report template][A] - when you have an error, problem or unexpected behavior to report.
  * [Feature request template][B] - when you want to request a new Evennia feature.
  * [Documentation error template][C] - when you find error in the [documentation][2]. Please note that the documentation is a wiki, so consider if you can easily fix the problem (such as typo) yourself first.
- * If you want to contribute code to Evennia, you should work in your own Github *fork* and then make a *push request*. Read the [Contribution][3] page for instructions how. 
+ * If you want to contribute code to Evennia, you should work in your own Github *fork* and then make a *pull request*. Read the [Contribution][3] page for instructions how. 
 
 ## Formatting your Issues: 
 
