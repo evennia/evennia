@@ -616,7 +616,9 @@ INSTALLED_APPS = (
     'evennia.comms',
     'evennia.help',
     'evennia.scripts',
-    'evennia.web.webclient')
+    'evennia.web.webclient',
+    'evennia.contrib.collab',  # Included in order to run tests.
+)
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
 AUTH_USER_MODEL = "players.PlayerDB"
