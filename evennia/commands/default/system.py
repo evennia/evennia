@@ -68,7 +68,7 @@ class CmdReset(MuxCommand):
       @reset
 
     A cold reboot. This works like a mixture of @reload and @shutdown,
-    - all shutdown hooks will be called and non-persistent scrips will
+    - all shutdown hooks will be called and non-persistent scripts will
     be purged. But the Portal will not be affected and the server will
     automatically restart again.
     """
