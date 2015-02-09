@@ -7,7 +7,7 @@ on uses of scripts are included.
 
 """
 from evennia import DefaultScript
-from contrib.tutorial_examples import cmdset_red_button as cmdsetexamples
+from evennia.contrib.tutorial_examples import cmdset_red_button as cmdsetexamples
 
 #
 # Scripts as state-managers

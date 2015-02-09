@@ -325,9 +325,6 @@ def pypath_to_realpath(python_path, file_ending='.py'):
             existence before being returned, so this may be an empty list.
 
     """
-    print "settings.EVENNIA_DIR:", settings.EVENNIA_DIR
-    print "settings.GAME_DIR:", settings.GAME_DIR
-    print python_path
     pathsplit = python_path.strip().split('.')
     paths = [os.path.join(settings.EVENNIA_DIR, *pathsplit),
              os.path.join(settings.GAME_DIR, *pathsplit)]
@@ -337,7 +334,6 @@ def pypath_to_realpath(python_path, file_ending='.py'):
         paths = ["%s%s" % (p, file_ending) if not p.endswith(file_ending) else p
                  for p in paths]
     # check so the paths actually exists before returning
-    print "py to path:", paths
     return [p for p in paths if os.path.isfile(p)]
 
 

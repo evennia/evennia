@@ -68,7 +68,7 @@ def suite():
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(utiltests))
 
     # load tests from the evennia/tests central location
-    for path in glob.glob(os.path.join(settings.EVENNIA_DIR, "tests", "*.py")):
+    for path in glob.glob(os.path.join(settings.EVENNIA_DIR, "tests", "test_*.py")):
         testmod = mod_import(path)
         tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(testmod))
 

@@ -12,8 +12,8 @@ Note that you must drop the button before you can see its messages!
 """
 import random
 from evennia import DefaultObject
-from contrib.tutorial_examples import red_button_scripts as scriptexamples
-from contrib.tutorial_examples import cmdset_red_button as cmdsetexamples
+from evennia.contrib.tutorial_examples import red_button_scripts as scriptexamples
+from evennia.contrib.tutorial_examples import cmdset_red_button as cmdsetexamples
 
 #
 # Definition of the object itself

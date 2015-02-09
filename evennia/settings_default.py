@@ -104,19 +104,16 @@ WEBSOCKET_INTERFACES = ['0.0.0.0']
 # standard Django admin is used.
 EVENNIA_ADMIN = True
 # The path to the root directory
-if test:
-    # Tests must be run within a migrated initialized game.
-    ROOT_DIR = os.getcwd()
-else:
-    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Path to the lib directory containing the bulk of the codebase's code.
 EVENNIA_DIR = os.path.join(ROOT_DIR, 'evennia')
 # Path to the game directory (containing the database file if using sqlite).
 if test:
-    GAME_DIR = ROOT_DIR
+    GAME_DIR = os.getcwd()
 else:
-    GAME_DIR = os.path.join(ROOT_DIR, 'game_template')
+    # Fallback location
+    GAME_DIR = os.path.join(EVENNIA_DIR, 'game_template')
 
 # Place to put log files
 LOG_DIR = os.path.join(GAME_DIR, 'server', 'logs')
@@ -336,7 +333,7 @@ TYPECLASS_AGGRESSIVE_CACHE = True
 
 # Python path to a directory to be searched for batch scripts
 # for the batch processors (.ev and/or .py files).
-BASE_BATCHPROCESS_PATHS = ['world', 'evennia.contrib']
+BASE_BATCHPROCESS_PATHS = ['world', 'evennia.contrib', 'evennia.contrib.tutorial_examples']
 
 ######################################################################
 # Game Time setup

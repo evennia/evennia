@@ -305,6 +305,6 @@ class TestComms(CommandTest):
 class TestBatchProcess(CommandTest):
     def test_batch_commands(self):
         # cannot test batchcode here, it must run inside the server process
-        self.call(batchprocess.CmdBatchCommands(), "batch_cmds", "Running Batchcommand processor  Automatic mode for batch_cmds")
+        self.call(batchprocess.CmdBatchCommands(), "example_batch_cmds", "Running Batchcommand processor  Automatic mode for example_batch_cmds")
         #self.call(batchprocess.CmdBatchCode(), "examples.batch_code", "")
 
