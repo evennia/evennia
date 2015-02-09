@@ -183,7 +183,7 @@ class TestPlayer(CommandTest):
         self.call(player.CmdWho(), "", "Players:", caller=self.player)
 
     def test_quit(self):
-        self.call(player.CmdQuit(), "", "Quitting. Hope to see you soon again.", caller=self.player)
+        self.call(player.CmdQuit(), "", "Quitting. Hope to see you again, soon.", caller=self.player)
 
     def test_sessions(self):
         self.call(player.CmdSessions(), "", "Your current session(s):", caller=self.player)
