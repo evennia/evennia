@@ -23,7 +23,12 @@ def returns_typeclass_list(method):
     """
     def func(self, *args, **kwargs):
         self.__doc__ = method.__doc__
-        return list(method(self, *args, **kwargs))
+        raw_queryset = kwargs.pop('raw_queryset', False)
+        result = method(self, *args, **kwargs)
+        if raw_queryset:
+            return result
+        else:
+            return list(result)
     return update_wrapper(func, method)
 
 
