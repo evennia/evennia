@@ -312,26 +312,33 @@ def get_evennia_version():
 
 def pypath_to_realpath(python_path, file_ending='.py'):
     """
-    Converts a path on dot python form (e.g. 'evennia.objects.models') to
-    a system path ($ROOT_DIR/evennia/objects/models.py). Calculates all
-    paths as absoulte paths starting from the evennia main directory.
+    Converts a dotted Python path to an absolute path under the
+    Evennia library directory or under the current game directory.
 
-    Since it seems to be a common mistake to include the file ending
-    when entering filename for things like batchprocess, we handle the
-    case of erroneously adding the file ending too.
+    Args:
+        python_path (str): a dot-python path
+        file_ending (str): a file ending, including the period.
+
+    Returns:
+        abspaths (list of str): The two absolute paths created by prepending
+            EVENNIA_DIR and GAME_DIR respectively. These are checked for
+            existence before being returned, so this may be an empty list.
+
     """
+    print "settings.EVENNIA_DIR:", settings.EVENNIA_DIR
+    print "settings.GAME_DIR:", settings.GAME_DIR
+    print python_path
     pathsplit = python_path.strip().split('.')
-    if python_path.endswith(file_ending):
-        # this is actually a malformed path ...
-        pathsplit = pathsplit[:-1]
-    if not pathsplit:
-        return python_path
-    path = settings.EVENNIA_DIR
-    for directory in pathsplit:
-        path = os.path.join(path, directory)
+    paths = [os.path.join(settings.EVENNIA_DIR, *pathsplit),
+             os.path.join(settings.GAME_DIR, *pathsplit)]
     if file_ending:
-        return "%s%s" % (path, file_ending)
-    return path
+        # attach file ending to the paths if not already set (a common mistake)
+        file_ending = ".%s" % file_ending if not file_ending.startswith(".") else file_ending
+        paths = ["%s%s" % (p, file_ending) if not p.endswith(file_ending) else p
+                 for p in paths]
+    # check so the paths actually exists before returning
+    print "py to path:", paths
+    return [p for p in paths if os.path.isfile(p)]
 
 
 def dbref(dbref, reqhash=True):

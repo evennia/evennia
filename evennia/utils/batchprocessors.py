@@ -199,35 +199,30 @@ def read_batchfile(pythonpath, file_ending='.py'):
     """
 
     # open the file
-    if pythonpath and not (pythonpath.startswith('evennia.') or pythonpath.startswith('game.')
-                           or pythonpath.startswith('contrib.')):
-        abspaths = []
-        for basepath in settings.BASE_BATCHPROCESS_PATHS:
-            abspaths.append(utils.pypath_to_realpath("%s.%s" % (basepath, pythonpath), file_ending))
-    else:
-        abspaths = [utils.pypath_to_realpath(pythonpath, file_ending)]
-    text, fobj  = None, None
-    fileerr, decoderr = [], []
+    abspaths = []
+    for basepath in settings.BASE_BATCHPROCESS_PATHS:
+        # note that pypath_to_realpath has already checked the file for existence
+        if basepath.startswith("evennia"):
+            basepath = basepath.split("evennia", 1)[-1]
+        abspaths.extend(utils.pypath_to_realpath("%s.%s" % (basepath, pythonpath), file_ending))
+    if not abspaths:
+        raise IOError
+    text = None
+    decoderr = []
     for abspath in abspaths:
         # try different paths, until we get a match
         # we read the file directly into unicode.
         for file_encoding in ENCODINGS:
             # try different encodings, in order
             try:
-                fobj = codecs.open(abspath, 'r', encoding=file_encoding)
-                text = fobj.read()
-            except IOError, e:
-                # could not find the file
-                fileerr.append(str(e))
-                break
+                with codecs.open(abspath, 'r', encoding=file_encoding) as fobj:
+                    text = fobj.read()
             except (ValueError, UnicodeDecodeError), e:
                 # this means an encoding error; try another encoding
                 decoderr.append(str(e))
                 continue
             break
-    if not fobj:
-        raise IOError("\n".join(fileerr))
-    if not text:
+    if not text and decoderr:
         raise UnicodeDecodeError("\n".join(decoderr))
 
     return text
