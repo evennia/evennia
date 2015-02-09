@@ -1,6 +1,6 @@
 ## Issue templates
 
-Thanks for helping us improve Evennia! Please use the issue templates below to keep things organized.
+Thanks for helping us improve Evennia! Please use one of the issue templates below:
 
  * [Issue/Bug report template][A] - when you have an error, problem or unexpected behavior to report. Note that pure usage questions belong on the [mailing list][5] or in the [chat][6].
  * [Feature request template][B] - when you want to request a new Evennia feature.
