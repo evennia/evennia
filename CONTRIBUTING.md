@@ -7,7 +7,7 @@ Please use the issue templates below to help us organize things.
  * [Documentation error template][C] - when you find error in the [documentation][2]. Please note that the documentation is a wiki, so consider if you can easily fix the problem (such as typo) yourself first.
  * If you want to contribute code to Evennia, you should work in your own Github *fork* and then make a *push request*. Read the [Contribution][3] page for instructions how. 
 
-## Writing issues: 
+## Formatting your Issues: 
 
 Issues are formatted using [markdown][7]. Here is some useful markdown:
 
