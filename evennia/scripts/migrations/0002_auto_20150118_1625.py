@@ -15,7 +15,7 @@ def convert_defaults(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('scripts', '0002_checksessions_donothing_script_scriptbase_store_validatechannelhandler_validateidmappercache_validat'),
+        ('scripts', '0001_initial'),
     ]
 
     operations = [

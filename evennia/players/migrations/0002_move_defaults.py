@@ -4,15 +4,15 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 
 def convert_defaults(apps, schema_editor):
-    ChannelDB = apps.get_model("comms", "ChannelDB")
-    for channel in ChannelDB.objects.filter(db_typeclass_path="src.comms.comms.Channel"):
-        channel.db_typeclass_path = "typeclasses.channels.Channel"
-        channel.save()
+    PlayerDB = apps.get_model("players", "PlayerDB")
+    for player in PlayerDB.objects.filter(db_typeclass_path="src.players.player.Player"):
+        player.db_typeclass_path = "typeclasses.players.Player"
+        player.save()
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('comms', '0004_defaultchannel'),
+        ('players', '0001_initial'),
     ]
 
     operations = [
