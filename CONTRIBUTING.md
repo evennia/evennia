@@ -2,10 +2,20 @@
 
 Please use the issue templates below to help us organize things.
 
- * [Issue/Bug report template][7] - when you have an error, problem or unexpected behavior to report.
- * [Feature request template][8] - when you want to request a new Evennia feature.
- * [Documentation error template][9] - when you find error in the [documentation][2]. Please note that the documentation is a wiki, so consider if you can easily fix the problem (such as typo) yourself first.
+ * [Issue/Bug report template][A] - when you have an error, problem or unexpected behavior to report.
+ * [Feature request template][B] - when you want to request a new Evennia feature.
+ * [Documentation error template][C] - when you find error in the [documentation][2]. Please note that the documentation is a wiki, so consider if you can easily fix the problem (such as typo) yourself first.
  * If you want to contribute code to Evennia, you should work in your own Github *fork* and then make a *push request*. Read the [Contribution][3] page for instructions how. 
+
+## Writing issues: 
+
+Issues are formatted using [markdown][7]. Here is some useful markdown:
+
+   - \**italic text*\* 
+   - \*\***bold text**\*\* 
+   - \[link text\]\(url\)
+   - \``inline code`\` (please use \``@command`\` to escape `@`-commands or github will notify any user that happens to be named *command*).
+   - \`\`\````multiline code```\`\`\`
 
 If you need further help, see the [Get and Give help][4] page. See [www.evennia.com][1] for access to all things Evennia.
 
@@ -16,6 +26,8 @@ If you need further help, see the [Get and Give help][4] page. See [www.evennia.
 [4]: https://github.com/evennia/evennia/wiki/how%20to%20get%20and%20give%20help
 [5]: https://groups.google.com/forum/#!forum/evennia
 [6]: http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb
-[7]: https://github.com/evennia/evennia/issues/new?title=Bug%3a+%5bShort+description+here%5d&body=**A)+These+steps+will+reproduce+the+problem%3a**%0d%0a%0d%0a1.%0d%0a2.%0d%0a3.%0d%0a%0d%0a**B)+This+is+a+bug+because%3a**%0d%0a%0d%0a+**C)+Extra+information%2c+such+as+Evennia+revision%2frepo%2fbranch%2c+operating+system+and+ideas+for+how+to+solve%3a**
-[8]: https://github.com/evennia/evennia/issues/new?title=Feature+request%3a+%5bshort+description+here%5d&body=**A)+The+suggested+feature+and+how+it+is+supposed+to+work+and+behave%0d%0ato+the+end+user+(player+or+admin%2fcoder)%3a**%0d%0a%0d%0a%0d%0a**B)+This+is+why+I+think+this+new+feature+should+be+included+in+Evennia%3a**%0d%0a%0d%0a+1.%0d%0a+2.%0d%0a%0d%0a**C)+Ideas+for+implementation%3a**
-[9]: https://github.com/evennia/evennia/issues/new?title=Docs%3a+%5bshort+description+here%5d%0d%0a&body=**A)+The+problem+is+with+this+documentation+page+(link)%3a**%0d%0a%0d%0a**B)+The+problem+%2f+changes+suggested%3a**
+[7]: https://help.github.com/articles/github-flavored-markdown/] 
+
+[A]: https://github.com/evennia/evennia/issues/new?title=Bug%3a&body=%23%23%23%23+Steps+to+reproduce+the+issue%3a%0d%0a%0d%0a1.+%0d%0a2.+%0d%0a3.+%0d%0a%0d%0a%23%23%23%23+What+I+expect+to+see+and+what+I+actually+see+(tracebacks%2c+error+messages+etc)%3a%0d%0a%0d%0a%0d%0a%0d%0a%23%23%23%23+Extra+information%2c+such+as+Evennia+revision%2frepo%2fbranch%2c+operating+system+and+ideas+for+how+to+solve%3a%0d%0a%0d%0a
+[B]: https://github.com/evennia/evennia/issues/new?title=Feature+request%3a&body=%23%23%23%23+Description+of+the+suggested+feature+and+how+it+is+supposed+to+work+for+the+admin%2fend+user%3a%0d%0a%0d%0a%0d%0a%23%23%23%23+A+list+of+arguments+for+why+you+think+this+new+feature+should+be+included+in+Evennia%3a%0d%0a%0d%0a1.%0d%0a2.%0d%0a%0d%0a%23%23%23%23+Extra+information%2c+such+as+requirements+or+ideas+on+implementation%3a%0d%0a%0d%0a
+[C]: https://github.com/evennia/evennia/issues/new?title=Docs%3a&body=%23%23%23%23+Where+in+the+documentation+to+find+the+error%3a+%0d%0a%0d%0a%0d%0a%23%23%23%23+What+the+error+is+(optionally+with+ideas+for+solution)%3a+
