@@ -417,6 +417,7 @@ class CmdPlayers(MuxCommand):
     key = "@players"
     aliases = ["@listplayers"]
     locks = "cmd:perm(listplayers) or perm(Wizards)"
+    help_category = "System"
 
     def func(self):
         "List the players"
