@@ -103,13 +103,11 @@ WEBSOCKET_INTERFACES = ['0.0.0.0']
 # This determine's whether Evennia's custom admin page is used, or if the
 # standard Django admin is used.
 EVENNIA_ADMIN = True
-# The path to the root directory
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 # Path to the lib directory containing the bulk of the codebase's code.
-EVENNIA_DIR = os.path.join(ROOT_DIR, 'evennia')
+EVENNIA_DIR = os.path.dirname(os.path.abspath(__file__))
 # Path to the game directory (containing the database file if using sqlite).
 if test:
+    # we must run tests from an initialized game directory
     GAME_DIR = os.getcwd()
 else:
     # Fallback location
@@ -530,7 +528,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # to load the internationalization machinery.
 USE_I18N = False
 # Where to find locales (no need to change this, most likely)
-LOCALE_PATHS = [os.path.join(ROOT_DIR, "locale/")]
+LOCALE_PATHS = [os.path.join(EVENNIA_DIR, "locale/")]
 # This should be turned off unless you want to do tests with Django's
 # development webserver (normally Evennia runs its own server)
 SERVE_MEDIA = False
