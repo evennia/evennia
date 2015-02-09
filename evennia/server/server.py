@@ -11,10 +11,6 @@ import time
 import sys
 import os
 
-# add core Evennia directory
-sys.path.insert(1, os.path.dirname(os.path.dirname(
-                os.path.dirname(os.path.abspath(__file__)))))
-
 from twisted.web import server, static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer

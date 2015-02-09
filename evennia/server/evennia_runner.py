@@ -91,6 +91,7 @@ def getenv():
     """
     sep = ";" if os.name == "nt" else ":"
     env = os.environ.copy()
+    sys.path.insert(0, GAMEDIR)
     env['PYTHONPATH'] = sep.join(sys.path)
     return env
 

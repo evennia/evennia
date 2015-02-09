@@ -11,11 +11,6 @@ by game/evennia.py).
 import sys
 import os
 
-# add core Evennia directory
-sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(
-             os.path.dirname(os.path.abspath(__file__))))))
-sys.path.insert(1, os.getcwd())
-
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor
 from twisted.web import server
