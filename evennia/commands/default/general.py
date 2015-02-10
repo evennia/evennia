@@ -266,6 +266,7 @@ class CmdDrop(MuxCommand):
 
     key = "drop"
     locks = "cmd:all()"
+    arg_regex = r"\s|$"
 
     def func(self):
         "Implement command"
@@ -277,13 +278,9 @@ class CmdDrop(MuxCommand):
 
         # Because the DROP command by definition looks for items
         # in inventory, call the search function using location = caller
-        results = caller.search(self.args, location=caller, quiet=True)
-
-        # now we send it into the error handler (this will output consistent
-        # error messages if there are problems).
-        obj = AT_SEARCH_RESULT(caller, self.args, results, False,
-                              nofound_string="You aren't carrying %s." % self.args,
-                              multimatch_string="You carry more than one %s:" % self.args)
+        obj = caller.search(self.args, location=caller,
+                            nofound_string="You aren't carrying %s." % self.args,
+                            multimatch_string="You carry more than one %s:" % self.args)
         if not obj:
             return
 
@@ -291,7 +288,7 @@ class CmdDrop(MuxCommand):
         caller.msg("You drop %s." % (obj.name,))
         caller.location.msg_contents("%s drops %s." %
                                          (caller.name, obj.name),
-                                         exclude=caller)
+                                     exclude=caller)
         # Call the object script's at_drop() method.
         obj.at_drop(caller)
 

@@ -317,7 +317,9 @@ class DefaultObject(ObjectDB):
                attribute_name=None,
                quiet=False,
                exact=False,
-               candidates=None):
+               candidates=None,
+               nofound_string=None,
+               multimatch_string=None):
         """
         Returns the typeclass of an Object matching a search string/condition
 
@@ -367,6 +369,8 @@ class DefaultObject(ObjectDB):
                     is given. If not set, this list will automatically be defined
                     to include the location, the contents of location and the
                     caller's contents (inventory).
+        nofound_string - optional custom string for not-found error message.
+        multimatch_string - optional custom string for multimatch error header
 
         Returns:
             quiet=False (default):
@@ -425,7 +429,7 @@ class DefaultObject(ObjectDB):
                                                  exact=exact)
         if quiet:
             return results
-        return  _AT_SEARCH_RESULT(self, searchdata, results, global_search)
+        return  _AT_SEARCH_RESULT(self, searchdata, results, global_search, nofound_string, multimatch_string)
 
     def search_player(self, searchdata, quiet=False):
         """
