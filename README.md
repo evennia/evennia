@@ -1,6 +1,4 @@
-# Evennia MUD/MU\* Creation System
-
-![evennia logo](https://github.com/evennia/evennia/blob/devel/evennia/web/static/evennia_general/images/evennia_logo.png)
+# Evennia MUD/MU\* Creation System ![evennia logo](https://github.com/evennia/evennia/blob/devel/evennia/web/static/evennia_general/images/evennia_logo.png)
 
 *Evennia* is a modern library for creating online multiplayer text games
 (MUD, MUSH, MUX, MOO etc) in pure Python. It allows game creatores to
@@ -28,7 +26,7 @@ the codebase extremely flexible. The code is heavily documented and
 you use Python classes to represent your objects, scripts and players.
 The database layer is abstracted away.
 
-![screenshot](https://github.com/evennia/evennia/wiki/Screenshot)
+![screenshot](https://raw.githubusercontent.com/wiki/evennia/evennia/evennia_screenshot3.png)
 
 Evennia offers extensive connectivity options. A single server
 instance may offer connections over Telnet, SSH, SSL and HTTP. The
