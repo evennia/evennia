@@ -312,7 +312,9 @@ class CmdGive(MuxCommand):
         if not self.args or not self.rhs:
             caller.msg("Usage: give <inventory object> = <target>")
             return
-        to_give = caller.search(self.lhs)
+        to_give = caller.search(self.lhs, location=caller,
+                                nofound_string="You aren't carrying %s." % self.lhs,
+                                multimatch_string="You carry more than one %s:" % self.lhs)
         target = caller.search(self.rhs)
         if not (to_give and target):
             return
