@@ -234,10 +234,6 @@ class CmdGet(MuxCommand):
         if caller == obj:
             caller.msg("You can't get yourself.")
             return
-        #print obj, obj.location, caller, caller==obj.location
-        if caller == obj.location:
-            caller.msg("You already hold that.")
-            return
         if not obj.access(caller, 'get'):
             if obj.db.get_err_msg:
                 caller.msg(obj.db.get_err_msg)
@@ -250,7 +246,7 @@ class CmdGet(MuxCommand):
         caller.location.msg_contents("%s picks up %s." %
                                         (caller.name,
                                          obj.name),
-                                         exclude=caller)
+                                     exclude=caller)
         # calling hook method
         obj.at_get(caller)
 
