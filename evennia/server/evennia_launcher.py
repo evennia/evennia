@@ -29,8 +29,8 @@ EVENNIA_LIB = os.path.join(os.path.dirname(os.path.abspath(evennia.__file__)))
 EVENNIA_SERVER = os.path.join(EVENNIA_LIB, "server")
 EVENNIA_RUNNER = os.path.join(EVENNIA_SERVER, "evennia_runner.py")
 EVENNIA_TEMPLATE = os.path.join(EVENNIA_LIB, "game_template")
-EVENNIA_TESTING = os.path.join(EVENNIA_SERVER, "testing")
-EVENNIA_DUMMYRUNNER = os.path.join(EVENNIA_TESTING, "dummyrunner.py")
+EVENNIA_PROFILING = os.path.join(EVENNIA_SERVER, "profiling")
+EVENNIA_DUMMYRUNNER = os.path.join(EVENNIA_PROFILING, "dummyrunner.py")
 
 TWISTED_BINARY = "twistd"
 

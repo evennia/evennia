@@ -31,7 +31,9 @@ for instructions on how to define this module.
 
 """
 
-import time, random
+import sys
+import time
+import random
 from argparse import ArgumentParser
 from twisted.conch import telnet
 from twisted.internet import reactor, protocol
@@ -43,6 +45,10 @@ from evennia.utils import mod_import, time_format
 # Load the dummyrunner settings module
 
 DUMMYRUNNER_SETTINGS = mod_import(settings.DUMMYRUNNER_SETTINGS_MODULE)
+if not DUMMYRUNNER_SETTINGS:
+    raise IOError("Error: Dummyrunner could not find settings file at %s" %
+                    settings.DUMMYRUNNER_SETTINGS_MODULE)
+
 DATESTRING = "%Y%m%d%H%M%S"
 
 # Settings
@@ -64,18 +70,39 @@ TELNET_PORT = DUMMYRUNNER_SETTINGS.TELNET_PORT or settings.TELNET_PORTS[0]
 #
 NLOGGED_IN = 0
 
+
 # Messages
+
 
 INFO_STARTING = \
     """
     Dummyrunner starting using {N} dummy player(s). If you don't see
     any connection messages, make sure that the Evennia server is
-    running. If you intend the dummies to work fully, set
-    settings.PERMISSION_PLAYER_DEFAULT appropriately (if so it is
-    recommended that you use a temporary testing database).
+    running.
 
     Use Ctrl-C to stop/disconnect clients.
     """
+
+ERROR_NO_MIXIN = \
+    """
+    Error: Evennia is not set up for dummyrunner. Before starting the
+    server, make sure to include the following at *the end* of your
+    settings file (remove when not using dummyrunner!):
+
+        from evennia.server.profiling.settings_mixin import *
+
+    This will change the settings in the following way:
+        - change PERMISSION_PLAYER_DEFAULT to 'Immortals' to allow clients
+          to test all commands
+        - change PASSWORD_HASHERS to use a faster (but less safe) algorithm
+          when creating large numbers of accounts at the same time
+
+    If you don't want to use the custom settings of the mixin for some
+    reason, you can change their values manually after the import, or
+    add DUMMYRUNNER_MIXIN=True to your settings file to avoid this
+    error completely.
+    """
+
 
 ERROR_FEW_ACTIONS = \
     """
@@ -291,6 +318,12 @@ def start_all_dummy_clients(nclients):
 #------------------------------------------------------------
 
 if __name__ == '__main__':
+
+    try:
+        settings.DUMMYRUNNER_MIXIN
+    except AttributeError:
+        print ERROR_NO_MIXIN
+        sys.exit()
 
     # parsing command line with default vals
     parser = ArgumentParser(description=HELPTEXT)

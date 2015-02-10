@@ -27,12 +27,9 @@ ERROR_NO_SUPERUSER = \
 
 LIMBO_DESC = \
     _("""
-Welcome to your new {wEvennia{n-based game. From here you are
-ready to begin development. Visit http://evennia.com if you should
-need help or would like to participate in community discussions.
-If you are logged in as user #1 you can create a demo/tutorial
-area with {w@batchcommand tutorial_world.build{n. Use {w@quell{n
-or login as normal player to play the demo properly.
+Welcome to your new {wEvennia{n-based game! Visit http://www.evennia.com if you need
+help, want to contribute, report issues or just join the community.
+As Player #1 you can create a demo/tutorial area with {w@batchcommand tutorial_world.build{n.
     """)
 
 

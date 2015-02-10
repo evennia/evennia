@@ -14,19 +14,13 @@ always be sure of what you have changed and what is default behaviour.
 """
 
 import os
+import sys
 
 ######################################################################
 # Evennia base server config
 ######################################################################
 
 # This is the name of your game. Make it catchy!
-import sys
-
-try:
-    test = sys.argv[1] == 'test'
-except IndexError:
-    test = False
-
 SERVERNAME = "Evennia"
 # Activate telnet service
 TELNET_ENABLED = True
@@ -106,8 +100,8 @@ EVENNIA_ADMIN = True
 # Path to the lib directory containing the bulk of the codebase's code.
 EVENNIA_DIR = os.path.dirname(os.path.abspath(__file__))
 # Path to the game directory (containing the database file if using sqlite).
-if test:
-    # we must run tests from the root of an initialized game directory
+if sys.argv[1] == 'test' if len(sys.argv)>1 else False:
+    # unittesting mode
     GAME_DIR = os.getcwd()
 else:
     # Fallback location (will be replaced by the actual game dir at runtime)
@@ -256,7 +250,7 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs",)
 OOB_PLUGIN_MODULES = ["evennia.server.oob_cmds", "server.conf.oobfuncs"]
 # Module holding settings/actions for the dummyrunner program (see the
 # dummyrunner for more information)
-DUMMYRUNNER_SETTINGS_MODULE = os.path.join(EVENNIA_DIR, "server/testing/dummyrunner_settings")
+DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
 
 ######################################################################
 # Default command sets
@@ -487,7 +481,6 @@ IMC2_NETWORK = "server01.mudbytes.net"
 IMC2_PORT = 5000 # this is the imc2 port, not on localhost
 IMC2_CLIENT_PWD = ""
 IMC2_SERVER_PWD = ""
-
 
 ######################################################################
 # Django web features
