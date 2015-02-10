@@ -112,6 +112,7 @@ will need to edit `mygame/server/conf/settings.py`.
 Enter your new game directory and run
 
 ```
+evennia migrate
 evennia -i start
 ```
 
