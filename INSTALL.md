@@ -51,7 +51,7 @@ environment is active. You need to activate it whenever you open a new
 terminal, but you *don't* have to be inside the `vienv` folder henceforth.
 
 
-# Get the developer's version of Evennia
+## Get the developer's version of Evennia
 
 This is currently the only Evennia version available. First download
 and install [Git](http://git-scm.com/) from the homepage or via the
