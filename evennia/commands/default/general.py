@@ -11,8 +11,6 @@ __all__ = ("CmdHome", "CmdLook", "CmdNick",
            "CmdInventory", "CmdGet", "CmdDrop", "CmdGive",
            "CmdSay", "CmdPose", "CmdAccess")
 
-AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
-
 
 class CmdHome(MuxCommand):
     """
