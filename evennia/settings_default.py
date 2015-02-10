@@ -107,10 +107,10 @@ EVENNIA_ADMIN = True
 EVENNIA_DIR = os.path.dirname(os.path.abspath(__file__))
 # Path to the game directory (containing the database file if using sqlite).
 if test:
-    # we must run tests from an initialized game directory
+    # we must run tests from the root of an initialized game directory
     GAME_DIR = os.getcwd()
 else:
-    # Fallback location
+    # Fallback location (will be replaced by the actual game dir at runtime)
     GAME_DIR = os.path.join(EVENNIA_DIR, 'game_template')
 
 # Place to put log files
