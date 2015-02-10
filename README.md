@@ -1,13 +1,11 @@
-# Evennia MUD/MU\* Creation System ![evennia logo](https://github.com/evennia/evennia/blob/devel/evennia/web/static/evennia_general/images/evennia_logo.png)
+# Evennia MUD/MU\* Creation System ![evennia logo][logo]
 
-*Evennia* is a modern library for creating online multiplayer text games
-(MUD, MUSH, MUX, MOO etc) in pure Python. It allows game creatores to
-design and flesh out their games with great freedom. 
+*Evennia* is a modern library for creating online multiplayer text
+games (MUD, MUSH, MUX, MOO etc) in pure Python. It allows game
+creators to design and flesh out their games with great freedom.
+Evennia is made available under the very friendly [BSD license][license].
 
 http://www.evennia.com is the main hub tracking all things Evennia.
-The extensive documentation is found
-[here](https://github.com/evennia/evennia/wiki).  Evennia is made
-available under the [BSD license](https://github.com/evennia/evennia/wiki/Licensing).
 
 
 ## Features and Philosophy
@@ -26,7 +24,7 @@ the codebase extremely flexible. The code is heavily documented and
 you use Python classes to represent your objects, scripts and players.
 The database layer is abstracted away.
 
-![screenshot](https://raw.githubusercontent.com/wiki/evennia/evennia/evennia_screenshot3.png)
+![screenshot][screenshot]
 
 Evennia offers extensive connectivity options. A single server
 instance may offer connections over Telnet, SSH, SSL and HTTP. The
@@ -49,16 +47,27 @@ you won't find any AI codes, mobs, skill systems, races or combat
 stats in the default distribution (we might expand our contributions
 folder with optional plugins in the future though).
 
-If this piqued your interest, there is also a [lengthier
-introduction](https://github.com/evennia/evennia/wiki/Evennia-Introduction)
-to Evennia to read.
-
 ## Current Status
 
-The codebase is currently in **Beta**. While development continues, Evennia is already stable enough to be suitable for prototyping and development of your own games.
+The codebase is currently in **Beta**. While development continues,
+Evennia is already stable enough to be suitable for prototyping and
+development of your own games. 
+## Where to go from here
 
-## More Information
+If this piqued your interest, there is a [lengthier introduction][introduction] to read.
 
-To learn how to get your hands on the code base, the [Getting started](https://github.com/evennia/evennia/wiki/Getting-Started) page
-is the way to go. Otherwise you could browse the [Documentation wiki](https://github.com/evennia/evennia/wiki) or why not come join
-the [Evennia Community](http://www.evennia.com). Welcome! 
+To learn how to get your hands on the code base, the [Getting started][gettingstarted] page 
+is the way to go. Otherwise you could browse
+the [Documentation][wiki] or why not come join the [Evennia Community forum][group] 
+or join us in our [development chat][chat]. Welcome!
+
+
+[homepage]: http://www.evennia.com
+[gettingstarted]: http://github.com/evennia/evennia/wiki/Getting-Started) 
+[wiki]: https://github.com/evennia/evennia/wiki
+[screenshot]: https://raw.githubusercontent.com/wiki/evennia/evennia/evennia_screenshot3.png
+[logo]: https://github.com/evennia/evennia/blob/devel/evennia/web/static/evennia_general/images/evennia_logo.png
+[introduction]: https://github.com/evennia/evennia/wiki/Evennia-Introduction
+[license]: https://github.com/evennia/evennia/wiki/Licensing
+[group]: https://groups.google.com/forum/#!forum/evennia
+[chat]: http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb
