@@ -8,11 +8,13 @@ from warnings import warn
 
 __all__ = ['CommonMarkParser']
 
+
 def flatten(iterator):
     return itertools.chain.from_iterable(iterator)
 
 
 class _SectionHandler(object):
+
     def __init__(self, document):
         self._level_to_elem = {0: document}
 
@@ -61,7 +63,7 @@ class CommonMarkParser(object, parsers.Parser):
         elif (block.t == "IndentedCode"):
             self.verbatim(block.string_content)
         elif (block.t == "FencedCode"):
-            #FIXME: add pygment support as done in code_role in rst/roles.py
+            # FIXME: add pygment support as done in code_role in rst/roles.py
             self.verbatim(block.string_content)
         elif (block.t == "ReferenceDef"):
             self.reference(block)
@@ -167,13 +169,13 @@ class CommonMarkParser(object, parsers.Parser):
         to_parse = rst_template.format(
             name=block.title,
             arguments=block.attributes.pop('arguments', ''),
-            )
+        )
         to_parse += "\n"
         for arg, value in block.attributes.items():
             to_parse += rst_options_template.format(
                 arg=arg,
                 value=value,
-                )
+            )
         to_parse += "\n\n"
         for line in block.strings:
             to_parse += "   {}\n".format(line)
@@ -182,7 +184,6 @@ class CommonMarkParser(object, parsers.Parser):
         document = self.env.node_from_directive(to_parse)
         for node in document.children:
             self.current_node.append(node)
-
 
     def horizontal_rule(self):
         transition_node = nodes.transition()
@@ -201,32 +202,40 @@ class CommonMarkParser(object, parsers.Parser):
 
         self.current_node.append(target_node)
 
+
 def make_refname(label):
     return text_only(label).lower()
+
 
 def text_only(nodes):
     return "".join(s.c if s.t == "Str" else text_only(s.children)
                    for s in nodes)
 
 # Inlines
+
+
 def emph(inlines):
     emph_node = nodes.emphasis()
     append_inlines(emph_node, inlines)
     return emph_node
+
 
 def strong(inlines):
     strong_node = nodes.strong()
     append_inlines(strong_node, inlines)
     return strong_node
 
+
 def inline_code(inline):
     literal_node = nodes.literal()
     literal_node.append(nodes.Text(inline.c))
     return literal_node
 
+
 def inline_html(inline):
     literal_node = nodes.raw('', inline.c, format='html')
     return literal_node
+
 
 def reference(block):
     ref_node = nodes.reference()
@@ -246,6 +255,7 @@ def reference(block):
     append_inlines(ref_node, block.label)
     return ref_node
 
+
 def image(block):
     img_node = nodes.image()
 
@@ -257,6 +267,7 @@ def image(block):
 
     img_node['alt'] = text_only(block.label)
     return img_node
+
 
 def parse_inline(parent_node, inline):
     node = None
@@ -289,7 +300,7 @@ def parse_inline(parent_node, inline):
         return
     parent_node.append(node)
 
+
 def append_inlines(parent_node, inlines):
     for i in range(len(inlines)):
         parse_inline(parent_node, inlines[i])
-
