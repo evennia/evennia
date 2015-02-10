@@ -328,60 +328,57 @@ class DefaultObject(ObjectDB):
         objects in self's current location or inventory is searched.
         Note: to find Players, use eg. ev.player_search.
 
-        Inputs:
-
-        searchdata (str or obj): Primary search criterion. Will be matched
-                    against object.key (with object.aliases second) unless
-                    the keyword attribute_name specifies otherwise.
-                    Special strings:
-                        #<num> - search by unique dbref. This is always
-                                 a global search.
-                        me,self - self-reference to this object
-                        <num>-<string> - can be used to differentiate
-                                         between multiple same-named matches
-        global_search (bool): Search all objects globally. This is overruled
-                              by "location" keyword.
-        use_nicks (bool): Use nickname-replace (nicktype "object") on the
-                          search string
-        typeclass (str or Typeclass, or list of either): Limit search only
-                   to Objects with this typeclass. May be a list of typeclasses
-                   for a broader search.
-        location (Object): Specify a location to search, if different from the
-                     self's given location plus its contents. This can also
-                     be a list of locations.
-        attribute_name (str): Define which property to search. If set, no
-                      key+alias search will be performed. This can be used to
-                      search database fields (db_ will be automatically
-                      appended), and if that fails, it will try to return
-                      objects having Attributes with this name and value
-                      equal to searchdata. A special use is to search for
-                      "key" here if you want to do a key-search without
-                      including aliases.
-        quiet (bool) - don't display default error messages - this tells the
-                      search method that the user wants to handle all errors
-                      themselves. It also changes the return value type, see
-                      below.
-        exact (bool) - if unset (default) - prefers to match to beginning of
-                      string rather than not matching at all. If set, requires
-                      exact mathing of entire string.
-        candidates (list of objects) - this is an optional custom list of objects
-                    to search (filter) between. It is ignored if global_search
-                    is given. If not set, this list will automatically be defined
-                    to include the location, the contents of location and the
-                    caller's contents (inventory).
-        nofound_string - optional custom string for not-found error message.
-        multimatch_string - optional custom string for multimatch error header
+        Args:
+            searchdata (str or obj): Primary search criterion. Will be matched
+                        against object.key (with object.aliases second) unless
+                        the keyword attribute_name specifies otherwise.
+                        Special strings:
+                            #<num> - search by unique dbref. This is always
+                                     a global search.
+                            me,self - self-reference to this object
+                            <num>-<string> - can be used to differentiate
+                                             between multiple same-named matches
+            global_search (bool): Search all objects globally. This is overruled
+                                  by "location" keyword.
+            use_nicks (bool): Use nickname-replace (nicktype "object") on the
+                              search string
+            typeclass (str or Typeclass, or list of either): Limit search only
+                       to Objects with this typeclass. May be a list of typeclasses
+                       for a broader search.
+            location (Object): Specify a location to search, if different from the
+                         self's given location plus its contents. This can also
+                         be a list of locations.
+            attribute_name (str): Define which property to search. If set, no
+                          key+alias search will be performed. This can be used to
+                          search database fields (db_ will be automatically
+                          appended), and if that fails, it will try to return
+                          objects having Attributes with this name and value
+                          equal to searchdata. A special use is to search for
+                          "key" here if you want to do a key-search without
+                          including aliases.
+            quiet (bool): don't display default error messages - this tells the
+                          search method that the user wants to handle all errors
+                          themselves. It also changes the return value type, see
+                          below.
+            exact (bool): if unset (default) - prefers to match to beginning of
+                          string rather than not matching at all. If set, requires
+                          exact mathing of entire string.
+            candidates (list of objects): this is an optional custom list of objects
+                        to search (filter) between. It is ignored if global_search
+                        is given. If not set, this list will automatically be defined
+                        to include the location, the contents of location and the
+                        caller's contents (inventory).
+            nofound_string (str):  optional custom string for not-found error message
+            multimatch_string (str): optional custom string for multimatch error header
 
         Returns:
-            quiet=False (default):
-                no match or multimatch:
-                auto-echoes errors to self.msg, then returns None
-                    (results are handled by settings.SEARCH_AT_RESULT
-                               and settings.SEARCH_AT_MULTIMATCH_INPUT)
-                match:
-                    a unique object match
-            quiet=True:
-                returns a list of 0, 1 or more matches
+            match (Object, None or list): will return an Object/None if quiet=False,
+                otherwise it will return a list of 0, 1 or more matches.
+
+        Notes:
+            If quiet=False, error messages will be handled by settings.SEARCH_AT_RESULT
+            and echoed automatically (on error, return will be None). If quiet=True, the
+            error messaging is assumed to be handled by the caller.
 
         """
         is_string = isinstance(searchdata, basestring)
