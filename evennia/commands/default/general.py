@@ -26,6 +26,7 @@ class CmdHome(MuxCommand):
 
     key = "home"
     locks = "cmd:perm(home) or perm(Builders)"
+    arg_regex = r"$"
 
     def func(self):
         "Implement the command"
@@ -53,7 +54,7 @@ class CmdLook(MuxCommand):
     key = "look"
     aliases = ["l", "ls"]
     locks = "cmd:all()"
-    arg_regex = r"\s.*?|$"
+    arg_regex = r"\s|$"
 
     def func(self):
         """
@@ -216,6 +217,7 @@ class CmdGet(MuxCommand):
     key = "get"
     aliases = "grab"
     locks = "cmd:all()"
+    arg_regex = r"\s|$"
 
     def func(self):
         "implements the command."
@@ -305,6 +307,7 @@ class CmdGive(MuxCommand):
     """
     key = "give"
     locks = "cmd:all()"
+    arg_regex = r"\s|$"
 
     def func(self):
         "Implement give"
@@ -342,6 +345,7 @@ class CmdDesc(MuxCommand):
     """
     key = "desc"
     locks = "cmd:all()"
+    arg_regex = r"\s|$"
 
     def func(self):
         "add the description"
@@ -447,6 +451,7 @@ class CmdAccess(MuxCommand):
     key = "access"
     aliases = ["groups", "hierarchy"]
     locks = "cmd:all()"
+    arg_regex = r"$"
 
     def func(self):
         "Load the permission groups"
