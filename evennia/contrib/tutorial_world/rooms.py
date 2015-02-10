@@ -5,10 +5,10 @@ Room Typeclasses for the TutorialWorld.
 """
 
 import random
-from evennia import CmdSet, Script, Command, DefaultRoom
+from evennia import CmdSet, DefaultScript, Command, DefaultRoom
 from evennia import utils, create_object, search_object
-from contrib.tutorial_world import scripts as tut_scripts
-from contrib.tutorial_world.objects import LightSource, TutorialObject
+from evennia.contrib.tutorial_world import scripts as tut_scripts
+from evennia.contrib.tutorial_world.objects import LightSource, TutorialObject
 
 
 #------------------------------------------------------------
@@ -241,7 +241,7 @@ class DarkCmdSet(CmdSet):
 # Darkness room two-state system
 #
 
-class DarkState(Script):
+class DarkState(DefaultScript):
     """
     The darkness state is a script that keeps tabs on when
     a player in the room carries an active light source. It places
@@ -276,7 +276,7 @@ class DarkState(Script):
         self.obj.scripts.add(LightState)
 
 
-class LightState(Script):
+class LightState(DefaultScript):
     """
     This is the counterpart to the Darkness state. It is active when the
     lantern is on.
@@ -695,12 +695,13 @@ class IntroRoom(TutorialRoom):
             character.db.health_max = health
 
         if character.is_superuser:
-            string = "-"*78
-            string += "\nWARNING: YOU ARE PLAYING AS A SUPERUSER (%s). TO EXPLORE NORMALLY YOU NEED " % character.key
-            string += "\nTO CREATE AND LOG IN AS A REGULAR USER INSTEAD. IF YOU CONTINUE, KNOW THAT "
-            string += "\nMANY FUNCTIONS AND PUZZLES WILL IGNORE THE PRESENCE OF A SUPERUSER.\n"
-            string += "-"*78
-            character.msg("{r%s{n" % string)
+            string = "-"*78 + "\n" \
+                     "WARNING: You are playing as a superuser ({name}). Use the {quell} command to\n" \
+                     "play without superuser privileges (many functions and puzzles ignore the \n" \
+                     "presence of a superuser, making this mode useful for exploring things behind \n" \
+                     "the scenes later).\n" \
+                     + "-"*78
+            character.msg("{r%s{n" % string.format(name=character.key, quell="{w@quell{r"))
 
 
 #------------------------------------------------------------

@@ -23,7 +23,7 @@ import time
 import random
 
 from evennia import create_object
-from evennia import DefaultObject, DefaultExit, Command, CmdSet, Script
+from evennia import DefaultObject, DefaultExit, Command, CmdSet, DefaultScript
 
 #------------------------------------------------------------
 #
@@ -224,7 +224,7 @@ class Obelisk(TutorialObject):
 #
 #------------------------------------------------------------
 
-class StateLightSourceOn(Script):
+class StateLightSourceOn(DefaultScript):
     """
     This script controls how long the light source is burning. When
     it runs out of fuel, the lightsource goes out.

@@ -8,9 +8,9 @@ object based on that mobile class.
 import random, time
 from django.conf import settings
 
-from evennia import search_object, utils, Script
-from contrib.tutorial_world import objects as tut_objects
-from contrib.tutorial_world import scripts as tut_scripts
+from evennia import search_object, utils, DefaultScript
+from evennia.contrib.tutorial_world import objects as tut_objects
+from evennia.contrib.tutorial_world import scripts as tut_scripts
 
 BASE_CHARACTER_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 
@@ -88,7 +88,7 @@ class Mob(tut_objects.TutorialObject):
 #
 #------------------------------------------------------------
 
-class AttackTimer(Script):
+class AttackTimer(DefaultScript):
     """
     This script is what makes an eneny "tick".
     """
