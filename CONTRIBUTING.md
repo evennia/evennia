@@ -5,7 +5,8 @@ Thanks for helping us improve Evennia! Please use one of the issue templates bel
  * [Issue/Bug report template][A] - when you have an error, problem or unexpected behavior to report. Note that pure usage questions belong on the [mailing list][5] or in the [chat][6].
  * [Feature request template][B] - when you want to request a new Evennia feature.
  * [Documentation error template][C] - when you find an error in the [documentation][2]. Please note that the documentation is a wiki, so consider if you can easily fix the problem yourself first.
- 
+ * [Empty template][D] - Use this for other issues not covered by the other templates, like long-term tasks and reminders.
+
 If you want to contribute code to Evennia, you should work in your own Github *fork* and then make a *pull request*. Read the [Contribution][3] page for instructions how. 
 
 ## Formatting your Issues: 
@@ -33,3 +34,4 @@ If you need further help, see the [Get and Give help][4] page and [www.evennia.c
 [A]: https://github.com/evennia/evennia/issues/new?title=Bug%3a+%3cdescriptive+title+here%3e&body=%23%23%23%23+Steps+to+reproduce+the+issue%3a%0d%0a%0d%0a1.+%0d%0a2.+%0d%0a3.+%0d%0a%0d%0a%23%23%23%23+What+I+expect+to+see+and+what+I+actually+see+(tracebacks%2c+error+messages+etc)%3a%0d%0a%0d%0a%0d%0a%0d%0a%23%23%23%23+Extra+information%2c+such+as+Evennia+revision%2frepo%2fbranch%2c+operating+system+and+ideas+for+how+to+solve%3a%0d%0a%0d%0a
 [B]: https://github.com/evennia/evennia/issues/new?title=Feature+Request%3a+%3cdescriptive+title+here%3e&body=%23%23%23%23+Description+of+the+suggested+feature+and+how+it+is+supposed+to+work+for+the+admin%2fend+user%3a%0d%0a%0d%0a%0d%0a%23%23%23%23+A+list+of+arguments+for+why+you+think+this+new+feature+should+be+included+in+Evennia%3a%0d%0a%0d%0a1.%0d%0a2.%0d%0a%0d%0a%23%23%23%23+Extra+information%2c+such+as+requirements+or+ideas+on+implementation%3a%0d%0a%0d%0a
 [C]: https://github.com/evennia/evennia/issues/new?title=Docs%3a+%3cdescriptive+title+here%3e&body=%23%23%23%23+Where+in+the+documentation+to+find+the+error%3a+%0d%0a%0d%0a%0d%0a%23%23%23%23+What+the+error+is+(optionally+with+ideas+for+solution)%3a+
+[D]: https://github.com/evennia/evennia/issues/new
