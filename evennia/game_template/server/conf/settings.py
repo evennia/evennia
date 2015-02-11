@@ -24,7 +24,7 @@ SERVERNAME = {servername}
 
 # Path to the game directory (use EVENNIA_DIR to refer to the
 # core evennia library)
-GAME_DIR = {game_dir}
+GAME_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Place to put log files
 LOG_DIR = os.path.join(GAME_DIR, "server", "logs")

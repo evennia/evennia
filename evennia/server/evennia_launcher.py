@@ -416,7 +416,6 @@ def create_settings_file():
     # tweak the settings
     setting_dict = {"settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
                     "servername":"\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1].capitalize(),
-                    "game_dir":"\"%s\"" % GAMEDIR,
                     "secret_key":"\'%s\'" % create_secret_key()}
 
     # modify the settings
