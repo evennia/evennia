@@ -5,26 +5,40 @@ This module implements commands as defined by the MSDP standard
 (http://tintin.sourceforge.net/msdp/), but is independent of the
 actual transfer protocol (webclient, MSDP, GMCP etc).
 
-This module is pointed to by settings.OOB_PLUGIN_MODULES. All functions
-(not classes) defined globally in this module will be made available
-to the oob mechanism.
+This module is pointed to by settings.OOB_PLUGIN_MODULES. It must
+contain a global dictionary CMD_MAP which is a dictionary that maps
+the call available in the OOB call to a function in this module.
+
+For example, if the OOB strings received looks like this:
+
+    MDSP.LISTEN [desc, key]         # GMCP (wrapping to MSDP)
+    LISTEN ARRAY VAL desc VAL key   # MSDP
+
+and CMD_MAP = {"LISTEN", listen} then this would result in a call to a
+function "listen" in this module, with the arguments *("desc", "key").
 
 oob functions have the following call signature:
+
     function(oobhandler, session, *args, **kwargs)
 
-where oobhandler is a back-reference to the central OOB_HANDLER
-instance and session is the active session to get return data.
+here, oobhandler always holds a back-reference to the central oob
+handler, session is the active session and *args, **kwargs are what
+is sent from the oob call.
 
-The function names are not case-sensitive (this allows for names
-like "LIST" which would otherwise collide with Python builtins).
-
-A function named OOB_ERROR will retrieve error strings if it is
+A function called with OOB_ERROR will retrieve error strings if it is
 defined. It will get the error message as its 3rd argument.
 
-Data is usually returned via
-  session.msg(oob=(cmdname, (args,), {kwargs}))
-Note that args, kwargs must be iterable/dict, non-iterables will
-be interpreted as a new command name.
+    oob_error(oobhandler, session, error, *args, **kwargs)
+
+This allows for customizing error handling.
+
+Data is usually returned to the user via a return OOB call:
+
+  session.msg(oob=(oobcmdname, (args,), {kwargs}))
+
+oobcmdnames (like "MSDP.LISTEN" / "LISTEN" above) are case-sensitive.  Note that args,
+kwargs must be iterable. Non-iterables will be interpreted as a new
+command name (you can send multiple oob commands with one msg() call))
 
 """
 
@@ -33,12 +47,14 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _NA_SEND = lambda o: "N/A"
 
+
 #------------------------------------------------------------
 # All OOB commands must be on the form
 #      cmdname(oobhandler, session, *args, **kwargs)
 #------------------------------------------------------------
 
-def OOB_ERROR(oobhandler, session, errmsg, *args, **kwargs):
+
+def oob_error(oobhandler, session, errmsg, *args, **kwargs):
     """
     A function with this name is special and is called by the oobhandler when an error
     occurs already at the execution stage (such as the oob function
@@ -46,13 +62,14 @@ def OOB_ERROR(oobhandler, session, errmsg, *args, **kwargs):
     """
     session.msg(oob=("err", ("ERROR " + errmsg,)))
 
-
-def ECHO(oobhandler, session, *args, **kwargs):
+def oob_echo(oobhandler, session, *args, **kwargs):
     "Test/debug function, simply returning the args and kwargs"
     session.msg(oob=("echo", args, kwargs))
 
-##OOB{"SEND":"CHARACTER_NAME"}
-def SEND(oobhandler, session, *args, **kwargs):
+# MSDP standard commands
+
+##OOB{"SEND":"CHARACTER_NAME"} - from webclient
+def oob_send(oobhandler, session, *args, **kwargs):
     """
     This function directly returns the value of the given variable to the
     session.
@@ -71,7 +88,7 @@ def SEND(oobhandler, session, *args, **kwargs):
         session.msg(oob=("err", ("You must log in first.",)))
 
 ##OOB{"REPORT":"TEST"}
-def REPORT(oobhandler, session, *args, **kwargs):
+def oob_report(oobhandler, session, *args, **kwargs):
     """
     This creates a tracker instance to track the data given in *args.
 
@@ -99,7 +116,7 @@ def REPORT(oobhandler, session, *args, **kwargs):
 
 
 ##OOB{"UNREPORT": "TEST"}
-def UNREPORT(oobhandler, session, *args, **kwargs):
+def oob_unreport(oobhandler, session, *args, **kwargs):
     """
     This removes tracking for the given data given in *args.
     """
@@ -118,7 +135,7 @@ def UNREPORT(oobhandler, session, *args, **kwargs):
 
 
 ##OOB{"LIST":"COMMANDS"}
-def LIST(oobhandler, session, mode, *args, **kwargs):
+def oob_list(oobhandler, session, mode, *args, **kwargs):
     """
     List available properties. Mode is the type of information
     desired:
@@ -172,7 +189,7 @@ def _repeat_callback(oobhandler, session, *args, **kwargs):
     session.msg(oob=("repeat", ("Repeat!",)))
 
 ##OOB{"REPEAT":10}
-def REPEAT(oobhandler, session, interval, *args, **kwargs):
+def oob_repeat(oobhandler, session, interval, *args, **kwargs):
     """
     Test command for the repeat functionality. Note that the args/kwargs
     must not be db objects (or anything else non-picklable), rather use
@@ -184,7 +201,7 @@ def REPEAT(oobhandler, session, interval, *args, **kwargs):
 
 
 ##OOB{"UNREPEAT":10}
-def UNREPEAT(oobhandler, session, interval):
+def oob_unrepeat(oobhandler, session, interval):
     """
     Disable repeating callback
     """
@@ -219,3 +236,16 @@ OOB_REPORTABLE = {
         "ROOM_NAME": "db_location",
         "TEST" : "test"
         }
+
+
+# this maps the commands to the names available to use from
+# the oob call
+CMD_MAP = {"OOB_ERROR": oob_error, # will get error messages
+           "SEND": oob_send,
+           "ECHO": oob_echo,
+           "REPORT": oob_report,
+           "UNREPORT": oob_unreport,
+           "LIST": oob_list,
+           "REPEAT": oob_repeat,
+           "UNREPEAT": oob_unrepeat}
+

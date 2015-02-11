@@ -10,7 +10,7 @@ sessions etc.
 import re
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, GA, WILL, WONT, ECHO
 from evennia.server.session import Session
-from evennia.server.portal import ttype, mssp, msdp, naws
+from evennia.server.portal import ttype, mssp, telnet_oob, naws
 from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
 from evennia.utils import utils, ansi, logger
@@ -35,7 +35,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         client_address = self.transport.client
         # this number is counted down for every handshake that completes.
         # when it reaches 0 the portal/server syncs their data
-        self.handshakes = 6 # naws, ttype, mccp, mssp, msdp, mxp
+        self.handshakes = 6 # naws, ttype, mccp, mssp, oob, mxp
         self.init_session("telnet", client_address, self.factory.sessionhandler)
 
         # negotiate client size
@@ -47,8 +47,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.mccp = Mccp(self)
         # negotiate mssp (crawler communication)
         self.mssp = mssp.Mssp(self)
-        # msdp
-        self.msdp = msdp.Msdp(self)
+        # oob communication (MSDP, GMCP)
+        self.oob = telnet_oob.TelnetOOB(self)
         # mxp support
         self.mxp = Mxp(self)
         # keepalive watches for dead links
@@ -211,7 +211,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         through the telnet connection.
 
         valid telnet kwargs:
-            oob=<string> - supply an Out-of-Band instruction.
+            oob=[(cmdname,args,kwargs), ...] - supply an Out-of-Band instruction.
             xterm256=True/False - enforce xterm256 setting. If not
                                   given, ttype result is used. If
                                   client does not suport xterm256, the
@@ -237,13 +237,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.sendLine(str(e))
             return
         if "oob" in kwargs:
-            oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob"))
-            if "MSDP" in self.protocol_flags:
-                for cmdname, args, kwargs in oobstruct:
-                    #print "cmdname, args, kwargs:", cmdname, args, kwargs
-                    msdp_string = self.msdp.evennia_to_msdp(cmdname, *args, **kwargs)
-                    #print "msdp_string:", msdp_string
-                    self.msdp.data_out(msdp_string)
+            # oob is a list of [(cmdname, arg, kwarg), ...]
+            if "OOB" in self.protocol_flags:
+                for cmdname, args, kwargs in kwargs["oob"]:
+                    self.oob.data_out(cmdname, *args, **kwargs)
 
         # parse **kwargs, falling back to ttype if nothing is given explicitly
         ttype = self.protocol_flags.get('TTYPE', {})

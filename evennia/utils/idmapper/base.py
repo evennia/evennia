@@ -13,6 +13,7 @@ import os, threading, gc, time
 from weakref import WeakValueDictionary
 from twisted.internet.reactor import callFromThread
 from django.core.exceptions import ObjectDoesNotExist, FieldError
+from django.db.models.signals import post_save
 from django.db.models.base import Model, ModelBase
 from django.db.models.signals import post_save, pre_delete, post_syncdb
 from evennia.utils import logger
@@ -22,10 +23,39 @@ from manager import SharedMemoryManager
 
 AUTO_FLUSH_MIN_INTERVAL = 60.0 * 5 # at least 5 mins between cache flushes
 
-
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
+
+def at_field_post_save(sender, instance=None, update_fields=None, raw=False, **kwargs):
+    """
+    Called at the beginning of the field save operation. The save method
+    must be called with the update_fields keyword in order to be most efficient.
+    This method should NOT save; rather it is the save() that triggers this
+    function. Its main purpose is to allow to plug-in a save handler and oob
+    handlers.
+    """
+    if raw:
+        return
+    if update_fields:
+        # this is a list of strings at this point. We want field objects
+        update_fields = (_GA(_GA(instance, "_meta"), "get_field_by_name")(field)[0] for field in update_fields)
+    else:
+        # meta.fields are already field objects; get them all
+        update_fields = _GA(_GA(instance, "_meta"), "fields")
+    for field in update_fields:
+        fieldname = field.name
+        handlername = "_at_%s_postsave" % fieldname
+        handler = _GA(instance, handlername) if handlername in _GA(sender, '__dict__') else None
+        if callable(handler):
+            handler()
+        trackerhandler = _GA(instance, "_trackerhandler") if "_trackerhandler" in _GA(instance, '__dict__') else None
+        if trackerhandler:
+            trackerhandler.update(fieldname, _GA(instance, fieldname))
+
+# connect the signal to catch field changes
+post_save.connect(at_post_field_save, dispatch_uid="at_post_field_save")
+
 
 # References to db-updated objects are stored here so the
 # main process can be informed to re-cache itself.

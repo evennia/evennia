@@ -22,11 +22,7 @@ from evennia.server.session import Session
 IDLE_COMMAND = settings.IDLE_COMMAND
 _GA = object.__getattribute__
 _ObjectDB = None
-_OOB_HANDLER = None
 
-# load optional out-of-band function module (this acts as a verification)
-OOB_PLUGIN_MODULES = [utils.mod_import(mod)
-                      for mod in make_iter(settings.OOB_PLUGIN_MODULES) if mod]
 INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
 
 # i18n
@@ -193,10 +189,9 @@ class ServerSession(Session):
         Send User->Evennia. This will in effect
         execute a command string on the server.
 
-        Especially handled keywords:
+        Note that oob data is already sent to the
+        oobhandler at this point.
 
-        oob - this should hold a dictionary of oob command calls from
-              the oob-supporting protocol.
         """
         #explicitly check for None since text can be an empty string, which is
         #also valid
@@ -218,16 +213,6 @@ class ServerSession(Session):
                                 categories=("inputline", "channels"), include_player=False)
             cmdhandler(self, text, callertype="session", sessid=self.sessid)
             self.update_session_counters()
-        if "oob" in kwargs:
-            # handle oob instructions
-            global _OOB_HANDLER
-            if not _OOB_HANDLER:
-                from evennia.server.oobhandler import OOB_HANDLER as _OOB_HANDLER
-            oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob", None))
-            #print "session.data_in: oobstruct:",oobstruct
-            for (funcname, args, kwargs) in oobstruct:
-                if funcname:
-                    _OOB_HANDLER.execute_cmd(self, funcname, *args, **kwargs)
 
     execute_cmd = data_in  # alias
 
