@@ -69,128 +69,99 @@ if not _OOB_ERROR:
 # but automatically through the OOBHandler.
 #
 
-class TrackerHandler(object):
+class FieldTracker(object):
     """
-    This object is dynamically assigned to objects whenever one of its fields
-    are to be tracked. It holds an internal dictionary mapping to the fields
-    on that object. Each field can be tracked by any number of trackers (each
-    tied to a different callback).
+    This object should be stored on the
+    tracked object as "_oob_at_<fieldname>_update".
+    the update() method will be called by the
+    save mechanism, which in turn will call the
+    user-customizable func()
     """
     def __init__(self, obj):
         """
-        This is initiated and stored on the object as a
-        property _trackerhandler.
+        This initializes the tracker with the object it sits on.
         """
         self.obj = obj
-        self.ntrackers = 0
-        # initiate store only with valid on-object fieldnames
-        self.tracktargets = dict((key, {})
-                for key in _GA(_GA(self.obj, "_meta"), "get_all_field_names")())
+        self.subscribers = {}
 
-    def add(self, fieldname, tracker):
+    def add(self, session):
         """
-        Add tracker to the handler. Raises KeyError if fieldname
-        does not exist.
+        Add a subscribing session to the tracker
         """
-        trackerkey = tracker.__class__.__name__
-        self.tracktargets[fieldname][trackerkey] = tracker
-        self.ntrackers += 1
+        self.subscribers[session.sessid] = session
 
-    def remove(self, fieldname, trackerclass, *args, **kwargs):
+    def remove(self, session):
         """
-        Remove identified tracker from TrackerHandler.
-        Raises KeyError if tracker is not found.
+        Remove a subsribing session from the tracker
         """
-        trackerkey = trackerclass.__name__
-        tracker = self.tracktargets[fieldname][trackerkey]
-        try:
-            tracker.at_remove(*args, **kwargs)
-        except Exception:
-            logger.log_trace()
-        del self.tracktargets[fieldname][trackerkey]
-        self.ntrackers -= 1
-        if self.ntrackers <= 0:
-            # if there are no more trackers, clean this handler
-            del self
+        self.subscribers.pop(session.sessid)
 
-    def update(self, fieldname, new_value):
+    def trigger_update(self, fieldname, new_value):
         """
-        Called by the field when it updates to a new value
+        Called by the save() mechanism when the given
+        field has updated.
         """
-        for tracker in self.tracktargets[fieldname].values():
+        for session in self.subscribers.values():
             try:
-                tracker.update(new_value)
+                self.at_field_update(session, fieldname, new_value)
             except Exception:
-                logger.log_trace()
+                pass
 
+    def at_field_update(self, session, fieldname, new_value):
+        """
+        This needs to be overloaded for each tracking
+        command.
 
-# On-object Trackers to load with TrackerHandler
-
-class TrackerBase(object):
-    """
-    Base class for OOB Tracker objects. Inherit from this
-    to define custom trackers.
-    """
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def update(self, *args, **kwargs):
-        "Called by tracked objects"
-        pass
-
-    def at_remove(self, *args, **kwargs):
-        "Called when tracker is removed"
+        Args:
+            session (Session): the session subscribing
+                to this update.
+            fieldname (str): the name of the updated field.
+            value (any): the new value now in this field.
+        """
         pass
 
 
-class ReportFieldTracker(TrackerBase):
+class ReportFieldTracker(FieldTracker):
     """
     Tracker that passively sends data to a stored sessid whenever
     a named database field changes. The TrackerHandler calls this with
     the correct arguments.
     """
-    def __init__(self, oobhandler, fieldname, sessid, *args, **kwargs):
+    def at_field_update(self, session, fieldname, new_value):
         """
-        name - name of entity to track, such as "db_key"
-        sessid - sessid of session to report to
+        Called when field updates.
         """
-        self.oobhandler = oobhandler
-        self.fieldname = fieldname
-        self.sessid = sessid
-
-    def update(self, new_value, *args, **kwargs):
-        "Called by cache when updating the tracked entitiy"
-        # use oobhandler to relay data
+        # we must never relay objects across to the Portal, only
+        # text.
         try:
-            # we must never relay objects across the amp, only text data.
+            # it may be an object
             new_value = new_value.key
         except AttributeError:
+            # ... or not
             new_value = to_str(new_value, force_string=True)
-        kwargs[self.fieldname] = new_value
-        # this is a wrapper call for sending oob data back to session
-        self.oobhandler.msg(self.sessid, "report", *args, **kwargs)
+        # return as an OOB call of type "report"
+        session.msg(oob=("report", {fieldname:new_value}))
 
 
-class ReportAttributeTracker(TrackerBase):
+class ReportAttributeTracker(FieldTracker):
     """
     Tracker that passively sends data to a stored sessid whenever
-    the Attribute updates. Since the field here is always "db_key",
-    we instead store the name of the attribute to return.
+    the Attribute updates. Since the Attribute's field is always
+    db_value, we return the attribute's name instead.
     """
-    def __init__(self, oobhandler, fieldname, sessid, attrname, *args, **kwargs):
+    def at_field_update(self, session, fieldname, new_value):
         """
-        attrname - name of attribute to track
-        sessid - sessid of session to report to
+        Called when field updates.
         """
-        self.oobhandler = oobhandler
-        self.attrname = attrname
-        self.sessid = sessid
-
-    def update(self, new_value, *args, **kwargs):
-        "Called by cache when attribute's db_value field updates"
-        kwargs[self.attrname] = new_value
-        # this is a wrapper call for sending oob data back to session
-        self.oobhandler.msg(self.sessid, "report", *args, **kwargs)
+        # we must never relay objects across to the Portal, only
+        # text.
+        try:
+            # it may be an object
+            new_value = new_value.key
+        except AttributeError:
+            # ... or not
+            new_value = to_str(new_value, force_string=True)
+        session.msg(oob=("report", {obj.db_key: new_value})
 
 
 
@@ -222,46 +193,39 @@ class OOBTickerHandler(TickerHandler):
 
 # Main OOB Handler
 
-class OOBHandler(object):
-    """
-    The OOBHandler maintains all dynamic on-object oob hooks. It will store the
-    creation instructions and and re-apply them at a server reload (but
-    not after a server shutdown)
-    """
-    def __init__(self):
-        """
-        Initialize handler
-        """
-        self.sessionhandler = SESSIONS
-        self.oob_tracker_storage = {}
-        self.tickerhandler = OOBTickerHandler("oob_ticker_storage")
+class OOBHandler(TickerHandler):
 
-    def save(self):
+    class AtTick(object):
         """
-        Save the command_storage as a serialized string into a temporary
-        ServerConf field
+        A wrapper object with a hook to call at regular intervals
         """
-        if self.oob_tracker_storage:
-            #print "saved tracker_storage:", self.oob_tracker_storage
-            ServerConfig.objects.conf(key="oob_tracker_storage",
-                                    value=dbserialize(self.oob_tracker_storage))
-        self.tickerhandler.save()
+        global SESSIONS, _OOB_FUNCS
 
-    def restore(self):
+        def at_tick(self, oobhandler, cmdname, sessid, *args, **kwargs):
+            "Called at regular intervals. Calls the oob function"
+            session = SESSIONS.session_from_sessid(sessid):
+            cmd = _OOB_FUNCS.get(cmdname, None)
+            try:
+                cmd(oobhandler, session, *args, **kwargs)
+            except Exception:
+                logger.log_trace()
+
+    def __init__(self, *args, **kwargs):
+        self.save_name = "oob_ticker_storage"
+        super(OOBHandler, self).__init__(*args, **kwargs)
+
+    def set_repeat(self, obj, sessid, oobfunc, interval=20, *args, **kwargs):
         """
-        Restore the command_storage from database and re-initialize the handler from storage.. This is
-        only triggered after a server reload, not after a shutdown-restart
+        Set an oob function to be repeatedly called.
+
+        Args:
+            obj (Object) - the object registering the repeat
+            sessid (int) - session id of the session registering
+            oobfunc (str) - oob function name to call every interval seconds
+            interval (int) - interval to call oobfunc, in seconds
+            *args, **kwargs - are used as arguments to the oobfunc
         """
-        # load stored command instructions and use them to re-initialize handler
-        tracker_storage = ServerConfig.objects.conf(key="oob_tracker_storage")
-        if tracker_storage:
-            self.oob_tracker_storage = dbunserialize(tracker_storage)
-            for (obj, sessid, fieldname, trackerclass, args, kwargs) in self.oob_tracker_storage.values():
-                #print "restoring tracking:",obj, sessid, fieldname, trackerclass
-                self._track(unpack_dbobj(obj), sessid, fieldname, trackerclass, *args, **kwargs)
-            # make sure to purge the storage
-            ServerConfig.objects.conf(key="oob_tracker_storage", delete=True)
-        self.tickerhandler.restore()
+
 
     def _track(self, obj, sessid, propname, trackerclass, *args, **kwargs):
         """
@@ -272,7 +236,7 @@ class OOBHandler(object):
         named as propname, this will be used as the property name when assigning
         the OOB to obj, otherwise tracker_key is used as the property name.
         """
-        if not "_trackerhandler" in _GA(obj, "__dict__"):
+        if not hasattr(obj, "_trackerhandler"):
             # assign trackerhandler to object
             _SA(obj, "_trackerhandler", TrackerHandler(obj))
         # initialize object

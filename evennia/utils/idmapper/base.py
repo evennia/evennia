@@ -27,35 +27,6 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
 
-def at_field_post_save(sender, instance=None, update_fields=None, raw=False, **kwargs):
-    """
-    Called at the beginning of the field save operation. The save method
-    must be called with the update_fields keyword in order to be most efficient.
-    This method should NOT save; rather it is the save() that triggers this
-    function. Its main purpose is to allow to plug-in a save handler and oob
-    handlers.
-    """
-    if raw:
-        return
-    if update_fields:
-        # this is a list of strings at this point. We want field objects
-        update_fields = (_GA(_GA(instance, "_meta"), "get_field_by_name")(field)[0] for field in update_fields)
-    else:
-        # meta.fields are already field objects; get them all
-        update_fields = _GA(_GA(instance, "_meta"), "fields")
-    for field in update_fields:
-        fieldname = field.name
-        handlername = "_at_%s_postsave" % fieldname
-        handler = _GA(instance, handlername) if handlername in _GA(sender, '__dict__') else None
-        if callable(handler):
-            handler()
-        trackerhandler = _GA(instance, "_trackerhandler") if "_trackerhandler" in _GA(instance, '__dict__') else None
-        if trackerhandler:
-            trackerhandler.update(fieldname, _GA(instance, fieldname))
-
-# connect the signal to catch field changes
-post_save.connect(at_post_field_save, dispatch_uid="at_post_field_save")
-
 
 # References to db-updated objects are stored here so the
 # main process can be informed to re-cache itself.
@@ -361,6 +332,25 @@ class SharedMemoryModel(Model):
             def _save_callback(cls, *args, **kwargs):
                 super(SharedMemoryModel, cls).save(*args, **kwargs)
             callFromThread(_save_callback, self, *args, **kwargs)
+
+        # update field-update hooks and eventual OOB watchers
+        if "update_fields" in kwargs:
+            # get field objects from their names
+            update_fields = (self._meta.get_field_by_name(field)[0] for field in kwargs["update_fields"])
+        else:
+            # meta.fields are already field objects; get them all
+            update_fields = self._meta.fields
+        for field in update_fields:
+            fieldname = field.name
+            # if a hook is defined it must be named exactly on this form
+            hookname = "_at_%s_postsave" % fieldname
+            if hasattr(self, hookname) and callable(_GA(self, hookname)):
+                _GA(self, hookname)()
+            # if a trackerhandler is set on this object, update it with the
+            # fieldname and the new value
+            trackername = "_oob_at_%s_postsave" % fieldname
+            if hasattr(self, trackername):
+                _GA(self, trackername).trigger_update(fieldname, _GA(self, fieldname))
 
 
 class WeakSharedMemoryModelBase(SharedMemoryModelBase):
