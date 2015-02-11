@@ -276,6 +276,71 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
     Note that this function returns a deferred!
     """
 
+    @inlineCallbacks
+    def _run_command(cmd, args):
+        """
+        This initializes and runs the Command instance once the parser
+        has identified it as either a normal command or one of the
+        system commands.
+
+        Args:
+            cmd (Command): command object
+            args (str): extra text entered after the identified command
+        Returns:
+            deferred (Deferred): this will fire when the func() method
+                returns.
+        """
+        # Assign useful variables to the instance
+        cmd.caller = caller
+        cmd.cmdstring = cmdname
+        cmd.args = args
+        cmd.cmdset = cmdset
+        cmd.sessid = session.sessid if session else sessid
+        cmd.session = session
+        cmd.player = player
+        cmd.raw_string = unformatted_raw_string
+        #cmd.obj  # set via on-object cmdset handler for each command,
+                  # since this may be different for every command when
+                  # merging multuple cmdsets
+
+        if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):
+            # cmd.obj is automatically made available by the cmdhandler.
+            # we make sure to validate its scripts.
+            yield cmd.obj.scripts.validate()
+
+        if _testing:
+            # only return the command instance
+            returnValue(cmd)
+
+        # assign custom kwargs to found cmd object
+        for key, val in kwargs.items():
+            setattr(cmd, key, val)
+
+        # pre-command hook
+        abort = yield cmd.at_pre_cmd()
+        if abort:
+            # abort sequence
+            returnValue(abort)
+
+        # Parse and execute
+        yield cmd.parse()
+
+        # main command code
+        # (return value is normally None)
+        ret = yield cmd.func()
+
+        # post-command hook
+        yield cmd.at_post_cmd()
+
+        if cmd.save_for_next:
+            # store a reference to this command, possibly
+            # accessible by the next command.
+            caller.ndb.last_cmd = yield copy(cmd)
+        else:
+            caller.ndb.last_cmd = None
+        # return result to the deferred
+        returnValue(ret)
+
     raw_string = to_unicode(raw_string, force_string=True)
 
     session, player, obj = None, None, None
@@ -373,56 +438,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 raise ExecSystemCommand(cmd, sysarg)
 
             # A normal command.
-
-            # Assign useful variables to the instance
-            cmd.caller = caller
-            cmd.cmdstring = cmdname
-            cmd.args = args
-            cmd.cmdset = cmdset
-            cmd.sessid = session.sessid if session else sessid
-            cmd.session = session
-            cmd.player = player
-            cmd.raw_string = unformatted_raw_string
-            #cmd.obj  # set via on-object cmdset handler for each command,
-                      # since this may be different for every command when
-                      # merging multuple cmdsets
-
-            if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):
-                # cmd.obj is automatically made available by the cmdhandler.
-                # we make sure to validate its scripts.
-                yield cmd.obj.scripts.validate()
-
-            if _testing:
-                # only return the command instance
-                returnValue(cmd)
-
-            # assign custom kwargs to found cmd object
-            for key, val in kwargs.items():
-                setattr(cmd, key, val)
-
-            # pre-command hook
-            abort = yield cmd.at_pre_cmd()
-            if abort:
-                # abort sequence
-                returnValue(abort)
-
-            # Parse and execute
-            yield cmd.parse()
-            # (return value is normally None)
-            ret = yield cmd.func()
-
-            # post-command hook
-            yield cmd.at_post_cmd()
-
-            if cmd.save_for_next:
-                # store a reference to this command, possibly
-                # accessible by the next command.
-                caller.ndb.last_cmd = yield copy(cmd)
-            else:
-                caller.ndb.last_cmd = None
-
-            # Done! This returns a deferred. By default, Evennia does
-            # not use this at all.
+            ret = yield _run_command(cmd, args)
             returnValue(ret)
 
         except ExecSystemCommand, exc:
@@ -430,26 +446,10 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             # or fall back to a return string.
             syscmd = exc.syscmd
             sysarg = exc.sysarg
+
             if syscmd:
-                syscmd.caller = caller
-                syscmd.cmdstring = syscmd.key
-                syscmd.args = sysarg
-                syscmd.cmdset = cmdset
-                syscmd.sessid = session.sessid if session else None
-                syscmd.raw_string = unformatted_raw_string
-
-                if hasattr(syscmd, 'obj') and hasattr(syscmd.obj, 'scripts'):
-                    # cmd.obj is automatically made available.
-                    # we make sure to validate its scripts.
-                    yield syscmd.obj.scripts.validate()
-
-                if _testing:
-                    # only return the command instance
-                    returnValue(syscmd)
-
-                # parse and run the command
-                yield syscmd.parse()
-                yield syscmd.func()
+                ret = yield _run_command(syscmd, sysarg)
+                returnValue(ret)
             elif sysarg:
                 # return system arg
                 caller.msg(exc.sysarg)
