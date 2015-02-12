@@ -497,7 +497,7 @@ def prompt_choice(caller, question="", prompts=None, choicefunc=None, force_choo
     count = 0
     choices = ""
     commands = []
-    for choice in utils.makeiter(prompts):
+    for choice in utils.make_iter(prompts):
         count += 1
         choices += "\n{lc%d{lt[%d]{le %s" % (count, count, choice)
 
