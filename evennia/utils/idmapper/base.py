@@ -348,9 +348,9 @@ class SharedMemoryModel(Model):
                 _GA(self, hookname)()
             # if a trackerhandler is set on this object, update it with the
             # fieldname and the new value
-            trackername = "_oob_at_%s_postsave" % fieldname
-            if hasattr(self, trackername):
-                _GA(self, trackername).trigger_update(fieldname, _GA(self, fieldname))
+            fieldtracker = "_oob_at_%s_postsave" % fieldname
+            if hasattr(self, fieldtracker):
+                _GA(self, fieldtracker)(_GA(self, fieldname), self)
 
 
 class WeakSharedMemoryModelBase(SharedMemoryModelBase):

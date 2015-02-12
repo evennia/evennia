@@ -236,6 +236,7 @@ class TickerHandler(object):
             ServerConfig.objects.conf(key=self.save_name,
                                     value=dbserialize(self.ticker_storage))
         else:
+            # make sure we have nothing lingering in the database
             ServerConfig.objects.conf(key=self.save_name, delete=True)
 
     def restore(self):
@@ -248,15 +249,12 @@ class TickerHandler(object):
             self.ticker_storage = dbunserialize(ticker_storage)
             #print "restore:", self.ticker_storage
             for store_key, (args, kwargs) in self.ticker_storage.items():
-                if len(store_key) == 2:
-                    # old form of store_key - update it
-                    store_key = (store_key[0], store_key[1], "")
                 obj, interval, idstring = store_key
                 obj = unpack_dbobj(obj)
                 _, store_key = self._store_key(obj, interval, idstring)
                 self.ticker_pool.add(store_key, obj, interval, *args, **kwargs)
 
-    def add(self, obj, interval, idstring="", *args, **kwargs):
+    def add(self, obj, interval, idstring="", hook_key="at_tick", *args, **kwargs):
         """
         Add object to tickerhandler. The object must have an at_tick
         method. This will be called every interval seconds until the
@@ -266,6 +264,7 @@ class TickerHandler(object):
         if isdb:
             self.ticker_storage[store_key] = (args, kwargs)
             self.save()
+        kwargs["hook_key"] = hook_key
         self.ticker_pool.add(store_key, obj, interval, *args, **kwargs)
 
     def remove(self, obj, interval=None, idstring=""):

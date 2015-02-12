@@ -35,14 +35,14 @@ messages.
 """
 
 from inspect import isfunction
-from twisted.internet.defer import inlineCallbacks
+from collections import defaultdict
 from django.conf import settings
 from evennia.server.models import ServerConfig
 from evennia.server.sessionhandler import SESSIONS
-from evennia.scripts.tickerhandler import Ticker, TickerPool, TickerHandler
+from evennia.scripts.tickerhandler import TickerHandler
 from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 from evennia.utils import logger
-from evennia.utils.utils import all_from_module, make_iter, to_str
+from evennia.utils.utils import all_from_module, make_iter
 
 _SA = object.__setattr__
 _GA = object.__getattribute__
@@ -69,7 +69,7 @@ if not _OOB_ERROR:
 # but automatically through the OOBHandler.
 #
 
-class FieldTracker(object):
+class OOBFieldMonitor(object):
     """
     This object should be stored on the
     tracked object as "_oob_at_<fieldname>_update".
@@ -77,286 +77,318 @@ class FieldTracker(object):
     save mechanism, which in turn will call the
     user-customizable func()
     """
-    def __init__(self, obj):
+    def __init__(self):
         """
-        This initializes the tracker with the object it sits on.
+        This initializes the monitor with the object it sits on.
         """
-        self.obj = obj
-        self.subscribers = {}
+        self.subscribers = defaultdict(list)
 
-    def add(self, session):
-        """
-        Add a subscribing session to the tracker
-        """
-        self.subscribers[session.sessid] = session
-
-    def remove(self, session):
-        """
-        Remove a subsribing session from the tracker
-        """
-        self.subscribers.pop(session.sessid)
-
-    def trigger_update(self, fieldname, new_value):
+    def __call__(self, new_value, obj):
         """
         Called by the save() mechanism when the given
         field has updated.
         """
-        for session in self.subscribers.values():
-            try:
-                self.at_field_update(session, fieldname, new_value)
-            except Exception:
-                pass
+        for sessid, (oobfuncname, args, kwargs) in self.subscribers.items():
+            OOB_HANDLER.execute_cmd(sessid, oobfuncname, new_value, obj=obj, *args, **kwargs)
 
-    def at_field_update(self, session, fieldname, new_value):
+    def add(self, sessid, oobfuncname, *args, **kwargs):
         """
-        This needs to be overloaded for each tracking
-        command.
+        Add a specific tracking callback to monitor
 
         Args:
-            session (Session): the session subscribing
-                to this update.
-            fieldname (str): the name of the updated field.
-            value (any): the new value now in this field.
+            sessid (int): Session id
+            oobfuncname (str): oob command to call when field updates
+            args,kwargs: arguments to pass to oob commjand
+
+        Notes:
+            Each sessid may have a list of (oobfuncname, args, kwargs)
+            tuples, all of which will be executed when the
+            field updates.
         """
-        pass
+        self.subscribers[sessid].append((oobfuncname, args, kwargs))
 
-
-class ReportFieldTracker(FieldTracker):
-    """
-    Tracker that passively sends data to a stored sessid whenever
-    a named database field changes. The TrackerHandler calls this with
-    the correct arguments.
-    """
-    def at_field_update(self, session, fieldname, new_value):
+    def remove(self, sessid, oobfuncname=None):
         """
-        Called when field updates.
+        Remove a subscribing session from the monitor
+
+        Args:
+            sessid(int): Session id
+        Keyword Args:
+            oobfuncname (str, optional): Only delete this cmdname.
+                If not given, delete all.
+
         """
-        # we must never relay objects across to the Portal, only
-        # text.
-        try:
-            # it may be an object
-            new_value = new_value.key
-        except AttributeError:
-            # ... or not
-            new_value = to_str(new_value, force_string=True)
-        # return as an OOB call of type "report"
-        session.msg(oob=("report", {fieldname:new_value}))
+        if oobfuncname:
+            self.subscribers[sessid] = [item for item in self.subscribers[sessid]
+                                        if item[0] != oobfuncname]
+        else:
+            self.subscribers.pop(sessid, None)
 
 
-class ReportAttributeTracker(FieldTracker):
+class OOBAtRepeat(object):
     """
-    Tracker that passively sends data to a stored sessid whenever
-    the Attribute updates. Since the Attribute's field is always
-    db_value, we return the attribute's name instead.
+    This object should be stored on a target object, named
+    as the hook to call repeatedly, e.g.
+
+    _oob_listen_every_20s_for_sessid_1 = AtRepat()
     """
-    def at_field_update(self, session, fieldname, new_value):
-        """
-        Called when field updates.
-        """
-        # we must never relay objects across to the Portal, only
-        # text.
-        try:
-            # it may be an object
-            new_value = new_value.key
-        except AttributeError:
-            # ... or not
-            new_value = to_str(new_value, force_string=True)
-        session.msg(oob=("report", {obj.db_key: new_value})
 
-
-
-# Ticker of auto-updating objects
-
-class OOBTicker(Ticker):
-    """
-    Version of Ticker that executes an executable rather than trying to call
-    a hook method.
-    """
-    @inlineCallbacks
-    def _callback(self):
-        "See original for more info"
-        for key, (_, args, kwargs) in self.subscriptions.items():
-            # args = (sessid, callback_function)
-            session = SESSIONS.session_from_sessid(args[0])
-            try:
-                # execute the oob callback
-                yield args[1](OOB_HANDLER, session, *args[2:], **kwargs)
-            except Exception:
-                logger.log_trace()
-
-class OOBTickerPool(TickerPool):
-    ticker_class = OOBTicker
-
-class OOBTickerHandler(TickerHandler):
-    ticker_pool_class = OOBTickerPool
+    def __call__(self, sessid, oobfuncname, *args, **kwargs):
+        "Called at regular intervals. Calls the oob function"
+        OOB_HANDLER.execute_cmd(sessid, oobfuncname, *args, **kwargs)
 
 
 # Main OOB Handler
 
 class OOBHandler(TickerHandler):
-
-    class AtTick(object):
-        """
-        A wrapper object with a hook to call at regular intervals
-        """
-        global SESSIONS, _OOB_FUNCS
-
-        def at_tick(self, oobhandler, cmdname, sessid, *args, **kwargs):
-            "Called at regular intervals. Calls the oob function"
-            session = SESSIONS.session_from_sessid(sessid):
-            cmd = _OOB_FUNCS.get(cmdname, None)
-            try:
-                cmd(oobhandler, session, *args, **kwargs)
-            except Exception:
-                logger.log_trace()
+    """
+    The OOBHandler manages all server-side OOB functionality
+    """
 
     def __init__(self, *args, **kwargs):
         self.save_name = "oob_ticker_storage"
+        self.oob_save_name = "oob_monitor_storage"
+        self.oob_monitor_storage = {}
         super(OOBHandler, self).__init__(*args, **kwargs)
 
-    def set_repeat(self, obj, sessid, oobfunc, interval=20, *args, **kwargs):
-        """
-        Set an oob function to be repeatedly called.
+    def _get_repeat_hook_name(self, oobfuncname, interval, sessid):
+        "Return the unique repeat call hook name for this object"
+        return "_oob_%s_every_%ss_for_sessid_%s" % (oobfuncname, interval, sessid)
 
-        Args:
-            obj (Object) - the object registering the repeat
-            sessid (int) - session id of the session registering
-            oobfunc (str) - oob function name to call every interval seconds
-            interval (int) - interval to call oobfunc, in seconds
-            *args, **kwargs - are used as arguments to the oobfunc
-        """
+    def _get_fieldmonitor_name(self, fieldname):
+        "Return the fieldmonitor name"
+        return "_oob_at_%s_postsave" % fieldname
 
-
-    def _track(self, obj, sessid, propname, trackerclass, *args, **kwargs):
+    def _add_monitor(self, obj, sessid, fieldname, oobfuncname, *args, **kwargs):
         """
-        Create an OOB obj of class _oob_MAPPING[tracker_key] on obj. args,
-        kwargs will be used to initialize the OOB hook  before adding
-        it to obj.
-        If propname is not given, but the OOB has a class property
-        named as propname, this will be used as the property name when assigning
-        the OOB to obj, otherwise tracker_key is used as the property name.
+        Create a fieldmonitor and store it on the object. This tracker
+        will be updated whenever the given field changes.
         """
-        if not hasattr(obj, "_trackerhandler"):
-            # assign trackerhandler to object
-            _SA(obj, "_trackerhandler", TrackerHandler(obj))
-        # initialize object
-        tracker = trackerclass(self, propname, sessid, *args, **kwargs)
-        _GA(obj, "_trackerhandler").add(propname, tracker)
-        # store calling arguments as a pickle for retrieval later
-        obj_packed = pack_dbobj(obj)
-        storekey = (obj_packed, sessid, propname)
-        stored = (obj_packed, sessid, propname, trackerclass,  args, kwargs)
-        self.oob_tracker_storage[storekey] = stored
-        #print "_track:", obj, id(obj), obj.__dict__
+        fieldmonitorname = self._get_fieldtracker_name(fieldname)
+        if not hasattr(obj, fieldmonitorname):
+            # assign a new fieldmonitor to the object
+            _SA(obj, fieldmonitorname, OOBFieldMonitor())
+        # register the session with the monitor
+        _GA(obj, fieldmonitorname).add(sessid, oobfuncname, *args, **kwargs)
 
-    def _untrack(self, obj, sessid, propname, trackerclass, *args, **kwargs):
+        # store calling arguments as a pickle for retrieval at reload
+        storekey = (pack_dbobj(obj), sessid, fieldname, oobfuncname)
+        stored = (args, kwargs)
+        self.oob_monitor_storage[storekey] = stored
+
+    def _remove_monitor(self, obj, sessid, fieldname, oobfuncname=None):
         """
         Remove the OOB from obj. If oob implements an
         at_delete hook, this will be called with args, kwargs
         """
+        fieldmonitorname = self._get_fieldtracker_name(fieldname)
         try:
-            # call at_remove hook on the trackerclass
-            _GA(obj, "_trackerhandler").remove(propname, trackerclass, *args, **kwargs)
+            _GA(obj, fieldmonitorname).remove(sessid, oobfuncname=oobfuncname)
+            if not _GA(obj, fieldmonitorname).subscribers:
+                _DA(obj, fieldmonitorname)
         except AttributeError:
             pass
         # remove the pickle from storage
-        store_key = (pack_dbobj(obj), sessid, propname)
-        self.oob_tracker_storage.pop(store_key, None)
+        store_key = (pack_dbobj(obj), sessid, fieldname, oobfuncname)
+        self.oob_monitor_storage.pop(store_key, None)
 
-    def get_all_tracked(self, session):
+    def save(self):
         """
-        Get the names of all variables this session is tracking.
+        Handles saving of the OOBHandler data when the server reloads.
+        Called from the Server process.
         """
-        sessid = session.sessid
-        return [stored for key, stored in self.oob_tracker_storage.items() if key[1] == sessid]
+        # save ourselves as a tickerhandler
+        super(OOBHandler, self).save()
+        # handle the extra oob monitor store
+        if self.ticker_storage:
+            ServerConfig.objects.conf(key=self.oob_save_name,
+                                      value=dbserialize(self.oob_monitor_storage))
+        else:
+            # make sure we have nothing lingering in the database
+            ServerConfig.objects.conf(key=self.oob_save_name, delete=True)
 
-    def track_field(self, obj, sessid, field_name, trackerclass=ReportFieldTracker):
+    def restore(self):
         """
-        Shortcut wrapper method for specifically tracking a database field.
-        Takes the tracker class as argument.
+        Called when the handler recovers after a Server reload. Called
+        by the Server process as part of the reload upstart. Here we
+        overload the tickerhandler's restore method completely to make
+        sure we correctly re-apply and re-initialize the correct
+        monitor and repeat objects on all saved objects.
+        """
+        # load the oob monitors and initialize them
+        oob_storage = ServerConfig.objects.conf(key=self.oob_save_name)
+        if oob_storage:
+            self.oob_storage = dbunserialize(oob_storage)
+            for store_key, (args, kwargs) in self.oob_storage.items():
+                # re-create the monitors
+                obj, sessid, fieldname, oobfuncname = store_key
+                obj = unpack_dbobj(obj)
+                self._add_monitor(obj, sessid, fieldname, oobfuncname, *args, **kwargs)
+        # handle the tickers (same as in TickerHandler except we  call
+        # the add_repeat method which makes sure to add the hooks before
+        # starting the tickerpool)
+        ticker_storage = ServerConfig.objects.conf(key=self.save_name)
+        if ticker_storage:
+            self.ticker_storage = dbunserialize(ticker_storage)
+            for store_key, (args, kwargs) in self.ticker_storage.items():
+                obj, interval, idstring = store_key
+                obj = unpack_dbobj(obj)
+                # we saved these in add_repeat before, can now retrieve them
+                sessid = kwargs["sessid"]
+                oobfuncname = kwargs["oobfuncname"]
+                self.add_repeat(obj, sessid, oobfuncname, interval, *args, **kwargs)
+
+    def add_repeat(self, obj, sessid, oobfuncname, interval=20, *args, **kwargs):
+        """
+        Set an oob function to be repeatedly called.
+
+        Args:
+            obj (Object) - the object on which to register the repeat
+            sessid (int) - session id of the session registering
+            oobfuncname (str) - oob function name to call every interval seconds
+            interval (int) - interval to call oobfunc, in seconds
+            *args, **kwargs - are used as arguments to the oobfunc
+        """
+        hook = OOBAtRepeat()
+        hookname = self._get_repeat_hook_name(oobfuncname, interval, sessid)
+        _SA(obj, hookname, hook)
+        kwargs.update({"sessid":sessid, "oobfuncname":oobfuncname})
+        # we store these in kwargs so that tickerhandler saves them with the rest
+        kwargs["sessid"] = sessid
+        kwargs["oobfuncbame"] = oobfuncname
+        self.add(obj, interval, idstring=oobfuncname, hook_key=hookname, *args, **kwargs)
+
+    def remove_repeat(self, obj, sessid, oobfuncname, interval=20):
+        """
+        Remove the repeatedly calling oob function
+
+        Args:
+            obj (Object): The object on which the repeater sits
+            sessid (int): Session id of the Session that registered the repeat
+            oob
+
+        """
+        self.remove(obj, interval, idstring=oobfuncname)
+        hookname = self._get_repeat_hook_name(oobfuncname, interval, sessid)
+        try:
+            _DA(obj, hookname)
+        except AttributeError:
+            pass
+
+    def add_field_monitor(self, obj, sessid, field_name, oobfuncname, *args, **kwargs):
+        """
+        Add a monitor tracking a database field
+
+        Args:
+            obj (Object): The object who'se field is to be monitored
+            sessid (int): Session if of the session monitoring
+            field_name (str): Name of database field to monitor. The db_* can optionally
+                be skipped (it will be automatically appended if missing)
+            oobfuncname (str): OOB function to call when field changes
+
+        Notes:
+            The optional args, and kwargs will be passed on to the
+            oobfunction.
         """
         # all database field names starts with db_*
         field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
-        self._track(obj, sessid, field_name, trackerclass, field_name)
+        self._add_monitor(obj, sessid, field_name, field_name, oobfuncname=None)
 
-    def untrack_field(self, obj, sessid, field_name, trackerclass=ReportFieldTracker):
+    def remove_field_monitor(self, obj, sessid, field_name, oobfuncname=None):
         """
-        Shortcut for untracking a database field. Uses OOBTracker by defualt
+        Un-tracks a database field
+
+        Args:
+            obj (Object): Entity with the monitored field
+            sessid (int): Session id of session that monitors
+            field_name (str): database field monitored (the db_* can optionally be
+                skipped (it will be auto-appended if missing)
+            oobfuncname (str, optional): OOB command to call on that field
+
         """
         field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
-        self._untrack(obj, sessid, field_name, trackerclass)
+        self._remove_monitor(obj, sessid, field_name, oobfuncname=oobfuncname)
 
-    def track_attribute(self, obj, sessid, attr_name, trackerclass=ReportAttributeTracker):
+    def add_attribute_track(self, obj, sessid, attr_name, oobfuncname):
         """
-        Shortcut wrapper method for specifically tracking the changes of an
-        Attribute on an object. Will create a tracker on the Attribute
-        Object and name in a way the Attribute expects.
+        Monitor the changes of an Attribute on an object. Will trigger when
+        the Attribute's `db_value` field updates.
+
+        Args:
+            obj (Object): Object with the Attribute to monitor.
+            sessid (int): Session id of monitoring Session.
+            attr_name (str): Name (key) of Attribute to monitor.
+            oobfuncname (str): OOB function to call when Attribute updates.
+
         """
         # get the attribute object if we can
         attrobj = obj.attributes.get(attr_name, return_obj=True)
-        #print "track_attribute attrobj:", attrobj, id(attrobj)
         if attrobj:
-            self._track(attrobj, sessid, "db_value", trackerclass, attr_name)
+            self._add_monitor(attrobj, sessid, "db_value", oobfuncname)
 
-    def untrack_attribute(self, obj, sessid, attr_name, trackerclass=ReportAttributeTracker):
+    def remove_attribute_monitor(self, obj, sessid, attr_name, oobfuncname):
         """
-        Shortcut for deactivating tracking for a given attribute.
+        Deactivate tracking for a given object's Attribute
+
+        Args:
+            obj (Object): Object monitored.
+            sessid (int): Session id of monitoring Session.
+            attr_name (str): Name of Attribute monitored.
+            oobfuncname (str): OOB function name called when Attribute updates.
+
         """
         attrobj = obj.attributes.get(attr_name, return_obj=True)
         if attrobj:
-            self._untrack(attrobj, sessid, "db_value", trackerclass, attr_name)
+            self._remove_monitor(attrobj, sessid, "db_value", attr_name, oobfuncname)
 
-    def repeat(self, obj, sessid, interval=20, callback=None, *args, **kwargs):
+    def get_all_monitors(self, sessid):
         """
-        Start a repeating action. Every interval seconds, trigger
-        callback(*args, **kwargs). The callback is called with
-        args and kwargs; note that *args and **kwargs may not contain
-        anything un-picklable (use dbrefs if wanting to use objects).
-        """
-        self.tickerhandler.add(obj, interval, sessid, callback, *args, **kwargs)
+        Get the names of all variables this session is tracking.
 
-    def unrepeat(self, obj, sessid, interval=20):
+        Args:
+            sessid (id): Session id of monitoring Session
+
         """
-        Stop a repeating action
-        """
-        self.tickerhandler.remove(obj, interval)
+        return [stored for key, stored in self.oob_monitor_storage.items() if key[1] == sessid]
 
 
     # access method - called from session.msg()
 
-    def execute_cmd(self, session, func_key, *args, **kwargs):
+    def execute_cmd(self, session, oobfuncname, *args, **kwargs):
         """
-        Retrieve oobfunc from OOB_FUNCS and execute it immediately
-        using *args and **kwargs
-        """
-        oobfunc = _OOB_FUNCS.get(func_key, None)
-        if not oobfunc:
-            # function not found
-            errmsg = "OOB Error: function '%s' not recognized." % func_key
-            if _OOB_ERROR:
-                _OOB_ERROR(self, session, errmsg, *args, **kwargs)
-                logger.log_trace()
-            else:
-                logger.log_trace(errmsg)
-            return
+        Execute an oob command
 
-        # execute the found function
+        Args:
+            session (Session or int):  Session or Session.sessid calling
+                the oob command
+            oobfuncname (str): The name of the oob command (case sensitive)
+
+        Notes:
+            If the oobfuncname is a valid oob function, the `*args` and
+            `**kwargs` are passed into the oob command.
+
+        """
+        if isinstance(session, int):
+            # a sessid. Convert to a session
+            session = SESSIONS.session_from_sessid(self.sessid)
+        if not session:
+            errmsg = "OOB Error: execute_cmd(%s,%s,%s,%s) - no valid session" % \
+                                                    (session, oobfuncname, args, kwargs)
+            raise RuntimeError(errmsg)
+
+        # don't catch this, wrong oobfuncname should be reported
+        oobfunc = _OOB_FUNCS[oobfuncname]
+
+        # we found an oob command. Execute it.
         try:
             #print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
             oobfunc(self, session, *args, **kwargs)
         except Exception, err:
-            errmsg = "OOB Error: Exception in '%s'(%s, %s):\n%s" % (func_key, args, kwargs, err)
+            errmsg = "OOB Error: Exception in '%s'(%s, %s):\n%s" % (oobfuncname, args, kwargs, err)
             if _OOB_ERROR:
                 _OOB_ERROR(self, session, errmsg, *args, **kwargs)
             logger.log_trace(errmsg)
             raise Exception(errmsg)
-
-    def msg(self, sessid, funcname, *args, **kwargs):
-        "Shortcut to force-send an OOB message through the oobhandler to a session"
-        session = self.sessionhandler.session_from_sessid(sessid)
-        #print "oobhandler msg:", sessid, session, funcname, args, kwargs
-        if session:
-            session.msg(oob=(funcname, args, kwargs))
 
 
 # access object
