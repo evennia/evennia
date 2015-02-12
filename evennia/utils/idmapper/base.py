@@ -350,7 +350,7 @@ class SharedMemoryModel(Model):
             # fieldname and the new value
             fieldtracker = "_oob_at_%s_postsave" % fieldname
             if hasattr(self, fieldtracker):
-                _GA(self, fieldtracker)(_GA(self, fieldname), self)
+                _GA(self, fieldtracker)(self, fieldname)
 
 
 class WeakSharedMemoryModelBase(SharedMemoryModelBase):

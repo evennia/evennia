@@ -51,14 +51,18 @@ _DA = object.__delattr__
 # load resources from plugin module
 _OOB_FUNCS = {}
 for mod in make_iter(settings.OOB_PLUGIN_MODULES):
-    _OOB_FUNCS.update(dict((key.lower(), func) for key, func in all_from_module(mod).items() if isfunction(func)))
+    _OOB_FUNCS.update(mod.CMD_MAP)
 
-# get custom error method or use the default
+# get the command to receive eventual error strings
 _OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
 if not _OOB_ERROR:
     # create default oob error message function
     def oob_error(oobhandler, session, errmsg, *args, **kwargs):
-        "Error wrapper"
+        """
+        Fallback error handler. This will be used if no custom
+        oob_error is defined and just echoes the error back to the
+        session.
+        """
         session.msg(oob=("err", ("ERROR ", errmsg)))
     _OOB_ERROR = oob_error
 
@@ -83,13 +87,13 @@ class OOBFieldMonitor(object):
         """
         self.subscribers = defaultdict(list)
 
-    def __call__(self, new_value, obj):
+    def __call__(self, obj, fieldname):
         """
         Called by the save() mechanism when the given
         field has updated.
         """
         for sessid, (oobfuncname, args, kwargs) in self.subscribers.items():
-            OOB_HANDLER.execute_cmd(sessid, oobfuncname, new_value, obj=obj, *args, **kwargs)
+            OOB_HANDLER.execute_cmd(sessid, oobfuncname, fieldname, obj, *args, **kwargs)
 
     def add(self, sessid, oobfuncname, *args, **kwargs):
         """
@@ -246,9 +250,14 @@ class OOBHandler(TickerHandler):
             obj (Object) - the object on which to register the repeat
             sessid (int) - session id of the session registering
             oobfuncname (str) - oob function name to call every interval seconds
-            interval (int) - interval to call oobfunc, in seconds
-            *args, **kwargs - are used as arguments to the oobfunc
+            interval (int, optional) - interval to call oobfunc, in seconds
+        Notes:
+            *args, **kwargs are used as extra arguments to the oobfunc.
         """
+        # check so we didn't get a session instead of a sessid
+        if not isinstance(sessid, int):
+            sessid = sessid.sessid
+
         hook = OOBAtRepeat()
         hookname = self._get_repeat_hook_name(oobfuncname, interval, sessid)
         _SA(obj, hookname, hook)
@@ -265,9 +274,13 @@ class OOBHandler(TickerHandler):
         Args:
             obj (Object): The object on which the repeater sits
             sessid (int): Session id of the Session that registered the repeat
-            oob
+            oobfuncname (str): Name of oob function to call at repeat
+            interval (int, optional): Number of seconds between repeats
 
         """
+        # check so we didn't get a session instead of a sessid
+        if not isinstance(sessid, int):
+            sessid = sessid.sessid
         self.remove(obj, interval, idstring=oobfuncname)
         hookname = self._get_repeat_hook_name(oobfuncname, interval, sessid)
         try:
@@ -287,9 +300,18 @@ class OOBHandler(TickerHandler):
             oobfuncname (str): OOB function to call when field changes
 
         Notes:
-            The optional args, and kwargs will be passed on to the
-            oobfunction.
+            When the field updates the given oobfunction will be called as
+
+                `oobfuncname(oobhandler, session, fieldname, obj, *args, **kwargs)`
+
+            where `fieldname` is the name of the monitored field and
+            `obj` is the object on which the field sits. From this you
+            can also easily get the new field value if you want.
+
         """
+        # check so we didn't get a session instead of a sessid
+        if not isinstance(sessid, int):
+            sessid = sessid.sessid
         # all database field names starts with db_*
         field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
         self._add_monitor(obj, sessid, field_name, field_name, oobfuncname=None)
@@ -306,10 +328,13 @@ class OOBHandler(TickerHandler):
             oobfuncname (str, optional): OOB command to call on that field
 
         """
+        # check so we didn't get a session instead of a sessid
+        if not isinstance(sessid, int):
+            sessid = sessid.sessid
         field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
         self._remove_monitor(obj, sessid, field_name, oobfuncname=oobfuncname)
 
-    def add_attribute_track(self, obj, sessid, attr_name, oobfuncname):
+    def add_attribute_monitor(self, obj, sessid, attr_name, oobfuncname):
         """
         Monitor the changes of an Attribute on an object. Will trigger when
         the Attribute's `db_value` field updates.
@@ -321,6 +346,9 @@ class OOBHandler(TickerHandler):
             oobfuncname (str): OOB function to call when Attribute updates.
 
         """
+        # check so we didn't get a session instead of a sessid
+        if not isinstance(sessid, int):
+            sessid = sessid.sessid
         # get the attribute object if we can
         attrobj = obj.attributes.get(attr_name, return_obj=True)
         if attrobj:
@@ -337,6 +365,9 @@ class OOBHandler(TickerHandler):
             oobfuncname (str): OOB function name called when Attribute updates.
 
         """
+        # check so we didn't get a session instead of a sessid
+        if not isinstance(sessid, int):
+            sessid = sessid.sessid
         attrobj = obj.attributes.get(attr_name, return_obj=True)
         if attrobj:
             self._remove_monitor(attrobj, sessid, "db_value", attr_name, oobfuncname)
@@ -347,9 +378,17 @@ class OOBHandler(TickerHandler):
 
         Args:
             sessid (id): Session id of monitoring Session
-
+        Returns:
+            stored monitors (tuple): A list of tuples
+            `(obj, fieldname, args, kwargs)` representing all
+            the monitoring the Session with the given sessid is doing.
         """
-        return [stored for key, stored in self.oob_monitor_storage.items() if key[1] == sessid]
+        # check so we didn't get a session instead of a sessid
+        if not isinstance(sessid, int):
+            sessid = sessid.sessid
+        # [(obj, fieldname, args, kwargs), ...]
+        return [(unpack_dbobj(key[0]), key[2], stored[0], stored[1])
+                for key, stored in self.oob_monitor_storage.items() if key[1] == sessid]
 
 
     # access method - called from session.msg()
