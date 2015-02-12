@@ -34,7 +34,6 @@ messages.
 
 """
 
-from inspect import isfunction
 from collections import defaultdict
 from django.conf import settings
 from evennia.server.models import ServerConfig
@@ -42,7 +41,7 @@ from evennia.server.sessionhandler import SESSIONS
 from evennia.scripts.tickerhandler import TickerHandler
 from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 from evennia.utils import logger
-from evennia.utils.utils import all_from_module, make_iter
+from evennia.utils.utils import make_iter
 
 _SA = object.__setattr__
 _GA = object.__getattribute__
@@ -56,7 +55,7 @@ for mod in make_iter(settings.OOB_PLUGIN_MODULES):
 # get the command to receive eventual error strings
 _OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
 if not _OOB_ERROR:
-    # create default oob error message function
+    # no custom error set; create default oob error message function
     def oob_error(oobhandler, session, errmsg, *args, **kwargs):
         """
         Fallback error handler. This will be used if no custom

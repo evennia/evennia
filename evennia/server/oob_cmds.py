@@ -3,11 +3,18 @@ Out-of-band default plugin commands available for OOB handler.
 
 This module implements commands as defined by the MSDP standard
 (http://tintin.sourceforge.net/msdp/), but is independent of the
-actual transfer protocol (webclient, MSDP, GMCP etc).
+actual transfer protocol (webclient, MSDP, GMCP etc). It also
+implements several OOB commands unique to Evennia (both some
+external and some for testing)
 
-This module is pointed to by settings.OOB_PLUGIN_MODULES. It must
-contain a global dictionary CMD_MAP which is a dictionary that maps
-the call available in the OOB call to a function in this module.
+The available OOB commands can be extended by changing
+
+    `settings.OOB_PLUGIN_MODULES`
+
+This module must contain a global dictionary CMD_MAP. This is a
+dictionary that maps the call available in the OOB call to a function
+in this module (this allows you to map multiple oob cmdnames to a
+single actual Python function, for example).
 
 For example, if the OOB strings received looks like this:
 
@@ -21,7 +28,7 @@ oob functions have the following call signature:
 
     function(oobhandler, session, *args, **kwargs)
 
-here, oobhandler is a back-reference to the central oob handler (this
+where oobhandler is a back-reference to the central oob handler (this
 allows for deactivating itself in various ways), session is the active
 session and *args, **kwargs are what is sent from the oob call.
 
@@ -34,11 +41,12 @@ This allows for customizing error handling.
 
 Data is usually returned to the user via a return OOB call:
 
-  session.msg(oob=(oobcmdname, (args,), {kwargs}))
+   session.msg(oob=(oobcmdname, (args,), {kwargs}))
 
-oobcmdnames (like "MSDP.LISTEN" / "LISTEN" above) are case-sensitive.  Note that args,
-kwargs must be iterable. Non-iterables will be interpreted as a new
-command name (you can send multiple oob commands with one msg() call))
+Oobcmdnames (like "MSDP.LISTEN" / "LISTEN" above) are case-sensitive.
+Note that args, kwargs must be iterable. Non-iterables will be
+interpreted as a new command name (you can send multiple oob commands
+with one msg() call))
 
 Evennia introduces two internal extensions to MSDP, and that is the
 MSDP_ARRAY and MSDP_TABLE commands. These are never sent across the
@@ -136,10 +144,10 @@ def oob_unrepeat(oobhandler, session, oobfuncname, interval):
 
 
 #
-# MSDP standard commands
+# MSDP protocol standard commands
 #
-
-# MSDP recommends the following standard name conventions for making different properties available to the player
+# MSDP suggests the following standard name conventions for making
+# different properties available to the player
 
 # "CHARACTER_NAME", "SERVER_ID",  "SERVER_TIME", "AFFECTS", "ALIGNMENT", "EXPERIENCE", "EXPERIENCE_MAX", "EXPERIENCE_TNL",
 # "HEALTH", "HEALTH_MAX", "LEVEL", "RACE", "CLASS", "MANA", "MANA_MAX", "WIMPY", "PRACTICE", "MONEY", "MOVEMENT",
@@ -341,6 +349,10 @@ def oob_list(oobhandler, session, mode, *args, **kwargs):
     else:
         session.msg(oob=("err", ("LIST", "Unsupported mode",)))
 
+
+#
+# Cmd mapping
+#
 
 # this maps the commands to the names available to use from
 # the oob call. The standard MSDP commands are capitalized
