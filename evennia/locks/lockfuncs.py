@@ -176,7 +176,7 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
                 else:
                     return hpos_target <= min(hpos_player, hpos_object)
             elif gtmode:
-                return gtmode and hpos_target < hpos_player
+                return hpos_target < hpos_player
             else:
                 return hpos_target <= hpos_player
         elif not is_quell and perm in perms_player:
