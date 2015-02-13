@@ -334,9 +334,10 @@ class SharedMemoryModel(Model):
             callFromThread(_save_callback, self, *args, **kwargs)
 
         # update field-update hooks and eventual OOB watchers
-        if "update_fields" in kwargs:
+        if "update_fields" in kwargs and kwargs["update_fields"]:
             # get field objects from their names
-            update_fields = (self._meta.get_field_by_name(field)[0] for field in kwargs["update_fields"])
+            update_fields = (self._meta.get_field_by_name(field)[0]
+                             for field in kwargs.get("update_fields"))
         else:
             # meta.fields are already field objects; get them all
             update_fields = self._meta.fields

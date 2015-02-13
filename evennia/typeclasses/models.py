@@ -38,10 +38,7 @@ from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHa
 
 from evennia.utils.idmapper.models import SharedMemoryModel
 from evennia.utils.idmapper.base import SharedMemoryModelBase
-#from evennia.server.caches import set_attr_cache
 
-#from evennia.server.caches import call_ndb_hooks
-#from evennia.server.models import ServerConfig
 from evennia.typeclasses import managers
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import (

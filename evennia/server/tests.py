@@ -30,6 +30,7 @@ except ImportError:
     import unittest
 
 from django.conf import settings
+#from django.test.runner import DiscoverRunner
 from django.test.simple import DjangoTestSuiteRunner
 from evennia.utils.utils import mod_import
 

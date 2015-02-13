@@ -32,19 +32,6 @@ from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.comms import channelhandler
 from evennia.server.sessionhandler import SESSIONS
 
-# setting up server-side field cache
-
-from django.db.models.signals import post_save
-from evennia.server.caches import field_post_save
-#pre_save.connect(field_pre_save, dispatch_uid="fieldcache")
-post_save.connect(field_post_save, dispatch_uid="fieldcache")
-
-#from evennia.server.caches import post_attr_update
-#from django.db.models.signals import m2m_changed
-
-# connect to attribute cache signal
-#m2m_changed.connect(post_attr_update, sender=TypedObject.db_attributes.through)
-
 _SA = object.__setattr__
 
 if os.name == 'nt':

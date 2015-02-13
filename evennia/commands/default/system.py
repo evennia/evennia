@@ -13,7 +13,6 @@ import twisted
 from time import time as timemeasure
 
 from django.conf import settings
-#from evennia.server.caches import get_cache_sizes
 from evennia.server.sessionhandler import SESSIONS
 from evennia.scripts.models import ScriptDB
 from evennia.objects.models import ObjectDB

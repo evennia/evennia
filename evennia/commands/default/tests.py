@@ -23,10 +23,6 @@ from evennia.commands.default import help, general, system, admin, player, build
 from evennia.utils import ansi
 from evennia.server.sessionhandler import SESSIONS
 
-from django.db.models.signals import post_save
-from evennia.server.caches import field_post_save
-post_save.connect(field_post_save, dispatch_uid="fieldcache")
-
 # set up signal here since we are not starting the server
 
 _RE = re.compile(r"^\+|-+\+|\+-+|--*|\|", re.MULTILINE)

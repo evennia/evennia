@@ -41,7 +41,7 @@ from evennia.server.sessionhandler import SESSIONS
 from evennia.scripts.tickerhandler import TickerHandler
 from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 from evennia.utils import logger
-from evennia.utils.utils import make_iter
+from evennia.utils.utils import make_iter, mod_import
 
 _SA = object.__setattr__
 _GA = object.__getattribute__
@@ -49,8 +49,8 @@ _DA = object.__delattr__
 
 # load resources from plugin module
 _OOB_FUNCS = {}
-for mod in make_iter(settings.OOB_PLUGIN_MODULES):
-    _OOB_FUNCS.update(mod.CMD_MAP)
+for modname in make_iter(settings.OOB_PLUGIN_MODULES):
+    _OOB_FUNCS.update(mod_import(modname).CMD_MAP)
 
 # get the command to receive eventual error strings
 _OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
