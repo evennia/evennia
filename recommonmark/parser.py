@@ -1,9 +1,8 @@
 from contextlib import contextmanager
 import itertools
-import os.path
 
 from docutils import parsers, nodes
-from CommonMark import DocParser
+from CommonMark import DocParser, HTMLRenderer
 from warnings import warn
 
 __all__ = ['CommonMarkParser']
@@ -38,16 +37,11 @@ class _SectionHandler(object):
 class CommonMarkParser(object, parsers.Parser):
     supported = ('md', 'markdown')
 
-    def __init__(self, env=None):
-        self.env = env
-
     def convert_blocks(self, blocks):
         for block in blocks:
             self.convert_block(block)
 
     def convert_block(self, block):
-        tag = attr = info_words = None
-
         if (block.t == "Document"):
             self.convert_blocks(block.children)
         elif (block.t == "ATXHeader") or (block.t == "SetextHeader"):
@@ -71,8 +65,6 @@ class CommonMarkParser(object, parsers.Parser):
             self.horizontal_rule()
         elif (block.t == "HtmlBlock"):
             self.html_block(block)
-        elif (block.t == "ExtensionBlock"):
-            self.extension_block(block)
         else:
             warn("Unsupported block type: " + block.t)
 
@@ -162,29 +154,6 @@ class CommonMarkParser(object, parsers.Parser):
         raw_node.line = block.start_line
         self.current_node.append(raw_node)
 
-    def extension_block(self, block):
-        rst_template = '.. {name}:: {arguments}'
-        rst_options_template = '   :{arg}: {value}'
-
-        to_parse = rst_template.format(
-            name=block.title,
-            arguments=block.attributes.pop('arguments', ''),
-        )
-        to_parse += "\n"
-        for arg, value in block.attributes.items():
-            to_parse += rst_options_template.format(
-                arg=arg,
-                value=value,
-            )
-        to_parse += "\n\n"
-        for line in block.strings:
-            to_parse += "   {}\n".format(line)
-
-        print "Sphinx Directive:\n[\n%s\n]\n" % to_parse
-        document = self.env.node_from_directive(to_parse)
-        for node in document.children:
-            self.current_node.append(node)
-
     def horizontal_rule(self):
         transition_node = nodes.transition()
         self.current_node.append(transition_node)
@@ -237,6 +206,12 @@ def inline_html(inline):
     return literal_node
 
 
+def inline_entity(inline):
+    val = HTMLRenderer().renderInline(inline)
+    entity_node = nodes.paragraph('', val, format='html')
+    return entity_node
+
+
 def reference(block):
     ref_node = nodes.reference()
 
@@ -247,7 +222,7 @@ def reference(block):
         ref_node['refuri'] = block.destination
     else:
         ref_node['refname'] = label
-        self.document.note_refname(ref_node)
+        # self.document.note_refname(ref_node)
 
     if block.title:
         ref_node['title'] = block.title
@@ -259,7 +234,6 @@ def reference(block):
 def image(block):
     img_node = nodes.image()
 
-    label = make_refname(block.label)
     img_node['uri'] = block.destination
 
     if block.title:
@@ -273,31 +247,26 @@ def parse_inline(parent_node, inline):
     node = None
     if (inline.t == "Str"):
         node = nodes.Text(inline.c)
-        node.line = inline.start_line
     elif (inline.t == "Softbreak"):
         node = nodes.Text('\n')
-        node.line = inline.start_line
     elif inline.t == "Emph":
         node = emph(inline.c)
-        node.line = inline.start_line
     elif inline.t == "Strong":
         node = strong(inline.c)
-        node.line = inline.start_line
     elif inline.t == "Link":
         node = reference(inline)
-        node.line = inline.start_line
     elif inline.t == "Image":
         node = image(inline)
-        node.line = inline.start_line
     elif inline.t == "Code":
         node = inline_code(inline)
-        node.line = inline.start_line
     elif inline.t == "Html":
         node = inline_html(inline)
-        node.line = inline.start_line
+    elif (inline.t == "Entity"):
+        node = inline_entity(inline)
     else:
         warn("Unsupported inline type " + inline.t)
         return
+    node.line = inline.start_line
     parent_node.append(node)
 
 
