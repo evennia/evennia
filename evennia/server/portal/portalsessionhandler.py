@@ -2,7 +2,7 @@
 Sessionhandler for portal sessions
 """
 import time
-from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PSYNC, PCONNSYNC
+from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC
 
 _MOD_IMPORT = None
 

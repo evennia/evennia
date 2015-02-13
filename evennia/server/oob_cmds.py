@@ -193,6 +193,7 @@ def oob_send(oobhandler, session, *args, **kwargs):
     if obj:
         for name in (a.upper() for a in args if a):
             try:
+                print "MSDP SEND inp:", name
                 value = OOB_SENDABLE.get(name, _NA_SEND)(obj)
                 ret[name] = value
             except Exception, e:

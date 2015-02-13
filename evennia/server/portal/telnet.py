@@ -236,11 +236,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         except Exception, e:
             self.sendLine(str(e))
             return
-        if "oob" in kwargs:
+        if "oob" in kwargs and "OOB" in self.protocol_flags:
             # oob is a list of [(cmdname, arg, kwarg), ...]
-            if "OOB" in self.protocol_flags:
-                for cmdname, args, kwargs in kwargs["oob"]:
-                    self.oob.data_out(cmdname, *args, **kwargs)
+            for cmdname, args, kwargs in kwargs["oob"]:
+                print "telnet oob data_out:", cmdname, args, kwargs
+                self.oob.data_out(cmdname, *args, **kwargs)
 
         # parse **kwargs, falling back to ttype if nothing is given explicitly
         ttype = self.protocol_flags.get('TTYPE', {})

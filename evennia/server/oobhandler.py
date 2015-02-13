@@ -414,6 +414,7 @@ class OOBHandler(TickerHandler):
                                                     (session, oobfuncname, args, kwargs)
             raise RuntimeError(errmsg)
 
+        print "execute_oob:", session, oobfuncname, args, kwargs
         # don't catch this, wrong oobfuncname should be reported
         oobfunc = _OOB_FUNCS[oobfuncname]
 
