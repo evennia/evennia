@@ -221,12 +221,15 @@ class TelnetOOB(object):
 
         print "decode_gmcp:", data
         if data:
-            splits = data.split(" ", 1)
+            splits = data.split(None, 1)
             cmdname = splits[0]
             if len(splits) < 2:
                 self.protocol.data_in(oob=(cmdname, (), {}))
             elif splits[1]:
-                struct = json.loads(json.dumps(splits[1]))
+                try:
+                    struct = json.loads(splits[1])
+                except ValueError:
+                    struct = splits[1]
                 args, kwargs = (), {}
                 if hasattr(struct, "__iter__"):
                     if isinstance(struct, dict):

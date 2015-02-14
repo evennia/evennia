@@ -375,12 +375,14 @@ def oob_list(oobhandler, session, mode, *args, **kwargs):
 CMD_MAP = {"oob_error": oob_error, # will get error messages
            "return_field_report": oob_return_field_report,
            "return_attribute_report": oob_return_attribute_report,
+           # MSDP
            "REPEAT": oob_repeat,
            "UNREPEAT": oob_unrepeat,
            "SEND": oob_send,
            "ECHO": oob_echo,
            "REPORT": oob_report,
            "UNREPORT": oob_unreport,
-           "LIST": oob_list
+           "LIST": oob_list,
+           # GMCP
            }
 
