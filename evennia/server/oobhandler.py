@@ -285,7 +285,7 @@ class OOBHandler(TickerHandler):
         Notes:
             When the field updates the given oobfunction will be called as
 
-                `oobfuncname(oobhandler, session, fieldname, obj, *args, **kwargs)`
+                `oobfuncname(session, fieldname, obj, *args, **kwargs)`
 
             where `fieldname` is the name of the monitored field and
             `obj` is the object on which the field sits. From this you
@@ -310,6 +310,15 @@ class OOBHandler(TickerHandler):
                 skipped (it will be auto-appended if missing)
             oobfuncname (str, optional): OOB command to call on that field
 
+        Notes:
+            When the Attributes db_value updates the given oobfunction
+            will be called as
+
+                `oobfuncname(session, fieldname, obj, *args, **kwargs)`
+
+            where `fieldname` is the name of the monitored field and
+            `obj` is the object on which the field sits. From this you
+            can also easily get the new field value if you want.
         """
         # check so we didn't get a session instead of a sessid
         if not isinstance(sessid, int):
@@ -317,7 +326,7 @@ class OOBHandler(TickerHandler):
         field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
         self._remove_monitor(obj, sessid, field_name, oobfuncname=oobfuncname)
 
-    def add_attribute_monitor(self, obj, sessid, attr_name, oobfuncname):
+    def add_attribute_monitor(self, obj, sessid, attr_name, oobfuncname, *args, **kwargs):
         """
         Monitor the changes of an Attribute on an object. Will trigger when
         the Attribute's `db_value` field updates.
