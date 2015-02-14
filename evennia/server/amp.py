@@ -376,7 +376,7 @@ class AMPProtocol(amp.AMP):
         ret = self.safe_recv(MsgServer2Portal, sessid,
                              ipart, nparts, text=msg, data=data)
         if ret is not None:
-            print "msg server->portal (portal side):", sessid, ret["text"], loads(ret["data"])
+            #print "msg server->portal (portal side):", sessid, ret["text"], loads(ret["data"])
             self.factory.portal.sessions.data_out(sessid,
                                                   text=ret["text"],
                                                   **loads(ret["data"]))
@@ -387,7 +387,7 @@ class AMPProtocol(amp.AMP):
         """
         Access method called by the Server and executed on the Server.
         """
-        print "msg server->portal (server side):", sessid, msg, data
+        #print "msg server->portal (server side):", sessid, msg, data
         return self.safe_send(MsgServer2Portal, sessid,
                               msg=msg if msg is not None else "",
                               data=dumps(data))

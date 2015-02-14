@@ -269,9 +269,9 @@ class PortalSessionHandler(SessionHandler):
         if session:
             # convert oob to the generic format
             if "oob" in kwargs:
-                print "oobstruct_parser in:", kwargs["oob"]
+                #print "oobstruct_parser in:", kwargs["oob"]
                 kwargs["oob"] = self.oobstruct_parser(kwargs["oob"])
-                print "oobstruct_parser out:", kwargs["oob"]
+                #print "oobstruct_parser out:", kwargs["oob"]
             session.data_out(text=text, **kwargs)
 
 PORTAL_SESSIONS = PortalSessionHandler()

@@ -158,7 +158,7 @@ class TelnetOOB(object):
             gmcp_string = "%s %s" % (cmdname, json.dumps(args))
         elif kwargs:
             gmcp_string = "%s %s" % (cmdname, json.dumps(kwargs))
-        print "gmcp_encode", cmdname, args, kwargs, "->", gmcp_string
+        #print "gmcp_encode", cmdname, args, kwargs, "->", gmcp_string
         return force_str(gmcp_string).strip()
 
     def decode_msdp(self, data):
@@ -219,7 +219,7 @@ class TelnetOOB(object):
         if hasattr(data, "__iter__"):
             data = "".join(data)
 
-        print "decode_gmcp:", data
+        #print "decode_gmcp:", data
         if data:
             splits = data.split(None, 1)
             cmdname = splits[0]
@@ -238,7 +238,7 @@ class TelnetOOB(object):
                         args = tuple(struct)
                 else:
                     args = (struct,)
-                print "gmcp decode:", data, "->", cmdname, args, kwargs
+                #print "gmcp decode:", data, "->", cmdname, args, kwargs
                 self.protocol.data_in(oob=(cmdname, args, kwargs))
 
     # access methods
