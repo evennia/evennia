@@ -1,36 +1,14 @@
 """
 OOBHandler - Out Of Band Handler
 
-The OOBHandler.execute_cmd is called by the sessionhandler when it detects
-an OOB instruction (exactly how this looked depends on the protocol; at this
-point all oob calls should look the same)
+The OOBHandler.execute_cmd is called by the sessionhandler when it
+detects an `oob` keyword in the outgoing data (usually called via
+`msg(oob=...)`
 
-The handler pieces of functionality:
-
-    function execution - the oob protocol can execute a function directly on
-                         the server. The available functions must be defined
-                         as global functions in settings.OOB_PLUGIN_MODULES.
-    repeat func execution - the oob protocol can request a given function be
-                            executed repeatedly at a regular interval. This
-                            uses an internal script pool.
-    tracking - the oob protocol can request Evennia to track changes to
-               fields on objects, as well as changes in Attributes. This is
-               done by dynamically adding tracker-objects on entities. The
-               behaviour of those objects can be customized by adding new
-               tracker classes in settings.OOB_PLUGIN_MODULES.
-
-What goes into the OOB_PLUGIN_MODULES is a (list of) modules that contains
-the working server-side code available to the OOB system: oob functions and
-tracker classes.
-
-oob functions have the following call signature:
-    function(caller, session, *args, **kwargs)
-
-oob trackers should inherit from the OOBTracker class (in this
-    module) and implement a minimum of the same functionality.
-
-If a function named "oob_error" is given, this will be called with error
-messages.
+How this works is that the handler executes an oobfunction, which is
+defined in a user-supplied module. This function can then make use of
+the oobhandler's functionality to return data, register a monitor on
+an object's properties or start a repeating action.
 
 """
 
@@ -132,17 +110,21 @@ class OOBFieldMonitor(object):
             self.subscribers.pop(sessid, None)
 
 
-class OOBAtRepeat(object):
+class OOBAtRepeater(object):
     """
-    This object should be stored on a target object, named
-    as the hook to call repeatedly, e.g.
+    This object is created and used by the `OOBHandler.repeat` method.
+    It will be assigned to a target object as a custom variable, e.g.:
 
-    _oob_listen_every_20s_for_sessid_1 = AtRepat()
+    `obj._oob_ECHO_every_20s_for_sessid_1 = AtRepater()`
+
+    It will be called every interval seconds by the OOBHandler,
+    triggering whatever OOB function it is set to use.
+
     """
 
-    def __call__(self, sessid, oobfuncname, *args, **kwargs):
+    def __call__(self, *args, **kwargs):
         "Called at regular intervals. Calls the oob function"
-        OOB_HANDLER.execute_cmd(sessid, oobfuncname, *args, **kwargs)
+        OOB_HANDLER.execute_cmd(kwargs["_sessid"], kwargs["_oobfuncname"], *args, **kwargs)
 
 
 # Main OOB Handler
@@ -153,13 +135,13 @@ class OOBHandler(TickerHandler):
     """
 
     def __init__(self, *args, **kwargs):
+        super(OOBHandler, self).__init__(*args, **kwargs)
         self.save_name = "oob_ticker_storage"
         self.oob_save_name = "oob_monitor_storage"
         self.oob_monitor_storage = {}
-        super(OOBHandler, self).__init__(*args, **kwargs)
 
-    def _get_repeat_hook_name(self, oobfuncname, interval, sessid):
-        "Return the unique repeat call hook name for this object"
+    def _get_repeater_hook_name(self, oobfuncname, interval, sessid):
+        "Return the unique repeater call hook name for this object"
         return "_oob_%s_every_%ss_for_sessid_%s" % (oobfuncname, interval, sessid)
 
     def _get_fieldmonitor_name(self, fieldname):
@@ -220,7 +202,7 @@ class OOBHandler(TickerHandler):
         by the Server process as part of the reload upstart. Here we
         overload the tickerhandler's restore method completely to make
         sure we correctly re-apply and re-initialize the correct
-        monitor and repeat objects on all saved objects.
+        monitor and repeater objecth on all saved objects.
         """
         # load the oob monitors and initialize them
         oob_storage = ServerConfig.objects.conf(key=self.oob_save_name)
@@ -232,7 +214,7 @@ class OOBHandler(TickerHandler):
                 obj = unpack_dbobj(obj)
                 self._add_monitor(obj, sessid, fieldname, oobfuncname, *args, **kwargs)
         # handle the tickers (same as in TickerHandler except we  call
-        # the add_repeat method which makes sure to add the hooks before
+        # the add_repeater method which makes sure to add the hooks before
         # starting the tickerpool)
         ticker_storage = ServerConfig.objects.conf(key=self.save_name)
         if ticker_storage:
@@ -240,12 +222,12 @@ class OOBHandler(TickerHandler):
             for store_key, (args, kwargs) in self.ticker_storage.items():
                 obj, interval, idstring = store_key
                 obj = unpack_dbobj(obj)
-                # we saved these in add_repeat before, can now retrieve them
-                sessid = kwargs["sessid"]
-                oobfuncname = kwargs["oobfuncname"]
-                self.add_repeat(obj, sessid, oobfuncname, interval, *args, **kwargs)
+                # we saved these in add_repeater before, can now retrieve them
+                sessid = kwargs["_sessid"]
+                oobfuncname = kwargs["_oobfuncname"]
+                self.add_repeater(obj, sessid, oobfuncname, interval, *args, **kwargs)
 
-    def add_repeat(self, obj, sessid, oobfuncname, interval=20, *args, **kwargs):
+    def add_repeater(self, obj, sessid, oobfuncname, interval=20, *args, **kwargs):
         """
         Set an oob function to be repeatedly called.
 
@@ -261,22 +243,20 @@ class OOBHandler(TickerHandler):
         if not isinstance(sessid, int):
             sessid = sessid.sessid
 
-        hook = OOBAtRepeat()
-        hookname = self._get_repeat_hook_name(oobfuncname, interval, sessid)
+        hook = OOBAtRepeater()
+        hookname = self._get_repeater_hook_name(oobfuncname, interval, sessid)
         _SA(obj, hookname, hook)
-        kwargs.update({"sessid":sessid, "oobfuncname":oobfuncname})
         # we store these in kwargs so that tickerhandler saves them with the rest
-        kwargs["sessid"] = sessid
-        kwargs["oobfuncbame"] = oobfuncname
-        self.add(obj, interval, idstring=oobfuncname, hook_key=hookname, *args, **kwargs)
+        kwargs.update({"_sessid":sessid, "_oobfuncname":oobfuncname})
+        super(OOBHandler, self).add(obj, int(interval), oobfuncname, hookname, *args, **kwargs)
 
-    def remove_repeat(self, obj, sessid, oobfuncname, interval=20):
+    def remove_repeater(self, obj, sessid, oobfuncname, interval=20):
         """
         Remove the repeatedly calling oob function
 
         Args:
             obj (Object): The object on which the repeater sits
-            sessid (int): Session id of the Session that registered the repeat
+            sessid (int): Session id of the Session that registered the repeater
             oobfuncname (str): Name of oob function to call at repeat
             interval (int, optional): Number of seconds between repeats
 
@@ -284,8 +264,8 @@ class OOBHandler(TickerHandler):
         # check so we didn't get a session instead of a sessid
         if not isinstance(sessid, int):
             sessid = sessid.sessid
-        self.remove(obj, interval, idstring=oobfuncname)
-        hookname = self._get_repeat_hook_name(oobfuncname, interval, sessid)
+        super(OOBHandler, self).remove(obj, interval, idstring=oobfuncname)
+        hookname = self._get_repeater_hook_name(oobfuncname, interval, sessid)
         try:
             _DA(obj, hookname)
         except AttributeError:
@@ -406,8 +386,8 @@ class OOBHandler(TickerHandler):
             oobfuncname (str): The name of the oob command (case sensitive)
 
         Notes:
-            If the oobfuncname is a valid oob function, the `*args` and
-            `**kwargs` are passed into the oob command.
+            If the oobfuncname is a valid oob function, `args` and
+            `kwargs` are passed into the oob command.
 
         """
         if isinstance(session, int):
@@ -418,13 +398,19 @@ class OOBHandler(TickerHandler):
                                                     (session, oobfuncname, args, kwargs)
             raise RuntimeError(errmsg)
 
-        print "execute_oob:", session, oobfuncname, args, kwargs
-        # don't catch this, wrong oobfuncname should be reported
-        oobfunc = _OOB_FUNCS[oobfuncname]
+        #print "execute_oob:", session, oobfuncname, args, kwargs
+        try:
+            oobfunc = _OOB_FUNCS[oobfuncname]
+        except Exception:
+            errmsg = "'%s' is not a valid OOB command. Commands available:\n %s" % (oobfuncname, ", ".join(_OOB_FUNCS))
+            if _OOB_ERROR:
+                _OOB_ERROR(self, session, errmsg, *args, **kwargs)
+            errmsg = "OOB ERROR: %s" % errmsg
+            logger.log_trace(errmsg)
+            raise
 
         # we found an oob command. Execute it.
         try:
-            #print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
             oobfunc(self, session, *args, **kwargs)
         except Exception, err:
             errmsg = "Exception in %s(*%s, **%s):\n%s" % (oobfuncname, args, kwargs, err)

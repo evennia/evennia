@@ -89,7 +89,7 @@ def oob_error(oobhandler, session, errmsg, *args, **kwargs):
     management.
 
     """
-    session.msg(oob=("error", ("OOB ERROR: %s" % errmsg)))
+    session.msg(oob=("error", ("OOB ERROR: %s" % errmsg,)))
 
 def oob_echo(oobhandler, session, *args, **kwargs):
     """
@@ -107,7 +107,7 @@ def oob_echo(oobhandler, session, *args, **kwargs):
 ##OOB{"repeat":10}
 def oob_repeat(oobhandler, session, oobfuncname, interval, *args, **kwargs):
     """
-    Called as REPEAT <oobfunc> <interval>
+    Called as REPEAT <oobfunc> <interval> <args>
     Repeats a given OOB command with a certain frequency.
 
     Args:
@@ -120,8 +120,14 @@ def oob_repeat(oobhandler, session, oobfuncname, interval, *args, **kwargs):
         The command checks so that it cannot repeat itself.
 
     """
-    if oobfuncname != "REPEAT":
-        oobhandler.add_repeat(None, session.sessid, oobfuncname, interval, *args, **kwargs)
+    if not oobfuncname:
+        oob_error(oobhandler, session, "Usage: REPEAT <oobfuncname>, <interval>")
+        return
+    # limit repeat actions to minimum 5 seconds interval
+    interval = 20 if not interval else (max(5, interval))
+    obj = session.get_puppet_or_player()
+    if obj and oobfuncname != "REPEAT":
+        oobhandler.add_repeater(obj, session.sessid, oobfuncname, interval, *args, **kwargs)
 
 
 ##OOB{"UNREPEAT":10}
@@ -132,16 +138,18 @@ def oob_unrepeat(oobhandler, session, oobfuncname, interval):
 
     Args:
         oobhandler (OOBHandler): main OOB handler.
-        session (Session): Session controlling the repeat
+        session (Session): Session controlling the repeater
         oobfuncname (str): OOB function called every interval seconds
-        interval (int): Interval of repeat, in seconds.
+        interval (int): Interval of repeater, in seconds.
 
     Notes:
         The command checks so that it cannot repeat itself.
 
 
     """
-    oobhandler.remove_repeat(None, session.sessid, oobfuncname, interval)
+    obj = session.get_puppet_or_player()
+    if obj:
+        oobhandler.remove_repeater(obj, session.sessid, oobfuncname, interval)
 
 
 #
@@ -194,7 +202,7 @@ def oob_send(oobhandler, session, *args, **kwargs):
     if obj:
         for name in (a.upper() for a in args if a):
             try:
-                print "MSDP SEND inp:", name
+                #print "MSDP SEND inp:", name
                 value = OOB_SENDABLE.get(name, _NA)(obj)
                 ret[name] = value
             except Exception, e:
@@ -253,7 +261,7 @@ def oob_report(oobhandler, session, *args, **kwargs):
             else:
                 oobhandler.add_attribute_monitor(obj, session.sessid, propname, "return_attribute_report")
                 ret.append(_GA(obj, "db_value"))
-        print "ret:", ret
+        #print "ret:", ret
         session.msg(oob=("MSDP_ARRAY", ret))
     else:
         oob_error(oobhandler, session, "You must log in first.")
@@ -336,11 +344,6 @@ def oob_list(oobhandler, session, mode, *args, **kwargs):
                                      "UNREPORT",
                                      # "RESET",
                                      "SEND")))
-    elif mode == "LISTS":
-        session.msg(oob=("LISTS",("REPORTABLE_VARIABLES",
-                                  "REPORTED_VARIABLES",
-                                  # "CONFIGURABLE_VARIABLES",
-                                  "SENDABLE_VARIABLES")))
     elif mode == "REPORTABLE_VARIABLES":
         session.msg(oob=("REPORTABLE_VARIABLES", tuple(key for key in OOB_REPORTABLE.keys())))
     elif mode == "REPORTED_VARIABLES":
@@ -356,7 +359,11 @@ def oob_list(oobhandler, session, mode, *args, **kwargs):
         # Not implemented (game specific)
         oob_error(oobhandler, session, "Not implemented (game specific)")
     else:
-        oob_error(oobhandler, session, "Unsupported mode")
+        # mode == "LISTS" or not given
+        session.msg(oob=("LISTS",("REPORTABLE_VARIABLES",
+                                  "REPORTED_VARIABLES",
+                                  # "CONFIGURABLE_VARIABLES",
+                                  "SENDABLE_VARIABLES")))
 
 #
 # Cmd mapping
@@ -368,8 +375,8 @@ def oob_list(oobhandler, session, mode, *args, **kwargs):
 CMD_MAP = {"oob_error": oob_error, # will get error messages
            "return_field_report": oob_return_field_report,
            "return_attribute_report": oob_return_attribute_report,
-           "repeat": oob_repeat,
-           "unrepeat": oob_unrepeat,
+           "REPEAT": oob_repeat,
+           "UNREPEAT": oob_unrepeat,
            "SEND": oob_send,
            "ECHO": oob_echo,
            "REPORT": oob_report,

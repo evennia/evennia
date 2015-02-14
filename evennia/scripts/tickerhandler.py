@@ -79,7 +79,7 @@ class Ticker(object):
         appropriately.
         """
         for key, (obj, args, kwargs) in self.subscriptions.items():
-            hook_key = yield kwargs.get("hook_key", "at_tick")
+            hook_key = yield kwargs.get("_hook_key", "at_tick")
             if not obj:
                 # object was deleted between calls
                 self.validate()
@@ -256,21 +256,48 @@ class TickerHandler(object):
 
     def add(self, obj, interval, idstring="", hook_key="at_tick", *args, **kwargs):
         """
-        Add object to tickerhandler. The object must have an at_tick
-        method. This will be called every interval seconds until the
-        object is unsubscribed from the ticker.
+        Add object to tickerhandler
+
+        Args:
+            obj (Object): The object to subscribe to the ticker.
+            interval (int): Interval in seconds between calling
+                `hook_key` below.
+            idstring (str, optional): Identifier for separating
+                this ticker-subscription from others with the same
+                interval. Allows for managing multiple calls with
+                the same time interval
+            hook_key (str, optional): The name of the hook method
+                on `obj` to call every `interval` seconds. Defaults to
+                `at_tick()`.
+            args, kwargs (optional): These will be passed into the
+                method given by `hook_key` every time it is called.
+
+        Notes:
+            The combination of `obj`, `interval` and `idstring`
+            together uniquely defines the ticker subscription. They
+            must all be supplied in order to unsubscribe from it
+            later.
+
         """
         isdb, store_key = self._store_key(obj, interval, idstring)
         if isdb:
             self.ticker_storage[store_key] = (args, kwargs)
             self.save()
-        kwargs["hook_key"] = hook_key
+        kwargs["_hook_key"] = hook_key
         self.ticker_pool.add(store_key, obj, interval, *args, **kwargs)
 
     def remove(self, obj, interval=None, idstring=""):
         """
-        Remove object from ticker, or only this object ticking
-        at a given interval.
+        Remove object from ticker or only remove it from tickers with
+        a given interval.
+
+        Args:
+            obj (Object): The object subscribing to the ticker.
+            interval (int, optional): Interval of ticker to remove. If
+                `None`, all tickers on this object matching `idstring`
+                will be removed, regardless of their `interval` setting.
+            idstring (str, optional): Identifier id of ticker to remove.
+
         """
         if interval:
             isdb, store_key = self._store_key(obj, interval, idstring)

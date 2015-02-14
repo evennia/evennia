@@ -373,10 +373,10 @@ class AMPProtocol(amp.AMP):
         """
         Relays message to Portal. This method is executed on the Portal.
         """
-        #print "msg server->portal (portal side):", sessid, msg
         ret = self.safe_recv(MsgServer2Portal, sessid,
                              ipart, nparts, text=msg, data=data)
         if ret is not None:
+            print "msg server->portal (portal side):", sessid, ret["text"], loads(ret["data"])
             self.factory.portal.sessions.data_out(sessid,
                                                   text=ret["text"],
                                                   **loads(ret["data"]))

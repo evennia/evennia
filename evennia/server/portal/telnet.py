@@ -26,8 +26,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
     def connectionMade(self):
         """
-        This is called when the connection is first
-        established.
+        This is called when the connection is first established.
         """
         # initialize the session
         self.iaw_mode = False
@@ -35,7 +34,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         client_address = self.transport.client
         # this number is counted down for every handshake that completes.
         # when it reaches 0 the portal/server syncs their data
-        self.handshakes = 6 # naws, ttype, mccp, mssp, oob, mxp
+        self.handshakes = 7 # naws, ttype, mccp, mssp, msdp, gmcp, mxp
         self.init_session("telnet", client_address, self.factory.sessionhandler)
 
         # negotiate client size
@@ -47,7 +46,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.mccp = Mccp(self)
         # negotiate mssp (crawler communication)
         self.mssp = mssp.Mssp(self)
-        # oob communication (MSDP, GMCP)
+        # oob communication (MSDP, GMCP) - two handshake calls!
         self.oob = telnet_oob.TelnetOOB(self)
         # mxp support
         self.mxp = Mxp(self)
@@ -67,7 +66,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         When all have reported, a sync with the server is performed.
         The system will force-call this sync after a small time to handle
         clients that don't reply to handshakes at all.
-        info - debug text from the protocol calling
         """
         if self.handshakes > 0:
             if force:
@@ -239,7 +237,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         if "oob" in kwargs and "OOB" in self.protocol_flags:
             # oob is a list of [(cmdname, arg, kwarg), ...]
             for cmdname, args, kwargs in kwargs["oob"]:
-                print "telnet oob data_out:", cmdname, args, kwargs
+                #print "telnet oob data_out:", cmdname, args, kwargs
                 self.oob.data_out(cmdname, *args, **kwargs)
 
         # parse **kwargs, falling back to ttype if nothing is given explicitly

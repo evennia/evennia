@@ -191,17 +191,22 @@ class PortalSessionHandler(SessionHandler):
          Helper method for each session to use to parse oob structures
          (The 'oob' kwarg of the msg() method).
 
-         Allowed input oob structures are:
-                 cmdname
-                ((cmdname,), (cmdname,))
-                (cmdname,(arg, ))
-                (cmdname,(arg1,arg2))
-                (cmdname,{key:val,key2:val2})
-                (cmdname, (args,), {kwargs})
-                ((cmdname, (arg1,arg2)), cmdname, (cmdname, (arg1,)))
-        outputs an ordered structure on the form
-                ((cmdname, (args,), {kwargs}), ...), where the two last
-                                              parts of each tuple may be empty
+         Args: oobstruct (str or iterable): A structure representing
+            an oob command on one of the following forms:
+                - "cmdname"
+                - "cmdname", "cmdname"
+                - ("cmdname", arg)
+                - ("cmdname",(args))
+                - ("cmdname",{kwargs}
+                - ("cmdname", (args), {kwargs})
+                - (("cmdname", (args,), {kwargs}), ("cmdname", (args,), {kwargs}))
+            and any combination of argument-less commands or commands with only
+            args, only kwargs or both.
+
+        Returns:
+            structure (tuple): A generic OOB structure on the form
+            `((cmdname, (args,), {kwargs}), ...)`, where the two last
+            args and kwargs may be empty
         """
         def _parse(oobstruct):
             slen = len(oobstruct)
@@ -217,17 +222,17 @@ class PortalSessionHandler(SessionHandler):
                 return (oobstruct[0], (), {})
             elif slen == 2:
                 if isinstance(oobstruct[1], dict):
-                    # cmdname, {kwargs}
+                    # (cmdname, {kwargs})
                     return (oobstruct[0], (), dict(oobstruct[1]))
                 elif isinstance(oobstruct[1], (tuple, list)):
-                    # cmdname, (args,)
-                    return (oobstruct[0], list(oobstruct[1]), {})
+                    # (cmdname, (args,))
+                    return (oobstruct[0], tuple(oobstruct[1]), {})
                 else:
-                    # cmdname, cmdname
-                    return ((oobstruct[0], (), {}), (oobstruct[1].lower(), (), {}))
+                    # (cmdname, arg)
+                    return (oobstruct[0], (oobstruct[1],), {})
             else:
-                # cmdname, (args,), {kwargs}
-                return (oobstruct[0], list(oobstruct[1]), dict(oobstruct[2]))
+                # (cmdname, (args,), {kwargs})
+                return (oobstruct[0], tuple(oobstruct[1]), dict(oobstruct[2]))
 
         if hasattr(oobstruct, "__iter__"):
             # differentiate between (cmdname, cmdname),
@@ -264,7 +269,9 @@ class PortalSessionHandler(SessionHandler):
         if session:
             # convert oob to the generic format
             if "oob" in kwargs:
+                print "oobstruct_parser in:", kwargs["oob"]
                 kwargs["oob"] = self.oobstruct_parser(kwargs["oob"])
+                print "oobstruct_parser out:", kwargs["oob"]
             session.data_out(text=text, **kwargs)
 
 PORTAL_SESSIONS = PortalSessionHandler()
