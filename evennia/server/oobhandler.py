@@ -34,7 +34,7 @@ for modname in make_iter(settings.OOB_PLUGIN_MODULES):
 _OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
 if not _OOB_ERROR:
     # no custom error set; create default oob error message function
-    def oob_error(oobhandler, session, errmsg, *args, **kwargs):
+    def oob_error(session, errmsg, *args, **kwargs):
         """
         Fallback error handler. This will be used if no custom
         oob_error is defined and just echoes the error back to the
@@ -404,18 +404,18 @@ class OOBHandler(TickerHandler):
         except Exception:
             errmsg = "'%s' is not a valid OOB command. Commands available:\n %s" % (oobfuncname, ", ".join(_OOB_FUNCS))
             if _OOB_ERROR:
-                _OOB_ERROR(self, session, errmsg, *args, **kwargs)
+                _OOB_ERROR(session, errmsg, *args, **kwargs)
             errmsg = "OOB ERROR: %s" % errmsg
             logger.log_trace(errmsg)
             raise
 
         # we found an oob command. Execute it.
         try:
-            oobfunc(self, session, *args, **kwargs)
+            oobfunc(session, *args, **kwargs)
         except Exception, err:
             errmsg = "Exception in %s(*%s, **%s):\n%s" % (oobfuncname, args, kwargs, err)
             if _OOB_ERROR:
-                _OOB_ERROR(self, session, errmsg, *args, **kwargs)
+                _OOB_ERROR(session, errmsg, *args, **kwargs)
             errmsg = "OOB ERROR: %s" % errmsg
             logger.log_trace(errmsg)
             raise

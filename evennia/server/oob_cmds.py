@@ -26,16 +26,15 @@ function "listen" in this module, with the arguments *("desc", "key").
 
 oob functions have the following call signature:
 
-    function(oobhandler, session, *args, **kwargs)
+    function(session, *args, **kwargs)
 
-where oobhandler is a back-reference to the central oob handler (this
-allows for deactivating itself in various ways), session is the active
-session and *args, **kwargs are what is sent from the oob call.
+where session is the active session and *args, **kwargs are extra
+arguments sent with the oob command.
 
-A function called with OOB_ERROR will retrieve error strings if it is
-defined. It will get the error message as its 3rd argument.
+A function mapped to the key "oob_error" will retrieve error strings
+if it is defined. It will get the error message as its 1st argument.
 
-    oob_error(oobhandler, session, error, *args, **kwargs)
+    oob_error(session, error, *args, **kwargs)
 
 This allows for customizing error handling.
 
@@ -59,6 +58,8 @@ name.
 
 from django.conf import settings
 from evennia.utils.utils import to_str
+from evennia import OOB_HANDLER
+
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _NA = lambda o: "N/A"
@@ -73,12 +74,11 @@ _NA = lambda o: "N/A"
 # General OOB commands
 #
 
-def oob_error(oobhandler, session, errmsg, *args, **kwargs):
+def oob_error(session, errmsg, *args, **kwargs):
     """
     Error handling method. Error messages are relayed here.
 
     Args:
-        oobhandler (OOBHandler): The main OOB handler.
         session (Session): The session to receive the error
         errmsg (str): The failure message
 
@@ -91,12 +91,11 @@ def oob_error(oobhandler, session, errmsg, *args, **kwargs):
     """
     session.msg(oob=("error", ("OOB ERROR: %s" % errmsg,)))
 
-def oob_echo(oobhandler, session, *args, **kwargs):
+def oob_echo(session, *args, **kwargs):
     """
     Test echo function. Echoes args, kwargs sent to it.
 
     Args:
-        oobhandler (OOBHandler): The main OOB handler.
         session (Session): The Session to receive the echo.
         args (list of str): Echo text.
         kwargs (dict of str, optional): Keyed echo text
@@ -105,13 +104,12 @@ def oob_echo(oobhandler, session, *args, **kwargs):
     session.msg(oob=("echo", args, kwargs))
 
 ##OOB{"repeat":10}
-def oob_repeat(oobhandler, session, oobfuncname, interval, *args, **kwargs):
+def oob_repeat(session, oobfuncname, interval, *args, **kwargs):
     """
     Called as REPEAT <oobfunc> <interval> <args>
     Repeats a given OOB command with a certain frequency.
 
     Args:
-        oobhandler (OOBHandler): main OOB handler.
         session (Session): Session creating the repeat
         oobfuncname (str): OOB function called every interval seconds
         interval (int): Interval of repeat, in seconds.
@@ -121,23 +119,22 @@ def oob_repeat(oobhandler, session, oobfuncname, interval, *args, **kwargs):
 
     """
     if not oobfuncname:
-        oob_error(oobhandler, session, "Usage: REPEAT <oobfuncname>, <interval>")
+        oob_error(session, "Usage: REPEAT <oobfuncname>, <interval>")
         return
     # limit repeat actions to minimum 5 seconds interval
     interval = 20 if not interval else (max(5, interval))
     obj = session.get_puppet_or_player()
     if obj and oobfuncname != "REPEAT":
-        oobhandler.add_repeater(obj, session.sessid, oobfuncname, interval, *args, **kwargs)
+        OOB_HANDLER.add_repeater(obj, session.sessid, oobfuncname, interval, *args, **kwargs)
 
 
 ##OOB{"UNREPEAT":10}
-def oob_unrepeat(oobhandler, session, oobfuncname, interval):
+def oob_unrepeat(session, oobfuncname, interval):
     """
     Called with UNREPEAT <oobfunc> <interval>
     Disable repeating callback.
 
     Args:
-        oobhandler (OOBHandler): main OOB handler.
         session (Session): Session controlling the repeater
         oobfuncname (str): OOB function called every interval seconds
         interval (int): Interval of repeater, in seconds.
@@ -149,7 +146,7 @@ def oob_unrepeat(oobhandler, session, oobfuncname, interval):
     """
     obj = session.get_puppet_or_player()
     if obj:
-        oobhandler.remove_repeater(obj, session.sessid, oobfuncname, interval)
+        OOB_HANDLER.remove_repeater(obj, session.sessid, oobfuncname, interval)
 
 
 #
@@ -178,7 +175,7 @@ OOB_SENDABLE = {
 
 
 ##OOB{"SEND":"CHARACTER_NAME"} - from webclient
-def oob_send(oobhandler, session, *args, **kwargs):
+def oob_send(session, *args, **kwargs):
     """
     Called with the SEND MSDP command.
     This function directly returns the value of the given variable to
@@ -186,7 +183,6 @@ def oob_send(oobhandler, session, *args, **kwargs):
     belongs to the session.
 
     Args:
-        oobhandler (OOBHandler): oobhandler reference
         session (Session): Session object
         args (str): any number of properties to return. These
             must belong to the OOB_SENDABLE dictionary.
@@ -210,7 +206,7 @@ def oob_send(oobhandler, session, *args, **kwargs):
         # return, make sure to use the right case
         session.msg(oob=("MSDP_TABLE", (), ret))
     else:
-        oob_error(oobhandler, session, "You must log in first.")
+        oob_error(session, "You must log in first.")
 
 
 # mapping standard MSDP keys to Evennia field names
@@ -221,14 +217,13 @@ OOB_REPORTABLE = {
         }
 
 ##OOB{"REPORT":"TEST"}
-def oob_report(oobhandler, session, *args, **kwargs):
+def oob_report(session, *args, **kwargs):
     """
     Called with the `REPORT PROPNAME` MSDP command.
     Monitors the changes of given property name. Assumes reporting
     happens on an objcet controlled by the session.
 
     Args:
-        oobhandler (OOBHandler): The main OOB handler
         session (Session): The Session doing the monitoring. The
             property is assumed to sit on the entity currently
             controlled by the Session. If puppeting, this is an
@@ -253,21 +248,21 @@ def oob_report(oobhandler, session, *args, **kwargs):
         for name in args:
             propname = OOB_REPORTABLE.get(name, None)
             if not propname:
-                oob_error(oobhandler, session, "No Reportable property '%s'. Use LIST REPORTABLE_VARIABLES." % propname)
+                oob_error(session, "No Reportable property '%s'. Use LIST REPORTABLE_VARIABLES." % propname)
             # the field_monitors require an oob function as a callback when they report a change.
             elif propname.startswith("db_"):
-                oobhandler.add_field_monitor(obj, session.sessid, propname, "return_field_report")
+                OOB_HANDLER.add_field_monitor(obj, session.sessid, propname, "return_field_report")
                 ret.append(to_str(_GA(obj, propname), force_string=True))
             else:
-                oobhandler.add_attribute_monitor(obj, session.sessid, propname, "return_attribute_report")
+                OOB_HANDLER.add_attribute_monitor(obj, session.sessid, propname, "return_attribute_report")
                 ret.append(_GA(obj, "db_value"))
         #print "ret:", ret
         session.msg(oob=("MSDP_ARRAY", ret))
     else:
-        oob_error(oobhandler, session, "You must log in first.")
+        oob_error(session, "You must log in first.")
 
 
-def oob_return_field_report(oobhandler, session, fieldname, obj, *args, **kwargs):
+def oob_return_field_report(session, fieldname, obj, *args, **kwargs):
     """
     This is a helper command called by the monitor when fieldname
     changes. It is not part of the official MSDP specification but is
@@ -278,7 +273,7 @@ def oob_return_field_report(oobhandler, session, fieldname, obj, *args, **kwargs
                      {fieldname: to_str(getattr(obj, fieldname), force_string=True)}))
 
 
-def oob_return_attribute_report(oobhandler, session, fieldname, obj, *args, **kwargs):
+def oob_return_attribute_report(session, fieldname, obj, *args, **kwargs):
     """
     This is a helper command called by the monitor when an Attribute
     changes. We need to handle this a little differently from fields
@@ -294,7 +289,7 @@ def oob_return_attribute_report(oobhandler, session, fieldname, obj, *args, **kw
 
 
 ##OOB{"UNREPORT": "TEST"}
-def oob_unreport(oobhandler, session, *args, **kwargs):
+def oob_unreport(session, *args, **kwargs):
     """
     This removes tracking for the given data.
     """
@@ -303,22 +298,21 @@ def oob_unreport(oobhandler, session, *args, **kwargs):
         for name in (a.upper() for a in args if a):
             propname = OOB_REPORTABLE.get(name, None)
             if not propname:
-                oob_error(oobhandler, session, "No Un-Reportable property '%s'. Use LIST REPORTABLE_VARIABLES." % propname)
+                oob_error(session, "No Un-Reportable property '%s'. Use LIST REPORTABLE_VARIABLES." % propname)
             elif propname.startswith("db_"):
-                oobhandler.remove_field_monitor(obj, session.sessid, propname, "oob_return_field_report")
+                OOB_HANDLER.remove_field_monitor(obj, session.sessid, propname, "oob_return_field_report")
             else:  # assume attribute
-                oobhandler.remove_attribute_monitor(obj, session.sessid, propname, "oob_return_attribute_report")
+                OOB_HANDLER.remove_attribute_monitor(obj, session.sessid, propname, "oob_return_attribute_report")
     else:
-        oob_error(oobhandler, session, "You must log in first.")
+        oob_error(session, "You must log in first.")
 
 
 ##OOB{"LIST":"COMMANDS"}
-def oob_list(oobhandler, session, mode, *args, **kwargs):
+def oob_list(session, mode, *args, **kwargs):
     """
     Called with the `LIST <MODE>`  MSDP command.
 
     Args:
-        oobhandler (OOBHandler): The main OOB handler
         session (Session): The Session asking for the information
         mode (str): The available properties. One of
             "COMMANDS"               Request an array of commands supported
@@ -350,14 +344,14 @@ def oob_list(oobhandler, session, mode, *args, **kwargs):
         # we need to check so as to use the right return value depending on if it is
         # an Attribute (identified by tracking the db_value field) or a normal database field
         # reported is a list of tuples (obj, propname, args, kwargs)
-        reported = oobhandler.get_all_monitors(session.sessid)
+        reported = OOB_HANDLER.get_all_monitors(session.sessid)
         reported = [rep[0].key if rep[1] == "db_value" else rep[1] for rep in reported]
         session.msg(oob=("REPORTED_VARIABLES", reported))
     elif mode == "SENDABLE_VARIABLES":
         session.msg(oob=("SENDABLE_VARIABLES", tuple(key for key in OOB_REPORTABLE.keys())))
     elif mode == "CONFIGURABLE_VARIABLES":
         # Not implemented (game specific)
-        oob_error(oobhandler, session, "Not implemented (game specific)")
+        oob_error(session, "Not implemented (game specific)")
     else:
         # mode == "LISTS" or not given
         session.msg(oob=("LISTS",("REPORTABLE_VARIABLES",
