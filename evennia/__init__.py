@@ -54,13 +54,19 @@ create_message = None
 
 # utilities
 lockfuncs = None
-tickerhandler = None
+oobhandler = None
 logger = None
 gametime = None
 ansi = None
 spawn = None
 managers = None
 contrib = None
+
+# Handlers
+SESSION_HANDLER = None
+TICKER_HANDLER = None
+OOB_HANDLER = None
+CHANNEL_HANDLER = None
 
 
 import os
@@ -136,12 +142,17 @@ def init():
 
     # utilities
     from locks import lockfuncs
-    from scripts.tickerhandler import TICKER_HANDLER as tickerhandler
     from utils import logger
     from utils import gametime
     from utils import ansi
     from utils.spawner import spawn
     import contrib
+
+    # handlers
+    from scripts.tickerhandler import TICKER_HANDLER
+    from server.oobhandler import OOB_HANDLER
+    from server.sessionhandler import SESSION_HANDLER
+    from comms.channelhandler import CHANNEL_HANDLER
 
     # API containers
 

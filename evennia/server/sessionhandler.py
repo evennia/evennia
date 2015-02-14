@@ -445,4 +445,5 @@ class ServerSessionHandler(SessionHandler):
             # pass the rest off to the session
             session.data_in(text=text, **kwargs)
 
-SESSIONS = ServerSessionHandler()
+SESSION_HANDLER = ServerSessionHandler()
+SESSIONS = SESSION_HANDLER # legacy

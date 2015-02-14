@@ -158,4 +158,5 @@ class ChannelHandler(object):
             self.cached_cmdsets[source_object] = chan_cmdset
             return chan_cmdset
 
-CHANNELHANDLER = ChannelHandler()
+CHANNEL_HANDLER = ChannelHandler()
+CHANNELHANDLER = CHANNEL_HANDLER # legacy
