@@ -91,8 +91,12 @@ class OOBFieldMonitor(object):
         Called by the save() mechanism when the given
         field has updated.
         """
-        for sessid, (oobfuncname, args, kwargs) in self.subscribers.items():
-            OOB_HANDLER.execute_cmd(sessid, oobfuncname, fieldname, obj, *args, **kwargs)
+        for sessid, oobtuples in self.subscribers.items():
+            # oobtuples is a list [(oobfuncname, args, kwargs), ...],
+            # a potential list of oob commands to call when this
+            # field changes.
+            for (oobfuncname, args, kwargs) in oobtuples:
+                OOB_HANDLER.execute_cmd(sessid, oobfuncname, fieldname, obj, *args, **kwargs)
 
     def add(self, sessid, oobfuncname, *args, **kwargs):
         """
@@ -167,7 +171,7 @@ class OOBHandler(TickerHandler):
         Create a fieldmonitor and store it on the object. This tracker
         will be updated whenever the given field changes.
         """
-        fieldmonitorname = self._get_fieldtracker_name(fieldname)
+        fieldmonitorname = self._get_fieldmonitor_name(fieldname)
         if not hasattr(obj, fieldmonitorname):
             # assign a new fieldmonitor to the object
             _SA(obj, fieldmonitorname, OOBFieldMonitor())
@@ -184,7 +188,7 @@ class OOBHandler(TickerHandler):
         Remove the OOB from obj. If oob implements an
         at_delete hook, this will be called with args, kwargs
         """
-        fieldmonitorname = self._get_fieldtracker_name(fieldname)
+        fieldmonitorname = self._get_fieldmonitor_name(fieldname)
         try:
             _GA(obj, fieldmonitorname).remove(sessid, oobfuncname=oobfuncname)
             if not _GA(obj, fieldmonitorname).subscribers:
@@ -313,7 +317,7 @@ class OOBHandler(TickerHandler):
             sessid = sessid.sessid
         # all database field names starts with db_*
         field_name = field_name if field_name.startswith("db_") else "db_%s" % field_name
-        self._add_monitor(obj, sessid, field_name, field_name, oobfuncname=None)
+        self._add_monitor(obj, sessid, field_name, oobfuncname, *args, **kwargs)
 
     def remove_field_monitor(self, obj, sessid, field_name, oobfuncname=None):
         """
@@ -408,7 +412,7 @@ class OOBHandler(TickerHandler):
         """
         if isinstance(session, int):
             # a sessid. Convert to a session
-            session = SESSIONS.session_from_sessid(self.sessid)
+            session = SESSIONS.session_from_sessid(session)
         if not session:
             errmsg = "OOB Error: execute_cmd(%s,%s,%s,%s) - no valid session" % \
                                                     (session, oobfuncname, args, kwargs)
@@ -423,11 +427,12 @@ class OOBHandler(TickerHandler):
             #print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
             oobfunc(self, session, *args, **kwargs)
         except Exception, err:
-            errmsg = "OOB Error: Exception in '%s'(%s, %s):\n%s" % (oobfuncname, args, kwargs, err)
+            errmsg = "Exception in %s(*%s, **%s):\n%s" % (oobfuncname, args, kwargs, err)
             if _OOB_ERROR:
                 _OOB_ERROR(self, session, errmsg, *args, **kwargs)
+            errmsg = "OOB ERROR: %s" % errmsg
             logger.log_trace(errmsg)
-            raise Exception(errmsg)
+            raise
 
 
 # access object

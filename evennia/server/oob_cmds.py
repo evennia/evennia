@@ -58,9 +58,10 @@ name.
 """
 
 from django.conf import settings
+from evennia.utils.utils import to_str
 _GA = object.__getattribute__
 _SA = object.__setattr__
-_NA_SEND = lambda o: "N/A"
+_NA = lambda o: "N/A"
 
 
 #------------------------------------------------------------
@@ -88,7 +89,7 @@ def oob_error(oobhandler, session, errmsg, *args, **kwargs):
     management.
 
     """
-    session.msg(oob=("err", ("ERROR " + errmsg,)))
+    session.msg(oob=("error", ("OOB ERROR: %s" % errmsg)))
 
 def oob_echo(oobhandler, session, *args, **kwargs):
     """
@@ -194,14 +195,14 @@ def oob_send(oobhandler, session, *args, **kwargs):
         for name in (a.upper() for a in args if a):
             try:
                 print "MSDP SEND inp:", name
-                value = OOB_SENDABLE.get(name, _NA_SEND)(obj)
+                value = OOB_SENDABLE.get(name, _NA)(obj)
                 ret[name] = value
             except Exception, e:
                 ret[name] = str(e)
         # return, make sure to use the right case
         session.msg(oob=("MSDP_TABLE", (), ret))
     else:
-        session.msg(oob=("err", ("You must log in first.",)))
+        oob_error(oobhandler, session, "You must log in first.")
 
 
 # mapping standard MSDP keys to Evennia field names
@@ -240,17 +241,22 @@ def oob_report(oobhandler, session, *args, **kwargs):
     """
     obj = session.get_puppet_or_player()
     if obj:
+        ret = []
         for name in args:
             propname = OOB_REPORTABLE.get(name, None)
             if not propname:
-                session.msg(oob=("err", ("No Reportable property '%s'. Use LIST REPORTABLE_VARIABLES." % propname,)))
+                oob_error(oobhandler, session, "No Reportable property '%s'. Use LIST REPORTABLE_VARIABLES." % propname)
             # the field_monitors require an oob function as a callback when they report a change.
             elif propname.startswith("db_"):
                 oobhandler.add_field_monitor(obj, session.sessid, propname, "return_field_report")
+                ret.append(to_str(_GA(obj, propname), force_string=True))
             else:
                 oobhandler.add_attribute_monitor(obj, session.sessid, propname, "return_attribute_report")
+                ret.append(_GA(obj, "db_value"))
+        print "ret:", ret
+        session.msg(oob=("MSDP_ARRAY", ret))
     else:
-        session.msg(oob=("err", ("You must log in first.",)))
+        oob_error(oobhandler, session, "You must log in first.")
 
 
 def oob_return_field_report(oobhandler, session, fieldname, obj, *args, **kwargs):
@@ -260,7 +266,8 @@ def oob_return_field_report(oobhandler, session, fieldname, obj, *args, **kwargs
     a callback used by the monitor to format the result before sending
     it on.
     """
-    session.msg(oob=("MSDP_TABLE", (), {fieldname, getattr(obj, fieldname)}))
+    session.msg(oob=("MSDP_TABLE", (),
+                     {fieldname: to_str(getattr(obj, fieldname), force_string=True)}))
 
 
 def oob_return_attribute_report(oobhandler, session, fieldname, obj, *args, **kwargs):
@@ -274,7 +281,8 @@ def oob_return_attribute_report(oobhandler, session, fieldname, obj, *args, **kw
     a callback used by the monitor to format the result before sending
     it on.
     """
-    session.msg(oob=("MSDP_TABLE", (), {obj.db_key, getattr(obj, fieldname)}))
+    session.msg(oob=("MSDP_TABLE", (),
+                     {obj.db_key: to_str(getattr(obj, fieldname), force_string=True)}))
 
 
 ##OOB{"UNREPORT": "TEST"}
@@ -287,13 +295,13 @@ def oob_unreport(oobhandler, session, *args, **kwargs):
         for name in (a.upper() for a in args if a):
             propname = OOB_REPORTABLE.get(name, None)
             if not propname:
-                session.msg(oob=("err", ("No Un-Reportable property '%s'. Use LIST REPORTED_VALUES." % name,)))
+                oob_error(oobhandler, session, "No Un-Reportable property '%s'. Use LIST REPORTABLE_VARIABLES." % propname)
             elif propname.startswith("db_"):
                 oobhandler.remove_field_monitor(obj, session.sessid, propname, "oob_return_field_report")
             else:  # assume attribute
                 oobhandler.remove_attribute_monitor(obj, session.sessid, propname, "oob_return_attribute_report")
     else:
-        session.msg(oob=("err", ("You must log in first.",)))
+        oob_error(oobhandler, session, "You must log in first.")
 
 
 ##OOB{"LIST":"COMMANDS"}
@@ -346,10 +354,9 @@ def oob_list(oobhandler, session, mode, *args, **kwargs):
         session.msg(oob=("SENDABLE_VARIABLES", tuple(key for key in OOB_REPORTABLE.keys())))
     elif mode == "CONFIGURABLE_VARIABLES":
         # Not implemented (game specific)
-        session.msg(oob=("err", ("LIST", "Not implemented (game specific).")))
+        oob_error(oobhandler, session, "Not implemented (game specific)")
     else:
-        session.msg(oob=("err", ("LIST", "Unsupported mode",)))
-
+        oob_error(oobhandler, session, "Unsupported mode")
 
 #
 # Cmd mapping

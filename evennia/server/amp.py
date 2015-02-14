@@ -215,7 +215,7 @@ class FunctionCall(amp.Command):
 
 # Helper functions
 
-dumps = lambda data: to_str(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
+dumps = lambda data: to_str(pickle.dumps(to_str(data), pickle.HIGHEST_PROTOCOL))
 loads = lambda data: pickle.loads(to_str(data))
 
 # multipart message store
@@ -348,10 +348,10 @@ class AMPProtocol(amp.AMP):
         data comes in multiple chunks; if so (nparts>1) we buffer the data
         and wait for the remaining parts to arrive before continuing.
         """
-        #print "msg portal -> server (server side):", sessid, msg, data
         ret = self.safe_recv(MsgPortal2Server, sessid, ipart, nparts,
                                                         text=msg, data=data)
         if ret is not None:
+            #print "msg portal -> server (server side):", sessid, msg, loads(ret["data"])
             self.factory.server.sessions.data_in(sessid,
                                                  text=ret["text"],
                                                  **loads(ret["data"]))
@@ -387,7 +387,7 @@ class AMPProtocol(amp.AMP):
         """
         Access method called by the Server and executed on the Server.
         """
-        #print "msg server->portal (server side):", sessid, msg, data
+        print "msg server->portal (server side):", sessid, msg, data
         return self.safe_send(MsgServer2Portal, sessid,
                               msg=msg if msg is not None else "",
                               data=dumps(data))
