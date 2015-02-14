@@ -4,33 +4,55 @@ OOB configuration.
 This module should be included in (or replace) the
 default module set in settings.OOB_PLUGIN_MODULES
 
-All functions defined in this module are made available
-to be called by the OOB handler.
+A function oob_error will be used as optional error management.
+The available OOB commands can be extended by changing
 
-See src/server/oob_msdp.py for more information.
+    `settings.OOB_PLUGIN_MODULES`
 
-    function execution - the oob protocol can execute a function directly on
-                         the server. The available functions must be defined
-                         as global functions via settings.OOB_PLUGIN_MODULES.
-    repeat func execution - the oob protocol can request a given function be
-                            executed repeatedly at a regular interval. This
-                            uses an internal script pool.
-    tracking - the oob protocol can request Evennia to track changes to
-               fields on objects, as well as changes in Attributes. This is
-               done by dynamically adding tracker-objects on entities. The
-               behaviour of those objects can be customized via
-               settings.OOB_PLUGIN_MODULES.
+CMD_MAP: This module must contain a global dictionary CMD_MAP. This is
+a dictionary that maps the call-name available  to a function in this
+module (this allows you to map multiple oob cmdnames to a single
+actual Python function, for example).
 
 oob functions have the following call signature:
-    function(caller, session, *args, **kwargs)
 
-oob trackers should inherit from the OOBTracker class in src/server.oob_msdp.py
-    and implement a minimum of the same functionality.
+    function(session, *args, **kwargs)
 
-a global function oob_error will be used as optional error management.
+where session is the active session and *args, **kwargs are extra
+arguments sent with the oob command.
+
+A function mapped to the key "oob_error" will retrieve error strings
+if it is defined. It will get the error message as its 1st argument.
+
+    oob_error(session, error, *args, **kwargs)
+
+This allows for customizing error handling.
+
+Data is usually returned to the user via a return OOB call:
+
+   session.msg(oob=(oobcmdname, (args,), {kwargs}))
+
+Oobcmdnames are case-sensitive.  Note that args, kwargs must be
+iterable. Non-iterables will be interpreted as a new command name (you
+can send multiple oob commands with one msg() call))
 
 """
 
 # import the contents of the default msdp module
 from evennia.server.oob_cmds import *
 
+
+# def oob_echo(session, *args, **kwargs):
+#     """
+#     Example echo function. Echoes args, kwargs sent to it.
+#
+#     Args:
+#         session (Session): The Session to receive the echo.
+#         args (list of str): Echo text.
+#         kwargs (dict of str, optional): Keyed echo text
+#
+#     """
+#     session.msg(oob=("echo", args, kwargs))
+#
+## oob command map
+# CMD_MAP = {"ECHO": oob_echo}
