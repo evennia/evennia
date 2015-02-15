@@ -99,38 +99,34 @@ function onMessage(evt) {
         // dynamically call oob methods, if available
         // The variables are come on the form [(cmname, [args], {kwargs}), ...]
         var oobcmds = JSON.parse(message);
-        var errmsg = "";
 
         try {
-                if (oobcmds instanceof Array == false) {
-                    errmsg = "oob instruction's outermost level must be an Array.";
-                    throw
+            if (oobcmds instanceof Array == false) {
+                throw "oob instruction's outermost level must be an Array.";
+            }
+            for (var icmd = 0; i < oobcmds.length; icmd++) {
+                // call each command tuple in turn
+                var cmdname = oobcmds[icmd][0];
+                var args = oobcmds[icmd][1];
+                var kwargs = oobcmds[icmd][2];
+                // match cmdname with a command existing in the
+                // CMD_MAP mapping
+                if (cmdname in CMD_MAP == false) {
+                    throw "oob command " + cmdname + " is not supported by client.";
                 }
-                for (var icmd = 0; i < oobcmds.length; icmd++) {
-                    // call each command tuple in turn
-                    var cmdname = oobcmds[icmd][0];
-                    var args = oobcmds[icmd][1];
-                    var kwargs = oobcmds[icmd][2];
-                    // match cmdname with a command existing in the
-                    // CMD_MAP mapping
-                    if (cmdname in CMD_MAP == false) {
-                        errmsg = "oob command " + cmdname + " is not supported by client.";
-                        throw
-                    }
-                    // we have a matching oob command in CMD_MAP.
-                    // Prepare the error message beforehand
-                    errmsg = "Client could not execute OOB function" + "cmdname" + "(" + args + kwargs + ").";
-                    // Execute
+                // we have a matching oob command in CMD_MAP.
+                // Prepare the error message beforehand
+                // Execute
+                try {
                     CMD_MAP[cmdname](args, kwargs);
                 }
+                catch(error) {
+                    doShow("err", "Client could not execute OOB function" + "cmdname" + "(" + args + kwargs + ").");
+                }
             }
+        }
         catch(error) {
-            if (errmsg) {
-                doShow("err", errmsg);
-            }
-            else {
-                doShow("err", "Client could not execute OOB function in " + oobcmds);
-            }
+            doShow("err", error);
         }
     }
     else if (mode == "PRT") {
@@ -194,22 +190,21 @@ function doSend(){
 function doOOB(cmdstring){
     // Send OOB data from client to Evennia.
     // Takes input strings with syntax ["cmdname", args, kwargs]
-    var errmsg = "";
     try {
         var cmdtuple = JSON.parse(cmdstring);
         var oobmsg = "";
         if (cmdtuple instanceof Array == false) {
             // a single command instruction without arguments
-            oobmsg = [cmdtuple, (), {}];
+            oobmsg = [cmdtuple, [], {}];
         }
-        else if {
+        else {
             switch (cmdtuple.length) {
                 case 0:
-                    throw;
-                    break;
+                    throw "No command given";
+                    return 
                 case 1:
                     // [cmdname]
-                    oobmsg = [cmdtuple[0], (), {}];
+                    oobmsg = [cmdtuple[0], [], {}];
                     break;
                 case 2:
                     // [cmdname, args]
@@ -221,18 +216,15 @@ function doOOB(cmdstring){
                     break;
                 default:
                     errmsg = "Malformed OOB instruction:" + cmdstring
+                    return
             }
         // convert to string and send it to the server
         oobmsg = JSON.stringify(oobmsg);
         websocket.send("OOB" + oobmsg);
         }
-    catch {
-        if (errmsg) {
-            doSend("err", errmsg);
-        }
-        else {
-            doSend("err", "OOB output " + cmdtuple + " is not on the right form.");
-        }
+    }
+    catch(error) {
+        doSend("err", "OOB output " + cmdtuple + " is not on the right form: " + error);
     }
 }
 

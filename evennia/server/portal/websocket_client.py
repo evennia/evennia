@@ -150,7 +150,7 @@ class WebSocketClient(Protocol, Session):
         if "prompt" in kwargs:
             self.sendLine("PROMPT" + parse_html(kwargs["prompt"], strip_ansi=nomarkup))
         if raw:
-            self.sendLine(text)
+            self.sendLine("CMD" + text)
         else:
-            self.sendLine(parse_html(text, strip_ansi=nomarkup))
+            self.sendLine("CMD" + parse_html(text, strip_ansi=nomarkup))
 
