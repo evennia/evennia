@@ -130,7 +130,7 @@ class CmdDelCom(MuxPlayerCommand):
     """
 
     key = "delcom"
-    aliases = ["delaliaschan, delchanalias"]
+    aliases = ["delaliaschan", "delchanalias"]
     help_category = "Comms"
     locks = "cmd:not perm(channel_banned)"
 
