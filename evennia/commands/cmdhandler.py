@@ -277,7 +277,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
     """
 
     @inlineCallbacks
-    def _run_command(cmd, args):
+    def _run_command(cmd, cmdname, args):
         """
         This initializes and runs the Command instance once the parser
         has identified it as either a normal command or one of the
@@ -285,6 +285,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
 
         Args:
             cmd (Command): command object
+            cmdname (str): name of command
             args (str): extra text entered after the identified command
         Returns:
             deferred (Deferred): this will fire when the func() method
@@ -438,7 +439,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 raise ExecSystemCommand(cmd, sysarg)
 
             # A normal command.
-            ret = yield _run_command(cmd, args)
+            ret = yield _run_command(cmd, cmdname, args)
             returnValue(ret)
 
         except ExecSystemCommand, exc:
@@ -448,7 +449,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             sysarg = exc.sysarg
 
             if syscmd:
-                ret = yield _run_command(syscmd, sysarg)
+                ret = yield _run_command(syscmd, syscmd.key, sysarg)
                 returnValue(ret)
             elif sysarg:
                 # return system arg
