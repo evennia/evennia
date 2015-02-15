@@ -3,9 +3,9 @@
 Room Typeclasses for the TutorialWorld.
 
 This defines special types of Rooms available in the tutorial. To keep
-everything in one place we define them together with custom commands
-to control them, those commands could also have been in a separate
-module (e.g. if they could have been re-used elsewhere.)
+everything in one place we define them together with the custom
+commands needed to control them. Those commands could also have been
+in a separate module (e.g. if they could have been re-used elsewhere.)
 
 """
 
@@ -301,9 +301,11 @@ class DarkRoom(TutorialRoom):
 
         Note that we do NOT look for a specific LightSource typeclass,
         but for the Attribute is_giving_light - this makes it easy to
-        later add other types of light-giving items.
+        later add other types of light-giving items. We also accept
+        if there is a light-giving object in the room overall (like if
+        a lantern was dropped in the room)
         """
-        return any(obj for obj in obj.contents if obj.db.is_giving_light)
+        return obj.db.is_giving_light or any(obj for obj in obj.contents if obj.db.is_giving_light)
 
     def _heal(self, character):
         """

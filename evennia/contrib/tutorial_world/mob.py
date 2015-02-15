@@ -41,6 +41,9 @@ class Mob(tut_objects.TutorialObject):
         self.db.last_location = None
         # only when True will the mob move.
         self.db.roam_mode = True
+        #
+        self.db.move_from
+        self.location.msg_contents("With a cold breeze, %s drifts in the direction of %s." % (self.key, destination.key))
 
     def announce_move_from(self, destination):
         "Called just before moving"
