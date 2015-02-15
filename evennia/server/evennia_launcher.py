@@ -59,7 +59,7 @@ TWISTED_MIN = '12.0'
 DJANGO_MIN = '1.7'
 DJANGO_REC = '1.7'
 
-sys.path[0] = EVENNIA_ROOT
+sys.path[1] = EVENNIA_ROOT
 
 #------------------------------------------------------------
 #
@@ -643,7 +643,7 @@ def init_game_directory(path, check_db=True):
     set_gamedir(path)
 
     # Add gamedir to python path
-    sys.path.insert(1, GAMEDIR)
+    sys.path.insert(0, GAMEDIR)
 
     if sys.argv[1] == 'test':
         os.environ['DJANGO_SETTINGS_MODULE'] = 'evennia.settings_default'

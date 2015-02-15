@@ -125,16 +125,16 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
         except ImportError, e:
             logger.log_trace()
             errstring += _("Error loading cmdset '%s': %s.")
-            errstring = errstring % (modulepath, e)
+            errstring = errstring % (python_path, e)
         except KeyError:
             logger.log_trace()
             errstring += _("Error in loading cmdset: No cmdset class '%(classname)s' in %(modulepath)s.")
             errstring = errstring % {"classname": classname,
-                                     "modulepath": modulepath}
+                                     "modulepath": python_path}
         except SyntaxError, e:
             logger.log_trace()
             errstring += _("SyntaxError encountered when loading cmdset '%s': %s.")
-            errstring = errstring % (modulepath, e)
+            errstring = errstring % (python_path, e)
         except Exception, e:
             logger.log_trace()
             errstring += _("Compile/Run error when loading cmdset '%s': %s.")
