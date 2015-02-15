@@ -495,6 +495,15 @@ def superuser(*args, **kwargs):
     """
     return False
 
+def has_player(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Only returns true if accessing_obj has_player is true, that is,
+    this is a player-controlled object. T
+
+    This is a useful lock for traverse-locking Exits to restrain NPC
+    mobiles from moving outside their areas.
+    """
+    return hasattr(accessing_obj, "has_player") and accessing_obj.has_player
 
 def serversetting(accessing_obj, accessed_obj, *args, **kwargs):
     """

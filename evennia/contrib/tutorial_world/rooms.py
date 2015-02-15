@@ -89,6 +89,19 @@ class TutorialRoom(DefaultRoom):
         self.db.tutorial_info = "This is a tutorial room. It allows you to use the 'tutorial' command."
         self.cmdset.add_default(TutorialRoomCmdSet)
 
+    def at_object_receive(self, new_arrival, source_location):
+        """
+        When an object enter a tutorial room we tell other objects in
+        the room about it by trying to call a hook on them. The Mob object
+        uses this to cheaply get notified of enemies without having
+        to constantly scan for them.
+        """
+        if new_arrival.has_player and not new_arrival.is_superuser:
+            # this is a character
+            for obj in self.content_get(exclude=new_arrival):
+                if hasattr(obj, "at_new_arrival"):
+                    obj.at_new_arrival(new_arrival)
+
     def reset(self):
         "Can be called by the tutorial runner."
         pass
