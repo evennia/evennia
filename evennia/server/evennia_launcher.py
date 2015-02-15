@@ -943,9 +943,15 @@ def main():
         server_operation(option, service, args.interactive, args.profiler)
     elif option != "noop":
         # pass-through to django manager
-        init_game_directory(CURRENT_DIR, check_db=False)
+        check_db = False
         if option in ('runserver', 'testserver'):
             print WARNING_RUNSERVER
+        if option == "shell":
+            # to use the shell we need to initialize it first,
+            # and this only works if the database is set up
+            check_db = True
+        init_game_directory(CURRENT_DIR, check_db=check_db)
+
         args = [option]
         kwargs = {}
         if service not in ("all", "server", "portal"):
