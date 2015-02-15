@@ -236,9 +236,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             return
         if "oob" in kwargs and "OOB" in self.protocol_flags:
             # oob is a list of [(cmdname, arg, kwarg), ...]
-            for cmdname, args, kwargs in kwargs["oob"]:
+            for cmdname, args, okwargs in kwargs["oob"]:
                 #print "telnet oob data_out:", cmdname, args, kwargs
-                self.oob.data_out(cmdname, *args, **kwargs)
+                self.oob.data_out(cmdname, *args, **okwargs)
 
         # parse **kwargs, falling back to ttype if nothing is given explicitly
         ttype = self.protocol_flags.get('TTYPE', {})

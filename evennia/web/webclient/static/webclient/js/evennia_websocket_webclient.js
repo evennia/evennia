@@ -36,14 +36,14 @@ function list (args, kwargs) {
 
 function send (args, kwargs) {
     // show in main window. SEND returns kwargs {name:value}.
-    for (sendvalue in kwargs) {
+    for (var sendvalue in kwargs) {
         doShow("out", sendvalue + " = " + kwargs[sendvalue]);}
 }
 
 function report (args, kwargs) {
     // show in main window. REPORT returns kwargs
     // {attrfieldname:value}
-    for (name in kwargs) {
+    for (var name in kwargs) {
         doShow("out", name + " = " + kwargs[name]) }
 }
 
@@ -55,6 +55,8 @@ function err (args, kwargs) {
     // display error
     doShow("err", args) }
 
+// Map above functions with oob command names
+var CMD_MAP = {"ECHO":echo, "LIST":list, "SEND":send, "REPORT":report, "error":err};
 
 //
 // Webclient code
@@ -86,34 +88,60 @@ function onClose(evt) {
 }
 
 function onMessage(evt) {
-    // called when the Evennia is sending data to client
-    var inmsg = evt.data
-    if (inmsg.length > 3 && inmsg.substr(0, 3) == "OOB") {
+    // called when the Evennia is sending data to client.
+    // Such data is always prepended by a 3-letter marker
+    // OOB, PRT or CMD, defining its operation
+    var inmsg = evt.data;
+    if (inmsg.length < 4) return;
+    var mode = inmsg.substr(0, 3);
+    var message = inmsg.slice(3);
+    if (mode == "OOB") {
         // dynamically call oob methods, if available
+        // The variables are come on the form [(cmname, [args], {kwargs}), ...]
+        var oobcmds = JSON.parse(message);
+        var errmsg = "";
+
         try {
-            var oobarray = JSON.parse(inmsg.slice(3));} // everything after OOB }
-        catch(err) {
-            // not JSON packed - a normal text
-            doShow('out', inmsg);
-            return;
-        }
-        if (typeof oobarray != "undefined") {
-            for (var ind in oobarray) {
-                try {
-                    window[oobarray[ind][0]](oobarray[ind][1], oobarray[ind][2]) }
-                catch(err) {
-                    doShow("err", "Could not execute js OOB function '" + oobarray[ind][0] + "(" + oobarray[ind][1] + oobarray[ind][2] + ")'") }
+                if (oobcmds instanceof Array == false) {
+                    errmsg = "oob instruction's outermost level must be an Array.";
+                    throw
+                }
+                for (var icmd = 0; i < oobcmds.length; icmd++) {
+                    // call each command tuple in turn
+                    var cmdname = oobcmds[icmd][0];
+                    var args = oobcmds[icmd][1];
+                    var kwargs = oobcmds[icmd][2];
+                    // match cmdname with a command existing in the
+                    // CMD_MAP mapping
+                    if (cmdname in CMD_MAP == false) {
+                        errmsg = "oob command " + cmdname + " is not supported by client.";
+                        throw
+                    }
+                    // we have a matching oob command in CMD_MAP.
+                    // Prepare the error message beforehand
+                    errmsg = "Client could not execute OOB function" + "cmdname" + "(" + args + kwargs + ").";
+                    // Execute
+                    CMD_MAP[cmdname](args, kwargs);
+                }
+            }
+        catch(error) {
+            if (errmsg) {
+                doShow("err", errmsg);
+            }
+            else {
+                doShow("err", "Client could not execute OOB function in " + oobcmds);
             }
         }
     }
-    else if (inmsg.length >= 6 && inmsg.substr(0, 6) == "PROMPT") {
+    else if (mode == "PRT") {
         // handle prompt
-        var game_prompt = inmsg.slice(6);
-        doPrompt("prompt", game_prompt);
+        doPrompt("prompt", message);
     }
-    else {
+    else if (mode == "CMD") {
+        // normal command operation
         // normal message
-        doShow('out', inmsg); }
+        doShow('out', message);
+    }
 }
 
 function onError(evt) {
@@ -123,15 +151,17 @@ function onError(evt) {
 
 function doSend(){
     // relays data from client to Evennia.
-    // If OOB_debug is set, allows OOB test data on the
-    // form ##OOB{func:args}
+    // If OOB_debug is set, allows OOB test data using the syntax
+    // ##OOB[funcname, args, kwargs]
     outmsg = $("#inputfield").val();
     history_add(outmsg);
     HISTORY_POS = 0;
     $('#inputform')[0].reset();                     // clear input field
 
     if (OOB_debug && outmsg.length > 4 && outmsg.substr(0, 5) == "##OOB") {
-        if (outmsg == "##OOBUNITTEST") {
+        // OOB direct input
+        var outmsg = outmsg.slice(5);
+        if (outmsg == "UNITTEST") {
            // unittest mode
            doShow("out", "OOB testing mode ...");
            doOOB(JSON.parse('{"ECHO":"Echo test"}'));
@@ -144,26 +174,66 @@ function doSend(){
            doShow("out", "... OOB testing mode done.");
            return
         }
-        // test OOB messaging
+        // send a manual OOB instruction
         try {
-            doShow("out", "OOB input: " + outmsg.slice(5));
+            doShow("out", "OOB input: " + outmsg);
             if (outmsg.length == 5) {
-                doShow("err", "OOB testing syntax: ##OOB{\"cmdname:args, ...}"); }
+                doShow("err", "OOB syntax: ##OOB[\"cmdname\", [args], {kwargs}]"); }
             else {
-                doOOB(JSON.parse(outmsg.slice(5))); } }
+                doOOB(JSON.parse(outmsg.slice(5))); }
+        }
         catch(err) {
-            doShow("err", err) }
+            doShow("err", err)
+        }
     }
     else {
         // normal output
-        websocket.send(outmsg); }
+        websocket.send("CMD" + outmsg); }
 }
 
-function doOOB(oobdict){
+function doOOB(cmdstring){
     // Send OOB data from client to Evennia.
-    // Takes input on form {funcname:[args], funcname: [args], ... }
-    var oobmsg = JSON.stringify(oobdict);
-    websocket.send("OOB" + oobmsg);
+    // Takes input strings with syntax ["cmdname", args, kwargs]
+    var errmsg = "";
+    try {
+        var cmdtuple = JSON.parse(cmdstring);
+        var oobmsg = "";
+        if (cmdtuple instanceof Array == false) {
+            // a single command instruction without arguments
+            oobmsg = [cmdtuple, (), {}];
+        }
+        else if {
+            switch (cmdtuple.length) {
+                case 0:
+                    throw;
+                    break;
+                case 1:
+                    // [cmdname]
+                    oobmsg = [cmdtuple[0], (), {}];
+                    break;
+                case 2:
+                    // [cmdname, args]
+                    oobmsg = [cmdtuple[0], cmdtuple[1], {}];
+                    break;
+                case 3:
+                    // [cmdname, args, kwargs]
+                    oobmsg = [cmdtuple[0], cmdtuple[1], cmdtuple[2]];
+                    break;
+                default:
+                    errmsg = "Malformed OOB instruction:" + cmdstring
+            }
+        // convert to string and send it to the server
+        oobmsg = JSON.stringify(oobmsg);
+        websocket.send("OOB" + oobmsg);
+        }
+    catch {
+        if (errmsg) {
+            doSend("err", errmsg);
+        }
+        else {
+            doSend("err", "OOB output " + cmdtuple + " is not on the right form.");
+        }
+    }
 }
 
 function doShow(type, msg){
@@ -352,6 +422,6 @@ $(document).ready(function(){
     }, 500);
     // set an idle timer to avoid proxy servers to time out on us (every 3 minutes)
     setInterval(function() {
-        websocket.send("idle");
+        doSend("idle")
     }, 60000*3);
 });
