@@ -16,7 +16,7 @@ messages sent to the client is one of two modes:
 
 // If on, allows client user to send OOB messages to server by
 // prepending with ##OOB{}, for example ##OOB{"echo":[1,2,3,4]}
-var OOB_debug = true
+var DEBUG = true
 
 //
 // Custom OOB functions
@@ -56,7 +56,7 @@ function err (args, kwargs) {
     doShow("err", args) }
 
 // Map above functions with oob command names
-var CMD_MAP = {"ECHO":echo, "LIST":list, "SEND":send, "REPORT":report, "error":err};
+var CMD_MAP = {"echo":echo, "LIST":list, "SEND":send, "REPORT":report, "error":err};
 
 //
 // Webclient code
@@ -96,33 +96,31 @@ function onMessage(evt) {
     var mode = inmsg.substr(0, 3);
     var message = inmsg.slice(3);
     if (mode == "OOB") {
-        // dynamically call oob methods, if available
-        // The variables are come on the form [(cmname, [args], {kwargs}), ...]
-        var oobcmds = JSON.parse(message);
-
+        // dynamically call oob methods if available
+        // The incoming data is on the form [cmdname, [args], {kwargs}]
         try {
-            if (oobcmds instanceof Array == false) {
-                throw "oob instruction's outermost level must be an Array.";
+            if (message.length < 1) {
+                throw "Usage: ##OOB [[commandname, [args], {kwargs}], ...]"
             }
-            for (var icmd = 0; i < oobcmds.length; icmd++) {
-                // call each command tuple in turn
-                var cmdname = oobcmds[icmd][0];
-                var args = oobcmds[icmd][1];
-                var kwargs = oobcmds[icmd][2];
-                // match cmdname with a command existing in the
-                // CMD_MAP mapping
-                if (cmdname in CMD_MAP == false) {
-                    throw "oob command " + cmdname + " is not supported by client.";
-                }
-                // we have a matching oob command in CMD_MAP.
-                // Prepare the error message beforehand
-                // Execute
-                try {
-                    CMD_MAP[cmdname](args, kwargs);
-                }
-                catch(error) {
-                    doShow("err", "Client could not execute OOB function" + "cmdname" + "(" + args + kwargs + ").");
-                }
+            var oobcmd = JSON.parse(message);
+            doShow("debug", "Received OOB: " + message + " parsed: " + oobcmd);
+            // call each command tuple in turn
+            var cmdname = oobcmd[0];
+            var args = oobcmd[1];
+            var kwargs = oobcmd[2];
+            // match cmdname with a command existing in the
+            // CMD_MAP mapping
+            if (cmdname in CMD_MAP == false) {
+                throw "oob command " + cmdname + " is not supported by client.";
+            }
+            // we have a matching oob command in CMD_MAP.
+            // Prepare the error message beforehand
+            // Execute
+            try {
+                CMD_MAP[cmdname](args, kwargs);
+            }
+            catch(error) {
+                doShow("err", "Client could not execute OOB function" + "cmdname" + "(" + args + kwargs + ").");
             }
         }
         catch(error) {
@@ -154,29 +152,31 @@ function doSend(){
     HISTORY_POS = 0;
     $('#inputform')[0].reset();                     // clear input field
 
-    if (OOB_debug && outmsg.length > 4 && outmsg.substr(0, 5) == "##OOB") {
+    if (outmsg.length > 4 && outmsg.substr(0, 5) == "##OOB") {
         // OOB direct input
         var outmsg = outmsg.slice(5);
         if (outmsg == "UNITTEST") {
            // unittest mode
            doShow("out", "OOB testing mode ...");
-           doOOB(JSON.parse('{"ECHO":"Echo test"}'));
-           doOOB(JSON.parse('{"LIST":"COMMANDS"}'));
-           doOOB(JSON.parse('{"SEND":"CHARACTER_NAME"}'));
-           doOOB(JSON.parse('{"REPORT":"TEST"}'));
-           doOOB(JSON.parse('{"UNREPORT":"TEST"}'));
-           doOOB(JSON.parse('{"REPEAT": 1}'));
-           doOOB(JSON.parse('{"UNREPEAT": 1}'));
+           doOOB(["ECHO", ["Echo test"]]);
+           doOOB(["LIST", ["COMMANDS"]]);
+           doOOB(["SEND", ["CHARACTER_NAME"]]);
+           doOOB(["REPORT", ["TEST"]]);
+           doOOB(["UNREPORT", ["TEST"]]);
+           doOOB(["REPEAT", [1, "ECHO"]]);
+           doOOB(["UNREPEAT", [1, "ECHO"]]);
            doShow("out", "... OOB testing mode done.");
            return
         }
         // send a manual OOB instruction
         try {
-            doShow("out", "OOB input: " + outmsg);
-            if (outmsg.length == 5) {
-                doShow("err", "OOB syntax: ##OOB[\"cmdname\", [args], {kwargs}]"); }
+            doShow("debug", "OOB input: " + outmsg);
+            if (outmsg.length == 0) {
+                throw "Usage: ##OOB [[commandname, [args], {kwargs}], ...]";
+            }
             else {
-                doOOB(JSON.parse(outmsg.slice(5))); }
+                doOOB(outmsg);
+            }
         }
         catch(err) {
             doShow("err", err)
@@ -190,6 +190,7 @@ function doSend(){
 function doOOB(cmdstring){
     // Send OOB data from client to Evennia.
     // Takes input strings with syntax ["cmdname", args, kwargs]
+    doShow("debug", "into doOOB... " + cmdstring)
     try {
         var cmdtuple = JSON.parse(cmdstring);
         var oobmsg = "";
@@ -201,7 +202,6 @@ function doOOB(cmdstring){
             switch (cmdtuple.length) {
                 case 0:
                     throw "No command given";
-                    return 
                 case 1:
                     // [cmdname]
                     oobmsg = [cmdtuple[0], [], {}];
@@ -215,8 +215,7 @@ function doOOB(cmdstring){
                     oobmsg = [cmdtuple[0], cmdtuple[1], cmdtuple[2]];
                     break;
                 default:
-                    errmsg = "Malformed OOB instruction:" + cmdstring
-                    return
+                    throw "Malformed OOB instruction: " + cmdstring;
             }
         // convert to string and send it to the server
         oobmsg = JSON.stringify(oobmsg);
@@ -224,7 +223,7 @@ function doOOB(cmdstring){
         }
     }
     catch(error) {
-        doSend("err", "OOB output " + cmdtuple + " is not on the right form: " + error);
+        doShow("err", "OOB output " + cmdtuple + " is not on the right form: " + error);
     }
 }
 
@@ -233,6 +232,16 @@ function doShow(type, msg){
     // type gives the class of div to use.
     // The default types are
     // "out" (normal output) or "err" (red error message)
+    if (type == "debug") {
+       if (DEBUG) {
+           type = "out";
+           msg = "DEBUG: " + msg;
+       }
+       else {
+           return;
+       }
+    }
+    // output
     $("#messagewindow").append(
         "<div class='msg "+ type +"'>"+ msg +"</div>");
     // scroll message window to bottom

@@ -86,7 +86,7 @@ class WebSocketClient(Protocol, Session):
 
         if mode == "OOB":
             # an out-of-band command
-            self.decode_json(data)
+            self.json_decode(data)
         elif mode == "CMD":
             # plain text input
             self.data_in(text=data)
@@ -107,7 +107,7 @@ class WebSocketClient(Protocol, Session):
         except Exception:
             log_trace("Websocket malformed OOB request: %s" % data)
             raise
-        self.sessionhandler.data_in(oob=(cmdname, args, kwargs))
+        self.sessionhandler.data_in(self, oob=(cmdname, args, kwargs))
 
     def json_encode(self, cmdname, *args, **kwargs):
         """
@@ -143,7 +143,7 @@ class WebSocketClient(Protocol, Session):
             self.sendLine(str(e))
         if "oob" in kwargs:
             for cmdname, args, okwargs in kwargs["oob"]:
-                self.encode_json(cmdname, *args, **okwargs)
+                self.json_encode(cmdname, *args, **okwargs)
 
         raw = kwargs.get("raw", False)
         nomarkup = kwargs.get("nomarkup", False)

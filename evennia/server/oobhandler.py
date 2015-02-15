@@ -416,7 +416,7 @@ class OOBHandler(TickerHandler):
                 _OOB_ERROR(session, errmsg, *args, **kwargs)
             errmsg = "OOB ERROR: %s" % errmsg
             logger.log_trace(errmsg)
-            raise
+            return
 
         # we found an oob command. Execute it.
         try:
@@ -427,7 +427,6 @@ class OOBHandler(TickerHandler):
                 _OOB_ERROR(session, errmsg, *args, **kwargs)
             errmsg = "OOB ERROR: %s" % errmsg
             logger.log_trace(errmsg)
-            raise
 
 
 # access object
