@@ -533,6 +533,7 @@ class CmdChannelCreate(MuxPlayerCommand):
                                          description,
                                          locks=lockstring)
         new_chan.connect(caller)
+        CHANNELHANDLER.update()
         self.msg("Created channel %s and connected to it." % new_chan.key)
 
 
