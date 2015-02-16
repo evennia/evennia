@@ -14,8 +14,9 @@ from evennia.contrib.tutorial_world import objects as tut_objects
 
 class Mob(tut_objects.TutorialObject):
     """
-    This is a mobile. It has several states which
+    This is a state-machine AI mobile. It has several states which
     are controlled from setting various Attributes:
+
         patrolling: if set, the mob will move randomly
             from room to room, but preferring to not return
             the way it came. If unset, the mob will remain
@@ -133,7 +134,7 @@ class Mob(tut_objects.TutorialObject):
              # we have a previous subscription, kill this first.
             TICKER_HANDLER.remove(self, last_interval, idstring)
         if not stop:
-            # now set the new ticker
+            # set the new ticker
             TICKER_HANDLER.add(self, interval, idstring, hook_key)
 
     def _find_target(self, location):
@@ -324,10 +325,11 @@ class Mob(tut_objects.TutorialObject):
         Someone landed a hit on us. Check our status
         and start attacking if not already doing so.
         """
-        if not weapon.db.magic:
-            damage = self.db.damage_resistance * damage
-            attacker.msg(self.db.weapon_ineffective_text)
-        self.db.health -= damage
+        if not self.db.immortal:
+            if not weapon.db.magic:
+                damage = self.db.damage_resistance * damage
+                attacker.msg(self.db.weapon_ineffective_text)
+                self.db.health -= damage
 
         # analyze the result
         if self.db.health <= 0:
