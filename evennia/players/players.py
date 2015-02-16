@@ -366,7 +366,8 @@ class DefaultPlayer(PlayerDB):
         return cmdhandler.cmdhandler(self, raw_string,
                                      callertype="player", sessid=sessid, **kwargs)
 
-    def search(self, searchdata, return_puppet=False, **kwargs):
+    def search(self, searchdata, return_puppet=False,
+               nofound_string=None, multimatch_string=None, **kwargs):
         """
         This is similar to the ObjectDB search method but will search for
         Players only. Errors will be echoed, and None returned if no Player
@@ -376,6 +377,8 @@ class DefaultPlayer(PlayerDB):
                            instead of the Player object itself. If no
                            puppeted object exists (since Player is OOC), None will
                            be returned.
+        nofound_string - optional custom string for not-found error message.
+        multimatch_string - optional custom string for multimatch error header.
         Extra keywords are ignored, but are allowed in call in order to make
                            API more consistent with objects.models.TypedObject.search.
         """
@@ -385,7 +388,9 @@ class DefaultPlayer(PlayerDB):
             if searchdata.lower() in ("me", "*me", "self", "*self",):
                 return self
         matches = self.__class__.objects.player_search(searchdata)
-        matches = _AT_SEARCH_RESULT(self, searchdata, matches, global_search=True)
+        matches = _AT_SEARCH_RESULT(self, searchdata, matches, global_search=True,
+                                    nofound_string=nofound_string,
+                                    multimatch_string=multimatch_string)
         if matches and return_puppet:
             try:
                 return matches.puppet
