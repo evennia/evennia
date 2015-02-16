@@ -74,6 +74,7 @@ class Mob(tut_objects.TutorialObject):
         self.db.patrolling_pace = 6
         self.db.aggressive_pace = 2
         self.db.hunting_pace = 1
+        self.db.death_pace = 100 # stay dead for 100 seconds
 
         # we store the call to the tickerhandler
         # so we can easily deactivate the last
@@ -97,6 +98,7 @@ class Mob(tut_objects.TutorialObject):
         self.db.send_defeated_to = "dark cell"
         # text to echo to the defeated foe.
         self.db.defeat_msg = "You fall to the ground."
+        self.db.defeat_msg_room = "%s falls to the ground."
         self.db.weapon_ineffective_text = "Your weapon just passes through your enemy, causing almost no effect!"
 
         self.db.death_msg = "After the last hit %s evaporates." % self.key
@@ -172,6 +174,7 @@ class Mob(tut_objects.TutorialObject):
         """
         Set the mob to "dead" mode. This turns it off
         and makes sure it can take no more damage.
+        It also starts a ticker for when it will return.
         """
         self.db.is_dead = True
         self.location = None
@@ -179,6 +182,8 @@ class Mob(tut_objects.TutorialObject):
         self.ndb.is_attacking = False
         self.ndb.is_hunting = False
         self.ndb.is_immortal = True
+        # we shall return after some time
+        self._set_ticker(self.db.death_pace, "set_alive")
 
     def start_idle(self):
         """
@@ -242,7 +247,8 @@ class Mob(tut_objects.TutorialObject):
                 self.start_attacking()
                 return
         # no target found, look for an exit.
-        exits = self.location.exits
+        exits = [exi for exi in self.location.exits
+                 if exi.access(self, "traverse")]
         last_location = self.ndb.last_location
         if exits:
             # randomly pick an exit
@@ -251,10 +257,8 @@ class Mob(tut_objects.TutorialObject):
                 # don't go back the same way we came if we
                 # can avoid it.
                 return
-            # check if we may actually exit this way,
-            # otherwise wait for next tick to try again.
-            if exit.access(self, "traverse"):
-                self.move_to(exit.destination)
+            # move there.
+            self.move_to(exit.destination)
         else:
             # no exits! teleport to home to get away.
             self.move_to(self.home)
@@ -313,7 +317,7 @@ class Mob(tut_objects.TutorialObject):
             # we reduced the target to <= 0 health. Move them to the
             # defeated room
             target.msg(self.db.defeat_msg)
-            self.location.msg_contents(self.db.defeat_msg_room, exclude=target)
+            self.location.msg_contents(self.db.defeat_msg_room % target.key, exclude=target)
             defeat_location = search_object(self.db.defeat_location)
             if defeat_location:
                 target.move_to(defeat_location, quiet=True)
@@ -327,9 +331,11 @@ class Mob(tut_objects.TutorialObject):
         """
         if not self.db.immortal:
             if not weapon.db.magic:
+                # not a magic weapon - scale damage with magical
+                # resistance
                 damage = self.db.damage_resistance * damage
-                attacker.msg(self.db.weapon_ineffective_text)
-                self.db.health -= damage
+                attacker.msg(self.db.weapon_ineffective_msg)
+            self.db.health -= damage
 
         # analyze the result
         if self.db.health <= 0:
