@@ -596,6 +596,37 @@ class DefaultPlayer(PlayerDB):
         else:
             logger.log_infomsg("[%s]: %s" % (now, message))
 
+    def _go_ic_at_login(self, sessid=None):
+        new_character = self.db._last_puppet
+
+        # permission checks
+        if self.get_puppet(sessid) == new_character:
+            return
+        if new_character.player:
+            # may not puppet an already puppeted character
+            if new_character.sessid.count() and new_character.player == self:
+                # as a safeguard we allow "taking over" chars from your own sessions.
+                if MULTISESSION_MODE in (1, 3):
+                    txt1 = "{c%s{n{G is now shared from another of your sessions.{n"
+                    txt2 = "Sharing {c%s{n with another of your sessions."
+                else:
+                    txt1 = "{c%s{n{R is now acted from another of your sessions.{n"
+                    txt2 = "Taking over {c%s{n from another of your sessions."
+                self.unpuppet_object(new_character.sessid.get())
+                self.msg(txt1 % new_character.name, sessid=new_character.sessid.get())
+                self.msg(txt2 % new_character.name, sessid=sessid)
+            elif new_character.player != self and new_character.player.is_connected:
+                self.msg("{c%s{r is already acted by another player{n." % new_character.name, sessid=sessid)
+                return
+        if not new_character.access(self, 'puppet'):
+            # main acccess check
+            self.msg("{rYou may not become {C%s{n." % new_character.name, sessid=sessid)
+            return
+        if self.puppet_object(sessid, new_character):
+            self.db._last_puppet = new_character
+        else:
+            self.msg("{rYou cannot become {C%s{n." % new_character.name, sessid=sessid)
+
     def at_post_login(self, sessid=None):
         """
         Called at the end of the login process, just before letting
@@ -605,15 +636,15 @@ class DefaultPlayer(PlayerDB):
         self._send_to_connect_channel("{G%s connected{n" % self.key)
         if _MULTISESSION_MODE == 0:
             # in this mode we should have only one character available. We
-            # try to auto-connect to it by calling the @ic command
-            # (this relies on player.db._last_puppet being set)
-            self.execute_cmd("@ic", sessid=sessid)
+            # try to auto-connect to it by calling _go_ic_at_login()
+            # (this relies on player.db._last_puppet being set).
+            self._go_ic_at_login(sessid=sessid)
         elif _MULTISESSION_MODE == 1:
             # in this mode the first session to connect acts like mode 0,
             # the following sessions "share" the same view and should
             # not perform any actions
             if not self.get_all_puppets():
-                self.execute_cmd("@ic", sessid=sessid)
+                self._go_ic_at_login(sessid=sessid)
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.
@@ -679,7 +710,7 @@ class DefaultGuest(DefaultPlayer):
         MULTISESSION_MODE we're in. They don't get a choice.
         """
         self._send_to_connect_channel("{G%s connected{n" % self.key)
-        self.execute_cmd("@ic", sessid=sessid)
+        self._go_ic_at_login(sessid=sessid)
 
     def at_disconnect(self):
         """
