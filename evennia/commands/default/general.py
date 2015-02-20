@@ -54,33 +54,65 @@ class CmdLook(MuxCommand):
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 
+    # we split up the functionality of Look a little
+    # since this is a command which is very common to
+    # overload; this makes it easy to overload different
+    # sections of it without overloading all.
+    def at_found_target(self, target):
+        """
+        Called when a target object has been found to look at.
+
+        Args:
+            target (Object): object found to look at (args have
+                been parsed and searched for already at this point)
+
+        The default implementation calls the return_appearance hook on
+        the observed target object to have it describe itself (and
+        possibly its contents) as well as format the description into
+        a suitable form.
+        """
+        caller = self.caller
+        if not hasattr(target, 'return_appearance'):
+            # this is likely due to us having a player instead
+            target = target.character
+        if not target.access(caller, "view"):
+            # no permission to view this object - act as if
+            # it was not found at all.
+            caller.msg("Could not find '%s'." % self.args)
+            return
+        # get object's appearance
+        self.caller.msg(target.return_appearance(caller))
+        # the object's at_desc() method.
+        target.at_desc(looker=caller)
+
+    def at_not_found_target(self):
+        """
+        Called when no target object was found to look at.
+        """
+        if not self.args:
+            # this means we tried to look at location but failed. It
+            # usually means we are OOC.
+            return self.caller.msg("You have no location to look at!")
+        # otherwise we just return quietly.
+        return
+
     def func(self):
         """
         Handle the looking.
         """
         caller = self.caller
-        args = self.args
-        if args:
-            # Use search to handle duplicate/nonexistant results.
-            looking_at_obj = caller.search(args, use_nicks=True)
-            if not looking_at_obj:
-                return
+        if self.args:
+            target = caller.search(self.args, use_nicks=True)
+            if target:
+                return self.at_found_target(target)
+            else:
+                return self.at_not_found_target()
         else:
-            looking_at_obj = caller.location
-            if not looking_at_obj:
-                caller.msg("You have no location to look at!")
-                return
-
-        if not hasattr(looking_at_obj, 'return_appearance'):
-            # this is likely due to us having a player instead
-            looking_at_obj = looking_at_obj.character
-        if not looking_at_obj.access(caller, "view"):
-            caller.msg("Could not find '%s'." % args)
-            return
-        # get object's appearance
-        caller.msg(looking_at_obj.return_appearance(caller))
-        # the object's at_desc() method.
-        looking_at_obj.at_desc(looker=caller)
+            target = caller.location
+            if target:
+                return self.at_found_target(target)
+            else:
+                return self.at_not_found_target()
 
 
 class CmdNick(MuxCommand):
