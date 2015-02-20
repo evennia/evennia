@@ -291,56 +291,62 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             deferred (Deferred): this will fire when the func() method
                 returns.
         """
-        # Assign useful variables to the instance
-        cmd.caller = caller
-        cmd.cmdstring = cmdname
-        cmd.args = args
-        cmd.cmdset = cmdset
-        cmd.sessid = session.sessid if session else sessid
-        cmd.session = session
-        cmd.player = player
-        cmd.raw_string = unformatted_raw_string
-        #cmd.obj  # set via on-object cmdset handler for each command,
-                  # since this may be different for every command when
-                  # merging multuple cmdsets
+        try:
+            # Assign useful variables to the instance
+            cmd.caller = caller
+            cmd.cmdstring = cmdname
+            cmd.args = args
+            cmd.cmdset = cmdset
+            cmd.sessid = session.sessid if session else sessid
+            cmd.session = session
+            cmd.player = player
+            cmd.raw_string = unformatted_raw_string
+            #cmd.obj  # set via on-object cmdset handler for each command,
+                      # since this may be different for every command when
+                      # merging multuple cmdsets
 
-        if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):
-            # cmd.obj is automatically made available by the cmdhandler.
-            # we make sure to validate its scripts.
-            yield cmd.obj.scripts.validate()
+            if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):
+                # cmd.obj is automatically made available by the cmdhandler.
+                # we make sure to validate its scripts.
+                yield cmd.obj.scripts.validate()
 
-        if _testing:
-            # only return the command instance
-            returnValue(cmd)
+            if _testing:
+                # only return the command instance
+                returnValue(cmd)
 
-        # assign custom kwargs to found cmd object
-        for key, val in kwargs.items():
-            setattr(cmd, key, val)
+            # assign custom kwargs to found cmd object
+            for key, val in kwargs.items():
+                setattr(cmd, key, val)
 
-        # pre-command hook
-        abort = yield cmd.at_pre_cmd()
-        if abort:
-            # abort sequence
-            returnValue(abort)
+            # pre-command hook
+            abort = yield cmd.at_pre_cmd()
+            if abort:
+                # abort sequence
+                returnValue(abort)
 
-        # Parse and execute
-        yield cmd.parse()
+            # Parse and execute
+            yield cmd.parse()
 
-        # main command code
-        # (return value is normally None)
-        ret = yield cmd.func()
+            # main command code
+            # (return value is normally None)
+            ret = yield cmd.func()
 
-        # post-command hook
-        yield cmd.at_post_cmd()
+            # post-command hook
+            yield cmd.at_post_cmd()
 
-        if cmd.save_for_next:
-            # store a reference to this command, possibly
-            # accessible by the next command.
-            caller.ndb.last_cmd = yield copy(cmd)
-        else:
-            caller.ndb.last_cmd = None
-        # return result to the deferred
-        returnValue(ret)
+            if cmd.save_for_next:
+                # store a reference to this command, possibly
+                # accessible by the next command.
+                caller.ndb.last_cmd = yield copy(cmd)
+            else:
+                caller.ndb.last_cmd = None
+            # return result to the deferred
+            returnValue(ret)
+        except Exception:
+            string = "%s\nAbove traceback is from an untrapped error."
+            string += " Please file a bug report."
+            logger.log_trace(_(string))
+            caller.msg(string % format_exc())
 
     raw_string = to_unicode(raw_string, force_string=True)
 
