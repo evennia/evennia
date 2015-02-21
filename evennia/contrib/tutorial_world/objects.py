@@ -576,9 +576,9 @@ class CrumblingWall(TutorialObject, DefaultExit):
                    whenever the button is pushed (this hides it as an exit
                    until it actually is)
     """
-    def __init__(self):
+    def at_init(self):
         """
-        We make sure to reset the puzzle after a server reload/reboot.
+        Called when object is recalled from cache.
         """
         self.reset()
 
@@ -913,42 +913,51 @@ WEAPON_PROTOTYPES = {
         "hit": 0.4,
         "damage": 6,
         "parry": 0.2},
+    "axe": {
+        "prototype": "weapon",
+        "key":"Axe",
+        "desc": "A woodcutter's axe with a keen edge.",
+        "hit": 0.4,
+        "damage": 6,
+        "parry": 0.2},
     "ornate longsword": {
         "prototype":"sword",
         "key": "Ornate longsword",
         "desc": "A fine longsword with some swirling patterns on the handle.",
         "hit": 0.5,
+        "magic": True,
         "damage": 5},
-    "rune axe": {
-        "prototype": "club",
-        "key": "Runeaxe",
-        "aliases": ["axe"],
-        "hit": 0.4,
-        "damage": 6},
-    "thruning": {
-        "prototype": "sword",
-        "key": "Broadsword named Thruning",
-        "desc": "This heavy bladed weapon is marked with the name 'Thruning'. It is very powerful in skilled hands.",
-        "hit": 0.6,
-        "parry": 0.6,
-        "damage": 7},
     "warhammer": {
         "prototype": "club",
         "key": "Silver Warhammer",
         "aliases": ["hammer", "warhammer", "war"],
         "desc": "A heavy war hammer with silver ornaments. This huge weapon causes massive damage - if you can hit.",
         "hit": 0.4,
-        "damage": 10},
-    "slayer waraxe": {
+        "magic": True,
+        "damage": 8},
+    "rune axe": {
         "prototype": "axe",
+        "key": "Runeaxe",
+        "aliases": ["axe"],
+        "hit": 0.4,
+        "magic": True,
+        "damage": 6},
+    "thruning": {
+        "prototype": "ornate longsword",
+        "key": "Broadsword named Thruning",
+        "desc": "This heavy bladed weapon is marked with the name 'Thruning'. It is very powerful in skilled hands.",
+        "hit": 0.6,
+        "parry": 0.6,
+        "damage": 7},
+    "slayer waraxe": {
+        "prototype": "rune axe",
         "key": "Slayer waraxe",
         "aliases": ["waraxe", "war", "slayer"],
         "desc": "A huge double-bladed axe marked with the runes for 'Slayer'. It has more runic inscriptions on its head, which you cannot decipher.",
-        "magic": True,
         "hit": 0.7,
         "damage": 8},
     "ghostblade": {
-        "prototype": "slayer waraxe",
+        "prototype": "ornate longsword",
         "key": "The Ghostblade",
         "aliases": ["blade", "ghost"],
         "desc": "This massive sword is large as you are tall, yet seems to weigh almost nothing. It's almost like it's not really there.",
@@ -960,9 +969,9 @@ WEAPON_PROTOTYPES = {
         "key": "The Hawblade",
         "aliases": ["hawk", "blade"],
         "desc": "The weapon of a long-dead heroine and a more civilized age, the hawk-shaped hilt of this blade almost has a life of its own.",
-        "hit": 0.95,
-        "parry": 0.8,
-        "damage": 12}
+        "hit": 0.85,
+        "parry": 0.7,
+        "damage": 11}
     }
 
 

@@ -41,7 +41,7 @@ class CmdMobOnOff(Command):
         mob = self.caller.search(self.args)
         if not mob:
             return
-        if self.cmdname == "mobon":
+        if self.cmdstring == "mobon":
             mob.set_alive()
         else:
             mob.set_dead()
@@ -91,7 +91,7 @@ class Mob(tut_objects.TutorialObject):
            happen to roam into a room with no exits.
 
     """
-    def __init__(self):
+    def at_init(self):
         """
         When initialized from cache (after a server reboot), set up
         the AI state.
@@ -107,7 +107,7 @@ class Mob(tut_objects.TutorialObject):
         Called the first time the object is created.
         We set up the base properties and flags here.
         """
-        self.cmdsets.add(MobCmdSet, permanent=True)
+        self.cmdset.add(MobCmdSet, permanent=True)
         # Main AI flags. We start in dead mode so we don't have to
         # chase the mob around when building.
         self.db.patrolling = True

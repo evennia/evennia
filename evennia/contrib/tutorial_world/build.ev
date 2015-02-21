@@ -739,7 +739,7 @@ hole
  the remains of the castle.  There is also a standing archway
  offering passage to a path along the old {wsouth{nern inner wall.
 #
-@detail portoculis;fall;fallen;grating
+@detail portoculis;fall;fallen;grating =
  This heavy iron grating used to block off the inner part of the gate house, now it has fallen
  to the ground together with the stone archway that once help it up.
 #
@@ -834,7 +834,7 @@ archway
 #
 @set ghost/get_err_msg = Your fingers just pass straight through it!
 #
-@desc ghost/desc_alive =
+@set ghost/desc_alive =
  This ghostly shape could momentarily be mistaken for a thick fog had
  it not moved with such determination and giving echoing hollow
  screams as it did. The shape is hard to determine, now and then it
@@ -842,7 +842,7 @@ archway
  later. The thing reeks of almost tangible spite at your
  presence. This must be the ruin's eternal guardian.
 #
-@desc ghost/desc_dead =
+@set ghost/desc_dead =
  The ghostly apparition is nothing but a howling on the wind, an eternal
  cold spot that can never be fully eradicated from these walls. While harmless
  in this state, there is no doubt that it shall eventually return to this plane
@@ -970,6 +970,7 @@ mobon ghost
 @detail altar =
  The altar is a massive stone slab. It might once have had ornate decorations
  but time and the salty air has broken everything down into dust.
+#
 @detail ceiling =
  The dome still looming intact above you is a marvel of engineering.
 
@@ -1248,6 +1249,8 @@ stairs down
 #
 @set sarcophagus/rack_id = rack_sarcophagus
 #
+@set sarcophagus/available_weapons = ["ornate_longsword","warhammer","rune axe","thruning","slayer waraxe","ghostblade","hawkblade"]
+#
 @set sarcophagus/no_more_weapons_msg =
  The tomb has already granted you all the might it will ever do.
 #
@@ -1284,7 +1287,7 @@ stairs down
 # rack_id. This we can use to check if any such weapon is in inventory
 # before unlocking the exit.
 #
-@lock Exit tutorial: view:holds(rack_sarcophagus) ; traverse:holds(rack_sarcophagus)
+@lock Exit tutorial = view:holds(rack_sarcophagus) ; traverse:holds(rack_sarcophagus)
 #
 # to tutorial outro
 @tel tut#17
