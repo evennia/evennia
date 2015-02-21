@@ -19,11 +19,9 @@ WeaponRack
 
 """
 
-import time
 import random
 
-from evennia import create_object
-from evennia import DefaultObject, DefaultExit, Command, CmdSet, DefaultScript
+from evennia import DefaultObject, DefaultExit, Command, CmdSet
 from evennia import utils
 from evennia.utils.spawner import spawn
 
@@ -171,8 +169,8 @@ class CmdClimb(Command):
         if not ostring:
             ostring = "You climb %s. Having looked around, you climb down again." % self.obj.name
         self.caller.msg(ostring)
-        # store this object to remember what we last climbed
-        self.caller.db.last_climbed = self.obj
+        # set a tag on the caller to remember that we climbed.
+        self.caller.tags.add("tutorial_climbed_tree")
 
 
 class CmdSetClimbable(CmdSet):
@@ -611,8 +609,6 @@ class CrumblingWall(TutorialObject, DefaultExit):
         # if its location is lit and only traverse it once the Attribute
         # exit_open is set to True.
         self.locks.add("cmd:locattr(is_lit);traverse:objattr(exit_open)")
-
-        self.db.tutorial_info = "This is an Exit with a conditional traverse-lock. Try to shift the roots around."
         # set cmdset
         self.cmdset.add(CmdSetCrumblingWall, permanent=True)
 
@@ -671,7 +667,8 @@ class CrumblingWall(TutorialObject, DefaultExit):
             # puzzle not solved yet.
             string =  "The wall is old and covered with roots that here and there have permeated the stone. " \
                       "The roots (or whatever they are - some of them are covered in small non-descript flowers) " \
-                      "crisscross the wall, making it hard to clearly see its stony surface.\n"
+                      "crisscross the wall, making it hard to clearly see its stony surface. Maybe you could " \
+                      "try to {wshift{n or {wmove{n them.\n"
             # display the root positions to help with the puzzle
             for key, pos in self.db.root_pos.items():
                 string += "\n" + self._translate_position(key, pos)
@@ -851,7 +848,7 @@ class Weapon(TutorialObject):
         super(Weapon, self).at_object_creation()
         self.db.hit = 0.4    # hit chance
         self.db.parry = 0.8  # parry chance
-        self.db.damage = 8.0
+        self.db.damage = 1.0
         self.db.magic = False
         self.cmdset.add_default(CmdSetWeapon, permanent=True)
 
@@ -1007,6 +1004,13 @@ class WeaponRack(TutorialObject):
     on it. This will also set a property on the character
     to make sure they can't get more than one at a time.
 
+    Attributes to set on this object:
+        available_weapons: list of prototype-keys from
+            WEAPON_PROTOTYPES, the weapons available in this rack.
+        no_more_weapons_msg - error message to return to players
+            who already got one weapon from the rack and tries to
+            grab another one.
+
     """
     def at_object_creation(self):
         """
@@ -1016,21 +1020,27 @@ class WeaponRack(TutorialObject):
         self.db.rack_id = "weaponrack_1"
         # these are prototype names from the prototype
         # dictionary above.
+        self.db.get_weapon_msg = "You pull %s from the rack."
+        self.db.no_more_weapons_msg = "%s has no more to offer you." % self.key
         self.db.available_weapons = ["knife", "rusty_dagger",
                                      "sword", "club"]
 
     def produce_weapon(self, caller):
         """
         This will produce a new weapon from the rack,
-        assuming the caller hasn't already gotten one.
+        assuming the caller hasn't already gotten one. When
+        doing so, the caller will get Tagged with the id
+        of this rack, to make sure they cannot keep
+        pulling weapons from it indefinitely.
         """
-        if caller.attributes.get(self.db.rack_id):
+        rack_id = self.db.rack_id
+        if caller.tags.get(rack_id):
             caller.msg("%s has no more to offer you." % self.key)
         else:
             prototype = random.choice(self.db.available_weapons)
             # use the spawner to create a new Weapon from the
-            # spawner dictionary
+            # spawner dictionary, tag the caller
             wpn = spawn(WEAPON_PROTOTYPES[prototype], prototype_parents=WEAPON_PROTOTYPES)
-            caller.attributes.add(self.db.rack_id, True)
+            caller.tags.add(rack_id)
             wpn.location = caller
-            caller.msg("You grab %s - %s." % (wpn.key, wpn.db.desc))
+            caller.msg(self.db.weapon_msg % wpn.key)

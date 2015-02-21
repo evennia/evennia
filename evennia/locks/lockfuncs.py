@@ -422,6 +422,27 @@ def attr_ne(accessing_obj, accessed_obj, *args, **kwargs):
     """
     return attr(accessing_obj, accessed_obj, *args, **{'compare': 'ne'})
 
+def tag(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage:
+        tag(tagkey)
+        tag(tagkey, category)
+
+    Only true if accessing_obj has the specified tag and optional
+    category
+    """
+    return accessing_obj.tags.get(*args)
+
+def objtag(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage:
+        objtag(tagkey)
+        objtag(tagkey, category)
+
+    Only true if accessed_obj has the specified tag and optional
+    category.
+    """
+    return accessed_obj.tags.get(*args)
 
 def inside(accessing_obj, accessed_obj, *args, **kwargs):
     """

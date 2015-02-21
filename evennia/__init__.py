@@ -88,7 +88,9 @@ except (IOError, CalledProcessError):
 
 def init():
     """
-    This is called only after Evennia has fully initialized all its models.
+    This is called by the launcher only after Evennia has fully
+    initialized all its models. It sets up the API in a safe
+    environment where all models are available already.
     """
     def imp(path, variable=True):
         "Helper function"
@@ -97,14 +99,14 @@ def init():
             mod, fromlist = path.rsplit('.', 1)
         return __import__(mod, fromlist=[fromlist])
 
-    global DefaultPlayer, DefaultObject, DefaultGuest, DefaultCharacter, \
-           DefaultRoom, DefaultExit, DefaultChannel, DefaultScript
+    global DefaultPlayer, DefaultObject, DefaultGuest, DefaultCharacter
+    global DefaultRoom, DefaultExit, DefaultChannel, DefaultScript
     global ObjectDB, PlayerDB, ScriptDB, ChannelDB, Msg
     global Command, CmdSet, default_cmds, syscmdkeys
     global search_object, search_script, search_player, search_channel, search_help
     global create_object, create_script, create_player, create_channel, create_message
-    global lockfuncs, tickerhandler, logger, utils, gametime, ansi, spawn, managers
-    global contrib
+    global lockfuncs, logger, utils, gametime, ansi, spawn, managers
+    global contrib, TICKER_HANDLER, OOB_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER
 
     from players.players import DefaultPlayer
     from players.players import DefaultGuest

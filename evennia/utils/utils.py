@@ -16,7 +16,6 @@ import textwrap
 import datetime
 import random
 import traceback
-from subprocess import check_output
 from importlib import import_module
 from inspect import ismodule, trace
 from collections import defaultdict
@@ -967,7 +966,8 @@ def class_from_module(path, defaultpaths=None):
             err += "."
         raise ImportError(err)
     return cls
-
+# alias
+object_from_module = class_from_module
 
 def init_new_player(player):
     """

@@ -268,7 +268,8 @@ class TickerHandler(object):
                 the same time interval
             hook_key (str, optional): The name of the hook method
                 on `obj` to call every `interval` seconds. Defaults to
-                `at_tick()`.
+                `at_tick(*args, **kwargs`. All hook methods must
+                always accept *args, **kwargs.
             args, kwargs (optional): These will be passed into the
                 method given by `hook_key` every time it is called.
 

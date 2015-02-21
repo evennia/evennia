@@ -9,13 +9,55 @@ import random
 
 from evennia import TICKER_HANDLER
 from evennia import search_object
+from evennia import Command, CmdSet
 from evennia.contrib.tutorial_world import objects as tut_objects
 
 
+class CmdMobOnOff(Command):
+    """
+    Activates/deactivates Mob
+
+    Usage:
+        mobon <mob>
+        moboff <mob>
+
+    This turns the mob from active (alive) mode
+    to inactive (dead) mode. It is used during
+    building to  activate the mob once it's
+    prepared.
+    """
+    key = "mobon"
+    aliases = "moboff"
+    locks = "cmd:superuser()"
+
+    def func(self):
+        """
+        Uses the mob's set_alive/set_dead methods
+        to turn on/off the mob."
+        """
+        if not self.args:
+            self.caller.msg("Usage: mobon|moboff <mob>")
+            return
+        mob = self.caller.search(self.args)
+        if not mob:
+            return
+        if self.cmdname == "mobon":
+            mob.set_alive()
+        else:
+            mob.set_dead()
+
+
+class MobCmdSet(CmdSet):
+    """
+    Holds the admin command controlling the mob
+    """
+    def at_cmdset_creation(self):
+        self.add(CmdMobOnOff())
+
 class Mob(tut_objects.TutorialObject):
     """
-    This is a state-machine AI mobile. It has several states which
-    are controlled from setting various Attributes:
+    This is a state-machine AI mobile. It has several states which are
+    controlled from setting various Attributes. All default to True:
 
         patrolling: if set, the mob will move randomly
             from room to room, but preferring to not return
@@ -30,18 +72,23 @@ class Mob(tut_objects.TutorialObject):
             to flee from it, so it can enter combat. If unset,
             it will return to patrolling/idling if fled from.
         immortal: If set, the mob cannot take any damage.
-    It also has several states,
-        is_patrolling - set when the mob is patrolling.
-        is_attacking - set when the mob is in combat
-        is_hunting - set when the mob is pursuing an enemy.
-        is_immortal - is currently immortal
-        is_dead: if set, the Mob is set to immortal, non-patrolling
-                   and non-aggressive mode. Its description is
-                   turned into that of a corpse-description.
-    Other important properties:
-        home - the home location should set to someplace inside
-        the patrolling area. The mob will use this if it should
-        happen to roam into a room with no exits.
+        irregular_echoes: list of strings the mob generates at irregular intervals.
+        desc_alive: the physical description while alive
+        desc_dead: the physical descripion while dead
+        send_defeated_to: unique key/alias for location to send defeated enemies to
+        defeat_msg: message to echo to defeated opponent
+        defeat_msg_room: message to echo to room. Accepts %s as the name of the defeated.
+        hit_msg: message to echo when this mob is hit. Accepts %s for the mob's key.
+        weapon_ineffective_msg: message to echo for useless attacks
+        death_msg: message to echo to room when this mob dies.
+        patrolling_pace: how many seconds per tick, when patrolling
+        aggressive_pace:   -"-         attacking
+        hunting_pace:      -"-         hunting
+        death_pace:        -"-         returning to life when dead
+
+        field 'home' - the home location should set to someplace inside
+           the patrolling area. The mob will use this if it should
+           happen to roam into a room with no exits.
 
     """
     def __init__(self):
@@ -60,10 +107,11 @@ class Mob(tut_objects.TutorialObject):
         Called the first time the object is created.
         We set up the base properties and flags here.
         """
+        self.cmdsets.add(MobCmdSet, permanent=True)
         # Main AI flags. We start in dead mode so we don't have to
         # chase the mob around when building.
-        self.db.patrolling = False
-        self.db.aggressive = False
+        self.db.patrolling = True
+        self.db.aggressive = True
         self.db.immortal = True
         # db-store if it is dead or not
         self.db.is_dead = True
@@ -99,10 +147,11 @@ class Mob(tut_objects.TutorialObject):
         # text to echo to the defeated foe.
         self.db.defeat_msg = "You fall to the ground."
         self.db.defeat_msg_room = "%s falls to the ground."
-        self.db.weapon_ineffective_text = "Your weapon just passes through your enemy, causing almost no effect!"
+        self.db.weapon_ineffective_msg = "Your weapon just passes through your enemy, causing almost no effect!"
 
         self.db.death_msg = "After the last hit %s evaporates." % self.key
         self.db.hit_msg = "%s wails, shudders and writhes." % self.key
+        self.db.irregular_msgs = ["the enemy looks about.", "the enemy changes stance."]
 
         self.db.tutorial_info = "This is an object with simple state AI, using a ticker to move."
 
@@ -127,7 +176,7 @@ class Mob(tut_objects.TutorialObject):
         previous ticker subscription so that we can
         easily find and stop it before setting a
         new one. The tickerhandler is persistent so
-        we need to remmeber this across reloads.
+        we need to remember this across reloads.
 
         """
         idstring = "tutorial_mob" # this doesn't change
@@ -155,7 +204,7 @@ class Mob(tut_objects.TutorialObject):
                     if obj.has_player and not obj.is_superuser]
         return targets[0] if targets else None
 
-    def set_alive(self):
+    def set_alive(self, *args, **kwargs):
         """
         Set the mob to "alive" mode. This effectively
         resurrects it from the dead state.
@@ -232,7 +281,7 @@ class Mob(tut_objects.TutorialObject):
         self.ndb.is_hunting = False
         self.ndb.is_attacking = True
 
-    def do_patrol(self):
+    def do_patrol(self, *args, **kwargs):
         """
         Called repeatedly during patrolling mode.  In this mode, the
         mob scans its surroundings and randomly chooses a viable exit.
@@ -240,6 +289,8 @@ class Mob(tut_objects.TutorialObject):
         order to block the mob from moving outside its area while
         allowing player-controlled characters to move normally.
         """
+        if random.random() < 0.01:
+            self.location.msg_contents(random.choice(self.db.irregular_msgs))
         if self.db.aggressive:
             # first check if there are any targets in the room.
             target = self._find_target(self.location)
@@ -263,12 +314,14 @@ class Mob(tut_objects.TutorialObject):
             # no exits! teleport to home to get away.
             self.move_to(self.home)
 
-    def do_hunting(self):
+    def do_hunting(self, *args, **kwargs):
         """
         Called regularly when in hunting mode. In hunting mode the mob
         scans adjacent rooms for enemies and moves towards them to
         attack if possible.
         """
+        if random.random() < 0.01:
+            self.location.msg_contents(random.choice(self.db.irregular_msgs))
         if self.db.aggressive:
             # first check if there are any targets in the room.
             target = self._find_target(self.location)
@@ -293,12 +346,14 @@ class Mob(tut_objects.TutorialObject):
             # no exits! teleport to home to get away.
             self.move_to(self.home)
 
-    def do_attacking(self):
+    def do_attacking(self, *args, **kwargs):
         """
         Called regularly when in attacking mode. In attacking mode
         the mob will bring its weapons to bear on any targets
         in the room.
         """
+        if random.random() < 0.01:
+            self.location.msg_contents(random.choice(self.db.irregular_msgs))
         # first make sure we have a target
         target = self._find_target(self.location)
         if not target:
