@@ -4,8 +4,6 @@ from django.utils.unittest import TestCase
 from evennia.scripts.models import ScriptDB, ObjectDoesNotExist
 from evennia.utils.create import create_script
 from evennia.scripts.scripts import DoNothing
-import unittest
-from django.conf import settings
 
 
 class TestScriptDB(TestCase):
