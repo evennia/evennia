@@ -1212,3 +1212,21 @@ def strip_control_sequences(string):
     if not _STRIP_ANSI:
         from evennia.utils.ansi import strip_raw_ansi as _STRIP_ANSI
     return _RE_CONTROL_CHAR.sub('', _STRIP_ANSI(string))
+
+def calledby(callerdepth=1):
+    """
+    Only to be used for debug purposes.
+    Insert this debug function in another function; it will print
+    which function called it. With callerdepth > 1, it will print the
+    caller of the caller etc.
+    """
+    import inspect, os
+    stack = inspect.stack()
+    # we must step one extra level back in stack since we don't want
+    # to include the call of this function itself.
+    callerdepth = min(max(2, callerdepth + 1), len(stack)-1)
+    frame = inspect.stack()[callerdepth]
+    path = os.path.sep.join(frame[1].rsplit(os.path.sep, 2)[-2:])
+    return "[called by '%s': %s:%s %s]" % (frame[3], path, frame[2], frame[4])
+
+
