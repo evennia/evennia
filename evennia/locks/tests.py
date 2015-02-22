@@ -7,7 +7,7 @@ the stability and integrity of the codebase during updates.
 This module tests the lock functionality of Evennia.
 
 """
-from evennia.tests.resources import EvenniaTest
+from evennia.utils.test_resources import EvenniaTest
 
 try:
     # this is a special optimized Django version, only available in current Django devel

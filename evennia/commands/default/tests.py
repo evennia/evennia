@@ -13,14 +13,16 @@ main test suite started with
 """
 
 import re
+
 from django.conf import settings
 from mock import Mock
-from evennia.commands.default.cmdset_character import CharacterCmdSet
 
-from evennia.tests.resources import EvenniaTest
+from evennia.commands.default.cmdset_character import CharacterCmdSet
+from evennia.utils.test_resources import EvenniaTest
 from evennia.commands.default import help, general, system, admin, player, building, batchprocess, comms
 from evennia.utils import ansi
 from evennia.server.sessionhandler import SESSIONS
+
 
 # set up signal here since we are not starting the server
 
