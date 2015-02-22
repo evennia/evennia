@@ -52,7 +52,6 @@ class TutorialObject(DefaultObject):
         "Called when the object is first created."
         super(TutorialObject, self).at_object_creation()
         self.db.tutorial_info = "No tutorial info is available for this object."
-        #self.db.last_reset = time.time()
 
     def reset(self):
         "Resets the object, whatever that may mean."
@@ -171,7 +170,7 @@ class CmdClimb(Command):
             ostring = "You climb %s. Having looked around, you climb down again." % self.obj.name
         self.caller.msg(ostring)
         # set a tag on the caller to remember that we climbed.
-        self.caller.tags.add("tutorial_climbed_tree")
+        self.caller.tags.add("tutorial_climbed_tree", category="tutorial_world")
 
 
 class CmdSetClimbable(CmdSet):
@@ -205,21 +204,22 @@ class Climbable(TutorialObject):
 #
 #------------------------------------------------------------
 
-OBELISK_DESCS = ("You can briefly make out the image of {ba woman with a blue bird{n.",
-                 "You for a moment see the visage of {ba woman on a horse{n.",
-                 "For the briefest moment you make out an engraving of {ba regal woman wearing a crown{n.",
-                 "You think you can see the outline of {ba flaming shield{n in the stone.",
-                 "The surface for a moment seems to portray {ba woman fighting a beast{n.")
-
 class Obelisk(TutorialObject):
     """
-    This object changes its description randomly.
+    This object changes its description randomly, and which is shown
+    determines which order "clue id" is stored on the Character for
+    future puzzles.
+
+    Important Attribute:
+       puzzle_descs (list): list of descriptions. One of these is
+
     """
 
     def at_object_creation(self):
         "Called when object is created."
         super(Obelisk, self).at_object_creation()
         self.db.tutorial_info = "This object changes its desc randomly, and makes sure to remember which one you saw."
+        self.db.puzzle_descs = ["You see a normal stone slab"]
         # make sure this can never be picked up
         self.locks.add("get:false()")
 
@@ -229,11 +229,12 @@ class Obelisk(TutorialObject):
         of the object. We overload it with our own version.
         """
         # randomly get the index for one of the descriptions
-        clueindex = random.randint(0, len(OBELISK_DESCS) - 1)
+        descs = self.db.puzzle_descs
+        clueindex = random.randint(0, len(descs) - 1)
         # set this description, with the random extra
         string = "The surface of the obelisk seem to waver, shift and writhe under your gaze, with " \
                  "different scenes and structures appearing whenever you look at it. "
-        self.db.desc = string + OBELISK_DESCS[clueindex]
+        self.db.desc = string + descs[clueindex]
         # remember that this was the clue we got. The Puzzle room will
         # look for this later to determine if you should be teleported
         # or not.
@@ -1051,13 +1052,13 @@ class WeaponRack(TutorialObject):
         pulling weapons from it indefinitely.
         """
         rack_id = self.db.rack_id
-        if caller.tags.get(rack_id):
+        if caller.tags.get(rack_id, category="tutorial_world"):
             caller.msg(self.db.no_more_weapons_msg)
         else:
             prototype = random.choice(self.db.available_weapons)
             # use the spawner to create a new Weapon from the
             # spawner dictionary, tag the caller
             wpn = spawn(WEAPON_PROTOTYPES[prototype], prototype_parents=WEAPON_PROTOTYPES)[0]
-            caller.tags.add(rack_id)
+            caller.tags.add(rack_id, category="tutorial_world")
             wpn.location = caller
             caller.msg(self.db.get_weapon_msg % wpn.key)

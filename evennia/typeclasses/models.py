@@ -446,7 +446,6 @@ class TypedObject(SharedMemoryModel):
         self.aliases.clear()
         if hasattr(self, "nicks"):
             self.nicks.clear()
-        self.flush_from_cache()
 
         # scrambling properties
         self.delete = self._deleted

@@ -38,14 +38,14 @@
 #     |        +--------+  +--------+    +--------+   +---+----+
 #     |                \                                  |
 #    ++---------+       \  +--------+    +--------+   +---+----+
-#    |intro     |        \ |cell    |    |trap/       |temple  |
-# o--+   01     |         \|  08    +----+  fall  |   |   13   |
-#    |          |          |        |   /|   15   |   |        |
+#    |intro     |        \ |cell    |    |        |   |temple  |
+# o--+   01     |         \|  08    +----+  trap  |   |   13   |
+#    |          |          |        |   /|        |   |        |
 #    +----+-----+          +--------+  / +--+-+-+-+   +---+----+
 #         |                           /     | | |         |
 #    +----+-----+          +--------+/   +--+-+-+---------+----+
 #    |outro     |          |tomb    |    |antechamber          |
-# o--+   17     +----------+  16    |    |       14            |
+# o--+   16     +----------+  15    |    |       14            |
 #    |          |          |        |    |                     |
 #    +----------+          +--------+    +---------------------+
 #
@@ -826,8 +826,11 @@ archway
 #
 @set obelisk/get_err_msg = It's way too heavy for anyone to move.
 #
-# (the obelisk describes itself, so we need no do it here)
+# Set the puzzle clues on the obelisk. The order should correspond
+# to the ids later checked by the antechamber puzzle.
 #
+@set obelisk/puzzle_descs = ("You can briefly make out the image of {ba woman with a blue bird{n.", "You for a moment see the visage of {ba woman on a horse{n.", "For the briefest moment you make out an engraving of {ba regal woman wearing a crown{n.", "You think you can see the outline of {ba flaming shield{n in the stone.", "The surface for a moment seems to portray {ba sharp-faced woman with white hair{n.")
+
 # Create the mobile. This is its start location.
 @create/drop Ghostly apparition;ghost;apparition;fog : tutorial_world.mob.Mob
 #
@@ -874,6 +877,7 @@ archway
 #
 @set ghost/hit_msg =
  The ghostly apparition howls and writhes, shifts and shivers.
+#
 @set ghost/death_msg =
  After the last strike, the ghostly apparition seems to collapse
 inwards. It fades and becomes one with the mist. Its howls rise to a
@@ -1028,7 +1032,7 @@ stairs down
 #
 @dig Blue bird tomb
  : tutorial_world.rooms.TeleportRoom
- = Tomb with stone bird;bird;blue;stone
+ = Blue bird tomb;bird;blue;stone
 #
 @desc Blue bird tomb =
 The entrance to this tomb is decorated with a very lifelike blue bird.
@@ -1037,9 +1041,9 @@ Blue bird tomb
 #
 @set here/puzzle_value = 0
 #
-@set here/failure_teleport_to = tut#15
+@set here/failure_teleport_to = tut#08
 #
-@set here/success_teleport_to = tut#16
+@set here/success_teleport_to = tut#15
 #
 @set here/failure_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
@@ -1059,7 +1063,7 @@ Blue bird tomb
 
  The air is damp. Where are you?
 #
-@set here/success_teleport_to =
+@set here/success_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
  make out a coffin in front of you in the gloom.
 
@@ -1072,7 +1076,7 @@ Blue bird tomb
 #
 @dig Tomb of woman on horse
  : tutorial_world.rooms.TeleportRoom
- = Tomb with statue of riding woman;horse;riding;
+ = Tomb of woman on horse;horse;riding;
 #
 @desc Tomb of woman on horse =
 The entrance to this tomb depicts a scene of a strong
@@ -1084,9 +1088,9 @@ Tomb of woman on horse
 #
 @set here/puzzle_value = 1
 #
-@set here/failure_teleport_to = tut#15
+@set here/failure_teleport_to = tut#08
 #
-@set here/success_teleport_to = tut#16
+@set here/success_teleport_to = tut#15
 #
 @set here/failure_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
@@ -1106,7 +1110,7 @@ Tomb of woman on horse
 
  The air is damp. Where are you?
 #
-@set here/success_teleport_to =
+@set here/success_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
  make out a coffin in front of you in the gloom.
 
@@ -1119,7 +1123,7 @@ Tomb of woman on horse
 #
 @dig Tomb of the crowned queen
  : tutorial_world.rooms.TeleportRoom
- = Tomb with statue of a crowned queen;crown;queen
+ = Tomb of the crowned queen;crown;queen
 #
 @desc Tomb of the crowned queen =
 The entrance to this tomb shows a beautiful mural of a queen ruling
@@ -1130,9 +1134,9 @@ Tomb of the crowned queen
 #
 @set here/puzzle_value = 2
 #
-@set here/failure_teleport_to = tut#15
+@set here/failure_teleport_to = tut#08
 #
-@set here/success_teleport_to = tut#16
+@set here/success_teleport_to = tut#15
 #
 @set here/failure_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
@@ -1152,7 +1156,7 @@ Tomb of the crowned queen
 
  The air is damp. Where are you?
 #
-@set here/success_teleport_to =
+@set here/success_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
  make out a coffin in front of you in the gloom.
 
@@ -1165,9 +1169,7 @@ Tomb of the crowned queen
 #
 @dig Tomb of the shield
  : tutorial_world.rooms.TeleportRoom
- = Tomb with shield of arms;shield
-#
-Tomb of the shield
+ = Tomb of the shield;shield
 #
 @desc Tomb of the shield =
 This tomb shows a warrior woman fighting shadowy creatures from the
@@ -1175,11 +1177,13 @@ top of a hill. Her sword lies broken on the ground before her but she
 fights on with her battered shield - the scene depicts her just as she
 rams the shield into an enemy in wild desperation.
 #
+Tomb of the shield
+#
 @set here/puzzle_value = 3
 #
-@set here/failure_teleport_to = tut#15
+@set here/failure_teleport_to = tut#08
 #
-@set here/success_teleport_to = tut#16
+@set here/success_teleport_to = tut#15
 #
 @set here/failure_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
@@ -1199,7 +1203,7 @@ rams the shield into an enemy in wild desperation.
 
  The air is damp. Where are you?
 #
-@set here/success_teleport_to =
+@set here/success_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
  make out a coffin in front of you in the gloom.
 
@@ -1212,7 +1216,7 @@ rams the shield into an enemy in wild desperation.
 #
 @dig Tomb of the hero
  : tutorial_world.rooms.TeleportRoom
- = Tomb depicting a heroine fighting a monster;knight;hero;monster;beast
+ = Tomb of the hero;knight;hero;monster;beast
 #
 @desc Tomb of the hero =
 The entrance to this tomb shows a mural of an aging woman in a
@@ -1225,9 +1229,9 @@ Tomb of the hero
 #
 @set here/puzzle_value = 4
 #
-@set here/failure_teleport_to = tut#15
+@set here/failure_teleport_to = tut#08
 #
-@set here/success_teleport_to = tut#16
+@set here/success_teleport_to = tut#15
 #
 @set here/failure_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
@@ -1247,7 +1251,7 @@ Tomb of the hero
 
  The air is damp. Where are you?
 #
-@set here/success_teleport_to =
+@set here/success_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
  make out a coffin in front of you in the gloom.
 
@@ -1269,14 +1273,14 @@ Tomb of the hero
 #
 #------------------------------------------------------------
 #
-@dig/teleport Ancient tomb;tut#16
+@dig/teleport Ancient tomb;tut#15
  : tutorial_world.rooms.TutorialRoom
  =  ,back to antechamber;antechamber;back
 #
 @desc
  Apart from the ornate sarcophagus, the tomb is bare from extra decorations.
  This is the resting place of a warrior with little patience for
- glamour and trinkets.
+ glamour and trinkets. You have reached the end of your quest.
 #
 @set here/tutorial_info =
  Congratulations, you have reached the end of this little tutorial
@@ -1330,7 +1334,7 @@ Tomb of the hero
 #
 #------------------------------------------------------------
 #
-@dig End of tutorial;end;tut#17
+@dig End of tutorial;end;tut#16
  : tutorial_world.rooms.OutroRoom
  = Exit tutorial;exit;end
 #
@@ -1341,7 +1345,7 @@ Tomb of the hero
 @lock Exit tutorial = view:holds(rack_sarcophagus) ; traverse:holds(rack_sarcophagus)
 #
 # to tutorial outro
-@tel tut#17
+@tel tut#16
 #
 # we want to clear the weapon-rack ids on the character when exiting.
 @set here/wracklist = ["rack_barrel", "rack_sarcophagus"]

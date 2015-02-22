@@ -557,7 +557,7 @@ class DefaultObject(ObjectDB):
             obj.msg(message, from_obj=from_obj, **kwargs)
 
     def move_to(self, destination, quiet=False,
-                emit_to_obj=None, use_destination=True, to_none=False):
+                emit_to_obj=None, use_destination=True, to_none=False, move_hooks=True):
         """
         Moves this object to a new location.
 
@@ -568,23 +568,26 @@ class DefaultObject(ObjectDB):
         function, such things are assumed to have been handled before calling
         move_to.
 
-        destination: (Object) Reference to the object to move to. This
-                     can also be an exit object, in which case the destination
-                     property is used as destination.
-        quiet:  (bool)    If true, don't emit left/arrived messages.
-        emit_to_obj: (Object) object to receive error messages
-        use_destination (bool): Default is for objects to use the "destination"
-                             property of destinations as the target to move to.
-                             Turning off this keyword allows objects to move
-                             "inside" exit objects.
-        to_none - allow destination to be None. Note that no hooks are run when
-                     moving to a None location. If you want to run hooks,
-                     run them manually (and make sure they can manage None
-                     locations).
+        Args:
+            destination (Object): Reference to the object to move to. This
+                 can also be an exit object, in which case the
+                 destination property is used as destination.
+            quiet (bool): If true, turn off the calling of the emit hooks
+                (announce_move_to/from etc)
+            emit_to_obj (Object): object to receive error messages
+            use_destination (bool): Default is for objects to use the "destination"
+                 property of destinations as the target to move to. Turning off this
+                 keyword allows objects to move "inside" exit objects.
+            to_none (bool): Allow destination to be None. Note that no hooks are run when
+                 moving to a None location. If you want to run hooks, run them manually
+                 (and make sure they can manage None locations).
+            move_hooks (bool): If False, turn off the calling of move-related hooks (at_before/after_move etc)
+                with quiet=True, this is as quiet a move as can be done.
 
-        Returns True/False depending on if there were problems with the move.
-                This method may also return various error messages to the
-                emit_to_obj.
+        Returns:
+            result (bool): True/False depending on if there were problems with the move.
+                    This method may also return various error messages to the
+                    emit_to_obj.
         """
         def logerr(string=""):
             trc = traceback.format_exc()
@@ -609,14 +612,15 @@ class DefaultObject(ObjectDB):
             destination = destination.destination
 
         # Before the move, call eventual pre-commands.
-        try:
-            if not self.at_before_move(destination):
-                return
-        except Exception:
-            logerr(errtxt % "at_before_move()")
-            #emit_to_obj.msg(errtxt % "at_before_move()")
-            #logger.log_trace()
-            return False
+        if move_hooks:
+            try:
+                if not self.at_before_move(destination):
+                    return
+            except Exception:
+                logerr(errtxt % "at_before_move()")
+                #emit_to_obj.msg(errtxt % "at_before_move()")
+                #logger.log_trace()
+                return False
 
         # Save the old location
         source_location = self.location
@@ -630,13 +634,14 @@ class DefaultObject(ObjectDB):
                 source_location = default_home
 
         # Call hook on source location
-        try:
-            source_location.at_object_leave(self, destination)
-        except Exception:
-            logerr(errtxt % "at_object_leave()")
-            #emit_to_obj.msg(errtxt % "at_object_leave()")
-            #logger.log_trace()
-            return False
+        if move_hooks:
+            try:
+                source_location.at_object_leave(self, destination)
+            except Exception:
+                logerr(errtxt % "at_object_leave()")
+                #emit_to_obj.msg(errtxt % "at_object_leave()")
+                #logger.log_trace()
+                return False
 
         if not quiet:
             #tell the old room we are leaving
@@ -667,25 +672,27 @@ class DefaultObject(ObjectDB):
                 #logger.log_trace()
                 return  False
 
-        # Perform eventual extra commands on the receiving location
-        # (the object has already arrived at this point)
-        try:
-            destination.at_object_receive(self, source_location)
-        except Exception:
-            logerr(errtxt % "at_object_receive()")
-            #emit_to_obj.msg(errtxt % "at_object_receive()")
-            #logger.log_trace()
-            return False
+        if move_hooks:
+            # Perform eventual extra commands on the receiving location
+            # (the object has already arrived at this point)
+            try:
+                destination.at_object_receive(self, source_location)
+            except Exception:
+                logerr(errtxt % "at_object_receive()")
+                #emit_to_obj.msg(errtxt % "at_object_receive()")
+                #logger.log_trace()
+                return False
 
         # Execute eventual extra commands on this object after moving it
         # (usually calling 'look')
-        try:
-            self.at_after_move(source_location)
-        except Exception:
-            logerr(errtxt % "at_after_move")
-            #emit_to_obj.msg(errtxt % "at_after_move()")
-            #logger.log_trace()
-            return False
+        if move_hooks:
+            try:
+                self.at_after_move(source_location)
+            except Exception:
+                logerr(errtxt % "at_after_move")
+                #emit_to_obj.msg(errtxt % "at_after_move()")
+                #logger.log_trace()
+                return False
         return True
 
     def clear_exits(self):
@@ -810,12 +817,6 @@ class DefaultObject(ObjectDB):
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):
             script.stop()
-        #for script in _GA(self, "scripts").all():
-        #    script.stop()
-
-        # if self.player:
-        #     self.player.user.is_active = False
-        #     self.player.user.save(
 
         # Destroy any exits to and from this room, if any
         self.clear_exits()
@@ -828,7 +829,6 @@ class DefaultObject(ObjectDB):
         # Perform the deletion of the object
         super(ObjectDB, self).delete()
         return True
-        # methods inherited from the typeclass system
 
 
     def __eq__(self, other):
@@ -892,7 +892,6 @@ class DefaultObject(ObjectDB):
             if cdict.get("location"):
                 cdict["location"].at_object_receive(self, None)
                 self.at_after_move(None)
-
             if cdict.get("attributes"):
                 # this should be a dict of attrname:value
                 keys, values = cdict["attributes"].keys(), cdict["attributes"].values()

@@ -171,8 +171,8 @@ def get_and_merge_cmdsets(caller, session, player, obj,
                     # Gather all cmdsets stored on objects in the room and
                     # also in the caller's inventory and the location itself
                     local_objlist = yield (location.contents_get(exclude=obj) +
-                                           obj.contents +
-                                           [location])
+                                           obj.contents + [location])
+                    local_objlist = [o for o in local_objlist if not o._is_deleted]
                     for lobj in local_objlist:
                         try:
                             # call hook in case we need to do dynamic changing to cmdset
@@ -205,6 +205,8 @@ def get_and_merge_cmdsets(caller, session, player, obj,
                 yield obj.at_cmdset_get()
             except Exception:
                 logger.log_trace()
+                _msg_err(caller, _ERROR_CMDSETS)
+                raise ErrorReported
             try:
                 returnValue(obj.cmdset.current)
             except AttributeError:
