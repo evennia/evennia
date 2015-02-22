@@ -301,14 +301,9 @@ class Mob(tut_objects.TutorialObject):
         # no target found, look for an exit.
         exits = [exi for exi in self.location.exits
                  if exi.access(self, "traverse")]
-        last_location = self.ndb.last_location
         if exits:
             # randomly pick an exit
             exit = random.choice(self.location.exits)
-            if len(exits) > 1 and exit.destination == last_location:
-                # don't go back the same way we came if we
-                # can avoid it.
-                return
             # move there.
             self.move_to(exit.destination)
         else:

@@ -540,6 +540,7 @@ def has_player(accessing_obj, accessed_obj, *args, **kwargs):
     This is a useful lock for traverse-locking Exits to restrain NPC
     mobiles from moving outside their areas.
     """
+    print "lock:", accessing_obj, accessed_obj, accessing_obj.has_player
     return hasattr(accessing_obj, "has_player") and accessing_obj.has_player
 
 def serversetting(accessing_obj, accessed_obj, *args, **kwargs):

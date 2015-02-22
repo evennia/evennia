@@ -473,7 +473,7 @@ class DarkRoom(TutorialRoom):
         self.db.tutorial_info = "This is a room with custom command sets on itself."
         # the room starts dark.
         self.db.is_lit = False
-        self.cmdsets.add(DarkCmdSet, permanent=True)
+        self.cmdset.add(DarkCmdSet, permanent=True)
 
     def at_init(self):
         """
