@@ -342,6 +342,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 caller.ndb.last_cmd = None
             # return result to the deferred
             returnValue(ret)
+
         except Exception:
             string = "%s\nAbove traceback is from an untrapped error."
             string += " Please file a bug report."

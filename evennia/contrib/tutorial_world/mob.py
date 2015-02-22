@@ -113,11 +113,11 @@ class Mob(tut_objects.TutorialObject):
         # chase the mob around when building.
         self.db.patrolling = True
         self.db.aggressive = True
-        self.db.immortal = True
+        self.db.immortal = False
         # db-store if it is dead or not
         self.db.is_dead = True
-        # specifies how much damage we remove from non-magic weapons
-        self.db.magic_resistance = 0.01
+        # specifies how much damage we divide away from non-magic weapons
+        self.db.damage_resistance = 100.0
         # pace (number of seconds between ticks) for
         # the respective modes.
         self.db.patrolling_pace = 6
@@ -388,12 +388,13 @@ class Mob(tut_objects.TutorialObject):
         Someone landed a hit on us. Check our status
         and start attacking if not already doing so.
         """
-        if not self.db.immortal:
+        if not self.ndb.is_immortal:
             if not weapon.db.magic:
-                # not a magic weapon - scale damage with magical
-                # resistance
-                damage = self.db.damage_resistance * damage
+                # not a magic weapon - divide away magic resistance
+                damage /= self.db.damage_resistance
                 attacker.msg(self.db.weapon_ineffective_msg)
+            else:
+                self.location.msg_contents(self.db.hit_msg)
             self.db.health -= damage
 
         # analyze the result
@@ -403,7 +404,6 @@ class Mob(tut_objects.TutorialObject):
             self.set_dead()
         else:
             # still alive, start attack if not already attacking
-            attacker.msg(self.db.hit_msg)
             if self.db.aggressive and not self.ndb.is_attacking:
                 self.start_attacking()
 

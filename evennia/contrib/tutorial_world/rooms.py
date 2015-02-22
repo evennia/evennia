@@ -111,7 +111,7 @@ class CmdTutorialSetDetail(default_cmds.MuxCommand):
         if not hasattr(self.obj, "set_detail"):
             self.caller.msg("Details cannot be set on %s." % self.obj)
             return
-        for key in self.args.split(";"):
+        for key in self.lhs.split(";"):
             # loop over all aliases, if any (if not, this will just be
             # the one key to loop over)
             self.obj.set_detail(key, self.rhs)
@@ -341,7 +341,7 @@ class WeatherRoom(TutorialRoom):
 #
 #------------------------------------------------------------------------------
 
-DARK_MESSAGES = ("It is pitch black. You are likely to be eaten by a grue."
+DARK_MESSAGES = ("It is pitch black. You are likely to be eaten by a grue.",
                  "It's pitch black. You fumble around but cannot find anything.",
                  "You don't see a thing. You feel around, managing to bump your fingers hard against something. Ouch!",
                  "You don't see a thing! Blindly grasping the air around you, you find nothing.",
@@ -475,6 +475,12 @@ class DarkRoom(TutorialRoom):
         self.db.is_lit = False
         self.cmdsets.add(DarkCmdSet, permanent=True)
 
+    def at_init(self):
+        """
+        Called when room is first recached (such as after a reload)
+        """
+        self.check_light_state()
+
     def _carries_light(self, obj):
         """
         Checks if the given object carries anything that gives light.
@@ -483,9 +489,9 @@ class DarkRoom(TutorialRoom):
         but for the Attribute is_giving_light - this makes it easy to
         later add other types of light-giving items. We also accept
         if there is a light-giving object in the room overall (like if
-        a lantern was dropped in the room)
+        a splinter was dropped in the room)
         """
-        return obj.db.is_giving_light or any(obj for obj in obj.contents if obj.db.is_giving_light)
+        return obj.is_superuser or obj.db.is_giving_light or obj.is_superuser or any(o for o in obj.contents if o.db.is_giving_light)
 
     def _heal(self, character):
         """
@@ -502,18 +508,15 @@ class DarkRoom(TutorialRoom):
         the room and also by the Light sources when they turn on.
         """
         if any(self._carries_light(obj) for obj in self.contents):
-            # people are carrying lights
-            if not self.db.is_lit:
-                self.cmdset.remove(DarkCmdSet)
-                self.db.is_lit = True
-                for char in (obj for obj in self.contents if obj.has_player):
-                    # this won't do anything if it is already removed
-                    char.msg("The room is lit up.")
+            self.cmdset.remove(DarkCmdSet)
+            self.db.is_lit = True
+            for char in (obj for obj in self.contents if obj.has_player):
+                # this won't do anything if it is already removed
+                char.msg("The room is lit up.")
         else:
             # noone is carrying light - darken the room
-            if self.db.is_lit:
-                self.db.is_lit = False
-                self.cmdset.add(DarkCmdSet, permanent=True)
+            self.db.is_lit = False
+            self.cmdset.add(DarkCmdSet, permanent=True)
             for char in (obj for obj in self.contents if obj.has_player):
                 if char.is_superuser:
                     char.msg("You are Superuser, so you are not affected by the dark state.")
@@ -529,7 +532,7 @@ class DarkRoom(TutorialRoom):
             # a puppeted object, that is, a Character
             self._heal(obj)
             # in case the new guy carries light with them
-            self.check_light_state()
+        self.check_light_state()
 
     def at_object_leave(self, obj, target_location):
         """
@@ -538,7 +541,6 @@ class DarkRoom(TutorialRoom):
         teleported away.
         """
         self.check_light_state()
-        obj.cmdset.delete(DarkCmdSet)
 
 #------------------------------------------------------------
 #
@@ -773,7 +775,7 @@ class CmdLookBridge(Command):
             fall_exit = search_object(self.obj.db.fall_exit)
             if fall_exit:
                 self.caller.msg("{r%s{n" % FALL_MESSAGE)
-                self.caller.move_to(fall_exit, quiet=True)
+                self.caller.move_to(fall_exit[0], quiet=True)
                 # inform others on the bridge
                 self.obj.msg_contents("A plank gives way under %s's feet and " \
                                       "they fall from the bridge!" % self.caller.key)

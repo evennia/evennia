@@ -198,7 +198,7 @@ start
  tickerhandler to regularly 'tick and randomly display various
  weather-related messages.
 
- The room also has 'details' set on it (such as the old well), those
+ The room also has 'details' set on it (such as the ruin in the distance), those
  are snippets of text stored on the room that the custom look command
  used for all tutorial rooms can display.
 #
@@ -620,8 +620,9 @@ hole
 #
 @detail hole;above =
  Whereas the lower edges of the hole seem jagged and natural you can
- faintly make out that it turns into a man-made circular shaft higher
- up. It looks like an old well.
+ faintly make out it turning into a man-made circular shaft higher up.
+ It looks like an old well. There must have been much more water
+ here once.
 #
 @detail passages;dark =
  Those dark passages seem to criss-cross the cliff. No need to
@@ -1062,7 +1063,9 @@ stairs down
  the tomb of some sort of ancient heroine - it must be the goal you
  have been looking for!
 #
-@dig Tomb of woman on horse
+@tel tut#14
+#
+@dig/teleport Tomb of woman on horse
  : tutorial_world.rooms.TeleportRoom
  = Tomb with statue of riding woman;horse;riding;
 #
@@ -1099,7 +1102,9 @@ stairs down
  the tomb of some sort of ancient heroine - it must be the goal you
  have been looking for!
 #
-@dig Tomb of the crowned queen
+@tel tut#14
+#
+@dig/teleport Tomb of the crowned queen
  : tutorial_world.rooms.TeleportRoom
  = Tomb with statue of a crowned queen;crown;queen
 #
@@ -1136,7 +1141,9 @@ stairs down
  the tomb of some sort of ancient heroine - it must be the goal you
  have been looking for!
 #
-@dig Tomb of the shield
+@tel tut#14
+#
+@dig/teleport Tomb of the shield
  : tutorial_world.rooms.TeleportRoom
  = Tomb with shield of arms;shield
 #
@@ -1173,7 +1180,9 @@ stairs down
  the tomb of some sort of ancient heroine - it must be the goal you
  have been looking for!
 #
-@dig Tomb of the hero
+@tel tut#14
+#
+@dig/teleport Tomb of the hero
  : tutorial_world.rooms.TeleportRoom
  = Tomb depicting a heroine fighting a monster;knight;hero;monster;beast
 #
@@ -1217,10 +1226,11 @@ stairs down
 #
 # The ancient tomb
 #
-# This is the real tomb, the goal of the adventure.
+# This is the real tomb, the goal of the adventure. It is not
+# directly accessible from the Antechamber but you are
+# teleported here only if you solve the puzzle of the Obelisk.
 #
 #------------------------------------------------------------
-# Create the real tomb
 #
 @dig/teleport Ancient tomb;tut#16
  : tutorial_world.rooms.TutorialRoom

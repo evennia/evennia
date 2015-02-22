@@ -23,6 +23,7 @@ import random
 
 from evennia import DefaultObject, DefaultExit, Command, CmdSet
 from evennia import utils
+from evennia.utils import search
 from evennia.utils.spawner import spawn
 
 #------------------------------------------------------------
@@ -276,7 +277,7 @@ class CmdLight(Command):
         """
 
         if self.obj.light():
-            self.caller("You light %s." % self.obj.key)
+            self.caller.msg("You light %s." % self.obj.key)
             self.caller.location.msg_contents("%s lights %s!" % (self.caller, self.obj.key), exclude=[self.caller])
         else:
             self.caller.msg("%s is already burning." % self.obj.key)
@@ -285,6 +286,8 @@ class CmdLight(Command):
 class CmdSetLight(CmdSet):
     "CmdSet for the lightsource commands"
     key = "lightsource_cmdset"
+    # this is higher than the dark cmdset - important!
+    priority = 3
 
     def at_cmdset_creation(self):
         "called at cmdset creation"
@@ -320,23 +323,26 @@ class LightSource(TutorialObject):
         # add the Light command
         self.cmdset.add_default(CmdSetLight, permanent=True)
 
-    def _burnout(self, ret):
+    def _burnout(self):
         """
         This is called when this light source burns out. We make no
         use of the return value.
         """
+        # delete ourselves from the database
+        self.db.is_giving_light = False
         try:
-            # our location is usually a Character (their inventory), we try
-            # to send to -their- location so everyone else also notices the
-            # light goes out.
             self.location.location.msg_contents("%s's %s flickers and dies." %
                                 (self.location, self.key), exclude=self.location)
             self.location.msg("Your %s flickers and dies." % self.key)
+            self.location.location.check_light_state()
         except AttributeError:
-            # we are not in someone's inventory (maybe we were dropped.)
-            self.location.msg_contents("A %s on the floor flickers and dies." % self.key)
-        # delete ourselves.
+            try:
+                self.location.msg_contents("A %s on the floor flickers and dies." % self.key)
+                self.location.location.check_light_state()
+            except AttributeError:
+                pass
         self.delete()
+
 
     def light(self):
         """
@@ -348,10 +354,13 @@ class LightSource(TutorialObject):
         self.db.is_giving_light = True
         # if we are in a dark room, trigger its light check
         try:
-            self.location.check_light_state()
-        except Exception:
-            # if we are not in a dark room, never mind
-            pass
+            self.location.location.check_light_state()
+        except AttributeError:
+            try:
+                # maybe we are directly in the room
+                self.location.check_light_state()
+            except AttributeError:
+                pass
         finally:
             # start the burn timer. When it runs out, self._burnout
             # will be called.
@@ -549,12 +558,11 @@ class CmdPressButton(Command):
         self.caller.location.msg_contents(string % self.caller.key, exclude=self.caller)
         self.obj.open_wall()
 
-        self.caller.msg(string)
-
 
 class CmdSetCrumblingWall(CmdSet):
     "Group the commands for crumblingWall"
     key = "crumblingwall_cmdset"
+    priority = 2
 
     def at_cmdset_creation(self):
         "called when object is first created."
@@ -612,18 +620,18 @@ class CrumblingWall(TutorialObject, DefaultExit):
         # set cmdset
         self.cmdset.add(CmdSetCrumblingWall, permanent=True)
 
-    def open(self):
+    def open_wall(self):
         """
         This method is called by the push button command once the puzzle
         is solved. It opens the wall and sets a timer for it to reset
         itself.
         """
-        # this will make it into a proper exit
-        eloc = self.caller.search(self.obj.db.destination, global_search=True)
+        # this will make it into a proper exit (this returns a list)
+        eloc = search.search_object(self.db.destination)
         if not eloc:
             self.caller.msg("The exit leads nowhere, there's just more stone behind it ...")
         else:
-            self.obj.destination = eloc
+            self.destination = eloc[0]
         self.exit_open = True
         # start a 45 second timer before closing again
         utils.delay(45, self.reset)

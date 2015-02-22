@@ -49,6 +49,7 @@ call the handler's save() and restore() methods when the server reboots.
 
 """
 from twisted.internet.defer import inlineCallbacks
+from django.core.exceptions import ObjectDoesNotExist
 from evennia.scripts.scripts import ExtendedLoopingCall
 from evennia.server.models import ServerConfig
 from evennia.utils.logger import log_trace, log_err
@@ -84,14 +85,17 @@ class Ticker(object):
         The callback should ideally work under @inlineCallbacks so it can yield
         appropriately.
         """
-        for key, (obj, args, kwargs) in self.subscriptions.items():
+        for store_key, (obj, args, kwargs) in self.subscriptions.items():
             hook_key = yield kwargs.get("_hook_key", "at_tick")
             if not obj:
                 # object was deleted between calls
-                self.validate()
+                self.remove(store_key)
                 continue
             try:
                 yield _GA(obj, hook_key)(*args, **kwargs)
+            except ObjectDoesNotExist:
+                log_trace()
+                self.remove(store_key)
             except Exception:
                 log_trace()
 
