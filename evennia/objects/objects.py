@@ -386,9 +386,9 @@ class DefaultObject(ObjectDB):
         if is_string:
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("here", ):
-                return self.location
+                return [self.location] if quiet else self.location
             if searchdata.lower() in ("me", "self",):
-                return self
+                return [self] if quiet else self
 
         if use_nicks:
             # do nick-replacement on search
@@ -961,8 +961,6 @@ class DefaultObject(ObjectDB):
 
     def at_init(self):
         """
-        DEPRECATED: Use __init__ instead.
-
         This is always called whenever this object is initiated --
         that is, whenever it its typeclass is cached from memory. This
         happens on-demand first time the object is used or activated

@@ -51,12 +51,18 @@ call the handler's save() and restore() methods when the server reboots.
 from twisted.internet.defer import inlineCallbacks
 from evennia.scripts.scripts import ExtendedLoopingCall
 from evennia.server.models import ServerConfig
-from evennia.utils.logger import log_trace
+from evennia.utils.logger import log_trace, log_err
 from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
 
+
+_ERROR_ADD_INTERVAL = \
+"""TickerHandler: Tried to add a ticker with invalid interval:
+obj={obj}, interval={interval}, args={args}, kwargs={kwargs}
+store_key={store_key}
+Ticker was not added."""
 
 class Ticker(object):
     """
@@ -93,7 +99,6 @@ class Ticker(object):
         """
         Set up the ticker
         """
-        print "Ticker __init__", interval
         self.interval = interval
         self.subscriptions = {}
         # set up a twisted asynchronous repeat call
@@ -113,7 +118,6 @@ class Ticker(object):
             if not subs:
                 self.task.stop()
         elif subs:
-            print "validating tickerhandler:", subs, start_delay, self.interval
             self.task.start(self.interval, now=False, start_delay=start_delay)
 
     def add(self, store_key, obj, *args, **kwargs):
@@ -156,6 +160,11 @@ class TickerPool(object):
         """
         Add new ticker subscriber
         """
+        if not interval:
+            log_err(_ERROR_ADD_INTERVAL.format(store_key=store_key, obj=obj,
+                                       interval=interval, args=args, kwargs=kwargs))
+            return
+
         if interval not in self.tickers:
             self.tickers[interval] = self.ticker_class(interval)
         self.tickers[interval].add(store_key, obj, *args, **kwargs)

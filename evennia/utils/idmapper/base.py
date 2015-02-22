@@ -65,7 +65,7 @@ class SharedMemoryModelBase(ModelBase):
         cached_instance = cls.get_cached_instance(instance_key)
         if cached_instance is None:
             cached_instance = new_instance()
-            cls.cache_instance(cached_instance)
+            cls.cache_instance(cached_instance, new=True)
         return cached_instance
 
 
@@ -246,12 +246,26 @@ class SharedMemoryModel(Model):
         return cls.__dbclass__.__instance_cache__.get(id)
 
     @classmethod
-    def cache_instance(cls, instance):
+    def cache_instance(cls, instance, new=False):
         """
         Method to store an instance in the cache.
+
+        Args:
+            instance (Class instance): the instance to cache
+            new (bool, optional): this is the first time this
+                instance is cached (i.e. this is not an update
+                operation).
+
         """
         if instance._get_pk_val() is not None:
             cls.__dbclass__.__instance_cache__[instance._get_pk_val()] = instance
+            if new:
+                try:
+                    # trigger the at_init hook only
+                    # at first initialization
+                    instance.at_init()
+                except AttributeError:
+                    pass
 
     @classmethod
     def get_all_cached_instances(cls):

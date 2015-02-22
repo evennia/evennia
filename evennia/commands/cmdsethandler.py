@@ -357,7 +357,7 @@ class CmdSetHandler(object):
                 cmdset.permanent = False
             self.update()
 
-    def delete(self, cmdset=None):
+    def remove(self, cmdset=None):
         """
         Remove a cmdset from the  handler.
 
@@ -409,8 +409,10 @@ class CmdSetHandler(object):
                     pass
         # re-sync the cmdsethandler.
         self.update()
+    # legacy alias
+    delete = remove
 
-    def delete_default(self):
+    def remove_default(self):
         """
         This explicitly deletes the default cmdset. It's the
         only command that can.
@@ -428,6 +430,8 @@ class CmdSetHandler(object):
         else:
             self.cmdset_stack = [_EmptyCmdSet(cmdsetobj=self.obj)]
         self.update()
+    # legacy alias
+    delete_default = remove_default
 
     def all(self):
         """

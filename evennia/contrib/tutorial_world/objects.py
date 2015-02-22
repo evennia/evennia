@@ -297,7 +297,7 @@ class LightSource(TutorialObject):
 
     When burned out, the object will be deleted.
     """
-    def __init__(self):
+    def at_init(self):
         """
         If this is called with the Attribute is_giving_light already
         set, we know that the timer got killed by a server
@@ -795,7 +795,7 @@ class CmdAttack(Command):
             self.caller.db.combat_parry_mode = False
         else:
             self.caller.msg("You fumble with your weapon, unsure of whether to stab, slash or parry ...")
-            self.caller.location.msg_contents("%s fumbles with their weapon." % self.obj.key)
+            self.caller.location.msg_contents("%s fumbles with their weapon." % self.caller, exclude=self.caller)
             self.caller.db.combat_parry_mode = False
             return
 

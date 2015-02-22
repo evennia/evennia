@@ -1714,9 +1714,12 @@ class CmdExamine(ObjManipCommand):
         """
         Formats a single attribute line.
         """
-        if crop and isinstance(value, basestring):
+        if crop:
+            if not isinstance(value, basestring):
+                value = utils.to_str(value, force_string=True)
             value = utils.crop(value)
             value = utils.to_unicode(value)
+
         string = "\n %s = %s" % (attr, value)
         string = raw(string)
         return string

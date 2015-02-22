@@ -10,6 +10,7 @@ import random
 from evennia import TICKER_HANDLER
 from evennia import search_object
 from evennia import Command, CmdSet
+from evennia import logger
 from evennia.contrib.tutorial_world import objects as tut_objects
 
 
@@ -276,7 +277,7 @@ class Mob(tut_objects.TutorialObject):
         if not self.db.aggressive:
             self.start_hunting()
             return
-        self._set_ticker(self.db.attacking_pace, "do_attack")
+        self._set_ticker(self.db.aggressive_pace, "do_attack")
         self.ndb.is_patrolling = False
         self.ndb.is_hunting = False
         self.ndb.is_attacking = True
@@ -346,7 +347,7 @@ class Mob(tut_objects.TutorialObject):
             # no exits! teleport to home to get away.
             self.move_to(self.home)
 
-    def do_attacking(self, *args, **kwargs):
+    def do_attack(self, *args, **kwargs):
         """
         Called regularly when in attacking mode. In attacking mode
         the mob will bring its weapons to bear on any targets
@@ -373,9 +374,12 @@ class Mob(tut_objects.TutorialObject):
             # defeated room
             target.msg(self.db.defeat_msg)
             self.location.msg_contents(self.db.defeat_msg_room % target.key, exclude=target)
-            defeat_location = search_object(self.db.defeat_location)
-            if defeat_location:
-                target.move_to(defeat_location, quiet=True)
+            send_defeated_to = search_object(self.db.send_defeated_to)
+            if send_defeated_to:
+                target.move_to(send_defeated_to[0], quiet=True)
+            else:
+                logger.log_err("Mob: mob.db.send_defeated_to not found: %s" % self.db.send_defeated_to)
+
 
     # response methods - called by other objects
 

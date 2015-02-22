@@ -440,6 +440,7 @@ class DarkCmdSet(CmdSet):
     """
     key = "darkroom_cmdset"
     mergetype = "Replace"
+    priority = 2
 
     def at_cmdset_creation(self):
         "populate the cmdset."
@@ -472,6 +473,7 @@ class DarkRoom(TutorialRoom):
         self.db.tutorial_info = "This is a room with custom command sets on itself."
         # the room starts dark.
         self.db.is_lit = False
+        self.cmdsets.add(DarkCmdSet, permanent=True)
 
     def _carries_light(self, obj):
         """
@@ -502,22 +504,22 @@ class DarkRoom(TutorialRoom):
         if any(self._carries_light(obj) for obj in self.contents):
             # people are carrying lights
             if not self.db.is_lit:
+                self.cmdset.remove(DarkCmdSet)
                 self.db.is_lit = True
                 for char in (obj for obj in self.contents if obj.has_player):
                     # this won't do anything if it is already removed
-                    char.cmdset.delete(DarkCmdSet)
                     char.msg("The room is lit up.")
         else:
             # noone is carrying light - darken the room
+            if self.db.is_lit:
+                self.db.is_lit = False
+                self.cmdset.add(DarkCmdSet, permanent=True)
             for char in (obj for obj in self.contents if obj.has_player):
-                if self.db.is_lit:
-                    self.db.is_lit = False
-                    if char.is_superuser:
-                        char.msg("You are Superuser, so you are not affected by the dark state.")
-                    else:
-                        # put players in darkness
-                        char.cmdset.add(DarkCmdSet)
-                        char.msg("The room is completely dark.")
+                if char.is_superuser:
+                    char.msg("You are Superuser, so you are not affected by the dark state.")
+                else:
+                    # put players in darkness
+                    char.msg("The room is completely dark.")
 
     def at_object_receive(self, obj, source_location):
         """
@@ -535,8 +537,8 @@ class DarkRoom(TutorialRoom):
         DarkCmdSet if necessary.  This also works if they are
         teleported away.
         """
-        obj.cmdset.delete(DarkCmdSet)
         self.check_light_state()
+        obj.cmdset.delete(DarkCmdSet)
 
 #------------------------------------------------------------
 #
