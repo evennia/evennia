@@ -31,12 +31,6 @@ class TestScriptDB(TestCase):
             self.scr.delete()
             self.scr.delete()
 
-    #@unittest.skip("not implemented")
-    #def test___init__fails(self):  # Users should be told not to do this
-    #                                  - No they should not; ScriptDB() is required internally. /Griatch
-    #    with self.assertRaises(Exception):
-    #        ScriptDB()
-
     def test_deleted_script_fails_start(self):
         "Would it ever be necessary to start a deleted script?"
         self.scr.delete()
@@ -49,7 +43,3 @@ class TestScriptDB(TestCase):
         "Can deleted scripts be said to be valid?"
         self.scr.delete()
         self.assertFalse(self.scr.is_valid())  # assertRaises? See issue #509
-
-
-if __name__ == '__main__':
-    unittest.main()
