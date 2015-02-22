@@ -87,7 +87,7 @@ class Ticker(object):
         """
         for store_key, (obj, args, kwargs) in self.subscriptions.items():
             hook_key = yield kwargs.get("_hook_key", "at_tick")
-            if not obj:
+            if not obj or not obj.pk:
                 # object was deleted between calls
                 self.remove(store_key)
                 continue

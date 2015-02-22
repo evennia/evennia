@@ -1026,9 +1026,14 @@ stairs down
 # except one which is the one decided by the scene shown by the
 # Obelisk last we looked.
 #
-@dig/tel Blue bird tomb
+@dig Blue bird tomb
  : tutorial_world.rooms.TeleportRoom
  = Tomb with stone bird;bird;blue;stone
+#
+@desc Blue bird tomb =
+The entrance to this tomb is decorated with a very lifelike blue bird.
+#
+Blue bird tomb
 #
 @set here/puzzle_value = 0
 #
@@ -1036,7 +1041,7 @@ stairs down
 #
 @set here/success_teleport_to = tut#16
 #
-@set here/failure_teleport_to =
+@set here/failure_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
  make out a coffin in front of you in the gloom.
 
@@ -1065,9 +1070,17 @@ stairs down
 #
 @tel tut#14
 #
-@dig/teleport Tomb of woman on horse
+@dig Tomb of woman on horse
  : tutorial_world.rooms.TeleportRoom
  = Tomb with statue of riding woman;horse;riding;
+#
+@desc Tomb of woman on horse =
+The entrance to this tomb depicts a scene of a strong
+warrior woman on a black horse. She shouts and brandishes
+a glowing weapon as she charges down a hill towards
+some enemy not depicted.
+#
+Tomb of woman on horse
 #
 @set here/puzzle_value = 1
 #
@@ -1075,7 +1088,7 @@ stairs down
 #
 @set here/success_teleport_to = tut#16
 #
-@set here/failure_teleport_to =
+@set here/failure_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
  make out a coffin in front of you in the gloom.
 
@@ -1104,9 +1117,16 @@ stairs down
 #
 @tel tut#14
 #
-@dig/teleport Tomb of the crowned queen
+@dig Tomb of the crowned queen
  : tutorial_world.rooms.TeleportRoom
  = Tomb with statue of a crowned queen;crown;queen
+#
+@desc Tomb of the crowned queen =
+The entrance to this tomb shows a beautiful mural of a queen ruling
+from her throne, respectful subjects kneeling before her. On her head
+is a crown that seems to shine with magical power.
+#
+Tomb of the crowned queen
 #
 @set here/puzzle_value = 2
 #
@@ -1114,7 +1134,7 @@ stairs down
 #
 @set here/success_teleport_to = tut#16
 #
-@set here/failure_teleport_to =
+@set here/failure_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
  make out a coffin in front of you in the gloom.
 
@@ -1143,9 +1163,17 @@ stairs down
 #
 @tel tut#14
 #
-@dig/teleport Tomb of the shield
+@dig Tomb of the shield
  : tutorial_world.rooms.TeleportRoom
  = Tomb with shield of arms;shield
+#
+Tomb of the shield
+#
+@desc Tomb of the shield =
+This tomb shows a warrior woman fighting shadowy creatures from the
+top of a hill. Her sword lies broken on the ground before her but she
+fights on with her battered shield - the scene depicts her just as she
+rams the shield into an enemy in wild desperation.
 #
 @set here/puzzle_value = 3
 #
@@ -1153,7 +1181,7 @@ stairs down
 #
 @set here/success_teleport_to = tut#16
 #
-@set here/failure_teleport_to =
+@set here/failure_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
  make out a coffin in front of you in the gloom.
 
@@ -1182,9 +1210,18 @@ stairs down
 #
 @tel tut#14
 #
-@dig/teleport Tomb of the hero
+@dig Tomb of the hero
  : tutorial_world.rooms.TeleportRoom
  = Tomb depicting a heroine fighting a monster;knight;hero;monster;beast
+#
+@desc Tomb of the hero =
+The entrance to this tomb shows a mural of an aging woman in a
+warrior's outfit. She has white hair yet her sword-arm shows no sign
+of weakness and her pose is straight. Children are gathered around her
+feet and men and women from all the land come to seek the wisdom and
+strength of the legendary hero.
+#
+Tomb of the hero
 #
 @set here/puzzle_value = 4
 #
@@ -1192,7 +1229,7 @@ stairs down
 #
 @set here/success_teleport_to = tut#16
 #
-@set here/failure_teleport_to =
+@set here/failure_teleport_msg =
  The tomb is dark. You fumble your way through it. You think you can
  make out a coffin in front of you in the gloom.
 
