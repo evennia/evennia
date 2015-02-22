@@ -995,7 +995,7 @@ class DefaultObject(ObjectDB):
         Called just after puppeting has been completed and
         all Player<->Object links have been established.
         """
-        pass
+        self.player.db._last_puppet = self
 
     def at_pre_unpuppet(self):
         """
