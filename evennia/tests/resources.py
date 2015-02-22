@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.test import TestCase
+from mock import Mock
 from evennia.objects import DefaultObject, DefaultCharacter, DefaultRoom
 from evennia.players import DefaultPlayer
 from evennia.scripts import DefaultScript
@@ -9,45 +10,17 @@ from evennia.utils import create
 from evennia.utils.idmapper.base import flush_cache
 
 
-def dummy(self, *args, **kwargs):
-    pass
-
-SESSIONS.data_out = dummy
-SESSIONS.disconnect = dummy
-
-
-class TestObjectClass(DefaultObject):
-    def msg(self, text="", **kwargs):
-        "test message"
-        pass
-
-
-class TestCharacterClass(DefaultCharacter):
-    def msg(self, text="", **kwargs):
-        "test message"
-        if self.player:
-            self.player.msg(text=text, **kwargs)
-        else:
-            if not self.ndb.stored_msg:
-                self.ndb.stored_msg = []
-            self.ndb.stored_msg.append(text)
-
-
-class TestPlayerClass(DefaultPlayer):
-    def msg(self, text="", **kwargs):
-        "test message"
-        if not self.ndb.stored_msg:
-            self.ndb.stored_msg = []
-        self.ndb.stored_msg.append(text)
+SESSIONS.data_out = Mock()
+SESSIONS.disconnect = Mock()
 
 
 class EvenniaTest(TestCase):
     """
     Base test for Evennia, sets up a basic environment.
     """
-    player_typeclass = TestPlayerClass
-    object_typeclass = TestObjectClass
-    character_typeclass = TestCharacterClass
+    player_typeclass = DefaultPlayer
+    object_typeclass = DefaultObject
+    character_typeclass = DefaultCharacter
     room_typeclass = DefaultRoom
     script_typeclass = DefaultScript
 
