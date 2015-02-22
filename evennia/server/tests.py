@@ -30,7 +30,6 @@ except ImportError:
     import unittest
 
 from django.conf import settings
-#from django.test.runner import DiscoverRunner
 from django.test.simple import DjangoTestSuiteRunner
 from evennia.utils.utils import mod_import
 
@@ -45,6 +44,8 @@ class EvenniaTestSuiteRunner(DjangoTestSuiteRunner):
         Build a test suite for Evennia. test_labels is a list of apps to test.
         If not given, a subset of settings.INSTALLED_APPS will be used.
         """
+        import evennia
+        evennia.init()
         if not test_labels:
             test_labels = [applabel.rsplit('.', 1)[1] for applabel in settings.INSTALLED_APPS
                            if applabel.startswith('evennia.')]
