@@ -93,6 +93,7 @@ class Ticker(object):
         """
         Set up the ticker
         """
+        print "Ticker __init__", interval
         self.interval = interval
         self.subscriptions = {}
         # set up a twisted asynchronous repeat call
@@ -112,7 +113,7 @@ class Ticker(object):
             if not subs:
                 self.task.stop()
         elif subs:
-            #print "starting with start_delay=", start_delay
+            print "validating tickerhandler:", subs, start_delay, self.interval
             self.task.start(self.interval, now=False, start_delay=start_delay)
 
     def add(self, store_key, obj, *args, **kwargs):

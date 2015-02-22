@@ -147,7 +147,6 @@ class CmdTutorialLook(default_cmds.CmdLook):
         """
         caller = self.caller
         args = self.args
-        print "tutorial look"
         if args:
             # we use quiet=True to turn off automatic error reporting.
             # This tells search that we want to handle error messages
@@ -159,7 +158,6 @@ class CmdTutorialLook(default_cmds.CmdLook):
                 # no target found or more than one target found (multimatch)
                 # look for a detail that may match
                 detail = self.obj.return_detail(args)
-                print "look detail:", detail, self.obj, self.obj.db.details
                 if detail:
                     self.caller.msg(detail)
                     return
@@ -232,7 +230,7 @@ class TutorialRoom(DefaultRoom):
         """
         if new_arrival.has_player and not new_arrival.is_superuser:
             # this is a character
-            for obj in self.content_get(exclude=new_arrival):
+            for obj in self.contents_get(exclude=new_arrival):
                 if hasattr(obj, "at_new_arrival"):
                     obj.at_new_arrival(new_arrival)
 
@@ -242,12 +240,13 @@ class TutorialRoom(DefaultRoom):
         returns the value of it.
 
         Args:
-            detailkey (str): The detail being looked at
+            detailkey (str): The detail being looked at. This is
+                case-insensitive.
 
         """
         details = self.db.details
         if details:
-            return details.get(detailkey, None)
+            return details.get(detailkey.lower(), None)
 
     def set_detail(self, detailkey, description):
         """
@@ -256,15 +255,15 @@ class TutorialRoom(DefaultRoom):
         Args:
             detailkey (str): The detail identifier to add (for
                 aliases you need to add multiple keys to the
-                same description).
+                same description). Case-insensitive.
             description (str): The text to return when looking
                 at the given detailkey.
 
         """
         if self.db.details:
-            self.db.details[detailkey] = description
+            self.db.details[detailkey.lower()] = description
         else:
-            self.db.details = {detailkey: description}
+            self.db.details = {detailkey.lower(): description}
 
     def reset(self):
         "Can be called by the tutorial runner."
@@ -759,7 +758,7 @@ class CmdLookBridge(Command):
                                       BRIDGE_POS_MESSAGES[bridge_position],
                                       random.choice(BRIDGE_MOODS))
 
-        chars = [obj for obj in self.obj.get_contents(exclude=caller) if obj.has_player]
+        chars = [obj for obj in self.obj.contents_get(exclude=caller) if obj.has_player]
         if chars:
             # we create the You see: message manually here
             message += "\n You see: %s" % ", ".join("{c%s{n" % char.key for char in chars)

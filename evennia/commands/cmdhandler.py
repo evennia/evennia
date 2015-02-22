@@ -146,7 +146,6 @@ def get_and_merge_cmdsets(caller, session, player, obj,
                 yield [lobj.cmdset.current for lobj in local_objlist
                    if (lobj.cmdset.current and
                    lobj.locks.check(caller, 'call', no_superuser_bypass=True))]
-            print "local_obj_cmdsets:", [c.key for c in local_obj_cmdsets]
             for cset in local_obj_cmdsets:
                 #This is necessary for object sets, or we won't be able to
                 # separate the command sets from each other in a busy room.
@@ -210,7 +209,6 @@ def get_and_merge_cmdsets(caller, session, player, obj,
     if cmdsets:
         # faster to do tuple on list than to build tuple directly
         mergehash = tuple([id(cmdset) for cmdset in cmdsets])
-        print "mergehash:", mergehash, mergehash in _CMDSET_MERGE_CACHE, [(c.key, c.priority) for c in cmdsets]
         if mergehash in _CMDSET_MERGE_CACHE:
             # cached merge exist; use that
             cmdset = _CMDSET_MERGE_CACHE[mergehash]

@@ -69,7 +69,7 @@ many traits with a normal goblin.
 
 """
 
-import os, sys, copy
+import copy
 #TODO
 #sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 #os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
@@ -149,6 +149,7 @@ def _batch_create_object(*objparams):
                            "nattributes": objparam[5]}
         # this triggers all hooks
         obj.save()
+        objs.append(obj)
     return objs
 
 

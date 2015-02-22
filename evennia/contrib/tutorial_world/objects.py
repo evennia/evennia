@@ -879,7 +879,7 @@ class Weapon(TutorialObject):
 
 WEAPON_PROTOTYPES = {
     "weapon": {
-        "typeclass": "tutorial_world.objects.Weapon",
+        "typeclass": "evennia.contrib.tutorial_world.objects.Weapon",
         "key": "Weapon",
         "hit": 0.2,
         "parry": 0.2,
@@ -892,7 +892,7 @@ WEAPON_PROTOTYPES = {
         "key": "Kitchen knife",
         "desc":"A rusty kitchen knife. Better than nothing.",
         "damage": 3},
-    "rusty dagger": {
+    "dagger": {
         "prototype": "knife",
         "key": "Rusty dagger",
         "aliases": ["knife", "dagger"],
@@ -1029,9 +1029,9 @@ class WeaponRack(TutorialObject):
         self.db.rack_id = "weaponrack_1"
         # these are prototype names from the prototype
         # dictionary above.
-        self.db.get_weapon_msg = "You pull %s from the rack."
-        self.db.no_more_weapons_msg = "%s has no more to offer you." % self.key
-        self.db.available_weapons = ["knife", "rusty_dagger",
+        self.db.get_weapon_msg = "You find {c%s{n."
+        self.db.no_more_weapons_msg = "you find nothing else of use."
+        self.db.available_weapons = ["knife", "dagger",
                                      "sword", "club"]
 
     def produce_weapon(self, caller):
@@ -1044,12 +1044,12 @@ class WeaponRack(TutorialObject):
         """
         rack_id = self.db.rack_id
         if caller.tags.get(rack_id):
-            caller.msg("%s has no more to offer you." % self.key)
+            caller.msg(self.db.no_more_weapons_msg)
         else:
             prototype = random.choice(self.db.available_weapons)
             # use the spawner to create a new Weapon from the
             # spawner dictionary, tag the caller
-            wpn = spawn(WEAPON_PROTOTYPES[prototype], prototype_parents=WEAPON_PROTOTYPES)
+            wpn = spawn(WEAPON_PROTOTYPES[prototype], prototype_parents=WEAPON_PROTOTYPES)[0]
             caller.tags.add(rack_id)
             wpn.location = caller
-            caller.msg(self.db.weapon_msg % wpn.key)
+            caller.msg(self.db.get_weapon_msg % wpn.key)

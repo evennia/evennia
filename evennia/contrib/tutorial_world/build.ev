@@ -384,16 +384,16 @@ north
 # Some details to look at
 #
 @detail shutters;storm =
-    The shutters are closed.
+ The shutters are closed.
 #
-@detail evennia =
-    You think you might have heard of this name before,
-    but at the moment you can recall where from.
+@detail inn;sign =
+ You think you might have heard of this name before,
+ but at the moment you can recall where from.
 #
-@detail snake;letters =
-    The snake is cartoonish with big googly eyes. It looks somewhat
-    like one of those big snakes from the distant jungles - the kind
-    squeezes their victims.
+@detail snake;letters;writing =
+ The snake is cartoonish with big googly eyes. It looks somewhat
+ like one of those big snakes from the distant jungles - the kind
+ squeezes their victims.
 
 #------------------------------------------------------------
 #
@@ -421,6 +421,10 @@ north
 
  (to get a weapon from the barrel, use {wget weapon{n)
 #
+@desc barrel =
+ This barrel has the air of leftovers - it contains an assorted
+ mess of random weaponry in various states and qualities.
+#
 @detail barkeep;man;landlord =
  The landlord is a cheerful fellow, always ready to supply you with
  more beer. He mentions doing some sort of arcane magic known as
@@ -446,7 +450,7 @@ north
 # defined in tutorial_world.objects.WEAPON_PROTOTYPES. We also set a
 # message to use when trying to grab a second weapon.
 #
-@set barrel/available_weapons = ["knife", "rusty_dagger", "sword", "club", "ornate_longsword"]
+@set barrel/available_weapons = ["knife", "dagger", "sword", "club"]
 #
 @set barrel/no_more_weapons_msg =
     The barkeep shakes his head. He says: 'Sorry pal. We get a lot of needy
