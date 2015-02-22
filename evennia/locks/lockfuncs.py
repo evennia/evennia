@@ -291,12 +291,15 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
     compare=gt means the accessing_obj must have a value greater than
     the one given).
 
-    Searches attributes *and* properties stored on the checking
-    object. The first form works like a flag - if the
-    attribute/property exists on the object, the value is checked for
-    True/False. The second form also requires that the value of the
-    attribute/property matches. Note that all retrieved values will be
-    converted to strings before doing the comparison.
+    Searches attributes *and* properties stored on the accessing_obj.
+    if accessing_obj has a property "obj", then this is used as
+    accessing_obj (this makes this usable for Commands too)
+
+    The first form works like a flag - if the attribute/property
+    exists on the object, the value is checked for True/False. The
+    second form also requires that the value of the attribute/property
+    matches. Note that all retrieved values will be converted to
+    strings before doing the comparison.
     """
     # deal with arguments
     if not args:
@@ -317,6 +320,13 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
             # this might happen if we try to compare two things
             # that cannot be compared
             return False
+
+    if hasattr(accessing_obj, "obj"):
+        # NOTE: this is relevant for Commands. It may clash with scripts
+        # (they have Attributes and .obj) , but are scripts really
+        # used so that one ever wants to check the property on the
+        # Script rather than on its owner?
+        accessing_obj = accessing_obj.obj
 
     # first, look for normal properties on the object trying to gain access
     if hasattr(accessing_obj, attrname):
@@ -342,13 +352,10 @@ def objattr(accessing_obj, accessed_obj, *args, **kwargs):
       objattr(attrname, value, compare=type)
 
     Works like attr, except it looks for an attribute on
-    accessing_obj.obj, if such an entity exists. Suitable
-    for commands.
+    accessed_obj instead.
 
     """
-    if hasattr(accessing_obj, "obj"):
-        return attr(accessing_obj.obj, accessed_obj, *args, **kwargs)
-
+    return attr(accessed_obj, accessed_obj, *args, **kwargs)
 
 def locattr(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -360,7 +367,12 @@ def locattr(accessing_obj, accessed_obj, *args, **kwargs):
     Works like attr, except it looks for an attribute on
     accessing_obj.location, if such an entity exists.
 
+    if accessing_obj has a property ".obj" (such as is the case for a
+    Command), then accessing_obj.obj.location is used instead.
+
     """
+    if hasattr(accessing_obj, "obj"):
+        accessing_obj = accessing_obj.obj
     if hasattr(accessing_obj, "location"):
         return attr(accessing_obj.location, accessed_obj, *args, **kwargs)
 
@@ -429,8 +441,12 @@ def tag(accessing_obj, accessed_obj, *args, **kwargs):
         tag(tagkey, category)
 
     Only true if accessing_obj has the specified tag and optional
-    category
+    category.
+    If accessing_obj has the ".obj" property (such as is the case for
+    a command), then accessing_obj.obj is used instead.
     """
+    if hasattr(accessing_obj, "obj"):
+        accessing_obj = accessing_obj = accessing_obj.obj
     return accessing_obj.tags.get(*args)
 
 def objtag(accessing_obj, accessed_obj, *args, **kwargs):
