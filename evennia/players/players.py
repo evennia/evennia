@@ -182,12 +182,15 @@ class DefaultPlayer(PlayerDB):
         if self.get_puppet(sessid) == obj:
             # already puppeting this object
             return
-        if obj.player:
+        if not obj.access(self, 'puppet'):
+            # no access
+            self.msg("You don't have permission to puppet '%s'." % obj.key)
+            return
+        if normal_mode and obj.player:
             # object already puppeted
             if obj.player == self:
                 if obj.sessid.count():
                     # we may take over another of our sessions
-                    self.unpuppet_object(obj.sessid.get())
                     # output messages to the affected sessions
                     if _MULTISESSION_MODE in (1, 3):
                         txt1 = "{c%s{n{G is now shared from another of your sessions.{n"
@@ -197,12 +200,11 @@ class DefaultPlayer(PlayerDB):
                         txt2 = "Taking over {c%s{n from another of your sessions."
                     self.msg(txt1 % obj.name, sessid=obj.sessid.get())
                     self.msg(txt2 % obj.name, sessid=sessid)
+                    self.unpuppet_object(obj.sessid.get())
             elif obj.player.is_connected:
                 # controlled by another player
+                self.msg("{R{c%s{R is already puppeted by another Player.")
                 return
-        if not obj.access(self, 'puppet'):
-            # no access
-            return
 
         # do the puppeting
         if normal_mode and session.puppet:
@@ -238,7 +240,10 @@ class DefaultPlayer(PlayerDB):
         session = self.get_session(sessid)
         if not session:
             return False
+        session = make_iter(session)[0]
+        print "unpuppet, session:", session, session.puppet
         obj = hasattr(session, "puppet") and session.puppet or None
+        print "unpuppet, obj:", obj
         if not obj:
             return False
         # do the disconnect, but only if we are the last session to puppet

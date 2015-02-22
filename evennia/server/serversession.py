@@ -12,7 +12,7 @@ from datetime import datetime
 from django.conf import settings
 #from evennia.scripts.models import ScriptDB
 from evennia.comms.models import ChannelDB
-from evennia.utils import logger, utils
+from evennia.utils import logger
 from evennia.utils.inlinefunc import parse_inlinefunc
 from evennia.utils.utils import make_iter
 from evennia.commands.cmdhandler import cmdhandler
