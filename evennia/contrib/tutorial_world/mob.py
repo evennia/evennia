@@ -184,6 +184,7 @@ class Mob(tut_objects.TutorialObject):
         if last_interval:
              # we have a previous subscription, kill this first.
             TICKER_HANDLER.remove(self, last_interval, idstring)
+        self.db.last_ticker_interval = interval
         if not stop:
             # set the new ticker
             TICKER_HANDLER.add(self, interval, idstring, hook_key)
