@@ -2,11 +2,12 @@
 
 """
 This is part of Evennia's unittest framework, for testing
-the stability and integrrity of the codebase during updates.
+the stability and integrity of the codebase during updates.
 
 This module tests the lock functionality of Evennia.
 
 """
+from evennia.tests.resources import EvenniaTest
 
 try:
     # this is a special optimized Django version, only available in current Django devel
@@ -14,25 +15,14 @@ try:
 except ImportError:
     from django.test import TestCase
 
-from django.conf import settings
 from evennia.locks import lockfuncs
-from evennia.utils import create
 
-#------------------------------------------------------------
-#
+# ------------------------------------------------------------
 # Lock testing
-#
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
-class LockTest(TestCase):
-    "Defines the lock test base"
-    def setUp(self):
-        "sets up the testing environment"
 
-        self.obj1 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj1")
-        self.obj2 = create.create_object(settings.BASE_OBJECT_TYPECLASS, key="obj2")
-
-class TestLockCheck(LockTest):
+class TestLockCheck(EvenniaTest):
     def testrun(self):
         dbref = self.obj2.dbref
         self.obj1.locks.add("owner:dbref(%s);edit:dbref(%s) or perm(Wizards);examine:perm(Builders) and id(%s);delete:perm(Wizards);get:all()" % (dbref, dbref, dbref))
@@ -45,7 +35,9 @@ class TestLockCheck(LockTest):
         self.obj1.locks.add("get:false()")
         self.assertEquals(False, self.obj1.locks.check(self.obj2, 'get'))
         self.assertEquals(True, self.obj1.locks.check(self.obj2, 'not_exist', default=True))
-class TestLockfuncs(LockTest):
+
+
+class TestLockfuncs(EvenniaTest):
     def testrun(self):
         self.obj2.permissions.add('Wizards')
         self.assertEquals(True, lockfuncs.true(self.obj2, self.obj1))

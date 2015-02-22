@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('scripts', '0001_initial'),
+        ('scripts', '0002_auto_20150118_1625'),
     ]
 
     operations = [
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             bases=('scripts.scriptdb',),
         ),
         migrations.CreateModel(
-            name='Script',
+            name='DefaultScript',
             fields=[
             ],
             options={
@@ -30,22 +30,22 @@ class Migration(migrations.Migration):
             bases=('scripts.scriptbase',),
         ),
         migrations.CreateModel(
-            name='CheckSessions',
-            fields=[
-            ],
-            options={
-                'proxy': True,
-            },
-            bases=('scripts.script',),
-        ),
-        migrations.CreateModel(
             name='DoNothing',
             fields=[
             ],
             options={
                 'proxy': True,
             },
-            bases=('scripts.script',),
+            bases=('scripts.defaultscript',),
+        ),
+        migrations.CreateModel(
+            name='CheckSessions',
+            fields=[
+            ],
+            options={
+                'proxy': True,
+            },
+            bases=('scripts.defaultscript',),
         ),
         migrations.CreateModel(
             name='Store',
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
             options={
                 'proxy': True,
             },
-            bases=('scripts.script',),
+            bases=('scripts.defaultscript',),
         ),
         migrations.CreateModel(
             name='ValidateChannelHandler',
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
             options={
                 'proxy': True,
             },
-            bases=('scripts.script',),
+            bases=('scripts.defaultscript',),
         ),
         migrations.CreateModel(
             name='ValidateIdmapperCache',
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
             options={
                 'proxy': True,
             },
-            bases=('scripts.script',),
+            bases=('scripts.defaultscript',),
         ),
         migrations.CreateModel(
             name='ValidateScripts',
@@ -81,6 +81,6 @@ class Migration(migrations.Migration):
             options={
                 'proxy': True,
             },
-            bases=('scripts.script',),
+            bases=('scripts.defaultscript',),
         ),
     ]

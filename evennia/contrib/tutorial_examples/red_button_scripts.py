@@ -6,8 +6,8 @@ red_button object type in contrib/examples. A few variations
 on uses of scripts are included.
 
 """
-from evennia import Script
-from contrib.tutorial_examples import cmdset_red_button as cmdsetexamples
+from evennia import DefaultScript
+from evennia.contrib.tutorial_examples import cmdset_red_button as cmdsetexamples
 
 #
 # Scripts as state-managers
@@ -26,7 +26,7 @@ from contrib.tutorial_examples import cmdset_red_button as cmdsetexamples
 # a bright light. The last one also has a timer component that allows it
 # to remove itself after a while (and the player recovers their eyesight).
 
-class ClosedLidState(Script):
+class ClosedLidState(DefaultScript):
     """
     This manages the cmdset for the "closed" button state. What this
     means is that while this script is valid, we add the RedButtonClosed
@@ -62,7 +62,7 @@ class ClosedLidState(Script):
         self.obj.cmdset.delete(cmdsetexamples.LidClosedCmdSet)
 
 
-class OpenLidState(Script):
+class OpenLidState(DefaultScript):
     """
     This manages the cmdset for the "open" button state. This will add
     the RedButtonOpen
@@ -97,7 +97,7 @@ class OpenLidState(Script):
         self.obj.cmdset.delete(cmdsetexamples.LidOpenCmdSet)
 
 
-class BlindedState(Script):
+class BlindedState(DefaultScript):
     """
     This is a timed state.
 
@@ -152,7 +152,7 @@ class BlindedState(Script):
 # that makes the lid covering the button slide back after a while.
 #
 
-class CloseLidEvent(Script):
+class CloseLidEvent(DefaultScript):
     """
     This event closes the glass lid over the button
     some time after it was opened. It's a one-off
@@ -195,7 +195,7 @@ class CloseLidEvent(Script):
         """
         self.obj.close_lid()
 
-class BlinkButtonEvent(Script):
+class BlinkButtonEvent(DefaultScript):
     """
     This timed script lets the button flash at regular intervals.
     """
@@ -225,7 +225,7 @@ class BlinkButtonEvent(Script):
         """
         self.obj.blink()
 
-class DeactivateButtonEvent(Script):
+class DeactivateButtonEvent(DefaultScript):
     """
     This deactivates the button for a short while (it won't blink, won't
     close its lid etc). It is meant to be called when the button is pushed

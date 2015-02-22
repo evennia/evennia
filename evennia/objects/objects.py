@@ -317,7 +317,9 @@ class DefaultObject(ObjectDB):
                attribute_name=None,
                quiet=False,
                exact=False,
-               candidates=None):
+               candidates=None,
+               nofound_string=None,
+               multimatch_string=None):
         """
         Returns the typeclass of an Object matching a search string/condition
 
@@ -326,58 +328,57 @@ class DefaultObject(ObjectDB):
         objects in self's current location or inventory is searched.
         Note: to find Players, use eg. ev.player_search.
 
-        Inputs:
-
-        searchdata (str or obj): Primary search criterion. Will be matched
-                    against object.key (with object.aliases second) unless
-                    the keyword attribute_name specifies otherwise.
-                    Special strings:
-                        #<num> - search by unique dbref. This is always
-                                 a global search.
-                        me,self - self-reference to this object
-                        <num>-<string> - can be used to differentiate
-                                         between multiple same-named matches
-        global_search (bool): Search all objects globally. This is overruled
-                              by "location" keyword.
-        use_nicks (bool): Use nickname-replace (nicktype "object") on the
-                          search string
-        typeclass (str or Typeclass, or list of either): Limit search only
-                   to Objects with this typeclass. May be a list of typeclasses
-                   for a broader search.
-        location (Object): Specify a location to search, if different from the
-                     self's given location plus its contents. This can also
-                     be a list of locations.
-        attribute_name (str): Define which property to search. If set, no
-                      key+alias search will be performed. This can be used to
-                      search database fields (db_ will be automatically
-                      appended), and if that fails, it will try to return
-                      objects having Attributes with this name and value
-                      equal to searchdata. A special use is to search for
-                      "key" here if you want to do a key-search without
-                      including aliases.
-        quiet (bool) - don't display default error messages - this tells the
-                      search method that the user wants to handle all errors
-                      themselves. It also changes the return value type, see
-                      below.
-        exact (bool) - if unset (default) - prefers to match to beginning of
-                      string rather than not matching at all. If set, requires
-                      exact mathing of entire string.
-        candidates (list of objects) - this is an optional custom list of objects
-                    to search (filter) between. It is ignored if global_search
-                    is given. If not set, this list will automatically be defined
-                    to include the location, the contents of location and the
-                    caller's contents (inventory).
+        Args:
+            searchdata (str or obj): Primary search criterion. Will be matched
+                        against object.key (with object.aliases second) unless
+                        the keyword attribute_name specifies otherwise.
+                        Special strings:
+                            #<num> - search by unique dbref. This is always
+                                     a global search.
+                            me,self - self-reference to this object
+                            <num>-<string> - can be used to differentiate
+                                             between multiple same-named matches
+            global_search (bool): Search all objects globally. This is overruled
+                                  by "location" keyword.
+            use_nicks (bool): Use nickname-replace (nicktype "object") on the
+                              search string
+            typeclass (str or Typeclass, or list of either): Limit search only
+                       to Objects with this typeclass. May be a list of typeclasses
+                       for a broader search.
+            location (Object): Specify a location to search, if different from the
+                         self's given location plus its contents. This can also
+                         be a list of locations.
+            attribute_name (str): Define which property to search. If set, no
+                          key+alias search will be performed. This can be used to
+                          search database fields (db_ will be automatically
+                          appended), and if that fails, it will try to return
+                          objects having Attributes with this name and value
+                          equal to searchdata. A special use is to search for
+                          "key" here if you want to do a key-search without
+                          including aliases.
+            quiet (bool): don't display default error messages - this tells the
+                          search method that the user wants to handle all errors
+                          themselves. It also changes the return value type, see
+                          below.
+            exact (bool): if unset (default) - prefers to match to beginning of
+                          string rather than not matching at all. If set, requires
+                          exact mathing of entire string.
+            candidates (list of objects): this is an optional custom list of objects
+                        to search (filter) between. It is ignored if global_search
+                        is given. If not set, this list will automatically be defined
+                        to include the location, the contents of location and the
+                        caller's contents (inventory).
+            nofound_string (str):  optional custom string for not-found error message
+            multimatch_string (str): optional custom string for multimatch error header
 
         Returns:
-            quiet=False (default):
-                no match or multimatch:
-                auto-echoes errors to self.msg, then returns None
-                    (results are handled by settings.SEARCH_AT_RESULT
-                               and settings.SEARCH_AT_MULTIMATCH_INPUT)
-                match:
-                    a unique object match
-            quiet=True:
-                returns a list of 0, 1 or more matches
+            match (Object, None or list): will return an Object/None if quiet=False,
+                otherwise it will return a list of 0, 1 or more matches.
+
+        Notes:
+            If quiet=False, error messages will be handled by settings.SEARCH_AT_RESULT
+            and echoed automatically (on error, return will be None). If quiet=True, the
+            error messaging is assumed to be handled by the caller.
 
         """
         is_string = isinstance(searchdata, basestring)
@@ -385,9 +386,9 @@ class DefaultObject(ObjectDB):
         if is_string:
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("here", ):
-                return self.location
+                return [self.location] if quiet else self.location
             if searchdata.lower() in ("me", "self",):
-                return self
+                return [self] if quiet else self
 
         if use_nicks:
             # do nick-replacement on search
@@ -425,7 +426,7 @@ class DefaultObject(ObjectDB):
                                                  exact=exact)
         if quiet:
             return results
-        return  _AT_SEARCH_RESULT(self, searchdata, results, global_search)
+        return  _AT_SEARCH_RESULT(self, searchdata, results, global_search, nofound_string, multimatch_string)
 
     def search_player(self, searchdata, quiet=False):
         """
@@ -556,7 +557,7 @@ class DefaultObject(ObjectDB):
             obj.msg(message, from_obj=from_obj, **kwargs)
 
     def move_to(self, destination, quiet=False,
-                emit_to_obj=None, use_destination=True, to_none=False):
+                emit_to_obj=None, use_destination=True, to_none=False, move_hooks=True):
         """
         Moves this object to a new location.
 
@@ -567,23 +568,26 @@ class DefaultObject(ObjectDB):
         function, such things are assumed to have been handled before calling
         move_to.
 
-        destination: (Object) Reference to the object to move to. This
-                     can also be an exit object, in which case the destination
-                     property is used as destination.
-        quiet:  (bool)    If true, don't emit left/arrived messages.
-        emit_to_obj: (Object) object to receive error messages
-        use_destination (bool): Default is for objects to use the "destination"
-                             property of destinations as the target to move to.
-                             Turning off this keyword allows objects to move
-                             "inside" exit objects.
-        to_none - allow destination to be None. Note that no hooks are run when
-                     moving to a None location. If you want to run hooks,
-                     run them manually (and make sure they can manage None
-                     locations).
+        Args:
+            destination (Object): Reference to the object to move to. This
+                 can also be an exit object, in which case the
+                 destination property is used as destination.
+            quiet (bool): If true, turn off the calling of the emit hooks
+                (announce_move_to/from etc)
+            emit_to_obj (Object): object to receive error messages
+            use_destination (bool): Default is for objects to use the "destination"
+                 property of destinations as the target to move to. Turning off this
+                 keyword allows objects to move "inside" exit objects.
+            to_none (bool): Allow destination to be None. Note that no hooks are run when
+                 moving to a None location. If you want to run hooks, run them manually
+                 (and make sure they can manage None locations).
+            move_hooks (bool): If False, turn off the calling of move-related hooks (at_before/after_move etc)
+                with quiet=True, this is as quiet a move as can be done.
 
-        Returns True/False depending on if there were problems with the move.
-                This method may also return various error messages to the
-                emit_to_obj.
+        Returns:
+            result (bool): True/False depending on if there were problems with the move.
+                    This method may also return various error messages to the
+                    emit_to_obj.
         """
         def logerr(string=""):
             trc = traceback.format_exc()
@@ -608,14 +612,15 @@ class DefaultObject(ObjectDB):
             destination = destination.destination
 
         # Before the move, call eventual pre-commands.
-        try:
-            if not self.at_before_move(destination):
-                return
-        except Exception:
-            logerr(errtxt % "at_before_move()")
-            #emit_to_obj.msg(errtxt % "at_before_move()")
-            #logger.log_trace()
-            return False
+        if move_hooks:
+            try:
+                if not self.at_before_move(destination):
+                    return
+            except Exception:
+                logerr(errtxt % "at_before_move()")
+                #emit_to_obj.msg(errtxt % "at_before_move()")
+                #logger.log_trace()
+                return False
 
         # Save the old location
         source_location = self.location
@@ -629,13 +634,14 @@ class DefaultObject(ObjectDB):
                 source_location = default_home
 
         # Call hook on source location
-        try:
-            source_location.at_object_leave(self, destination)
-        except Exception:
-            logerr(errtxt % "at_object_leave()")
-            #emit_to_obj.msg(errtxt % "at_object_leave()")
-            #logger.log_trace()
-            return False
+        if move_hooks:
+            try:
+                source_location.at_object_leave(self, destination)
+            except Exception:
+                logerr(errtxt % "at_object_leave()")
+                #emit_to_obj.msg(errtxt % "at_object_leave()")
+                #logger.log_trace()
+                return False
 
         if not quiet:
             #tell the old room we are leaving
@@ -666,25 +672,27 @@ class DefaultObject(ObjectDB):
                 #logger.log_trace()
                 return  False
 
-        # Perform eventual extra commands on the receiving location
-        # (the object has already arrived at this point)
-        try:
-            destination.at_object_receive(self, source_location)
-        except Exception:
-            logerr(errtxt % "at_object_receive()")
-            #emit_to_obj.msg(errtxt % "at_object_receive()")
-            #logger.log_trace()
-            return False
+        if move_hooks:
+            # Perform eventual extra commands on the receiving location
+            # (the object has already arrived at this point)
+            try:
+                destination.at_object_receive(self, source_location)
+            except Exception:
+                logerr(errtxt % "at_object_receive()")
+                #emit_to_obj.msg(errtxt % "at_object_receive()")
+                #logger.log_trace()
+                return False
 
         # Execute eventual extra commands on this object after moving it
         # (usually calling 'look')
-        try:
-            self.at_after_move(source_location)
-        except Exception:
-            logerr(errtxt % "at_after_move")
-            #emit_to_obj.msg(errtxt % "at_after_move()")
-            #logger.log_trace()
-            return False
+        if move_hooks:
+            try:
+                self.at_after_move(source_location)
+            except Exception:
+                logerr(errtxt % "at_after_move")
+                #emit_to_obj.msg(errtxt % "at_after_move()")
+                #logger.log_trace()
+                return False
         return True
 
     def clear_exits(self):
@@ -809,12 +817,6 @@ class DefaultObject(ObjectDB):
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):
             script.stop()
-        #for script in _GA(self, "scripts").all():
-        #    script.stop()
-
-        # if self.player:
-        #     self.player.user.is_active = False
-        #     self.player.user.save(
 
         # Destroy any exits to and from this room, if any
         self.clear_exits()
@@ -827,7 +829,6 @@ class DefaultObject(ObjectDB):
         # Perform the deletion of the object
         super(ObjectDB, self).delete()
         return True
-        # methods inherited from the typeclass system
 
 
     def __eq__(self, other):
@@ -891,7 +892,6 @@ class DefaultObject(ObjectDB):
             if cdict.get("location"):
                 cdict["location"].at_object_receive(self, None)
                 self.at_after_move(None)
-
             if cdict.get("attributes"):
                 # this should be a dict of attrname:value
                 keys, values = cdict["attributes"].keys(), cdict["attributes"].values()
@@ -960,8 +960,6 @@ class DefaultObject(ObjectDB):
 
     def at_init(self):
         """
-        DEPRECATED: Use __init__ instead.
-
         This is always called whenever this object is initiated --
         that is, whenever it its typeclass is cached from memory. This
         happens on-demand first time the object is used or activated
@@ -997,7 +995,7 @@ class DefaultObject(ObjectDB):
         Called just after puppeting has been completed and
         all Player<->Object links have been established.
         """
-        pass
+        self.player.db._last_puppet = self
 
     def at_pre_unpuppet(self):
         """
@@ -1217,10 +1215,10 @@ class DefaultObject(ObjectDB):
             else:
                 things.append(key)
         # get description, build string
-        string = "{c%s{n" % self.key
+        string = "{c%s{n\n" % self.key
         desc = self.db.desc
         if desc:
-            string += "\n %s" % desc
+            string += "%s" % desc
         if exits:
             string += "\n{wExits:{n " + ", ".join(exits)
         if users or things:

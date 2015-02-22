@@ -16,7 +16,6 @@ import textwrap
 import datetime
 import random
 import traceback
-from subprocess import check_output
 from importlib import import_module
 from inspect import ismodule, trace
 from collections import defaultdict
@@ -312,26 +311,29 @@ def get_evennia_version():
 
 def pypath_to_realpath(python_path, file_ending='.py'):
     """
-    Converts a path on dot python form (e.g. 'evennia.objects.models') to
-    a system path ($ROOT_DIR/evennia/objects/models.py). Calculates all
-    paths as absoulte paths starting from the evennia main directory.
+    Converts a dotted Python path to an absolute path under the
+    Evennia library directory or under the current game directory.
 
-    Since it seems to be a common mistake to include the file ending
-    when entering filename for things like batchprocess, we handle the
-    case of erroneously adding the file ending too.
+    Args:
+        python_path (str): a dot-python path
+        file_ending (str): a file ending, including the period.
+
+    Returns:
+        abspaths (list of str): The two absolute paths created by prepending
+            EVENNIA_DIR and GAME_DIR respectively. These are checked for
+            existence before being returned, so this may be an empty list.
+
     """
     pathsplit = python_path.strip().split('.')
-    if python_path.endswith(file_ending):
-        # this is actually a malformed path ...
-        pathsplit = pathsplit[:-1]
-    if not pathsplit:
-        return python_path
-    path = settings.EVENNIA_DIR
-    for directory in pathsplit:
-        path = os.path.join(path, directory)
+    paths = [os.path.join(settings.EVENNIA_DIR, *pathsplit),
+             os.path.join(settings.GAME_DIR, *pathsplit)]
     if file_ending:
-        return "%s%s" % (path, file_ending)
-    return path
+        # attach file ending to the paths if not already set (a common mistake)
+        file_ending = ".%s" % file_ending if not file_ending.startswith(".") else file_ending
+        paths = ["%s%s" % (p, file_ending) if not p.endswith(file_ending) else p
+                 for p in paths]
+    # check so the paths actually exists before returning
+    return [p for p in paths if os.path.isfile(p)]
 
 
 def dbref(dbref, reqhash=True):
@@ -964,7 +966,8 @@ def class_from_module(path, defaultpaths=None):
             err += "."
         raise ImportError(err)
     return cls
-
+# alias
+object_from_module = class_from_module
 
 def init_new_player(player):
     """
@@ -1209,3 +1212,21 @@ def strip_control_sequences(string):
     if not _STRIP_ANSI:
         from evennia.utils.ansi import strip_raw_ansi as _STRIP_ANSI
     return _RE_CONTROL_CHAR.sub('', _STRIP_ANSI(string))
+
+def calledby(callerdepth=1):
+    """
+    Only to be used for debug purposes.
+    Insert this debug function in another function; it will print
+    which function called it. With callerdepth > 1, it will print the
+    caller of the caller etc.
+    """
+    import inspect, os
+    stack = inspect.stack()
+    # we must step one extra level back in stack since we don't want
+    # to include the call of this function itself.
+    callerdepth = min(max(2, callerdepth + 1), len(stack)-1)
+    frame = inspect.stack()[callerdepth]
+    path = os.path.sep.join(frame[1].rsplit(os.path.sep, 2)[-2:])
+    return "[called by '%s': %s:%s %s]" % (frame[3], path, frame[2], frame[4])
+
+

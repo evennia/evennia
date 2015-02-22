@@ -164,8 +164,7 @@ class DefaultPlayer(PlayerDB):
     def puppet_object(self, sessid, obj, normal_mode=True):
         """
         Use the given session to control (puppet) the given object (usually
-        a Character type). Note that we make no puppet checks here, that must
-        have been done before calling this method.
+        a Character type).
 
         sessid - session id of session to connect
         obj - the object to connect to
@@ -174,16 +173,43 @@ class DefaultPlayer(PlayerDB):
 
         returns True if successful, False otherwise
         """
+        # safety checks
+        if not obj:
+            return
         session = self.get_session(sessid)
         if not session:
             return False
+        if self.get_puppet(sessid) == obj:
+            # already puppeting this object
+            return
+        if not obj.access(self, 'puppet'):
+            # no access
+            self.msg("You don't have permission to puppet '%s'." % obj.key)
+            return
+        if normal_mode and obj.player:
+            # object already puppeted
+            if obj.player == self:
+                if obj.sessid.count():
+                    # we may take over another of our sessions
+                    # output messages to the affected sessions
+                    if _MULTISESSION_MODE in (1, 3):
+                        txt1 = "{c%s{n{G is now shared from another of your sessions.{n"
+                        txt2 = "Sharing {c%s{n with another of your sessions."
+                    else:
+                        txt1 = "{c%s{n{R is now acted from another of your sessions.{n"
+                        txt2 = "Taking over {c%s{n from another of your sessions."
+                    self.msg(txt1 % obj.name, sessid=obj.sessid.get())
+                    self.msg(txt2 % obj.name, sessid=sessid)
+                    self.unpuppet_object(obj.sessid.get())
+            elif obj.player.is_connected:
+                # controlled by another player
+                self.msg("{R{c%s{R is already puppeted by another Player.")
+                return
+
+        # do the puppeting
         if normal_mode and session.puppet:
             # cleanly unpuppet eventual previous object puppeted by this session
             self.unpuppet_object(sessid)
-        if obj.player and obj.player.is_connected and obj.player != self:
-            # we don't allow to puppet an object already controlled by an active
-            # player. To kick a player, call unpuppet_object on them explicitly.
-            return
         # if we get to this point the character is ready to puppet or it
         # was left with a lingering player/sessid reference from an unclean
         # server kill or similar
@@ -214,7 +240,10 @@ class DefaultPlayer(PlayerDB):
         session = self.get_session(sessid)
         if not session:
             return False
+        session = make_iter(session)[0]
+        print "unpuppet, session:", session, session.puppet
         obj = hasattr(session, "puppet") and session.puppet or None
+        print "unpuppet, obj:", obj
         if not obj:
             return False
         # do the disconnect, but only if we are the last session to puppet
@@ -366,7 +395,8 @@ class DefaultPlayer(PlayerDB):
         return cmdhandler.cmdhandler(self, raw_string,
                                      callertype="player", sessid=sessid, **kwargs)
 
-    def search(self, searchdata, return_puppet=False, **kwargs):
+    def search(self, searchdata, return_puppet=False,
+               nofound_string=None, multimatch_string=None, **kwargs):
         """
         This is similar to the ObjectDB search method but will search for
         Players only. Errors will be echoed, and None returned if no Player
@@ -376,6 +406,8 @@ class DefaultPlayer(PlayerDB):
                            instead of the Player object itself. If no
                            puppeted object exists (since Player is OOC), None will
                            be returned.
+        nofound_string - optional custom string for not-found error message.
+        multimatch_string - optional custom string for multimatch error header.
         Extra keywords are ignored, but are allowed in call in order to make
                            API more consistent with objects.models.TypedObject.search.
         """
@@ -385,7 +417,9 @@ class DefaultPlayer(PlayerDB):
             if searchdata.lower() in ("me", "*me", "self", "*self",):
                 return self
         matches = self.__class__.objects.player_search(searchdata)
-        matches = _AT_SEARCH_RESULT(self, searchdata, matches, global_search=True)
+        matches = _AT_SEARCH_RESULT(self, searchdata, matches, global_search=True,
+                                    nofound_string=nofound_string,
+                                    multimatch_string=multimatch_string)
         if matches and return_puppet:
             try:
                 return matches.puppet
@@ -499,7 +533,6 @@ class DefaultPlayer(PlayerDB):
         lockstring = "attrread:perm(Admins);attredit:perm(Admins);attrcreate:perm(Admins)"
         self.attributes.add("_playable_characters", [], lockstring=lockstring)
 
-    # TODO - handle this in __init__ instead.
     def at_init(self):
         """
         This is always called whenever this object is initiated --
@@ -591,24 +624,55 @@ class DefaultPlayer(PlayerDB):
         else:
             logger.log_infomsg("[%s]: %s" % (now, message))
 
+    #def _go_ic_at_login(self, sessid=None):
+    #    new_character = self.db._last_puppet
+
+    #    # permission checks
+    #    if self.get_puppet(sessid) == new_character:
+    #        return
+    #    if new_character.player:
+    #        # may not puppet an already puppeted character
+    #        if new_character.sessid.count() and new_character.player == self:
+    #            # as a safeguard we allow "taking over" chars from your own sessions.
+    #            if _MULTISESSION_MODE in (1, 3):
+    #                txt1 = "{c%s{n{G is now shared from another of your sessions.{n"
+    #                txt2 = "Sharing {c%s{n with another of your sessions."
+    #            else:
+    #                txt1 = "{c%s{n{R is now acted from another of your sessions.{n"
+    #                txt2 = "Taking over {c%s{n from another of your sessions."
+    #            self.unpuppet_object(new_character.sessid.get())
+    #            self.msg(txt1 % new_character.name, sessid=new_character.sessid.get())
+    #            self.msg(txt2 % new_character.name, sessid=sessid)
+    #        elif new_character.player != self and new_character.player.is_connected:
+    #            self.msg("{c%s{r is already acted by another player{n." % new_character.name, sessid=sessid)
+    #            return
+    #    if not new_character.access(self, 'puppet'):
+    #        # main acccess check
+    #        self.msg("{rYou may not become {C%s{n." % new_character.name, sessid=sessid)
+    #        return
+    #    if self.puppet_object(sessid, new_character):
+    #        self.db._last_puppet = new_character
+    #    else:
+    #        self.msg("{rYou cannot become {C%s{n." % new_character.name, sessid=sessid)
+
     def at_post_login(self, sessid=None):
         """
         Called at the end of the login process, just before letting
-        them loose. This is called before an eventual Character's
+        the player loose. This is called before an eventual Character's
         at_post_login hook.
         """
         self._send_to_connect_channel("{G%s connected{n" % self.key)
         if _MULTISESSION_MODE == 0:
             # in this mode we should have only one character available. We
-            # try to auto-connect to it by calling the @ic command
-            # (this relies on player.db._last_puppet being set)
-            self.execute_cmd("@ic", sessid=sessid)
+            # try to auto-connect to our last conneted object, if any
+            self.puppet_object(sessid, self.db._last_puppet)
         elif _MULTISESSION_MODE == 1:
             # in this mode the first session to connect acts like mode 0,
             # the following sessions "share" the same view and should
             # not perform any actions
             if not self.get_all_puppets():
-                self.execute_cmd("@ic", sessid=sessid)
+                # we are first. Connect.
+                self.puppet_object(sessid, self.db._last_puppet)
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.
@@ -674,7 +738,7 @@ class DefaultGuest(DefaultPlayer):
         MULTISESSION_MODE we're in. They don't get a choice.
         """
         self._send_to_connect_channel("{G%s connected{n" % self.key)
-        self.execute_cmd("@ic", sessid=sessid)
+        self._go_ic_at_login(sessid=sessid)
 
     def at_disconnect(self):
         """

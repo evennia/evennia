@@ -15,7 +15,7 @@ from evennia.scripts.manager import ScriptManager
 from evennia.comms import channelhandler
 from evennia.utils import logger
 
-__all__ = ["Script", "DoNothing", "CheckSessions",
+__all__ = ["DefaultScript", "DoNothing", "CheckSessions",
            "ValidateScripts", "ValidateChannelHandler"]
 
 _GA = object.__getattribute__
@@ -107,7 +107,7 @@ class ExtendedLoopingCall(LoopingCall):
         return None
 
 #
-# Base script, inherit from Script below instead.
+# Base script, inherit from DefaultScript below instead.
 #
 class ScriptBase(ScriptDB):
     """
@@ -346,7 +346,7 @@ class ScriptBase(ScriptDB):
 # Base Script - inherit from this
 #
 
-class Script(ScriptBase):
+class DefaultScript(ScriptBase):
     """
     This is the base TypeClass for all Scripts. Scripts describe events,
     timers and states in game, they can have a time component or describe
@@ -526,7 +526,7 @@ class Script(ScriptBase):
 
 # Some useful default Script types used by Evennia.
 
-class DoNothing(Script):
+class DoNothing(DefaultScript):
     "An script that does nothing. Used as default fallback."
     def at_script_creation(self):
         "Setup the script"
@@ -534,7 +534,7 @@ class DoNothing(Script):
         self.desc = _("This is an empty placeholder script.")
 
 
-class Store(Script):
+class Store(DefaultScript):
     "Simple storage script"
     def at_script_creation(self):
         "Setup the script"
@@ -542,7 +542,7 @@ class Store(Script):
         self.desc = _("This is a generic storage container.")
 
 
-class CheckSessions(Script):
+class CheckSessions(DefaultScript):
     "Check sessions regularly."
     def at_script_creation(self):
         "Setup the script"
@@ -562,7 +562,7 @@ class CheckSessions(Script):
 
 _FLUSH_CACHE = None
 _IDMAPPER_CACHE_MAX_MEMORY = settings.IDMAPPER_CACHE_MAXSIZE
-class ValidateIdmapperCache(Script):
+class ValidateIdmapperCache(DefaultScript):
     """
     Check memory use of idmapper cache
     """
@@ -579,7 +579,7 @@ class ValidateIdmapperCache(Script):
             from evennia.utils.idmapper.base import conditional_flush as _FLUSH_CACHE
         _FLUSH_CACHE(_IDMAPPER_CACHE_MAX_MEMORY)
 
-class ValidateScripts(Script):
+class ValidateScripts(DefaultScript):
     "Check script validation regularly"
     def at_script_creation(self):
         "Setup the script"
@@ -594,7 +594,7 @@ class ValidateScripts(Script):
         ScriptDB.objects.validate()
 
 
-class ValidateChannelHandler(Script):
+class ValidateChannelHandler(DefaultScript):
     "Update the channelhandler to make sure it's in sync."
     def at_script_creation(self):
         "Setup the script"

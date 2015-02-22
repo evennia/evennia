@@ -223,7 +223,7 @@ class CmdIC(MuxPlayerCommand):
     """
 
     key = "@ic"
-    # lockmust be all() for different puppeted objects to access it.
+    # lock must be all() for different puppeted objects to access it.
     locks = "cmd:all()"
     aliases = "@puppet"
     help_category = "General"
@@ -249,30 +249,6 @@ class CmdIC(MuxPlayerCommand):
             else:
                 self.msg("That is not a valid character choice.")
                 return
-        # permission checks
-        if player.get_puppet(sessid) == new_character:
-            self.msg("{RYou already act as {c%s{n." % new_character.name)
-            return
-        if new_character.player:
-            # may not puppet an already puppeted character
-            if new_character.sessid.count() and new_character.player == player:
-                # as a safeguard we allow "taking over" chars from your own sessions.
-                if MULTISESSION_MODE in (1, 3):
-                    txt = "{c%s{n{G is now shared from another of your sessions.{n"
-                    txt2 =  "Sharing {c%s{n with another of your sessions."
-                else:
-                    txt = "{c%s{n{R is now acted from another of your sessions.{n"
-                    txt2 =  "Taking over {c%s{n from another of your sessions."
-                player.unpuppet_object(new_character.sessid.get())
-                player.msg(txt % (new_character.name), sessid=new_character.sessid.get())
-                self.msg(txt2 % new_character.name)
-            elif new_character.player != player and new_character.player.is_connected:
-                self.msg("{c%s{r is already acted by another player.{n" % new_character.name)
-                return
-        if not new_character.access(player, "puppet"):
-            # main acccess check
-            self.msg("{rYou may not become %s.{n" % new_character.name)
-            return
         if player.puppet_object(sessid, new_character):
             player.db._last_puppet = new_character
         else:
@@ -292,7 +268,6 @@ class CmdOOC(MuxPlayerCommand):
     """
 
     key = "@ooc"
-    # lock must be all(), for different puppeted objects to access it.
     locks = "cmd:pperm(Players)"
     aliases = "@unpuppet"
     help_category = "General"
@@ -554,7 +529,7 @@ class CmdQuit(MuxPlayerCommand):
                 player.msg("{RQuitting{n. %i session are still connected." % (nsess-1), sessid=self.sessid)
             else:
                 # we are quitting the last available session
-                player.msg("{RQuitting{n. Hope to see you soon again.", sessid=self.sessid)
+                player.msg("{RQuitting{n. Hope to see you again, soon.", sessid=self.sessid)
             player.disconnect_session_from_player(self.sessid)
 
 

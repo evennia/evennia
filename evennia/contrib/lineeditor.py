@@ -26,7 +26,7 @@ module. To use it just import and add it to your default cmdset.
 import re
 from evennia import Command, CmdSet, utils
 from evennia import syscmdkeys
-from contrib.menusystem import prompt_yesno
+from evennia.contrib.menusystem import prompt_yesno
 
 CMD_NOMATCH = syscmdkeys.CMD_NOMATCH
 CMD_NOINPUT = syscmdkeys.CMD_NOINPUT

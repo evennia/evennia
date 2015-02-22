@@ -14,99 +14,28 @@ main test suite started with
 
 import re
 from django.conf import settings
-from django.utils.unittest import TestCase
+from evennia.commands.default.cmdset_character import CharacterCmdSet
+
 import evennia
 evennia.init()
-from evennia.server.serversession import ServerSession
-from evennia.objects.objects import DefaultObject, DefaultCharacter
-from evennia.players.players import DefaultPlayer
-from evennia.utils import create, ansi
+from evennia.tests.resources import EvenniaTest
+from evennia.commands.default import help, general, system, admin, player, building, batchprocess, comms
+from evennia.utils import ansi
 from evennia.server.sessionhandler import SESSIONS
-
-from django.db.models.signals import post_save
-from evennia.server.caches import field_post_save
-post_save.connect(field_post_save, dispatch_uid="fieldcache")
 
 # set up signal here since we are not starting the server
 
 _RE = re.compile(r"^\+|-+\+|\+-+|--*|\|", re.MULTILINE)
 
-#------------------------------------------------------------
+
+# ------------------------------------------------------------
 # Command testing
 # ------------------------------------------------------------
 
-
-def dummy(self, *args, **kwargs):
-    pass
-
-SESSIONS.data_out = dummy
-SESSIONS.disconnect = dummy
-
-
-class TestObjectClass(DefaultObject):
-    def msg(self, text="", **kwargs):
-        "test message"
-        pass
-
-
-class TestCharacterClass(DefaultCharacter):
-    def msg(self, text="", **kwargs):
-        "test message"
-        if self.player:
-            self.player.msg(text=text, **kwargs)
-        else:
-            if not self.ndb.stored_msg:
-                self.ndb.stored_msg = []
-            self.ndb.stored_msg.append(text)
-
-
-class TestPlayerClass(DefaultPlayer):
-    def msg(self, text="", **kwargs):
-        "test message"
-        if not self.ndb.stored_msg:
-            self.ndb.stored_msg = []
-        self.ndb.stored_msg.append(text)
-
-    # not supported to overload is_superuser field with property.
-    #def _get_superuser(self):
-    #    "test with superuser flag"
-    #    return self.ndb.is_superuser
-    #is_superuser = property(_get_superuser)
-
-
-class CommandTest(TestCase):
+class CommandTest(EvenniaTest):
     """
     Tests a command
     """
-    CID = 0 # we must set a different CID in every test to avoid unique-name collisions creating the objects
-    def setUp(self):
-        "sets up testing environment"
-        #print "creating player %i: %s" % (self.CID, self.__class__.__name__)
-        self.player = create.create_player("TestPlayer%i" % self.CID, "test@test.com", "testpassword", typeclass=TestPlayerClass)
-        self.player2 = create.create_player("TestPlayer%ib" % self.CID, "test@test.com", "testpassword", typeclass=TestPlayerClass)
-        self.room1 = create.create_object("evennia.objects.objects.DefaultRoom", key="Room%i"%self.CID, nohome=True)
-        self.room1.db.desc = "room_desc"
-        settings.DEFAULT_HOME = "#%i" % self.room1.id # we must have a default home
-        self.room2 = create.create_object("evennia.objects.objects.DefaultRoom", key="Room%ib" % self.CID)
-        self.obj1 = create.create_object(TestObjectClass, key="Obj%i" % self.CID, location=self.room1, home=self.room1)
-        self.obj2 = create.create_object(TestObjectClass, key="Obj%ib" % self.CID, location=self.room1, home=self.room1)
-        self.char1 = create.create_object(TestCharacterClass, key="Char%i" % self.CID, location=self.room1, home=self.room1)
-        self.char1.permissions.add("Immortals")
-        self.char2 = create.create_object(TestCharacterClass, key="Char%ib" % self.CID, location=self.room1, home=self.room1)
-        self.char1.player = self.player
-        self.char2.player = self.player2
-        self.script = create.create_script("evennia.scripts.scripts.Script", key="Script%i" % self.CID)
-        self.player.permissions.add("Immortals")
-
-        # set up a fake session
-
-        global SESSIONS
-        session = ServerSession()
-        session.init_session("telnet", ("localhost", "testmode"), SESSIONS)
-        session.sessid = self.CID
-        SESSIONS.portal_connect(session.get_sync_data())
-        SESSIONS.login(SESSIONS.session_from_sessid(self.CID), self.player, testmode=True)
-
 
     def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None):
         """
@@ -120,13 +49,11 @@ class CommandTest(TestCase):
         output sent to caller.msg in the game
         """
         cmdobj.caller = caller if caller else self.char1
-        #print "call:", cmdobj.key, cmdobj.caller, caller if caller else cmdobj.caller.player
-        #print "perms:", cmdobj.caller.permissions.all()
         cmdobj.cmdstring = cmdobj.key
         cmdobj.args = args
         cmdobj.cmdset = cmdset
-        cmdobj.sessid = self.CID
-        cmdobj.session = SESSIONS.session_from_sessid(self.CID)
+        cmdobj.sessid = 1
+        cmdobj.session = SESSIONS.session_from_sessid(1)
         cmdobj.player = self.player
         cmdobj.raw_string = cmdobj.key + " " + args
         cmdobj.obj = caller if caller else self.char1
@@ -139,7 +66,6 @@ class CommandTest(TestCase):
         # clean out prettytable sugar
         stored_msg = self.char1.player.ndb.stored_msg if self.char1.player else self.char1.ndb.stored_msg
         returned_msg = "|".join(_RE.sub("", mess) for mess in stored_msg)
-        #returned_msg = "|".join(self.char1.player.ndb.stored_msg)
         returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
         if msg != None:
             if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
@@ -149,141 +75,232 @@ class CommandTest(TestCase):
                 retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
                 raise AssertionError(retval)
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 # Individual module Tests
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
-from evennia.commands.default import general
+
 class TestGeneral(CommandTest):
-    CID = 1
+    def test_look(self):
+        self.call(general.CmdLook(), "here", "Room\nroom_desc")
 
-    def test_cmds(self):
-        self.call(general.CmdLook(), "here", "Room1\n room_desc")
+    def test_home(self):
         self.call(general.CmdHome(), "", "You are already home")
+
+    def test_inventory(self):
         self.call(general.CmdInventory(), "", "You are not carrying anything.")
-        self.call(general.CmdPose(), "looks around", "")  # TODO-check this
-        self.call(general.CmdHome(), "", "You are already home")
+
+    def test_pose(self):
+        self.call(general.CmdPose(), "looks around", "Char looks around")
+
+    def test_nick(self):
         self.call(general.CmdNick(), "testalias = testaliasedstring1", "Nick set:")
         self.call(general.CmdNick(), "/player testalias = testaliasedstring2", "Nick set:")
         self.call(general.CmdNick(), "/object testalias = testaliasedstring3", "Nick set:")
         self.assertEqual(u"testaliasedstring1", self.char1.nicks.get("testalias"))
         self.assertEqual(u"testaliasedstring2", self.char1.nicks.get("testalias", category="player"))
         self.assertEqual(u"testaliasedstring3", self.char1.nicks.get("testalias", category="object"))
-        self.call(general.CmdGet(), "Obj1", "You pick up Obj1.")
-        self.call(general.CmdDrop(), "Obj1", "You drop Obj1.")
+
+    def test_get_and_drop(self):
+        self.call(general.CmdGet(), "Obj", "You pick up Obj.")
+        self.call(general.CmdDrop(), "Obj", "You drop Obj.")
+
+    def test_say(self):
         self.call(general.CmdSay(), "Testing", "You say, \"Testing\"")
+
+    def test_access(self):
         self.call(general.CmdAccess(), "", "Permission Hierarchy (climbing):")
 
 
-from evennia.commands.default import help
-from evennia.commands.default.cmdset_character import CharacterCmdSet
 class TestHelp(CommandTest):
-    CID = 2
-    def test_cmds(self):
+    def test_help(self):
         self.call(help.CmdHelp(), "", "Command help entries", cmdset=CharacterCmdSet())
+
+    def test_set_help(self):
         self.call(help.CmdSetHelp(), "testhelp, General = This is a test", "Topic 'testhelp' was successfully created.")
         self.call(help.CmdHelp(), "testhelp", "Help topic for testhelp", cmdset=CharacterCmdSet())
 
 
-from evennia.commands.default import system
 class TestSystem(CommandTest):
-    CID = 3
-    def test_cmds(self):
+    def test_py(self):
         # we are not testing CmdReload, CmdReset and CmdShutdown, CmdService or CmdTime
         # since the server is not running during these tests.
         self.call(system.CmdPy(), "1+2", ">>> 1+2|<<< 3")
+
+    def test_scripts(self):
         self.call(system.CmdScripts(), "", "dbref ")
+
+    def test_objects(self):
         self.call(system.CmdObjects(), "", "Object subtype totals")
+
+    def test_about(self):
         self.call(system.CmdAbout(), "", None)
+
+    def test_server_load(self):
         self.call(system.CmdServerLoad(), "", "Server CPU and Memory load:")
 
 
-from evennia.commands.default import admin
 class TestAdmin(CommandTest):
-    CID = 4
-    def test_cmds(self):
-        # not testing CmdBoot, CmdDelPlayer, CmdNewPassword
-        self.call(admin.CmdEmit(), "Char4b = Test", "Emitted to Char4b:\nTest")
-        self.call(admin.CmdPerm(), "Obj4 = Builders", "Permission 'Builders' given to Obj4 (the Object/Character).")
+    def test_emit(self):
+        self.call(admin.CmdEmit(), "Char2 = Test", "Emitted to Char2:\nTest")
+
+    def test_perm(self):
+        self.call(admin.CmdPerm(), "Obj = Builders", "Permission 'Builders' given to Obj (the Object/Character).")
+        self.call(admin.CmdPerm(), "Char2 = Builders", "Permission 'Builders' given to Char2 (the Object/Character).")
+
+    def test_wall(self):
         self.call(admin.CmdWall(), "Test", "Announcing to all connected players ...")
-        self.call(admin.CmdPerm(), "Char4b = Builders","Permission 'Builders' given to Char4b (the Object/Character).")
-        self.call(admin.CmdBan(), "Char4", "NameBan char4 was added.")
+
+    def test_ban(self):
+        self.call(admin.CmdBan(), "Char", "NameBan char was added.")
 
 
-from evennia.commands.default import player
 class TestPlayer(CommandTest):
-   CID = 5
-   def test_cmds(self):
+
+    def test_ooc_look(self):
         if settings.MULTISESSION_MODE < 2:
             self.call(player.CmdOOCLook(), "", "You are outofcharacter (OOC).", caller=self.player)
         if settings.MULTISESSION_MODE == 2:
-            self.call(player.CmdOOCLook(), "", "Account TestPlayer5 (you are OutofCharacter)", caller=self.player)
+            self.call(player.CmdOOCLook(), "", "Account TestPlayer (you are OutofCharacter)", caller=self.player)
+
+    def test_ooc(self):
         self.call(player.CmdOOC(), "", "You are already", caller=self.player)
-        self.call(player.CmdIC(), "Char5","You become Char5.", caller=self.player)
+
+    def test_ic(self):
+        self.call(player.CmdIC(), "Char", "You become Char.", caller=self.player)
+
+    def test_password(self):
         self.call(player.CmdPassword(), "testpassword = testpassword", "Password changed.", caller=self.player)
+
+    def test_encoding(self):
         self.call(player.CmdEncoding(), "", "Default encoding:", caller=self.player)
+
+    def test_who(self):
         self.call(player.CmdWho(), "", "Players:", caller=self.player)
-        self.call(player.CmdQuit(), "", "Quitting. Hope to see you soon again.", caller=self.player)
+
+    def test_quit(self):
+        self.call(player.CmdQuit(), "", "Quitting. Hope to see you again, soon.", caller=self.player)
+
+    def test_sessions(self):
         self.call(player.CmdSessions(), "", "Your current session(s):", caller=self.player)
+
+    def test_color_test(self):
         self.call(player.CmdColorTest(), "ansi", "ANSI colors:", caller=self.player)
-        self.call(player.CmdCharCreate(), "Test1=Test char","Created new character Test1. Use @ic Test1 to enter the game", caller=self.player)
+
+    def test_char_create(self):
+        self.call(player.CmdCharCreate(), "Test1=Test char", "Created new character Test1. Use @ic Test1 to enter the game", caller=self.player)
+
+    def test_quell(self):
+        self.call(player.CmdIC(), "Char", "You become Char.", caller=self.player)
         self.call(player.CmdQuell(), "", "Quelling to current puppet's permissions (immortals).", caller=self.player)
 
 
-from evennia.commands.default import building
 class TestBuilding(CommandTest):
-    CID = 6
-    def test_cmds(self):
-        self.call(building.CmdCreate(), "/drop TestObj1", "You create a new Object: TestObj1.")
-        self.call(building.CmdExamine(), "TestObj1", "Name/key: TestObj1")
-        self.call(building.CmdSetObjAlias(), "TestObj1 = TestObj1b","Alias(es) for 'TestObj1' set to testobj1b.")
-        self.call(building.CmdCopy(), "TestObj1 = TestObj2;TestObj2b, TestObj3;TestObj3b", "Copied TestObj1 to 'TestObj3' (aliases: ['TestObj3b']")
-        self.call(building.CmdSetAttribute(), "Obj6/test1=\"value1\"", "Created attribute Obj6/test1 = \"value1\"")
-        self.call(building.CmdSetAttribute(), "Obj6b/test2=\"value2\"", "Created attribute Obj6b/test2 = \"value2\"")
-        self.call(building.CmdMvAttr(), "Obj6b/test2 = Obj6/test3", "Moving Obj6b/test2 (with value value2) ...\nMoved Obj6b.test2")
-        self.call(building.CmdCpAttr(), "Obj6/test1 = Obj6b/test3", "Copying Obj6/test1 (with value value1) ...\nCopied Obj6.test1")
-        self.call(building.CmdName(), "Obj6b=Obj6c", "Object's name changed to 'Obj6c'.")
-        self.call(building.CmdDesc(), "Obj6c=TestDesc", "The description was set on Obj6c.")
-        self.call(building.CmdWipe(), "Obj6c/test2/test3", "Wiped attributes test2,test3 on Obj6c.")
-        self.call(building.CmdDestroy(), "TestObj1","TestObj1 was destroyed.")
+    def test_create(self):
+        name = settings.BASE_OBJECT_TYPECLASS.rsplit('.', 1)[1]
+        self.call(building.CmdCreate(), "/drop TestObj1", "You create a new %s: TestObj1." % name)
+
+    def test_examine(self):
+        self.call(building.CmdExamine(), "Obj", "Name/key: Obj")
+
+    def test_set_obj_alias(self):
+        self.call(building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj' set to testobj1b.")
+
+    def test_copy(self):
+        self.call(building.CmdCopy(), "Obj = TestObj2;TestObj2b, TestObj3;TestObj3b", "Copied Obj to 'TestObj3' (aliases: ['TestObj3b']")
+
+    def test_attribute_commands(self):
+        self.call(building.CmdSetAttribute(), "Obj/test1=\"value1\"", "Created attribute Obj/test1 = 'value1'")
+        self.call(building.CmdSetAttribute(), "Obj2/test2=\"value2\"", "Created attribute Obj2/test2 = 'value2'")
+        self.call(building.CmdMvAttr(), "Obj2/test2 = Obj/test3", "Moved Obj2.test2 > Obj.test3")
+        self.call(building.CmdCpAttr(), "Obj/test1 = Obj2/test3", "Copied Obj.test1 > Obj2.test3")
+        self.call(building.CmdWipe(), "Obj2/test2/test3", "Wiped attributes test2,test3 on Obj2.")
+
+    def test_name(self):
+        self.call(building.CmdName(), "Obj2=Obj3", "Object's name changed to 'Obj3'.")
+
+    def test_desc(self):
+        self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2.")
+
+    def test_wipe(self):
+        self.call(building.CmdDestroy(), "Obj", "Obj was destroyed.")
+
+    def test_dig(self):
         self.call(building.CmdDig(), "TestRoom1=testroom;tr,back;b", "Created room TestRoom1")
+
+    def test_tunnel(self):
         self.call(building.CmdTunnel(), "n = TestRoom2;test2", "Created room TestRoom2")
-        self.call(building.CmdOpen(), "TestExit1=Room6b", "Created new Exit 'TestExit1' from Room6 to Room6b")
-        self.call(building.CmdLink(),"TestExit1 = TestRoom1","Link created TestExit1 > TestRoom1 (one way).")
+
+    def test_exit_commands(self):
+        self.call(building.CmdOpen(), "TestExit1=Room2", "Created new Exit 'TestExit1' from Room to Room2")
+        self.call(building.CmdLink(), "TestExit1=Room", "Link created TestExit1 > Room (one way).")
         self.call(building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere.")
-        self.call(building.CmdSetHome(), "Obj6 = Room6b", "Obj6's home location was changed from Room6")
+
+    def test_set_home(self):
+        self.call(building.CmdSetHome(), "Obj = Room2", "Obj's home location was changed from Room")
+
+    def test_list_cmdsets(self):
         self.call(building.CmdListCmdSets(), "", "<DefaultCharacter (Union, prio 0, perm)>:")
-        self.call(building.CmdTypeclass(), "Obj6 = evennia.objects.objects.DefaultExit",
-                "Obj6 changed typeclass from evennia.commands.default.tests.TestObjectClass to evennia.objects.objects.DefaultExit")
-        self.call(building.CmdLock(), "Obj6 = test:perm(Immortals)", "Added lock 'test:perm(Immortals)' to Obj6.")
-        self.call(building.CmdFind(), "TestRoom1", "One Match")
-        self.call(building.CmdScript(), "Obj6 = evennia.scripts.scripts.Script", "Script evennia.scripts.scripts.Script successfully added")
-        self.call(building.CmdTeleport(), "TestRoom1", "TestRoom1\nExits: back|Teleported to TestRoom1.")
+
+    def test_typeclass(self):
+        self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultExit",
+                "Obj changed typeclass from evennia.tests.resources.TestObjectClass to evennia.objects.objects.DefaultExit.")
+
+    def test_lock(self):
+        self.call(building.CmdLock(), "Obj = test:perm(Immortals)", "Added lock 'test:perm(Immortals)' to Obj.")
+
+    def test_find(self):
+        self.call(building.CmdFind(), "Room2", "One Match")
+
+    def test_script(self):
+        self.call(building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added")
+
+    def test_teleport(self):
+        self.call(building.CmdTeleport(), "Room2", "Room2\n|Teleported to Room2.")
 
 
-from evennia.commands.default import comms
 class TestComms(CommandTest):
-    CID = 7
-    def test_cmds(self):
-        # not testing the irc/imc2/rss commands here since testing happens offline
+
+    def setUp(self):
+        super(CommandTest, self).setUp()
         self.call(comms.CmdChannelCreate(), "testchan;test=Test Channel", "Created channel testchan and connected to it.")
+
+    def test_toggle_com(self):
         self.call(comms.CmdAddCom(), "tc = testchan", "You are already connected to channel testchan. You can now")
         self.call(comms.CmdDelCom(), "tc",  "Your alias 'tc' for channel testchan was cleared.")
+
+    def test_channels(self):
         self.call(comms.CmdChannels(), "" ,"Available channels (use comlist,addcom and delcom to manage")
+
+    def test_all_com(self):
         self.call(comms.CmdAllCom(), "", "Available channels (use comlist,addcom and delcom to manage")
+
+    def test_clock(self):
         self.call(comms.CmdClock(), "testchan=send:all()", "Lock(s) applied. Current locks on testchan:")
+
+    def test_cdesc(self):
         self.call(comms.CmdCdesc(), "testchan = Test Channel", "Description of channel 'testchan' set to 'Test Channel'.")
-        self.call(comms.CmdCemit(), "testchan = Test Message", "Sent to channel testchan: Test Message")
-        self.call(comms.CmdCWho(), "testchan", "Channel subscriptions\ntestchan:\n  TestPlayer7")
-        self.call(comms.CmdPage(), "TestPlayer7b = Test", "TestPlayer7b is offline. They will see your message if they list their pages later.|You paged TestPlayer7b with: 'Test'.")
-        self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <player> [:reason]") # noone else connected to boot
-        self.call(comms.CmdCdestroy(), "testchan" ,"Channel 'testchan' was destroyed.")
+
+    def test_cemit(self):
+        self.call(comms.CmdCemit(), "testchan = Test Message", "[testchan] Test Message|Sent to channel testchan: Test Message")
+
+    def test_cwho(self):
+        self.call(comms.CmdCWho(), "testchan", "Channel subscriptions\ntestchan:\n  TestPlayer")
+
+    def test_page(self):
+        self.call(comms.CmdPage(), "TestPlayer2 = Test", "TestPlayer2 is offline. They will see your message if they list their pages later.|You paged TestPlayer2 with: 'Test'.")
+
+    def test_cboot(self):
+        # No one else connected to boot
+        self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <player> [:reason]")
+
+    def test_cdestroy(self):
+        self.call(comms.CmdCdestroy(), "testchan" ,"[testchan] TestPlayer: testchan is being destroyed. Make sure to change your aliases.|Channel 'testchan' was destroyed.")
 
 
-from evennia.commands.default import batchprocess
 class TestBatchProcess(CommandTest):
-    CID = 8
-    def test_cmds(self):
+    def test_batch_commands(self):
         # cannot test batchcode here, it must run inside the server process
-        self.call(batchprocess.CmdBatchCommands(), "contrib.tutorial_examples.batch_cmds", "Running Batchcommand processor  Automatic mode for contrib.tutorial_examples.batch_cmds")
+        self.call(batchprocess.CmdBatchCommands(), "example_batch_cmds", "Running Batchcommand processor  Automatic mode for example_batch_cmds")
         #self.call(batchprocess.CmdBatchCode(), "examples.batch_code", "")
+

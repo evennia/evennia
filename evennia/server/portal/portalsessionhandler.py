@@ -2,7 +2,7 @@
 Sessionhandler for portal sessions
 """
 import time
-from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PSYNC, PCONNSYNC
+from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC
 
 _MOD_IMPORT = None
 
@@ -179,6 +179,76 @@ class PortalSessionHandler(SessionHandler):
         return [sess for sess in self.get_sessions(include_unloggedin=True)
                 if hasattr(sess, 'suid') and sess.suid == suid]
 
+    def announce_all(self, message):
+        """
+        Send message to all connection sessions
+        """
+        for session in self.sessions.values():
+            session.data_out(message)
+
+    def oobstruct_parser(self, oobstruct):
+        """
+         Helper method for each session to use to parse oob structures
+         (The 'oob' kwarg of the msg() method).
+
+         Args: oobstruct (str or iterable): A structure representing
+            an oob command on one of the following forms:
+                - "cmdname"
+                - "cmdname", "cmdname"
+                - ("cmdname", arg)
+                - ("cmdname",(args))
+                - ("cmdname",{kwargs}
+                - ("cmdname", (args), {kwargs})
+                - (("cmdname", (args,), {kwargs}), ("cmdname", (args,), {kwargs}))
+            and any combination of argument-less commands or commands with only
+            args, only kwargs or both.
+
+        Returns:
+            structure (tuple): A generic OOB structure on the form
+            `((cmdname, (args,), {kwargs}), ...)`, where the two last
+            args and kwargs may be empty
+        """
+        def _parse(oobstruct):
+            slen = len(oobstruct)
+            if not oobstruct:
+                return tuple(None, (), {})
+            elif not hasattr(oobstruct, "__iter__"):
+                # a singular command name, without arguments or kwargs
+                return (oobstruct, (), {})
+            # regardless of number of args/kwargs, the first element must be
+            # the function name. We will not catch this error if not, but
+            # allow it to propagate.
+            if slen == 1:
+                return (oobstruct[0], (), {})
+            elif slen == 2:
+                if isinstance(oobstruct[1], dict):
+                    # (cmdname, {kwargs})
+                    return (oobstruct[0], (), dict(oobstruct[1]))
+                elif isinstance(oobstruct[1], (tuple, list)):
+                    # (cmdname, (args,))
+                    return (oobstruct[0], tuple(oobstruct[1]), {})
+                else:
+                    # (cmdname, arg)
+                    return (oobstruct[0], (oobstruct[1],), {})
+            else:
+                # (cmdname, (args,), {kwargs})
+                return (oobstruct[0], tuple(oobstruct[1]), dict(oobstruct[2]))
+
+        if hasattr(oobstruct, "__iter__"):
+            # differentiate between (cmdname, cmdname),
+            # (cmdname, (args), {kwargs}) and ((cmdname,(args),{kwargs}),
+            # (cmdname,(args),{kwargs}), ...)
+
+            if oobstruct and isinstance(oobstruct[0], basestring):
+                return (list(_parse(oobstruct)),)
+            else:
+                out = []
+                for oobpart in oobstruct:
+                    out.append(_parse(oobpart))
+                return (list(out),)
+        return (_parse(oobstruct),)
+
+
     def data_in(self, session, text="", **kwargs):
         """
         Called by portal sessions for relaying data coming
@@ -189,20 +259,19 @@ class PortalSessionHandler(SessionHandler):
                                                               msg=text,
                                                               data=kwargs)
 
-    def announce_all(self, message):
-        """
-        Send message to all connection sessions
-        """
-        for session in self.sessions.values():
-            session.data_out(message)
-
     def data_out(self, sessid, text=None, **kwargs):
         """
         Called by server for having the portal relay messages and data
-        to the correct session protocol.
+        to the correct session protocol. We also convert oob input to
+        a generic form here.
         """
         session = self.sessions.get(sessid, None)
         if session:
+            # convert oob to the generic format
+            if "oob" in kwargs:
+                #print "oobstruct_parser in:", kwargs["oob"]
+                kwargs["oob"] = self.oobstruct_parser(kwargs["oob"])
+                #print "oobstruct_parser out:", kwargs["oob"]
             session.data_out(text=text, **kwargs)
 
 PORTAL_SESSIONS = PortalSessionHandler()

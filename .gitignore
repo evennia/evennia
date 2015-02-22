@@ -10,7 +10,6 @@ dist
 build
 eggs
 parts
-bin
 var
 sdist
 develop-eggs
@@ -25,12 +24,6 @@ __pycache__
 *.pid
 *.restart
 *.db3
-
-# Installation-specific
-game/settings.py
-game/logs/*.log.*
-game/gamesrc/web/static/*
-game/gamesrc/web/media/*
 
 # Installer logs
 pip-log.txt

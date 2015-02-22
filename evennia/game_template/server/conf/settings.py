@@ -24,7 +24,7 @@ SERVERNAME = {servername}
 
 # Path to the game directory (use EVENNIA_DIR to refer to the
 # core evennia library)
-GAME_DIR = {game_dir}
+GAME_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Place to put log files
 LOG_DIR = os.path.join(GAME_DIR, "server", "logs")
@@ -40,7 +40,7 @@ HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
 # ENGINE - path to the the database backend. Possible choices are:
 #            'django.db.backends.sqlite3', (default)
 #            'django.db.backends.mysql',
-#            'django.db.backends.'postgresql_psycopg2' (see Issue 241),
+#            'django.db.backends.postgresql_psycopg2' (see Issue 241),
 #            'django.db.backends.oracle' (untested).
 # NAME - database name, or path to the db file for sqlite3
 # USER - db admin (unused in sqlite3)

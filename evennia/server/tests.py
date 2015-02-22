@@ -16,6 +16,7 @@ Guidelines:
  methods assert*() are used to test the behaviour.
 """
 
+import os
 import sys
 import glob
 
@@ -35,7 +36,7 @@ from evennia.utils.utils import mod_import
 
 class EvenniaTestSuiteRunner(DjangoTestSuiteRunner):
     """
-    This test runner only runs tests on the apps specified in evennia/ and game/ to
+    This test runner only runs tests on the apps specified in evennia/
      avoid running the large number of tests defined by Django
     """
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
@@ -43,9 +44,11 @@ class EvenniaTestSuiteRunner(DjangoTestSuiteRunner):
         Build a test suite for Evennia. test_labels is a list of apps to test.
         If not given, a subset of settings.INSTALLED_APPS will be used.
         """
+        import evennia
+        evennia.init()
         if not test_labels:
             test_labels = [applabel.rsplit('.', 1)[1] for applabel in settings.INSTALLED_APPS
-                           if (applabel.startswith('evennia.') or applabel.startswith('game.'))]
+                           if applabel.startswith('evennia.')]
         return super(EvenniaTestSuiteRunner, self).build_suite(test_labels, extra_tests=extra_tests, **kwargs)
 
 
@@ -66,11 +69,9 @@ def suite():
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(locktests))
     tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(utiltests))
 
-    for path in glob.glob("../evennia/tests/test_*.py"):
+    # load tests from the evennia/tests central location
+    for path in glob.glob(os.path.join(settings.EVENNIA_DIR, "tests", "test_*.py")):
         testmod = mod_import(path)
         tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(testmod))
-
-    #from evennia.tests import test_commands_cmdhandler
-    #tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(test_commands_cmdhandler))
 
     return tsuite

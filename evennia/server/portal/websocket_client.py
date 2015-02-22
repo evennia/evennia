@@ -78,26 +78,47 @@ class WebSocketClient(Protocol, Session):
             OOB - This is an Out-of-band instruction. If so,
                   the remaining string should be a json-packed
                   string on the form {oobfuncname: [args, ], ...}
-            any other prefix (or lack of prefix) is considered
-                  plain text data, to be treated like a game
+            CMD - plain text data, to be treated like a game
                   input command.
         """
-        if string[:3] == "OOB":
-            string = string[3:]
-            try:
-                oobdata = json.loads(string)
-                for (key, args) in oobdata.items():
-                    #print "oob data in:", (key, args)
-                    self.data_in(text=None, oob=(key, make_iter(args)))
-            except Exception:
-                log_trace("Websocket malformed OOB request: %s" % string)
-        else:
+        mode = string[:3]
+        data = string[3:]
+
+        if mode == "OOB":
+            # an out-of-band command
+            self.json_decode(data)
+        elif mode == "CMD":
             # plain text input
-            self.data_in(text=string)
+            self.data_in(text=data)
 
     def sendLine(self, line):
         "send data to client"
         return self.transport.write(line)
+
+    def json_decode(self, data):
+        """
+        Decodes incoming data from the client
+
+        [cmdname, [args],{kwargs}] -> cmdname *args **kwargs
+
+        """
+        try:
+            cmdname, args, kwargs = json.loads(data)
+        except Exception:
+            log_trace("Websocket malformed OOB request: %s" % data)
+            raise
+        self.sessionhandler.data_in(self, oob=(cmdname, args, kwargs))
+
+    def json_encode(self, cmdname, *args, **kwargs):
+        """
+        Encode OOB data for sending to client
+
+        cmdname *args -> cmdname [json array]
+        cmdname **kwargs -> cmdname {json object}
+
+        """
+        cmdtuple = [cmdname, list(args), kwargs]
+        self.sendLine("OOB" + json.dumps(cmdtuple))
 
     def data_in(self, text=None, **kwargs):
         """
@@ -121,15 +142,15 @@ class WebSocketClient(Protocol, Session):
         except Exception, e:
             self.sendLine(str(e))
         if "oob" in kwargs:
-            oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob"))
-            #print "oob data_out:", "OOB" + json.dumps(oobstruct)
-            self.sendLine("OOB" + json.dumps(oobstruct))
+            for cmdname, args, okwargs in kwargs["oob"]:
+                self.json_encode(cmdname, *args, **okwargs)
+
         raw = kwargs.get("raw", False)
         nomarkup = kwargs.get("nomarkup", False)
         if "prompt" in kwargs:
             self.sendLine("PROMPT" + parse_html(kwargs["prompt"], strip_ansi=nomarkup))
         if raw:
-            self.sendLine(text)
+            self.sendLine("CMD" + text)
         else:
-            self.sendLine(parse_html(text, strip_ansi=nomarkup))
+            self.sendLine("CMD" + parse_html(text, strip_ansi=nomarkup))
 

@@ -69,7 +69,7 @@ many traits with a normal goblin.
 
 """
 
-import os, sys, copy
+import copy
 #TODO
 #sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 #os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
@@ -128,27 +128,30 @@ def _batch_create_object(*objparams):
                  creation/add handlers in the following order:
                     (create, permissions, locks, aliases, nattributes, attributes)
     Returns:
-    A list of created objects
+        objects (list): A list of created objects
+
     """
 
     # bulk create all objects in one go
-    dbobjs = [ObjectDB(**objparam[0]) for objparam in objparams]
-    # unfortunately this doesn't work since bulk_create don't creates pks;
+
+    # unfortunately this doesn't work since bulk_create doesn't creates pks;
     # the result are double objects at the next stage
     #dbobjs = _ObjectDB.objects.bulk_create(dbobjs)
 
+    dbobjs = [ObjectDB(**objparam[0]) for objparam in objparams]
     objs = []
     for iobj, obj in enumerate(dbobjs):
         # call all setup hooks on each object
         objparam = objparams[iobj]
         # setup
-        obj._createdict = {"pernmissions": objparam[1],
+        obj._createdict = {"permissions": objparam[1],
                            "locks": objparam[2],
                            "aliases": objparam[3],
-                           "attributes": objparam[4],
-                           "nattributes": objparam[5]}
+                           "nattributes": objparam[4],
+                           "attributes": objparam[5]}
         # this triggers all hooks
         obj.save()
+        objs.append(obj)
     return objs
 
 

@@ -13,6 +13,36 @@ from evennia.players.models import PlayerDB
 from evennia.server.models import ServerConfig
 from evennia.utils import create
 
+
+ERROR_NO_SUPERUSER = \
+    """
+    No superuser exists yet. The superuser is the 'owner' account on
+    the Evennia server. Create a new superuser using the command
+
+       evennia createsuperuser
+
+    Follow the prompts, then restart the server.
+    """
+
+
+LIMBO_DESC = \
+    _("""
+Welcome to your new {wEvennia{n-based game! Visit http://www.evennia.com if you need
+help, want to contribute, report issues or just join the community.
+As Player #1 you can create a demo/tutorial area with {w@batchcommand tutorial_world.build{n.
+    """)
+
+
+WARNING_POSTGRESQL_FIX = \
+    """
+    PostgreSQL-psycopg2 compatability fix:
+    The in-game channels {chan1}, {chan2} and {chan3} were created,
+    but the superuser was not yet connected to them. Please use in
+    game commands to connect Player #1 to those channels when first
+    logging in.
+    """
+
+
 def create_config_values():
     """
     Creates the initial config values.
@@ -20,20 +50,14 @@ def create_config_values():
     ServerConfig.objects.conf("site_name", settings.SERVERNAME)
     ServerConfig.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
 
-
 def get_god_player():
     """
-    Creates the god user.
+    Creates the god user and don't take no for an answer.
     """
     try:
         god_player = PlayerDB.objects.get(id=1)
     except PlayerDB.DoesNotExist:
-        txt = "\n\nNo superuser exists yet. The superuser is the 'owner'\n" \
-              "account on the Evennia server. Create a new superuser using\n" \
-              "the command\n\n" \
-              "  python manage.py createsuperuser\n\n" \
-              "Follow the prompts, then restart the server."
-        raise Exception(txt)
+        raise PlayerDB.DoesNotExist(ERROR_NO_SUPERUSER)
     return god_player
 
 
@@ -71,10 +95,10 @@ def create_objects():
                                          nohome=True)
 
     god_character.id = 1
+    god_character.save()
     god_character.db.desc = _('This is User #1.')
     god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
     god_character.permissions.add("Immortals")
-    god_character.save()
 
     god_player.attributes.add("_first_login", True)
     god_player.attributes.add("_last_puppet", god_character)
@@ -83,15 +107,8 @@ def create_objects():
     room_typeclass = settings.BASE_ROOM_TYPECLASS
     limbo_obj = create.create_object(room_typeclass, _('Limbo'), nohome=True)
     limbo_obj.id = 2
-    string = \
-        "Welcome to your new {wEvennia{n-based game. From here you are ready " \
-        "to begin development. Visit http://evennia.com if you should need " \
-        "help or would like to participate in community discussions. If you " \
-        "are logged in as user #1 you can create a demo/tutorial area with " \
-        "{w@batchcommand contrib.tutorial_world.build{n. Use {w@quell{n or login " \
-        "as normal player to play the demo properly."
-    string = _(string)
-    limbo_obj.db.desc = string
+    limbo_obj.save()
+    limbo_obj.db.desc = LIMBO_DESC.strip()
     limbo_obj.save()
 
     # Now that Limbo exists, try to set the user up in Limbo (unless
@@ -127,14 +144,7 @@ def create_channels():
         or (hasattr(settings, 'DATABASES')
             and settings.DATABASES.get("default", {}).get('ENGINE', None)
             == 'django.db.backends.postgresql_psycopg2')):
-        warning = """
-        PostgreSQL-psycopg2 compatability fix:
-        The in-game channels %s, %s and %s were created,
-        but the superuser was not yet connected to them. Please use in
-        game commands to onnect Player #1 to those channels when first
-        logging in.
-        """ % (key1, key2, key3)
-        print warning
+        print WARNING_POSTGRESQL_FIX.format(chan1=key1, chan2=key2, chan3=key3)
         return
 
     # connect the god user to all these channels by default.

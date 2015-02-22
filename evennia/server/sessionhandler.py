@@ -27,6 +27,7 @@ _PlayerDB = None
 _ServerSession = None
 _ServerConfig = None
 _ScriptDB = None
+_OOB_HANDLER = None
 
 
 # AMP signals
@@ -101,63 +102,6 @@ class SessionHandler(object):
         sessions in store.
         """
         return dict((sessid, sess.get_sync_data()) for sessid, sess in self.sessions.items())
-
-    def oobstruct_parser(self, oobstruct):
-        """
-         Helper method for each session to use to parse oob structures
-         (The 'oob' kwarg of the msg() method).
-
-         Allowed input oob structures are:
-                 cmdname
-                ((cmdname,), (cmdname,))
-                (cmdname,(arg, ))
-                (cmdname,(arg1,arg2))
-                (cmdname,{key:val,key2:val2})
-                (cmdname, (args,), {kwargs})
-                ((cmdname, (arg1,arg2)), cmdname, (cmdname, (arg1,)))
-        outputs an ordered structure on the form
-                ((cmdname, (args,), {kwargs}), ...), where the two last
-                                              parts of each tuple may be empty
-        """
-        def _parse(oobstruct):
-            slen = len(oobstruct)
-            if not oobstruct:
-                return tuple(None, (), {})
-            elif not hasattr(oobstruct, "__iter__"):
-                # a singular command name, without arguments or kwargs
-                return (oobstruct.lower(), (), {})
-            # regardless of number of args/kwargs, the first element must be
-            # the function name. We will not catch this error if not, but
-            # allow it to propagate.
-            if slen == 1:
-                return (oobstruct[0].lower(), (), {})
-            elif slen == 2:
-                if isinstance(oobstruct[1], dict):
-                    # cmdname, {kwargs}
-                    return (oobstruct[0].lower(), (), dict(oobstruct[1]))
-                elif isinstance(oobstruct[1], (tuple, list)):
-                    # cmdname, (args,)
-                    return (oobstruct[0].lower(), list(oobstruct[1]), {})
-                else:
-                    # cmdname, cmdname
-                    return ((oobstruct[0].lower(), (), {}), (oobstruct[1].lower(), (), {}))
-            else:
-                # cmdname, (args,), {kwargs}
-                return (oobstruct[0].lower(), list(oobstruct[1]), dict(oobstruct[2]))
-
-        if hasattr(oobstruct, "__iter__"):
-            # differentiate between (cmdname, cmdname),
-            # (cmdname, (args), {kwargs}) and ((cmdname,(args),{kwargs}),
-            # (cmdname,(args),{kwargs}), ...)
-
-            if oobstruct and isinstance(oobstruct[0], basestring):
-                return (list(_parse(oobstruct)),)
-            else:
-                out = []
-                for oobpart in oobstruct:
-                    out.append(_parse(oobpart))
-                return (list(out),)
-        return (_parse(oobstruct),)
 
 
 #------------------------------------------------------------
@@ -421,13 +365,32 @@ class ServerSessionHandler(SessionHandler):
                         and (tcurr - session.cmd_last) > IDLE_TIMEOUT):
             self.disconnect(session, reason=reason)
 
-    def player_count(self):
+    def player_count(self, count=True):
         """
         Get the number of connected players (not sessions since a
         player may have more than one session depending on settings).
         Only logged-in players are counted here.
+
+        Args:
+            count (bool): If true, return a count of players, otherwise
+                return a list.
+
+        Returns:
+            number (int): If count=True
+            players (list): I count=False
+
         """
-        return len(set(session.uid for session in self.sessions.values() if session.logged_in))
+        players = set(session.uid for session in self.sessions.values() if session.logged_in)
+        if count:
+            return len(players)
+        return players
+
+    def all_connected_players(self):
+        """
+        Returns all conected players (not sessions, since a player may
+        have more than one session depending on sessions)
+        """
+        return self.player_count(count=False)
 
     def session_from_sessid(self, sessid):
         """
@@ -482,11 +445,24 @@ class ServerSessionHandler(SessionHandler):
 
     def data_in(self, sessid, text="", **kwargs):
         """
-        Data Portal -> Server
+        Data Portal -> Server.
+        We also intercept OOB communication here.
         """
         session = self.sessions.get(sessid, None)
         if session:
             text = text and to_unicode(strip_control_sequences(text), encoding=session.encoding)
+            if "oob" in kwargs:
+                # incoming data is always on the form (cmdname, args, kwargs)
+                global _OOB_HANDLER
+                if not _OOB_HANDLER:
+                    from evennia.server.oobhandler import OOB_HANDLER as _OOB_HANDLER
+                funcname, args, kwargs = kwargs.pop("oob")
+                #print "OOB session.data_in:", funcname, args, kwargs
+                if funcname:
+                    _OOB_HANDLER.execute_cmd(session, funcname, *args, **kwargs)
+
+            # pass the rest off to the session
             session.data_in(text=text, **kwargs)
 
-SESSIONS = ServerSessionHandler()
+SESSION_HANDLER = ServerSessionHandler()
+SESSIONS = SESSION_HANDLER # legacy

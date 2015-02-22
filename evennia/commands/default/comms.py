@@ -130,7 +130,7 @@ class CmdDelCom(MuxPlayerCommand):
     """
 
     key = "delcom"
-    aliases = ["delaliaschan, delchanalias"]
+    aliases = ["delaliaschan", "delchanalias"]
     help_category = "Comms"
     locks = "cmd:not perm(channel_banned)"
 
@@ -533,6 +533,7 @@ class CmdChannelCreate(MuxPlayerCommand):
                                          description,
                                          locks=lockstring)
         new_chan.connect(caller)
+        CHANNELHANDLER.update()
         self.msg("Created channel %s and connected to it." % new_chan.key)
 
 

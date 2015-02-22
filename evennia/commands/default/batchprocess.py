@@ -694,11 +694,11 @@ class CmdStateCC(MuxCommand):
 
 class CmdStateJJ(MuxCommand):
     """
-    j <command number>
+    jj <command number>
 
     Jump to specific command number
     """
-    key = "j"
+    key = "jj"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
 

@@ -19,11 +19,12 @@ WeaponRack
 
 """
 
-import time
 import random
 
-from evennia import create_object
-from evennia import DefaultObject, DefaultExit, Command, CmdSet, Script
+from evennia import DefaultObject, DefaultExit, Command, CmdSet
+from evennia import utils
+from evennia.utils import search
+from evennia.utils.spawner import spawn
 
 #------------------------------------------------------------
 #
@@ -31,7 +32,7 @@ from evennia import DefaultObject, DefaultExit, Command, CmdSet, Script
 #
 # The TutorialObject is the base class for all items
 # in the tutorial. They have an attribute "tutorial_info"
-# on them that a global tutorial command can use to extract
+# on them that the global tutorial command can use to extract
 # interesting behind-the scenes information about the object.
 #
 # TutorialObjects may also be "reset". What the reset means
@@ -51,7 +52,6 @@ class TutorialObject(DefaultObject):
         "Called when the object is first created."
         super(TutorialObject, self).at_object_creation()
         self.db.tutorial_info = "No tutorial info is available for this object."
-        #self.db.last_reset = time.time()
 
     def reset(self):
         "Resets the object, whatever that may mean."
@@ -60,16 +60,20 @@ class TutorialObject(DefaultObject):
 
 #------------------------------------------------------------
 #
-# Readable - an object one can "read".
+# Readable - an object that can be "read"
 #
 #------------------------------------------------------------
+
+#
+# Read command
+#
 
 class CmdRead(Command):
     """
     Usage:
       read [obj]
 
-    Read some text.
+    Read some text of a readable object.
     """
 
     key = "read"
@@ -77,7 +81,11 @@ class CmdRead(Command):
     help_category = "TutorialWorld"
 
     def func(self):
-        "Implement the read command."
+        """
+        Implements the read command. This simply looks for an
+        Attribute "readable_text" on the object and displays that.
+        """
+
         if self.args:
             obj = self.caller.search(self.args.strip())
         else:
@@ -94,18 +102,25 @@ class CmdRead(Command):
 
 
 class CmdSetReadable(CmdSet):
-    "CmdSet for readables"
+    """
+    A CmdSet for readables.
+    """
     def at_cmdset_creation(self):
-        "called when object is created."
+        """
+        Called when the cmdset is created.
+        """
         self.add(CmdRead())
 
 
 class Readable(TutorialObject):
     """
-    This object defines some attributes and defines a read method on itself.
+    This simple object defines some attributes and
     """
     def at_object_creation(self):
-        "Called when object is created"
+        """
+        Called when object is created. We make sure to set the needed
+        Attribute and add the readable cmdset.
+        """
         super(Readable, self).at_object_creation()
         self.db.tutorial_info = "This is an object with a 'read' command defined in a command set on itself."
         self.db.readable_text = "There is no text written on %s." % self.key
@@ -119,14 +134,20 @@ class Readable(TutorialObject):
 #
 # The climbable object works so that once climbed, it sets
 # a flag on the climber to show that it was climbed. A simple
-# command 'climb' handles the actual climbing.
+# command 'climb' handles the actual climbing. The memory
+# of what was last climbed is used in a simple puzzle in the
+# tutorial.
 #
 #------------------------------------------------------------
 
 class CmdClimb(Command):
     """
+    Climb an object
+
     Usage:
       climb <object>
+
+    This allows you to climb.
     """
     key = "climb"
     locks = "cmd:all()"
@@ -148,7 +169,8 @@ class CmdClimb(Command):
         if not ostring:
             ostring = "You climb %s. Having looked around, you climb down again." % self.obj.name
         self.caller.msg(ostring)
-        self.caller.db.last_climbed = self.obj
+        # set a tag on the caller to remember that we climbed.
+        self.caller.tags.add("tutorial_climbed_tree", category="tutorial_world")
 
 
 class CmdSetClimbable(CmdSet):
@@ -159,7 +181,10 @@ class CmdSetClimbable(CmdSet):
 
 
 class Climbable(TutorialObject):
-    "A climbable object."
+    """
+    A climbable object. All that is special about it is that it has
+    the "climb" command available on it.
+    """
 
     def at_object_creation(self):
         "Called at initial creation only"
@@ -171,44 +196,51 @@ class Climbable(TutorialObject):
 #
 # Obelisk - a unique item
 #
-# The Obelisk is an object with a modified return_appearance
-# method that causes it to look slightly different every
-# time one looks at it. Since what you actually see
-# is a part of a game puzzle, the act of looking also
-# stores a key attribute on the looking object for later
-# reference.
+# The Obelisk is an object with a modified return_appearance method
+# that causes it to look slightly different every time one looks at it.
+# Since what you actually see is a part of a game puzzle, the act of
+# looking also stores a key attribute on the looking object (different
+# depending on which text you saw) for later reference.
 #
 #------------------------------------------------------------
 
-OBELISK_DESCS = ["You can briefly make out the image of {ba woman with a blue bird{n.",
-                 "You for a moment see the visage of {ba woman on a horse{n.",
-                 "For the briefest moment you make out an engraving of {ba regal woman wearing a crown{n.",
-                 "You think you can see the outline of {ba flaming shield{n in the stone.",
-                 "The surface for a moment seems to portray {ba woman fighting a beast{n."]
-
-
 class Obelisk(TutorialObject):
     """
-    This object changes its description randomly.
+    This object changes its description randomly, and which is shown
+    determines which order "clue id" is stored on the Character for
+    future puzzles.
+
+    Important Attribute:
+       puzzle_descs (list): list of descriptions. One of these is
+
     """
 
     def at_object_creation(self):
         "Called when object is created."
         super(Obelisk, self).at_object_creation()
         self.db.tutorial_info = "This object changes its desc randomly, and makes sure to remember which one you saw."
+        self.db.puzzle_descs = ["You see a normal stone slab"]
         # make sure this can never be picked up
         self.locks.add("get:false()")
 
     def return_appearance(self, caller):
-        "Overload the default version of this hook."
-        clueindex = random.randint(0, len(OBELISK_DESCS) - 1)
-        # set this description
-        string = "The surface of the obelisk seem to waver, shift and writhe under your gaze, with "
-        string += "different scenes and structures appearing whenever you look at it. "
-        self.db.desc = string + OBELISK_DESCS[clueindex]
-        # remember that this was the clue we got.
+        """
+        This hook is called by the look command to get the description
+        of the object. We overload it with our own version.
+        """
+        # randomly get the index for one of the descriptions
+        descs = self.db.puzzle_descs
+        clueindex = random.randint(0, len(descs) - 1)
+        # set this description, with the random extra
+        string = "The surface of the obelisk seem to waver, shift and writhe under your gaze, with " \
+                 "different scenes and structures appearing whenever you look at it. "
+        self.db.desc = string + descs[clueindex]
+        # remember that this was the clue we got. The Puzzle room will
+        # look for this later to determine if you should be teleported
+        # or not.
         caller.db.puzzle_clue = clueindex
-        # call the parent function as normal (this will use db.desc we just set)
+        # call the parent function as normal (this will use
+        # the new desc Attribute we just set)
         return super(Obelisk, self).return_appearance(caller)
 
 
@@ -216,163 +248,125 @@ class Obelisk(TutorialObject):
 #
 # LightSource
 #
-# This object that emits light and can be
-# turned on or off. It must be carried to use and has only
-# a limited burn-time.
-# When burned out, it will remove itself from the carrying
-# character's inventory.
+# This object emits light. Once it has been turned on it
+# cannot be turned off. When it burns out it will delete
+# itself.
+#
+# This could be implemented using a single-repeat Script or by
+# registering with the TickerHandler. We do it simpler by
+# using the delay() utility function. This is very simple
+# to use but does not survive a server @reload. Because of
+# where the light matters (in the Dark Room where you can
+# find new light sources easily), this is okay here.
 #
 #------------------------------------------------------------
 
-class StateLightSourceOn(Script):
+class CmdLight(Command):
     """
-    This script controls how long the light source is burning. When
-    it runs out of fuel, the lightsource goes out.
-    """
-    def at_script_creation(self):
-        "Called at creation of script."
-        self.key = "lightsourceBurn"
-        self.desc = "Keeps lightsources burning."
-        self.start_delay = True # only fire after self.interval s.
-        self.repeats = 1 # only run once.
-        self.persistent = True  # survive a server reboot.
-
-    def at_start(self):
-        "Called at script start - this can also happen if server is restarted."
-        self.interval = self.obj.db.burntime
-        self.db.script_started = time.time()
-
-    def at_repeat(self):
-        "Called at self.interval seconds"
-        # this is only called when torch has burnt out
-        self.obj.db.burntime = -1
-        self.obj.reset()
-
-    def at_stop(self):
-        """
-        Since the user may also turn off the light
-        prematurely, this hook will store the current
-        burntime.
-        """
-        # calculate remaining burntime, if object is not
-        # already deleted (because it burned out)
-        if self.obj:
-            try:
-                time_burnt = time.time() - self.db.script_started
-            except TypeError:
-                # can happen if script_started is not defined
-                time_burnt = self.interval
-            burntime = self.interval - time_burnt
-            self.obj.db.burntime = burntime
-
-    def is_valid(self):
-        "This script is only valid as long as the lightsource burns."
-        return self.obj.db.is_active
-
-
-class CmdLightSourceOn(Command):
-    """
-    Switches on the lightsource.
+    Creates light where there was none. Something to burn.
     """
     key = "on"
-    aliases = ["switch on", "turn on", "light"]
-    locks = "cmd:holds()"  # only allow if command.obj is carried by caller.
+    aliases = ["light", "burn"]
+    # only allow this command if command.obj is carried by caller.
+    locks = "cmd:holds()"
     help_category = "TutorialWorld"
 
     def func(self):
-        "Implements the command"
+        """
+        Implements the light command. Since this command is designed
+        to sit on a "lightable" object, we operate only on self.obj.
+        """
 
-        if self.obj.db.is_active:
-            self.caller.msg("%s is already burning." % self.obj.key)
-        else:
-            # set lightsource to active
-            self.obj.db.is_active = True
-            # activate the script to track burn-time.
-            self.obj.scripts.add(StateLightSourceOn)
-            self.caller.msg("{gYou light {C%s.{n" % self.obj.key)
+        if self.obj.light():
+            self.caller.msg("You light %s." % self.obj.key)
             self.caller.location.msg_contents("%s lights %s!" % (self.caller, self.obj.key), exclude=[self.caller])
-            # run script validation on the room to make light/dark states tick.
-            self.caller.location.scripts.validate()
-            # look around
-            self.caller.execute_cmd("look")
-
-
-class CmdLightSourceOff(Command):
-    """
-    Switch off the lightsource.
-    """
-    key = "off"
-    aliases = ["switch off", "turn off", "dowse"]
-    locks = "cmd:holds()"  # only allow if command.obj is carried by caller.
-    help_category = "TutorialWorld"
-
-    def func(self):
-        "Implements the command "
-
-        if not self.obj.db.is_active:
-            self.caller.msg("%s is not burning." % self.obj.key)
         else:
-            # set lightsource to inactive
-            self.obj.db.is_active = False
-            # validating the scripts will kill it now that is_active=False.
-            self.obj.scripts.validate()
-            self.caller.msg("{GYou dowse {C%s.{n" % self.obj.key)
-            self.caller.location.msg_contents("%s dowses %s." % (self.caller, self.obj.key), exclude=[self.caller])
-            self.caller.location.scripts.validate()
-            self.caller.execute_cmd("look")
+            self.caller.msg("%s is already burning." % self.obj.key)
 
 
-class CmdSetLightSource(CmdSet):
+class CmdSetLight(CmdSet):
     "CmdSet for the lightsource commands"
     key = "lightsource_cmdset"
+    # this is higher than the dark cmdset - important!
+    priority = 3
 
     def at_cmdset_creation(self):
         "called at cmdset creation"
-        self.add(CmdLightSourceOn())
-        self.add(CmdLightSourceOff())
+        self.add(CmdLight())
 
 
 class LightSource(TutorialObject):
     """
     This implements a light source object.
 
-    When burned out, lightsource will be moved to its home - which by
-    default is the location it was first created at.
+    When burned out, the object will be deleted.
     """
+    def at_init(self):
+        """
+        If this is called with the Attribute is_giving_light already
+        set, we know that the timer got killed by a server
+        reload/reboot before it had time to finish. So we kill it here
+        instead. This is the price we pay for the simplicity of the
+        non-persistent delay() method.
+        """
+        if self.db.is_giving_light:
+            self.delete()
+
     def at_object_creation(self):
         "Called when object is first created."
         super(LightSource, self).at_object_creation()
-        self.db.tutorial_info = "This object can be turned on off and has a timed script controlling it."
-        self.db.is_active = False
+        self.db.tutorial_info = "This object can be lit to create light. It has a timeout for how long it burns."
+        self.db.is_giving_light = False
         self.db.burntime = 60 * 3  # 3 minutes
+        # this is the default desc, it can of course be customized
+        # when created.
         self.db.desc = "A splinter of wood with remnants of resin on it, enough for burning."
-        # add commands
-        self.cmdset.add_default(CmdSetLightSource, permanent=True)
+        # add the Light command
+        self.cmdset.add_default(CmdSetLight, permanent=True)
 
-    def reset(self):
+    def _burnout(self):
         """
-        Can be called by tutorial world runner, or by the script when
-        the lightsource has burned out.
+        This is called when this light source burns out. We make no
+        use of the return value.
         """
-        if self.db.burntime <= 0:
-            # light burned out. Since the lightsources's "location" should be
-            # a character, notify them this way.
-            try:
-                loc = self.location.location
-            except AttributeError:
-                loc = self.location
-            loc.msg_contents("{c%s{n {Rburns out.{n" % self.key)
-        self.db.is_active = False
+        # delete ourselves from the database
+        self.db.is_giving_light = False
         try:
-            # validate in holders current room, if possible
-            self.location.location.scripts.validate()
+            self.location.location.msg_contents("%s's %s flickers and dies." %
+                                (self.location, self.key), exclude=self.location)
+            self.location.msg("Your %s flickers and dies." % self.key)
+            self.location.location.check_light_state()
         except AttributeError:
-            # maybe it was dropped, try validating at current location.
             try:
-                self.location.scripts.validate()
+                self.location.msg_contents("A %s on the floor flickers and dies." % self.key)
+                self.location.location.check_light_state()
             except AttributeError:
                 pass
         self.delete()
+
+
+    def light(self):
+        """
+        Light this object - this is called by Light command.
+        """
+        if self.db.is_giving_light:
+            return False
+        # burn for 3 minutes before calling _burnout
+        self.db.is_giving_light = True
+        # if we are in a dark room, trigger its light check
+        try:
+            self.location.location.check_light_state()
+        except AttributeError:
+            try:
+                # maybe we are directly in the room
+                self.location.check_light_state()
+            except AttributeError:
+                pass
+        finally:
+            # start the burn timer. When it runs out, self._burnout
+            # will be called.
+            utils.delay(60 * 3, self._burnout)
+        return True
 
 
 #------------------------------------------------------------
@@ -382,7 +376,7 @@ class LightSource(TutorialObject):
 # This implements a simple puzzle exit that needs to be
 # accessed with commands before one can get to traverse it.
 #
-# The puzzle is currently simply to move roots (that have
+# The puzzle-part is simply to move roots (that have
 # presumably covered the wall) aside until a button for a
 # secret door is revealed. The original position of the
 # roots blocks the button, so they have to be moved to a certain
@@ -398,25 +392,34 @@ class LightSource(TutorialObject):
 # along the sides. The goal is to make the center position clear.
 # (yes, it's really as simple as it sounds, just move the roots
 # to each side to "win". This is just a tutorial, remember?)
+#
+# The ShiftRoot command depends on the root object having an
+# Attribute root_pos (a dictionary) to describe the current
+# position of the roots.
 
 class CmdShiftRoot(Command):
     """
     Shifts roots around.
 
-    shift blue root left/right
-    shift red root left/right
-    shift yellow root up/down
-    shift green root up/down
+    Usage:
+      shift blue root left/right
+      shift red root left/right
+      shift yellow root up/down
+      shift green root up/down
 
     """
     key = "shift"
-    aliases = ["move"]
-    # the locattr() lock looks for the attribute is_dark on the current room.
-    locks = "cmd:not locattr(is_dark)"
+    aliases = ["shiftroot", "push", "pull", "move"]
+    # we only allow to use this command while the
+    # room is properly lit, so we lock it to the
+    # setting of Attribute "is_lit" on our location.
+    locks = "cmd:locattr(is_lit)"
     help_category = "TutorialWorld"
 
     def parse(self):
-        "custom parser; split input by spaces"
+        """
+        Custom parser; split input by spaces for simplicity.
+        """
         self.arglist = self.args.strip().split()
 
     def func(self):
@@ -429,14 +432,20 @@ class CmdShiftRoot(Command):
         if not self.arglist:
             self.caller.msg("What do you want to move, and in what direction?")
             return
+
         if "root" in self.arglist:
+            # we clean out the use of the word "root"
             self.arglist.remove("root")
+
         # we accept arguments on the form <color> <direction>
+
         if not len(self.arglist) > 1:
             self.caller.msg("You must define which colour of root you want to move, and in which direction.")
             return
+
         color = self.arglist[0].lower()
         direction = self.arglist[1].lower()
+
         # get current root positions dict
         root_pos = self.obj.db.root_pos
 
@@ -475,6 +484,7 @@ class CmdShiftRoot(Command):
                     self.caller.msg("The thick reddish root gets in the way and is pushed back to the left.")
             else:
                 self.caller.msg("You cannot move the root in that direction.")
+
         # now the horizontal roots (yellow/green). They can be moved up/down
         elif color == "yellow":
             if direction == "up":
@@ -506,11 +516,14 @@ class CmdShiftRoot(Command):
                     self.caller.msg("The root with yellow flowers gets in the way and is pushed upwards.")
             else:
                 self.caller.msg("You cannot move the root in that direction.")
-        # store new position
+
+        # we have moved the root. Store new position
         self.obj.db.root_pos = root_pos
-        # check victory condition
+
+        # Check victory condition
         if root_pos.values().count(0) == 0: # no roots in middle position
-            self.caller.db.crumbling_wall_found_button = True
+            # This will affect the cmd: lock of CmdPressButton
+            self.obj.db.button_exposed = True
             self.caller.msg("Holding aside the root you think you notice something behind it ...")
 
 
@@ -520,8 +533,11 @@ class CmdPressButton(Command):
     """
     key = "press"
     aliases = ["press button", "button", "push", "push button"]
-    # only accessible if the button was found and there is light.
-    locks = "cmd:attr(crumbling_wall_found_button) and not locattr(is_dark)"
+    # only accessible if the button was found and there is light. This checks
+    # the Attribute button_exposed on the Wall object so that
+    # you can only push the button when the puzzle is solved. It also
+    # checks the is_lit Attribute on the location.
+    locks = "cmd:objattr(button_exposed) and locattr(is_lit)"
     help_category = "TutorialWorld"
 
     def func(self):
@@ -533,24 +549,21 @@ class CmdPressButton(Command):
             return
 
         # pushing the button
-        string = "You move your fingers over the suspicious depression, then gives it a "
-        string += "decisive push. First nothing happens, then there is a rumble and a hidden "
-        string += "{wpassage{n opens, dust and pebbles rumbling as part of the wall moves aside."
-
-        # we are done - this will make the exit traversable!
-        self.caller.db.crumbling_wall_found_exit = True
-        # this will make it into a proper exit
-        eloc = self.caller.search(self.obj.db.destination, global_search=True)
-        if not eloc:
-            self.caller.msg("The exit leads nowhere, there's just more stone behind it ...")
-            return
-        self.obj.destination = eloc
+        string = "You move your fingers over the suspicious depression, then gives it a " \
+                 "decisive push. First nothing happens, then there is a rumble and a hidden " \
+                 "{wpassage{n opens, dust and pebbles rumbling as part of the wall moves aside."
         self.caller.msg(string)
+        string = "%s moves their fingers over the suspicious depression, then gives it a " \
+                 "decisive push. First nothing happens, then there is a rumble and a hidden " \
+                 "{wpassage{n opens, dust and pebbles rumbling as part of the wall moves aside."
+        self.caller.location.msg_contents(string % self.caller.key, exclude=self.caller)
+        self.obj.open_wall()
 
 
 class CmdSetCrumblingWall(CmdSet):
     "Group the commands for crumblingWall"
     key = "crumblingwall_cmdset"
+    priority = 2
 
     def at_cmdset_creation(self):
         "called when object is first created."
@@ -560,36 +573,30 @@ class CmdSetCrumblingWall(CmdSet):
 
 class CrumblingWall(TutorialObject, DefaultExit):
     """
-    The CrumblingWall can be examined in various
-    ways, but only if a lit light source is in the room. The traversal
-    itself is blocked by a traverse: lock on the exit that only
-    allows passage if a certain attribute is set on the trying
-    player.
+    This is a custom Exit.
+
+    The CrumblingWall can be examined in various ways, but only if a
+    lit light source is in the room. The traversal itself is blocked
+    by a traverse: lock on the exit that only allows passage if a
+    certain attribute is set on the trying player.
 
     Important attribute
      destination - this property must be set to make this a valid exit
                    whenever the button is pushed (this hides it as an exit
                    until it actually is)
     """
+    def at_init(self):
+        """
+        Called when object is recalled from cache.
+        """
+        self.reset()
+
     def at_object_creation(self):
         "called when the object is first created."
         super(CrumblingWall, self).at_object_creation()
 
         self.aliases.add(["secret passage", "passage",
                           "crack", "opening", "secret door"])
-        # this is assigned first when pushing button, so assign
-        # this at creation time!
-
-        self.db.destination = 2
-        # locks on the object directly transfer to the exit "command"
-        self.locks.add("cmd:not locattr(is_dark)")
-
-        self.db.tutorial_info = "This is an Exit with a conditional traverse-lock. Try to shift the roots around."
-        # the lock is important for this exit; we only allow passage
-        # if we "found exit".
-        self.locks.add("traverse:attr(crumbling_wall_found_exit)")
-        # set cmdset
-        self.cmdset.add(CmdSetCrumblingWall, permanent=True)
 
         # starting root positions. H1/H2 are the horizontally hanging roots,
         # V1/V2 the vertically hanging ones. Each can have three positions:
@@ -597,6 +604,38 @@ class CrumblingWall(TutorialObject, DefaultExit):
         # horizontal roots and red/blue vertical, all may have value 0, but n
         # ever any other identical value.
         self.db.root_pos = {"yellow": 0, "green": 0, "red": 0, "blue": 0}
+
+        # flags controlling the puzzle victory conditions
+        self.db.button_exposed = False
+        self.db.exit_open = False
+
+        # this is not even an Exit until it has a proper destination, and we won't assign
+        # that until it is actually open. Until then we store the destination here. This
+        # should be given a reasonable value at creation!
+        self.db.destination = 2
+
+        # we lock this Exit so that one can only execute commands on it
+        # if its location is lit and only traverse it once the Attribute
+        # exit_open is set to True.
+        self.locks.add("cmd:locattr(is_lit);traverse:objattr(exit_open)")
+        # set cmdset
+        self.cmdset.add(CmdSetCrumblingWall, permanent=True)
+
+    def open_wall(self):
+        """
+        This method is called by the push button command once the puzzle
+        is solved. It opens the wall and sets a timer for it to reset
+        itself.
+        """
+        # this will make it into a proper exit (this returns a list)
+        eloc = search.search_object(self.db.destination)
+        if not eloc:
+            self.caller.msg("The exit leads nowhere, there's just more stone behind it ...")
+        else:
+            self.destination = eloc[0]
+        self.exit_open = True
+        # start a 45 second timer before closing again
+        utils.delay(45, self.reset)
 
     def _translate_position(self, root, ipos):
         "Translates the position into words"
@@ -622,19 +661,29 @@ class CrumblingWall(TutorialObject, DefaultExit):
         This is called when someone looks at the wall. We need to echo the
         current root positions.
         """
-        if caller.db.crumbling_wall_found_button:
-            string = "Having moved all the roots aside, you find that the center of the wall, "
-            string += "previously hidden by the vegetation, hid a curious square depression. It was maybe once "
-            string += "concealed and made to look a part of the wall, but with the crumbling of stone around it,"
-            string += "it's now easily identifiable as some sort of button."
+        if self.db.button_exposed:
+            # we found the button by moving the roots
+            string = "Having moved all the roots aside, you find that the center of the wall, " \
+                     "previously hidden by the vegetation, hid a curious square depression. It was maybe once " \
+                     "concealed and made to look a part of the wall, but with the crumbling of stone around it," \
+                     "it's now easily identifiable as some sort of button."
+        elif self.db.exit_open:
+            # we pressed the button; the exit is open
+            string = "With the button pressed, a crack has opened in the root-covered wall, just wide enough " \
+                     "to squeeze through. A cold draft is coming from the hole and you get the feeling the " \
+                     "opening may close again soon."
         else:
-            string =  "The wall is old and covered with roots that here and there have permeated the stone. "
-            string += "The roots (or whatever they are - some of them are covered in small non-descript flowers) "
-            string += "crisscross the wall, making it hard to clearly see its stony surface.\n"
+            # puzzle not solved yet.
+            string =  "The wall is old and covered with roots that here and there have permeated the stone. " \
+                      "The roots (or whatever they are - some of them are covered in small non-descript flowers) " \
+                      "crisscross the wall, making it hard to clearly see its stony surface. Maybe you could " \
+                      "try to {wshift{n or {wmove{n them.\n"
+            # display the root positions to help with the puzzle
             for key, pos in self.db.root_pos.items():
                 string += "\n" + self._translate_position(key, pos)
         self.db.desc = string
-        # call the parent to continue execution (will use desc we just set)
+
+        # call the parent to continue execution (will use the desc we just set)
         return super(CrumblingWall, self).return_appearance(caller)
 
     def at_after_traverse(self, traverser, source_location):
@@ -642,7 +691,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         This is called after we traversed this exit. Cleans up and resets
         the puzzle.
         """
-        del traverser.db.crumbling_wall_found_button
+        del traverser.db.crumbling_wall_found_buttothe
         del traverser.db.crumbling_wall_found_exit
         self.reset()
 
@@ -656,10 +705,11 @@ class CrumblingWall(TutorialObject, DefaultExit):
         traversed the Exit.
         """
         self.location.msg_contents("The secret door closes abruptly, roots falling back into place.")
-        for obj in self.location.contents:
-            # clear eventual puzzle-solved attribues on everyone that didn't
-            # get out in time. They have to try again.
-            del obj.db.crumbling_wall_found_exit
+
+        # reset the flags and remove the exit destination
+        self.db.button_exposed = False
+        self.db.exit_open = False
+        self.destination = None
 
         # Reset the roots with some random starting positions for the roots:
         start_pos = [{"yellow":1, "green":0, "red":0, "blue":0},
@@ -667,8 +717,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
                      {"yellow":0, "green":1, "red":-1, "blue":0},
                      {"yellow":1, "green":0, "red":0, "blue":0},
                      {"yellow":0, "green":0, "red":0, "blue":1}]
-        self.db.root_pos = start_pos[random.randint(0, 4)]
-        self.destination = None
+        self.db.root_pos = random.choice(start_pos)
 
 
 #------------------------------------------------------------
@@ -755,7 +804,7 @@ class CmdAttack(Command):
             self.caller.db.combat_parry_mode = False
         else:
             self.caller.msg("You fumble with your weapon, unsure of whether to stab, slash or parry ...")
-            self.caller.location.msg_contents("%s fumbles with their weapon." % self.obj.key)
+            self.caller.location.msg_contents("%s fumbles with their weapon." % self.caller, exclude=self.caller)
             self.caller.db.combat_parry_mode = False
             return
 
@@ -808,7 +857,7 @@ class Weapon(TutorialObject):
         super(Weapon, self).at_object_creation()
         self.db.hit = 0.4    # hit chance
         self.db.parry = 0.8  # parry chance
-        self.db.damage = 8.0
+        self.db.damage = 1.0
         self.db.magic = False
         self.cmdset.add_default(CmdSetWeapon, permanent=True)
 
@@ -828,7 +877,112 @@ class Weapon(TutorialObject):
 #
 # Weapon rack - spawns weapons
 #
+# This is a spawner mechanism that creates custom weapons from a
+# spawner prototype dictionary. Note that we only create a single typeclass
+# (Weapon) yet customize all these different weapons using the spawner.
+# The spawner dictionaries could easily sit in separate modules and be
+# used to create unique and interesting variations of typeclassed
+# objects.
+#
 #------------------------------------------------------------
+
+WEAPON_PROTOTYPES = {
+    "weapon": {
+        "typeclass": "evennia.contrib.tutorial_world.objects.Weapon",
+        "key": "Weapon",
+        "hit": 0.2,
+        "parry": 0.2,
+        "damage": 1.0,
+        "magic": False,
+        "desc": "A generic blade."},
+    "knife": {
+        "prototype": "weapon",
+        "aliases": "sword",
+        "key": "Kitchen knife",
+        "desc":"A rusty kitchen knife. Better than nothing.",
+        "damage": 3},
+    "dagger": {
+        "prototype": "knife",
+        "key": "Rusty dagger",
+        "aliases": ["knife", "dagger"],
+        "desc": "A double-edged dagger with a nicked edge and a wooden handle.",
+        "hit": 0.25},
+    "sword": {
+        "prototype": "weapon",
+        "key": "Rusty sword",
+        "aliases": ["sword"],
+        "desc": "A rusty shortsword. It has a leather-wrapped handle covered i food grease.",
+        "hit": 0.3,
+        "damage": 5,
+        "parry": 0.5},
+    "club": {
+        "prototype": "weapon",
+        "key":"Club",
+        "desc": "A heavy wooden club, little more than a heavy branch.",
+        "hit": 0.4,
+        "damage": 6,
+        "parry": 0.2},
+    "axe": {
+        "prototype": "weapon",
+        "key":"Axe",
+        "desc": "A woodcutter's axe with a keen edge.",
+        "hit": 0.4,
+        "damage": 6,
+        "parry": 0.2},
+    "ornate longsword": {
+        "prototype":"sword",
+        "key": "Ornate longsword",
+        "desc": "A fine longsword with some swirling patterns on the handle.",
+        "hit": 0.5,
+        "magic": True,
+        "damage": 5},
+    "warhammer": {
+        "prototype": "club",
+        "key": "Silver Warhammer",
+        "aliases": ["hammer", "warhammer", "war"],
+        "desc": "A heavy war hammer with silver ornaments. This huge weapon causes massive damage - if you can hit.",
+        "hit": 0.4,
+        "magic": True,
+        "damage": 8},
+    "rune axe": {
+        "prototype": "axe",
+        "key": "Runeaxe",
+        "aliases": ["axe"],
+        "hit": 0.4,
+        "magic": True,
+        "damage": 6},
+    "thruning": {
+        "prototype": "ornate longsword",
+        "key": "Broadsword named Thruning",
+        "desc": "This heavy bladed weapon is marked with the name 'Thruning'. It is very powerful in skilled hands.",
+        "hit": 0.6,
+        "parry": 0.6,
+        "damage": 7},
+    "slayer waraxe": {
+        "prototype": "rune axe",
+        "key": "Slayer waraxe",
+        "aliases": ["waraxe", "war", "slayer"],
+        "desc": "A huge double-bladed axe marked with the runes for 'Slayer'. It has more runic inscriptions on its head, which you cannot decipher.",
+        "hit": 0.7,
+        "damage": 8},
+    "ghostblade": {
+        "prototype": "ornate longsword",
+        "key": "The Ghostblade",
+        "aliases": ["blade", "ghost"],
+        "desc": "This massive sword is large as you are tall, yet seems to weigh almost nothing. It's almost like it's not really there.",
+        "hit": 0.9,
+        "parry": 0.8,
+        "damage": 10},
+    "hawkblade": {
+        "prototype": "ghostblade",
+        "key": "The Hawblade",
+        "aliases": ["hawk", "blade"],
+        "desc": "The weapon of a long-dead heroine and a more civilized age, the hawk-shaped hilt of this blade almost has a life of its own.",
+        "hit": 0.85,
+        "parry": 0.7,
+        "damage": 11}
+    }
+
 
 class CmdGetWeapon(Command):
     """
@@ -837,40 +991,23 @@ class CmdGetWeapon(Command):
 
     This will try to obtain a weapon from the container.
     """
-    key = "get"
+    key = "get weapon"
     aliases = "get weapon"
     locks = "cmd:all()"
     help_cateogory = "TutorialWorld"
 
     def func(self):
-        "Implement the command"
-
-        rack_id = self.obj.db.rack_id
-        if self.caller.attributes.get(rack_id):
-            # we don't allow a player to take more than one weapon from rack.
-            self.caller.msg("%s has no more to offer you." % self.obj.name)
-        else:
-            dmg, name, aliases, desc, magic = self.obj.randomize_type()
-            new_weapon = create_object(Weapon, key=name, aliases=aliases,location=self.caller, home=self.caller)
-            new_weapon.db.rack_id = rack_id
-            new_weapon.db.damage = dmg
-            new_weapon.db.desc = desc
-            new_weapon.db.magic = magic
-            ostring = self.obj.db.get_text
-            if not ostring:
-                ostring = "You pick up %s."
-            if '%s' in ostring:
-                self.caller.msg(ostring % name)
-            else:
-                self.caller.msg(ostring)
-            # tag the caller so they cannot keep taking objects from the rack.
-            self.caller.attributes.add(rack_id, True)
-
+        """
+        Get a weapon from the container. It will
+        itself handle all messages.
+        """
+        self.obj.produce_weapon(self.caller)
 
 class CmdSetWeaponRack(CmdSet):
-    "group the rack cmd"
+    """
+    The cmdset for the rack.
+    """
     key = "weaponrack_cmdset"
-    mergemode = "Replace"
 
     def at_cmdset_creation(self):
         "Called at first creation of cmdset"
@@ -879,73 +1016,49 @@ class CmdSetWeaponRack(CmdSet):
 
 class WeaponRack(TutorialObject):
     """
-    This will spawn a new weapon for the player unless the player already has
-    one from this rack.
+    This object represents a weapon store. When people use the
+    "get weapon" command on this rack, it will produce one
+    random weapon from among those registered to exist
+    on it. This will also set a property on the character
+    to make sure they can't get more than one at a time.
 
-    attribute to set at creation:
-    min_dmg  - the minimum damage of objects from this rack
-    max_dmg - the maximum damage of objects from this rack
-    magic - if weapons should be magical (have the magic flag set)
-    get_text - the echo text to return when getting the weapon. Give '%s'
-               to include the name of the weapon.
+    Attributes to set on this object:
+        available_weapons: list of prototype-keys from
+            WEAPON_PROTOTYPES, the weapons available in this rack.
+        no_more_weapons_msg - error message to return to players
+            who already got one weapon from the rack and tries to
+            grab another one.
+
     """
     def at_object_creation(self):
-        "called at creation"
+        """
+        called at creation
+        """
         self.cmdset.add_default(CmdSetWeaponRack, permanent=True)
         self.db.rack_id = "weaponrack_1"
-        self.db.min_dmg = 1.0
-        self.db.max_dmg = 4.0
-        self.db.magic = False
+        # these are prototype names from the prototype
+        # dictionary above.
+        self.db.get_weapon_msg = "You find {c%s{n."
+        self.db.no_more_weapons_msg = "you find nothing else of use."
+        self.db.available_weapons = ["knife", "dagger",
+                                     "sword", "club"]
 
-    def randomize_type(self):
+    def produce_weapon(self, caller):
         """
-        this returns a random weapon
+        This will produce a new weapon from the rack,
+        assuming the caller hasn't already gotten one. When
+        doing so, the caller will get Tagged with the id
+        of this rack, to make sure they cannot keep
+        pulling weapons from it indefinitely.
         """
-        min_dmg = float(self.db.min_dmg)
-        max_dmg = float(self.db.max_dmg)
-        magic = bool(self.db.magic)
-        dmg = min_dmg + random.random()*(max_dmg - min_dmg)
-        aliases = [self.db.rack_id, "weapon"]
-        if dmg < 1.5:
-            name = "Knife"
-            desc = "A rusty kitchen knife. Better than nothing."
-        elif dmg < 2.0:
-            name = "Rusty dagger"
-            desc = "A double-edged dagger with nicked edge. It has a wooden handle."
-        elif dmg < 3.0:
-            name = "Sword"
-            desc = "A rusty shortsword. It has leather wrapped around the handle."
-        elif dmg < 4.0:
-            name = "Club"
-            desc = "A heavy wooden club with some rusty spikes in it."
-        elif dmg < 5.0:
-            name = "Ornate Longsword"
-            aliases.extend(["longsword","ornate"])
-            desc = "A fine longsword."
-        elif dmg < 6.0:
-            name = "Runeaxe"
-            aliases.extend(["rune","axe"])
-            desc = "A single-bladed axe, heavy but yet easy to use."
-        elif dmg < 7.0:
-            name = "Broadsword named Thruning"
-            aliases.extend(["thruning","broadsword"])
-            desc = "This heavy bladed weapon is marked with the name 'Thruning'. It is very powerful in skilled hands."
-        elif dmg < 8.0:
-            name = "Silver Warhammer"
-            aliases.append("warhammer")
-            desc = "A heavy war hammer with silver ornaments. This huge weapon causes massive damage."
-        elif dmg < 9.0:
-            name = "Slayer Waraxe"
-            aliases.extend(["waraxe","slayer"])
-            desc = "A huge double-bladed axe marked with the runes for 'Slayer'. It has more runic inscriptions on its head, which you cannot decipher."
-        elif dmg < 10.0:
-            name = "The Ghostblade"
-            aliases.append("ghostblade")
-            desc =  "This massive sword is large as you are tall. Its metal shine with a bluish glow."
+        rack_id = self.db.rack_id
+        if caller.tags.get(rack_id, category="tutorial_world"):
+            caller.msg(self.db.no_more_weapons_msg)
         else:
-            name = "The Hawkblade"
-            aliases.append("hawkblade")
-            desc = "White surges of magical power runs up and down this runic blade. The hawks depicted on its hilt almost seems to have a life of their own."
-        if dmg < 9 and magic:
-            desc += "\nThe metal seems to glow faintly, as if imbued with more power than what is immediately apparent."
-        return dmg, name, aliases, desc, magic
+            prototype = random.choice(self.db.available_weapons)
+            # use the spawner to create a new Weapon from the
+            # spawner dictionary, tag the caller
+            wpn = spawn(WEAPON_PROTOTYPES[prototype], prototype_parents=WEAPON_PROTOTYPES)[0]
+            caller.tags.add(rack_id, category="tutorial_world")
+            wpn.location = caller
+            caller.msg(self.db.get_weapon_msg % wpn.key)

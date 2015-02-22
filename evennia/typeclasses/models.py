@@ -38,11 +38,7 @@ from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHa
 
 from evennia.utils.idmapper.models import SharedMemoryModel
 from evennia.utils.idmapper.base import SharedMemoryModelBase
-from evennia.server.caches import get_prop_cache, set_prop_cache
-#from evennia.server.caches import set_attr_cache
 
-#from evennia.server.caches import call_ndb_hooks
-#from evennia.server.models import ServerConfig
 from evennia.typeclasses import managers
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import (
@@ -269,11 +265,7 @@ class TypedObject(SharedMemoryModel):
         Caches and returns the unique id of the object.
         Use this instead of self.id, which is not cached.
         """
-        dbid = get_prop_cache(self, "_dbid")
-        if not dbid:
-            dbid = self.id
-            set_prop_cache(self, "_dbid", dbid)
-        return dbid
+        return self.id
 
     def __dbid_set(self, value):
         raise Exception("dbid cannot be set!")
@@ -287,7 +279,7 @@ class TypedObject(SharedMemoryModel):
         """
         Returns the object's dbref on the form #NN.
         """
-        return "#%s" % self.dbid
+        return "#%s" % self.id
 
     def __dbref_set(self):
         raise Exception("dbref cannot be set!")
@@ -443,8 +435,6 @@ class TypedObject(SharedMemoryModel):
         "Scrambling method for already deleted objects"
         raise ObjectDoesNotExist("This object was already deleted!")
 
-    _is_deleted = False # this is checked by db_* wrappers
-
     def delete(self):
         "Cleaning up handlers on the typeclass level"
         global TICKER_HANDLER
@@ -456,11 +446,9 @@ class TypedObject(SharedMemoryModel):
         self.aliases.clear()
         if hasattr(self, "nicks"):
             self.nicks.clear()
-        self.flush_from_cache()
 
         # scrambling properties
         self.delete = self._deleted
-        self._is_deleted = True
         super(TypedObject, self).delete()
 
     #

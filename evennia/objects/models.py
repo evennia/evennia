@@ -15,7 +15,6 @@ transparently through the decorating TypeClass.
 """
 
 from django.db import models
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
 from evennia.typeclasses.models import TypedObject
@@ -159,11 +158,11 @@ class ObjectDB(TypedObject):
         except RuntimeError:
             errmsg = "Error: %s.location = %s creates a location loop." % (self.key, location)
             logger.log_errmsg(errmsg)
-            raise RuntimeError(errmsg)
+            raise #RuntimeError(errmsg)
         except Exception, e:
             errmsg = "Error (%s): %s is not a valid location." % (str(e), location)
             logger.log_errmsg(errmsg)
-            raise Exception(errmsg)
+            raise #Exception(errmsg)
 
     def __location_del(self):
         "Cleanly delete the location reference"

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-EVENNIA SERVER STARTUP SCRIPT
+EVENNIA SERVER LAUNCHER SCRIPT
 
 This is the start point for running Evennia.
 
@@ -22,15 +22,15 @@ import django
 SIG = signal.SIGINT
 
 # Set up the main python paths to Evennia
-EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-EVENNIA_BIN = os.path.join(EVENNIA_ROOT, "bin")
+EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import evennia
 EVENNIA_LIB = os.path.join(os.path.dirname(os.path.abspath(evennia.__file__)))
-EVENNIA_RUNNER = os.path.join(EVENNIA_BIN, "evennia_runner.py")
+EVENNIA_SERVER = os.path.join(EVENNIA_LIB, "server")
+EVENNIA_RUNNER = os.path.join(EVENNIA_SERVER, "evennia_runner.py")
 EVENNIA_TEMPLATE = os.path.join(EVENNIA_LIB, "game_template")
-EVENNIA_BINTESTING = os.path.join(EVENNIA_BIN, "testing")
-EVENNIA_DUMMYRUNNER = os.path.join(EVENNIA_BINTESTING, "dummyrunner.py")
+EVENNIA_PROFILING = os.path.join(EVENNIA_SERVER, "profiling")
+EVENNIA_DUMMYRUNNER = os.path.join(EVENNIA_PROFILING, "dummyrunner.py")
 
 TWISTED_BINARY = "twistd"
 
@@ -59,11 +59,7 @@ TWISTED_MIN = '12.0'
 DJANGO_MIN = '1.7'
 DJANGO_REC = '1.7'
 
-# add Evennia root and bin dir to PYTHONPATH
-# note that we want to remove bin/ (path[0]) from
-# pythonpath since there is otherwise a clash over
-# the name evennia
-sys.path[0] = EVENNIA_ROOT
+sys.path[1] = EVENNIA_ROOT
 
 #------------------------------------------------------------
 #
@@ -96,10 +92,30 @@ CREATED_NEW_GAMEDIR = \
 
     """
 
+ERROR_INPUT = \
+    """
+    The argument(s)
+        {args} {kwargs}
+    is/are not recognized by Evennia nor Django. Use -h for help.
+    """
+
 ERROR_NO_GAMEDIR = \
     """
     No Evennia settings file was found. You must run this command from
     inside a valid game directory first created with --init.
+    """
+
+WARNING_MOVING_SUPERUSER = \
+    """
+    Evennia expects a Player superuser with id=1. No such Player was
+    found. However, another superuser ('{other_key}', id={other_id})
+    was found in the database. If you just created this superuser and
+    still see this text it is probably due to the database being
+    flushed recently - in this case the database's internal
+    auto-counter might just start from some value higher than one.
+
+    We will fix this by assigning the id 1 to Player '{other_key}'.
+    Please confirm this is acceptable before continuing.
     """
 
 WARNING_RUNSERVER = \
@@ -131,7 +147,7 @@ ERROR_DATABASE = \
     Your database does not seem to be set up correctly.
     (error was '{traceback}')
 
-    Standing in your game directory, try to run
+    Standing in your game directory, run
 
        evennia migrate
 
@@ -143,9 +159,14 @@ ERROR_WINDOWS_WIN32API = \
     ERROR: Unable to import win32api, which Twisted requires to run.
     You may download it from:
 
-    http://sourceforge.net/projects/pywin32
-      or
-    http://starship.python.net/crew/mhammond/win32/Downloads.html
+    http://sourceforge.net/projects/pywin32/files/pywin32/
+
+    If you are running in a virtual environment, browse to the
+    location of the latest win32api exe file for your computer and
+    Python version and copy the url to it; then paste it into a call
+    to easy_install:
+
+        easy_install http://<url to win32api exe>
     """
 
 INFO_WINDOWS_BATFILE = \
@@ -154,7 +175,7 @@ INFO_WINDOWS_BATFILE = \
     created for you. This is a simple batch file that tries to call
     the twisted executable. Evennia determined this to be:
 
-       %(twistd_path)s
+       {twistd_path}
 
     If you run into errors at startup you might need to edit
     twistd.bat to point to the actual location of the Twisted
@@ -167,8 +188,9 @@ INFO_WINDOWS_BATFILE = \
 CMDLINE_HELP = \
     """
     Starts or operates the Evennia MU* server. Also allows for
-    initializing a new game directory and managing the game's
-    database.
+    initializing a new game directory and manages the game's database.
+    You can also pass most standard django-admin arguments and
+    options.
     """
 
 
@@ -197,57 +219,46 @@ ABOUT_INFO= \
     """
 
 HELP_ENTRY = \
-"""
-See python evennia.py -h for controlling Evennia directly from
-the command line.
+    """
+    Enter 'evennia -h' for command-line options.
 
-Evennia has two parts that both must run:
+    Use option (1) in a production environment.  During development (2) is
+    usually enough, portal debugging is usually only useful if you are
+    adding new protocols or are debugging Evennia itself.
 
-Portal - the connection to the outside world (via telnet, web, ssh
-         etc). This is normally running as a daemon and don't need to
-         be reloaded unless you are debugging a new connection
-         protocol.
-Server - the game server itself. This will often need to be reloaded
-         as you develop your game. The Portal will auto-connect to the
-         Server whenever the Server activates.
+    Reload with (5) to update the server with your changes without
+    disconnecting any players.
 
-Use option (1) in a production environment.  During development (2) is
-usually enough, portal debugging is usually only useful if you are
-adding new protocols or are debugging an Evennia bug.
-
-Reload with (5) to update the server with your changes without
-disconnecting any players.
-
-Reload and stop are sometimes poorly supported in Windows. If you have
-issues, log into the game to stop or restart the server instead.
-"""
+    Note: Reload and stop are sometimes poorly supported in Windows. If you have
+    issues, log into the game to stop or restart the server instead.
+    """
 
 MENU = \
-"""
-+----Evennia Launcher-------------------------------------------------------+
-|                                                                           |
-+--- Starting --------------------------------------------------------------+
-|                                                                           |
-|  1) (default):      All output to logfiles.                               |
-|  2) (game debug):   Server outputs to terminal instead of to logfile.     |
-|  3) (portal debug): Portal outputs to terminal instead of to logfile.     |
-|  4) (full debug):   Both Server and Portal output to terminal             |
-|                                                                           |
-+--- Restarting ------------------------------------------------------------+
-|                                                                           |
-|  5) Reload the Server                                                     |
-|  6) Reload the Portal (only works with portal/full debug)                 |
-|                                                                           |
-+--- Stopping --------------------------------------------------------------+
-|                                                                           |
-|  7) Stopping both Portal and Server.                                      |
-|  8) Stopping only Server.                                                 |
-|  9) Stopping only Portal.                                                 |
-|                                                                           |
-+---------------------------------------------------------------------------+
-|  h) Help                     i) About info                      q) Abort  |
-+---------------------------------------------------------------------------+
-"""
+    """
+    +----Evennia Launcher-------------------------------------------+
+    |                                                               |
+    +--- Starting --------------------------------------------------+
+    |                                                               |
+    |  1) (normal):       All output to logfiles                    |
+    |  2) (server devel): Server logs to terminal (-i option)       |
+    |  3) (portal devel): Portal logs to terminal                   |
+    |  4) (full devel):   Both Server and Portal logs to terminal   |
+    |                                                               |
+    +--- Restarting ------------------------------------------------+
+    |                                                               |
+    |  5) Reload the Server                                         |
+    |  6) Reload the Portal (only works with portal/full debug)     |
+    |                                                               |
+    +--- Stopping --------------------------------------------------+
+    |                                                               |
+    |  7) Stopping both Portal and Server                           |
+    |  8) Stopping only Server                                      |
+    |  9) Stopping only Portal                                      |
+    |                                                               |
+    +---------------------------------------------------------------+
+    |  h) Help              i) About info               q) Abort    |
+    +---------------------------------------------------------------+
+    """
 
 ERROR_PYTHON_VERSION = \
     """
@@ -338,7 +349,6 @@ def check_main_evennia_dependencies():
         error = True
     # Django
     try:
-        import django
         dversion = ".".join(str(num) for num in django.VERSION if type(num) == int)
         # only the main version (1.5, not 1.5.4.0)
         dversion_main = ".".join(dversion.split(".")[:2])
@@ -406,7 +416,6 @@ def create_settings_file():
     # tweak the settings
     setting_dict = {"settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
                     "servername":"\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1].capitalize(),
-                    "game_dir":"\"%s\"" % GAMEDIR,
                     "secret_key":"\'%s\'" % create_secret_key()}
 
     # modify the settings
@@ -434,13 +443,14 @@ def create_game_directory(dirname):
 
 
 def create_superuser():
+    "Create the superuser player"
     print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
     django.core.management.call_command("createsuperuser", interactive=True)
 
 
-def check_database(exit_on_error=False):
+def check_database():
     """
-    Check database exists and has a superuser
+    Check database exists
     """
     # Check so a database exists and is accessible
     from django.db import connection
@@ -449,19 +459,46 @@ def check_database(exit_on_error=False):
         # database exists and seems set up. Initialize evennia.
         import evennia
         evennia.init()
-    else:
-        if exit_on_error:
-            print ERROR_DATABASE.format(traceback=e)
-            sys.exit()
-        return False
-
     # Try to get Player#1
     from evennia.players.models import PlayerDB
     try:
         PlayerDB.objects.get(id=1)
+    except django.db.utils.OperationalError, e:
+        print ERROR_DATABASE.format(traceback=e)
+        sys.exit()
     except PlayerDB.DoesNotExist:
         # no superuser yet. We need to create it.
-        create_superuser()
+
+        other_superuser = PlayerDB.objects.filter(is_superuser=True)
+        if other_superuser:
+             # Another superuser was found, but not with id=1. This may
+             # happen if using flush (the auto-id starts at a higher
+             # value). Wwe copy this superuser into id=1. To do
+             # this we must deepcopy it, delete it then save the copy
+             # with the new id. This allows us to avoid the UNIQUE
+             # constraint on usernames.
+            other = other_superuser[0]
+            other_id = other.id
+            other_key = other.username
+            print WARNING_MOVING_SUPERUSER.format(other_key=other_key,
+                                                 other_id=other_id)
+            res = ""
+            while res.upper() != "Y":
+                # ask for permission
+                res = raw_input("Continue [Y]/N: ")
+                if res.upper() == "N":
+                    sys.exit()
+                elif not res:
+                    break
+            # continue with the
+            from copy import deepcopy
+            new = deepcopy(other)
+            other.delete()
+            new.id = 1
+            new.save()
+        else:
+            create_superuser()
+            check_database()
     return True
 
 
@@ -596,7 +633,7 @@ def error_check_python_modules():
     imp(settings.BASE_SCRIPT_TYPECLASS)
 
 
-def init_game_directory(path):
+def init_game_directory(path, check_db=True):
     """
     Try to analyze the given path to find settings.py - this defines
     the game directory and also sets PYTHONPATH as well as the
@@ -606,10 +643,12 @@ def init_game_directory(path):
     set_gamedir(path)
 
     # Add gamedir to python path
-    sys.path.insert(1, GAMEDIR)
+    sys.path.insert(0, GAMEDIR)
 
-    # Prepare django; set the settings location
-    os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
+    if sys.argv[1] == 'test':
+        os.environ['DJANGO_SETTINGS_MODULE'] = 'evennia.settings_default'
+    else:
+        os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
 
     # required since django1.7
     django.setup()
@@ -625,7 +664,8 @@ def init_game_directory(path):
         sys.exit()
 
     # this will both check the database and initialize the evennia dir.
-    check_database()
+    if check_db:
+        check_database()
 
     # set up the Evennia executables and log file locations
     global SERVER_PY_FILE, PORTAL_PY_FILE
@@ -663,7 +703,8 @@ def init_game_directory(path):
             print ERROR_WINDOWS_WIN32API
             sys.exit()
 
-        if not os.path.exists(os.path.join(EVENNIA_BIN, TWISTED_BINARY)):
+        batpath = os.path.join(EVENNIA_SERVER, TWISTED_BINARY)
+        if not os.path.exists(batpath):
             # Test for executable twisted batch file. This calls the
             # twistd.py executable that is usually not found on the
             # path in Windows.  It's not enough to locate
@@ -680,7 +721,7 @@ def init_game_directory(path):
                             os.pardir, os.pardir, os.pardir, os.pardir,
                             'scripts', 'twistd.py'))
 
-            with open('twistd.bat', 'w') as bat_file:
+            with open(batpath, 'w') as bat_file:
                 # build a custom bat file for windows
                 bat_file.write("@\"%s\" \"%s\" %%*" % (sys.executable, twistd_path))
 
@@ -707,9 +748,6 @@ def run_menu():
     """
     This launches an interactive menu.
     """
-
-    cmdstr = [sys.executable, EVENNIA_RUNNER]
-
     while True:
         # menu loop
 
@@ -718,9 +756,9 @@ def run_menu():
 
         # quitting and help
         if inp.lower() == 'q':
-            sys.exit()
+            return
         elif inp.lower() == 'h':
-            print HELP_ENTRY % EVENNIA_VERSION
+            print HELP_ENTRY
             raw_input("press <return> to continue ...")
             continue
         elif inp.lower() in ('v', 'i', 'a'):
@@ -734,41 +772,39 @@ def run_menu():
         except ValueError:
             print "Not a valid option."
             continue
-        errmsg = "The %s does not seem to be running."
-        if inp < 5:
-            if inp == 1:
-                pass  # default operation
-            elif inp == 2:
-                cmdstr.extend(['--iserver'])
-            elif inp == 3:
-                cmdstr.extend(['--iportal'])
-            elif inp == 4:
-                cmdstr.extend(['--iserver', '--iportal'])
-            # start server
-            cmdstr.append("start")
-            Popen(cmdstr, env=getenv())
-            return
-        elif inp < 10:
-            if inp == 5:
-                if os.name == 'nt':
-                    print "This operation is not supported under Windows. Log into the game to restart/reload the server."
-                    return
-                kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % "Server", SERVER_RESTART, restart=True)
-            elif inp == 6:
-                if os.name == 'nt':
-                    print "This operation is not supported under Windows."
-                    return
-                kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped if in daemon mode).", errmsg % "Portal", PORTAL_RESTART, restart=True)
-            elif inp == 7:
-                kill(PORTAL_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART)
-                kill(SERVER_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", SERVER_RESTART)
-            elif inp == 8:
-                kill(SERVER_PIDFILE, SIG, "Stopped Server.", errmsg % "Server", SERVER_RESTART)
-            elif inp == 9:
-                kill(PORTAL_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART)
-            return
+        if inp == 1:
+            # start everything, log to log files
+            server_operation("start", "all", False, False)
+        elif inp == 2:
+            # start everything, server interactive start
+            server_operation("start", "all", True, False)
+        elif inp == 3:
+            # start everything, portal interactive start
+            server_operation("start", "server", False, False)
+            server_operation("start", "portal", True, False)
+        elif inp == 4:
+            # start both server and portal interactively
+            server_operation("start", "server", True, False)
+            server_operation("start", "portal", True, False)
+        elif inp == 5:
+            # reload the server
+            server_operation("reload", "server", None, None)
+        elif inp == 6:
+            # reload the portal
+            server_operation("reload", "portal", None, None)
+        elif inp == 7:
+            # stop server and portal
+            server_operation("stop", "all", None, None)
+        elif inp == 8:
+            # stop server
+            server_operation("stop", "server", None, None)
+        elif inp == 9:
+            # stop portal
+            server_operation("stop", "portal", None, None)
         else:
             print "Not a valid option."
+            continue
+        return
 
 
 def server_operation(mode, service, interactive, profiler):
@@ -865,50 +901,76 @@ def main():
                       help="Start given server component under the Python profiler.")
     parser.add_argument('--dummyrunner', nargs=1, action='store', dest='dummyrunner', metavar="N",
                         help="Tests a running server by connecting N dummy players to it.")
-    parser.add_argument("mode", metavar="option", nargs='?', default="help",
-                        help="Operational mode or management option. Commonly start, stop, reload, migrate, or menu (default).")
-    parser.add_argument("service", metavar="component", nargs='?', choices=["all", "server", "portal"], default="all",
-                        help="Which server component to operate on. One of server, portal or all (default).")
+    parser.add_argument("option", nargs='?', default="noop",
+                        help="Operational mode: 'start', 'stop', 'restart' or 'menu'.")
+    parser.add_argument("service", metavar="component", nargs='?', default="all",
+                        help="Server component to operate on: 'server', 'portal' or 'all' (default).")
+    parser.epilog = "Example django-admin commands: 'migrate', 'flush', 'shell' and 'dbshell'. " \
+                    "See the django documentation for more django-admin commands."
 
-    args = parser.parse_args()
+    args, unknown_args = parser.parse_known_args()
 
     # handle arguments
 
-    mode, service = args.mode, args.service
+    option, service = args.option, args.service
 
     check_main_evennia_dependencies()
 
-    if args.init:
+    if not args:
+        print CMDLINE_HELP
+        sys.exit()
+    elif args.init:
         create_game_directory(args.init)
         print CREATED_NEW_GAMEDIR.format(gamedir=args.init,
                                          settings_path=os.path.join(args.init, SETTINGS_PATH))
         sys.exit()
 
     if args.show_version:
-        print show_version_info(mode=="help")
+        print show_version_info(option=="help")
         sys.exit()
-    if mode == "help" and not args.dummyrunner:
-        print ABOUT_INFO
-        sys.exit()
-
-    # this must be done first - it sets up all the global properties
-    # and initializes django for the game directory
-    init_game_directory(CURRENT_DIR)
 
     if args.dummyrunner:
         # launch the dummy runner
+        init_game_directory(CURRENT_DIR, check_db=True)
         run_dummyrunner(args.dummyrunner[0])
-    elif mode == 'menu':
+    elif option == 'menu':
         # launch menu for operation
+        init_game_directory(CURRENT_DIR, check_db=True)
         run_menu()
-    elif mode in ('start', 'reload', 'stop'):
+    elif option in ('start', 'reload', 'stop'):
         # operate the server directly
-        server_operation(mode, service, args.interactive, args.profiler)
-    else:
+        init_game_directory(CURRENT_DIR, check_db=True)
+        server_operation(option, service, args.interactive, args.profiler)
+    elif option != "noop":
         # pass-through to django manager
-        if mode in ('runserver', 'testserver'):
+        check_db = False
+        if option in ('runserver', 'testserver'):
             print WARNING_RUNSERVER
-        django.core.management.call_command(mode)
+        if option == "shell":
+            # to use the shell we need to initialize it first,
+            # and this only works if the database is set up
+            check_db = True
+        init_game_directory(CURRENT_DIR, check_db=check_db)
+
+        args = [option]
+        kwargs = {}
+        if service not in ("all", "server", "portal"):
+            args.append(service)
+        if unknown_args:
+            for arg in unknown_args:
+                if arg.startswith("--"):
+                    kwargs[arg.lstrip("--")] = True
+                else:
+                    args.append(arg)
+        try:
+            django.core.management.call_command(*args, **kwargs)
+        except django.core.management.base.CommandError:
+            args = ", ".join(args)
+            kwargs = ", ".join(["--%s" % kw for kw in kwargs])
+            print ERROR_INPUT.format(args=args, kwargs=kwargs)
+    else:
+        # no input; print evennia info
+        print ABOUT_INFO
 
 
 if __name__ == '__main__':

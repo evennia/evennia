@@ -14,6 +14,7 @@ always be sure of what you have changed and what is default behaviour.
 """
 
 import os
+import sys
 
 ######################################################################
 # Evennia base server config
@@ -96,12 +97,16 @@ WEBSOCKET_INTERFACES = ['0.0.0.0']
 # This determine's whether Evennia's custom admin page is used, or if the
 # standard Django admin is used.
 EVENNIA_ADMIN = True
-# The path to the root directory
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Path to the lib directory containing the bulk of the codebase's code.
-EVENNIA_DIR = os.path.join(ROOT_DIR, 'evennia')
+EVENNIA_DIR = os.path.dirname(os.path.abspath(__file__))
 # Path to the game directory (containing the database file if using sqlite).
-GAME_DIR = os.path.join(ROOT_DIR, 'game_template')
+if sys.argv[1] == 'test' if len(sys.argv)>1 else False:
+    # unittesting mode
+    GAME_DIR = os.getcwd()
+else:
+    # Fallback location (will be replaced by the actual game dir at runtime)
+    GAME_DIR = os.path.join(EVENNIA_DIR, 'game_template')
+
 # Place to put log files
 LOG_DIR = os.path.join(GAME_DIR, 'server', 'logs')
 SERVER_LOG_FILE = os.path.join(LOG_DIR, 'server.log')
@@ -186,7 +191,7 @@ IDMAPPER_CACHE_MAXSIZE = 200      # (MB)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(GAME_DIR, 'evennia.db3'),
+        'NAME': os.path.join(GAME_DIR, 'server', 'evennia.db3'),
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
@@ -245,7 +250,7 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs",)
 OOB_PLUGIN_MODULES = ["evennia.server.oob_cmds", "server.conf.oobfuncs"]
 # Module holding settings/actions for the dummyrunner program (see the
 # dummyrunner for more information)
-DUMMYRUNNER_SETTINGS_MODULE = os.path.join(ROOT_DIR, "bin/testing/dummyrunner_settings")
+DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
 
 ######################################################################
 # Default command sets
@@ -320,7 +325,7 @@ TYPECLASS_AGGRESSIVE_CACHE = True
 
 # Python path to a directory to be searched for batch scripts
 # for the batch processors (.ev and/or .py files).
-BASE_BATCHPROCESS_PATHS = ['world', 'evennia.contrib']
+BASE_BATCHPROCESS_PATHS = ['world', 'evennia.contrib', 'evennia.contrib.tutorial_examples']
 
 ######################################################################
 # Game Time setup
@@ -477,7 +482,6 @@ IMC2_PORT = 5000 # this is the imc2 port, not on localhost
 IMC2_CLIENT_PWD = ""
 IMC2_SERVER_PWD = ""
 
-
 ######################################################################
 # Django web features
 ######################################################################
@@ -517,7 +521,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # to load the internationalization machinery.
 USE_I18N = False
 # Where to find locales (no need to change this, most likely)
-LOCALE_PATHS = [os.path.join(ROOT_DIR, "locale/")]
+LOCALE_PATHS = [os.path.join(EVENNIA_DIR, "locale/")]
 # This should be turned off unless you want to do tests with Django's
 # development webserver (normally Evennia runs its own server)
 SERVE_MEDIA = False

@@ -384,7 +384,14 @@ class LockHandler(object):
         else:
             return default
 
-    def check_lockstring(self, accessing_obj, lockstring, no_superuser_bypass=False):
+    def _eval_access_type(self, accessing_obj, locks, access_type):
+        evalstring, func_tup, raw_string = locks[access_type]
+        true_false = tuple(tup[0](accessing_obj, self.obj, *tup[1], **tup[2])
+                           for tup in func_tup)
+        return eval(evalstring % true_false)
+
+    def check_lockstring(self, accessing_obj, lockstring, no_superuser_bypass=False,
+                         default=False, access_type=None):
         """
         Do a direct check against a lockstring ('atype:func()..'), without any
         intermediary storage on the accessed object (this can be left
@@ -401,11 +408,16 @@ class LockHandler(object):
                 return True
 
         locks = self._parse_lockstring(lockstring)
+
+        if access_type:
+            if not access_type in locks:
+                return default
+            else:
+                return self._eval_access_type(
+                    accessing_obj, locks, access_type)
+
         for access_type in locks:
-            evalstring, func_tup, raw_string = locks[access_type]
-            true_false = tuple(tup[0](accessing_obj, self.obj, *tup[1],**tup[2])
-                                      for tup in func_tup)
-            return eval(evalstring % true_false)
+            return self._eval_access_type(accessing_obj, locks, access_type)
 
 
 def _test():

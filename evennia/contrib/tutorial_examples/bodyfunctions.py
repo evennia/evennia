@@ -12,9 +12,9 @@ or you won't see any messages!
 
 """
 import random
-from evennia import Script
+from evennia import DefaultScript
 
-class BodyFunctions(Script):
+class BodyFunctions(DefaultScript):
     """
     This class defines the script itself
     """

@@ -1,7 +1,10 @@
 import os
+import sys
 from setuptools import setup, find_packages
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+VERSION_PATH = os.path.join('evennia', 'VERSION.txt')
 
 
 def get_requirements():
@@ -17,7 +20,20 @@ def get_requirements():
             reqs.append(line)
     return reqs
 
-VERSION_PATH = os.path.join('evennia', 'VERSION.txt')
+
+def get_scripts():
+    """
+    Determine which executable scripts should be added. For Windows,
+    this means creating a .bat file.
+    """
+    if os.name == "nt":
+        batpath = os.path.join("bin", "windows", "evennia.bat")
+        scriptpath = os.path.join(sys.prefix, "Scripts", "evennia.py")
+        with open(batpath, "w") as batfile:
+            batfile.write("@\"%s\" \"%s\" %%*" % (sys.executable, scriptpath))
+        return [batpath, os.path.join("bin", "windows", "evennia.py")]
+    else:
+        return [os.path.join("bin", "unix", "evennia")]
 
 
 def get_version():
@@ -38,18 +54,23 @@ def package_data():
     for root, dirs, files in os.walk('evennia'):
         for f in files:
             if '.git' in f.split(os.path.normpath(os.path.join(root, f))):
-                # Prevent the repo from bing added.
+                # Prevent the repo from being added.
                 continue
             file_name = os.path.relpath(os.path.join(root, f), 'evennia')
             file_set.append(file_name)
     return file_set
 
+# setup the package
 setup(
     name='evennia',
     version=get_version(),
+    author = "Evennia community",
+    maintainer = "Griatch",
+    maintainer_email = "griatch AT gmail DOT com",
+    url = "http://www.evennia.com",
     description='A full-featured MUD building toolkit.',
     packages=find_packages(),
-    scripts=['bin/evennia', 'bin/evennia_runner.py'],
+    scripts=get_scripts(),
     install_requires=get_requirements(),
     package_data={'': package_data()},
     zip_safe=False

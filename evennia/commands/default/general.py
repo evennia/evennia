@@ -11,8 +11,6 @@ __all__ = ("CmdHome", "CmdLook", "CmdNick",
            "CmdInventory", "CmdGet", "CmdDrop", "CmdGive",
            "CmdSay", "CmdPose", "CmdAccess")
 
-AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
-
 
 class CmdHome(MuxCommand):
     """
@@ -26,6 +24,7 @@ class CmdHome(MuxCommand):
 
     key = "home"
     locks = "cmd:perm(home) or perm(Builders)"
+    arg_regex = r"$"
 
     def func(self):
         "Implement the command"
@@ -53,7 +52,7 @@ class CmdLook(MuxCommand):
     key = "look"
     aliases = ["l", "ls"]
     locks = "cmd:all()"
-    arg_regex = r"\s.*?|$"
+    arg_regex = r"\s|$"
 
     def func(self):
         """
@@ -186,6 +185,7 @@ class CmdInventory(MuxCommand):
     key = "inventory"
     aliases = ["inv", "i"]
     locks = "cmd:all()"
+    arg_regex = r"$"
 
     def func(self):
         "check inventory"
@@ -215,6 +215,7 @@ class CmdGet(MuxCommand):
     key = "get"
     aliases = "grab"
     locks = "cmd:all()"
+    arg_regex = r"\s|$"
 
     def func(self):
         "implements the command."
@@ -231,10 +232,6 @@ class CmdGet(MuxCommand):
         if caller == obj:
             caller.msg("You can't get yourself.")
             return
-        #print obj, obj.location, caller, caller==obj.location
-        if caller == obj.location:
-            caller.msg("You already hold that.")
-            return
         if not obj.access(caller, 'get'):
             if obj.db.get_err_msg:
                 caller.msg(obj.db.get_err_msg)
@@ -247,7 +244,7 @@ class CmdGet(MuxCommand):
         caller.location.msg_contents("%s picks up %s." %
                                         (caller.name,
                                          obj.name),
-                                         exclude=caller)
+                                     exclude=caller)
         # calling hook method
         obj.at_get(caller)
 
@@ -265,6 +262,7 @@ class CmdDrop(MuxCommand):
 
     key = "drop"
     locks = "cmd:all()"
+    arg_regex = r"\s|$"
 
     def func(self):
         "Implement command"
@@ -276,13 +274,9 @@ class CmdDrop(MuxCommand):
 
         # Because the DROP command by definition looks for items
         # in inventory, call the search function using location = caller
-        results = caller.search(self.args, location=caller, quiet=True)
-
-        # now we send it into the error handler (this will output consistent
-        # error messages if there are problems).
-        obj = AT_SEARCH_RESULT(caller, self.args, results, False,
-                              nofound_string="You aren't carrying %s." % self.args,
-                              multimatch_string="You carry more than one %s:" % self.args)
+        obj = caller.search(self.args, location=caller,
+                            nofound_string="You aren't carrying %s." % self.args,
+                            multimatch_string="You carry more than one %s:" % self.args)
         if not obj:
             return
 
@@ -290,7 +284,7 @@ class CmdDrop(MuxCommand):
         caller.msg("You drop %s." % (obj.name,))
         caller.location.msg_contents("%s drops %s." %
                                          (caller.name, obj.name),
-                                         exclude=caller)
+                                     exclude=caller)
         # Call the object script's at_drop() method.
         obj.at_drop(caller)
 
@@ -307,6 +301,7 @@ class CmdGive(MuxCommand):
     """
     key = "give"
     locks = "cmd:all()"
+    arg_regex = r"\s|$"
 
     def func(self):
         "Implement give"
@@ -315,7 +310,9 @@ class CmdGive(MuxCommand):
         if not self.args or not self.rhs:
             caller.msg("Usage: give <inventory object> = <target>")
             return
-        to_give = caller.search(self.lhs)
+        to_give = caller.search(self.lhs, location=caller,
+                                nofound_string="You aren't carrying %s." % self.lhs,
+                                multimatch_string="You carry more than one %s:" % self.lhs)
         target = caller.search(self.rhs)
         if not (to_give and target):
             return
@@ -330,6 +327,31 @@ class CmdGive(MuxCommand):
         to_give.move_to(target, quiet=True)
         target.msg("%s gives you %s." % (caller.key, to_give.key))
 
+
+class CmdDesc(MuxCommand):
+    """
+    describe yourself
+
+    Usage:
+      desc <description>
+
+    Add a description to yourself. This
+    will be visible to people when they
+    look at you.
+    """
+    key = "desc"
+    locks = "cmd:all()"
+    arg_regex = r"\s|$"
+
+    def func(self):
+        "add the description"
+
+        if not self.args:
+            self.caller.msg("You must add a description.")
+            return
+
+        self.caller.db.desc = self.args.strip()
+        self.caller.msg("You set your description.")
 
 class CmdSay(MuxCommand):
     """
@@ -425,6 +447,7 @@ class CmdAccess(MuxCommand):
     key = "access"
     aliases = ["groups", "hierarchy"]
     locks = "cmd:all()"
+    arg_regex = r"$"
 
     def func(self):
         "Load the permission groups"
