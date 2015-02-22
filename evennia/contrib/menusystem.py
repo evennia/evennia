@@ -28,7 +28,7 @@ from evennia import Command, CmdSet, utils
 from evennia import default_cmds, logger
 
 # imported only to make it available during execution of code blocks
-import ev
+import evennia
 
 CMD_NOMATCH = syscmdkeys.CMD_NOMATCH
 CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
@@ -61,7 +61,7 @@ class CmdMenuNode(Command):
             except Exception, e:
                 self.caller.msg("%s\n{rThere was an error with this selection.{n" % e)
         elif self.code:
-            ev.logger.log_depmsg("menusystem.code is deprecated. Use menusystem.func.")
+            evennia.logger.log_depmsg("menusystem.code is deprecated. Use menusystem.func.")
             try:
                 exec(self.code)
             except Exception, e:
@@ -224,7 +224,7 @@ class MenuTree(object):
                     self.caller.msg("{rNode callback could not be executed for node %s. Continuing anyway.{n" % key)
             if node.code:
                 # Execute eventual code active on this node. self.caller is available at this point.
-                ev.logger.log_depmsg("menusystem.code is deprecated. Use menusystem.callback.")
+                evennia.logger.log_depmsg("menusystem.code is deprecated. Use menusystem.callback.")
                 try:
                     exec(node.code)
                 except Exception:
@@ -303,7 +303,7 @@ class MenuNode(object):
         Nlinks = len(self.links)
 
         if code:
-            ev.logger.log_depmsg("menusystem.code is deprecated. Use menusystem.callback.")
+            evennia.logger.log_depmsg("menusystem.code is deprecated. Use menusystem.callback.")
 
         # validate the input
         if not self.links:
@@ -443,10 +443,10 @@ def prompt_yesno(caller, question="", yesfunc=None, nofunc=None, yescode="", noc
 
     # code exec is deprecated:
     if yescode:
-        ev.logger.log_depmsg("yesnosystem.code is deprecated. Use yesnosystem.callback.")
+        evennia.logger.log_depmsg("yesnosystem.code is deprecated. Use yesnosystem.callback.")
         cmdyes.code = yescode + "\nself.caller.cmdset.delete('menucmdset')\ndel self.caller.db._menu_data"
     if nocode:
-        ev.logger.log_depmsg("yesnosystem.code is deprecated. Use yesnosystem.callback.")
+        evennia.logger.log_depmsg("yesnosystem.code is deprecated. Use yesnosystem.callback.")
         cmdno.code = nocode + "\nself.caller.cmdset.delete('menucmdset')\ndel self.caller.db._menu_data"
 
     # creating cmdset (this will already have look/help commands)
