@@ -9,8 +9,8 @@ def makeService(options):
     """
     ms = service.MultiService()
 
-    from contrib.procpools.ampoule.pool import ProcessPool
-    from contrib.procpools.ampoule.main import ProcessStarter
+    from evennia.contrib.procpools.ampoule.pool import ProcessPool
+    from evennia.contrib.procpools.ampoule.main import ProcessStarter
     name = options['name']
     ampport = options['ampport']
     ampinterface = options['ampinterface']
@@ -23,7 +23,7 @@ def makeService(options):
     childReactor = options['reactor']
     timeout = options['timeout']
 
-    starter = ProcessStarter(packages=("twisted", "ampoule"), childReactor=childReactor)
+    starter = ProcessStarter(packages=("twisted",), childReactor=childReactor)
     pp = ProcessPool(child, parent, min, max, name, maxIdle, recycle, starter, timeout)
     svc = AMPouleService(pp, child, ampport, ampinterface)
     svc.setServiceParent(ms)
@@ -43,7 +43,7 @@ class AMPouleService(service.Service):
         Before reactor.run() is called we setup the system.
         """
         service.Service.startService(self)
-        from contrib.procpools.ampoule import rpool
+        from evennia.contrib.procpools.ampoule import rpool
         from twisted.internet import reactor
 
         try:

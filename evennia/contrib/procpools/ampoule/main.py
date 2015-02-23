@@ -11,7 +11,7 @@ from twisted.protocols import amp
 from twisted.python import runtime
 from twisted.python.compat import set
 
-from contrib.procpools.ampoule import iampoule
+from evennia.contrib.procpools.ampoule import iampoule
 
 gen = itertools.count()
 
@@ -193,7 +193,7 @@ class ProcessStarter(object):
         self.uid = uid
         self.gid = gid
         self.usePTY = usePTY
-        self.packages = ("ampoule",) + packages
+        self.packages = ("evennia.contrib.procpools.ampoule",) + packages
         self.packages = packages
         self.childReactor = childReactor
 

@@ -102,7 +102,7 @@ class DefaultObject(ObjectDB):
     Characters, Exits and Rooms (see the bottom of this module).
 
     Note that all new Objects and their subclasses *must* always be
-    created using the ev.create_object() function. This is so the
+    created using the evennia.create_object() function. This is so the
     typeclass system can be correctly initiated behind the scenes.
 
 
@@ -326,7 +326,7 @@ class DefaultObject(ObjectDB):
         Perform a standard object search in the database, handling
         multiple results and lack thereof gracefully. By default, only
         objects in self's current location or inventory is searched.
-        Note: to find Players, use eg. ev.player_search.
+        Note: to find Players, use eg. evennia.player_search.
 
         Args:
             searchdata (str or obj): Primary search criterion. Will be matched

@@ -23,8 +23,8 @@ mob implementation.
 
 """
 
-from evennia import Object, CmdSet, default_cmds
-from contrib import menusystem
+from evennia import DefaultObject, CmdSet, default_cmds
+from evennia.contrib import menusystem
 
 
 #
@@ -110,7 +110,7 @@ CONV = {"START": {"text": "Hello there, how can I help you?",
         }
 
 
-class TalkingNPC(Object):
+class TalkingNPC(DefaultObject):
     """
     This implements a simple Object using the talk command and using the
     conversation defined above. .

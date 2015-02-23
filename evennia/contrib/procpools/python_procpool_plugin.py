@@ -72,16 +72,15 @@ def start_plugin_services(server):
     # terminal output
     print '  amp (Process Pool): %s' % PROCPOOL_PORT
 
-    from contrib.procpools.ampoule import main as ampoule_main
-    from contrib.procpools.ampoule import service as ampoule_service
-    from contrib.procpools.ampoule import pool as ampoule_pool
-    from contrib.procpools.ampoule.main import BOOTSTRAP as _BOOTSTRAP
-    from contrib.procpools.python_procpool import PythonProcPoolChild
+    from evennia.contrib.procpools.ampoule import main as ampoule_main
+    from evennia.contrib.procpools.ampoule import service as ampoule_service
+    from evennia.contrib.procpools.ampoule import pool as ampoule_pool
+    from evennia.contrib.procpools.ampoule.main import BOOTSTRAP as _BOOTSTRAP
+    from evennia.contrib.procpools.python_procpool import PythonProcPoolChild
 
     # for some reason absolute paths don't work here, only relative ones.
     apackages = ("twisted",
-                 os.path.join(os.pardir, "contrib", "procpools", "ampoule"),
-                 os.path.join(os.pardir, "ev"),
+                 "evennia",
                  "settings")
     aenv = {"DJANGO_SETTINGS_MODULE": "settings",
             "DATABASE_NAME": settings.DATABASES.get("default", {}).get("NAME") or settings.DATABASE_NAME}
