@@ -1,6 +1,5 @@
 
-IDMAPPER
---------
+# IDMAPPER
 
 https://github.com/dcramer/django-idmapper
 
@@ -10,9 +9,8 @@ not only lowers memory consumption but most importantly allows for
 semi-persistance of properties on database model instances (something
 not guaranteed for normal Django models).
 
-Evennia makes a few modifications to the original IDmapper routines
-(we try to limit our modifications in order to make it easy to update
-it from upstream down the line). 
+Evennia makes extensive modifications to the original IDmapper
+routines:
 
 - We change the caching from a WeakValueDictionary to a normal
   dictionary. This is done because we use the models as semi-
@@ -21,4 +19,9 @@ it from upstream down the line).
   then allowed them to be garbage collected. With this change they
   are guaranteed to remain (which is good for persistence but 
   potentially bad for memory consumption).
-- We add some caching/reset hooks called from the server side. 
+- We change the save and init code to allow for typeclass hook loading
+  and subprocessor checks.
+- We add caching/reset hooks called from the server side. 
+- We add dynamic field wrappers for all fields named db_*
+
+

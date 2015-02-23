@@ -666,7 +666,7 @@ class CmdServerLoad(MuxCommand):
         if not _resource:
             import resource as _resource
         if not _idmapper:
-            from evennia.utils.idmapper import base as _idmapper
+            from evennia.utils.idmapper import models as _idmapper
 
         import resource
         loadavg = os.getloadavg()

@@ -13,8 +13,7 @@ import sys
 import copy
 import warnings
 from django.apps import apps
-from django.db.models.base import ModelBase
-from django.db.models.base import subclass_exception
+from django.db.models.base import ModelBase, subclass_exception
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.options import Options
 from django.utils.deprecation import RemovedInDjango19Warning

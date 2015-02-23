@@ -599,6 +599,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.flatpages',
     'django.contrib.staticfiles',
+    'evennia.utils.idmapper',
     'evennia.server',
     'evennia.typeclasses',
     'evennia.players',

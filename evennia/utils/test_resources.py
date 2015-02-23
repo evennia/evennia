@@ -7,7 +7,7 @@ from evennia.scripts import DefaultScript
 from evennia.server.serversession import ServerSession
 from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import create
-from evennia.utils.idmapper.base import flush_cache
+from evennia.utils.idmapper.models import flush_cache
 
 
 SESSIONS.data_out = Mock()
