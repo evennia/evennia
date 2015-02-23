@@ -20,7 +20,7 @@ class HelpEntryManager(models.Manager):
     find_topicsuggestions
     find_topics_with_category
     all_to_category
-    search_help (equivalent to ev.search_helpentry)
+    search_help (equivalent to evennia.search_helpentry)
 
     """
     def find_topicmatch(self, topicstr, exact=False):

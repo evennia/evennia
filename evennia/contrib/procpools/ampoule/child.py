@@ -5,10 +5,10 @@ Inherit from this to define a new type of subprocess.
 
 """
 
-from twisted.python import log
 from twisted.internet import error
 from twisted.protocols import amp
-from contrib.procpools.ampoule.commands import Echo, Shutdown, Ping
+from evennia.contrib.procpools.ampoule.commands import Echo, Shutdown, Ping
+
 
 class AMPChild(amp.AMP):
     def __init__(self):

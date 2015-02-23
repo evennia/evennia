@@ -45,7 +45,7 @@ class ObjectDBManager(TypedObjectManager):
     get_objs_with_key_or_alias
     get_contents
     object_search (interface to many of the above methods,
-                   equivalent to ev.search_object)
+                   equivalent to evennia.search_object)
     copy_object
 
     """

@@ -1,22 +1,24 @@
 
 from signal import SIGHUP
-import math
 import os
 import os.path
 from cStringIO import StringIO as sio
 import tempfile
 
 from twisted.internet import error, defer, reactor
-from twisted.python import failure, reflect
+from twisted.python import failure
 from twisted.trial import unittest
 from twisted.protocols import amp
-from contrib.procpools.ampoule import main, child, commands, pool
+from evennia.contrib.procpools.ampoule import main, child, commands, pool
+
 
 class ShouldntHaveBeenCalled(Exception):
     pass
 
+
 def _raise(_):
     raise ShouldntHaveBeenCalled(_)
+
 
 class _FakeT(object):
     closeStdinCalled = False
@@ -28,6 +30,7 @@ class _FakeT(object):
 
     def write(self, data):
         self.s.write(data)
+
 
 class FakeAMP(object):
     connector = None
@@ -48,37 +51,46 @@ class FakeAMP(object):
     def dataReceived(self, data):
         self.s.write(data)
 
+
 class Ping(amp.Command):
     arguments = [('data', amp.String())]
     response = [('response', amp.String())]
+
 
 class Pong(amp.Command):
     arguments = [('data', amp.String())]
     response = [('response', amp.String())]
 
+
 class Pid(amp.Command):
     response = [('pid', amp.Integer())]
 
+
 class Reactor(amp.Command):
     response = [('classname', amp.String())]
+
 
 class NoResponse(amp.Command):
     arguments = [('arg', amp.String())]
     requiresAnswer = False
 
+
 class GetResponse(amp.Command):
     response = [("response", amp.String())]
+
 
 class Child(child.AMPChild):
     def ping(self, data):
         return self.callRemote(Pong, data=data)
     Ping.responder(ping)
 
+
 class PidChild(child.AMPChild):
     def pid(self):
         import os
         return {'pid': os.getpid()}
     Pid.responder(pid)
+
 
 class NoResponseChild(child.AMPChild):
     _set = False
@@ -91,32 +103,40 @@ class NoResponseChild(child.AMPChild):
         return {"response": self._set}
     GetResponse.responder(getresponse)
 
+
 class ReactorChild(child.AMPChild):
     def reactor(self):
         from twisted.internet import reactor
         return {'classname': reactor.__class__.__name__}
     Reactor.responder(reactor)
 
+
 class First(amp.Command):
     arguments = [('data', amp.String())]
     response = [('response', amp.String())]
 
+
 class Second(amp.Command):
     pass
 
+
 class WaitingChild(child.AMPChild):
     deferred = None
+
     def first(self, data):
         self.deferred = defer.Deferred()
         return self.deferred.addCallback(lambda _: {'response': data})
     First.responder(first)
+
     def second(self):
         self.deferred.callback('')
         return {}
     Second.responder(second)
 
+
 class Die(amp.Command):
     pass
+
 
 class BadChild(child.AMPChild):
     def die(self):
@@ -235,7 +255,7 @@ main(sys.argv[1])
 """
         starter = main.ProcessStarter(bootstrap=BOOT,
                                       args=(STRING,),
-                                      packages=("twisted", "ampoule"))
+                                      packages=("twisted",))
 
         amp, finished = starter.startPythonProcess(main.AMPConnector(a))
         def _eb(reason):
@@ -257,7 +277,7 @@ def main(arg):
     raise Exception(arg)
 main(sys.argv[1])
 """
-        starter = main.ProcessStarter(bootstrap=BOOT, args=(STRING,), packages=("twisted", "ampoule"))
+        starter = main.ProcessStarter(bootstrap=BOOT, args=(STRING,), packages=("twisted",))
         ready, finished = starter.startPythonProcess(main.AMPConnector(a), "I'll be ignored")
 
         self.assertFailure(finished, error.ProcessTerminated)
@@ -279,9 +299,10 @@ def main():
 main()
 """
         starter = main.ProcessStarter(bootstrap=BOOT,
-                                      packages=("twisted", "ampoule"),
+                                      packages=("twisted",),
                                       env={"FOOBAR": STRING})
         amp, finished = starter.startPythonProcess(main.AMPConnector(a), "I'll be ignored")
+
         def _eb(reason):
             print reason
         finished.addErrback(_eb)
@@ -294,7 +315,7 @@ main()
         """
         STRING = "ciao"
 
-        starter = main.ProcessStarter(packages=("twisted", "ampoule"))
+        starter = main.ProcessStarter(packages=("twisted",))
         c, finished = starter.startAMPProcess(child.AMPChild)
         c.callRemote(commands.Echo, data=STRING
            ).addCallback(lambda response:
@@ -303,9 +324,10 @@ main()
         return finished
 
     def test_BootstrapContext(self):
-        starter = main.ProcessStarter(packages=('twisted', 'ampoule'))
+        starter = main.ProcessStarter(packages=('twisted',))
         c, finished = starter.startAMPProcess(TempDirChild)
         cwd = []
+
         def checkBootstrap(response):
             cwd.append(response['cwd'])
             self.assertNotEquals(cwd, os.getcwd())
@@ -316,10 +338,11 @@ main()
         return finished
 
     def test_BootstrapContextInstance(self):
-        starter = main.ProcessStarter(packages=('twisted', 'ampoule'))
+        starter = main.ProcessStarter(packages=('twisted',))
         c, finished = starter.startAMPProcess(TempDirChild,
                                               ampChildArgs=('foo',))
         cwd = []
+
         def checkBootstrap(response):
             cwd.append(response['cwd'])
             self.assertTrue(cwd[0].endswith('/foo'))
@@ -342,7 +365,7 @@ main()
                 return {'response': DATA+APPEND}
             Pong.responder(pong)
 
-        starter = main.ProcessStarter(packages=("twisted", "ampoule"))
+        starter = main.ProcessStarter(packages=("twisted",))
 
         subp, finished = starter.startAMPProcess(ampChild=Child, ampParent=Parent)
         subp.callRemote(Ping, data=DATA
@@ -359,9 +382,10 @@ main()
         class Child(child.AMPChild):
             pass
 
-        starter = main.ProcessStarter(packages=("twisted", "ampoule"))
+        starter = main.ProcessStarter(packages=("twisted",))
 
         self.assertRaises(RuntimeError, starter.startAMPProcess, ampChild=Child)
+
 
 class TestProcessPool(unittest.TestCase):
 
@@ -485,6 +509,7 @@ class TestProcessPool(unittest.TestCase):
             Pong.responder(pong)
 
         pp = pool.ProcessPool(ampChild=Child, ampParent=Parent)
+
         def _checks(_):
             return pp.doWork(Ping, data=DATA
                        ).addCallback(lambda response:
@@ -492,7 +517,6 @@ class TestProcessPool(unittest.TestCase):
                        )
 
         return pp.start().addCallback(_checks).addCallback(lambda _: pp.stop())
-
 
     def test_deferToAMPProcess(self):
         """
@@ -593,6 +617,7 @@ class TestProcessPool(unittest.TestCase):
         def _realChecks(_):
             from twisted.internet import reactor
             d = defer.Deferred()
+
             def _cb():
                 def __(_):
                     try:
@@ -677,7 +702,6 @@ class TestProcessPool(unittest.TestCase):
         d.addCallback(_work)
         return d
 
-
     def test_disableProcessRecycling(self):
         """
         Test that by setting 0 to recycleAfter we actually disable process recycling.
@@ -724,7 +748,7 @@ class TestProcessPool(unittest.TestCase):
             pp = pool.ProcessPool(
                 starter=main.ProcessStarter(
                     childReactor=FIRST,
-                    packages=("twisted", "ampoule")),
+                    packages=("twisted",)),
                 ampChild=ReactorChild, min=MIN, max=MAX)
             pp.start()
             return pp.doWork(Reactor
@@ -735,7 +759,7 @@ class TestProcessPool(unittest.TestCase):
             pp = pool.ProcessPool(
                 starter=main.ProcessStarter(
                     childReactor=SECOND,
-                    packages=("twisted", "ampoule")),
+                    packages=("twisted",)),
                 ampChild=ReactorChild, min=MIN, max=MAX)
             pp.start()
             return pp.doWork(Reactor
@@ -772,6 +796,7 @@ class TestProcessPool(unittest.TestCase):
     def test_SupplyChildArgs(self):
         """Ensure that arguments for the child constructor are passed in."""
         pp = pool.ProcessPool(Writer, ampChildArgs=['body'], min=0)
+
         def _check(result):
             return pp.doWork(Write).addCallback(
             self.assertEquals, {'response': 'body'})

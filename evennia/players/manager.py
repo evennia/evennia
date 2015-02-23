@@ -36,7 +36,7 @@ class PlayerDBManager(TypedObjectManager, UserManager):
     get_player_from_email
     get_player_from_uid
     get_player_from_name
-    player_search (equivalent to ev.search_player)
+    player_search (equivalent to evennia.search_player)
     #swap_character
 
     """
