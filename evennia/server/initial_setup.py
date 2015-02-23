@@ -125,34 +125,10 @@ def create_channels():
     """
     print " Creating default channels ..."
 
-    # public channel
-    key1, aliases, desc, locks = settings.CHANNEL_PUBLIC
-    pchan = create.create_channel(key1, aliases, desc, locks=locks)
-    # mudinfo channel
-    key2, aliases, desc, locks = settings.CHANNEL_MUDINFO
-    ichan = create.create_channel(key2, aliases, desc, locks=locks)
-    # connectinfo channel
-    key3, aliases, desc, locks = settings.CHANNEL_CONNECTINFO
-    cchan = create.create_channel(key3, aliases, desc, locks=locks)
-
-    # TODO: postgresql-psycopg2 has a strange error when trying to
-    # connect the user to the default channels. It works fine from inside
-    # the game, but not from the initial startup. We are temporarily bypassing
-    # the problem with the following fix. See Evennia Issue 151.
-    if ((".".join(str(i) for i in django.VERSION) < "1.2"
-                    and settings.DATABASE_ENGINE == "postgresql_psycopg2")
-        or (hasattr(settings, 'DATABASES')
-            and settings.DATABASES.get("default", {}).get('ENGINE', None)
-            == 'django.db.backends.postgresql_psycopg2')):
-        print WARNING_POSTGRESQL_FIX.format(chan1=key1, chan2=key2, chan3=key3)
-        return
-
-    # connect the god user to all these channels by default.
     goduser = get_god_player()
-    pchan.connect(goduser)
-    ichan.connect(goduser)
-    cchan.connect(goduser)
-
+    for channeldict in settings.DEFAULT_CHANNELS:
+        channel = create.create_channel(**channeldict)
+        channel.connect(goduser)
 
 def create_system_scripts():
     """

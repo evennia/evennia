@@ -241,9 +241,9 @@ class DefaultPlayer(PlayerDB):
         if not session:
             return False
         session = make_iter(session)[0]
-        print "unpuppet, session:", session, session.puppet
+        #print "unpuppet, session:", session, session.puppet
         obj = hasattr(session, "puppet") and session.puppet or None
-        print "unpuppet, obj:", obj
+        #print "unpuppet, obj:", obj
         if not obj:
             return False
         # do the disconnect, but only if we are the last session to puppet
@@ -613,7 +613,8 @@ class DefaultPlayer(PlayerDB):
         global _CONNECT_CHANNEL
         if not _CONNECT_CHANNEL:
             try:
-                _CONNECT_CHANNEL = ChannelDB.objects.filter(db_key=settings.CHANNEL_CONNECTINFO[0])[0]
+                print "all channels:", ChannelDB.objects.all()
+                _CONNECT_CHANNEL = ChannelDB.objects.filter(db_key=settings.DEFAULT_CHANNELS[1]["key"])[0]
             except Exception:
                 logger.log_trace()
         now = datetime.datetime.now()
