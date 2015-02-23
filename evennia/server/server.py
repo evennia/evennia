@@ -18,7 +18,7 @@ import django
 django.setup()
 
 import evennia
-evennia.init()
+evennia._init()
 
 from django.db import connection
 from django.conf import settings

@@ -69,28 +69,34 @@ OOB_HANDLER = None
 CHANNEL_HANDLER = None
 
 
-import os
-from subprocess import check_output, CalledProcessError, STDOUT
-
-__version__ = "Unknown"
-
-root = os.path.dirname(os.path.abspath(__file__))
-try:
-    with open(os.path.join(root, "VERSION.txt"), 'r') as f:
-        __version__ = f.read().strip()
-except IOError as err:
-    print err
-try:
-    __version__ = "%s" % (check_output("git rev-parse --short HEAD", shell=True, cwd=root, stderr=STDOUT).strip())
-except (IOError, CalledProcessError):
-    pass
-
-
-def init():
+def _create_version():
     """
-    This is called by the launcher only after Evennia has fully
-    initialized all its models. It sets up the API in a safe
-    environment where all models are available already.
+    Helper function for building the version string
+    """
+    import os
+    from subprocess import check_output, CalledProcessError, STDOUT
+
+    version = "Unknown"
+    root = os.path.dirname(os.path.abspath(__file__))
+    try:
+        with open(os.path.join(root, "VERSION.txt"), 'r') as f:
+            version = f.read().strip()
+    except IOError as err:
+        print err
+    try:
+        version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=root, stderr=STDOUT).strip())
+    except (IOError, CalledProcessError):
+        pass
+    return version
+
+__version__ = _create_version()
+del _create_version
+
+def _init():
+    """
+    This function is called automatically by the launcher only after
+    Evennia has fully initialized all its models. It sets up the API
+    in a safe environment where all models are available already.
     """
     def imp(path, variable=True):
         "Helper function"

@@ -19,7 +19,7 @@ django.setup()
 from django.conf import settings
 
 import evennia
-evennia.init()
+evennia._init()
 
 from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
