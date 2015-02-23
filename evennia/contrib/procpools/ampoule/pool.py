@@ -11,13 +11,14 @@ pop = heapq.heappop
 from twisted.internet import defer, task, error
 from twisted.python import log, failure
 
-from contrib.procpools.ampoule import commands, main
+from evennia.contrib.procpools.ampoule import commands, main
 
 try:
     DIE = signal.SIGKILL
 except AttributeError:
     # Windows doesn't have SIGKILL, let's just use SIGTERM then
     DIE = signal.SIGTERM
+
 
 class ProcessPool(object):
     """
@@ -62,11 +63,11 @@ class ProcessPool(object):
         self.starter = starter
         self.ampChildArgs = tuple(ampChildArgs)
         if starter is None:
-            self.starter = main.ProcessStarter(packages=("twisted", "ampoule"))
+            self.starter = main.ProcessStarter(packages=("twisted",))
         self.ampParent = ampParent
         self.ampChild = ampChild
         if ampChild is None:
-            from contrib.procpools.ampoule.child import AMPChild
+            from evennia.contrib.procpools.ampoule.child import AMPChild
             self.ampChild = AMPChild
         self.min = min
         self.max = max
@@ -395,6 +396,7 @@ class ProcessPool(object):
         log.msg('\t\t%r' % (self.starter,))
 
 pp = None
+
 
 def deferToAMPProcess(command, **kwargs):
     """

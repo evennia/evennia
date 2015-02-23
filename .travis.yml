@@ -6,5 +6,5 @@ script:
   - evennia --init dummy
   - cd dummy
   - evennia migrate
-  - evennia test
+  - evennia test evennia
 

@@ -29,12 +29,10 @@ try:
 except ImportError:
     import unittest
 
-from django.conf import settings
-from django.test.simple import DjangoTestSuiteRunner
-from evennia.utils.utils import mod_import
+from django.test.runner import DiscoverRunner
 
 
-class EvenniaTestSuiteRunner(DjangoTestSuiteRunner):
+class EvenniaTestSuiteRunner(DiscoverRunner):
     """
     This test runner only runs tests on the apps specified in evennia/
      avoid running the large number of tests defined by Django
@@ -46,32 +44,4 @@ class EvenniaTestSuiteRunner(DjangoTestSuiteRunner):
         """
         import evennia
         evennia.init()
-        if not test_labels:
-            test_labels = [applabel.rsplit('.', 1)[1] for applabel in settings.INSTALLED_APPS
-                           if applabel.startswith('evennia.')]
         return super(EvenniaTestSuiteRunner, self).build_suite(test_labels, extra_tests=extra_tests, **kwargs)
-
-
-def suite():
-    """
-    This function is called automatically by the django test runner.
-    This also collates tests from packages that are not formally django applications.
-    """
-    from evennia.locks import tests as locktests
-    from evennia.utils import tests as utiltests
-    from evennia.commands.default import tests as commandtests
-
-    tsuite = unittest.TestSuite()
-    tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__]))
-
-    # test modules from non-django apps
-    tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(commandtests))
-    tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(locktests))
-    tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(utiltests))
-
-    # load tests from the evennia/tests central location
-    for path in glob.glob(os.path.join(settings.EVENNIA_DIR, "tests", "test_*.py")):
-        testmod = mod_import(path)
-        tsuite.addTest(unittest.defaultTestLoader.loadTestsFromModule(testmod))
-
-    return tsuite

@@ -3,16 +3,19 @@ from twisted.internet.protocol import ClientFactory
 from twisted.trial import unittest
 from twisted.protocols import amp
 
-from contrib.procpools.ampoule import service, child, pool, main
-from contrib.procpools.ampoule.commands import Echo
+from evennia.contrib.procpools.ampoule import service, child, pool, main
+from evennia.contrib.procpools.ampoule.commands import Echo
+
 
 class ClientAMP(amp.AMP):
     factory = None
+
     def connectionMade(self):
         if self.factory is not None:
             self.factory.theProto = self
             if hasattr(self.factory, 'onMade'):
                 self.factory.onMade.callback(None)
+
 
 class TestAMPProxy(unittest.TestCase):
     def setUp(self):

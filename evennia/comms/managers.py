@@ -121,7 +121,7 @@ class MsgManager(models.Manager):
      get_messages_by_receiver
      get_messages_by_channel
      text_search
-     message_search (equivalent to ev.search_messages)
+     message_search (equivalent to evennia.search_messages)
     """
 
     def identify_object(self, obj):
@@ -256,7 +256,7 @@ class ChannelDBManager(TypedObjectManager):
     get_all_channels
     get_channel(channel)
     get_subscriptions(player)
-    channel_search (equivalent to ev.search_channel)
+    channel_search (equivalent to evennia.search_channel)
 
     """
     @returns_typeclass_list

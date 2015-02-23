@@ -21,7 +21,7 @@ the header carefully.
 To test it works, make sure to activate the process pool, then try the
 following as superuser:
 
-@py from contrib.procpools.python_procpool import run_async;run_async("_return('Wohoo!')", at_return=self.msg, at_err=self.msg)
+@py from evennia.contrib.procpools.python_procpool import run_async;run_async("_return('Wohoo!')", at_return=self.msg, at_err=self.msg)
 
 You can also try to import time and do time.sleep(5) before the
 _return statement, to test it really is asynchronous.
@@ -30,7 +30,7 @@ _return statement, to test it really is asynchronous.
 
 from twisted.protocols import amp
 from twisted.internet import threads
-from contrib.procpools.ampoule.child import AMPChild
+from evennia.contrib.procpools.ampoule.child import AMPChild
 from evennia.utils.dbserialize import to_pickle, from_pickle, do_pickle, do_unpickle
 from evennia.utils.idmapper.base import PROC_MODIFIED_OBJS
 from evennia.utils.utils import clean_object_caches, to_str
