@@ -613,7 +613,6 @@ class DefaultPlayer(PlayerDB):
         global _CONNECT_CHANNEL
         if not _CONNECT_CHANNEL:
             try:
-                print "all channels:", ChannelDB.objects.all()
                 _CONNECT_CHANNEL = ChannelDB.objects.filter(db_key=settings.DEFAULT_CHANNELS[1]["key"])[0]
             except Exception:
                 logger.log_trace()
@@ -624,37 +623,6 @@ class DefaultPlayer(PlayerDB):
             _CONNECT_CHANNEL.tempmsg("[%s, %s]: %s" % (_CONNECT_CHANNEL.key, now, message))
         else:
             logger.log_infomsg("[%s]: %s" % (now, message))
-
-    #def _go_ic_at_login(self, sessid=None):
-    #    new_character = self.db._last_puppet
-
-    #    # permission checks
-    #    if self.get_puppet(sessid) == new_character:
-    #        return
-    #    if new_character.player:
-    #        # may not puppet an already puppeted character
-    #        if new_character.sessid.count() and new_character.player == self:
-    #            # as a safeguard we allow "taking over" chars from your own sessions.
-    #            if _MULTISESSION_MODE in (1, 3):
-    #                txt1 = "{c%s{n{G is now shared from another of your sessions.{n"
-    #                txt2 = "Sharing {c%s{n with another of your sessions."
-    #            else:
-    #                txt1 = "{c%s{n{R is now acted from another of your sessions.{n"
-    #                txt2 = "Taking over {c%s{n from another of your sessions."
-    #            self.unpuppet_object(new_character.sessid.get())
-    #            self.msg(txt1 % new_character.name, sessid=new_character.sessid.get())
-    #            self.msg(txt2 % new_character.name, sessid=sessid)
-    #        elif new_character.player != self and new_character.player.is_connected:
-    #            self.msg("{c%s{r is already acted by another player{n." % new_character.name, sessid=sessid)
-    #            return
-    #    if not new_character.access(self, 'puppet'):
-    #        # main acccess check
-    #        self.msg("{rYou may not become {C%s{n." % new_character.name, sessid=sessid)
-    #        return
-    #    if self.puppet_object(sessid, new_character):
-    #        self.db._last_puppet = new_character
-    #    else:
-    #        self.msg("{rYou cannot become {C%s{n." % new_character.name, sessid=sessid)
 
     def at_post_login(self, sessid=None):
         """
