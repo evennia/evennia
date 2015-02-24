@@ -57,6 +57,7 @@ class SessidHandler(object):
     def get(self):
         "Returns a list of one or more session ids"
         return self._cache
+    all = get # alias
 
     def add(self, sessid):
         "Add sessid to handler"
@@ -812,7 +813,8 @@ class DefaultObject(ObjectDB):
             # no need to disconnect, Player just jumps to OOC mode.
         # sever the connection (important!)
         if self.player:
-            self.player.character = None
+            for sessid in self.sessid.all():
+                self.player.unpuppet_object(sessid)
         self.player = None
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):

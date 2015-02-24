@@ -166,7 +166,7 @@ class ServerSessionHandler(SessionHandler):
         if session:
             # since some of the session properties may have had
             # a chance to change already before the portal gets here
-            # the portal doesn't send all sessiondata here, but only
+            # the portal doesn't send all sessiondata but only
             # ones which should only be changed from portal (like
             # protocol_flags etc)
             session.load_sync_data(portalsessiondata)

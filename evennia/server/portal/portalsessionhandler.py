@@ -2,8 +2,11 @@
 Sessionhandler for portal sessions
 """
 import time
+from twisted.internet import reactor
 from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC
 
+_CONNECTION_RATE = 5.0
+_MIN_TIME_BETWEEN_CONNECTS = 1.0 / _CONNECTION_RATE
 _MOD_IMPORT = None
 
 #------------------------------------------------------------
@@ -30,6 +33,7 @@ class PortalSessionHandler(SessionHandler):
         self.latest_sessid = 0
         self.uptime = time.time()
         self.connection_time = 0
+        self.time_last_connect = time.time()
 
     def at_server_connection(self):
         """
@@ -43,25 +47,56 @@ class PortalSessionHandler(SessionHandler):
         """
         Called by protocol at first connect. This adds a not-yet
         authenticated session using an ever-increasing counter for sessid.
+
+        We implement a throttling mechanism here to limit the speed at which
+        new connections are accepted - this is both a stop against DoS attacks
+        as well as helps using the Dummyrunner tester with a large number of
+        connector dummies.
+
         """
-        self.latest_sessid += 1
-        sessid = self.latest_sessid
-        session.sessid = sessid
-        sessdata = session.get_sync_data()
-        self.sessions[sessid] = session
+        session.server_connected = False
+
+        if not session.sessid:
+            # only assign if we were not delayed
+            self.latest_sessid += 1
+            session.sessid = self.latest_sessid
+
+        now = time.time()
+        current_rate = 1.0 / (now - self.time_last_connect)
+
+        if current_rate > _CONNECTION_RATE:
+            # we have too many connections per second. Delay.
+            #print "  delaying connecting", session.sessid
+            reactor.callLater(_MIN_TIME_BETWEEN_CONNECTS, self.connect, session)
+            return
+
+        if not self.portal.amp_protocol:
+            # if amp is not yet ready (usually because the server is
+            # booting up), try again a little later
+            reactor.CallLater(0.5, self.connect, session)
+            return
+
         # sync with server-side
-        if self.portal.amp_protocol:  # this is a timing issue
-            self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
+
+        self.time_last_connect = now
+        sessdata = session.get_sync_data()
+        self.sessions[session.sessid] = session
+        session.server_connected = True
+        #print "connecting", session.sessid, " number:", len(self.sessions)
+        self.portal.amp_protocol.call_remote_ServerAdmin(session.sessid,
                                                          operation=PCONN,
                                                          data=sessdata)
+
     def sync(self, session):
         """
         Called by the protocol of an already connected session. This
         can be used to sync the session info in a delayed manner,
         such as when negotiation and handshakes are delayed.
         """
-        if session.sessid:
-            # only use if session already has sessid (i.e. has already connected)
+        if session.sessid and session.server_connected:
+            # only use if session already has sessid and has already connected
+            # once to the server - if so we must re-sync woth the server, otherwise
+            # we skip this step.
             sessdata = session.get_sync_data()
             if self.portal.amp_protocol:
                 # we only send sessdata that should not have changed
