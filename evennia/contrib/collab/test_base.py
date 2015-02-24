@@ -1,9 +1,9 @@
 from copy import deepcopy
-from contrib.collab import collab_settings
-from contrib.collab.typeclasses import CollabCharacter, CollabObject, CollabPlayer
+from evennia.contrib.collab import collab_settings
+from evennia.contrib.collab.typeclasses import CollabCharacter, CollabObject, CollabPlayer
 from django.conf import settings
-from src.commands.default.tests import CommandTest
-from src.locks.lockhandler import _cache_lockfuncs
+from evennia.commands.default.tests import CommandTest
+from evennia.locks.lockhandler import _cache_lockfuncs
 
 
 class CollabTest(CommandTest):
@@ -15,15 +15,17 @@ class CollabTest(CommandTest):
         """
         Some tests will involve manipulating quota number settings.
         """
-        self.old_types = collab_settings.CREATE_TYPES
-        collab_settings.CREATE_TYPES = deepcopy(self.old_types)
-        self.types = collab_settings.CREATE_TYPES
-        settings.LOCK_FUNC_MODULES += ('contrib.collab.locks',)
+        self.old_settings = dict(settings.__dict__)
+        # This may change during the test. Save it for restore.
+        self.old_types = deepcopy(collab_settings.COLLAB_TYPES)
+        settings.__dict__.update(collab_settings.__dict__)
+        settings.LOCK_FUNC_MODULES += ('evennia.contrib.collab.locks',)
         _cache_lockfuncs()
         super(CollabTest, self).setUp()
 
     def tearDown(self):
-        collab_settings.CREATE_TYPES = self.old_types
+        settings.__dict__.update(self.old_settings)
+        collab_settings.COLLAB_TYPES = self.old_types
         settings.LOCK_FUNC_MODULES = settings.LOCK_FUNC_MODULES[:-1]
         _cache_lockfuncs()
         super(CollabTest, self).tearDown()
