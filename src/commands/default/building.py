@@ -189,7 +189,7 @@ class CmdCopy(ObjManipCommand):
               since it was first created.
 
     Create one or more copies of an object. If you don't supply any targets,
-    one exact copt of the original object will be created with the name *_copy.
+    one exact copy of the original object will be created with the name *_copy.
     """
 
     key = "@copy"
