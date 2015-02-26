@@ -224,6 +224,8 @@ class ServerSession(Session):
         if INLINEFUNC_ENABLED and not "raw" in kwargs:
             text = parse_inlinefunc(text, strip="strip_inlinefunc" in kwargs, session=self)
         self.sessionhandler.data_out(self, text=text, **kwargs)
+    # alias
+    msg = data_out
 
     def __eq__(self, other):
         return self.address == other.address
@@ -250,18 +252,6 @@ class ServerSession(Session):
         Unicode representation
         """
         return u"%s" % str(self)
-
-    # easy-access functions
-
-    #def login(self, player):
-    #    "alias for at_login"
-    #    self.session_login(player)
-    #def disconnect(self):
-    #    "alias for session_disconnect"
-    #    self.session_disconnect()
-    def msg(self, text='', **kwargs):
-        "alias for at_data_out"
-        self.data_out(text=text, **kwargs)
 
     # Dummy API hooks for use during non-loggedin operation
 

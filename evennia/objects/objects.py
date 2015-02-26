@@ -501,23 +501,19 @@ class DefaultObject(ObjectDB):
         """
         Emits something to a session attached to the object.
 
-        message (str): The message to send
-        from_obj (obj): object that is sending.
-        data (object): an optional data object that may or may not
-                       be used by the protocol.
-        sessid (int): sessid to relay to, if any.
-                      If set to 0 (default), use either from_obj.sessid (if set) or self.sessid automatically
-                      If None, echo to all connected sessions
-
-        When this message is called, from_obj.at_msg_send and self.at_msg_receive are called.
+        Args:
+            text (str, optional): The message to send
+            from_obj (obj, optional): object that is sending. If
+                given, at_msg_send will be called
+            sessid (int or list, optional): sessid or list of
+                sessids to relay to, if any. If set, will
+                force send regardless of MULTISESSION_MODE.
+        Notes:
+            `at_msg_receive` will be called on this Object.
+            All extra kwargs will be passed on to the protocol.
 
         """
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-
         text = to_str(text, force_string=True) if text else ""
-
         if from_obj:
             # call hook
             try:
@@ -531,9 +527,25 @@ class DefaultObject(ObjectDB):
         except Exception:
             log_trace()
 
-        sessions = _SESSIONS.session_from_sessid([sessid] if sessid else make_iter(self.sessid.get()))
-        for session in sessions:
-            session.msg(text=text, **kwargs)
+        # session relay
+
+        if self.player:
+            # for there to be a session there must be a Player.
+            if sessid:
+                # this could still be an iterable if sessid is.
+                sessions = self.player.get_session(sessid)
+                if sessions:
+                    # this is a special instruction to ignore MULTISESSION_MODE
+                    # and only relay to this given session.
+                    kwargs["_nomulti"] = True
+                    for session in make_iter(sessions):
+                        session.msg(text=text, **kwargs)
+                    return
+            # we only send to the first of any connected sessions - the sessionhandler
+            # will disperse this to the other sessions based on MULTISESSION_MODE.
+            sessions = self.player.get_all_sessions()
+            if sessions:
+                sessions[0].msg(text=text, **kwargs)
 
     def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):
         """

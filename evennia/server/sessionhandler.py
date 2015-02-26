@@ -46,7 +46,7 @@ PCONNSYNC = chr(10)   # portal post-syncing session
 from django.utils.translation import ugettext as _
 
 SERVERNAME = settings.SERVERNAME
-MULTISESSION_MODE = settings.MULTISESSION_MODE
+_MULTISESSION_MODE = settings.MULTISESSION_MODE
 IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 
 
@@ -278,7 +278,7 @@ class ServerSessionHandler(SessionHandler):
 
         player.at_pre_login()
 
-        if MULTISESSION_MODE == 0:
+        if _MULTISESSION_MODE == 0:
             # disconnect all previous sessions.
             self.disconnect_duplicate_sessions(session)
 
@@ -418,14 +418,15 @@ class ServerSessionHandler(SessionHandler):
         uid = player.uid
         return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
 
-    def sessions_from_character(self, character):
+    def sessions_from_puppet(self, puppet):
         """
-        Given a game character, return any matching sessions.
+        Given a puppeted object, return all controlling sessions.
         """
-        sessid = character.sessid.get()
+        sessid = puppet.sessid.get()
         if is_iter(sessid):
-            return [self.sessions.get(sess) for sess in sessid if sessid in self.sessions]
+            return [self.sessions.get(sid) for sid in sessid if sid in self.sessions]
         return self.sessions.get(sessid)
+    sessions_from_character = sessions_from_puppet
 
     def announce_all(self, message):
         """
@@ -437,9 +438,35 @@ class ServerSessionHandler(SessionHandler):
     def data_out(self, session, text="", **kwargs):
         """
         Sending data Server -> Portal
+
+        Args:
+            session (Session): Session object
+            text (str, optional): text data to return
+            _nomulti (bool, optional): if given, only this
+                session will receive the rest of the data,
+                regardless of MULTISESSION_MODE. This is an
+                internal variable that will not be passed on.
+
         """
         text = text and to_str(to_unicode(text), encoding=session.encoding)
-        self.server.amp_protocol.call_remote_MsgServer2Portal(sessid=session.sessid,
+        multi = not kwargs.pop("_nomulti", None)
+        sessions = [session]
+        if _MULTISESSION_MODE == 1:
+            if session.player:
+                sessions = self.sessions_from_player(session.player)
+        elif multi:
+            if _MULTISESSION_MODE == 2:
+                if session.player:
+                    sessions = self.sessions_from_player(session.player)
+            elif _MULTISESSION_MODE == 3:
+                if session.puppet:
+                    sessions = self.sessions_from_puppet(session.puppet)
+                elif session.player:
+                    sessions = self.sessions_from_player(session.player)
+
+        # send to all found sessions
+        for session in sessions:
+            self.server.amp_protocol.call_remote_MsgServer2Portal(sessid=session.sessid,
                                                               msg=text,
                                                               data=kwargs)
 
