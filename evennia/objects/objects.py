@@ -490,7 +490,6 @@ class DefaultObject(ObjectDB):
             command structure.
         """
         # nick replacement - we require full-word matching.
-
         # do text encoding conversion
         raw_string = to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string,
@@ -518,13 +517,6 @@ class DefaultObject(ObjectDB):
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
 
         text = to_str(text, force_string=True) if text else ""
-
-        if "data" in kwargs:
-            # deprecation warning
-            log_depmsg("ObjectDB.msg(): 'data'-dict keyword is deprecated. Use **kwargs instead.")
-            data = kwargs.pop("data")
-            if isinstance(data, dict):
-                kwargs.update(data)
 
         if from_obj:
             # call hook

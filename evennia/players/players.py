@@ -339,13 +339,6 @@ class DefaultPlayer(PlayerDB):
                  and handles the sessid). Can also be a list of sessids.
         kwargs (dict) - All other keywords are parsed as extra data.
         """
-        if "data" in kwargs:
-            # deprecation warning
-            logger.log_depmsg("PlayerDB:msg() 'data'-dict keyword is deprecated. Use **kwargs instead.")
-            data = kwargs.pop("data")
-            if isinstance(data, dict):
-                kwargs.update(data)
-
         text = to_str(text, force_string=True) if text else ""
         if from_obj:
             # call hook
