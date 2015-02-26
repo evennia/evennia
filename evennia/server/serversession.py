@@ -10,7 +10,6 @@ are stored on the Portal side)
 import time
 from datetime import datetime
 from django.conf import settings
-#from evennia.scripts.models import ScriptDB
 from evennia.comms.models import ChannelDB
 from evennia.utils import logger
 from evennia.utils.inlinefunc import parse_inlinefunc
