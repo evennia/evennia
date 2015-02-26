@@ -446,15 +446,29 @@ class ServerSessionHandler(SessionHandler):
                 session will receive the rest of the data,
                 regardless of MULTISESSION_MODE. This is an
                 internal variable that will not be passed on.
+                This is ignored for MULTISESSION_MODE = 1,
+                since all messages are mirrored everywhere for
+                that.
+            _forced_nomulti (bool, optional): Like _nomulti,
+                but works even when MULTISESSION_MODE = 1.
+                Useful for connection handling messages.
 
         """
         text = text and to_str(to_unicode(text), encoding=session.encoding)
         multi = not kwargs.pop("_nomulti", None)
+        forced_nomulti = kwargs.pop("_forced_nomulti", None)
         sessions = [session]
+        # Mode 1 mirrors to all.
         if _MULTISESSION_MODE == 1:
-            if session.player:
-                sessions = self.sessions_from_player(session.player)
-        elif multi:
+            multi = True
+        # ...Unless we're absolutely sure.
+        if forced_nomulti:
+            multi = False
+
+        if multi:
+            if _MULTISESSION_MODE == 1:
+                if session.player:
+                    sessions = self.sessions_from_player(session.player)
             if _MULTISESSION_MODE == 2:
                 if session.player:
                     sessions = self.sessions_from_player(session.player)
@@ -467,8 +481,8 @@ class ServerSessionHandler(SessionHandler):
         # send to all found sessions
         for session in sessions:
             self.server.amp_protocol.call_remote_MsgServer2Portal(sessid=session.sessid,
-                                                              msg=text,
-                                                              data=kwargs)
+                                                                  msg=text,
+                                                                  data=kwargs)
 
     def data_in(self, sessid, text="", **kwargs):
         """

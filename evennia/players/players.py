@@ -203,8 +203,8 @@ class DefaultPlayer(PlayerDB):
                         txt1 = "{c%s{n{R is now acted from another of your sessions.{n"
                         txt2 = "Taking over {c%s{n from another of your sessions."
                         self.unpuppet_object(obj.sessid.get())
-                    self.msg(txt1 % obj.name, sessid=obj.sessid.get())
-                    self.msg(txt2 % obj.name, sessid=sessid)
+                    self.msg(txt1 % obj.name, sessid=obj.sessid.get(), _forced_nomulti=True)
+                    self.msg(txt2 % obj.name, sessid=sessid, _forced_nomulti=True)
             elif obj.player.is_connected:
                 # controlled by another player
                 raise RuntimeError("{R{c%s{R is already puppeted by another Player.")
@@ -244,22 +244,24 @@ class DefaultPlayer(PlayerDB):
         """
         if _MULTISESSION_MODE == 1:
             sessions = self.get_all_sessions()
+            ignore_empty = True
         else:
             sessions = self.get_session(sessid)
+            ignore_empty = False
         if not sessions:
             raise RuntimeError("No session was found.")
         for session in make_iter(sessions):
-            #print "unpuppet, session:", session, session.puppet
             obj = hasattr(session, "puppet") and session.puppet or None
-            #print "unpuppet, obj:", obj
-            if not obj:
+            if not obj and not ignore_empty:
                 raise RuntimeError("No puppet was found to disconnect from.")
-            # do the disconnect, but only if we are the last session to puppet
-            obj.at_pre_unpuppet()
-            obj.sessid.remove(sessid)
-            if not obj.sessid.count():
-                del obj.player
-                obj.at_post_unpuppet(self, sessid=sessid)
+            elif obj:
+                # do the disconnect, but only if we are the last session to puppet
+                obj.at_pre_unpuppet()
+                obj.sessid.remove(session.sessid)
+                if not obj.sessid.count():
+                    del obj.player
+                    obj.at_post_unpuppet(self, sessid=sessid)
+            # Just to be sure we're always clear.
             session.puppet = None
             session.puid = None
 
