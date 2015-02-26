@@ -142,13 +142,18 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         Return objects having tags with a given key or category or
         combination of the two.
 
-        tagtype = None, alias or permission
+        Args:
+            key (str, optional): Tag key. Not case sensitive.
+            category (str, optional): Tag category. Not case sensitive.
+            tagtype (str or None, optional): 'type' of Tag, by default
+                this is either `None` (a normal Tag), `alias` or
+                `permission`.
         """
         query = [("db_tags__db_tagtype", tagtype)]
         if key:
-            query.append(("db_tags__db_key", key))
+            query.append(("db_tags__db_key", key.lower()))
         if category:
-            query.append(("db_tags__db_category", category))
+            query.append(("db_tags__db_category", category.lower()))
         return self.filter(**dict(query))
 
     def get_by_permission(self, key=None, category=None):
