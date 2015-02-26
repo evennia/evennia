@@ -16,7 +16,7 @@
 # To load this file, place yourself in Limbo (room #2) and load the
 # file as user #1 with
 #
-#     @batchprocess contrib.tutorial_world.build
+#     @batchcommand contrib.tutorial_world.build
 #
 # If you give the /interactive switch you can step through the
 # build process command for command.
