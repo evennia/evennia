@@ -456,7 +456,8 @@ class ServerSessionHandler(SessionHandler):
 
         """
         sessions = make_iter(session)
-        text = text and to_str(to_unicode(text), encoding=sessions[0].encoding)
+        session = sessions[0]
+        text = text and to_str(to_unicode(text), encoding=session.encoding)
         multi = not kwargs.pop("_nomulti", None)
         forced_nomulti = kwargs.pop("_forced_nomulti", None)
         # Mode 1 mirrors to all.

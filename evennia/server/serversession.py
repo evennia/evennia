@@ -110,7 +110,7 @@ class ServerSession(Session):
         if self.logged_in:
             sessid = self.sessid
             player = self.player
-            player.unpuppet_object(sessid)
+            player.unpuppet_object(sessid, ignore_empty=True)
             uaccount = player
             uaccount.last_login = datetime.now()
             uaccount.save()
