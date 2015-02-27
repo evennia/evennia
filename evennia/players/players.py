@@ -231,22 +231,21 @@ class DefaultPlayer(PlayerDB):
         # re-cache locks to make sure superuser bypass is updated
         obj.locks.cache_lock_bypass(obj)
 
-    def unpuppet_object(self, sessid):
+    def unpuppet_object(self, sessid, ignore_empty=False):
         """
         Disengage control over an object
 
         Args:
             sessid(int): the session id to disengage
+            ignore_empty(bool): ignores sessions without puppets
 
         Raises:
             RuntimeError with message about error.
         """
         if _MULTISESSION_MODE == 1:
             sessions = self.get_all_sessions()
-            ignore_empty = True
         else:
             sessions = self.get_session(sessid)
-            ignore_empty = False
         if not sessions:
             raise RuntimeError("No session was found.")
         for session in make_iter(sessions):
@@ -270,7 +269,7 @@ class DefaultPlayer(PlayerDB):
         before a reset/shutdown.
         """
         for session in self.get_all_sessions():
-            self.unpuppet_object(session.sessid)
+            self.unpuppet_object(session.sessid, ignore_empty=True)
 
     def get_puppet(self, sessid, return_dbobj=False):
         """
