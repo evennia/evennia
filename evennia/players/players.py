@@ -231,7 +231,6 @@ class DefaultPlayer(PlayerDB):
         # re-cache locks to make sure superuser bypass is updated
         obj.locks.cache_lock_bypass(obj)
 
-
     def unpuppet_object(self, sessid):
         """
         Disengage control over an object
