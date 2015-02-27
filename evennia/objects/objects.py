@@ -533,18 +533,12 @@ class DefaultObject(ObjectDB):
         if self.player:
             # for there to be a session there must be a Player.
             if sessid:
-                # this could still be an iterable if sessid is.
-                sessions = self.player.get_session(sessid)
-                if sessions:
-                    # this is a special instruction to ignore MULTISESSION_MODE
-                    # and only relay to this given session.
-                    for session in make_iter(sessions):
-                        session.msg(text=text, **kwargs)
-                    return
-            # Send to all sessions connected to this object
-            sessions = [self.player.get_session(sessid) for sessid in self.sessid.get()]
+                sessions = make_iter(self.player.get_session(sessid))
+            else:
+                # Send to all sessions connected to this object
+                sessions = [self.player.get_session(sessid) for sessid in self.sessid.get()]
             if sessions:
-                sessions[0].msg(text=text, **kwargs)
+                sessions[0].msg(text=text, session=sessions, **kwargs)
 
     def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):
         """

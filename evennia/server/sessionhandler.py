@@ -16,7 +16,8 @@ import time
 from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.utils.utils import variable_from_module, is_iter, \
-                            to_str, to_unicode, strip_control_sequences
+                            to_str, to_unicode, strip_control_sequences, make_iter
+
 try:
     import cPickle as pickle
 except ImportError:
@@ -454,10 +455,10 @@ class ServerSessionHandler(SessionHandler):
                 Useful for connection handling messages.
 
         """
-        text = text and to_str(to_unicode(text), encoding=session.encoding)
+        sessions = make_iter(session)
+        text = text and to_str(to_unicode(text), encoding=sessions[0].encoding)
         multi = not kwargs.pop("_nomulti", None)
         forced_nomulti = kwargs.pop("_forced_nomulti", None)
-        sessions = [session]
         # Mode 1 mirrors to all.
         if _MULTISESSION_MODE == 1:
             multi = True

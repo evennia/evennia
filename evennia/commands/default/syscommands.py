@@ -61,7 +61,7 @@ class SystemNoMatch(MuxCommand):
         """
         This is given the failed raw string as input.
         """
-        self.caller.msg("Huh?")
+        self.msg("Huh?")
 
 
 #
@@ -124,7 +124,7 @@ class SystemMultimatch(MuxCommand):
         all the clashing matches.
         """
         string = self.format_multimatches(self.caller, self.matches)
-        self.caller.msg(string)
+        self.msg(string)
 
 
 # Command called when the command given at the command line
