@@ -528,6 +528,7 @@ class DefaultObject(ObjectDB):
             log_trace()
 
         # session relay
+        kwargs['_nomulti'] = kwargs.get('_nomulti', True)
 
         if self.player:
             # for there to be a session there must be a Player.
@@ -537,13 +538,11 @@ class DefaultObject(ObjectDB):
                 if sessions:
                     # this is a special instruction to ignore MULTISESSION_MODE
                     # and only relay to this given session.
-                    kwargs["_nomulti"] = True
                     for session in make_iter(sessions):
                         session.msg(text=text, **kwargs)
                     return
-            # we only send to the first of any connected sessions - the sessionhandler
-            # will disperse this to the other sessions based on MULTISESSION_MODE.
-            sessions = self.player.get_all_sessions()
+            # Send to all sessions connected to this object
+            sessions = [self.player.get_session(sessid) for sessid in self.sessid.get()]
             if sessions:
                 sessions[0].msg(text=text, **kwargs)
 
