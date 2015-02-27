@@ -513,6 +513,7 @@ class CmdQuit(MuxPlayerCommand):
     game. Use the /all switch to disconnect from all sessions.
     """
     key = "@quit"
+    aliases = "quit"
     locks = "cmd:all()"
 
     def func(self):
