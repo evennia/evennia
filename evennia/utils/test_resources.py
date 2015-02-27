@@ -40,7 +40,9 @@ class EvenniaTest(TestCase):
         self.char1.permissions.add("Immortals")
         self.char2 = create.create_object(self.character_typeclass, key="Char2", location=self.room1, home=self.room1)
         self.char1.player = self.player
+        self.player.db._last_puppet = self.char1
         self.char2.player = self.player2
+        self.player2.db._last_puppet = self.char2
         self.script = create.create_script(self.script_typeclass, key="Script")
         self.player.permissions.add("Immortals")
 
