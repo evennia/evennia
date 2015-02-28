@@ -100,6 +100,7 @@ class CommonMarkParser(object, parsers.Parser):
         title_node.line = block.start_line
         append_inlines(title_node, block.inline_content)
         new_section.append(title_node)
+        new_section['ids'] = nodes.make_id(title_node.astext())
 
         self.section_handler.add_new_section(new_section, block.level)
         self.current_node = new_section
