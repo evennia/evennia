@@ -10,7 +10,6 @@ are stored on the Portal side)
 import time
 from datetime import datetime
 from django.conf import settings
-#from evennia.scripts.models import ScriptDB
 from evennia.comms.models import ChannelDB
 from evennia.utils import logger
 from evennia.utils.inlinefunc import parse_inlinefunc
@@ -111,7 +110,7 @@ class ServerSession(Session):
         if self.logged_in:
             sessid = self.sessid
             player = self.player
-            player.unpuppet_object(sessid)
+            player.unpuppet_object(sessid, ignore_empty=True)
             uaccount = player
             uaccount.last_login = datetime.now()
             uaccount.save()
@@ -223,7 +222,9 @@ class ServerSession(Session):
         text = text if text else ""
         if INLINEFUNC_ENABLED and not "raw" in kwargs:
             text = parse_inlinefunc(text, strip="strip_inlinefunc" in kwargs, session=self)
-        self.sessionhandler.data_out(self, text=text, **kwargs)
+        session = kwargs.pop('session', None)
+        session = session or self
+        self.sessionhandler.data_out(session, text=text, **kwargs)
     # alias
     msg = data_out
 

@@ -171,9 +171,10 @@ class TestPlayer(CommandTest):
             self.call(player.CmdOOCLook(), "", "Account TestPlayer (you are OutofCharacter)", caller=self.player)
 
     def test_ooc(self):
-        self.call(player.CmdOOC(), "", "You are already", caller=self.player)
+        self.call(player.CmdOOC(), "", "You go OOC.", caller=self.player)
 
     def test_ic(self):
+        self.player.unpuppet_object(self.session.sessid)
         self.call(player.CmdIC(), "Char", "You become Char.", caller=self.player, receiver=self.char1)
 
     def test_password(self):
@@ -198,7 +199,6 @@ class TestPlayer(CommandTest):
         self.call(player.CmdCharCreate(), "Test1=Test char", "Created new character Test1. Use @ic Test1 to enter the game", caller=self.player)
 
     def test_quell(self):
-        self.call(player.CmdIC(), "Char", "You become Char.", caller=self.player, receiver=self.char1)
         self.call(player.CmdQuell(), "", "Quelling to current puppet's permissions (immortals).", caller=self.player)
 
 
