@@ -100,7 +100,10 @@ class CommonMarkParser(object, parsers.Parser):
         title_node.line = block.start_line
         append_inlines(title_node, block.inline_content)
         new_section.append(title_node)
-        new_section['ids'] = nodes.make_id(title_node.astext())
+        name = nodes.fully_normalize_name(title_node.astext())
+        new_section['names'].append(name)
+        self.current_node.document.note_implicit_target(new_section, new_section)
+        new_section['ids'].append(nodes.make_id(name))
 
         self.section_handler.add_new_section(new_section, block.level)
         self.current_node = new_section
