@@ -18,7 +18,6 @@ from evennia.players.manager import PlayerManager
 from evennia.players.models import PlayerDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
-from evennia.scripts.models import ScriptDB
 from evennia.utils import logger
 from evennia.utils.utils import (lazy_property, to_str,
                              make_iter, to_unicode,
@@ -161,7 +160,7 @@ class DefaultPlayer(PlayerDB):
 
     # puppeting operations
 
-    def puppet_object(self, sessid, obj, normal_mode=True):
+    def puppet_object(self, sessid, obj):
         """
         Use the given session to control (puppet) the given object (usually
         a Character type).
@@ -169,9 +168,6 @@ class DefaultPlayer(PlayerDB):
         Args:
             sessid (int): session id of session to connect
             obj (Object): the object to start puppeting
-            normal_mode (bool, optional): trigger hooks and extra
-                checks - this is turned off when the server reloads, to
-                quickly re-connect puppets.
 
         Raises:
             RuntimeError with message if puppeting is not possible
@@ -190,7 +186,7 @@ class DefaultPlayer(PlayerDB):
         if not obj.access(self, 'puppet'):
             # no access
             raise RuntimeError("You don't have permission to puppet '%s'." % obj.key)
-        if normal_mode and obj.player:
+        if obj.player:
             # object already puppeted
             if obj.player == self:
                 if obj.sessid.count():
@@ -210,34 +206,34 @@ class DefaultPlayer(PlayerDB):
                 raise RuntimeError("{R{c%s{R is already puppeted by another Player.")
 
         # do the puppeting
-        if normal_mode and session.puppet:
+        if session.puppet:
             # cleanly unpuppet eventual previous object puppeted by this session
             self.unpuppet_object(sessid)
         # if we get to this point the character is ready to puppet or it
         # was left with a lingering player/sessid reference from an unclean
         # server kill or similar
 
-        if normal_mode:
-            obj.at_pre_puppet(self, sessid=sessid)
+        obj.at_pre_puppet(self, sessid=sessid)
+
         # do the connection
         obj.sessid.add(sessid)
         obj.player = self
         session.puid = obj.id
         session.puppet = obj
         # validate/start persistent scripts on object
-        ScriptDB.objects.validate(obj=obj)
-        if normal_mode:
-            obj.at_post_puppet()
+        obj.scripts.validate()
+
+        obj.at_post_puppet()
+
         # re-cache locks to make sure superuser bypass is updated
         obj.locks.cache_lock_bypass(obj)
 
-    def unpuppet_object(self, sessid, ignore_empty=False):
+    def unpuppet_object(self, sessid):
         """
         Disengage control over an object
 
         Args:
             sessid(int): the session id to disengage
-            ignore_empty(bool): ignores sessions without puppets
 
         Raises:
             RuntimeError with message about error.
@@ -249,8 +245,8 @@ class DefaultPlayer(PlayerDB):
         if not sessions:
             raise RuntimeError("No session was found.")
         for session in make_iter(sessions):
-            obj = hasattr(session, "puppet") and session.puppet or None
-            if not obj and not ignore_empty:
+            obj = session.puppet or None
+            if not obj:
                 raise RuntimeError("No puppet was found to disconnect from.")
             elif obj:
                 # do the disconnect, but only if we are the last session to puppet
@@ -268,8 +264,8 @@ class DefaultPlayer(PlayerDB):
         Disconnect all puppets. This is called by server
         before a reset/shutdown.
         """
-        for session in self.get_all_sessions():
-            self.unpuppet_object(session.sessid, ignore_empty=True)
+        for session in (sess for sess in self.get_all_sessions() if sess.puppet):
+            self.unpuppet_object(session.sessid)
 
     def get_puppet(self, sessid, return_dbobj=False):
         """

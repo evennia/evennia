@@ -77,9 +77,16 @@ class ServerSession(Session):
 
         if self.puid:
             # reconnect puppet (puid is only set if we are coming
-            # back from a server reload)
+            # back from a server reload). This does all the steps
+            # done in the default @ic command but without any
+            # hooks, echoes or access checks.
             obj = _ObjectDB.objects.get(id=self.puid)
-            self.player.puppet_object(self.sessid, obj, normal_mode=False)
+            obj.sessid.add(self.sessid)
+            obj.player = self.player
+            self.puid = obj.id
+            self.puppet = obj
+            obj.scripts.validate()
+            obj.locks_cache_lock_bypass(obj)
 
     def at_login(self, player):
         """
@@ -110,7 +117,8 @@ class ServerSession(Session):
         if self.logged_in:
             sessid = self.sessid
             player = self.player
-            player.unpuppet_object(sessid, ignore_empty=True)
+            if self.puppet:
+                player.unpuppet_object(sessid)
             uaccount = player
             uaccount.last_login = datetime.now()
             uaccount.save()
