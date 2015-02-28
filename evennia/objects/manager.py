@@ -171,8 +171,7 @@ class ObjectDBManager(TypedObjectManager):
     @returns_typeclass_list
     def get_contents(self, location, excludeobj=None):
         """
-        Get all objects that has a location
-        set to this one.
+        Get all objects that has a location set to this one.
 
         excludeobj - one or more object keys to exclude from the match
         """

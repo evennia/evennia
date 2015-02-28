@@ -294,7 +294,7 @@ class DefaultObject(ObjectDB):
 
         exclude is one or more objects to not return
         """
-        return ObjectDB.objects.get_contents(self, excludeobj=exclude)
+        return self.contents_cache.get(exclude=exclude)
     contents = property(contents_get)
 
 
@@ -709,7 +709,6 @@ class DefaultObject(ObjectDB):
         location or to default home.
         """
         # Gather up everything that thinks this is its location.
-        objs = ObjectDB.objects.filter(db_location=self)
         default_home_id = int(settings.DEFAULT_HOME.lstrip("#"))
         try:
             default_home = ObjectDB.objects.get(id=default_home_id)
@@ -721,7 +720,7 @@ class DefaultObject(ObjectDB):
             log_errmsg(string % default_home_id)
             default_home = None
 
-        for obj in objs:
+        for obj in self.contents:
             home = obj.home
             # Obviously, we can't send it back to here.
             if not home or (home and home.dbid == self.dbid):
@@ -824,6 +823,7 @@ class DefaultObject(ObjectDB):
         self.attributes.clear()
         self.nicks.clear()
         self.aliases.clear()
+        self.location = None # this updates contents_cache for our location
 
         # Perform the deletion of the object
         super(ObjectDB, self).delete()

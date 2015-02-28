@@ -63,7 +63,7 @@ CHANCE_OF_ACTION = 0.5
 # Chance of a currently unlogged-in dummy performing its login
 # action every tick. This emulates not all players logging in
 # at exactly the same time.
-CHANCE_OF_LOGIN = 1.0#0.5
+CHANCE_OF_LOGIN = 1.0
 
 # Which telnet port to connect to. If set to None, uses the first
 # default telnet port of the running server.

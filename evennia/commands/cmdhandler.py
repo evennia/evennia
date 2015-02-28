@@ -171,7 +171,7 @@ def get_and_merge_cmdsets(caller, session, player, obj,
                     # Gather all cmdsets stored on objects in the room and
                     # also in the caller's inventory and the location itself
                     local_objlist = yield (location.contents_get(exclude=obj) +
-                                           obj.contents + [location])
+                                           obj.contents_get() + [location])
                     local_objlist = [o for o in local_objlist if not o._is_deleted]
                     for lobj in local_objlist:
                         try:

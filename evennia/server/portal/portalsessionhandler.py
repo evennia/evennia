@@ -73,7 +73,7 @@ class PortalSessionHandler(SessionHandler):
         if not self.portal.amp_protocol:
             # if amp is not yet ready (usually because the server is
             # booting up), try again a little later
-            reactor.CallLater(0.5, self.connect, session)
+            reactor.callLater(0.5, self.connect, session)
             return
 
         # sync with server-side
