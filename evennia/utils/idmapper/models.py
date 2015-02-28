@@ -329,7 +329,17 @@ class SharedMemoryModel(Model):
         super(SharedMemoryModel, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        "save method tracking process/thread issues"
+        """
+        Central database save operation.
+
+        Arguments as per django documentation
+
+        Calls:
+            self.at_<fieldname>_postsave(new)
+            # this is a wrapper set by oobhandler:
+            self._oob_at_<fieldname>_postsave()
+
+        """
 
         if _IS_SUBPROCESS:
             # we keep a store of objects modified in subprocesses so
@@ -348,24 +358,26 @@ class SharedMemoryModel(Model):
             callFromThread(_save_callback, self, *args, **kwargs)
 
         # update field-update hooks and eventual OOB watchers
+        new = False
         if "update_fields" in kwargs and kwargs["update_fields"]:
             # get field objects from their names
             update_fields = (self._meta.get_field_by_name(field)[0]
                              for field in kwargs.get("update_fields"))
         else:
             # meta.fields are already field objects; get them all
+            new =True
             update_fields = self._meta.fields
         for field in update_fields:
             fieldname = field.name
             # if a hook is defined it must be named exactly on this form
-            hookname = "_at_%s_postsave" % fieldname
+            hookname = "at_%s_postsave" % fieldname
             if hasattr(self, hookname) and callable(_GA(self, hookname)):
-                _GA(self, hookname)()
+                _GA(self, hookname)(new)
             # if a trackerhandler is set on this object, update it with the
             # fieldname and the new value
             fieldtracker = "_oob_at_%s_postsave" % fieldname
             if hasattr(self, fieldtracker):
-                _GA(self, fieldtracker)(self, fieldname)
+                _GA(self, fieldtracker)(fieldname)
 
 
 class WeakSharedMemoryModelBase(SharedMemoryModelBase):

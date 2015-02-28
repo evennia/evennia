@@ -265,19 +265,26 @@ class ObjectDB(TypedObject):
         self.save(update_fields=["db_location"])
     location = property(__location_get, __location_set, __location_del)
 
-    def _db_location_post_save(self):
+    def at_db_location_postsave(self, new):
         """
-        This is called automatically after the location field was saved,
-        no matter how. It checks for a variable _safe_contents_update to
-        know if the save was triggered via the proper handler or not.
-
-        Since we cannot know at this point was old_location was, we
-        trigger a full-on contents_cache update here.
+        This is called automatically after the location field was
+        saved, no matter how. It checks for a variable
+        _safe_contents_update to know if the save was triggered via
+        the location handler (which updates the contents cache) or
+        not.
 
         """
         if not hasattr(self, "_safe_contents_update"):
-            logger.log_warn("db_location direct save triggered contents_cache.init() for all objects!")
-            [o.contents_cache.init() for o in self.__dbclass__.get_all_cached_instances()]
+            # changed/set outside of the location handler
+            if new:
+                # if new, there is no previous location to worry about
+                if self.db_location:
+                    self.db_location.contents_cache.add(self)
+            else:
+                # Since we cannot know at this point was old_location was, we
+                # trigger a full-on contents_cache update here.
+                logger.log_warn("db_location direct save triggered contents_cache.init() for all objects!")
+                [o.contents_cache.init() for o in self.__dbclass__.get_all_cached_instances()]
 
     class Meta:
         "Define Django meta options"

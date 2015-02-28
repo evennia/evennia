@@ -7,7 +7,7 @@ It is stored on the Server side (as opposed to protocol-specific sessions which
 are stored on the Portal side)
 """
 
-import time
+from time import time
 from datetime import datetime
 from django.conf import settings
 from evennia.comms.models import ChannelDB
@@ -48,6 +48,7 @@ class ServerSession(Session):
         self.player = None
         self.cmdset_storage_string = ""
         self.cmdset = CmdSetHandler(self, True)
+        self.cmd_per_second = 0.0
 
     def __cmdset_storage_get(self):
         return [path.strip() for path in self.cmdset_storage_string.split(',')]
@@ -98,7 +99,7 @@ class ServerSession(Session):
         self.uid = self.player.id
         self.uname = self.player.username
         self.logged_in = True
-        self.conn_time = time.time()
+        self.conn_time = time()
         self.puid = None
         self.puppet = None
         self.cmdset_storage = settings.CMDSET_SESSION
@@ -184,12 +185,11 @@ class ServerSession(Session):
         and command counters.
         """
         # Store the timestamp of the user's last command.
-        self.cmd_last = time.time()
         if not idle:
             # Increment the user's command counter.
             self.cmd_total += 1
             # Player-visible idle time, not used in idle timeout calcs.
-            self.cmd_last_visible = time.time()
+            self.cmd_last_visible = time()
 
     def data_in(self, text=None, **kwargs):
         """
@@ -200,6 +200,10 @@ class ServerSession(Session):
         oobhandler at this point.
 
         """
+        now = time()
+        self.cmd_per_second = 1.0 / (now - self.cmd_last)
+        self.cmd_last = now
+
         #explicitly check for None since text can be an empty string, which is
         #also valid
         if text is not None:

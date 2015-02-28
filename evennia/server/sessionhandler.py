@@ -12,11 +12,12 @@ There are two similar but separate stores of sessions:
 
 """
 
-import time
+from time import time
 from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.utils.utils import variable_from_module, is_iter, \
                             to_str, to_unicode, strip_control_sequences, make_iter
+from evennia.utils import logger
 
 try:
     import cPickle as pickle
@@ -46,10 +47,14 @@ PCONNSYNC = chr(10)   # portal post-syncing session
 # i18n
 from django.utils.translation import ugettext as _
 
-SERVERNAME = settings.SERVERNAME
+_SERVERNAME = settings.SERVERNAME
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
-IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+_IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+_MAX_SERVER_COMMANDS_PER_SECOND = 100.0
+_MAX_SESSION_COMMANDS_PER_SECOND = 5.0
 
+
+_ERROR_COMMAND_OVERFLOW = "You entered commands too fast. Wait a moment and try again."
 
 def delayed_import():
     "Helper method for delayed import of all needed entities"
@@ -130,7 +135,9 @@ class ServerSessionHandler(SessionHandler):
         """
         self.sessions = {}
         self.server = None
-        self.server_data = {"servername": SERVERNAME}
+        self.server_data = {"servername": _SERVERNAME}
+        self.cmd_last = time()
+        self.cmd_per_second = 0.0
 
     def portal_connect(self, portalsession):
         """
@@ -359,11 +366,11 @@ class ServerSessionHandler(SessionHandler):
         Check all currently connected sessions (logged in and not)
         and see if any are dead or idle
         """
-        tcurr = time.time()
+        tcurr = time()
         reason = _("Idle timeout exceeded, disconnecting.")
         for session in (session for session in self.sessions.values()
-                        if session.logged_in and IDLE_TIMEOUT > 0
-                        and (tcurr - session.cmd_last) > IDLE_TIMEOUT):
+                        if session.logged_in and _IDLE_TIMEOUT > 0
+                        and (tcurr - session.cmd_last) > _IDLE_TIMEOUT):
             self.disconnect(session, reason=reason)
 
     def player_count(self, count=True):
@@ -493,6 +500,17 @@ class ServerSessionHandler(SessionHandler):
         """
         session = self.sessions.get(sessid, None)
         if session:
+
+            now = time()
+            self.cmd_per_second = 1.0 / (now - self.cmd_last)
+            self.cmd_last = now
+
+            if self.cmd_per_second > _MAX_SERVER_COMMANDS_PER_SECOND:
+                if session.cmd_per_second > _MAX_SESSION_COMMANDS_PER_SECOND:
+                    session.data.out(text=_ERROR_COMMAND_OVERFLOW)
+                    logger.log_infomsg("overflow kicked in for session %s: %s" % (session.sessid, text))
+                    return
+
             text = text and to_unicode(strip_control_sequences(text), encoding=session.encoding)
             if "oob" in kwargs:
                 # incoming data is always on the form (cmdname, args, kwargs)
