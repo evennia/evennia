@@ -48,7 +48,6 @@ class ServerSession(Session):
         self.player = None
         self.cmdset_storage_string = ""
         self.cmdset = CmdSetHandler(self, True)
-        self.cmd_per_second = 0.0
 
     def __cmdset_storage_get(self):
         return [path.strip() for path in self.cmdset_storage_string.split(',')]
@@ -200,10 +199,6 @@ class ServerSession(Session):
         oobhandler at this point.
 
         """
-        now = time()
-        self.cmd_per_second = 1.0 / (now - self.cmd_last)
-        self.cmd_last = now
-
         #explicitly check for None since text can be an empty string, which is
         #also valid
         if text is not None:

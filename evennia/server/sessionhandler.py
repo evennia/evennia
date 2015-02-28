@@ -136,8 +136,6 @@ class ServerSessionHandler(SessionHandler):
         self.sessions = {}
         self.server = None
         self.server_data = {"servername": _SERVERNAME}
-        self.cmd_last = time()
-        self.cmd_per_second = 0.0
 
     def portal_connect(self, portalsession):
         """
@@ -500,17 +498,6 @@ class ServerSessionHandler(SessionHandler):
         """
         session = self.sessions.get(sessid, None)
         if session:
-
-            now = time()
-            self.cmd_per_second = 1.0 / (now - self.cmd_last)
-            self.cmd_last = now
-
-            if self.cmd_per_second > _MAX_SERVER_COMMANDS_PER_SECOND:
-                if session.cmd_per_second > _MAX_SESSION_COMMANDS_PER_SECOND:
-                    session.data.out(text=_ERROR_COMMAND_OVERFLOW)
-                    logger.log_infomsg("overflow kicked in for session %s: %s" % (session.sessid, text))
-                    return
-
             text = text and to_unicode(strip_control_sequences(text), encoding=session.encoding)
             if "oob" in kwargs:
                 # incoming data is always on the form (cmdname, args, kwargs)
