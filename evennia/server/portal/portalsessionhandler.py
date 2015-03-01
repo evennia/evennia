@@ -10,8 +10,8 @@ _CONNECTION_RATE = 5.0
 _MIN_TIME_BETWEEN_CONNECTS = 1.0 / _CONNECTION_RATE
 _MOD_IMPORT = None
 
-_MAX_CMD_RATE = 150.0
-_ERROR_COMMAND_OVERFLOW = "You entered commands too fast. Wait a moment and try again."
+#_MAX_CMD_RATE = 80.0
+#_ERROR_COMMAND_OVERFLOW = "You entered commands too fast. Wait a moment and try again."
 
 #------------------------------------------------------------
 # Portal-SessionHandler class
@@ -38,14 +38,6 @@ class PortalSessionHandler(SessionHandler):
         self.uptime = time()
         self.connection_time = 0
         self.time_last_connect = time()
-        self.cmd_last = time()
-        self.cmd_rate_history = deque([], 200)
-        self.cmd_rate = 0.0
-        self.overflows = 0
-        task.LoopingCall(self._report, interval=30)
-
-    def _report(self):
-        print " INFO: cmd rate: %s, overflows: %s" % (sum(self.cmd_rate_history) / 200.0, self.overflows)
 
     def at_server_connection(self):
         """
@@ -301,29 +293,8 @@ class PortalSessionHandler(SessionHandler):
         Called by portal sessions for relaying data coming
         in from the protocol to the server. data is
         serialized before passed on.
+
         """
-
-        now = time()
-        self.cmd_rate_history.append(1.0 / (now - self.cmd_last))
-
-        if session.logged_in:
-            # command flood protection
-            self.cmd_rate = sum(self.cmd_rate_history) / 200.0
-            if self.cmd_rate > _MAX_CMD_RATE:
-                max_rate_per_session = _MAX_CMD_RATE / len(self.sessions)
-                session_rate = 1.0 / (now - session.cmd_last)
-                session.cmd_last = now
-                if session_rate > max_rate_per_session:
-                    self.overflows += 1
-                    session.data_out(text=_ERROR_COMMAND_OVERFLOW)
-                    if 100 % self.overflows == 0:
-                        print "CMD OVERFLOW %s: %s (%s/%s, %s/%s)" % (session.sessid, text,
-                                        self.cmd_rate, _MAX_CMD_RATE,
-                                        session_rate, max_rate_per_session)
-                    return
-        else:
-            session.cmd_last = now
-
         self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
                                                               msg=text,
                                                               data=kwargs)
