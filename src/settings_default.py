@@ -248,7 +248,7 @@ OOB_PLUGIN_MODULES = ["src.server.oob_cmds"]
 # Default command sets
 ######################################################################
 # Note that with the exception of the unloggedin set (which is not
-# stored anywhere in the databse), changing these paths will only affect
+# stored anywhere in the database), changing these paths will only affect
 # NEW created characters/objects, not those already in play. So if you plan to
 # change this, it's recommended you do it before having created a lot of objects
 # (or simply reset the database after the change for simplicity). Remember
