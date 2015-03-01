@@ -415,7 +415,7 @@ GUEST_HOME = DEFAULT_HOME
 # The start position used for guest characters.
 GUEST_START_LOCATION = START_LOCATION
 # The naming convention used for creating new guest
-# players/characters. The size of this list also detemines how many
+# players/characters. The size of this list also determines how many
 # guests may be on the game at once. The default is a maximum of nine
 # guests, named Guest1 through Guest9.
 GUEST_LIST = ["Guest" + str(s+1) for s in range(9)]
