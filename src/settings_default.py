@@ -383,7 +383,7 @@ MULTISESSION_MODE = 0
 # checked by the default ooc char-creation command. Forced to 1 for
 # MULTISESSION_MODE 0 and 1.
 MAX_NR_CHARACTERS = 1
-# The access hiearchy, in climbing order. A higher permission in the
+# The access hierarchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()
 # lock functions.
 PERMISSION_HIERARCHY = ["Guests", # note-only used if GUEST_ENABLED=True
