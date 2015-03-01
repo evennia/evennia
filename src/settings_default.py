@@ -276,7 +276,7 @@ CMDSET_PATHS = ["game.gamesrc.commands"]
 SERVER_SESSION_CLASS = "src.server.serversession.ServerSession"
 
 # Base paths for typeclassed object classes. These paths must be
-# defined relative evennia's root directory. They will be searched in
+# defined relatively to Evennia's root directory. They will be searched in
 # order to find relative typeclass paths.
 OBJECT_TYPECLASS_PATHS = ["game.gamesrc.objects",
                           "game.gamesrc.objects.examples",
