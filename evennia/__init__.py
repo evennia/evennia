@@ -51,6 +51,7 @@ create_script = None
 create_player = None
 create_channel = None
 create_message = None
+create_help_entry = None
 
 # utilities
 lockfuncs = None
@@ -110,7 +111,7 @@ def _init():
     global ObjectDB, PlayerDB, ScriptDB, ChannelDB, Msg
     global Command, CmdSet, default_cmds, syscmdkeys
     global search_object, search_script, search_player, search_channel, search_help
-    global create_object, create_script, create_player, create_channel, create_message
+    global create_object, create_script, create_player, create_channel, create_message, create_help_entry
     global lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, OOB_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER
 
@@ -147,6 +148,7 @@ def _init():
     from utils.create import create_player
     from utils.create import create_channel
     from utils.create import create_message
+    from utils.create import create_help_entry
 
     # utilities
     from locks import lockfuncs
