@@ -123,7 +123,7 @@ LANGUAGE_CODE = 'en-us'
 # How long time (in seconds) a user may idle before being logged
 # out. This can be set as big as desired. A user may avoid being
 # thrown off by sending the empty system command 'idle' to the server
-# at regular intervals. Set <=0 to deactivate idle timout completely.
+# at regular intervals. Set <=0 to deactivate idle timeout completely.
 IDLE_TIMEOUT = 3600
 # The idle command can be sent to keep your session active without actually
 # having to spam normal commands regularly. It gives no feedback, only updates
