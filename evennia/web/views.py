@@ -42,13 +42,13 @@ def page_index(request):
     pagevars = {
         "page_title": "Front Page",
         "players_connected_recent": recent_users,
-        "num_players_connected": nsess or "noone",
+        "num_players_connected": nsess or "no one",
         "num_players_registered": nplyrs or "no",
         "num_players_connected_recent": nplyrs_conn_recent or "no",
-        "num_players_registered_recent": nplyrs_reg_recent or "noone",
+        "num_players_registered_recent": nplyrs_reg_recent or "no one",
         "num_rooms": nrooms or "none",
         "num_exits": nexits or "no",
-        "num_objects" : nobjs or "none",
+        "num_objects": nobjs or "none",
         "num_characters": nchars or "no",
         "num_others": nothers or "no"
     }
