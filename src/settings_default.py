@@ -496,7 +496,7 @@ DEBUG = False
 # While true, show "pretty" error messages for template syntax errors.
 TEMPLATE_DEBUG = DEBUG
 # Emails are sent to these people if the above DEBUG value is False. If you'd
-# rather nobody recieve emails, leave this commented out or empty.
+# rather prefer nobody receives emails, leave this commented out or empty.
 ADMINS = () #'Your Name', 'your_email@domain.com'),)
 # These guys get broken link notifications when SEND_BROKEN_LINK_EMAILS is True.
 MANAGERS = ADMINS
