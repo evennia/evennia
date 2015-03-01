@@ -336,7 +336,7 @@ BASE_BATCHPROCESS_PATHS = ['game.gamesrc.world', 'contrib']
 # determine the current in-game time. You can of course interpret
 # "week", "month" etc as your own in-game time units as desired.
 
-#The time factor dictates if the game world runs faster (timefactor>1)
+# The time factor dictates if the game world runs faster (timefactor>1)
 # or slower (timefactor<1) than the real world.
 TIME_FACTOR = 2.0
 # These measures might or might not make sense to your game world.
