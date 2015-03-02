@@ -376,6 +376,25 @@ def locattr(accessing_obj, accessed_obj, *args, **kwargs):
     if hasattr(accessing_obj, "location"):
         return attr(accessing_obj.location, accessed_obj, *args, **kwargs)
 
+def objlocattr(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage:
+      locattr(attrname)
+      locattr(attrname, value)
+      locattr(attrname, value, compare=type)
+
+    Works like attr, except it looks for an attribute on
+    accessed_obj.location, if such an entity exists.
+
+    if accessed_obj has a property ".obj" (such as is the case for a
+    Command), then accessing_obj.obj.location is used instead.
+
+    """
+    if hasattr(accessed_obj, "obj"):
+        accessed_obj = accessed_obj.obj
+    if hasattr(accessed_obj, "location"):
+        return attr(accessed_obj.location, accessed_obj, *args, **kwargs)
+
 
 def attr_eq(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -447,6 +466,7 @@ def tag(accessing_obj, accessed_obj, *args, **kwargs):
     """
     if hasattr(accessing_obj, "obj"):
         accessing_obj = accessing_obj = accessing_obj.obj
+    print "tag:", args, accessing_obj, accessing_obj.tags.get(*args)
     return accessing_obj.tags.get(*args)
 
 def objtag(accessing_obj, accessed_obj, *args, **kwargs):
