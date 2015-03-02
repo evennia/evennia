@@ -692,7 +692,9 @@ def init_game_directory(path, check_db=True):
         # batchfile in game/server, linking to the actual binary
 
         global TWISTED_BINARY
-        TWISTED_BINARY = "twistd.bat"
+        # Windows requires us to use the absolute path for the bat file.
+        server_path = os.path.dirname(os.path.abspath(__file__))
+        TWISTED_BINARY = os.path.join(server_path, "twistd.bat")
 
         # add path so system can find the batfile
         sys.path.insert(1, os.path.join(GAMEDIR, SERVERDIR))
