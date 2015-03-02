@@ -44,6 +44,7 @@ search_script = None
 search_player = None
 search_channel = None
 search_help = None
+search_tag = None
 
 # create functions
 create_object = None
@@ -110,7 +111,7 @@ def _init():
     global DefaultRoom, DefaultExit, DefaultChannel, DefaultScript
     global ObjectDB, PlayerDB, ScriptDB, ChannelDB, Msg
     global Command, CmdSet, default_cmds, syscmdkeys
-    global search_object, search_script, search_player, search_channel, search_help
+    global search_object, search_script, search_player, search_channel, search_help, search_tag
     global create_object, create_script, create_player, create_channel, create_message, create_help_entry
     global lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, OOB_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER
@@ -141,6 +142,7 @@ def _init():
     from utils.search import search_player
     from utils.search import search_channel
     from utils.search import search_help
+    from utils.search import search_tag
 
     # create functions
     from utils.create import create_object
