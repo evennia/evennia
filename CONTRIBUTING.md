@@ -9,7 +9,7 @@ Thanks for helping us improve Evennia! Please use one of the issue templates bel
 
 If you want to contribute code to Evennia, you should work in your own Github *fork* (see our [style guide](https://github.com/evennia/evennia/blob/master/CODING_STYLE.txt)) and then make a *pull request*. Read the [Contribution][3] page for instructions how. 
 
-## Formatting your Issues: 
+## Formatting your Issue
 
 Issues are formatted using [markdown][7]. Here is some useful markdown syntax:
 
