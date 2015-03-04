@@ -38,7 +38,7 @@ SDISCONN = chr(5)     # server session disconnect
 SDISCONNALL = chr(6)  # server session disconnect all
 SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server session sync
-SCONN = chr(9)        # server creating new connectiong (for irc/imc2 bots etc)
+SCONN = chr(9)        # server creating new connection (for irc/imc2 bots etc)
 PCONNSYNC = chr(10)   # portal post-syncing a session
 
 MAXLEN = 65535  # max allowed data length in AMP protocol
