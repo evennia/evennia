@@ -221,7 +221,7 @@ def oob_report(session, *args, **kwargs):
     """
     Called with the `REPORT PROPNAME` MSDP command.
     Monitors the changes of given property name. Assumes reporting
-    happens on an objcet controlled by the session.
+    happens on an object controlled by the session.
 
     Args:
         session (Session): The Session doing the monitoring. The
