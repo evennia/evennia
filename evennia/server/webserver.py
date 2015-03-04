@@ -87,8 +87,8 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
 class DjangoWebRoot(resource.Resource):
     """
     This creates a web root (/) that Django
-    understands by tweaking the way the
-    child instancee are recognized.
+    understands by tweaking the way
+    child instancee ars recognized.
     """
     def __init__(self, pool):
         """
