@@ -40,7 +40,7 @@ class ServerConfig(WeakSharedMemoryModel):
     #
     #
     # These database fields are all set using their corresponding properties,
-    # named same as the field, but withtout the db_* prefix.
+    # named same as the field, but without the db_* prefix.
 
     # main name of the database entry
     db_key = models.CharField(max_length=64, unique=True)
