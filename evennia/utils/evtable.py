@@ -97,7 +97,9 @@ ANSI-coloured string types.
 When a cell is auto-wrapped across multiple lines, ANSI-reset
 sequences will be put at the end of each wrapped line. This means that
 the colour of a wrapped cell will not "bleed", but it also means that
-eventual colour outside
+eventual colour outside the table will not transfer "across" a table,
+you need to re-set the color to have it appear on both sides of the
+table string.
 
 """
 #from textwrap import wrap
