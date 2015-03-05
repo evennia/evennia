@@ -93,11 +93,11 @@ CREATED_NEW_GAMEDIR = \
     """
 
 ERROR_INPUT = \
-    """
-    The argument(s)
-        {args} {kwargs}
-    is/are not recognized by Evennia nor Django. Use -h for help.
-    """
+"""
+    Command
+      {args} {kwargs}
+    raised an error: '{traceback}'.
+"""
 
 ERROR_NO_GAMEDIR = \
     """
@@ -903,6 +903,8 @@ def main():
                       help="Start given server component under the Python profiler.")
     parser.add_argument('--dummyrunner', nargs=1, action='store', dest='dummyrunner', metavar="N",
                         help="Tests a running server by connecting N dummy players to it.")
+    parser.add_argument('--settings', nargs=1, action='store', dest='customsettings', metavar="/rel/path/to/file",
+                      help="Start evennia with an alternative settings file.")
     parser.add_argument("option", nargs='?', default="noop",
                         help="Operational mode: 'start', 'stop', 'restart' or 'menu'.")
     parser.add_argument("service", metavar="component", nargs='?', default="all",
@@ -961,15 +963,19 @@ def main():
         if unknown_args:
             for arg in unknown_args:
                 if arg.startswith("--"):
-                    kwargs[arg.lstrip("--")] = True
+                    if "=" in arg:
+                        arg, value  = [p.strip() for p in arg.split("=", 1)]
+                    else:
+                        value = True
+                    kwargs[arg.lstrip("--")] = value
                 else:
                     args.append(arg)
         try:
             django.core.management.call_command(*args, **kwargs)
-        except django.core.management.base.CommandError:
+        except django.core.management.base.CommandError, exc:
             args = ", ".join(args)
             kwargs = ", ".join(["--%s" % kw for kw in kwargs])
-            print ERROR_INPUT.format(args=args, kwargs=kwargs)
+            print ERROR_INPUT.format(traceback=exc, args=args, kwargs=kwargs)
     else:
         # no input; print evennia info
         print ABOUT_INFO
