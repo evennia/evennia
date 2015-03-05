@@ -1113,7 +1113,7 @@ def format_table(table, extra_space=1):
 
 def get_evennia_pids():
     """
-    Get the currently valids PIDs (Process IDs) of the Portal and Server
+    Get the currently valid PIDs (Process IDs) of the Portal and Server
     by trying to access an PID file. This can be used to determine if we
     are in a subprocess by something like
 
