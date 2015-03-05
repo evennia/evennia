@@ -970,11 +970,12 @@ def main():
         if unknown_args:
             for arg in unknown_args:
                 if arg.startswith("--"):
+                    print "arg:", arg
                     if "=" in arg:
                         arg, value  = [p.strip() for p in arg.split("=", 1)]
                     else:
                         value = True
-                    kwargs[arg.lstrip("--")] = value
+                    kwargs[arg.lstrip("--")] = [value]
                 else:
                     args.append(arg)
         try:
