@@ -903,8 +903,8 @@ def main():
                       help="Start given server component under the Python profiler.")
     parser.add_argument('--dummyrunner', nargs=1, action='store', dest='dummyrunner', metavar="N",
                         help="Tests a running server by connecting N dummy players to it.")
-    parser.add_argument('--settings', nargs=1, action='store', dest='customsettings', metavar="/rel/path/to/file",
-                      help="Start evennia with an alternative settings file.")
+    parser.add_argument('--settings', nargs=1, action='store', dest='altsettings', default=None, metavar="filename.py",
+                      help="Start evennia with alternative settings file in gamedir/server/conf/.")
     parser.add_argument("option", nargs='?', default="noop",
                         help="Operational mode: 'start', 'stop', 'restart' or 'menu'.")
     parser.add_argument("service", metavar="component", nargs='?', default="all",
@@ -932,6 +932,13 @@ def main():
     if args.show_version:
         print show_version_info(option=="help")
         sys.exit()
+
+    if args.altsettings:
+        sfile = args.altsettings[0]
+        global SETTINGSFILE, SETTINGS_DOTPATH
+        SETTINGSFILE = sfile
+        SETTINGS_DOTPATH = "server.conf.%s" % sfile.rstrip(".py")
+        print "Using settings file '%s' (%s)." % (SETTINGSFILE, SETTINGS_DOTPATH)
 
     if args.dummyrunner:
         # launch the dummy runner
