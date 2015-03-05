@@ -1006,7 +1006,7 @@ def string_similarity(string1, string2):
 
 def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
     """
-    Given a string and a vocabulary, return a match or a list of suggestsion
+    Given a string and a vocabulary, return a match or a list of suggestions
     based on string similarity.
 
     Args:
