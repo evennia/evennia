@@ -14,6 +14,8 @@ import os
 from twisted.web import server, static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
+from twisted.internet.task import LoopingCall
+
 import django
 django.setup()
 
@@ -72,6 +74,42 @@ RSS_ENABLED = settings.RSS_ENABLED
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
 
 
+# Maintenance function - this is called repeatedly by the server
+
+_MAINTENANCE_COUNT = 0
+_FLUSH_CACHE = None
+_IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
+def _server_maintenance():
+    """
+    This maintenance function handles repeated checks and updates that
+    the server needs to do. It is called every 5 minutes.
+    """
+    global EVENNIA, _MAINTENANCE_COUNT
+    global _FLUSH_CACHE
+    if not _FLUSH_CACHE:
+        from evennia.utils.idmapper.models import conditional_flush as _FLUSH_CACHE
+
+    _MAINTENANCE_COUNT += 1
+
+    # update game time
+    EVENNIA.runtime += 60.0
+    ServerConfig.objects.conf("runtime", EVENNIA.runtime)
+    EVENNIA.runtime_last_saved = time.time()
+
+    if _MAINTENANCE_COUNT % 300 == 0:
+        # check cache size every 5 minutes
+        print "maintenance: check flush cache..."
+        _FLUSH_CACHE(_IDMAPPER_CACHE_MAXSIZE)
+    if _MAINTENANCE_COUNT % 3600 == 0:
+        # validate scripts every hour
+        print "maintenance: validate scripts..."
+        evennia.ScriptDB.objects.validate()
+    if _MAINTENANCE_COUNT % 3700 == 0:
+        # validate channels off-sync with scripts
+        print "maintenance: validate channels..."
+        evennia.CHANNEL_HANDLER.update()
+
+
 #------------------------------------------------------------
 # Evennia Main Server object
 #------------------------------------------------------------
@@ -104,8 +142,6 @@ class Evennia(object):
         # Run the initial setup if needed
         self.run_initial_setup()
 
-        self.start_time = time.time()
-
         # initialize channelhandler
         channelhandler.CHANNELHANDLER.update()
 
@@ -113,8 +149,12 @@ class Evennia(object):
         # by Ctrl-C, reboot etc.
         reactor.addSystemEventTrigger('before', 'shutdown',
                                           self.shutdown, _reactor_stopping=True)
-
         self.game_running = True
+
+        # track the server time
+        self.start_time = time.time()
+        self.runtime = ServerConfig.objects.conf("runtime", default=0.0)
+        self.runtime_last_saved = self.start_time
 
         self.run_init_hooks()
 
@@ -323,10 +363,6 @@ class Evennia(object):
 
             self.at_server_cold_stop()
 
-        # stopping time
-        from evennia.utils import gametime
-        gametime.save()
-
         self.at_server_stop()
         # if _reactor_stopping is true, reactor does not need to
         # be stopped again.
@@ -486,6 +522,9 @@ ServerConfig.objects.conf("server_starting_mode", delete=True)
 
 if os.name == 'nt':
     # Windows only: Set PID file manually
-    f = open(os.path.join(settings.GAME_DIR, 'server.pid'), 'w')
-    f.write(str(os.getpid()))
-    f.close()
+    with open(os.path.join(settings.GAME_DIR, 'server.pid'), 'w') as f:
+        f.write(str(os.getpid()))
+
+# start the maintenance task
+maintenance_task = LoopingCall(_server_maintenance)
+maintenance_task.start(60) # call every minute

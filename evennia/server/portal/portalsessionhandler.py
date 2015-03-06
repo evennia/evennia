@@ -295,6 +295,7 @@ class PortalSessionHandler(SessionHandler):
         serialized before passed on.
 
         """
+        self.cmd_last = time()
         self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
                                                               msg=text,
                                                               data=kwargs)

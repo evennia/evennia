@@ -8,12 +8,15 @@ sessions etc.
 """
 
 import re
+from twisted.internet.task import LoopingCall
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, GA, WILL, WONT, ECHO
 from evennia.server.session import Session
 from evennia.server.portal import ttype, mssp, telnet_oob, naws
 from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
 from evennia.utils import utils, ansi, logger
+
+NOP = chr(241)
 
 _RE_N = re.compile(r"\{n$")
 _RE_LEND = re.compile(r"\n$|\r$", re.MULTILINE)
@@ -59,6 +62,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # timeout the handshakes in case the client doesn't reply at all
         from evennia.utils.utils import delay
         delay(2, callback=self.handshake_done, retval=True)
+
+        # set up a keep-alive
+        self.keep_alive = LoopingCall(self._write, NOP)
+        self.keep_alive.start(30)
+
 
     def handshake_done(self, force=False):
         """

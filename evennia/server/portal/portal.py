@@ -8,11 +8,13 @@ by game/evennia.py).
 
 """
 
+import time
 import sys
 import os
 
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor
+from twisted.internet.task import LoopingCall
 from twisted.web import server
 import django
 django.setup()
@@ -65,6 +67,28 @@ AMP_HOST = settings.AMP_HOST
 AMP_PORT = settings.AMP_PORT
 AMP_INTERFACE = settings.AMP_INTERFACE
 AMP_ENABLED = AMP_HOST and AMP_PORT and AMP_INTERFACE
+
+
+# Maintenance function - this is called repeatedly by the portal.
+
+_IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+def _portal_maintenance():
+    """
+    The maintenance function handles repeated checks and updates
+    that the server needs to do. It is called every minute.
+    """
+    # check for idle sessions
+    now = time.time()
+
+    reason = "Idle timeout exceeded, disconnecting."
+    for session in [sess for sess in PORTAL_SESSIONS.sessions.values()
+                    if (now - sess.cmd_last) > _IDLE_TIMEOUT]:
+        session.data_out(reason)
+        PORTAL_SESSIONS.disconnect(session)
+if _IDLE_TIMEOUT > 0:
+    # only start the maintenance task if we care about idling.
+    _maintenance_task = LoopingCall(_portal_maintenance)
+    _maintenance_task.start(60) # called every minute
 
 
 #------------------------------------------------------------
