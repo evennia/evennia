@@ -15,8 +15,8 @@ from evennia.scripts.manager import ScriptManager
 from evennia.comms import channelhandler
 from evennia.utils import logger
 
-__all__ = ["DefaultScript", "DoNothing", "CheckSessions",
-           "ValidateScripts", "ValidateChannelHandler"]
+__all__ = ["DefaultScript", "DoNothing", "Store"]
+
 
 _GA = object.__getattribute__
 _SESSIONS = None

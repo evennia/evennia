@@ -41,8 +41,9 @@ from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBa
 from evennia.typeclasses import managers
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import (
-    is_iter, inherits_from, lazy_property,
-    class_from_module)
+        is_iter, inherits_from, lazy_property,
+        class_from_module)
+from evennia.utils.logger import log_trace
 from evennia.typeclasses.django_new_patch import patched_new
 
 __all__ = ("TypedObject", )
@@ -180,10 +181,17 @@ class TypedObject(SharedMemoryModel):
         typeclass_path = kwargs.pop("typeclass", None)
         super(TypedObject, self).__init__(*args, **kwargs)
         if typeclass_path:
-            self.__class__ = class_from_module(typeclass_path)
-            self.db_typclass_path = typeclass_path
+            try:
+                self.__class__ = class_from_module(typeclass_path)
+            except ImportError:
+                log_trace()
+            finally:
+                self.db_typclass_path = typeclass_path
         elif self.db_typeclass_path:
-            self.__class__ = class_from_module(self.db_typeclass_path)
+            try:
+                self.__class__ = class_from_module(self.db_typeclass_path)
+            except ImportError:
+                log_trace()
         else:
             self.db_typeclass_path = "%s.%s" % (self.__module__, self.__class__.__name__)
         # important to put this at the end since _meta is based on the set __class__
