@@ -79,22 +79,31 @@ WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
 _MAINTENANCE_COUNT = 0
 _FLUSH_CACHE = None
 _IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
+_GAMETIME_MODULE = None
+
 def _server_maintenance():
     """
     This maintenance function handles repeated checks and updates that
     the server needs to do. It is called every 5 minutes.
     """
-    global EVENNIA, _MAINTENANCE_COUNT
-    global _FLUSH_CACHE
+    global EVENNIA, _MAINTENANCE_COUNT, _FLUSH_CACHE, _GAMETIME_MODULE
     if not _FLUSH_CACHE:
         from evennia.utils.idmapper.models import conditional_flush as _FLUSH_CACHE
+    if not _GAMETIME_MODULE:
+        from evennia.utils import gametime as _GAMETIME_MODULE
 
     _MAINTENANCE_COUNT += 1
 
-    # update game time
-    EVENNIA.runtime += 60.0
-    ServerConfig.objects.conf("runtime", EVENNIA.runtime)
-    EVENNIA.runtime_last_saved = time.time()
+    now = time.time()
+    if _MAINTENANCE_COUNT == 1:
+        # first call after a reload
+        _GAMETIME_MODULE.SERVER_START_TIME = now
+        _GAMETIME_MODULE.SERVER_RUNTIME = ServerConfig.objects.conf("runtime", default=0.0)
+    else:
+        _GAMETIME_MODULE.SERVER_RUNTIME += 60.0
+    # update game time and save it across reloads
+    _GAMETIME_MODULE.SERVER_RUNTIME_LAST_UPDATED = now
+    ServerConfig.objects.conf("runtime", _GAMETIME_MODULE.SERVER_RUNTIME)
 
     if _MAINTENANCE_COUNT % 300 == 0:
         # check cache size every 5 minutes
@@ -108,7 +117,8 @@ def _server_maintenance():
         # validate channels off-sync with scripts
         print "maintenance: validate channels..."
         evennia.CHANNEL_HANDLER.update()
-
+maintenance_task = LoopingCall(_server_maintenance)
+maintenance_task.start(60, now=True) # call every minute
 
 #------------------------------------------------------------
 # Evennia Main Server object
@@ -139,6 +149,8 @@ class Evennia(object):
         # Database-specific startup optimizations.
         self.sqlite3_prep()
 
+        self.start_time = time.time()
+
         # Run the initial setup if needed
         self.run_initial_setup()
 
@@ -152,10 +164,6 @@ class Evennia(object):
         self.game_running = True
 
         # track the server time
-        self.start_time = time.time()
-        self.runtime = ServerConfig.objects.conf("runtime", default=0.0)
-        self.runtime_last_saved = self.start_time
-
         self.run_init_hooks()
 
     # Server startup methods
@@ -525,6 +533,3 @@ if os.name == 'nt':
     with open(os.path.join(settings.GAME_DIR, 'server.pid'), 'w') as f:
         f.write(str(os.getpid()))
 
-# start the maintenance task
-maintenance_task = LoopingCall(_server_maintenance)
-maintenance_task.start(60) # call every minute

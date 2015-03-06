@@ -604,7 +604,7 @@ class CmdTime(MuxCommand):
         table.align = 'l'
         table.add_row(["Current server uptime", utils.time_format(gametime.uptime(), 3)])
         table.add_row(["Total server running time", utils.time_format(gametime.runtime(), 2)])
-        table.add_row(["Total in-game time (realtime x %g" % (gametime.TIMEFACTOR), utils.time_format(gametime.gametime(), 2)])
+        table.add_row(["Total in-game time (realtime x %g)" % (gametime.TIMEFACTOR), utils.time_format(gametime.gametime(), 2)])
         table.add_row(["Server time stamp", datetime.datetime.now()])
         self.caller.msg(str(table))
 

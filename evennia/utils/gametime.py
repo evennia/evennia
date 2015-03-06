@@ -31,9 +31,10 @@ WEEK = DAY * settings.TIME_DAY_PER_WEEK
 MONTH = WEEK * settings.TIME_WEEK_PER_MONTH
 YEAR = MONTH * settings.TIME_MONTH_PER_YEAR
 
-# link to the main Server
-_EVENNIA = None
-
+# these are kept updated by the server maintenance loop
+SERVER_START_TIME = 0.0
+SERVER_RUNTIME_LAST_UPDATED = 0.0
+SERVER_RUNTIME = 0.0
 
 def _format(seconds, *divisors) :
     """
@@ -65,20 +66,14 @@ def _format(seconds, *divisors) :
 
 def runtime(format=False):
     "Get the total runtime of the server since first start (minus downtimes)"
-    global _EVENNIA
-    if not _EVENNIA:
-        from evennia.server.server import EVENNIA as _EVENNIA
-    runtime = _EVENNIA.runtime + (time() - _EVENNIA.runtime_last_saved)
+    runtime = SERVER_RUNTIME + (time() - SERVER_RUNTIME_LAST_UPDATED)
     if format:
         return _format(runtime, 31536000, 2628000, 604800, 86400, 3600, 60)
     return runtime
 
 def uptime(format=False):
     "Get the current uptime of the server since last reload"
-    global _EVENNIA
-    if not _EVENNIA:
-        from evennia.server.server import EVENNIA as _EVENNIA
-    uptime = time() - _EVENNIA.start_time
+    uptime = time() - SERVER_START_TIME
     if format:
         return _format(uptime, 31536000, 2628000, 604800, 86400, 3600, 60)
     return uptime
