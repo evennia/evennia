@@ -16,6 +16,7 @@ from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
 from evennia.utils import utils, ansi, logger
 
+IAC = chr(255)
 NOP = chr(241)
 
 _RE_N = re.compile(r"\{n$")
@@ -64,7 +65,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         delay(2, callback=self.handshake_done, retval=True)
 
         # set up a keep-alive
-        self.keep_alive = LoopingCall(self._write, NOP)
+        self.keep_alive = LoopingCall(self._write, IAC + NOP, now=False)
         self.keep_alive.start(30)
 
 
