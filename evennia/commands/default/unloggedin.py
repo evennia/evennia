@@ -2,8 +2,10 @@
 Commands that are available from the connect screen.
 """
 import re
-from random import getrandbits
 import traceback
+import time
+from collections import defaultdict
+from random import getrandbits
 from django.conf import settings
 from evennia.players.models import PlayerDB
 from evennia.objects.models import ObjectDB
@@ -20,6 +22,56 @@ __all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
 
 MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
+
+# Helper function to throttle failed connection attempts.
+# This can easily be used to limit player creation too,
+# (just supply a different storage dictionary), but this
+# would also block dummyrunner, so it's not added as default.
+
+_LATEST_FAILED_LOGINS = defaultdict(list)
+def _throttle(session, maxlim=None, timeout=None,
+                   storage=_LATEST_FAILED_LOGINS):
+    """
+    This will check the session's address against the
+    _LATEST_LOGINS dictionary to check they haven't
+    spammed too many fails recently.
+
+    Args:
+        session (Session): Session failing
+        maxlim (int): max number of attempts to allow
+        timeout (int): number of timeout seconds after
+            max number of tries has been reached.
+
+    Returns:
+        throttles (bool): True if throttling is active,
+            False otherwise.
+
+    Notes:
+        If maxlim and/or timeout are set, the function will
+        just do the comparison, not append a new datapoint.
+
+    """
+    address = session.address
+    if isinstance(address, tuple):
+        address = address[0]
+    now = time.time()
+    if maxlim and timeout:
+        # checking mode
+        latest_fails = storage[address]
+        if latest_fails and len(latest_fails) >= maxlim:
+            # too many fails recently
+            if now - latest_fails[-1] < timeout:
+                # too soon - timeout in play
+                return True
+            else:
+                # timeout has passed. Reset faillist
+                storage[address] = []
+                return False
+    else:
+        # store the time of the latest fail
+        storage[address].append(time.time())
+        return False
+
 
 class CmdUnconnectedConnect(MuxCommand):
     """
@@ -46,8 +98,14 @@ class CmdUnconnectedConnect(MuxCommand):
         other types of logged-in commands (this is because
         there is no object yet before the player has logged in)
         """
-
         session = self.caller
+
+        # check for too many login errors too quick.
+        if _throttle(session, maxlim=5, timeout=5*60, storage=_LATEST_FAILED_LOGINS):
+            # timeout is 5 minutes.
+            session.msg("{RYou made too many connection attempts. Try again in a few minutes.{n")
+            return
+
         args = self.args
         # extract quoted parts
         parts = [part.strip() for part in re.split(r"\"|\'", args) if part.strip()]
@@ -66,24 +124,23 @@ class CmdUnconnectedConnect(MuxCommand):
                         session.msg("All guest accounts are in use. Please try again later.")
                         return
 
-                    password       = "%016x" % getrandbits(64)
-                    home           = ObjectDB.objects.get_id(settings.GUEST_HOME)
-                    permissions    = settings.PERMISSION_GUEST_DEFAULT
-                    typeclass      = settings.BASE_CHARACTER_TYPECLASS
-                    ptypeclass     = settings.BASE_GUEST_TYPECLASS
+                    password = "%016x" % getrandbits(64)
+                    home = ObjectDB.objects.get_id(settings.GUEST_HOME)
+                    permissions = settings.PERMISSION_GUEST_DEFAULT
+                    typeclass = settings.BASE_CHARACTER_TYPECLASS
+                    ptypeclass = settings.BASE_GUEST_TYPECLASS
                     start_location = ObjectDB.objects.get_id(settings.GUEST_START_LOCATION)
-
                     new_player = _create_player(session, playername, password,
-                                              home, permissions, ptypeclass)
+                                                home, permissions, ptypeclass)
                     if new_player:
                         _create_character(session, new_player, typeclass, start_location,
                                         home, permissions)
                         session.sessionhandler.login(session, new_player)
 
                 except Exception:
-                # We are in the middle between logged in and -not, so we have
-                # to handle tracebacks ourselves at this point. If we don't,
-                # we won't see any errors at all.
+                    # We are in the middle between logged in and -not, so we have
+                    # to handle tracebacks ourselves at this point. If we don't,
+                    # we won't see any errors at all.
                     string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
                     session.msg(string % (traceback.format_exc()))
                     logger.log_errmsg(traceback.format_exc())
@@ -102,12 +159,14 @@ class CmdUnconnectedConnect(MuxCommand):
             pswd = player.check_password(password)
 
         if not (player and pswd):
-        # No playername or password match
-            string = "Wrong login information given.\nIf you have spaces in your name or "
-            string += "password, don't forget to enclose it in quotes. Also capitalization matters."
-            string += "\nIf you are new you should first create a new account "
-            string += "using the 'create' command."
+            # No playername or password match
+            string = "Wrong login information given.\nIf you have spaces in your name or " \
+                     "password, don't forget to enclose it in quotes. Also capitalization matters." \
+                     "\nIf you are new you should first create a new account " \
+                     "using the 'create' command."
             session.msg(string)
+            # this just updates the throttle
+            _throttle(session, storage=_LATEST_FAILED_LOGINS)
             return
 
         # Check IP and/or name bans
@@ -116,8 +175,8 @@ class CmdUnconnectedConnect(MuxCommand):
                      or
                      any(tup[2].match(session.address) for tup in bans if tup[2])):
             # this is a banned IP or name!
-            string = "{rYou have been banned and cannot continue from here."
-            string += "\nIf you feel this ban is in error, please email an admin.{x"
+            string = "{rYou have been banned and cannot continue from here." \
+                     "\nIf you feel this ban is in error, please email an admin.{x"
             session.msg(string)
             session.execute_cmd("quit")
             return
@@ -160,8 +219,8 @@ class CmdUnconnectedCreate(MuxCommand):
             # this was (hopefully) due to no quotes being found
             parts = parts[0].split(None, 1)
         if len(parts) != 2:
-            string = "\n Usage (without <>): create <name> <password>"
-            string += "\nIf <name> or <password> contains spaces, enclose it in quotes."
+            string = "\n Usage (without <>): create <name> <password>" \
+                     "\nIf <name> or <password> contains spaces, enclose it in quotes."
             session.msg(string)
             return
         playername, password = parts
@@ -186,9 +245,9 @@ class CmdUnconnectedCreate(MuxCommand):
             session.msg(string)
             return
         if not re.findall('^[\w. @+-]+$', password) or not (3 < len(password)):
-            string = "\n\r Password should be longer than 3 characers. Letters, spaces, digits and @\.\+\-\_ only."
-            string += "\nFor best security, make it longer than 8 characters. You can also use a phrase of"
-            string += "\nmany words if you enclose the password in quotes."
+            string = "\n\r Password should be longer than 3 characers. Letters, spaces, digits and @\.\+\-\_ only." \
+                     "\nFor best security, make it longer than 8 characters. You can also use a phrase of" \
+                     "\nmany words if you enclose the password in quotes."
             session.msg(string)
             return
 
@@ -198,8 +257,8 @@ class CmdUnconnectedCreate(MuxCommand):
                      or
                      any(tup[2].match(session.address) for tup in bans if tup[2])):
             # this is a banned IP or name!
-            string = "{rYou have been banned and cannot continue from here."
-            string += "\nIf you feel this ban is in error, please email an admin.{x"
+            string = "{rYou have been banned and cannot continue from here." \
+                     "\nIf you feel this ban is in error, please email an admin.{x"
             session.msg(string)
             session.execute_cmd("quit")
             return
@@ -306,25 +365,9 @@ You are not yet logged into the game. Commands available at this point:
   {wencoding{n - change the text encoding to match your client
   {wquit{n - abort the connection
 
-To login, first create an account
-
-     {wcreate Anna c67jHL8p{n
-
-   Note that if you use spaces in your name, you have to enclose in quotes:
-
-     {wcreate "Anna the Barbarian"  c67jHL8p{n
-
-   It's always a good idea (not only here, but everywhere on the net)
-   to not use a regular word for your password. Make it longer than
-   6 characters or write a full passphrase.
-
-Once you have an account, connect using your password
-
-     {wconnect Anna c67jHL8p{n
-
-   (Again, if there are spaces in the name you have to enclose it in quotes).
-   This should log you in. Run {whelp{n again once you're logged in
-   to get more aid. Hope you enjoy your stay!
+First create an account e.g. with {wcreate Anna c67jHL8p{n
+(If you have spaces in your name, use quotes: {wcreate "Anna the Barbarian"  c67jHL8p{n
+Next you can connect to the game: {wconnect Anna c67jHL8p{n
 
 You can use the {wlook{n command if you want to see the connect screen again.
 
