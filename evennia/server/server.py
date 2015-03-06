@@ -117,6 +117,11 @@ def _server_maintenance():
         # validate channels off-sync with scripts
         print "maintenance: validate channels..."
         evennia.CHANNEL_HANDLER.update()
+    ## Commenting this out, it is probably not needed
+    ## with CONN_MAX_AGE set. Keeping it as a reminder
+    ## if database-gone-away errors appears again /Griatch
+    #if _MAINTENANCE_COUNT % 18000 == 0:
+    #    connection.close()
 maintenance_task = LoopingCall(_server_maintenance)
 maintenance_task.start(60, now=True) # call every minute
 

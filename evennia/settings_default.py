@@ -197,6 +197,11 @@ DATABASES = {
         'HOST': '',
         'PORT': ''
         }}
+# How long the django-database connection should be kept open, in seconds.
+# If you get errors about the database having gone away after long idle
+# periods, shorten this value (e.g. MySQL defaults to a timeout of 8 hrs)
+CONN_MAX_AGE = 3600 * 7
+
 
 ######################################################################
 # Evennia pluggable modules

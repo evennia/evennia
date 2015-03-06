@@ -514,7 +514,7 @@ class DefaultObject(ObjectDB):
             All extra kwargs will be passed on to the protocol.
 
         """
-        text = to_str(text, force_string=True) if text else ""
+        text = to_str(text, force_string=True) if text != None else ""
         if from_obj:
             # call hook
             try:
