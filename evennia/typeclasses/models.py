@@ -74,8 +74,6 @@ def post_save(sender, instance, created, **kwargs):
     """
     if created:
         instance.at_first_save()
-    #TODO - put OOB handler here?
-
 
 class TypeclassBase(SharedMemoryModelBase):
     """
