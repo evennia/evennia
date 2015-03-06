@@ -65,8 +65,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         delay(2, callback=self.handshake_done, retval=True)
 
         # set up a keep-alive
-        self.keep_alive = LoopingCall(self._write, IAC + NOP, now=False)
-        self.keep_alive.start(30)
+        self.keep_alive = LoopingCall(self._write, IAC + NOP)
+        self.keep_alive.start(30, now=False)
 
 
     def handshake_done(self, force=False):

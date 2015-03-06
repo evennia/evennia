@@ -185,14 +185,7 @@ class ServerSessionHandler(SessionHandler):
         session = self.sessions.get(sessid, None)
         if not session:
             return
-        player = session.player
-        if player:
-            nsess = len(self.sessions_from_player(player)) - 1
-            remaintext = nsess and "%i session%s remaining" % (nsess, nsess > 1 and "s" or "") or "no more sessions"
-            session.log(_('Connection dropped: %s %s (%s)' % (session.player, session.address, remaintext)))
-        session.at_disconnect()
-        session.disconnect()
-        del self.sessions[session.sessid]
+        self.disconnect(session)
 
     def portal_sessions_sync(self, portalsessions):
         """

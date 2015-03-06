@@ -196,12 +196,11 @@ CMDLINE_HELP = \
 
 VERSION_INFO = \
     """
-    {about}
     Evennia {version}
     OS: {os}
     Python: {python}
     Twisted: {twisted}
-    Django: {django}
+    Django: {django}{about}
     """
 
 ABOUT_INFO= \
