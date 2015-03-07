@@ -845,7 +845,7 @@ class EvTable(object):
         table = kwargs.pop("table", [])
 
         # header is a list of texts. We merge it to the table's top
-        header = list(args)
+        header = [_to_ansi(head) for head in args]
         self.header = header != []
         if self.header:
             if table:

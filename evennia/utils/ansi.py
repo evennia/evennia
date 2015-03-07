@@ -213,14 +213,14 @@ class ANSIParser(object):
             pstring = self.ansi_sub.sub(self.sub_ansi, pstring)
             parsed_string += "%s%s" % (pstring, sep[0].strip())
 
+        if not mxp:
+            parsed_string = self.strip_mxp(parsed_string)
+
         if strip_ansi:
             # remove all ansi codes (including those manually
             # inserted in string)
-            parsed_string = self.strip_mxp(parsed_string)
             return self.strip_raw_codes(parsed_string)
 
-        if not mxp:
-            parsed_string = self.strip_mxp(parsed_string)
 
          # cache and crop old cache
         _PARSE_CACHE[cachekey] = parsed_string
@@ -325,7 +325,12 @@ class ANSIParser(object):
     ansi_map = dict(mux_ansi_map + ext_ansi_map)
 
     # prepare matching ansi codes overall
-    ansi_regex = re.compile("\033\[[0-9;]+m")
+    ansi_re = r"\033\[[0-9;]+m"
+    ansi_regex = re.compile(ansi_re)
+
+    # merged regex for both ansi and mxp, for use by ansistring
+    mxp_tags = r'\{lc.*?\{lt|\{le'
+    tags_regex = re.compile("%s|%s" % (ansi_re, mxp_tags), re.DOTALL)
 
     # escapes - these double-chars will be replaced with a single
     # instance of each
@@ -509,7 +514,7 @@ class ANSIString(unicode):
         if not decoded:
             # Completely new ANSI String
             clean_string = to_unicode(parser.parse_ansi(string, strip_ansi=True))
-            string = parser.parse_ansi(string)
+            string = parser.parse_ansi(string, xterm256=True, mxp=True)
         elif clean_string is not None:
             # We have an explicit clean string.
             pass
@@ -762,7 +767,8 @@ class ANSIString(unicode):
         """
 
         code_indexes = []
-        for match in self.parser.ansi_regex.finditer(self._raw_string):
+        #for match in self.parser.ansi_regex.finditer(self._raw_string):
+        for match in self.parser.tags_regex.finditer(self._raw_string):
             code_indexes.extend(range(match.start(), match.end()))
         if not code_indexes:
             # Plain string, no ANSI codes.
