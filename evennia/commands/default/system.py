@@ -670,7 +670,9 @@ class CmdServerLoad(MuxCommand):
         pid = os.getpid()
 
         if os_windows:
-            # Windows requires the psutil module to get statistics like this
+            # Windows requires the psutil module to even get paltry
+            # statistics like this (it's pretty much worthless,
+            # unfortunately, since it's not specific to the process) /rant
             try:
                 import psutil
                 has_psutil = True
@@ -681,12 +683,10 @@ class CmdServerLoad(MuxCommand):
                 loadavg = psutil.cpu_percent()
                 _mem = psutil.virtual_memory()
                 rmem = _mem.used  / (1000 * 1000)
-                vmem = "N/A on Windows"
                 pmem = _mem.percent
-                rusage = "N/A on Windows"
 
                 if "mem" in self.switches:
-                    string = "Memory usage: {w%g{n MB (%g%%)"
+                    string = "Total computer memory usage: {w%g{n MB (%g%%)"
                     self.caller.msg(string % (rmem, pmem))
                     return
                 # Display table
@@ -699,7 +699,7 @@ class CmdServerLoad(MuxCommand):
                             "(install with {wpip install psutil{n)."
 
         else:
-            # Linux / BSD (OSX)
+            # Linux / BSD (OSX) - proper pid-based statistics
 
             global _RESOURCE
             if not _RESOURCE:
