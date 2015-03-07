@@ -758,9 +758,9 @@ def list_settings(keys):
         # show a list of all keys
         # a specific key
         table = evtable.EvTable()
-        confs = dict((key,var) for key, var in evsettings.__dict__.items() if key.isupper())
+        confs = [key for key in sorted(evsettings.__dict__) if key.isupper()]
         for i in range(0, len(confs), 4):
-            table.add_row(*confs.keys()[i:i+4])
+            table.add_row(*confs[i:i+4])
     else:
         # a specific key
         table = evtable.EvTable(width=131)

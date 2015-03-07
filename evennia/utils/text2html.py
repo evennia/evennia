@@ -124,8 +124,9 @@ class TextToHTMLparser(object):
         """
         Replaces links with HTML code
         """
-        html = "<a href='#' onclick='websocket.send(\"\\1\"); return false;'>\\2</a>"
-        return self.re_link.sub(html, text)
+        html = "<a href='#' onclick='websocket.send(\"CMD\\1\"); return false;'>\\2</a>"
+        repl = self.re_link.sub(html, text)
+        return repl
 
     def do_sub(self, m):
         "Helper method to be passed to re.sub."
