@@ -680,7 +680,7 @@ class CmdServerLoad(MuxCommand):
             if has_psutil:
                 loadavg = psutil.cpu_percent()
                 _mem = psutil.virtual_memory()
-                rmem = _mem.used
+                rmem = _mem.used  / (1000 * 1000)
                 vmem = "N/A on Windows"
                 pmem = _mem.percent
                 rusage = "N/A on Windows"
@@ -691,9 +691,9 @@ class CmdServerLoad(MuxCommand):
                     return
                 # Display table
                 loadtable = EvTable("property", "statistic", align="l")
-                loadtable.add_row("Server load", "%g" % loadavg)
+                loadtable.add_row("Total CPU load", "%g %%" % loadavg)
+                loadtable.add_row("Total computer memory usage","%g MB (%g%%)" % (rmem, pmem))
                 loadtable.add_row("Process ID", "%g" % pid),
-                loadtable.add_row("Memory usage","%g MB (%g%%)" % (rmem, pmem))
             else:
                 loadtable = "Not available on Windows without 'psutil' library " \
                             "(install with {wpip install psutil{n)."
