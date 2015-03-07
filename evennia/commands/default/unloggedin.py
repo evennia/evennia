@@ -129,11 +129,10 @@ class CmdUnconnectedConnect(MuxCommand):
                     permissions = settings.PERMISSION_GUEST_DEFAULT
                     typeclass = settings.BASE_CHARACTER_TYPECLASS
                     ptypeclass = settings.BASE_GUEST_TYPECLASS
-                    start_location = ObjectDB.objects.get_id(settings.GUEST_START_LOCATION)
                     new_player = _create_player(session, playername, password,
                                                 home, permissions, ptypeclass)
                     if new_player:
-                        _create_character(session, new_player, typeclass, start_location,
+                        _create_character(session, new_player, typeclass,
                                         home, permissions)
                         session.sessionhandler.login(session, new_player)
 
@@ -265,14 +264,13 @@ class CmdUnconnectedCreate(MuxCommand):
 
         # everything's ok. Create the new player account.
         try:
-            default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
             permissions = settings.PERMISSION_PLAYER_DEFAULT
             typeclass = settings.BASE_CHARACTER_TYPECLASS
-            new_player = _create_player(session, playername, password, default_home, permissions)
-            start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
+            new_player = _create_player(session, playername, password, permissions)
             if new_player:
                 if MULTISESSION_MODE < 2:
-                    _create_character(session, new_player, typeclass, start_location,
+                    default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
+                    _create_character(session, new_player, typeclass,
                                     default_home, permissions)
                 # tell the caller everything went well.
                 string = "A new account '%s' was created. Welcome!"
@@ -438,8 +436,7 @@ class CmdUnconnectedEncoding(MuxCommand):
         self.caller.msg(string.strip())
 
 
-def _create_player(session, playername, password,
-                 default_home, permissions, typeclass=None):
+def _create_player(session, playername, password, permissions, typeclass=None):
     """
     Helper function, creates a player of the specified typeclass.
     """
@@ -465,17 +462,14 @@ def _create_player(session, playername, password,
     return new_player
 
 
-def _create_character(session, new_player, typeclass, start_location, home, permissions):
+def _create_character(session, new_player, typeclass, home, permissions):
     """
     Helper function, creates a character based on a player's name.
     This is meant for Guest and MULTISESSION_MODE < 2 situations.
     """
     try:
-        if not start_location:
-            start_location = home # fallback
         new_character = create.create_object(typeclass, key=new_player.key,
-                                  location=start_location, home=home,
-                                  permissions=permissions)
+                                  home=home, permissions=permissions)
         # set playable character list
         new_player.db._playable_characters.append(new_character)
 

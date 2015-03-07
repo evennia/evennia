@@ -26,7 +26,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands import cmdset, command
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
-from evennia.utils.logger import log_depmsg, log_trace, log_errmsg
+from evennia.utils.logger import log_trace, log_errmsg
 from evennia.utils.utils import (variable_from_module, lazy_property,
                              make_iter, to_str, to_unicode)
 

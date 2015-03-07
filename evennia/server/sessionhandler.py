@@ -17,7 +17,6 @@ from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.utils.utils import variable_from_module, is_iter, \
                             to_str, to_unicode, strip_control_sequences, make_iter
-from evennia.utils import logger
 
 try:
     import cPickle as pickle
