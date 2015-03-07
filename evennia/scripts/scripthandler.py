@@ -58,7 +58,7 @@ class ScriptHandler(object):
               definition)
         autostart - start the script upon adding it
         """
-        if self.obj.__class__.__name__ == "PlayerDB":
+        if self.obj.__dbclass__.__name__ == "PlayerDB":
             # we add to a Player, not an Object
             script = create.create_script(scriptclass, key=key, player=self.obj,
                                           autostart=autostart)

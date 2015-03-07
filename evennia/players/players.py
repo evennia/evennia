@@ -350,7 +350,6 @@ class DefaultPlayer(PlayerDB):
                 pass
 
         # session relay
-
         if sessid:
             # this could still be an iterable if sessid is an iterable
             sessions = self.get_session(sessid)

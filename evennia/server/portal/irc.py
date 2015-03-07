@@ -10,6 +10,11 @@ from twisted.internet import protocol
 from evennia.server.session import Session
 from evennia.utils import logger
 
+# IRC colors
+
+
+
+
 
 # IRC bot
 
