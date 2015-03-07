@@ -281,8 +281,9 @@ class ServerSessionHandler(SessionHandler):
             self.disconnect_duplicate_sessions(session)
 
         nsess = len(self.sessions_from_player(player))
-        totalstring = "%i session%s total" % (nsess, nsess > 1 and "s" or "")
-        session.log(_('Logged in: %s %s (%s)' % (player, session.address, totalstring)))
+        string = _("Logged in: {player} {address} ({nsessions} session(s) total)")
+        string = string.format(player=player,address=session.address, nsessions=nsess)
+        session.log(string)
 
         session.logged_in = True
         # sync the portal to the session
@@ -305,8 +306,9 @@ class ServerSessionHandler(SessionHandler):
         if hasattr(session, "player") and session.player:
             # only log accounts logging off
             nsess = len(self.sessions_from_player(session.player)) - 1
-            remaintext = nsess and "%i session%s remaining" % (nsess, nsess > 1 and "s" or "") or "no more sessions"
-            session.log(_('Logged out: %s %s (%s)' % (session.player, session.address, remaintext)))
+            string = _("Logged out: {player} {address} ({nsessions} sessions(s) remaining)")
+            string = string.format(player=session.player, address=session.address, nsessions=nsess)
+            session.log(string)
 
         session.at_disconnect()
         sessid = session.sessid
