@@ -1,0 +1,10 @@
+# Evennia dependencies, for Windows platform
+
+# windows specific 
+pypiwin32
+psutil >= 2.2
+# general 
+django >= 1.7
+twisted >= 12.0
+mock >= 1.0.1
+pillow
