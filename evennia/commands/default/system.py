@@ -23,9 +23,8 @@ from evennia.utils.utils import crop
 from evennia.commands.default.muxcommand import MuxCommand
 
 # delayed imports
-_resource = None
-_idmapper = None
-_attribute_cache = None
+_RESOURCE = None
+_IDMAPPER = None
 
 # limit symbol import for API
 __all__ = ("CmdReload", "CmdReset", "CmdShutdown", "CmdPy",
@@ -653,52 +652,83 @@ class CmdServerLoad(MuxCommand):
     def func(self):
         "Show list."
 
-        caller = self.caller
+        global _IDMAPPER
+        if not _IDMAPPER:
+            from evennia.utils.idmapper import models as _IDMAPPER
+
+        if "flushmem" in self.switches:
+            # flush the cache
+            nflushed = _IDMAPPER.flush_cache()
+            string = "Flushed object idmapper cache. Python garbage " \
+                     "collector recovered memory from %i objects."
+            self.caller(string % nflushed)
+            return
 
         # display active processes
 
-        if not utils.host_os_is('posix'):
-            string = "Process listings are only available under Linux/Unix."
-            caller.msg(string)
-            return
-
-        global _resource, _idmapper
-        if not _resource:
-            import resource as _resource
-        if not _idmapper:
-            from evennia.utils.idmapper import models as _idmapper
-
-        import resource
-        loadavg = os.getloadavg()
-        psize = _resource.getpagesize()
+        os_windows = os.name == "nt"
         pid = os.getpid()
-        rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rss")).read()) / 1000.0  # resident memory
-        vmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "vsz")).read()) / 1000.0  # virtual memory
-        pmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "%mem")).read())  # percent of resident memory to total
-        rusage = resource.getrusage(resource.RUSAGE_SELF)
+        loadtable = EvTable("property", "statistic", align="l")
 
-        if "mem" in self.switches:
-            caller.msg("Memory usage: RMEM: {w%g{n MB (%g%%), VMEM (res+swap+cache): {w%g{n MB." % (rmem, pmem, vmem))
-            return
+        if os_windows:
+            # Windows requires the psutil module to get statistics like this
+            try:
+                import psutil
+            except ImportError:
+                string = "The psutil module is not installed: Process " \
+                         " listings are only available under Linux/Unix."
+                self.caller.msg(string)
+                return
 
-        if "flushmem" in self.switches:
-            caller.msg("Flushed object idmapper cache. Python garbage collector recovered memory from %i objects." %  _idmapper.flush_cache())
-            return
+            loadavg = psutil.cpu_percent()
+            _mem = psutil.virtual_memory()
+            rmem = _mem.used
+            vmem = "N/A on Windows"
+            pmem = _mem.percent
+            rusage = "N/A on Windows"
 
-        # load table
-        loadtable = prettytable.PrettyTable(["property", "statistic"])
-        loadtable.align = 'l'
-        loadtable.add_row(["Server load (1 min)", "%g" % loadavg[0]])
-        loadtable.add_row(["Process ID", "%g" % pid]),
-        loadtable.add_row(["Bytes per page", "%g " % psize])
-        loadtable.add_row(["CPU time used (total)", "%s (%gs)" % (utils.time_format(rusage.ru_utime), rusage.ru_utime)])
-        loadtable.add_row(["CPU time used (user)", "%s (%gs)" % (utils.time_format(rusage.ru_stime), rusage.ru_stime)])
-        loadtable.add_row(["Memory usage","%g MB (%g%%)" % (rmem, pmem)])
-        loadtable.add_row(["Virtual address space\n {x(resident+swap+caching){n", "%g MB" % vmem])
-        loadtable.add_row(["Page faults", "%g hard,  %g soft, %g swapouts" % (rusage.ru_majflt, rusage.ru_minflt, rusage.ru_nswap)])
-        loadtable.add_row(["Disk I/O", "%g reads, %g writes" % (rusage.ru_inblock, rusage.ru_oublock)])
-        loadtable.add_row(["Network I/O", "%g in, %g out" % (rusage.ru_msgrcv, rusage.ru_msgsnd)])
-        loadtable.add_row(["Context switching", "%g vol, %g forced, %g signals" % (rusage.ru_nvcsw, rusage.ru_nivcsw, rusage.ru_nsignals)])
+            if "mem" in self.switches:
+                string = "Memory usage: {w%g{n MB (%g%%)"
+                self.caller.msg(string % (rmem, pmem))
+                return
+            # Display table
+            loadtable.add_row("Server load", "%g" % loadavg)
+            loadtable.add_row("Process ID", "%g" % pid),
+            loadtable.add_row("Memory usage","%g MB (%g%%)" % (rmem, pmem))
+
+        else:
+            # Linux / BSD (OSX)
+
+            global _RESOURCE
+            if not _RESOURCE:
+                import resource as _RESOURCE
+
+            loadavg = os.getloadavg()[0]
+            rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rss")).read()) / 1000.0  # resident memory
+            vmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "vsz")).read()) / 1000.0  # virtual memory
+            pmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "%mem")).read())  # percent of resident memory to total
+            rusage = _RESOURCE.getrusage(_RESOURCE.RUSAGE_SELF)
+
+            if "mem" in self.switches:
+                string = "Memory usage: RMEM: {w%g{n MB (%g%%), " \
+                         " VMEM (res+swap+cache): {w%g{n MB."
+                self.caller.msg(string % (rmem, pmem, vmem))
+                return
+
+            loadtable.add_row("Server load (1 min)", "%g" % loadavg)
+            loadtable.add_row("Process ID", "%g" % pid),
+            loadtable.add_row("Memory usage","%g MB (%g%%)" % (rmem, pmem))
+            loadtable.add_row("Virtual address space", "")
+            loadtable.add_row("{x(resident+swap+caching){n", "%g MB" % vmem)
+            loadtable.add_row("CPU time used (total)", "%s (%gs)" % (utils.time_format(rusage.ru_utime), rusage.ru_utime))
+            loadtable.add_row("CPU time used (user)", "%s (%gs)" % (utils.time_format(rusage.ru_stime), rusage.ru_stime))
+            loadtable.add_row("Page faults", "%g hard,  %g soft, %g swapouts" % (rusage.ru_majflt, rusage.ru_minflt, rusage.ru_nswap))
+            loadtable.add_row("Disk I/O", "%g reads, %g writes" % (rusage.ru_inblock, rusage.ru_oublock))
+            loadtable.add_row("Network I/O", "%g in, %g out" % (rusage.ru_msgrcv, rusage.ru_msgsnd))
+            loadtable.add_row("Context switching", "%g vol, %g forced, %g signals" % (rusage.ru_nvcsw, rusage.ru_nivcsw, rusage.ru_nsignals))
+
+
+        # os-generic
 
         string = "{wServer CPU and Memory load:{n\n%s" % loadtable
 
@@ -707,20 +737,14 @@ class CmdServerLoad(MuxCommand):
             # because it lacks sys.getsizeof
 
             # object cache size
-            total_num, cachedict = _idmapper.cache_size()
+            total_num, cachedict = _IDMAPPER.cache_size()
             sorted_cache = sorted([(key, num) for key, num in cachedict.items() if num > 0],
                                     key=lambda tup: tup[1], reverse=True)
-            memtable = prettytable.PrettyTable(["entity name",
-                                                "number",
-                                                "idmapper %%"])
-            memtable.align = 'l'
+            memtable = EvTable("entity name", "number", "idmapper %%", align="l")
             for tup in sorted_cache:
-                memtable.add_row([tup[0],
-                                 "%i" % tup[1],
-                                 "%.2f" % (float(tup[1]) / total_num * 100)])
+                memtable.add_row(tup[0], "%i" % tup[1], "%.2f" % (float(tup[1]) / total_num * 100))
 
-            # get sizes of other caches
             string += "\n{w Entity idmapper cache:{n %i items\n%s" % (total_num, memtable)
 
-        caller.msg(string)
-
+        # return to caller
+        self.caller.msg(string)
