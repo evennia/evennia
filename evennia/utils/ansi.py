@@ -229,6 +229,7 @@ class ANSIParser(object):
 
         return parsed_string
     # MUX-style mappings %cr %cn etc
+    # Warning: DEPRECATED. Use {-type syntax instead.
 
     mux_ansi_map = [
         (r'%cn', ANSI_NORMAL),
@@ -261,7 +262,7 @@ class ANSIParser(object):
         (r'%cX', ANSI_BACK_BLACK)
         ]
 
-    # Expanded mapping {r {n etc
+    # Mapping using {r {n etc
 
     hilite = ANSI_HILITE
     normal = ANSI_NORMAL
@@ -292,6 +293,19 @@ class ANSIParser(object):
         (r'{W', normal + ANSI_WHITE),  # light grey
         (r'{X', normal + ANSI_BLACK),  # pure black
 
+        # hilight-able colors
+        (r'{h', hilite),
+
+        (r'{!R', ANSI_RED),
+        (r'{!G', ANSI_GREEN),
+        (r'{!Y', ANSI_YELLOW),
+        (r'{!B', ANSI_BLUE),
+        (r'{!M', ANSI_MAGENTA),
+        (r'{!C', ANSI_CYAN),
+        (r'{!W', ANSI_WHITE),  # light grey
+        (r'{!X', ANSI_BLACK),  # pure black
+
+        # background colors
         (r'{[r', ANSI_BACK_RED),
         (r'{[g', ANSI_BACK_GREEN),
         (r'{[y', ANSI_BACK_YELLOW),
