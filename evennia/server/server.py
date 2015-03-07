@@ -535,6 +535,6 @@ ServerConfig.objects.conf("server_starting_mode", delete=True)
 
 if os.name == 'nt':
     # Windows only: Set PID file manually
-    with open(os.path.join(settings.GAME_DIR, 'server.pid'), 'w') as f:
+    with open(SERVER_PIDFILE, 'w') as f:
         f.write(str(os.getpid()))
 

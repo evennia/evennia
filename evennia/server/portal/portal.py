@@ -131,10 +131,9 @@ class Portal(object):
         """
         if mode is None:
             return
-        f = open(PORTAL_RESTART, 'w')
-        print "writing mode=%(mode)s to %(portal_restart)s" % {'mode': mode, 'portal_restart': PORTAL_RESTART}
-        f.write(str(mode))
-        f.close()
+        with open(PORTAL_RESTART, 'w') as f:
+            print "writing mode=%(mode)s to %(portal_restart)s" % {'mode': mode, 'portal_restart': PORTAL_RESTART}
+            f.write(str(mode))
 
     def shutdown(self, restart=None, _reactor_stopping=False):
         """
@@ -330,6 +329,5 @@ print '-' * 50  # end of terminal output
 
 if os.name == 'nt':
     # Windows only: Set PID file manually
-    f = open(os.path.join(settings.GAME_DIR, 'portal.pid'), 'w')
-    f.write(str(os.getpid()))
-    f.close()
+    with open(PORTAL_PIDFILE, 'w') as f:
+        f.write(str(os.getpid()))
