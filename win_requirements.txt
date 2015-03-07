@@ -2,7 +2,6 @@
 
 # windows specific 
 pypiwin32
-psutil >= 2.2
 # general 
 django >= 1.7
 twisted >= 12.0

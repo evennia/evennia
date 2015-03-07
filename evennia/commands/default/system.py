@@ -668,33 +668,35 @@ class CmdServerLoad(MuxCommand):
 
         os_windows = os.name == "nt"
         pid = os.getpid()
-        loadtable = EvTable("property", "statistic", align="l")
 
         if os_windows:
             # Windows requires the psutil module to get statistics like this
             try:
                 import psutil
+                has_psutil = True
             except ImportError:
-                string = "The psutil module is not installed: Process " \
-                         " listings are only available under Linux/Unix."
-                self.caller.msg(string)
-                return
+                has_psutil = False
 
-            loadavg = psutil.cpu_percent()
-            _mem = psutil.virtual_memory()
-            rmem = _mem.used
-            vmem = "N/A on Windows"
-            pmem = _mem.percent
-            rusage = "N/A on Windows"
+            if has_psutil:
+                loadavg = psutil.cpu_percent()
+                _mem = psutil.virtual_memory()
+                rmem = _mem.used
+                vmem = "N/A on Windows"
+                pmem = _mem.percent
+                rusage = "N/A on Windows"
 
-            if "mem" in self.switches:
-                string = "Memory usage: {w%g{n MB (%g%%)"
-                self.caller.msg(string % (rmem, pmem))
-                return
-            # Display table
-            loadtable.add_row("Server load", "%g" % loadavg)
-            loadtable.add_row("Process ID", "%g" % pid),
-            loadtable.add_row("Memory usage","%g MB (%g%%)" % (rmem, pmem))
+                if "mem" in self.switches:
+                    string = "Memory usage: {w%g{n MB (%g%%)"
+                    self.caller.msg(string % (rmem, pmem))
+                    return
+                # Display table
+                loadtable = EvTable("property", "statistic", align="l")
+                loadtable.add_row("Server load", "%g" % loadavg)
+                loadtable.add_row("Process ID", "%g" % pid),
+                loadtable.add_row("Memory usage","%g MB (%g%%)" % (rmem, pmem))
+            else:
+                loadtable = "Not available on Windows without 'psutil' library " \
+                            "(install with {wpip install psutil{n)."
 
         else:
             # Linux / BSD (OSX)
@@ -715,6 +717,7 @@ class CmdServerLoad(MuxCommand):
                 self.caller.msg(string % (rmem, pmem, vmem))
                 return
 
+            loadtable = EvTable("property", "statistic", align="l")
             loadtable.add_row("Server load (1 min)", "%g" % loadavg)
             loadtable.add_row("Process ID", "%g" % pid),
             loadtable.add_row("Memory usage","%g MB (%g%%)" % (rmem, pmem))
