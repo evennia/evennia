@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Evennia Beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-13 09:18+0200\n"
+"POT-Creation-Date: 2015-03-07 23:43+0100\n"
 "PO-Revision-Date: 2014-04-13 09:22+0100\n"
 "Last-Translator: Griatch <griatch@gmail.com>\n"
 "Language-Team: Swedish <>\n"
@@ -17,151 +17,174 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: evennia/commands/cmdhandler.py:320
+#: commands/cmdhandler.py:452
 msgid "There were multiple matches."
 msgstr "Det fanns många träffar."
 
-#: evennia/commands/cmdhandler.py:348
+#: commands/cmdhandler.py:480
 #, python-format
 msgid "Command '%s' is not available."
 msgstr "Kommandot '%s' är inte tillgängligt."
 
-#: evennia/commands/cmdhandler.py:353
+#: commands/cmdhandler.py:485
 #, python-format
 msgid " Maybe you meant %s?"
 msgstr "Menade du kanske %s?"
 
-#: evennia/commands/cmdhandler.py:353
+#: commands/cmdhandler.py:485
 msgid "or"
 msgstr "eller"
 
-#: evennia/commands/cmdhandler.py:355
+#: commands/cmdhandler.py:487
 msgid " Type \"help\" for help."
 msgstr "Skriv \"help\" för hjälp."
 
-#: evennia/commands/cmdparser.py:153
+#: commands/cmdparser.py:159
 #, python-format
 msgid "Could not find '%s'."
 msgstr "Kunde inte hitta '%s'."
 
-#: evennia/commands/cmdparser.py:174
+#: commands/cmdparser.py:180
 msgid "location"
 msgstr "plats"
 
-#: evennia/commands/cmdparser.py:175
+#: commands/cmdparser.py:181
 msgid " (carried)"
 msgstr "(buren)"
 
-#: evennia/commands/cmdparser.py:255
+#: commands/cmdparser.py:261
 msgid " (channel)"
 msgstr "(kanal)"
 
-#: evennia/commands/cmdsethandler.py:123
-#, python-format
-msgid "Error loading cmdset: Couldn't import module '%s'."
-msgstr "Fel medan cmdset laddades: Kunde inte importera modulen '%s'."
+#: commands/cmdsethandler.py:132
+#, python-brace-format
+msgid "Error loading cmdset {path}: {error}"
+msgstr ""
 
-#: evennia/commands/cmdsethandler.py:127
-#, python-format
-msgid "Error in loading cmdset: No cmdset class '%(classname)s' in %(modulepath)s."
-msgstr "Fel medan cmdset laddades: Ingen cmdset-klass med namn '%(classname)s' i %(modulepath)s."
+#: commands/cmdsethandler.py:136
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "Error in loading cmdset: No cmdset class '%(classname)s' in "
+#| "%(modulepath)s."
+msgid "Error in loading cmdset: No cmdset class '{classname}' in {path}."
+msgstr ""
+"Fel medan cmdset laddades: Ingen cmdset-klass med namn '%(classname)s' i "
+"%(modulepath)s."
 
-#: evennia/commands/cmdsethandler.py:132
-#, python-format
-msgid "Compile/Run error when loading cmdset '%s'. Error was logged."
-msgstr "Kompilerings/Körningsfel när cmdset '%s' laddades. Felet skrevs i loggen."
+#: commands/cmdsethandler.py:140
+#, python-brace-format
+msgid "SyntaxError encountered when loading cmdset '{path}': {error}."
+msgstr ""
 
-#: evennia/commands/cmdsethandler.py:208
-#, python-format
-msgid "custom %(mergetype)s on cmdset '%(merged_on)s'"
+#: commands/cmdsethandler.py:144
+#, fuzzy, python-brace-format
+#| msgid "Compile/Run error when loading cmdset '%s'. Error was logged."
+msgid "Compile/Run error when loading cmdset '{path}': {error}."
+msgstr ""
+"Kompilerings/Körningsfel när cmdset '%s' laddades. Felet skrevs i loggen."
+
+#: commands/cmdsethandler.py:154
+msgid ""
+"\n"
+" (See log for details.)"
+msgstr ""
+
+#: commands/cmdsethandler.py:221
+#, fuzzy, python-brace-format
+#| msgid "custom %(mergetype)s on cmdset '%(merged_on)s'"
+msgid "custom {mergetype} on cmdset '{cmdset}'"
 msgstr "särskild %(mergetype)s på cmdset '%(merged_on)s'"
 
-#: evennia/commands/cmdsethandler.py:211
-#, python-format
-msgid " <Merged %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
-msgstr "<Sammanslagen %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+#: commands/cmdsethandler.py:224
+#, fuzzy, python-brace-format
+#| msgid " <Merged %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+msgid " <Merged {mergelist} {mergetype}, prio {prio}>: {current}"
+msgstr ""
+"<Sammanslagen %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
 
-#: evennia/commands/cmdsethandler.py:219
-#, python-format
-msgid " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+#: commands/cmdsethandler.py:232
+#, fuzzy, python-brace-format
+#| msgid ""
+#| " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+msgid " <{key} ({mergetype} prio {prio}, {permstring}>: {keylist}"
 msgstr " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
 
-#: evennia/commands/cmdsethandler.py:294
-#: evennia/commands/cmdsethandler.py:326
+#: commands/cmdsethandler.py:308 commands/cmdsethandler.py:343
 msgid "Only CmdSets can be added to the cmdsethandler!"
 msgstr "Bara CmdSets can läggas till cmdsethandler!"
 
-#: evennia/locks/lockhandler.py:223
-#, python-format
-msgid "Lock: function '%s' is not available."
+#: locks/lockhandler.py:218
+#, fuzzy, python-format
+#| msgid "Lock: function '%s' is not available."
+msgid "Lock: lock-function '%s' is not available."
 msgstr "Lås: funktionen '%s' kunde inte hittas."
 
-#: evennia/locks/lockhandler.py:236
+#: locks/lockhandler.py:231
 #, python-format
 msgid "Lock: definition '%s' has syntax errors."
 msgstr "Lås: definitionen '%s' har syntaktiska fel."
 
-#: evennia/locks/lockhandler.py:240
-#, python-format
-msgid "Lock: access type '%(access_type)s' changed from '%(source)s' to '%(goal)s' "
-msgstr "Lås: låstypen '%(access_type)s' ändrade sig från '%(source)s' till '%(goal)s'"
+#: locks/lockhandler.py:235
+#, fuzzy, python-format
+#| msgid ""
+#| "Lock: access type '%(access_type)s' changed from '%(source)s' to "
+#| "'%(goal)s' "
+msgid ""
+"LockHandler on %(obj)s: access type '%(access_type)s' changed from "
+"'%(source)s' to '%(goal)s' "
+msgstr ""
+"Lås: låstypen '%(access_type)s' ändrade sig från '%(source)s' till '%(goal)s'"
 
-#: evennia/locks/lockhandler.py:284
+#: locks/lockhandler.py:275
 #, python-format
 msgid "Lock: '%s' contains no colon (:)."
 msgstr "Lås: '%s' innehåller inget kolon (:)."
 
-#: evennia/locks/lockhandler.py:288
+#: locks/lockhandler.py:279
 #, python-format
 msgid "Lock: '%s' has no access_type (left-side of colon is empty)."
 msgstr "Lås: '%s' saknar låstyp (ingenting till vänster om kolonet)."
 
-#: evennia/locks/lockhandler.py:291
+#: locks/lockhandler.py:282
 #, python-format
 msgid "Lock: '%s' has mismatched parentheses."
 msgstr "Lås: '%s' has ickematchande parenteser."
 
-#: evennia/locks/lockhandler.py:294
+#: locks/lockhandler.py:285
 #, python-format
 msgid "Lock: '%s' has no valid lock functions."
 msgstr "Lås: '%s' innehåller inga acceptabla låsfunktioner."
 
-#: evennia/objects/models.py:551
+#: objects/objects.py:597
 #, python-format
 msgid "Couldn't perform move ('%s'). Contact an admin."
 msgstr "Kunde inte utföra föflyttningen ('%s'). Kontakta en admininstrator."
 
-#: evennia/objects/models.py:561
+#: objects/objects.py:607
 msgid "The destination doesn't exist."
 msgstr "Destinationen existerar inte."
 
-#: evennia/objects/models.py:675
+#: objects/objects.py:720
 #, python-format
 msgid "Could not find default home '(#%d)'."
 msgstr "Kunde inte hitta standard-hem '(#'%d)'."
 
-#: evennia/objects/models.py:690
+#: objects/objects.py:736
 msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
-msgstr "Nåtgot gick fel! Du har blivit flyttat till en icke-existerande plats. Kontakta en admininstrator."
+msgstr ""
+"Nåtgot gick fel! Du har blivit flyttat till en icke-existerande plats. "
+"Kontakta en admininstrator."
 
-#: evennia/objects/models.py:762
+#: objects/objects.py:809
 #, python-format
 msgid "Your character %s has been destroyed."
 msgstr "Din karaktär %s har blivit raderad."
 
-#: evennia/players/models.py:38
-msgid "me"
-msgstr "jag"
-
-#: evennia/players/models.py:39
-msgid "self"
-msgstr "self"
-
-#: evennia/players/models.py:417
+#: players/players.py:325
 msgid "Player being deleted."
 msgstr "Spelaren raderas."
 
-#: evennia/scripts/scripthandler.py:45
+#: scripts/scripthandler.py:45
 #, python-format
 msgid ""
 "\n"
@@ -170,189 +193,182 @@ msgstr ""
 "\n"
 " '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repetitioner): %(desc)s"
 
-#: evennia/scripts/scripts.py:158
-#, python-format
-msgid "Script %(key)s(#%(dbid)i) of type '%(cname)s': at_repeat() error '%(err)s'."
-msgstr "Script %(key)s(#%(dbid)i) av typ '%(cname)s': at_repeat() fel '%(err)s'."
+#: scripts/scripts.py:158
+#, fuzzy, python-format
+#| msgid ""
+#| "Script %(key)s(#%(dbid)i) of type '%(cname)s': at_repeat() error "
+#| "'%(err)s'."
+msgid ""
+"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+msgstr ""
+"Script %(key)s(#%(dbid)i) av typ '%(cname)s': at_repeat() fel '%(err)s'."
 
-#: evennia/scripts/scripts.py:512
+#: scripts/scripts.py:534
 msgid "This is an empty placeholder script."
 msgstr "Detta är ett tomt platshållar-script."
 
-#: evennia/scripts/scripts.py:520
+#: scripts/scripts.py:542
 msgid "This is a generic storage container."
 msgstr "Detta är en generisk lagringskontainer."
 
-#: evennia/scripts/scripts.py:528
-msgid "Checks sessions so they are live."
-msgstr "Kollar sessioner så att de är aktiva."
+#: server/initial_setup.py:29
+msgid ""
+"\n"
+"Welcome to your new {wEvennia{n-based game! Visit http://www.evennia.com if "
+"you need\n"
+"help, want to contribute, report issues or just join the community.\n"
+"As Player #1 you can create a demo/tutorial area with {w@batchcommand "
+"tutorial_world.build{n.\n"
+"    "
+msgstr ""
 
-#: evennia/scripts/scripts.py:547
-msgid "Validates all scripts regularly."
-msgstr "Validerar alla script regelbundet."
-
-#: evennia/scripts/scripts.py:562
-msgid "Updates the channel handler"
-msgstr "Uppdaterar kanalhanteraren"
-
-#: evennia/server/initial_setup.py:75
+#: server/initial_setup.py:99
 msgid "This is User #1."
 msgstr "Detta är användare #1."
 
-#: evennia/server/initial_setup.py:85
+#: server/initial_setup.py:108
 msgid "Limbo"
 msgstr "Limbo"
 
-#: evennia/server/sessionhandler.py:221
-#, python-format
-msgid "Connection dropped: %s %s (%s)"
-msgstr "Uppkopplingen förlorades: %s %s (%s)"
-
-#: evennia/server/sessionhandler.py:258
-msgid " ... Server restarted."
-msgstr "... Servern startades om."
-
-#: evennia/server/sessionhandler.py:322
-#, python-format
-msgid "Logged in: %s %s (%s)"
-msgstr "Loggade in: %s %s (%s)"
-
-#: evennia/server/sessionhandler.py:346
-#, python-format
-msgid "Logged out: %s %s (%s)"
-msgstr "Loggade ut: %s %s (%s)"
-
-#: evennia/server/sessionhandler.py:366
-msgid "You have been disconnected."
-msgstr "Du har blivit frånkopplad."
-
-#: evennia/server/sessionhandler.py:379
-msgid "Logged in from elsewhere. Disconnecting."
-msgstr "Inloggad från någon annanstans ifrån. Kopplas ifrån."
-
-#: evennia/server/sessionhandler.py:397
-msgid "Idle timeout exceeded, disconnecting."
-msgstr "Timeout. Kopplar ur."
-
-#: evennia/server/portal/imc2.py:167
+#: server/portal/imc2.py:167
 #, python-format
 msgid "Whois reply from %(origin)s: %(msg)s"
 msgstr "Whois-svar från %(origin)s: %(msg)s"
 
-#: evennia/server/portal/imc2.py:175
+#: server/portal/imc2.py:175
 #, python-format
 msgid "{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s"
 msgstr "{c%(sender)s@%(origin)s{n {wskickar (over IMC):{n %(msg)s"
 
-#: evennia/server/portal/imc2.py:193
+#: server/portal/imc2.py:193
 msgid "IMC2 server rejected connection."
 msgstr "IMC2 server avvisade uppkopplingen."
 
-#: evennia/server/portal/imc2.py:201
+#: server/portal/imc2.py:201
 msgid "IMC2: Autosetup response found."
 msgstr "IMC2: Autosetup-svar hittat."
 
-#: evennia/web/templates/admin/base_site.html:4
-msgid "Evennia site admin"
-msgstr "Evennia site admin"
+#: server/sessionhandler.py:221
+msgid " ... Server restarted."
+msgstr "... Servern startades om."
 
-#: evennia/web/templates/admin/base_site.html:7
-msgid "Evennia database administration"
-msgstr "Evennia databasadministration"
+#: server/sessionhandler.py:284
+#, python-brace-format
+msgid "Logged in: {player} {address} ({nsessions} session(s) total)"
+msgstr ""
 
-#: evennia/web/templates/admin/index.html:29
-#: evennia/web/templates/admin/index.html:73
-#: evennia/web/templates/admin/index.html:117
-#, python-format
-msgid "Models available in the %(name)s application."
-msgstr "Modeller tillgängliga i %(name)s applikation."
+#: server/sessionhandler.py:309
+#, python-brace-format
+msgid "Logged out: {player} {address} ({nsessions} sessions(s) remaining)"
+msgstr ""
 
-#: evennia/web/templates/admin/index.html:30
-#: evennia/web/templates/admin/index.html:74
-#: evennia/web/templates/admin/index.html:118
-#, python-format
-msgid "%(name)s"
-msgstr "%(name)s"
+#: server/sessionhandler.py:331
+msgid "You have been disconnected."
+msgstr "Du har blivit frånkopplad."
 
-#: evennia/web/templates/admin/index.html:41
-#: evennia/web/templates/admin/index.html:84
-#: evennia/web/templates/admin/index.html:128
-#: evennia/web/templates/admin/players/change_form.html:22
-msgid "Add"
-msgstr "Lägg till"
+#: server/sessionhandler.py:344
+msgid "Logged in from elsewhere. Disconnecting."
+msgstr "Inloggad från någon annanstans ifrån. Kopplas ifrån."
 
-#: evennia/web/templates/admin/index.html:47
-#: evennia/web/templates/admin/index.html:90
-#: evennia/web/templates/admin/index.html:134
-msgid "Change"
-msgstr "Ändra"
+#: server/sessionhandler.py:362
+msgid "Idle timeout exceeded, disconnecting."
+msgstr "Timeout. Kopplar ur."
 
-#: evennia/web/templates/admin/index.html:149
-msgid "You don't have permission to edit anything."
-msgstr "Du har inte rättigheter att ändra någonting."
+#~ msgid "Error loading cmdset: Couldn't import module '%s'."
+#~ msgstr "Fel medan cmdset laddades: Kunde inte importera modulen '%s'."
 
-#: evennia/web/templates/admin/index.html:157
-msgid "Recent Actions"
-msgstr "Senaste Aktiviteter"
+#~ msgid "me"
+#~ msgstr "jag"
 
-#: evennia/web/templates/admin/index.html:158
-msgid "My Actions"
-msgstr "Mina Aktiviteter"
+#~ msgid "self"
+#~ msgstr "self"
 
-#: evennia/web/templates/admin/index.html:162
-msgid "None yet."
-msgstr "Inga än."
+#~ msgid "Checks sessions so they are live."
+#~ msgstr "Kollar sessioner så att de är aktiva."
 
-#: evennia/web/templates/admin/index.html:176
-msgid "Unknown content"
-msgstr "Okänt innehåll"
+#~ msgid "Validates all scripts regularly."
+#~ msgstr "Validerar alla script regelbundet."
 
-#: evennia/web/templates/admin/players/add_form.html:6
-msgid "First, enter a username and password. Then you'll be able to edit more Player options."
-msgstr "Först, ange ett användarnamn och lösenord. Då kommer du att kunna modifiera fler Player-inställningar."
+#~ msgid "Updates the channel handler"
+#~ msgstr "Uppdaterar kanalhanteraren"
 
-#: evennia/web/templates/admin/players/add_form.html:8
-msgid "Enter a username and password."
-msgstr "Ange ett användarnamn och lösenord."
+#~ msgid "Connection dropped: %s %s (%s)"
+#~ msgstr "Uppkopplingen förlorades: %s %s (%s)"
 
-#: evennia/web/templates/admin/players/change_form.html:19
-#: evennia/web/templates/admin/players/change_list.html:41
-msgid "Home"
-msgstr "Hem"
+#~ msgid "Logged in: %s %s (%s)"
+#~ msgstr "Loggade in: %s %s (%s)"
 
-#: evennia/web/templates/admin/players/change_form.html:30
-msgid "History"
-msgstr "Historia"
+#~ msgid "Logged out: %s %s (%s)"
+#~ msgstr "Loggade ut: %s %s (%s)"
 
-#: evennia/web/templates/admin/players/change_form.html:31
-#: evennia/web/templates/admin/players/stacked.html:9
-msgid "View on site"
-msgstr "Inspektera på sida"
+#~ msgid "Evennia site admin"
+#~ msgstr "Evennia site admin"
 
-#: evennia/web/templates/admin/players/change_form.html:42
-#: evennia/web/templates/admin/players/change_list.html:72
-msgid "Please correct the error below."
-msgid_plural "Please correct the errors below."
-msgstr[0] "Vänligen korrigera felet nedan."
-msgstr[1] "Vänligen korrigera felet nedan.\t\t\t\t"
+#~ msgid "Evennia database administration"
+#~ msgstr "Evennia databasadministration"
 
-#: evennia/web/templates/admin/players/change_list.html:63
-#, python-format
-msgid "Add %(name)s"
-msgstr "Lägg till %(name)s"
+#~ msgid "Models available in the %(name)s application."
+#~ msgstr "Modeller tillgängliga i %(name)s applikation."
 
-#: evennia/web/templates/admin/players/change_list.html:83
-msgid "Filter"
-msgstr "Filtrera"
+#~ msgid "%(name)s"
+#~ msgstr "%(name)s"
 
-#: evennia/web/templates/admin/players/stacked.html:67
-#, python-format
-msgid "Add another %(verbose_name)s"
-msgstr "Lägg till ännu ett %(verbose_name)s"
+#~ msgid "Add"
+#~ msgstr "Lägg till"
 
-#: evennia/web/templates/admin/players/stacked.html:70
-msgid "Remove"
-msgstr "Ta bort"
+#~ msgid "Change"
+#~ msgstr "Ändra"
+
+#~ msgid "You don't have permission to edit anything."
+#~ msgstr "Du har inte rättigheter att ändra någonting."
+
+#~ msgid "Recent Actions"
+#~ msgstr "Senaste Aktiviteter"
+
+#~ msgid "My Actions"
+#~ msgstr "Mina Aktiviteter"
+
+#~ msgid "None yet."
+#~ msgstr "Inga än."
+
+#~ msgid "Unknown content"
+#~ msgstr "Okänt innehåll"
+
+#~ msgid ""
+#~ "First, enter a username and password. Then you'll be able to edit more "
+#~ "Player options."
+#~ msgstr ""
+#~ "Först, ange ett användarnamn och lösenord. Då kommer du att kunna "
+#~ "modifiera fler Player-inställningar."
+
+#~ msgid "Enter a username and password."
+#~ msgstr "Ange ett användarnamn och lösenord."
+
+#~ msgid "Home"
+#~ msgstr "Hem"
+
+#~ msgid "History"
+#~ msgstr "Historia"
+
+#~ msgid "View on site"
+#~ msgstr "Inspektera på sida"
+
+#~ msgid "Please correct the error below."
+#~ msgid_plural "Please correct the errors below."
+#~ msgstr[0] "Vänligen korrigera felet nedan."
+#~ msgstr[1] "Vänligen korrigera felet nedan.\t\t\t\t"
+
+#~ msgid "Add %(name)s"
+#~ msgstr "Lägg till %(name)s"
+
+#~ msgid "Filter"
+#~ msgstr "Filtrera"
+
+#~ msgid "Add another %(verbose_name)s"
+#~ msgstr "Lägg till ännu ett %(verbose_name)s"
+
+#~ msgid "Remove"
+#~ msgstr "Ta bort"
 
 #~ msgid " (exit to %s)"
 #~ msgstr "(utgång till %s)"

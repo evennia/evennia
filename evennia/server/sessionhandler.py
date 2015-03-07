@@ -281,7 +281,7 @@ class ServerSessionHandler(SessionHandler):
             self.disconnect_duplicate_sessions(session)
 
         nsess = len(self.sessions_from_player(player))
-        string = _("Logged in: {player} {address} ({nsessions} session(s) total)")
+        string = "Logged in: {player} {address} ({nsessions} session(s) total)"
         string = string.format(player=player,address=session.address, nsessions=nsess)
         session.log(string)
 
@@ -306,7 +306,7 @@ class ServerSessionHandler(SessionHandler):
         if hasattr(session, "player") and session.player:
             # only log accounts logging off
             nsess = len(self.sessions_from_player(session.player)) - 1
-            string = _("Logged out: {player} {address} ({nsessions} sessions(s) remaining)")
+            string = "Logged out: {player} {address} ({nsessions} sessions(s) remaining)"
             string = string.format(player=session.player, address=session.address, nsessions=nsess)
             session.log(string)
 
