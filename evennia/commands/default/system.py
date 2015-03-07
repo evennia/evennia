@@ -257,7 +257,7 @@ class CmdScripts(MuxCommand):
 
     If no switches are given, this command just views all active
     scripts. The argument can be either an object, at which point it
-    will be searched for all scripts defined on it, or an script name
+    will be searched for all scripts defined on it, or a script name
     or #dbref. For using the /stop switch, a unique script #dbref is
     required since whole classes of scripts often have the same name.
 
