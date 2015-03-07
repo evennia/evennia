@@ -177,3 +177,19 @@ class TestListToString(TestCase):
         self.assertEqual('1, 2 and 3', utils.list_to_string([1,2,3]))
         self.assertEqual('"1", "2" and "3"', utils.list_to_string([1,2,3], endsep="and", addquote=True))
 
+class TestMXP(TestCase):
+    """
+    Test the inclusion of MXP tags in the string; these are on a
+    different form than normal ANSI codes:
+        {lc command {lt linktext {le
+    Here ANSIString._cleanstring should have the length of `linktext`
+    since this is what the ansi_parser(strip_ansi=True, mxp=False)
+    will produce.
+    """
+    def test_mxp_length(self):
+        mxp1 = "{lclook{ltat{le"
+        mxp2 = "Start to {lclook here{ltclick somewhere here{le first"
+        self.assertEqual(2, len(ANSIString(mxp1)))
+        self.assertEqual(35, len(ANSIString(mxp2)))
+        self.assertEqual(len(ANSIString(mxp1)), len(ANSIString(mxp1).split("\n")[0]))
+        self.assertEqual(len(ANSIString(mxp2)), len(ANSIString(mxp2).split("\n")[0]))
