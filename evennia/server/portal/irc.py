@@ -4,17 +4,100 @@ The bot then pipes what is being said between the IRC channel and one or
 more Evennia channels.
 """
 
+import re
 from twisted.application import internet
 from twisted.words.protocols import irc
 from twisted.internet import protocol
 from evennia.server.session import Session
-from evennia.utils import logger
+from evennia.utils import logger, utils
+
 
 # IRC colors
 
+IRC_BOLD = "\002"
+IRC_COLOR = "\003"
+IRC_RESET = "\017"
+IRC_ITALIC = "\026"
+IRC_NORMAL = "99"
+IRC_UNDERLINE = "37"
 
+IRC_WHITE = "0"
+IRC_BLACK = "1"
+IRC_DBLUE = "2"
+IRC_DGREEN = "3"
+IRC_RED = "4"
+IRC_DRED = "5"
+IRC_DMAGENTA = "6"
+IRC_DYELLOW = "7"
+IRC_YELLOW = "8"
+IRC_GREEN = "9"
+IRC_DCYAN = "10"
+IRC_CYAN = "11"
+IRC_BLUE = "12"
+IRC_MAGENTA = "13"
+IRC_DGREY = "14"
+IRC_GRAY = "15"
 
+# test:
+# {rred {ggreen {yyellow {bblue {mmagenta {ccyan {wwhite {xdgrey
+# {Rdred {Gdgreen {Ydyellow {Bdblue {Mdmagenta {Cdcyan {Wlgrey {Xblack
+# {[rredbg {[ggreenbg {[yyellowbg {[bbluebg {[mmagentabg {[ccyanbg {[wlgreybg {[xblackbg
 
+IRC_COLOR_MAP = dict([
+    (r'{n', IRC_RESET),                # reset
+    (r'{/', ""),          # line break
+    (r'{-', " "),             # tab
+    (r'{_', " "),           # space
+    (r'{*', ""),        # invert
+    (r'{^', ""),          # blinking text
+
+    (r'{r', IRC_COLOR + IRC_RED),
+    (r'{g', IRC_COLOR + IRC_GREEN),
+    (r'{y', IRC_COLOR + IRC_YELLOW),
+    (r'{b', IRC_COLOR + IRC_BLUE),
+    (r'{m', IRC_COLOR + IRC_MAGENTA),
+    (r'{c', IRC_COLOR + IRC_CYAN),
+    (r'{w', IRC_COLOR + IRC_WHITE),  # pure white
+    (r'{x', IRC_COLOR + IRC_DGREY),  # dark grey
+
+    (r'{R', IRC_COLOR + IRC_DRED),
+    (r'{G', IRC_COLOR + IRC_DGREEN),
+    (r'{Y', IRC_COLOR + IRC_DYELLOW),
+    (r'{B', IRC_COLOR + IRC_DBLUE),
+    (r'{M', IRC_COLOR + IRC_DMAGENTA),
+    (r'{C', IRC_COLOR + IRC_DCYAN),
+    (r'{W', IRC_COLOR + IRC_GRAY),  # light grey
+    (r'{X', IRC_COLOR + IRC_BLACK),  # pure black
+
+    (r'{[r', IRC_COLOR + IRC_NORMAL + "," + IRC_DRED),
+    (r'{[g', IRC_COLOR + IRC_NORMAL + "," + IRC_DGREEN),
+    (r'{[y', IRC_COLOR + IRC_NORMAL + "," + IRC_DYELLOW),
+    (r'{[b', IRC_COLOR + IRC_NORMAL + "," + IRC_DBLUE),
+    (r'{[m', IRC_COLOR + IRC_NORMAL + "," + IRC_DMAGENTA),
+    (r'{[c', IRC_COLOR + IRC_NORMAL + "," + IRC_DCYAN),
+    (r'{[w', IRC_COLOR + IRC_NORMAL + "," + IRC_GRAY),    # light grey background
+    (r'{[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK)     # pure black background
+    ])
+RE_IRC_COLOR = re.compile(r"|".join([re.escape(key) for key in IRC_COLOR_MAP.keys()]), re.DOTALL)
+RE_MXP = re.compile(r'\{lc(.*?)\{lt(.*?)\{le', re.DOTALL)
+RE_ANSI_ESCAPES = re.compile(r"(%s)" % "|".join(("{{", "%%", "\\\\")), re.DOTALL)
+
+def sub_irc(ircmatch):
+    return IRC_COLOR_MAP.get(ircmatch.group(), "")
+
+def parse_irc_colors(string):
+    """
+    Parse {-type syntax and replace with IRC color markers
+    """
+    in_string = utils.to_str(string)
+    parsed_string = ""
+    parts = RE_ANSI_ESCAPES.split(in_string) + [" "]
+    for part, sep in zip(parts[::2], parts[1::2]):
+        pstring = RE_IRC_COLOR.sub(sub_irc, part)
+        parsed_string += "%s%s" % (pstring, sep[0].strip())
+    # strip mxp
+    parsed_string = RE_MXP.sub(r'\2', parsed_string)
+    return parsed_string
 
 # IRC bot
 
@@ -79,6 +162,7 @@ class IRCBot(irc.IRCClient, Session):
         "Data from server-> IRC"
         if text.startswith("bot_data_out"):
             text = text.split(" ", 1)[1]
+            text = parse_irc_colors(text)
             self.say(self.channel, text)
 
 
