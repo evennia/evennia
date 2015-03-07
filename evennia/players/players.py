@@ -317,7 +317,11 @@ class DefaultPlayer(PlayerDB):
             # unpuppeting all objects and disconnecting the user, if any
             # sessions remain (should usually be handled from the
             # deleting command)
-            self.unpuppet_object(session.sessid)
+            try:
+                self.unpuppet_object(session.sessid)
+            except RuntimeError:
+                # no puppet to disconnect from
+                pass
             session.sessionhandler.disconnect(session, reason=_("Player being deleted."))
         self.scripts.stop()
         self.attributes.clear()
