@@ -357,7 +357,7 @@ class EvCell(object):
             corner_top_left_char (str): Char used for "nw" corner.
             corner_top_right_char (str):  Char used for "ne" corner.
             corner_bottom_left_char (str): Char used for "sw" corner.
-            corner_bottom_right_char (str=): Char used for "se" corner.
+            corner_bottom_right_char (str): Char used for "se" corner.
             crop_string (str): String to use when cropping sideways, default is `'[...]'`.
             crop (bool): Crop contentof cell rather than expand vertically, default=`False`.
             enforce_size (bool): If true, the width/height of the cell is
