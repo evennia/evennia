@@ -153,7 +153,8 @@ which block you are part of. You should normally use the specified
 format rather than the freeform counterpart (this will produce nicer
 output) but in some cases the freeform may produce a more compact and
 readable result (such as when describing an `*args` or `**kwargs`
-statement in general terms).
+statement in general terms). The first `self` argument of class methods
+should never be documented. 
 
 Note that
 
