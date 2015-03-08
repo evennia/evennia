@@ -1,23 +1,25 @@
 """
+This is an advanced ASCII table creator. It was inspired by
+[prettytable](https://code.google.com/p/prettytable/) but shares no
+code.
 
-EvTable
-
-This is an advanced ASCII table creator. It was inspired
-by prettytable but shares no code.
-
-Note: to test ANSI colors on the command line you need to
-call the printed table in a unicode() call, like print unicode(table).
-This is due to a bug in the python interpreter and print.
+> Note: to test ANSI colors on the command line you need to call the
+printed table in a unicode() call, like print unicode(table).  This is
+due to a bug in the python interpreter and print.
 
 Example usage:
 
-    table = EvTable("Heading1", "Heading2", table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
-    table.add_column("This is long data", "This is even longer data")
-    table.add_row("This is a single row")
-    print table
+```python
+  table = EvTable("Heading1", "Heading2",
+                  table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
+  table.add_column("This is long data", "This is even longer data")
+  table.add_row("This is a single row")
+  print table
+```
 
 Result:
 
+```python
 +----------------------+----------+---+--------------------------+
 |       Heading1       | Heading2 |   |                          |
 +~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~~+~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~+
@@ -29,18 +31,20 @@ Result:
 +----------------------+----------+---+--------------------------+
 | This is a single row |          |   |                          |
 +----------------------+----------+---+--------------------------+
+```
 
 As seen, the table will automatically expand with empty cells to make
-the table symmetric.
+the table symmetric. Tables can be restricted to a given width:
 
-Tables can be restricted to a given width.
-
-table.reformat(width=50, align="l")
+```python
+  table.reformat(width=50, align="l")
+```
 
 (We could just have added these keywords to the table creation call)
 
 This yields the following result:
 
+```python
 +-----------+------------+-----------+-----------+
 | Heading1  | Heading2   |           |           |
 +~~~~~~~~~~~+~~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~+
@@ -58,6 +62,7 @@ This yields the following result:
 |  single   |            |           |           |
 | row       |            |           |           |
 +-----------+------------+-----------+-----------+
+```
 
 Table-columns can be individually formatted. Note that if an
 individual column is set with a specific width, table auto-balancing
@@ -65,6 +70,8 @@ will not affect this column (this may lead to the full table being too
 wide, so be careful mixing fixed-width columns with auto- balancing).
 Here we change the width and alignment of the column at index 3
 (Python starts from 0):
+
+```python
 
 table.reformat_column(3, width=30, align="r")
 print table
@@ -83,6 +90,7 @@ print table
 |  single   |       |     |                             |         |
 | row       |       |     |                             |         |
 +-----------+-------+-----+-----------------------------+---------+
+```
 
 When adding new rows/columns their data can have its own alignments
 (left/center/right, top/center/bottom).
@@ -91,8 +99,8 @@ If the height is restricted, cells will be restricted from expanding
 vertically. This will lead to text contents being cropped. Each cell
 can only shrink to a minimum width and height of 1.
 
-EvTable is intended to be used with ANSIString for supporting
-ANSI-coloured string types.
+`EvTable` is intended to be used with [ANSIString](evennia.utils.ansi#ansistring)
+for supporting ANSI-coloured string types.
 
 When a cell is auto-wrapped across multiple lines, ANSI-reset
 sequences will be put at the end of each wrapped line. This means that
