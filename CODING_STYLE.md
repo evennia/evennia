@@ -65,7 +65,7 @@ desired look.
 
 When using any code tags (inline or blocks) it's recommended that you
 don't let the code extend wider than about 70 characters or it will
-need to be scrolled horisontally in the wiki (this does not affect any
+need to be scrolled horizontally in the wiki (this does not affect any
 other text, only code).
 
 ### Class docstrings
