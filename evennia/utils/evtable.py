@@ -868,13 +868,13 @@ class EvColumn(object):
 
         Args:
             Texts for the new cells
-
-        Kwargs:
             ypos (int, optional): Index position in table before which to insert the
                 new column. Uses Python indexing, so to insert at the top,
                 use `ypos=0`. If not given, data will be inserted at the end
                 of the column.
-            kwargs (various, optional): Available keywods as per `EvCell.__init__`.
+
+        Kwargs:
+            Available keywods as per `EvCell.__init__`.
 
         """
         ypos = kwargs.get("ypos", None)
@@ -1067,7 +1067,7 @@ class EvTable(object):
         # balance the table
         #self._balance()
 
-    def _cellborders(self, ix, iy, nx, ny, kwargs):
+    def _cellborders(self, ix, iy, nx, ny, **kwargs):
         """
         Adds borders to the table by adjusting the input kwarg to
         instruct cells to build a border in the right positions.
@@ -1077,7 +1077,9 @@ class EvTable(object):
             iy (int): y index positions in table.
             nx (int): x size of table.
             ny (int): y size of table.
-            kwargs (various, optional): Keywords as per `EvTable.__init__`.
+
+        Kwargs:
+            Keywords as per `EvTable.__init__`.
 
         Returns:
             table (str): string with the correct borders.
@@ -1337,8 +1339,11 @@ class EvTable(object):
 
         Args:
             args (str): These strings will be used as the header texts.
-            kwawrgs (various, optional): Same keywords as per `EvTable.__init__`. Will
-                be applied to the new header's cells.
+
+        Kwargs:
+            Same keywords as per `EvTable.__init__`. Will be applied
+            to the new header's cells.
+
         """
         self.header = True
         self.add_row(ypos=0, *args, **kwargs)
@@ -1358,7 +1363,9 @@ class EvTable(object):
             xpos (int, optional): Index position in table *before* which
                to input new column. If not given, column will be added to the end
                of the table. Uses Python indexing (so first column is `xpos=0`)
-            kwargs (various, optional): Same keywords as per `Cell.__init__`.
+
+        Kwargs:
+            Other keywords as per `Cell.__init__`.
 
         """
         # this will replace default options with new ones without changing default
@@ -1414,7 +1421,9 @@ class EvTable(object):
             ypos (int, optional): Index position in table before which to
                  input new row. If not given, will be added to the end of the table.
                  Uses Python indexing (so first row is `ypos=0`)
-            kwargs (various, optional): Available keywords are as per `EvCell.__init__`.
+
+        Kwargs:
+            Other keywords are as per `EvCell.__init__`.
 
         """
         # this will replace default options with new ones without changing default
@@ -1452,9 +1461,8 @@ class EvTable(object):
         """
         Force a re-shape of the entire table.
 
-        Args:
-            kwargs (various, optional): Table options as per
-            `EvTable.__init__`.
+        Kwargs:
+            Table options as per `EvTable.__init__`.
 
         """
         self.width = kwargs.pop("width", self.width)
@@ -1484,7 +1492,9 @@ class EvTable(object):
         Args:
             index (int): Which column to reformat. The column index is
                 given from 0 to Ncolumns-1.
-            kwargs (various, optional): Column options as per `EvCell.__init__`.
+
+        Kwargs:
+            Column options as per `EvCell.__init__`.
 
         Raises:
             Exception: if an invalid index is found.

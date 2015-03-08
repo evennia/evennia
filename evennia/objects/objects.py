@@ -1,5 +1,6 @@
 """
-This is the basis of the typeclass system.
+This model defines the basic Object and its children, typeclasses used
+for all in-game entities.
 
 The idea is have the object as a normal class with the
 database-connection tied to itself through a property.
