@@ -1,13 +1,12 @@
 # Evennia Code Style
 
 All code submitted or committed to the Evennia project should aim to
-follow the guidelines outlined in [Python PEP
-8](http://www.python.org/dev/peps/pep-0008). Keeping the code style
+follow the guidelines outlined in [Python PEP 8][pep8]. Keeping the code style
 uniform makes it much easier for people to collaborate and read the
 code.
 
-A good way to check if your code follows PEP8 is to use the [PEP8
-tool](https://pypi.python.org/pypi/pep8) on your sources.
+A good way to check if your code follows PEP8 is to use the [PEP8 tool][pep8tool] 
+on your sources.
 
 ## A quick list of code style points
 
@@ -25,18 +24,101 @@ tool](https://pypi.python.org/pypi/pep8) on your sources.
    - Evennia src/ modules
    - Evennia game/ modules
    - Evennia 'ev' API imports
+ * All modules, classes, functions and modules should have doc 
+   strings formatted as described below
 
-## Documentation
+## Doc strings
 
-Remember that Evennia's source code is intended to be read - and will
-be read - by game admins trying to implement their game. Evennia
-prides itself with being extensively documented. Modules, functions,
-classes and class methods should all start with at least one line of
-docstring summing up the function's purpose. Ideally also explain
-eventual arguments and caveats. Add comments where appropriate.
+All modules, classes, functions and methods should have docstrings
+formatted with [Google style][googlestyle] indents, using
+[Markdown][githubmarkdown] formatting where needed. Evennia's `api2md`
+parser will use this to create pretty API documentation. 
+
+> Note that far from all sources are currently formatted using the
+> consistent style listed here. This is something that is being
+> worked on and any help to convert existing docs are appreciated. 
+
+### Module docstrings
+
+Modules should all start with at least a few lines of docstring at
+their top describing the contents and purpose of the module.
+Sectioning should not be used - the auto-api will create this
+automatically. Otherwise markdown should be used as needed to format
+the text. 
+
+Example of module docstring (top of file):
+
+```python
+"""
+This module handles the creation of `Objects` that 
+are useful in the game ...
+
+"""
+```
+
+### Class docstrings
+
+The root class docstring should describe the over-arcing use of the
+class. It should usually not describe the exact call sequence nor list
+important methods, this tends to be hard to keep updated as the API
+develops. 
+
+Example of class docstring:
+
+```python
+class MyClass(object):
+    """"
+    This class describes the creation of `Objects`. It is useful
+    in many situations, such as ...
+
+    """
+```
+
+### Function / method docstrings
+
+Example of function or method docstring:
+
+```python
+
+def funcname(a, b, c, d=False):
+    """
+    This is a brief introduction to the function/class/method
+
+    Args:
+        a (str): This is a string argument that we can talk about
+            over multiple lines.
+        b (int or str): Another argument
+        c (list): A list argument
+        d (bool, optional): An optional keyword argument
+
+    Returns:
+        e (str): The result of the function
+
+    Notes:
+        This is an example function. If `d=True`, something
+        amazing will happen.
+
+    """
+```
+
+If you are describing a class method, the `self` argument should not 
+be included among the documented arguments. 
+
+The arg blocks components should be separated by indents (4 spaces as
+per PEP8) and if a given argument description extends over more than
+one line, use an extra level of indent to mark it belongs to the same
+item. The `argname (type):` are mandatory, the describing text should 
+start with a capital letter. 
+
 
 ## Ask Questions!
 
 If any of the rules outlined in PEP 8 or in the sections above doesn't
 make sense, please don't hesitate to ask on the Evennia mailing list
 or in the chat. 
+
+
+[pep8]: http://www.python.org/dev/peps/pep-0008
+[pep8tool]: https://pypi.python.org/pypi/pep8
+[googlestyle]: http://google-styleguide.googlecode.com/svn/trunk/pyguide.html?showone=Comments#Comments
+[githubmarkdown]: https://help.github.com/articles/github-flavored-markdown/
