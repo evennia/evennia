@@ -94,6 +94,12 @@ def funcname(a, b, c, d=False):
     Returns:
         e (str): The result of the function
 
+    Raises:
+        failed (RuntimeException): If there is a critical error,
+            this is raised. 
+        io error (IOError): This is only raised if there is a 
+            problem with the database.
+
     Notes:
         This is an example function. If `d=True`, something
         amazing will happen.
@@ -101,14 +107,29 @@ def funcname(a, b, c, d=False):
     """
 ```
 
-If you are describing a class method, the `self` argument should not 
-be included among the documented arguments. 
-
-The arg blocks components should be separated by indents (4 spaces as
-per PEP8) and if a given argument description extends over more than
-one line, use an extra level of indent to mark it belongs to the same
-item. The `argname (type):` are mandatory, the describing text should 
-start with a capital letter. 
+ - If you are describing a class method, the `self` argument should not 
+   be included among the documented arguments. 
+ - The text before the argument blocks is free-form. It should
+   decsribe the function/method briefly. 
+ - The argument blocks supported by `api2md` are 
+   - `Args:`, `Returns` and `Raises` should be followed by a line break. nted 
+     an extra 4 spaces (only). 
+     - `argname (type):` is used for positional arguments 
+     - `argname (type, optional):` is used for keyword arguments
+     - `raise intention (exception type):` is used to describe exceptions
+       raised from the function or method. 
+     - All the above should appear on a new line with a 4-space indent relative their
+       block header (as per PEP8). If extending over more than one line, the 
+       subsequent lines should be indented another 4 spaces (only). 
+     - The text inside the parenthesis is free-form so you can put
+       anything that makes sense in there (such as `Object` or `list
+       or str`). 
+     - The describing text should start with a capital letter and end
+       with a full stop (`.`).
+ - `Notes:` starts freeform blocks of text and hsould always appear last. 
+   The `Notes:` header should 
+   be followed by a line break and a 4-space indent. The rest of the text
+   is free-form.
 
 
 ## Ask Questions!
