@@ -79,7 +79,7 @@ Example of class docstring:
 
 ```python
 class MyClass(object):
-    """"
+    """
     This class describes the creation of `Objects`. It is useful
     in many situations, such as ...
 
@@ -123,7 +123,7 @@ def funcname(a, b, c, d=False, **kwargs):
 ```
 
 The syntax is very "loose" but the indentation matters. That is, you
-should end the block headers (like `Args:`) with a line break followed
+should end the block headers (like `Args:`) with a line break followed by
 an indent. When you need to break a line you should start the next line
 with another indent. For consistency with the code we recommend all
 indents to be 4 spaces wide (no tabs!).
