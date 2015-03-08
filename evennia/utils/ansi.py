@@ -339,7 +339,7 @@ class ANSIParser(object):
     ansi_map = dict(mux_ansi_map + ext_ansi_map)
 
     # prepare matching ansi codes overall
-    ansi_re = r"\033\[[0-9;]+m"
+    ansi_re = r"(\033\[[0-9;]+m|\{lc(.*?)\{lt|\{le)"
     ansi_regex = re.compile(ansi_re)
 
     # merged regex for both ansi and mxp, for use by ansistring
