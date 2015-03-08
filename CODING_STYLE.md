@@ -30,13 +30,15 @@ on your sources.
 ## Doc strings
 
 All modules, classes, functions and methods should have docstrings
-formatted with [Google style][googlestyle] indents, using
+formatted with [Google style][googlestyle] -inspired indents, using
 [Markdown][githubmarkdown] formatting where needed. Evennia's `api2md`
 parser will use this to create pretty API documentation. 
 
 > Note that far from all sources are currently formatted using the
 > consistent style listed here. This is something that is being
 > worked on and any help to convert existing docs are appreciated. 
+> We also don't support all forms of the google style syntax, going
+> for a limited and more restricted set for consistency.
 
 ### Module docstrings
 
