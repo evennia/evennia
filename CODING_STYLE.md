@@ -92,7 +92,7 @@ Example of function or method docstring:
 
 ```python
 
-def funcname(a, b, c, d=False):
+def funcname(a, b, c, d=False, **kwargs):
     """
     This is a brief introduction to the function/class/method
 
@@ -103,13 +103,16 @@ def funcname(a, b, c, d=False):
         c (list): A list argument
         d (bool, optional): An optional keyword argument
 
+    Kwargs:
+        test (list): A test keyword
+
     Returns:
         e (str): The result of the function
 
     Raises:
-        failed (RuntimeException): If there is a critical error,
+        RuntimeException: If there is a critical error,
             this is raised.
-        io error (IOError): This is only raised if there is a
+        IOError: This is only raised if there is a
             problem with the database.
 
     Notes:
@@ -119,29 +122,59 @@ def funcname(a, b, c, d=False):
     """
 ```
 
- - If you are describing a class method, the `self` argument should not
-   be included among the documented arguments.
- - The text before the argument blocks is free-form. It should
-   decsribe the function/method briefly.
- - The argument blocks supported by `api2md` are
-   - `Args:`, `Returns` and `Raises` should be followed by a line break. nted
-     an extra 4 spaces (only).
-     - `argname (type):` is used for positional arguments
-     - `argname (type, optional):` is used for keyword arguments
-     - `raise intention (exception type):` is used to describe exceptions
-       raised from the function or method.
-     - All the above should appear on a new line with a 4-space indent relative their
-       block header (as per PEP8). If extending over more than one line, the
-       subsequent lines should be indented another 4 spaces (only).
-     - The text inside the parenthesis is free-form so you can put
-       anything that makes sense in there (such as `Object` or `list
-       or str`).
-     - The describing text should start with a capital letter and end
-       with a full stop (`.`).
- - `Notes:` starts freeform blocks of text and hsould always appear last.
-   The `Notes:` header should
-   be followed by a line break and a 4-space indent. The rest of the text
-   is free-form.
+The syntax is very "loose" but the indentation matters. That is, you
+should end the block headers (like `Args:`) with a line break followed
+an indent. When you need to break a line you should start the next line
+with another indent. For consistency with the code we recommend all
+indents to be 4 spaces wide (no tabs!).
+
+Here are all the supported block headers:
+
+```
+    Args/Arg/Kwargs/Kwarg:
+        argname (freeform type): text
+        or
+        freeform text
+    Returns/Yields:
+        kwargname (freeform type): text
+        or
+        freeform text
+    Raises:
+        Exceptiontype: text
+        or
+        freeform text
+    Notes/Note/Examples/Example:
+        freeform text
+```
+
+Parts marked with "freeform" means that you can in principle put any
+text there using any formatting except for the indentation to mark
+which block you are part of. You should normally use the specified
+format rather than the freeform counterpart (this will produce nicer
+output) but in some cases the freeform may produce a more compact and
+readable result (such as when describing an `*args` or `**kwargs`
+statement in general terms).
+
+Note that
+
+```
+Args:
+    argname (type, optional): text
+```
+
+and
+
+```
+Kwargs:
+   argname (type): text
+```
+
+mean the same thing! Which one is used depends on the function or
+method documented, but there are no hard rules; If there is a large
+`**kwargs` block in the function, using the `Kwargs:` block may be a
+good idea, for a small number of arguments though, just using `Args:`
+and marking keywords as `optional` will shorten the docstring and make
+it easier to read.
 
 
 ## Ask Questions!
