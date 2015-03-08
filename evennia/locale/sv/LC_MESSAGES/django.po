@@ -1,0 +1,421 @@
+# Evennia Swedish translation
+# Copyright (C) 2010- Griatch
+# This file is distributed under the same license as the Evennia package.
+# Griatch <griatchATgmailDOTcom>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Evennia Beta\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-03-07 23:43+0100\n"
+"PO-Revision-Date: 2014-04-13 09:22+0100\n"
+"Last-Translator: Griatch <griatch@gmail.com>\n"
+"Language-Team: Swedish <>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: commands/cmdhandler.py:452
+msgid "There were multiple matches."
+msgstr "Det fanns många träffar."
+
+#: commands/cmdhandler.py:480
+#, python-format
+msgid "Command '%s' is not available."
+msgstr "Kommandot '%s' är inte tillgängligt."
+
+#: commands/cmdhandler.py:485
+#, python-format
+msgid " Maybe you meant %s?"
+msgstr "Menade du kanske %s?"
+
+#: commands/cmdhandler.py:485
+msgid "or"
+msgstr "eller"
+
+#: commands/cmdhandler.py:487
+msgid " Type \"help\" for help."
+msgstr "Skriv \"help\" för hjälp."
+
+#: commands/cmdparser.py:159
+#, python-format
+msgid "Could not find '%s'."
+msgstr "Kunde inte hitta '%s'."
+
+#: commands/cmdparser.py:180
+msgid "location"
+msgstr "plats"
+
+#: commands/cmdparser.py:181
+msgid " (carried)"
+msgstr "(buren)"
+
+#: commands/cmdparser.py:261
+msgid " (channel)"
+msgstr "(kanal)"
+
+#: commands/cmdsethandler.py:132
+#, python-brace-format
+msgid "Error loading cmdset {path}: {error}"
+msgstr ""
+
+#: commands/cmdsethandler.py:136
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "Error in loading cmdset: No cmdset class '%(classname)s' in "
+#| "%(modulepath)s."
+msgid "Error in loading cmdset: No cmdset class '{classname}' in {path}."
+msgstr ""
+"Fel medan cmdset laddades: Ingen cmdset-klass med namn '%(classname)s' i "
+"%(modulepath)s."
+
+#: commands/cmdsethandler.py:140
+#, python-brace-format
+msgid "SyntaxError encountered when loading cmdset '{path}': {error}."
+msgstr ""
+
+#: commands/cmdsethandler.py:144
+#, fuzzy, python-brace-format
+#| msgid "Compile/Run error when loading cmdset '%s'. Error was logged."
+msgid "Compile/Run error when loading cmdset '{path}': {error}."
+msgstr ""
+"Kompilerings/Körningsfel när cmdset '%s' laddades. Felet skrevs i loggen."
+
+#: commands/cmdsethandler.py:154
+msgid ""
+"\n"
+" (See log for details.)"
+msgstr ""
+
+#: commands/cmdsethandler.py:221
+#, fuzzy, python-brace-format
+#| msgid "custom %(mergetype)s on cmdset '%(merged_on)s'"
+msgid "custom {mergetype} on cmdset '{cmdset}'"
+msgstr "särskild %(mergetype)s på cmdset '%(merged_on)s'"
+
+#: commands/cmdsethandler.py:224
+#, fuzzy, python-brace-format
+#| msgid " <Merged %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+msgid " <Merged {mergelist} {mergetype}, prio {prio}>: {current}"
+msgstr ""
+"<Sammanslagen %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+
+#: commands/cmdsethandler.py:232
+#, fuzzy, python-brace-format
+#| msgid ""
+#| " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+msgid " <{key} ({mergetype} prio {prio}, {permstring}>: {keylist}"
+msgstr " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+
+#: commands/cmdsethandler.py:308 commands/cmdsethandler.py:343
+msgid "Only CmdSets can be added to the cmdsethandler!"
+msgstr "Bara CmdSets can läggas till cmdsethandler!"
+
+#: locks/lockhandler.py:218
+#, fuzzy, python-format
+#| msgid "Lock: function '%s' is not available."
+msgid "Lock: lock-function '%s' is not available."
+msgstr "Lås: funktionen '%s' kunde inte hittas."
+
+#: locks/lockhandler.py:231
+#, python-format
+msgid "Lock: definition '%s' has syntax errors."
+msgstr "Lås: definitionen '%s' har syntaktiska fel."
+
+#: locks/lockhandler.py:235
+#, fuzzy, python-format
+#| msgid ""
+#| "Lock: access type '%(access_type)s' changed from '%(source)s' to "
+#| "'%(goal)s' "
+msgid ""
+"LockHandler on %(obj)s: access type '%(access_type)s' changed from "
+"'%(source)s' to '%(goal)s' "
+msgstr ""
+"Lås: låstypen '%(access_type)s' ändrade sig från '%(source)s' till '%(goal)s'"
+
+#: locks/lockhandler.py:275
+#, python-format
+msgid "Lock: '%s' contains no colon (:)."
+msgstr "Lås: '%s' innehåller inget kolon (:)."
+
+#: locks/lockhandler.py:279
+#, python-format
+msgid "Lock: '%s' has no access_type (left-side of colon is empty)."
+msgstr "Lås: '%s' saknar låstyp (ingenting till vänster om kolonet)."
+
+#: locks/lockhandler.py:282
+#, python-format
+msgid "Lock: '%s' has mismatched parentheses."
+msgstr "Lås: '%s' has ickematchande parenteser."
+
+#: locks/lockhandler.py:285
+#, python-format
+msgid "Lock: '%s' has no valid lock functions."
+msgstr "Lås: '%s' innehåller inga acceptabla låsfunktioner."
+
+#: objects/objects.py:597
+#, python-format
+msgid "Couldn't perform move ('%s'). Contact an admin."
+msgstr "Kunde inte utföra föflyttningen ('%s'). Kontakta en admininstrator."
+
+#: objects/objects.py:607
+msgid "The destination doesn't exist."
+msgstr "Destinationen existerar inte."
+
+#: objects/objects.py:720
+#, python-format
+msgid "Could not find default home '(#%d)'."
+msgstr "Kunde inte hitta standard-hem '(#'%d)'."
+
+#: objects/objects.py:736
+msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
+msgstr ""
+"Nåtgot gick fel! Du har blivit flyttat till en icke-existerande plats. "
+"Kontakta en admininstrator."
+
+#: objects/objects.py:809
+#, python-format
+msgid "Your character %s has been destroyed."
+msgstr "Din karaktär %s har blivit raderad."
+
+#: players/players.py:325
+msgid "Player being deleted."
+msgstr "Spelaren raderas."
+
+#: scripts/scripthandler.py:45
+#, python-format
+msgid ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+msgstr ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repetitioner): %(desc)s"
+
+#: scripts/scripts.py:158
+#, fuzzy, python-format
+#| msgid ""
+#| "Script %(key)s(#%(dbid)i) of type '%(cname)s': at_repeat() error "
+#| "'%(err)s'."
+msgid ""
+"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+msgstr ""
+"Script %(key)s(#%(dbid)i) av typ '%(cname)s': at_repeat() fel '%(err)s'."
+
+#: scripts/scripts.py:534
+msgid "This is an empty placeholder script."
+msgstr "Detta är ett tomt platshållar-script."
+
+#: scripts/scripts.py:542
+msgid "This is a generic storage container."
+msgstr "Detta är en generisk lagringskontainer."
+
+#: server/initial_setup.py:29
+msgid ""
+"\n"
+"Welcome to your new {wEvennia{n-based game! Visit http://www.evennia.com if "
+"you need\n"
+"help, want to contribute, report issues or just join the community.\n"
+"As Player #1 you can create a demo/tutorial area with {w@batchcommand "
+"tutorial_world.build{n.\n"
+"    "
+msgstr ""
+
+#: server/initial_setup.py:99
+msgid "This is User #1."
+msgstr "Detta är användare #1."
+
+#: server/initial_setup.py:108
+msgid "Limbo"
+msgstr "Limbo"
+
+#: server/portal/imc2.py:167
+#, python-format
+msgid "Whois reply from %(origin)s: %(msg)s"
+msgstr "Whois-svar från %(origin)s: %(msg)s"
+
+#: server/portal/imc2.py:175
+#, python-format
+msgid "{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s"
+msgstr "{c%(sender)s@%(origin)s{n {wskickar (over IMC):{n %(msg)s"
+
+#: server/portal/imc2.py:193
+msgid "IMC2 server rejected connection."
+msgstr "IMC2 server avvisade uppkopplingen."
+
+#: server/portal/imc2.py:201
+msgid "IMC2: Autosetup response found."
+msgstr "IMC2: Autosetup-svar hittat."
+
+#: server/sessionhandler.py:221
+msgid " ... Server restarted."
+msgstr "... Servern startades om."
+
+#: server/sessionhandler.py:284
+#, python-brace-format
+msgid "Logged in: {player} {address} ({nsessions} session(s) total)"
+msgstr ""
+
+#: server/sessionhandler.py:309
+#, python-brace-format
+msgid "Logged out: {player} {address} ({nsessions} sessions(s) remaining)"
+msgstr ""
+
+#: server/sessionhandler.py:331
+msgid "You have been disconnected."
+msgstr "Du har blivit frånkopplad."
+
+#: server/sessionhandler.py:344
+msgid "Logged in from elsewhere. Disconnecting."
+msgstr "Inloggad från någon annanstans ifrån. Kopplas ifrån."
+
+#: server/sessionhandler.py:362
+msgid "Idle timeout exceeded, disconnecting."
+msgstr "Timeout. Kopplar ur."
+
+#~ msgid "Error loading cmdset: Couldn't import module '%s'."
+#~ msgstr "Fel medan cmdset laddades: Kunde inte importera modulen '%s'."
+
+#~ msgid "me"
+#~ msgstr "jag"
+
+#~ msgid "self"
+#~ msgstr "self"
+
+#~ msgid "Checks sessions so they are live."
+#~ msgstr "Kollar sessioner så att de är aktiva."
+
+#~ msgid "Validates all scripts regularly."
+#~ msgstr "Validerar alla script regelbundet."
+
+#~ msgid "Updates the channel handler"
+#~ msgstr "Uppdaterar kanalhanteraren"
+
+#~ msgid "Connection dropped: %s %s (%s)"
+#~ msgstr "Uppkopplingen förlorades: %s %s (%s)"
+
+#~ msgid "Logged in: %s %s (%s)"
+#~ msgstr "Loggade in: %s %s (%s)"
+
+#~ msgid "Logged out: %s %s (%s)"
+#~ msgstr "Loggade ut: %s %s (%s)"
+
+#~ msgid "Evennia site admin"
+#~ msgstr "Evennia site admin"
+
+#~ msgid "Evennia database administration"
+#~ msgstr "Evennia databasadministration"
+
+#~ msgid "Models available in the %(name)s application."
+#~ msgstr "Modeller tillgängliga i %(name)s applikation."
+
+#~ msgid "%(name)s"
+#~ msgstr "%(name)s"
+
+#~ msgid "Add"
+#~ msgstr "Lägg till"
+
+#~ msgid "Change"
+#~ msgstr "Ändra"
+
+#~ msgid "You don't have permission to edit anything."
+#~ msgstr "Du har inte rättigheter att ändra någonting."
+
+#~ msgid "Recent Actions"
+#~ msgstr "Senaste Aktiviteter"
+
+#~ msgid "My Actions"
+#~ msgstr "Mina Aktiviteter"
+
+#~ msgid "None yet."
+#~ msgstr "Inga än."
+
+#~ msgid "Unknown content"
+#~ msgstr "Okänt innehåll"
+
+#~ msgid ""
+#~ "First, enter a username and password. Then you'll be able to edit more "
+#~ "Player options."
+#~ msgstr ""
+#~ "Först, ange ett användarnamn och lösenord. Då kommer du att kunna "
+#~ "modifiera fler Player-inställningar."
+
+#~ msgid "Enter a username and password."
+#~ msgstr "Ange ett användarnamn och lösenord."
+
+#~ msgid "Home"
+#~ msgstr "Hem"
+
+#~ msgid "History"
+#~ msgstr "Historia"
+
+#~ msgid "View on site"
+#~ msgstr "Inspektera på sida"
+
+#~ msgid "Please correct the error below."
+#~ msgid_plural "Please correct the errors below."
+#~ msgstr[0] "Vänligen korrigera felet nedan."
+#~ msgstr[1] "Vänligen korrigera felet nedan.\t\t\t\t"
+
+#~ msgid "Add %(name)s"
+#~ msgstr "Lägg till %(name)s"
+
+#~ msgid "Filter"
+#~ msgstr "Filtrera"
+
+#~ msgid "Add another %(verbose_name)s"
+#~ msgstr "Lägg till ännu ett %(verbose_name)s"
+
+#~ msgid "Remove"
+#~ msgstr "Ta bort"
+
+#~ msgid " (exit to %s)"
+#~ msgstr "(utgång till %s)"
+
+#~ msgid "Send an IMC2 is-alive packet"
+#~ msgstr "Skicka ett IMC2-is-alive paket"
+
+#~ msgid "Send an IMC2 keepalive-request packet"
+#~ msgstr "Skicka ett IMC2 keepalive-request paket"
+
+#~ msgid "Check IMC2 list for inactive games"
+#~ msgstr "Genomsök IMC2-listan efter inaktiva spel"
+
+#~ msgid "Re-sync IMC2 network channel list"
+#~ msgstr "Återsynca nätverkslistan över IMC2 kanaler"
+
+#~ msgid "Successfully authenticated to the '%s' network."
+#~ msgstr "Identifierade sig framgångsrikt till nätverket '%s'."
+
+#~ msgid "Connection lost: %s"
+#~ msgstr "Uppkopplingen förlorades: %s"
+
+#~ msgid "Cannot attach IMC2<->Evennia: Evennia Channel '%s' not found"
+#~ msgstr ""
+#~ "Kan inte sammankoppla IMC2<->Evennia: Evennia-kanalen '%s' gick inte att "
+#~ "hitta."
+
+#~ msgid "joined %s."
+#~ msgstr "lyssnar till %s."
+
+#~ msgid "Unknown"
+#~ msgstr "Okänd"
+
+#~ msgid "Connection closed."
+#~ msgstr "Uppkopplingen stängdes."
+
+#~ msgid "Lost connection %(key)s. Reason: '%(reason)s'. Reconnecting."
+#~ msgstr ""
+#~ "Förlorade uppkopplingen %(key)s. Anledning: '%(reason)s'. Försöker igen."
+
+#~ msgid "Could not connect %(key)s Reason: '%(reason)s'"
+#~ msgstr "Kunde inte koppla upp %(key)s Reason: '%(reason)s'"
+
+#~ msgid "Cannot attach IRC<->Evennia: Evennia Channel '%s' not found"
+#~ msgstr ""
+#~ "Kan inte sammankoppla IRC<->Evennia: Evennia-kanalen '%s' gick inte att "
+#~ "hitta"
+
+#~ msgid "Clears the Attribute Cache"
+#~ msgstr "Nollställer Attribut-cachen"

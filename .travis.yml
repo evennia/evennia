@@ -1,0 +1,10 @@
+language: python
+python:
+  - "2.7"
+install: pip install .
+script:
+  - evennia --init dummy
+  - cd dummy
+  - evennia migrate
+  - evennia test evennia
+

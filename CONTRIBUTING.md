@@ -1,15 +1,15 @@
-## Issue templates
+## Creating an Issue
 
 Thanks for helping us improve Evennia! Please use one of the issue templates below:
 
  * [Issue/Bug report template][A] - when you have an error, problem or unexpected behavior to report. Note that pure usage questions belong on the [mailing list][5] or in the [chat][6].
- * [Feature request template][B] - when you want to request a new Evennia feature.
+ * [Feature request template][B] - when you have an idea for a new Evennia feature.
  * [Documentation error template][C] - when you find an error in the [documentation][2]. Please note that the documentation is a wiki, so consider if you can easily fix the problem yourself first.
- * [Empty template][D] - use for issues not covered by the other templates, like long-term tasks and reminders.
+ * [Empty template][D] - for issues not covered by the other templates, like long-term tasks and reminders.
 
-If you want to contribute code to Evennia, you should work in your own Github *fork* (see our [style guide](https://github.com/evennia/evennia/blob/master/CODING_STYLE.txt)) and then make a *pull request*. Read the [Contribution][3] page for instructions how. 
+If you want to contribute code to Evennia, you should work in your own Github *fork* (see our [style guide](https://github.com/evennia/evennia/blob/master/CODING_STYLE.md)) and then make a *pull request*. Read the [Contribution][3] page for instructions how. 
 
-## Formatting your Issues: 
+## Formatting your Issue
 
 Issues are formatted using [markdown][7]. Here is some useful markdown syntax:
 

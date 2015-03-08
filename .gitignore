@@ -10,7 +10,6 @@ dist
 build
 eggs
 parts
-bin
 var
 sdist
 develop-eggs
@@ -26,12 +25,6 @@ __pycache__
 *.restart
 *.db3
 
-# Installation-specific
-game/settings.py
-game/logs/*.log.*
-game/gamesrc/web/static/*
-game/gamesrc/web/media/*
-
 # Installer logs
 pip-log.txt
 
@@ -41,7 +34,7 @@ pip-log.txt
 nosetests.xml
 
 # Translations
-*.mo
+# *.mo
 
 # Mr Developer
 .mr.developer.cfg

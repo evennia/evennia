@@ -1,0 +1,258 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-08-19 13:23-0300\n"
+"PO-Revision-Date: 2014-08-19 14:13-0300\n"
+"Last-Translator: Nerun <nerunblogs@gmail.com>\n"
+"Language-Team: Nerun <nerunblogs@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Language: Portuguese\n"
+"X-Poedit-Country: BRAZIL\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: evennia/commands/cmdhandler.py:321
+msgid "There were multiple matches."
+msgstr "Havia várias correspondências."
+
+#: evennia/commands/cmdhandler.py:349
+#, python-format
+msgid "Command '%s' is not available."
+msgstr "Comando '%s' não está disponível."
+
+#: evennia/commands/cmdhandler.py:354
+#, python-format
+msgid " Maybe you meant %s?"
+msgstr " Você talvez quis dizer %s?"
+
+#: evennia/commands/cmdhandler.py:354
+msgid "or"
+msgstr "ou"
+
+#: evennia/commands/cmdhandler.py:356
+msgid " Type \"help\" for help."
+msgstr "Digite \"help\" para obter ajuda."
+
+#: evennia/commands/cmdparser.py:153
+#, python-format
+msgid "Could not find '%s'."
+msgstr "Não foi possível encontrar '%s'."
+
+#: evennia/commands/cmdparser.py:174
+msgid "location"
+msgstr "localização"
+
+#: evennia/commands/cmdparser.py:175
+msgid " (carried)"
+msgstr "(carregado)"
+
+#: evennia/commands/cmdparser.py:255
+msgid " (channel)"
+msgstr "(canal)"
+
+#: evennia/commands/cmdsethandler.py:127
+#, python-format
+msgid "Error loading cmdset: Couldn't import module '%s': %s."
+msgstr "Erro ao carregar cmdset: Não foi possível importar o módulo '%s': %s."
+
+#: evennia/commands/cmdsethandler.py:130
+#, python-format
+msgid "Error in loading cmdset: No cmdset class '%(classname)s' in %(modulepath)s."
+msgstr "Erro ao carregar cmdset: Nenhuma classe cmdset '%(classname)s' em %(modulepath)s."
+
+#: evennia/commands/cmdsethandler.py:134
+#, python-format
+msgid "SyntaxError encountered when loading cmdset '%s': %s."
+msgstr "Encontrado SyntaxError ao carregar cmdset '%s': %s."
+
+#: evennia/commands/cmdsethandler.py:137
+#, python-format
+msgid "Compile/Run error when loading cmdset '%s': %s."
+msgstr "Erro de Compilação / Execução ao carregar cmdset '%s': %s."
+
+#: evennia/commands/cmdsethandler.py:214
+#, python-format
+msgid "custom %(mergetype)s on cmdset '%(merged_on)s'"
+msgstr "%(mergetype)s personalizado em cmdset '%(merged_on)s'"
+
+#: evennia/commands/cmdsethandler.py:217
+#, python-format
+msgid " <Merged %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+msgstr " <Combinado %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+
+#: evennia/commands/cmdsethandler.py:225
+#, python-format
+msgid " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+msgstr " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+
+#: evennia/commands/cmdsethandler.py:299
+#: evennia/commands/cmdsethandler.py:332
+msgid "Only CmdSets can be added to the cmdsethandler!"
+msgstr "Somente CmdSets podems er adicionados ao cmdsethandler!"
+
+#: evennia/locks/lockhandler.py:219
+#, python-format
+msgid "Lock: function '%s' is not available."
+msgstr "Travado: a função '%s' não está disponível."
+
+#: evennia/locks/lockhandler.py:232
+#, python-format
+msgid "Lock: definition '%s' has syntax errors."
+msgstr "Travado: a definição '%s' possui erros de sintaxe."
+
+#: evennia/locks/lockhandler.py:236
+#, python-format
+msgid "LockHandler on %(obj)s: access type '%(access_type)s' changed from '%(source)s' to '%(goal)s' "
+msgstr "LockHandler em %(obj)s: tipo de acesso '%(access_type)s' alterado de '%(source)s' para '%(goal)s' "
+
+#: evennia/locks/lockhandler.py:276
+#, python-format
+msgid "Lock: '%s' contains no colon (:)."
+msgstr "Travado: '%s' não contém dois pontos (:)."
+
+#: evennia/locks/lockhandler.py:280
+#, python-format
+msgid "Lock: '%s' has no access_type (left-side of colon is empty)."
+msgstr "Travado: '%s' não possui tipo de acesso (o lado esquerdo dos dois pontos está vazio)."
+
+#: evennia/locks/lockhandler.py:283
+#, python-format
+msgid "Lock: '%s' has mismatched parentheses."
+msgstr "Travado: '%s' possui parêntesis descasados."
+
+#: evennia/locks/lockhandler.py:286
+#, python-format
+msgid "Lock: '%s' has no valid lock functions."
+msgstr "Travado: '%s' não possui funções travamento válidas."
+
+#: evennia/objects/models.py:609
+#, python-format
+msgid "Couldn't perform move ('%s'). Contact an admin."
+msgstr "Não foi possível realizar o movimento ('%s'). Contacte um admin."
+
+#: evennia/objects/models.py:619
+msgid "The destination doesn't exist."
+msgstr "O destino não existe."
+
+#: evennia/objects/models.py:733
+#, python-format
+msgid "Could not find default home '(#%d)'."
+msgstr "Não foi possível encontrar o home '(#%d)' padrão."
+
+#: evennia/objects/models.py:749
+msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
+msgstr "Algo deu errado! Você foi parar em lugar nenhum. Contacte um administrador."
+
+#: evennia/objects/models.py:821
+#, python-format
+msgid "Your character %s has been destroyed."
+msgstr "Seu personagemr %s foi destruído."
+
+#: evennia/players/models.py:422
+msgid "Player being deleted."
+msgstr "Jogador sendo deletado."
+
+#: evennia/scripts/scripthandler.py:45
+#, python-format
+msgid ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+msgstr ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+
+#: evennia/scripts/scripts.py:156
+#, python-format
+msgid "Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+msgstr "Script %(key)s(#%(dbid)s) do tipo '%(cname)s': at_repeat() error '%(err)s'."
+
+#: evennia/scripts/scripts.py:510
+msgid "This is an empty placeholder script."
+msgstr "Este é um script placeholder vazio."
+
+#: evennia/scripts/scripts.py:518
+msgid "This is a generic storage container."
+msgstr "Este é um recipiente de armazenamento genérico."
+
+#: evennia/scripts/scripts.py:526
+msgid "Checks sessions so they are live."
+msgstr "Sessões de checagem para ver se estão vivos."
+
+#: evennia/scripts/scripts.py:547
+msgid "Restrains size of idmapper cache."
+msgstr "Restringe o tamanho do cache do idmapper."
+
+#: evennia/scripts/scripts.py:563
+msgid "Validates all scripts regularly."
+msgstr "Valida todos os scripts regularmente."
+
+#: evennia/scripts/scripts.py:578
+msgid "Updates the channel handler"
+msgstr "Atualiza o manipulador de canal"
+
+#: evennia/server/initial_setup.py:75
+msgid "This is User #1."
+msgstr "Este é o Usuário #1."
+
+#: evennia/server/initial_setup.py:85
+msgid "Limbo"
+msgstr "Limbo"
+
+#: evennia/server/sessionhandler.py:236
+#, python-format
+msgid "Connection dropped: %s %s (%s)"
+msgstr "Conexão descartada: %s %s (%s)"
+
+#: evennia/server/sessionhandler.py:273
+msgid " ... Server restarted."
+msgstr "... Servidor reiniciado."
+
+#: evennia/server/sessionhandler.py:337
+#, python-format
+msgid "Logged in: %s %s (%s)"
+msgstr "Conectado em: %s %s (%s)"
+
+#: evennia/server/sessionhandler.py:361
+#, python-format
+msgid "Logged out: %s %s (%s)"
+msgstr "Desconectado em: %s %s (%s)"
+
+#: evennia/server/sessionhandler.py:381
+msgid "You have been disconnected."
+msgstr "Você foi desconectado."
+
+#: evennia/server/sessionhandler.py:394
+msgid "Logged in from elsewhere. Disconnecting."
+msgstr "Conectado de outro lugar. Desconectando."
+
+#: evennia/server/sessionhandler.py:412
+msgid "Idle timeout exceeded, disconnecting."
+msgstr "Tempo de inatividade excedido, desconectando."
+
+#: evennia/server/portal/imc2.py:167
+#, python-format
+msgid "Whois reply from %(origin)s: %(msg)s"
+msgstr "Resposta Whois de %(origin)s: %(msg)s"
+
+#: evennia/server/portal/imc2.py:175
+#, python-format
+msgid "{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s"
+msgstr "{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s"
+
+#: evennia/server/portal/imc2.py:193
+msgid "IMC2 server rejected connection."
+msgstr "Servidor IMC2 rejeitou a conexão."
+
+#: evennia/server/portal/imc2.py:201
+msgid "IMC2: Autosetup response found."
+msgstr "ICM2: encontrada resposta do autosetup."
+
