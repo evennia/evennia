@@ -58,19 +58,9 @@ are useful in the game ...
 """
 ```
 
-Code examples should use the `\`\`\`python` marker to mark
-multi-line code blocks, such as 
-
-```
-\`\`\`python
-
-code here
-
-\`\`\`
-```
-
-Just indenting will not produce the code desired. 
-
+Code examples should use [multi-line syntax highlighting][markdown-hilight] to mark
+multi-line code blocks, using the "python" identifier. Just indenting 
+code blocks (common in markdown) will not produce the desired look.
 
 ### Class docstrings
 
@@ -159,3 +149,4 @@ or in the chat.
 [pep8tool]: https://pypi.python.org/pypi/pep8
 [googlestyle]: http://google-styleguide.googlecode.com/svn/trunk/pyguide.html?showone=Comments#Comments
 [githubmarkdown]: https://help.github.com/articles/github-flavored-markdown/
+[markdown-hilight]: https://help.github.com/articles/github-flavored-markdown/#syntax-highlighting
