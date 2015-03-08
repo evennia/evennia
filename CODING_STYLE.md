@@ -1,13 +1,12 @@
 # Evennia Code Style
 
 All code submitted or committed to the Evennia project should aim to
-follow the guidelines outlined in [Python PEP
-8](http://www.python.org/dev/peps/pep-0008). Keeping the code style
+follow the guidelines outlined in [Python PEP 8][pep8]. Keeping the code style
 uniform makes it much easier for people to collaborate and read the
 code.
 
-A good way to check if your code follows PEP8 is to use the [PEP8
-tool](https://pypi.python.org/pypi/pep8) on your sources.
+A good way to check if your code follows PEP8 is to use the [PEP8 tool][pep8tool]
+on your sources.
 
 ## A quick list of code style points
 
@@ -25,18 +24,169 @@ tool](https://pypi.python.org/pypi/pep8) on your sources.
    - Evennia src/ modules
    - Evennia game/ modules
    - Evennia 'ev' API imports
+ * All modules, classes, functions and modules should have doc
+   strings formatted as described below
 
-## Documentation
+## Doc strings
 
-Remember that Evennia's source code is intended to be read - and will
-be read - by game admins trying to implement their game. Evennia
-prides itself with being extensively documented. Modules, functions,
-classes and class methods should all start with at least one line of
-docstring summing up the function's purpose. Ideally also explain
-eventual arguments and caveats. Add comments where appropriate.
+All modules, classes, functions and methods should have docstrings
+formatted with [Google style][googlestyle] -inspired indents, using
+[Markdown][githubmarkdown] formatting where needed. Evennia's `api2md`
+parser will use this to create pretty API documentation.
+
+> Note that far from all sources are currently formatted using the
+> consistent style listed here. This is something that is being
+> worked on and any help to convert existing docs are appreciated.
+> We also don't support all forms of the google style syntax, going
+> for a limited and more restricted set for consistency.
+
+### Module docstrings
+
+Modules should all start with at least a few lines of docstring at
+their top describing the contents and purpose of the module.
+Sectioning should not be used - the auto-api will create this
+automatically. Otherwise markdown should be used as needed to format
+the text.
+
+Example of module docstring (top of file):
+
+```python
+"""
+This module handles the creation of `Objects` that
+are useful in the game ...
+
+"""
+```
+
+Code examples should use [multi-line syntax highlighting][markdown-hilight]
+to mark multi-line code blocks, using the "python" identifier. Just
+indenting code blocks (common in markdown) will not produce the
+desired look.
+
+When using any code tags (inline or blocks) it's recommended that you
+don't let the code extend wider than about 70 characters or it will
+need to be scrolled horisontally in the wiki (this does not affect any
+other text, only code).
+
+### Class docstrings
+
+The root class docstring should describe the over-arcing use of the
+class. It should usually not describe the exact call sequence nor list
+important methods, this tends to be hard to keep updated as the API
+develops.
+
+Example of class docstring:
+
+```python
+class MyClass(object):
+    """"
+    This class describes the creation of `Objects`. It is useful
+    in many situations, such as ...
+
+    """
+```
+
+### Function / method docstrings
+
+Example of function or method docstring:
+
+```python
+
+def funcname(a, b, c, d=False, **kwargs):
+    """
+    This is a brief introduction to the function/class/method
+
+    Args:
+        a (str): This is a string argument that we can talk about
+            over multiple lines.
+        b (int or str): Another argument
+        c (list): A list argument
+        d (bool, optional): An optional keyword argument
+
+    Kwargs:
+        test (list): A test keyword
+
+    Returns:
+        e (str): The result of the function
+
+    Raises:
+        RuntimeException: If there is a critical error,
+            this is raised.
+        IOError: This is only raised if there is a
+            problem with the database.
+
+    Notes:
+        This is an example function. If `d=True`, something
+        amazing will happen.
+
+    """
+```
+
+The syntax is very "loose" but the indentation matters. That is, you
+should end the block headers (like `Args:`) with a line break followed
+an indent. When you need to break a line you should start the next line
+with another indent. For consistency with the code we recommend all
+indents to be 4 spaces wide (no tabs!).
+
+Here are all the supported block headers:
+
+```
+    Args/Arg/Kwargs/Kwarg:
+        argname (freeform type): text
+        or
+        freeform text
+    Returns/Yields:
+        kwargname (freeform type): text
+        or
+        freeform text
+    Raises:
+        Exceptiontype: text
+        or
+        freeform text
+    Notes/Note/Examples/Example:
+        freeform text
+```
+
+Parts marked with "freeform" means that you can in principle put any
+text there using any formatting except for the indentation to mark
+which block you are part of. You should normally use the specified
+format rather than the freeform counterpart (this will produce nicer
+output) but in some cases the freeform may produce a more compact and
+readable result (such as when describing an `*args` or `**kwargs`
+statement in general terms). The first `self` argument of class methods
+should never be documented. 
+
+Note that
+
+```
+Args:
+    argname (type, optional): text
+```
+
+and
+
+```
+Kwargs:
+   argname (type): text
+```
+
+mean the same thing! Which one is used depends on the function or
+method documented, but there are no hard rules; If there is a large
+`**kwargs` block in the function, using the `Kwargs:` block may be a
+good idea, for a small number of arguments though, just using `Args:`
+and marking keywords as `optional` will shorten the docstring and make
+it easier to read.
+
 
 ## Ask Questions!
 
 If any of the rules outlined in PEP 8 or in the sections above doesn't
 make sense, please don't hesitate to ask on the Evennia mailing list
-or in the chat. 
+or in the chat.
+
+
+[pep8]: http://www.python.org/dev/peps/pep-0008
+[pep8tool]: https://pypi.python.org/pypi/pep8
+[googlestyle]: http://google-styleguide.googlecode.com/svn/trunk/pyguide.html?showone=Comments#Comments
+[githubmarkdown]: https://help.github.com/articles/github-flavored-markdown/
+[markdown-hilight]: https://help.github.com/articles/github-flavored-markdown/#syntax-highlighting
