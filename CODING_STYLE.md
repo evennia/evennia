@@ -56,6 +56,20 @@ are useful in the game ...
 """
 ```
 
+Code examples should use the `\`\`\`python` marker to mark
+multi-line code blocks, such as 
+
+```
+\`\`\`python
+
+code here
+
+\`\`\`
+```
+
+Just indenting will not produce the code desired. 
+
+
 ### Class docstrings
 
 The root class docstring should describe the over-arcing use of the
