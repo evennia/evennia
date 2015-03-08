@@ -328,7 +328,7 @@ class ServerSessionHandler(SessionHandler):
                                                          operation=SSYNC,
                                                          data=sessdata)
 
-    def disconnect_all_sessions(self, reason=_("You have been disconnected.")):
+    def disconnect_all_sessions(self, reason="You have been disconnected."):
         """
         Cleanly disconnect all of the connected sessions.
         """

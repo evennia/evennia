@@ -229,7 +229,7 @@ class CmdSetHandler(object):
             permstring = "non-perm"
             if self.current.permanent:
                 permstring = "perm"
-            tmpstring = _(" <{key} ({mergetype} prio {prio}, {permstring}>: {keylist}")
+            tmpstring = _(" <{key} ({mergetype}, prio {prio}, {permstring})>:\n {keylist}")
             string += tmpstring.format(key=self.current.key, mergetype=mergetype,
                                        prio=self.current.priority,
                                        permstring=permstring,
