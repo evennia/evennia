@@ -1187,14 +1187,16 @@ class lazy_property(object):
     the Implementation in the werkzeug suite:
     http://werkzeug.pocoo.org/docs/utils/#werkzeug.utils.cached_property
 
-    This should be used as a decorator in a class and is in Evennia
+    This should be used as a decorator in a class and in Evennia is
     mainly used to lazy-load handlers:
 
+        ```python
         @lazy_property
         def attributes(self):
             return AttributeHandler(self)
+        ```
 
-    Once initialized, the AttributeHandler will be available
+    Once initialized, the `AttributeHandler` will be available
     as a property "attributes" on the object.
 
     """
@@ -1219,7 +1221,7 @@ _STRIP_ANSI = None
 _RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([unichr(c) for c in range(0,32)])))# + range(127,160)])))
 def strip_control_sequences(string):
     """
-    remove non-print text sequences from string.
+    remove non-print text sequences from `string`.
     """
     global _STRIP_ANSI
     if not _STRIP_ANSI:
@@ -1230,7 +1232,7 @@ def calledby(callerdepth=1):
     """
     Only to be used for debug purposes.
     Insert this debug function in another function; it will print
-    which function called it. With callerdepth > 1, it will print the
+    which function called it. With `callerdepth` > 1, it will print the
     caller of the caller etc.
     """
     import inspect, os
