@@ -67,28 +67,28 @@ _PARSE_CACHE_SIZE = 10000
 
 class ANSIParser(object):
     """
-    A class that parses ansi markup
+    A class that parses ANSI markup
     to ANSI command sequences
 
     We also allow to escape colour codes
-    by prepending with a \ for mux-style and xterm256,
+    by prepending with a \ for MUX-style and xterm256,
     an extra { for Merc-style codes
     """
 
     def sub_ansi(self, ansimatch):
         """
-        Replacer used by re.sub to replace ansi
-        markers with correct ansi sequences
+        Replacer used by `re.sub` to replace ANSI
+        markers with correct ANSI sequences
         """
         return self.ansi_map.get(ansimatch.group(), "")
 
     def sub_xterm256(self, rgbmatch):
         """
-        This is a replacer method called by re.sub with the matched
+        This is a replacer method called by `re.sub` with the matched
         tag. It must return the correct ansi sequence.
 
-        It checks self.do_xterm256 to determine if conversion
-        to standard ansi should be done or not.
+        It checks `self.do_xterm256` to determine if conversion
+        to standard ANSI should be done or not.
         """
         if not rgbmatch:
             return ""
@@ -183,7 +183,7 @@ class ANSIParser(object):
         Parses a string, subbing color codes according to
         the stored mapping.
 
-        strip_ansi flag instead removes all ansi markup.
+        strip_ansi flag instead removes all ANSI markup.
 
         """
         if hasattr(string, '_raw_string'):
