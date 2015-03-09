@@ -2,12 +2,13 @@
 Spawner
 
 The spawner takes input files containing object definitions in
-dictionary forms. These use a prototype architechture to define
+dictionary forms. These use a prototype architecture to define
 unique objects without having to make a Typeclass for each.
 
-The main function is spawn(*prototype), where the prototype
+The main function is `spawn(*prototype)`, where the `prototype`
 is a dictionary like this:
 
+```python
 GOBLIN = {
  "typeclass": "types.objects.Monster",
  "key": "goblin grunt",
@@ -16,11 +17,12 @@ GOBLIN = {
  "attacks": ["fists"],
  "weaknesses": ["fire", "light"]
  }
+```
 
 Possible keywords are:
     prototype - string parent prototype
     key - string, the main object identifier
-    typeclass - string, if not set, will use settings.BASE_OBJECT_TYPECLASS
+    typeclass - string, if not set, will use `settings.BASE_OBJECT_TYPECLASS`
     location - this should be a valid object or #dbref
     home - valid object or #dbref
     destination - only valid for exits (object or dbref)
@@ -40,6 +42,7 @@ By specifying a prototype, the child will inherit all prototype slots
 it does not explicitly define itself, while overloading those that it
 does specify.
 
+```python
 GOBLIN_WIZARD = {
  "prototype": GOBLIN,
  "key": "goblin wizard",
@@ -51,10 +54,12 @@ GOBLIN_ARCHER = {
  "key": "goblin archer",
  "attacks": ["short bow"]
 }
+```
 
 One can also have multiple prototypes. These are inherited from the
 left, with the ones further to the right taking precedence.
 
+```python
 ARCHWIZARD = {
  "attack": ["archwizard staff", "eye of doom"]
 
@@ -62,10 +67,11 @@ GOBLIN_ARCHWIZARD = {
  "key" : "goblin archwizard"
  "prototype": (GOBLIN_WIZARD, ARCHWIZARD),
 }
+```
 
-The goblin archwizard will have some different attacks, but will
-otherwise have the same spells as a goblin wizard who in turn shares
-many traits with a normal goblin.
+The *goblin archwizard* will have some different attacks, but will
+otherwise have the same spells as a *goblin wizard* who in turn shares
+many traits with a normal *goblin*.
 
 """
 
