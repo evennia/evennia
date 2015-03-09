@@ -4,7 +4,7 @@ Extended Room
 Evennia Contribution - Griatch 2012
 
 This is an extended Room typeclass for Evennia. It is supported
-by an extended Look command and an extended @desc command, also
+by an extended `Look` command and an extended `@desc` command, also
 in this module.
 
 
@@ -13,17 +13,17 @@ Features:
 1) Time-changing description slots
 
 This allows to change the full description text the room shows
-depending on larger time variations. Four seasons - spring, summer,
-autumn and winter are used by default). The season is calculated
+depending on larger time variations. Four seasons (spring, summer,
+autumn and winter) are used by default. The season is calculated
 on-demand (no Script or timer needed) and updates the full text block.
 
 There is also a general description which is used as fallback if
 one or more of the seasonal descriptions are not set when their
 time comes.
 
-An updated @desc command allows for setting seasonal descriptions.
+An updated `@desc` command allows for setting seasonal descriptions.
 
-The room uses the evennia.utils.gametime.GameTime global script. This is
+The room uses the `evennia.utils.gametime.GameTime` global script. This is
 started by default, but if you have deactivated it, you need to
 supply your own time keeping mechanism.
 
@@ -32,20 +32,20 @@ supply your own time keeping mechanism.
 
 Within each seasonal (or general) description text, you can also embed
 time-of-day dependent sections. Text inside such a tag will only show
-during that particular time of day. The tags looks like <timeslot> ...
-</timeslot>. By default there are four timeslots per day - morning,
+during that particular time of day. The tags looks like `<timeslot> ...
+</timeslot>`. By default there are four timeslots per day - morning,
 afternoon, evening and night.
 
 
 3) Details
 
 The Extended Room can be "detailed" with special keywords. This makes
-use of a special Look command. Details are "virtual" targets to look
+use of a special `Look` command. Details are "virtual" targets to look
 at, without there having to be a database object created for it. The
 Details are simply stored in a dictionary on the room and if the look
-command cannot find an object match for a "look <target>" command it
+command cannot find an object match for a `look <target>` command it
 will also look through the available details at the current location
-if applicable. An extended @desc command is used to set details.
+if applicable. An extended `@desc` command is used to set details.
 
 
 4) Extra commands
@@ -53,17 +53,17 @@ if applicable. An extended @desc command is used to set details.
   CmdExtendedLook - look command supporting room details
   CmdExtendedDesc - @desc command allowing to add seasonal descs and details,
                     as well as listing them
-  CmdGameTime     - A simple "time" command, displaying the current
+  CmdGameTime     - A simple `time` command, displaying the current
                     time and season.
 
 
 Installation/testing:
 
-1) Add CmdExtendedLook, CmdExtendedDesc and CmdGameTime to the default cmdset
-   (see wiki how to do this).
-2) @dig a room of type contrib.extended_room.ExtendedRoom (or make it the
+1) Add `CmdExtendedLook`, `CmdExtendedDesc` and `CmdGameTime` to the default `cmdset`
+   (see Wiki for how to do this).
+2) `@dig` a room of type `contrib.extended_room.ExtendedRoom` (or make it the
    default room type)
-3) Use @desc and @detail to customize the room, then play around!
+3) Use `@desc` and `@detail` to customize the room, then play around!
 
 """
 
@@ -102,7 +102,7 @@ DAY_BOUNDARIES = (0, 6 / 24.0, 12 / 24.0, 18 / 24.0)
 
 class ExtendedRoom(DefaultRoom):
     """
-    This room implements a more advanced look functionality depending on
+    This room implements a more advanced `look` functionality depending on
     time. It also allows for "details", together with a slightly modified
     look command.
     """
@@ -126,7 +126,7 @@ class ExtendedRoom(DefaultRoom):
 
     def get_time_and_season(self):
         """
-        Calculate the current time and season ids
+        Calculate the current time and season ids.
         """
         # get the current time as parts of year and parts of day
         # returns a tuple (years,months,weeks,days,hours,minutes,sec)
@@ -158,7 +158,7 @@ class ExtendedRoom(DefaultRoom):
 
     def replace_timeslots(self, raw_desc, curr_time):
         """
-        Filter so that only time markers <timeslot>...</timeslot> of the
+        Filter so that only time markers `<timeslot>...</timeslot>` of the
         correct timeslot remains in the description.
         """
         if raw_desc:
@@ -173,8 +173,8 @@ class ExtendedRoom(DefaultRoom):
         """
         This will attempt to match a "detail" to look for in the room. A detail
         is a way to offer more things to look at in a room without having to
-        add new objects. For this to work, we require a custom look command that
-        allows for "look <detail>" - the look command should defer to this
+        add new objects. For this to work, we require a custom `look` command that
+        allows for `look <detail>` - the look command should defer to this
         method on the current location (if it exists) before giving up on
         finding the target.
 
@@ -298,36 +298,39 @@ class CmdExtendedLook(default_cmds.CmdLook):
 
 class CmdExtendedDesc(default_cmds.CmdDesc):
     """
-    @desc - describe an object or room
+    `@desc` - describe an object or room.
 
     Usage:
       @desc[/switch] [<obj> =] <description>
       @detail[/del] [<key> = <description>]
 
 
-    Switches for @desc:
-      spring  - set description for <season> in current room
+    Switches for `@desc`:
+      spring  - set description for <season> in current room.
       summer
       autumn
       winter
 
-    Switch for @detail:
-      del   - delete a named detail
+    Switch for `@detail`:
+      del   - delete a named detail.
 
     Sets the "desc" attribute on an object. If an object is not given,
     describe the current room.
 
-    The alias @detail allows to assign a "detail" (a non-object
-    target for the look command) to the current room (only).
+    The alias `@detail` allows to assign a "detail" (a non-object
+    target for the `look` command) to the current room (only).
 
     You can also embed special time markers in your room description, like this:
-      <night>In the darkness, the forest looks foreboding.</night>. Text
-    marked this way will only display when the server is truly at the given
-    time slot. The available times
-    are night, morning, afternoon and evening.
 
-    Note that @detail, seasons and time-of-day slots only works on rooms in this
-    version of the @desc command.
+        ```
+        <night>In the darkness, the forest looks foreboding.</night>.
+        ```
+
+    Text marked this way will only display when the server is truly at the given
+    timeslot. The available times are night, morning, afternoon and evening.
+
+    Note that `@detail`, seasons and time-of-day slots only works on rooms in this
+    version of the `@desc` command.
 
     """
     aliases = ["@describe", "@detail"]
@@ -434,7 +437,7 @@ class CmdGameTime(default_cmds.MuxCommand):
     Check the game time
 
     Usage:
-      time
+        time
 
     Shows the current in-game time and season.
     """
