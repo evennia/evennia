@@ -107,15 +107,12 @@ def _server_maintenance():
 
     if _MAINTENANCE_COUNT % 300 == 0:
         # check cache size every 5 minutes
-        print "maintenance: check flush cache..."
         _FLUSH_CACHE(_IDMAPPER_CACHE_MAXSIZE)
     if _MAINTENANCE_COUNT % 3600 == 0:
         # validate scripts every hour
-        print "maintenance: validate scripts..."
         evennia.ScriptDB.objects.validate()
     if _MAINTENANCE_COUNT % 3700 == 0:
         # validate channels off-sync with scripts
-        print "maintenance: validate channels..."
         evennia.CHANNEL_HANDLER.update()
     ## Commenting this out, it is probably not needed
     ## with CONN_MAX_AGE set. Keeping it as a reminder
