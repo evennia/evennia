@@ -111,6 +111,7 @@ class ScriptBase(ScriptDB):
     """
     Base class for scripts. Don't inherit from this, inherit
     from the class `DefaultScript` below instead.
+
     """
     __metaclass__ = TypeclassBase
     objects = ScriptManager()
@@ -279,6 +280,7 @@ class ScriptBase(ScriptDB):
         """
         This stops a running script and stores its active state.
         It WILL NOT call the `at_stop()` hook.
+
         """
         if not self.db._paused_time:
             # only allow pause if not already paused
