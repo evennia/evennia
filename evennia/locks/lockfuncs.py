@@ -12,7 +12,7 @@ with a lock variable/field, so be careful to not expect
 a certain object type.
 
 
-##Appendix: MUX locks
+**Appendix: MUX locks**
 
 Below is a list nicked from the MUX help file on the locks available
 in standard MUX. Most of these are not relevant to core Evennia since
@@ -29,7 +29,7 @@ DefaultLock:   Exits:          controls who may traverse the exit to
                                its destination.
                                  Evennia: "traverse:<lockfunc()>"
                Rooms:          controls whether the player sees the
-                               SUCC or FAIL message for the room 
+                               SUCC or FAIL message for the room
                                following the room description when
                                looking at the room.
                                  Evennia: Custom typeclass
@@ -58,7 +58,7 @@ DefaultLock:   Exits:          controls who may traverse the exit to
  ParentLock:   All:            controls who may make @parent links to
                                the object.
                                  Evennia: Typeclasses and
-								          "puppet:<lockstring()>"
+                               "puppet:<lockstring()>"
  ReceiveLock:  Players/Things: controls who may give things to the
                                object.
                                  Evennia:
