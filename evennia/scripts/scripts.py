@@ -132,10 +132,7 @@ class ExtendedLoopingCall(LoopingCall):
             return self._expectNextCallAt - currentTime
         return None
 
-#
-# Base script, inherit from DefaultScript below instead.
-#
-class _ScriptBase(ScriptDB):
+class ScriptBase(ScriptDB):
     """
     Base class for scripts. Don't inherit from this, inherit from the
     class `DefaultScript` below instead.
@@ -143,6 +140,15 @@ class _ScriptBase(ScriptDB):
     """
     __metaclass__ = TypeclassBase
     objects = ScriptManager()
+
+
+class DefaultScript(ScriptBase):
+    """
+    This is the base TypeClass for all Scripts. Scripts describe
+    events, timers and states in game, they can have a time component
+    or describe a state that changes under certain conditions.
+
+    """
 
     def __eq__(self, other):
         """
@@ -385,14 +391,6 @@ class _ScriptBase(ScriptDB):
         if task:
             task.force_repeat()
 
-
-class DefaultScript(_ScriptBase):
-    """
-    This is the base TypeClass for all Scripts. Scripts describe
-    events, timers and states in game, they can have a time component
-    or describe a state that changes under certain conditions.
-
-    """
     def at_first_save(self):
         """
         This is called after very first time this object is saved.
