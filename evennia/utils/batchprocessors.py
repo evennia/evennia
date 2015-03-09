@@ -1,5 +1,5 @@
 """
-This file contains the core methods for the Batch-command- and
+This module contains the core methods for the Batch-command- and
 Batch-code-processors respectively. In short, these are two different
 ways to build a game world using a normal text-editor without having
 to do so 'on the fly' in-game. They also serve as an automatic backup
@@ -107,7 +107,7 @@ allows them to the executed in blocks. This way of working assures a
 sequential execution of the file and allows for features like stepping
 from block to block (without executing those coming before), as well
 as automatic deletion of created objects etc. You can however also run
-a batch-code Python file directly using Python (and can also be de).
+a batch-code Python file directly using Python.
 
 Code blocks are separated by python comments starting with special
 code words.
@@ -315,8 +315,8 @@ class BatchCodeProcessor(object):
         3) #CODE headers may be of the following form:
                               #CODE (info) objname, objname2, ...
         4) Lines starting with #INSERT are on form #INSERT filename.
-        3) All lines outside blocks are stripped.
-        4) All excess whitespace beginning/ending a block is stripped.
+        5) All lines outside blocks are stripped.
+        6) All excess whitespace beginning/ending a block is stripped.
 
         """
 

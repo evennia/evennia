@@ -1,5 +1,5 @@
 """
-This module contains the base Script class that all
+This module contains the base DefaultScript class that all
 scripts are inheriting from.
 
 It also defines a few common scripts.
@@ -7,12 +7,10 @@ It also defines a few common scripts.
 
 from twisted.internet.defer import Deferred, maybeDeferred
 from twisted.internet.task import LoopingCall
-from django.conf import settings
 from django.utils.translation import ugettext as _
 from evennia.typeclasses.models import TypeclassBase
 from evennia.scripts.models import ScriptDB
 from evennia.scripts.manager import ScriptManager
-from evennia.comms import channelhandler
 from evennia.utils import logger
 
 __all__ = ["DefaultScript", "DoNothing", "Store"]
@@ -112,7 +110,7 @@ class ExtendedLoopingCall(LoopingCall):
 class ScriptBase(ScriptDB):
     """
     Base class for scripts. Don't inherit from this, inherit
-    from the class `Script`  instead.
+    from the class `DefaultScript` below instead.
     """
     __metaclass__ = TypeclassBase
     objects = ScriptManager()
@@ -280,7 +278,7 @@ class ScriptBase(ScriptDB):
     def pause(self):
         """
         This stops a running script and stores its active state.
-        It WILL NOT call that `at_stop()` hook.
+        It WILL NOT call the `at_stop()` hook.
         """
         if not self.db._paused_time:
             # only allow pause if not already paused
@@ -348,9 +346,9 @@ class ScriptBase(ScriptDB):
 
 class DefaultScript(ScriptBase):
     """
-    This is the base TypeClass for all Scripts. Scripts describe events,
-    timers and states in game, they can have a time component or describe
-    a state that changes under certain conditions.
+    This is the base TypeClass for all Scripts. Scripts describe
+    events, timers and states in game, they can have a time component
+    or describe a state that changes under certain conditions.
 
     Script API:
 
