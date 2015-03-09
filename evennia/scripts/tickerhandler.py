@@ -11,23 +11,27 @@ server reloads and be started automaticall on boot.
 
 Example:
 
+```python
     from evennia.scripts.tickerhandler import TICKER_HANDLER
 
     # tick myobj every 15 seconds
     TICKER_HANDLER.add(myobj, 15)
+```
 
-The handler will by default try to call a hook "at_tick()"
+The handler will by default try to call a hook `at_tick()`
 on the subscribing object. The hook's name can be changed
-if the "hook_key" keyword is given to the add() method (only
+if the `hook_key` keyword is given to the `add()` method (only
 one such alternate name per interval though). The
 handler will transparently set up and add new timers behind
 the scenes to tick at given intervals, using a TickerPool.
 
 To remove:
 
+```python
     TICKER_HANDLER.remove(myobj, 15)
+```
 
-The interval must be given since a single object can be subcribed
+The interval must be given since a single object can be subscribed
 to many different tickers at the same time.
 
 
@@ -35,6 +39,7 @@ The TickerHandler's functionality can be overloaded by modifying the
 Ticker class and then changing TickerPool and TickerHandler to use the
 custom classes
 
+```python
 class MyTicker(Ticker):
     # [doing custom stuff]
 
@@ -42,10 +47,11 @@ class MyTickerPool(TickerPool):
     ticker_class = MyTicker
 class MyTickerHandler(TickerHandler):
     ticker_pool_class = MyTickerPool
+```
 
 If one wants to duplicate TICKER_HANDLER's auto-saving feature in
-a  custom handler one can make a custom AT_STARTSTOP_MODULE entry to
-call the handler's save() and restore() methods when the server reboots.
+a  custom handler one can make a custom `AT_STARTSTOP_MODULE` entry to
+call the handler's `save()` and `restore()` methods when the server reboots.
 
 """
 from twisted.internet.defer import inlineCallbacks
@@ -68,15 +74,15 @@ Ticker was not added."""
 class Ticker(object):
     """
     Represents a repeatedly running task that calls
-    hooks repeatedly. Overload _callback to change the
+    hooks repeatedly. Overload `_callback` to change the
     way it operates.
     """
 
     @inlineCallbacks
     def _callback(self):
         """
-        This will be called repeatedly every self.interval seconds.
-        self.subscriptions contain tuples of (obj, args, kwargs) for
+        This will be called repeatedly every `self.interval` seconds.
+        `self.subscriptions` contain tuples of (obj, args, kwargs) for
         each subscribing object.
 
         If overloading, this callback is expected to handle all

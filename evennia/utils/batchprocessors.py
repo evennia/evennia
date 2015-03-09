@@ -26,7 +26,7 @@ the batch-code processor. There is no in-game character that moves and
 that can be affected by what is being built - the database is
 populated on the fly. The drawback is safety and entry threshold - the
 code is executed as would any server code, without mud-specific
-permission checks and you have full access to modifying objects
+permission-checks, and you have full access to modifying objects
 etc. You also need to know Python and Evennia's API. Hence it's
 recommended that the batch-code processor is limited only to
 superusers or highly trusted staff.
@@ -37,11 +37,11 @@ superusers or highly trusted staff.
 Batch-command processor file syntax
 
 The batch-command processor accepts 'batchcommand files' e.g
-'batch.ev', containing a sequence of valid evennia commands in a
+`batch.ev`, containing a sequence of valid Evennia commands in a
 simple format. The engine runs each command in sequence, as if they
 had been run at the game prompt.
 
-Each evennia command must be delimited by a line comment to mark its
+Each Evennia command must be delimited by a line comment to mark its
 end.
 
 #INSERT path.batchcmdfile - this as the first entry on a line will
@@ -56,6 +56,7 @@ editor or prompt.
 Example of batch.ev file:
 ----------------------------
 
+```
 # batch file
 # all lines starting with # are comments; they also indicate
 # that a command definition is over.
@@ -88,9 +89,11 @@ It seems the bottom of the box is a bit loose.
 
 # Done, the box is in the warehouse! (this last comment is not necessary to
 # close the @drop command since it's the end of the file)
+```
+
 -------------------------
 
-An example batch file is contrib/examples/batch_example.ev.
+An example batch file is `contrib/examples/batch_example.ev`.
 
 
 ==========================================================================
@@ -98,13 +101,13 @@ An example batch file is contrib/examples/batch_example.ev.
 
 Batch-code processor file syntax
 
-The Batch-code processor accepts full python modules (e.g. "batch.py")
+The Batch-code processor accepts full python modules (e.g. `batch.py`)
 that looks identical to normal Python files with a few exceptions that
 allows them to the executed in blocks. This way of working assures a
 sequential execution of the file and allows for features like stepping
 from block to block (without executing those coming before), as well
 as automatic deletion of created objects etc. You can however also run
-a batch-code python file directly using Python (and can also be de).
+a batch-code Python file directly using Python (and can also be de).
 
 Code blocks are separated by python comments starting with special
 code words.
@@ -140,6 +143,7 @@ caller - the object executing the script
 Example batch.py file
 -----------------------------------
 
+```
 #HEADER
 
 import traceback
@@ -162,7 +166,7 @@ caller.msg("The object was created!")
 #CODE
 
 script = create.create_script()
-
+```
 """
 
 import re
@@ -191,7 +195,7 @@ def read_batchfile(pythonpath, file_ending='.py'):
     """
     This reads the contents of a batch-file.
     Filename is considered to be a python path to a batch file
-    relative the directory specified in settings.py.
+    relative the directory specified in `settings.py`.
 
     file_ending specify which batchfile ending should be
     assumed (.ev or .py). The ending should not be included
