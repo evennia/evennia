@@ -1,19 +1,9 @@
 """
-This model defines the basic Object and its children, typeclasses used
-for all in-game entities.
+This module defines the basic `DefaultObject` and its children
+`DefaultCharacter`, `DefaultPlayer`, `DefaultRoom` and `DefaultExit`.
+These are the (default) starting points for all in-game visible
+entities.
 
-The idea is have the object as a normal class with the
-database-connection tied to itself through a property.
-
-The instances of all the different object types are all tied to their
-own database object stored in the 'dbobj' property.  All attribute
-get/set operations are channeled transparently to the database object
-as desired. You should normally never have to worry about the database
-abstraction, just do everything on the TypeClass object.
-
-That an object is controlled by a player/user is just defined by its
-'user' property being set.  This means a user may switch which object
-they control by simply linking to a new object's user property.
 """
 
 import traceback
@@ -31,14 +21,14 @@ from evennia.utils.logger import log_trace, log_errmsg
 from evennia.utils.utils import (variable_from_module, lazy_property,
                              make_iter, to_str, to_unicode)
 
-MULTISESSION_MODE = settings.MULTISESSION_MODE
+_MULTISESSION_MODE = settings.MULTISESSION_MODE
 
 _ScriptDB = None
 _SESSIONS = None
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 # the sessid_max is based on the length of the db_sessid csv field (excluding commas)
-_SESSID_MAX = 16 if MULTISESSION_MODE in (1, 3) else 1
+_SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
 
 from django.utils.translation import ugettext as _
 
@@ -48,6 +38,13 @@ class SessidHandler(object):
     comma-separated integer field
     """
     def __init__(self, obj):
+        """
+        Initializes the handler.
+
+        Args:
+            obj (Object): The object on which the handler is defined.
+
+        """
         self.obj = obj
         self._cache = set()
         self._recache()
@@ -56,12 +53,27 @@ class SessidHandler(object):
         self._cache = list(set(int(val) for val in (self.obj.db_sessid or "").split(",") if val))
 
     def get(self):
-        "Returns a list of one or more session ids"
+        """
+        Get the session ids.
+
+        Returns:
+            session (list): A cached list of one or more session ids.
+
+        Notes:
+            Aliased to `self.all()`.
+
+        """
         return self._cache
     all = get # alias
 
     def add(self, sessid):
-        "Add sessid to handler"
+        """
+        Add sessid to handler.
+
+        Args:
+            sessid (int): Session id to add.
+
+        """
         _cache = self._cache
         if sessid not in _cache:
             if len(_cache) >= _SESSID_MAX:
@@ -71,7 +83,13 @@ class SessidHandler(object):
             self.obj.save(update_fields=["db_sessid"])
 
     def remove(self, sessid):
-        "Remove sessid from handler"
+        """
+        Remove sessid from handler.
+
+        Args:
+            sessid (int): Session id to remove.
+
+        """
         _cache = self._cache
         if sessid in _cache:
             _cache.remove(sessid)
@@ -79,13 +97,21 @@ class SessidHandler(object):
             self.obj.save(update_fields=["db_sessid"])
 
     def clear(self):
-        "Clear sessids"
+        """
+        Clear all handled sessids.
+
+        """
         self._cache = []
         self.obj.db_sessid = None
         self.obj.save(update_fields=["db_sessid"])
 
     def count(self):
-        "Return amount of sessions connected"
+        """
+        Get amount of sessions connected.
+
+        Returns:
+            sesslen (int): Number of sessions handled.
+        """
         return len(self._cache)
 
 
@@ -96,151 +122,17 @@ class SessidHandler(object):
 
 class DefaultObject(ObjectDB):
     """
-    This is the root typeclass object, representing all entities
-    that have an actual presence in-game. Objects generally have a
-    location. They can also be manipulated and looked at. Most
-    game entities you define should inherit from Object at some distance.
-    Evennia defines some important subclasses of Object by default, namely
-    Characters, Exits and Rooms (see the bottom of this module).
+    This is the root typeclass object, representing all entities that
+    have an actual presence in-game. DefaultObjects generally have a
+    location. They can also be manipulated and looked at. Game
+    entities you define should inherit from DefaultObject at some distance.
 
-    Note that all new Objects and their subclasses *must* always be
-    created using the evennia.create_object() function. This is so the
-    typeclass system can be correctly initiated behind the scenes.
+    It is recommended to create children of this class using the
+    `evennia.create_object()` function rather than to initialize the class
+    directly - this will both set things up and efficiently save the object
+    without obj.save() having to be called explicitly.
 
-
-    Object Typeclass API:
-
-    * Available properties (only available on *initiated* typeclass objects)
-
-     key (string) - name of object
-     name (string) - same as key
-     aliases (list of strings) - aliases to the object. Will be saved to
-                 database as AliasDB entries but returned as strings.
-     dbref (int, read-only) - unique #id-number. Also "id" can be used.
-     date_created (string) - time stamp of object creation
-     permissions (list of strings) - list of permission strings
-
-     player (Player) - controlling player (if any, only set together with
-                      sessid below)
-     sessid (int, read-only) - session id (if any, only set together with
-                      player above)
-     location (Object) - current location. Is None if this is a room
-     home (Object) - safety start-location
-     sessions (list of Sessions, read-only) - returns all sessions
-                 connected to this object
-     has_player (bool, read-only)- will only return *connected* players
-     contents (list of Objects, read-only) - returns all objects inside
-                     this object (including exits)
-     exits (list of Objects, read-only) - returns all exits from this
-                 object, if any
-     destination (Object) - only set if this object is an exit.
-     is_superuser (bool, read-only) - True/False if this user is a superuser
-
-    * Handlers available
-
-     locks - lock-handler: use locks.add() to add new lock strings
-     db - attribute-handler: store/retrieve database attributes on this
-                             self.db.myattr=val, val=self.db.myattr
-     ndb - non-persistent attribute handler: same as db but does not
-                             create a database entry when storing data
-     scripts - script-handler. Add new scripts to object with scripts.add()
-     cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
-     nicks - nick-handler. New nicks with nicks.add().
-
-    * Helper methods (see evennia.objects.objects.py for full headers)
-
-     search(ostring, global_search=False, use_nicks=True,
-            typeclass=None,
-            attribute_name=None, use_nicks=True, location=None,
-            quiet=False, exact=False)
-     execute_cmd(raw_string)
-     msg(text=None, from_obj=None, sessid=0, **kwargs)
-     msg_contents(message, exclude=None, from_obj=None, **kwargs)
-     move_to(destination, quiet=False, emit_to_obj=None,
-             use_destination=True, to_none=False)
-     copy(new_key=None)
-     delete()
-     is_typeclass(typeclass, exact=False)
-     swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
-     access(accessing_obj, access_type='read', default=False)
-     check_permstring(permstring)
-
-    * Hook methods
-
-     basetype_setup()     - only called once, used for behind-the-scenes
-                            setup. Normally not modified.
-     basetype_posthook_setup() - customization in basetype, after the
-                             object has been created; Normally not modified.
-
-     at_object_creation() - only called once, when object is first created.
-                            Object customizations go here.
-     at_object_delete() - called just before deleting an object. If
-                          returning False, deletion is aborted. Note that
-                          all objects inside a deleted object are
-                          automatically moved to their <home>, they don't
-                          need to be removed here.
-
-     at_init()            called whenever typeclass is cached from
-                          memory, at least once every server restart/reload
-     at_cmdset_get(**kwargs) - this is called just before the command
-                            handler requests a cmdset from this object, usually
-                            without any kwargs
-     at_pre_puppet(player)- (player-controlled objects only) called just
-                             before puppeting
-     at_post_puppet()     - (player-controlled objects only) called just
-                             after completing connection player<->object
-     at_pre_unpuppet()    - (player-controlled objects only) called just
-                             before un-puppeting
-     at_post_unpuppet(player) (player-controlled objects only) called
-                              just after disconnecting player<->object link
-     at_server_reload()   - called before server is reloaded
-     at_server_shutdown() - called just before server is fully shut down
-
-     at_before_move(destination)    called just before moving
-                                    object to the destination. If returns
-                                    False, move is cancelled.
-     announce_move_from(destination)  - called in old location, just before
-                                        move, if obj.move_to() has
-                                        quiet=False
-     announce_move_to(source_location) - called in new location,
-                                         just after move, if obj.move_to()
-                                         has quiet=False
-     at_after_move(source_location)    - always called after a move
-                                         has been successfully performed.
-     at_object_leave(obj, target_location)   - called when an object leaves
-                                               this object in any fashion
-     at_object_receive(obj, source_location) - called when this object
-                                               receives another object
-     at_access(result, **kwargs) - this is called with the result of an
-                                   access call, along with any kwargs used
-                                   for that call. The return of this
-                                   method does not affect the result of the
-                                   lock check.
-     at_before_traverse(traversing_object) - (exit-objects only) called
-                                              just before an object
-                                              traverses this object
-     at_after_traverse(traversing_object, source_location) - (exit-objects
-                          only) called just after a traversal has happened.
-     at_failed_traverse(traversing_object)      - (exit-objects only) called
-                if traversal fails and property err_traverse is not defined.
-
-     at_msg_receive(self, msg, from_obj=None, data=None) - called when a
-                             message (via self.msg()) is sent to this obj.
-                             If returns false, aborts send.
-     at_msg_send(self, msg, to_obj=None, data=None) - called when this
-                         objects sends a message to someone via self.msg().
-
-     return_appearance(looker) - describes this object. Used by "look"
-                                 command by default
-     at_desc(looker=None)      - called by 'look' whenever the appearance
-                                 is requested.
-     at_get(getter)            - called after object has been picked up.
-                                 Does not stop pickup.
-     at_drop(dropper)          - called when this object has been dropped.
-     at_say(speaker, message)  - by default, called if an object inside
-                                 this object speaks
-
-     """
+    """
     # typeclass setup
     __metaclass__ = TypeclassBase
     objects = ObjectManager()
@@ -267,6 +159,7 @@ class DefaultObject(ObjectDB):
     def sessions(self):
         """
         Retrieve sessions connected to this object.
+
         """
         # if the player is not connected, this will simply be an empty list.
         if self.db_player:
