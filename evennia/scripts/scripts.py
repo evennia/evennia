@@ -97,6 +97,7 @@ class ExtendedLoopingCall(LoopingCall):
         """
         Handle call rescheduling including nulling `start_delay` and
         stopping if number of repeats is reached.
+
         """
         self.start_delay = None
         super(ExtendedLoopingCall, self)._reschedule()
