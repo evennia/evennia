@@ -24,7 +24,7 @@ _SESSIONS = None
 class ExtendedLoopingCall(LoopingCall):
     """
     LoopingCall that can start at a delay different
-    than self.interval.
+    than `self.interval`.
     """
     start_delay = None
     callcount = 0
@@ -63,8 +63,8 @@ class ExtendedLoopingCall(LoopingCall):
             self()
         else:
             if start_delay is not None and start_delay >= 0:
-                # we set start_delay after the _reshedule call to make
-                # next_call_time() find it until next reshedule.
+                # we set `start_delay` after the `_reschedule` call to make
+                # next_call_time() find it until next reschedule.
                 self.interval = start_delay
                 self._reschedule()
                 self.interval = interval
@@ -81,7 +81,7 @@ class ExtendedLoopingCall(LoopingCall):
     def _reschedule(self):
         """
         Handle call rescheduling including
-        nulling start_delay and stopping if
+        nulling `start_delay` and stopping if
         number of repeats is reached.
         """
         self.start_delay = None
@@ -99,7 +99,7 @@ class ExtendedLoopingCall(LoopingCall):
     def next_call_time(self):
         """
         Return the time in seconds until the next call. This takes
-        start_delay into account.
+        `start_delay` into account.
         """
         if self.running:
             currentTime = self.clock.seconds()
@@ -112,7 +112,7 @@ class ExtendedLoopingCall(LoopingCall):
 class ScriptBase(ScriptDB):
     """
     Base class for scripts. Don't inherit from this, inherit
-    from the class 'Script'  instead.
+    from the class `Script`  instead.
     """
     __metaclass__ = TypeclassBase
     objects = ScriptManager()
@@ -193,7 +193,7 @@ class ScriptBase(ScriptDB):
     def time_until_next_repeat(self):
         """
         Returns the time in seconds until the script will be
-        run again. If this is not a stepping script, returns None.
+        run again. If this is not a stepping script, returns `None`.
         This is not used in any way by the script's stepping
         system; it's only here for the user to be able to
         check in on their scripts and when they will next be run.
@@ -207,7 +207,7 @@ class ScriptBase(ScriptDB):
         return None
 
     def remaining_repeats(self):
-        "Get the number of returning repeats. Returns None if unlimited repeats."
+        "Get the number of returning repeats. Returns `None` if unlimited repeats."
         task = self.ndb._task
         if task:
             return max(0, self.db_repeats - task.callcount)
@@ -280,7 +280,7 @@ class ScriptBase(ScriptDB):
     def pause(self):
         """
         This stops a running script and stores its active state.
-        It WILL NOT call that at_stop() hook.
+        It WILL NOT call that `at_stop()` hook.
         """
         if not self.db._paused_time:
             # only allow pause if not already paused
@@ -293,7 +293,7 @@ class ScriptBase(ScriptDB):
 
     def unpause(self):
         """
-        Restart a paused script. This WILL call the at_start() hook.
+        Restart a paused script. This WILL call the `at_start()` hook.
         """
         if self.db._paused_time:
             # only unpause if previously paused
@@ -367,7 +367,7 @@ class DefaultScript(ScriptBase):
      desc (string)      - optional description of script, shown in listings
      obj (Object)       - optional object that this script is connected to
                           and acts on (set automatically
-                          by obj.scripts.add())
+                          by `obj.scripts.add()`)
      interval (int)     - how often script should run, in seconds.
                           <=0 turns off ticker
      start_delay (bool) - if the script should start repeating right
