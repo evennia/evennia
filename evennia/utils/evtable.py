@@ -1183,7 +1183,7 @@ class EvTable(object):
         options = self.options
         for ix, col in enumerate(self.worktable):
             for iy, cell in enumerate(col):
-                col.reformat_cell(iy, **self._cellborders(ix,iy,nx,ny,options))
+                col.reformat_cell(iy, **self._cellborders(ix,iy,nx,ny,**options))
 
     def _balance(self):
         """
