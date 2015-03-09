@@ -24,7 +24,7 @@ _AT_MULTIMATCH_INPUT = utils.variable_from_module(*settings.SEARCH_AT_MULTIMATCH
 
 class ObjectDBManager(TypedObjectManager):
     """
-    This ObjectManager implementes methods for searching
+    This ObjectManager implements methods for searching
     and manipulating Objects directly from the database.
 
     Evennia-specific search methods (will return Typeclasses or
@@ -60,9 +60,8 @@ class ObjectDBManager(TypedObjectManager):
     def get_object_with_player(self, ostring, exact=True, candidates=None):
         """
         Search for an object based on its player's name or dbref.
-        This search
-        is sometimes initiated by appending a * to the beginning of
-        the search criterion (e.g. in local_and_global_search).
+        This search is sometimes initiated by appending an `*` to the
+        beginning of the search criterion (e.g. in local_and_global_search).
         search_string:  (string) The name or dbref to search for.
         """
         ostring = to_unicode(ostring).lstrip('*')
@@ -183,7 +182,7 @@ class ObjectDBManager(TypedObjectManager):
                                          candidates=None, typeclasses=None):
         """
         Returns objects based on key or alias match. Will also do fuzzy
-        matching based on the utils.string_partial_matching function.
+        matching based on the `utils.string_partial_matching` function.
         candidates - list of candidate objects to restrict on
         typeclasses - list of typeclass path strings to restrict on
         """
@@ -241,12 +240,12 @@ class ObjectDBManager(TypedObjectManager):
         Arguments:
         searchdata: (str or obj) The entity to match for. This is usually a
                   key string but may also be an object itself. By default (if
-                  not attribute_name is set), this will search object.key and
-                  object.aliases in order. Can also be on the form #dbref,
-                  which will, if exact=True be matched against primary key.
+                  no `attribute_name` is set), this will search `object.key` and
+                  `object.aliases` in order. Can also be on the form #dbref,
+                  which will (if `exact=True`) be matched against primary key.
         attribute_name: (str): Use this named ObjectAttribute to match
                   searchdata against, instead of the defaults. If this is
-                  the name of a database field (with or without the db_ prefix),
+                  the name of a database field (with or without the `db_` prefix),
                   that will be matched too.
         typeclass (str or TypeClass): restrict matches to objects having this
                   typeclass. This will help speed up global searches.
@@ -260,7 +259,7 @@ class ObjectDBManager(TypedObjectManager):
                   names with multiple components (so "bi sw" will match
                   "Big sword"). Since this is more expensive than exact
                   matching, it is recommended to be used together with the
-                  objlist keyword to limit the number of possibilities. This
+                  `objlist` keyword to limit the number of possibilities. This
                   value has no meaning if searching for attributes/properties.
 
         Returns:
@@ -268,7 +267,7 @@ class ObjectDBManager(TypedObjectManager):
         """
         def _searcher(searchdata, candidates, typeclass, exact=False):
             """
-            Helper method for searching objects. typeclass is only used
+            Helper method for searching objects. `typeclass` is only used
             for global searching (no candidates)
             """
             if attribute_name:
@@ -347,12 +346,12 @@ class ObjectDBManager(TypedObjectManager):
         will be identical to the original except for the arguments given
         specifically to this method.
 
-        original_object (obj) - the object to make a copy from
+        original_object (obj) - the object to make a copy from.
         new_key (str) - name the copy differently from the original.
-        new_location (obj) - if not None, change the location
-        new_home (obj) - if not None, change the Home
-        new_aliases (list of strings) - if not None, change object aliases.
-        new_destination (obj) - if not None, change destination
+        new_location (obj) - if not `None`, change the location.
+        new_home (obj) - if not `None`, change the Home.
+        new_aliases (list of strings) - if not `None`, change object aliases.
+        new_destination (obj) - if not `None`, change destination.
         """
 
         # get all the object's stats
