@@ -175,6 +175,7 @@ class TypedObject(SharedMemoryModel):
         This is the main function of the typeclass system -
         to dynamically re-apply a class based on the
         db_typeclass_path rather than use the one in the model.
+
         """
         typeclass_path = kwargs.pop("typeclass", None)
         super(TypedObject, self).__init__(*args, **kwargs)

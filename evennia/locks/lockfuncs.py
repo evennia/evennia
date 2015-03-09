@@ -3,16 +3,16 @@ This module provides a set of permission lock functions for use
 with Evennia's permissions system.
 
 To call these locks, make sure this module is included in the
-settings tuple PERMISSION_FUNC_MODULES then define a lock on the form
+settings tuple `PERMISSION_FUNC_MODULES` then define a lock on the form
 '<access_type>:func(args)' and add it to the object's lockhandler.
-Run the access() method of the handler to execute the lock check.
+Run the `access()` method of the handler to execute the lock check.
 
-Note that accessing_obj and accessed_obj can be any object type
+Note that `accessing_obj` and `accessed_obj` can be any object type
 with a lock variable/field, so be careful to not expect
 a certain object type.
 
 
-Appendix: MUX locks
+**Appendix: MUX locks**
 
 Below is a list nicked from the MUX help file on the locks available
 in standard MUX. Most of these are not relevant to core Evennia since
@@ -22,30 +22,32 @@ available like the MUX ones. So many of these are not available in
 basic Evennia, but could all be implemented easily if needed for the
 individual game.
 
+```
 MUX Name:      Affects:        Effect:
--------------------------------------------------------------------------------
+----------------------------------------------------------------------
 DefaultLock:   Exits:          controls who may traverse the exit to
                                its destination.
                                  Evennia: "traverse:<lockfunc()>"
-               Rooms:          controls whether the player sees the SUCC
-                               or FAIL message for the room following the
-                               room description when looking at the room.
+               Rooms:          controls whether the player sees the
+                               SUCC or FAIL message for the room
+                               following the room description when
+                               looking at the room.
                                  Evennia: Custom typeclass
                Players/Things: controls who may GET the object.
                                  Evennia: "get:<lockfunc()"
  EnterLock:    Players/Things: controls who may ENTER the object
                                  Evennia:
- GetFromLock:  All but Exits:  controls who may gets things from a given
-                               location.
+ GetFromLock:  All but Exits:  controls who may gets things from a
+                               given location.
                                  Evennia:
  GiveLock:     Players/Things: controls who may give the object.
                                  Evennia:
  LeaveLock:    Players/Things: controls who may LEAVE the object.
                                  Evennia:
- LinkLock:     All but Exits:  controls who may link to the location if the
-                               location is LINK_OK (for linking exits or
-                               setting drop-tos) or ABODE (for setting
-                               homes)
+ LinkLock:     All but Exits:  controls who may link to the location
+                               if the location is LINK_OK (for linking
+                               exits or setting drop-tos) or ABODE (for
+                               setting homes)
                                  Evennia:
  MailLock:     Players:        controls who may @mail the player.
                                Evennia:
@@ -53,10 +55,12 @@ DefaultLock:   Exits:          controls who may traverse the exit to
                                  Evennia:
  PageLock:     Players:        controls who may page the player.
                                  Evennia: "send:<lockfunc()>"
- ParentLock:   All:            controls who may make @parent links to the
+ ParentLock:   All:            controls who may make @parent links to
+                               the object.
+                                 Evennia: Typeclasses and
+                               "puppet:<lockstring()>"
+ ReceiveLock:  Players/Things: controls who may give things to the
                                object.
-                                 Evennia: Typeclasses and "puppet:<lockstring()>"
- ReceiveLock:  Players/Things: controls who may give things to the object.
                                  Evennia:
  SpeechLock:   All but Exits:  controls who may speak in that location
                                  Evennia:
@@ -65,20 +69,23 @@ DefaultLock:   Exits:          controls who may traverse the exit to
                                  Evennia:
  TportLock:    Rooms/Things:   controls who may teleport there
                                  Evennia:
- UseLock:      All but Exits:  controls who may USE the object, GIVE the
-                               object money and have the PAY attributes
-                               run, have their messages heard and possibly
-                               acted on by LISTEN and AxHEAR, and invoke
-                               $-commands stored on the object.
+ UseLock:      All but Exits:  controls who may USE the object, GIVE
+                               the object money and have the PAY
+                               attributes run, have their messages
+                               heard and possibly acted on by LISTEN
+                               and AxHEAR, and invoke $-commands
+                               stored on the object.
                                  Evennia: Commands and Cmdsets.
  DropLock:     All but rooms:  controls who may drop that object.
                                  Evennia:
- VisibleLock:  All:            Controls object visibility when the object
-                               is not dark and the looker passes the lock.
-                               In DARK locations, the object must also be
-                               set LIGHT and the viewer must pass the
-                               VisibleLock.
-                                 Evennia: Room typeclass with Dark/light script
+ VisibleLock:  All:            Controls object visibility when the
+                               object is not dark and the looker
+                               passes the lock. In DARK locations, the
+                               object must also be set LIGHT and the
+                               viewer must pass the VisibleLock.
+                                 Evennia: Room typeclass with
+                                          Dark/light script
+```
 """
 
 from django.conf import settings

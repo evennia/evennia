@@ -112,7 +112,7 @@ class SharedMemoryModelBase(ModelBase):
                     raise ObjectDoesNotExist("Cannot access %s: Hosting object was already deleted." % fname)
                 return _GA(cls, fieldname)
             def _get_foreign(cls, fname):
-                "Wrapper for returing foreignkey fields"
+                "Wrapper for returning foreignkey fields"
                 if _GA(cls, "_is_deleted"):
                     raise ObjectDoesNotExist("Cannot access %s: Hosting object was already deleted." % fname)
                 return _GA(cls, fieldname)
@@ -174,6 +174,10 @@ class SharedMemoryModelBase(ModelBase):
             else:
                 fset = lambda cls, val: _set(cls, fieldname, val)
             fdel = lambda cls: _del(cls, fieldname) if editable else _del_nonedit(cls,fieldname)
+            # set docstrings for auto-doc
+            fget.__doc__ = "A wrapper for getting database field `%s`." % fieldname
+            fset.__doc__ = "A wrapper for setting (and saving) database field `%s`." % fieldname
+            fdel.__doc__ = "A wrapper for deleting database field `%s`." % fieldname
             # assigning
             attrs[wrappername] = property(fget, fset, fdel)
             #type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel))#, doc))

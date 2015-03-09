@@ -44,9 +44,6 @@ parser will use this to create pretty API documentation.
 
 Modules should all start with at least a few lines of docstring at
 their top describing the contents and purpose of the module.
-Sectioning should not be used - the auto-api will create this
-automatically. Otherwise markdown should be used as needed to format
-the text.
 
 Example of module docstring (top of file):
 
@@ -58,6 +55,12 @@ are useful in the game ...
 """
 ```
 
+Sectioning (`# title`,  `## subtile` etc) should not be used in
+freeform docstrings - this will confuse the sectioning of the auto
+documentation page and the auto-api will create this automatically.
+Use **section** with bold markers if a section is needed. Otherwise
+markdown should be used as needed to format the text.
+
 Code examples should use [multi-line syntax highlighting][markdown-hilight]
 to mark multi-line code blocks, using the "python" identifier. Just
 indenting code blocks (common in markdown) will not produce the
@@ -65,7 +68,7 @@ desired look.
 
 When using any code tags (inline or blocks) it's recommended that you
 don't let the code extend wider than about 70 characters or it will
-need to be scrolled horisontally in the wiki (this does not affect any
+need to be scrolled horizontally in the wiki (this does not affect any
 other text, only code).
 
 ### Class docstrings
@@ -73,7 +76,7 @@ other text, only code).
 The root class docstring should describe the over-arcing use of the
 class. It should usually not describe the exact call sequence nor list
 important methods, this tends to be hard to keep updated as the API
-develops.
+develops. Don't use section markers (`#`, `##` etc).
 
 Example of class docstring:
 
@@ -148,13 +151,14 @@ Here are all the supported block headers:
 ```
 
 Parts marked with "freeform" means that you can in principle put any
-text there using any formatting except for the indentation to mark
-which block you are part of. You should normally use the specified
-format rather than the freeform counterpart (this will produce nicer
-output) but in some cases the freeform may produce a more compact and
-readable result (such as when describing an `*args` or `**kwargs`
-statement in general terms). The first `self` argument of class methods
-should never be documented. 
+text there using any formatting except for sections markers (`#`, `##`
+etc). You must also keep indentation to mark which block you are part
+of. You should normally use the specified format rather than the
+freeform counterpart (this will produce nicer output) but in some
+cases the freeform may produce a more compact and readable result
+(such as when describing an `*args` or `**kwargs` statement in general
+terms). The first `self` argument of class methods should never be
+documented. 
 
 Note that
 

@@ -94,12 +94,12 @@ in-game.
 
 """
 
-from evennia import Command, Script, CmdSet
+from evennia import Command, DefaultScript, CmdSet
 
 TRADE_TIMEOUT = 60  # timeout for B to accept trade
 
 
-class TradeTimeout(Script):
+class TradeTimeout(DefaultScript):
     """
     This times out the trade request, in case player B did not reply in time.
     """

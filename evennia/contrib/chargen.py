@@ -184,7 +184,7 @@ class CmdOOCCharacterCreate(Command):
         self.caller.msg("{gThe Character {c%s{g was successfully created!" % charname)
 
 
-class OOCCmdSetCharGen(default_cmds.OOCCmdSet):
+class OOCCmdSetCharGen(default_cmds.PlayerCmdSet):
     """
     Extends the default OOC cmdset.
     """
