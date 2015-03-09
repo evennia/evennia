@@ -4,7 +4,7 @@ Django ID mapper
 Modified for Evennia by making sure that no model references
 leave caching unexpectedly (no use of WeakRefs).
 
-Also adds cache_size() for monitoring the size of the cache.
+Also adds `cache_size()` for monitoring the size of the cache.
 """
 
 import os, threading, gc, time
@@ -50,8 +50,8 @@ class SharedMemoryModelBase(ModelBase):
     def __call__(cls, *args, **kwargs):
         """
         this method will either create an instance (by calling the default implementation)
-        or try to retrieve one from the class-wide cache by infering the pk value from
-        args and kwargs. If instance caching is enabled for this class, the cache is
+        or try to retrieve one from the class-wide cache by inferring the pk value from
+        `args` and `kwargs`. If instance caching is enabled for this class, the cache is
         populated whenever possible (ie when it is possible to infer the pk value).
         """
         def new_instance():
@@ -86,10 +86,16 @@ class SharedMemoryModelBase(ModelBase):
     def __new__(cls, name, bases, attrs):
         """
         Field shortcut creation:
-        Takes field names db_* and creates property wrappers named without the db_ prefix. So db_key -> key
-        This wrapper happens on the class level, so there is no overhead when creating objects. If a class
-        already has a wrapper of the given name, the automatic creation is skipped. Note: Remember to
-        document this auto-wrapping in the class header, this could seem very much like magic to the user otherwise.
+
+        Takes field names `db_*` and creates property wrappers named without the
+        `db_` prefix. So db_key -> key
+
+        This wrapper happens on the class level, so there is no overhead when creating objects.
+        If a class already has a wrapper of the given name, the automatic creation is skipped.
+
+        Notes:
+            Remember to document this auto-wrapping in the class header, this could seem very
+            much like magic to the user otherwise.
         """
 
         attrs["typename"] = cls.__name__
@@ -192,7 +198,7 @@ class SharedMemoryModelBase(ModelBase):
 
 class SharedMemoryModel(Model):
     """
-    Base class for idmapped objects. Inherit from this.
+    Base class for idmapped objects. Inherit from `this`.
     """
     # CL: setting abstract correctly to allow subclasses to inherit the default
     # manager.
@@ -251,7 +257,7 @@ class SharedMemoryModel(Model):
         Method to store an instance in the cache.
 
         Args:
-            instance (Class instance): the instance to cache
+            instance (Class instance): the instance to cache.
             new (bool, optional): this is the first time this
                 instance is cached (i.e. this is not an update
                 operation).
@@ -269,12 +275,16 @@ class SharedMemoryModel(Model):
 
     @classmethod
     def get_all_cached_instances(cls):
-        "return the objects so far cached by idmapper for this class."
+        """
+        Return the objects so far cached by idmapper for this class.
+        """
         return cls.__dbclass__.__instance_cache__.values()
 
     @classmethod
     def _flush_cached_by_key(cls, key, force=True):
-        "Remove the cached reference."
+        """
+        Remove the cached reference.
+        """
         try:
             if force or not cls._idmapper_recache_protection:
                 del cls.__dbclass__.__instance_cache__[key]
@@ -296,7 +306,7 @@ class SharedMemoryModel(Model):
     @classmethod
     def flush_instance_cache(cls, force=False):
         """
-        This will clean safe objects from the cache. Use force
+        This will clean safe objects from the cache. Use `force`
         keyword to remove all objects, safe or not.
         """
         if force:
@@ -311,18 +321,20 @@ class SharedMemoryModel(Model):
     def flush_from_cache(self, force=False):
         """
         Flush this instance from the instance cache. Use
-        force to override recache_protection for the object.
+        `force` to override recache_protection for the object.
         """
         if self.pk and (force or not self._idmapper_recache_protection):
             self.__class__.__dbclass__.__instance_cache__.pop(self.pk, None)
 
     def set_recache_protection(self, mode=True):
-        "set if this instance should be allowed to be recached."
+        """
+        Set if this instance should be allowed to be recached.
+        """
         self._idmapper_recache_protection = bool(mode)
 
     def delete(self, *args, **kwargs):
         """
-        Delete the object, clearing cache
+        Delete the object, clearing cache.
         """
         self.flush_from_cache()
         self._is_deleted = True
@@ -332,7 +344,7 @@ class SharedMemoryModel(Model):
         """
         Central database save operation.
 
-        Arguments as per django documentation
+        Arguments as per Django documentation
 
         Calls:
             self.at_<fieldname>_postsave(new)
@@ -382,7 +394,7 @@ class SharedMemoryModel(Model):
 
 class WeakSharedMemoryModelBase(SharedMemoryModelBase):
     """
-    Uses a WeakValue dictionary for caching instead of a regular one
+    Uses a WeakValue dictionary for caching instead of a regular one.
     """
     def _prepare(cls):
         super(WeakSharedMemoryModelBase, cls)._prepare()
@@ -402,9 +414,9 @@ class WeakSharedMemoryModel(SharedMemoryModel):
 def flush_cache(**kwargs):
     """
     Flush idmapper cache. When doing so the cache will
-    look for a property _idmapper_cache_flush_safe on the
+    look for a property `_idmapper_cache_flush_safe` on the
     class/subclass instance and only flush if this
-    is True.
+    is `True`.
 
     Uses a signal so we make sure to catch cascades.
     """
@@ -430,7 +442,7 @@ post_syncdb.connect(flush_cache)
 
 def flush_cached_instance(sender, instance, **kwargs):
     """
-    Flush the idmapper cache only for a given instance
+    Flush the idmapper cache only for a given instance.
     """
     # XXX: Is this the best way to make sure we can flush?
     if not hasattr(instance, 'flush_cached_instance'):
@@ -441,7 +453,7 @@ pre_delete.connect(flush_cached_instance)
 
 def update_cached_instance(sender, instance, **kwargs):
     """
-    Re-cache the given instance in the idmapper cache
+    Re-cache the given instance in the idmapper cache.
     """
     if not hasattr(instance, 'cache_instance'):
         return
@@ -452,14 +464,18 @@ post_save.connect(update_cached_instance)
 LAST_FLUSH = None
 def conditional_flush(max_rmem, force=False):
     """
-    Flush the cache if the estimated memory usage exceeds max_rmem.
+    Flush the cache if the estimated memory usage exceeds `max_rmem`.
 
     The flusher has a timeout to avoid flushing over and over
     in particular situations (this means that for some setups
     the memory usage will exceed the requirement and a server with
-    more memory is probably required for the given game)
+    more memory is probably required for the given game).
 
-    force - forces a flush, regardless of timeout.
+    Args:
+        max_rmem (int): memory-usage estimation-treshold after which
+            cache is flushed.
+        force (bool, optional): forces a flush, regardless of timeout.
+            Defaults to `False`.
     """
     global LAST_FLUSH
 
@@ -517,13 +533,13 @@ def cache_size(mb=True):
     Calculate statistics about the cache.
 
     Note: we cannot get reliable memory statistics from the cache -
-    whereas we could do getsizof each object in cache, the result is
-    highly imprecise and for a large number of object the result is
-    many times larger than the actual memory use of the entire server;
+    whereas we could do `getsizof` each object in cache, the result is
+    highly imprecise and for a large number of objects the result is
+    many times larger than the actual memory usage of the entire server;
     Python is clearly reusing memory behind the scenes that we cannot
     catch in an easy way here.  Ideas are appreciated. /Griatch
 
-    Returns
+    Returns:
       total_num, {objclass:total_num, ...}
     """
     numtotal = [0] # use mutable to keep reference through recursion
