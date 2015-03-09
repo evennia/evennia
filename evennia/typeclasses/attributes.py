@@ -3,7 +3,7 @@ Attributes are arbitrary data stored on objects. Attributes supports
 both pure-string values and pickled arbitrary data.
 
 Attributes are also used to implement Nicks. This module also contains
-the Attribute- and NickHandlers as well as the NAttributeHandler,
+the Attribute- and NickHandlers as well as the `NAttributeHandler`,
 which is a non-db version of Attributes.
 
 
@@ -37,16 +37,17 @@ class Attribute(SharedMemoryModel):
     attributes, rather than making different classes for each object type and
     storing them directly. The added benefit is that we can add/remove
     attributes on the fly as we like.
+
     The Attribute class defines the following properties:
-      key - primary identifier
-      lock_storage - perm strings
-      obj - which object the attribute is defined on
-      date_created - when the attribute was created.
-      value - the data stored in the attribute, in pickled form
-              using wrappers to be able to store/retrieve models.
-      strvalue - string-only data. This data is not pickled and is
-                 thus faster to search for in the database.
-      category - optional character string for grouping the Attribute
+        key - primary identifier.
+        lock_storage - perm strings.
+        obj - which object the attribute is defined on.
+        date_created - when the attribute was created.
+        value - the data stored in the attribute, in pickled form
+                using wrappers to be able to store/retrieve models.
+        strvalue - string-only data. This data is not pickled and is
+                    thus faster to search for in the database.
+        category - optional character string for grouping the Attribute.
 
     """
 
@@ -126,7 +127,7 @@ class Attribute(SharedMemoryModel):
     #@property
     def __value_get(self):
         """
-        Getter. Allows for value = self.value.
+        Getter. Allows for `value = self.value`.
         We cannot cache here since it makes certain cases (such
         as storing a dbobj which is then deleted elsewhere) out-of-sync.
         The overhead of unpickling seems hard to avoid.
@@ -163,10 +164,17 @@ class Attribute(SharedMemoryModel):
     def access(self, accessing_obj, access_type='read', default=False, **kwargs):
         """
         Determines if another object has permission to access.
-        accessing_obj - object trying to access this one
-        access_type - type of access sought
-        default - what to return if no lock of access_type was found
-        **kwargs - passed to at_access hook along with result.
+
+        Args:
+            accessing_obj (object): object trying to access this one.
+            access_type (optional): type of access sought.
+            default (optional): what to return if no lock of access_type was found
+
+        Kwargs:
+            **kwargs: passed to `at_access` hook along with `result`.
+
+        Returns:
+            result:
         """
         result = self.locks.check(accessing_obj, access_type=access_type, default=default)
         #self.at_access(result, **kwargs)
@@ -223,17 +231,18 @@ class AttributeHandler(object):
             default_access=True, not_found_none=False):
         """
         Returns the value of the given Attribute or list of Attributes.
-        strattr will cause the string-only value field instead of the normal
+        `strattr` will cause the string-only value field instead of the normal
         pickled field data. Use to get back values from Attributes added with
-        the strattr keyword.
-        If return_obj=True, return the matching Attribute object
-        instead. Returns default if no matches (or [ ] if key was a list
-        with no matches). If raise_exception=True, failure to find a
-        match will raise AttributeError instead.
+        the `strattr` keyword.
 
-        If accessing_obj is given, its "attrread" permission lock will be
+        If `return_obj=True`, return the matching Attribute object
+        instead. Returns `default` if no matches (or [ ] if `key` was a list
+        with no matches). If `raise_exception=True`, failure to find a
+        match will raise `AttributeError` instead.
+
+        If `accessing_obj` is given, its `attrread` permission lock will be
         checked before displaying each looked-after Attribute. If no
-        accessing_obj is given, no check will be done.
+        `accessing_obj` is given, no check will be done.
         """
 
         class RetDefault(object):
@@ -277,13 +286,13 @@ class AttributeHandler(object):
     def add(self, key, value, category=None, lockstring="",
             strattr=False, accessing_obj=None, default_access=True):
         """
-        Add attribute to object, with optional lockstring.
+        Add attribute to object, with optional `lockstring`.
 
-        If strattr is set, the db_strvalue field will be used (no pickling).
-        Use the get() method with the strattr keyword to get it back.
+        If `strattr` is set, the `db_strvalue` field will be used (no pickling).
+        Use the `get()` method with the `strattr` keyword to get it back.
 
-        If accessing_obj is given, self.obj's  'attrcreate' lock access
-        will be checked against it. If no accessing_obj is given, no check
+        If `accessing_obj` is given, `self.obj`'s  `attrcreate` lock access
+        will be checked against it. If no `accessing_obj` is given, no check
         will be done.
         """
         if accessing_obj and not self.obj.access(accessing_obj,
@@ -324,10 +333,10 @@ class AttributeHandler(object):
     def batch_add(self, key, value, category=None, lockstring="",
             strattr=False, accessing_obj=None, default_access=True):
         """
-        Batch-version of add(). This is more efficient than
+        Batch-version of `add()`. This is more efficient than
         repeat-calling add.
 
-        key and value must be sequences of the same length, each
+        `key` and `value` must be sequences of the same length, each
         representing a key-value pair.
 
         """
@@ -378,9 +387,10 @@ class AttributeHandler(object):
 
     def remove(self, key, raise_exception=False, category=None,
                accessing_obj=None, default_access=True):
-        """Remove attribute or a list of attributes from object.
+        """
+        Remove attribute or a list of attributes from object.
 
-        If accessing_obj is given, will check against the 'attredit' lock.
+        If `accessing_obj` is given, will check against the `attredit` lock.
         If not given, this check is skipped.
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
@@ -399,8 +409,8 @@ class AttributeHandler(object):
 
     def clear(self, category=None, accessing_obj=None, default_access=True):
         """
-        Remove all Attributes on this object. If accessing_obj is
-        given, check the 'attredit' lock on each Attribute before
+        Remove all Attributes on this object. If `accessing_obj` is
+        given, check the `attredit` lock on each Attribute before
         continuing. If not given, skip check.
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
@@ -416,7 +426,7 @@ class AttributeHandler(object):
         """
         Return all Attribute objects on this object.
 
-        If accessing_obj is given, check the "attrread" lock on
+        If `accessing_obj` is given, check the `attrread` lock on
         each attribute before returning them. If not given, this
         check is skipped.
         """
@@ -433,10 +443,10 @@ class AttributeHandler(object):
 class NickHandler(AttributeHandler):
     """
     Handles the addition and removal of Nicks
-    (uses Attributes' strvalue and category fields)
+    (uses Attributes' `strvalue` and `category` fields)
 
     Nicks are stored as Attributes
-    with categories nick_<nicktype>
+    with categories `nick_<nicktype>`
     """
     _attrtype = "nick"
 
@@ -476,9 +486,9 @@ class NickHandler(AttributeHandler):
 class NAttributeHandler(object):
     """
     This stand-alone handler manages non-database saving.
-    It is similar to AttributeHandler and is used
-    by the .ndb handler in the same way as .db does
-    for the AttributeHandler.
+    It is similar to `AttributeHandler` and is used
+    by the `.ndb` handler in the same way as `.db` does
+    for the `AttributeHandler`.
     """
     def __init__(self, obj):
         "initialized on the object"
