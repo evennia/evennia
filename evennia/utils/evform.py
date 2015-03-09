@@ -1,24 +1,25 @@
 # coding=utf-8
 """
-EvForm - a way to create advanced ascii forms
+EvForm - a way to create advanced ASCII forms
 
-This is intended for creating advanced ascii game forms, such as a
+This is intended for creating advanced ASCII game forms, such as a
 large pretty character sheet or info document.
 
 The system works on the basis of a readin template that is given in a
-separate python file imported into the handler. This file contains
+separate Python file imported into the handler. This file contains
 some optional settings and a string mapping out the form. The template
 has markers in it to denounce fields to fill. The markers map the
-absolute size of the field and will be filled with an evtable.EvCell
+absolute size of the field and will be filled with an `evtable.EvCell`
 object when displaying the form.
 
 Note, when printing examples with ANSI color, you need to wrap
-the output in unicode(), such as print unicode(form). This is
-due to a bug in the Python parser and the print statement.
+the output in `unicode()`, such as `print unicode(form)`. This is
+due to a bug in the Python parser and the `print` statement.
 
 
-Example of input file testform.py:
+Example of input file `testform.py`:
 
+```python
 FORMCHAR = "x"
 TABLECHAR = "c"
 
@@ -44,20 +45,22 @@ FORM = '''
 |          |                                     |
 -------------------------------------------------
 '''
+```
 
-The first line of the FORM string is ignored. The forms and table
+The first line of the `FORM` string is ignored. The forms and table
 markers must mark out complete, unbroken rectangles, each containing
 one embedded single-character identifier (so the smallest element
 possible is a 3-character wide form). The identifier can be any
-character except for the FORM_CHAR and TABLE_CHAR and some of the
-common ascii-art elements, like space, _ | * etc (see
-INVALID_FORMCHARS in this module). Form Rectangles can have any size,
+character except for the `FORM_CHAR` and `TABLE_CHAR` and some of the
+common ASCII-art elements, like space, `_` `|` `*` etc (see
+`INVALID_FORMCHARS` in this module). Form Rectangles can have any size,
 but must be separated from each other by at least one other
 character's width.
 
 
 Use as follows:
 
+```python
     import evform
 
     # create a new form from the template
@@ -90,9 +93,11 @@ Use as follows:
 
     # unicode is required since the example contains non-ascii characters
     print unicode(form)
+```
 
 This produces the following result:
 
+```
 .------------------------------------------------.
 |                                                |
 |  Name: Tom the        Player: Griatch          |
@@ -113,17 +118,18 @@ This produces the following result:
 |   |* |   | Smithing   |9          |205/900     |
 |          |                                     |
  ------------------------------------------------
+```
 
 The marked forms have been replaced with EvCells of text and with
-EvTables. The form can be updated by simply re-applying form.map()
+EvTables. The form can be updated by simply re-applying `form.map()`
 with the updated data.
 
-When working with the template ascii file, you can use form.reload()
+When working with the template ASCII file, you can use `form.reload()`
 to re-read the template and re-apply all existing mappings.
 
 Each component is restrained to the width and height specified by the
 template, so it will resize to fit (or crop text if the area is too
-small for it. If you try to fit a table into an area it cannot fit
+small for it). If you try to fit a table into an area it cannot fit
 into (when including its borders and at least one line of text), the
 form will raise an error.
 
@@ -155,7 +161,7 @@ class EvForm(object):
     This object is instantiated with a text file and parses
     it for rectangular form fields. It can then be fed a
     mapping so as to populate the fields with fixed-width
-    EvCell or Tablets.
+    EvCell or Tables.
 
     """
     def __init__(self, filename=None, cells=None, tables=None, form=None, **kwargs):
@@ -172,7 +178,7 @@ class EvForm(object):
             tables -  dictionary mapping of {id:EvTable}
 
         other kwargs are fed as options to the EvCells and EvTables
-        (see evtablet.EvCell and evtable.EvTable for more info).
+        (see `evtable.EvCell` and `evtable.EvTable` for more info).
 
         """
         self.filename = filename
