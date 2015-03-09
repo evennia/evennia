@@ -16,7 +16,7 @@ from ansi import *
 
 class TextToHTMLparser(object):
     """
-    This class describes a parser for converting from ansi to html.
+    This class describes a parser for converting from ANSI to html.
     """
 
     tabstop = 4
@@ -145,7 +145,7 @@ class TextToHTMLparser(object):
     def parse(self, text, strip_ansi=False):
         """
         Main access function, converts a text containing
-        ansi codes into html statements.
+        ANSI codes into html statements.
         """
         # parse everything to ansi first
         text = parse_ansi(text, strip_ansi=strip_ansi, xterm256=False, mxp=True)
@@ -173,6 +173,6 @@ HTML_PARSER = TextToHTMLparser()
 
 def parse_html(string, strip_ansi=False, parser=HTML_PARSER):
     """
-    Parses a string, replace ansi markup with html
+    Parses a string, replace ANSI markup with html
     """
     return parser.parse(string, strip_ansi=strip_ansi)
