@@ -69,7 +69,7 @@ Installation/testing:
 
 import re
 from django.conf import settings
-from evennia import Room
+from evennia import DefaultRoom
 from evennia import gametime
 from evennia import default_cmds
 from evennia import utils
@@ -100,7 +100,7 @@ DAY_BOUNDARIES = (0, 6 / 24.0, 12 / 24.0, 18 / 24.0)
 
 # implements the Extended Room
 
-class ExtendedRoom(Room):
+class ExtendedRoom(DefaultRoom):
     """
     This room implements a more advanced look functionality depending on
     time. It also allows for "details", together with a slightly modified
