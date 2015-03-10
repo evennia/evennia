@@ -89,8 +89,23 @@ class TypeclassBase(SharedMemoryModelBase):
         """
 
         # storage of stats
-        attrs["typename"] = name#cls.__name__
+        attrs["typename"] = name
         attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
+        #defaultpath = attrs["__defaultclasspath__"]
+        #attrs["__defaultclass__"] = class_from_module(attrs["__defaultclasspath__"])
+        #try:
+        #    defaultpath = attrs["__defaultclasspath__"]
+        #    attrs["__defaultclass__"] = class_from_module(attrs["__defaultclasspath__"])
+        #except Exception:
+        #    log_trace("Typeclass error for %s: Default typeclass '%s' could not load. "
+        #              "Falling back to library base." % (name, defaultpath))
+        #    try:
+        #        # two levels down from TypedObject will always be the default base class.
+        #        attrs["__defaultclass__"] = cls.__mro__[cls.__mro__.index(TypedObject)-2]
+        #    except Exception:
+        #        log_trace("Critical error for %s: Neither typeclass, "
+        #                  "default fallback nor base class could load." % name)
+        #        attrs["__defaultclass__"] = cls
 
         # typeclass proxy setup
         if not "Meta" in attrs:
@@ -172,9 +187,33 @@ class TypedObject(SharedMemoryModel):
 
     def __init__(self, *args, **kwargs):
         """
-        This is the main function of the typeclass system -
-        to dynamically re-apply a class based on the
-        db_typeclass_path rather than use the one in the model.
+        The `__init__` method of typeclasses is the core operational
+        code of the typeclass system, where it dynamically re-applies
+        a class based on the db_typeclass_path database field rather
+        than use the one in the model.
+
+        Args:
+            Passed through to parent.
+
+        Kwargs:
+            Passed through to parent.
+
+        Notes:
+            The loading mechanism will attempt the following steps:
+
+            1. Attempt to load typeclass given on command line
+            1. Attempt to load typeclass stored in db_typeclass_path
+            1. Attempt to load `__settingsclasspath__`, which is by the
+               default classes defined to be the respective user-set
+               base typeclass settings, like `BASE_OBJECT_TYPECLASS`.
+            1. Attempt to load `__defaultclasspath__`, which is the
+               base classes in the library, like DefaultObject etc.
+            1. If everything else fails, use the database model.
+
+            Normal operation is to load successfully at either step 1
+            or 2 depending on how the class was called. Tracebacks
+            will be logged for every step the loader must take beyond
+            2.
 
         """
         typeclass_path = kwargs.pop("typeclass", None)
@@ -182,15 +221,29 @@ class TypedObject(SharedMemoryModel):
         if typeclass_path:
             try:
                 self.__class__ = class_from_module(typeclass_path)
-            except ImportError:
+            except Exception:
                 log_trace()
+                try:
+                    self.__class__ = class_from_module(self.__settingsclasspath__)
+                except Exception:
+                    log_trace()
+                    try:
+                        self.__class__ = class_from_module(self.__defaultclasspath__)
+                    except Exception:
+                        log_trace()
+                        self.__class__ = self._meta.proxy_for_model or self.__class__
             finally:
                 self.db_typclass_path = typeclass_path
         elif self.db_typeclass_path:
             try:
                 self.__class__ = class_from_module(self.db_typeclass_path)
-            except ImportError:
+            except Exception:
                 log_trace()
+                try:
+                    self.__class__ = class_from_module(self.__defaultclasspath__)
+                except Exception:
+                    log_trace()
+                    self.__dbclass__ = self._meta.proxy_for_model or self.__class__
         else:
             self.db_typeclass_path = "%s.%s" % (self.__module__, self.__class__.__name__)
         # important to put this at the end since _meta is based on the set __class__

@@ -8,6 +8,7 @@ ability to run timers.
 from twisted.internet.defer import Deferred, maybeDeferred
 from twisted.internet.task import LoopingCall
 from django.utils.translation import ugettext as _
+from django.conf import settings
 from evennia.typeclasses.models import TypeclassBase
 from evennia.scripts.models import ScriptDB
 from evennia.scripts.manager import ScriptManager
@@ -140,6 +141,8 @@ class ScriptBase(ScriptDB):
 
     """
     __metaclass__ = TypeclassBase
+    __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
+    __defaultclasspath__ = "evennia.scripts.scripts.DefaultScript"
     objects = ScriptManager()
 
 

@@ -109,6 +109,9 @@ class DefaultPlayer(PlayerDB):
      """
 
     __metaclass__ = TypeclassBase
+    __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
+    __defaultclasspath__ = "evennia.players.players.DefaultPlayer"
+
     objects = PlayerManager()
 
     # properties
