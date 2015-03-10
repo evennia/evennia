@@ -82,7 +82,7 @@ class ANSIParser(object):
         """
         return self.ansi_map.get(ansimatch.group(), "")
 
-    def sub_xterm256(self, rgbmatch):
+    def sub_xterm256(self, rgbmatch, convert=False):
         """
         This is a replacer method called by `re.sub` with the matched
         tag. It must return the correct ansi sequence.
@@ -102,7 +102,7 @@ class ANSIParser(object):
         else:
             red, green, blue = int(rgbtag[0]), int(rgbtag[1]), int(rgbtag[2])
 
-        if self.do_xterm256:
+        if convert:
             colval = 16 + (red * 36) + (green * 6) + blue
             #print "RGB colours:", red, green, blue
             return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval/100, (colval % 100)/10, colval%10)
@@ -201,15 +201,16 @@ class ANSIParser(object):
         if cachekey in _PARSE_CACHE:
             return _PARSE_CACHE[cachekey]
 
-        self.do_xterm256 = xterm256
-        self.do_mxp = mxp
+        def do_xterm256(part):
+            return self.sub_xterm256(part, xterm256)
+
         in_string = utils.to_str(string)
 
         # do string replacement
         parsed_string =  ""
         parts = self.ansi_escapes.split(in_string) + [" "]
         for part, sep in zip(parts[::2], parts[1::2]):
-            pstring = self.xterm256_sub.sub(self.sub_xterm256, part)
+            pstring = self.xterm256_sub.sub(do_xterm256, part)
             pstring = self.ansi_sub.sub(self.sub_ansi, pstring)
             parsed_string += "%s%s" % (pstring, sep[0].strip())
 
@@ -221,8 +222,7 @@ class ANSIParser(object):
             # inserted in string)
             return self.strip_raw_codes(parsed_string)
 
-
-         # cache and crop old cache
+        # cache and crop old cache
         _PARSE_CACHE[cachekey] = parsed_string
         if len(_PARSE_CACHE) > _PARSE_CACHE_SIZE:
            _PARSE_CACHE.popitem(last=False)
@@ -341,10 +341,6 @@ class ANSIParser(object):
     # prepare matching ansi codes overall
     ansi_re = r"\033\[[0-9;]+m"
     ansi_regex = re.compile(ansi_re)
-
-    # merged regex for both ansi and mxp, for use by ansistring
-    mxp_tags = r'\{lc.*?\{lt|\{le'
-    tags_regex = re.compile("%s|%s" % (ansi_re, mxp_tags), re.DOTALL)
 
     # escapes - these double-chars will be replaced with a single
     # instance of each
@@ -527,7 +523,7 @@ class ANSIString(unicode):
             decoded = True
         if not decoded:
             # Completely new ANSI String
-            clean_string = to_unicode(parser.parse_ansi(string, strip_ansi=True))
+            clean_string = to_unicode(parser.parse_ansi(string, strip_ansi=True, mxp=True))
             string = parser.parse_ansi(string, xterm256=True, mxp=True)
         elif clean_string is not None:
             # We have an explicit clean string.
@@ -781,8 +777,7 @@ class ANSIString(unicode):
         """
 
         code_indexes = []
-        #for match in self.parser.ansi_regex.finditer(self._raw_string):
-        for match in self.parser.tags_regex.finditer(self._raw_string):
+        for match in self.parser.ansi_regex.finditer(self._raw_string):
             code_indexes.extend(range(match.start(), match.end()))
         if not code_indexes:
             # Plain string, no ANSI codes.
