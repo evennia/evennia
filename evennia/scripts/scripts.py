@@ -576,7 +576,7 @@ class ValidateIdmapperCache(DefaultScript):
         "Called every ~5 mins"
         global _FLUSH_CACHE
         if not _FLUSH_CACHE:
-            from evennia.utils.idmapper.base import conditional_flush as _FLUSH_CACHE
+            from evennia.utils.idmapper.models import conditional_flush as _FLUSH_CACHE
         _FLUSH_CACHE(_IDMAPPER_CACHE_MAX_MEMORY)
 
 class ValidateScripts(DefaultScript):

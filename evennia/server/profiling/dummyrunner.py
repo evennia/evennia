@@ -101,6 +101,9 @@ ERROR_NO_MIXIN = \
     reason, you can change their values manually after the import, or
     add DUMMYRUNNER_MIXIN=True to your settings file to avoid this
     error completely.
+
+    Warning: Don't run dummyrunner on a production database! It will
+    create a lot of spammy objects and player accounts!
     """
 
 
@@ -200,6 +203,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         self.exits = [] # exit names created
         self.objs = [] # obj names created
 
+        self._connected = False
         self._loggedin = False
         self._logging_out = False
         self._report = ""
@@ -210,16 +214,17 @@ class DummyClient(telnet.StatefulTelnetProtocol):
 
         reactor.addSystemEventTrigger('before', 'shutdown', self.logout)
 
-        # start client tick
-        d = LoopingCall(self.step)
-        # dissipate exact step by up to +/- 0.5 second
-        timestep = TIMESTEP + (-0.5 + (random.random()*1.0))
-        d.start(timestep, now=True).addErrback(self.error)
-
-
     def dataReceived(self, data):
-        "Echo incoming data to stdout"
-        pass
+        "Wait to start stepping until the server actually responds"
+        if not self._connected and not data.startswith(chr(255)):
+            # wait until we actually get text back (not just telnet
+            # negotiation)
+            self._connected = True
+            # start client tick
+            d = LoopingCall(self.step)
+            # dissipate exact step by up to +/- 0.5 second
+            timestep = TIMESTEP + (-0.5 + (random.random()*1.0))
+            d.start(timestep, now=True).addErrback(self.error)
 
     def connectionLost(self, reason):
         "loosing the connection"

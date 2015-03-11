@@ -20,8 +20,81 @@ from django.core.exceptions import ObjectDoesNotExist
 from evennia.typeclasses.models import TypedObject
 from evennia.objects.manager import ObjectDBManager
 from evennia.utils import logger
-from evennia.utils.utils import (make_iter, dbref)
+from evennia.utils.utils import (make_iter, dbref, lazy_property)
 
+
+class ContentsHandler(object):
+    """
+    Handles and caches the contents of an object
+    to avoid excessive lookups (this is done very
+    often due to cmdhandler needing to look for
+    object-cmdsets). It is stored on the 'contents_cache'
+    property of the ObjectDB.
+    """
+    def __init__(self, obj):
+        """
+        Sets up the contents handler.
+
+        Args:
+            obj (Object):  The object on which the
+                handler is defined
+
+        """
+        self.obj = obj
+        self._cache = {}
+        self.init()
+
+    def init(self):
+        """
+        Re-initialize the content cache
+
+        """
+        self._cache.update(dict((obj.pk, obj) for obj in
+                            ObjectDB.objects.filter(db_location=self.obj)))
+
+    def get(self, exclude=None):
+        """
+        Return the contents of the cache.
+
+        Args:
+            exclude (Object or list of Object): object(s) to ignore
+
+        Returns:
+            objects (list): the Objects inside this location
+
+        """
+        if exclude:
+            exclude = [excl.pk for excl in make_iter(exclude)]
+            return [obj for key, obj in self._cache.items() if key not in exclude]
+        return self._cache.values()
+
+    def add(self, obj):
+        """
+        Add a new object to this location
+
+        Args:
+            obj (Object): object to add
+
+        """
+        self._cache[obj.pk] = obj
+
+    def remove(self, obj):
+        """
+        Remove object from this location
+
+        Args:
+            obj (Object): object to remove
+
+        """
+        self._cache.pop(obj.pk, None)
+
+    def clear(self):
+        """
+        Clear the contents cache and re-initialize
+
+        """
+        self._cache = {}
+        self._init()
 
 #------------------------------------------------------------
 #
@@ -105,6 +178,10 @@ class ObjectDB(TypedObject):
     # Database manager
     objects = ObjectDBManager()
 
+    @lazy_property
+    def contents_cache(self):
+        return ContentsHandler(self)
+
     # cmdset_storage property handling
     def __cmdset_storage_get(self):
         "getter"
@@ -152,9 +229,27 @@ class ObjectDB(TypedObject):
                 is_loc_loop(location)
             except RuntimeWarning:
                 pass
-            # actually set the field
+
+            # if we get to this point we are ready to change location
+
+            old_location = self.db_location
+
+            # this is checked in _db_db_location_post_save below
+            self._safe_contents_update = True
+
+            # actually set the field (this will error if location is invalid)
             self.db_location = location
             self.save(update_fields=["db_location"])
+
+            # remove the safe flag
+            del self._safe_contents_update
+
+            # update the contents cache
+            if old_location:
+                old_location.contents_cache.remove(self)
+            if self.db_location:
+                self.db_location.contents_cache.add(self)
+
         except RuntimeError:
             errmsg = "Error: %s.location = %s creates a location loop." % (self.key, location)
             logger.log_errmsg(errmsg)
@@ -169,6 +264,27 @@ class ObjectDB(TypedObject):
         self.db_location = None
         self.save(update_fields=["db_location"])
     location = property(__location_get, __location_set, __location_del)
+
+    def at_db_location_postsave(self, new):
+        """
+        This is called automatically after the location field was
+        saved, no matter how. It checks for a variable
+        _safe_contents_update to know if the save was triggered via
+        the location handler (which updates the contents cache) or
+        not.
+
+        """
+        if not hasattr(self, "_safe_contents_update"):
+            # changed/set outside of the location handler
+            if new:
+                # if new, there is no previous location to worry about
+                if self.db_location:
+                    self.db_location.contents_cache.add(self)
+            else:
+                # Since we cannot know at this point was old_location was, we
+                # trigger a full-on contents_cache update here.
+                logger.log_warn("db_location direct save triggered contents_cache.init() for all objects!")
+                [o.contents_cache.init() for o in self.__dbclass__.get_all_cached_instances()]
 
     class Meta:
         "Define Django meta options"

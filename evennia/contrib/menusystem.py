@@ -281,7 +281,7 @@ class MenuNode(object):
         code      - functional code. Deprecated. This will be executed just before this
                     node is loaded (i.e. as soon after it's been selected from
                     another node). self.caller is available to call from this
-                    code block, as well as ev.
+                    code block, as well as the evennia flat API.
         callback  - function callback. This will be called as callback(currentnode) just
                     before this node is loaded (i.e. as soon as possible as it's
                     been selected from another node). currentnode.caller is available.

@@ -36,8 +36,7 @@ from django.utils.encoding import smart_str
 from evennia.typeclasses.attributes import Attribute, AttributeHandler, NAttributeHandler
 from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHandler
 
-from evennia.utils.idmapper.models import SharedMemoryModel
-from evennia.utils.idmapper.base import SharedMemoryModelBase
+from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBase
 
 from evennia.typeclasses import managers
 from evennia.locks.lockhandler import LockHandler

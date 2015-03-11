@@ -45,7 +45,7 @@ class ObjectDBManager(TypedObjectManager):
     get_objs_with_key_or_alias
     get_contents
     object_search (interface to many of the above methods,
-                   equivalent to ev.search_object)
+                   equivalent to evennia.search_object)
     copy_object
 
     """
@@ -171,8 +171,7 @@ class ObjectDBManager(TypedObjectManager):
     @returns_typeclass_list
     def get_contents(self, location, excludeobj=None):
         """
-        Get all objects that has a location
-        set to this one.
+        Get all objects that has a location set to this one.
 
         excludeobj - one or more object keys to exclude from the match
         """

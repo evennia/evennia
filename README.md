@@ -66,7 +66,7 @@ or join us in our [development chat][chat]. Welcome!
 [homepage]: http://www.evennia.com
 [gettingstarted]: http://github.com/evennia/evennia/wiki/Getting-Started
 [wiki]: https://github.com/evennia/evennia/wiki
-[screenshot]: https://raw.githubusercontent.com/wiki/evennia/evennia/evennia_screenshot3.png
+[screenshot]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/evennia_screenshot3.png
 [logo]: https://github.com/evennia/evennia/blob/devel/evennia/web/static/evennia_general/images/evennia_logo.png
 [introduction]: https://github.com/evennia/evennia/wiki/Evennia-Introduction
 [license]: https://github.com/evennia/evennia/wiki/Licensing

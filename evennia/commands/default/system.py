@@ -136,7 +136,7 @@ class CmdPy(MuxCommand):
       inherits_from(obj, parent) : check object inheritance
 
     You can explore The evennia API from inside the game by calling
-    ev.help(), ev.managers.help() etc.
+    evennia.help(), evennia.managers.help() etc.
 
     {rNote: In the wrong hands this command is a severe security risk.
     It should only be accessible by trusted server admins/superusers.{n
@@ -666,7 +666,7 @@ class CmdServerLoad(MuxCommand):
         if not _resource:
             import resource as _resource
         if not _idmapper:
-            from evennia.utils.idmapper import base as _idmapper
+            from evennia.utils.idmapper import models as _idmapper
 
         import resource
         loadavg = os.getloadavg()

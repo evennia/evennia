@@ -7,10 +7,9 @@ It is stored on the Server side (as opposed to protocol-specific sessions which
 are stored on the Portal side)
 """
 
-import time
+from time import time
 from datetime import datetime
 from django.conf import settings
-#from evennia.scripts.models import ScriptDB
 from evennia.comms.models import ChannelDB
 from evennia.utils import logger
 from evennia.utils.inlinefunc import parse_inlinefunc
@@ -78,9 +77,16 @@ class ServerSession(Session):
 
         if self.puid:
             # reconnect puppet (puid is only set if we are coming
-            # back from a server reload)
+            # back from a server reload). This does all the steps
+            # done in the default @ic command but without any
+            # hooks, echoes or access checks.
             obj = _ObjectDB.objects.get(id=self.puid)
-            self.player.puppet_object(self.sessid, obj, normal_mode=False)
+            obj.sessid.add(self.sessid)
+            obj.player = self.player
+            self.puid = obj.id
+            self.puppet = obj
+            obj.scripts.validate()
+            obj.locks.cache_lock_bypass(obj)
 
     def at_login(self, player):
         """
@@ -92,7 +98,7 @@ class ServerSession(Session):
         self.uid = self.player.id
         self.uname = self.player.username
         self.logged_in = True
-        self.conn_time = time.time()
+        self.conn_time = time()
         self.puid = None
         self.puppet = None
         self.cmdset_storage = settings.CMDSET_SESSION
@@ -111,7 +117,8 @@ class ServerSession(Session):
         if self.logged_in:
             sessid = self.sessid
             player = self.player
-            player.unpuppet_object(sessid)
+            if self.puppet:
+                player.unpuppet_object(sessid)
             uaccount = player
             uaccount.last_login = datetime.now()
             uaccount.save()
@@ -177,12 +184,11 @@ class ServerSession(Session):
         and command counters.
         """
         # Store the timestamp of the user's last command.
-        self.cmd_last = time.time()
         if not idle:
             # Increment the user's command counter.
             self.cmd_total += 1
             # Player-visible idle time, not used in idle timeout calcs.
-            self.cmd_last_visible = time.time()
+            self.cmd_last_visible = time()
 
     def data_in(self, text=None, **kwargs):
         """
@@ -223,7 +229,11 @@ class ServerSession(Session):
         text = text if text else ""
         if INLINEFUNC_ENABLED and not "raw" in kwargs:
             text = parse_inlinefunc(text, strip="strip_inlinefunc" in kwargs, session=self)
-        self.sessionhandler.data_out(self, text=text, **kwargs)
+        session = kwargs.pop('session', None)
+        session = session or self
+        self.sessionhandler.data_out(session, text=text, **kwargs)
+    # alias
+    msg = data_out
 
     def __eq__(self, other):
         return self.address == other.address
@@ -250,18 +260,6 @@ class ServerSession(Session):
         Unicode representation
         """
         return u"%s" % str(self)
-
-    # easy-access functions
-
-    #def login(self, player):
-    #    "alias for at_login"
-    #    self.session_login(player)
-    #def disconnect(self):
-    #    "alias for session_disconnect"
-    #    self.session_disconnect()
-    def msg(self, text='', **kwargs):
-        "alias for at_data_out"
-        self.data_out(text=text, **kwargs)
 
     # Dummy API hooks for use during non-loggedin operation
 

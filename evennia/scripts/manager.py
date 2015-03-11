@@ -31,7 +31,7 @@ class ScriptDBManager(TypedObjectManager):
     delete_script
     remove_non_persistent
     validate
-    script_search (equivalent to ev.search_script)
+    script_search (equivalent to evennia.search_script)
     copy_script
 
     """

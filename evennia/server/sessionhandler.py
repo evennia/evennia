@@ -12,11 +12,13 @@ There are two similar but separate stores of sessions:
 
 """
 
-import time
+from time import time
 from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.utils.utils import variable_from_module, is_iter, \
-                            to_str, to_unicode, strip_control_sequences
+                            to_str, to_unicode, strip_control_sequences, make_iter
+from evennia.utils import logger
+
 try:
     import cPickle as pickle
 except ImportError:
@@ -45,10 +47,14 @@ PCONNSYNC = chr(10)   # portal post-syncing session
 # i18n
 from django.utils.translation import ugettext as _
 
-SERVERNAME = settings.SERVERNAME
-MULTISESSION_MODE = settings.MULTISESSION_MODE
-IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+_SERVERNAME = settings.SERVERNAME
+_MULTISESSION_MODE = settings.MULTISESSION_MODE
+_IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+_MAX_SERVER_COMMANDS_PER_SECOND = 100.0
+_MAX_SESSION_COMMANDS_PER_SECOND = 5.0
 
+
+_ERROR_COMMAND_OVERFLOW = "You entered commands too fast. Wait a moment and try again."
 
 def delayed_import():
     "Helper method for delayed import of all needed entities"
@@ -129,7 +135,7 @@ class ServerSessionHandler(SessionHandler):
         """
         self.sessions = {}
         self.server = None
-        self.server_data = {"servername": SERVERNAME}
+        self.server_data = {"servername": _SERVERNAME}
 
     def portal_connect(self, portalsession):
         """
@@ -166,7 +172,7 @@ class ServerSessionHandler(SessionHandler):
         if session:
             # since some of the session properties may have had
             # a chance to change already before the portal gets here
-            # the portal doesn't send all sessiondata here, but only
+            # the portal doesn't send all sessiondata but only
             # ones which should only be changed from portal (like
             # protocol_flags etc)
             session.load_sync_data(portalsessiondata)
@@ -278,7 +284,7 @@ class ServerSessionHandler(SessionHandler):
 
         player.at_pre_login()
 
-        if MULTISESSION_MODE == 0:
+        if _MULTISESSION_MODE == 0:
             # disconnect all previous sessions.
             self.disconnect_duplicate_sessions(session)
 
@@ -358,11 +364,11 @@ class ServerSessionHandler(SessionHandler):
         Check all currently connected sessions (logged in and not)
         and see if any are dead or idle
         """
-        tcurr = time.time()
+        tcurr = time()
         reason = _("Idle timeout exceeded, disconnecting.")
         for session in (session for session in self.sessions.values()
-                        if session.logged_in and IDLE_TIMEOUT > 0
-                        and (tcurr - session.cmd_last) > IDLE_TIMEOUT):
+                        if session.logged_in and _IDLE_TIMEOUT > 0
+                        and (tcurr - session.cmd_last) > _IDLE_TIMEOUT):
             self.disconnect(session, reason=reason)
 
     def player_count(self, count=True):
@@ -418,14 +424,15 @@ class ServerSessionHandler(SessionHandler):
         uid = player.uid
         return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
 
-    def sessions_from_character(self, character):
+    def sessions_from_puppet(self, puppet):
         """
-        Given a game character, return any matching sessions.
+        Given a puppeted object, return all controlling sessions.
         """
-        sessid = character.sessid.get()
+        sessid = puppet.sessid.get()
         if is_iter(sessid):
-            return [self.sessions.get(sess) for sess in sessid if sessid in self.sessions]
+            return [self.sessions.get(sid) for sid in sessid if sid in self.sessions]
         return self.sessions.get(sessid)
+    sessions_from_character = sessions_from_puppet
 
     def announce_all(self, message):
         """
@@ -437,11 +444,52 @@ class ServerSessionHandler(SessionHandler):
     def data_out(self, session, text="", **kwargs):
         """
         Sending data Server -> Portal
+
+        Args:
+            session (Session): Session object
+            text (str, optional): text data to return
+            _nomulti (bool, optional): if given, only this
+                session will receive the rest of the data,
+                regardless of MULTISESSION_MODE. This is an
+                internal variable that will not be passed on.
+                This is ignored for MULTISESSION_MODE = 1,
+                since all messages are mirrored everywhere for
+                that.
+            _forced_nomulti (bool, optional): Like _nomulti,
+                but works even when MULTISESSION_MODE = 1.
+                Useful for connection handling messages.
+
         """
+        sessions = make_iter(session)
+        session = sessions[0]
         text = text and to_str(to_unicode(text), encoding=session.encoding)
-        self.server.amp_protocol.call_remote_MsgServer2Portal(sessid=session.sessid,
-                                                              msg=text,
-                                                              data=kwargs)
+        multi = not kwargs.pop("_nomulti", None)
+        forced_nomulti = kwargs.pop("_forced_nomulti", None)
+        # Mode 1 mirrors to all.
+        if _MULTISESSION_MODE == 1:
+            multi = True
+        # ...Unless we're absolutely sure.
+        if forced_nomulti:
+            multi = False
+
+        if multi:
+            if _MULTISESSION_MODE == 1:
+                if session.player:
+                    sessions = self.sessions_from_player(session.player)
+            if _MULTISESSION_MODE == 2:
+                if session.player:
+                    sessions = self.sessions_from_player(session.player)
+            elif _MULTISESSION_MODE == 3:
+                if session.puppet:
+                    sessions = self.sessions_from_puppet(session.puppet)
+                elif session.player:
+                    sessions = self.sessions_from_player(session.player)
+
+        # send to all found sessions
+        for session in sessions:
+            self.server.amp_protocol.call_remote_MsgServer2Portal(sessid=session.sessid,
+                                                                  msg=text,
+                                                                  data=kwargs)
 
     def data_in(self, sessid, text="", **kwargs):
         """

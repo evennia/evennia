@@ -458,7 +458,7 @@ def check_database():
     if tables and u'players_playerdb' in tables:
         # database exists and seems set up. Initialize evennia.
         import evennia
-        evennia.init()
+        evennia._init()
     # Try to get Player#1
     from evennia.players.models import PlayerDB
     try:

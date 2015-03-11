@@ -57,6 +57,7 @@ class SessidHandler(object):
     def get(self):
         "Returns a list of one or more session ids"
         return self._cache
+    all = get # alias
 
     def add(self, sessid):
         "Add sessid to handler"
@@ -102,7 +103,7 @@ class DefaultObject(ObjectDB):
     Characters, Exits and Rooms (see the bottom of this module).
 
     Note that all new Objects and their subclasses *must* always be
-    created using the ev.create_object() function. This is so the
+    created using the evennia.create_object() function. This is so the
     typeclass system can be correctly initiated behind the scenes.
 
 
@@ -293,7 +294,7 @@ class DefaultObject(ObjectDB):
 
         exclude is one or more objects to not return
         """
-        return ObjectDB.objects.get_contents(self, excludeobj=exclude)
+        return self.contents_cache.get(exclude=exclude)
     contents = property(contents_get)
 
 
@@ -326,7 +327,7 @@ class DefaultObject(ObjectDB):
         Perform a standard object search in the database, handling
         multiple results and lack thereof gracefully. By default, only
         objects in self's current location or inventory is searched.
-        Note: to find Players, use eg. ev.player_search.
+        Note: to find Players, use eg. evennia.player_search.
 
         Args:
             searchdata (str or obj): Primary search criterion. Will be matched
@@ -489,7 +490,6 @@ class DefaultObject(ObjectDB):
             command structure.
         """
         # nick replacement - we require full-word matching.
-
         # do text encoding conversion
         raw_string = to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string,
@@ -501,30 +501,19 @@ class DefaultObject(ObjectDB):
         """
         Emits something to a session attached to the object.
 
-        message (str): The message to send
-        from_obj (obj): object that is sending.
-        data (object): an optional data object that may or may not
-                       be used by the protocol.
-        sessid (int): sessid to relay to, if any.
-                      If set to 0 (default), use either from_obj.sessid (if set) or self.sessid automatically
-                      If None, echo to all connected sessions
-
-        When this message is called, from_obj.at_msg_send and self.at_msg_receive are called.
+        Args:
+            text (str, optional): The message to send
+            from_obj (obj, optional): object that is sending. If
+                given, at_msg_send will be called
+            sessid (int or list, optional): sessid or list of
+                sessids to relay to, if any. If set, will
+                force send regardless of MULTISESSION_MODE.
+        Notes:
+            `at_msg_receive` will be called on this Object.
+            All extra kwargs will be passed on to the protocol.
 
         """
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-
         text = to_str(text, force_string=True) if text else ""
-
-        if "data" in kwargs:
-            # deprecation warning
-            log_depmsg("ObjectDB.msg(): 'data'-dict keyword is deprecated. Use **kwargs instead.")
-            data = kwargs.pop("data")
-            if isinstance(data, dict):
-                kwargs.update(data)
-
         if from_obj:
             # call hook
             try:
@@ -538,9 +527,18 @@ class DefaultObject(ObjectDB):
         except Exception:
             log_trace()
 
-        sessions = _SESSIONS.session_from_sessid([sessid] if sessid else make_iter(self.sessid.get()))
-        for session in sessions:
-            session.msg(text=text, **kwargs)
+        # session relay
+        kwargs['_nomulti'] = kwargs.get('_nomulti', True)
+
+        if self.player:
+            # for there to be a session there must be a Player.
+            if sessid:
+                sessions = make_iter(self.player.get_session(sessid))
+            else:
+                # Send to all sessions connected to this object
+                sessions = [self.player.get_session(sessid) for sessid in self.sessid.get()]
+            if sessions:
+                sessions[0].msg(text=text, session=sessions, **kwargs)
 
     def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):
         """
@@ -711,7 +709,6 @@ class DefaultObject(ObjectDB):
         location or to default home.
         """
         # Gather up everything that thinks this is its location.
-        objs = ObjectDB.objects.filter(db_location=self)
         default_home_id = int(settings.DEFAULT_HOME.lstrip("#"))
         try:
             default_home = ObjectDB.objects.get(id=default_home_id)
@@ -723,7 +720,7 @@ class DefaultObject(ObjectDB):
             log_errmsg(string % default_home_id)
             default_home = None
 
-        for obj in objs:
+        for obj in self.contents:
             home = obj.home
             # Obviously, we can't send it back to here.
             if not home or (home and home.dbid == self.dbid):
@@ -812,7 +809,8 @@ class DefaultObject(ObjectDB):
             # no need to disconnect, Player just jumps to OOC mode.
         # sever the connection (important!)
         if self.player:
-            self.player.character = None
+            for sessid in self.sessid.all():
+                self.player.unpuppet_object(sessid)
         self.player = None
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):
@@ -825,6 +823,7 @@ class DefaultObject(ObjectDB):
         self.attributes.clear()
         self.nicks.clear()
         self.aliases.clear()
+        self.location = None # this updates contents_cache for our location
 
         # Perform the deletion of the object
         super(ObjectDB, self).delete()

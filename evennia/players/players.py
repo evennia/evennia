@@ -18,7 +18,6 @@ from evennia.players.manager import PlayerManager
 from evennia.players.models import PlayerDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
-from evennia.scripts.models import ScriptDB
 from evennia.utils import logger
 from evennia.utils.utils import (lazy_property, to_str,
                              make_iter, to_unicode,
@@ -161,32 +160,33 @@ class DefaultPlayer(PlayerDB):
 
     # puppeting operations
 
-    def puppet_object(self, sessid, obj, normal_mode=True):
+    def puppet_object(self, sessid, obj):
         """
         Use the given session to control (puppet) the given object (usually
         a Character type).
 
-        sessid - session id of session to connect
-        obj - the object to connect to
-        normal_mode - trigger hooks and extra checks - this is turned off when
-                     the server reloads, to quickly re-connect puppets.
+        Args:
+            sessid (int): session id of session to connect
+            obj (Object): the object to start puppeting
+
+        Raises:
+            RuntimeError with message if puppeting is not possible
 
         returns True if successful, False otherwise
         """
         # safety checks
         if not obj:
-            return
+            raise RuntimeError("Object not found")
         session = self.get_session(sessid)
         if not session:
-            return False
+            raise RuntimeError("Session not found")
         if self.get_puppet(sessid) == obj:
             # already puppeting this object
-            return
+            raise RuntimeError("You are already puppeting this object.")
         if not obj.access(self, 'puppet'):
             # no access
-            self.msg("You don't have permission to puppet '%s'." % obj.key)
-            return
-        if normal_mode and obj.player:
+            raise RuntimeError("You don't have permission to puppet '%s'." % obj.key)
+        if obj.player:
             # object already puppeted
             if obj.player == self:
                 if obj.sessid.count():
@@ -198,70 +198,73 @@ class DefaultPlayer(PlayerDB):
                     else:
                         txt1 = "{c%s{n{R is now acted from another of your sessions.{n"
                         txt2 = "Taking over {c%s{n from another of your sessions."
-                    self.msg(txt1 % obj.name, sessid=obj.sessid.get())
-                    self.msg(txt2 % obj.name, sessid=sessid)
-                    self.unpuppet_object(obj.sessid.get())
+                        self.unpuppet_object(obj.sessid.get())
+                    self.msg(txt1 % obj.name, sessid=obj.sessid.get(), _forced_nomulti=True)
+                    self.msg(txt2 % obj.name, sessid=sessid, _forced_nomulti=True)
             elif obj.player.is_connected:
                 # controlled by another player
-                self.msg("{R{c%s{R is already puppeted by another Player.")
-                return
+                raise RuntimeError("{R{c%s{R is already puppeted by another Player.")
 
         # do the puppeting
-        if normal_mode and session.puppet:
+        if session.puppet:
             # cleanly unpuppet eventual previous object puppeted by this session
             self.unpuppet_object(sessid)
         # if we get to this point the character is ready to puppet or it
         # was left with a lingering player/sessid reference from an unclean
         # server kill or similar
 
-        if normal_mode:
-            obj.at_pre_puppet(self, sessid=sessid)
+        obj.at_pre_puppet(self, sessid=sessid)
+
         # do the connection
         obj.sessid.add(sessid)
         obj.player = self
         session.puid = obj.id
         session.puppet = obj
         # validate/start persistent scripts on object
-        ScriptDB.objects.validate(obj=obj)
-        if normal_mode:
-            obj.at_post_puppet()
+        obj.scripts.validate()
+
+        obj.at_post_puppet()
+
         # re-cache locks to make sure superuser bypass is updated
         obj.locks.cache_lock_bypass(obj)
-        return True
 
     def unpuppet_object(self, sessid):
         """
         Disengage control over an object
 
-        sessid - the session id to disengage
+        Args:
+            sessid(int): the session id to disengage
 
-        returns True if successful
+        Raises:
+            RuntimeError with message about error.
         """
-        session = self.get_session(sessid)
-        if not session:
-            return False
-        session = make_iter(session)[0]
-        print "unpuppet, session:", session, session.puppet
-        obj = hasattr(session, "puppet") and session.puppet or None
-        print "unpuppet, obj:", obj
-        if not obj:
-            return False
-        # do the disconnect, but only if we are the last session to puppet
-        obj.at_pre_unpuppet()
-        obj.sessid.remove(sessid)
-        if not obj.sessid.count():
-            del obj.player
-            obj.at_post_unpuppet(self, sessid=sessid)
-        session.puppet = None
-        session.puid = None
-        return True
+        if _MULTISESSION_MODE == 1:
+            sessions = self.get_all_sessions()
+        else:
+            sessions = self.get_session(sessid)
+        if not sessions:
+            raise RuntimeError("No session was found.")
+        for session in make_iter(sessions):
+            obj = session.puppet or None
+            if not obj:
+                raise RuntimeError("No puppet was found to disconnect from.")
+            elif obj:
+                # do the disconnect, but only if we are the last session to puppet
+                obj.at_pre_unpuppet()
+                obj.sessid.remove(session.sessid)
+                if not obj.sessid.count():
+                    del obj.player
+                    obj.at_post_unpuppet(self, sessid=sessid)
+            # Just to be sure we're always clear.
+            session.puppet = None
+            session.puid = None
 
     def unpuppet_all(self):
         """
         Disconnect all puppets. This is called by server
         before a reset/shutdown.
         """
-        for session in self.get_all_sessions():
+        for session in (sess for sess in self.get_all_sessions() if sess.puppet):
             self.unpuppet_object(session.sessid)
 
     def get_puppet(self, sessid, return_dbobj=False):
@@ -329,23 +332,15 @@ class DefaultPlayer(PlayerDB):
         This is the main route for sending data back to the user from the
         server.
 
-        outgoing_string (string) - text data to send
-        from_obj (Object/Player) - source object of message to send. Its
-                 at_msg_send() hook will be called.
-        sessid - the session id of the session to send to. If not given, return
-                 to all sessions connected to this player. This is usually only
-                 relevant when using msg() directly from a player-command (from
-                 a command on a Character, the character automatically stores
-                 and handles the sessid). Can also be a list of sessids.
-        kwargs (dict) - All other keywords are parsed as extra data.
+        Args:
+            text (str, optional): text data to send
+            from_obj (Object or Player, optional): object sending. If given,
+                its at_msg_send() hook will be called.
+            sessid (int or list, optional): session id or ids to receive this
+                send. If given, overrules MULTISESSION_MODE.
+        Notes:
+            All other keywords are passed on to the protocol.
         """
-        if "data" in kwargs:
-            # deprecation warning
-            logger.log_depmsg("PlayerDB:msg() 'data'-dict keyword is deprecated. Use **kwargs instead.")
-            data = kwargs.pop("data")
-            if isinstance(data, dict):
-                kwargs.update(data)
-
         text = to_str(text, force_string=True) if text else ""
         if from_obj:
             # call hook
@@ -353,18 +348,24 @@ class DefaultPlayer(PlayerDB):
                 from_obj.at_msg_send(text=text, to_obj=self, **kwargs)
             except Exception:
                 pass
-        sessions = _MULTISESSION_MODE > 1 and sessid and self.get_session(sessid) or None
+
+        # session relay
+
+        if sessid:
+            # this could still be an iterable if sessid is an iterable
+            sessions = self.get_session(sessid)
+            if sessions:
+                # this is a special instruction to ignore MULTISESSION_MODE
+                # and only relay to this given session.
+                kwargs["_nomulti"] = True
+                for session in make_iter(sessions):
+                    session.msg(text=text, **kwargs)
+                return
+        # we only send to the first of any connected sessions - the sessionhandler
+        # will disperse this to the other sessions based on MULTISESSION_MODE.
+        sessions = self.get_all_sessions()
         if sessions:
-            for session in make_iter(sessions):
-                obj = session.puppet
-                if obj and not obj.at_msg_receive(text=text, **kwargs):
-                    # if hook returns false, cancel send
-                    continue
-                session.msg(text=text, **kwargs)
-        else:
-            # if no session was specified, send to them all
-            for sess in self.get_all_sessions():
-                sess.msg(text=text, **kwargs)
+            sessions[0].msg(text=text, **kwargs)
 
     def execute_cmd(self, raw_string, sessid=None, **kwargs):
         """
@@ -613,7 +614,7 @@ class DefaultPlayer(PlayerDB):
         global _CONNECT_CHANNEL
         if not _CONNECT_CHANNEL:
             try:
-                _CONNECT_CHANNEL = ChannelDB.objects.filter(db_key=settings.CHANNEL_CONNECTINFO[0])[0]
+                _CONNECT_CHANNEL = ChannelDB.objects.filter(db_key=settings.DEFAULT_CHANNELS[1]["key"])[0]
             except Exception:
                 logger.log_trace()
         now = datetime.datetime.now()
@@ -623,37 +624,6 @@ class DefaultPlayer(PlayerDB):
             _CONNECT_CHANNEL.tempmsg("[%s, %s]: %s" % (_CONNECT_CHANNEL.key, now, message))
         else:
             logger.log_infomsg("[%s]: %s" % (now, message))
-
-    #def _go_ic_at_login(self, sessid=None):
-    #    new_character = self.db._last_puppet
-
-    #    # permission checks
-    #    if self.get_puppet(sessid) == new_character:
-    #        return
-    #    if new_character.player:
-    #        # may not puppet an already puppeted character
-    #        if new_character.sessid.count() and new_character.player == self:
-    #            # as a safeguard we allow "taking over" chars from your own sessions.
-    #            if _MULTISESSION_MODE in (1, 3):
-    #                txt1 = "{c%s{n{G is now shared from another of your sessions.{n"
-    #                txt2 = "Sharing {c%s{n with another of your sessions."
-    #            else:
-    #                txt1 = "{c%s{n{R is now acted from another of your sessions.{n"
-    #                txt2 = "Taking over {c%s{n from another of your sessions."
-    #            self.unpuppet_object(new_character.sessid.get())
-    #            self.msg(txt1 % new_character.name, sessid=new_character.sessid.get())
-    #            self.msg(txt2 % new_character.name, sessid=sessid)
-    #        elif new_character.player != self and new_character.player.is_connected:
-    #            self.msg("{c%s{r is already acted by another player{n." % new_character.name, sessid=sessid)
-    #            return
-    #    if not new_character.access(self, 'puppet'):
-    #        # main acccess check
-    #        self.msg("{rYou may not become {C%s{n." % new_character.name, sessid=sessid)
-    #        return
-    #    if self.puppet_object(sessid, new_character):
-    #        self.db._last_puppet = new_character
-    #    else:
-    #        self.msg("{rYou cannot become {C%s{n." % new_character.name, sessid=sessid)
 
     def at_post_login(self, sessid=None):
         """
@@ -667,12 +637,8 @@ class DefaultPlayer(PlayerDB):
             # try to auto-connect to our last conneted object, if any
             self.puppet_object(sessid, self.db._last_puppet)
         elif _MULTISESSION_MODE == 1:
-            # in this mode the first session to connect acts like mode 0,
-            # the following sessions "share" the same view and should
-            # not perform any actions
-            if not self.get_all_puppets():
-                # we are first. Connect.
-                self.puppet_object(sessid, self.db._last_puppet)
+            # in this mode all sessions connect to the same puppet.
+            self.puppet_object(sessid, self.db._last_puppet)
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.

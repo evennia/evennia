@@ -53,18 +53,22 @@ if not _OOB_ERROR:
 class OOBFieldMonitor(object):
     """
     This object should be stored on the
-    tracked object as "_oob_at_<fieldname>_update".
-    the update() method will be called by the
+    tracked object as "_oob_at_<fieldname>_postsave".
+    the update() method w ill be called by the
     save mechanism, which in turn will call the
     user-customizable func()
     """
-    def __init__(self):
+    def __init__(self, obj):
         """
         This initializes the monitor with the object it sits on.
+
+        Args:
+            obj (Object): object handler is defined on.
         """
+        self.obj = obj
         self.subscribers = defaultdict(list)
 
-    def __call__(self, obj, fieldname):
+    def __call__(self, fieldname):
         """
         Called by the save() mechanism when the given
         field has updated.
@@ -74,7 +78,7 @@ class OOBFieldMonitor(object):
             # a potential list of oob commands to call when this
             # field changes.
             for (oobfuncname, args, kwargs) in oobtuples:
-                OOB_HANDLER.execute_cmd(sessid, oobfuncname, fieldname, obj, *args, **kwargs)
+                OOB_HANDLER.execute_cmd(sessid, oobfuncname, fieldname, self.obj, *args, **kwargs)
 
     def add(self, sessid, oobfuncname, *args, **kwargs):
         """
@@ -156,7 +160,7 @@ class OOBHandler(TickerHandler):
         fieldmonitorname = self._get_fieldmonitor_name(fieldname)
         if not hasattr(obj, fieldmonitorname):
             # assign a new fieldmonitor to the object
-            _SA(obj, fieldmonitorname, OOBFieldMonitor())
+            _SA(obj, fieldmonitorname, OOBFieldMonitor(obj))
         # register the session with the monitor
         _GA(obj, fieldmonitorname).add(sessid, oobfuncname, *args, **kwargs)
 

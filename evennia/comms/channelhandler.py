@@ -82,13 +82,25 @@ class ChannelCommand(command.Command):
 
 class ChannelHandler(object):
     """
-    Handles the set of commands related to channels.
+    The ChannelHandler manages all active in-game channels and
+    dynamically creates channel commands for users so that they can
+    just give the channek's key or alias to write to it. Whenever a
+    new channel is created in the database, the update() method on
+    this handler must be called to sync it with the database (this is
+    done automatically if creating the channel with
+    evennia.create_channel())
+
     """
     def __init__(self):
+        """
+        Initializes the channel handler's internal state.
+
+        """
         self.cached_channel_cmds = []
         self.cached_cmdsets = {}
 
     def __str__(self):
+        "Returns the string representation of the handler"
         return ", ".join(str(cmd) for cmd in self.cached_channel_cmds)
 
     def clear(self):
@@ -133,7 +145,9 @@ class ChannelHandler(object):
         self.cached_cmdsets = {}
 
     def update(self):
-        "Updates the handler completely."
+        """
+        Updates the handler completely.
+        """
         self.cached_channel_cmds = []
         self.cached_cmdsets = {}
         for channel in ChannelDB.objects.get_all_channels():

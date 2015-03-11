@@ -100,7 +100,7 @@ def _msg_err(receiver, string):
         string (str): string with a {traceback} format marker inside it.
 
     """
-    receiver.msg(string.format(traceback=format_exc()))
+    receiver.msg(string.format(traceback=format_exc(), _nomulti=True))
 
 
 # custom Exceptions
@@ -171,7 +171,7 @@ def get_and_merge_cmdsets(caller, session, player, obj,
                     # Gather all cmdsets stored on objects in the room and
                     # also in the caller's inventory and the location itself
                     local_objlist = yield (location.contents_get(exclude=obj) +
-                                           obj.contents + [location])
+                                           obj.contents_get() + [location])
                     local_objlist = [o for o in local_objlist if not o._is_deleted]
                     for lobj in local_objlist:
                         try:
@@ -411,15 +411,18 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
     elif callertype == "player":
         player = called_by
         if sessid:
+            session = player.get_session(sessid)
             obj = yield player.get_puppet(sessid)
     elif callertype == "object":
         obj = called_by
     else:
         raise RuntimeError("cmdhandler: callertype %s is not valid." % callertype)
-
     # the caller will be the one to receive messages and excert its permissions.
     # we assign the caller with preference 'bottom up'
     caller = obj or player or session
+    # The error_to is the default recipient for errors. Tries to make sure a player
+    # does not get spammed for errors while preserving character mirroring.
+    error_to = obj or session or player
 
     try:  # catch bugs in cmdhandler itself
         try:  # catch special-type commands
@@ -470,7 +473,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 # No commands match our entered command
                 syscmd = yield cmdset.get(CMD_NOMATCH)
                 if syscmd:
-                    # use custom CMD_NOMATH command
+                    # use custom CMD_NOMATCH command
                     sysarg = raw_string
                 else:
                     # fallback to default error text
@@ -516,19 +519,19 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 returnValue(ret)
             elif sysarg:
                 # return system arg
-                caller.msg(exc.sysarg)
+                error_to.msg(exc.sysarg, _nomulti=True)
 
         except NoCmdSets:
             # Critical error.
             logger.log_errmsg("No cmdsets found: %s" % caller)
-            caller.msg(_ERROR_NOCMDSETS)
+            error_to.msg(_ERROR_NOCMDSETS, _nomulti=True)
 
         except Exception:
             # We should not end up here. If we do, it's a programming bug.
             logger.log_trace()
-            _msg_err(caller, _ERROR_UNTRAPPED)
+            _msg_err(error_to, _ERROR_UNTRAPPED)
 
     except Exception:
         # This catches exceptions in cmdhandler exceptions themselves
         logger.log_trace()
-        _msg_err(caller, _ERROR_CMDHANDLER)
+        _msg_err(error_to, _ERROR_CMDHANDLER)

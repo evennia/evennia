@@ -14,7 +14,7 @@ access the character when these commands are triggered with
 a connected character (such as the case of the @ooc command), it
 is None if we are OOC.
 
-Note that under MULTISESSION_MODE=2, Player- commands should use
+Note that under MULTISESSION_MODE > 2, Player- commands should use
 self.msg() and similar methods to reroute returns to the correct
 method. Otherwise all text will be returned to all connected sessions.
 
@@ -249,10 +249,11 @@ class CmdIC(MuxPlayerCommand):
             else:
                 self.msg("That is not a valid character choice.")
                 return
-        if player.puppet_object(sessid, new_character):
+        try:
+            player.puppet_object(sessid, new_character)
             player.db._last_puppet = new_character
-        else:
-            self.msg("{rYou cannot become {C%s{n." % new_character.name)
+        except RuntimeError, exc:
+            self.msg("{rYou cannot become {C%s{n: %s" % (new_character.name, exc))
 
 
 class CmdOOC(MuxPlayerCommand):
@@ -287,11 +288,12 @@ class CmdOOC(MuxPlayerCommand):
         player.db._last_puppet = old_char
 
         # disconnect
-        if player.unpuppet_object(sessid):
+        try:
+            player.unpuppet_object(sessid)
             self.msg("\n{GYou go OOC.{n\n")
             player.execute_cmd("look", sessid=sessid)
-        else:
-            raise RuntimeError("Could not unpuppet!")
+        except RuntimeError, exc:
+            self.msg("{rCould not unpuppet from {c%s{n: %s" % (old_char, exc))
 
 class CmdSessions(MuxPlayerCommand):
     """
@@ -511,6 +513,7 @@ class CmdQuit(MuxPlayerCommand):
     game. Use the /all switch to disconnect from all sessions.
     """
     key = "@quit"
+    aliases = "quit"
     locks = "cmd:all()"
 
     def func(self):

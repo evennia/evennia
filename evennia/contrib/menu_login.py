@@ -33,7 +33,7 @@ from evennia import Command, CmdSet
 from evennia import syscmdkeys
 from evennia.server.models import ServerConfig
 
-from contrib.menusystem import MenuNode, MenuTree
+from evennia.contrib.menusystem import MenuNode, MenuTree
 
 CMD_LOGINSTART = syscmdkeys.CMD_LOGINSTART
 CMD_NOINPUT = syscmdkeys.CMD_NOINPUT

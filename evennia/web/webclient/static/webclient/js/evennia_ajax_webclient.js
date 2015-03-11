@@ -159,7 +159,7 @@ function webclient_init(){
             }, 10000);
 
             // Report success
-            msg_display('sys',"Connected to " + data.msg + ".");
+            msg_display('sys',"Connected to " + data.msg + ". Websockets not available: Using ajax client without OOB support.");
 
             // Wait for input
             webclient_receive();

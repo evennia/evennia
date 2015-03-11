@@ -13,15 +13,16 @@ main test suite started with
 """
 
 import re
-from django.conf import settings
-from evennia.commands.default.cmdset_character import CharacterCmdSet
 
-import evennia
-evennia.init()
-from evennia.tests.resources import EvenniaTest
+from django.conf import settings
+from mock import Mock
+
+from evennia.commands.default.cmdset_character import CharacterCmdSet
+from evennia.utils.test_resources import EvenniaTest
 from evennia.commands.default import help, general, system, admin, player, building, batchprocess, comms
 from evennia.utils import ansi
 from evennia.server.sessionhandler import SESSIONS
+
 
 # set up signal here since we are not starting the server
 
@@ -37,7 +38,7 @@ class CommandTest(EvenniaTest):
     Tests a command
     """
 
-    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None):
+    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None, receiver=None):
         """
         Test a command by assigning all the needed
         properties to cmdobj and  running
@@ -48,7 +49,9 @@ class CommandTest(EvenniaTest):
         The msgreturn value is compared to eventual
         output sent to caller.msg in the game
         """
-        cmdobj.caller = caller if caller else self.char1
+        caller = caller if caller else self.char1
+        receiver = receiver if receiver else caller
+        cmdobj.caller = caller
         cmdobj.cmdstring = cmdobj.key
         cmdobj.args = args
         cmdobj.cmdset = cmdset
@@ -58,22 +61,26 @@ class CommandTest(EvenniaTest):
         cmdobj.raw_string = cmdobj.key + " " + args
         cmdobj.obj = caller if caller else self.char1
         # test
-        self.char1.player.ndb.stored_msg = []
-        cmdobj.at_pre_cmd()
-        cmdobj.parse()
-        cmdobj.func()
-        cmdobj.at_post_cmd()
-        # clean out prettytable sugar
-        stored_msg = self.char1.player.ndb.stored_msg if self.char1.player else self.char1.ndb.stored_msg
-        returned_msg = "|".join(_RE.sub("", mess) for mess in stored_msg)
-        returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
-        if msg != None:
-            if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
-                sep1 = "\n" + "="*30 + "Wanted message" + "="*34 + "\n"
-                sep2 = "\n" + "="*30 + "Returned message" + "="*32 + "\n"
-                sep3 = "\n" + "="*78
-                retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
-                raise AssertionError(retval)
+        old_msg = receiver.msg
+        try:
+            receiver.msg = Mock()
+            cmdobj.at_pre_cmd()
+            cmdobj.parse()
+            cmdobj.func()
+            cmdobj.at_post_cmd()
+            # clean out prettytable sugar
+            stored_msg = [args[0] for name, args, kwargs in receiver.msg.mock_calls]
+            returned_msg = "|".join(_RE.sub("", mess) for mess in stored_msg)
+            returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
+            if msg is not None:
+                if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
+                    sep1 = "\n" + "="*30 + "Wanted message" + "="*34 + "\n"
+                    sep2 = "\n" + "="*30 + "Returned message" + "="*32 + "\n"
+                    sep3 = "\n" + "="*78
+                    retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
+                    raise AssertionError(retval)
+        finally:
+            receiver.msg = old_msg
 
 # ------------------------------------------------------------
 # Individual module Tests
@@ -164,10 +171,11 @@ class TestPlayer(CommandTest):
             self.call(player.CmdOOCLook(), "", "Account TestPlayer (you are OutofCharacter)", caller=self.player)
 
     def test_ooc(self):
-        self.call(player.CmdOOC(), "", "You are already", caller=self.player)
+        self.call(player.CmdOOC(), "", "You go OOC.", caller=self.player)
 
     def test_ic(self):
-        self.call(player.CmdIC(), "Char", "You become Char.", caller=self.player)
+        self.player.unpuppet_object(self.session.sessid)
+        self.call(player.CmdIC(), "Char", "You become Char.", caller=self.player, receiver=self.char1)
 
     def test_password(self):
         self.call(player.CmdPassword(), "testpassword = testpassword", "Password changed.", caller=self.player)
@@ -191,7 +199,6 @@ class TestPlayer(CommandTest):
         self.call(player.CmdCharCreate(), "Test1=Test char", "Created new character Test1. Use @ic Test1 to enter the game", caller=self.player)
 
     def test_quell(self):
-        self.call(player.CmdIC(), "Char", "You become Char.", caller=self.player)
         self.call(player.CmdQuell(), "", "Quelling to current puppet's permissions (immortals).", caller=self.player)
 
 
@@ -244,7 +251,7 @@ class TestBuilding(CommandTest):
 
     def test_typeclass(self):
         self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultExit",
-                "Obj changed typeclass from evennia.tests.resources.TestObjectClass to evennia.objects.objects.DefaultExit.")
+                "Obj changed typeclass from evennia.objects.objects.DefaultObject to evennia.objects.objects.DefaultExit.")
 
     def test_lock(self):
         self.call(building.CmdLock(), "Obj = test:perm(Immortals)", "Added lock 'test:perm(Immortals)' to Obj.")
@@ -263,39 +270,39 @@ class TestComms(CommandTest):
 
     def setUp(self):
         super(CommandTest, self).setUp()
-        self.call(comms.CmdChannelCreate(), "testchan;test=Test Channel", "Created channel testchan and connected to it.")
+        self.call(comms.CmdChannelCreate(), "testchan;test=Test Channel", "Created channel testchan and connected to it.", receiver=self.player)
 
     def test_toggle_com(self):
-        self.call(comms.CmdAddCom(), "tc = testchan", "You are already connected to channel testchan. You can now")
-        self.call(comms.CmdDelCom(), "tc",  "Your alias 'tc' for channel testchan was cleared.")
+        self.call(comms.CmdAddCom(), "tc = testchan", "You are already connected to channel testchan. You can now", receiver=self.player)
+        self.call(comms.CmdDelCom(), "tc",  "Your alias 'tc' for channel testchan was cleared.", receiver=self.player)
 
     def test_channels(self):
-        self.call(comms.CmdChannels(), "" ,"Available channels (use comlist,addcom and delcom to manage")
+        self.call(comms.CmdChannels(), "" ,"Available channels (use comlist,addcom and delcom to manage", receiver=self.player)
 
     def test_all_com(self):
-        self.call(comms.CmdAllCom(), "", "Available channels (use comlist,addcom and delcom to manage")
+        self.call(comms.CmdAllCom(), "", "Available channels (use comlist,addcom and delcom to manage", receiver=self.player)
 
     def test_clock(self):
-        self.call(comms.CmdClock(), "testchan=send:all()", "Lock(s) applied. Current locks on testchan:")
+        self.call(comms.CmdClock(), "testchan=send:all()", "Lock(s) applied. Current locks on testchan:", receiver=self.player)
 
     def test_cdesc(self):
-        self.call(comms.CmdCdesc(), "testchan = Test Channel", "Description of channel 'testchan' set to 'Test Channel'.")
+        self.call(comms.CmdCdesc(), "testchan = Test Channel", "Description of channel 'testchan' set to 'Test Channel'.", receiver=self.player)
 
     def test_cemit(self):
-        self.call(comms.CmdCemit(), "testchan = Test Message", "[testchan] Test Message|Sent to channel testchan: Test Message")
+        self.call(comms.CmdCemit(), "testchan = Test Message", "[testchan] Test Message|Sent to channel testchan: Test Message", receiver=self.player)
 
     def test_cwho(self):
-        self.call(comms.CmdCWho(), "testchan", "Channel subscriptions\ntestchan:\n  TestPlayer")
+        self.call(comms.CmdCWho(), "testchan", "Channel subscriptions\ntestchan:\n  TestPlayer", receiver=self.player)
 
     def test_page(self):
-        self.call(comms.CmdPage(), "TestPlayer2 = Test", "TestPlayer2 is offline. They will see your message if they list their pages later.|You paged TestPlayer2 with: 'Test'.")
+        self.call(comms.CmdPage(), "TestPlayer2 = Test", "TestPlayer2 is offline. They will see your message if they list their pages later.|You paged TestPlayer2 with: 'Test'.", receiver=self.player)
 
     def test_cboot(self):
         # No one else connected to boot
-        self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <player> [:reason]")
+        self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <player> [:reason]", receiver=self.player)
 
     def test_cdestroy(self):
-        self.call(comms.CmdCdestroy(), "testchan" ,"[testchan] TestPlayer: testchan is being destroyed. Make sure to change your aliases.|Channel 'testchan' was destroyed.")
+        self.call(comms.CmdCdestroy(), "testchan" ,"[testchan] TestPlayer: testchan is being destroyed. Make sure to change your aliases.|Channel 'testchan' was destroyed.", receiver=self.player)
 
 
 class TestBatchProcess(CommandTest):
