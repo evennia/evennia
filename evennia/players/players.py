@@ -286,15 +286,12 @@ class DefaultPlayer(PlayerDB):
             return session.puppet
         return session.puppet and session.puppet or None
 
-    def get_all_puppets(self, return_dbobj=False):
+    def get_all_puppets(self):
         """
         Get all currently puppeted objects as a list
         """
-        puppets = [session.puppet for session in self.get_all_sessions()
-                                                            if session.puppet]
-        if return_dbobj:
-            return puppets
-        return [puppet for puppet in puppets]
+        return [session.puppet for session in self.get_all_sessions()
+                                                       if session.puppet]
 
     def __get_single_puppet(self):
         """
