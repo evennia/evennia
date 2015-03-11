@@ -17,7 +17,6 @@ from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.utils.utils import variable_from_module, is_iter, \
                             to_str, to_unicode, strip_control_sequences, make_iter
-from evennia.utils import logger
 
 try:
     import cPickle as pickle
@@ -185,14 +184,7 @@ class ServerSessionHandler(SessionHandler):
         session = self.sessions.get(sessid, None)
         if not session:
             return
-        player = session.player
-        if player:
-            nsess = len(self.sessions_from_player(player)) - 1
-            remaintext = nsess and "%i session%s remaining" % (nsess, nsess > 1 and "s" or "") or "no more sessions"
-            session.log(_('Connection dropped: %s %s (%s)' % (session.player, session.address, remaintext)))
-        session.at_disconnect()
-        session.disconnect()
-        del self.sessions[session.sessid]
+        self.disconnect(session)
 
     def portal_sessions_sync(self, portalsessions):
         """
@@ -289,8 +281,9 @@ class ServerSessionHandler(SessionHandler):
             self.disconnect_duplicate_sessions(session)
 
         nsess = len(self.sessions_from_player(player))
-        totalstring = "%i session%s total" % (nsess, nsess > 1 and "s" or "")
-        session.log(_('Logged in: %s %s (%s)' % (player, session.address, totalstring)))
+        string = "Logged in: {player} {address} ({nsessions} session(s) total)"
+        string = string.format(player=player,address=session.address, nsessions=nsess)
+        session.log(string)
 
         session.logged_in = True
         # sync the portal to the session
@@ -313,8 +306,9 @@ class ServerSessionHandler(SessionHandler):
         if hasattr(session, "player") and session.player:
             # only log accounts logging off
             nsess = len(self.sessions_from_player(session.player)) - 1
-            remaintext = nsess and "%i session%s remaining" % (nsess, nsess > 1 and "s" or "") or "no more sessions"
-            session.log(_('Logged out: %s %s (%s)' % (session.player, session.address, remaintext)))
+            string = "Logged out: {player} {address} ({nsessions} sessions(s) remaining)"
+            string = string.format(player=session.player, address=session.address, nsessions=nsess)
+            session.log(string)
 
         session.at_disconnect()
         sessid = session.sessid
@@ -334,7 +328,7 @@ class ServerSessionHandler(SessionHandler):
                                                          operation=SSYNC,
                                                          data=sessdata)
 
-    def disconnect_all_sessions(self, reason=_("You have been disconnected.")):
+    def disconnect_all_sessions(self, reason="You have been disconnected."):
         """
         Cleanly disconnect all of the connected sessions.
         """

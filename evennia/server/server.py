@@ -14,6 +14,8 @@ import os
 from twisted.web import server, static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
+from twisted.internet.task import LoopingCall
+
 import django
 django.setup()
 
@@ -72,6 +74,54 @@ RSS_ENABLED = settings.RSS_ENABLED
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
 
 
+# Maintenance function - this is called repeatedly by the server
+
+_MAINTENANCE_COUNT = 0
+_FLUSH_CACHE = None
+_IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
+_GAMETIME_MODULE = None
+
+def _server_maintenance():
+    """
+    This maintenance function handles repeated checks and updates that
+    the server needs to do. It is called every 5 minutes.
+    """
+    global EVENNIA, _MAINTENANCE_COUNT, _FLUSH_CACHE, _GAMETIME_MODULE
+    if not _FLUSH_CACHE:
+        from evennia.utils.idmapper.models import conditional_flush as _FLUSH_CACHE
+    if not _GAMETIME_MODULE:
+        from evennia.utils import gametime as _GAMETIME_MODULE
+
+    _MAINTENANCE_COUNT += 1
+
+    now = time.time()
+    if _MAINTENANCE_COUNT == 1:
+        # first call after a reload
+        _GAMETIME_MODULE.SERVER_START_TIME = now
+        _GAMETIME_MODULE.SERVER_RUNTIME = ServerConfig.objects.conf("runtime", default=0.0)
+    else:
+        _GAMETIME_MODULE.SERVER_RUNTIME += 60.0
+    # update game time and save it across reloads
+    _GAMETIME_MODULE.SERVER_RUNTIME_LAST_UPDATED = now
+    ServerConfig.objects.conf("runtime", _GAMETIME_MODULE.SERVER_RUNTIME)
+
+    if _MAINTENANCE_COUNT % 300 == 0:
+        # check cache size every 5 minutes
+        _FLUSH_CACHE(_IDMAPPER_CACHE_MAXSIZE)
+    if _MAINTENANCE_COUNT % 3600 == 0:
+        # validate scripts every hour
+        evennia.ScriptDB.objects.validate()
+    if _MAINTENANCE_COUNT % 3700 == 0:
+        # validate channels off-sync with scripts
+        evennia.CHANNEL_HANDLER.update()
+    ## Commenting this out, it is probably not needed
+    ## with CONN_MAX_AGE set. Keeping it as a reminder
+    ## if database-gone-away errors appears again /Griatch
+    #if _MAINTENANCE_COUNT % 18000 == 0:
+    #    connection.close()
+maintenance_task = LoopingCall(_server_maintenance)
+maintenance_task.start(60, now=True) # call every minute
+
 #------------------------------------------------------------
 # Evennia Main Server object
 #------------------------------------------------------------
@@ -101,10 +151,10 @@ class Evennia(object):
         # Database-specific startup optimizations.
         self.sqlite3_prep()
 
+        self.start_time = time.time()
+
         # Run the initial setup if needed
         self.run_initial_setup()
-
-        self.start_time = time.time()
 
         # initialize channelhandler
         channelhandler.CHANNELHANDLER.update()
@@ -113,9 +163,9 @@ class Evennia(object):
         # by Ctrl-C, reboot etc.
         reactor.addSystemEventTrigger('before', 'shutdown',
                                           self.shutdown, _reactor_stopping=True)
-
         self.game_running = True
 
+        # track the server time
         self.run_init_hooks()
 
     # Server startup methods
@@ -323,10 +373,6 @@ class Evennia(object):
 
             self.at_server_cold_stop()
 
-        # stopping time
-        from evennia.utils import gametime
-        gametime.save()
-
         self.at_server_stop()
         # if _reactor_stopping is true, reactor does not need to
         # be stopped again.
@@ -486,6 +532,6 @@ ServerConfig.objects.conf("server_starting_mode", delete=True)
 
 if os.name == 'nt':
     # Windows only: Set PID file manually
-    f = open(os.path.join(settings.GAME_DIR, 'server.pid'), 'w')
-    f.write(str(os.getpid()))
-    f.close()
+    with open(SERVER_PIDFILE, 'w') as f:
+        f.write(str(os.getpid()))
+

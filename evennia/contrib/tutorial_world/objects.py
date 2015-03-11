@@ -537,7 +537,7 @@ class CmdPressButton(Command):
     # the Attribute button_exposed on the Wall object so that
     # you can only push the button when the puzzle is solved. It also
     # checks the is_lit Attribute on the location.
-    locks = "cmd:objattr(button_exposed) and locattr(is_lit)"
+    locks = "cmd:objattr(button_exposed) and objlocattr(is_lit)"
     help_category = "TutorialWorld"
 
     def func(self):

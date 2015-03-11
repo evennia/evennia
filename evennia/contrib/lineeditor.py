@@ -9,17 +9,17 @@ in-game. The editor mimics the command mechanisms of the VI editor as
 far as possible.
 
 Features of the editor:
- undo/redo
- edit/replace on any line of the buffer
- search&replace text anywhere in buffer
- formatting of buffer, or selection, to certain width + indentations
- allow to echo the input or not depending on your client.
+    undo/redo.
+    edit/replace on any line of the buffer.
+    search&replace text anywhere in buffer.
+    formatting of buffer, or selection, to certain width + indentations.
+    allow to echo the input or not, depending on your client.
 
 
 Whereas the editor is intended to be called from other commands that
 requires more elaborate text editing of data, there is also a
 stand-alone editor command for editing Attributes at the end of this
-module. To use it just import and add it to your default cmdset.
+module. To use it just import and add it to your default `cmdset`.
 
 """
 
@@ -49,13 +49,13 @@ class CmdEditorBase(Command):
         Handles pre-parsing
 
         Editor commands are on the form
-         :cmd [li] [w] [txt]
+            :cmd [li] [w] [txt]
 
         Where all arguments are optional.
-          li  - line number (int), starting from 1. This could also
-                be a range given as <l>:<l>
-          w   - word(s) (string), could be encased in quotes.
-          txt - extra text (string), could be encased in quotes
+            li  - line number (int), starting from 1. This could also
+                  be a range given as <l>:<l>.
+            w   - word(s) (string), could be encased in quotes.
+            txt - extra text (string), could be encased in quotes.
         """
 
         linebuffer = []
@@ -152,7 +152,9 @@ class CmdLineInput(CmdEditorBase):
     aliases = [CMD_NOINPUT]
 
     def func(self):
-        "Adds the line without any formatting changes."
+        """
+        Adds the line without any formatting changes.
+        """
         # add a line of text
         if not self.editor.buffer:
             buf = self.args
@@ -406,23 +408,23 @@ class LineEditor(object):
                  quitfunc=None, quitfunc_args=None,
                  key=""):
         """
-        caller - who is using the editor
+        caller - who is using the editor.
 
-        loadfunc - this will be called as func(*loadfunc_args) when the
+        loadfunc - this will be called as `func(*loadfunc_args)` when the
                    editor is first started, e.g. for pre-loading text into it.
-        loadfunc_args - optional tuple of arguments to supply to loadfunc.
-        savefunc - this will be called as func(*savefunc_args) when the
+        loadfunc_args - optional tuple of arguments to supply to `loadfunc`.
+        savefunc - this will be called as `func(*savefunc_args)` when the
                    save-command is given and is used to actually determine
-                   where/how result is saved. It should return True if save
+                   where/how result is saved. It should return `True` if save
                    was successful and also handle any feedback to the user.
-        savefunc_args - optional tuple of arguments to supply to savefunc.
-        quitfunc - this will optionally e called as func(*quitfunc_args) when
-                   the editor is exited. If defined, it should handle all
-                   wanted feedback to the user.
-        quitfunc_args - optional tuple of arguments to supply to quitfunc.
+        savefunc_args - optional tuple of arguments to supply to `savefunc`.
+        quitfunc - this will optionally be called as `func(*quitfunc_args)`
+                   when the editor is exited. If defined, it should handle
+                   all wanted feedback to the user.
+        quitfunc_args - optional tuple of arguments to supply to `quitfunc`.
 
         key = an optional key for naming this session (such as which attribute
-              is being edited)
+              is being edited).
         """
         self.key = key
         self.caller = caller
@@ -492,7 +494,9 @@ class LineEditor(object):
             self.unsaved = True
 
     def quit(self):
-        "Cleanly exit the editor."
+        """
+        Cleanly exit the editor.
+        """
         if self.quitfunc:
             # call quit function hook if available
             try:
@@ -508,7 +512,7 @@ class LineEditor(object):
 
     def save_buffer(self):
         """
-            Saves the content of the buffer. The 'quitting' argument is a bool
+        Saves the content of the buffer. The 'quitting' argument is a bool
         indicating whether or not the editor intends to exit after saving.
         """
         if self.unsaved:
@@ -549,7 +553,7 @@ class LineEditor(object):
         """
         This displays the line editor buffer, or selected parts of it.
 
-        If buf is set and is not the full buffer, offset should define
+        If `buf` is set and is not the full buffer, `offset` should define
         the starting line number, to get the linenum display right.
         """
         if buf == None:
@@ -626,10 +630,10 @@ class LineEditor(object):
 
 class CmdEditor(Command):
     """
-    start editor
+    Start editor
 
     Usage:
-      @editor <obj>/<attr>
+        @editor <obj>/<attr>
 
     This will start Evennia's powerful line editor to edit an
     Attribute. The editor has a host of commands on its own. Use :h

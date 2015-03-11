@@ -128,7 +128,7 @@ LANGUAGE_CODE = 'en-us'
 # How long time (in seconds) a user may idle before being logged
 # out. This can be set as big as desired. A user may avoid being
 # thrown off by sending the empty system command 'idle' to the server
-# at regular intervals. Set <=0 to deactivate idle timout completely.
+# at regular intervals. Set <=0 to deactivate idle timeout completely.
 IDLE_TIMEOUT = 3600
 # The idle command can be sent to keep your session active without actually
 # having to spam normal commands regularly. It gives no feedback, only updates
@@ -197,6 +197,11 @@ DATABASES = {
         'HOST': '',
         'PORT': ''
         }}
+# How long the django-database connection should be kept open, in seconds.
+# If you get errors about the database having gone away after long idle
+# periods, shorten this value (e.g. MySQL defaults to a timeout of 8 hrs)
+CONN_MAX_AGE = 3600 * 7
+
 
 ######################################################################
 # Evennia pluggable modules
@@ -256,7 +261,7 @@ DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
 # Default command sets
 ######################################################################
 # Note that with the exception of the unloggedin set (which is not
-# stored anywhere in the databse), changing these paths will only affect
+# stored anywhere in the database), changing these paths will only affect
 # NEW created characters/objects, not those already in play. So if you plan to
 # change this, it's recommended you do it before having created a lot of objects
 # (or simply reset the database after the change for simplicity).
@@ -280,7 +285,7 @@ CMDSET_PATHS = ["commands"]
 SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
 
 # Base paths for typeclassed object classes. These paths must be
-# defined relative evennia's root directory. They will be searched in
+# defined relatively to Evennia's root directory. They will be searched in
 # order to find relative typeclass paths.
 OBJECT_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 SCRIPT_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
@@ -336,7 +341,7 @@ BASE_BATCHPROCESS_PATHS = ['world', 'evennia.contrib', 'evennia.contrib.tutorial
 # determine the current in-game time. You can of course interpret
 # "week", "month" etc as your own in-game time units as desired.
 
-#The time factor dictates if the game world runs faster (timefactor>1)
+# The time factor dictates if the game world runs faster (timefactor>1)
 # or slower (timefactor<1) than the real world.
 TIME_FACTOR = 2.0
 # These measures might or might not make sense to your game world.
@@ -383,7 +388,7 @@ MULTISESSION_MODE = 0
 # checked by the default ooc char-creation command. Forced to 1 for
 # MULTISESSION_MODE 0 and 1.
 MAX_NR_CHARACTERS = 1
-# The access hiearchy, in climbing order. A higher permission in the
+# The access hierarchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()
 # lock functions.
 PERMISSION_HIERARCHY = ["Guests", # note-only used if GUEST_ENABLED=True
@@ -415,7 +420,7 @@ GUEST_HOME = DEFAULT_HOME
 # The start position used for guest characters.
 GUEST_START_LOCATION = START_LOCATION
 # The naming convention used for creating new guest
-# players/characters. The size of this list also detemines how many
+# players/characters. The size of this list also determines how many
 # guests may be on the game at once. The default is a maximum of nine
 # guests, named Guest1 through Guest9.
 GUEST_LIST = ["Guest" + str(s+1) for s in range(9)]
@@ -504,7 +509,7 @@ DEBUG = False
 # While true, show "pretty" error messages for template syntax errors.
 TEMPLATE_DEBUG = DEBUG
 # Emails are sent to these people if the above DEBUG value is False. If you'd
-# rather nobody recieve emails, leave this commented out or empty.
+# rather prefer nobody receives emails, leave this commented out or empty.
 ADMINS = () #'Your Name', 'your_email@domain.com'),)
 # These guys get broken link notifications when SEND_BROKEN_LINK_EMAILS is True.
 MANAGERS = ADMINS

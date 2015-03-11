@@ -3,7 +3,7 @@ Models for the help system.
 
 The database-tied help system is only half of Evennia's help
 functionality, the other one being the auto-generated command help
-that is created on the fly from each command's __doc__ string. The
+that is created on the fly from each command's `__doc__` string. The
 persistent database system defined here is intended for all other
 forms of help that do not concern commands, like information about the
 game world, policy info, rules and similar.

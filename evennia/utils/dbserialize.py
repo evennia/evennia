@@ -10,11 +10,11 @@ The purpose of dbserialize is to handle all forms of data. For
 well-structured non-arbitrary exchange, such as communicating with a
 rich web client, a simpler JSON serialization makes more sense.
 
-This module also implements the SaverList, SaverDict and SaverSet
+This module also implements the `SaverList`, `SaverDict` and `SaverSet`
 classes. These are iterables that track their position in a nested
 structure and makes sure to send updates up to their root. This is
 used by Attributes - without it, one would not be able to update mutables
-in-situ, e.g obj.db.mynestedlist[3][5] = 3 would never be saved and
+in-situ, e.g `obj.db.mynestedlist[3][5] = 3` would never be saved and
 be out of sync with the database.
 
 """

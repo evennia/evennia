@@ -67,28 +67,28 @@ _PARSE_CACHE_SIZE = 10000
 
 class ANSIParser(object):
     """
-    A class that parses ansi markup
+    A class that parses ANSI markup
     to ANSI command sequences
 
     We also allow to escape colour codes
-    by prepending with a \ for mux-style and xterm256,
+    by prepending with a \ for MUX-style and xterm256,
     an extra { for Merc-style codes
     """
 
     def sub_ansi(self, ansimatch):
         """
-        Replacer used by re.sub to replace ansi
-        markers with correct ansi sequences
+        Replacer used by `re.sub` to replace ANSI
+        markers with correct ANSI sequences
         """
         return self.ansi_map.get(ansimatch.group(), "")
 
     def sub_xterm256(self, rgbmatch):
         """
-        This is a replacer method called by re.sub with the matched
+        This is a replacer method called by `re.sub` with the matched
         tag. It must return the correct ansi sequence.
 
-        It checks self.do_xterm256 to determine if conversion
-        to standard ansi should be done or not.
+        It checks `self.do_xterm256` to determine if conversion
+        to standard ANSI should be done or not.
         """
         if not rgbmatch:
             return ""
@@ -183,7 +183,7 @@ class ANSIParser(object):
         Parses a string, subbing color codes according to
         the stored mapping.
 
-        strip_ansi flag instead removes all ansi markup.
+        strip_ansi flag instead removes all ANSI markup.
 
         """
         if hasattr(string, '_raw_string'):
@@ -213,14 +213,14 @@ class ANSIParser(object):
             pstring = self.ansi_sub.sub(self.sub_ansi, pstring)
             parsed_string += "%s%s" % (pstring, sep[0].strip())
 
+        if not mxp:
+            parsed_string = self.strip_mxp(parsed_string)
+
         if strip_ansi:
             # remove all ansi codes (including those manually
             # inserted in string)
-            parsed_string = self.strip_mxp(parsed_string)
             return self.strip_raw_codes(parsed_string)
 
-        if not mxp:
-            parsed_string = self.strip_mxp(parsed_string)
 
          # cache and crop old cache
         _PARSE_CACHE[cachekey] = parsed_string
@@ -229,6 +229,7 @@ class ANSIParser(object):
 
         return parsed_string
     # MUX-style mappings %cr %cn etc
+    # Warning: DEPRECATED. Use {-type syntax instead.
 
     mux_ansi_map = [
         (r'%cn', ANSI_NORMAL),
@@ -261,7 +262,7 @@ class ANSIParser(object):
         (r'%cX', ANSI_BACK_BLACK)
         ]
 
-    # Expanded mapping {r {n etc
+    # Mapping using {r {n etc
 
     hilite = ANSI_HILITE
     normal = ANSI_NORMAL
@@ -292,6 +293,19 @@ class ANSIParser(object):
         (r'{W', normal + ANSI_WHITE),  # light grey
         (r'{X', normal + ANSI_BLACK),  # pure black
 
+        # hilight-able colors
+        (r'{h', hilite),
+
+        (r'{!R', ANSI_RED),
+        (r'{!G', ANSI_GREEN),
+        (r'{!Y', ANSI_YELLOW),
+        (r'{!B', ANSI_BLUE),
+        (r'{!M', ANSI_MAGENTA),
+        (r'{!C', ANSI_CYAN),
+        (r'{!W', ANSI_WHITE),  # light grey
+        (r'{!X', ANSI_BLACK),  # pure black
+
+        # background colors
         (r'{[r', ANSI_BACK_RED),
         (r'{[g', ANSI_BACK_GREEN),
         (r'{[y', ANSI_BACK_YELLOW),
@@ -325,7 +339,12 @@ class ANSIParser(object):
     ansi_map = dict(mux_ansi_map + ext_ansi_map)
 
     # prepare matching ansi codes overall
-    ansi_regex = re.compile("\033\[[0-9;]+m")
+    ansi_re = r"\033\[[0-9;]+m"
+    ansi_regex = re.compile(ansi_re)
+
+    # merged regex for both ansi and mxp, for use by ansistring
+    mxp_tags = r'\{lc.*?\{lt|\{le'
+    tags_regex = re.compile("%s|%s" % (ansi_re, mxp_tags), re.DOTALL)
 
     # escapes - these double-chars will be replaced with a single
     # instance of each
@@ -509,7 +528,7 @@ class ANSIString(unicode):
         if not decoded:
             # Completely new ANSI String
             clean_string = to_unicode(parser.parse_ansi(string, strip_ansi=True))
-            string = parser.parse_ansi(string)
+            string = parser.parse_ansi(string, xterm256=True, mxp=True)
         elif clean_string is not None:
             # We have an explicit clean string.
             pass
@@ -762,7 +781,8 @@ class ANSIString(unicode):
         """
 
         code_indexes = []
-        for match in self.parser.ansi_regex.finditer(self._raw_string):
+        #for match in self.parser.ansi_regex.finditer(self._raw_string):
+        for match in self.parser.tags_regex.finditer(self._raw_string):
             code_indexes.extend(range(match.start(), match.end()))
         if not code_indexes:
             # Plain string, no ANSI codes.

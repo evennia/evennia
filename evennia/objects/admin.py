@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import admin
 from evennia.typeclasses.admin import AttributeInline, TagInline
 from evennia.objects.models import ObjectDB
+from django.contrib.admin.utils import flatten_fieldsets
 
 
 class ObjectAttributeInline(AttributeInline):
@@ -62,7 +63,6 @@ class ObjectDBAdmin(admin.ModelAdmin):
     save_on_top = True
     list_select_related = True
     list_filter = ('db_typeclass_path',)
-    #list_filter = ('db_permissions', 'db_typeclass_path')
 
     # editing fields setup
 
@@ -73,16 +73,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
                            ('db_location', 'db_home'), 'db_destination','db_cmdset_storage'
                            )}),
         )
-    #fieldsets = (
-    #    (None, {
-    #            'fields': (('db_key','db_typeclass_path'), ('db_permissions', 'db_lock_storage'),
-    #                       ('db_location', 'db_home'), 'db_destination','db_cmdset_storage'
-    #                       )}),
-    #    )
 
-    #deactivated temporarily, they cause empty objects to be created in admin
-
-    # Custom modification to give two different forms wether adding or not.
     add_form = ObjectCreateForm
     add_fieldsets = (
         (None, {
@@ -91,12 +82,6 @@ class ObjectDBAdmin(admin.ModelAdmin):
                            )}),
         )
 
-    #add_fieldsets = (
-    #    (None, {
-    #            'fields': (('db_key','db_typeclass_path'), 'db_permissions',
-    #                       ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
-    #                       )}),
-    #    )
     def get_fieldsets(self, request, obj=None):
         if not obj:
             return self.add_fieldsets
@@ -109,9 +94,9 @@ class ObjectDBAdmin(admin.ModelAdmin):
         defaults = {}
         if obj is None:
             defaults.update({
-                    'form': self.add_form,
-                    'fields': admin.util.flatten_fieldsets(self.add_fieldsets),
-                    })
+                'form': self.add_form,
+                'fields': flatten_fieldsets(self.add_fieldsets),
+            })
             defaults.update(kwargs)
         return super(ObjectDBAdmin, self).get_form(request, obj, **defaults)
 

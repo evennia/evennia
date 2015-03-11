@@ -5,13 +5,16 @@ from setuptools import setup, find_packages
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 VERSION_PATH = os.path.join('evennia', 'VERSION.txt')
-
+OS_WINDOWS = os.name == "nt"
 
 def get_requirements():
     """
-    To update the requirements for Evennia, edit the requirements.txt file.
+    To update the requirements for Evennia, edit the requirements.txt
+    file, or win_requirements.txt for Windows platforms.
     """
-    req_lines = open('requirements.txt', 'r').readlines()
+    filename = 'win_requirements.txt' if OS_WINDOWS else 'requirements.txt'
+    with open(filename, 'r') as f:
+        req_lines = f.readlines()
     reqs = []
     for line in req_lines:
         # Avoid adding comments.
@@ -26,7 +29,7 @@ def get_scripts():
     Determine which executable scripts should be added. For Windows,
     this means creating a .bat file.
     """
-    if os.name == "nt":
+    if OS_WINDOWS:
         batpath = os.path.join("bin", "windows", "evennia.bat")
         scriptpath = os.path.join(sys.prefix, "Scripts", "evennia_launcher.py")
         with open(batpath, "w") as batfile:

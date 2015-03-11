@@ -1,0 +1,295 @@
+# Evennia (Beta 0.5.0) Traduzione in Italiano
+# Prima bozza : versione 0.1 (2015/03/03)
+# di/by Tristano Ajmone <tajmone@gmail.com>, 2015.
+#
+# Italian translation, first draft.
+# This file is distributed under the same license as Evennia.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Evennia\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-03-02 22:23+0100\n"
+"PO-Revision-Date: 2015-03-03 23:42+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: Tristano Ajmone <tajmone@gmail.com>\n"
+"Language-Team: Tristano Ajmone <tajmone@gmail.com>\n"
+"X-Generator: Poedit 1.7.4\n"
+"Language: it\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: .\commands\cmdhandler.py:452
+msgid "There were multiple matches."
+msgstr "Sono state trovate diverse corrispondenze."
+
+#: .\commands\cmdhandler.py:480
+#, python-format
+msgid "Command '%s' is not available."
+msgstr "Il comando '%s' non è disponibile."
+
+#: .\commands\cmdhandler.py:485
+#, python-format
+msgid " Maybe you meant %s?"
+msgstr " Forse intendevi dire %s?"
+
+#: .\commands\cmdhandler.py:485
+msgid "or"
+msgstr "oppure"
+
+#: .\commands\cmdhandler.py:487
+msgid " Type \"help\" for help."
+msgstr " Digita \"help\" per ottenere aiuto."
+
+#: .\commands\cmdparser.py:159
+#, python-format
+msgid "Could not find '%s'."
+msgstr "Impossibile trovare '%s'."
+
+# EN: not easy to translate unless I know exactly what is meant by location (different words available in Italian for different contexts).
+# IT: traduzione approssimativa, mi mancava il contesto esatto del termine: Collocazione? Posizione? Luogo? Punto?
+#: .\commands\cmdparser.py:180
+#, fuzzy
+msgid "location"
+msgstr "collocazione"
+
+# EN: Would like to check it better, to be sure about the context.
+# IT: Vorrei verificarlo meglio, capire il contesto.
+#: .\commands\cmdparser.py:181
+#, fuzzy
+msgid " (carried)"
+msgstr " (trasportato)"
+
+#: .\commands\cmdparser.py:261
+msgid " (channel)"
+msgstr " (canale)"
+
+#: .\commands\cmdsethandler.py:127
+#, python-format
+msgid "Error loading cmdset '%s': %s."
+msgstr "Errore durante il caricamento del cmdset '%s': %s."
+
+#: .\commands\cmdsethandler.py:131
+#, python-format
+msgid "Error in loading cmdset: No cmdset class '%(classname)s' in %(modulepath)s."
+msgstr "Errore nel caricamento del cmdset: Nessuna classe cmdset '%(classname)s' in %(modulepath)s."
+
+#: .\commands\cmdsethandler.py:136
+#, python-format
+msgid "SyntaxError encountered when loading cmdset '%s': %s."
+msgstr "Riscontrato Errore di Sintassi durante il caricamento del cmdset '%s': %s."
+
+#: .\commands\cmdsethandler.py:140
+#, python-format
+msgid "Compile/Run error when loading cmdset '%s': %s."
+msgstr "Errore di Compilazione/Esecuzione durante il caricamento del cmdset '%s': %s."
+
+#: .\commands\cmdsethandler.py:150
+msgid ""
+"\n"
+" (See log for details.)"
+msgstr ""
+"\n"
+" (Per ulteriori dettagli esaminare il log.)"
+
+#: .\commands\cmdsethandler.py:217
+#, python-format
+msgid "custom %(mergetype)s on cmdset '%(merged_on)s'"
+msgstr "%(mergetype)s personalizzato sul cmdset '%(merged_on)s'"
+
+# EN: maybe "Merged" could have been left untraslated?
+# IT: forse si poteva anche non tradurre?
+#: .\commands\cmdsethandler.py:220
+#, fuzzy, python-format
+msgid " <Merged %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+msgstr " <Unito %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+
+#: .\commands\cmdsethandler.py:228
+#, python-format
+msgid " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+msgstr " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+
+#: .\commands\cmdsethandler.py:302 .\commands\cmdsethandler.py:335
+msgid "Only CmdSets can be added to the cmdsethandler!"
+msgstr "Si possono aggiungere solamente CmdSets al cmdsethandler!"
+
+#: .\locks\lockhandler.py:218
+#, python-format
+msgid "Lock: lock-function '%s' is not available."
+msgstr "Lock: la funzione di lock '%s' non è disponibile."
+
+#: .\locks\lockhandler.py:231
+#, python-format
+msgid "Lock: definition '%s' has syntax errors."
+msgstr "Lock: la definizione '%s' contiene errori di sintassi."
+
+#: .\locks\lockhandler.py:235
+#, python-format
+msgid "LockHandler on %(obj)s: access type '%(access_type)s' changed from '%(source)s' to '%(goal)s' "
+msgstr "LockHandler per %(obj)s: l'access type '%(access_type)s' è mutato da '%(source)s' a '%(goal)s' "
+
+#: .\locks\lockhandler.py:275
+#, python-format
+msgid "Lock: '%s' contains no colon (:)."
+msgstr "Lock: '%s' non contiene due punti (:)."
+
+#: .\locks\lockhandler.py:279
+#, python-format
+msgid "Lock: '%s' has no access_type (left-side of colon is empty)."
+msgstr "Lock: '%s' non ha un access_type (la parte a sinistra dei due punti è vuota)."
+
+#: .\locks\lockhandler.py:282
+#, python-format
+msgid "Lock: '%s' has mismatched parentheses."
+msgstr "Lock: '%s' presenta irregolarità nell'uso delle parentesi."
+
+#: .\locks\lockhandler.py:285
+#, python-format
+msgid "Lock: '%s' has no valid lock functions."
+msgstr "Lock: '%s' non contiene funzioni di lock valide."
+
+#: .\objects\objects.py:596
+#, python-format
+msgid "Couldn't perform move ('%s'). Contact an admin."
+msgstr "Spostamento non riuscito ('%s'). Contatta un amministratore."
+
+#: .\objects\objects.py:606
+msgid "The destination doesn't exist."
+msgstr "Destinazione inesistente."
+
+#: .\objects\objects.py:719
+#, python-format
+msgid "Could not find default home '(#%d)'."
+msgstr "Non è stata trovata la home prefedinita '(#%d)'."
+
+#: .\objects\objects.py:735
+msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
+msgstr "Qualcosa è andato storto! Sei stato gettato nel nulla. Contatta un amministratore."
+
+#: .\objects\objects.py:808
+#, python-format
+msgid "Your character %s has been destroyed."
+msgstr "Il tuo personaggio %s è stato distrutto."
+
+#: .\players\players.py:321
+msgid "Player being deleted."
+msgstr "Cancellazione del giocatore."
+
+#: .\scripts\scripthandler.py:45
+#, python-format
+msgid ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+msgstr ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+
+#: .\scripts\scripts.py:158
+#, python-format
+msgid "Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+msgstr "Script %(key)s(#%(dbid)s) del tipo '%(cname)s': at_repeat() error '%(err)s'."
+
+#: .\scripts\scripts.py:534
+msgid "This is an empty placeholder script."
+msgstr "Questo è uno script segnaposto vuoto."
+
+# EN: Not clear if 'storage' refers to disk- or database-storage, or if it relates to game-world objects/containers.
+# IT: Non è chiaro se se si riferisce a 'storage' nel sendo di dati su disco (o database) oppure a contenitori quali oggetti del MUD!
+#: .\scripts\scripts.py:542
+#, fuzzy
+msgid "This is a generic storage container."
+msgstr "Questo è un contenitore per immagazzinamento generico."
+
+#: .\scripts\scripts.py:550
+msgid "Checks sessions so they are live."
+msgstr "Verifica che le sessioni siano attive."
+
+#: .\scripts\scripts.py:571
+msgid "Restrains size of idmapper cache."
+msgstr "Limita le dimensioni cache dello idmapper."
+
+#: .\scripts\scripts.py:587
+msgid "Validates all scripts regularly."
+msgstr "Convalida regolarmente tutti gli script."
+
+#: .\scripts\scripts.py:602
+msgid "Updates the channel handler"
+msgstr "Aggiorna l'handler del canale."
+
+#: .\server\initial_setup.py:29
+msgid ""
+"\n"
+"Welcome to your new {wEvennia{n-based game! Visit http://www.evennia.com if you need\n"
+"help, want to contribute, report issues or just join the community.\n"
+"As Player #1 you can create a demo/tutorial area with {w@batchcommand tutorial_world.build{n.\n"
+"    "
+msgstr ""
+"\n"
+"Benvenuto al tuo nuovo gioco creato con {wEvennia{n! Visita http://www.evennia.com se ti\n"
+"serve aiuto, se vuoi collaborare, segnalare errori o se desideri unirti alla comunità online.\n"
+"In qualità di Giocatore #1 puoi creare un'area dimostrativa/tutorial digitando il comando:\n"
+"{w@batchcommand tutorial_world.build{n.\n"
+"    "
+
+#: .\server\initial_setup.py:99
+msgid "This is User #1."
+msgstr "Questo è l'Utente #1."
+
+#: .\server\initial_setup.py:108
+msgid "Limbo"
+msgstr "Limbo"
+
+#: .\server\portal\imc2.py:167
+#, python-format
+msgid "Whois reply from %(origin)s: %(msg)s"
+msgstr "Risposta Whois da %(origin)s: %(msg)s"
+
+#: .\server\portal\imc2.py:175
+#, python-format
+msgid "{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s"
+msgstr "{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s"
+
+#: .\server\portal\imc2.py:193
+msgid "IMC2 server rejected connection."
+msgstr "Il server IMC2 ha rifiutato la connessione."
+
+#: .\server\portal\imc2.py:201
+msgid "IMC2: Autosetup response found."
+msgstr "IMC2: Trovato responso di autosetup."
+
+#: .\server\sessionhandler.py:192
+#, python-format
+msgid "Connection dropped: %s %s (%s)"
+msgstr "Connessione caduta: %s %s (%s)"
+
+#: .\server\sessionhandler.py:229
+msgid " ... Server restarted."
+msgstr " ... Server riavviato."
+
+# EN: translated as if referring to player. In doubt it may refer to list of all connected users...
+# IT: tradotto presupponendo si riferisca al giocatore. Dubbio: potrebbe riferirsi all'elenco di tutti gli utenti?
+#: .\server\sessionhandler.py:293
+#, fuzzy, python-format
+msgid "Logged in: %s %s (%s)"
+msgstr "Connesso: %s %s (%s)"
+
+# EN: translated as if referring to player. In doubt it may refer to list of all connected users...
+# IT: tradotto presupponendo si riferisca al giocatore. Dubbio: potrebbe riferirsi all'elenco di tutti gli utenti?
+#: .\server\sessionhandler.py:317
+#, fuzzy, python-format
+msgid "Logged out: %s %s (%s)"
+msgstr "Disconnesso: %s %s (%s)"
+
+#: .\server\sessionhandler.py:337
+msgid "You have been disconnected."
+msgstr "Sei stato disconnesso."
+
+#: .\server\sessionhandler.py:350
+msgid "Logged in from elsewhere. Disconnecting."
+msgstr "Connesso da altrove. Disconnesione in corso."
+
+#: .\server\sessionhandler.py:368
+msgid "Idle timeout exceeded, disconnecting."
+msgstr "Timeout di inattività superato: disconnesione avviata."

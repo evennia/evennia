@@ -3,6 +3,7 @@ Default Typeclass for Comms.
 
 See objects.objects for more information on Typeclassing.
 """
+from django.conf import settings
 from evennia.typeclasses.models import TypeclassBase
 from evennia.comms.models import Msg, TempMsg, ChannelDB
 from evennia.comms.managers import ChannelManager
@@ -15,7 +16,10 @@ class DefaultChannel(ChannelDB):
     This is the base class for all Comms. Inherit from this to create different
     types of communication channels.
     """
+    # typeclass setup
     __metaclass__ = TypeclassBase
+    __settingclasspath__ = settings.BASE_CHANNEL_TYPECLASS
+    __defaultclasspath__ = "evennia.comms.comms.DefaultChannel"
     objects = ChannelManager()
 
     def at_first_save(self):

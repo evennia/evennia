@@ -120,13 +120,13 @@ class Bot(DefaultPlayer):
         """
         Evennia -> outgoing protocol
         """
-        pass
+        super(Bot, self).msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
 
     def execute_cmd(self, raw_string, sessid=None):
         """
         Incoming protocol -> Evennia
         """
-        pass
+        super(Bot, self).msg(raw_string, sessid=sessid)
 
     def at_server_shutdown(self):
         "We need to handle this case manually since the shutdown may be a reset"
@@ -198,7 +198,7 @@ class IRCBot(Bot):
         if "from_channel" in kwargs and text and self.ndb.ev_channel.dbid == kwargs["from_channel"]:
             if "from_obj" not in kwargs or kwargs["from_obj"] != [self.id]:
                 text = "bot_data_out %s" % text
-                self.msg(text=text)
+                super(IRCBot, self).msg(text=text)
 
     def execute_cmd(self, text=None, sessid=None):
         """
@@ -210,7 +210,6 @@ class IRCBot(Bot):
             self.ndb.ev_channel = self.db.ev_channel
         if self.ndb.ev_channel:
             self.ndb.ev_channel.msg(text, senders=self.id)
-
 
 # RSS
 
@@ -259,6 +258,8 @@ class RSSBot(Bot):
             self.ndb.ev_channel = self.db.ev_channel
         if self.ndb.ev_channel:
             self.ndb.ev_channel.msg(text, senders=self.id)
+
+# IMC2
 
 class IMC2Bot(Bot):
     """

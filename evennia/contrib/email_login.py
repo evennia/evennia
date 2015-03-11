@@ -4,7 +4,7 @@ Email-based login system
 Evennia contrib - Griatch 2012
 
 
-This is a variant of the login system that requires a email-adress
+This is a variant of the login system that requires an email-address
 instead of a username to login.
 
 This used to be the default Evennia login before replacing it with a
@@ -14,16 +14,18 @@ on it. The email is not strictly needed internally, nor is any
 confirmation email sent out anyway).
 
 
-Install is simple:
+Installation is simple:
 
 To your settings file, add/edit the line:
 
+```python
 CMDSET_UNLOGGEDIN = "contrib.email-login.UnloggedinCmdSet"
+```
 
 That's it. Reload the server and try to log in to see it.
 
 The initial login "graphic" will still not mention email addresses
-after this change. The login splash screen is taken from strings in
+after this change. The login splashscreen is taken from strings in
 the module given by settings.CONNECTION_SCREEN_MODULE.
 
 """
@@ -60,7 +62,7 @@ class CmdUnconnectedConnect(MuxCommand):
     Connect to the game.
 
     Usage (at login screen):
-      connect <email> <password>
+        connect <email> <password>
 
     Use the create command to first create an account before logging in.
     """
@@ -71,8 +73,8 @@ class CmdUnconnectedConnect(MuxCommand):
     def func(self):
         """
         Uses the Django admin api. Note that unlogged-in commands
-        have a unique position in that their func() receives
-        a session object instead of a source_object like all
+        have a unique position in that their `func()` receives
+        a session object instead of a `source_object` like all
         other types of logged-in commands (this is because
         there is no object yet before the player has logged in)
         """
@@ -120,7 +122,7 @@ class CmdUnconnectedCreate(MuxCommand):
     Create a new account.
 
     Usage (at login screen):
-      create \"playername\" <email> <password>
+        create \"playername\" <email> <password>
 
     This creates a new player account.
 
@@ -133,7 +135,7 @@ class CmdUnconnectedCreate(MuxCommand):
         """
         The parser must handle the multiple-word player
         name enclosed in quotes:
-        connect "Long name with many words" my@myserv.com mypassw
+            connect "Long name with many words" my@myserv.com mypassw
         """
         super(CmdUnconnectedCreate, self).parse()
 
@@ -261,7 +263,7 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
 
 class CmdUnconnectedQuit(MuxCommand):
     """
-    We maintain a different version of the quit command
+    We maintain a different version of the `quit` command
     here for unconnected players for the sake of simplicity. The logged in
     version is a bit more complicated.
     """
@@ -278,7 +280,7 @@ class CmdUnconnectedQuit(MuxCommand):
 
 class CmdUnconnectedLook(MuxCommand):
     """
-    This is an unconnected version of the look command for simplicity.
+    This is an unconnected version of the `look` command for simplicity.
 
     This is called by the server and kicks everything in gear.
     All it does is display the connect screen.

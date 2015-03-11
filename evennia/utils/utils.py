@@ -74,7 +74,7 @@ fill = wrap
 def pad(text, width=78, align="c", fillchar=" "):
     """
     Pads to a given width, align is one of c,l,r
-    and fillchar defaults to the empty string
+    and fillchar defaults to the space character.
     """
     align = align if align in ('c', 'l', 'r') else 'c'
     fillchar = fillchar[0] if fillchar else " "
@@ -87,7 +87,7 @@ def pad(text, width=78, align="c", fillchar=" "):
 
 def crop(text, width=78, suffix="[...]"):
     """
-    Crop text to a certain width, adding suffix to show the line
+    Crop text to a certain width, adding `suffix` to show that the line
     continues. Cropping will be done so that the suffix will also fit
     within the given width. If width is too small to fit both crop
     and suffix, crop without the suffix.
@@ -120,15 +120,17 @@ def list_to_string(inlist, endsep="and", addquote=False):
     """
     This pretty-formats a list as string output, adding
     an optional alternative separator to the second to last entry.
-    If addquote is True, the outgoing strings will be surrounded by quotes.
+    If `addquote` is `True`, the outgoing strings will be surrounded by quotes.
 
     Examples:
+    ```
      no endsep:
         [1,2,3] -> '1, 2, 3'
      with endsep=='and':
         [1,2,3] -> '1, 2 and 3'
      with addquote and endsep
         [1,2,3] -> '"1", "2" and "3"'
+    ```
     """
     if not endsep:
         endsep = ","
@@ -151,7 +153,7 @@ def wildcard_to_regexp(instring):
     Converts a player-supplied string that may have wildcards in it to regular
     expressions. This is useful for name matching.
 
-    instring: (string) A string that may potentially contain wildcards (* or ?).
+    instring: (string) A string that may potentially contain wildcards (`*` or `?`).
     """
     regexp_string = ""
 
@@ -268,7 +270,7 @@ def time_format(seconds, style=0):
 
 def datetime_format(dtobj):
     """
-    Takes a datetime object instance (e.g. from django's DateTimeField)
+    Takes a datetime object instance (e.g. from Django's `DateTimeField`)
     and returns a string describing how long ago that date was.
 
     """
@@ -320,7 +322,7 @@ def pypath_to_realpath(python_path, file_ending='.py'):
 
     Returns:
         abspaths (list of str): The two absolute paths created by prepending
-            EVENNIA_DIR and GAME_DIR respectively. These are checked for
+            `EVENNIA_DIR` and `GAME_DIR` respectively. These are checked for
             existence before being returned, so this may be an empty list.
 
     """
@@ -338,11 +340,11 @@ def pypath_to_realpath(python_path, file_ending='.py'):
 
 def dbref(dbref, reqhash=True):
     """
-    Converts/checks if input is a valid dbref.  If reqhash is set,
+    Converts/checks if input is a valid dbref.  If `reqhash` is set,
     only input strings on the form '#N', where N is an integer is
     accepted. Otherwise strings '#N', 'N' and integers N are all
     accepted.
-     Output is the integer part.
+    Output is the integer part.
     """
     if reqhash:
         num = (int(dbref.lstrip('#')) if (isinstance(dbref, basestring) and
@@ -359,9 +361,9 @@ def dbref(dbref, reqhash=True):
 
 def dbid_to_obj(inp, objclass, raise_errors=True):
     """
-    Convert a #dbid to a valid object of objclass. objclass
-    should be a valid object class to filter against (objclass.filter ...)
-    If not raise_errors is set, this will swallow errors of non-existing
+    Convert a #dbid to a valid object of `objclass`. `objclass`
+    should be a valid object class to filter against (`objclass.filter` ...)
+    If not `raise_errors` is set, this will swallow errors of non-existing
     objects.
     """
     dbid = dbref(inp)
@@ -388,7 +390,7 @@ def to_unicode(obj, encoding='utf-8', force_string=False):
     one needs to encode it back to utf-8 before writing to disk or
     printing. Note that non-string objects are let through without
     conversion - this is important for e.g. Attributes. Use
-    force_string to enforce conversion of objects to string. .
+    `force_string` to enforce conversion of objects to string.
     """
 
     if force_string and not isinstance(obj, basestring):
@@ -422,7 +424,7 @@ def to_str(obj, encoding='utf-8', force_string=False):
     This encodes a unicode string back to byte-representation,
     for printing, writing to disk etc. Note that non-string
     objects are let through without modification - this is
-    required e.g. for Attributes. Use force_string to force
+    required e.g. for Attributes. Use `force_string` to force
     conversion of objects to strings.
     """
 
@@ -492,8 +494,8 @@ def validate_email_address(emailaddress):
 def inherits_from(obj, parent):
     """
     Takes an object and tries to determine if it inherits at any distance
-    from parent. What differs this function from e.g. isinstance()
-    is that obj may be both an instance and a class, and parent
+    from parent. What differs this function from e.g. `isinstance()`
+    is that `obj` may be both an instance and a class, and parent
     may be an instance, a class, or the python path to a class (counting
     from the evennia root directory).
     """
@@ -518,7 +520,7 @@ def inherits_from(obj, parent):
 def server_services():
     """
     Lists all services active on the Server. Observe that
-    since services are launced in memory, this function will
+    since services are launched in memory, this function will
     only return any results if called from inside the game.
     """
     from evennia.server.sessionhandler import SESSIONS
@@ -534,7 +536,7 @@ def server_services():
 def uses_database(name="sqlite3"):
     """
     Checks if the game is currently using a given database. This is a
-    shortcut to having to use the full backend name
+    shortcut to having to use the full backend name.
 
     name - one of 'sqlite3', 'mysql', 'postgresql_psycopg2' or 'oracle'
     """
@@ -551,12 +553,12 @@ def delay(delay=2, callback=None, retval=None):
     Inputs:
       delay (int) - the delay in seconds
       callback (func() or func(retval)) - if given, will be called without
-                     arguments or with retval after delay seconds
+                     arguments or with `retval` after delay seconds.
       retval (any) - this will be returned by this function after a delay,
-                     or as input to callback
+                     or as input to callback.
     Returns:
-      deferred that will fire with callback after delay seconds. Note that
-      if delay() is used in the commandhandler callback chain, the callback
+      deferred that will fire with callback after `delay` seconds. Note that
+      if `delay()` is used in the commandhandler callback chain, the callback
       chain can be defined directly in the command body and don't need to be
       specified here.
     """
@@ -571,7 +573,7 @@ _TYPECLASSMODELS = None
 _OBJECTMODELS = None
 def clean_object_caches(obj):
     """
-    Clean all object caches on the given object
+    Clean all object caches on the given object.
     """
     global _TYPECLASSMODELS, _OBJECTMODELS
     if not _TYPECLASSMODELS:
@@ -607,7 +609,7 @@ def run_async(to_execute, *args, **kwargs):
 
     Inputs:
     to_execute (callable) - if this is a callable, it will
-            be executed with *args and non-reserver *kwargs as
+            be executed with *args and non-reserved *kwargs as
             arguments.
             The callable will be executed using ProcPool, or in
             a thread if ProcPool is not available.
@@ -642,7 +644,7 @@ def run_async(to_execute, *args, **kwargs):
 
     Also note that some databases, notably sqlite3, don't support access from
     multiple threads simultaneously, so if you do heavy database access from
-    your to_execute under sqlite3 you will probably run very slow or even get
+    your `to_execute` under sqlite3 you will probably run very slow or even get
     tracebacks.
 
     """
@@ -733,7 +735,9 @@ def check_evennia_dependencies():
 
 
 def has_parent(basepath, obj):
-    "Checks if basepath is somewhere in objs parent tree."
+    """
+    Checks if `basepath` is somewhere in `obj`s parent tree.
+    """
     try:
         return any(cls for cls in obj.__class__.mro()
                    if basepath == "%s.%s" % (cls.__module__, cls.__name__))
@@ -749,20 +753,20 @@ def mod_import(module):
 
     Args:
         module - this can be either a Python path (dot-notation like
-                 evennia.objects.models), an absolute path
-                 (e.g. /home/eve/evennia/evennia/objects.models.py)
-                 or an already imported module object (e.g. models)
+                 `evennia.objects.models`), an absolute path
+                 (e.g. `/home/eve/evennia/evennia/objects.models.py`)
+                 or an already imported module object (e.g. `models`)
     Returns:
         an imported module. If the input argument was already a model,
         this is returned as-is, otherwise the path is parsed and imported.
     Error:
-        returns None. The error is also logged.
+        returns `None`. The error is also logged.
     """
 
     def log_trace(errmsg=None):
         """
         Log a traceback to the log. This should be called
-        from within an exception. errmsg is optional and
+        from within an exception. `errmsg` is optional and
         adds an extra line with added info.
         """
         from twisted.python import log
@@ -836,21 +840,21 @@ def variable_from_module(module, variable=None, default=None):
     """
     Retrieve a variable or list of variables from a module. The variable(s)
     must be defined globally in the module. If no variable is given (or a
-    list entry is None), all global variables are extracted from the module.
+    list entry is `None`), all global variables are extracted from the module.
 
-    If module cannot be imported or given variable not found, default
+    If `module` cannot be imported or a given `variable` not found, `default`
     is returned.
 
     Args:
-      module (string or module)- python path, absolute path or a module
+      module (string or module)- python path, absolute path or a module.
       variable (string or iterable) - single variable name or iterable of
-                                      variable names to extract
+                                      variable names to extract.
       default (string) - default value to use if a variable fails
-                         to be extracted. Ignored if variable is not given
+                         to be extracted. Ignored if `variable` is not given.
     Returns:
       a single value or a list of values depending on the type of
-        'variable' argument. Errors in lists are replaced by the
-        'default' argument.
+        `variable` argument. Errors in lists are replaced by the
+        `default` argument.
     """
 
     if not module:
@@ -876,10 +880,10 @@ def variable_from_module(module, variable=None, default=None):
 
 def string_from_module(module, variable=None, default=None):
     """
-    This is a wrapper for variable_from_module that requires return
+    This is a wrapper for `variable_from_module` that requires return
     value to be a string to pass. It's primarily used by login screen.
-    if variable is not set, returns a list of all string variables in
-    module
+    if `variable` is not set, returns a list of all string variables in
+    `module`.
     """
     val = variable_from_module(module, variable=variable, default=default)
     if val:
@@ -892,21 +896,21 @@ def string_from_module(module, variable=None, default=None):
 
 def random_string_from_module(module):
     """
-    Returns a random global string from a module
+    Returns a random global string from a module.
     """
     return random.choice(string_from_module(module))
 
 def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
     """
     Import a variable based on a fuzzy path. First the literal
-    path will be tried, then all given defaultdirs will be
+    `path` will be tried, then all given `defaultpaths` will be
     prepended to see a match is found.
 
-    path - full or partial python path
-    variable - name of variable to import from module
+    path - full or partial python path.
+    variable - name of variable to import from module.
     defaultpaths - an iterable of python paths to attempt
                    in order if importing directly from
-                   path does not work.
+                   `path` doesn't work.
     """
     paths = [path] + make_iter(defaultpaths)
     for modpath in paths:
@@ -925,8 +929,8 @@ def class_from_module(path, defaultpaths=None):
     Return a class from a module, given the module's path. This is
     primarily used to convert db_typeclass_path:s to classes.
 
-    if a list of defaultpaths is given, try subsequent runs by
-    prepending those paths to the given path.
+    if a list of `defaultpaths` is given, try subsequent runs by
+    prepending those paths to the given `path`.
     """
     cls = None
     if defaultpaths:
@@ -972,7 +976,7 @@ object_from_module = class_from_module
 def init_new_player(player):
     """
     Helper method to call all hooks, set flags etc on a newly created
-    player (and potentially their character, if it exists already)
+    player (and potentially their character, if it exists already).
     """
     # the FIRST_LOGIN flags are necessary for the system to call
     # the relevant first-login hooks.
@@ -984,8 +988,8 @@ def init_new_player(player):
 def string_similarity(string1, string2):
     """
     This implements a "cosine-similarity" algorithm as described for example in
-       Proceedings of the 22nd International Conference on Computation
-       Linguistics (Coling 2008), pages 593-600, Manchester, August 2008
+       *Proceedings of the 22nd International Conference on Computation
+       Linguistics* (Coling 2008), pages 593-600, Manchester, August 2008.
     The measure-vectors used is simply a "bag of words" type histogram
     (but for letters).
 
@@ -1006,18 +1010,18 @@ def string_similarity(string1, string2):
 
 def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
     """
-    Given a string and a vocabulary, return a match or a list of suggestsion
+    Given a `string` and a `vocabulary`, return a match or a list of suggestions
     based on string similarity.
 
     Args:
-        string (str)- a string to search for
-        vocabulary (iterable) - a list of available strings
+        string (str)- a string to search for.
+        vocabulary (iterable) - a list of available strings.
         cutoff (int, 0-1) - limit the similarity matches (higher, the more
-                            exact is required)
-        maxnum (int) - maximum number of suggestions to return
+                            exact is required).
+        maxnum (int) - maximum number of suggestions to return.
     Returns:
-        list of suggestions from vocabulary (could be empty if there are
-        no matches)
+        list of suggestions from `vocabulary` (could be empty if there are
+        no matches).
     """
     return [tup[1] for tup in sorted([(string_similarity(string, sugg), sugg)
                                        for sugg in vocabulary],
@@ -1027,19 +1031,19 @@ def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
 
 def string_partial_matching(alternatives, inp, ret_index=True):
     """
-    Partially matches a string based on a list of alternatives. Matching
+    Partially matches a string based on a list of `alternatives`. Matching
     is made from the start of each subword in each alternative. Case is not
     important. So e.g. "bi sh sw" or just "big" or "shiny" or "sw" will match
     "Big shiny sword". Scoring is done to allow to separate by most common
     demoninator. You will get multiple matches returned if appropriate.
 
     Input:
-        alternatives (list of str) - list of possible strings to match
-        inp (str) - search criterion
+        alternatives (list of str) - list of possible strings to match.
+        inp (str) - search criterion.
         ret_index (bool) - return list of indices (from alternatives
-                           array) or strings
+                           array) or strings.
     Returns:
-        list of matching indices or strings, or an empty list
+        list of matching indices or strings, or an empty list.
 
     """
     if not alternatives or not inp:
@@ -1075,23 +1079,24 @@ def string_partial_matching(alternatives, inp, ret_index=True):
 
 def format_table(table, extra_space=1):
     """
-    Note: evennia.utils.prettytable is more powerful than this, but this
+    Note: `evennia.utils.prettytable` is more powerful than this, but this
     function can be useful when the number of columns and rows are
     unknown and must be calculated on the fly.
 
-    Takes a table of collumns: [[val,val,val,...], [val,val,val,...], ...]
+    Takes a table of columns: [[val,val,val,...], [val,val,val,...], ...]
     where each val will be placed on a separate row in the column. All
-    collumns must have the same number of rows (some positions may be
+    columns must have the same number of rows (some positions may be
     empty though).
 
     The function formats the columns to be as wide as the widest member
     of each column.
 
-    extra_space defines how much extra padding should minimum be left between
-    collumns.
+    `extra_space` defines how much *minimum* extra padding should  be left between
+    columns.
 
-    print the resulting list e.g. with
+    print the resulting list e.g. with:
 
+    ```python
     for ir, row in enumarate(ftable):
         if ir == 0:
             # make first row white
@@ -1099,7 +1104,7 @@ def format_table(table, extra_space=1):
         else:
             string += "\n" + "".join(row)
     print string
-
+    ```
     """
     if not table:
         return [[]]
@@ -1113,14 +1118,15 @@ def format_table(table, extra_space=1):
 
 def get_evennia_pids():
     """
-    Get the currently valids PIDs (Process IDs) of the Portal and Server
-    by trying to access an PID file. This can be used to determine if we
-    are in a subprocess by something like
+    Get the currently valid PIDs (Process IDs) of the Portal and Server
+    by trying to access a PID file. This can be used to determine if we
+    are in a subprocess by something like:
 
-     self_pid = os.getpid()
-     server_pid, portal_pid = get_evennia_pids()
-     is_subprocess = self_pid not in (server_pid, portal_pid)
-
+    ```python
+    self_pid = os.getpid()
+    server_pid, portal_pid = get_evennia_pids()
+    is_subprocess = self_pid not in (server_pid, portal_pid)
+    ```
     """
     server_pidfile = os.path.join(settings.GAME_DIR, 'server.pid')
     portal_pidfile = os.path.join(settings.GAME_DIR, 'portal.pid')
@@ -1143,14 +1149,21 @@ def deepsize(obj, max_depth=4):
     """
     Get not only size of the given object, but also the
     size of objects referenced by the object, down to
-    max_depth distance from the object.
+    `max_depth` distance from the object.
 
     Note that this measure is necessarily approximate
     since some memory is shared between objects. The
-    max_depth of 4 is roughly tested to give reasonable
+    `max_depth` of 4 is roughly tested to give reasonable
     size information about database models and their handlers.
 
-    Returns size in Bytes
+    Args:
+        obj (object): the object to be measured.
+        max_depth (int, optional): maximum referential distance
+            from `obj` that `deepsize()` should cover for
+            measuring objects referenced by `obj`.
+
+    Returns:
+        size (int): deepsize of `obj` in Bytes.
     """
     def _recurse(o, dct, depth):
         if max_depth >= 0 and depth > max_depth:
@@ -1174,14 +1187,16 @@ class lazy_property(object):
     the Implementation in the werkzeug suite:
     http://werkzeug.pocoo.org/docs/utils/#werkzeug.utils.cached_property
 
-    This should be used as a decorator in a class and is in Evennia
+    This should be used as a decorator in a class and in Evennia is
     mainly used to lazy-load handlers:
 
+        ```python
         @lazy_property
         def attributes(self):
             return AttributeHandler(self)
+        ```
 
-    Once initialized, the AttributeHandler will be available
+    Once initialized, the `AttributeHandler` will be available
     as a property "attributes" on the object.
 
     """
@@ -1206,7 +1221,7 @@ _STRIP_ANSI = None
 _RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([unichr(c) for c in range(0,32)])))# + range(127,160)])))
 def strip_control_sequences(string):
     """
-    remove non-print text sequences from string.
+    remove non-print text sequences from `string`.
     """
     global _STRIP_ANSI
     if not _STRIP_ANSI:
@@ -1217,7 +1232,7 @@ def calledby(callerdepth=1):
     """
     Only to be used for debug purposes.
     Insert this debug function in another function; it will print
-    which function called it. With callerdepth > 1, it will print the
+    which function called it. With `callerdepth` > 1, it will print the
     caller of the caller etc.
     """
     import inspect, os

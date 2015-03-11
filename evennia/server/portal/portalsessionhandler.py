@@ -122,13 +122,8 @@ class PortalSessionHandler(SessionHandler):
         from the portal side.
         """
         sessid = session.sessid
-        if sessid in self.sessions:
-            del self.sessions[sessid]
-        del session
-        # tell server to also delete this session
         self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
                                                          operation=PDISCONN)
-
 
     def server_connect(self, protocol_path="", config=dict()):
         """
@@ -295,6 +290,7 @@ class PortalSessionHandler(SessionHandler):
         serialized before passed on.
 
         """
+        self.cmd_last = time()
         self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
                                                               msg=text,
                                                               data=kwargs)

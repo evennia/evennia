@@ -93,11 +93,11 @@ CREATED_NEW_GAMEDIR = \
     """
 
 ERROR_INPUT = \
-    """
-    The argument(s)
-        {args} {kwargs}
-    is/are not recognized by Evennia nor Django. Use -h for help.
-    """
+"""
+    Command
+      {args} {kwargs}
+    raised an error: '{traceback}'.
+"""
 
 ERROR_NO_GAMEDIR = \
     """
@@ -196,12 +196,11 @@ CMDLINE_HELP = \
 
 VERSION_INFO = \
     """
-    {about}
     Evennia {version}
     OS: {os}
     Python: {python}
     Twisted: {twisted}
-    Django: {django}
+    Django: {django}{about}
     """
 
 ABOUT_INFO= \
@@ -692,7 +691,9 @@ def init_game_directory(path, check_db=True):
         # batchfile in game/server, linking to the actual binary
 
         global TWISTED_BINARY
-        TWISTED_BINARY = "twistd.bat"
+        # Windows requires us to use the absolute path for the bat file.
+        server_path = os.path.dirname(os.path.abspath(__file__))
+        TWISTED_BINARY = os.path.join(server_path, "twistd.bat")
 
         # add path so system can find the batfile
         sys.path.insert(1, os.path.join(GAMEDIR, SERVERDIR))
@@ -743,6 +744,32 @@ def run_dummyrunner(number_of_dummies):
         call(cmdstr, env=getenv())
     except KeyboardInterrupt:
         pass
+
+def list_settings(keys):
+    """
+    Display the server settings. We only display
+    the Evennia specific settings here.
+    """
+    from importlib import import_module
+    from evennia.utils import evtable
+
+    evsettings = import_module(SETTINGS_DOTPATH)
+    if len(keys) == 1 and keys[0].upper() == "ALL":
+        # show a list of all keys
+        # a specific key
+        table = evtable.EvTable()
+        confs = [key for key in sorted(evsettings.__dict__) if key.isupper()]
+        for i in range(0, len(confs), 4):
+            table.add_row(*confs[i:i+4])
+    else:
+        # a specific key
+        table = evtable.EvTable(width=131)
+        keys = [key.upper() for key in keys]
+        confs = dict((key,var) for key, var in evsettings.__dict__.items() if key in keys)
+        for key, val in confs.items():
+            table.add_row(key, str(val))
+    print table
+
 
 def run_menu():
     """
@@ -897,10 +924,14 @@ def main():
                       help="Start given processes in interactive mode.")
     parser.add_argument('--init', action='store', dest="init", metavar="name",
                         help="Creates a new game directory 'name' at the current location.")
+    parser.add_argument('-l', nargs='+', action='store', dest='listsetting', metavar="key",
+                      help="List values for server settings. Use 'all' to list all available keys.")
     parser.add_argument('--profiler', action='store_true', dest='profiler', default=False,
                       help="Start given server component under the Python profiler.")
     parser.add_argument('--dummyrunner', nargs=1, action='store', dest='dummyrunner', metavar="N",
                         help="Tests a running server by connecting N dummy players to it.")
+    parser.add_argument('--settings', nargs=1, action='store', dest='altsettings', default=None, metavar="filename.py",
+                      help="Start evennia with alternative settings file in gamedir/server/conf/.")
     parser.add_argument("option", nargs='?', default="noop",
                         help="Operational mode: 'start', 'stop', 'restart' or 'menu'.")
     parser.add_argument("service", metavar="component", nargs='?', default="all",
@@ -911,28 +942,43 @@ def main():
     args, unknown_args = parser.parse_known_args()
 
     # handle arguments
-
     option, service = args.option, args.service
 
+    # make sure we have everything
     check_main_evennia_dependencies()
 
     if not args:
+        # show help pane
         print CMDLINE_HELP
         sys.exit()
     elif args.init:
+        # initialization of game directory
         create_game_directory(args.init)
         print CREATED_NEW_GAMEDIR.format(gamedir=args.init,
                                          settings_path=os.path.join(args.init, SETTINGS_PATH))
         sys.exit()
 
     if args.show_version:
+        # show the version info
         print show_version_info(option=="help")
         sys.exit()
+
+    if args.altsettings:
+        # use alternative settings file
+        sfile = args.altsettings[0]
+        global SETTINGSFILE, SETTINGS_DOTPATH
+        SETTINGSFILE = sfile
+        SETTINGS_DOTPATH = "server.conf.%s" % sfile.rstrip(".py")
+        print "Using settings file '%s' (%s)." % (SETTINGSFILE, SETTINGS_DOTPATH)
 
     if args.dummyrunner:
         # launch the dummy runner
         init_game_directory(CURRENT_DIR, check_db=True)
         run_dummyrunner(args.dummyrunner[0])
+    elif args.listsetting:
+        # display all current server settings
+        init_game_directory(CURRENT_DIR, check_db=False)
+        list_settings(args.listsetting)
     elif option == 'menu':
         # launch menu for operation
         init_game_directory(CURRENT_DIR, check_db=True)
@@ -959,15 +1005,20 @@ def main():
         if unknown_args:
             for arg in unknown_args:
                 if arg.startswith("--"):
-                    kwargs[arg.lstrip("--")] = True
+                    print "arg:", arg
+                    if "=" in arg:
+                        arg, value  = [p.strip() for p in arg.split("=", 1)]
+                    else:
+                        value = True
+                    kwargs[arg.lstrip("--")] = [value]
                 else:
                     args.append(arg)
         try:
             django.core.management.call_command(*args, **kwargs)
-        except django.core.management.base.CommandError:
+        except django.core.management.base.CommandError, exc:
             args = ", ".join(args)
             kwargs = ", ".join(["--%s" % kw for kw in kwargs])
-            print ERROR_INPUT.format(args=args, kwargs=kwargs)
+            print ERROR_INPUT.format(traceback=exc, args=args, kwargs=kwargs)
     else:
         # no input; print evennia info
         print ABOUT_INFO

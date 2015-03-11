@@ -45,7 +45,7 @@ Data is usually returned to the user via a return OOB call:
 Oobcmdnames (like "MSDP.LISTEN" / "LISTEN" above) are case-sensitive.
 Note that args, kwargs must be iterable. Non-iterables will be
 interpreted as a new command name (you can send multiple oob commands
-with one msg() call))
+with one msg() call)
 
 Evennia introduces two internal extensions to MSDP, and that is the
 MSDP_ARRAY and MSDP_TABLE commands. These are never sent across the
@@ -221,7 +221,7 @@ def oob_report(session, *args, **kwargs):
     """
     Called with the `REPORT PROPNAME` MSDP command.
     Monitors the changes of given property name. Assumes reporting
-    happens on an objcet controlled by the session.
+    happens on an object controlled by the session.
 
     Args:
         session (Session): The Session doing the monitoring. The

@@ -189,7 +189,7 @@ class CmdCopy(ObjManipCommand):
               since it was first created.
 
     Create one or more copies of an object. If you don't supply any targets,
-    one exact copt of the original object will be created with the name *_copy.
+    one exact copy of the original object will be created with the name *_copy.
     """
 
     key = "@copy"
@@ -1798,10 +1798,6 @@ class CmdExamine(ObjManipCommand):
 
         string += "\n{wPermissions{n: %s" % perms_string
 
-        tags_string = utils.fill(", ".join(tag for tag in obj.tags.all()), indent=5)
-        if tags_string:
-            string += "\n{wTags{n: %s" % tags_string
-
         locks = str(obj.locks)
         if locks:
             locks_string = utils.fill("; ".join([lock for lock in locks.split(';')]), indent=6)
@@ -1853,6 +1849,12 @@ class CmdExamine(ObjManipCommand):
             string += "\n{wScripts{n:\n %s" % obj.scripts
         # add the attributes
         string += self.format_attributes(obj)
+
+        # display Tags
+        tags_string = utils.fill(", ".join(tag for tag in obj.tags.all()), indent=5)
+        if tags_string:
+            string += "\n{wTags{n: %s" % tags_string
+
         # add the contents
         exits = []
         pobjs = []

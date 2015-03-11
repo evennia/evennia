@@ -10,9 +10,6 @@ from evennia.web.urls import urlpatterns
 # http://diveintopython.org/regular_expressions/street_addresses.html#re.matching.2.3
 #
 
-# Copy this file into your web directory in gamesrc, and add this line to settings.py:
-# ROOT_URLCONF = 'game.gamesrc.web.urls'
-
 # Add your own URL patterns to the patterns variable below, and then change
 #
 # These are Django URL patterns, so you should look up how to use these at

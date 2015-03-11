@@ -1,18 +1,9 @@
 """
-This is the basis of the typeclass system.
+This module defines the basic `DefaultObject` and its children
+`DefaultCharacter`, `DefaultPlayer`, `DefaultRoom` and `DefaultExit`.
+These are the (default) starting points for all in-game visible
+entities.
 
-The idea is have the object as a normal class with the
-database-connection tied to itself through a property.
-
-The instances of all the different object types are all tied to their
-own database object stored in the 'dbobj' property.  All attribute
-get/set operations are channeled transparently to the database object
-as desired. You should normally never have to worry about the database
-abstraction, just do everything on the TypeClass object.
-
-That an object is controlled by a player/user is just defined by its
-'user' property being set.  This means a user may switch which object
-they control by simply linking to a new object's user property.
 """
 
 import traceback
@@ -26,18 +17,18 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands import cmdset, command
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
-from evennia.utils.logger import log_depmsg, log_trace, log_errmsg
+from evennia.utils.logger import log_trace, log_errmsg
 from evennia.utils.utils import (variable_from_module, lazy_property,
                              make_iter, to_str, to_unicode)
 
-MULTISESSION_MODE = settings.MULTISESSION_MODE
+_MULTISESSION_MODE = settings.MULTISESSION_MODE
 
 _ScriptDB = None
 _SESSIONS = None
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 # the sessid_max is based on the length of the db_sessid csv field (excluding commas)
-_SESSID_MAX = 16 if MULTISESSION_MODE in (1, 3) else 1
+_SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
 
 from django.utils.translation import ugettext as _
 
@@ -47,6 +38,13 @@ class SessidHandler(object):
     comma-separated integer field
     """
     def __init__(self, obj):
+        """
+        Initializes the handler.
+
+        Args:
+            obj (Object): The object on which the handler is defined.
+
+        """
         self.obj = obj
         self._cache = set()
         self._recache()
@@ -55,12 +53,27 @@ class SessidHandler(object):
         self._cache = list(set(int(val) for val in (self.obj.db_sessid or "").split(",") if val))
 
     def get(self):
-        "Returns a list of one or more session ids"
+        """
+        Get the session ids.
+
+        Returns:
+            session (list): A cached list of one or more session ids.
+
+        Notes:
+            Aliased to `self.all()`.
+
+        """
         return self._cache
     all = get # alias
 
     def add(self, sessid):
-        "Add sessid to handler"
+        """
+        Add sessid to handler.
+
+        Args:
+            sessid (int): Session id to add.
+
+        """
         _cache = self._cache
         if sessid not in _cache:
             if len(_cache) >= _SESSID_MAX:
@@ -70,7 +83,13 @@ class SessidHandler(object):
             self.obj.save(update_fields=["db_sessid"])
 
     def remove(self, sessid):
-        "Remove sessid from handler"
+        """
+        Remove sessid from handler.
+
+        Args:
+            sessid (int): Session id to remove.
+
+        """
         _cache = self._cache
         if sessid in _cache:
             _cache.remove(sessid)
@@ -78,13 +97,21 @@ class SessidHandler(object):
             self.obj.save(update_fields=["db_sessid"])
 
     def clear(self):
-        "Clear sessids"
+        """
+        Clear all handled sessids.
+
+        """
         self._cache = []
         self.obj.db_sessid = None
         self.obj.save(update_fields=["db_sessid"])
 
     def count(self):
-        "Return amount of sessions connected"
+        """
+        Get amount of sessions connected.
+
+        Returns:
+            sesslen (int): Number of sessions handled.
+        """
         return len(self._cache)
 
 
@@ -95,153 +122,21 @@ class SessidHandler(object):
 
 class DefaultObject(ObjectDB):
     """
-    This is the root typeclass object, representing all entities
-    that have an actual presence in-game. Objects generally have a
-    location. They can also be manipulated and looked at. Most
-    game entities you define should inherit from Object at some distance.
-    Evennia defines some important subclasses of Object by default, namely
-    Characters, Exits and Rooms (see the bottom of this module).
+    This is the root typeclass object, representing all entities that
+    have an actual presence in-game. DefaultObjects generally have a
+    location. They can also be manipulated and looked at. Game
+    entities you define should inherit from DefaultObject at some distance.
 
-    Note that all new Objects and their subclasses *must* always be
-    created using the evennia.create_object() function. This is so the
-    typeclass system can be correctly initiated behind the scenes.
+    It is recommended to create children of this class using the
+    `evennia.create_object()` function rather than to initialize the class
+    directly - this will both set things up and efficiently save the object
+    without obj.save() having to be called explicitly.
 
-
-    Object Typeclass API:
-
-    * Available properties (only available on *initiated* typeclass objects)
-
-     key (string) - name of object
-     name (string) - same as key
-     aliases (list of strings) - aliases to the object. Will be saved to
-                 database as AliasDB entries but returned as strings.
-     dbref (int, read-only) - unique #id-number. Also "id" can be used.
-     date_created (string) - time stamp of object creation
-     permissions (list of strings) - list of permission strings
-
-     player (Player) - controlling player (if any, only set together with
-                      sessid below)
-     sessid (int, read-only) - session id (if any, only set together with
-                      player above)
-     location (Object) - current location. Is None if this is a room
-     home (Object) - safety start-location
-     sessions (list of Sessions, read-only) - returns all sessions
-                 connected to this object
-     has_player (bool, read-only)- will only return *connected* players
-     contents (list of Objects, read-only) - returns all objects inside
-                     this object (including exits)
-     exits (list of Objects, read-only) - returns all exits from this
-                 object, if any
-     destination (Object) - only set if this object is an exit.
-     is_superuser (bool, read-only) - True/False if this user is a superuser
-
-    * Handlers available
-
-     locks - lock-handler: use locks.add() to add new lock strings
-     db - attribute-handler: store/retrieve database attributes on this
-                             self.db.myattr=val, val=self.db.myattr
-     ndb - non-persistent attribute handler: same as db but does not
-                             create a database entry when storing data
-     scripts - script-handler. Add new scripts to object with scripts.add()
-     cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
-     nicks - nick-handler. New nicks with nicks.add().
-
-    * Helper methods (see evennia.objects.objects.py for full headers)
-
-     search(ostring, global_search=False, use_nicks=True,
-            typeclass=None,
-            attribute_name=None, use_nicks=True, location=None,
-            quiet=False, exact=False)
-     execute_cmd(raw_string)
-     msg(text=None, from_obj=None, sessid=0, **kwargs)
-     msg_contents(message, exclude=None, from_obj=None, **kwargs)
-     move_to(destination, quiet=False, emit_to_obj=None,
-             use_destination=True, to_none=False)
-     copy(new_key=None)
-     delete()
-     is_typeclass(typeclass, exact=False)
-     swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
-     access(accessing_obj, access_type='read', default=False)
-     check_permstring(permstring)
-
-    * Hook methods
-
-     basetype_setup()     - only called once, used for behind-the-scenes
-                            setup. Normally not modified.
-     basetype_posthook_setup() - customization in basetype, after the
-                             object has been created; Normally not modified.
-
-     at_object_creation() - only called once, when object is first created.
-                            Object customizations go here.
-     at_object_delete() - called just before deleting an object. If
-                          returning False, deletion is aborted. Note that
-                          all objects inside a deleted object are
-                          automatically moved to their <home>, they don't
-                          need to be removed here.
-
-     at_init()            called whenever typeclass is cached from
-                          memory, at least once every server restart/reload
-     at_cmdset_get(**kwargs) - this is called just before the command
-                            handler requests a cmdset from this object, usually
-                            without any kwargs
-     at_pre_puppet(player)- (player-controlled objects only) called just
-                             before puppeting
-     at_post_puppet()     - (player-controlled objects only) called just
-                             after completing connection player<->object
-     at_pre_unpuppet()    - (player-controlled objects only) called just
-                             before un-puppeting
-     at_post_unpuppet(player) (player-controlled objects only) called
-                              just after disconnecting player<->object link
-     at_server_reload()   - called before server is reloaded
-     at_server_shutdown() - called just before server is fully shut down
-
-     at_before_move(destination)    called just before moving
-                                    object to the destination. If returns
-                                    False, move is cancelled.
-     announce_move_from(destination)  - called in old location, just before
-                                        move, if obj.move_to() has
-                                        quiet=False
-     announce_move_to(source_location) - called in new location,
-                                         just after move, if obj.move_to()
-                                         has quiet=False
-     at_after_move(source_location)    - always called after a move
-                                         has been successfully performed.
-     at_object_leave(obj, target_location)   - called when an object leaves
-                                               this object in any fashion
-     at_object_receive(obj, source_location) - called when this object
-                                               receives another object
-     at_access(result, **kwargs) - this is called with the result of an
-                                   access call, along with any kwargs used
-                                   for that call. The return of this
-                                   method does not affect the result of the
-                                   lock check.
-     at_before_traverse(traversing_object) - (exit-objects only) called
-                                              just before an object
-                                              traverses this object
-     at_after_traverse(traversing_object, source_location) - (exit-objects
-                          only) called just after a traversal has happened.
-     at_failed_traverse(traversing_object)      - (exit-objects only) called
-                if traversal fails and property err_traverse is not defined.
-
-     at_msg_receive(self, msg, from_obj=None, data=None) - called when a
-                             message (via self.msg()) is sent to this obj.
-                             If returns false, aborts send.
-     at_msg_send(self, msg, to_obj=None, data=None) - called when this
-                         objects sends a message to someone via self.msg().
-
-     return_appearance(looker) - describes this object. Used by "look"
-                                 command by default
-     at_desc(looker=None)      - called by 'look' whenever the appearance
-                                 is requested.
-     at_get(getter)            - called after object has been picked up.
-                                 Does not stop pickup.
-     at_drop(dropper)          - called when this object has been dropped.
-     at_say(speaker, message)  - by default, called if an object inside
-                                 this object speaks
-
-     """
+    """
     # typeclass setup
     __metaclass__ = TypeclassBase
+    __settingsclasspath__ = settings.BASE_OBJECT_TYPECLASS
+    __defaultclasspath__ = "evennia.objects.objects.DefaultObject"
     objects = ObjectManager()
 
     # on-object properties
@@ -266,6 +161,7 @@ class DefaultObject(ObjectDB):
     def sessions(self):
         """
         Retrieve sessions connected to this object.
+
         """
         # if the player is not connected, this will simply be an empty list.
         if self.db_player:
@@ -275,14 +171,18 @@ class DefaultObject(ObjectDB):
     @property
     def has_player(self):
         """
-        Convenience function for checking if an active player is
-        currently connected to this object
+        Convenience property for checking if an active player is
+        currently connected to this object.
+
         """
         return any(self.sessions)
 
     @property
     def is_superuser(self):
-        "Check if user has a player, and if so, if it is a superuser."
+        """
+        Check if user has a player, and if so, if it is a superuser.
+
+        """
         return self.db_player and self.db_player.is_superuser \
                 and not self.db_player.attributes.get("_quell")
 
@@ -292,7 +192,16 @@ class DefaultObject(ObjectDB):
         objects that has this object set as its location.
         This should be publically available.
 
-        exclude is one or more objects to not return
+        Args:
+            exclude (Object): Object to exclude from returned
+                contents list
+
+        Returns:
+            contents (list): List of contents of this Object.
+
+        Notes:
+            Also available as the `contents` property.
+
         """
         return self.contents_cache.get(exclude=exclude)
     contents = property(contents_get)
@@ -301,8 +210,8 @@ class DefaultObject(ObjectDB):
     @property
     def exits(self):
         """
-        Returns all exits from this object, i.e. all objects
-        at this location having the property destination != None.
+        Returns all exits from this object, i.e. all objects at this
+        location having the property destination != `None`.
         """
         return [exi for exi in self.contents if exi.destination]
 
@@ -322,64 +231,65 @@ class DefaultObject(ObjectDB):
                nofound_string=None,
                multimatch_string=None):
         """
-        Returns the typeclass of an Object matching a search string/condition
+        Returns the typeclass of an `Object` matching a search
+        string/condition
 
         Perform a standard object search in the database, handling
         multiple results and lack thereof gracefully. By default, only
-        objects in self's current location or inventory is searched.
-        Note: to find Players, use eg. evennia.player_search.
+        objects in the current `location` of `self` or its inventory are searched for.
 
         Args:
             searchdata (str or obj): Primary search criterion. Will be matched
-                        against object.key (with object.aliases second) unless
-                        the keyword attribute_name specifies otherwise.
-                        Special strings:
-                            #<num> - search by unique dbref. This is always
-                                     a global search.
-                            me,self - self-reference to this object
-                            <num>-<string> - can be used to differentiate
-                                             between multiple same-named matches
+                against `object.key` (with `object.aliases` second) unless
+                the keyword attribute_name specifies otherwise.
+                **Special strings:**
+                - `#<num>`: search by unique dbref. This is always
+                   a global search.
+                - `me,self`: self-reference to this object
+                - `<num>-<string>` - can be used to differentiate
+                   between multiple same-named matches
             global_search (bool): Search all objects globally. This is overruled
-                                  by "location" keyword.
-            use_nicks (bool): Use nickname-replace (nicktype "object") on the
-                              search string
+                by `location` keyword.
+            use_nicks (bool): Use nickname-replace (nicktype "object") on `searchdata`.
             typeclass (str or Typeclass, or list of either): Limit search only
-                       to Objects with this typeclass. May be a list of typeclasses
-                       for a broader search.
+                to `Objects` with this typeclass. May be a list of typeclasses
+                for a broader search.
             location (Object): Specify a location to search, if different from the
-                         self's given location plus its contents. This can also
-                         be a list of locations.
+                self's given `location` plus its contents. This can also
+                be a list of locations.
             attribute_name (str): Define which property to search. If set, no
-                          key+alias search will be performed. This can be used to
-                          search database fields (db_ will be automatically
-                          appended), and if that fails, it will try to return
-                          objects having Attributes with this name and value
-                          equal to searchdata. A special use is to search for
-                          "key" here if you want to do a key-search without
-                          including aliases.
+                key+alias search will be performed. This can be used
+                to search database fields (db_ will be automatically
+                appended), and if that fails, it will try to return
+                objects having Attributes with this name and value
+                equal to searchdata. A special use is to search for
+                "key" here if you want to do a key-search without
+                including aliases.
             quiet (bool): don't display default error messages - this tells the
-                          search method that the user wants to handle all errors
-                          themselves. It also changes the return value type, see
-                          below.
+                search method that the user wants to handle all errors
+                themselves. It also changes the return value type, see
+                below.
             exact (bool): if unset (default) - prefers to match to beginning of
-                          string rather than not matching at all. If set, requires
-                          exact mathing of entire string.
+                string rather than not matching at all. If set, requires
+                exact mathing of entire string.
             candidates (list of objects): this is an optional custom list of objects
-                        to search (filter) between. It is ignored if global_search
-                        is given. If not set, this list will automatically be defined
-                        to include the location, the contents of location and the
-                        caller's contents (inventory).
-            nofound_string (str):  optional custom string for not-found error message
-            multimatch_string (str): optional custom string for multimatch error header
+                to search (filter) between. It is ignored if `global_search`
+                is given. If not set, this list will automatically be defined
+                to include the location, the contents of location and the
+                caller's contents (inventory).
+            nofound_string (str):  optional custom string for not-found error message.
+            multimatch_string (str): optional custom string for multimatch error header.
 
         Returns:
-            match (Object, None or list): will return an Object/None if quiet=False,
+            match (Object, None or list): will return an Object/None if `quiet=False`,
                 otherwise it will return a list of 0, 1 or more matches.
 
         Notes:
-            If quiet=False, error messages will be handled by settings.SEARCH_AT_RESULT
-            and echoed automatically (on error, return will be None). If quiet=True, the
-            error messaging is assumed to be handled by the caller.
+            To find Players, use eg. `evennia.player_search`. If
+            `quiet=False`, error messages will be handled by
+            `settings.SEARCH_AT_RESULT` and echoed automatically (on
+            error, return will be `None`). If `quiet=True`, the error
+            messaging is assumed to be handled by the caller.
 
         """
         is_string = isinstance(searchdata, basestring)
@@ -433,25 +343,25 @@ class DefaultObject(ObjectDB):
         """
         Simple shortcut wrapper to search for players, not characters.
 
-        searchdata - search criterion - the key or dbref of the player
-                     to search for. If this is "here" or "me", search
-                     for the player connected to this object.
-        quiet - return the results as a list rather than echo eventual
-                standard error messages.
+        Args:
+            searchdata (str): Search criterion - the key or dbref of the player
+                to search for. If this is "here" or "me", search
+                for the player connected to this object.
+            quiet (bool): Returns the results as a list rather than
+                echo eventual standard error messages. Default `False`.
 
         Returns:
-            quiet=False (default):
-                no match or multimatch:
-                    auto-echoes errors to self.msg, then returns None
-                    (results are handled by settings.SEARCH_AT_RESULT
-                                 and settings.SEARCH_AT_MULTIMATCH_INPUT)
-                match:
-                    a unique player match
-            quiet=True:
-                no match or multimatch:
-                    returns None or list of multi-matches
-                match:
-                    a unique object match
+            result (Player, None or list): Just what is returned depends on
+                the `quiet` setting:
+                    - `quiet=True`: No match or multumatch auto-echoes errors
+                      to self.msg, then returns `None`. The esults are passed
+                      through `settings.SEARCH_AT_RESULT` and
+                      `settings.SEARCH_AT_MULTIMATCH_INPUT`. If there is a
+                      unique match, this will be returned.
+                    - `quiet=True`: No automatic error messaging is done, and
+                      what is returned is always a list with 0, 1 or more
+                      matching Players.
+
         """
         if isinstance(searchdata, basestring):
             # searchdata is a string; wrap some common self-references
@@ -466,28 +376,33 @@ class DefaultObject(ObjectDB):
 
     def execute_cmd(self, raw_string, sessid=None, **kwargs):
         """
-        Do something as this object. This method is a copy of the execute_
-        cmd method on the session. This is never called normally, it's only
-        used when wanting specifically to let an object be the caller of a
-        command. It makes use of nicks of eventual connected players as well.
+        Do something as this object. This method is a copy of the
+        `execute_cmd` method on the session. This is never called
+        normally, it's only used when wanting specifically to let an
+        object be the caller of a command. It makes use of nicks of
+        eventual connected players as well.
 
-        Argument:
-        raw_string (string) - raw command input
-        sessid (int) - optional session id to return results to
-        **kwargs - other keyword arguments will be added to the found command
-                   object instace as variables before it executes. This is
-                   unused by default Evennia but may be used to set flags and
-                   change operating paramaters for commands at run-time.
+        Args:
+            raw_string (string): Raw command input
+            sessid (int, optional): Session id to return results to
 
-        Returns Deferred - this is an asynchronous Twisted object that will
-            not fire until the command has actually finished executing. To
-            overload this one needs to attach callback functions to it, with
-            addCallback(function). This function will be called with an
-            eventual return value from the command execution.
+        Kwargs:
+            Other keyword arguments will be added to the found command
+            object instace as variables before it executes.  This is
+            unused by default Evennia but may be used to set flags and
+            change operating paramaters for commands at run-time.
 
-            This return is not used at all by Evennia by default, but might
-            be useful for coders intending to implement some sort of nested
-            command structure.
+        Returns:
+            defer (Deferred): This is an asynchronous Twisted object that
+                will not fire until the command has actually finished
+                executing. To overload this one needs to attach
+                callback functions to it, with addCallback(function).
+                This function will be called with an eventual return
+                value from the command execution. This return is not
+                used at all by Evennia by default, but might be useful
+                for coders intending to implement some sort of nested
+                command structure.
+
         """
         # nick replacement - we require full-word matching.
         # do text encoding conversion
@@ -513,7 +428,7 @@ class DefaultObject(ObjectDB):
             All extra kwargs will be passed on to the protocol.
 
         """
-        text = to_str(text, force_string=True) if text else ""
+        text = to_str(text, force_string=True) if text != None else ""
         if from_obj:
             # call hook
             try:
@@ -542,10 +457,19 @@ class DefaultObject(ObjectDB):
 
     def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):
         """
-        Emits something to all objects inside an object.
+        Emits a message to all objects inside this object.
 
-        exclude is a list of objects not to send to. See self.msg() for
+        Args:
+            message (str): Message to send.
+            exclude (list, optional): A list of objects not to send to.
+            from_obj (Object, optional): An object designated as the
+                "sender" of the message. See `DefaultObject.msg()` for
                 more info.
+
+        Kwargs:
+            Keyword arguments will be passed on to `obj.msg()` for all
+            messaged objects.
+
         """
         contents = self.contents
         if exclude:
@@ -558,13 +482,6 @@ class DefaultObject(ObjectDB):
                 emit_to_obj=None, use_destination=True, to_none=False, move_hooks=True):
         """
         Moves this object to a new location.
-
-        Moves this object to a new location. Note that if <destination> is an
-        exit object (i.e. it has "destination"!=None), the move_to will
-        happen to this destination and -not- into the exit object itself, unless
-        use_destination=False. Note that no lock checks are done by this
-        function, such things are assumed to have been handled before calling
-        move_to.
 
         Args:
             destination (Object): Reference to the object to move to. This
@@ -586,8 +503,24 @@ class DefaultObject(ObjectDB):
             result (bool): True/False depending on if there were problems with the move.
                     This method may also return various error messages to the
                     emit_to_obj.
+
+        Notes:
+            No access checks are done in this method, these should be handled before
+            calling `move_to`.
+
+            The `DefaultObject` hooks called (if `move_hooks=True`) are, in order:
+
+             1. `self.at_before_move(destination)` (if this returns False, move is aborted)
+             1. `source_location.at_object_leave(self, destination)`
+             1. `self.announce_move_from(destination)`
+             1. (move happens here)
+             1. `self.announce_move_to(source_location)`
+             1. `destination.at_object_receive(self, source_location)`
+             1. `self.at_after_move(source_location)`
+
         """
         def logerr(string=""):
+            "Simple log helper method"
             trc = traceback.format_exc()
             errstring = "%s%s" % (trc, string)
             log_trace()
@@ -705,8 +638,8 @@ class DefaultObject(ObjectDB):
 
     def clear_contents(self):
         """
-        Moves all objects (players/things) to their home
-        location or to default home.
+        Moves all objects (players/things) to their home location or
+        to default home.
         """
         # Gather up everything that thinks this is its location.
         default_home_id = int(settings.DEFAULT_HOME.lstrip("#"))
@@ -750,14 +683,17 @@ class DefaultObject(ObjectDB):
 
     def copy(self, new_key=None):
         """
-        Makes an identical copy of this object. If you want to customize the
-        copy by changing some settings, use ObjectDB.object.copy_object()
+        Makes an identical copy of this object, identical except for a
+        new dbref in the database. If you want to customize the copy
+        by changing some settings, use ObjectDB.object.copy_object()
         directly.
 
-        new_key (string) - new key/name of copied object. If new_key is not
-                            specified, the copy will be named <old_key>_copy
-                            by default.
-        Returns: Object (copy of this one)
+        Args:
+            new_key (string): New key/name of copied object. If new_key is not
+                specified, the copy will be named <old_key>_copy by default.
+        Returns:
+            copy (Object): A copy of this object.
+
         """
         def find_clone_key():
             """
@@ -779,10 +715,14 @@ class DefaultObject(ObjectDB):
     delete_iter = 0
     def delete(self):
         """
-        Deletes this object.
-        Before deletion, this method makes sure to move all contained
-        objects to their respective home locations, as well as clean
-        up all exits to/from the object.
+        Deletes this object.  Before deletion, this method makes sure
+        to move all contained objects to their respective home
+        locations, as well as clean up all exits to/from the object.
+
+        Returns:
+            noerror (bool): Returns whether or not the delete completed
+                successfully or not.
+
         """
         global _ScriptDB
         if not _ScriptDB:
@@ -832,10 +772,12 @@ class DefaultObject(ObjectDB):
 
     def __eq__(self, other):
         """
-        Checks for equality against an id string or another object or user.
+        Checks for equality against an id string or another object or
+        user.
 
-        This has be located at this level, having it in the
-        parent doesn't work.
+        Args:
+            other (Object): object to compare to.
+
         """
         try:
             return self.dbid == other.dbid
@@ -846,6 +788,10 @@ class DefaultObject(ObjectDB):
             except AttributeError:
                 return False
 
+    #
+    # Hook methods
+    #
+
     def at_first_save(self):
         """
         This is called by the typeclass system whenever an instance of
@@ -853,6 +799,7 @@ class DefaultObject(ObjectDB):
         for calling the startup hooks for the various game entities.
         When overloading you generally don't overload this but
         overload the hooks called by this method.
+
         """
         self.basetype_setup()
         self.at_object_creation()
@@ -909,11 +856,12 @@ class DefaultObject(ObjectDB):
 
     def basetype_setup(self):
         """
-        This sets up the default properties of an Object,
-        just before the more general at_object_creation.
+        This sets up the default properties of an Object, just before
+        the more general at_object_creation.
 
         You normally don't need to change this unless you change some
         fundamental things like names of permission groups.
+
         """
         # the default security setup fallback for a generic
         # object. Overload in child for a custom setup. Also creation
@@ -939,21 +887,24 @@ class DefaultObject(ObjectDB):
         setup after the object is created. An example of this is
         EXITs, who need to know keys, aliases, locks etc to set up
         their exit-cmdsets.
+
         """
         pass
 
     def at_object_creation(self):
         """
-        Called once, when this object is first created. This is
-        the normal hook to overload for most object types.
+        Called once, when this object is first created. This is the
+        normal hook to overload for most object types.
+
         """
         pass
 
     def at_object_delete(self):
         """
-        Called just before the database object is
-        permanently delete()d from the database. If
-        this method returns False, deletion is aborted.
+        Called just before the database object is permanently
+        delete()d from the database. If this method returns False,
+        deletion is aborted.
+
         """
         return True
 
@@ -964,6 +915,7 @@ class DefaultObject(ObjectDB):
         happens on-demand first time the object is used or activated
         in some way after being created but also after each server
         restart or reload.
+
         """
         pass
 
@@ -973,44 +925,53 @@ class DefaultObject(ObjectDB):
         command handler. If changes need to be done on the fly to the
         cmdset before passing them on to the cmdhandler, this is the
         place to do it. This is called also if the object currently
-        have no cmdsets. **kwargs are usually not set but could be
-        used e.g. to force rebuilding of a dynamically created cmdset
-        or similar.
+        have no cmdsets.
+
+        Kwargs:
+            Usually not set but could be used e.g. to force rebuilding
+            of a dynamically created cmdset or similar.
+
         """
         pass
 
     def at_pre_puppet(self, player, sessid=None):
         """
-        Called just before a Player connects to this object
-        to puppet it.
+        Called just before a Player connects to this object to puppet
+        it.
 
-        player - connecting player object
-        sessid - session id controlling the connection
+        Args:
+            player (Player): This is the connecting player.
+            sessid (int): Session id controlling the connection.
         """
         pass
 
     def at_post_puppet(self):
         """
-        Called just after puppeting has been completed and
-        all Player<->Object links have been established.
+        Called just after puppeting has been completed and all
+        Player<->Object links have been established.
+
         """
         self.player.db._last_puppet = self
 
     def at_pre_unpuppet(self):
         """
-        Called just before beginning to un-connect a puppeting
-        from this Player.
+        Called just before beginning to un-connect a puppeting from
+        this Player.
+
         """
         pass
 
     def at_post_unpuppet(self, player, sessid=None):
         """
-        Called just after the Player successfully disconnected
-        from this object, severing all connections.
+        Called just after the Player successfully disconnected from
+        this object, severing all connections.
 
-        player - the player object that just disconnected from
-                 this object.
-        sessid - session id controlling the connection
+        Args:
+            player (Player): The player object that just disconnected
+                from this object.
+            sessid (int): Session id controlling the connection that
+                just disconnected.
+
         """
         pass
 
@@ -1019,6 +980,7 @@ class DefaultObject(ObjectDB):
         This hook is called whenever the server is shutting down for
         restart/reboot. If you want to, for example, save non-persistent
         properties across a restart, this is the place to do it.
+
         """
         pass
 
@@ -1026,6 +988,7 @@ class DefaultObject(ObjectDB):
         """
         This hook is called whenever the server is shutting down fully
         (i.e. not for a restart).
+
         """
         pass
 
@@ -1036,6 +999,17 @@ class DefaultObject(ObjectDB):
         not affect the result of the lock check. It can be used e.g. to
         customize error messages in a central location or other effects
         based on the access result.
+
+        Args:
+            result (bool): The outcome of the access call.
+            accessing_obj (Object or Player): The entity trying to
+            gain access.  access_type (str): The type of access that
+            was requested.
+
+        Kwargs:
+            Not used by default, added for possible expandability in a
+            game.
+
         """
         pass
 
@@ -1044,13 +1018,19 @@ class DefaultObject(ObjectDB):
 
     def at_before_move(self, destination):
         """
-        Called just before starting to move
-        this object to destination.
+        Called just before starting to move this object to
+        destination.
 
-        destination - the object we are moving to
+        Args:
+            destination (Object): The object we are moving to
 
-        If this method returns False/None, the move
-        is cancelled before it is even started.
+        Returns:
+            shouldmove (bool): If we should move or not.
+
+        Notes:
+            If this method returns False/None, the move is cancelled
+            before it is even started.
+
         """
         #return has_perm(self, destination, "can_move")
         return True
@@ -1061,7 +1041,9 @@ class DefaultObject(ObjectDB):
         called while we are still standing in the old
         location.
 
-        destination - the place we are going to.
+        Args:
+            destination (Object): The place we are going to.
+
         """
         if not self.location:
             return
@@ -1074,10 +1056,12 @@ class DefaultObject(ObjectDB):
 
     def announce_move_to(self, source_location):
         """
-        Called after the move if the move was not quiet. At this
-        point we are standing in the new location.
+        Called after the move if the move was not quiet. At this point
+        we are standing in the new location.
 
-        source_location - the place we came from
+        Args:
+            source_location (Object): The place we came from
+
         """
 
         name = self.name
@@ -1097,10 +1081,13 @@ class DefaultObject(ObjectDB):
 
     def at_after_move(self, source_location):
         """
-        Called after move has completed, regardless of quiet mode or not.
-        Allows changes to the object due to the location it is now in.
+        Called after move has completed, regardless of quiet mode or
+        not.  Allows changes to the object due to the location it is
+        now in.
 
-        source_location - where we came from. This may be None.
+        Args:
+            source_location (Object): Wwhere we came from. This may be `None`.
+
         """
         pass
 
@@ -1108,8 +1095,10 @@ class DefaultObject(ObjectDB):
         """
         Called just before an object leaves from inside this object
 
-        moved_obj - the object leaving
-        target_location - where the object is going.
+        Args:
+            moved_obj (Object): The object leaving
+            target_location (Object): Where `moved_obj` is going.
+
         """
         pass
 
@@ -1117,93 +1106,140 @@ class DefaultObject(ObjectDB):
         """
         Called after an object has been moved into this object.
 
-        moved_obj - the object moved into this one
-        source_location - where moved_object came from.
+        Args:
+            moved_obj (Object): The object moved into this one
+            source_location (Object): Where `moved_object` came from.
+
         """
         pass
 
     def at_before_traverse(self, traversing_object):
         """
-        Called just before an object uses this object to
-        traverse to another object (i.e. this object is a type of Exit)
+        Called just before an object uses this object to traverse to
+        another object (i.e. this object is a type of Exit)
 
-        The target location should normally be available as self.destination.
+        Args:
+            traversing_object (Object): The object traversing us.
+
+        Notes:
+            The target destination should normally be available as
+            `self.destination`.
+
         """
         pass
 
     def at_traverse(self, traversing_object, target_location):
         """
-        This hook is responsible for handling the actual traversal, normally
-        by calling traversing_object.move_to(target_location). It is normally
-        only implemented by Exit objects. If it returns False (usually because
-        move_to returned False), at_after_traverse below should not be called
-        and instead at_failed_traverse should be called.
+        This hook is responsible for handling the actual traversal,
+        normally by calling
+        `traversing_object.move_to(target_location)`. It is normally
+        only implemented by Exit objects. If it returns False (usually
+        because move_to returned False), at_after_traverse below
+        should not be called and instead at_failed_traverse should be
+        called.
+
+        Args:
+            traversing_object (Object): Object traversing us.
+            target_location (Object): Where target is going.
+
         """
         pass
 
     def at_after_traverse(self, traversing_object, source_location):
         """
         Called just after an object successfully used this object to
-        traverse to another object (i.e. this object is a type of Exit)
+        traverse to another object (i.e. this object is a type of
+        Exit)
 
-        The target location should normally be available as self.destination.
+        Args:
+            traversing_object (Object): The object traversing us.
+            source_location (Object): Where `traversing_object` came from.
+
+        Notes:
+            The target location should normally be available as `self.destination`.
         """
         pass
 
     def at_failed_traverse(self, traversing_object):
         """
-        This is called if an object fails to traverse this object for some
-        reason. It will not be called if the attribute err_traverse is defined,
-        that attribute will then be echoed back instead.
+        This is called if an object fails to traverse this object for
+        some reason.
+
+        Args:
+            traversing_object (Object): The object that failed traversing us.
+
+        Notes:
+            Using the default exits, this hook will not be called if an
+            Attribute `err_traverse` is defined - this will in that case be
+            read for an error string instead.
+
         """
         pass
 
     def at_msg_receive(self, text=None, **kwargs):
         """
-        This hook is called whenever someone
-        sends a message to this object.
+        This hook is called whenever someone sends a message to this
+        object using the `msg` method.
 
-        Note that from_obj may be None if the sender did
-        not include itself as an argument to the obj.msg()
-        call - so you have to check for this. .
+        Note that from_obj may be None if the sender did not include
+        itself as an argument to the obj.msg() call - so you have to
+        check for this. .
 
-        Consider this a pre-processing method before
-        msg is passed on to the user sesssion. If this
-        method returns False, the msg will not be
-        passed on.
-        Input:
-            msg = the message received
-            from_obj = the one sending the message
-        Output:
-            boolean True/False
+        Consider this a pre-processing method before msg is passed on
+        to the user sesssion. If this method returns False, the msg
+        will not be passed on.
+
+        Args:
+            text (str, optional): The message received.
+
+        Kwargs:
+            This includes any keywords sent to the `msg` method.
+
+        Returns:
+            receive (bool): If this message should be received.
+
+        Notes:
+            If this method returns False, the `msg` operation
+            will abort without sending the message.
+
         """
         return True
 
     def at_msg_send(self, text=None, to_obj=None, **kwargs):
         """
-        This is a hook that is called when /this/ object
-        sends a message to another object with obj.msg()
-        while also specifying that it is the one sending.
+        This is a hook that is called when *this* object sends a
+        message to another object with `obj.msg(text, to_obj=obj)`.
 
-        Note that this method is executed on the object
-        passed along with the msg() function (i.e. using
-        obj.msg(msg, from_obj=caller) will then launch caller.at_msg())
-        and if no object was passed, it will never be called.
+        Args:
+            text (str): Text to send.
+            to_obj (Object): The object to send to.
+
+        Kwargs:
+            Keywords passed from msg()
+
+        Notes:
+            Since this method is executed `from_obj`, if no `from_obj`
+            was passed to `DefaultCharacter.msg` this hook will never
+            get called.
+
         """
         pass
 
     # hooks called by the default cmdset.
 
-    def return_appearance(self, pobject):
+    def return_appearance(self, looker):
         """
-        This is a convenient hook for a 'look'
-        command to call.
+        This formats a description. It is the hook a 'look' command
+        should call.
+
+        Args:
+            looker (Object): Object doing the looking.
         """
-        if not pobject:
+        if not looker:
             return
         # get and identify all objects
-        visible = (con for con in self.contents if con != pobject and
-                                                    con.access(pobject, "view"))
+        visible = (con for con in self.contents if con != looker and
+                                                    con.access(looker, "view"))
         exits, users, things = [], [], []
         for con in visible:
             key = con.key
@@ -1226,39 +1262,58 @@ class DefaultObject(ObjectDB):
 
     def at_desc(self, looker=None):
         """
-        This is called whenever someone looks
-        at this object. Looker is the looking
-        object.
+        This is called whenever someone looks at this object.
+
+        looker (Object): The object requesting the description.
+
         """
         pass
 
     def at_get(self, getter):
         """
-        Called when this object has been picked up. Obs-
-        this method cannot stop the pickup - use permissions
-        for that!
+        Called by the default `get` command when this object has been
+        picked up.
 
-        getter - the object getting this object.
+        Args:
+            getter (Object): The object getting this object.
+
+        Notes:
+            This hook cannot stop the pickup from happening. Use
+            permissions for that.
+
         """
         pass
 
     def at_drop(self, dropper):
         """
-        Called when this object has been dropped.
+        Called by the default `drop` command when this object has been
+        dropped.
 
-        dropper - the object which just dropped this object.
+        Args:
+            dropper (Object): The object which just dropped this object.
+
+        Notes:
+            This hook cannot stop the pickup from happening. Use
+            permissions from that.
+
         """
         pass
 
     def at_say(self, speaker, message):
         """
         Called on this object if an object inside this object speaks.
-        The string returned from this method is the final form
-        of the speech. Obs - you don't have to add things like
-        'you say: ' or similar, that is handled by the say command.
+        The string returned from this method is the final form of the
+        speech.
 
-        speaker - the object speaking
-        message - the words spoken.
+        Args:
+            speaker (Object): The object speaking.
+            message (str): The words spoken.
+
+        Notes:
+            You should not need to add things like 'you say: ' or
+            similar here, that should be handled by the say command before
+            this.
+
         """
         return message
 
@@ -1269,18 +1324,19 @@ class DefaultObject(ObjectDB):
 
 class DefaultCharacter(DefaultObject):
     """
-    This is just like the Object except it implements its own
-    version of the at_object_creation to set up the script
-    that adds the default cmdset to the object.
+    This implements an Object puppeted by a Session and what that
+    means.
+
     """
 
     def basetype_setup(self):
         """
-        Setup character-specific security
+        Setup character-specific security.
 
-        You should normally not need to overload this, but if you do, make
-        sure to reproduce at least the two last commands in this method (unless
-        you want to fundamentally change how a Character object works).
+        You should normally not need to overload this, but if you do,
+        make sure to reproduce at least the two last commands in this
+        method (unless you want to fundamentally change how a
+        Character object works).
 
         """
         super(DefaultCharacter, self).basetype_setup()
@@ -1289,23 +1345,22 @@ class DefaultCharacter(DefaultObject):
         # add the default cmdset
         self.cmdset.add_default(settings.CMDSET_CHARACTER, permanent=True)
 
-    def at_object_creation(self):
-        """
-        All this does (for now) is to add the default cmdset. Since
-        the script is permanently stored to this object (the permanent
-        keyword creates a script to do this), we should never need to
-        do this again for as long as this object exists.
-        """
-        pass
-
     def at_after_move(self, source_location):
-        "Default is to look around after a move."
+        """
+        We make sure to look around after a move.
+
+        """
         self.execute_cmd('look')
 
     def at_pre_puppet(self, player, sessid=None):
         """
-        This recovers the character again after having been "stoved away"
-        at the unpuppet
+        This implementation recovers the character again after having been "stoved
+        away" to the `None` location in `at_post_unpuppet`.
+
+        Args:
+            player (Player): This is the connecting player.
+            sessid (int): Session id controlling the connection.
+
         """
         if self.db.prelogout_location:
             # try to recover
@@ -1322,7 +1377,9 @@ class DefaultCharacter(DefaultObject):
 
     def at_post_puppet(self):
         """
-        Called just after puppeting has completed.
+        Called just after puppeting has been completed and all
+        Player<->Object links have been established.
+
         """
         self.msg("\nYou become {c%s{n.\n" % self.name)
         self.execute_cmd("look")
@@ -1332,8 +1389,14 @@ class DefaultCharacter(DefaultObject):
     def at_post_unpuppet(self, player, sessid=None):
         """
         We stove away the character when the player goes ooc/logs off,
-        otherwise the character object will remain in the room also after the
-        player logged off ("headless", so to say).
+        otherwise the character object will remain in the room also
+        after the player logged off ("headless", so to say).
+
+        Args:
+            player (Player): The player object that just disconnected
+                from this object.
+            sessid (int): Session id controlling the connection that
+                just disconnected.
         """
         if self.location: # have to check, in case of multiple connections closing
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
@@ -1347,12 +1410,13 @@ class DefaultCharacter(DefaultObject):
 class DefaultRoom(DefaultObject):
     """
     This is the base room object. It's just like any Object except its
-    location is None.
+    location is always `None`.
     """
     def basetype_setup(self):
         """
-        Simple setup, shown as an example
-        (since default is None anyway)
+        Simple room setup setting locks to make sure the room
+        cannot be picked up.
+
         """
 
         super(DefaultRoom, self).basetype_setup()
@@ -1374,6 +1438,7 @@ class DefaultExit(DefaultObject):
     created dynamically depending on what the exit is called). This
     command (which has a high priority) will thus allow us to traverse
     exits simply by giving the exit-object's name on its own.
+
     """
 
     # Helper classes and methods to implement the Exit. These need not
@@ -1384,23 +1449,26 @@ class DefaultExit(DefaultObject):
         """
         Helper function for creating an exit command set + command.
 
-        The command of this cmdset has the same name as the Exit object
-        and allows the exit to react when the player enter the exit's name,
-        triggering the movement between rooms.
+        The command of this cmdset has the same name as the Exit
+        object and allows the exit to react when the player enter the
+        exit's name, triggering the movement between rooms.
 
-        Note that exitdbobj is an ObjectDB instance. This is necessary
-        for handling reloads and avoid tracebacks if this is called while
-        the typeclass system is rebooting.
+        Args:
+            exiddobj (Object): The DefaultExit object to base the command on.
+
         """
         class ExitCommand(command.Command):
             """
-            This is a command that simply cause the caller
-            to traverse the object it is attached to.
+            This is a command that simply cause the caller to traverse
+            the object it is attached to.
+
             """
             obj = None
 
             def func(self):
-                "Default exit traverse if no syscommand is defined."
+                """
+                Default exit traverse if no syscommand is defined.
+                """
 
                 if self.obj.access(self.caller, 'traverse'):
                     # we may traverse the exit.
@@ -1438,8 +1506,9 @@ class DefaultExit(DefaultObject):
         """
         Setup exit-security
 
-        You should normally not need to overload this - if you do make sure you
-        include all the functionality in this method.
+        You should normally not need to overload this - if you do make
+        sure you include all the functionality in this method.
+
         """
         super(DefaultExit, self).basetype_setup()
 
@@ -1454,28 +1523,32 @@ class DefaultExit(DefaultObject):
 
     def at_cmdset_get(self, **kwargs):
         """
-        Called when the cmdset is requested from this object, just before the
-        cmdset is actually extracted. If no Exit-cmdset is cached, create
-        it now.
+        Called just before cmdsets on this object are requested by the
+        command handler. If changes need to be done on the fly to the
+        cmdset before passing them on to the cmdhandler, this is the
+        place to do it. This is called also if the object currently
+        have no cmdsets.
 
-        kwargs:
-          force_init=True - force a re-build of the cmdset (for example to update aliases)
+        Kwargs:
+          force_init (bool): If `True`, force a re-build of the cmdset
+            (for example to update aliases).
+
         """
 
         if "force_init" in kwargs or not self.cmdset.has_cmdset("_exitset", must_be_default=True):
             # we are resetting, or no exit-cmdset was set. Create one dynamically.
             self.cmdset.add_default(self.create_exit_cmdset(self), permanent=False)
 
-    # this and other hooks are what usually can be modified safely.
-
-    def at_object_creation(self):
-        "Called once, when object is first created (after basetype_setup)."
-        pass
 
     def at_traverse(self, traversing_object, target_location):
         """
-        This implements the actual traversal. The traverse lock has already been
-        checked (in the Exit command) at this point.
+        This implements the actual traversal. The traverse lock has
+        already been checked (in the Exit command) at this point.
+
+        Args:
+            traversing_object (Object): Object traversing us.
+            target_location (Object): Where target is going.
+
         """
         source_location = traversing_object.location
         if traversing_object.move_to(target_location):
@@ -1488,19 +1561,17 @@ class DefaultExit(DefaultObject):
                 # No shorthand error message. Call hook.
                 self.at_failed_traverse(traversing_object)
 
-    def at_after_traverse(self, traversing_object, source_location):
-        """
-        Called after a successful traverse.
-        """
-        pass
-
     def at_failed_traverse(self, traversing_object):
         """
-        This is called if an object fails to traverse this object for some
-        reason. It will not be called if the attribute "err_traverse" is
-        defined, that attribute will then be echoed back instead as a
-        convenient shortcut.
+        Overloads the default hook to implement a simple default error message.
 
-        (See also hooks at_before_traverse and at_after_traverse).
+        Args:
+            traversing_object (Object): The object that failed traversing us.
+
+        Notes:
+            Using the default exits, this hook will not be called if an
+            Attribute `err_traverse` is defined - this will in that case be
+            read for an error string instead.
+
         """
         traversing_object.msg("You cannot go there.")

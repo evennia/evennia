@@ -109,6 +109,9 @@ class DefaultPlayer(PlayerDB):
      """
 
     __metaclass__ = TypeclassBase
+    __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
+    __defaultclasspath__ = "evennia.players.players.DefaultPlayer"
+
     objects = PlayerManager()
 
     # properties
@@ -317,7 +320,11 @@ class DefaultPlayer(PlayerDB):
             # unpuppeting all objects and disconnecting the user, if any
             # sessions remain (should usually be handled from the
             # deleting command)
-            self.unpuppet_object(session.sessid)
+            try:
+                self.unpuppet_object(session.sessid)
+            except RuntimeError:
+                # no puppet to disconnect from
+                pass
             session.sessionhandler.disconnect(session, reason=_("Player being deleted."))
         self.scripts.stop()
         self.attributes.clear()
@@ -350,7 +357,6 @@ class DefaultPlayer(PlayerDB):
                 pass
 
         # session relay
-
         if sessid:
             # this could still be an iterable if sessid is an iterable
             sessions = self.get_session(sessid)

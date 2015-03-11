@@ -130,39 +130,6 @@ def create_channels():
         channel = create.create_channel(**channeldict)
         channel.connect(goduser)
 
-def create_system_scripts():
-    """
-    Setup the system repeat scripts. They are automatically started
-    by the create_script function.
-    """
-    from evennia.scripts import scripts
-
-    print " Creating and starting global scripts ..."
-
-    # check so that all sessions are alive.
-    script1 = create.create_script(scripts.CheckSessions)
-    # validate all scripts in script table.
-    script2 = create.create_script(scripts.ValidateScripts)
-    # update the channel handler to make sure it's in sync
-    script3 = create.create_script(scripts.ValidateChannelHandler)
-    # flush the idmapper cache
-    script4 = create.create_script(scripts.ValidateIdmapperCache)
-
-    if not script1 or not script2 or not script3 or not script4:
-        print " Error creating system scripts."
-
-
-def start_game_time():
-    """
-    This starts a persistent script that keeps track of the
-    in-game time (in whatever accelerated reference frame), but also
-    the total run time of the server as well as its current uptime
-    (the uptime can also be found directly from the server though).
-    """
-    print " Starting in-game time ..."
-    from evennia.utils import gametime
-    gametime.init_gametime()
-
 
 def at_initial_setup():
     """
@@ -206,20 +173,15 @@ def handle_setup(last_step):
         # this means we don't need to handle setup since
         # it already ran sucessfully once.
         return
-    elif last_step is None:
-        # config doesn't exist yet. First start of server
-        last_step = 0
+    # if None, set it to 0
+    last_step = last_step or 0
 
     # setting up the list of functions to run
-    setup_queue = [
-        create_config_values,
-        create_objects,
-        create_channels,
-        create_system_scripts,
-        start_game_time,
-        at_initial_setup,
-        reset_server
-        ]
+    setup_queue = [create_config_values,
+                   create_objects,
+                   create_channels,
+                   at_initial_setup,
+                   reset_server]
 
     #print " Initial setup: %s steps." % (len(setup_queue))
 
@@ -241,6 +203,7 @@ def handle_setup(last_step):
                 from evennia.comms.models import ChannelDB
                 ChannelDB.objects.all().delete()
             raise
+        # save this step
         ServerConfig.objects.conf("last_initial_setup_step", last_step + num + 1)
     # We got through the entire list. Set last_step to -1 so we don't
     # have to run this again.

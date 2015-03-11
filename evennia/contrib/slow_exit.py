@@ -36,14 +36,14 @@ TickerHandler might be better.
 
 """
 
-from evennia import Exit, utils, Command
+from evennia import DefaultExit, utils, Command
 
 MOVE_DELAY = {"stroll": 6,
               "walk": 4,
               "run": 2,
               "sprint": 1}
 
-class SlowExit(Exit):
+class SlowExit(DefaultExit):
     """
     This overloads the way moving happens.
     """

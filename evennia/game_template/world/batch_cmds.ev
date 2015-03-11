@@ -14,13 +14,13 @@
 # - every command must be separated by at least one line of comment.
 #
 # All supplied commands are given as normal, on their own line
-# and accepts arguments in any format up until the first next
-# comment line  begins. Extra whitespace is removed; an empty
+# and accept arguments in any format up until the first next
+# comment line begins. Extra whitespace is removed; an empty
 # line in a command definition translates into a newline.
 # 
-# See evennia/contrib/tutorial_examples/batch_cmds.ev for
+# See `evennia/contrib/tutorial_examples/batch_cmds.ev` for
 # an example of a batch-command code. See also the batch-code
-# system for loading python-code in this way.
+# system for loading python-code this way.
 #
 
 

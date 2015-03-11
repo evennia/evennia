@@ -1,8 +1,8 @@
 """
 The script handler makes sure to check through all stored scripts
 to make sure they are still relevant.
-An scripthandler is automatically added to all game objects. You
-access it through the property 'scripts' on the game object.
+A scripthandler is automatically added to all game objects. You
+access it through the property `scripts` on the game object.
 """
 
 from evennia.scripts.models import ScriptDB
@@ -21,7 +21,7 @@ class ScriptHandler(object):
         obj - a reference to the object this handler is attached to.
 
         We retrieve all scripts attached to this object and check
-        if they are all peristent. If they are not, they are just
+        if they are all persistent. If they are not, they are just
         cruft left over from a server shutdown.
         """
         self.obj = obj
@@ -49,7 +49,7 @@ class ScriptHandler(object):
 
     def add(self, scriptclass, key=None, autostart=True):
         """
-        Add an script to this object.
+        Add a script to this object.
 
         scriptclass - either a class object
              inheriting from Script, an instantiated script object
@@ -58,7 +58,7 @@ class ScriptHandler(object):
               definition)
         autostart - start the script upon adding it
         """
-        if self.obj.__class__.__name__ == "PlayerDB":
+        if self.obj.__dbclass__.__name__ == "PlayerDB":
             # we add to a Player, not an Object
             script = create.create_script(scriptclass, key=key, player=self.obj,
                                           autostart=autostart)
@@ -83,7 +83,7 @@ class ScriptHandler(object):
 
     def get(self, scriptid):
         """
-        Return one or all scripts on this object matching scriptid. Will return
+        Return one or all scripts on this object matching `scriptid`. Will return
         a list.
         """
         return ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptid)

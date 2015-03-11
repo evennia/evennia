@@ -8,10 +8,6 @@ total runtime of the server and the current uptime.
 
 from time import time
 from django.conf import settings
-from evennia.scripts.scripts import DefaultScript
-from evennia.utils.create import create_script
-
-GAMETIME_SCRIPT_NAME = "sys_game_time"
 
 # Speed-up factor of the in-game time compared
 # to real time.
@@ -35,67 +31,26 @@ WEEK = DAY * settings.TIME_DAY_PER_WEEK
 MONTH = WEEK * settings.TIME_WEEK_PER_MONTH
 YEAR = MONTH * settings.TIME_MONTH_PER_YEAR
 
-# Cached time stamps
-SERVER_STARTTIME = time()
+# these are kept updated by the server maintenance loop
+SERVER_START_TIME = 0.0
+SERVER_RUNTIME_LAST_UPDATED = 0.0
 SERVER_RUNTIME = 0.0
-
-
-class GameTime(DefaultScript):
-    """
-    This script repeatedly saves server times so
-    it can be retrieved after server downtime.
-    """
-    def at_script_creation(self):
-        """
-        Setup the script
-        """
-        self.key = GAMETIME_SCRIPT_NAME
-        self.desc = "Saves uptime/runtime"
-        self.interval = 60
-        self.persistent = True
-        self.start_delay = True
-        self.attributes.add("run_time", 0.0)  # OOC time
-        self.attributes.add("up_time", 0.0)  # OOC time
-
-    def at_repeat(self):
-        """
-        Called every minute to update the timers.
-        """
-        self.attributes.add("run_time", runtime())
-        self.attributes.add("up_time", uptime())
-
-    def at_start(self):
-        """
-        This is called once every server restart.
-        We reset the up time and load the relevant
-        times.
-        """
-        global SERVER_RUNTIME
-        SERVER_RUNTIME = self.attributes.get("run_time")
-
-def save():
-    "Force save of time. This is called by server when shutting down/reloading."
-    from evennia.scripts.models import ScriptDB
-    try:
-        script = ScriptDB.objects.get(db_key=GAMETIME_SCRIPT_NAME)
-        script.at_repeat()
-    except Exception:
-        from evennia.utils import logger
-        logger.log_trace()
 
 def _format(seconds, *divisors) :
     """
-    Helper function. Creates a tuple of even dividends given
-    a range of divisors.
+    Helper function. Creates a tuple of even dividends given a range
+    of divisors.
 
-    Inputs
-      seconds - number of seconds to format
-      *divisors - a number of integer dividends. The number of seconds will be
-                  integer-divided by the first number in this sequence, the remainder
-                  will be divided with the second and so on.
-    Output:
-        A tuple of length len(*args)+1, with the last element being the last remaining
-        seconds not evenly divided by the supplied dividends.
+    Args:
+        seconds (int): Number of seconds to format
+        *divisors (int): a sequence of numbers of integer dividends. The
+            number of seconds will be integer-divided by the first number in
+            this sequence, the remainder will be divided with the second and
+            so on.
+    Returns:
+        time (tuple): This tuple has length len(*args)+1, with the
+            last element being the last remaining seconds not evenly
+            divided by the supplied dividends.
 
     """
     results = []
@@ -111,14 +66,14 @@ def _format(seconds, *divisors) :
 
 def runtime(format=False):
     "Get the total runtime of the server since first start (minus downtimes)"
-    runtime = SERVER_RUNTIME + (time() - SERVER_STARTTIME)
+    runtime = SERVER_RUNTIME + (time() - SERVER_RUNTIME_LAST_UPDATED)
     if format:
         return _format(runtime, 31536000, 2628000, 604800, 86400, 3600, 60)
     return runtime
 
 def uptime(format=False):
     "Get the current uptime of the server since last reload"
-    uptime = time() - SERVER_STARTTIME
+    uptime = time() - SERVER_START_TIME
     if format:
         return _format(uptime, 31536000, 2628000, 604800, 86400, 3600, 60)
     return uptime
@@ -167,13 +122,3 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
         return _format(gametime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
     return gametime
 
-
-# Time administration routines
-
-def init_gametime():
-    """
-    This is called once, when the server starts for the very first time.
-    """
-    # create the GameTime script and start it
-    game_time = create_script(GameTime)
-    game_time.start()

@@ -91,15 +91,20 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
     instance from a python module, given a python_path. It's usually accessed
     through the cmdsethandler's add() and add_default() methods.
     path - This is the full path to the cmdset object on python dot-form
-    cmdsetobj - the database object/typeclass on which this cmdset is to be
+
+    Args:
+        cmdsetobj (CmdSet): The database object/typeclass on which this cmdset is to be
             assigned (this can be also channels and exits, as well as players
             but there will always be such an object)
-    emit_to_obj - if given, error is emitted to this object (in addition
-                  to logging)
-    no_logging - don't log/send error messages. This can be useful
-                if import_cmdset is just used to check if this is a
-                valid python path or not.
-    function returns None if an error was encountered or path not found.
+        emit_to_obj (Object, optional): If given, error is emitted to
+            this object (in addition to logging)
+        no_logging (bool, optional): Don't log/send error messages.
+            This can be useful if import_cmdset is just used to check if
+            this is a valid python path or not.
+    Returns:
+        cmdset (CmdSet): If an error was encountered, `commands.cmdsethandler._ErrorCmdSet`
+            is returned for the benefit of the handler.
+
     """
 
     python_paths = [path] + ["%s.%s" % (prefix, path)
@@ -124,21 +129,20 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             return cmdsetclass
         except ImportError, e:
             logger.log_trace()
-            errstring += _("Error loading cmdset '%s': %s.")
-            errstring = errstring % (python_path, e)
+            errstring += _("Error loading cmdset {path}: {error}")
+            errstring = errstring.format(path=python_path, error=e)
         except KeyError:
             logger.log_trace()
-            errstring += _("Error in loading cmdset: No cmdset class '%(classname)s' in %(modulepath)s.")
-            errstring = errstring % {"classname": classname,
-                                     "modulepath": python_path}
+            errstring += _("Error in loading cmdset: No cmdset class '{classname}' in {path}.")
+            errstring = errstring.format(classname=classname, path=python_path)
         except SyntaxError, e:
             logger.log_trace()
-            errstring += _("SyntaxError encountered when loading cmdset '%s': %s.")
-            errstring = errstring % (python_path, e)
+            errstring += _("SyntaxError encountered when loading cmdset '{path}': {error}.")
+            errstring = errstring.format(path=python_path, error=e)
         except Exception, e:
             logger.log_trace()
-            errstring += _("Compile/Run error when loading cmdset '%s': %s.")
-            errstring = errstring % (python_path, e)
+            errstring += _("Compile/Run error when loading cmdset '{path}': {error}.")
+            errstring = errstring.format(path=python_path, error=e)
 
     if errstring:
         # returning an empty error cmdset
@@ -214,21 +218,23 @@ class CmdSetHandler(object):
         mergetype = self.mergetype_stack[-1]
         if mergetype != self.current.mergetype:
             merged_on = self.cmdset_stack[-2].key
-            mergetype = _("custom %(mergetype)s on cmdset '%(merged_on)s'") % \
-                          {"mergetype": mergetype, "merged_on":merged_on}
+            mergetype = _("custom {mergetype} on cmdset '{cmdset}'")
+            mergetype = mergetype.format(mergetype=mergetype, cmdset=merged_on)
         if mergelist:
-            string += _(" <Merged %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s") % \
-                    {"mergelist": "+".join(mergelist),
-                     "mergetype": mergetype, "prio": self.current.priority,
-                     "current":self.current}
+            tmpstring = _(" <Merged {mergelist} {mergetype}, prio {prio}>: {current}")
+            string += tmpstring.format(mergelist="+".join(mergelist),
+                                      mergetype=mergetype, prio=self.current.priority,
+                                      current=self.current)
         else:
             permstring = "non-perm"
             if self.current.permanent:
                 permstring = "perm"
-            string += _(" <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s") % \
-                     {"key": self.current.key, "mergetype": mergetype,
-                      "prio": self.current.priority, "permstring": permstring,
-                      "keylist": ", ".join(cmd.key for cmd in sorted(self.current, key=lambda o: o.key))}
+            tmpstring = _(" <{key} ({mergetype}, prio {prio}, {permstring})>:\n {keylist}")
+            string += tmpstring.format(key=self.current.key, mergetype=mergetype,
+                                       prio=self.current.priority,
+                                       permstring=permstring,
+                                       keylist=", ".join(cmd.key for
+                                           cmd in sorted(self.current, key=lambda o: o.key)))
         return string.strip()
 
     def _import_cmdset(self, cmdset_path, emit_to_obj=None):
@@ -299,7 +305,9 @@ class CmdSetHandler(object):
         that has to be documented.
         """
         if not (isinstance(cmdset, basestring) or utils.inherits_from(cmdset, CmdSet)):
-            raise Exception(_("Only CmdSets can be added to the cmdsethandler!"))
+            string = _("Only CmdSets can be added to the cmdsethandler!")
+            raise Exception(string)
+
         if callable(cmdset):
             cmdset = cmdset(self.obj)
         elif isinstance(cmdset, basestring):
@@ -332,7 +340,8 @@ class CmdSetHandler(object):
         """
         if callable(cmdset):
             if not utils.inherits_from(cmdset, CmdSet):
-                raise Exception(_("Only CmdSets can be added to the cmdsethandler!"))
+                string = _("Only CmdSets can be added to the cmdsethandler!")
+                raise Exception(string)
             cmdset = cmdset(self.obj)
         elif isinstance(cmdset, basestring):
             # this is (maybe) a python path. Try to import from cache.

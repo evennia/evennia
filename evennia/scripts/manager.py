@@ -71,7 +71,7 @@ class ScriptDBManager(TypedObjectManager):
             script = []
             dbref = self.dbref(key)
             if dbref or dbref == 0:
-                script = self.dbref_search(dbref)
+                script = [self.dbref_search(dbref)]
             if not script:
                 script = self.filter(db_key=key)
             return script
