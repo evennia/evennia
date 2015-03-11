@@ -288,10 +288,10 @@ class DefaultPlayer(PlayerDB):
 
     def get_all_puppets(self):
         """
-        Get all currently puppeted objects as a list
+        Get all currently puppeted objects as a list.
         """
-        return [session.puppet for session in self.get_all_sessions()
-                                                       if session.puppet]
+        return list(set(session.puppet for session in self.get_all_sessions()
+                                                    if session.puppet))
 
     def __get_single_puppet(self):
         """
