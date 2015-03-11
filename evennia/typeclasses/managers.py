@@ -54,7 +54,19 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         strvalue, by object (it is stored on) or with a combination of
         those criteria.
 
-        attrtype - one of None (normal Attributes) or "nick"
+        Attrs:
+            key (str, optional): The attribute's key to search for
+            category (str, optional): The category of the attribute(s) to search for.
+            value (str, optional): The attribute value to search for. Note that this
+                is not a very efficient operation since it will query for a pickled
+                entity. Mutually exclusive to `strvalue`.
+            strvalue (str, optional): The str-value to search for. Most Attributes
+                will not have strvalue set. This is mutually exclusive to the `value`
+                keyword and will take precedence if given.
+            obj (Object, optional): On which object the Attribute to search for is.
+            attrype (str, optional): An attribute-type to search for. By default this
+                is either `None` (normal Attributes) or `"nick"`.
+
         """
         query = [("attribute__db_attrtype", attrtype)]
         if obj:
@@ -64,7 +76,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         if category:
             query.append(("attribute__db_category", category))
         if strvalue:
-            query.append(("attribute__db_strvalue", value))
+            query.append(("attribute__db_strvalue", strvalue))
         elif value:
             # strvalue and value are mutually exclusive
             query.append(("attribute__db_value", value))
