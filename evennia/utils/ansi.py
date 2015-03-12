@@ -618,7 +618,7 @@ class ANSIString(unicode):
         code_indexes.extend(
             cls._shifter(second._code_indexes, len(first._raw_string)))
         char_indexes.extend(
-            cls._shifter(second._code_indexes, len(first._raw_string)))
+            cls._shifter(second._char_indexes, len(first._raw_string)))
         return ANSIString(raw_string, code_indexes=code_indexes,
                           char_indexes=char_indexes,
                           clean_string=clean_string)
@@ -660,7 +660,7 @@ class ANSIString(unicode):
         a start and end with [x:y], but many forget that they can also specify
         an interval with [x:y:z]. As a result, not only do we have to track
         the ANSI Escapes that have played before the start of the slice, we
-        must also replay any in these intervals, should the exist.
+        must also replay any in these intervals, should they exist.
 
         Thankfully, slicing the _char_indexes table gives us the actual
         indexes that need slicing in the raw string. We can check between
