@@ -1,4 +1,5 @@
 # Evennia MUD/MU\* Creation System ![evennia logo][logo]
+[![Build Status](https://travis-ci.org/evennia/evennia.svg?branch=master)](https://travis-ci.org/evennia/evennia)
 
 *Evennia* is a modern library for creating [online multiplayer text
 games][wikimudpage] (MUD, MUSH, MUX, MOO etc) in pure Python. It allows game
