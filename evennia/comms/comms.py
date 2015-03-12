@@ -58,44 +58,78 @@ class DefaultChannel(ChannelDB):
 
     # helper methods, for easy overloading
 
-    def has_connection(self, player):
+    def has_connection(self, subscriber):
         """
         Checks so this player is actually listening
         to this channel.
-        """
-        if hasattr(player, "player"):
-            player = player.player
-        return player in self.db_subscriptions.all()
 
-    def connect(self, player):
-        "Connect the user to this channel. This checks access."
-        if hasattr(player, "player"):
-            player = player.player
+        Args:
+            subscriber (Player or Object): Entity to check.
+
+        Returns:
+            has_sub (bool): Whether the subscriber is subscribing to
+                this channel or not.
+
+        Notes:
+            This will first try Player subscribers and only try Object
+                if the Player fails.
+
+        """
+        has_sub = self.subscriptions.has(subscriber)
+        if not has_sub and hasattr(subscriber, "player"):
+            # it's common to send an Object when we
+            # by default only allow Players to subscribe.
+            has_sub = self.subscriptions.has(subscriber.player)
+        return has_sub
+
+
+    def connect(self, subscriber):
+        """
+        Connect the user to this channel. This checks access.
+
+        Args:
+            subscriber (Player or Object): the entity to subscribe
+                to this channel.
+
+        Returns:
+            success (bool): Whether or not the addition was
+                successful.
+
+        """
         # check access
-        if not self.access(player, 'listen'):
+        if not self.access(subscriber, 'listen'):
             return False
         # pre-join hook
-        connect = self.pre_join_channel(player)
+        connect = self.pre_join_channel(subscriber)
         if not connect:
             return False
         # subscribe
-        self.db_subscriptions.add(player)
+        self.subscriptions.add(subscriber)
         # post-join hook
-        self.post_join_channel(player)
+        self.post_join_channel(subscriber)
         return True
 
-    def disconnect(self, player):
-        "Disconnect user from this channel."
-        if hasattr(player, "player"):
-            player = player.player
+    def disconnect(self, subscriber):
+        """
+        Disconnect entity from this channel.
+
+        Args:
+            subscriber (Player of Object): the
+                entity to disconnect.
+
+        Returns:
+            success (bool): Whether or not the removal was
+                successful.
+
+        """
         # pre-disconnect hook
-        disconnect = self.pre_leave_channel(player)
+        disconnect = self.pre_leave_channel(subscriber)
         if not disconnect:
             return False
         # disconnect
-        self.db_subscriptions.remove(player)
+        self.subscriptions.remove(subscriber)
         # post-disconnect hook
-        self.post_leave_channel(player)
+        self.post_leave_channel(subscriber)
         return True
 
     def access(self, accessing_obj, access_type='listen', default=False):
@@ -133,17 +167,17 @@ class DefaultChannel(ChannelDB):
 
     def distribute_message(self, msg, online=False):
         """
-        Method for grabbing all listeners that a message should be sent to on
-        this channel, and sending them a message.
+        Method for grabbing all listeners that a message should be
+        sent to on this channel, and sending them a message.
         """
         # get all players connected to this channel and send to them
-        for player in self.db_subscriptions.all():
+        for entity in self.subscriptions.all():
             try:
                 # note our addition of the from_channel keyword here. This could be checked
                 # by a custom player.msg() to treat channel-receives differently.
-                player.msg(msg.message, from_obj=msg.senders, from_channel=self.id)
+                entity.msg(msg.message, from_obj=msg.senders, from_channel=self.id)
             except AttributeError, e:
-                logger.log_trace("%s\nCannot send msg to player '%s'." % (e, player))
+                logger.log_trace("%s\nCannot send msg to '%s'." % (e, entity))
 
     def msg(self, msgobj, header=None, senders=None, sender_strings=None,
             persistent=False, online=False, emit=False, external=False):

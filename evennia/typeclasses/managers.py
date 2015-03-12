@@ -97,7 +97,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         if category:
             query.append(("db_attributes__db_category", category))
         if strvalue:
-            query.append(("db_attributes__db_strvalue", value))
+            query.append(("db_attributes__db_strvalue", strvalue))
         elif value:
             # strvalue and value are mutually exclusive
             query.append(("db_attributes__db_value", value))

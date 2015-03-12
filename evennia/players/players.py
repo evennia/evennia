@@ -707,7 +707,7 @@ class DefaultGuest(DefaultPlayer):
         MULTISESSION_MODE we're in. They don't get a choice.
         """
         self._send_to_connect_channel("{G%s connected{n" % self.key)
-        self._go_ic_at_login(sessid=sessid)
+        self.puppet_object(sessid, self.db._last_puppet)
 
     def at_disconnect(self):
         """
