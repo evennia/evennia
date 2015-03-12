@@ -130,7 +130,7 @@ class CmdUnconnectedConnect(MuxCommand):
                     typeclass = settings.BASE_CHARACTER_TYPECLASS
                     ptypeclass = settings.BASE_GUEST_TYPECLASS
                     new_player = _create_player(session, playername, password,
-                                                home, permissions, ptypeclass)
+                                                permissions, ptypeclass)
                     if new_player:
                         _create_character(session, new_player, typeclass,
                                         home, permissions)
