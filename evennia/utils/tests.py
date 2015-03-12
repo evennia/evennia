@@ -135,6 +135,21 @@ class ANSIStringTestCase(TestCase):
         self.assertEqual(mxp1, ANSIString(mxp1))
         self.assertEqual(mxp2, unicode(ANSIString(mxp2)))
 
+    def test_add(self):
+        """
+        Verify concatination works correctly.
+        """
+        a = ANSIString("{gTest")
+        b = ANSIString("{cString{n")
+        c = a + b
+        result = u'\x1b[1m\x1b[32mTest\x1b[1m\x1b[36mString\x1b[0m'
+        self.checker(c, result, u'TestString')
+        char_table = [9, 10, 11, 12, 22, 23, 24, 25, 26, 27]
+        code_table = [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21, 28, 29, 30, 31
+        ]
+        self.table_check(c, char_table, code_table)
+
 
 class TestIsIter(TestCase):
     def test_is_iter(self):
