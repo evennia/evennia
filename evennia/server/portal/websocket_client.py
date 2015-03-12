@@ -31,7 +31,7 @@ import json
 from twisted.internet.protocol import Protocol
 from evennia.server.session import Session
 from evennia.utils.logger import log_trace
-from evennia.utils.utils import to_str, make_iter
+from evennia.utils.utils import to_str
 from evennia.utils.text2html import parse_html
 
 
@@ -148,7 +148,7 @@ class WebSocketClient(Protocol, Session):
         raw = kwargs.get("raw", False)
         nomarkup = kwargs.get("nomarkup", False)
         if "prompt" in kwargs:
-            self.sendLine("PROMPT" + parse_html(kwargs["prompt"], strip_ansi=nomarkup))
+            self.sendLine("PRT" + parse_html(kwargs["prompt"], strip_ansi=nomarkup))
         if raw:
             self.sendLine("CMD" + text)
         else:
