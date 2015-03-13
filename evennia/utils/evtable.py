@@ -221,7 +221,6 @@ class ANSITextWrapper(TextWrapper):
 
             # Maximum width for this line.
             width = self.width - m_len(indent)
-            print "width:", width
 
             # First chunk on line is whitespace -- drop it, unless this
             # is the very beginning of the text (ie. no lines started yet).
@@ -979,7 +978,7 @@ class EvTable(object):
                 that may occationally have issues with UTF-8 characters.
             header_line_char (str, optional): Character to use for underlining
                 the header row (default is '~'). Requires `border` to not be `None`.
-            width (int, optional): Dixed width of table. If not set,
+            width (int, optional): Fixed width of table. If not set,
                 width is set by the total width of each column.  This will
                 resize individual columns in the vertical direction to fit.
             height (int, optional): Fixed height of table. Defaults to being unset. Width is
@@ -1116,7 +1115,7 @@ class EvTable(object):
             "add vertical border along left table edge"
             if ix == 0:
                 ret["border_left"] = bwidth
-                ret["trim_horizontal"] = bwidth
+                #ret["trim_horizontal"] = bwidth
             return ret
 
         def top_edge(ret):
