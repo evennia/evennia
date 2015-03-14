@@ -18,8 +18,6 @@ class DefaultChannel(ChannelDB):
     """
     # typeclass setup
     __metaclass__ = TypeclassBase
-    __settingclasspath__ = settings.BASE_CHANNEL_TYPECLASS
-    __defaultclasspath__ = "evennia.comms.comms.DefaultChannel"
     objects = ChannelManager()
 
     def at_first_save(self):

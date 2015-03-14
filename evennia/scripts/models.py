@@ -100,6 +100,10 @@ class ScriptDB(TypedObject):
     # Database manager
     objects = ScriptDBManager()
 
+    # defaults
+    __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
+    __defaultclasspath__ = "evennia.scripts.scripts.DefaultScript"
+
     class Meta:
         "Define Django meta options"
         verbose_name = "Script"

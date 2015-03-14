@@ -469,8 +469,8 @@ class ChannelDB(TypedObject):
     # Database manager
     objects = managers.ChannelDBManager()
 
-    _typeclass_paths = settings.CHANNEL_TYPECLASS_PATHS
-    _default_typeclass_path = settings.BASE_CHANNEL_TYPECLASS or "evennia.comms.comms.Channel"
+    __settingclasspath__ = settings.BASE_CHANNEL_TYPECLASS
+    __defaultclasspath__ = "evennia.comms.comms.DefaultChannel"
 
     class Meta:
         "Define Django meta options"
