@@ -128,8 +128,8 @@ class TypeclassBase(SharedMemoryModelBase):
 
 class DbHolder(object):
     "Holder for allowing property access of attributes"
-    def __init__(self, obj, name):
-        _SA(self, name, obj.attributes)
+    def __init__(self, obj, name, manager_name='attributes'):
+        _SA(self, name, _GA(obj, manager_name))
         _SA(self, 'name', name)
 
     def __getattribute__(self, attrname):
@@ -598,30 +598,7 @@ class TypedObject(SharedMemoryModel):
         try:
             return self._ndb_holder
         except AttributeError:
-            class NDbHolder(object):
-                "Holder for allowing property access of attributes"
-                def __init__(self, obj):
-                    _SA(self, "nattrhandler", obj.nattributes)
-
-                def __getattribute__(self, attrname):
-                    if attrname == 'all':
-                        # we allow to overload our default .all
-                        attr = _GA(self, "nattrhandler").get('all')
-                        if attr:
-                            return attr
-                        return self.all
-                    return _GA(self, "nattrhandler").get(attrname)
-
-                def __setattr__(self, attrname, value):
-                    _GA(self, "nattrhandler").add(attrname, value)
-
-                def __delattr__(self, attrname):
-                    _GA(self, "nattrhandler").remove(attrname)
-
-                def get_all(self):
-                    return _GA(self, "nattrhandler").all()
-                all = property(get_all)
-            self._ndb_holder = NDbHolder(self)
+            self._ndb_holder = DbHolder(self, "nattrhandler", manager_name='nattributes')
             return self._ndb_holder
 
     #@db.setter
