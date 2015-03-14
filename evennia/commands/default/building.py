@@ -1130,10 +1130,10 @@ class CmdOpen(ObjManipCommand):
         # check if this exit object already exists at the location.
         # we need to ignore errors (so no automatic feedback)since we
         # have to know the result of the search to decide what to do.
-        exit_obj = caller.search(exit_name, location=location, quiet=True)
+        exit_obj = caller.search(exit_name, location=location, quiet=True, exact=True)
         if len(exit_obj) > 1:
             # give error message and return
-            caller.search(exit_name, location=location)
+            caller.search(exit_name, location=location, exact=True)
             return
         if exit_obj:
             exit_obj = exit_obj[0]
