@@ -2211,6 +2211,10 @@ class CmdScript(MuxCommand):
             caller.msg(string)
             return
 
+        if not self.lhs:
+            caller.msg("To create a global script you need {w@scripts/add <typeclass>{n.")
+            return
+
         obj = caller.search(self.lhs)
         if not obj:
             return
