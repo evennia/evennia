@@ -284,13 +284,10 @@ CMDSET_PATHS = ["commands"]
 # Server-side session class used.
 SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
 
-# Base paths for typeclassed object classes. These paths must be
-# defined relatively to Evennia's root directory. They will be searched in
-# order to find relative typeclass paths.
-OBJECT_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
-SCRIPT_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
-PLAYER_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
-CHANNEL_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
+# These are paths that will be prefixed to the paths given if the
+# immediately entered path fail to find a typeclass. It allows for
+# shorter input strings. They must either base off the game directory
+# or start from the evennia library.
 TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 
 # Typeclass for player objects (linked to a character) (fallback)

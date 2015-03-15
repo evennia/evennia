@@ -618,6 +618,17 @@ def error_check_python_modules():
     if hasattr(settings, "CHARACTER_DEFAULT_HOME"):
         raise DeprecationWarning("settings.CHARACTER_DEFAULT_HOME should be renamed to DEFAULT_HOME. " \
                 "See also settings.START_LOCATION (see evennia/settings_default.py).")
+    deprstring = "settings.%s is now merged into settings.TYPECLASS_PATHS. Update your settings file."
+    if hasattr(settings, "OBJECT_TYPECLASS_PATHS"):
+        raise DeprecationWarning(deprstring % "OBJECT_TYPECLASS_PATHS")
+    if hasattr(settings, "SCRIPT_TYPECLASS_PATHS"):
+        raise DeprecationWarning(deprstring % "SCRIPT_TYPECLASS_PATHS")
+    if hasattr(settings, "PLAYER_TYPECLASS_PATHS"):
+        raise DeprecationWarning(deprstring % "PLAYER_TYPECLASS_PATHS")
+    if hasattr(settings, "CHANNEL_TYPECLASS_PATHS"):
+        raise DeprecationWarning(deprstring % "CHANNEL_TYPECLASS_PATHS")
+
+
 
     from evennia.commands import cmdsethandler
     if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None): print "Warning: CMDSET_UNLOGGED failed to load!"
