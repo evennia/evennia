@@ -291,6 +291,7 @@ OBJECT_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tut
 SCRIPT_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 PLAYER_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 CHANNEL_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
+TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 
 # Typeclass for player objects (linked to a character) (fallback)
 BASE_PLAYER_TYPECLASS = "typeclasses.players.Player"

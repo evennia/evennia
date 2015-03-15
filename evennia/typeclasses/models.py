@@ -245,7 +245,7 @@ class TypedObject(SharedMemoryModel):
         super(TypedObject, self).__init__(*args, **kwargs)
         if typeclass_path:
             try:
-                self.__class__ = class_from_module(typeclass_path)
+                self.__class__ = class_from_module(typeclass_path, defaultpaths=settings.TYPECLASS_PATHS)
             except Exception:
                 log_trace()
                 try:
@@ -390,15 +390,18 @@ class TypedObject(SharedMemoryModel):
                 if the object's type is exactly this typeclass, ignoring
                 parents.
         """
-        if not isinstance(typeclass, basestring):
-            typeclass = typeclass.path
+        if isinstance(typeclass, basestring):
+            typeclass = [typeclass] + ["%s.%s" % (prefix, typeclass) for prefix in settings.TYPECLASS_PATHS]
+        else:
+            typeclass = [typeclass.path]
 
+        selfpath = self.path
         if exact:
-            return typeclass == self.path
+            # check only exact match
+            return selfpath in typeclass
         else:
             # check parent chain
-            selfpath = self.path
-            return any(cls for cls in self.__class__.mro() if cls.path == selfpath)
+            return any(cls.path in typeclass for cls in self.__class__.mro())
 
     def swap_typeclass(self, new_typeclass, clean_attributes=False,
                        run_start_hooks=True, no_default=True):
@@ -439,7 +442,7 @@ class TypedObject(SharedMemoryModel):
 
         if not callable(new_typeclass):
             # this is an actual class object - build the path
-            new_typeclass = class_from_module(new_typeclass)
+            new_typeclass = class_from_module(new_typeclass, defaultpaths=settings.TYPECLASS_PATHS)
 
         # if we get to this point, the class is ok.
 
