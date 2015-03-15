@@ -1013,7 +1013,7 @@ class EvTable(object):
                 excess = len(header) - len(table)
                 if excess > 0:
                     # header bigger than table
-                    self.table.extend([] for i in xrange(excess))
+                    table.extend([] for i in xrange(excess))
                 elif excess < 0:
                     # too short header
                     header.extend(_to_ansi(["" for i in xrange(abs(excess))]))
