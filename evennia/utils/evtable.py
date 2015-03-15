@@ -10,7 +10,9 @@ due to a bug in the python interpreter and print.
 Example usage:
 
 ```python
-  table = EvTable("Heading1", "Heading2",
+  from evennia.utils import evtable
+
+  table = evtable.EvTable("Heading1", "Heading2",
                   table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
   table.add_column("This is long data", "This is even longer data")
   table.add_row("This is a single row")
