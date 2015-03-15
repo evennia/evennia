@@ -2250,7 +2250,7 @@ class CmdScript(MuxCommand):
 
             else:
                 paths = [self.rhs] + ["%s.%s" % (prefix, self.rhs)
-                                      for prefix in settings.SCRIPT_TYPECLASS_PATHS]
+                                      for prefix in settings.TYPECLASS_PATHS]
                 if "stop" in self.switches:
                     # we are stopping an already existing script
                     for path in paths:
