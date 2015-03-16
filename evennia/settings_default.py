@@ -140,6 +140,11 @@ IDLE_COMMAND = "idle"
 # Add sets for languages/regions your players are likely to use.
 # (see http://en.wikipedia.org/wiki/Character_encoding)
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
+# Regular expression applied to all output to a given session in order
+# to strip away characters (usually various forms of decorations) for the benefit
+# of users with screen readers. Note that ANSI/MXP doesn't need to
+# be stripped this way, that is handled automatically.
+SCREENREADER_REGEX_STRIP = r"\+-+|\+$|\+~|--+|~~+|==+"
 # The game server opens an AMP port so that the portal can
 # communicate with it. This is an internal functionality of Evennia, usually
 # operating between two processes on the same machine. You usually don't need to
