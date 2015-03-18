@@ -107,7 +107,11 @@ allows them to the executed in blocks. This way of working assures a
 sequential execution of the file and allows for features like stepping
 from block to block (without executing those coming before), as well
 as automatic deletion of created objects etc. You can however also run
+<<<<<<< HEAD
+a batch-code Python file directly using Python (and can also be de).
+=======
 a batch-code Python file directly using Python.
+>>>>>>> upstream/master
 
 Code blocks are separated by python comments starting with special
 code words.
