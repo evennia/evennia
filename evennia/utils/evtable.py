@@ -10,7 +10,9 @@ due to a bug in the python interpreter and print.
 Example usage:
 
 ```python
-  table = EvTable("Heading1", "Heading2",
+  from evennia.utils import evtable
+
+  table = evtable.EvTable("Heading1", "Heading2",
                   table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
   table.add_column("This is long data", "This is even longer data")
   table.add_row("This is a single row")
@@ -115,7 +117,7 @@ table string.
 #from textwrap import wrap
 from textwrap import TextWrapper
 from copy import deepcopy, copy
-from evennia.utils.utils import to_unicode
+from evennia.utils.utils import to_unicode, m_len
 from evennia.utils.ansi import ANSIString
 
 def _to_ansi(obj):
@@ -220,7 +222,7 @@ class ANSITextWrapper(TextWrapper):
                 indent = self.initial_indent
 
             # Maximum width for this line.
-            width = self.width - len(indent)
+            width = self.width - m_len(indent)
 
             # First chunk on line is whitespace -- drop it, unless this
             # is the very beginning of the text (ie. no lines started yet).
@@ -228,7 +230,7 @@ class ANSITextWrapper(TextWrapper):
                 del chunks[-1]
 
             while chunks:
-                l = len(chunks[-1])
+                l = m_len(chunks[-1])
 
                 # Can at least squeeze this chunk onto the current line.
                 if cur_len + l <= width:
@@ -241,7 +243,7 @@ class ANSITextWrapper(TextWrapper):
 
             # The current line is full, and the next chunk is too big to
             # fit on *any* line (not just this one).
-            if chunks and len(chunks[-1]) > width:
+            if chunks and m_len(chunks[-1]) > width:
                 self._handle_long_word(chunks, cur_line, cur_len, width)
 
             # If the last chunk on this line is all whitespace, drop it.
@@ -423,7 +425,7 @@ class EvCell(object):
 
         #self.data = self._split_lines(unicode(data))
         self.data = self._split_lines(_to_ansi(data))
-        self.raw_width = max(len(line) for line in self.data)
+        self.raw_width = max(m_len(line) for line in self.data)
         self.raw_height = len(self.data)
 
         # this is extra trimming required for cels in the middle of a table only
@@ -458,9 +460,9 @@ class EvCell(object):
             width (int): The width to crop `text` to.
 
         """
-        if len(text) > width:
+        if m_len(text) > width:
             crop_string = self.crop_string
-            return text[:width-len(crop_string)] + crop_string
+            return text[:width-m_len(crop_string)] + crop_string
         return text
 
     def _reformat(self):
@@ -500,7 +502,7 @@ class EvCell(object):
         width = self.width
         adjusted_data = []
         for line in data:
-            if 0 < width < len(line):
+            if 0 < width < m_len(line):
                 # replace_whitespace=False, expand_tabs=False is a
                 # fix for ANSIString not supporting expand_tabs/translate
                 adjusted_data.extend([ANSIString(part + ANSIString("{n"))
@@ -535,7 +537,7 @@ class EvCell(object):
             text (str): Centered text.
 
         """
-        excess = width - len(text)
+        excess = width - m_len(text)
         if excess <= 0:
             return text
         if excess % 2:
@@ -695,7 +697,7 @@ class EvCell(object):
             natural_width (int): Width of cell.
 
         """
-        return len(self.formatted[0]) #if self.formatted else 0
+        return m_len(self.formatted[0]) #if self.formatted else 0
 
     def replace_data(self, data, **kwargs):
         """
@@ -711,7 +713,7 @@ class EvCell(object):
         """
         #self.data = self._split_lines(unicode(data))
         self.data = self._split_lines(_to_ansi(data))
-        self.raw_width = max(len(line) for line in self.data)
+        self.raw_width = max(m_len(line) for line in self.data)
         self.raw_height = len(self.data)
         self.reformat(**kwargs)
 
@@ -978,7 +980,7 @@ class EvTable(object):
                 that may occationally have issues with UTF-8 characters.
             header_line_char (str, optional): Character to use for underlining
                 the header row (default is '~'). Requires `border` to not be `None`.
-            width (int, optional): Dixed width of table. If not set,
+            width (int, optional): Fixed width of table. If not set,
                 width is set by the total width of each column.  This will
                 resize individual columns in the vertical direction to fit.
             height (int, optional): Fixed height of table. Defaults to being unset. Width is
@@ -1011,7 +1013,7 @@ class EvTable(object):
                 excess = len(header) - len(table)
                 if excess > 0:
                     # header bigger than table
-                    self.table.extend([] for i in xrange(excess))
+                    table.extend([] for i in xrange(excess))
                 elif excess < 0:
                     # too short header
                     header.extend(_to_ansi(["" for i in xrange(abs(excess))]))
@@ -1115,7 +1117,7 @@ class EvTable(object):
             "add vertical border along left table edge"
             if ix == 0:
                 ret["border_left"] = bwidth
-                ret["trim_horizontal"] = bwidth
+                #ret["trim_horizontal"] = bwidth
             return ret
 
         def top_edge(ret):

@@ -140,6 +140,11 @@ IDLE_COMMAND = "idle"
 # Add sets for languages/regions your players are likely to use.
 # (see http://en.wikipedia.org/wiki/Character_encoding)
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
+# Regular expression applied to all output to a given session in order
+# to strip away characters (usually various forms of decorations) for the benefit
+# of users with screen readers. Note that ANSI/MXP doesn't need to
+# be stripped this way, that is handled automatically.
+SCREENREADER_REGEX_STRIP = r"\+-+|\+$|\+~|--+|~~+|==+"
 # The game server opens an AMP port so that the portal can
 # communicate with it. This is an internal functionality of Evennia, usually
 # operating between two processes on the same machine. You usually don't need to
@@ -284,13 +289,11 @@ CMDSET_PATHS = ["commands"]
 # Server-side session class used.
 SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
 
-# Base paths for typeclassed object classes. These paths must be
-# defined relatively to Evennia's root directory. They will be searched in
-# order to find relative typeclass paths.
-OBJECT_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
-SCRIPT_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
-PLAYER_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
-CHANNEL_TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
+# These are paths that will be prefixed to the paths given if the
+# immediately entered path fail to find a typeclass. It allows for
+# shorter input strings. They must either base off the game directory
+# or start from the evennia library.
+TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 
 # Typeclass for player objects (linked to a character) (fallback)
 BASE_PLAYER_TYPECLASS = "typeclasses.players.Player"

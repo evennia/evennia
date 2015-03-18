@@ -349,6 +349,105 @@ class TempMsg(object):
 #
 #------------------------------------------------------------
 
+class SubscriptionHandler(object):
+    """
+    This handler manages subscriptions to the
+    channel and hides away which type of entity is
+    subscribing (Player or Object)
+    """
+    def __init__(self, obj):
+        """
+        Initialize the handler
+
+        Attr:
+            obj (ChannelDB): The channel the handler sits on.
+
+        """
+        self.obj = obj
+
+    def has(self, entity):
+        """
+        Check if the given entity subscribe to this channel
+
+        Args:
+            entity (str, Player or Object): The entity to return. If
+                a string, it assumed to be the key or the #dbref
+                of the entity.
+
+        Returns:
+            subscriber (Player, Object or None): The given
+                subscriber.
+
+        """
+        clsname = entity.__dbclass__.__name__
+        if clsname == "PlayerDB":
+            return entity in self.obj.db_subscriptions.all()
+        elif clsname == "ObjectDB":
+            return entity in self.obj.db_object_subscriptions.all()
+
+
+    def add(self, entity):
+        """
+        Subscribe an entity to this channel.
+
+        Args:
+            entity (Player, Object or list): The entity or
+                list of entities to subscribe to this channel.
+
+        Note:
+            No access-checking is done here, this must have
+                been done before calling this method. Also
+                no hooks will be called.
+
+        """
+        for subscriber in make_iter(entity):
+            if subscriber:
+                clsname = subscriber.__dbclass__.__name__
+                # chooses the right type
+                if clsname == "ObjectDB":
+                    self.obj.db_object_subscriptions.add(subscriber)
+                elif clsname == "PlayerDB":
+                    self.obj.db_subscriptions.add(subscriber)
+
+    def remove(self, entity):
+        """
+        Remove a subecriber from the channel.
+
+        Args:
+            entity (Player, Object or list): The entity or
+                entities to un-subscribe from the channel.
+
+        """
+        for subscriber in make_iter(entity):
+            if subscriber:
+                clsname = subscriber.__dbclass__.__name__
+                # chooses the right type
+                if clsname == "PlayerDB":
+                    self.obj.db_subscriptions.remove(entity)
+                elif clsname == "ObjectDB":
+                    self.obj.db_object_subscriptions.remove(entity)
+
+    def all(self):
+        """
+        Get all subscriptions to this channel.
+
+        Returns:
+            subscribers (list): The subscribers. This
+                may be a mix of Players and Objects!
+
+        """
+        return list(self.obj.db_subscriptions.all()) + \
+               list(self.obj.db_object_subscriptions.all())
+
+    def clear(self):
+        """
+        Remove all subscribers from channel.
+
+        """
+        self.obj.db_subscriptions.clear()
+        self.obj.db_object_subscriptions.clear()
+
+
 class ChannelDB(TypedObject):
     """
     This is the basis of a comm channel, only implementing
@@ -364,11 +463,14 @@ class ChannelDB(TypedObject):
     db_subscriptions = models.ManyToManyField("players.PlayerDB",
                        related_name="subscription_set", null=True, verbose_name='subscriptions', db_index=True)
 
+    db_object_subscriptions = models.ManyToManyField("objects.ObjectDB",
+                       related_name="object_subscription_set", null=True, verbose_name='subscriptions', db_index=True)
+
     # Database manager
     objects = managers.ChannelDBManager()
 
-    _typeclass_paths = settings.CHANNEL_TYPECLASS_PATHS
-    _default_typeclass_path = settings.BASE_CHANNEL_TYPECLASS or "evennia.comms.comms.Channel"
+    __settingclasspath__ = settings.BASE_CHANNEL_TYPECLASS
+    __defaultclasspath__ = "evennia.comms.comms.DefaultChannel"
 
     class Meta:
         "Define Django meta options"
@@ -377,3 +479,7 @@ class ChannelDB(TypedObject):
 
     def __str__(self):
         return "Channel '%s' (%s)" % (self.key, self.db.desc)
+
+    @lazy_property
+    def subscriptions(self):
+        return SubscriptionHandler(self)

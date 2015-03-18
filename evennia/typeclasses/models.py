@@ -89,8 +89,23 @@ class TypeclassBase(SharedMemoryModelBase):
         """
 
         # storage of stats
-        attrs["typename"] = name#cls.__name__
+        attrs["typename"] = name
         attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
+        #defaultpath = attrs["__defaultclasspath__"]
+        #attrs["__defaultclass__"] = class_from_module(attrs["__defaultclasspath__"])
+        #try:
+        #    defaultpath = attrs["__defaultclasspath__"]
+        #    attrs["__defaultclass__"] = class_from_module(attrs["__defaultclasspath__"])
+        #except Exception:
+        #    log_trace("Typeclass error for %s: Default typeclass '%s' could not load. "
+        #              "Falling back to library base." % (name, defaultpath))
+        #    try:
+        #        # two levels down from TypedObject will always be the default base class.
+        #        attrs["__defaultclass__"] = cls.__mro__[cls.__mro__.index(TypedObject)-2]
+        #    except Exception:
+        #        log_trace("Critical error for %s: Neither typeclass, "
+        #                  "default fallback nor base class could load." % name)
+        #        attrs["__defaultclass__"] = cls
 
         # typeclass proxy setup
         if not "Meta" in attrs:
@@ -110,6 +125,31 @@ class TypeclassBase(SharedMemoryModelBase):
 
         return new_class
 
+
+class DbHolder(object):
+    "Holder for allowing property access of attributes"
+    def __init__(self, obj, name, manager_name='attributes'):
+        _SA(self, name, _GA(obj, manager_name))
+        _SA(self, 'name', name)
+
+    def __getattribute__(self, attrname):
+        if attrname == 'all':
+            # we allow to overload our default .all
+            attr = _GA(self, _GA(self, 'name')).get("all")
+            if attr:
+                return attr
+            return self.all
+        return _GA(self, _GA(self, 'name')).get(attrname)
+
+    def __setattr__(self, attrname, value):
+        _GA(self, _GA(self, 'name')).add(attrname, value)
+
+    def __delattr__(self, attrname):
+        _GA(self, _GA(self, 'name')).remove(attrname)
+
+    def get_all(self):
+        return _GA(self, _GA(self, 'name')).all()
+    all = property(get_all)
 
 #
 # Main TypedObject abstraction
@@ -172,25 +212,63 @@ class TypedObject(SharedMemoryModel):
 
     def __init__(self, *args, **kwargs):
         """
-        This is the main function of the typeclass system -
-        to dynamically re-apply a class based on the
-        db_typeclass_path rather than use the one in the model.
+        The `__init__` method of typeclasses is the core operational
+        code of the typeclass system, where it dynamically re-applies
+        a class based on the db_typeclass_path database field rather
+        than use the one in the model.
+
+        Args:
+            Passed through to parent.
+
+        Kwargs:
+            Passed through to parent.
+
+        Notes:
+            The loading mechanism will attempt the following steps:
+
+            1. Attempt to load typeclass given on command line
+            1. Attempt to load typeclass stored in db_typeclass_path
+            1. Attempt to load `__settingsclasspath__`, which is by the
+               default classes defined to be the respective user-set
+               base typeclass settings, like `BASE_OBJECT_TYPECLASS`.
+            1. Attempt to load `__defaultclasspath__`, which is the
+               base classes in the library, like DefaultObject etc.
+            1. If everything else fails, use the database model.
+
+            Normal operation is to load successfully at either step 1
+            or 2 depending on how the class was called. Tracebacks
+            will be logged for every step the loader must take beyond
+            2.
 
         """
         typeclass_path = kwargs.pop("typeclass", None)
         super(TypedObject, self).__init__(*args, **kwargs)
         if typeclass_path:
             try:
-                self.__class__ = class_from_module(typeclass_path)
-            except ImportError:
+                self.__class__ = class_from_module(typeclass_path, defaultpaths=settings.TYPECLASS_PATHS)
+            except Exception:
                 log_trace()
+                try:
+                    self.__class__ = class_from_module(self.__settingsclasspath__)
+                except Exception:
+                    log_trace()
+                    try:
+                        self.__class__ = class_from_module(self.__defaultclasspath__)
+                    except Exception:
+                        log_trace()
+                        self.__class__ = self._meta.proxy_for_model or self.__class__
             finally:
                 self.db_typclass_path = typeclass_path
         elif self.db_typeclass_path:
             try:
                 self.__class__ = class_from_module(self.db_typeclass_path)
-            except ImportError:
+            except Exception:
                 log_trace()
+                try:
+                    self.__class__ = class_from_module(self.__defaultclasspath__)
+                except Exception:
+                    log_trace()
+                    self.__dbclass__ = self._meta.proxy_for_model or self.__class__
         else:
             self.db_typeclass_path = "%s.%s" % (self.__module__, self.__class__.__name__)
         # important to put this at the end since _meta is based on the set __class__
@@ -312,15 +390,18 @@ class TypedObject(SharedMemoryModel):
                 if the object's type is exactly this typeclass, ignoring
                 parents.
         """
-        if not isinstance(typeclass, basestring):
-            typeclass = typeclass.path
+        if isinstance(typeclass, basestring):
+            typeclass = [typeclass] + ["%s.%s" % (prefix, typeclass) for prefix in settings.TYPECLASS_PATHS]
+        else:
+            typeclass = [typeclass.path]
 
+        selfpath = self.path
         if exact:
-            return typeclass == self.path
+            # check only exact match
+            return selfpath in typeclass
         else:
             # check parent chain
-            selfpath = self.path
-            return any(cls for cls in self.__class__.mro() if cls.path == selfpath)
+            return any(cls.path in typeclass for cls in self.__class__.mro())
 
     def swap_typeclass(self, new_typeclass, clean_attributes=False,
                        run_start_hooks=True, no_default=True):
@@ -361,7 +442,7 @@ class TypedObject(SharedMemoryModel):
 
         if not callable(new_typeclass):
             # this is an actual class object - build the path
-            new_typeclass = class_from_module(new_typeclass)
+            new_typeclass = class_from_module(new_typeclass, defaultpaths=settings.TYPECLASS_PATHS)
 
         # if we get to this point, the class is ok.
 
@@ -489,30 +570,7 @@ class TypedObject(SharedMemoryModel):
         try:
             return self._db_holder
         except AttributeError:
-            class DbHolder(object):
-                "Holder for allowing property access of attributes"
-                def __init__(self, obj):
-                    _SA(self, "attrhandler", obj.attributes)
-
-                def __getattribute__(self, attrname):
-                    if attrname == 'all':
-                        # we allow to overload our default .all
-                        attr = _GA(self, "attrhandler").get("all")
-                        if attr:
-                            return attr
-                        return self.all
-                    return _GA(self, "attrhandler").get(attrname)
-
-                def __setattr__(self, attrname, value):
-                    _GA(self, "attrhandler").add(attrname, value)
-
-                def __delattr__(self, attrname):
-                    _GA(self, "attrhandler").remove(attrname)
-
-                def get_all(self):
-                    return _GA(self, "attrhandler").all()
-                all = property(get_all)
-            self._db_holder = DbHolder(self)
+            self._db_holder = DbHolder(self, 'attributes')
             return self._db_holder
 
     #@db.setter
@@ -543,30 +601,7 @@ class TypedObject(SharedMemoryModel):
         try:
             return self._ndb_holder
         except AttributeError:
-            class NDbHolder(object):
-                "Holder for allowing property access of attributes"
-                def __init__(self, obj):
-                    _SA(self, "nattrhandler", obj.nattributes)
-
-                def __getattribute__(self, attrname):
-                    if attrname == 'all':
-                        # we allow to overload our default .all
-                        attr = _GA(self, "nattrhandler").get('all')
-                        if attr:
-                            return attr
-                        return self.all
-                    return _GA(self, "nattrhandler").get(attrname)
-
-                def __setattr__(self, attrname, value):
-                    _GA(self, "nattrhandler").add(attrname, value)
-
-                def __delattr__(self, attrname):
-                    _GA(self, "nattrhandler").remove(attrname)
-
-                def get_all(self):
-                    return _GA(self, "nattrhandler").all()
-                all = property(get_all)
-            self._ndb_holder = NDbHolder(self)
+            self._ndb_holder = DbHolder(self, "nattrhandler", manager_name='nattributes')
             return self._ndb_holder
 
     #@db.setter

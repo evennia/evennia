@@ -283,11 +283,16 @@ class ChannelDBManager(TypedObjectManager):
         return None
 
     @returns_typeclass_list
-    def get_subscriptions(self, player):
+    def get_subscriptions(self, entity):
         """
         Return all channels a given player is subscribed to
         """
-        return player.subscription_set.all()
+        clsname = entity.__dbclass__.__name__
+        if clsname == "PlayerDB":
+            return entity.subscription_set.all()
+        if clsname == "ObjectDB":
+            return entity.object_subscription_set.all()
+        return []
 
     @returns_typeclass_list
     def channel_search(self, ostring, exact=True):

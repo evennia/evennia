@@ -63,7 +63,7 @@ DATABASES = {{
 
 # Absolute path to the directory that holds file uploads from web apps.
 # Example: "/home/media/media.lawrence.com"
-MEDIA_ROOT = os.path.join(GAME_DIR, "gamesrc", "web", "media")
+MEDIA_ROOT = os.path.join(GAME_DIR, "web", "media")
 
 # The master urlconf file that contains all of the sub-branches to the
 # applications. Change this to add your own URLs to the website.

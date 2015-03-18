@@ -1250,3 +1250,13 @@ def calledby(callerdepth=1):
     return "[called by '%s': %s:%s %s]" % (frame[3], path, frame[2], frame[4])
 
 
+def m_len(target):
+    """
+    Provides length checking for strings with MXP patterns, and falls
+    back to normal len for other objects.
+    """
+    # Would create circular import if in module root.
+    from evennia.utils.ansi import ANSI_PARSER
+    if inherits_from(target, basestring):
+        return len(ANSI_PARSER.strip_mxp(target))
+    return len(target)

@@ -5,8 +5,8 @@ try:
 except ImportError:
     from django.test import TestCase
 
-from ansi import ANSIString
-import utils
+from .ansi import ANSIString
+from evennia import utils
 
 
 class ANSIStringTestCase(TestCase):
@@ -121,6 +121,35 @@ class ANSIStringTestCase(TestCase):
         result = u'\x1b[1m\x1b[32mTest\x1b[0m'
         self.checker(target.capitalize(), result, u'Test')
 
+    def test_mxp_agnostic(self):
+        """
+        Make sure MXP tags are not treated like ANSI codes, but normal text.
+        """
+        mxp1 = "{lclook{ltat{le"
+        mxp2 = "Start to {lclook here{ltclick somewhere here{le first"
+        self.assertEqual(15, len(ANSIString(mxp1)))
+        self.assertEqual(53, len(ANSIString(mxp2)))
+        # These would indicate an issue with the tables.
+        self.assertEqual(len(ANSIString(mxp1)), len(ANSIString(mxp1).split("\n")[0]))
+        self.assertEqual(len(ANSIString(mxp2)), len(ANSIString(mxp2).split("\n")[0]))
+        self.assertEqual(mxp1, ANSIString(mxp1))
+        self.assertEqual(mxp2, unicode(ANSIString(mxp2)))
+
+    def test_add(self):
+        """
+        Verify concatination works correctly.
+        """
+        a = ANSIString("{gTest")
+        b = ANSIString("{cString{n")
+        c = a + b
+        result = u'\x1b[1m\x1b[32mTest\x1b[1m\x1b[36mString\x1b[0m'
+        self.checker(c, result, u'TestString')
+        char_table = [9, 10, 11, 12, 22, 23, 24, 25, 26, 27]
+        code_table = [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21, 28, 29, 30, 31
+        ]
+        self.table_check(c, char_table, code_table)
+
 
 class TestIsIter(TestCase):
     def test_is_iter(self):
@@ -177,3 +206,26 @@ class TestListToString(TestCase):
         self.assertEqual('1, 2 and 3', utils.list_to_string([1,2,3]))
         self.assertEqual('"1", "2" and "3"', utils.list_to_string([1,2,3], endsep="and", addquote=True))
 
+
+class TestMLen(TestCase):
+    """
+    Verifies that m_len behaves like len in all situations except those
+    where MXP may be involved.
+    """
+    def test_non_mxp_string(self):
+        self.assertEqual(utils.m_len('Test_string'), 11)
+
+    def test_mxp_string(self):
+        self.assertEqual(utils.m_len('{lclook{ltat{le'), 2)
+
+    def test_mxp_ansi_string(self):
+        self.assertEqual(utils.m_len(ANSIString('{lcl{gook{ltat{le{n')), 2)
+
+    def test_non_mxp_ansi_string(self):
+        self.assertEqual(utils.m_len(ANSIString('{gHello{n')), 5)
+
+    def test_list(self):
+        self.assertEqual(utils.m_len([None, None]), 2)
+
+    def test_dict(self):
+        self.assertEqual(utils.m_len({'hello': True, 'Goodbye': False}), 2)

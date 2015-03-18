@@ -208,7 +208,7 @@ class AttributeHandler(object):
                  "attribute__db_attrtype" : self._attrtype}
         attrs = [conn.attribute for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
-                                       attr.db_category.lower() if conn.attribute.db_category else None),
+                                       attr.db_category.lower() if attr.db_category else None),
                             attr) for attr in attrs)
 
     def has(self, key, category=None):

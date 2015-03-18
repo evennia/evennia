@@ -365,32 +365,28 @@ class ServerSessionHandler(SessionHandler):
                         and (tcurr - session.cmd_last) > _IDLE_TIMEOUT):
             self.disconnect(session, reason=reason)
 
-    def player_count(self, count=True):
+    def player_count(self):
         """
         Get the number of connected players (not sessions since a
         player may have more than one session depending on settings).
         Only logged-in players are counted here.
 
-        Args:
-            count (bool): If true, return a count of players, otherwise
-                return a list.
-
         Returns:
-            number (int): If count=True
-            players (list): I count=False
+            nplayer (int): Number of connected players
 
         """
-        players = set(session.uid for session in self.sessions.values() if session.logged_in)
-        if count:
-            return len(players)
-        return players
+        return len(set(session.uid for session in self.sessions.values() if session.logged_in))
 
     def all_connected_players(self):
         """
-        Returns all conected players (not sessions, since a player may
-        have more than one session depending on sessions)
+        Get a unique list of connected and logged-in Players.
+
+        Returns:
+            players (list): All conected Players (which may be fewer than the
+                amount of Sessions due to multi-playing).
+
         """
-        return self.player_count(count=False)
+        return list(set(session.player for session in self.sessions.values() if session.logged_in and session.player))
 
     def session_from_sessid(self, sessid):
         """

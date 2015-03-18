@@ -109,6 +109,7 @@ class DefaultPlayer(PlayerDB):
      """
 
     __metaclass__ = TypeclassBase
+
     objects = PlayerManager()
 
     # properties
@@ -283,15 +284,12 @@ class DefaultPlayer(PlayerDB):
             return session.puppet
         return session.puppet and session.puppet or None
 
-    def get_all_puppets(self, return_dbobj=False):
+    def get_all_puppets(self):
         """
-        Get all currently puppeted objects as a list
+        Get all currently puppeted objects as a list.
         """
-        puppets = [session.puppet for session in self.get_all_sessions()
-                                                            if session.puppet]
-        if return_dbobj:
-            return puppets
-        return [puppet for puppet in puppets]
+        return list(set(session.puppet for session in self.get_all_sessions()
+                                                    if session.puppet))
 
     def __get_single_puppet(self):
         """
@@ -707,7 +705,7 @@ class DefaultGuest(DefaultPlayer):
         MULTISESSION_MODE we're in. They don't get a choice.
         """
         self._send_to_connect_channel("{G%s connected{n" % self.key)
-        self._go_ic_at_login(sessid=sessid)
+        self.puppet_object(sessid, self.db._last_puppet)
 
     def at_disconnect(self):
         """
