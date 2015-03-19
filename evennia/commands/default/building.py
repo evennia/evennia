@@ -35,6 +35,7 @@ except ImportError:
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 ROOM_TYPECLASS = settings.BASE_ROOM_TYPECLASS
 EXIT_TYPECLASS = settings.BASE_EXIT_TYPECLASS
+_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 _PROTOTYPE_PARENTS = None
 
@@ -1874,7 +1875,7 @@ class CmdExamine(ObjManipCommand):
             if things:
                 string += "\n{wContents{n: %s" % ", ".join(["%s(%s)" % (cont.name, cont.dbref) for cont in obj.contents
                                                             if cont not in exits and cont not in pobjs])
-        separator = "-" * 78
+        separator = "-" * _DEFAULT_WIDTH
         #output info
         return '%s\n%s\n%s' % (separator, string.strip(), separator)
 

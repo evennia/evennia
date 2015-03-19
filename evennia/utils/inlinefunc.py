@@ -47,12 +47,13 @@ import re
 from django.conf import settings
 from evennia.utils import utils
 
+_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 # inline functions
 
 def pad(text, *args, **kwargs):
     "Pad to width. pad(text, width=78, align='c', fillchar=' ')"
-    width = 78
+    width = _DEFAULT_WIDTH
     align = 'c'
     fillchar = ' '
     for iarg, arg in enumerate(args):
@@ -68,7 +69,7 @@ def pad(text, *args, **kwargs):
 
 def crop(text, *args, **kwargs):
     "Crop to width. crop(text, width=78, suffix='[...]')"
-    width = 78
+    width = _DEFAULT_WIDTH
     suffix = "[...]"
     for iarg, arg in enumerate(args):
         if iarg == 0:
@@ -81,7 +82,7 @@ def crop(text, *args, **kwargs):
 
 def wrap(text, *args, **kwargs):
     "Wrap/Fill text to width. fill(text, width=78, indent=0)"
-    width = 78
+    width = _DEFAULT_WIDTH
     indent = 0
     for iarg, arg in enumerate(args):
         if iarg == 0:

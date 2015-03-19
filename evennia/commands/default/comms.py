@@ -23,6 +23,7 @@ __all__ = ("CmdAddCom", "CmdDelCom", "CmdAllCom",
            "CmdCWho", "CmdChannelCreate", "CmdClock", "CmdCdesc",
            "CmdPage", "CmdIRC2Chan", "CmdRSS2Chan")#, "CmdIMC2Chan", "CmdIMCInfo",
            #"CmdIMCTell")
+_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 
 def find_channel(caller, channelname, silent=False, noaliases=False):
@@ -276,7 +277,7 @@ class CmdChannels(MuxPlayerCommand):
 
         if self.cmdstring == "comlist":
             # just display the subscribed channels with no extra info
-            comtable = evtable.EvTable("{wchannel{n", "{wmy aliases{n", "{wdescription{n", align="l", maxwidth=78)
+            comtable = evtable.EvTable("{wchannel{n", "{wmy aliases{n", "{wdescription{n", align="l", maxwidth=_DEFAULT_WIDTH)
             #comtable = prettytable.PrettyTable(["{wchannel", "{wmy aliases", "{wdescription"])
             for chan in subs:
                 clower = chan.key.lower()
@@ -289,7 +290,7 @@ class CmdChannels(MuxPlayerCommand):
             caller.msg("\n{wChannel subscriptions{n (use {w@channels{n to list all, {waddcom{n/{wdelcom{n to sub/unsub):{n\n%s" % comtable)
         else:
             # full listing (of channels caller is able to listen to)
-            comtable = evtable.EvTable("{wsub{n", "{wchannel{n", "{wmy aliases{n", "{wlocks{n", "{wdescription{n", maxwidth=78)
+            comtable = evtable.EvTable("{wsub{n", "{wchannel{n", "{wmy aliases{n", "{wlocks{n", "{wdescription{n", maxwidth=_DEFAULT_WIDTH)
             #comtable = prettytable.PrettyTable(["{wsub", "{wchannel", "{wmy aliases", "{wlocks", "{wdescription"])
             for chan in channels:
                 clower = chan.key.lower()
@@ -796,7 +797,7 @@ class CmdIRC2Chan(MuxCommand):
             ircbots = [bot for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
             if ircbots:
                 from evennia.utils.evtable import EvTable
-                table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", maxwidth=78)
+                table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", maxwidth=_DEFAULT_WIDTH)
                 for ircbot in ircbots:
                     ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
                     table.add_row(ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo)
@@ -905,7 +906,8 @@ class CmdRSS2Chan(MuxCommand):
             rssbots = [bot for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="rssbot-")]
             if rssbots:
                 from evennia.utils.evtable import EvTable
-                table = EvTable("{wdbid{n", "{wupdate rate{n", "{wev-channel", "{wRSS feed URL{n", border="cells", maxwidth=78)
+                table = EvTable("{wdbid{n", "{wupdate rate{n", "{wev-channel",
+                                "{wRSS feed URL{n", border="cells", maxwidth=_DEFAULT_WIDTH)
                 for rssbot in rssbots:
                     table.add_row(rssbot.id, rssbot.db.rss_rate, rssbot.db.ev_channel, rssbot.db.rss_url)
                 self.caller.msg(table)

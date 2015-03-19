@@ -6,6 +6,7 @@ set. The normal, database-tied help system is used for collaborative
 creation of other help topics such as RP help or game-world aides.
 """
 
+from django.conf import settings
 from collections import defaultdict
 from evennia.utils.utils import fill, dedent
 from evennia.commands.command import Command
@@ -16,16 +17,15 @@ from evennia.commands.default.muxcommand import MuxCommand
 
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")
-
-
-SEP = "{C" + "-" * 78 + "{n"
+_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
+_SEP = "{C" + "-" * _DEFAULT_WIDTH + "{n"
 
 
 def format_help_entry(title, help_text, aliases=None, suggested=None):
     """
     This visually formats the help entry.
     """
-    string = SEP + "\n"
+    string = _SEP + "\n"
     if title:
         string += "{CHelp topic for {w%s{n" % title
     if aliases:
@@ -36,7 +36,7 @@ def format_help_entry(title, help_text, aliases=None, suggested=None):
         string += "\n\n{CSuggested:{n "
         string += "{w%s{n" % fill(", ".join(suggested))
     string.strip()
-    string += "\n" + SEP
+    string += "\n" + _SEP
     return string
 
 
@@ -48,12 +48,12 @@ def format_help_list(hdict_cmds, hdict_db):
     """
     string = ""
     if hdict_cmds and any(hdict_cmds.values()):
-        string += "\n" + SEP + "\n   {CCommand help entries{n\n" + SEP
+        string += "\n" + _SEP + "\n   {CCommand help entries{n\n" + _SEP
         for category in sorted(hdict_cmds.keys()):
             string += "\n  {w%s{n:\n" % (str(category).title())
             string += "{G" + fill(", ".join(sorted(hdict_cmds[category]))) + "{n"
     if hdict_db and any(hdict_db.values()):
-        string += "\n\n" + SEP + "\n\r  {COther help entries{n\n" + SEP
+        string += "\n\n" + _SEP + "\n\r  {COther help entries{n\n" + _SEP
         for category in sorted(hdict_db.keys()):
             string += "\n\r  {w%s{n:\n" % (str(category).title())
             string += "{G" + fill(", ".join(sorted([str(topic) for topic in hdict_db[category]]))) + "{n"
