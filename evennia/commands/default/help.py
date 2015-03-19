@@ -29,12 +29,12 @@ def format_help_entry(title, help_text, aliases=None, suggested=None):
     if title:
         string += "{CHelp topic for {w%s{n" % title
     if aliases:
-        string += " {C(aliases: {w%s{n{C){n" % (", ".join(aliases))
+        string += " {C(aliases: {w%s{n{C){n" % ("{C,{n ".join(aliases))
     if help_text:
         string += "\n%s" % dedent(help_text.rstrip())
     if suggested:
         string += "\n\n{CSuggested:{n "
-        string += "{w%s{n" % fill(", ".join(suggested))
+        string += "{w%s{n" % fill("{C,{n ".join(suggested))
     string.strip()
     string += "\n" + _SEP
     return string
