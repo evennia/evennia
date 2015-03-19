@@ -55,6 +55,7 @@ create_message = None
 create_help_entry = None
 
 # utilities
+settings = None
 lockfuncs = None
 oobhandler = None
 logger = None
@@ -113,7 +114,7 @@ def _init():
     global Command, CmdSet, default_cmds, syscmdkeys
     global search_object, search_script, search_player, search_channel, search_help, search_tag
     global create_object, create_script, create_player, create_channel, create_message, create_help_entry
-    global lockfuncs, logger, utils, gametime, ansi, spawn, managers
+    global settings,lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, OOB_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER
 
     from players.players import DefaultPlayer
@@ -153,6 +154,7 @@ def _init():
     from utils.create import create_help_entry
 
     # utilities
+    from django.conf import settings
     from locks import lockfuncs
     from utils import logger
     from utils import gametime
