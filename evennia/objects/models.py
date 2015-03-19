@@ -14,6 +14,7 @@ the database object. Like everything else, they can be accessed
 transparently through the decorating TypeClass.
 """
 
+from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -177,6 +178,10 @@ class ObjectDB(TypedObject):
 
     # Database manager
     objects = ObjectDBManager()
+
+    # defaults
+    __settingsclasspath__ = settings.BASE_OBJECT_TYPECLASS
+    __defaultclasspath__ = "evennia.objects.objects.DefaultObject"
 
     @lazy_property
     def contents_cache(self):

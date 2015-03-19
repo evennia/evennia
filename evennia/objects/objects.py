@@ -135,8 +135,6 @@ class DefaultObject(ObjectDB):
     """
     # typeclass setup
     __metaclass__ = TypeclassBase
-    __settingsclasspath__ = settings.BASE_OBJECT_TYPECLASS
-    __defaultclasspath__ = "evennia.objects.objects.DefaultObject"
     objects = ObjectManager()
 
     # on-object properties

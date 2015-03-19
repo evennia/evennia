@@ -10,7 +10,9 @@ due to a bug in the python interpreter and print.
 Example usage:
 
 ```python
-  table = EvTable("Heading1", "Heading2",
+  from evennia.utils import evtable
+
+  table = evtable.EvTable("Heading1", "Heading2",
                   table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
   table.add_column("This is long data", "This is even longer data")
   table.add_row("This is a single row")
@@ -1011,7 +1013,7 @@ class EvTable(object):
                 excess = len(header) - len(table)
                 if excess > 0:
                     # header bigger than table
-                    self.table.extend([] for i in xrange(excess))
+                    table.extend([] for i in xrange(excess))
                 elif excess < 0:
                     # too short header
                     header.extend(_to_ansi(["" for i in xrange(abs(excess))]))

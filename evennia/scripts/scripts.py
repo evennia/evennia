@@ -141,8 +141,6 @@ class ScriptBase(ScriptDB):
 
     """
     __metaclass__ = TypeclassBase
-    __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
-    __defaultclasspath__ = "evennia.scripts.scripts.DefaultScript"
     objects = ScriptManager()
 
 

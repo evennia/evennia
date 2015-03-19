@@ -361,6 +361,7 @@ You are not yet logged into the game. Commands available at this point:
   {wlook{n - re-show the connection screen
   {whelp{n - show this help
   {wencoding{n - change the text encoding to match your client
+  {wscreenreader{n - make the server more suitable for use with screen readers
   {wquit{n - abort the connection
 
 First create an account e.g. with {wcreate Anna c67jHL8p{n
@@ -397,7 +398,7 @@ class CmdUnconnectedEncoding(MuxCommand):
   """
 
     key = "encoding"
-    aliases = "@encoding, @encode"
+    aliases = ("@encoding", "@encode")
     locks = "cmd:all()"
 
     def func(self):
@@ -434,6 +435,25 @@ class CmdUnconnectedEncoding(MuxCommand):
             self.session.encoding = encoding
             string = "Your custom text encoding was changed from '%s' to '%s'." % (old_encoding, encoding)
         self.caller.msg(string.strip())
+
+class CmdUnconnectedScreenreader(MuxCommand):
+    """
+    Activate screenreader mode.
+
+    Usage:
+        screenreader
+
+    Used to flip screenreader mode on and off before logging in (when
+    logged in, use @option screenreader on).
+    """
+    key = "screenreader"
+    aliases = "@screenreader"
+
+    def func(self):
+        "Flips screenreader setting."
+        self.session.screenreader = not self.session.screenreader
+        string = "Screenreader mode turned {w%s{n." % ("on" if self.session.screenreader else "off")
+        self.caller.msg(string)
 
 
 def _create_player(session, playername, password, permissions, typeclass=None):

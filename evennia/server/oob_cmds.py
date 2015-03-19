@@ -58,7 +58,7 @@ name.
 
 from django.conf import settings
 from evennia.utils.utils import to_str
-from evennia import OOB_HANDLER
+from evennia.server.oobhandler import OOB_HANDLER
 
 _GA = object.__getattribute__
 _SA = object.__setattr__

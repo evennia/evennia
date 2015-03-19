@@ -126,6 +126,31 @@ class TypeclassBase(SharedMemoryModelBase):
         return new_class
 
 
+class DbHolder(object):
+    "Holder for allowing property access of attributes"
+    def __init__(self, obj, name, manager_name='attributes'):
+        _SA(self, name, _GA(obj, manager_name))
+        _SA(self, 'name', name)
+
+    def __getattribute__(self, attrname):
+        if attrname == 'all':
+            # we allow to overload our default .all
+            attr = _GA(self, _GA(self, 'name')).get("all")
+            if attr:
+                return attr
+            return self.all
+        return _GA(self, _GA(self, 'name')).get(attrname)
+
+    def __setattr__(self, attrname, value):
+        _GA(self, _GA(self, 'name')).add(attrname, value)
+
+    def __delattr__(self, attrname):
+        _GA(self, _GA(self, 'name')).remove(attrname)
+
+    def get_all(self):
+        return _GA(self, _GA(self, 'name')).all()
+    all = property(get_all)
+
 #
 # Main TypedObject abstraction
 #
@@ -220,7 +245,7 @@ class TypedObject(SharedMemoryModel):
         super(TypedObject, self).__init__(*args, **kwargs)
         if typeclass_path:
             try:
-                self.__class__ = class_from_module(typeclass_path)
+                self.__class__ = class_from_module(typeclass_path, defaultpaths=settings.TYPECLASS_PATHS)
             except Exception:
                 log_trace()
                 try:
@@ -365,15 +390,18 @@ class TypedObject(SharedMemoryModel):
                 if the object's type is exactly this typeclass, ignoring
                 parents.
         """
-        if not isinstance(typeclass, basestring):
-            typeclass = typeclass.path
+        if isinstance(typeclass, basestring):
+            typeclass = [typeclass] + ["%s.%s" % (prefix, typeclass) for prefix in settings.TYPECLASS_PATHS]
+        else:
+            typeclass = [typeclass.path]
 
+        selfpath = self.path
         if exact:
-            return typeclass == self.path
+            # check only exact match
+            return selfpath in typeclass
         else:
             # check parent chain
-            selfpath = self.path
-            return any(cls for cls in self.__class__.mro() if cls.path == selfpath)
+            return any(cls.path in typeclass for cls in self.__class__.mro())
 
     def swap_typeclass(self, new_typeclass, clean_attributes=False,
                        run_start_hooks=True, no_default=True):
@@ -414,7 +442,7 @@ class TypedObject(SharedMemoryModel):
 
         if not callable(new_typeclass):
             # this is an actual class object - build the path
-            new_typeclass = class_from_module(new_typeclass)
+            new_typeclass = class_from_module(new_typeclass, defaultpaths=settings.TYPECLASS_PATHS)
 
         # if we get to this point, the class is ok.
 
@@ -542,30 +570,7 @@ class TypedObject(SharedMemoryModel):
         try:
             return self._db_holder
         except AttributeError:
-            class DbHolder(object):
-                "Holder for allowing property access of attributes"
-                def __init__(self, obj):
-                    _SA(self, "attrhandler", obj.attributes)
-
-                def __getattribute__(self, attrname):
-                    if attrname == 'all':
-                        # we allow to overload our default .all
-                        attr = _GA(self, "attrhandler").get("all")
-                        if attr:
-                            return attr
-                        return self.all
-                    return _GA(self, "attrhandler").get(attrname)
-
-                def __setattr__(self, attrname, value):
-                    _GA(self, "attrhandler").add(attrname, value)
-
-                def __delattr__(self, attrname):
-                    _GA(self, "attrhandler").remove(attrname)
-
-                def get_all(self):
-                    return _GA(self, "attrhandler").all()
-                all = property(get_all)
-            self._db_holder = DbHolder(self)
+            self._db_holder = DbHolder(self, 'attributes')
             return self._db_holder
 
     #@db.setter
@@ -596,30 +601,7 @@ class TypedObject(SharedMemoryModel):
         try:
             return self._ndb_holder
         except AttributeError:
-            class NDbHolder(object):
-                "Holder for allowing property access of attributes"
-                def __init__(self, obj):
-                    _SA(self, "nattrhandler", obj.nattributes)
-
-                def __getattribute__(self, attrname):
-                    if attrname == 'all':
-                        # we allow to overload our default .all
-                        attr = _GA(self, "nattrhandler").get('all')
-                        if attr:
-                            return attr
-                        return self.all
-                    return _GA(self, "nattrhandler").get(attrname)
-
-                def __setattr__(self, attrname, value):
-                    _GA(self, "nattrhandler").add(attrname, value)
-
-                def __delattr__(self, attrname):
-                    _GA(self, "nattrhandler").remove(attrname)
-
-                def get_all(self):
-                    return _GA(self, "nattrhandler").all()
-                all = property(get_all)
-            self._ndb_holder = NDbHolder(self)
+            self._ndb_holder = DbHolder(self, "nattrhandler", manager_name='nattributes')
             return self._ndb_holder
 
     #@db.setter

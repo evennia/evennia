@@ -30,7 +30,7 @@ MULTISESSION_MODE = settings.MULTISESSION_MODE
 
 # limit symbol import for API
 __all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit",
-           "CmdCharCreate", "CmdEncoding", "CmdSessions", "CmdWho",
+           "CmdCharCreate", "CmdOption", "CmdSessions", "CmdWho",
            "CmdColorTest", "CmdQuell")
 
 # force max nr chars to 1 if mode is 0 or 1
@@ -405,67 +405,62 @@ class CmdWho(MuxPlayerCommand):
         self.msg(string)
 
 
-class CmdEncoding(MuxPlayerCommand):
+class CmdOption(MuxPlayerCommand):
     """
-    set which text encoding to use
+    Set an account option
 
-    Usage:
-      @encoding/switches [<encoding>]
+    @option
+    @option encoding = [encoding]
+    @option screenreader = on|off
 
-    Switches:
-      clear - clear your custom encoding
+    The text encoding is mostly an issue only if you want to use
+    non-ASCII characters (i.e. letters/symbols not found in English).
+    If you see that your characters look strange (or you get encoding
+    errors), you should use this command to set the server encoding to
+    be the same used in your client program. If given the empty string
+    (default), the custom encoding will be removed and only Evennia's
+    defaults will be used.
 
+    The screenreader setting strips the text output for users using
+    screen readers. It strips based on settings.SCREENREADER_REGEX_STRIP.
 
-    This sets the text encoding for communicating with Evennia. This is mostly
-    an issue only if you want to use non-ASCII characters (i.e. letters/symbols
-    not found in English). If you see that your characters look strange (or you
-    get encoding errors), you should use this command to set the server
-    encoding to be the same used in your client program.
-
-    Common encodings are utf-8 (default), latin-1, ISO-8859-1 etc.
-
-    If you don't submit an encoding, the current encoding will be displayed
-    instead.
-  """
-
-    key = "@encoding"
-    aliases = "@encode"
+    """
+    key = "@option"
+    aliases = "@options"
     locks = "cmd:all()"
 
     def func(self):
         """
-        Sets the encoding.
+        Implements the command
         """
-
         if self.session is None:
             return
 
-        if 'clear' in self.switches:
-            # remove customization
-            old_encoding = self.session.encoding
-            if old_encoding:
-                string = "Your custom text encoding ('%s') was cleared." % old_encoding
-            else:
-                string = "No custom encoding was set."
-            self.session.encoding = "utf-8"
-        elif not self.args:
-            # just list the encodings supported
-            pencoding = self.session.encoding
-            string = ""
-            if pencoding:
-                string += "Default encoding: {g%s{n (change with {w@encoding <encoding>{n)" % pencoding
-            encodings = settings.ENCODINGS
-            if encodings:
-                string += "\nServer's alternative encodings (tested in this order):\n   {g%s{n" % ", ".join(encodings)
-            if not string:
-                string = "No encodings found."
-        else:
+        if not self.args:
+            # list the option settings
+            string = "{wEncoding{n:\n"
+            pencoding = self.session.encoding or "None"
+            sencodings = settings.ENCODINGS
+            string += " Custom: %s\n Server: %s" % (pencoding, ", ".join(sencodings))
+            string += "\n{wScreen Reader mode:{n %s" % self.session.screenreader
+            self.caller.msg(string)
+            return
+
+        if not self.rhs:
+            self.caller.msg("Usage: @option [name = [value]]")
+
+        if self.lhs == "encoding":
             # change encoding
             old_encoding = self.session.encoding
-            encoding = self.args
-            self.session.encoding = encoding
-            string = "Your custom text encoding was changed from '%s' to '%s'." % (old_encoding, encoding)
-        self.msg(string.strip())
+            new_encoding = self.rhs.strip() or "utf-8"
+            self.session.encoding = new_encoding
+            self.caller.msg("Encoding was changed from %s to %s." % (old_encoding, new_encoding))
+            return
+
+        if self.lhs == "screenreader":
+            onoff = self.rhs.lower() == "on"
+            self.session.screenreader = onoff
+            self.caller.msg("Screen reader mode was turned {w%s{n." % ("on" if onoff else "off"))
 
 
 class CmdPassword(MuxPlayerCommand):

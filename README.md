@@ -1,5 +1,5 @@
 # Evennia MUD/MU\* Creation System ![evennia logo][logo]
-[![Build Status](https://travis-ci.org/evennia/evennia.svg?branch=master)](https://travis-ci.org/evennia/evennia)
+[![Build Status][travisimg]][travislink]
 
 *Evennia* is a modern library for creating [online multiplayer text
 games][wikimudpage] (MUD, MUSH, MUX, MOO etc) in pure Python. It allows game
@@ -68,7 +68,9 @@ or join us in our [development chat][chat]. Welcome!
 [gettingstarted]: http://github.com/evennia/evennia/wiki/Getting-Started
 [wiki]: https://github.com/evennia/evennia/wiki
 [screenshot]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/evennia_screenshot3.png
-[logo]: https://github.com/evennia/evennia/blob/devel/evennia/web/static/evennia_general/images/evennia_logo.png
+[logo]: https://github.com/evennia/evennia/blob/master/evennia/web/static/evennia_general/images/evennia_logo.png
+[travisimg]: https://travis-ci.org/evennia/evennia.svg?branch=master
+[travislink]: https://travis-ci.org/evennia/evennia
 [introduction]: https://github.com/evennia/evennia/wiki/Evennia-Introduction
 [license]: https://github.com/evennia/evennia/wiki/Licensing
 [group]: https://groups.google.com/forum/#!forum/evennia

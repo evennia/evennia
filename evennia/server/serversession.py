@@ -7,6 +7,7 @@ It is stored on the Server side (as opposed to protocol-specific sessions which
 are stored on the Portal side)
 """
 
+import re
 from time import time
 from datetime import datetime
 from django.conf import settings
@@ -18,11 +19,12 @@ from evennia.commands.cmdhandler import cmdhandler
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
 
-IDLE_COMMAND = settings.IDLE_COMMAND
+_IDLE_COMMAND = settings.IDLE_COMMAND
 _GA = object.__getattribute__
 _ObjectDB = None
-
-INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
+_ANSI = None
+_INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
+_RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -205,7 +207,7 @@ class ServerSession(Session):
             # this is treated as a command input
             #text = to_unicode(escape_control_sequences(text), encoding=self.encoding)
             # handle the 'idle' command
-            if text.strip() == IDLE_COMMAND:
+            if text.strip() == _IDLE_COMMAND:
                 self.update_session_counters(idle=True)
                 return
             if self.player:
@@ -227,8 +229,14 @@ class ServerSession(Session):
         Send Evennia -> User
         """
         text = text if text else ""
-        if INLINEFUNC_ENABLED and not "raw" in kwargs:
+        if _INLINEFUNC_ENABLED and not "raw" in kwargs:
             text = parse_inlinefunc(text, strip="strip_inlinefunc" in kwargs, session=self)
+        if self.screenreader:
+            global _ANSI
+            if not _ANSI:
+                from evennia.utils import ansi as _ANSI
+            text = _ANSI.parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
+            text = _RE_SCREENREADER_REGEX.sub("", text)
         session = kwargs.pop('session', None)
         session = session or self
         self.sessionhandler.data_out(session, text=text, **kwargs)

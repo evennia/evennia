@@ -93,6 +93,10 @@ class PlayerDB(TypedObject, AbstractUser):
     # Database manager
     objects = PlayerDBManager()
 
+    # defaults
+    __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
+    __defaultclasspath__ = "evennia.players.players.DefaultPlayer"
+
     class Meta:
         app_label = 'players'
         verbose_name = 'Player'

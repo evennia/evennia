@@ -80,7 +80,7 @@ def create_object(typeclass=None, key=None, location=None,
 
     if isinstance(typeclass, basestring):
         # a path is given. Load the actual typeclass
-        typeclass = class_from_module(typeclass, settings.OBJECT_TYPECLASS_PATHS)
+        typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
 
     # Setup input for the create command. We use ObjectDB as baseclass here
     # to give us maximum freedom (the typeclasses will load
@@ -154,7 +154,7 @@ def create_script(typeclass, key=None, obj=None, player=None, locks=None,
 
     if isinstance(typeclass, basestring):
         # a path is given. Load the actual typeclass
-        typeclass = class_from_module(typeclass, settings.SCRIPT_TYPECLASS_PATHS)
+        typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
 
     # validate input
     kwarg = {}
@@ -289,7 +289,7 @@ def create_channel(key, aliases=None, desc=None,
 
     if isinstance(typeclass, basestring):
         # a path is given. Load the actual typeclass
-        typeclass = class_from_module(typeclass, settings.CHANNEL_TYPECLASS_PATHS)
+        typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
 
     # create new instance
     new_channel = typeclass(db_key=key)
@@ -348,7 +348,7 @@ def create_player(key, email, password,
 
     if isinstance(typeclass, basestring):
         # a path is given. Load the actual typeclass.
-        typeclass = class_from_module(typeclass, settings.OBJECT_TYPECLASS_PATHS)
+        typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
 
     # setup input for the create command. We use PlayerDB as baseclass
     # here to give us maximum freedom (the typeclasses will load
