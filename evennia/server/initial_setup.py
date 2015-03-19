@@ -35,7 +35,7 @@ As Player #1 you can create a demo/tutorial area with {w@batchcommand tutorial_w
 
 WARNING_POSTGRESQL_FIX = \
     """
-    PostgreSQL-psycopg2 compatibility fix:
+    PostgreSQL-psycopg2 compatability fix:
     The in-game channels {chan1}, {chan2} and {chan3} were created,
     but the superuser was not yet connected to them. Please use in
     game commands to connect Player #1 to those channels when first
