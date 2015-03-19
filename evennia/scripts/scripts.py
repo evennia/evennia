@@ -136,9 +136,18 @@ class ExtendedLoopingCall(LoopingCall):
 
 class ScriptBase(ScriptDB):
     """
+<<<<<<< HEAD
+    Base class for scripts. Don't inherit from this, inherit
+<<<<<<< HEAD
+    from the class `Script`  instead.
+=======
+    from the class `DefaultScript` below instead.
+=======
     Base class for scripts. Don't inherit from this, inherit from the
     class `DefaultScript` below instead.
+>>>>>>> a25ead9626d22d1738e61711ef726fd9e4997fd0
 
+>>>>>>> upstream/master
     """
     __metaclass__ = TypeclassBase
     objects = ScriptManager()
@@ -355,8 +364,12 @@ class DefaultScript(ScriptBase):
     def pause(self):
         """
         This stops a running script and stores its active state.
+<<<<<<< HEAD
+        It WILL NOT call that `at_stop()` hook.
+=======
         It WILL NOT call the `at_stop()` hook.
 
+>>>>>>> upstream/master
         """
         if not self.db._paused_time:
             # only allow pause if not already paused

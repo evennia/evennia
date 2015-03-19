@@ -73,8 +73,13 @@ fill = wrap
 
 def pad(text, width=78, align="c", fillchar=" "):
     """
+<<<<<<< HEAD
+    Pads to a given `width`, `align` is one of c,l,r
+    and `fillchar` defaults to an empty string.
+=======
     Pads to a given width, align is one of c,l,r
     and fillchar defaults to the space character.
+>>>>>>> upstream/master
     """
     align = align if align in ('c', 'l', 'r') else 'c'
     fillchar = fillchar[0] if fillchar else " "
