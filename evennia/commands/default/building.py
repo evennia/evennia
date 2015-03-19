@@ -1474,7 +1474,7 @@ class CmdTypeclass(MuxCommand):
     """
 
     key = "@typeclass"
-    aliases = "@type, @parent"
+    aliases = ["@type", "@parent", "@swap"]
     locks = "cmd:perm(typeclass) or perm(Builders)"
     help_category = "Building"
 
@@ -1484,7 +1484,7 @@ class CmdTypeclass(MuxCommand):
         caller = self.caller
 
         if not self.args:
-            caller.msg("Usage: @type <object> [=<typeclass]")
+            caller.msg("Usage: %s <object> [=<typeclass]" % self.cmdstring)
             return
 
         # get object to swap on
