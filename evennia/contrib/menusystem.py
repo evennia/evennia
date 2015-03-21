@@ -6,7 +6,7 @@ Contribution - Griatch 2011
 This module offers the ability for admins to let their game be fully
 or partly menu-driven. Menu choices can be numbered or use arbitrary
 keys. There are also some formatting options, such a putting options
-in one or more collumns.
+in one or more columns.
 
 The menu system consists of a MenuTree object populated by MenuNode
 objects. Nodes are linked together with automatically created commands
@@ -79,7 +79,7 @@ class CmdMenuLook(default_cmds.CmdLook):
 
     This is a Menu version of the look command. It will normally show
     the options available, otherwise works like the normal look
-    command..
+    command.
     """
     key = "look"
     aliases = ["l", "ls"]
@@ -171,7 +171,7 @@ class MenuTree(object):
         """
         We specify startnode/endnode so that the system knows where to
         enter and where to exit the menu tree. If nodes is given, it
-        shuld be a list of valid node objects to add to the tree.
+        should be a list of valid node objects to add to the tree.
 
         exec_end - if not None, will execute the given command string
                    directly after the menu system has been exited.
@@ -332,7 +332,7 @@ class MenuNode(object):
         if text:
             string += "%s\n" % text
 
-        # format the choices into as many collumns as specified
+        # format the choices into as many columns as specified
         choices = []
         for ilink, link in enumerate(self.links):
             choice = ""
@@ -480,14 +480,14 @@ def prompt_yesno(caller, question="", yesfunc=None, nofunc=None, yescode="", noc
 def prompt_choice(caller, question="", prompts=None, choicefunc=None, force_choose=False):
     """
     This sets up a simple choice questionnaire. Question will be
-    asked, followed by a serie of prompts. Note that this isn't
+    asked, followed by a series of prompts. Note that this isn't
     making use of the menu node system.
 
     caller - the object calling and being offered the choice
     question - text describing the offered choice
     prompts - list of choices
     choicefunc - functions callback to be called as func(self) when
-                 make choice (self.caller is available) The function's definision
+                 make choice (self.caller is available) The function's definition
                  should be like func(self, menu_node), and menu_node.key is user's
                  choice.
     force_choose - force user to make a choice or not
@@ -553,7 +553,7 @@ def prompt_choice(caller, question="", prompts=None, choicefunc=None, force_choo
     choicecmdset.add(CmdMenuLook())
     choicecmdset.add(CmdMenuHelp())
 
-    # assinging menu data flags to caller.
+    # assigning menu data flags to caller.
     caller.db._menu_data = {"help": "Please select.",
                             "look": prompt}
 
