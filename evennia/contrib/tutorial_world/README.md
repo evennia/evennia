@@ -26,7 +26,7 @@ the tutorial as intended.
 
 ## Comments
 
-The tutorial world is intended for you playing around with the engine.
+The tutorial world is intended for your playing around with the engine.
 It will help you learn how to accomplish some more advanced effects
 and might give some good ideas along the way.
 
@@ -88,13 +88,13 @@ tutorial game**
 * The Cliff is a good place to get an overview of the surroundings.
 * The Bridge may seem like a big room, but it is really only one room
   with custom move commands to make it take longer to cross. You can
-  also fall off the bridge if youare unlucky or take your time to
+  also fall off the bridge if you are unlucky or take your time to
   take in the view too long.
 * In the Castle areas an aggressive mob is patrolling. It implements
   rudimentary AI but packs quite a punch unless you have
   found yourself a weapon that can harm it. Combat is only
   possible once you find a weapon.
-* The Antechamber feature a puzzle for finding the correct Grave
+* The Antechamber features a puzzle for finding the correct Grave
   chamber.
 * The Cell  is your reward if you fail in various ways. Finding a
   way out of it is a small puzzle of its own.
