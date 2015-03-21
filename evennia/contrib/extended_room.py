@@ -91,7 +91,7 @@ REGEXMAP = {"morning": (RE_MORNING, RE_AFTERNOON, RE_EVENING, RE_NIGHT),
 
 # set up the seasons and time slots. This assumes gametime started at the
 # beginning of the year (so month 1 is equivalent to January), and that
-# one CAN divive the game's year into four seasons in the first place ...
+# one CAN divide the game's year into four seasons in the first place ...
 MONTHS_PER_YEAR = settings.TIME_MONTH_PER_YEAR
 SEASONAL_BOUNDARIES = (3 / 12.0, 6 / 12.0, 9 / 12.0)
 HOURS_PER_DAY = settings.TIME_HOUR_PER_DAY
@@ -329,7 +329,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
     Text marked this way will only display when the server is truly at the given
     timeslot. The available times are night, morning, afternoon and evening.
 
-    Note that `@detail`, seasons and time-of-day slots only works on rooms in this
+    Note that `@detail`, seasons and time-of-day slots only work on rooms in this
     version of the `@desc` command.
 
     """
@@ -419,9 +419,9 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 else:
                     text = self.args
                     obj = location
-                obj.db.desc = self.rhs # a compatability fallback
+                obj.db.desc = self.rhs # a compatibility fallback
                 if utils.inherits_from(obj, ExtendedRoom):
-                    # this is an extendedroom, we need to reset
+                    # this is an extended room, we need to reset
                     # times and set general_desc
                     obj.db.general_desc = text
                     self.reset_times(obj)
