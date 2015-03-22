@@ -8,7 +8,7 @@
 # of the file and allows for features like stepping from block to block
 # (without executing those coming before), as well as automatic deletion
 # of created objects etc. You can however also run a batch-code python file
-# directly using Python (and can also be de).
+# directly using Python.
 
 # Code blocks are separated by python comments starting with special code words.
 
@@ -28,11 +28,10 @@
 #            contains the command myobj = create.create_object(...), you could
 #            put 'myobj' in the #CODE header regardless of what the created
 #            object is actually called in-game.
-# #INSERT filename - this includes another code batch file. The named file will
-#            be loaded and run at this point. Note that code from the inserted
-#            file will NOT share #HEADERs with the importing file, but will
-#            only use the headers in the importing file. Make sure to not
-#            create a cyclic import here!
+# #INSERT filename - this includes another code batch file into this one. The
+#            named file will be loaded and run at the position of the #INSERT.
+#            Note that the inserted file will use its own #HEADERs and not
+#            have access to the #HEADERs of the inserting file.
 
 # The following variable is automatically made available for the script:
 
