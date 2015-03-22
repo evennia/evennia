@@ -401,7 +401,7 @@ class TypedObject(SharedMemoryModel):
             return selfpath in typeclass
         else:
             # check parent chain
-            return any(cls.path in typeclass for cls in self.__class__.mro())
+            return any(hasattr(cls, "path") and cls.path in typeclass for cls in self.__class__.mro())
 
     def swap_typeclass(self, new_typeclass, clean_attributes=False,
                        run_start_hooks=True, no_default=True):

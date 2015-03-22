@@ -767,6 +767,23 @@ class DefaultObject(ObjectDB):
         super(ObjectDB, self).delete()
         return True
 
+    def access(self, accessing_obj, access_type='read', default=False, **kwargs):
+        """
+        Determines if another object has permission to access this object
+        in whatever way.
+
+        Args:
+          accessing_obj (Object): Object trying to access this one
+          access_type (str): Type of access sought
+          default (bool): What to return if no lock of access_type was found
+
+        Kwargs:
+          Passed to the at_access hook along with the result.
+
+        """
+        result = super(DefaultObject, self).access(accessing_obj, access_type=access_type, default=default)
+        self.at_access(result, accessing_obj, access_type, **kwargs)
+        return result
 
     def __eq__(self, other):
         """
