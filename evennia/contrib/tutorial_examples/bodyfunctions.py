@@ -1,6 +1,6 @@
 """
 Example script for testing. This adds a simple timer that
-has your character make observations and noices at irregular
+has your character make observations and notices at irregular
 intervals.
 
 To test, use

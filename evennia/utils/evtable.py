@@ -115,10 +115,13 @@ table string.
 
 """
 #from textwrap import wrap
+from django.conf import settings
 from textwrap import TextWrapper
 from copy import deepcopy, copy
 from evennia.utils.utils import to_unicode, m_len
 from evennia.utils.ansi import ANSIString
+
+_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 def _to_ansi(obj):
     """
@@ -262,7 +265,7 @@ class ANSITextWrapper(TextWrapper):
 
 # -- Convenience interface ---------------------------------------------
 
-def wrap(text, width=70, **kwargs):
+def wrap(text, width=_DEFAULT_WIDTH, **kwargs):
     """
     Wrap a single paragraph of text, returning a list of wrapped lines.
 
@@ -283,7 +286,7 @@ def wrap(text, width=70, **kwargs):
     w = ANSITextWrapper(width=width, **kwargs)
     return w.wrap(text)
 
-def fill(text, width=70, **kwargs):
+def fill(text, width=_DEFAULT_WIDTH, **kwargs):
     """Fill a single paragraph of text, returning a new string.
 
     Reformat the single paragraph in 'text' to fit in lines of no more

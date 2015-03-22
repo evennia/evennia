@@ -429,83 +429,23 @@ class DefaultPlayer(PlayerDB):
                 return None
         return matches
 
-    def is_typeclass(self, typeclass, exact=False):
-        """
-        Returns true if this object has this type
-          OR has a typeclass which is an subclass of
-          the given typeclass.
-
-        typeclass - can be a class object or the
-                python path to such an object to match against.
-
-        exact - returns true only if the object's
-               type is exactly this typeclass, ignoring
-               parents.
-
-        Returns: Boolean
-        """
-        return super(DefaultPlayer, self).is_typeclass(typeclass, exact=exact)
-
-    def swap_typeclass(self, new_typeclass, clean_attributes=False, no_default=True):
-        """
-        This performs an in-situ swap of the typeclass. This means
-        that in-game, this object will suddenly be something else.
-        Player will not be affected. To 'move' a player to a different
-        object entirely (while retaining this object's type), use
-        self.player.swap_object().
-
-        Note that this might be an error prone operation if the
-        old/new typeclass was heavily customized - your code
-        might expect one and not the other, so be careful to
-        bug test your code if using this feature! Often its easiest
-        to create a new object and just swap the player over to
-        that one instead.
-
-        Arguments:
-        new_typeclass (path/classobj) - type to switch to
-        clean_attributes (bool/list) - will delete all attributes
-                           stored on this object (but not any
-                           of the database fields such as name or
-                           location). You can't get attributes back,
-                           but this is often the safest bet to make
-                           sure nothing in the new typeclass clashes
-                           with the old one. If you supply a list,
-                           only those named attributes will be cleared.
-        no_default - if this is active, the swapper will not allow for
-                     swapping to a default typeclass in case the given
-                     one fails for some reason. Instead the old one
-                     will be preserved.
-        Returns:
-          boolean True/False depending on if the swap worked or not.
-
-        """
-        super(DefaultPlayer, self).swap_typeclass(new_typeclass,
-                    clean_attributes=clean_attributes, no_default=no_default)
-
     def access(self, accessing_obj, access_type='read', default=False, **kwargs):
         """
         Determines if another object has permission to access this object
         in whatever way.
 
-          accessing_obj (Object)- object trying to access this one
-          access_type (string) - type of access sought
-          default (bool) - what to return if no lock of access_type was found
-          **kwargs - passed to the at_access hook along with the result.
+        Args:
+          accessing_obj (Object): Object trying to access this one
+          access_type (str): Type of access sought
+          default (bool): What to return if no lock of access_type was found
+
+        Kwargs:
+          Passed to the at_access hook along with the result.
+
         """
         result = super(DefaultPlayer, self).access(accessing_obj, access_type=access_type, default=default)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
-
-    def check_permstring(self, permstring):
-        """
-        This explicitly checks the given string against this object's
-        'permissions' property without involving any locks.
-
-        permstring (string) - permission string that need to match a permission
-                              on the object. (example: 'Builders')
-        Note that this method does -not- call the at_access hook.
-        """
-        return super(DefaultPlayer, self).check_permstring(permstring)
 
     ## player hooks
 

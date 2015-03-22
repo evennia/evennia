@@ -32,6 +32,8 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
 
+_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
+
 
 def is_iter(iterable):
     """
@@ -54,7 +56,7 @@ def make_iter(obj):
     return not hasattr(obj, '__iter__') and [obj] or obj
 
 
-def wrap(text, width=78, indent=0):
+def wrap(text, width=_DEFAULT_WIDTH, indent=0):
     """
     Safely wrap text to a certain number of characters.
 
@@ -71,7 +73,7 @@ def wrap(text, width=78, indent=0):
 # alias - fill
 fill = wrap
 
-def pad(text, width=78, align="c", fillchar=" "):
+def pad(text, width=_DEFAULT_WIDTH, align="c", fillchar=" "):
     """
     Pads to a given width, align is one of c,l,r
     and fillchar defaults to the space character.
@@ -85,7 +87,7 @@ def pad(text, width=78, align="c", fillchar=" "):
     else:
         return text.center(width, fillchar)
 
-def crop(text, width=78, suffix="[...]"):
+def crop(text, width=_DEFAULT_WIDTH, suffix="[...]"):
     """
     Crop text to a certain width, adding `suffix` to show that the line
     continues. Cropping will be done so that the suffix will also fit

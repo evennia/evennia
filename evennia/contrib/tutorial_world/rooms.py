@@ -28,12 +28,12 @@ _SEARCH_AT_RESULT = utils.object_from_module(settings.SEARCH_AT_RESULT)
 #
 # This room is the parent of all rooms in the tutorial.
 # It defines a tutorial command on itself (available to
-# all who is in a tutorial room).
+# all those who are in a tutorial room).
 #
 #------------------------------------------------------------
 
 #
-# Special command avaiable in all tutorial rooms
+# Special command available in all tutorial rooms
 #
 
 class CmdTutorial(Command):
@@ -301,7 +301,7 @@ class WeatherRoom(TutorialRoom):
         We set up a ticker to update this room regularly.
 
         Note that we could in principle also use a Script to manage
-        the ticking of the room, the TickerHandler is works fine for
+        the ticking of the room; the TickerHandler works fine for
         simple things like this though.
         """
         super(WeatherRoom, self).at_object_creation()
@@ -380,10 +380,10 @@ class IntroRoom(TutorialRoom):
 #
 # Bridge - unique room
 #
-# Defines a special west-eastward "bridge"-room, a large room it takes
+# Defines a special west-eastward "bridge"-room, a large room that takes
 # several steps to cross. It is complete with custom commands and a
 # chance of falling off the bridge. This room has no regular exits,
-# instead the exiting are handled by custom commands set on the player
+# instead the exitings are handled by custom commands set on the player
 # upon first entering the room.
 #
 # Since one can enter the bridge room from both ends, it is

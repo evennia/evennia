@@ -509,12 +509,12 @@ class DefaultObject(ObjectDB):
             The `DefaultObject` hooks called (if `move_hooks=True`) are, in order:
 
              1. `self.at_before_move(destination)` (if this returns False, move is aborted)
-             1. `source_location.at_object_leave(self, destination)`
-             1. `self.announce_move_from(destination)`
-             1. (move happens here)
-             1. `self.announce_move_to(source_location)`
-             1. `destination.at_object_receive(self, source_location)`
-             1. `self.at_after_move(source_location)`
+             2. `source_location.at_object_leave(self, destination)`
+             3. `self.announce_move_from(destination)`
+             4. (move happens here)
+             5. `self.announce_move_to(source_location)`
+             6. `destination.at_object_receive(self, source_location)`
+             7. `self.at_after_move(source_location)`
 
         """
         def logerr(string=""):
@@ -767,6 +767,23 @@ class DefaultObject(ObjectDB):
         super(ObjectDB, self).delete()
         return True
 
+    def access(self, accessing_obj, access_type='read', default=False, **kwargs):
+        """
+        Determines if another object has permission to access this object
+        in whatever way.
+
+        Args:
+          accessing_obj (Object): Object trying to access this one
+          access_type (str): Type of access sought
+          default (bool): What to return if no lock of access_type was found
+
+        Kwargs:
+          Passed to the at_access hook along with the result.
+
+        """
+        result = super(DefaultObject, self).access(accessing_obj, access_type=access_type, default=default)
+        self.at_access(result, accessing_obj, access_type, **kwargs)
+        return result
 
     def __eq__(self, other):
         """

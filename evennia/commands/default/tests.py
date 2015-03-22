@@ -125,7 +125,7 @@ class TestHelp(CommandTest):
 
     def test_set_help(self):
         self.call(help.CmdSetHelp(), "testhelp, General = This is a test", "Topic 'testhelp' was successfully created.")
-        self.call(help.CmdHelp(), "testhelp", "Help topic for testhelp", cmdset=CharacterCmdSet())
+        self.call(help.CmdHelp(), "testhelp", "Help for testhelp", cmdset=CharacterCmdSet())
 
 
 class TestSystem(CommandTest):

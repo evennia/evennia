@@ -212,6 +212,8 @@ class Obelisk(TutorialObject):
 
     Important Attribute:
        puzzle_descs (list): list of descriptions. One of these is
+        picked randomly when this object is looked at and its index
+        in the list is used as a key for to solve the puzzle.
 
     """
 

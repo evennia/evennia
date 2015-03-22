@@ -128,7 +128,9 @@ class CmdSet(object):
     key = "Unnamed CmdSet"
     mergetype = "Union"
     priority = 0
-    duplicates = False
+    # if None, the cmdhandler will switch to True for objects and stay False otherwise.
+    # Explicitly set True/False will be kept.
+    duplicates = None
     key_mergetypes = {}
     no_exits = False
     no_objs = False

@@ -738,6 +738,7 @@ class ANSIString(unicode):
     def partition(self, sep, reverse=False):
         """
         Similar to split, but always creates a tuple with three items:
+
         1. The part before the separator
         2. The separator itself.
         3. The part after.

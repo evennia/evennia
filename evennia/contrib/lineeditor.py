@@ -24,6 +24,7 @@ module. To use it just import and add it to your default `cmdset`.
 """
 
 import re
+from django.conf import settings
 from evennia import Command, CmdSet, utils
 from evennia import syscmdkeys
 from evennia.contrib.menusystem import prompt_yesno
@@ -32,6 +33,7 @@ CMD_NOMATCH = syscmdkeys.CMD_NOMATCH
 CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
 
 RE_GROUP = re.compile(r"\".*?\"|\'.*?\'|\S*")
+_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 
 class CmdEditorBase(Command):
@@ -347,7 +349,7 @@ class CmdEditorGroup(CmdEditorBase):
                 editor.update_buffer(buf)
         elif cmd == ":f":
             # :f <l> flood-fill buffer or <l> lines of buffer.
-            width = 78
+            width = _DEFAULT_WIDTH
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
@@ -567,7 +569,7 @@ class LineEditor(object):
         nchars = len(buf)
 
         sep = self.sep
-        header = "{n" + sep * 10 + "Line Editor [%s]" % self.key + sep * (78-25-len(self.key))
+        header = "{n" + sep * 10 + "Line Editor [%s]" % self.key + sep * (_DEFAULT_WIDTH-25-len(self.key))
         footer = "{n" + sep * 10 + "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) + sep * 12 + "(:h for help)" + sep * 23
         if linenums:
             main = "\n".join("{b%02i|{n %s" % (iline + 1 + offset, line) for iline, line in enumerate(lines))
@@ -580,7 +582,7 @@ class LineEditor(object):
         """
         Shows the help entry for the editor.
         """
-        string = self.sep * 78 + """
+        string = self.sep * _DEFAULT_WIDTH + """
 <txt>  - any non-command is appended to the end of the buffer.
 :  <l> - view buffer or only line <l>
 :: <l> - view buffer without line numbers or other parsing
@@ -620,7 +622,7 @@ class LineEditor(object):
    <l> - line numbers, or range lstart:lend, e.g. '3:7'.
    <w> - one word or several enclosed in quotes.
    <txt> - longer string, usually not needed to be enclosed in quotes.
-""" + self.sep * 78
+""" + self.sep * _DEFAULT_WIDTH
         return string
 
 

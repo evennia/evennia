@@ -167,7 +167,7 @@ class CmdUnconnectedCreate(MuxCommand):
             session.msg(string)
             return
         if not re.findall('^[\w. @+-]+$', playername) or not (0 < len(playername) <= 30):
-            session.msg("\n\r Playername can max be 30 characters or fewer. Letters, spaces, dig\
+            session.msg("\n\r Playername can be max 30 characters, or less. Letters, spaces, dig\
 its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth module.
             return
         if not email or not password:

@@ -188,9 +188,11 @@ def get_and_merge_cmdsets(caller, session, player, obj,
                            lobj.locks.check(caller, 'call', no_superuser_bypass=True))]
                     for cset in local_obj_cmdsets:
                         #This is necessary for object sets, or we won't be able to
-                        # separate the command sets from each other in a busy room.
+                        # separate the command sets from each other in a busy room. We
+                        # only keep the setting if duplicates were set to False/True
+                        # explicitly.
                         cset.old_duplicates = cset.duplicates
-                        cset.duplicates = True
+                        cset.duplicates = True if cset.duplicates is None else cset.duplicates
                 returnValue(local_obj_cmdsets)
             except Exception:
                 logger.log_trace()
