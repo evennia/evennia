@@ -509,12 +509,12 @@ class DefaultObject(ObjectDB):
             The `DefaultObject` hooks called (if `move_hooks=True`) are, in order:
 
              1. `self.at_before_move(destination)` (if this returns False, move is aborted)
-             1. `source_location.at_object_leave(self, destination)`
-             1. `self.announce_move_from(destination)`
-             1. (move happens here)
-             1. `self.announce_move_to(source_location)`
-             1. `destination.at_object_receive(self, source_location)`
-             1. `self.at_after_move(source_location)`
+             2. `source_location.at_object_leave(self, destination)`
+             3. `self.announce_move_from(destination)`
+             4. (move happens here)
+             5. `self.announce_move_to(source_location)`
+             6. `destination.at_object_receive(self, source_location)`
+             7. `self.at_after_move(source_location)`
 
         """
         def logerr(string=""):

@@ -227,13 +227,13 @@ class TypedObject(SharedMemoryModel):
             The loading mechanism will attempt the following steps:
 
             1. Attempt to load typeclass given on command line
-            1. Attempt to load typeclass stored in db_typeclass_path
-            1. Attempt to load `__settingsclasspath__`, which is by the
+            2. Attempt to load typeclass stored in db_typeclass_path
+            3. Attempt to load `__settingsclasspath__`, which is by the
                default classes defined to be the respective user-set
                base typeclass settings, like `BASE_OBJECT_TYPECLASS`.
-            1. Attempt to load `__defaultclasspath__`, which is the
+            4. Attempt to load `__defaultclasspath__`, which is the
                base classes in the library, like DefaultObject etc.
-            1. If everything else fails, use the database model.
+            5. If everything else fails, use the database model.
 
             Normal operation is to load successfully at either step 1
             or 2 depending on how the class was called. Tracebacks
