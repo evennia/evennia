@@ -25,6 +25,7 @@ ANSI_NORMAL = "\033[0m"
 
 ANSI_UNDERLINE = "\033[4m"
 ANSI_HILITE = "\033[1m"
+ANSI_UNHILITE = "\033[22m"
 ANSI_BLINK = "\033[5m"
 ANSI_INVERSE = "\033[7m"
 ANSI_INV_HILITE = "\033[1;7m"
@@ -81,6 +82,13 @@ class ANSIParser(object):
         markers with correct ANSI sequences
         """
         return self.ansi_map.get(ansimatch.group(), "")
+
+    def sub_brightbg(self, ansimatch):
+        """
+        Replacer used by `re.sub` to replace ANSI
+        bright background markers with Xterm256 replacement
+        """
+        return self.ansi_bright_bgs.get(ansimatch.group(), "")
 
     def sub_xterm256(self, rgbmatch, convert=False):
         """
@@ -201,6 +209,9 @@ class ANSIParser(object):
         if cachekey in _PARSE_CACHE:
             return _PARSE_CACHE[cachekey]
 
+        # pre-convert bright colors to xterm256 color tags
+        string = self.brightbg_sub.sub(self.sub_brightbg, string)
+
         def do_xterm256(part):
             return self.sub_xterm256(part, xterm256)
 
@@ -265,10 +276,10 @@ class ANSIParser(object):
     # Mapping using {r {n etc
 
     hilite = ANSI_HILITE
-    normal = ANSI_NORMAL
+    unhilite = ANSI_UNHILITE
 
     ext_ansi_map = [
-        (r'{n', normal),                # reset
+        (r'{n', ANSI_NORMAL),          # reset
         (r'{/', ANSI_RETURN),          # line break
         (r'{-', ANSI_TAB),             # tab
         (r'{_', ANSI_SPACE),           # space
@@ -284,17 +295,18 @@ class ANSIParser(object):
         (r'{w', hilite + ANSI_WHITE),  # pure white
         (r'{x', hilite + ANSI_BLACK),  # dark grey
 
-        (r'{R', normal + ANSI_RED),
-        (r'{G', normal + ANSI_GREEN),
-        (r'{Y', normal + ANSI_YELLOW),
-        (r'{B', normal + ANSI_BLUE),
-        (r'{M', normal + ANSI_MAGENTA),
-        (r'{C', normal + ANSI_CYAN),
-        (r'{W', normal + ANSI_WHITE),  # light grey
-        (r'{X', normal + ANSI_BLACK),  # pure black
+        (r'{R', unhilite + ANSI_RED),
+        (r'{G', unhilite + ANSI_GREEN),
+        (r'{Y', unhilite + ANSI_YELLOW),
+        (r'{B', unhilite + ANSI_BLUE),
+        (r'{M', unhilite + ANSI_MAGENTA),
+        (r'{C', unhilite + ANSI_CYAN),
+        (r'{W', unhilite + ANSI_WHITE),  # light grey
+        (r'{X', unhilite + ANSI_BLACK),  # pure black
 
         # hilight-able colors
         (r'{h', hilite),
+        (r'{H', unhilite),
 
         (r'{!R', ANSI_RED),
         (r'{!G', ANSI_GREEN),
@@ -305,16 +317,30 @@ class ANSIParser(object):
         (r'{!W', ANSI_WHITE),  # light grey
         (r'{!X', ANSI_BLACK),  # pure black
 
-        # background colors
-        (r'{[r', ANSI_BACK_RED),
-        (r'{[g', ANSI_BACK_GREEN),
-        (r'{[y', ANSI_BACK_YELLOW),
-        (r'{[b', ANSI_BACK_BLUE),
-        (r'{[m', ANSI_BACK_MAGENTA),
-        (r'{[c', ANSI_BACK_CYAN),
-        (r'{[w', ANSI_BACK_WHITE),    # light grey background
-        (r'{[x', ANSI_BACK_BLACK)     # pure black background
+        # normal ANSI backgrounds
+        (r'{[R', ANSI_BACK_RED),
+        (r'{[G', ANSI_BACK_GREEN),
+        (r'{[Y', ANSI_BACK_YELLOW),
+        (r'{[B', ANSI_BACK_BLUE),
+        (r'{[M', ANSI_BACK_MAGENTA),
+        (r'{[C', ANSI_BACK_CYAN),
+        (r'{[W', ANSI_BACK_WHITE),    # light grey background
+        (r'{[X', ANSI_BACK_BLACK)     # pure black background
         ]
+
+    ansi_bright_bgs = [
+        # "bright" ANSI backgrounds using xterm256 since ANSI
+        # standard does not support it (will
+        # fallback to dark ANSI background colors if xterm256
+        # is not supported by client)
+        (r'{[r', r'{[500'),
+        (r'{[g', r'{[050'),
+        (r'{[y', r'{[550'),
+        (r'{[b', r'{[005'),
+        (r'{[m', r'{[505'),
+        (r'{[c', r'{[055'),
+        (r'{[w', r'{[555'),     # white background
+        (r'{[x', r'{[222')]     # dark grey background
 
     #ansi_map = mux_ansi_map + ext_ansi_map
 
@@ -331,12 +357,14 @@ class ANSIParser(object):
     mxp_re = r'\{lc(.*?)\{lt(.*?)\{le'
 
     # prepare regex matching
+    brightbg_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ansi_bright_bgs]), re.DOTALL)
     xterm256_sub = re.compile(r"|".join([tup[0] for tup in xterm256_map]), re.DOTALL)
     ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in mux_ansi_map + ext_ansi_map]), re.DOTALL)
     mxp_sub = re.compile(mxp_re, re.DOTALL)
 
     # used by regex replacer to correctly map ansi sequences
     ansi_map = dict(mux_ansi_map + ext_ansi_map)
+    ansi_bright_bgs = dict(ansi_bright_bgs)
 
     # prepare matching ansi codes overall
     ansi_re = r"\033\[[0-9;]+m"

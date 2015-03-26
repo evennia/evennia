@@ -156,6 +156,7 @@ messages = search_messages
 #     Search the channel database for a particular channel.
 #
 #     ostring - the key or database id of the channel.
+#     exact -  requires an exact ostring match (not case sensitive)
 #     """
 
 search_channel = Channel.objects.channel_search

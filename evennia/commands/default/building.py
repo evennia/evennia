@@ -1452,12 +1452,16 @@ class CmdTypeclass(MuxCommand):
       @swap - this is a shorthand for using /force/reset flags.
 
     Switch:
+      show - display the current typeclass of object
       reset - clean out *all* the attributes on the object -
               basically making this a new clean object.
       force - change to the typeclass also if the object
               already has a typeclass of the same name.
     Example:
       @type button = examples.red_button.RedButton
+
+    If the typeclass.path is not given, the current object's
+    typeclass is assumed.
 
     View or set an object's typeclass. If setting, the creation hooks
     of the new typeclass will be run on the object. If you have
@@ -1493,23 +1497,20 @@ class CmdTypeclass(MuxCommand):
         if not obj:
             return
 
-        if not self.rhs:
-            # we did not supply a new typeclass, view the
-            # current one instead.
-            if hasattr(obj, "typeclass"):
-                string = "%s's current typeclass is '%s' (%s)." % (obj.name,
-                                    obj.typename, obj.path)
-            else:
-                string = "%s is not a typed object." % obj.name
+        if not hasattr(obj, "__dbclass__"):
+            string = "%s is not a typed object." % obj.name
             caller.msg(string)
+            return
+
+        new_typeclass = self.rhs or obj.path
+
+        if "show" in self.switches:
+            string = "%s's current typeclass is %s." % (obj.name, obj.__class__)
             return
 
         if self.cmdstring == "@swap":
             self.switches.append("force")
             self.switches.append("reset")
-
-        # we have an =, a typeclass was supplied.
-        typeclass = self.rhs
 
         if not obj.access(caller, 'edit'):
             caller.msg("You are not allowed to do that.")
@@ -1519,15 +1520,15 @@ class CmdTypeclass(MuxCommand):
             caller.msg("This object cannot have a type at all!")
             return
 
-        is_same = obj.is_typeclass(typeclass, exact=True)
+        is_same = obj.is_typeclass(new_typeclass, exact=True)
         if is_same and not 'force' in self.switches:
-            string = "%s already has the typeclass '%s'. Use /force to override." % (obj.name, typeclass)
+            string = "%s already has the typeclass '%s'. Use /force to override." % (obj.name, new_typeclass)
         else:
             reset = "reset" in self.switches
             old_typeclass_path = obj.typeclass_path
 
             # we let this raise exception if needed
-            obj.swap_typeclass(typeclass, clean_attributes=reset)
+            obj.swap_typeclass(new_typeclass, clean_attributes=reset)
 
             if is_same:
                 string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.path)
@@ -1539,8 +1540,7 @@ class CmdTypeclass(MuxCommand):
             if reset:
                 string += " All old attributes where deleted before the swap."
             else:
-                string += " Note that the typeclassed object could have ended up with a mixture of old"
-                string += "\nand new attributes. Use /reset to remove old attributes if you don't want this."
+                string += " Attributes set before swap were not removed."
 
         caller.msg(string)
 

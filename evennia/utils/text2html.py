@@ -22,25 +22,26 @@ class TextToHTMLparser(object):
     tabstop = 4
     # mapping html color name <-> ansi code.
     hilite = ANSI_HILITE
+    unhilite = ANSI_UNHILITE
     normal = ANSI_NORMAL
     underline = ANSI_UNDERLINE
     colorcodes = [
             ('red', hilite + ANSI_RED),
-            ('maroon', ANSI_RED),
+            ('maroon', unhilite + ANSI_RED),
             ('lime', hilite + ANSI_GREEN),
-            ('green', ANSI_GREEN),
+            ('green', unhilite + ANSI_GREEN),
             ('yellow', hilite + ANSI_YELLOW),
-            ('olive', ANSI_YELLOW),
+            ('olive', unhilite + ANSI_YELLOW),
             ('blue', hilite + ANSI_BLUE),
-            ('navy', ANSI_BLUE),
+            ('navy', unhilite + ANSI_BLUE),
             ('magenta', hilite + ANSI_MAGENTA),
-            ('purple', ANSI_MAGENTA),
+            ('purple', unhilite + ANSI_MAGENTA),
             ('cyan', hilite + ANSI_CYAN),
-            ('teal', ANSI_CYAN),
+            ('teal', unhilite + ANSI_CYAN),
             ('white', hilite + ANSI_WHITE),  # pure white
-            ('gray', ANSI_WHITE),  # light grey
+            ('gray', unhilite + ANSI_WHITE),  # light grey
             ('dimgray', hilite + ANSI_BLACK),  # dark grey
-            ('black', ANSI_BLACK),  # pure black
+            ('black', unhilite + ANSI_BLACK),  # pure black
     ]
     colorback = [
             ('bgred', hilite + ANSI_BACK_RED),
