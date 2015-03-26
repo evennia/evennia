@@ -282,6 +282,11 @@ CMDSET_PLAYER = "commands.default_cmdsets.PlayerCmdSet"
 # Location to search for cmdsets if full path not given
 CMDSET_PATHS = ["commands"]
 
+# Line editor path. Points to a line editor class that commands may use to give
+# users extended editing control. See the default path for a reference implementation
+# and usage.
+LINE_EDITOR = 'evennia.commands.default.lineeditor.LineEditor'
+
 ######################################################################
 # Typeclasses and other paths
 ######################################################################

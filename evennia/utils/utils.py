@@ -1257,3 +1257,10 @@ def m_len(target):
     if inherits_from(target, basestring):
         return len(ANSI_PARSER.strip_mxp(target))
     return len(target)
+
+
+def get_line_editor():
+    """
+    Get the line editor for this game.
+    """
+    return variable_from_module(*settings.LINE_EDITOR.rsplit('.', 1))
