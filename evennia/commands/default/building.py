@@ -515,18 +515,14 @@ class CmdDesc(MuxCommand):
     """
     describe an object
 
-    Usage 1:
-      @desc [<obj> =] >description>
+    Usage:
+      @desc [<obj> =] <description>
 
-    Sets the "desc" attribute on an
-    object. If an object is not given,
+    Switches:
+      edit - Open up a line editor for more advanced editing.
+
+    Sets the "desc" attribute on an object. If an object is not given,
     describe the current room.
-
-    Usage 2:
-      @desc/edit [obj]
-
-    Opens up a line editor to set the "desc"
-    attribute on an object for advanced editing.
     """
     key = "@desc"
     aliases = "@describe"
@@ -570,7 +566,7 @@ class CmdDesc(MuxCommand):
 
         caller = self.caller
         if not self.args and 'edit' not in self.switches:
-            caller.msg("Usage: @desc [<obj> =] >description>")
+            caller.msg("Usage: @desc [<obj> =] <description>")
             return
 
         if 'edit' in self.switches:
