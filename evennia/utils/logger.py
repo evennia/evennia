@@ -14,12 +14,13 @@ log_typemsg(). This is for historical, back-compatible reasons.
 """
 
 import os
-from datetime import datetime
 from traceback import format_exc
 from twisted.python import log
 from twisted.internet.threads import deferToThread
 
+
 _LOGDIR = None
+_TIMEZONE = None
 
 def log_trace(errmsg=None):
     """
@@ -114,15 +115,17 @@ def log_file(msg, filename="game.log"):
     'game.log'. All logs will appear in the logs directory and log
     entries will start on new lines following datetime info.
     """
-    global LOG_FILE_HANDLES, _LOGDIR
+    global LOG_FILE_HANDLES, _LOGDIR, _TIMEZONE
 
     if not _LOGDIR:
         from django.conf import settings
         _LOGDIR = settings.LOG_DIR
+    if not _TIMEZONE:
+        from django.utils import timezone as _TIMEZONE
 
     def callback(filehandle, msg):
         "Writing to file and flushing result"
-        msg = "\n%s [-] %s" % (datetime.now(), msg.strip())
+        msg = "\n%s [-] %s" % (_TIMEZONE.now(), msg.strip())
         filehandle.write(msg)
         # since we don't close the handle, we need to flush
         # manually or log file won't be written to until the

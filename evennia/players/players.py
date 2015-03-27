@@ -11,8 +11,8 @@ instead for most things).
 
 """
 
-import datetime
 from django.conf import settings
+from django.utils import timezone
 from evennia.typeclasses.models import TypeclassBase
 from evennia.players.manager import PlayerManager
 from evennia.players.models import PlayerDB
@@ -558,7 +558,7 @@ class DefaultPlayer(PlayerDB):
                 _CONNECT_CHANNEL = ChannelDB.objects.filter(db_key=settings.DEFAULT_CHANNELS[1]["key"])[0]
             except Exception:
                 logger.log_trace()
-        now = datetime.datetime.now()
+        now = timezone.now()
         now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month,
                                              now.day, now.hour, now.minute)
         if _CONNECT_CHANNEL:

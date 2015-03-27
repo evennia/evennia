@@ -119,6 +119,8 @@ CYCLE_LOGFILES = True
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 TIME_ZONE = 'UTC'
+# Activate time zone in datetimes
+USE_TZ = True
 # Authentication backends. This is the code used to authenticate a user.
 AUTHENTICATION_BACKENDS = (
     'evennia.web.utils.backends.CaseInsensitiveModelBackend',)

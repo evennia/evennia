@@ -19,8 +19,8 @@ ChannelConnect object (this object is necessary to easily
 be able to delete connections on the fly).
 """
 
-from datetime import datetime
 from django.conf import settings
+from django.utils import timezone
 from django.db import models
 from evennia.typeclasses.models import TypedObject
 from evennia.utils.idmapper.models import SharedMemoryModel
@@ -309,7 +309,7 @@ class TempMsg(object):
         self.message = message
         self.lock_storage = lockstring
         self.hide_from = hide_from and make_iter(hide_from) or []
-        self.date_sent = datetime.now()
+        self.date_sent = timezone.now()
 
     @lazy_property
     def locks(self):

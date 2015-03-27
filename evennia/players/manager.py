@@ -3,6 +3,7 @@ The managers for the custom Player object and permissions.
 """
 
 import datetime
+from django.utils import timezone
 from django.contrib.auth.models import UserManager
 #from functools import update_wrapper
 from evennia.typeclasses.managers import (returns_typeclass_list, returns_typeclass,
@@ -59,7 +60,7 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         Returns a QuerySet containing the player User accounts that have been
         connected within the last <days> days.
         """
-        end_date = datetime.datetime.now()
+        end_date = timezone.now()
         tdelta = datetime.timedelta(days)
         start_date = end_date - tdelta
         return self.filter(date_joined__range=(start_date, end_date))
@@ -72,7 +73,7 @@ class PlayerDBManager(TypedObjectManager, UserManager):
 
         days - number of days backwards to check
         """
-        end_date = datetime.datetime.now()
+        end_date = timezone.now()
         tdelta = datetime.timedelta(days)
         start_date = end_date - tdelta
         return self.filter(last_login__range=(
