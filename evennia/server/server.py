@@ -344,8 +344,7 @@ class Evennia(object):
             # call restart hooks
             yield [o.at_server_reload() for o in ObjectDB.get_all_cached_instances()]
             yield [p.at_server_reload() for p in PlayerDB.get_all_cached_instances()]
-            yield [(s.pause(), s.at_server_reload())
-                                   for s in ScriptDB.get_all_cached_instances()]
+            yield [(s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
             yield self.sessions.all_sessions_portal_sync()
             ServerConfig.objects.conf("server_restart_mode", "reload")
 
@@ -367,6 +366,7 @@ class Evennia(object):
                 yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
                 yield [(p.unpuppet_all(), p.at_server_shutdown())
                                        for p in PlayerDB.get_all_cached_instances()]
+            yield [(s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
             yield [s.at_server_shutdown() for s in ScriptDB.get_all_cached_instances()]
             yield ObjectDB.objects.clear_all_sessids()
             ServerConfig.objects.conf("server_restart_mode", "reset")
