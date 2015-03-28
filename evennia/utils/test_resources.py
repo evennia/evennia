@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.test import TestCase
 from mock import Mock
-from evennia.objects import DefaultObject, DefaultCharacter, DefaultRoom
+from evennia.objects import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
 from evennia.players import DefaultPlayer
 from evennia.scripts import DefaultScript
 from evennia.server.serversession import ServerSession
@@ -21,6 +21,7 @@ class EvenniaTest(TestCase):
     player_typeclass = DefaultPlayer
     object_typeclass = DefaultObject
     character_typeclass = DefaultCharacter
+    exit_typeclass = DefaultExit
     room_typeclass = DefaultRoom
     script_typeclass = DefaultScript
 
@@ -34,6 +35,7 @@ class EvenniaTest(TestCase):
         self.room1.db.desc = "room_desc"
         settings.DEFAULT_HOME = "#%i" % self.room1.id  # we must have a default home
         self.room2 = create.create_object(self.room_typeclass, key="Room2")
+        self.exit = create.create_object(self.exit_typeclass, key='out', location=self.room1, destination=self.room2)
         self.obj1 = create.create_object(self.object_typeclass, key="Obj", location=self.room1, home=self.room1)
         self.obj2 = create.create_object(self.object_typeclass, key="Obj2", location=self.room1, home=self.room1)
         self.char1 = create.create_object(self.character_typeclass, key="Char", location=self.room1, home=self.room1)

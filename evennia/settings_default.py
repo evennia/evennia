@@ -119,6 +119,8 @@ CYCLE_LOGFILES = True
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 TIME_ZONE = 'UTC'
+# Activate time zone in datetimes
+USE_TZ = True
 # Authentication backends. This is the code used to authenticate a user.
 AUTHENTICATION_BACKENDS = (
     'evennia.web.utils.backends.CaseInsensitiveModelBackend',)
@@ -281,6 +283,11 @@ CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
 CMDSET_PLAYER = "commands.default_cmdsets.PlayerCmdSet"
 # Location to search for cmdsets if full path not given
 CMDSET_PATHS = ["commands"]
+
+# Line editor path. Points to a line editor class that commands may use to give
+# users extended editing control. See the default path for a reference implementation
+# and usage.
+LINE_EDITOR = 'evennia.commands.default.lineeditor.LineEditor'
 
 ######################################################################
 # Typeclasses and other paths

@@ -1,8 +1,5 @@
 """
-
 Evennia Line Editor
-
-Contribution - Griatch 2011
 
 This implements an advanced line editor for editing longer texts
 in-game. The editor mimics the command mechanisms of the VI editor as
@@ -20,7 +17,6 @@ Whereas the editor is intended to be called from other commands that
 requires more elaborate text editing of data, there is also a
 stand-alone editor command for editing Attributes at the end of this
 module. To use it just import and add it to your default `cmdset`.
-
 """
 
 import re
@@ -684,8 +680,10 @@ class CmdEditor(Command):
 
         editor_key = "%s/%s" % (self.objname, self.attrname)
         # start editor, it will handle things from here.
-        self.editor = LineEditor(self.caller,
-                                 loadfunc=load_attr,
-                                 savefunc=save_attr,
-                                 quitfunc=quit_hook,
-                                 key=editor_key)
+        self.editor = utils.get_line_editor()(
+            self.caller,
+            loadfunc=load_attr,
+            savefunc=save_attr,
+            quitfunc=quit_hook,
+            key=editor_key
+        )

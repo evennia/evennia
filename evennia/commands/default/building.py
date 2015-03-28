@@ -516,10 +516,12 @@ class CmdDesc(MuxCommand):
     describe an object
 
     Usage:
-      @desc [<obj> =] >description>
+      @desc [<obj> =] <description>
 
-    Setts the "desc" attribute on an
-    object. If an object is not given,
+    Switches:
+      edit - Open up a line editor for more advanced editing.
+
+    Sets the "desc" attribute on an object. If an object is not given,
     describe the current room.
     """
     key = "@desc"
@@ -527,12 +529,48 @@ class CmdDesc(MuxCommand):
     locks = "cmd:perm(desc) or perm(Builders)"
     help_category = "Building"
 
+    def edit_handler(self):
+        if self.rhs:
+            self.msg("{rYou may specify a description, or use the edit switch, "
+                     "but not both.{n")
+            return
+        if self.args:
+            obj = self.caller.search(self.args)
+        else:
+            obj = self.caller.location or self.msg("{rYou can't describe oblivion.{n")
+        if not obj:
+            return
+
+        def load():
+            return obj.db.desc or ""
+
+        def save():
+            """
+            Save line buffer to the desc prop. This should
+            return True if successful and also report its status to the user.
+            """
+            obj.db.desc = self.editor.buffer
+            self.caller.msg("Saved.")
+            return True
+
+        self.editor = utils.get_line_editor()(
+            self.caller,
+            loadfunc=load,
+            savefunc=save,
+            key="desc",
+        )
+        return
+
     def func(self):
         "Define command"
 
         caller = self.caller
-        if not self.args:
-            caller.msg("Usage: @desc [<obj> =] >description>")
+        if not self.args and 'edit' not in self.switches:
+            caller.msg("Usage: @desc [<obj> =] <description>")
+            return
+
+        if 'edit' in self.switches:
+            self.edit_handler()
             return
 
         if self.rhs:
@@ -542,9 +580,11 @@ class CmdDesc(MuxCommand):
                 return
             desc = self.rhs
         else:
-            obj = caller.location
+            obj = caller.location or self.msg("{rYou can't describe oblivion.{n")
+            if not obj:
+                return
             desc = self.args
-        # storing the description
+
         obj.db.desc = desc
         caller.msg("The description was set on %s." % obj.key)
 

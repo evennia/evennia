@@ -9,7 +9,7 @@ are stored on the Portal side)
 
 import re
 from time import time
-from datetime import datetime
+from django.utils import timezone
 from django.conf import settings
 from evennia.comms.models import ChannelDB
 from evennia.utils import logger
@@ -106,7 +106,7 @@ class ServerSession(Session):
         self.cmdset_storage = settings.CMDSET_SESSION
 
         # Update account's last login time.
-        self.player.last_login = datetime.now()
+        self.player.last_login = timezone.now()
         self.player.save()
 
         # add the session-level cmdset
@@ -122,7 +122,7 @@ class ServerSession(Session):
             if self.puppet:
                 player.unpuppet_object(sessid)
             uaccount = player
-            uaccount.last_login = datetime.now()
+            uaccount.last_login = timezone.now()
             uaccount.save()
             # calling player hook
             player.at_disconnect()

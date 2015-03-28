@@ -13,7 +13,6 @@ import types
 import math
 import re
 import textwrap
-import datetime
 import random
 import traceback
 from importlib import import_module
@@ -21,6 +20,7 @@ from inspect import ismodule, trace
 from collections import defaultdict
 from twisted.internet import threads, defer, reactor
 from django.conf import settings
+from django.utils import timezone
 
 try:
     import cPickle as pickle
@@ -279,7 +279,7 @@ def datetime_format(dtobj):
 
     year, month, day = dtobj.year, dtobj.month, dtobj.day
     hour, minute, second = dtobj.hour, dtobj.minute, dtobj.second
-    now = datetime.datetime.now()
+    now = timezone.now()
 
     if year < now.year:
         # another year
@@ -1257,3 +1257,10 @@ def m_len(target):
     if inherits_from(target, basestring):
         return len(ANSI_PARSER.strip_mxp(target))
     return len(target)
+
+
+def get_line_editor():
+    """
+    Get the line editor for this game.
+    """
+    return variable_from_module(*settings.LINE_EDITOR.rsplit('.', 1))
