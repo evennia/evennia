@@ -1441,6 +1441,35 @@ class DefaultRoom(DefaultObject):
 
 
 #
+# Default Exit command, used by the base exit object
+#
+
+class ExitCommand(command.Command):
+    """
+    This is a command that simply cause the caller to traverse
+    the object it is attached to.
+
+    """
+    obj = None
+
+    def func(self):
+        """
+        Default exit traverse if no syscommand is defined.
+        """
+
+        if self.obj.access(self.caller, 'traverse'):
+            # we may traverse the exit.
+            self.obj.at_traverse(self.caller, self.obj.destination)
+        else:
+            # exit is locked
+            if self.obj.db.err_traverse:
+                # if exit has a better error message, let's use it.
+                self.caller.msg(self.obj.db.err_traverse)
+            else:
+                # No shorthand error message. Call hook.
+                self.obj.at_failed_traverse(self.caller)
+
+#
 # Base Exit object
 #
 
@@ -1456,6 +1485,8 @@ class DefaultExit(DefaultObject):
 
     """
 
+    exit_command = ExitCommand
+    priority = 101
     # Helper classes and methods to implement the Exit. These need not
     # be overloaded unless one want to change the foundation for how
     # Exits work. See the end of the class for hook methods to overload.
@@ -1472,45 +1503,21 @@ class DefaultExit(DefaultObject):
             exiddobj (Object): The DefaultExit object to base the command on.
 
         """
-        class ExitCommand(command.Command):
-            """
-            This is a command that simply cause the caller to traverse
-            the object it is attached to.
-
-            """
-            obj = None
-
-            def func(self):
-                """
-                Default exit traverse if no syscommand is defined.
-                """
-
-                if self.obj.access(self.caller, 'traverse'):
-                    # we may traverse the exit.
-                    self.obj.at_traverse(self.caller, self.obj.destination)
-                else:
-                    # exit is locked
-                    if self.obj.db.err_traverse:
-                        # if exit has a better error message, let's use it.
-                        self.caller.msg(self.obj.db.err_traverse)
-                    else:
-                        # No shorthand error message. Call hook.
-                        self.obj.at_failed_traverse(self.caller)
 
         # create an exit command. We give the properties here,
         # to always trigger metaclass preparations
-        cmd = ExitCommand(key=exidbobj.db_key.strip().lower(),
-                          aliases=exidbobj.aliases.all(),
-                          locks=str(exidbobj.locks),
-                          auto_help=False,
-                          destination=exidbobj.db_destination,
-                          arg_regex=r"^$",
-                          is_exit=True,
-                          obj=exidbobj)
+        cmd = self.exit_command(key=exidbobj.db_key.strip().lower(),
+                                aliases=exidbobj.aliases.all(),
+                                locks=str(exidbobj.locks),
+                                auto_help=False,
+                                destination=exidbobj.db_destination,
+                                arg_regex=r"^$",
+                                is_exit=True,
+                                obj=exidbobj)
         # create a cmdset
         exit_cmdset = cmdset.CmdSet(None)
         exit_cmdset.key = '_exitset'
-        exit_cmdset.priority = 101
+        exit_cmdset.priority = self.priority
         exit_cmdset.duplicates = True
         # add command to cmdset
         exit_cmdset.add(cmd)
