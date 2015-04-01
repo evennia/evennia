@@ -205,9 +205,6 @@ def c_moves_s(client):
     "move through south exit if available"
     return "south"
 
-def c_test(client):
-    return "@test"
-
 # Action tuple (required)
 #
 # This is a tuple of client action functions. The first element is the
@@ -248,9 +245,9 @@ def c_test(client):
 #            #(0.1, c_creates_button),
 #            #(0.4, c_moves))
 # "inactive player" definition
-ACTIONS = (c_login_nodig,
-           c_logout,
-           (1.0, c_test))
+#ACTIONS = (c_login_nodig,
+#           c_logout,
+#           (1.0, c_idles))
 ## "normal player" definition
 #ACTIONS = ( c_login,
 #            c_logout,
@@ -265,14 +262,14 @@ ACTIONS = (c_login_nodig,
 #           c_logout,
 #           (1.0, c_moves_n))
 ## "socializing heavy builder" definition
-#ACTIONS = (c_login,
-#           c_logout,
-#           (0.1, c_socialize),
-#           (0.1, c_looks),
-#           (0.2, c_help),
-#           (0.1, c_creates_obj),
-#           (0.2, c_digs),
-#           (0.3, c_moves))
+ACTIONS = (c_login,
+           c_logout,
+           (0.1, c_socialize),
+           (0.1, c_looks),
+           (0.2, c_help),
+           (0.1, c_creates_obj),
+           (0.2, c_digs),
+           (0.3, c_moves))
 ## "heavy digger memory tester" definition
 #ACTIONS = (c_login,
 #           c_logout,
