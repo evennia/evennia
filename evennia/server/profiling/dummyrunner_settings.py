@@ -205,6 +205,9 @@ def c_moves_s(client):
     "move through south exit if available"
     return "south"
 
+def c_test(client):
+    return "@test"
+
 # Action tuple (required)
 #
 # This is a tuple of client action functions. The first element is the
@@ -247,7 +250,7 @@ def c_moves_s(client):
 # "inactive player" definition
 ACTIONS = (c_login_nodig,
            c_logout,
-           (1.0, c_idles))
+           (1.0, c_test))
 ## "normal player" definition
 #ACTIONS = ( c_login,
 #            c_logout,

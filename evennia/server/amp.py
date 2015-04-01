@@ -18,6 +18,7 @@ Server - (AMP server) Handles all mud operations. The server holds its own list
 
 # imports needed on both server and portal side
 import os
+from time import time
 from collections import defaultdict
 try:
     import cPickle as pickle
@@ -162,6 +163,21 @@ class MsgServer2Portal(amp.Command):
     response = []
 
 
+class BatchServer2Portal(amp.Command):
+    """
+    Batch data server -> portal
+
+    This is used when the amount of outgoing data
+    is very high, to minimize the throughput.
+    """
+    key = "BatchServer2Portal"
+    arguments = [('hashid', amp.Integer()),
+                 ('data', amp.String()),
+                 ('ipart', amp.Integer()),
+                 ('nparts', amp.Integer())]
+    errors = [(Exception, 'EXCEPTION')]
+    response = []
+
 class ServerAdmin(amp.Command):
     """
     Portal -> Server
@@ -236,6 +252,15 @@ class AMPProtocol(amp.AMP):
     subclasses that specify the datatypes of the input/output of these methods.
     """
 
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the protocol
+        """
+        super(AMPProtocol, self).__init__(*args, **kwargs)
+        self.outbatch = []
+        self.inbatch = []
+        self.lastsend = time()
+
     # helper methods
 
     def connectionMade(self):
@@ -264,6 +289,53 @@ class AMPProtocol(amp.AMP):
         print "AMP Error for %(info)s: %(e)s" % {'info': info,
                                                  'e': e.getErrorMessage()}
 
+    def batch_send(self, command, sessid, **kwargs):
+        """
+        This will batch data together to send fewer, large batches.
+        """
+        self.outbatch.append((sessid, kwargs))
+
+        if time() - self.lastsend > 0.0001:
+            batch = dumps(self.outbatch)
+            self.outbatch = []
+            to_send = [batch[i:i+MAXLEN] for i in range(0, len(batch), MAXLEN)]
+            nparts = len(to_send)
+            hashid=id(batch)
+            if nparts == 1:
+                return self.callRemote(command,
+                                       hashid=hashid,
+                                       data=batch,
+                                       ipart=0,
+                                       nparts=1).addErrback(self.errback, "BatchServer2Portal")
+            else:
+                deferreds = []
+                for ipart, part in enumerate(to_send):
+                    deferred = self.callRemote(command,
+                                               hashid=hashid,
+                                               data=part,
+                                               ipart=ipart,
+                                               nparts=nparts)
+                    deferred.addErrback(self.errback, "BatchServer2Portal-part")
+                    deferreds.append(deferred)
+                return deferreds
+
+    def batch_recv(self, hashid, data, ipart, nparts):
+        """
+        This will receive and unpack data sent as a batch.
+        """
+        global _MSGBUFFER
+        if nparts == 1:
+            return loads(data)
+        else:
+            if ipart < nparts-1:
+                # not yet complete
+                _MSGBUFFER[hashid].append(data)
+            else:
+                # all parts in place
+                data = _MSGBUFFER.pop(hashid) + data
+                return loads(data)
+
+
     def safe_send(self, command, sessid, **kwargs):
         """
         This helper method splits the sending of a message into
@@ -277,6 +349,8 @@ class AMPProtocol(amp.AMP):
 
         Returns a deferred or a list of such
         """
+
+
         to_send = [(key, [string[i:i+MAXLEN] for i in range(0, len(string), MAXLEN)])
                           for key, string in kwargs.items()]
         nparts_max = max(len(part[1]) for part in to_send)
@@ -383,14 +457,28 @@ class AMPProtocol(amp.AMP):
         return {}
     MsgServer2Portal.responder(amp_msg_server2portal)
 
+    def amp_batch_server2portal(self, hashid, data, ipart, nparts):
+        """
+        Relays batch data to Portal. This method is executed on the Portal.
+        """
+        batch = self.batch_recv(hashid, data, ipart, nparts)
+        if batch is not None:
+            for (sessid, kwargs) in batch:
+                self.factory.portal.sessions.data_out(sessid,
+                                                      text=kwargs["msg"],
+                                                      **kwargs["data"])
+        return {}
+    BatchServer2Portal.responder(amp_batch_server2portal)
+
     def call_remote_MsgServer2Portal(self, sessid, msg, data=""):
         """
         Access method called by the Server and executed on the Server.
         """
         #print "msg server->portal (server side):", sessid, msg, data
-        return self.safe_send(MsgServer2Portal, sessid,
-                              msg=msg if msg is not None else "",
-                              data=dumps(data))
+        return self.batch_send(BatchServer2Portal, sessid, msg=msg, data=data)
+        #return self.safe_send(MsgServer2Portal, sessid,
+        #                      msg=msg if msg is not None else "",
+        #                      data=dumps(data))
 
     # Server administration from the Portal side
     def amp_server_admin(self, sessid, ipart, nparts, operation, data):
@@ -489,7 +577,7 @@ class AMPProtocol(amp.AMP):
         """
         Access method called by the server side.
         """
-        self.safe_send(PortalAdmin, sessid, operation=operation, data=dumps(data))
+        return self.safe_send(PortalAdmin, sessid, operation=operation, data=dumps(data))
 
     # Extra functions
 
