@@ -1,0 +1,54 @@
+key,name,location,desc
+detail_tut_01,ruin;ruins;castle,room_tut_03," A fair bit out from the rocky shores you can make out the foggy
+ outlines of a ruined castle. The once mighty towers have crumbled and
+ it presents a jagged shape against the rainy sky. The ruin is perched
+ on its own cliff, only connected to the mainland by means of an old
+ hanging bridge starting not far east from you."
+detail_tut_02,sea;ocean;waves,room_tut_03," The gray sea stretches as far as the eye can see to the east. Far
+ below you its waves crash against the foot of the cliff. The vast
+ inland moor meets the ocean along a high and uninviting coastline of
+ ragged vertical stone.
+
+ Once this part of the world might have been beautiful, but now the
+ eternal winds and storms have washed it all down into a gray and
+ barren wasteland."
+detail_tut_03,shutters;storm,room_tut_04,The shutters are closed.
+detail_tut_04,inn;sign,room_tut_04," You think you might have heard of this name before,
+ but at the moment you can recall where from."
+detail_tut_05,snake;letters;writing,room_tut_04," The snake is cartoonish with big googly eyes. It looks somewhat
+ like one of those big snakes from the distant jungles - the kind
+ squeezes their victims."
+detail_tut_06,barkeep;man;landlord,room_tut_05," The landlord is a cheerful fellow, always ready to supply you with
+ more beer. He mentions doing some sort of arcane magic known as
+ ""software development"" when not running this place. Whatever that
+ means."
+detail_tut_07,brush;brushes,room_tut_07,"The brushes covering the ledge are gray and dwarfed from constantly
+ being pummeled by salt, rain and wind."
+detail_tut_08,below;sea;ocean;waves,room_tut_07," Below you the gray sea rages, its waves crashing into the cliff so a
+ thin mist of salt mixes with the rain even this far above it. You can
+ almost imagine the cliff trembling under its onslaught."
+detail_tut_09,bridge,room_tut_07," Partly obscured by the rain you can make out the shape of the hanging
+ bridge high above you. There is no way to get back up there from this
+ ledge."
+detail_tut_10,pool;water,room_tut_08," The water of the pool is black and opaque. The rain coming down from
+ above does not seem to ripple the surface quite as much as it should."
+detail_tut_11,bucket,room_tut_08," The bucket is nearly coming apart, only rusty iron bands holding
+ the rotten wood together. It's been down here for a long time."
+detail_tut_12,hole;above,room_tut_08," Whereas the lower edges of the hole seem jagged and natural you can
+ faintly make out it turning into a man-made circular shaft higher up.
+ It looks like an old well. There must have been much more water
+ here once."
+detail_tut_13,passages;dark,room_tut_08," Those dark passages seem to criss-cross the cliff. No need to
+ head back into the gloom now that there seems to be a way out."
+detail_tut_14,iron-cast door;iron;door;iron-cast,room_tut_09," The door is very solid and clad in iron. No matter how much you push
+ at it, it won't budge. It actually doesn't show any signs of having
+ been opened for a very long time."
+detail_tut_15,stone walls;walls;stone;stones;wall,room_tut_09," The walls are dripping with moisture and mold. A network of roots
+ have burst through the cracks on one side, bending the stones
+ slightly aside. You feel a faint draft from that direction."
+detail_tut_16,portoculis;fall;fallen;grating,room_tut_10," This heavy iron grating used to block off the inner part of the gate house, now it has fallen
+ to the ground together with the stone archway that once help it up."
+detail_tut_17,stables;stable;building,room_tut_13," The building is empty, if it was indeed once a stable it was abandoned long ago."
+detail_tut_18,altar,room_tut_14," The altar is a massive stone slab. It might once have had ornate decorations
+ but time and the salty air has broken everything down into dust."
+detail_tut_19,ceiling,room_tut_14, The dome still looming intact above you is a marvel of engineering.

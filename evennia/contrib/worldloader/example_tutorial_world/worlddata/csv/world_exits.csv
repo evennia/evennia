@@ -1,0 +1,61 @@
+key,name,alias,typeclass,desc,lock,attributes,location,destination,tutorial_info
+exit_tut_01,tutorial,tut;intro,typeclasses.exits.Exit," This starts the {gEvennia tutorial{n, using a small solo game to show off
+ some of the server's possibilities.",,,limbo,room_tut_01,
+exit_tut_02,exit tutorial,exit;back,typeclasses.exits.Exit,,,,room_tut_01,room_tut_02,
+exit_tut_03,start again,start,typeclasses.exits.Exit,,,,room_tut_02,room_tut_01,
+exit_tut_04,exit,,typeclasses.exits.Exit,,,,room_tut_02,limbo,
+exit_tut_05,begin adventure,begin;start,typeclasses.exits.Exit,,,,room_tut_01,room_tut_03,
+exit_tut_06,northern path,north;n;path,typeclasses.exits.Exit," This is a hardly visible footpath leading off through the rain-beaten
+ grass. It seems to circle the trees northward. You would never had
+ noticed it had you not spotted it from up in the tree.",view:tag(tutorial_climbed_tree) ; traverse:tag(tutorial_climbed_tree),,room_tut_03,room_tut_04," This exit is locked with a lock string that looks like this:
+
+   view:tag(tutorial_climbed_tree) ; traverse:tag(tutorial_climbed_tree)
+
+ This checks if Character has a Tag tutorial_climbed_tree set before it
+ allows itself to be displayed. This Tag is set by the tree object when
+ the 'climb' command is used."
+exit_tut_07,back to cliff,back;cliff;south;s,typeclasses.exits.Exit,,,,room_tut_04,room_tut_03,
+exit_tut_08,enter,in,typeclasses.exits.Exit,,,,room_tut_04,room_tut_05,
+exit_tut_09,leave,out,typeclasses.exits.Exit,,,,room_tut_05,room_tut_04,
+exit_tut_10,old bridge,east;e;bridge;hangbridge,typeclasses.exits.Exit," The hanging bridge's foundation sits at the edge of the cliff to the
+ east - two heavy stone pillars anchor the bridge on this side. The
+ bridge sways precariously in the storm.",,,room_tut_03,room_tut_06,
+exit_tut_11,hole into cliff,hole;passage;cliff,typeclasses.exits.Exit," The hole is natural, the soft rock eroded by ages of sea water. The
+ opening is small but large enough for you to push through. It looks
+ like it expands into a cavern further in.",,,room_tut_07,room_tut_08,
+exit_tut_12,climb the chain,climb;chain,typeclasses.exits.Exit," The chain is made of iron. It is rusty but you think it might still
+ hold your weight even after all this time. Better hope you don't need
+ to do this more times ...",,,room_tut_08,room_tut_03,
+exit_tut_13,Bridge over the abyss,bridge;abyss;west;w,typeclasses.exits.Exit,,traverse:has_player(),,room_tut_10,room_tut_06,
+exit_tut_14,Standing archway,archway;south;s,typeclasses.exits.Exit, It seems the archway leads off into a series of dimly lit rooms.,,,room_tut_10,room_tut_11,
+exit_tut_15,ruined gatehouse,gatehouse;north;n,typeclasses.exits.Exit,,,,room_tut_11,room_tut_10,
+exit_tut_16,castle corner,corner;east;e,typeclasses.exits.Exit,,,,room_tut_10,room_tut_12,
+exit_tut_17,gatehouse,west;w,typeclasses.exits.Exit,,,,room_tut_12,room_tut_10,
+exit_tut_18,courtyard,south;s,typeclasses.exits.Exit,,,,room_tut_12,room_tut_13,
+exit_tut_19,castle corner,north;n,typeclasses.exits.Exit,,,,room_tut_13,room_tut_12,
+exit_tut_20,along inner wall,wall;along;west;w,typeclasses.exits.Exit,,,,room_tut_13,room_tut_11,
+exit_tut_21,overgrown courtyard,courtyard;east;e,typeclasses.exits.Exit,,,,room_tut_11,room_tut_13,
+exit_tut_22,ruined temple,temple;east;e,typeclasses.exits.Exit,,,,room_tut_13,room_tut_14,
+exit_tut_23,overgrown courtyard,courtyard;outside;out;west;w,typeclasses.exits.Exit,,,,room_tut_14,room_tut_13,
+exit_tut_24,stairs down,stairs;down;d,typeclasses.exits.Exit, The stairs are worn by the age-old passage of feet.,traverse:has_player(),,room_tut_14,room_tut_15,
+exit_tut_25,up the stairs to ruined temple,stairs;temple;up;u,typeclasses.exits.Exit,,,,room_tut_15,room_tut_14,
+exit_tut_26,Blue bird tomb,bird;blue;stone,typeclasses.exits.Exit,The entrance to this tomb is decorated with a very lifelike blue bird.,,,room_tut_15,room_tut_16,
+exit_tut_27,Tomb of woman on horse,horse;riding,typeclasses.exits.Exit,"The entrance to this tomb depicts a scene of a strong
+warrior woman on a black horse. She shouts and brandishes
+a glowing weapon as she charges down a hill towards
+some enemy not depicted.",,,room_tut_15,room_tut_17,
+exit_tut_28,Tomb of the crowned queen,crown;queen,typeclasses.exits.Exit,"The entrance to this tomb shows a beautiful mural of a queen ruling
+from her throne, respectful subjects kneeling before her. On her head
+is a crown that seems to shine with magical power.",,,room_tut_15,room_tut_18,
+exit_tut_29,Tomb of the shield,shield,typeclasses.exits.Exit,"This tomb shows a warrior woman fighting shadowy creatures from the
+top of a hill. Her sword lies broken on the ground before her but she
+fights on with her battered shield - the scene depicts her just as she
+rams the shield into an enemy in wild desperation.",,,room_tut_15,room_tut_19,
+exit_tut_30,Tomb of the hero,knight;hero;monster;beast,typeclasses.exits.Exit,"The entrance to this tomb shows a mural of an aging woman in a
+warrior's outfit. She has white hair yet her sword-arm shows no sign
+of weakness and her pose is straight. Children are gathered around her
+feet and men and women from all the land come to seek the wisdom and
+strength of the legendary hero.",,,room_tut_15,room_tut_20,
+exit_tut_31,back to antechamber,antechamber;back,typeclasses.exits.Exit,,,,room_tut_21,room_tut_15,
+exit_tut_32,Exit tutorial,exit;end,typeclasses.exits.Exit,,view:holds(rack_sarcophagus); traverse:holds(rack_sarcophagus),,room_tut_21,room_tut_22,
+exit_tut_33,exit back to Limbo,limbo;exit;back,typeclasses.exits.Exit,,,,room_tut_22,limbo,
