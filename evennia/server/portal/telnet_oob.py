@@ -154,6 +154,8 @@ class TelnetOOB(object):
         elif cmdname in ("MSDP_ARRAY", "MSDP_TABLE"):
             # no cmdname should accompany these, just the MSDP wrapper
             cmdname = "MSDP"
+
+        gmcp_string = ""
         if args:
             gmcp_string = "%s %s" % (cmdname, json.dumps(args))
         elif kwargs:
