@@ -25,7 +25,7 @@ try:
 except ImportError:
     import pickle
 from twisted.protocols import amp
-from twisted.internet import protocol
+from twisted.internet import protocol, reactor
 from twisted.internet.defer import Deferred
 from evennia.utils.utils import to_str, variable_from_module
 
@@ -293,16 +293,18 @@ class AMPProtocol(amp.AMP):
         """
         This will batch data together to send fewer, large batches.
         """
-        self.outbatch.append((sessid, kwargs))
+        if sessid is not None:
+            self.outbatch.append((sessid, kwargs))
 
-        if time() - self.lastsend > 0.0001:
+        timeout = 0.0025
+        if time() - self.lastsend > timeout:
             batch = dumps(self.outbatch)
             self.outbatch = []
             to_send = [batch[i:i+MAXLEN] for i in range(0, len(batch), MAXLEN)]
             nparts = len(to_send)
             hashid=id(batch)
             if nparts == 1:
-                return self.callRemote(command,
+                deferreds = self.callRemote(command,
                                        hashid=hashid,
                                        data=batch,
                                        ipart=0,
@@ -317,7 +319,12 @@ class AMPProtocol(amp.AMP):
                                                nparts=nparts)
                     deferred.addErrback(self.errback, "BatchServer2Portal-part")
                     deferreds.append(deferred)
-                return deferreds
+            self.lastsend = time()
+            return deferreds
+        else:
+            # make sure to tick
+            reactor.callLater(0.01, self.batch_send, command, None)
+
 
     def batch_recv(self, hashid, data, ipart, nparts):
         """
