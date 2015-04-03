@@ -245,7 +245,7 @@ class AMPProtocol(amp.AMP):
         """
         self.min_batch_step = 1.0 / BATCH_RATE
         self.lastsend = time()
-        self.task = task.LoopingCall(self.batch_send, MsgPortal2Server, None)
+        self.task = task.LoopingCall(self.batch_send, None, None)
         self.task.start(BATCH_TIMEOUT)
 
 
@@ -278,40 +278,54 @@ class AMPProtocol(amp.AMP):
     def batch_send(self, command, sessid, **kwargs):
         """
         This will batch data together to send fewer, large batches.
-        """
-        global _SENDBATCH
-        cmdkey = command.key
-        if sessid is not None:
-            _SENDBATCH[cmdkey].append((sessid, kwargs))
-        if not _SENDBATCH:
-            return
-        now = time()
 
-        if now - self.lastsend > self.min_batch_step:
-            batch = dumps(_SENDBATCH[cmdkey])
-            _SENDBATCH[cmdkey] = []
-            to_send = [batch[i:i+AMP_MAXLEN] for i in range(0, len(batch), AMP_MAXLEN)]
-            nparts = len(to_send)
-            # tag this batch
-            hashid = "%s-%s" % (id(batch), now)
-            if nparts == 1:
-                deferreds = self.callRemote(command,
-                                       hashid=hashid,
-                                       data=batch,
-                                       ipart=0,
-                                       nparts=1).addErrback(self.errback, command.key)
-            else:
-                deferreds = []
-                for ipart, part in enumerate(to_send):
-                    deferred = self.callRemote(command,
-                                               hashid=hashid,
-                                               data=part,
-                                               ipart=ipart,
-                                               nparts=nparts)
-                    deferred.addErrback(self.errback, "%s part %i/%i" % (command.key, ipart, part))
-                    deferreds.append(deferred)
-            self.lastsend = time() # don't use now here, keep it as up-to-date as possible
-            return deferreds
+        Kwargs:
+            force_direct: send direct
+        """
+        #print "batch_send 1:", command, sessid
+        global _SENDBATCH
+        if command is None:
+            # called by the automatic cleanup mechanism
+            commands = [cmd for cmd in (MsgPortal2Server, MsgServer2Portal, ServerAdmin, PortalAdmin)
+                        if _SENDBATCH.get(cmd, False)]
+            if not commands:
+                return
+        else:
+            # called to send right away
+            commands = [command]
+            _SENDBATCH[command].append((sessid, kwargs))
+
+        force_direct = kwargs.pop("force_direct", False)
+        now = time()
+        #print "batch_send 2:", now, self.lastsend, self.min_batch_step, now-self.lastsend > self.min_batch_step
+
+        if force_direct or now - self.lastsend > self.min_batch_step:
+            for command in commands:
+                batch = dumps(_SENDBATCH[command])
+                _SENDBATCH[command] = []
+                # split in parts small enough to fit in AMP MAXLEN
+                to_send = [batch[i:i+AMP_MAXLEN] for i in range(0, len(batch), AMP_MAXLEN)]
+                nparts = len(to_send)
+                # tag this batch
+                hashid = "%s-%s" % (id(batch), now)
+                if nparts == 1:
+                    deferreds = [self.callRemote(command,
+                                           hashid=hashid,
+                                           data=batch,
+                                           ipart=0,
+                                           nparts=1).addErrback(self.errback, command.key)]
+                else:
+                    deferreds = []
+                    for ipart, part in enumerate(to_send):
+                        deferred = self.callRemote(command,
+                                                   hashid=hashid,
+                                                   data=part,
+                                                   ipart=ipart,
+                                                   nparts=nparts)
+                        deferred.addErrback(self.errback, "%s part %i/%i" % (command.key, ipart, part))
+                        deferreds.append(deferred)
+                self.lastsend = time() # don't use now here, keep it as up-to-date as possible
+                return deferreds
 
 
     def batch_recv(self, hashid, data, ipart, nparts):
@@ -406,6 +420,7 @@ class AMPProtocol(amp.AMP):
         operations on the server.  This is executed on the Server.
 
         """
+        #print "serveradmin (server side):", hashid, ipart, nparts
         batch = self.batch_recv(hashid, data, ipart, nparts)
 
         for (sessid, kwargs) in batch:
@@ -443,6 +458,8 @@ class AMPProtocol(amp.AMP):
         Access method called by the Portal and Executed on the Portal.
         """
         #print "serveradmin (portal side):", sessid, ord(operation), data
+        if hasattr(self.factory, "server_restart_mode"):
+            return self.batch_send(ServerAdmin, sessid, force_direct=True, operation=operation, data=data)
         return self.batch_send(ServerAdmin, sessid, operation=operation, data=data)
 
     # Portal administraton from the Server side
@@ -494,6 +511,8 @@ class AMPProtocol(amp.AMP):
         """
         Access method called by the server side.
         """
+        if operation == SSYNC:
+            return self.batch_send(PortalAdmin, sessid, force_direct=True, operation=operation, data=data)
         return self.batch_send(PortalAdmin, sessid, operation=operation, data=data)
 
     # Extra functions
