@@ -679,8 +679,8 @@ def check_evennia_dependencies():
     # defining the requirements
     python_min = '2.7'
     twisted_min = '12.0'
-    django_min = '1.7'
-    django_rec = '1.7'
+    django_min = '1.8'
+    django_rec = '1.8'
 
     errstring = ""
     no_error = True

@@ -56,8 +56,8 @@ PORTAL_PY_FILE = None
 
 PYTHON_MIN = '2.7'
 TWISTED_MIN = '12.0'
-DJANGO_MIN = '1.7'
-DJANGO_REC = '1.7'
+DJANGO_MIN = '1.8'
+DJANGO_REC = '1.8'
 
 sys.path[1] = EVENNIA_ROOT
 
@@ -278,8 +278,13 @@ ERROR_NOTWISTED = \
 
 ERROR_DJANGO_MIN = \
     """
-    ERROR: Django {dversion} found. Evennia requires version
-    {django_min} or higher.
+    ERROR: Django {dversion} found. Evennia requires version {django_min}
+    or higher.
+
+    Install it with for example `pip install --upgrade django`
+    or with `pip install django=={django_min}` to get a specific version.
+
+    It's also a good idea to run `evennia migrate` after this upgrade.
     """
 
 NOTE_DJANGO_MIN = \
@@ -291,8 +296,8 @@ NOTE_DJANGO_MIN = \
 NOTE_DJANGO_NEW = \
     """
     NOTE: Django {dversion} found. This is newer than Evennia's
-    recommended version (v{django_rec}). It will probably work, but
-    may be new enough not to be fully tested yet. Report any issues."
+    recommended version (v{django_rec}). It might work, but may be new
+    enough to not be fully tested yet. Report any issues.
     """
 
 ERROR_NODJANGO = \
