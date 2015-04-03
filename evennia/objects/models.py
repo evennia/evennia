@@ -182,6 +182,7 @@ class ObjectDB(TypedObject):
     # defaults
     __settingsclasspath__ = settings.BASE_OBJECT_TYPECLASS
     __defaultclasspath__ = "evennia.objects.objects.DefaultObject"
+    __applabel__ = "objects"
 
     @lazy_property
     def contents_cache(self):

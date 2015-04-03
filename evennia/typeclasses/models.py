@@ -91,26 +91,12 @@ class TypeclassBase(SharedMemoryModelBase):
         # storage of stats
         attrs["typename"] = name
         attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
-        #defaultpath = attrs["__defaultclasspath__"]
-        #attrs["__defaultclass__"] = class_from_module(attrs["__defaultclasspath__"])
-        #try:
-        #    defaultpath = attrs["__defaultclasspath__"]
-        #    attrs["__defaultclass__"] = class_from_module(attrs["__defaultclasspath__"])
-        #except Exception:
-        #    log_trace("Typeclass error for %s: Default typeclass '%s' could not load. "
-        #              "Falling back to library base." % (name, defaultpath))
-        #    try:
-        #        # two levels down from TypedObject will always be the default base class.
-        #        attrs["__defaultclass__"] = cls.__mro__[cls.__mro__.index(TypedObject)-2]
-        #    except Exception:
-        #        log_trace("Critical error for %s: Neither typeclass, "
-        #                  "default fallback nor base class could load." % name)
-        #        attrs["__defaultclass__"] = cls
 
         # typeclass proxy setup
         if not "Meta" in attrs:
             class Meta:
                 proxy = True
+                app_label = attrs.get("__applabel__", "typeclasses")
             attrs["Meta"] = Meta
         attrs["Meta"].proxy = True
 

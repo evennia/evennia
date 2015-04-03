@@ -44,7 +44,7 @@ class ScriptDBManager(TypedObjectManager):
         """
         if not obj:
             return []
-        player = _GA(_GA(obj, "__class__"), "__name__") == "PlayerDB"
+        player = _GA(_GA(obj, "__dbclass__"), "__name__") == "PlayerDB"
         if key:
             dbref = self.dbref(key)
             if dbref or dbref == 0:

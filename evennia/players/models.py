@@ -96,9 +96,9 @@ class PlayerDB(TypedObject, AbstractUser):
     # defaults
     __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
     __defaultclasspath__ = "evennia.players.players.DefaultPlayer"
+    __applabel__ = "players"
 
     class Meta:
-        app_label = 'players'
         verbose_name = 'Player'
 
     # alias to the objs property

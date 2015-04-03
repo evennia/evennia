@@ -103,6 +103,7 @@ class ScriptDB(TypedObject):
     # defaults
     __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
     __defaultclasspath__ = "evennia.scripts.scripts.DefaultScript"
+    __applabel__ = "scripts"
 
     class Meta:
         "Define Django meta options"

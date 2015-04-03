@@ -471,6 +471,7 @@ class ChannelDB(TypedObject):
 
     __settingclasspath__ = settings.BASE_CHANNEL_TYPECLASS
     __defaultclasspath__ = "evennia.comms.comms.DefaultChannel"
+    __applabel__ = "comms"
 
     class Meta:
         "Define Django meta options"
