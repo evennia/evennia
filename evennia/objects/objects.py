@@ -1132,7 +1132,7 @@ class DefaultObject(ObjectDB):
         normally by calling
         `traversing_object.move_to(target_location)`. It is normally
         only implemented by Exit objects. If it returns False (usually
-        because move_to returned False), `at_after_traverse` below
+        because `move_to` returned False), `at_after_traverse` below
         should not be called and instead `at_failed_traverse` should be
         called.
 
