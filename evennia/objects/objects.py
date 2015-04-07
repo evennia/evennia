@@ -1525,7 +1525,7 @@ class DefaultExit(DefaultObject):
         command handler. If changes need to be done on the fly to the
         cmdset before passing them on to the cmdhandler, this is the
         place to do it. This is called also if the object currently
-        have no cmdsets.
+        has no cmdsets.
 
         Kwargs:
           force_init (bool): If `True`, force a re-build of the cmdset
