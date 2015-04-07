@@ -130,7 +130,7 @@ class DefaultObject(ObjectDB):
     It is recommended to create children of this class using the
     `evennia.create_object()` function rather than to initialize the class
     directly - this will both set things up and efficiently save the object
-    without obj.save() having to be called explicitly.
+    without `obj.save()` having to be called explicitly.
 
     """
     # typeclass setup
