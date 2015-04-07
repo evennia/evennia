@@ -483,8 +483,8 @@ class DefaultObject(ObjectDB):
 
         Args:
             destination (Object): Reference to the object to move to. This
-                 can also be an exit object, in which case the
-                 destination property is used as destination.
+                can also be an exit object, in which case the
+                destination property is used as destination.
             quiet (bool): If true, turn off the calling of the emit hooks
                 (announce_move_to/from etc)
             emit_to_obj (Object): object to receive error messages
@@ -494,13 +494,14 @@ class DefaultObject(ObjectDB):
             to_none (bool): Allow destination to be None. Note that no hooks are run when
                  moving to a None location. If you want to run hooks, run them manually
                  (and make sure they can manage None locations).
-            move_hooks (bool): If False, turn off the calling of move-related hooks (at_before/after_move etc)
-                with quiet=True, this is as quiet a move as can be done.
+            move_hooks (bool): If False, turn off the calling of move-related hooks
+                (at_before/after_move etc) with quiet=True, this is as quiet a move
+                as can be done.
 
         Returns:
             result (bool): True/False depending on if there were problems with the move.
                     This method may also return various error messages to the
-                    emit_to_obj.
+                    `emit_to_obj`.
 
         Notes:
             No access checks are done in this method, these should be handled before
@@ -509,12 +510,12 @@ class DefaultObject(ObjectDB):
             The `DefaultObject` hooks called (if `move_hooks=True`) are, in order:
 
              1. `self.at_before_move(destination)` (if this returns False, move is aborted)
-             1. `source_location.at_object_leave(self, destination)`
-             1. `self.announce_move_from(destination)`
-             1. (move happens here)
-             1. `self.announce_move_to(source_location)`
-             1. `destination.at_object_receive(self, source_location)`
-             1. `self.at_after_move(source_location)`
+             2. `source_location.at_object_leave(self, destination)`
+             3. `self.announce_move_from(destination)`
+             4. (move happens here)
+             5. `self.announce_move_to(source_location)`
+             6. `destination.at_object_receive(self, source_location)`
+             7. `self.at_after_move(source_location)`
 
         """
         def logerr(string=""):
