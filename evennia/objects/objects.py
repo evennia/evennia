@@ -1452,7 +1452,7 @@ class DefaultExit(DefaultObject):
         exit's name, triggering the movement between rooms.
 
         Args:
-            exiddobj (Object): The DefaultExit object to base the command on.
+            exidbobj (Object): The DefaultExit object to base the command on.
 
         """
         class ExitCommand(command.Command):
