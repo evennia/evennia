@@ -1340,8 +1340,8 @@ class DefaultObject(ObjectDB):
 
 class DefaultCharacter(DefaultObject):
     """
-    This implements an Object puppeted by a Session and what that
-    means.
+    This implements an Object puppeted by a Session - that is,
+    a character avatar controlled by a player.
 
     """
 
