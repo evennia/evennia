@@ -130,7 +130,7 @@ class DefaultObject(ObjectDB):
     It is recommended to create children of this class using the
     `evennia.create_object()` function rather than to initialize the class
     directly - this will both set things up and efficiently save the object
-    without obj.save() having to be called explicitly.
+    without `obj.save()` having to be called explicitly.
 
     """
     # typeclass setup
@@ -1149,8 +1149,8 @@ class DefaultObject(ObjectDB):
         normally by calling
         `traversing_object.move_to(target_location)`. It is normally
         only implemented by Exit objects. If it returns False (usually
-        because move_to returned False), at_after_traverse below
-        should not be called and instead at_failed_traverse should be
+        because `move_to` returned False), `at_after_traverse` below
+        should not be called and instead `at_failed_traverse` should be
         called.
 
         Args:
@@ -1500,7 +1500,7 @@ class DefaultExit(DefaultObject):
         exit's name, triggering the movement between rooms.
 
         Args:
-            exiddobj (Object): The DefaultExit object to base the command on.
+            exidbobj (Object): The DefaultExit object to base the command on.
 
         """
 
@@ -1549,7 +1549,7 @@ class DefaultExit(DefaultObject):
         command handler. If changes need to be done on the fly to the
         cmdset before passing them on to the cmdhandler, this is the
         place to do it. This is called also if the object currently
-        have no cmdsets.
+        has no cmdsets.
 
         Kwargs:
           force_init (bool): If `True`, force a re-build of the cmdset
