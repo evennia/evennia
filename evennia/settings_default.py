@@ -235,7 +235,7 @@ CONNECTION_SCREEN_MODULE = "server.conf.connection_screens"
 # named at_initial_setup(). This hook method can be used to customize
 # the server's initial setup sequence (the very first startup of the system).
 # The check will fail quietly if module doesn't exist or fails to load.
-AT_INITIAL_SETUP_HOOK_MODULE = "server.conf.at_initial_setup_hook"
+AT_INITIAL_SETUP_HOOK_MODULE = "server.conf.at_initial_setup"
 # Module containing your custom at_server_start(), at_server_reload() and
 # at_server_stop() methods. These methods will be called every time
 # the server starts, reloads and resets/stops respectively.
