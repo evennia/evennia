@@ -483,8 +483,8 @@ class DefaultObject(ObjectDB):
 
         Args:
             destination (Object): Reference to the object to move to. This
-                 can also be an exit object, in which case the
-                 destination property is used as destination.
+                can also be an exit object, in which case the
+                destination property is used as destination.
             quiet (bool): If true, turn off the calling of the emit hooks
                 (announce_move_to/from etc)
             emit_to_obj (Object): object to receive error messages
@@ -494,13 +494,14 @@ class DefaultObject(ObjectDB):
             to_none (bool): Allow destination to be None. Note that no hooks are run when
                  moving to a None location. If you want to run hooks, run them manually
                  (and make sure they can manage None locations).
-            move_hooks (bool): If False, turn off the calling of move-related hooks (at_before/after_move etc)
-                with quiet=True, this is as quiet a move as can be done.
+            move_hooks (bool): If False, turn off the calling of move-related hooks
+                (at_before/after_move etc) with quiet=True, this is as quiet a move
+                as can be done.
 
         Returns:
             result (bool): True/False depending on if there were problems with the move.
                     This method may also return various error messages to the
-                    emit_to_obj.
+                    `emit_to_obj`.
 
         Notes:
             No access checks are done in this method, these should be handled before
