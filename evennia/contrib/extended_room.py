@@ -349,25 +349,27 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
             if not location:
                 caller.msg("No location to detail!")
                 return
-            if not self.rhs:
-                # no '=' used - list content of given detail
-                if self.args in location.db.details:
-                    string = "{wDetail '%s' on %s:\n{n" % (self.args, location)
-                    string += location.db.details[self.args]
-                    caller.msg(string)
-                    return
+            if self.switches and self.switches[0] in 'del':
+                # removing a detail.
+                if self.lhs in location.db.details:
+                    del location.db.details[self.lhs]
+                caller.msg("Detail %s deleted, if it existed." % self.lhs)
+                self.reset_times(location)
+                return
             if not self.args:
                 # No args given. Return all details on location
                 string = "{wDetails on %s{n:\n" % location
                 string += "\n".join(" {w%s{n: %s" % (key, utils.crop(text)) for key, text in location.db.details.items())
                 caller.msg(string)
                 return
-            if self.switches and self.switches[0] in 'del':
-                # removing a detail.
-                if self.lhs in location.db.details:
-                    del location.db.detail
-                caller.msg("Detail %s deleted, if it existed." % self.lhs)
-                self.reset_times(location)
+            if not self.rhs:
+                # no '=' used - list content of given detail
+                if self.args in location.db.details:
+                    string = "{wDetail '%s' on %s:\n{n" % (self.args, location)
+                    string += str(location.db.details[self.args])
+                    caller.msg(string)
+                else:
+                    caller.msg("Detail '%s' not found." % self.args)
                 return
             # setting a detail
             location.db.details[self.lhs] = self.rhs
@@ -410,7 +412,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 self.reset_times(location)
                 caller.msg("Seasonal description was set on %s." % location.key)
             else:
-                # Not seasonal desc set, maybe this is not an extended room
+                # No seasonal desc set, maybe this is not an extended room
                 if self.rhs:
                     text = self.rhs
                     obj = caller.search(self.lhs)
@@ -419,14 +421,12 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 else:
                     text = self.args
                     obj = location
-                obj.db.desc = self.rhs # a compatibility fallback
-                if utils.inherits_from(obj, ExtendedRoom):
-                    # this is an extended room, we need to reset
-                    # times and set general_desc
+                obj.db.desc = text # a compatibility fallback
+                if obj.attributes.has("general_desc"):
                     obj.db.general_desc = text
-                    self.reset_times(obj)
                     caller.msg("General description was set on %s." % obj.key)
                 else:
+                    # this is not an ExtendedRoom.
                     caller.msg("The description was set on %s." % obj.key)
 
 
