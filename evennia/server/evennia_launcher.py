@@ -459,7 +459,7 @@ def check_database():
     # Check so a database exists and is accessible
     from django.db import connection
     tables = connection.introspection.get_table_list(connection.cursor())
-    if not isinstance(tables[0], basestring): # django 1.8+
+    if not tables or not isinstance(tables[0], basestring): # django 1.8+
         tables = [tableinfo.name for tableinfo in tables]
     if tables and u'players_playerdb' in tables:
         # database exists and seems set up. Initialize evennia.
