@@ -34,7 +34,7 @@ class _SectionHandler(object):
         self._prune_levels(level)
 
 
-class CommonMarkParser(object, parsers.Parser):
+class CommonMarkParser(parsers.Parser):
     supported = ('md', 'markdown')
 
     def convert_blocks(self, blocks):
