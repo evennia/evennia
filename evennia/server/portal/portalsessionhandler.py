@@ -1,17 +1,19 @@
 """
 Sessionhandler for portal sessions
 """
-from collections import deque
+
 from time import time
-from twisted.internet import reactor, task
+from twisted.internet import reactor
+from django.conf import settings
 from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC
 
-_CONNECTION_RATE = 5.0
-_MIN_TIME_BETWEEN_CONNECTS = 1.0 / _CONNECTION_RATE
+# module import
 _MOD_IMPORT = None
 
-#_MAX_CMD_RATE = 80.0
-#_ERROR_COMMAND_OVERFLOW = "You entered commands too fast. Wait a moment and try again."
+# throttles
+_MIN_TIME_BETWEEN_CONNECTS = 1.0 / float(settings.MAX_CONNECTION_RATE) if float(settings.MAX_CONNECTION_RATE) > 0 else 1.0 / 5.0
+_MIN_TIME_BETWEEN_CMDS = 1.0 / float(settings.MAX_COMMAND_RATE) if float(settings.MAX_COMMAND_RATE) > 0 else -10
+_ERROR_COMMAND_OVERFLOW = settings.COMMAND_RATE_WARNING
 
 #------------------------------------------------------------
 # Portal-SessionHandler class
@@ -66,9 +68,8 @@ class PortalSessionHandler(SessionHandler):
             session.sessid = self.latest_sessid
 
         now = time()
-        current_rate = 1.0 / (now - self.time_last_connect)
 
-        if current_rate > _CONNECTION_RATE:
+        if now - self.time_last_connect <  _MIN_TIME_BETWEEN_CONNECTS:
             # we have too many connections per second. Delay.
             #print "  delaying connecting", session.sessid
             reactor.callLater(_MIN_TIME_BETWEEN_CONNECTS, self.connect, session)
@@ -80,9 +81,9 @@ class PortalSessionHandler(SessionHandler):
             reactor.callLater(0.5, self.connect, session)
             return
 
-        # sync with server-side
-
         self.time_last_connect = now
+
+        # sync with server-side
         sessdata = session.get_sync_data()
         self.sessions[session.sessid] = session
         session.server_connected = True
@@ -290,7 +291,13 @@ class PortalSessionHandler(SessionHandler):
         serialized before passed on.
 
         """
+        # data throttle (anti DoS measure)
+        prev_cmd_last = session.cmd_last
         session.cmd_last = time()
+        if session.cmd_last - prev_cmd_last < _MIN_TIME_BETWEEN_CMDS:
+            self.data_out(session.sessid, text=_ERROR_COMMAND_OVERFLOW)
+            return
+        # relay data to Server
         self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
                                                               msg=text,
                                                               data=kwargs)

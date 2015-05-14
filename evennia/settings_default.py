@@ -71,7 +71,7 @@ WEBSOCKET_CLIENT_ENABLED = True
 WEBSOCKET_CLIENT_PORT = 8001
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSOCKET_CLIENT_INTERFACE = '0.0.0.0'
-# Actual URL for webclient component to reach the websocket.  
+# Actual URL for webclient component to reach the websocket.
 # The WEBSOCKET_CLIENT_PORT will be automatically appended to this URL.
 WEBSOCKET_CLIENT_URL = "ws://localhost"
 # Activate SSH protocol communication (SecureShell)
@@ -179,6 +179,19 @@ AMP_INTERFACE = '127.0.0.1'
 # be necessary (use @server to see how many objects are in the idmapper
 # cache at any time). Setting this to None disables the cache cap.
 IDMAPPER_CACHE_MAXSIZE = 200      # (MB)
+# This determines how many connections per second the Portal should
+# accept, as a DoS countermeasure. If the rate exceeds this number, incoming
+# connections will be queued to this rate, so none will be lost.
+# Must be set to a value > 0.
+MAX_CONNECTION_RATE = 5
+# Determine how many commands per second a given Session is allowed
+# to send to the Portal via a connected protocol. Too high rate will
+# drop the command and echo a warning. Note that this will also cap
+# OOB messages so don't set it too low if you expect a lot of events
+# from the client! To turn the limiter off, set to <= 0.
+MAX_COMMAND_RATE = 80
+# The warning to echo back to users if they send commands too fast
+COMMAND_RATE_WARNING ="You entered commands too fast. Wait a moment and try again."
 
 ######################################################################
 # Evennia Database config
