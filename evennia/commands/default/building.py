@@ -1136,7 +1136,7 @@ class CmdName(ObjManipCommand):
             astring = " (%s)" % (", ".join(aliases))
         # fix for exits - we need their exit-command to change name too
         if obj.destination:
-            obj.flush_from_cache()
+            obj.flush_from_cache(force=True)
         caller.msg("Object's name changed to '%s'%s." % (newname, astring))
 
 

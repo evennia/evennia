@@ -42,7 +42,8 @@ class ContentsHandler(object):
 
         """
         self.obj = obj
-        self._cache = {}
+        self._pkcache = {}
+        self._idcache = obj.__class__.__instance_cache__
         self.init()
 
     def init(self):
@@ -50,7 +51,7 @@ class ContentsHandler(object):
         Re-initialize the content cache
 
         """
-        self._cache.update(dict((obj.pk, obj) for obj in
+        self._pkcache.update(dict((obj.pk, None) for obj in
                             ObjectDB.objects.filter(db_location=self.obj)))
 
     def get(self, exclude=None):
@@ -64,10 +65,16 @@ class ContentsHandler(object):
             objects (list): the Objects inside this location
 
         """
+        pks = self._pkcache.keys()
         if exclude:
-            exclude = [excl.pk for excl in make_iter(exclude)]
-            return [obj for key, obj in self._cache.items() if key not in exclude]
-        return self._cache.values()
+            pks = [pk for pk in pks if pk not in [excl.pk for excl in make_iter(exclude)]]
+        try:
+            return [self._idcache[pk] for pk in pks]
+        except KeyError:
+            # this can happen if the idmapper cache was cleared for an object
+            # in the contents cache. If so we need to re-initialize and try again.
+            self.init()
+            return self.get(exclude=exclude)
 
     def add(self, obj):
         """
@@ -77,7 +84,7 @@ class ContentsHandler(object):
             obj (Object): object to add
 
         """
-        self._cache[obj.pk] = obj
+        self._pkcache[obj.pk] = None
 
     def remove(self, obj):
         """
@@ -87,14 +94,14 @@ class ContentsHandler(object):
             obj (Object): object to remove
 
         """
-        self._cache.pop(obj.pk, None)
+        self._pkcache.pop(obj.pk, None)
 
     def clear(self):
         """
         Clear the contents cache and re-initialize
 
         """
-        self._cache = {}
+        self._pkcache = {}
         self._init()
 
 #------------------------------------------------------------

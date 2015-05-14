@@ -17,7 +17,7 @@ from django.db.models.signals import post_save
 from django.db.models.base import Model, ModelBase
 from django.db.models.signals import pre_delete, post_syncdb
 from evennia.utils import logger
-from evennia.utils.utils import dbref, get_evennia_pids, to_str
+from evennia.utils.utils import dbref, get_evennia_pids, to_str,calledby
 
 from manager import SharedMemoryManager
 
@@ -59,10 +59,12 @@ class SharedMemoryModelBase(ModelBase):
 
         instance_key = cls._get_cache_key(args, kwargs)
         # depending on the arguments, we might not be able to infer the PK, so in that case we create a new instance
+        #print "SharedMemoryModelBase.__call__ 1: calledby:", calledby(3)
+        #print "SharedMemoryModelBase.__call__ 2: instance_key:", instance_key
         if instance_key is None:
             return new_instance()
-
         cached_instance = cls.get_cached_instance(instance_key)
+        #print "SharedMemoryModelBase.__call__ 3: cached_instance:", cached_instance
         if cached_instance is None:
             cached_instance = new_instance()
             cls.cache_instance(cached_instance, new=True)
@@ -242,9 +244,6 @@ class SharedMemoryModel(Model):
             # if the pk value happens to be a model instance (which can happen wich a FK), we'd rather use its own pk as the key
             result = result._get_pk_val()
         return result
-    #_get_cache_key = classmethod(_get_cache_key)
-
-
 
     @classmethod
     def get_cached_instance(cls, id):
@@ -264,11 +263,12 @@ class SharedMemoryModel(Model):
             instance (Class instance): the instance to cache.
             new (bool, optional): this is the first time this
                 instance is cached (i.e. this is not an update
-                operation).
+                operation like after a db save).
 
         """
-        if instance._get_pk_val() is not None:
-            cls.__dbclass__.__instance_cache__[instance._get_pk_val()] = instance
+        pk = instance._get_pk_val()
+        if pk is not None:
+            cls.__dbclass__.__instance_cache__[pk] = instance
             if new:
                 try:
                     # trigger the at_init hook only
@@ -327,8 +327,9 @@ class SharedMemoryModel(Model):
         Flush this instance from the instance cache. Use
         `force` to override recache_protection for the object.
         """
-        if self.pk and (force or not self._idmapper_recache_protection):
-            self.__class__.__dbclass__.__instance_cache__.pop(self.pk, None)
+        pk = self._get_pk_val()
+        if pk and (force or not self._idmapper_recache_protection):
+            self.__class__.__dbclass__.__instance_cache__.pop(pk, None)
 
     def set_recache_protection(self, mode=True):
         """

@@ -1524,6 +1524,7 @@ class DefaultExit(DefaultObject):
         exit_cmdset.add(cmd)
         return exit_cmdset
 
+
     # Command hooks
     def basetype_setup(self):
         """
@@ -1562,6 +1563,13 @@ class DefaultExit(DefaultObject):
             # we are resetting, or no exit-cmdset was set. Create one dynamically.
             self.cmdset.add_default(self.create_exit_cmdset(self), permanent=False)
 
+    def at_init(self):
+        """
+        This is called when this objects is re-loaded from cache. When
+        that happens, we make sure to remove any old _exitset cmdset
+        (this most commonly occurs when renaming an existing exit)
+        """
+        self.cmdset.remove_default()
 
     def at_traverse(self, traversing_object, target_location):
         """
