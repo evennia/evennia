@@ -92,7 +92,7 @@ class Ticker(object):
         appropriately.
         """
         for store_key, (obj, args, kwargs) in self.subscriptions.items():
-            hook_key = yield kwargs.get("_hook_key", "at_tick")
+            hook_key = yield kwargs.pop("_hook_key", "at_tick")
             if not obj or not obj.pk:
                 # object was deleted between calls
                 self.remove(store_key)
@@ -104,6 +104,9 @@ class Ticker(object):
                 self.remove(store_key)
             except Exception:
                 log_trace()
+            finally:
+                # make sure to re-store
+                kwargs["_hook_key"] = hook_key
 
     def __init__(self, interval):
         """
