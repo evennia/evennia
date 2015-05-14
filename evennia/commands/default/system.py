@@ -118,8 +118,8 @@ class CmdShutdown(MuxCommand):
             announcement += "%s\n" % self.args
         logger.log_infomsg('Server shutdown by %s.' % self.caller.name)
         SESSIONS.announce_all(announcement)
-        SESSIONS.portal_shutdown()
         SESSIONS.server.shutdown(mode='shutdown')
+        SESSIONS.portal_shutdown()
 
 
 class CmdPy(MuxCommand):

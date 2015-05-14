@@ -355,7 +355,6 @@ class Evennia(object):
             from evennia.server.oobhandler import OOB_HANDLER
             OOB_HANDLER.save()
         else:
-            ServerConfig.objects.conf("server_restart_mode", "reset")
             if mode == 'reset':
                 # like shutdown but don't unset the is_connected flag and don't disconnect sessions
                 yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
@@ -368,6 +367,7 @@ class Evennia(object):
                                        for p in PlayerDB.get_all_cached_instances()]
                 yield ObjectDB.objects.clear_all_sessids()
             yield [(s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
+            ServerConfig.objects.conf("server_restart_mode", "reset")
             self.at_server_cold_stop()
 
         # tickerhandler state should always be saved.
