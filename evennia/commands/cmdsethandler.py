@@ -283,26 +283,31 @@ class CmdSetHandler(object):
             self.mergetype_stack.append(new_current.actual_mergetype)
         self.current = new_current
 
-    def add(self, cmdset, emit_to_obj=None, permanent=False):
+    def add(self, cmdset, emit_to_obj=None, permanent=False, default_cmdset=False):
         """
-        Add a cmdset to the handler, on top of the old ones.
-        Default is to not make this permanent, i.e. the set
-        will not survive a server reset.
+        Add a cmdset to the handler, on top of the old ones, unless it
+        is set as the default one (it will then end up at the bottom of the stack)
 
-        cmdset - can be a cmdset object or the python path to
-                 such an object.
-        emit_to_obj - an object to receive error messages.
-        permanent - this cmdset will remain across a server reboot
+        Args:
+          cmdset (CmdSet or str): Can be a cmdset object or the python path
+            to such an object.
+        emit_to_obj (Object, optional): An object to receive error messages.
+        permanent (bool, optional): This cmdset will remain across a server reboot.
+        default_cmdset (Cmdset, optional): Insert this to replace the
+            default cmdset position (there is only one such position,
+            always at the bottom of the stack).
 
-        Note: An interesting feature of this method is if you were to
-        send it an *already instantiated cmdset* (i.e. not a class),
-        the current cmdsethandler's obj attribute will then *not* be
-        transferred over to this already instantiated set (this is
-        because it might be used elsewhere and can cause strange effects).
-        This means you could in principle have the handler
-        launch command sets tied to a *different* object than the
-        handler. Not sure when this would be useful, but it's a 'quirk'
-        that has to be documented.
+        Notes:
+          An interesting feature of this method is if you were to send
+          it an *already instantiated cmdset* (i.e. not a class), the
+          current cmdsethandler's obj attribute will then *not* be
+          transferred over to this already instantiated set (this is
+          because it might be used elsewhere and can cause strange
+          effects).  This means you could in principle have the
+          handler launch command sets tied to a *different* object
+          than the handler. Not sure when this would be useful, but
+          it's a 'quirk' that has to be documented.
+
         """
         if not (isinstance(cmdset, basestring) or utils.inherits_from(cmdset, CmdSet)):
             string = _("Only CmdSets can be added to the cmdsethandler!")
@@ -314,71 +319,55 @@ class CmdSetHandler(object):
             # this is (maybe) a python path. Try to import from cache.
             cmdset = self._import_cmdset(cmdset)
         if cmdset and cmdset.key != '_CMDSET_ERROR':
+            cmdset.permanent = permanent
             if permanent and cmdset.key != '_CMDSET_ERROR':
                 # store the path permanently
-                cmdset.permanent = True
-                storage = self.obj.cmdset_storage
-                if not storage:
-                    storage = ["", cmdset.path]
+                storage = self.obj.cmdset_storage or [""]
+                if default_cmdset:
+                    storage[0] = cmdset.path
                 else:
                     storage.append(cmdset.path)
                 self.obj.cmdset_storage = storage
+            if default_cmdset:
+                self.cmdset_stack[0] = cmdset
             else:
-                cmdset.permanent = False
-            self.cmdset_stack.append(cmdset)
+                self.cmdset_stack.append(cmdset)
             self.update()
 
     def add_default(self, cmdset, emit_to_obj=None, permanent=True):
         """
-        Add a new default cmdset. If an old default existed,
-        it is replaced. If permanent is set, the set will survive a reboot.
-        cmdset - can be a cmdset object or the python path to
-                 an instance of such an object.
-        emit_to_obj - an object to receive error messages.
-        permanent - save cmdset across reboots
-        See also the notes for self.add(), which applies here too.
+        Shortcut for adding a default cmdset.
         """
-        if callable(cmdset):
-            if not utils.inherits_from(cmdset, CmdSet):
-                string = _("Only CmdSets can be added to the cmdsethandler!")
-                raise Exception(string)
-            cmdset = cmdset(self.obj)
-        elif isinstance(cmdset, basestring):
-            # this is (maybe) a python path. Try to import from cache.
-            cmdset = self._import_cmdset(cmdset)
-        if cmdset and cmdset.key != '_CMDSET_ERROR':
-            if self.cmdset_stack:
-                self.cmdset_stack[0] = cmdset
-                self.mergetype_stack[0] = cmdset.mergetype
-            else:
-                self.cmdset_stack = [cmdset]
-                self.mergetype_stack = [cmdset.mergetype]
+        self.add(cmdset, emit_to_obj=emit_to_obj, permanent=permanent, default_cmdset=True)
 
-            if permanent and cmdset.key != '_CMDSET_ERROR':
-                cmdset.permanent = True
-                storage = self.obj.cmdset_storage
-                if storage:
-                    storage[0] = cmdset.path
-                else:
-                    storage = [cmdset.path]
-                self.obj.cmdset_storage = storage
-            else:
-                cmdset.permanent = False
-            self.update()
-
-    def remove(self, cmdset=None):
+    def remove(self, cmdset=None, default_cmdset=False):
         """
         Remove a cmdset from the  handler.
 
-        cmdset can be supplied either as a cmdset-key,
-        an instance of the CmdSet or a python path
-        to the cmdset. If no key is given,
-        the last cmdset in the stack is removed. Whenever
-        the cmdset_stack changes, the cmdset is updated.
-        The default cmdset (first entry in stack) is never
-        removed - remove it explicitly with delete_default.
+        Args:
+            cmdset (CommandSet or str, optional): This can can be supplied either as a cmdset-key,
+                an instance of the CmdSet or a python path to the cmdset.
+                If no key is given, the last cmdset in the stack is
+                removed. Whenever the cmdset_stack changes, the cmdset is
+                updated. If default_cmdset is set, this argument is ignored.
+            default_cmdset (bool, optional): If set, this will remove the
+                default cmdset (at the bottom of the stack).
 
         """
+        if default_cmdset:
+            # remove the default cmdset only
+            if self.cmdset_stack:
+                cmdset = self.cmdset_stack[0]
+                if cmdset.permanent:
+                    storage = self.obj.cmdset_storage or [""]
+                    storage[0] = ""
+                    self.obj.cmdset_storage = storage
+                self.cmdset_stack[0] = _EmptyCmdSet(cmdsetobj=self.obj)
+            else:
+                self.cmdset_stack = [_EmptyCmdSet(cmdsetobj=self.obj)]
+            self.update()
+            return
+
         if len(self.cmdset_stack) < 2:
             # don't allow deleting default cmdsets here.
             return
@@ -423,24 +412,12 @@ class CmdSetHandler(object):
 
     def remove_default(self):
         """
-        This explicitly deletes the default cmdset. It's the
-        only command that can.
+        This explicitly deletes only the default cmdset.
         """
-        if self.cmdset_stack:
-            cmdset = self.cmdset_stack[0]
-            if cmdset.permanent:
-                storage = self.obj.cmdset_storage
-                if storage:
-                    storage[0] = ""
-                else:
-                    storage = [""]
-                self.cmdset_storage = storage
-            self.cmdset_stack[0] = _EmptyCmdSet(cmdsetobj=self.obj)
-        else:
-            self.cmdset_stack = [_EmptyCmdSet(cmdsetobj=self.obj)]
-        self.update()
+        self.remove(default_cmdset=True)
     # legacy alias
     delete_default = remove_default
+
 
     def all(self):
         """
@@ -455,7 +432,6 @@ class CmdSetHandler(object):
         default one.
         """
         self.cmdset_stack = [self.cmdset_stack[0]]
-        self.mergetype_stack = [self.cmdset_stack[0].mergetype]
         storage = self.obj.cmdset_storage
         if storage:
             storage = storage[0]
@@ -478,14 +454,10 @@ class CmdSetHandler(object):
         after _CACHED_CMDSETS have been cleared (normally by @reload).
         """
         new_cmdset_stack = []
-        new_mergetype_stack = []
         for cmdset in self.cmdset_stack:
             if cmdset.key == "_EMPTY_CMDSET":
                 new_cmdset_stack.append(cmdset)
-                new_mergetype_stack.append("Union")
             else:
                 new_cmdset_stack.append(self._import_cmdset(cmdset.path))
-                new_mergetype_stack.append(cmdset.mergetype)
         self.cmdset_stack = new_cmdset_stack
-        self.mergetype_stack = new_mergetype_stack
         self.update()
