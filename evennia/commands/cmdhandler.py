@@ -2,35 +2,35 @@
 Command handler
 
 This module contains the infrastructure for accepting commands on the
-command line. The process is as follows:
+command line. The processing of a command works as follows:
 
-1) The calling object (caller) inputs a string and triggers the command parsing system.
-2) The system checks the state of the caller - loggedin or not
-3) If no command string was supplied, we search the merged cmdset for system command CMD_NOINPUT
-   and branches to execute that.  --> Finished
-4) Cmdsets are gathered from different sources (in order of dropping priority):
-           channels - all available channel names are auto-created into a cmdset, to allow
-                  for giving the channel name and have the following immediately
-                  sent to the channel. The sending is performed by the CMD_CHANNEL
-                  system command.
-           object cmdsets - all objects at caller's location are scanned for non-empty
-                  cmdsets. This includes cmdsets on exits.
-           caller - the caller is searched for its own currently active cmdset.
-           player - lastly the cmdsets defined on caller.player are added.
-5) All the gathered cmdsets (if more than one) are merged into one using the cmdset priority rules.
-6) If merged cmdset is empty, raise NoCmdSet exception (this should not happen, at least the
-   player should have a default cmdset available at all times). --> Finished
-7) The raw input string is parsed using the parser defined by settings.COMMAND_PARSER. It
-   uses the available commands from the merged cmdset to know which commands to look for and
-   returns one or many matches.
-8)   If match list is empty, branch to system command CMD_NOMATCH --> Finished
-9)   If match list has more than one element, branch to system command CMD_MULTIMATCH --> Finished
-10) A single match was found. If this is a channel-command (i.e. the command name is that of a channel),
-    branch to CMD_CHANNEL --> Finished
-11) At this point we have found a normal command. We assign useful variables to it that
-    will be available to the command coder at run-time.
-12) We have a unique cmdobject, primed for use. Call all hooks:
-    at_pre_cmd(), cmdobj.parse(), cmdobj.func() and finally at_post_cmd().
+1. The calling object (caller) is analyzed based on its callertype.
+2. Cmdsets are gathered from different sources:
+   - channels:  all available channel names are auto-created into a cmdset, to allow
+     for giving the channel name and have the following immediately
+     sent to the channel. The sending is performed by the CMD_CHANNEL
+     system command.
+   - object cmdsets: all objects at caller's location are scanned for non-empty
+     cmdsets. This includes cmdsets on exits.
+   - caller: the caller is searched for its own currently active cmdset.
+   - player: lastly the cmdsets defined on caller.player are added.
+3. The collected cmdsets are merged together to a combined, current cmdset.
+4. If the input string is empty -> check for CMD_NOINPUT command in
+   current cmdset or fallback to error message. Exit.
+5. The Command Parser is triggered, using the current cmdset to analyze the
+   input string for possible command matches.
+6. If multiple matches are found -> check for CMD_MULTIMATCH in current
+   cmdset, or fallback to error message. Exit.
+7. If no match was found -> check for CMD_NOMATCH in current cmdset or
+   fallback to error message. Exit.
+8. A single match was found. If this is a channel-command (i.e. the
+   ommand name is that of a channel), --> check for CMD_CHANNEL in
+   current cmdset or use channelhandler default. Exit.
+9. At this point we have found a normal command. We assign useful variables to it that
+   will be available to the command coder at run-time.
+12. We have a unique cmdobject, primed for use. Call all hooks:
+   `at_pre_cmd()`, `cmdobj.parse()`, `cmdobj.func()` and finally `at_post_cmd()`.
+13. Return deferred that will fire with the return from `cmdobj.func()` (unused by default).
 
 
 """
@@ -128,24 +128,37 @@ def get_and_merge_cmdsets(caller, session, player, obj,
     """
     Gather all relevant cmdsets and merge them.
 
-    callertype is one of "session", "player" or "object" dependin
-    on which level the cmdhandler is invoked. Session includes the
-    cmdsets available to Session, Player and its eventual puppeted Object.
-    Player-level include cmdsets on Player and Object, while calling
-    the handler on an Object only includes cmdsets on itself.
+    Args:
+        caller (Session, Player or Object): The entity executing the command. Which
+            type of object this is depends on the current game state; for example
+            when the user is not logged in, this will be a Session, when being OOC
+            it will be a Player and when puppeting an object this will (often) be
+            a Character Object. In the end it depends on where the cmdset is stored.
+        session (Session or None): The Session associated with caller, if any.
+        player (Player or None): The calling Player associated with caller, if any.
+        obj (Object or None): The Object associated with caller, if any.
+        callertype (str): This identifies caller as either "player", "object" or "session"
+            to avoid having to do this check internally.
+        sessid (int, optional): Session ID. This is not used at the moment.
 
-    The cdmsets are merged in order generality, so that the Object's
-    cmdset is merged last (and will thus take precedence over
-    same-named and same-prio commands on Player and Session).
+    Returns:
+        cmdset (Deferred): This deferred fires with the merged cmdset
+        result once merger finishes.
 
-    Note that this function returns a deferred!
+    Notes:
+        The cdmsets are merged in order or generality, so that the
+        Object's cmdset is merged last (and will thus take precedence
+        over same-named and same-prio commands on Player and Session).
+
     """
     try:
         local_obj_cmdsets = [None]
 
         @inlineCallbacks
         def _get_channel_cmdsets(player, player_cmdset):
-            "Channel-cmdsets"
+            """
+            Helper-method; Get channel-cmdsets
+            """
             # Create cmdset for all player's available channels
             try:
                 channel_cmdset = None
@@ -159,7 +172,9 @@ def get_and_merge_cmdsets(caller, session, player, obj,
 
         @inlineCallbacks
         def _get_local_obj_cmdsets(obj, obj_cmdset):
-            "Object-level cmdsets"
+            """
+            Helper-method; Get Object-level cmdsets
+            """
             # Gather cmdsets from location, objects in location or carried
             try:
                 local_obj_cmdsets = [None]
@@ -202,7 +217,10 @@ def get_and_merge_cmdsets(caller, session, player, obj,
 
         @inlineCallbacks
         def _get_cmdset(obj):
-            "Get cmdset, triggering all hooks"
+            """
+            Helper method; Get cmdset while making sure to trigger all
+            hooks safely.
+            """
             try:
                 yield obj.at_cmdset_get()
             except Exception:
@@ -307,43 +325,54 @@ def get_and_merge_cmdsets(caller, session, player, obj,
 @inlineCallbacks
 def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sessid=None, **kwargs):
     """
-    This is the main function to handle any string sent to the engine.
+    This is the main mechanism that handles any string sent to the engine.
 
-    called_by - object on which this was called from. This is either a Session, a Player or an Object.
-    raw_string - the command string given on the command line
-    _testing - if we should actually execute the command or not.
-              if True, the command instance will be returned instead.
-    callertype - this is one of "session", "player" or "object", in decending
-                 order. So when the Session is the caller, it will merge its
-                 own cmdset into cmdsets from both Player and eventual puppeted
-                 Object (and cmdsets in its room etc). A Player will only
-                 include its own cmdset and the Objects and so on. Merge order
-                 is the same order, so that Object cmdsets are merged in last,
-                 giving them precendence for same-name and same-prio commands.
-    sessid - Relevant if callertype is "player" - the session id will help
-             retrieve the correct cmdsets from puppeted objects.
-    **kwargs - other keyword arguments will be assigned as named variables on the
-               retrieved command object *before* it is executed. This is unuesed
-               in default Evennia but may be used by code to set custom flags or
-               special operating conditions for a command as it executes.
+    Args:
+        called_by (Session, Player or Object): Object from which this
+            command was called. which this was called from.  What this is
+            depends on the game state.
+        raw_string (str): The command string as given on the command line.
+        _testing (bool, optional): Used for debug purposes and decides if we
+            should actually execute the command or not. If True, the
+            command instance will be returned.
+        callertype (str, optional): One of "session", "player" or
+            "object". These are treated in decending order, so when the
+            Session is the caller, it will merge its own cmdset into
+            cmdsets from both Player and eventual puppeted Object (and
+            cmdsets in its room etc). A Player will only include its own
+            cmdset and the Objects and so on. Merge order is the same
+            order, so that Object cmdsets are merged in last, giving them
+            precendence for same-name and same-prio commands.
+        sessid (int, optional): Relevant if callertype is "player" - the session id will help
+            retrieve the correct cmdsets from puppeted objects.
 
-    Note that this function returns a deferred!
+    Kwargs:
+        kwargs (any): other keyword arguments will be assigned as named variables on the
+            retrieved command object *before* it is executed. This is unused
+            in default Evennia but may be used by code to set custom flags or
+            special operating conditions for a command as it executes.
+
+    Returns:
+        deferred (Deferred): This deferred is fired with the return
+        value of the command's `func` method.  This is not used in
+        default Evennia.
+
     """
 
     @inlineCallbacks
     def _run_command(cmd, cmdname, args):
         """
-        This initializes and runs the Command instance once the parser
-        has identified it as either a normal command or one of the
-        system commands.
+        Helper function: This initializes and runs the Command
+        instance once the parser has identified it as either a normal
+        command or one of the system commands.
 
         Args:
             cmd (Command): command object
             cmdname (str): name of command
             args (str): extra text entered after the identified command
         Returns:
-            deferred (Deferred): this will fire when the func() method
-                returns.
+            deferred (Deferred): this will fire with the return of the
+                command's `func` method.
         """
         try:
             # Assign useful variables to the instance
