@@ -75,12 +75,16 @@ _CACHED_CMDSETS = {}
 _CMDSET_PATHS = utils.make_iter(settings.CMDSET_PATHS)
 
 class _ErrorCmdSet(CmdSet):
-    "This is a special cmdset used to report errors"
+    """
+    This is a special cmdset used to report errors.
+    """
     key = "_CMDSET_ERROR"
     errmessage = "Error when loading cmdset."
 
 class _EmptyCmdSet(CmdSet):
-    "This cmdset represents an empty cmdset"
+    """
+    This cmdset represents an empty cmdset
+    """
     key = "_EMPTY_CMDSET"
     priority = -101
     mergetype = "Union"
@@ -173,8 +177,12 @@ class CmdSetHandler(object):
         """
         This method is called whenever an object is recreated.
 
-        obj - this is a reference to the game object this handler
-              belongs to.
+        Args:
+            obj (Object): An reference to the game object this handler
+                belongs to.
+            init_true (bool, optional): Set when the handler is initializing
+                and loads the current cmdset.
+
         """
         self.obj = obj
 
@@ -194,7 +202,9 @@ class CmdSetHandler(object):
             self.update(init_mode=True) #is then called from the object __init__.
 
     def __str__(self):
-        "Display current commands"
+        """
+        Display current commands
+        """
 
         string = ""
         mergelist = []
@@ -239,10 +249,16 @@ class CmdSetHandler(object):
 
     def _import_cmdset(self, cmdset_path, emit_to_obj=None):
         """
-        Method wrapper for import_cmdset.
-        load a cmdset from a module.
-        cmdset_path - the python path to an cmdset object.
-        emit_to_obj - object to send error messages to
+        Method wrapper for import_cmdset; Loads a cmdset from a
+        module.
+
+        Args:
+            cmdset_path (str): The python path to an cmdset object.
+            emit_to_obj (Object): The object to send error messages to
+
+        Returns:
+            cmdset (Cmdset): The imported cmdset.
+
         """
         if not emit_to_obj:
             emit_to_obj = self.obj
@@ -250,11 +266,13 @@ class CmdSetHandler(object):
 
     def update(self, init_mode=False):
         """
-        Re-adds all sets in the handler to have an updated
-        current set.
+        Re-adds all sets in the handler to have an updated current
+        set.
 
-        init_mode is used right after this handler was
-        created; it imports all permanent cmdsets from db.
+        Args:
+            init_mode (bool, optional): Used automatically right after
+                this handler was created; it imports all permanent cmdsets
+                from the database.
         """
         if init_mode:
             # reimport all permanent cmdsets
@@ -291,11 +309,11 @@ class CmdSetHandler(object):
         Args:
           cmdset (CmdSet or str): Can be a cmdset object or the python path
             to such an object.
-        emit_to_obj (Object, optional): An object to receive error messages.
-        permanent (bool, optional): This cmdset will remain across a server reboot.
-        default_cmdset (Cmdset, optional): Insert this to replace the
-            default cmdset position (there is only one such position,
-            always at the bottom of the stack).
+            emit_to_obj (Object, optional): An object to receive error messages.
+            permanent (bool, optional): This cmdset will remain across a server reboot.
+            default_cmdset (Cmdset, optional): Insert this to replace the
+                default cmdset position (there is only one such position,
+                always at the bottom of the stack).
 
         Notes:
           An interesting feature of this method is if you were to send
@@ -337,6 +355,12 @@ class CmdSetHandler(object):
     def add_default(self, cmdset, emit_to_obj=None, permanent=True):
         """
         Shortcut for adding a default cmdset.
+
+        Args:
+            cmdset (Cmdset): The Cmdset to add.
+            emit_to_obj (Object, optional): Gets error messages
+            permanent (bool, optional): The new Cmdset should survive a server reboot.
+
         """
         self.add(cmdset, emit_to_obj=emit_to_obj, permanent=permanent, default_cmdset=True)
 
@@ -413,6 +437,7 @@ class CmdSetHandler(object):
     def remove_default(self):
         """
         This explicitly deletes only the default cmdset.
+
         """
         self.remove(default_cmdset=True)
     # legacy alias
@@ -421,15 +446,19 @@ class CmdSetHandler(object):
 
     def all(self):
         """
-        Returns the list of cmdsets. Mostly useful to check
-        if stack if empty or not.
+        Show all cmdsets.
+
+        Returns:
+            cmdsets (list): All the command sets currently in the handler.
+
         """
         return self.cmdset_stack
 
     def clear(self):
         """
-        Removes all extra Command sets from the handler, leaving only the
-        default one.
+        Removes all Command Sets from the handler except the default one
+        (use `self.remove_default` to remove that).
+
         """
         self.cmdset_stack = [self.cmdset_stack[0]]
         storage = self.obj.cmdset_storage
@@ -441,7 +470,15 @@ class CmdSetHandler(object):
     def has_cmdset(self, cmdset_key, must_be_default=False):
         """
         checks so the cmdsethandler contains a cmdset with the given key.
-        must_be_default - only match against the default cmdset.
+
+        Args:
+            cmdset_key (str): Cmdset key to check
+            must_be_default (bool, optional): Only return True if
+                the checked cmdset is the default one.
+
+        Returns:
+            has_cmdset (bool): Whether or not the cmdset is in the handler.
+
         """
         if must_be_default:
             return self.cmdset_stack and self.cmdset_stack[0].key == cmdset_key
@@ -451,7 +488,9 @@ class CmdSetHandler(object):
     def reset(self):
         """
         Force reload of all cmdsets in handler. This should be called
-        after _CACHED_CMDSETS have been cleared (normally by @reload).
+        after _CACHED_CMDSETS have been cleared (normally this is
+        handled automatically by @reload).
+
         """
         new_cmdset_stack = []
         for cmdset in self.cmdset_stack:

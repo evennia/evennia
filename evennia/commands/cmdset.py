@@ -1,17 +1,30 @@
 """
-A cmdset holds a set of commands available to the object or to other
-objects near it. All the commands a player can give (look, @create etc)
-are stored as the default cmdset on the player object and managed using the
-CmdHandler object (see cmdhandler.py).
 
-The power of having command sets in CmdSets like this is that CmdSets
-can be merged together according to individual rules to create a new
-on-the-fly CmdSet that is some combination of the
-previous ones. Their function are borrowed to a large parts from mathematical
-Set theory, it should not be much of a problem to understand.
+A Command Set (CmdSet) holds a set of commands. The Cmdsets can be
+merged and combined to create new sets of commands in a
+non-destructive way. This makes them very powerful for implementing
+custom game states where different commands (or different variations
+of commands) are available to the players depending on circumstance.
 
-See CmdHandler for practical examples on how to apply cmdsets
-together to create interesting in-game effects.
+The available merge operations are partly borrowed from mathematical
+Set theory.
+
+
+* Union The two command sets are merged so that as many commands as
+    possible of each cmdset ends up in the merged cmdset. Same-name
+    commands are merged by priority.  This is the most common default.
+    Ex: A1,A3 + B1,B2,B4,B5 = A1,B2,A3,B4,B5
+* Intersect - Only commands found in *both* cmdsets (i.e. which have
+    same names) end up in the merged cmdset, with the higher-priority
+    cmdset replacing the lower one. Ex: A1,A3 + B1,B2,B4,B5 = A1
+* Replace -   The commands of this cmdset completely replaces the
+    lower-priority cmdset's commands, regardless of if same-name commands
+    exist. Ex: A1,A3 + B1,B2,B4,B5 = A1,A3
+* Remove -    This removes the relevant commands from the
+    lower-priority cmdset completely.  They are not replaced with
+    anything, so this in effects uses the high-priority cmdset as a filter
+    to affect the low-priority cmdset.  Ex: A1,A3 + B1,B2,B4,B5 = B2,B4,B5
+
 """
 
 from weakref import WeakKeyDictionary
@@ -24,10 +37,12 @@ class _CmdSetMeta(type):
     """
     This metaclass makes some minor on-the-fly convenience fixes to
     the cmdset class.
+
     """
     def __init__(mcs, *args, **kwargs):
         """
         Fixes some things in the cmdclass
+
         """
         # by default we key the cmdset the same as the
         # name of its class.
@@ -43,83 +58,83 @@ class _CmdSetMeta(type):
 
 class CmdSet(object):
     """
-    This class describes a unique cmdset that understands priorities. CmdSets
-    can be merged and made to perform various set operations on each other.
-    CmdSets have priorities that affect which of their ingoing commands
-    gets used.
+    This class describes a unique cmdset that understands priorities.
+    CmdSets can be merged and made to perform various set operations
+    on each other.  CmdSets have priorities that affect which of their
+    ingoing commands gets used.
 
-        In the examples, cmdset A always have higher priority than cmdset B.
+    In the examples, cmdset A always have higher priority than cmdset B.
 
-        key - the name of the cmdset. This can be used on its own for game
-        operations
+    key - the name of the cmdset. This can be used on its own for game
+    operations
 
-        mergetype (partly from Set theory):
+    mergetype (partly from Set theory):
 
-            Union -    The two command sets are merged so that as many
-                        commands as possible of each cmdset ends up in the
-                        merged cmdset. Same-name commands are merged by
-                        priority.  This is the most common default.
-                        Ex: A1,A3 + B1,B2,B4,B5 = A1,B2,A3,B4,B5
-            Intersect - Only commands found in *both* cmdsets
-                        (i.e. which have same names) end up in the merged
-                        cmdset, with the higher-priority cmdset replacing the
-                        lower one.  Ex: A1,A3 + B1,B2,B4,B5 = A1
-            Replace -   The commands of this cmdset completely replaces
-                        the lower-priority cmdset's commands, regardless
-                        of if same-name commands exist.
-                        Ex: A1,A3 + B1,B2,B4,B5 = A1,A3
-            Remove -    This removes the relevant commands from the
-                        lower-priority cmdset completely.  They are not
-                        replaced with anything, so this in effects uses the
-                        high-priority cmdset as a filter to affect the
-                        low-priority cmdset.
-                        Ex: A1,A3 + B1,B2,B4,B5 = B2,B4,B5
+        Union -    The two command sets are merged so that as many
+                    commands as possible of each cmdset ends up in the
+                    merged cmdset. Same-name commands are merged by
+                    priority.  This is the most common default.
+                    Ex: A1,A3 + B1,B2,B4,B5 = A1,B2,A3,B4,B5
+        Intersect - Only commands found in *both* cmdsets
+                    (i.e. which have same names) end up in the merged
+                    cmdset, with the higher-priority cmdset replacing the
+                    lower one.  Ex: A1,A3 + B1,B2,B4,B5 = A1
+        Replace -   The commands of this cmdset completely replaces
+                    the lower-priority cmdset's commands, regardless
+                    of if same-name commands exist.
+                    Ex: A1,A3 + B1,B2,B4,B5 = A1,A3
+        Remove -    This removes the relevant commands from the
+                    lower-priority cmdset completely.  They are not
+                    replaced with anything, so this in effects uses the
+                    high-priority cmdset as a filter to affect the
+                    low-priority cmdset.
+                    Ex: A1,A3 + B1,B2,B4,B5 = B2,B4,B5
 
-                     Note: Commands longer than 2 characters and starting
-                           with double underscrores, like '__noinput_command'
-                           are considered 'system commands' and are
-                           excempt from all merge operations - they are
-                           ALWAYS included across mergers and only affected
-                           if same-named system commands replace them.
+                 Note: Commands longer than 2 characters and starting
+                       with double underscrores, like '__noinput_command'
+                       are considered 'system commands' and are
+                       excempt from all merge operations - they are
+                       ALWAYS included across mergers and only affected
+                       if same-named system commands replace them.
 
-        priority- All cmdsets are always merged in pairs of two so that
-                  the higher set's mergetype is applied to the
-                  lower-priority cmdset. Default commands have priority 0,
-                  high-priority ones like Exits and Channels have 10 and 9.
-                  Priorities can be negative as well to give default
-                  commands preference.
+    priority- All cmdsets are always merged in pairs of two so that
+              the higher set's mergetype is applied to the
+              lower-priority cmdset. Default commands have priority 0,
+              high-priority ones like Exits and Channels have 10 and 9.
+              Priorities can be negative as well to give default
+              commands preference.
 
-        duplicates - determines what happens when two sets of equal
-                     priority merge. Default has the first of them in the
-                     merger (i.e. A above) automatically taking
-                     precedence. But if allow_duplicates is true, the
-                     result will be a merger with more than one of each
-                     name match.  This will usually lead to the player
-                     receiving a multiple-match error higher up the road,
-                     but can be good for things like cmdsets on non-player
-                     objects in a room, to allow the system to warn that
-                     more than one 'ball' in the room has the same 'kick'
-                     command defined on it, so it may offer a chance to
-                     select which ball to kick ...  Allowing duplicates
-                     only makes sense for Union and Intersect, the setting
-                     is ignored for the other mergetypes.
+    duplicates - determines what happens when two sets of equal
+                 priority merge. Default has the first of them in the
+                 merger (i.e. A above) automatically taking
+                 precedence. But if allow_duplicates is true, the
+                 result will be a merger with more than one of each
+                 name match.  This will usually lead to the player
+                 receiving a multiple-match error higher up the road,
+                 but can be good for things like cmdsets on non-player
+                 objects in a room, to allow the system to warn that
+                 more than one 'ball' in the room has the same 'kick'
+                 command defined on it, so it may offer a chance to
+                 select which ball to kick ...  Allowing duplicates
+                 only makes sense for Union and Intersect, the setting
+                 is ignored for the other mergetypes.
 
-        key_mergetype (dict) - allows the cmdset to define a unique
-                 mergetype for particular cmdsets.  Format is
-                 {CmdSetkeystring:mergetype}. Priorities still apply.
-                 Example: {'Myevilcmdset','Replace'} which would make
-                 sure for this set to always use 'Replace' on
-                 Myevilcmdset no matter what overall mergetype this set
-                 has.
+    key_mergetype (dict) - allows the cmdset to define a unique
+             mergetype for particular cmdsets.  Format is
+             {CmdSetkeystring:mergetype}. Priorities still apply.
+             Example: {'Myevilcmdset','Replace'} which would make
+             sure for this set to always use 'Replace' on
+             Myevilcmdset no matter what overall mergetype this set
+             has.
 
-        no_objs  - don't include any commands from nearby objects
-                      when searching for suitable commands
-        no_exits  - ignore the names of exits when matching against
-                            commands
-        no_channels   - ignore the name of channels when matching against
-                            commands (WARNING- this is dangerous since the
-                            player can then not even ask staff for help if
-                            something goes wrong)
+    no_objs  - don't include any commands from nearby objects
+                  when searching for suitable commands
+    no_exits  - ignore the names of exits when matching against
+                        commands
+    no_channels   - ignore the name of channels when matching against
+                        commands (WARNING- this is dangerous since the
+                        player can then not even ask staff for help if
+                        something goes wrong)
 
 
     """
@@ -146,10 +161,16 @@ class CmdSet(object):
         """
         Creates a new CmdSet instance.
 
-        cmdsetobj - this is the database object to which this particular
-             instance of cmdset is related. It is often a character but
-             may also be a regular object.
+        Args:
+            cmdsetobj (Session, Player, Object, optional): This is the database object
+                to which this particular instance of cmdset is related. It
+                is often a character but may also be a regular object, Player
+                or Session.
+            key (str, optional): The idenfier for this cmdset. This
+                helps if wanting to selectively remov cmdsets.
+
         """
+
         if key:
             self.key = key
         self.commands = []
@@ -167,7 +188,20 @@ class CmdSet(object):
     # Priority-sensitive merge operations for cmdsets
 
     def _union(self, cmdset_a, cmdset_b):
-        "C = A U B. CmdSet A is assumed to have higher priority"
+        """
+        Merge two sets using union merger
+
+        Args:
+            cmdset_a (Cmdset): Cmdset given higher priority in the case of a tie.
+            cmdset_b (Cmdset): Cmdset given lower priority in the case of a tie.
+
+        Returns:
+            cmdset_c (Cmdset): The result of A U B operation.
+
+        Notes:
+            Union, C = A U B,  means that C gets all elements from both A and B.
+
+        """
         cmdset_c = cmdset_a._duplicate()
         # we make copies, not refs by use of [:]
         cmdset_c.commands = cmdset_a.commands[:]
@@ -179,7 +213,23 @@ class CmdSet(object):
         return cmdset_c
 
     def _intersect(self, cmdset_a, cmdset_b):
-        "C = A (intersect) B. A is assumed higher priority"
+        """
+        Merge two sets using intersection merger
+
+        Args:
+            cmdset_a (Cmdset): Cmdset given higher priority in the case of a tie.
+            cmdset_b (Cmdset): Cmdset given lower priority in the case of a tie.
+
+        Returns:
+            cmdset_c (Cmdset): The result of A (intersect) B operation.
+
+        Notes:
+            Intersection, C = A (intersect) B, means that C only gets the
+                parts of A and B that are the same (that is, the commands
+                of each set having the same name. Only the one of these
+                having the higher prio ends up in C).
+
+        """
         cmdset_c = cmdset_a._duplicate()
         if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
             for cmd in [cmd for cmd in cmdset_a if cmd in cmdset_b]:
@@ -190,22 +240,56 @@ class CmdSet(object):
         return cmdset_c
 
     def _replace(self, cmdset_a, cmdset_b):
-        "C = A + B where the result is A."
+        """
+        Replace the contents of one set with another
+
+        Args:
+            cmdset_a (Cmdset): Cmdset replacing
+            cmdset_b (Cmdset): Cmdset to replace
+
+        Returns:
+            cmdset_c (Cmdset): This is indentical to cmdset_a.
+
+        Notes:
+            C = A, where B is ignored.
+
+        """
         cmdset_c = cmdset_a._duplicate()
         cmdset_c.commands = cmdset_a.commands[:]
         return cmdset_c
 
     def _remove(self, cmdset_a, cmdset_b):
-        "C = A + B, where B is filtered by A"
+        """
+        Filter a set by another.
+
+        Args:
+            cmdset_a (Cmdset): Cmdset acting as a removal filter.
+            cmdset_b (Cmdset): Cmdset to filter
+
+        Returns:
+            cmdset_c (Cmdset): B, with all matching commands from A removed.
+
+        Notes:
+            C = B - A, where A is used to remove the commands of B.
+
+        """
+
         cmdset_c = cmdset_a._duplicate()
         cmdset_c.commands = [cmd for cmd in cmdset_b if not cmd in cmdset_a]
         return cmdset_c
 
     def _instantiate(self, cmd):
         """
-        checks so that object is an instantiated command
-        and not, say a cmdclass. If it is, instantiate it.
-        Other types, like strings, are passed through.
+        checks so that object is an instantiated command and not, say
+        a cmdclass. If it is, instantiate it.  Other types, like
+        strings, are passed through.
+
+        Args:
+            cmd (any): Entity to analyze.
+
+        Returns:
+            result (any): An instantiated Command or the input unmodified.
+
         """
         try:
             return cmd()
@@ -214,8 +298,11 @@ class CmdSet(object):
 
     def _duplicate(self):
         """
-        Returns a new cmdset with the same settings as this one
-        (no actual commands are copied over)
+        Returns a new cmdset with the same settings as this one (no
+        actual commands are copied over)
+
+        Returns:
+            cmdset (Cmdset): A copy of the current cmdset.
         """
         cmdset = CmdSet()
         for key, val in ((key, getattr(self, key)) for key in self.to_duplicate):
@@ -233,20 +320,29 @@ class CmdSet(object):
     def __str__(self):
         """
         Show all commands in cmdset when printing it.
+
+        Returns:
+            commands (str): Representation of commands in Cmdset.
+
         """
         return ", ".join([str(cmd) for cmd in sorted(self.commands, key=lambda o:o.key)])
 
     def __iter__(self):
         """
         Allows for things like 'for cmd in cmdset':
+
+        Returns:
+            iterable (iter): Commands in Cmdset.
+
         """
         return iter(self.commands)
 
     def __contains__(self, othercmd):
         """
-        Returns True if this cmdset contains the given command (as defined
-        by command name and aliases). This allows for things
+        Returns True if this cmdset contains the given command (as
+        defined by command name and aliases). This allows for things
         like 'if cmd in cmdset'
+
         """
         ret = self._contains_cache.get(othercmd)
         if ret is None:
@@ -333,18 +429,26 @@ class CmdSet(object):
 
     def add(self, cmd):
         """
-        Add a command, a list of commands or a cmdset to this cmdset.
+        Add a new command or commands to this CmdSetcommand, a list of
+        commands or a cmdset to this cmdset. Note that this is *not*
+        a merge operation (that is handled by the + operator).
 
-        Note that if cmd already exists in set,
-        it will replace the old one (no priority checking etc
-        at this point; this is often used to overload
-        default commands).
+        Args:
+            cmd (Command, list, Cmdset): This allows for adding one or
+                more commands to this Cmdset in one go. If another Cmdset
+                is given, all its commands will be added.
 
-        If cmd is another cmdset class or -instance, the commands
-        of that command set is added to this one, as if they were part
-        of the original cmdset definition. No merging or priority checks
-        are made, rather later added commands will simply replace
-        existing ones to make a unique set.
+        Notes:
+            If cmd already exists in set, it will replace the old one
+            (no priority checking etc happens here). This is very useful
+            when overloading default commands).
+
+            If cmd is another cmdset class or -instance, the commands of
+            that command set is added to this one, as if they were part of
+            the original cmdset definition. No merging or priority checks
+            are made, rather later added commands will simply replace
+            existing ones to make a unique set.
+
         """
 
         if inherits_from(cmd, "evennia.commands.cmdset.CmdSet"):
@@ -391,16 +495,26 @@ class CmdSet(object):
     def remove(self, cmd):
         """
         Remove a command instance from the cmdset.
-        cmd can be either a cmd instance or a key string.
+
+        Args:
+            cmd (Command or str): Either the Command object to remove
+                or the key of such a command.
+
         """
         cmd = self._instantiate(cmd)
         self.commands = [oldcmd for oldcmd in self.commands if oldcmd != cmd]
 
     def get(self, cmd):
         """
-        Return the command in this cmdset that matches the
-        given command. cmd may be either a command instance or
-        a key string.
+        Get a command from the cmdset. This is mostly useful to
+        check if the command is part of this cmdset or not.
+
+        Args:
+            cmd (Command or str): Either the Command object or its key.
+
+        Returns:
+            cmd (Command): The first matching Command in the set.
+
         """
         cmd = self._instantiate(cmd)
         for thiscmd in self.commands:
@@ -408,26 +522,46 @@ class CmdSet(object):
                 return thiscmd
 
     def count(self):
-        "Return number of commands in set"
+        """
+        Number of commands in set.
+
+        Returns:
+            N (int): Number of commands in this Cmdset.
+
+        """
         return len(self.commands)
 
     def get_system_cmds(self):
         """
-        Return system commands in the cmdset, defined as
-        commands starting with double underscore __.
-        These are excempt from merge operations.
+        Get system commands in cmdset
+
+        Returns:
+            sys_cmds (list): The system commands in the set.
+
+        Notes:
+            As far as the Cmdset is concerned, system commands are any
+            commands with a key starting with double underscore __.
+            These are excempt from merge operations.
+
         """
         return self.system_commands
-        #return [cmd for cmd in self.commands if cmd.key.startswith('__')]
 
     def make_unique(self, caller):
         """
-        This is an unsafe command meant to clean out a cmdset of
-        doublet commands after it has been created. It is useful
-        for commands inheriting cmdsets from the cmdhandler where
-        obj-based cmdsets always are added double. Doublets will
-        be weeded out with preference to commands defined on caller,
-        otherwise just by first-come-first-served.
+        Remove duplicate command-keys (unsafe)
+
+        Args:
+            caller (object): Commands on this object will
+                get preference in the duplicate removal.
+
+        Notes:
+            This is an unsafe command meant to clean out a cmdset of
+            doublet commands after it has been created. It is useful
+            for commands inheriting cmdsets from the cmdhandler where
+            obj-based cmdsets always are added double. Doublets will
+            be weeded out with preference to commands defined on
+            caller, otherwise just by first-come-first-served.
+
         """
         unique = {}
         for cmd in self.commands:
@@ -442,10 +576,17 @@ class CmdSet(object):
 
     def get_all_cmd_keys_and_aliases(self, caller=None):
         """
-        Returns a list of all command keys and aliases
-        available in this cmdset. If caller is given, the
-        commands is checked for access on the "call" type
-        before being returned.
+        Collects keys/aliases from commands
+
+        Args:
+            caller (Object, optional): If set, this is used to check access permissions
+                on each command. Only commands that pass are returned.
+
+        Returns:
+            names (list): A list of all command keys and aliases in this cmdset. If `caller`
+                was given, this list will only contain commands to which `caller` passed
+                the `call` locktype check.
+
         """
         names = []
         if caller:
@@ -458,7 +599,7 @@ class CmdSet(object):
     def at_cmdset_creation(self):
         """
         Hook method - this should be overloaded in the inheriting
-        class, and should take care of populating the cmdset
-        by use of self.add().
+        class, and should take care of populating the cmdset by use of
+        self.add().
         """
         pass
