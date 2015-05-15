@@ -25,6 +25,8 @@ from evennia import Command, CmdSet, utils
 from evennia import syscmdkeys
 from evennia.contrib.menusystem import prompt_yesno
 
+__all__ = ("CmdEditor", )
+
 CMD_NOMATCH = syscmdkeys.CMD_NOMATCH
 CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
 
