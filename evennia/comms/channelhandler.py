@@ -1,28 +1,29 @@
 """
-The channel handler handles the stored set of channels
-and how they are represented against the cmdhandler.
+The channel handler, accessed from this module as CHANNEL_HANDLER is a
+singleton that handles the stored set of channels and how they are
+represented against the cmdhandler.
 
-If there is a channel named 'newbie', we want to be able
-to just write
+If there is a channel named 'newbie', we want to be able to just write
 
-> newbie Hello!
+    newbie Hello!
 
-For this to work, 'newbie', the name of the channel, must
-be identified by the cmdhandler as a command name. The
-channelhandler stores all channels as custom 'commands'
-that the cmdhandler can import and look through.
+For this to work, 'newbie', the name of the channel, must be
+identified by the cmdhandler as a command name. The channelhandler
+stores all channels as custom 'commands' that the cmdhandler can
+import and look through.
 
-Warning - channel names take precedence over command names,
-so make sure to not pick clashing channel names.
+> Warning - channel names take precedence over command names, so make
+sure to not pick clashing channel names.
 
-Unless deleting a channel you normally don't need to bother about
-the channelhandler at all - the create_channel method handles the update.
+Unless deleting a channel you normally don't need to bother about the
+channelhandler at all - the create_channel method handles the update.
 
 To delete a channel cleanly, delete the channel object, then call
 update() on the channelhandler. Or use Channel.objects.delete() which
 does this for you.
 
 """
+
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdset, command
 
@@ -37,6 +38,7 @@ class ChannelCommand(command.Command):
     This is a channel. If you have subscribed to it, you can send to
     it by entering its name or alias, followed by the text you want to
     send.
+
     """
     # this flag is what identifies this cmd as a channel cmd
     # and branches off to the system send-to-channel command
@@ -100,17 +102,31 @@ class ChannelHandler(object):
         self.cached_cmdsets = {}
 
     def __str__(self):
-        "Returns the string representation of the handler"
+        """
+        Returns the string representation of the handler
+
+        """
         return ", ".join(str(cmd) for cmd in self.cached_channel_cmds)
 
     def clear(self):
         """
         Reset the cache storage.
+
         """
         self.cached_channel_cmds = []
 
     def _format_help(self, channel):
-        "builds a doc string"
+        """
+        Builds an automatic doc string for the channel.
+
+        Args:
+            channel (Channel): Source of help info.
+
+        Returns:
+            doc (str): The docstring for the channel.
+
+        """
+
         key = channel.key
         aliases = channel.aliases.all()
         ustring = "%s <message>" % key.lower() + "".join(["\n           %s <message>" % alias.lower() for alias in aliases])
@@ -129,9 +145,17 @@ class ChannelHandler(object):
     def add_channel(self, channel):
         """
         Add an individual channel to the handler. This should be
-        called whenever a new channel is created. To
-        remove a channel, simply delete the channel object
-        and run self.update on the handler.
+        called whenever a new channel is created.
+
+        Args:
+            channel (Channel): The channel to add.
+
+        Notes:
+            To remove a channel, simply delete the channel object and
+            run self.update on the handler. This should usually be
+            handled automatically by one of the deletion methos of
+            the Channel itself.
+
         """
         # map the channel to a searchable command
         cmd = ChannelCommand(key=channel.key.strip().lower(),
@@ -146,7 +170,9 @@ class ChannelHandler(object):
 
     def update(self):
         """
-        Updates the handler completely.
+        Updates the handler completely, including removing old removed
+        Channel objects. This must be called after deleting a Channel.
+
         """
         self.cached_channel_cmds = []
         self.cached_cmdsets = {}
@@ -157,6 +183,15 @@ class ChannelHandler(object):
         """
         Retrieve cmdset for channels this source_object has
         access to send to.
+
+        Args:
+            source_object (Object): An object subscribing to one
+                or more channels.
+
+        Returns:
+            cmdsets (list): The Channel-Cmdsets `source_object` has
+                access to.
+
         """
         if source_object in self.cached_cmdsets:
             return self.cached_cmdsets[source_object]

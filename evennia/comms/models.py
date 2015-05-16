@@ -1,22 +1,21 @@
 """
-Models for the comsystem. The Commsystem is intended to be
-used by Players (thematic IC communication is probably
-best handled by custom commands instead).
+Models for the in-game communication system.
 
-The comm system could take the form of channels, but can also
-be adopted for storing tells or in-game mail.
+The comm system could take the form of channels, but can also be
+adopted for storing tells or in-game mail.
 
-The comsystem's main component is the Message (Msg), which
-carries the actual information between two parties.
-Msgs are stored in the database and usually not
-deleted.
-A Msg always have one sender (a user), but can have
-any number targets, both users and channels.
+The comsystem's main component is the Message (Msg), which carries the
+actual information between two parties.  Msgs are stored in the
+database and usually not deleted.  A Msg always have one sender (a
+user), but can have any number targets, both users and channels.
 
-Channels are central objects that act as targets for
-Msgs. Players can connect to channels by use of a
-ChannelConnect object (this object is necessary to easily
-be able to delete connections on the fly).
+For non-persistent (and slightly faster) use one can also use the
+TempMsg, which mimics the Msg API but without actually saving to the
+database.
+
+Channels are central objects that act as targets for Msgs. Players can
+connect to channels by use of a ChannelConnect object (this object is
+necessary to easily be able to delete connections on the fly).
 """
 
 from django.conf import settings
@@ -47,16 +46,22 @@ class Msg(SharedMemoryModel):
     A single message. This model describes all ooc messages
     sent in-game, both to channels and between players.
 
-    The Msg class defines the following properties:
-      sender - sender of message
-      receivers - list of target objects for message
-      channels - list of channels message was sent to
-      message - the text being sent
-      date_sent - time message was sent
-      hide_from_sender - bool if message should be hidden from sender
-      hide_from_receivers - list of receiver objects to hide message from
-      hide_from_channels - list of channels objects to hide message from
-      permissions - perm strings
+    The Msg class defines the following database fields (all
+    accessed via specific handler methods):
+
+    - db_sender_players: Player senders
+    - db_sender_objects: Object senders
+    - db_sender_external: External senders (defined as string names)
+    - db_receivers_players: Receiving players
+    - db_receivers_objects: Receiving objects
+    - db_receivers_channels: Receiving channels
+    - db_header: Header text
+    - db_message: The actual message text
+    - db_date_sent: time message was sent
+    - db_hide_from_sender: bool if message should be hidden from sender
+    - db_hide_from_receivers: list of receiver objects to hide message from
+    - db_hide_from_channels: list of channels objects to hide message from
+    - db_lock_storage: Internal storage of lock strings.
 
     """
     #
@@ -160,7 +165,13 @@ class Msg(SharedMemoryModel):
     senders = property(__senders_get, __senders_set, __senders_del)
 
     def remove_sender(self, senders):
-        "Remove a single sender or a list of senders"
+        """
+        Remove a single sender or a list of senders.
+
+        Args:
+            senders (Player, Object, str or list): Senders to remove.
+
+        """
         for sender in make_iter(senders):
             if not sender:
                 continue
@@ -210,7 +221,13 @@ class Msg(SharedMemoryModel):
     receivers = property(__receivers_get, __receivers_set, __receivers_del)
 
     def remove_receiver(self, receivers):
-        "Remove a single receiver or a list of receivers"
+        """
+        Remove a single receiver or a list of receivers.
+
+        Args:
+            receivers (Player, Object, Channel or list): Receiver to remove.
+
+        """
         for receiver in make_iter(receivers):
             if not receiver:
                 continue
@@ -295,12 +312,26 @@ class Msg(SharedMemoryModel):
 
 class TempMsg(object):
     """
-    This is a non-persistent object for sending
-    temporary messages that will not be stored.
-    It mimics the "real" Msg object, but don't require
-    sender to be given.
+    This is a non-persistent object for sending temporary messages
+    that will not be stored.  It mimics the "real" Msg object, but
+    doesn't require sender to be given.
+
     """
     def __init__(self, senders=None, receivers=None, channels=None, message="", header="", type="", lockstring="", hide_from=None):
+        """
+        Creates the temp message.
+
+        Args:
+            senders (any or list, optional): Senders of the message.
+            receivers (Player, Object, Channel or list, optional): Receivers of this message.
+            channels  (Channel or list, optional): Channels to send to.
+            message (str, optional): Message to send.
+            header (str, optional): Header of message.
+            type (str, optional): Message class, if any.
+            lockstring (str, optional): Lock for the message.
+            hide_from (Player, Object, Channel or list, optional): Entities to hide this message from.
+
+        """
         self.senders = senders and make_iter(senders) or []
         self.receivers = receivers and make_iter(receivers) or []
         self.channels = channels and make_iter(channels) or []
@@ -316,29 +347,54 @@ class TempMsg(object):
         return LockHandler(self)
 
     def __str__(self):
-        "This handles what is shown when e.g. printing the message"
+        """
+        This handles what is shown when e.g. printing the message.
+        """
         senders = ",".join(obj.key for obj in self.senders)
         receivers = ",".join(["[%s]" % obj.key for obj in self.channels] + [obj.key for obj in self.receivers])
         return "%s->%s: %s" % (senders, receivers, crop(self.message, width=40))
 
-    def remove_sender(self, obj):
-        "Remove a sender or a list of senders"
-        for o in make_iter(obj):
+    def remove_sender(self, sender):
+        """
+        Remove a sender or a list of senders.
+
+        Args:
+            sender (Object, Player, str or list): Senders to remove.
+
+        """
+        for o in make_iter(sender):
             try:
                 self.senders.remove(o)
             except ValueError:
                 pass  # nothing to remove
 
-    def remove_receiver(self, obj):
-        "Remove a sender or a list of senders"
-        for o in make_iter(obj):
+    def remove_receiver(self, receiver):
+        """
+        Remove a receiver or a list of receivers
+
+        Args:
+            receiver (Object, Player, Channel, str or list): Receivers to remove.
+        """
+
+        for o in make_iter(receiver):
             try:
                 self.senders.remove(o)
             except ValueError:
                 pass  # nothing to remove
 
     def access(self, accessing_obj, access_type='read', default=False):
-        "checks lock access"
+        """
+        Checks lock access.
+
+        Args:
+            accessing_obj (Object or Player): The object trying to gain access.
+            access_type (str, optional): The type of lock access to check.
+            default (bool): Fallback to use if `access_type` lock is not defined.
+
+        Returns:
+            result (bool): If access was granted or not.
+
+        """
         return self.locks.check(accessing_obj,
                                 access_type=access_type, default=default)
 
@@ -453,11 +509,12 @@ class ChannelDB(TypedObject):
     This is the basis of a comm channel, only implementing
     the very basics of distributing messages.
 
-    The Channel class defines the following properties:
-      key - main name for channel
-      desc - optional description of channel
-      aliases - alternative names for the channel
-      permissions - perm strings
+    The Channel class defines the following database fields
+    beyond the ones inherited from TypedObject:
+
+      - db_subscriptions: The Player subscriptions (this is the most
+        usual case, named this way for legacy.
+      - db_object_subscriptions: The Object subscriptions.
 
     """
     db_subscriptions = models.ManyToManyField("players.PlayerDB",
@@ -479,6 +536,7 @@ class ChannelDB(TypedObject):
         verbose_name_plural = "Channels"
 
     def __str__(self):
+        "Echoes the text representation of the channel."
         return "Channel '%s' (%s)" % (self.key, self.db.desc)
 
     @lazy_property
