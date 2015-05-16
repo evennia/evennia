@@ -295,7 +295,7 @@ CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
 # Command set for players without a character (ooc)
 CMDSET_PLAYER = "commands.default_cmdsets.PlayerCmdSet"
 # Location to search for cmdsets if full path not given
-CMDSET_PATHS = ["commands"]
+CMDSET_PATHS = ["commands", "evennia", "contribs"]
 
 # Line editor path. Points to a line editor class that commands may use to give
 # users extended editing control. See the default path for a reference implementation
@@ -313,7 +313,7 @@ SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
 # immediately entered path fail to find a typeclass. It allows for
 # shorter input strings. They must either base off the game directory
 # or start from the evennia library.
-TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
+TYPECLASS_PATHS = ["typeclasses", "evennia", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 
 # Typeclass for player objects (linked to a character) (fallback)
 BASE_PLAYER_TYPECLASS = "typeclasses.players.Player"

@@ -302,26 +302,21 @@ node1a = MenuNode("node1a", text="Please enter your account name (empty to abort
                   links=["START", "node1b"],
                   helptext=["Enter the account name you previously registered with."],
                   keywords=[CMD_NOINPUT, CMD_NOMATCH],
-                  selectcmds=[CmdBackToStart, CmdUsernameSelect],
-                  nodefaultcmds=True) # if we don't, default help/look will be triggered by names starting with l/h ...
+                  selectcmds=[CmdBackToStart, CmdUsernameSelect])
 node1b = MenuNode("node1b", text="Please enter your password (empty to go back).",
                   links=["node1a", "END"],
                   keywords=[CMD_NOINPUT, CMD_NOMATCH],
-                  selectcmds=[CmdPasswordSelectBack, CmdPasswordSelect],
-                  nodefaultcmds=True)
-
+                  selectcmds=[CmdPasswordSelectBack, CmdPasswordSelect])
 node2a = MenuNode("node2a", text="Please enter your desired account name (empty to abort).",
                   links=["START", "node2b"],
                   helptext="Account name can max be 30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only.",
                   keywords=[CMD_NOINPUT, CMD_NOMATCH],
-                  selectcmds=[CmdBackToStart, CmdUsernameCreate],
-                  nodefaultcmds=True)
+                  selectcmds=[CmdBackToStart, CmdUsernameCreate])
 node2b = MenuNode("node2b", text="Please enter your password (empty to go back).",
                   links=["node2a", "START"],
                   helptext="Try to pick a long and hard-to-guess password.",
                   keywords=[CMD_NOINPUT, CMD_NOMATCH],
-                  selectcmds=[CmdPasswordCreateBack, CmdPasswordCreate],
-                  nodefaultcmds=True)
+                  selectcmds=[CmdPasswordCreateBack, CmdPasswordCreate])
 node3 = MenuNode("node3", text=LOGIN_SCREEN_HELP,
                  links=["START"],
                  helptext="",
@@ -348,7 +343,7 @@ class CmdUnloggedinLook(Command):
     to the menu's own look command..
     """
     key = CMD_LOGINSTART
-    aliases = ["look", "l"]
+    # obs, this should NOT have aliases for look or l, this will clash with the menu version!
     locks = "cmd:all()"
     arg_regex = r"^$"
 

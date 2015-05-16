@@ -119,7 +119,6 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             #print "importing %s: _CACHED_CMDSETS=%s" % (python_path, _CACHED_CMDSETS)
             wanted_cache_key = python_path
             cmdsetclass = _CACHED_CMDSETS.get(wanted_cache_key, None)
-            errstring = ""
             if not cmdsetclass:
                 #print "cmdset '%s' not in cache. Reloading %s on %s." % (wanted_cache_key, python_path, cmdsetobj)
                 # Not in cache. Reload from disk.
@@ -130,21 +129,22 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             #instantiate the cmdset (and catch its errors)
             if callable(cmdsetclass):
                 cmdsetclass = cmdsetclass(cmdsetobj)
+            errstring = ""
             return cmdsetclass
         except ImportError, e:
-            logger.log_trace()
+            #logger.log_trace()
             errstring += _("Error loading cmdset {path}: {error}")
             errstring = errstring.format(path=python_path, error=e)
         except KeyError:
-            logger.log_trace()
+            #logger.log_trace()
             errstring += _("Error in loading cmdset: No cmdset class '{classname}' in {path}.")
             errstring = errstring.format(classname=classname, path=python_path)
         except SyntaxError, e:
-            logger.log_trace()
+            #logger.log_trace()
             errstring += _("SyntaxError encountered when loading cmdset '{path}': {error}.")
             errstring = errstring.format(path=python_path, error=e)
         except Exception, e:
-            logger.log_trace()
+            #logger.log_trace()
             errstring += _("Compile/Run error when loading cmdset '{path}': {error}.")
             errstring = errstring.format(path=python_path, error=e)
 

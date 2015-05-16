@@ -66,7 +66,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         return (cmdname, args, cmdobj, cmdlen, mratio)
 
     if not raw_string:
-        return None
+        return []
 
     matches = []
 
