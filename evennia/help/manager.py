@@ -26,6 +26,16 @@ class HelpEntryManager(models.Manager):
     def find_topicmatch(self, topicstr, exact=False):
         """
         Searches for matching topics based on player's input.
+
+        Args:
+            topcistr (str): Help topic to search for.
+            exact (bool, optional): Require exact match
+                (non-case-sensitive).  If `False` (default), match
+                sub-parts of the string.
+
+        Returns:
+            matches (HelpEntries): Query results.
+
         """
         dbref = utils.dbref(topicstr)
         if dbref:
@@ -41,6 +51,13 @@ class HelpEntryManager(models.Manager):
         """
         Do a very loose search, returning all help entries containing
         the search criterion in their titles.
+
+        Args:
+            topicstr (str): Search criterion.
+
+        Returns:
+            matches (HelpEntries): Query results.
+
         """
         return self.filter(db_key__icontains=topicstr)
 
@@ -48,34 +65,61 @@ class HelpEntryManager(models.Manager):
         """
         Do a fuzzy match, preferably within the category of the
         current topic.
+
+        Args:
+            topicstr (str): Search criterion.
+
+        Returns:
+            matches (Helpentries): Query results.
+
         """
         return self.filter(db_key__icontains=topicstr).exclude(db_key__iexact=topicstr)
 
     def find_topics_with_category(self, help_category):
         """
-        Search topics having a particular category
+        Search topics having a particular category.
+
+        Args:
+            help_category (str): Category query criterion.
+
+        Returns:
+            matches (HelpEntries): Query results.
+
         """
         return self.filter(db_help_category__iexact=help_category)
 
     def get_all_topics(self):
         """
-        Return all topics.
+        Get all topics.
+
+        Returns:
+            all (HelpEntries): All topics.
+
         """
         return self.all()
 
-    def get_all_categories(self, pobject):
+    def get_all_categories(self):
         """
-        Return all defined category names with at least one
-        topic in them.
+        Return all defined category names with at least one topic in
+        them.
+
+        Returns:
+            matches (list): Unique list of category names across all
+                topics.
+
         """
         return list(set(topic.help_category for topic in self.all()))
 
     def all_to_category(self, default_category):
         """
-        Shifts all help entries in database to default_category.
-        This action cannot be reverted. It is used primarily by
-        the engine when importing a default help database, making
-        sure this ends up in one easily separated category.
+        Shifts all help entries in database to default_category.  This
+        action cannot be reverted. It is used primarily by the engine
+        when importing a default help database, making sure this ends
+        up in one easily separated category.
+
+        Args:
+            default_category (str): Category to move entries to.
+
         """
         topics = self.all()
         for topic in topics:
@@ -88,8 +132,10 @@ class HelpEntryManager(models.Manager):
         """
         Retrieve a search entry object.
 
-        ostring - the help topic to look for
-        category - limit the search to a particular help topic
+        Args:
+            ostring (str): The help topic to look for.
+            category (str): Limit the search to a particular help topic
+
         """
         ostring = ostring.strip().lower()
         if help_category:
