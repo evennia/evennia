@@ -1,9 +1,8 @@
 """
-Locks
-
-A lock defines access to a particular subsystem or property of
+A *lock* defines access to a particular subsystem or property of
 Evennia. For example, the "owner" property can be impmemented as a
 lock. Or the disability to lift an object or to ban users.
+
 
 A lock consists of three parts:
 
@@ -14,8 +13,6 @@ A lock consists of three parts:
  - lock function(s). These are regular python functions with a special
    set of allowed arguments. They should always return a boolean depending
    on if they allow access or not.
-
-# Lock function
 
 A lock function is defined by existing in one of the modules
 listed by settings.LOCK_FUNC_MODULES. It should also always
@@ -42,7 +39,8 @@ Lock functions should most often be pretty general and ideally possible to
 re-use and combine in various ways to build clever locks.
 
 
-# Lock definition ("Lock string")
+
+Lock definition ("Lock string")
 
 A lock definition is a string with a special syntax. It is added to
 each object's lockhandler, making that lock available from then on.
@@ -95,7 +93,8 @@ use instead:
   if not target_obj.access(caller, 'edit'):
       caller.msg("Sorry, you cannot edit that.")
 
-# Permissions
+
+Permissions
 
 Permissions are just text strings stored in a comma-separated list on
 typeclassed objects. The default perm() lock function uses them,
@@ -121,7 +120,9 @@ WARNING_LOG = "lockwarnings.log"
 #
 
 class LockException(Exception):
-    "raised during an error in a lock."
+    """
+    Raised during an error in a lock.
+    """
     pass
 
 
@@ -131,7 +132,9 @@ class LockException(Exception):
 
 _LOCKFUNCS = {}
 def _cache_lockfuncs():
-    "Updates the cache."
+    """
+    Updates the cache.
+    """
     global _LOCKFUNCS
     _LOCKFUNCS = {}
     for modulepath in settings.LOCK_FUNC_MODULES:
@@ -161,12 +164,17 @@ class LockHandler(object):
     """
     This handler should be attached to all objects implementing
     permission checks, under the property 'lockhandler'.
+
     """
 
     def __init__(self, obj):
         """
-        Loads and pre-caches all relevant locks and their
-        functions.
+        Loads and pre-caches all relevant locks and their functions.
+
+        Args:
+            obj (object): The object on which the lockhandler is
+            defined.
+
         """
         if not _LOCKFUNCS:
             _cache_lockfuncs()
@@ -186,7 +194,11 @@ class LockHandler(object):
         Helper function. This is normally only called when the
         lockstring is cached and does preliminary checking.  locks are
         stored as a string
-               'atype:[NOT] lock()[[ AND|OR [NOT] lock()[...]];atype...
+
+            atype:[NOT] lock()[[ AND|OR [NOT] lock()[...]];atype...
+
+        Args:
+            storage_locksring (str): The lockstring to parse.
 
         """
         locks = {}
@@ -245,28 +257,45 @@ class LockHandler(object):
         return locks
 
     def _cache_locks(self, storage_lockstring):
-        """Store data"""
+        """
+        Store data
+        """
         self.locks = self._parse_lockstring(storage_lockstring)
 
     def _save_locks(self):
-        "Store locks to obj"
+        """
+        Store locks to obj
+        """
         self.obj.lock_storage = ";".join([tup[2] for tup in self.locks.values()])
 
     def cache_lock_bypass(self, obj):
         """
-        We cache superuser bypass checks here for efficiency. This needs to
-        be re-run when a player is assigned to a character.
-        We need to grant access to superusers. We need to check both directly
-        on the object (players), through obj.player and using the get_player()
-        method (this sits on serversessions, in some rare cases where a
-        check is done before the login process has yet been fully finalized)
+        We cache superuser bypass checks here for efficiency. This
+        needs to be re-run when a player is assigned to a character.
+        We need to grant access to superusers. We need to check both
+        directly on the object (players), through obj.player and using
+        the get_player() method (this sits on serversessions, in some
+        rare cases where a check is done before the login process has
+        yet been fully finalized)
+
+        Args:
+            obj (object): This is checked for the `is_superuser` property.
+
         """
         self.lock_bypass = hasattr(obj, "is_superuser") and obj.is_superuser
 
     def add(self, lockstring):
         """
-        Add a new lockstring on the form '<access_type>:<functions>'. Multiple
-        access types should be separated by semicolon (;).
+        Add a new lockstring to handler.
+
+        Args:
+            lockstring (str): A string on the form
+                `"<access_type>:<functions>"`.  Multiple access types
+                should be separated by semicolon (`;`).
+
+        Returns:
+            success (bool): The outcome of the addition, `False` on
+                error.
 
         """
         # sanity checks
@@ -296,7 +325,20 @@ class LockHandler(object):
         return True
 
     def replace(self, lockstring):
-        "Replaces the lockstring entirely."
+        """
+        Replaces the lockstring entirely.
+
+        Args:
+            lockstring (str): The new lock definition.
+
+        Return:
+            success (bool): False if an error occurred.
+
+        Raises:
+            LockException: If a critical error occurred.
+                If so, the old string is recovered.
+
+        """
         old_lockstring = str(self)
         self.clear()
         try:
@@ -306,13 +348,34 @@ class LockHandler(object):
             raise
 
     def get(self, access_type=None):
-        "get the full lockstring or the lockstring of a particular access type."
+        """
+        Get the full lockstring or the lockstring of a particular
+        access type.
+
+        Args:
+            access_type (str, optional):
+
+        Returns:
+            lockstring (str): The matched lockstring, or the full
+                lockstring if no access_type was given.
+        """
+
         if access_type:
             return self.locks.get(access_type, ["", "", ""])[2]
         return str(self)
 
     def delete(self, access_type):
-        "Remove a lock from the handler"
+        """
+        Remove a particular lock from the handler
+
+        Args:
+            access_type (str): The type of lock to remove.
+
+        Returns:
+            success (bool): If the access_type was not found
+                in the lock, this returns `False`.
+
+        """
         if access_type in self.locks:
             del self.locks[access_type]
             self._save_locks()
@@ -320,45 +383,53 @@ class LockHandler(object):
         return False
 
     def clear(self):
-        "Remove all locks"
+        """
+        Remove all locks in the handler.
+
+        """
         self.locks = {}
         self.lock_storage = ""
         self._save_locks()
 
     def reset(self):
         """
-        Set the reset flag, so the the lock will be re-cached at next checking.
-        This is usually set by @reload.
+        Set the reset flag, so the the lock will be re-cached at next
+        checking.  This is usually called by @reload.
+
         """
         self._cache_locks(self.obj.lock_storage)
         self.cache_lock_bypass(self.obj)
 
     def check(self, accessing_obj, access_type, default=False, no_superuser_bypass=False):
         """
-        Checks a lock of the correct type by passing execution
-        off to the lock function(s).
+        Checks a lock of the correct type by passing execution off to
+        the lock function(s).
 
-        accessing_obj - the object seeking access
-        access_type - the type of access wanted
-        default - if no suitable lock type is found, use this
-        no_superuser_bypass - don't use this unless you really, really need to,
-                             it makes supersusers susceptible to the lock check.
+        Args:
+            accessing_obj (object): The object seeking access.
+            access_type (str): The type of access wanted.
+            default (bool, optional): If no suitable lock type is
+                found, default to this result.
+            no_superuser_bypass (bool): Don't use this unless you
+                really, really need to, it makes supersusers susceptible
+                to the lock check.
 
-        A lock is executed in the follwoing way:
+        Notes:
+            A lock is executed in the follwoing way:
 
-        Parsing the lockstring, we (during cache) extract the valid
-        lock functions and store their function objects in the right
-        order along with their args/kwargs. These are now executed in
-        sequence, creating a list of True/False values. This is put
-        into the evalstring, which is a string of AND/OR/NOT entries
-        separated by placeholders where each function result should
-        go. We just put those results in and evaluate the string to
-        get a final, combined True/False value for the lockstring.
+            Parsing the lockstring, we (during cache) extract the valid
+            lock functions and store their function objects in the right
+            order along with their args/kwargs. These are now executed in
+            sequence, creating a list of True/False values. This is put
+            into the evalstring, which is a string of AND/OR/NOT entries
+            separated by placeholders where each function result should
+            go. We just put those results in and evaluate the string to
+            get a final, combined True/False value for the lockstring.
 
-        The important bit with this solution is that the full
-        lockstring is never blindly evaluated, and thus there (should
-        be) no way to sneak in malign code in it. Only "safe" lock
-        functions (as defined by your settings) are executed.
+            The important bit with this solution is that the full
+            lockstring is never blindly evaluated, and thus there (should
+            be) no way to sneak in malign code in it. Only "safe" lock
+            functions (as defined by your settings) are executed.
 
         """
         try:
@@ -385,6 +456,15 @@ class LockHandler(object):
             return default
 
     def _eval_access_type(self, accessing_obj, locks, access_type):
+        """
+        Helper method for evaluating the access type using eval().
+
+        Args:
+            accessing_obj (object): Object seeking access.
+            locks (dict): The pre-parsed representation of all access-types.
+            access_type (str): An access-type key to evaluate.
+
+        """
         evalstring, func_tup, raw_string = locks[access_type]
         true_false = tuple(tup[0](accessing_obj, self.obj, *tup[1], **tup[2])
                            for tup in func_tup)
@@ -393,10 +473,27 @@ class LockHandler(object):
     def check_lockstring(self, accessing_obj, lockstring, no_superuser_bypass=False,
                          default=False, access_type=None):
         """
-        Do a direct check against a lockstring ('atype:func()..'), without any
-        intermediary storage on the accessed object (this can be left
-        to None if the lock functions called don't access it). atype can also be
-        put to a dummy value since no lock selection is made.
+        Do a direct check against a lockstring ('atype:func()..'),
+        without any intermediary storage on the accessed object.
+
+        Args:
+            accessing_obj (object or None): The object seeking access.
+                Importantly, this can be left unset if the lock functions
+                don't access it, no updating or storage of locks are made
+                against this object in this method.
+            lockstring (str): Lock string to check, on the form
+                `"access_type:lock_definition"` where the `access_type`
+                part can potentially be set to a dummy value to just check
+                a lock condition.
+            no_superuser_bypass  (bool, optional): Force superusers to heed lock.
+            default (bool, optional): Fallback result to use if `access_type` is set
+                but no such `access_type` is found in the given `lockstring`.
+            access_type (str, bool): If set, only this access_type will be looked up
+                among the locks defined by `lockstring`.
+
+        Return:
+            access (bool): If check is passed or not.
+
         """
         try:
             if accessing_obj.locks.lock_bypass and not no_superuser_bypass:
