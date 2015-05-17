@@ -59,7 +59,7 @@ ANSI_TAB = "\t"
 ANSI_SPACE = " "
 
 # Escapes
-ANSI_ESCAPES = ("{{", "%%", "\\\\")
+ANSI_ESCAPES = ("{{", "\\\\")
 
 from collections import OrderedDict
 _PARSE_CACHE = OrderedDict()
@@ -72,7 +72,7 @@ class ANSIParser(object):
     to ANSI command sequences
 
     We also allow to escape colour codes
-    by prepending with a \ for MUX-style and xterm256,
+    by prepending with a \ for xterm256,
     an extra { for Merc-style codes
     """
 
@@ -239,39 +239,6 @@ class ANSIParser(object):
            _PARSE_CACHE.popitem(last=False)
 
         return parsed_string
-    # MUX-style mappings %cr %cn etc
-    # Warning: DEPRECATED. Use {-type syntax instead.
-
-    mux_ansi_map = [
-        (r'%cn', ANSI_NORMAL),
-        (r'%ch', ANSI_HILITE),
-        (r'%r', ANSI_RETURN),
-        (r'%R', ANSI_RETURN),
-        (r'%t', ANSI_TAB),
-        (r'%T', ANSI_TAB),
-        (r'%b', ANSI_SPACE),
-        (r'%B', ANSI_SPACE),
-        (r'%cf', ANSI_BLINK), # annoying and not supported by all clients
-        (r'%ci', ANSI_INVERSE),
-
-        (r'%cr', ANSI_RED),
-        (r'%cg', ANSI_GREEN),
-        (r'%cy', ANSI_YELLOW),
-        (r'%cb', ANSI_BLUE),
-        (r'%cm', ANSI_MAGENTA),
-        (r'%cc', ANSI_CYAN),
-        (r'%cw', ANSI_WHITE),
-        (r'%cx', ANSI_BLACK),
-
-        (r'%cR', ANSI_BACK_RED),
-        (r'%cG', ANSI_BACK_GREEN),
-        (r'%cY', ANSI_BACK_YELLOW),
-        (r'%cB', ANSI_BACK_BLUE),
-        (r'%cM', ANSI_BACK_MAGENTA),
-        (r'%cC', ANSI_BACK_CYAN),
-        (r'%cW', ANSI_BACK_WHITE),
-        (r'%cX', ANSI_BACK_BLACK)
-        ]
 
     # Mapping using {r {n etc
 
@@ -342,8 +309,6 @@ class ANSIParser(object):
         (r'{[w', r'{[555'),     # white background
         (r'{[x', r'{[222')]     # dark grey background
 
-    #ansi_map = mux_ansi_map + ext_ansi_map
-
     # xterm256 {123, %c134. These are replaced directly by
     # the sub_xterm256 method
 
@@ -359,11 +324,11 @@ class ANSIParser(object):
     # prepare regex matching
     brightbg_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ansi_bright_bgs]), re.DOTALL)
     xterm256_sub = re.compile(r"|".join([tup[0] for tup in xterm256_map]), re.DOTALL)
-    ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in mux_ansi_map + ext_ansi_map]), re.DOTALL)
+    ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ext_ansi_map]), re.DOTALL)
     mxp_sub = re.compile(mxp_re, re.DOTALL)
 
     # used by regex replacer to correctly map ansi sequences
-    ansi_map = dict(mux_ansi_map + ext_ansi_map)
+    ansi_map = dict(ext_ansi_map)
     ansi_bright_bgs = dict(ansi_bright_bgs)
 
     # prepare matching ansi codes overall
@@ -400,7 +365,7 @@ def raw(string):
     """
     Escapes a string into a form which won't be colorized by the ansi parser.
     """
-    return string.replace('{', '{{').replace('%', '%%')
+    return string.replace('{', '{{')
 
 
 def group(lst, n):
