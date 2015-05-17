@@ -11,14 +11,29 @@ in one or more columns.
 The menu system consists of a MenuTree object populated by MenuNode
 objects. Nodes are linked together with automatically created commands
 so the player may select and traverse the menu. Each node can display
-text and show options, but also execute arbitrary code to act on the
+text and show options, but also execute a callback to act on the
 system and the calling object when they are selected.
 
-There is also a simple Yes/No function supplied. This will create a
-one-off Yes/No question and executes a given code depending on which
-choice was made.
+There is also a simple Yes/No function as well as a one-level choice
+function supplied. This will create a one-off Yes/No question or a
+one-level choice. These helpers will execute a given callback
+depending on which choice was made.
 
-To test, add this to the default cmdset
+To start a menu, define the nodes of the menu and then add the
+following to a command `func` you can call:
+
+```python
+
+menu = MenuTree(self.caller, nodes=(...))
+menu.start()
+
+```
+
+This will switch you into menu-mode. See `contrib/menu_login.py` for an
+example of usage.
+
+
+For a simple demonstration, add `CmdMenuTest` from this module to the default cmdset.
 
 """
 from types import MethodType
@@ -49,8 +64,6 @@ class CmdMenuNode(Command):
 
     menutree = None
     callback = None
-    # deprecated
-    code = None
 
     def func(self):
         "Execute a selection"
@@ -58,12 +71,6 @@ class CmdMenuNode(Command):
         if self.callback:
             try:
                 self.callback()
-            except Exception, e:
-                self.caller.msg("%s\n{rThere was an error with this selection.{n" % e)
-        elif self.code:
-            evennia.logger.log_depmsg("menusystem.code is deprecated. Use menusystem.func.")
-            try:
-                exec(self.code)
             except Exception, e:
                 self.caller.msg("%s\n{rThere was an error with this selection.{n" % e)
         else:
@@ -173,8 +180,19 @@ class MenuTree(object):
         enter and where to exit the menu tree. If nodes is given, it
         should be a list of valid node objects to add to the tree.
 
-        exec_end - if not None, will execute the given command string
-                   directly after the menu system has been exited.
+        caller (Object): The caller triggering the menu
+        nodes (tuple, optional): A tuple of `MenuNode` objects. This need
+            not be in any particular order.
+        startnode (str, optional): The key of the first `MenuNode` to jump
+            to when starting the menu. Defaults to "START".
+        endnode (str, optional): The key of the end node. When
+            instructed to go to this node (by any means), the menu
+            will be gracefully exited. Defaults to "END".
+        exec_end (str, optional): If not `None`, this command name will be executed
+            directly after the menu system has been exited. It is
+            normally useful for making sure the user realizes their UI
+            mode has changed.
+
         """
         self.tree = {}
         self.startnode = startnode
@@ -187,7 +205,8 @@ class MenuTree(object):
 
     def start(self):
         """
-        Initialize the menu
+        Initialize the menu and go to the starting node.
+
         """
         self.goto(self.startnode)
 
@@ -195,6 +214,9 @@ class MenuTree(object):
         """
         Add a menu node object to the tree. Each node itself keeps
         track of which nodes it is connected to.
+
+        Args:
+            menunode (MenuNode): The node to add.
         """
         self.tree[menunode.key] = menunode
 
@@ -202,6 +224,10 @@ class MenuTree(object):
         """
         Go to a key in the tree. This sets up the cmdsets on the
         caller so that they match the choices in that node.
+
+        Args:
+            key (str): The node-key to go to.
+
         """
         if key == self.endnode:
             # if we was given the END node key, we clean up immediately.
@@ -210,7 +236,7 @@ class MenuTree(object):
             if self.exec_end is not None:
                 self.caller.execute_cmd(self.exec_end)
             return
-        # not exiting, look for a valid code.
+        # not exiting, look for a valid node
         node = self.tree.get(key, None)
         # make caller available on node
         node.caller = self.caller
@@ -222,13 +248,6 @@ class MenuTree(object):
                 except Exception:
                     logger.log_trace()
                     self.caller.msg("{rNode callback could not be executed for node %s. Continuing anyway.{n" % key)
-            if node.code:
-                # Execute eventual code active on this node. self.caller is available at this point.
-                evennia.logger.log_depmsg("menusystem.code is deprecated. Use menusystem.callback.")
-                try:
-                    exec(node.code)
-                except Exception:
-                    self.caller.msg("{rCode could not be executed for node %s. Continuing anyway.{n" % key)
             # initialize - this creates new cmdset
             node.init(self)
             # clean old menu cmdset and replace with the new one
@@ -252,42 +271,48 @@ class MenuNode(object):
     """
     def __init__(self, key, text="", links=None, linktexts=None,
                  keywords=None, cols=1, helptext=None,
-                 selectcmds=None, callback=None, code="", nodefaultcmds=False, separator=""):
+                 selectcmds=None, callback=None, nodefaultcmds=False, separator=""):
         """
-        key       - the unique identifier of this node.
-        text      - is the text that will be displayed at top when viewing this
-                    node.
-        links     - a list of keys for unique menunodes this is connected to.
-                    The actual keys will not printed - keywords will be used
-                    (or a number)
-        linktexts - an optional list of texts to describe the links. Must
-                    match link list if defined. Entries can be None to not
-                    generate any extra text for a particular link.
-        keywords  - an optional list of unique keys for choosing links. Must
-                    match links list. If not given, index numbers will be used.
-                    Also individual list entries can be None and will be replaed
-                    by indices. If CMD_NOMATCH or CMD_NOENTRY, no text will be
-                    generated to indicate the option exists.
-        cols      - how many columns to use for displaying options.
-        helptext  - if defined, this is shown when using the help command
-                    instead of the normal help index.
-        selectcmds- a list of custom cmdclasses for handling each option.
-                    Must match links list, but some entries may be set to None
-                    to use default menu cmds. The given command's key will be
-                    used for the menu list entry unless it's CMD_NOMATCH or
-                    CMD_NOENTRY, in which case no text will be generated. These
-                    commands have access to self.menutree and so can be used to
-                    select nodes.
-        code      - functional code. Deprecated. This will be executed just before this
-                    node is loaded (i.e. as soon after it's been selected from
-                    another node). self.caller is available to call from this
-                    code block, as well as the evennia flat API.
-        callback  - function callback. This will be called as callback(currentnode) just
-                    before this node is loaded (i.e. as soon as possible as it's
-                    been selected from another node). currentnode.caller is available.
-        nodefaultcmds - if true, don't offer the default help and look commands
-                    in the node
-        separator - this string will be put on the line between menu nodes.
+        Initialize the node.
+
+        Args:
+            key (str): The unique identifier of this node.
+            text (str, optional): The text that will be displayed at
+                top when viewing this node.
+        Kwargs:
+            links (list): A liist of keys for unique menunodes this is connected to.
+                The actual keys will not printed - keywords will be
+                used (or a number)
+            linktexts (list)- A list of texts to describe the links. Must
+                match order of `links` list if defined. Entries can be
+                None to not generate any extra text for a particular
+                link.
+            keywords (list): A list of unique keys for choosing links. Must
+                match links list. If not given, index numbers will be
+                used.  Also individual list entries can be None and
+                will be replaed by indices. If CMD_NOMATCH or
+                CMD_NOENTRY, no text will be generated to indicate the
+                option exists.
+            cols (int): How many columns to use for displaying options.
+            helptext (str): If defined, this is shown when using the help command
+                instead of the normal help index.
+            selectcmds (list): A list of custom cmdclasses for
+                handling each option.  Must match links list, but some
+                entries may be set to None to use default menu cmds.
+                The given command's key will be used for the menu list
+                entry unless it's CMD_NOMATCH or CMD_NOENTRY, in which
+                case no text will be generated. These commands have
+                access to self.menutree and so can be used to select
+                nodes.
+            callback (function): Function callback. This will be
+                called as callback(currentnode) just before this node is
+                loaded (i.e. as soon as possible as it's been selected
+                from another node).  currentnode.caller is available.
+            nodefaultcmds (bool): If `True`, don't offer the default
+                help and look commands in the node
+            separator (str): This string will be put on the line
+                between menu nodes.
+
         """
         self.key = key
         self.cmdset = None
@@ -296,14 +321,10 @@ class MenuNode(object):
         self.keywords = keywords
         self.cols = cols
         self.selectcmds = selectcmds
-        self.code = code
         self.callback = MethodType(callback, self, MenuNode) if callback else None
         self.nodefaultcmds = nodefaultcmds
         self.separator = separator
         Nlinks = len(self.links)
-
-        if code:
-            evennia.logger.log_depmsg("menusystem.code is deprecated. Use menusystem.callback.")
 
         # validate the input
         if not self.links:
@@ -399,17 +420,21 @@ class MenuNode(object):
 # make use the node system since there is only one level of choice.
 #
 
-def prompt_yesno(caller, question="", yesfunc=None, nofunc=None, yescode="", nocode="", default="N"):
+def prompt_yesno(caller, question="", yesfunc=None, nofunc=None, default="N"):
     """
     This sets up a simple yes/no questionnaire. Question will be
     asked, followed by a Y/[N] prompt where the [x] signifies the
-    default selection. Note that this isn't making use of the menu
-    node system.
+    default selection. Note that this isn't actually making use of the
+    menu node system, but does use the MenuCmdSet.
 
-    yesfunc - function callback to be called as yesfunc(self) when choosing yes (self.caller is available)
-    nofunc - function callback to be called as yesfunc(self) when choosing no (self.caller is available)
-    yescode - deprecated, executable code
-    nocode  -            "
+    Args:
+        caller (Object): The object triggering the prompt.
+        question (str, optional): The Yes/No question asked.
+        yesfunc (function, optional): Callback for a Yes answer.
+        nofunc (functionm optional): Callback for a No answer.
+        default (str, optional): Default used if caller just hits
+            return. Either `"Y"` or `"N"`
+
     """
 
     # creating and defining commands
@@ -440,14 +465,6 @@ def prompt_yesno(caller, question="", yesfunc=None, nofunc=None, yescode="", noc
     def _defaultcmd(self):
         self.caller.execute_cmd('%s' % default)
     defaultcmd.callback = MethodType(_defaultcmd, defaultcmd, CmdMenuNode)
-
-    # code exec is deprecated:
-    if yescode:
-        evennia.logger.log_depmsg("yesnosystem.code is deprecated. Use yesnosystem.callback.")
-        cmdyes.code = yescode + "\nself.caller.cmdset.delete('menucmdset')\ndel self.caller.db._menu_data"
-    if nocode:
-        evennia.logger.log_depmsg("yesnosystem.code is deprecated. Use yesnosystem.callback.")
-        cmdno.code = nocode + "\nself.caller.cmdset.delete('menucmdset')\ndel self.caller.db._menu_data"
 
     # creating cmdset (this will already have look/help commands)
     yesnocmdset = MenuCmdSet()
@@ -481,33 +498,57 @@ def prompt_choice(caller, question="", prompts=None, choicefunc=None, force_choo
     """
     This sets up a simple choice questionnaire. Question will be
     asked, followed by a series of prompts. Note that this isn't
-    making use of the menu node system.
+    making use of the menu node system but uses the MenuCmdSet.
 
-    caller - the object calling and being offered the choice
-    question - text describing the offered choice
-    prompts - list of choices
-    choicefunc - functions callback to be called as func(self) when
-                 make choice (self.caller is available) The function's definition
-                 should be like func(self, menu_node), and menu_node.key is user's
-                 choice.
-    force_choose - force user to make a choice or not
+    Args:
+        caller (object): The object calling and being offered the choice
+        question (str, optional): Text describing the offered choice
+        prompts (list, optional): List of strings defining the available choises.
+        choicefunc (function, optional): A function called as
+            `choicefunc(self)` when a choice is made. Inside this function,
+            `self.caller` is available and `self.prompt_index` is the index
+            (starting with 0) matching the chosen prompt in the `prompts` list.
+        force_choose - force user to make a choice
+
+    Examples:
+
+        ```python
+            def mychoice(self):
+                self.caller.msg("Index of choice is %s." % self.prompt_index)
+
+            prompt_choice(caller, "Make a choice:", prompts=["A","B","C"], choicefunc=mychoice)
+        ```
+
+        When triggering the above from a command or @py prompt you get the following options:
+
+        >>> Make a choice:
+            [1] A
+            [2] B
+            [3] C
+        <<< 2
+        >>> Index of choice is 1.
+
     """
 
     # creating and defining commands
     count = 0
     choices = ""
     commands = []
+
     for choice in utils.make_iter(prompts):
+        # create the available choice-commands
         count += 1
         choices += "\n{lc%d{lt[%d]{le %s" % (count, count, choice)
 
         cmdfunc = CmdMenuNode(key="%d" % count)
+        cmdfunc.prompt_index = count-1
         if choicefunc:
             cmdfunc.choicefunc = choicefunc
             def _choicefunc(self):
                 self.caller.cmdset.delete('menucmdset')
                 del self.caller.db._menu_data
                 self.choicefunc(self)
+            # set a new method "callback" on cmdfunc
             cmdfunc.callback = MethodType(_choicefunc, cmdfunc, CmdMenuNode)
 
         commands.append(cmdfunc)
@@ -517,6 +558,7 @@ def prompt_choice(caller, question="", prompts=None, choicefunc=None, force_choo
 
     prompt = question + choices + "\nPlease choose one."
 
+    # create the error-reporting command
     errorcmd = CmdMenuNode(key=CMD_NOMATCH)
     if force_choose:
         def _errorcmd(self):
@@ -531,6 +573,7 @@ def prompt_choice(caller, question="", prompts=None, choicefunc=None, force_choo
                 self.choicefunc(self)
     errorcmd.callback = MethodType(_errorcmd, errorcmd, CmdMenuNode)
 
+    # create the fallback command
     defaultcmd = CmdMenuNode(key=CMD_NOINPUT)
     if force_choose:
         def _defaultcmd(self):
@@ -547,7 +590,8 @@ def prompt_choice(caller, question="", prompts=None, choicefunc=None, force_choo
 
     # creating cmdset (this will already have look/help commands)
     choicecmdset = MenuCmdSet()
-    for cmdfunc in commands: choicecmdset.add(cmdfunc)
+    for cmdfunc in commands:
+        choicecmdset.add(cmdfunc)
     choicecmdset.add(errorcmd)
     choicecmdset.add(defaultcmd)
     choicecmdset.add(CmdMenuLook())

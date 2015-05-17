@@ -4,8 +4,8 @@ Dice - rolls dice for roleplaying, in-game gambling or GM:ing
 Evennia contribution - Griatch 2012
 
 
-This module implements a full-fledged dice-roller and a 'dice' command to
-go with it. It uses standard RPG 'd'-syntax (e.g. 2d6 to roll two
+This module implements a full-fledged dice-roller and a 'dice' command
+to go with it. It uses standard RPG 'd'-syntax (e.g. 2d6 to roll two
 six-sided die) and also supports modifiers such as 3d6 + 5.
 
 One can also specify a standard Python operator in order to specify
@@ -39,31 +39,53 @@ def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=F
     """
     This is a standard dice roller.
 
-    Input:
-     dicenum - number of dice to roll (the result to be added)
-     dicetype - number of sides of the dice to be rolled
-     modifier - tuple (operator, value), where operator is a character string
-                with one of +,-,/ or *. The entire result of the dice rolls will
-                be modified by this value.
-     conditional - tuple (conditional, value), where conditional is a character
-                   string with one of ==,<,>,>=,<= or !=.
-     return_tuple - return result as a tuple containing all relevant info
-     return_tuple - (default False) - return a tuple with all individual roll
-                    results
-    All input numbers are converted to integers.
+    Args:
+     dicenum (int): Number of dice to roll (the result to be added).
+     dicetype (int): Number of sides of the dice to be rolled.
+     modifier (tuple): A tuple `(operator, value)`, where operator is
+        one of `"+"`, `"-"`, `"/"` or `"*"`. The result of the dice
+        roll(s) will be modified by this value.
+     conditional (tuple): A tuple `(conditional, value)`, where
+        conditional is one of `"=="`,`"<"`,`">"`,`">="`,`"<=`" or "`!=`".
+        This allows the roller to directly return a result depending
+        on if the conditional was passed or not.
+     return_tuple (bool): Return a tuple with all individual roll
+        results or not.
 
     Returns:
-         normally returns the result
-         if return_tuple=True, returns a tuple (result, outcome, diff, rolls)
-                In this tuple, outcome and diff will be None if conditional is
-                not set. rolls is itself a tuple holding all the individual
-                rolls in the case of multiple die-rolls.
+        roll_result (int): The result of the roll + modifiers. This is the
+             default return.
+        condition_result (bool): A True/False value returned if `conditional`
+            is set but not `return_tuple`. This effectively hides the result
+            of the roll.
+        full_result (tuple): If, return_tuple` is `True`, instead
+            return a tuple `(result, outcome, diff, rolls)`. Here,
+            `result` is the normal result of the roll + modifiers.
+            `outcome` and `diff` are the boolean result of the roll and
+            absolute difference to the `conditional` input; they will
+            be will be `None` if `conditional` is not set. `rolls` is
+            itself a tuple holding all the individual rolls in the case of
+            multiple die-rolls.
 
     Raises:
         TypeError if non-supported modifiers or conditionals are given.
 
+    Notes:
+        All input numbers are converted to integers.
+
+    Examples:
+        print roll_dice(2, 6) # 2d6
+        <<< 7
+        print roll_dice(1, 100, ('+', 5) # 1d100 + 5
+        <<< 34
+        print roll_dice(1, 20, conditional=('<', 10) # let'say we roll 3
+        <<< True
+        print roll_dice(3, 10, return_tuple=True)
+        <<< (11, None, None, (2, 5, 4))
+        print roll_dice(2, 20, ('-', 2), conditional=('>=', 10), return_tuple=True)
+        <<< (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8
+
     """
-    dicelimit = 0 # This is the maximum number of dice that can be used in a single roll.
     dicenum = int(dicenum)
     dicetype = int(dicetype)
 
@@ -90,7 +112,10 @@ def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=F
     if return_tuple:
         return (result, outcome, diff, rolls)
     else:
-        return result
+        if conditional:
+            return outcome
+        else:
+            return result
 
 RE_PARTS = re.compile(r"(d|\+|-|/|\*|<|>|<=|>=|!=|==)")
 RE_MOD = re.compile(r"(\+|-|/|\*)")

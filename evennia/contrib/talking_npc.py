@@ -4,22 +4,19 @@ Evennia Talkative NPC
 
 Contribution - Griatch 2011
 
-This is a simple NPC object capable of holding a
-simple menu-driven conversation. Create it by
-creating an object of typeclass contrib.talking_npc.TalkingNPC,
-For example using @create:
+This is a simple NPC object capable of holding a simple menu-driven
+conversation. Create it by creating an object of typeclass
+contrib.talking_npc.TalkingNPC, For example using @create:
 
  @create John : contrib.talking_npc.TalkingNPC
 
-Walk up to it and give the talk command
-to strike up a conversation. If there are many
-talkative npcs in the same room you will get to
-choose which one's talk command to call (Evennia
-handles this automatically).
+Walk up to it and give the talk command to strike up a conversation.
+If there are many talkative npcs in the same room you will get to
+choose which one's talk command to call (Evennia handles this
+automatically).
 
-Note that this is only a prototype class, showcasing
-the uses of the menusystem module. It is NOT a full
-mob implementation.
+Note that this is only a prototype class, showcasing the uses of the
+menusystem module. It is NOT a full mob implementation.
 
 """
 

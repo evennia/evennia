@@ -158,8 +158,16 @@ class ExtendedRoom(DefaultRoom):
 
     def replace_timeslots(self, raw_desc, curr_time):
         """
-        Filter so that only time markers `<timeslot>...</timeslot>` of the
-        correct timeslot remains in the description.
+        Filter so that only time markers `<timeslot>...</timeslot>` of
+        the correct timeslot remains in the description.
+
+        Args:
+            raw_desc (str): The unmodified description.
+            curr_time (str): A timeslot identifier.
+
+        Returns:
+            description (str): A possibly moified description.
+
         """
         if raw_desc:
             regextuple = REGEXMAP[curr_time]
@@ -171,14 +179,24 @@ class ExtendedRoom(DefaultRoom):
 
     def return_detail(self, key):
         """
-        This will attempt to match a "detail" to look for in the room. A detail
-        is a way to offer more things to look at in a room without having to
-        add new objects. For this to work, we require a custom `look` command that
-        allows for `look <detail>` - the look command should defer to this
-        method on the current location (if it exists) before giving up on
-        finding the target.
+        This will attempt to match a "detail" to look for in the room.
 
-        Details are not season-sensitive, but are parsed for timeslot markers.
+        Args:
+            key (str): A detail identifier.
+
+        Returns:
+            detail (str or None): A detail mathing the given key.
+
+        Notes:
+            A detail is a way to offer more things to look at in a room
+            without having to add new objects. For this to work, we
+            require a custom `look` command that allows for `look
+            <detail>` - the look command should defer to this method on
+            the current location (if it exists) before giving up on
+            finding the target.
+
+            Details are not season-sensitive, but are parsed for timeslot
+            markers.
         """
         try:
             detail = self.db.details.get(key.lower(), None)
@@ -192,7 +210,17 @@ class ExtendedRoom(DefaultRoom):
         return None
 
     def return_appearance(self, looker):
-        "This is called when e.g. the look command wants to retrieve the description of this object."
+        """
+        This is called when e.g. the look command wants to retrieve
+        the description of this object.
+
+        Args:
+            looker (Object): The object looking at us.
+
+        Returns:
+            description (str): Our description.
+
+        """
         raw_desc = self.db.raw_desc or ""
         update = False
 
