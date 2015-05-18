@@ -60,9 +60,19 @@ class ObjectDBManager(TypedObjectManager):
     def get_object_with_player(self, ostring, exact=True, candidates=None):
         """
         Search for an object based on its player's name or dbref.
-        This search is sometimes initiated by appending an `*` to the
-        beginning of the search criterion (e.g. in local_and_global_search).
-        search_string:  (string) The name or dbref to search for.
+
+        Args:
+            ostring (str or int): Search criterion or dbref. Searching
+                for a player is sometimes initiated by appending an `*` to
+                the beginning of the search criterion (e.g. in
+                local_and_global_search). This is stripped here.
+            exact (bool, optional): Require an exact player match.
+            candidates (list, optional): Only search among this list of possible
+                object candidates.
+
+        Return:
+            match (Object or list): One or more matching results.
+
         """
         ostring = to_unicode(ostring).lstrip('*')
         # simplest case - search by dbref
@@ -85,6 +95,14 @@ class ObjectDBManager(TypedObjectManager):
     def get_objs_with_key_and_typeclass(self, oname, otypeclass_path, candidates=None):
         """
         Returns objects based on simultaneous key and typeclass match.
+
+        Args:
+            oname (str): Object key to search for
+            otypeclass_path (str): Full Python path to tyepclass to search for
+            candidates (list, optional): Only match among the given list of candidates.
+
+        Returns:
+            matches (list): The matching objects.
         """
         cand_restriction = candidates != None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         return self.filter(cand_restriction & Q(db_key__iexact=oname, db_typeclass_path__exact=otypeclass_path))
@@ -94,8 +112,15 @@ class ObjectDBManager(TypedObjectManager):
     @returns_typeclass_list
     def get_objs_with_attr(self, attribute_name, candidates=None):
         """
-        Returns all objects having the given attribute_name defined at all.
-        Location should be a valid location object.
+        Get objects based on having a certain Attribute defined.
+
+        Args:
+            attribute_name (str): Attribute name to search for.
+            candidates (list, optional): Only match among the given list of candidates.
+
+        Returns:
+            matches (list):  All objects having the given attribute_name defined at all.
+
         """
         cand_restriction = candidates != None and Q(db_attributes__db_obj__pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         return list(self.filter(cand_restriction & Q(db_attributes__db_key=attribute_name)))
@@ -103,14 +128,22 @@ class ObjectDBManager(TypedObjectManager):
     @returns_typeclass_list
     def get_objs_with_attr_value(self, attribute_name, attribute_value, candidates=None, typeclasses=None):
         """
-        Returns all objects having the valid attrname set to the given value.
+        Get all objects having the given attrname set to the given value.
 
-        candidates - list of candidate objects to search
-        typeclasses - list of typeclass-path strings to restrict matches with
+        Args:
+            attribute_name (str): Attribute key to search for.
+            attribute_value (str):  Attribute value to search for.
+            candidates (list, optional): Candidate objects to limit search to.
+            typeclasses (list, optional): Python pats to restrict matches with.
 
-        This uses the Attribute's PickledField to transparently search the database by matching
-        the internal representation. This is reasonably effective but since Attribute values
-        cannot be indexed, searching by Attribute key is to be preferred whenever possible.
+        Returns:
+            matches (list): Objects fullfilling both the `attribute_name` and `attribute_value` criterions.
+
+        Notes:
+            This uses the Attribute's PickledField to transparently search the database by matching
+            the internal representation. This is reasonably effective but since Attribute values
+            cannot be indexed, searching by Attribute key is to be preferred whenever possible.
+
         """
         cand_restriction = candidates != None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
@@ -131,9 +164,15 @@ class ObjectDBManager(TypedObjectManager):
     @returns_typeclass_list
     def get_objs_with_db_property(self, property_name, candidates=None):
         """
-        Returns all objects having a given db field property.
-        property_name = search string
-        candidates - list of candidate objects to search
+        Get all objects having a given db field property.
+
+        Args:
+            property_name (str): The name of the field to match for.
+            candidates (list, optional): Only search among th egiven candidates.
+
+        Returns:
+            matches (list): The found matches.
+
         """
         property_name = "db_%s" % property_name.lstrip('db_')
         cand_restriction = candidates != None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
@@ -146,9 +185,14 @@ class ObjectDBManager(TypedObjectManager):
     @returns_typeclass_list
     def get_objs_with_db_property_value(self, property_name, property_value, candidates=None, typeclasses=None):
         """
-        Returns all objects having a given db field property.
-        candidates - list of objects to search
-        typeclasses - list of typeclass-path strings to restrict matches with
+        Get objects with a specific field name and value.
+
+        Args:
+            property_name (str): Field name to search for.
+            property_value (any): Value required for field with `property_name` to have.
+            candidates (list, optional): List of objects to limit search to.
+            typeclasses (list, optional): List of typeclass-path strings to restrict matches with
+
         """
         if isinstance(property_value, basestring):
             property_value = to_unicode(property_value)

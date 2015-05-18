@@ -12,15 +12,26 @@ from django.contrib.admin.utils import flatten_fieldsets
 
 
 class ObjectAttributeInline(AttributeInline):
+    """
+    Defines inline descriptions of Attributes (experimental)
+
+    """
     model = ObjectDB.db_attributes.through
 
 
 class ObjectTagInline(TagInline):
+    """
+    Defines inline descriptions of Tags (experimental)
+
+    """
     model = ObjectDB.db_tags.through
 
 
 class ObjectCreateForm(forms.ModelForm):
-    "This form details the look of the fields"
+    """
+    This form details the look of the fields.
+
+    """
     class Meta:
         model = ObjectDB
         fields = '__all__'
@@ -40,7 +51,10 @@ class ObjectCreateForm(forms.ModelForm):
 
 
 class ObjectEditForm(ObjectCreateForm):
-    "Form used for editing. Extends the create one with more fields"
+    """
+    Form used for editing. Extends the create one with more fields
+
+    """
 
     class Meta:
         fields = '__all__'
@@ -51,6 +65,10 @@ class ObjectEditForm(ObjectCreateForm):
 
 
 class ObjectDBAdmin(admin.ModelAdmin):
+    """
+    Describes the admin page for Objects.
+
+    """
 
     inlines = [ObjectTagInline, ObjectAttributeInline]
     list_display = ('id', 'db_key', 'db_player', 'db_typeclass_path')
@@ -83,13 +101,25 @@ class ObjectDBAdmin(admin.ModelAdmin):
         )
 
     def get_fieldsets(self, request, obj=None):
+        """
+        Return fieldsets.
+
+        Args:
+            request (Request): Incoming request.
+            obj (ObjectDB, optional): Database object.
+        """
         if not obj:
             return self.add_fieldsets
         return super(ObjectDBAdmin, self).get_fieldsets(request, obj)
 
     def get_form(self, request, obj=None, **kwargs):
         """
-        Use special form during creation
+        Use special form during creation.
+
+        Args:
+            request (Request): Incoming request.
+            obj (Object, optional): Database object.
+
         """
         defaults = {}
         if obj is None:
@@ -101,6 +131,16 @@ class ObjectDBAdmin(admin.ModelAdmin):
         return super(ObjectDBAdmin, self).get_form(request, obj, **defaults)
 
     def save_model(self, request, obj, form, change):
+        """
+        Model-save hook.
+
+        Args:
+            request (Request): Incoming request.
+            obj (Object): Database object.
+            form (Form): Form instance.
+            change (bool): If this is a change or a new object.
+
+        """
         obj.save()
         if not change:
             # adding a new object
