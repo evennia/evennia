@@ -43,3 +43,8 @@ nosetests.xml
 
 # PyCharm config
 .idea
+
+# Windows files generated during setup
+bin/windows/evennia.bat
+evennia/server/twistd.bat
+
