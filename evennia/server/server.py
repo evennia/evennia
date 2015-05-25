@@ -359,7 +359,8 @@ class Evennia(object):
                 # like shutdown but don't unset the is_connected flag and don't disconnect sessions
                 yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
                 yield [p.at_server_shutdown() for p in PlayerDB.get_all_cached_instances()]
-                yield self.sessions.all_sessions_portal_sync()
+                if self.amp_protocol:
+                    yield self.sessions.all_sessions_portal_sync()
             else:  # shutdown
                 yield [_SA(p, "is_connected", False) for p in PlayerDB.get_all_cached_instances()]
                 yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
