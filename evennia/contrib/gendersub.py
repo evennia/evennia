@@ -66,7 +66,7 @@ class SetGender(Command):
         Implements the command.
         """
         caller = self.caller
-        arg = self.args.lower()
+        arg = self.args.strip().lower()
         if not arg in ("male", "female", "neutral"):
             caller.msg("Usage: @gender male|female|neutral")
             return
