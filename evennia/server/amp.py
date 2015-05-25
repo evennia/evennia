@@ -345,7 +345,7 @@ class AMPProtocol(amp.AMP):
                 return []
             else:
                 # all parts in place - deserialize it
-                return loads(_MSGBUFFER.pop(hashid) + data)
+                return loads("".join(_MSGBUFFER.pop(hashid)) + data)
 
 
     # Message definition + helper methods to call/create each message type
