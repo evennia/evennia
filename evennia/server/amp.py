@@ -322,7 +322,7 @@ class AMPProtocol(amp.AMP):
                                                    data=part,
                                                    ipart=ipart,
                                                    nparts=nparts)
-                        deferred.addErrback(self.errback, "%s part %i/%i" % (command.key, ipart, part))
+                        deferred.addErrback(self.errback, "%s part %i/%i" % (command.key, ipart, nparts))
                         deferreds.append(deferred)
                 self.lastsend = time() # don't use now here, keep it as up-to-date as possible
                 return deferreds
