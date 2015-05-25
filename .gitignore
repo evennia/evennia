@@ -45,6 +45,5 @@ nosetests.xml
 .idea
 
 # Windows files generated during setup
-bin/windows/evennia.bat
-evennia/server/twistd.bat
-
+evennia.bat
+twistd.bat
