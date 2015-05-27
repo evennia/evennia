@@ -26,11 +26,10 @@ from evennia.utils.utils import (make_iter, dbref, lazy_property)
 
 class ContentsHandler(object):
     """
-    Handles and caches the contents of an object
-    to avoid excessive lookups (this is done very
-    often due to cmdhandler needing to look for
-    object-cmdsets). It is stored on the 'contents_cache'
-    property of the ObjectDB.
+    Handles and caches the contents of an object to avoid excessive
+    lookups (this is done very often due to cmdhandler needing to look
+    for object-cmdsets). It is stored on the 'contents_cache' property
+    of the ObjectDB.
     """
     def __init__(self, obj):
         """
@@ -285,6 +284,9 @@ class ObjectDB(TypedObject):
         _safe_contents_update to know if the save was triggered via
         the location handler (which updates the contents cache) or
         not.
+
+        Args:
+            new (bool): Set if this location has not yet been saved before.
 
         """
         if not hasattr(self, "_safe_contents_update"):

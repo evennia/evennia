@@ -216,7 +216,13 @@ class ObjectDBManager(TypedObjectManager):
         """
         Get all objects that has a location set to this one.
 
-        excludeobj - one or more object keys to exclude from the match
+        Args:
+            location (Object): Where to get contents from.
+            excludeobj (Object or list, optional): One or more objects
+                to exclude from the match.
+
+        Returns:
+            contents (list): Matching contents, without excludeobj, if given.
         """
         exclude_restriction = Q(pk__in=[_GA(obj, "id") for obj in make_iter(excludeobj)]) if excludeobj else Q()
         return self.filter(db_location=location).exclude(exclude_restriction)
@@ -225,10 +231,16 @@ class ObjectDBManager(TypedObjectManager):
     def get_objs_with_key_or_alias(self, ostring, exact=True,
                                          candidates=None, typeclasses=None):
         """
-        Returns objects based on key or alias match. Will also do fuzzy
-        matching based on the `utils.string_partial_matching` function.
-        candidates - list of candidate objects to restrict on
-        typeclasses - list of typeclass path strings to restrict on
+        Args:
+            ostring (str): A search criterion.
+            exact (bool, optional): Require exact match of ostring
+                (still case-insensitive). If `False`, will do fuzzy matching
+                using `evennia.utils.utils.string_partial_matching` algorithm.
+            candidates (list): Only match among these candidates.
+            typeclasses (list): Only match objects with typeclasses having thess path strings.
+
+        Returns:
+            matches (list): A list of matches of length 0, 1 or more.
         """
         if not isinstance(ostring, basestring):
             if hasattr(ostring, "key"):
@@ -278,36 +290,41 @@ class ObjectDBManager(TypedObjectManager):
                       candidates=None,
                       exact=True):
         """
-        Search as an object globally or in a list of candidates and return
-        results. The result is always an Object. Always returns a list.
+        Search as an object globally or in a list of candidates and
+        return results. The result is always an Object. Always returns
+        a list.
 
-        Arguments:
-        searchdata: (str or obj) The entity to match for. This is usually a
-                  key string but may also be an object itself. By default (if
-                  no `attribute_name` is set), this will search `object.key` and
-                  `object.aliases` in order. Can also be on the form #dbref,
-                  which will (if `exact=True`) be matched against primary key.
-        attribute_name: (str): Use this named ObjectAttribute to match
-                  searchdata against, instead of the defaults. If this is
-                  the name of a database field (with or without the `db_` prefix),
-                  that will be matched too.
-        typeclass (str or TypeClass): restrict matches to objects having this
-                  typeclass. This will help speed up global searches.
-        candidates (list obj ObjectDBs): If supplied, search will only be
-                  performed among the candidates in this list. A common list
-                  of candidates is the contents of the current location
-                  searched.
-        exact (bool): Match names/aliases exactly or partially. Partial
-                  matching matches the beginning of words in the names/aliases,
-                  using a matching routine to separate multiple matches in
-                  names with multiple components (so "bi sw" will match
-                  "Big sword"). Since this is more expensive than exact
-                  matching, it is recommended to be used together with the
-                  `objlist` keyword to limit the number of possibilities. This
-                  value has no meaning if searching for attributes/properties.
+        Args:
+            searchdata (str or Object): The entity to match for. This is
+                usually a key string but may also be an object itself.
+                By default (if no `attribute_name` is set), this will
+                search `object.key` and `object.aliases` in order.
+                Can also be on the form #dbref, which will (if
+                `exact=True`) be matched against primary key.
+            attribute_name (str): Use this named Attribute to
+                match searchdata against, instead of the defaults. If
+                this is the name of a database field (with or without
+                the `db_` prefix), that will be matched too.
+            typeclass (str or TypeClass): restrict matches to objects
+                having this typeclass. This will help speed up global
+                searches.
+            candidates (list): If supplied, search will
+                only be performed among the candidates in this list. A
+                common list of candidates is the contents of the
+                current location searched.
+            exact (bool): Match names/aliases exactly or partially.
+                Partial matching matches the beginning of words in the
+                names/aliases, using a matching routine to separate
+                multiple matches in names with multiple components (so
+                "bi sw" will match "Big sword"). Since this is more
+                expensive than exact matching, it is recommended to be
+                used together with the `candidates` keyword to limit the
+                number of possibilities. This value has no meaning if
+                searching for attributes/properties.
 
         Returns:
-        A list of matching objects (or a list with one unique match)
+            matches (list): Matching objects
+
         """
         def _searcher(searchdata, candidates, typeclass, exact=False):
             """
@@ -390,12 +407,21 @@ class ObjectDBManager(TypedObjectManager):
         will be identical to the original except for the arguments given
         specifically to this method.
 
-        original_object (obj) - the object to make a copy from.
-        new_key (str) - name the copy differently from the original.
-        new_location (obj) - if not `None`, change the location.
-        new_home (obj) - if not `None`, change the Home.
-        new_aliases (list of strings) - if not `None`, change object aliases.
-        new_destination (obj) - if not `None`, change destination.
+        Args:
+            original_object (Object): The object to make a copy from.
+            new_key (str, optional): Name of the copy, if different
+                from the original.
+            new_location (Object, optional): Alternate location.
+            new_home (Object, optional): Change the home location
+            new_aliases (list, optional): Give alternate object
+                aliases as a list of strings.
+            new_destination (Object, optional): Used only by exits.
+
+        Returns:
+            copy (Object or None): The copy of `original_object`,
+                optionally modified as per the ingoing keyword
+                arguments.  `None` if an error was encountered.
+
         """
 
         # get all the object's stats
@@ -448,8 +474,8 @@ class ObjectDBManager(TypedObjectManager):
 
     def clear_all_sessids(self):
         """
-        Clear the db_sessid field of all objects having also the db_player field
-        set.
+        Clear the db_sessid field of all objects having also the
+        db_player field set.
         """
         self.filter(db_sessid__isnull=False).update(db_sessid=None)
 
