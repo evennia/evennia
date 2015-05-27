@@ -8,7 +8,6 @@ ability to run timers.
 from twisted.internet.defer import Deferred, maybeDeferred
 from twisted.internet.task import LoopingCall
 from django.utils.translation import ugettext as _
-from django.conf import settings
 from evennia.typeclasses.models import TypeclassBase
 from evennia.scripts.models import ScriptDB
 from evennia.scripts.manager import ScriptManager
@@ -40,7 +39,7 @@ class ExtendedLoopingCall(LoopingCall):
             interval (int): Repeat interval in seconds.
             now (bool, optional): Whether to start immediately or after
                 `start_delay` seconds.
-            start_delay (bool: The number of seconds before starting.
+            start_delay (int): The number of seconds before starting.
                 If None, wait interval seconds. Only valid if `now` is `False`.
                 It is used as a way to start with a variable start time
                 after a pause.
@@ -64,44 +63,40 @@ class ExtendedLoopingCall(LoopingCall):
                                   "ExtendedLoopingCall.")
         if interval < 0:
             raise ValueError, "interval must be >= 0"
-
         self.running = True
         d = self.deferred = Deferred()
         self.starttime = self.clock.seconds()
-        self._expectNextCallAt = self.starttime
         self.interval = interval
         self._runAtStart = now
         self.callcount = max(0, count_start)
+        self.start_delay = start_delay if start_delay is None else max(0, start_delay)
 
         if now:
+            # run immediately
             self()
+        elif start_delay is not None and start_delay >= 0:
+            # start after some time: for this to work we need to
+            # trick _scheduleFrom by temporarily setting a different
+            # self.interval for it to check.
+            real_interval, self.interval = self.interval, start_delay
+            self._scheduleFrom(self.starttime)
+            # re-set the actual interval (this will be picked up
+            # next time it runs
+            self.interval = real_interval
         else:
-            if start_delay is not None and start_delay >= 0:
-                # we set `start_delay` after the `_reschedule` call to make
-                # next_call_time() find it until next reschedule.
-                self.interval = start_delay
-                self._reschedule()
-                self.interval = interval
-                self.start_delay = start_delay
-            else:
-                self._reschedule()
+            self._scheduleFrom(self.starttime)
         return d
 
     def __call__(self):
         """
-        Tick one step
+        Tick one step. We update callcount (tracks number of calls) as
+        well as null start_delay (needed in order to correctly
+        estimate next_call_time at all times).
+
         """
         self.callcount += 1
-        super(ExtendedLoopingCall, self).__call__()
-
-    def _reschedule(self):
-        """
-        Handle call rescheduling including nulling `start_delay` and
-        stopping if number of repeats is reached.
-
-        """
         self.start_delay = None
-        super(ExtendedLoopingCall, self)._reschedule()
+        super(ExtendedLoopingCall, self).__call__()
 
     def force_repeat(self):
         """
@@ -116,22 +111,24 @@ class ExtendedLoopingCall(LoopingCall):
                               "that was not running.")
         if self.call is not None:
             self.call.cancel()
-            self._expectNextCallAt = self.clock.seconds()
+            self.call.callback()
             self()
 
     def next_call_time(self):
         """
-        Get the next call time.
+        Get the next call time. This also takes the eventual effect
+        of start_delay into account.
 
         Returns:
-            next (int): The time in seconds until the next call. This
+            next (int or None): The time in seconds until the next call. This
                 takes `start_delay` into account. Returns `None` if
                 the task is not running.
 
         """
         if self.running:
-            currentTime = self.clock.seconds()
-            return self._expectNextCallAt - currentTime
+            total_runtime = self.clock.seconds() - self.starttime
+            interval = self.start_delay or self.interval
+            return interval - (total_runtime % self.interval)
         return None
 
 class ScriptBase(ScriptDB):

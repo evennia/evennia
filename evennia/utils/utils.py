@@ -672,68 +672,37 @@ def run_async(to_execute, *args, **kwargs):
 
 def check_evennia_dependencies():
     """
-    Checks the versions of Evennia's dependencies.
+    Checks the versions of Evennia's dependencies including making
+    some checks for runtime libraries
 
     Returns False if a show-stopping version mismatch is found.
     """
-    # defining the requirements
-    python_min = '2.7'
-    twisted_min = '12.0'
-    django_min = '1.8'
-    django_rec = '1.8'
+
+    # check main dependencies
+    from evennia.server.evennia_launcher import check_main_evennia_dependencies
+    not_error = check_main_evennia_dependencies()
 
     errstring = ""
-    no_error = True
-
-    # Python
-    pversion = ".".join(str(num) for num in sys.version_info if type(num) == int)
-    if pversion < python_min:
-        errstring += "\n ERROR: Python %s used. Evennia requires version %s or higher (but not 3.x)." % (pversion, python_min)
-        no_error = False
-    # Twisted
-    try:
-        import twisted
-        tversion = twisted.version.short()
-        if tversion < twisted_min:
-            errstring += "\n WARNING: Twisted %s found. Evennia recommends v%s or higher." % (twisted.version.short(), twisted_min)
-    except ImportError:
-        errstring += "\n ERROR: Twisted does not seem to be installed."
-        no_error = False
-    # Django
-    try:
-        import django
-        dversion = ".".join(str(num) for num in django.VERSION if type(num) == int)
-        dversion_main = ".".join(dversion.split(".")[:2]) # only the main version (1.5, not 1.5.4.0)
-        if dversion < django_min:
-            errstring += "\n ERROR: Django %s found. Evennia requires version %s or higher." % (dversion, django_min)
-            no_error = False
-        elif django_min <= dversion < django_rec:
-            errstring += "\n NOTE: Django %s found. This will work, but v%s is recommended for production." % (dversion, django_rec)
-        elif django_rec < dversion_main:
-            errstring += "\n NOTE: Django %s found. This is newer than Evennia's recommended version (v%s). It will"
-            errstring += "\n       probably work, but may be new enough not to be fully tested yet. Report any issues." % (dversion, django_rec)
-    except ImportError:
-        errstring += "\n ERROR: Django does not seem to be installed."
-        no_error = False
-    # South
+    # South is no longer used ...
     if 'south' in settings.INSTALLED_APPS:
-        errstring += "\n ERROR: 'south' found in settings.INSTALLED_APPS. South is no longer used. If this was added manually, remove it."
-        no_error = False
+        errstring += "\n ERROR: 'south' found in settings.INSTALLED_APPS. " \
+                     "\n   South is no longer used. If this was added manually, remove it."
+        not_error = False
     # IRC support
     if settings.IRC_ENABLED:
         try:
             import twisted.words
             twisted.words  # set to avoid debug info about not-used import
         except ImportError:
-            errstring += "\n ERROR: IRC is enabled, but twisted.words is not installed. Please install it."
-            errstring += "\n   Linux Debian/Ubuntu users should install package 'python-twisted-words', others"
-            errstring += "\n   can get it from http://twistedmatrix.com/trac/wiki/TwistedWords."
-            no_error = False
+            errstring += "\n ERROR: IRC is enabled, but twisted.words is not installed. Please install it." \
+                         "\n   Linux Debian/Ubuntu users should install package 'python-twisted-words', others" \
+                         "\n   can get it from http://twistedmatrix.com/trac/wiki/TwistedWords."
+            not_error = False
     errstring = errstring.strip()
     if errstring:
         mlen = max(len(line) for line in errstring.split("\n"))
         print "%s\n%s\n%s" % ("-"*mlen, errstring, '-'*mlen)
-    return no_error
+    return not_error
 
 
 def has_parent(basepath, obj):

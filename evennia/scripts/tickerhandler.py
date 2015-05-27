@@ -264,7 +264,10 @@ class TickerHandler(object):
 
     def restore(self):
         """
-        Restore ticker_storage from database and re-initialize the handler from storage. This is triggered by the server at restart.
+        Restore ticker_storage from database and re-initialize the
+        handler from storage. This is triggered by the server at
+        restart.
+
         """
         # load stored command instructions and use them to re-initialize handler
         ticker_storage = ServerConfig.objects.conf(key=self.save_name)
@@ -353,7 +356,9 @@ class TickerHandler(object):
         """
         self.ticker_pool.stop(interval)
         if interval:
-            self.ticker_storage = dict((store_key, store_key) for store_key in self.ticker_storage if store_key[1] != interval)
+            self.ticker_storage = dict((store_key, store_key)
+                                        for store_key in self.ticker_storage
+                                        if store_key[1] != interval)
         else:
             self.ticker_storage = {}
         self.save()

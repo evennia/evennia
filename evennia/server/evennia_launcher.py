@@ -54,8 +54,9 @@ PORTAL_RESTART = None
 SERVER_PY_FILE = None
 PORTAL_PY_FILE = None
 
+
 PYTHON_MIN = '2.7'
-TWISTED_MIN = '12.0'
+TWISTED_MIN = '15.2.1'
 DJANGO_MIN = '1.8'
 DJANGO_REC = '1.8'
 
@@ -265,10 +266,10 @@ ERROR_PYTHON_VERSION = \
     {python_min} or higher (but not 3.x).
     """
 
-WARNING_TWISTED_VERSION = \
+ERROR_TWISTED_VERSION = \
     """
-    WARNING: Twisted {tversion} found. Evennia recommends
-    v{twisted_min} or higher."
+    ERROR: Twisted {tversion} found. Evennia requires
+    version {twisted_min} or higher.
     """
 
 ERROR_NOTWISTED = \
@@ -334,6 +335,9 @@ def check_main_evennia_dependencies():
     """
     Checks and imports the Evennia dependencies. This must be done
     already before the paths are set up.
+
+    Returns:
+        not_error (bool): True if no dependency error was found.
     """
     error = False
 
@@ -347,7 +351,8 @@ def check_main_evennia_dependencies():
         import twisted
         tversion = twisted.version.short()
         if tversion < TWISTED_MIN:
-            print WARNING_TWISTED_VERSION.format(tversion=tversion, twisted_min=TWISTED_MIN)
+            print ERROR_TWISTED_VERSION.format(tversion=tversion, twisted_min=TWISTED_MIN)
+            error = True
     except ImportError:
         print ERROR_NOTWISTED
         error = True
@@ -368,6 +373,8 @@ def check_main_evennia_dependencies():
         error = True
     if error:
         sys.exit()
+    # return True/False if error was reported or not
+    return not error
 
 
 def set_gamedir(path):
