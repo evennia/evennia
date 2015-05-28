@@ -16,7 +16,7 @@ Coding in Evennia is done using normal Python modules imported into the server a
 
 Evennia offers extensive connectivity options, including traditional telnet connections. Evennia is also its own web server: A default website as well as a browser-based mud client (html5 websockets, with fallback to AJAX) runs by default. Due to our Django and Twisted foundations, web integration is easy since the same code powering the game is also used to run its web presence.
 
-Whereas Evennia is intentionally empty of game content from the onset, we *do* offer some defaults you can build from. The code base comes with basic classes for objects, exits, rooms and characters. There are systems for handling puppeting, scripting, timers, dynamic games states and so on. A default command set (completely replaceable with your own syntax and functionality) handles administration, building, chat channels, poses and so on. The default setup is enough to run a 'Talker' or some other social-style game out of the box. We also have a contributions folder with optional plugins and examples of more game-specific systems.
+Whereas Evennia is intentionally empty of game content from the onset, we *do* offer some defaults you can build from. The code base comes with basic classes for objects, exits, rooms and characters. There are systems for handling puppeting, scripting, timers, dynamic games states etc. A default command set (completely replaceable with your own syntax and functionality) handles administration, building, chat channels, poses and so on. The default setup is enough to run a 'Talker' or some other social-style game out of the box. We also have a contributions folder with optional plugins and examples of more game-specific systems.
 
 ## Current Status
 
