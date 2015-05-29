@@ -23,6 +23,7 @@ class BotStarter(DefaultScript):
     This non-repeating script has the
     sole purpose of kicking its bot
     into gear when it is initialized.
+
     """
     def at_script_creation(self):
         self.key = "botstarter"
@@ -35,7 +36,10 @@ class BotStarter(DefaultScript):
             self.start_delay = True
 
     def at_start(self):
-        "Kick bot into gear"
+        """
+        Kick bot into gear.
+
+        """
         if not self.db.started:
             self.player.start()
             self.db.started = True
@@ -47,6 +51,7 @@ class BotStarter(DefaultScript):
         not catch it (commands executed from the server side usually
         has no sessions). So we update the idle counter manually here
         instead. This keeps the bot getting hit by IDLE_TIMEOUT.
+
         """
         global _SESSIONS
         if not _SESSIONS:
@@ -58,20 +63,24 @@ class BotStarter(DefaultScript):
         """
         If server reloads we don't need to reconnect the protocol
         again, this is handled by the portal reconnect mechanism.
+
         """
         self.db.started = True
 
     def at_server_shutdown(self):
-        "Make sure we are shutdown"
+        """
+        Make sure we are shutdown.
+
+        """
         self.db.started = False
 
 
 class CmdBotListen(Command):
     """
-    This is a command that absorbs input
-    aimed specifically at the bot. The session
-    must prepend its data with bot_data_in for
-    this to trigger.
+    This is a command that absorbs input aimed specifically at the
+    bot. The session must prepend its data with bot_data_in for this
+    to trigger.
+
     """
     key = "bot_data_in"
     def func(self):
@@ -79,7 +88,10 @@ class CmdBotListen(Command):
         self.obj.execute_cmd(self.args.strip(), sessid=self.sessid)
 
 class BotCmdSet(CmdSet):
-    "Holds the BotListen command"
+    """
+    Holds the BotListen command
+
+    """
     key = "botcmdset"
     def at_cmdset_creation(self):
         self.add(CmdBotListen())
@@ -89,15 +101,16 @@ class BotCmdSet(CmdSet):
 
 class Bot(DefaultPlayer):
     """
-    A Bot will start itself when the server
-    starts (it will generally not do so
-    on a reload - that will be handled by the
-    normal Portal session resync)
+    A Bot will start itself when the server starts (it will generally
+    not do so on a reload - that will be handled by the normal Portal
+    session resync)
+
     """
 
     def basetype_setup(self):
         """
         This sets up the basic properties for the bot.
+
         """
         # the text encoding to use.
         self.db.encoding = "utf-8"
@@ -113,24 +126,31 @@ class Bot(DefaultPlayer):
     def start(self, **kwargs):
         """
         This starts the bot, whatever that may mean.
+
         """
         pass
 
     def msg(self, text=None, from_obj=None, sessid=None, **kwargs):
         """
         Evennia -> outgoing protocol
+
         """
         super(Bot, self).msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
 
     def execute_cmd(self, raw_string, sessid=None):
         """
         Incoming protocol -> Evennia
+
         """
         super(Bot, self).msg(raw_string, sessid=sessid)
 
     def at_server_shutdown(self):
-        "We need to handle this case manually since the shutdown may be a reset"
-        print "bots at_server_shutdown called"
+        """
+        We need to handle this case manually since the shutdown may be
+        a reset.
+
+        """
+        print "bot's at_server_shutdown called"
         for session in self.get_all_sessions():
             session.sessionhandler.disconnect(session)
 
@@ -142,16 +162,20 @@ class Bot(DefaultPlayer):
 class IRCBot(Bot):
     """
     Bot for handling IRC connections.
+
     """
     def start(self, ev_channel=None, irc_botname=None, irc_channel=None, irc_network=None, irc_port=None):
         """
         Start by telling the portal to start a new session.
 
-        ev_channel - key of the Evennia channel to connect to
-        irc_botname - name of bot to connect to irc channel. If not set, use self.key
-        irc_channel - name of channel on the form #channelname
-        irc_network - url of network, like irc.freenode.net
-        irc_port - port number of irc network, like 6667
+        Args:
+            ev_channel (str): Key of the Evennia channel to connect to.
+            irc_botname (str): Name of bot to connect to irc channel. If
+                not set, use `self.key`.
+            irc_channel (str): Name of channel on the form `#channelname`.
+            irc_network (str): URL of the IRC network, like `irc.freenode.net`.
+            irc_port (str): Port number of the irc network, like `6667`.
+
         """
         global _SESSIONS
         if not _SESSIONS:
@@ -190,7 +214,15 @@ class IRCBot(Bot):
 
     def msg(self, text=None, **kwargs):
         """
-        Takes text from connected channel (only)
+        Takes text from connected channel (only).
+
+        Args:
+            text (str, optional): Incoming text from channel.
+
+        Kwargs:
+            from_channel (str): dbid of a channel this text originated from.
+            from_obj (str): dbid of an object sending this text.
+
         """
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
@@ -202,8 +234,14 @@ class IRCBot(Bot):
 
     def execute_cmd(self, text=None, sessid=None):
         """
-        Take incoming data and send it to connected channel. This is triggered
-        by the CmdListen command in the BotCmdSet.
+        Take incoming data and send it to connected channel. This is
+        triggered by the CmdListen command in the BotCmdSet.
+
+        Args:
+            text (str, optional):  Command string.
+            sessid (int, optional): Session id responsible for this
+                command.
+
         """
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
@@ -215,16 +253,22 @@ class IRCBot(Bot):
 
 class RSSBot(Bot):
     """
-    An RSS relayer. The RSS protocol itself runs a ticker to update its feed at regular
-    intervals.
+    An RSS relayer. The RSS protocol itself runs a ticker to update
+    its feed at regular intervals.
+
     """
     def start(self, ev_channel=None, rss_url=None, rss_rate=None):
         """
         Start by telling the portal to start a new RSS session
 
-        ev_channel - key of the Evennia channel to connect to
-        rss_url - full URL to the RSS feed to subscribe to
-        rss_update_rate - how often for the feedreader to update
+        Args:
+            ev_channel (str): Key of the Evennia channel to connect to.
+            rss_url (str): Full URL to the RSS feed to subscribe to.
+            rss_update_rate (int): How often for the feedreader to update.
+
+        Raises:
+            RuntimeError: If `ev_channel` does not exist.
+
         """
         global _SESSIONS
         if not _SESSIONS:
@@ -251,6 +295,7 @@ class RSSBot(Bot):
     def execute_cmd(self, text=None, sessid=None):
         """
         Echo RSS input to connected channel
+
         """
         print "execute_cmd rss:", text
         if not self.ndb.ev_channel and self.db.ev_channel:
@@ -259,22 +304,29 @@ class RSSBot(Bot):
         if self.ndb.ev_channel:
             self.ndb.ev_channel.msg(text, senders=self.id)
 
-# IMC2
+# IMC2 (not tested currently)
 
 class IMC2Bot(Bot):
     """
     IMC2 Bot
+
     """
     def start(self, ev_channel=None, imc2_network=None, imc2_mudname=None,
               imc2_port=None, imc2_client_pwd=None, imc2_server_pwd=None):
         """
         Start by telling the portal to start a new session
-        ev_channel - key of the Evennia channel to connect to
-        imc2_network - IMC2 network name
-        imc2_mudname - registered mudname (if not given, use settings.SERVERNAME)
-        imc2_port - port number of IMC2 network
-        imc2_client_pwd - client password registered with IMC2 network
-        imc2_server_pwd - server password registered with IMC2 network
+
+        Args:
+            ev_channel (str, optional): Key of the Evennia channel to connect to.
+            imc2_network (str, optional): IMC2 network name.
+            imc2_mudname (str, optional): Registered mudname (if not given, use settings.SERVERNAME).
+            imc2_port (int, optional): Port number of the IMC2 network.
+            imc2_client_pwd (str, optional): Client password registered with IMC2 network.
+            imc2_server_pwd (str, optional): Server password registered with IMC2 network.
+
+        Raises:
+            RuntimeError: If `ev_channel` was not found.
+
         """
         global _SESSIONS
         if not _SESSIONS:
@@ -313,7 +365,15 @@ class IMC2Bot(Bot):
 
     def msg(self, text=None, **kwargs):
         """
-        Takes text from connected channel (only)
+        Takes text from connected channel (only).
+
+        Args:
+            text (str): Message from channel.
+
+        Kwargs:
+            from_channel (str): dbid of a channel this text originated from.
+            from_obj (str): dbid of an object sending this text.
+
         """
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
@@ -326,6 +386,12 @@ class IMC2Bot(Bot):
     def execute_cmd(self, text=None, sessid=None):
         """
         Relay incoming data to connected channel.
+
+        Args:
+            text (str, optional):  Command string.
+            sessid (int, optional): Session id responsible for this
+                command.
+
         """
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup

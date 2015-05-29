@@ -15,7 +15,10 @@ from evennia.utils import create
 
 # handle the custom User editor
 class PlayerDBChangeForm(UserChangeForm):
+    """
+    Modify the playerdb class.
 
+    """
     class Meta:
         model = PlayerDB
         fields = '__all__'
@@ -33,6 +36,10 @@ class PlayerDBChangeForm(UserChangeForm):
                   "@/./+/-/_ only.")
 
     def clean_username(self):
+        """
+        Clean the username and check its existence.
+
+        """
         username = self.cleaned_data['username']
         if username.upper() == self.instance.username.upper():
             return username
@@ -43,6 +50,9 @@ class PlayerDBChangeForm(UserChangeForm):
 
 
 class PlayerDBCreationForm(UserCreationForm):
+    """
+    Create a new PlayerDB instance.
+    """
 
     class Meta:
         model = PlayerDB
@@ -71,6 +81,7 @@ class PlayerDBCreationForm(UserCreationForm):
 class PlayerForm(forms.ModelForm):
     """
     Defines how to display Players
+
     """
     class Meta:
         model = PlayerDB
@@ -132,6 +143,7 @@ class PlayerForm(forms.ModelForm):
 class PlayerInline(admin.StackedInline):
     """
     Inline creation of Player
+
     """
     model = PlayerDB
     template = "admin/players/stacked.html"
@@ -152,16 +164,25 @@ class PlayerInline(admin.StackedInline):
 
 
 class PlayerTagInline(TagInline):
+    """
+    Inline Player Tags.
+
+    """
     model = PlayerDB.db_tags.through
 
 
 class PlayerAttributeInline(AttributeInline):
+    """
+    Inline Player Attributes.
+
+    """
     model = PlayerDB.db_attributes.through
 
 
 class PlayerDBAdmin(BaseUserAdmin):
     """
     This is the main creation screen for Users/players
+
     """
 
     list_display = ('username', 'email', 'is_staff', 'is_superuser')
@@ -201,6 +222,16 @@ class PlayerDBAdmin(BaseUserAdmin):
                          "system and the game.</i>"},),)
 
     def save_model(self, request, obj, form, change):
+        """
+        Custom save actions.
+
+        Args:
+            request (Request): Incoming request.
+            obj (Object): Object to save.
+            form (Form): Related form instance.
+            change (bool): False if this is a new save and not an update.
+
+        """
         obj.save()
         if not change:
             #calling hooks for new player

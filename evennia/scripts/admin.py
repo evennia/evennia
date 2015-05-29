@@ -9,14 +9,26 @@ from django.contrib import admin
 
 
 class ScriptTagInline(TagInline):
+    """
+    Inline script tags.
+
+    """
     model = ScriptDB.db_tags.through
 
 
 class ScriptAttributeInline(AttributeInline):
+    """
+    Inline attribute tags.
+
+    """
     model = ScriptDB.db_attributes.through
 
 
 class ScriptDBAdmin(admin.ModelAdmin):
+    """
+    Displaying the main Script page.
+
+    """
 
     list_display = ('id', 'db_key', 'db_typeclass_path',
                     'db_obj', 'db_interval', 'db_repeats', 'db_persistent')
