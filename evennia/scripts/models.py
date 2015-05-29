@@ -3,8 +3,8 @@ Scripts are entities that perform some sort of action, either only
 once or repeatedly. They can be directly linked to a particular
 Evennia Object or be stand-alonw (in the latter case it is considered
 a 'global' script). Scripts can indicate both actions related to the
-game world as well as pure behind-the-scenes events and
-effects. Everything that has a time component in the game (i.e. is not
+game world as well as pure behind-the-scenes events and effects.
+Everything that has a time component in the game (i.e. is not
 hard-coded at startup or directly created/controlled by players) is
 handled by Scripts.
 
@@ -14,14 +14,14 @@ Scripts can also implement at_start and at_end hooks for preparing and
 cleaning whatever effect they have had on the game object.
 
 Common examples of uses of Scripts:
-- load the default cmdset to the player object's cmdhandler
+
+- Load the default cmdset to the player object's cmdhandler
   when logging in.
-- switch to a different state, such as entering a text editor,
+- Switch to a different state, such as entering a text editor,
   start combat or enter a dark room.
-- Weather patterns in-game
-- merge a new cmdset with the default one for changing which
+- Merge a new cmdset with the default one for changing which
   commands are available at a particular time
-- give the player/object a time-limited bonus/effect
+- Give the player/object a time-limited bonus/effect
 
 """
 from django.conf import settings
@@ -118,9 +118,10 @@ class ScriptDB(TypedObject):
     # obj property
     def __get_obj(self):
         """
-        property wrapper that homogenizes access to either
-        the db_player or db_obj field, using the same obj
-        property name
+        Property wrapper that homogenizes access to either the
+        db_player or db_obj field, using the same object property
+        name.
+
         """
         obj = _GA(self, "db_player")
         if not obj:
@@ -131,6 +132,7 @@ class ScriptDB(TypedObject):
         """
         Set player or obj to their right database field. If
         a dbref is given, assume ObjectDB.
+
         """
         try:
             value = _GA(value, "dbobj")
@@ -157,25 +159,3 @@ class ScriptDB(TypedObject):
         _GA(self, "save")(update_fields=[fname])
     obj = property(__get_obj, __set_obj)
     object = property(__get_obj, __set_obj)
-
-
-#    def at_typeclass_error(self):
-#        """
-#        If this is called, it means the typeclass has a critical
-#        error and cannot even be loaded. We don't allow a script
-#        to be created under those circumstances. Already created,
-#        permanent scripts are set to already be active so they
-#        won't get activated now (next reboot the bug might be fixed)
-#        """
-#        # By setting is_active=True, we trick the script not to run "again".
-#        self.is_active = True
-#        return super(ScriptDB, self).at_typeclass_error()
-#
-#    delete_iter = 0
-#    def delete(self):
-#        "Delete script"
-#        if self.delete_iter > 0:
-#            return
-#        self.delete_iter += 1
-#        _GA(self, "attributes").clear()
-#        super(ScriptDB, self).delete()

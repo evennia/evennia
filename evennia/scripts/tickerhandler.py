@@ -88,8 +88,12 @@ class Ticker(object):
         If overloading, this callback is expected to handle all
         subscriptions when it is triggered. It should not return
         anything and should not traceback on poorly designed hooks.
-        The callback should ideally work under @inlineCallbacks so it can yield
-        appropriately.
+        The callback should ideally work under @inlineCallbacks so it
+        can yield appropriately.
+
+        The _hook_key, which is passed down through the handler via
+        kwargs is used here to identify which hook method to call.
+
         """
         for store_key, (obj, args, kwargs) in self.subscriptions.items():
             hook_key = yield kwargs.pop("_hook_key", "at_tick")
@@ -111,6 +115,10 @@ class Ticker(object):
     def __init__(self, interval):
         """
         Set up the ticker
+
+        Args:
+            interval (int): The stepping interval.
+
         """
         self.interval = interval
         self.subscriptions = {}
@@ -119,8 +127,12 @@ class Ticker(object):
 
     def validate(self, start_delay=None):
         """
-        Start/stop the task depending on how many
-        subscribers we have using it.
+        Start/stop the task depending on how many subscribers we have
+        using it.
+
+        Args:
+            start_delay (int): Time to way before starting.
+
         """
         subs = self.subscriptions
         if None in subs.values():
@@ -135,9 +147,19 @@ class Ticker(object):
 
     def add(self, store_key, obj, *args, **kwargs):
         """
-        Sign up a subscriber to this ticker. If kwargs contains
-        a keyword _start_delay, this will be used to delay the start
-        of the trigger instead of interval.
+        Sign up a subscriber to this ticker.
+        Args:
+            store_key (str): Unique storage hash for this ticker subscription.
+            obj (Object): Object subscribing to this ticker.
+            args (any, optional): Arguments to call the hook method with.
+
+        Kwargs:
+            _start_delay (int): If set, this will be
+                used to delay the start of the trigger instead of
+                `interval`.
+            _hooK_key (str): This carries the name of the hook method
+                to call. It is passed on as-is from this method.
+
         """
         start_delay = kwargs.pop("_start_delay", None)
         self.subscriptions[store_key] = (obj, args, kwargs)
@@ -146,13 +168,18 @@ class Ticker(object):
     def remove(self, store_key):
         """
         Unsubscribe object from this ticker
+
+        Args:
+            store_key (str): Unique store key.
+
         """
         self.subscriptions.pop(store_key, False)
         self.validate()
 
     def stop(self):
         """
-        Kill the Task, regardless of subscriptions
+        Kill the Task, regardless of subscriptions.
+
         """
         self.subscriptions = {}
         self.validate()
@@ -160,18 +187,37 @@ class Ticker(object):
 
 class TickerPool(object):
     """
-    This maintains a pool of Twisted LoopingCall tasks
-    for calling subscribed objects at given times.
+    This maintains a pool of
+    `evennia.scripts.scripts.ExtendedLoopingCall` tasks for calling
+    subscribed objects at given times.
+
     """
     ticker_class = Ticker
 
     def __init__(self):
-        "Initialize the pool"
+        """
+        Initialize the pool.
+
+        """
         self.tickers = {}
 
     def add(self, store_key, obj, interval, *args, **kwargs):
         """
-        Add new ticker subscriber
+        Add new ticker subscriber.
+
+        Args:
+            store_key (str): Unique storage hash.
+            obj (Object): Object subscribing.
+            interval (int): How often to call the ticker.
+            args (any, optional): Arguments to send to the hook method.
+
+        Kwargs:
+            _start_delay (int): If set, this will be
+                used to delay the start of the trigger instead of
+                `interval`. It is passed on as-is from this method.
+            _hooK_key (str): This carries the name of the hook method
+                to call. It is passed on as-is from this method.
+
         """
         if not interval:
             log_err(_ERROR_ADD_INTERVAL.format(store_key=store_key, obj=obj,
@@ -184,7 +230,16 @@ class TickerPool(object):
 
     def remove(self, store_key, interval):
         """
-        Remove subscription from pool
+        Remove subscription from pool.
+
+        Args:
+            store_key (str): Unique storage hash.
+            interval (int): Ticker interval.
+
+        Notes:
+            A given subscription is uniquely identified both
+            via its `store_key` and its `interval`.
+
         """
         if interval in self.tickers:
             self.tickers[interval].remove(store_key)
@@ -193,7 +248,11 @@ class TickerPool(object):
         """
         Stop all scripts in pool. This is done at server reload since
         restoring the pool will automatically re-populate the pool.
-        If interval is given, only stop tickers with that interval.
+
+        Args:
+            interval (int, optional): Only stop tickers with this
+                interval.
+
         """
         if interval and interval in self.tickers:
             self.tickers[interval].stop()
@@ -207,12 +266,17 @@ class TickerHandler(object):
     The Tickerhandler maintains a pool of tasks for subscribing
     objects to various tick rates.  The pool maintains creation
     instructions and and re-applies them at a server restart.
+
     """
     ticker_pool_class = TickerPool
 
     def __init__(self, save_name="ticker_storage"):
         """
         Initialize handler
+
+        save_name (str, optional): The name of the ServerConfig
+            instance to store the handler state persistently.
+
         """
         self.ticker_storage = {}
         self.save_name = save_name
@@ -220,10 +284,16 @@ class TickerHandler(object):
 
     def _store_key(self, obj, interval, idstring=""):
         """
-        Tries to create a store_key for the object.
-        Returns a tuple (isdb, store_key) where isdb
-        is a boolean True if obj was a database object,
-        False otherwise.
+        Tries to create a store_key for the object.  Returns a tuple
+        (isdb, store_key) where isdb is a boolean True if obj was a
+        database object, False otherwise.
+
+        Args:
+            obj (Object): Subscribing object.
+            interval (int): Ticker interval
+            idstring (str, optional): Additional separator between
+                different subscription types.
+
         """
         if hasattr(obj, "db_key"):
             # create a store_key using the database representation
@@ -243,9 +313,10 @@ class TickerHandler(object):
     def save(self):
         """
         Save ticker_storage as a serialized string into a temporary
-        ServerConf field. Whereas saving is done on the fly, if called by
-        server when it shuts down, the current timer of each ticker will be
-        saved so it can start over from that point.
+        ServerConf field. Whereas saving is done on the fly, if called
+        by server when it shuts down, the current timer of each ticker
+        will be saved so it can start over from that point.
+
         """
         if self.ticker_storage:
             start_delays = dict((interval, ticker.task.next_call_time())
@@ -349,10 +420,15 @@ class TickerHandler(object):
 
     def clear(self, interval=None):
         """
-        Stop/remove all tickers from handler, or the ones
-        with a given interval. This is the only supported
-        way to kill tickers for non-db objects. If interval
-        is given, only stop tickers with this interval.
+        Stop/remove all tickers from handler.
+
+        Args:
+            interval (int): Only stop tickers with this interval.
+
+        Notes:
+            This is the only supported way to kill tickers related to
+            non-db objects.
+
         """
         self.ticker_pool.stop(interval)
         if interval:
@@ -365,9 +441,17 @@ class TickerHandler(object):
 
     def all(self, interval=None):
         """
-        Get the subsciptions for a given interval. If interval
-        is not given, return a dictionary with lists for every
-        interval in the tickerhandler.
+        Get all subscriptions.
+
+        Args:
+            interval (int): Limit match to tickers with this interval.
+
+        Returns:
+            tickers (list): If `interval` was given, this is a list of
+                tickers using that interval.
+            tickerpool_layout (dict): If `interval` was *not* given,
+                this is a dict {interval1: [ticker1, ticker2, ...],  ...}
+
         """
         if interval is None:
             # return dict of all, ordered by interval

@@ -38,9 +38,16 @@ class ScriptDBManager(TypedObjectManager):
     @returns_typeclass_list
     def get_all_scripts_on_obj(self, obj, key=None):
         """
-        Returns as result all the Scripts related to a particular object.
-        key can be given as a dbref or name string. If given, only scripts
-        matching the key on the object will be returned.
+        Find all Scripts related to a particular object.
+
+        Args:
+            obj (Object): Object whose Scripts we are looking for.
+            key (str, optional): Script identifier - can be given as a
+                dbref or name string. If given, only scripts matching the
+                key on the object will be returned.
+        Returns:
+            matches (list): Matching scripts.
+
         """
         if not obj:
             return []
@@ -64,8 +71,15 @@ class ScriptDBManager(TypedObjectManager):
     @returns_typeclass_list
     def get_all_scripts(self, key=None):
         """
-        Return all scripts, alternative only
-        scripts with a certain key/dbref
+        Get all scripts in the database.
+
+        Args:
+            key (str, optional): Restrict result to only those
+                with matching key or dbref.
+
+        Returns:
+            scripts (list): All scripts found, or those matching `key`.
+
         """
         if key:
             script = []
@@ -79,10 +93,16 @@ class ScriptDBManager(TypedObjectManager):
 
     def delete_script(self, dbref):
         """
-        This stops and deletes a specific script directly
-        from the script database. This might be
-        needed for global scripts not tied to
-        a specific game object.
+        This stops and deletes a specific script directly from the
+        script database.
+
+        Args:
+            dbref (int): Database unique id.
+
+        Notes:
+            This might be needed for global scripts not tied to a
+            specific game object
+
         """
         scripts = self.get_id(dbref)
         for script in make_iter(scripts):
@@ -91,8 +111,12 @@ class ScriptDBManager(TypedObjectManager):
     def remove_non_persistent(self, obj=None):
         """
         This cleans up the script database of all non-persistent
-        scripts, or only those on obj. It is called every time the server
-        restarts.
+        scripts. It is called every time the server restarts.
+
+        Args:
+            obj (Object, optional): Only remove non-persistent scripts
+                assigned to this object.
+
         """
         if obj:
             to_stop = self.filter(db_obj=obj, db_persistent=False, db_is_active=True)
@@ -114,26 +138,32 @@ class ScriptDBManager(TypedObjectManager):
         all objects run scripts that are still valid in the context
         they are in. This is called by the game engine at regular
         intervals but can also be initiated by player scripts.
-        If key and/or obj is given, only update the related
-        script/object.
 
         Only one of the arguments are supposed to be supplied
         at a time, since they are exclusive to each other.
 
-        scripts = a list of scripts objects obtained somewhere.
-        obj = validate only scripts defined on a special object.
-        key = validate only scripts with a particular key
-        dbref = validate only the single script with this particular id.
+        Args:
+            scripts (list, optional): A list of script objects to
+                validate.
+            obj (Object, optional): Validate only scripts defined on
+                this object.
+            key (str): Validate only scripts with this key.
+            dbref (int): Validate only the single script with this
+                particular id.
+            init_mode (str, optional): This is used during server
+                upstart and can have three values:
+                - `False` (no init mode). Called during run.
+                - `"reset"` - server reboot. Kill non-persistent scripts
+                - `"reload"` - server reload. Keep non-persistent scripts.
+        Returns:
+            nr_started, nr_stopped (tuple): Statistics on how many objects
+                where started and stopped.
 
-        init_mode - This is used during server upstart and can have
-             three values:
-                False (no init mode). Called during run.
-                "reset" - server reboot. Kill non-persistent scripts
-                "reload" - server reload. Keep non-persistent scripts.
+        Notes:
+            This method also makes sure start any scripts it validates
+            which should be harmless, since already-active scripts have
+            the property 'is_running' set and will be skipped.
 
-        This method also makes sure start any scripts it validates,
-        this should be harmless, since already-active scripts
-        have the property 'is_running' set and will be skipped.
         """
 
         # we store a variable that tracks if we are calling a
@@ -194,10 +224,13 @@ class ScriptDBManager(TypedObjectManager):
         """
         Search for a particular script.
 
-        ostring - search criterion - a script ID or key
-        obj - limit search to scripts defined on this object
-        only_timed - limit search only to scripts that run
-                     on a timer.
+        Args:
+            ostring (str): Search criterion - a script dbef or key.
+            obj (Object, optional): Limit search to scripts defined on
+                this object
+            only_timed (bool): Limit search only to scripts that run
+                on a timer.
+
         """
 
         ostring = ostring.strip()
@@ -218,7 +251,18 @@ class ScriptDBManager(TypedObjectManager):
 
     def copy_script(self, original_script, new_key=None, new_obj=None, new_locks=None):
         """
-        Make an identical copy of the original_script
+        Make an identical copy of the original_script.
+
+        Args:
+            original_script (Script): The Script to copy.
+            new_key (str, optional): Rename the copy.
+            new_obj (Object, optional): Place copy on different Object.
+            new_locks (str, optional): Give copy different locks from
+                the original.
+
+        Returns:
+            script_copy (Script): A new Script instance, copied from
+                the original.
         """
         typeclass = original_script.typeclass_path
         new_key = new_key if new_key is not None else original_script.key
