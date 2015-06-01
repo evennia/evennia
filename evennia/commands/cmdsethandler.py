@@ -417,12 +417,16 @@ class CmdSetHandler(object):
             if any(cset.permanent for cset in delcmdsets):
                 # only hit database if there's need to
                 storage = self.obj.cmdset_storage
+                updated = False
                 for cset in delcmdsets:
                     if cset.permanent:
                         try:
                             storage.remove(cset.path)
+                            updated = True
                         except ValueError:
                             pass
+                if updated:
+                    self.obj.cmdset_storage = storage
             for cset in delcmdsets:
                 # clean the in-memory stack
                 try:
