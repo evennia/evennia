@@ -463,21 +463,28 @@ class TypedObject(SharedMemoryModel):
     # Lock / permission methods
     #
 
-    def access(self, accessing_obj, access_type='read', default=False, **kwargs):
+    def access(self, accessing_obj, access_type='read', default=False, no_superuser_bypass=False, **kwargs):
         """
-        Determines if another object has permission to access.
-        accessing_obj - object trying to access this one
-        access_type - type of access sought
-        default - what to return if no lock of access_type was found
-        **kwargs - this is ignored, but is there to make the api consistent with the
-                   object-typeclass method access, which use it to feed to its hook methods.
+        Determines if another object has permission to access this one.
+
+        Args:
+            accessing_obj (str): Object trying to access this one.
+            access_type (str, optional): Type of access sought.
+            default (bool, optional): What to return if no lock of access_type was found
+            no_superuser_bypass (bool, optional): Turn off the superuser lock bypass (be careful with this one).
+
+        Kwargs:
+            kwargs (any): Ignored, but is there to make the api consistent with the
+                object-typeclass method access, which use it to feed to its hook methods.
+
         """
-        return self.locks.check(accessing_obj, access_type=access_type, default=default)
+        return self.locks.check(accessing_obj, access_type=access_type, default=default,
+                                no_superuser_bypass=no_superuser_bypass)
 
     def check_permstring(self, permstring):
         """
         This explicitly checks if we hold particular permission without
-        involving any locks. It does -not- trigger the at_access hook.
+        involving any locks.
         """
         if hasattr(self, "player"):
             if self.player and self.player.is_superuser:

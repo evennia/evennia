@@ -200,7 +200,7 @@ def get_and_merge_cmdsets(caller, session, player, obj,
                     local_obj_cmdsets = \
                         yield [lobj.cmdset.current for lobj in local_objlist
                            if (lobj.cmdset.current and
-                           lobj.locks.check(caller, 'call', no_superuser_bypass=True))]
+                           lobj.access(caller, access_type='call', no_superuser_bypass=True))]
                     for cset in local_obj_cmdsets:
                         #This is necessary for object sets, or we won't be able to
                         # separate the command sets from each other in a busy room. We

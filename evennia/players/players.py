@@ -84,7 +84,7 @@ class DefaultPlayer(PlayerDB):
                      ignore_errors=False, player=False)
      is_typeclass(typeclass, exact=False)
      swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
-     access(accessing_obj, access_type='read', default=False)
+     access(accessing_obj, access_type='read', default=False, no_superuser_bypass=False)
      check_permstring(permstring)
 
     * Hook methods
@@ -429,21 +429,27 @@ class DefaultPlayer(PlayerDB):
                 return None
         return matches
 
-    def access(self, accessing_obj, access_type='read', default=False, **kwargs):
+    def access(self, accessing_obj, access_type='read', default=False, no_superuser_bypass=False, **kwargs):
         """
         Determines if another object has permission to access this object
         in whatever way.
 
         Args:
           accessing_obj (Object): Object trying to access this one
-          access_type (str): Type of access sought
-          default (bool): What to return if no lock of access_type was found
+          access_type (str, optional): Type of access sought
+          default (bool, optional): What to return if no lock of access_type was found
+          no_superuser_bypass (bool, optional): Turn off superuser
+            lock bypassing. Be careful with this one.
 
         Kwargs:
           Passed to the at_access hook along with the result.
 
+        Returns:
+            result (bool): Result of access check.
+
         """
-        result = super(DefaultPlayer, self).access(accessing_obj, access_type=access_type, default=default)
+        result = super(DefaultPlayer, self).access(accessing_obj, access_type=access_type,
+                                                   default=default, no_superuser_bypass=no_superuser_bypass)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 

@@ -768,21 +768,24 @@ class DefaultObject(ObjectDB):
         super(ObjectDB, self).delete()
         return True
 
-    def access(self, accessing_obj, access_type='read', default=False, **kwargs):
+    def access(self, accessing_obj, access_type='read', default=False, no_superuser_bypass=False, **kwargs):
         """
         Determines if another object has permission to access this object
         in whatever way.
 
         Args:
-          accessing_obj (Object): Object trying to access this one
-          access_type (str): Type of access sought
-          default (bool): What to return if no lock of access_type was found
+          accessing_obj (Object): Object trying to access this one.
+          access_type (str, optional): Type of access sought.
+          default (bool, optional): What to return if no lock of access_type was found.
+          no_superuser_bypass (bool, optional): If `True`, don't skip
+            lock check for superuser (be careful with this one).
 
         Kwargs:
-          Passed to the at_access hook along with the result.
+          Passed on to the at_access hook along with the result of the access check.
 
         """
-        result = super(DefaultObject, self).access(accessing_obj, access_type=access_type, default=default)
+        result = super(DefaultObject, self).access(accessing_obj, access_type=access_type,
+                                                   default=default, no_superuser_bypass=no_superuser_bypass)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 

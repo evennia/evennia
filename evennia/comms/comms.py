@@ -133,17 +133,23 @@ class DefaultChannel(ChannelDB):
         self.post_leave_channel(subscriber)
         return True
 
-    def access(self, accessing_obj, access_type='listen', default=False):
+    def access(self, accessing_obj, access_type='listen', default=False, no_superuser_bypass=False):
         """
         Determines if another object has permission to access.
 
         Args:
             accessing_obj (Object): Object trying to access this one.
-            access_type (str): Type of access sought.
-            default (bool): What to return if no lock of access_type was found
+            access_type (str, optional): Type of access sought.
+            default (bool, optional): What to return if no lock of access_type was found
+            no_superuser_bypass (bool, optional): Turns off superuser
+                lock bypass. Be careful with this one.
+
+        Returns:
+            return (bool): Result of lock check.
 
         """
-        return self.locks.check(accessing_obj, access_type=access_type, default=default)
+        return self.locks.check(accessing_obj, access_type=access_type,
+                                default=default, no_superuser_bypass=no_superuser_bypass)
 
     def delete(self):
         """
