@@ -277,12 +277,12 @@ def pid(accessing_obj, accessed_obj, *args, **kwargs):
 
 
 # this is more efficient than multiple if ... elif statments
-CF_MAPPING = {'eq': lambda val1, val2: val1 == val2 or int(val1) == int(val2),
-              'gt': lambda val1, val2: int(val1) > int(val2),
-              'lt': lambda val1, val2: int(val1) < int(val2),
-              'ge': lambda val1, val2: int(val1) >= int(val2),
-              'le': lambda val1, val2: int(val1) <= int(val2),
-              'ne': lambda val1, val2: int(val1) != int(val2),
+CF_MAPPING = {'eq': lambda val1, val2: val1 == val2 or str(val1) == str(val2) or float(val1) == float(val2),
+              'gt': lambda val1, val2: float(val1) >  float(val2),
+              'lt': lambda val1, val2: float(val1) <  float(val2),
+              'ge': lambda val1, val2: float(val1) >= float(val2),
+              'le': lambda val1, val2: float(val1) <= float(val2),
+              'ne': lambda val1, val2: float(val1) != float(val2),
               'default': lambda val1, val2: False}
 
 
@@ -322,10 +322,10 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
     def valcompare(val1, val2, typ='eq'):
         "compare based on type"
         try:
-            return CF_MAPPING.get(typ, 'default')(val1, val2)
+            return CF_MAPPING.get(typ, CF_MAPPING['default'])(val1, val2)
         except Exception:
-            # this might happen if we try to compare two things
-            # that cannot be compared
+            # this might happen if we try to compare two things that
+            # cannot be compared
             return False
 
     if hasattr(accessing_obj, "obj"):
