@@ -255,7 +255,9 @@ class AMPProtocol(amp.AMP):
         between server and portal. AMP calls it on both sides,
         so we need to make sure to only trigger resync from the
         portal side.
+
         """
+        self.transport.setTcpNoDelay(True) # this makes for a factor x10 faster sends!
         if hasattr(self.factory, "portal"):
             # only the portal has the 'portal' property, so we know we are
             # on the portal side and can initialize the connection.

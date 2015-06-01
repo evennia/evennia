@@ -52,9 +52,6 @@ _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 _MAX_SERVER_COMMANDS_PER_SECOND = 100.0
 _MAX_SESSION_COMMANDS_PER_SECOND = 5.0
 
-
-_ERROR_COMMAND_OVERFLOW = "You entered commands too fast. Wait a moment and try again."
-
 def delayed_import():
     "Helper method for delayed import of all needed entities"
     global _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
