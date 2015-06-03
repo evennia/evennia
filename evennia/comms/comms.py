@@ -3,7 +3,6 @@ Base typeclass for in-game Channels.
 
 """
 
-from django.conf import settings
 from evennia.typeclasses.models import TypeclassBase
 from evennia.comms.models import Msg, TempMsg, ChannelDB
 from evennia.comms.managers import ChannelManager

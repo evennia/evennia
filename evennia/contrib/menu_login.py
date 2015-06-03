@@ -31,6 +31,7 @@ import traceback
 from django.conf import settings
 from evennia import managers
 from evennia import utils, logger, create_player
+from evennia import ObjectDB
 from evennia import Command, CmdSet
 from evennia import syscmdkeys
 from evennia.server.models import ServerConfig
@@ -41,6 +42,7 @@ CMD_LOGINSTART = syscmdkeys.CMD_LOGINSTART
 CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
 CMD_NOMATCH = syscmdkeys.CMD_NOMATCH
 
+MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 
 
@@ -210,28 +212,21 @@ class CmdPasswordCreate(Command):
             self.caller.msg(string)
             self.menutree.goto("node2b")
             return
-        # everything's ok. Create the new player account. Don't create
-        # a Character here.
+        # everything's ok. Create the new player account and possibly the character
+        # depending on the multisession mode
+
+        from evennia.commands.default import unloggedin
+        # we make use of the helper functions from the default set here.
         try:
             permissions = settings.PERMISSION_PLAYER_DEFAULT
-            typeclass = settings.BASE_PLAYER_TYPECLASS
-            new_player = create_player(playername, None, password,
-                                       typeclass=typeclass,
-                                       permissions=permissions)
-            if not new_player:
-                self.msg("There was an error creating the Player. This error was logged. Contact an admin.")
-                self.menutree.goto("START")
-                return
-            utils.init_new_player(new_player)
-
-            # join the new player to the public channel
-            pchanneldef = settings.CHANNEL_PUBLIC
-            if pchanneldef:
-                pchannel = managers.channels.get_channel(pchanneldef[0])
-                if not pchannel.connect(new_player):
-                    string = "New player '%s' could not connect to public channel!" % new_player.key
-                    logger.log_errmsg(string)
-
+            typeclass = settings.BASE_CHARACTER_TYPECLASS
+            new_player = unloggedin._create_player(self.caller, playername,
+                                               password, permissions)
+            if new_player:
+                if MULTISESSION_MODE < 2:
+                    default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
+                    unloggedin._create_character(self.caller, new_player, typeclass,
+                                                 default_home, permissions)
             # tell the caller everything went well.
             string = "{gA new account '%s' was created. Now go log in from the menu!{n"
             self.caller.msg(string % (playername))
