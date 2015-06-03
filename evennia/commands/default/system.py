@@ -429,7 +429,7 @@ class CmdPlayers(MuxCommand):
         "List the players"
 
         caller = self.caller
-        if self.args and self.args.is_digit():
+        if self.args and self.args.isdigit():
             nlim = int(self.args)
         else:
             nlim = 10
