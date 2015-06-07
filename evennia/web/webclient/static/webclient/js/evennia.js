@@ -61,7 +61,7 @@ toClass = function(divclass, data) {
                 break;
             case "lookarea":
                 // update the look text box
-                $(this).val(data);
+                $(this).val($.trim(data));
                 break;
         }
     });
@@ -146,7 +146,7 @@ getHistory = function(obj, lastentry, step) {
         return current;
     }
     hpos = Math.max(0, Math.min(hpos, lhist-1));
-    console.log("lhist: " + lhist + " hpos: " + hpos + " current: " + obj.input_history.current);
+    //console.log("lhist: " + lhist + " hpos: " + hpos + " current: " + obj.input_history.current);
     obj.input_history.hpos = hpos;
     return history.store[hpos];
 }
@@ -164,9 +164,10 @@ initialize = function() {
     $(".input_singleline").on("submit", function(event) {
         // input from the single-line input field
         event.preventDefault(); // stop form from switching page
-        var msg = $(this).children("input").val();
+        var field = $(this).find("input");
+        var msg = field.val();
         addHistory(this, msg);
-        $(this).children("input").val("");
+        field.val("");
         dataSend("inputfield", msg);
         if (echo_to_textarea) {
             // echo to textfield
@@ -200,12 +201,14 @@ initialize = function() {
 
     // textarea input 
    
+
     $(".input_multiline").on("submit", function(event) {
         // input from the textarea input
         event.preventDefault(); // stop form from switching page
-        var msg = $(this).children("textarea").val();
+        var field = $(this).find("textarea");
+        var msg = field.val(); 
         addHistory(this, msg);
-        $(this).children("textarea").val("");
+        field.val("");
         dataSend("inputfield", msg);
         if (echo_to_textarea) {
             // echo to textfield
@@ -239,6 +242,10 @@ initialize = function() {
             }
         }
     });
+    
+    // make sure textarea fills surrounding div
+    //$('textarea').css({height:(300-$('form').height())+'px'});
+    //$('textarea').css({height:"inherit", resize:"vertical"});
 
     // configurations
     $(".echo").on("change", function(event) {
