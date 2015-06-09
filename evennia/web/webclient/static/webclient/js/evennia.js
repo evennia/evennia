@@ -52,16 +52,16 @@ toClass = function(divclass, data) {
     //console.log("toClass: " + divclass + " " + data);
     $("." + divclass).each(function() {
         switch (divclass) {
-            case "textarea": 
+            case "textoutput": 
                 // update the bottom of the normal text area
                 // and scroll said area.
                 var oldtext = $.trim($(this).val());
                 $(this).val(oldtext + "\n" + data);
-                $(this).scrollTop($(this)[0].scrollHeight);
+                //$(this).scrollTop($(this)[0].scrollHeight);
                 break;
-            case "lookarea":
+            case "lookoutput":
                 // update the look text box
-                $(this).val($.trim(data));
+                $(this).val(data);
                 break;
         }
     });
@@ -171,9 +171,9 @@ initialize = function() {
         dataSend("inputfield", msg);
         if (echo_to_textarea) {
             // echo to textfield
-            toClass("textarea", msg);
-            toClass("lookarea", msg);
-            toClass("listarea", msg);
+            toClass("textoutput", msg);
+            toClass("lookoutput", msg);
+            toClass("listoutput", msg);
         }
     });
 
@@ -245,7 +245,7 @@ initialize = function() {
     
     // make sure textarea fills surrounding div
     //$('textarea').css({height:(300-$('form').height())+'px'});
-    //$('textarea').css({height:"inherit", resize:"vertical"});
+    //$('textarea').css({'height':"100%"});
 
     // configurations
     $(".echo").on("change", function(event) {
