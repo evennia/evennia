@@ -88,7 +88,7 @@ class CmdNick(MuxCommand):
     define a personal alias/nick
 
     Usage:
-      nick[/switches] <nickname> = [<string>]
+      nick[/switches] <nickname> [= [<string>]]
       alias             ''
 
     Switches:
@@ -100,6 +100,8 @@ class CmdNick(MuxCommand):
     Examples:
       nick hi = say Hello, I'm Sarah!
       nick/object tom = the tall man
+      nick hi              (shows the nick substitution)
+      nick hi =            (removes nick 'hi')
 
     A 'nick' is a personal shortcut you create for your own use. When
     you enter the nick, the alternative string will be sent instead.
@@ -126,12 +128,15 @@ class CmdNick(MuxCommand):
         nicks = caller.nicks.get(return_obj=True)
 
         if 'list' in switches:
-            table = prettytable.PrettyTable(["{wNickType",
-                                             "{wNickname",
-                                             "{wTranslates-to"])
-            for nick in utils.make_iter(nicks):
-                table.add_row([nick.db_category, nick.db_key, nick.db_strvalue])
-            string = "{wDefined Nicks:{n\n%s" % table
+            if not nicks:
+                string = "{wNo nicks defined.{n"
+            else:
+                table = prettytable.PrettyTable(["{wNickType",
+                                                 "{wNickname",
+                                                 "{wTranslates-to"])
+                for nick in utils.make_iter(nicks):
+                    table.add_row([nick.db_category, nick.db_key, nick.db_strvalue])
+                string = "{wDefined Nicks:{n\n%s" % table
             caller.msg(string)
             return
         if 'clearall' in switches:
@@ -155,19 +160,22 @@ class CmdNick(MuxCommand):
         for switch in switches:
             oldnick = caller.nicks.get(key=nick, category=switch)
             if not real:
-                # removal of nick
-                if oldnick:
-                    # clear the alias
-                    string += "\nNick '%s' (= '%s') was cleared." % (nick, oldnick)
-                    caller.nicks.delete(nick, category=switch)
+                if "=" in self.args:
+                    if oldnick:
+                            # clear the alias
+                            string += "\nNick cleared: '{w%s{n' (-> '{w%s{n')." % (nick, oldnick)
+                            caller.nicks.remove(nick, category=switch)
+                    else:
+                        string += "\nNo nick '%s' found, so it could not be removed." % nick
                 else:
-                    string += "\nNo nick '%s' found, so it could not be removed." % nick
+                    string += "\nNick: '{w%s{n'{n -> '{w%s{n'." % (nick, oldnick)
+
             else:
                 # creating new nick
                 if oldnick:
-                    string += "\nNick %s changed from '%s' to '%s'." % (nick, oldnick, real)
+                    string += "\nNick '{w%s{n' reset from '{w%s{n' to '{w%s{n'." % (nick, oldnick, real)
                 else:
-                    string += "\nNick set: '%s' = '%s'." % (nick, real)
+                    string += "\nNick set: '{w%s{n' -> '{w%s{n'." % (nick, real)
                 caller.nicks.add(nick, real, category=switch)
         caller.msg(string)
 
