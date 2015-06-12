@@ -1654,7 +1654,7 @@ class CmdLock(ObjManipCommand):
     object.
 
     Lockstring is on the form
-       'access_type:[NOT] func1(args)[ AND|OR][ NOT] func2(args) ...]
+       'access_type:[NOT] func1(args)[ AND|OR][ NOT] func2(args) ...]'
     Where func1, func2 ... valid lockfuncs with or without arguments.
     Separator expressions need not be capitalized.
 
@@ -1667,6 +1667,11 @@ class CmdLock(ObjManipCommand):
     You can add several access_types after oneanother by separating
     them by ';', i.e:
        'get:id(25);delete:perm(Builders)'
+       
+    Note:
+    Please keep in mind that although the command will take commands
+    in apostrophes ('') and it will not affect the functionality, it
+    will make the locks harder to read and break the lockstring order.
     """
     key = "@lock"
     aliases = ["@locks", "lock", "locks"]
