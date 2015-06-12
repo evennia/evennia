@@ -6,24 +6,26 @@ in-game. The editor mimics the command mechanisms of the VI editor as
 far as possible.
 
 Features of the editor:
-    undo/redo.
-    edit/replace on any line of the buffer.
-    search&replace text anywhere in buffer.
-    formatting of buffer, or selection, to certain width + indentations.
-    allow to echo the input or not, depending on your client.
 
+ - undo/redo.
+ - edit/replace on any line of the buffer.
+ - search&replace text anywhere in buffer.
+ - formatting of buffer, or selection, to certain width + indentations.
+ - allow to echo the input or not, depending on your client.
+
+Testing / Tutorial:
 
 Whereas the editor is intended to be called from other commands that
 requires more elaborate text editing of data, there is also a
 stand-alone editor command for editing Attributes at the end of this
-module. To use it just import and add it to your default `cmdset`.
+module. To test it it just import and add it to your default `cmdset`.
+
 """
 
 import re
 from django.conf import settings
 from evennia import Command, CmdSet, utils
 from evennia import syscmdkeys
-from evennia.contrib.menusystem import prompt_yesno
 
 __all__ = ("CmdEditor", )
 
@@ -32,6 +34,42 @@ CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
 
 RE_GROUP = re.compile(r"\".*?\"|\'.*?\'|\S*")
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
+
+class CmdSaveYesNo(Command):
+    """
+    Save the editor state on quit. This catches
+    nomatches (defaults to Yes), and avoid saves only if
+    command was given specifically as "no" or "n".
+    """
+    key = CMD_NOMATCH
+    aliases = CMD_NOINPUT
+    locks = "cmd:all()"
+    help_cateogory = "LineEditor"
+
+    def func(self):
+        "Implement the yes/no choice."
+        # this is only called from inside the lineeditor
+        # so caller.ndb._lineditor must be set.
+
+        self.caller.cmdset.remove(SaveYesNoCmdSet)
+        if self.raw_string.strip().lower() in ("no", "n"):
+            # answered no
+            self.caller.msg(self.caller.ndb._lineeditor.quit())
+        else:
+            # answered yes (default)
+            self.caller.ndb._lineeditor.save_buffer()
+            self.caller.ndb._lineeditor.quit()
+
+
+class SaveYesNoCmdSet(CmdSet):
+    "Stores the yesno question"
+    key = "quitsave_yesno"
+    priority = 1
+    mergetype = "Replace"
+
+    def at_cmdset_creation(self):
+        "at cmdset creation"
+        self.add(CmdSaveYesNo())
 
 
 class CmdEditorBase(Command):
@@ -227,9 +265,11 @@ class CmdEditorGroup(CmdEditorBase):
         elif cmd == ":q":
             # quit. If not saved, will ask
             if self.editor.unsaved:
-                prompt_yesno(caller, "Save before quitting?",
-                             yescode = "self.caller.ndb._lineeditor.save_buffer()\nself.caller.ndb._lineeditor.quit()",
-                             nocode = "self.caller.msg(self.caller.ndb._lineeditor.quit())", default="Y")
+                caller.cmdset.add(SaveYesNoCmdSet)
+                caller.msg("Save before quitting? {lcyes{lt[Y]{le/{lcno{ltN{le")
+                #prompt_yesno(caller, "Save before quitting?",
+                #             yescode = "self.caller.ndb._lineeditor.save_buffer()\nself.caller.ndb._lineeditor.quit()",
+                #             nocode = "self.caller.msg(self.caller.ndb._lineeditor.quit())", default="Y")
             else:
                 string = editor.quit()
         elif cmd == ":q!":
@@ -504,7 +544,7 @@ class LineEditor(object):
             except Exception, e:
                 self.caller.msg("%s\n{Quit function gave an error. Skipping.{n" % e)
         del self.caller.ndb._lineeditor
-        self.caller.cmdset.delete(EditorCmdSet)
+        self.caller.cmdset.remove(EditorCmdSet)
         if self.quitfunc:
             # if quitfunc is defined, it should manage exit messages.
             return ""
@@ -664,7 +704,8 @@ class CmdEditor(Command):
             target = self.obj.attributes.get(self.attrname)
             if target is not None and not isinstance(target, basestring):
                 typ = type(target).__name__
-                self.caller.msg("{RWARNING! Saving this buffer will overwrite the current attribute (of type %s) with a string!{n" % typ)
+                self.caller.msg("{RWARNING! Saving this buffer will overwrite the "\
+                                "current attribute (of type %s) with a string!{n" % typ)
             return target and str(target) or ""
 
         def save_attr():
