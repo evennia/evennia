@@ -4,6 +4,7 @@ import sys
 Building and world design commands
 
 """
+import re
 from django.conf import settings
 from django.db.models import Q
 from evennia.objects.models import ObjectDB
@@ -1654,7 +1655,7 @@ class CmdLock(ObjManipCommand):
     object.
 
     Lockstring is on the form
-       'access_type:[NOT] func1(args)[ AND|OR][ NOT] func2(args) ...]
+       access_type:[NOT] func1(args)[ AND|OR][ NOT] func2(args) ...]
     Where func1, func2 ... valid lockfuncs with or without arguments.
     Separator expressions need not be capitalized.
 
@@ -1681,6 +1682,7 @@ class CmdLock(ObjManipCommand):
             string = "@lock <object>[ = <lockstring>] or @lock[/switch] object/<access_type>"
             caller.msg(string)
             return
+
         if '/' in self.lhs:
             # call on the form @lock obj/access_type
             objname, access_type = [p.strip() for p in self.lhs.split('/', 1)]
@@ -1688,6 +1690,7 @@ class CmdLock(ObjManipCommand):
             if not obj:
                 return
             lockdef = obj.locks.get(access_type)
+            string = ""
             if lockdef:
                 if 'del' in self.switches:
                     if not obj.access(caller, 'control'):
@@ -1695,6 +1698,8 @@ class CmdLock(ObjManipCommand):
                         return
                     obj.locks.delete(access_type)
                     string = "deleted lock %s" % lockdef
+                else:
+                    string = lockdef
             else:
                 string = "%s has no lock of access type '%s'." % (obj, access_type)
             caller.msg(string)
@@ -1702,6 +1707,13 @@ class CmdLock(ObjManipCommand):
 
         if self.rhs:
             # we have a = separator, so we are assigning a new lock
+            if self.switches:
+                swi = ", ".join(self.switches)
+                caller.msg("Switch(es) {w%s{n can not be used with a "\
+                           "lock assignment. Use e.g. " \
+                           "{w@lock/del objname/locktype{n instead." % swi)
+                return
+
             objname, lockdef = self.lhs, self.rhs
             obj = caller.search(objname)
             if not obj:
@@ -1710,6 +1722,7 @@ class CmdLock(ObjManipCommand):
                 caller.msg("You are not allowed to do that.")
                 return
             ok = False
+            lockdef = re.sub(r"\'|\"", "", lockdef)
             try:
                 ok = obj.locks.add(lockdef)
             except LockException, e:
