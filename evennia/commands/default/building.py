@@ -1331,10 +1331,11 @@ def _convert_from_string(cmd, strobj):
             return _LITERAL_EVAL(strobj)
         except (SyntaxError, ValueError):
             # treat as string
-            string = "{RNote: Value was converted to string. If you don't want this, "
-            string += "use proper Python syntax, like enclosing strings in quotes.{n"
+            strobj = utils.to_str(strobj)
+            string = "{RNote: name \"{r%s{R\" was converted to a string. " \
+                     "Make sure this is acceptable." % strobj
             cmd.caller.msg(string)
-            return utils.to_str(strobj)
+            return strobj
     else:
         # fall back to old recursive solution (does not support
         # nested lists/dicts)
