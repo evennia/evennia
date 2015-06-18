@@ -242,9 +242,9 @@ initialize = function() {
             }
         }
     });
-    
+
     // make sure textarea fills surrounding div
-    //$('textarea').css({height:(300-$('form').height())+'px'});
+    $('.textoutput').css({height:(300-$('.form').height())+'px'});
     //$('textarea').css({'height':"100%"});
 
     // configurations
