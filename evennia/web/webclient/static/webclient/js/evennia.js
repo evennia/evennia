@@ -243,9 +243,17 @@ initialize = function() {
         }
     });
 
+    //console.log("windowsize: " + $(window).height() + " footerheight: " + $('.footer').height())
+    //$(window).on("resize", function(event) {
+    //    $('.textoutput').css({height:($(window).height() - 120 + "px")});
+    //});
+
+    // resizing
+
     // make sure textarea fills surrounding div
-    $('.textoutput').css({height:(300-$('.form').height())+'px'});
-    //$('textarea').css({'height':"100%"});
+    //$('.textoutput').css({height:($(window).height()-$('.footer').height())+'px'});
+    //$('.textoutput').css({height:($(window).height() - 120 + "px")});
+
 
     // configurations
     $(".echo").on("change", function(event) {

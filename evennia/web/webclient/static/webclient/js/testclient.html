@@ -12,57 +12,57 @@
         <script src="evennia.js"></script>
         <!--[if !IE 7]>
         <style type="text/css">
-            #wrap {display:table;height:100%}
+            #outputsection {display:table;height:100%}
         </style>
         <![endif]-->
     </head>
 
     <body>
 
-        <div id="wrapper">
+        <div id="outputsection">
             <!-- Config menu button -->
-            <a href="#" data-reveal-id="ConfigMenu">Config</a>
+            <div id="header">
+                <a href="#" data-reveal-id="ConfigMenu">Config</a>
+            </div>
             <div id="main">
                 <!--Outputs -->
-                <div class="textoutput" readonly>Test textoutput </div>
+                <div class="textoutput">Test textoutput </div>
             </div>
         </div>
 
         <!-- Inputs -->
         <div id="footer">
-            <div class="small-12 colums">
-                <!-- hide inputs behind tabs -->
-                <ul class="tabs" data-tab>
-                    <li class="tab-title active"><a href="#singleinput">Single-line</a></li>
-                    <li class="tab-title"><a href="#multiinput">Multi-line</a></li>
-                </ul>
-                <!-- single-line input -->
-                <div class="tabs-content">
-                    <div class="content active" id=singleinput>
-                        <form class="input_singleline" action="send">
-                            <div class="row">
-                                <div class="small-11 large-11 columns">
-                                    <input type="text">
-                                </div>
-                                <div class="small-1 large-1 columns">
-                                    <input type="submit" value="Send">
-                                </div>
+            <!-- hide inputs behind tabs -->
+            <ul class="tabs" data-tab>
+                <li class="tab-title active"><a href="#singleinput">Single-line</a></li>
+                <li class="tab-title"><a href="#multiinput">Multi-line</a></li>
+            </ul>
+            <!-- single-line input -->
+            <div class="tabs-content">
+                <div class="content active" id=singleinput>
+                    <form class="input_singleline" action="send">
+                        <div class="row">
+                            <div class="small-11 large-11 columns">
+                                <input type="text">
                             </div>
-                        </form>
-                    </div>
-                    <!-- multi-line input-->
-                    <div class="content" id=multiinput>
-                        <form class="input_multiline" action="send">
-                            <div class="row">
-                                <div class="large-11 columns">
-                                    <textarea></textarea>
-                                </div>
-                                <div class="large-1 columns">
-                                    <input type="submit" value="Send">
-                                </div>
+                            <div class="small-1 large-1 columns">
+                                <input type="submit" value="Send">
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- multi-line input-->
+                <div class="content" id=multiinput>
+                    <form class="input_multiline" action="send">
+                        <div class="row">
+                            <div class="large-11 columns">
+                                <textarea></textarea>
+                            </div>
+                            <div class="large-1 columns">
+                                <input type="submit" value="Send">
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

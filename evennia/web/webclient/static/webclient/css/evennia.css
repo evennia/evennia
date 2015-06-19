@@ -4,31 +4,35 @@ html, body {
     height: 100%;
 }
 
-#wrapper {
-    min-height: 100%;
+#outputsection {
+    min-height: 80%;
+}
+
+#header > a {
+    color: red;
 }
 
 #main {
-    height: 100%;
-    min-height: 100%;
-    padding-bottom: 100px;
+    height: auto;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 1px;
 }
 
 .textoutput {
-    height: auto;
-    width: 98%;
-    min-height: 100%;
-    min-width: 98% !important;
+    position:absolute;
+    top:30px;
+    bottom: 40px;
+    left:10px;
+    right: 10px;
     overflow: hidden;
-    padding-left:2em;
     background: rgba(201, 201, 201, 0.65);
 }
 
 #footer {
     position: relative;
-    margin-top: -100px;
-    height: 100px;
+    height: 40px;
+    width: 98%;
     clear: both;
 }
-
-*/
