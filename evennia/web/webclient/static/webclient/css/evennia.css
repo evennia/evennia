@@ -2,37 +2,70 @@
 
 html, body {
     height: 100%;
+    background: darkgreen;
 }
 
-#outputsection {
-    min-height: 80%;
-}
-
-#header > a {
-    color: red;
+#header {
+    background: yellow;
+    padding: 5px;
 }
 
 #main {
-    height: auto;
-    padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 1px;
+    height: 100%;
+    width:auto;
+    background: beige;    
+    padding: 5px;
 }
+
 
 .textoutput {
-    position:absolute;
-    top:30px;
-    bottom: 40px;
-    left:10px;
-    right: 10px;
+    width: 80%;
+    height: 100%;
     overflow: hidden;
-    background: rgba(201, 201, 201, 0.65);
+    background: lightpink;
+    float: left;
+    border: 2px solid black;
+    margin-right: 2px;
 }
 
-#footer {
-    position: relative;
-    height: 40px;
-    width: 98%;
+#sidepanel {
+    height: 100%;
+    width: 100%;
+    background: red;
+}
+
+.lookoutput {
+    width: 19%;
+    height: 50%;
+    overflow: hidden;
+    background: lightgreen;
+    border: 2px solid black;
+    margin-bottom: 2px;
+}
+
+.contentoutput {
+    width: 19%;
+    height: calc(50% - 6px);
+    overflow: hidden;
+    background: lightblue;
+    border: 2px solid black;    
+}
+
+/* Input footer */
+
+#footer { 
+    padding: 5px;
+    height: auto;
     clear: both;
+    background: darkgray;
+    margin-top: 2px;
+}
+
+#input_singleline_field {
+    width:90%;
+    visibility: hidden;
+}
+
+#input_multiline_field {
+    width:90%;
 }
