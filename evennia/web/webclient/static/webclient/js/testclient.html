@@ -2,82 +2,38 @@
 
 <html lang="en">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Evennia test client</title>
-        <link rel="stylesheet" href="../css/foundation.css" />
         <link rel="stylesheet" href="../css/evennia.css" />
-        <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-        <script src="modernizr.js"></script>
-        <script src="evennia.js"></script>
-        <!--[if !IE 7]>
-        <style type="text/css">
-            #outputsection {display:table;height:100%}
-        </style>
-        <![endif]-->
     </head>
 
     <body>
 
-        <div id="outputsection">
-            <!-- Config menu button -->
-            <div id="header">
-                <a href="#" data-reveal-id="ConfigMenu">Config</a>
-            </div>
-            <div id="main">
-                <!--Outputs -->
-                <div class="textoutput">Test textoutput </div>
+        <!-- Config menu button -->
+        <div id="header">
+            <a href="#configmenu" class="button">Config</a>
+        </div>
+        <!-- Config menu itself -->
+        <div id="configmenu">
+            <!-- close button -->
+            <a href="#" class="close">&times;</a>
+        </div>
+
+        <div id="main">
+            <!--Outputs -->
+            <div class="textoutput">Test textoutput </div>
+            <div id="sidepanel">
+                <div class="lookoutput">Look textoutput </div>
+                <div class="contentoutput">Content textoutput </div>
             </div>
         </div>
 
         <!-- Inputs -->
         <div id="footer">
-            <!-- hide inputs behind tabs -->
-            <ul class="tabs" data-tab>
-                <li class="tab-title active"><a href="#singleinput">Single-line</a></li>
-                <li class="tab-title"><a href="#multiinput">Multi-line</a></li>
-            </ul>
-            <!-- single-line input -->
-            <div class="tabs-content">
-                <div class="content active" id=singleinput>
-                    <form class="input_singleline" action="send">
-                        <div class="row">
-                            <div class="small-11 large-11 columns">
-                                <input type="text">
-                            </div>
-                            <div class="small-1 large-1 columns">
-                                <input type="submit" value="Send">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <!-- multi-line input-->
-                <div class="content" id=multiinput>
-                    <form class="input_multiline" action="send">
-                        <div class="row">
-                            <div class="large-11 columns">
-                                <textarea></textarea>
-                            </div>
-                            <div class="large-1 columns">
-                                <input type="submit" value="Send">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <form class="input_singleline" action="send">
+                <!-- multi-line input -->
+                <textarea id="input_multiline_field"></textarea>
+                <input id="sendbutton" type="submit" value="Send">
+            </form>
         </div>
 
-        <!-- Config area popup  -->
-        <div id="ConfigMenu" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-            <div class="switch">
-                <input type="checkbox" id="exampleCheckboxSwitch" class="config echo" checked>echo</input>
-                <label for="exampleCheckboxSwitch"></label>
-            </div>
-        </div>
-
-    <script src="foundation.min.js"></script>
-    <script>
-        $(document).foundation();
-    </script>
     </body>
 </html>
