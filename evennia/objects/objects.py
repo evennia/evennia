@@ -857,6 +857,9 @@ class DefaultObject(ObjectDB):
             if cdict.get("location"):
                 cdict["location"].at_object_receive(self, None)
                 self.at_after_move(None)
+            if cdict.get("tags"):
+                # this should be a list of tags
+                self.tags.add(cdict["tags"])
             if cdict.get("attributes"):
                 # this should be a dict of attrname:value
                 keys, values = cdict["attributes"].keys(), cdict["attributes"].values()

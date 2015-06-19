@@ -16,6 +16,7 @@ GOBLIN = {
  "resists": ["cold", "poison"],
  "attacks": ["fists"],
  "weaknesses": ["fire", "light"]
+ "tags:": ["mob", "evil"]
  }
 ```
 
@@ -30,7 +31,7 @@ Possible keywords are:
     permissions - string or list of permission strings
     locks - a lock-string
     aliases - string or list of strings
-
+    tags - string or list of strings
     ndb_<name> - value of a nattribute (ndb_ is stripped)
     any other keywords are interpreted as Attributes and their values.
 
@@ -154,7 +155,8 @@ def _batch_create_object(*objparams):
                            "locks": objparam[2],
                            "aliases": objparam[3],
                            "nattributes": objparam[4],
-                           "attributes": objparam[5]}
+                           "attributes": objparam[5],
+                           "tags":objparam[6]}
         # this triggers all hooks
         obj.save()
         objs.append(obj)
@@ -214,6 +216,7 @@ def spawn(*prototypes, **kwargs):
         permission_string = prot.pop("permissions", "")
         lock_string = prot.pop("locks", "")
         alias_string = prot.pop("aliases", "")
+        tags = prot.pop("tags", "")
 
         # extract ndb assignments
         nattributes = dict((key.split("_", 1)[1], value if callable(value) else value)
@@ -222,11 +225,11 @@ def spawn(*prototypes, **kwargs):
         # the rest are attributes
         attributes = dict((key, value() if callable(value) else value)
                            for key, value in prot.items()
-                           if not (key in _CREATE_OBJECT_KWARGS or key in nattributes))
+                           if not (key in _CREATE_OBJECT_KWARGS or key.startswith("ndb_")))
 
         # pack for call into _batch_create_object
         objsparams.append( (create_kwargs, permission_string, lock_string,
-                            alias_string, nattributes, attributes) )
+                            alias_string, nattributes, attributes, tags) )
 
     return _batch_create_object(*objsparams)
 

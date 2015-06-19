@@ -54,7 +54,7 @@ _GA = object.__getattribute__
 
 def create_object(typeclass=None, key=None, location=None,
                   home=None, permissions=None, locks=None,
-                  aliases=None, destination=None, report_to=None, nohome=False):
+                  aliases=None, tags=None, destination=None, report_to=None, nohome=False):
     """
 
     Create a new in-game object.
@@ -66,6 +66,7 @@ def create_object(typeclass=None, key=None, location=None,
         permissions - a comma-separated string of permissions
         locks - one or more lockstrings, separated by semicolons
         aliases - a list of alternative keys
+        tags - a list of tag keys (using no category)
         destination - obj or #dbref to use as an Exit's target
 
         nohome - this allows the creation of objects without a default home location;
@@ -103,7 +104,7 @@ def create_object(typeclass=None, key=None, location=None,
     # store the call signature for the signal
     new_object._createdict = {"key":key, "location":location, "destination":destination,
                               "home":home, "typeclass":typeclass.path, "permissions":permissions,
-                              "locks":locks, "aliases":aliases, "destination":destination,
+                              "locks":locks, "aliases":aliases, "tags": tags, "destination":destination,
                               "report_to":report_to, "nohome":nohome}
     # this will trigger the save signal which in turn calls the
     # at_first_save hook on the typeclass, where the _createdict can be
