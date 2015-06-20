@@ -4,3 +4,4 @@ django >= 1.8, < 1.9
 twisted >= 15.2.1
 mock >= 1.0.1
 pillow
+pytz
