@@ -1479,11 +1479,17 @@ class ExitCommand(command.Command):
     def get_extra_info(self, caller, **kwargs):
         """
         Shows a bit of information on where the exit leads.
+
+        Args:
+            caller (Object): The object (usually a character) that entered an ambiguous command.
+
+        Returns:
+            A string with identifying information to disambiguate the command, conventionally with a preceding space.
         """
         if self.obj.destination:
-            return " (exit to %s)" % self.obj.destination.display_name(caller)
+            return " (exit to %s)" % self.obj.destination.get_display_name(caller)
         else:
-            return " (%s)" % self.obj.display_name(caller)
+            return " (%s)" % self.obj.get_display_name(caller)
 
 #
 # Base Exit object

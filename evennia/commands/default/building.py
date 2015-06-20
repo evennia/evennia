@@ -138,9 +138,9 @@ class CmdSetObjAlias(MuxCommand):
             # no =, so we just list aliases on object.
             aliases = obj.aliases.all()
             if aliases:
-                caller.msg("Aliases for '%s': %s" % (obj.display_name(caller), ", ".join(aliases)))
+                caller.msg("Aliases for '%s': %s" % (obj.get_display_name(caller), ", ".join(aliases)))
             else:
-                caller.msg("No aliases exist for '%s'." % obj.display_name(caller))
+                caller.msg("No aliases exist for '%s'." % obj.get_display_name(caller))
             return
 
         if not obj.access(caller, 'edit'):
@@ -151,7 +151,7 @@ class CmdSetObjAlias(MuxCommand):
             # we have given an empty =, so delete aliases
             old_aliases = obj.aliases.all()
             if old_aliases:
-                caller.msg("Cleared aliases from %s: %s" % (obj.display_name(caller), ", ".join(old_aliases)))
+                caller.msg("Cleared aliases from %s: %s" % (obj.get_display_name(caller), ", ".join(old_aliases)))
                 obj.aliases.clear()
             else:
                 caller.msg("No aliases to clear.")
@@ -175,7 +175,7 @@ class CmdSetObjAlias(MuxCommand):
         obj.at_cmdset_get(force_init=True)
 
         # report all aliases on the object
-        caller.msg("Alias(es) for '%s' set to %s." % (obj.display_name(caller), str(obj.aliases)))
+        caller.msg("Alias(es) for '%s' set to %s." % (obj.get_display_name(caller), str(obj.aliases)))
 
 
 class CmdCopy(ObjManipCommand):
@@ -587,7 +587,7 @@ class CmdDesc(MuxCommand):
             desc = self.args
 
         obj.db.desc = desc
-        caller.msg("The description was set on %s." % obj.display_name(caller))
+        caller.msg("The description was set on %s." % obj.get_display_name(caller))
 
 
 class CmdDestroy(MuxCommand):
@@ -2085,7 +2085,7 @@ class CmdFind(MuxCommand):
                 string += "\n   {RNo match found for '%s' in #dbref interval.{n" % (searchstring)
             else:
                 result=result[0]
-                string += "\n{g   %s - %s{n" % (result.display_name(caller), result.path)
+                string += "\n{g   %s - %s{n" % (result.get_display_name(caller), result.path)
         else:
             # Not a player/dbref search but a wider search; build a queryset.
             # Searchs for key and aliases
@@ -2117,10 +2117,10 @@ class CmdFind(MuxCommand):
                 if nresults > 1:
                     string = "{w%i Matches{n(#%i-#%i%s):" % (nresults, low, high, restrictions)
                     for res in results:
-                        string += "\n   {g%s - %s{n" % (res.display_name(caller), res.path)
+                        string += "\n   {g%s - %s{n" % (res.get_display_name(caller), res.path)
                 else:
                     string = "{wOne Match{n(#%i-#%i%s):" % (low, high, restrictions)
-                    string += "\n   {g%s - %s{n" % (results[0].display_name(caller), results[0].path)
+                    string += "\n   {g%s - %s{n" % (results[0].get_display_name(caller), results[0].path)
             else:
                 string = "{wMatch{n(#%i-#%i%s):" % (low, high, restrictions)
                 string += "\n   {RNo matches found for '%s'{n" % searchstring
@@ -2278,18 +2278,18 @@ class CmdScript(MuxCommand):
             # no rhs means we want to operate on all scripts
             scripts = obj.scripts.all()
             if not scripts:
-                string += "No scripts defined on %s." % obj.display_name(caller)
+                string += "No scripts defined on %s." % obj.get_display_name(caller)
             elif not self.switches:
                 # view all scripts
                 from evennia.commands.default.system import format_script_list
                 string += format_script_list(scripts)
             elif "start" in self.switches:
                 num = sum([obj.scripts.start(script.key) for script in scripts])
-                string += "%s scripts started on %s." % (num, obj.display_name(caller))
+                string += "%s scripts started on %s." % (num, obj.get_display_name(caller))
             elif "stop" in self.switches:
                 for script in scripts:
-                    string += "Stopping script %s on %s." % (script.display_name(caller),
-                                                             obj.display_name(caller))
+                    string += "Stopping script %s on %s." % (script.get_display_name(caller),
+                                                             obj.get_display_name(caller))
                     script.stop()
                 string = string.strip()
             obj.scripts.validate()
@@ -2299,11 +2299,11 @@ class CmdScript(MuxCommand):
                 ok = obj.scripts.add(self.rhs, autostart=True)
                 if not ok:
                     string += "\nScript %s could not be added and/or started on %s." % (
-                        self.rhs, obj.display_name(caller)
+                        self.rhs, obj.get_display_name(caller)
                     )
                 else:
                     string = "Script {w%s{n successfully added and started on %s." % (
-                        self.rhs, obj.display_name(caller)
+                        self.rhs, obj.get_display_name(caller)
                     )
 
             else:
@@ -2374,7 +2374,7 @@ class CmdTag(MuxCommand):
             if nobjs > 0:
                 catstr = " (category: '{w%s{n')" % category if category else \
                                 ("" if nobjs == 1 else " (may have different tag categories)")
-                matchstr = ", ".join(o.display_name(self.caller) for o in objs)
+                matchstr = ", ".join(o.get_display_name(self.caller) for o in objs)
 
                 string = "Found {w%i{n object%s with tag '{w%s{n'%s:\n %s" % (nobjs,
                                                        "s" if nobjs > 1 else "",
@@ -2528,6 +2528,6 @@ class CmdSpawn(MuxCommand):
             prototype["location"] = self.caller.location
 
         for obj in spawn(prototype):
-            self.caller.msg("Spawned %s." % obj.display_name(self.caller))
+            self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
 
 

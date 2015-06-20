@@ -356,7 +356,13 @@ class Command(object):
 
         If this command is a potential match in an ambiguous situation, one distinguishing
         feature may be its attachment to a nearby object, so we include this by default if available.
+
+        Args:
+            caller (TypedObject): The caller who typed an ambiguous term handed to the search function.
+
+        Returns:
+            A string with identifying information to disambiguate the object, conventionally with a preceding space.
         """
         if hasattr(self, 'obj'):
-            return " (%s)" % self.obj.display_name(caller)
+            return " (%s)" % self.obj.get_display_name(caller)
         return ""

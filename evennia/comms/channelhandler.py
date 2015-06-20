@@ -83,7 +83,13 @@ class ChannelCommand(command.Command):
 
     def get_extra_info(self, caller, **kwargs):
         """
-        Let users know that this exit is for communicating on a channel.
+        Let users know that this command is for communicating on a channel.
+
+        Args:
+            caller (TypedObject): A Character or Player who has entered an ambiguous command.
+
+        Returns:
+            A string with identifying information to disambiguate the object, conventionally with a preceding space.
         """
         return _(" (channel)")
 

@@ -610,19 +610,28 @@ class TypedObject(SharedMemoryModel):
         raise Exception("Cannot delete the ndb object!")
     ndb = property(__ndb_get, __ndb_set, __ndb_del)
 
-    def display_name(self, looker, **kwargs):
+    def get_display_name(self, looker, **kwargs):
         """
         Displays the name of the object in a viewer-aware manner.
 
-        Note that this function could be extended to change how object names
-        appear to users, but be wary. This function does not change an object's keys or
-        aliases when searching, and is expected to produce something useful for builders.
+        Args:
+            looker (TypedObject): The object or player that is looking at/getting inforamtion for this object.
+
+        Returns:
+            A string containing the name of the object, including the DBREF if this user is privileged to control
+            said object.
+
+        Notes:
+            This function could be extended to change how object names
+            appear to users in character, but be wary. This function does not change an object's keys or
+            aliases when searching, and is expected to produce something useful for builders.
+
         """
         if self.access(looker, access_type='controls'):
             return "{}(#{})".format(self.name, self.id)
         return self.name
 
-    def get_extra_info(self, viewer, **kwargs):
+    def get_extra_info(self, looker, **kwargs):
         """
         Used when an object is in a list of ambiguous objects as an additional
         information tag.
@@ -630,8 +639,14 @@ class TypedObject(SharedMemoryModel):
         For instance, if you had potions which could have varying levels of liquid
         left in them, you might want to display how many drinks are left in each when
         selecting which to drop, but not in your normal inventory listing.
+
+        Args:
+            looker (TypedObject): The object or player that is looking at/getting information for this object.
+
+        Returns:
+            A string with disambiguating information, conventionally with a leading space.
         """
 
-        if self.location == viewer:
+        if self.location == looker:
             return " (carried)"
         return ""
