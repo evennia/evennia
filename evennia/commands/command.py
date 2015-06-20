@@ -363,6 +363,6 @@ class Command(object):
         Returns:
             A string with identifying information to disambiguate the object, conventionally with a preceding space.
         """
-        if hasattr(self, 'obj'):
+        if hasattr(self, 'obj') and self.obj != caller:
             return " (%s)" % self.obj.get_display_name(caller)
         return ""
