@@ -137,6 +137,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
 #
 # SEARCH_AT_RESULT
 # SEARCH_AT_MULTIMATCH_INPUT
+# SEARCH_AT_MULTIMATCH_CMD
 #
 # The the replacing functions must have the same inputs and outputs as
 # those in this module.

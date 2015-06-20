@@ -240,6 +240,9 @@ SEARCH_AT_RESULT = "evennia.commands.cmdparser.at_search_result"
 # object matches (so you can separate between same-named
 # objects without using dbrefs).
 SEARCH_AT_MULTIMATCH_INPUT = "evennia.commands.cmdparser.at_multimatch_input"
+# The parser used in order to separate multiple
+# command matches (so you can separate between same-named commands)
+SEARCH_AT_MULTIMATCH_CMD = "evennia.commands.cmdparser.at_multimatch_cmd"
 # The module holding text strings for the connection screen.
 # This module should contain one or more variables
 # with strings defining the look of the screen.

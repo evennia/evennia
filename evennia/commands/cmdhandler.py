@@ -42,7 +42,6 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
 from evennia.comms.channelhandler import CHANNELHANDLER
 from evennia.utils import logger, utils
-from evennia.commands.cmdparser import at_multimatch_cmd
 from evennia.utils.utils import string_suggestions, to_unicode
 
 from django.utils.translation import ugettext as _
@@ -70,6 +69,9 @@ CMD_CHANNEL = "__send_to_channel_command"
 # command to call as the very first one when the user connects.
 # (is expected to display the login screen)
 CMD_LOGINSTART = "__unloggedin_look_command"
+
+# Function for handling multiple command matches.
+_AT_MULTIMATCH_CMD = utils.variable_from_module(*settings.SEARCH_AT_MULTIMATCH_CMD.rsplit('.', 1))
 
 # Output strings
 
@@ -486,7 +488,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                     syscmd.matches = matches
                 else:
                     # fall back to default error handling
-                    sysarg = yield at_multimatch_cmd(caller, matches)
+                    sysarg = yield _AT_MULTIMATCH_CMD(caller, matches)
                 raise ExecSystemCommand(syscmd, sysarg)
 
             if len(matches) == 1:
