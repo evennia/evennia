@@ -355,7 +355,7 @@ class Command(object):
         in a disambiguity prompt.
 
         If this command is a potential match in an ambiguous situation, one distinguishing
-        feature may be its attachment to a nearby object, so we include this by default if available.
+        feature may be its attachment to a nearby object, so we include this if available.
 
         Args:
             caller (TypedObject): The caller who typed an ambiguous term handed to the search function.
