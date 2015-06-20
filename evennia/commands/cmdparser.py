@@ -283,5 +283,5 @@ def at_multimatch_cmd(caller, matches):
         cmdname, arg, cmd, dum, dum = match
 
         get_extra_info = cmd.get_extra_info(caller)
-        string += "%s-%s%s" % (num + 1, cmdname, get_extra_info)
+        string += "\n %s-%s%s" % (num + 1, cmdname, get_extra_info)
     return string
