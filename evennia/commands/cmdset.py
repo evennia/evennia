@@ -143,14 +143,19 @@ class CmdSet(object):
     key = "Unnamed CmdSet"
     mergetype = "Union"
     priority = 0
-    # if None, the cmdhandler will switch to True for objects and stay False otherwise.
-    # Explicitly set True/False will be kept.
+
+    # These flags, if set to None, will allow "pass-through" of lower-prio settings
+    # of True/False. If set to True/False, will override lower-prio settings.
+    no_exits = None
+    no_objs = None
+    no_channels = None
+    # same as above, but if left at None in the final merged set, the
+    # cmdhandler will auto-assume True for Objects and stay False for all
+    # other entities.
     duplicates = None
-    key_mergetypes = {}
-    no_exits = False
-    no_objs = False
-    no_channels = False
+
     permanent = False
+    key_mergetypes = {}
     errmessage = ""
     # pre-store properties to duplicate straight off
     to_duplicate = ("key", "cmdsetobj", "no_exits", "no_objs",
@@ -312,10 +317,6 @@ class CmdSet(object):
                 setattr(cmdset, key, val)
         cmdset.key_mergetypes = self.key_mergetypes.copy()
         return cmdset
-        #cmdset = self.__class__()
-        #cmdset.__dict__.update(dict((key, val) for key, val in self.__dict__.items() if key in self.to_duplicate))
-        #cmdset.key_mergetypes = self.key_mergetypes.copy() #copy.deepcopy(self.key_mergetypes)
-        #return cmdset
 
     def __str__(self):
         """
@@ -388,9 +389,11 @@ class CmdSet(object):
                 cmdset_c = self._remove(self, cmdset_b)
             else: # Union
                 cmdset_c = self._union(self, cmdset_b)
-            cmdset_c.no_channels = self.no_channels
-            cmdset_c.no_exits = self.no_exits
-            cmdset_c.no_objs = self.no_objs
+            # update or pass-through
+            cmdset_c.no_channels = cmdset_b.no_channels if self.no_channels is None else self.no_channels
+            cmdset_c.no_exits = cmdset_b.no_exits if self.no_exits is None else self.no_exits
+            cmdset_c.no_objs = cmdset_b.no_objs if self.no_objs is None else self.no_objs
+            cmdset_c.duplicates = cmdset_b.duplicates if self.duplicates is None else self.duplicates
             if self.key.startswith("_"):
                 # don't rename new output if the merge set's name starts with _
                 cmdset_c.key = cmdset_b.key
@@ -414,6 +417,11 @@ class CmdSet(object):
             cmdset_c.no_channels = cmdset_b.no_channels
             cmdset_c.no_exits = cmdset_b.no_exits
             cmdset_c.no_objs = cmdset_b.no_objs
+            # update or pass-through
+            cmdset_c.no_channels = self.no_channels if self.no_channels is None else cmdset_b.no_channels
+            cmdset_c.no_exits = self.no_exits if self.no_exits is None else cmdset_b.no_exits
+            cmdset_c.no_objs = self.no_objs if self.no_objs is None else cmdset_b.no_objs
+            cmdset_c.duplicates = self.duplicates if self.duplicates is None else cmdset_b.duplicates
             if cmdset_b.key.startswith("_"):
                 # don't rename new output if the merge set's name starts with _
                 cmdset_c.key = self.key
