@@ -1476,6 +1476,15 @@ class ExitCommand(command.Command):
                 # No shorthand error message. Call hook.
                 self.obj.at_failed_traverse(self.caller)
 
+    def get_extra_info(self, caller, **kwargs):
+        """
+        Shows a bit of information on where the exit leads.
+        """
+        if self.obj.destination:
+            return " (exit to %s)" % self.obj.destination.display_name(caller)
+        else:
+            return " (%s)" % self.obj.display_name(caller)
+
 #
 # Base Exit object
 #

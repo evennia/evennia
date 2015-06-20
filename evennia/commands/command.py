@@ -348,3 +348,15 @@ class Command(object):
         string += fill("current cmdset (self.cmdset): {w%s{n\n" % (self.cmdset.key if self.cmdset.key else self.cmdset.__class__))
 
         self.caller.msg(string)
+
+    def get_extra_info(self, caller, **kwargs):
+        """
+        Display some extra information that may help distinguish this command from others, for instance,
+        in a disambiguity prompt.
+
+        If this command is a potential match in an ambiguous situation, one distinguishing
+        feature may be its attachment to a nearby object, so we include this by default if available.
+        """
+        if hasattr(self, 'obj'):
+            return " (%s)" % self.obj.display_name(caller)
+        return ""

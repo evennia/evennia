@@ -187,9 +187,6 @@ def at_search_result(msg_obj, ostring, results, global_search=False,
         # we have more than one match. We will display a
         # list of the form 1-objname, 2-objname etc.
 
-        # check if the msg_object may se dbrefs
-        show_dbref = global_search
-
         if multimatch_string:
             # custom header
             string = multimatch_string
@@ -199,14 +196,7 @@ def at_search_result(msg_obj, ostring, results, global_search=False,
             string = _(string)
 
         for num, result in enumerate(results):
-            invtext = ""
-            dbreftext = ""
-            if hasattr(result, _("location")) and result.location == msg_obj:
-                invtext = _(" (carried)")
-            if show_dbref:
-                dbreftext = "(#%i)" % result.dbid
-            string += "\n %i-%s%s%s" % (num + 1, result.name,
-                                        dbreftext, invtext)
+            string += "\n %i-%s%s" % (num + 1, result.name, result.get_extra_info(msg_obj))
         results = None
     else:
         # we have exactly one match.
@@ -292,26 +282,6 @@ def at_multimatch_cmd(caller, matches):
         # each match is a tuple (candidate, cmd)
         cmdname, arg, cmd, dum, dum = match
 
-        is_channel = hasattr(cmd, "is_channel") and cmd.is_channel
-        if is_channel:
-            is_channel = _(" (channel)")
-        else:
-            is_channel = ""
-        if cmd.is_exit and cmd.destination:
-            is_exit = (" (exit to %s)") % cmd.destination
-        else:
-            is_exit = ""
-
-        id1 = ""
-        id2 = ""
-        if (not (is_channel or is_exit) and
-            (hasattr(cmd, 'obj') and cmd.obj != caller) and
-             hasattr(cmd.obj, "key")):
-            # the command is defined on some other object
-            id1 = "%s-%s" % (num + 1, cmdname)
-            id2 = " (%s)" % (cmd.obj.key)
-        else:
-            id1 = "%s-%s" % (num + 1, cmdname)
-            id2 = ""
-        string += "\n  %s%s%s%s" % (id1, id2, is_channel, is_exit)
+        get_extra_info = cmd.get_extra_info(caller)
+        string += "%s-%s%s" % (num + 1, cmdname, get_extra_info)
     return string

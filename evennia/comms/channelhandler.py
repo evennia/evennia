@@ -81,6 +81,12 @@ class ChannelCommand(command.Command):
             return
         channel.msg(msg, senders=self.caller, online=True)
 
+    def get_extra_info(self, caller, **kwargs):
+        """
+        Let users know that this exit is for communicating on a channel.
+        """
+        return _(" (channel)")
+
 
 class ChannelHandler(object):
     """
