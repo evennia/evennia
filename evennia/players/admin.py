@@ -71,6 +71,9 @@ class PlayerDBCreationForm(UserCreationForm):
                   "@/./+/-/_ only.")
 
     def clean_username(self):
+        """
+        Cleanup username.
+        """
         username = self.cleaned_data['username']
         if PlayerDB.objects.filter(username__iexact=username):
             raise forms.ValidationError('A player with that name already '

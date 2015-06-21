@@ -26,6 +26,10 @@ class BotStarter(DefaultScript):
 
     """
     def at_script_creation(self):
+        """
+        Called once, when script is created.
+
+        """
         self.key = "botstarter"
         self.desc = "bot start/keepalive"
         self.persistent = True
