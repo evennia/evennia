@@ -43,6 +43,7 @@ class OOBFieldMonitor(object):
     the update() method w ill be called by the
     save mechanism, which in turn will call the
     user-customizable func()
+
     """
     def __init__(self, obj):
         """
@@ -50,14 +51,19 @@ class OOBFieldMonitor(object):
 
         Args:
             obj (Object): object handler is defined on.
+
         """
         self.obj = obj
         self.subscribers = defaultdict(list)
 
     def __call__(self, fieldname):
         """
-        Called by the save() mechanism when the given
-        field has updated.
+        Called by the save() mechanism when the given field has
+        updated.
+
+        Args:
+            fieldname (str): The field to monitor
+
         """
         for sessid, oobtuples in self.subscribers.items():
             # oobtuples is a list [(oobfuncname, args, kwargs), ...],
@@ -73,12 +79,13 @@ class OOBFieldMonitor(object):
         Args:
             sessid (int): Session id
             oobfuncname (str): oob command to call when field updates
-            args,kwargs: arguments to pass to oob commjand
+            args,kwargs (any): arguments to pass to oob commjand
 
         Notes:
             Each sessid may have a list of (oobfuncname, args, kwargs)
             tuples, all of which will be executed when the
             field updates.
+
         """
         self.subscribers[sessid].append((oobfuncname, args, kwargs))
 
@@ -88,7 +95,6 @@ class OOBFieldMonitor(object):
 
         Args:
             sessid(int): Session id
-        Keyword Args:
             oobfuncname (str, optional): Only delete this cmdname.
                 If not given, delete all.
 

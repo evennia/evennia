@@ -75,15 +75,27 @@ class AmpServerFactory(protocol.ServerFactory):
     """
     def __init__(self, server):
         """
-        server: The Evennia server service instance
-        protocol: The protocol the factory creates instances of.
+        Initialize the factory.
+
+        Args:
+            server (Server): The Evennia server service instance.
+            protocol (Protocol): The protocol the factory creates
+                instances of.
+
         """
         self.server = server
         self.protocol = AMPProtocol
 
     def buildProtocol(self, addr):
         """
-        Start a new connection, and store it on the service object
+        Start a new connection, and store it on the service object.
+
+        Args:
+            addr (str): Connection address. Not used.
+
+        Returns:
+            protocol (Protocol): The created protocol.
+
         """
         #print "Evennia Server connected to Portal at %s." % addr
         self.server.amp_protocol = AMPProtocol()
@@ -95,6 +107,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     """
     This factory creates an instance of the Portal, an AMPProtocol
     instances to use to connect
+
     """
     # Initial reconnect delay in seconds.
     initialDelay = 1
@@ -102,12 +115,24 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     maxDelay = 1
 
     def __init__(self, portal):
+        """
+        Initializes the client factory.
+
+        Args:
+            portal (Portal): Portal instance.
+
+        """
         self.portal = portal
         self.protocol = AMPProtocol
 
     def startedConnecting(self, connector):
         """
         Called when starting to try to connect to the MUD server.
+
+        Args:
+            connector (Connector): Twisted Connector instance representing
+                this connection.
+
         """
         pass
         #print 'AMP started to connect:', connector
@@ -115,6 +140,10 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     def buildProtocol(self, addr):
         """
         Creates an AMPProtocol instance when connecting to the server.
+
+        Args:
+            addr (str): Connection address. Not used.
+
         """
         #print "Portal connected to Evennia server at %s." % addr
         self.resetDelay()
@@ -125,6 +154,12 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     def clientConnectionLost(self, connector, reason):
         """
         Called when the AMP connection to the MUD server is lost.
+
+        Args:
+            connector (Connector): Twisted Connector instance representing
+                this connection.
+            reason (str): Eventual text describing why connection was lost.
+
         """
         if hasattr(self, "server_restart_mode"):
             self.maxDelay = 1
@@ -137,6 +172,12 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     def clientConnectionFailed(self, connector, reason):
         """
         Called when an AMP connection attempt to the MUD server fails.
+
+        Args:
+            connector (Connector): Twisted Connector instance representing
+                this connection.
+            reason (str): Eventual text describing why connection failed.
+
         """
         if hasattr(self, "server_restart_mode"):
             self.maxDelay = 1
@@ -150,7 +191,8 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
 
 class MsgPortal2Server(amp.Command):
     """
-    Message portal -> server
+    Message Portal -> Server
+
     """
     key = "MsgPortal2Server"
     arguments = [('hashid', amp.String()),
@@ -163,7 +205,8 @@ class MsgPortal2Server(amp.Command):
 
 class MsgServer2Portal(amp.Command):
     """
-    Message server -> portal
+    Message Server -> Portal
+
     """
     key = "MsgServer2Portal"
     arguments = [('hashid', amp.String()),
@@ -176,11 +219,11 @@ class MsgServer2Portal(amp.Command):
 
 class ServerAdmin(amp.Command):
     """
-    Portal -> Server
+    Administration Portal -> Server
 
-    Sent when the portal needs to perform admin
-     operations on the server, such as when a new
-     session connects or resyncs
+    Sent when the portal needs to perform admin operations on the
+    server, such as when a new session connects or resyncs
+
     """
     key = "ServerAdmin"
     arguments = [('hashid', amp.String()),
@@ -193,10 +236,11 @@ class ServerAdmin(amp.Command):
 
 class PortalAdmin(amp.Command):
     """
-    Server -> Portal
+    Administration Server -> Portal
 
-    Sent when the server needs to perform admin
-     operations on the portal.
+    Sent when the server needs to perform admin operations on the
+    portal.
+
     """
     key = "PortalAdmin"
     arguments = [('hashid', amp.String()),
@@ -209,11 +253,11 @@ class PortalAdmin(amp.Command):
 
 class FunctionCall(amp.Command):
     """
-    Bidirectional
+    Bidirectional Server <-> Portal
 
-    Sent when either process needs to call an
-    arbitrary function in the other. This does
-    not use the batch-send functionality.
+    Sent when either process needs to call an arbitrary function in
+    the other. This does not use the batch-send functionality.
+
     """
     key = "FunctionCall"
     arguments = [('module', amp.String()),
@@ -224,7 +268,7 @@ class FunctionCall(amp.Command):
     response = [('result', amp.String())]
 
 
-# Helper functions
+# Helper functions for pickling.
 
 dumps = lambda data: to_str(pickle.dumps(to_str(data), pickle.HIGHEST_PROTOCOL))
 loads = lambda data: pickle.loads(to_str(data))
@@ -237,19 +281,22 @@ loads = lambda data: pickle.loads(to_str(data))
 class AMPProtocol(amp.AMP):
     """
     This is the protocol that the MUD server and the proxy server
-    communicate to each other with. AMP is a bi-directional protocol, so
-    both the proxy and the MUD use the same commands and protocol.
+    communicate to each other with. AMP is a bi-directional protocol,
+    so both the proxy and the MUD use the same commands and protocol.
 
-    AMP specifies responder methods here and connect them to amp.Command
-    subclasses that specify the datatypes of the input/output of these methods.
+    AMP specifies responder methods here and connect them to
+    amp.Command subclasses that specify the datatypes of the
+    input/output of these methods.
+
     """
 
     # helper methods
 
     def __init__(self, *args, **kwargs):
         """
-        Initialize protocol with some things that need to be
-        in place already before connecting both on portal and server.
+        Initialize protocol with some things that need to be in place
+        already before connecting both on portal and server.
+
         """
         self.min_batch_step = 1.0 / BATCH_RATE
         self.lastsend = time()
@@ -259,13 +306,13 @@ class AMPProtocol(amp.AMP):
 
     def connectionMade(self):
         """
-        This is called when a connection is established
-        between server and portal. AMP calls it on both sides,
-        so we need to make sure to only trigger resync from the
-        portal side.
+        This is called when a connection is established between server
+        and portal. AMP calls it on both sides, so we need to make
+        sure to only trigger resync from the portal side.
 
         """
-        self.transport.setTcpNoDelay(True) # this makes for a factor x10 faster sends!
+        # this makes for a factor x10 faster sends!
+        self.transport.setTcpNoDelay(True)
         if hasattr(self.factory, "portal"):
             # only the portal has the 'portal' property, so we know we are
             # on the portal side and can initialize the connection.
@@ -280,7 +327,15 @@ class AMPProtocol(amp.AMP):
     # Error handling
 
     def errback(self, e, info):
-        "error handler, to avoid dropping connections on server tracebacks."
+        """
+        Error callback.
+        Handles errors to avoid dropping connections on server tracebacks.
+
+        Args:
+            e (Failure): Deferred error instance.
+            info (str): Error string.
+
+        """
         e.trap(Exception)
         print "AMP Error for %(info)s: %(e)s" % {'info': info,
                                                  'e': e.getErrorMessage()}
@@ -289,8 +344,17 @@ class AMPProtocol(amp.AMP):
         """
         This will batch data together to send fewer, large batches.
 
+        Args:
+            command (AMP Command): A protocol send command.
+            sessid (int): A unique Session id.
+
         Kwargs:
-            force_direct: send direct
+            force_direct (bool): Send direct, without batching data.
+
+        Returns:
+            deferreds (list or None): A list of deferreds firing with
+                as batch parts get sent (or fails).
+
         """
         #print "batch_send 1:", command, sessid
         global _SENDBATCH
@@ -343,6 +407,17 @@ class AMPProtocol(amp.AMP):
         This will receive and unpack data sent as a batch. This both
         handles too-long data as well as batch-sending very fast-
         arriving commands.
+
+        Args:
+            hashid (str): Unique hash id representing this batch in
+                the cache buffer.
+            data (str): Data coming over the wire.
+            ipart (int): Index of this part of the batch (ipart/nparts)
+            nparts (int): Total number of parts in this batch.
+
+        Returns:
+            data (str or list): The received data.
+
         """
         global _MSGBUFFER
         if nparts == 1:
@@ -364,11 +439,20 @@ class AMPProtocol(amp.AMP):
 
     def amp_msg_portal2server(self, hashid, data, ipart, nparts):
         """
-        Relays message to server. This method is executed on the Server.
+        Relays message to server. This method is executed on the
+        Server.
 
-        Since AMP has a limit of 65355 bytes per message, it's possible the
-        data comes in multiple chunks; if so (nparts>1) we buffer the data
-        and wait for the remaining parts to arrive before continuing.
+        Since AMP has a limit of 65355 bytes per message, it's
+        possible the data comes in multiple chunks; if so (nparts>1)
+        we buffer the data and wait for the remaining parts to arrive
+        before continuing.
+
+        Args:
+            hashid (str): Unique hash identifying this data batch.
+            data (str): Data to send (often a part of a batch)
+            ipart (int): Index of this part of the batch.
+            nparts (int): Total number of batches.
+
         """
         batch = self.batch_recv(hashid, data, ipart, nparts)
         for (sessid, kwargs) in batch:
@@ -382,6 +466,15 @@ class AMPProtocol(amp.AMP):
     def call_remote_MsgPortal2Server(self, sessid, msg, data=""):
         """
         Access method called by the Portal and executed on the Portal.
+
+        Args:
+            sessid (int): Unique Session id.
+            msg (str): Message to send over the wire.
+            data (str, optional): Optional data.
+
+        Returns:
+            deferred (Deferred): Asynchronous return.
+
         """
         #print "msg portal->server (portal side):", sessid, msg, data
         return self.batch_send(MsgPortal2Server, sessid,
@@ -393,6 +486,18 @@ class AMPProtocol(amp.AMP):
     def amp_msg_server2portal(self, hashid, data, ipart, nparts):
         """
         Relays message to Portal. This method is executed on the Portal.
+
+        Since AMP has a limit of 65355 bytes per message, it's
+        possible the data comes in multiple chunks; if so (nparts>1)
+        we buffer the data and wait for the remaining parts to arrive
+        before continuing.
+
+        Args:
+            hashid (str): Unique hash identifying this data batch.
+            data (str): Data to send (often a part of a batch)
+            ipart (int): Index of this part of the batch.
+            nparts (int): Total number of batches.
+
         """
         batch = self.batch_recv(hashid, data, ipart, nparts)
         for (sessid, kwargs) in batch:
@@ -406,6 +511,18 @@ class AMPProtocol(amp.AMP):
     def amp_batch_server2portal(self, hashid, data, ipart, nparts):
         """
         Relays batch data to Portal. This method is executed on the Portal.
+
+        Since AMP has a limit of 65355 bytes per message, it's
+        possible the data comes in multiple chunks; if so (nparts>1)
+        we buffer the data and wait for the remaining parts to arrive
+        before continuing.
+
+        Args:
+            hashid (str): Unique hash identifying this data batch.
+            data (str): Data to send (often a part of a batch)
+            ipart (int): Index of this part of the batch.
+            nparts (int): Total number of batches.
+
         """
         batch = self.batch_recv(hashid, data, ipart, nparts)
         if batch is not None:
@@ -418,7 +535,13 @@ class AMPProtocol(amp.AMP):
 
     def call_remote_MsgServer2Portal(self, sessid, msg, data=""):
         """
-        Access method called by the Server and executed on the Server.
+        Send Message - access method called by the Server and executed on the Server.
+
+        Args:
+            sessid (int): Unique Session id.
+            msg (str): Message to send over the wire.
+            data (str, optional): Extra data.
+
         """
         #print "msg server->portal (server side):", sessid, msg, data
         return self.batch_send(MsgServer2Portal, sessid, msg=msg, data=data)
@@ -428,6 +551,17 @@ class AMPProtocol(amp.AMP):
         """
         This allows the portal to perform admin
         operations on the server.  This is executed on the Server.
+
+        Since AMP has a limit of 65355 bytes per message, it's
+        possible the data comes in multiple chunks; if so (nparts>1)
+        we buffer the data and wait for the remaining parts to arrive
+        before continuing.
+
+        Args:
+            hashid (str): Unique hash identifying this data batch.
+            data (str): Data to send (often a part of a batch)
+            ipart (int): Index of this part of the batch.
+            nparts (int): Total number of batches.
 
         """
         #print "serveradmin (server side):", hashid, ipart, nparts
@@ -465,7 +599,15 @@ class AMPProtocol(amp.AMP):
 
     def call_remote_ServerAdmin(self, sessid, operation="", data=""):
         """
-        Access method called by the Portal and Executed on the Portal.
+        Administrative access method called by the Portal and Executed
+        on the Portal.
+
+        Args:
+            sessid (int): Session id.
+            operation (char, optional): Identifier for the server operation, as defined by the
+                global variables in `evennia/server/amp.py`.
+            data (str, optional): Data going into the adminstrative operation.
+
         """
         #print "serveradmin (portal side):", sessid, ord(operation), data
         if hasattr(self.factory, "server_restart_mode"):
@@ -478,6 +620,18 @@ class AMPProtocol(amp.AMP):
         """
         This allows the server to perform admin
         operations on the portal. This is executed on the Portal.
+
+        Since AMP has a limit of 65355 bytes per message, it's
+        possible the data comes in multiple chunks; if so (nparts>1)
+        we buffer the data and wait for the remaining parts to arrive
+        before continuing.
+
+        Args:
+            hashid (str): Unique hash identifying this data batch.
+            data (str): Data to send (often a part of a batch)
+            ipart (int): Index of this part of the batch.
+            nparts (int): Total number of batches.
+
         """
         #print "portaladmin (portal side):", sessid, ord(operation), data
         batch = self.batch_recv(hashid, data, ipart, nparts)
@@ -519,7 +673,17 @@ class AMPProtocol(amp.AMP):
 
     def call_remote_PortalAdmin(self, sessid, operation="", data=""):
         """
-        Access method called by the server side.
+        Administrative access method called by the Server side and executed
+        onthe Portal.
+
+        Args:
+            sessid (int): Session id.
+            operation (char, optional): Identifier for the server
+                operation, as defined by the global variables in
+                `evennia/server/amp.py`.
+            data (str, optional): Data going into the adminstrative
+                operation.
+
         """
         if operation == SSYNC:
             return self.batch_send(PortalAdmin, sessid, force_direct=True, operation=operation, data=data)
@@ -529,8 +693,18 @@ class AMPProtocol(amp.AMP):
 
     def amp_function_call(self, module, function, args, **kwargs):
         """
-        This allows Portal- and Server-process to call an arbitrary function
-        in the other process. It is intended for use by plugin modules.
+        This allows Portal- and Server-process to call an arbitrary
+        function in the other process. It is intended for use by
+        plugin modules.
+
+        Args:
+            module (str or module): The module containing the
+                `function` to call.
+            function (str): The name of the function to call in
+                `module`.
+            args, kwargs (any): These will be used as args/kwargs to
+                `function`.
+
         """
         args = loads(args)
         kwargs = loads(kwargs)
@@ -561,6 +735,7 @@ class AMPProtocol(amp.AMP):
         Returns:
             A deferred that fires with the return value of the remote
             function call
+
         """
         return self.callRemote(FunctionCall,
                                module=modulepath,

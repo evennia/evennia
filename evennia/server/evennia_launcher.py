@@ -315,6 +315,7 @@ ERROR_NODJANGO = \
 def evennia_version():
     """
     Get the Evennia version info from the main package.
+
     """
     version = "Unknown"
     try:
@@ -338,6 +339,7 @@ def check_main_evennia_dependencies():
 
     Returns:
         not_error (bool): True if no dependency error was found.
+
     """
     error = False
 
@@ -381,6 +383,7 @@ def set_gamedir(path):
     """
     Set GAMEDIR based on path, by figuring out where the setting file
     is inside the directory tree.
+
     """
 
     global GAMEDIR
@@ -405,6 +408,7 @@ def set_gamedir(path):
 def create_secret_key():
     """
     Randomly create the secret key for the settings file
+
     """
     import random
     import string
@@ -419,6 +423,7 @@ def create_settings_file():
     """
     Uses the template settings file to build a working
     settings file.
+
     """
     settings_path = os.path.join(GAMEDIR, "server", "conf", "settings.py")
     with open(settings_path, 'r') as f:
@@ -441,6 +446,10 @@ def create_game_directory(dirname):
     Initialize a new game directory named dirname
     at the current path. This means copying the
     template directory from evennia's root.
+
+    Args:
+        dirname (str): The directory name to create.
+
     """
     global GAMEDIR
     GAMEDIR = os.path.abspath(os.path.join(CURRENT_DIR, dirname))
@@ -454,14 +463,20 @@ def create_game_directory(dirname):
 
 
 def create_superuser():
-    "Create the superuser player"
+    """
+    Create the superuser player
+
+    """
     print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
     django.core.management.call_command("createsuperuser", interactive=True)
 
 
 def check_database():
     """
-    Check database exists
+    Check so the database exists.
+
+    Returns:
+        exists (bool): `True` if the database exists, otherwise `False`.
     """
     # Check so a database exists and is accessible
     from django.db import connection
@@ -517,7 +532,11 @@ def check_database():
 
 def getenv():
     """
-    Get current environment and add PYTHONPATH
+    Get current environment and add PYTHONPATH.
+
+    Returns:
+        env (dict): Environment global dict.
+
     """
     sep = ";" if os.name == 'nt' else ":"
     env = os.environ.copy()
@@ -527,8 +546,14 @@ def getenv():
 
 def get_pid(pidfile):
     """
-    Get the PID (Process ID) by trying to access
-    an PID file.
+    Get the PID (Process ID) by trying to access an PID file.
+
+    Args:
+        pidfile (str): The path of the pid file.
+
+    Returns:
+        pid (str): The process id.
+
     """
     pid = None
     if os.path.exists(pidfile):
@@ -542,6 +567,10 @@ def del_pid(pidfile):
     The pidfile should normally be removed after a process has
     finished, but when sending certain signals they remain, so we need
     to clean them manually.
+
+    Args:
+        pidfile (str): The path of the pid file.
+
     """
     if os.path.exists(pidfile):
         os.remove(pidfile)
@@ -552,6 +581,15 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART
     Send a kill signal to a process based on PID. A customized
     success/error message will be returned. If clean=True, the system
     will attempt to manually remove the pid file.
+
+    Args:
+        pidfile (str): The path of the pidfile to get the PID from.
+        signal (int, optional): Signal identifier.
+        succmsg (str, optional): Message to log on success.
+        errmsg (str, optional): Message to log on failure.
+        restart_file (str, optional): Restart file location.
+        restart (bool, optional): Are we in restart mode or not.
+
     """
     pid = get_pid(pidfile)
     if pid:
@@ -579,7 +617,14 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART
 
 def show_version_info(about=False):
     """
-    Display version info
+    Display version info.
+
+    Args:
+        about (bool): Include ABOUT info as well as version numbers.
+
+    Returns:
+        version_info (str): A complete version info string.
+
     """
     import os, sys
     import twisted
@@ -595,10 +640,15 @@ def show_version_info(about=False):
 def error_check_python_modules():
     """
     Import settings modules in settings. This will raise exceptions on
-    pure python-syntax issues which are hard to catch gracefully
-    with exceptions in the engine (since they are formatting errors in
-    the python source files themselves). Best they fail already here
+    pure python-syntax issues which are hard to catch gracefully with
+    exceptions in the engine (since they are formatting errors in the
+    python source files themselves). Best they fail already here
     before we get any further.
+
+    Raises:
+        DeprecationWarning: For trying to access various modules
+        (usually in `settings.py`) which are no longer supported.
+
     """
     from django.conf import settings
     def imp(path, split=True):
@@ -661,8 +711,13 @@ def error_check_python_modules():
 def init_game_directory(path, check_db=True):
     """
     Try to analyze the given path to find settings.py - this defines
-    the game directory and also sets PYTHONPATH as well as the
-    django path.
+    the game directory and also sets PYTHONPATH as well as the django
+    path.
+
+    Args:
+        path (str): Path to new game directory, including its name.
+        check_db (bool, optional): Check if the databae exists.
+
     """
     # set the GAMEDIR path
     set_gamedir(path)
@@ -758,8 +813,14 @@ def run_dummyrunner(number_of_dummies):
     """
     Start an instance of the dummyrunner
 
-    The dummy players' behavior can be customized by adding a
-    dummyrunner_settings.py config file in the game's conf directory.
+    Args:
+        number_of_dummies (int): The number of dummy players to start.
+
+    Notes:
+        The dummy players' behavior can be customized by adding a
+        ´dummyrunner_settings.py´ config file in the game's conf/
+        directory.
+
     """
     number_of_dummies = str(int(number_of_dummies)) if number_of_dummies else 1
     cmdstr = [sys.executable, EVENNIA_DUMMYRUNNER, "-N", number_of_dummies]
@@ -773,8 +834,12 @@ def run_dummyrunner(number_of_dummies):
 
 def list_settings(keys):
     """
-    Display the server settings. We only display
-    the Evennia specific settings here.
+    Display the server settings. We only display the Evennia specific
+    settings here. The result will be printed to the terminal.
+
+    Args:
+        keys (str or list): Setting key or keys to inspect.
+
     """
     from importlib import import_module
     from evennia.utils import evtable
@@ -800,6 +865,7 @@ def list_settings(keys):
 def run_menu():
     """
     This launches an interactive menu.
+
     """
     while True:
         # menu loop
@@ -864,10 +930,12 @@ def server_operation(mode, service, interactive, profiler):
     """
     Handle argument options given on the command line.
 
-    mode - str; start/stop etc
-    service - str; server, portal or all
-    interactive - bool; use interactive mode or daemon
-    profiler - run the service under the profiler
+    Args:
+        mode (str): Start/stop/restart and so on.
+        service (str): "server", "portal" or "all".
+        interactive (bool). Use interactive mode or daemon.
+        profiler (bool): Run the service under the profiler.
+
     """
 
     cmdstr = [sys.executable, EVENNIA_RUNNER]
@@ -936,7 +1004,8 @@ def server_operation(mode, service, interactive, profiler):
 
 def main():
     """
-    Run the evennia main program.
+    Run the evennia launcher main program.
+
     """
 
     # set up argument parser

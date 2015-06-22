@@ -46,6 +46,7 @@ WARNING_POSTGRESQL_FIX = \
 def create_config_values():
     """
     Creates the initial config values.
+
     """
     ServerConfig.objects.conf("site_name", settings.SERVERNAME)
     ServerConfig.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
@@ -53,6 +54,7 @@ def create_config_values():
 def get_god_player():
     """
     Creates the god user and don't take no for an answer.
+
     """
     try:
         god_player = PlayerDB.objects.get(id=1)
@@ -64,6 +66,7 @@ def get_god_player():
 def create_objects():
     """
     Creates the #1 player and Limbo room.
+
     """
 
     print " Creating objects (Player #1 and Limbo room) ..."
@@ -122,6 +125,7 @@ def create_objects():
 def create_channels():
     """
     Creates some sensible default channels.
+
     """
     print " Creating default channels ..."
 
@@ -137,6 +141,7 @@ def at_initial_setup():
     setup. Called very last in the sequence. It tries to import and
     srun a module settings.AT_INITIAL_SETUP_HOOK_MODULE and will fail
     silently if this does not exist or fails to load.
+
     """
     modname = settings.AT_INITIAL_SETUP_HOOK_MODULE
     if not modname:
@@ -152,10 +157,11 @@ def at_initial_setup():
 
 def reset_server():
     """
-    We end the initialization by resetting the server. This
-    makes sure the first login is the same as all the following
-    ones, particularly it cleans all caches for the special objects.
-    It also checks so the warm-reset mechanism works as it should.
+    We end the initialization by resetting the server. This makes sure
+    the first login is the same as all the following ones,
+    particularly it cleans all caches for the special objects.  It
+    also checks so the warm-reset mechanism works as it should.
+
     """
     from evennia.server.sessionhandler import SESSIONS
     print " Initial setup complete. Restarting Server once."
@@ -164,9 +170,14 @@ def reset_server():
 
 def handle_setup(last_step):
     """
-    Main logic for the module. It allows for restarting
-    the initialization at any point if one of the modules
-    should crash.
+    Main logic for the module. It allows for restarting the
+    initialization at any point if one of the modules should crash.
+
+    Args:
+        last_step (int): The last stored successful step, for starting
+            over on errors. If `< 0`, initialization has finished and no
+            steps need to be redone.
+
     """
 
     if last_step < 0:
