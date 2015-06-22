@@ -53,6 +53,14 @@ _MSGBUFFER = defaultdict(list)
 def get_restart_mode(restart_file):
     """
     Parse the server/portal restart status
+
+    Args:
+        restart_file (str): Path to restart.dat file.
+
+    Returns:
+        restart_mode (bool): If the file indicates the server is in
+            restart mode or not.
+
     """
     if os.path.exists(restart_file):
         flag = open(restart_file, 'r').read()
