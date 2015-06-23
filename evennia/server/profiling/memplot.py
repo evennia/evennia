@@ -18,7 +18,12 @@ LOGFILE = "logs/memoryusage.log"
 INTERVAL = 30 # log every 30 seconds
 
 class Memplot(ev.Script):
+    """
+    Describes a memory plotting action.
+
+    """
     def at_script_creation(self):
+        "Called at script creation"
         self.key = "memplot"
         self.desc = "Save server memory stats to file"
         self.start_delay = False
@@ -27,7 +32,7 @@ class Memplot(ev.Script):
         self.db.starttime = time.time()
 
     def at_repeat(self):
-
+        "Regularly save memory statistics."
         pid = os.getpid()
         rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rss")).read()) / 1000.0  # resident memory
         vmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "vsz")).read()) / 1000.0  # virtual memory

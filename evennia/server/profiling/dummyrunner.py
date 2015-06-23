@@ -162,7 +162,13 @@ Setup:
 
 ICOUNT = 0
 def idcounter():
-    "makes unique ids"
+    """
+    Makes unique ids.
+
+    Returns:
+        count (int): A globally unique counter.
+
+    """
     global ICOUNT
     ICOUNT += 1
     return str(ICOUNT)
@@ -170,17 +176,29 @@ def idcounter():
 
 GCOUNT = 0
 def gidcounter():
-    "makes globally unique ids"
+    """
+    Makes globally unique ids.
+
+    Returns:
+        count (int); A globally unique counter.
+
+    """
     global GCOUNT
     GCOUNT += 1
     return "%s-%s" % (time.strftime(DATESTRING), GCOUNT)
 
 
 def makeiter(obj):
-    "makes everything iterable"
-    if not hasattr(obj, '__iter__'):
-        return [obj]
-    return obj
+    """
+    Makes everything iterable.
+
+    Args:
+        obj (any): Object to turn iterable.
+
+    Returns:
+        iterable (iterable): An iterable object.
+    """
+    return obj if hasattr(obj, '__iter__') else [obj]
 
 #------------------------------------------------------------
 # Client classes
@@ -191,10 +209,14 @@ class DummyClient(telnet.StatefulTelnetProtocol):
     Handles connection to a running Evennia server,
     mimicking a real player by sending commands on
     a timer.
+
     """
 
     def connectionMade(self):
+        """
+        Called when connection is first established.
 
+        """
         # public properties
         self.cid = idcounter()
         self.key = "Dummy-%s" % self.cid
@@ -215,7 +237,14 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         reactor.addSystemEventTrigger('before', 'shutdown', self.logout)
 
     def dataReceived(self, data):
-        "Wait to start stepping until the server actually responds"
+        """
+        Called when data comes in over the protocol. We wait to start
+        stepping until the server actually responds
+
+        Args:
+            data (str): Incoming data.
+
+        """
         if not self._connected and not data.startswith(chr(255)):
             # wait until we actually get text back (not just telnet
             # negotiation)
@@ -227,20 +256,40 @@ class DummyClient(telnet.StatefulTelnetProtocol):
             d.start(timestep, now=True).addErrback(self.error)
 
     def connectionLost(self, reason):
-        "loosing the connection"
+        """
+        Called when loosing the connection.
+
+        Args:
+            reason (str): Reason for loosing connection.
+
+        """
         if not self._logging_out:
             print "client %s(%s) lost connection (%s)" % (self.key, self.cid, reason)
 
     def error(self, err):
-        "error callback"
+        """
+        Error callback.
+
+        Args:
+            err (Failure): Error instance.
+        """
         print err
 
     def counter(self):
-        "produces a unique id, also between clients"
+        """
+        Produces a unique id, also between clients.
+
+        Returns:
+            counter (int): A unique counter.
+
+        """
         return gidcounter()
 
     def logout(self):
-        "Causes the client to log out of the server. Triggered by ctrl-c signal."
+        """
+        Causes the client to log out of the server. Triggered by ctrl-c signal.
+
+        """
         self._logging_out = True
         cmd = self._logout(self)
         print "client %s(%s) logout (%s actions)" % (self.key, self.cid, self.istep)
@@ -248,9 +297,10 @@ class DummyClient(telnet.StatefulTelnetProtocol):
 
     def step(self):
         """
-        Perform a step. This is called repeatedly by the runner
-        and causes the client to issue commands to the server.
-        This holds all "intelligence" of the dummy client.
+        Perform a step. This is called repeatedly by the runner and
+        causes the client to issue commands to the server.  This holds
+        all "intelligence" of the dummy client.
+
         """
         global NLOGGED_IN
 
@@ -294,7 +344,13 @@ class DummyFactory(protocol.ClientFactory):
 #------------------------------------------------------------
 
 def start_all_dummy_clients(nclients):
+    """
+    Initialize all clients, connect them and start to step them
 
+    Args:
+        nclients (int): Number of dummy clients to connect.
+
+    """
     global NCLIENTS
     NCLIENTS = int(nclients)
     actions = DUMMYRUNNER_SETTINGS.ACTIONS
