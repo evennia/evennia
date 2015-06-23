@@ -131,23 +131,59 @@ class OOBHandler(TickerHandler):
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        Setup the tickerhandler wrapper.
+        """
         super(OOBHandler, self).__init__(*args, **kwargs)
         self.save_name = "oob_ticker_storage"
         self.oob_save_name = "oob_monitor_storage"
         self.oob_monitor_storage = {}
 
     def _get_repeater_hook_name(self, oobfuncname, interval, sessid):
-        "Return the unique repeater call hook name for this object"
+        """
+        Get the unique repeater call hook name for this object
+
+        Args:
+            oobfuncname (str): OOB function to retrieve
+            interval (int): Repeat interval
+            sessid (int): The Session id.
+
+        Returns:
+            hook_name (str): The repeater hook, when created, is a
+                dynamically assigned function that gets assigned to a
+                variable with a name created by combining the arguments.
+
+        """
         return "_oob_%s_every_%ss_for_sessid_%s" % (oobfuncname, interval, sessid)
 
     def _get_fieldmonitor_name(self, fieldname):
-        "Return the fieldmonitor name"
+        """
+        Get the fieldmonitor name.
+
+        Args:
+            fieldname (str): The field monitored.
+
+        Returns:
+            fieldmonitor_name (str): A dynamic function name
+                created from the argument.
+
+        """
         return "_oob_at_%s_postsave" % fieldname
 
     def _add_monitor(self, obj, sessid, fieldname, oobfuncname, *args, **kwargs):
         """
-        Create a fieldmonitor and store it on the object. This tracker
-        will be updated whenever the given field changes.
+        Helper method. Creates a fieldmonitor and store it on the
+        object. This tracker will be updated whenever the given field
+        changes.
+
+        Args:
+            obj (Object): The object on which to store the monitor.
+            sessid (int): The Session id associated with the monitor.
+            fieldname (str): The field to monitor
+            oobfuncname (str): The OOB callback function to trigger when
+                field `fieldname` changes.
+            args, kwargs (any): Arguments to pass on to the callback.
+
         """
         fieldmonitorname = self._get_fieldmonitor_name(fieldname)
         if not hasattr(obj, fieldmonitorname):
@@ -163,8 +199,14 @@ class OOBHandler(TickerHandler):
 
     def _remove_monitor(self, obj, sessid, fieldname, oobfuncname=None):
         """
-        Remove the OOB from obj. If oob implements an
-        at_delete hook, this will be called with args, kwargs
+        Helper method. Removes the OOB from obj.
+
+        Args:
+            obj (Object): The object from which to remove the monitor.
+            sessid (int): The Session id associated with the monitor.
+            fieldname (str): The monitored field from which to remove the monitor.
+            oobfuncname (str): The oob callback function.
+
         """
         fieldmonitorname = self._get_fieldmonitor_name(fieldname)
         try:
@@ -181,6 +223,7 @@ class OOBHandler(TickerHandler):
         """
         Handles saving of the OOBHandler data when the server reloads.
         Called from the Server process.
+
         """
         # save ourselves as a tickerhandler
         super(OOBHandler, self).save()
@@ -199,6 +242,7 @@ class OOBHandler(TickerHandler):
         overload the tickerhandler's restore method completely to make
         sure we correctly re-apply and re-initialize the correct
         monitor and repeater objecth on all saved objects.
+
         """
         # load the oob monitors and initialize them
         oob_storage = ServerConfig.objects.conf(key=self.oob_save_name)
@@ -370,6 +414,7 @@ class OOBHandler(TickerHandler):
             stored monitors (tuple): A list of tuples
             `(obj, fieldname, args, kwargs)` representing all
             the monitoring the Session with the given sessid is doing.
+
         """
         # check so we didn't get a session instead of a sessid
         if not isinstance(sessid, int):
@@ -444,6 +489,11 @@ if not _OOB_ERROR:
         Fallback error handler. This will be used if no custom
         oob_error is defined and just echoes the error back to the
         session.
+
+        Args:
+            errmsg (str): Error message to echo.
+            args, kwargs (any): Not used.
+
         """
         session.msg(oob=("err", ("ERROR ", errmsg)))
     _OOB_ERROR = oob_error
