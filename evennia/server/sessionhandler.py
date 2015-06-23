@@ -3,10 +3,11 @@ This module defines handlers for storing sessions when handles
 sessions of users connecting to the server.
 
 There are two similar but separate stores of sessions:
-  ServerSessionHandler - this stores generic game sessions
+
+  - ServerSessionHandler - this stores generic game sessions
          for the game. These sessions has no knowledge about
          how they are connected to the world.
-  PortalSessionHandler - this stores sessions created by
+  - PortalSessionHandler - this stores sessions created by
          twisted protocols. These are dumb connectors that
          handle network communication but holds no game info.
 
@@ -53,7 +54,10 @@ _MAX_SERVER_COMMANDS_PER_SECOND = 100.0
 _MAX_SESSION_COMMANDS_PER_SECOND = 5.0
 
 def delayed_import():
-    "Helper method for delayed import of all needed entities"
+    """
+    Helper method for delayed import of all needed entities.
+
+    """
     global _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
     if not _ServerSession:
         # we allow optional arbitrary serversession class for overloading
@@ -76,16 +80,26 @@ def delayed_import():
 class SessionHandler(object):
     """
     This handler holds a stack of sessions.
+
     """
     def __init__(self):
         """
         Init the handler.
+
         """
         self.sessions = {}
 
     def get_sessions(self, include_unloggedin=False):
         """
         Returns the connected session objects.
+
+        Args:
+            include_unloggedin (bool, optional): Also list Sessions
+                that have not yet authenticated.
+
+        Returns:
+            sessions (list): A list of `Session` objects.
+
         """
         if include_unloggedin:
             return self.sessions.values()
@@ -94,7 +108,14 @@ class SessionHandler(object):
 
     def get_session(self, sessid):
         """
-        Get session by sessid
+        Get session by sessid.
+
+        Args:
+            sessid (int): Session id.
+
+        Returns:
+            session (Session): A `Session` object, if found.
+
         """
         return self.sessions.get(sessid, None)
 
@@ -102,6 +123,10 @@ class SessionHandler(object):
         """
         Create a dictionary of sessdata dicts representing all
         sessions in store.
+
+        Returns:
+            syncdata (dict): A dict of sync data.
+
         """
         return dict((sessid, sess.get_sync_data()) for sessid, sess in self.sessions.items())
 
@@ -128,26 +153,29 @@ class ServerSessionHandler(SessionHandler):
     def __init__(self):
         """
         Init the handler.
+
         """
         self.sessions = {}
         self.server = None
         self.server_data = {"servername": _SERVERNAME}
 
-    def portal_connect(self, portalsession):
+    def portal_connect(self, portalsessiondata):
         """
         Called by Portal when a new session has connected.
         Creates a new, unlogged-in game session.
 
-        portalsession is a dictionary of all property:value keys
-                      defining the session and which is marked to
-                      be synced.
+        Args:
+            portalsessiondata (dict): a dictionary of all property:value
+                keys defining the session and which is marked to be
+                synced.
+
         """
         delayed_import()
         global _ServerSession, _PlayerDB, _ScriptDB
 
         sess = _ServerSession()
         sess.sessionhandler = self
-        sess.load_sync_data(portalsession)
+        sess.load_sync_data(portalsessiondata)
         if sess.logged_in and sess.uid:
             # this can happen in the case of auto-authenticating
             # protocols like SSH
@@ -162,6 +190,12 @@ class ServerSessionHandler(SessionHandler):
         """
         Called by Portal when it wants to update a single session (e.g.
         because of all negotiation protocols have finally replied)
+
+        Args:
+            portalsessiondata (dict): a dictionary of all property:value
+                keys defining the session and which is marked to be
+                synced.
+
         """
         sessid = portalsessiondata.get("sessid")
         session = self.sessions.get(sessid)
@@ -177,20 +211,26 @@ class ServerSessionHandler(SessionHandler):
         """
         Called by Portal when portal reports a closing of a session
         from the portal side.
+
+        Args:
+            sessid (int): Session id.
+
         """
         session = self.sessions.get(sessid, None)
         if not session:
             return
         self.disconnect(session)
 
-    def portal_sessions_sync(self, portalsessions):
+    def portal_sessions_sync(self, portalsessionsdata):
         """
         Syncing all session ids of the portal with the ones of the
         server. This is instantiated by the portal when reconnecting.
 
-        portalsessions is a dictionary {sessid: {property:value},...} defining
-                      each session and the properties in it which should
-                      be synced.
+        Args:
+            portalsessionsdata (dict): A dictionary
+              `{sessid: {property:value},...}` defining each session and
+              the properties in it which should be synced.
+
         """
         delayed_import()
         global _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
@@ -200,7 +240,7 @@ class ServerSessionHandler(SessionHandler):
             # lingering references.
             del sess
 
-        for sessid, sessdict in portalsessions.items():
+        for sessid, sessdict in portalsessionsdata.items():
             sess = _ServerSession()
             sess.sessionhandler = self
             sess.load_sync_data(sessdict)
@@ -221,14 +261,26 @@ class ServerSessionHandler(SessionHandler):
 
     def start_bot_session(self, protocol_path, configdict):
         """
-        This method allows the server-side to force the Portal to create
-        a new bot session using the protocol specified by protocol_path,
-        which should be the full python path to the class, including the
-        class name, like "evennia.server.portal.irc.IRCClient".
-        The new session will use the supplied player-bot uid to
-        initiate an already logged-in connection. The Portal will
-        treat this as a normal connection and henceforth so will the
-        Server.
+        This method allows the server-side to force the Portal to
+        create a new bot session.
+
+        Args:
+            protocol_path (str): The  full python path to the bot's
+                class.
+            configdict (dict): This dict will be used to configure
+                the bot (this depends on the bot protocol).
+
+        Examples:
+            start_bot_session("evennia.server.portal.irc.IRCClient",
+                              {"uid":1,  "botname":"evbot", "channel":"#evennia",
+                               "network:"irc.freenode.net", "port": 6667})
+
+        Notes:
+            The new session will use the supplied player-bot uid to
+            initiate an already logged-in connection. The Portal will
+            treat this as a normal connection and henceforth so will
+            the Server.
+
         """
         data = {"protocol_path":protocol_path,
                 "config":configdict}
@@ -239,6 +291,7 @@ class ServerSessionHandler(SessionHandler):
     def portal_shutdown(self):
         """
         Called by server when shutting down the portal.
+
         """
         self.server.amp_protocol.call_remote_PortalAdmin(0,
                                                          operation=SSHUTD,
@@ -247,11 +300,15 @@ class ServerSessionHandler(SessionHandler):
     def login(self, session, player, testmode=False):
         """
         Log in the previously unloggedin session and the player we by
-        now should know is connected to it. After this point we
-        assume the session to be logged in one way or another.
+        now should know is connected to it. After this point we assume
+        the session to be logged in one way or another.
 
-        testmode - this is used by unittesting for faking login without
-        any AMP being actually active
+        Args:
+            session (Session): The Session to authenticate.
+            player (Player): The Player identified as associated with this Session.
+            testmode (bool, optional): This is used by unittesting for
+                faking login without any AMP being actually active.
+
         """
 
         # we have to check this first before uid has been assigned
@@ -295,6 +352,11 @@ class ServerSessionHandler(SessionHandler):
         """
         Called from server side to remove session and inform portal
         of this fact.
+
+        Args:
+            session (Session): The Session to disconnect.
+            reason (str, optional): A motivation for the disconnect.
+
         """
         session = self.sessions.get(session.sessid)
         if not session:
@@ -319,6 +381,7 @@ class ServerSessionHandler(SessionHandler):
         """
         This is called by the server when it reboots. It syncs all session data
         to the portal. Returns a deferred!
+
         """
         sessdata = self.get_all_sync_data()
         return self.server.amp_protocol.call_remote_PortalAdmin(0,
@@ -328,6 +391,10 @@ class ServerSessionHandler(SessionHandler):
     def disconnect_all_sessions(self, reason="You have been disconnected."):
         """
         Cleanly disconnect all of the connected sessions.
+
+        Args:
+            reason (str, optional): The reason for the disconnection.
+
         """
 
         for session in self.sessions:
@@ -341,6 +408,11 @@ class ServerSessionHandler(SessionHandler):
                       reason=_("Logged in from elsewhere. Disconnecting.")):
         """
         Disconnects any existing sessions with the same user.
+
+        args:
+            curr_session (Session): Disconnect all Sessions matching this one.
+            reason (str, optional): A motivation for disconnecting.
+
         """
         uid = curr_session.uid
         doublet_sessions = [sess for sess in self.sessions.values()
@@ -352,8 +424,9 @@ class ServerSessionHandler(SessionHandler):
 
     def validate_sessions(self):
         """
-        Check all currently connected sessions (logged in and not)
-        and see if any are dead or idle
+        Check all currently connected sessions (logged in and not) and
+        see if any are dead or idle.
+
         """
         tcurr = time()
         reason = _("Idle timeout exceeded, disconnecting.")
@@ -387,7 +460,14 @@ class ServerSessionHandler(SessionHandler):
 
     def session_from_sessid(self, sessid):
         """
-        Return session based on sessid, or None if not found
+        Get session based on sessid, or None if not found
+
+        Args:
+            sessid (int or list): Session id(s)
+
+        Return:
+            sessions (Session or list): Session(s) found.
+
         """
         if is_iter(sessid):
             return [self.sessions.get(sid) for sid in sessid if sid in self.sessions]
@@ -395,7 +475,16 @@ class ServerSessionHandler(SessionHandler):
 
     def session_from_player(self, player, sessid):
         """
-        Given a player and a session id, return the actual session object
+        Given a player and a session id, return the actual session
+        object.
+
+        Args:
+            player (Player): The Player to get the Session from.
+            sessid (int or list): Session id(s).
+
+        Returns:
+            sessions (Session or list): Session(s) found.
+
         """
         if is_iter(sessid):
             sessions = [self.sessions.get(sid) for sid in sessid]
@@ -407,6 +496,13 @@ class ServerSessionHandler(SessionHandler):
     def sessions_from_player(self, player):
         """
         Given a player, return all matching sessions.
+
+        Args:
+            player (Player): Player to get sessions from.
+
+        Returns:
+            sessions (list): All Sessions associated with this player.
+
         """
         uid = player.uid
         return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
@@ -414,6 +510,14 @@ class ServerSessionHandler(SessionHandler):
     def sessions_from_puppet(self, puppet):
         """
         Given a puppeted object, return all controlling sessions.
+
+        Args:
+            puppet (Object): Object puppeted
+
+        Returns.
+            sessions (Session or list): Can be more than one of Object is controlled by
+                more than one Session (MULTISESSION_MODE > 1).
+
         """
         sessid = puppet.sessid.get()
         if is_iter(sessid):
@@ -424,6 +528,10 @@ class ServerSessionHandler(SessionHandler):
     def announce_all(self, message):
         """
         Send message to all connected sessions
+
+        Args:
+            message (str): Message to send.
+
         """
         for sess in self.sessions.values():
             self.data_out(sess, message)
@@ -482,6 +590,14 @@ class ServerSessionHandler(SessionHandler):
         """
         Data Portal -> Server.
         We also intercept OOB communication here.
+
+        Args:
+            sessid (int): Session id.
+
+        Kwargs:
+            text (str): Text from protocol.
+            kwargs (any): Other data from protocol.
+
         """
         session = self.sessions.get(sessid, None)
         if session:
