@@ -57,6 +57,7 @@ def jsonify(obj):
 class WebClient(resource.Resource):
     """
     An ajax/comet long-polling transport
+
     """
     isLeaf = True
     allowedMethods = ('POST',)
@@ -80,8 +81,17 @@ class WebClient(resource.Resource):
 
     def lineSend(self, suid, string, data=None):
         """
-        This adds the data to the buffer and/or sends it to
-        the client as soon as possible.
+        This adds the data to the buffer and/or sends it to the client
+        as soon as possible.
+
+        Args:
+            suid (int): Session id.
+            string (str): The text to send.
+            data (dict): Optional data.
+
+        Notes:
+            The `data` keyword is deprecated.
+
         """
         request = self.requests.get(suid)
         if request:
@@ -98,6 +108,10 @@ class WebClient(resource.Resource):
     def client_disconnect(self, suid):
         """
         Disconnect session with given suid.
+
+        Args:
+            suid (int): Session id.
+
         """
         if suid in self.requests:
             self.requests[suid].finish()
@@ -107,8 +121,12 @@ class WebClient(resource.Resource):
 
     def mode_init(self, request):
         """
-        This is called by render_POST when the client
-        requests an init mode operation (at startup)
+        This is called by render_POST when the client requests an init
+        mode operation (at startup)
+
+        Args:
+            request (Request): Incoming request.
+
         """
         #csess = request.getSession() # obs, this is a cookie, not
                                       # an evennia session!
@@ -133,6 +151,10 @@ class WebClient(resource.Resource):
         """
         This is called by render_POST when the client
         is sending data to the server.
+
+        Args:
+            request (Request): Incoming request.
+
         """
         suid = request.args.get('suid', ['0'])[0]
         if suid == '0':
@@ -148,10 +170,13 @@ class WebClient(resource.Resource):
     def mode_receive(self, request):
         """
         This is called by render_POST when the client is telling us
-        that it is ready to receive data as soon as it is
-        available. This is the basis of a long-polling (comet)
-        mechanism: the server will wait to reply until data is
-        available.
+        that it is ready to receive data as soon as it is available.
+        This is the basis of a long-polling (comet) mechanism: the
+        server will wait to reply until data is available.
+
+        Args:
+            request (Request): Incoming request.
+
         """
         suid = request.args.get('suid', ['0'])[0]
         if suid == '0':
@@ -170,6 +195,10 @@ class WebClient(resource.Resource):
         """
         This is called by render_POST when the client is signalling
         that it is about to be closed.
+
+        Args:
+            request (Request): Incoming request.
+
         """
         suid = request.args.get('suid', ['0'])[0]
         if suid == '0':
@@ -191,6 +220,10 @@ class WebClient(resource.Resource):
         initializing or sending/receving data through the request. It
         uses a long-polling mechanism to avoid sending data unless
         there is actual data available.
+
+        Args:
+            request (Request): Incoming request.
+
         """
         dmode = request.args.get('mode', [None])[0]
         if dmode == 'init':
@@ -222,7 +255,10 @@ class WebClientSession(session.Session):
 
     def disconnect(self, reason=None):
         """
-        Disconnect from server
+        Disconnect from server.
+
+        Args:
+            reason (str): Motivation for the disconnect.
         """
         if reason:
             self.client.lineSend(self.suid, reason)
@@ -230,11 +266,11 @@ class WebClientSession(session.Session):
 
     def data_out(self, text=None, **kwargs):
         """
-        Data Evennia -> Player access hook.
+        Data Evennia -> User access hook.
 
-        webclient flags checked are
-        raw=True - no parsing at all (leave ansi-to-html markers unparsed)
-        nomarkup=True - clean out all ansi/html markers and tokens
+        Kwargs:
+            raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
+            nomarkup (bool): Clean out all ansi/html markers and tokens.
 
         """
         # string handling is similar to telnet

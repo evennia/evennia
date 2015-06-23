@@ -31,6 +31,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     def connectionMade(self):
         """
         This is called when the connection is first established.
+
         """
         # initialize the session
         self.iaw_mode = False
@@ -88,8 +89,14 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     def enableRemote(self, option):
         """
         This sets up the remote-activated options we allow for this protocol.
+
+        Args:
+            option (char): The telnet option to enable.
+
+        Returns:
+            enable (bool): If this option should be enabled.
+
         """
-        pass
         return (option == LINEMODE or
                 option == ttype.TTYPE or
                 option == naws.NAWS or
@@ -99,12 +106,23 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     def enableLocal(self, option):
         """
         Call to allow the activation of options for this protocol
+
+        Args:
+            option (char): The telnet option to enable locally.
+
+        Returns:
+            enable (bool): If this option should be enabled.
+
         """
         return (option == MCCP or option==ECHO)
 
     def disableLocal(self, option):
         """
-        Disable a given option
+        Disable a given option locally.
+
+        Args:
+            option (char): The telnet option to disable locally.
+
         """
         if option == ECHO:
             return True
@@ -116,23 +134,33 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
     def connectionLost(self, reason):
         """
-        this is executed when the connection is lost for
-        whatever reason. it can also be called directly, from
-        the disconnect method
+        this is executed when the connection is lost for whatever
+        reason. it can also be called directly, from the disconnect
+        method
+
+        Args:
+            reason (str): Motivation for losing connection.
+
         """
         self.sessionhandler.disconnect(self)
         self.transport.loseConnection()
 
     def dataReceived(self, data):
         """
+        Handle incoming data over the wire.
+
         This method will split the incoming data depending on if it
         starts with IAC (a telnet command) or not. All other data will
         be handled in line mode. Some clients also sends an erroneous
         line break after IAC, which we must watch out for.
 
-        OOB protocols (MSDP etc) already intercept subnegotiations
-        on their own, never entering this method. They will relay
-        their parsed data directly to self.data_in.
+        Args:
+            data (str): Incoming data.
+
+        Notes:
+            OOB protocols (MSDP etc) already intercept subnegotiations on
+            their own, never entering this method. They will relay their
+            parsed data directly to self.data_in.
 
         """
 
@@ -180,7 +208,13 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         super(TelnetProtocol, self)._write(mccp_compress(self, data))
 
     def sendLine(self, line):
-        "hook overloading the one used by linereceiver"
+        """
+        Hook overloading the one used by linereceiver.
+
+        Args:
+            line (str): Line to send.
+
+        """
         #print "sendLine (%s):\n%s" % (self.state, line)
         #escape IAC in line mode, and correctly add \r\n
         line += self.delimiter
@@ -191,6 +225,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         Telnet method called when data is coming in over the telnet
         connection. We pass it on to the game engine directly.
+
+        Args:
+            string (str): Incoming data.
+
         """
         self.data_in(text=string)
 
@@ -200,6 +238,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         generic hook for the engine to call in order to
         disconnect this protocol.
+
+        Args:
+            reason (str): Reason for disconnecting.
+
         """
         if reason:
             self.data_out(reason)
@@ -207,36 +249,46 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
     def data_in(self, text=None, **kwargs):
         """
-        Data Telnet -> Server
+        Data User -> Evennia
+
+        Kwargs:
+            text (str): Incoming text.
+            kwargs (any): Options from the protocol.
+
         """
         self.sessionhandler.data_in(self, text=text, **kwargs)
 
     def data_out(self, text=None, **kwargs):
         """
-        Data Evennia -> Player.
-        generic hook method for engine to call in order to send data
-        through the telnet connection.
+        Data Evennia -> User. A generic hook method for engine to call
+        in order to send data through the telnet connection.
 
-        valid telnet kwargs:
-            oob=[(cmdname,args,kwargs), ...] - supply an Out-of-Band instruction.
-            xterm256=True/False - enforce xterm256 setting. If not
-                                  given, ttype result is used. If
-                                  client does not suport xterm256, the
-                                  ansi fallback will be used
-            mxp=True/False - enforce mxp setting. If not given, enables if we
-                             detected client support for it
-            ansi=True/False - enforce ansi setting. If not given,
-                              ttype result is used.
-            nomarkup=True - strip all ansi markup (this is the same as
-                            xterm256=False, ansi=False)
-            raw=True - pass string through without any ansi
-                       processing (i.e. include Evennia ansi markers but do
-                       not convert them into ansi tokens)
-            prompt=<string> - supply a prompt text which gets sent without a
-                              newline added to the end
-            echo=True/False
-        The telnet ttype negotiation flags, if any, are used if no kwargs
-        are given.
+        Kwargs:
+            text (str): Text to send.
+            oob (list): `[(cmdname,args,kwargs), ...]`, supply an
+                Out-of-Band instruction.
+            xterm256 (bool): Enforce xterm256 setting. If not given,
+                ttype result is used. If client does not suport xterm256,
+                the ansi fallback will be used
+            mxp (bool): Enforce mxp setting. If not given, enables if
+                we detected client support for it
+            ansi (bool): Enforce ansi setting. If not given, ttype
+                result is used.
+            nomarkup (bool): If True, strip all ansi markup (this is
+                the same as ´xterm256=False, ansi=False`)
+            raw (bool):Pass string through without any ansi processing
+                (i.e. include Evennia ansi markers but do not convert them
+                into ansi tokens)
+            prompt (str): Supply a prompt text which gets sent without
+                a newline added to the end.
+            echo (str): Turn on/off line echo on the client, if the
+                client supports it (e.g. for password input). Remember
+                that you must manually activate it again later.
+
+        Notes:
+            The telnet TTYPE negotiation flags, if any, are used if no kwargs
+            are given.
+
         """
         try:
             text = utils.to_str(text if text else "", encoding=self.encoding)

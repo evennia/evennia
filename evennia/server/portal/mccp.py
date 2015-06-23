@@ -22,7 +22,16 @@ FLUSH = zlib.Z_SYNC_FLUSH
 
 
 def mccp_compress(protocol, data):
-    "Handles zlib compression, if applicable"
+    """
+    Handles zlib compression, if applicable.
+
+    Args:
+        data (str): Incoming data to compress.
+
+    Returns:
+        stream (binary): Zlib-compressed data.
+
+    """
     if hasattr(protocol, 'zlib'):
         return protocol.zlib.compress(data) + protocol.zlib.flush(FLUSH)
     return data
@@ -32,6 +41,7 @@ class Mccp(object):
     """
     Implements the MCCP protocol. Add this to a
     variable on the telnet protocol to set it up.
+
     """
 
     def __init__(self, protocol):
@@ -40,6 +50,10 @@ class Mccp(object):
         ourselves and calling the client to see if
         it supports MCCP. Sets callbacks to
         start zlib compression in that case.
+
+        Args:
+            protocol (Protocol): The active protocol instance.
+
         """
 
         self.protocol = protocol
@@ -49,7 +63,11 @@ class Mccp(object):
 
     def no_mccp(self, option):
         """
-        Called if client doesn't support mccp or chooses to turn it off
+        Called if client doesn't support mccp or chooses to turn it off.
+
+        Args:
+            option (Option): Option dict (not used).
+
         """
         if hasattr(self.protocol, 'zlib'):
             del self.protocol.zlib
@@ -60,6 +78,10 @@ class Mccp(object):
         """
         The client supports MCCP. Set things up by
         creating a zlib compression stream.
+
+        Args:
+            option (Option): Option dict (not used).
+
         """
         self.protocol.protocol_flags['MCCP'] = True
         self.protocol.requestNegotiation(MCCP, '')

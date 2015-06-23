@@ -11,6 +11,7 @@ More information can be found on the following links:
 http://www.zuggsoft.com/zmud/mxp.htm
 http://www.mushclient.com/mushclient/mxp.htm
 http://www.gammon.com.au/mushclient/addingservermxp.htm
+
 """
 import re
 
@@ -27,6 +28,13 @@ MXP_SEND = MXP_TEMPSECURE + \
 def mxp_parse(text):
     """
     Replaces links to the correct format for MXP.
+
+    Args:
+        text (str): The text to parse.
+
+    Returns:
+        parsed (str): The parsed text.
+
     """
     text = text.replace("&", "&amp;") \
                .replace("<", "&lt;") \
@@ -38,24 +46,39 @@ def mxp_parse(text):
 class Mxp(object):
     """
     Implements the MXP protocol.
+
     """
 
     def __init__(self, protocol):
-        """Initializes the protocol by checking if the client supports it."""
+        """
+        Initializes the protocol by checking if the client supports it.
+
+        Args:
+            protocol (Protocol): The active protocol instance.
+
+        """
         self.protocol = protocol
         self.protocol.protocol_flags["MXP"] = False
         self.protocol.will(MXP).addCallbacks(self.do_mxp, self.no_mxp)
 
     def no_mxp(self, option):
         """
-        Client does not support MXP.
+        Called when the Client reports to not support MXP.
+
+        Args:
+            option (Option): Not used.
+
         """
         self.protocol.protocol_flags["MXP"] = False
         self.protocol.handshake_done()
 
     def do_mxp(self, option):
         """
-        Client does support MXP.
+        Called when the Client reports to support MXP.
+
+        Args:
+            option (Option): Not used.
+
         """
         self.protocol.protocol_flags["MXP"] = True
         self.protocol.handshake_done()

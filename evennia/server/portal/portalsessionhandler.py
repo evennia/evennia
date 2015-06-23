@@ -33,6 +33,7 @@ class PortalSessionHandler(SessionHandler):
     def __init__(self):
         """
         Init the handler
+
         """
         self.portal = None
         self.sessions = {}
@@ -43,21 +44,26 @@ class PortalSessionHandler(SessionHandler):
 
     def at_server_connection(self):
         """
-        Called when the Portal establishes connection with the
-        Server. At this point, the AMP connection is already
-        established.
+        Called when the Portal establishes connection with the Server.
+        At this point, the AMP connection is already established.
+
         """
         self.connection_time = time()
 
     def connect(self, session):
         """
         Called by protocol at first connect. This adds a not-yet
-        authenticated session using an ever-increasing counter for sessid.
+        authenticated session using an ever-increasing counter for
+        sessid.
 
-        We implement a throttling mechanism here to limit the speed at which
-        new connections are accepted - this is both a stop against DoS attacks
-        as well as helps using the Dummyrunner tester with a large number of
-        connector dummies.
+        Args:
+            session (PortalSession): The Session connecting.
+
+        Notes:
+            We implement a throttling mechanism here to limit the speed at
+            which new connections are accepted - this is both a stop
+            against DoS attacks as well as helps using the Dummyrunner
+            tester with a large number of connector dummies.
 
         """
         session.server_connected = False
@@ -95,8 +101,12 @@ class PortalSessionHandler(SessionHandler):
     def sync(self, session):
         """
         Called by the protocol of an already connected session. This
-        can be used to sync the session info in a delayed manner,
-        such as when negotiation and handshakes are delayed.
+        can be used to sync the session info in a delayed manner, such
+        as when negotiation and handshakes are delayed.
+
+        Args:
+            session (PortalSession): Session to sync.
+
         """
         if session.sessid and session.server_connected:
             # only use if session already has sessid and has already connected
@@ -119,8 +129,12 @@ class PortalSessionHandler(SessionHandler):
 
     def disconnect(self, session):
         """
-        Called from portal side when the connection is closed
-        from the portal side.
+        Called from portal when the connection is closed from the
+        portal side.
+
+        Args:
+            session (PortalSession): Session to disconnect.
+
         """
         sessid = session.sessid
         self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
@@ -128,19 +142,25 @@ class PortalSessionHandler(SessionHandler):
 
     def server_connect(self, protocol_path="", config=dict()):
         """
-        Called by server to force the initialization of a new
-        protocol instance. Server wants this instance to get
-        a unique sessid and to be connected back as normal. This
-        is used to initiate irc/imc2/rss etc connections.
+        Called by server to force the initialization of a new protocol
+        instance. Server wants this instance to get a unique sessid
+        and to be connected back as normal. This is used to initiate
+        irc/imc2/rss etc connections.
 
-        protocol_path - full python path to the class factory
-                    for the protocol used, eg
-                    'evennia.server.portal.irc.IRCClientFactory'
-        config - dictionary of configuration options, fed as **kwarg
-                 to protocol class' __init__ method.
+        Args:
+            protocol_path (st): Full python path to the class factory
+                for the protocol used, eg
+                'evennia.server.portal.irc.IRCClientFactory'
+            config (dict): Dictionary of configuration options, fed as
+                **kwarg to protocol class' __init__ method.
 
-        The called protocol class must have a method start()
-        that calls the portalsession.connect() as a normal protocol.
+        Raises:
+            RuntimeError: If The correct factory class is not found.
+
+        Notes:
+            The called protocol class must have a method start()
+            that calls the portalsession.connect() as a normal protocol.
+
         """
         global _MOD_IMPORT
         if not _MOD_IMPORT:
@@ -154,7 +174,12 @@ class PortalSessionHandler(SessionHandler):
 
     def server_disconnect(self, sessid, reason=""):
         """
-        Called by server to force a disconnect by sessid
+        Called by server to force a disconnect by sessid.
+
+        Args:
+            sessid (int): Session id to disconnect.
+            reason (str, optional): Motivation for disconect.
+
         """
         session = self.sessions.get(sessid, None)
         if session:
@@ -167,6 +192,10 @@ class PortalSessionHandler(SessionHandler):
     def server_disconnect_all(self, reason=""):
         """
         Called by server when forcing a clean disconnect for everyone.
+
+        Args:
+            reason (str, optional): Motivation for disconnect.
+
         """
         for session in self.sessions.values():
             session.disconnect(reason)
@@ -175,21 +204,29 @@ class PortalSessionHandler(SessionHandler):
 
     def server_logged_in(self, sessid, data):
         """
-        The server tells us that the session has been
-        authenticated. Updated it.
+        The server tells us that the session has been authenticated.
+        Update it. Called by the Server.
+
+        Args:
+            sessid (int): Session id logging in.
+            data (dict): The session sync data.
+
         """
         sess = self.get_session(sessid)
         sess.load_sync_data(data)
 
     def server_session_sync(self, serversessions):
         """
-        Server wants to save data to the portal, maybe because it's about
-        to shut down. We don't overwrite any sessions here, just update
-        them in-place and remove any that are out of sync (which should
-        normally not be the case)
+        Server wants to save data to the portal, maybe because it's
+        about to shut down. We don't overwrite any sessions here, just
+        update them in-place and remove any that are out of sync
+        (which should normally not be the case)
 
-        serversessions - dictionary {sessid:{property:value},...} describing
-                         the properties to sync on all sessions
+        Args:
+            serversessions (dict): This is a dictionary
+
+                `{sessid:{property:value},...}` describing
+                the properties to sync on all sessions.
         """
         to_save = [sessid for sessid in serversessions if sessid in self.sessions]
         to_delete = [sessid for sessid in self.sessions if sessid not in to_save]
@@ -203,6 +240,14 @@ class PortalSessionHandler(SessionHandler):
     def count_loggedin(self, include_unloggedin=False):
         """
         Count loggedin connections, alternatively count all connections.
+
+        Args:
+            include_unloggedin (bool): Also count sessions that have
+            not yet authenticated.
+
+        Returns:
+            count (int): Number of sessions.
+
         """
         return len(self.get_sessions(include_unloggedin=include_unloggedin))
 
@@ -210,13 +255,24 @@ class PortalSessionHandler(SessionHandler):
         """
         Given a session id, retrieve the session (this is primarily
         intended to be called by web clients)
+
+        Args:
+            suid (int): Session id.
+
+        Returns:
+            session (list): The matching session, if found.
+
         """
         return [sess for sess in self.get_sessions(include_unloggedin=True)
                 if hasattr(sess, 'suid') and sess.suid == suid]
 
     def announce_all(self, message):
         """
-        Send message to all connection sessions
+        Send message to all connected sessions.
+
+        Args:
+            message (str):  Message to relay.
+
         """
         for session in self.sessions.values():
             session.data_out(message)
@@ -226,22 +282,24 @@ class PortalSessionHandler(SessionHandler):
          Helper method for each session to use to parse oob structures
          (The 'oob' kwarg of the msg() method).
 
-         Args: oobstruct (str or iterable): A structure representing
-            an oob command on one of the following forms:
-                - "cmdname"
-                - "cmdname", "cmdname"
-                - ("cmdname", arg)
-                - ("cmdname",(args))
-                - ("cmdname",{kwargs}
-                - ("cmdname", (args), {kwargs})
-                - (("cmdname", (args,), {kwargs}), ("cmdname", (args,), {kwargs}))
+         Args:
+            oobstruct (str or iterable): A structure representing
+                an oob command on one of the following forms:
+                    - "cmdname"
+                    - "cmdname", "cmdname"
+                    - ("cmdname", arg)
+                    - ("cmdname",(args))
+                    - ("cmdname",{kwargs}
+                    - ("cmdname", (args), {kwargs})
+                    - (("cmdname", (args,), {kwargs}), ("cmdname", (args,), {kwargs}))
             and any combination of argument-less commands or commands with only
             args, only kwargs or both.
 
         Returns:
             structure (tuple): A generic OOB structure on the form
-            `((cmdname, (args,), {kwargs}), ...)`, where the two last
-            args and kwargs may be empty
+                `((cmdname, (args,), {kwargs}), ...)`, where the two last
+                args and kwargs may be empty
+
         """
         def _parse(oobstruct):
             slen = len(oobstruct)
@@ -287,8 +345,17 @@ class PortalSessionHandler(SessionHandler):
     def data_in(self, session, text="", **kwargs):
         """
         Called by portal sessions for relaying data coming
-        in from the protocol to the server. data is
-        serialized before passed on.
+        in from the protocol to the server.
+
+        Args:
+            session (PortalSession): Session receiving data.
+
+        Kwargs:
+            text (str): Text from protocol.
+            kwargs (any): Other data from protocol.
+
+        Notes:
+            Data is serialized before passed on.
 
         """
         # data throttle (anti DoS measure)
@@ -307,6 +374,14 @@ class PortalSessionHandler(SessionHandler):
         Called by server for having the portal relay messages and data
         to the correct session protocol. We also convert oob input to
         a generic form here.
+
+        Args:
+            sessid (int): Session id sending data.
+
+        Kwargs:
+            text (str): Text from protocol.
+            kwargs (any): Other data from protocol.
+
         """
         session = self.sessions.get(sessid, None)
         if session:

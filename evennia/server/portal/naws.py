@@ -5,9 +5,8 @@ NAWS - Negotiate About Window Size
 This implements the NAWS telnet option as per
 https://www.ietf.org/rfc/rfc1073.txt
 
-NAWS allows telnet clients to report their
-current window size to the client and update
-it when the size changes
+NAWS allows telnet clients to report their current window size to the
+client and update it when the size changes
 
 """
 from django.conf import settings
@@ -22,14 +21,18 @@ DEFAULT_HEIGHT = settings.CLIENT_DEFAULT_HEIGHT
 
 class Naws(object):
     """
-    Implements the MSSP protocol. Add this to a
-    variable on the telnet protocol to set it up.
+    Implements the NAWS protocol. Add this to a variable on the telnet
+    protocol to set it up.
+
     """
     def __init__(self, protocol):
         """
-        initialize NAWS by storing protocol on ourselves
-        and calling the client to see if it supports
-        NAWS.
+        initialize NAWS by storing protocol on ourselves and calling
+        the client to see if it supports NAWS.
+
+        Args:
+            protocol (Protocol): The active protocol instance.
+
         """
         self.naws_step = 0
         self.protocol = protocol
@@ -40,17 +43,33 @@ class Naws(object):
 
     def no_naws(self, option):
         """
-        This is the normal operation.
+        Called when client is not reporting NAWS. This is the normal
+        operation.
+
+        Args:
+            option (Option): Not used.
+
         """
         self.protocol.handshake_done()
 
     def do_naws(self, option):
         """
-        Negotiate all the information.
+        Client wants to negotiate all the NAWS information.
+
+        Args:
+            option (Option): Not used.
+
         """
         self.protocol.handshake_done()
 
     def negotiate_sizes(self, options):
+        """
+        Step through the NAWS handshake.
+
+        Args:
+            option (list): The incoming NAWS options.
+
+        """
         if len(options) == 4:
            # NAWS is negotiated with 16bit words
            width = options[0] + options[1]
