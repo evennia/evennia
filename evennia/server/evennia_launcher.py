@@ -818,7 +818,7 @@ def run_dummyrunner(number_of_dummies):
 
     Notes:
         The dummy players' behavior can be customized by adding a
-        ´dummyrunner_settings.py´ config file in the game's conf/
+        `dummyrunner_settings.py` config file in the game's conf/
         directory.
 
     """
