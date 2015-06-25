@@ -275,7 +275,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             ansi (bool): Enforce ansi setting. If not given, ttype
                 result is used.
             nomarkup (bool): If True, strip all ansi markup (this is
-                the same as ´xterm256=False, ansi=False`)
+                the same as `xterm256=False, ansi=False`)
             raw (bool):Pass string through without any ansi processing
                 (i.e. include Evennia ansi markers but do not convert them
                 into ansi tokens)
