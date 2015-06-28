@@ -411,7 +411,7 @@ class CmdSet(object):
             elif mergetype == "Replace":
                 cmdset_c = self._replace(cmdset_b, self)
             elif mergetype == "Remove":
-                cmdset_c = self._remove(self, cmdset_b)
+                cmdset_c = self._remove(cmdset_b, self)
             else:  # Union
                 cmdset_c = self._union(cmdset_b, self)
             cmdset_c.no_channels = cmdset_b.no_channels

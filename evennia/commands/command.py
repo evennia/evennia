@@ -184,7 +184,8 @@ class Command(object):
         """
         try:
             # first assume input is a command (the most common case)
-            return cmd.key in self._matchset
+            return self._matchset.intersection(cmd._matchset)
+            #return cmd.key in self._matchset
         except AttributeError:
             # probably got a string
             return cmd in self._matchset
