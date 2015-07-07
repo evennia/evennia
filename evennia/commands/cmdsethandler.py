@@ -64,7 +64,7 @@ example, you can have a 'On a boat' set, onto which you then tack on
 the 'Fishing' set. Fishing from a boat? No problem!
 """
 import traceback
-from imp import find_module
+from imp import find_module, load_module
 from django.conf import settings
 from evennia.utils import logger, utils
 from evennia.commands.cmdset import CmdSet
@@ -99,6 +99,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
     path - This is the full path to the cmdset object on python dot-form
 
     Args:
+        path (str): The path to the command set to load.
         cmdsetobj (CmdSet): The database object/typeclass on which this cmdset is to be
             assigned (this can be also channels and exits, as well as players
             but there will always be such an object)
@@ -108,8 +109,9 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             This can be useful if import_cmdset is just used to check if
             this is a valid python path or not.
     Returns:
-        cmdset (CmdSet): If an error was encountered, `commands.cmdsethandler._ErrorCmdSet`
-            is returned for the benefit of the handler.
+        cmdset (CmdSet): The imported command set. If an error was
+            encountered, `commands.cmdsethandler._ErrorCmdSet` is returned
+            for the benefit of the handler.
 
     """
     python_paths = [path] + ["%s.%s" % (prefix, path)
@@ -117,30 +119,39 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
     errstring = ""
     for python_path in python_paths:
 
-        # check if module exists at all
-        modulepath, classname = python_path.rsplit('.', 1)
-        if python_path.count('.') < 2:
-            extrapath, modulename = "", modulepath
-        else:
-            extrapath, modulename = modulepath.rsplit('.', 1)
         try:
-            find_module(modulename, [extrapath])
-        except ImportError:
-            # module not found, try next
-            errstring += _("\n(Unsuccessfully tried '%s.' + '%s.%s')." % (extrapath, modulename, classname))
-            continue
-
-        try:
+            # first try to get from cache
             #print "importing %s: _CACHED_CMDSETS=%s" % (python_path, _CACHED_CMDSETS)
             wanted_cache_key = python_path
             cmdsetclass = _CACHED_CMDSETS.get(wanted_cache_key, None)
+
             if not cmdsetclass:
-                #print "cmdset '%s' not in cache. Reloading %s on %s." % (wanted_cache_key, python_path, cmdsetobj)
-                # Not in cache. Reload from disk.
-                #modulepath, classname = python_path.rsplit('.', 1)
-                module = __import__(modulepath, fromlist=[True])
+
+                # check if module exists at all
+                try:
+                    mod_path, classname = python_path.rsplit(".", 1)
+                except ValueError:
+                    # malformed input.
+                    errstring += _("\n(Malformed path '%s' (requires at least modulename.Classname).)" % python_path)
+                    continue
+                path_tree = mod_path.split(".")
+                mod_path = None
+                module = None
+                while path_tree:
+                    # traverse the tree
+                    modname = path_tree.pop(0)
+                    try:
+                        info = find_module(modname, mod_path)
+                    except ImportError:
+                        errstring += _("\n(Unsuccessfully tried '%s')." % (python_path))
+                        break
+                    module = load_module(modname, *info)
+                    mod_path = module.__path__ if hasattr(module, "__path__") else None
+                if not module:
+                    continue
                 cmdsetclass = module.__dict__[classname]
                 _CACHED_CMDSETS[wanted_cache_key] = cmdsetclass
+
             #instantiate the cmdset (and catch its errors)
             if callable(cmdsetclass):
                 cmdsetclass = cmdsetclass(cmdsetobj)
