@@ -217,6 +217,53 @@ class Command(object):
         """
         return any(query in keyalias for keyalias in self._keyaliases)
 
+    def _optimize(self):
+        """
+        Optimize the key and aliases for lookups.
+        """
+        # optimization - a set is much faster to match against than a list
+        self._matchset = set([self.key] + self.aliases)
+        # optimization for looping over keys+aliases
+        self._keyaliases = tuple(self._matchset)
+
+    def set_key(self, new_key):
+        """
+        Update key.
+
+        Args:
+            new_key (str): The new key.
+
+        Notes:
+            This is necessary to use to make sure the optimization
+            caches are properly updated as well.
+
+        """
+        self.key = new_key.lower()
+        self._optimize()
+
+    def set_aliases(self, new_aliases):
+        """
+        Update aliases.
+
+        Args:
+            new_aliases (list):
+
+        Notes:
+            This is necessary to use to make sure the optimization
+            caches are properly updated as well.
+
+        """
+        if not is_iter(new_aliases):
+            try:
+                self.aliases = [str(alias).strip().lower()
+                                for alias in self.aliases.split(',')]
+            except Exception:
+                self.aliases = []
+        self.aliases = list(set(alias for alias in self.aliases
+                            if alias and alias != self.key))
+        self._optimize()
+
+
     def match(self, cmdname):
         """
         This is called by the system when searching the available commands,
