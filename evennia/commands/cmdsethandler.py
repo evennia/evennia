@@ -63,8 +63,9 @@ can then implement separate sets for different situations. For
 example, you can have a 'On a boat' set, onto which you then tack on
 the 'Fishing' set. Fishing from a boat? No problem!
 """
-import traceback
-from imp import find_module, load_module
+import sys
+from importlib import import_module
+from inspect import trace
 from django.conf import settings
 from evennia.utils import logger, utils
 from evennia.commands.cmdset import CmdSet
@@ -119,38 +120,39 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
     errstring = ""
     for python_path in python_paths:
 
+        if "." in  path:
+            modpath, classname = python_path.rsplit(".", 1)
+        else:
+            raise ImportError("The path '%s' is not on the form modulepath.ClassName" % path)
+
         try:
             # first try to get from cache
             #print "importing %s: _CACHED_CMDSETS=%s" % (python_path, _CACHED_CMDSETS)
-            wanted_cache_key = python_path
-            cmdsetclass = _CACHED_CMDSETS.get(wanted_cache_key, None)
+            cmdsetclass = _CACHED_CMDSETS.get(python_path, None)
 
             if not cmdsetclass:
-
-                # check if module exists at all
                 try:
-                    mod_path, classname = python_path.rsplit(".", 1)
-                except ValueError:
-                    # malformed input.
-                    errstring += _("\n(Malformed path '%s' (requires at least modulename.Classname).)" % python_path)
-                    continue
-                path_tree = mod_path.split(".")
-                mod_path = None
-                module = None
-                while path_tree:
-                    # traverse the tree
-                    modname = path_tree.pop(0)
-                    try:
-                        info = find_module(modname, mod_path)
-                    except ImportError:
-                        errstring += _("\n(Unsuccessfully tried '%s')." % (python_path))
-                        break
-                    module = load_module(modname, *info)
-                    mod_path = module.__path__ if hasattr(module, "__path__") else None
-                if not module:
-                    continue
-                cmdsetclass = module.__dict__[classname]
-                _CACHED_CMDSETS[wanted_cache_key] = cmdsetclass
+                    module = import_module(modpath, package="evennia")
+                except ImportError:
+                    if len(trace()) > 2:
+                        # error in module, make sure to not hide it.
+                        exc = sys.exc_info()
+                        raise exc[1], None, exc[2]
+                    else:
+                        # try next suggested path
+                        errstring += _("\n(Unsuccessfully tried '%s')." % python_path)
+                        continue
+                try:
+                    cmdsetclass = getattr(module, classname)
+                except AttributeError:
+                    if len(trace()) > 2:
+                        # Attribute error within module, don't hide it
+                        exc = sys.exc_info()
+                        raise exc[1], None, exc[2]
+                    else:
+                        errstring += _("\n(Unsuccessfully tried '%s')." % python_path)
+                        continue
+                _CACHED_CMDSETS[python_path] = cmdsetclass
 
             #instantiate the cmdset (and catch its errors)
             if callable(cmdsetclass):
@@ -161,18 +163,22 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             logger.log_trace()
             errstring += _("\nError loading cmdset {path}: \"{error}\"")
             errstring = errstring.format(path=python_path, error=e)
+            break
         except KeyError:
             logger.log_trace()
             errstring += _("\nError in loading cmdset: No cmdset class '{classname}' in {path}.")
             errstring = errstring.format(classname=classname, path=python_path)
+            break
         except SyntaxError, e:
             logger.log_trace()
             errstring += _("\nSyntaxError encountered when loading cmdset '{path}': \"{error}\".")
             errstring = errstring.format(path=python_path, error=e)
+            break
         except Exception, e:
             logger.log_trace()
             errstring += _("\nCompile/Run error when loading cmdset '{path}': \"{error}\".")
             errstring = errstring.format(path=python_path, error=e)
+            break
 
     if errstring:
         # returning an empty error cmdset
