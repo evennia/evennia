@@ -8,7 +8,7 @@ This is a simple NPC object capable of holding a simple menu-driven
 conversation. Create it by creating an object of typeclass
 contrib.talking_npc.TalkingNPC, For example using @create:
 
- @create John : contrib.talking_npc.TalkingNPC
+ @create/drop John : contrib.talking_npc.TalkingNPC
 
 Walk up to it and give the talk command to strike up a conversation.
 If there are many talkative npcs in the same room you will get to
@@ -84,26 +84,26 @@ CONV = {"START": {"text": "Hello there, how can I help you?",
                   "linktexts": ["Hey, do you know what this 'Evennia' thing is all about?",
                                 "What's your name, little NPC?"],
                   "keywords": None,
-                  "code": None},
+                  "callback": None},
         "info1": {"text": "Oh, Evennia is where you are right now! Don't you feel the power?",
                   "links": ["info3", "info2", "END"],
                   "linktexts":["Sure, *I* do, not sure how you do though. You are just an NPC.",
                               "Sure I do. What's yer name, NPC?",
                               "Ok, bye for now then."],
                  "keywords": None,
-                 "code": None},
+                 "callback": None},
         "info2": {"text": "My name is not really important ... I'm just an NPC after all.",
                  "links": ["info3", "info1"],
                  "linktexts": ["I didn't really want to know it anyhow.",
                               "Okay then, so what's this 'Evennia' thing about?"],
                  "keywords": None,
-                 "code": None},
+                 "callback": None},
         "info3": {"text": "Well ... I'm sort of busy so, have to go. NPC business. Important stuff. You wouldn't understand.",
                  "links": ["END", "info2"],
                  "linktexts": ["Oookay ... I won't keep you. Bye.",
                                "Wait, why don't you tell me your name first?"],
                  "keywords": None,
-                 "code": None},
+                 "callback": None},
         }
 
 

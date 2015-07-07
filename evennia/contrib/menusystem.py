@@ -42,9 +42,6 @@ from evennia import syscmdkeys
 from evennia import Command, CmdSet, utils
 from evennia import default_cmds, logger
 
-# imported only to make it available during execution of code blocks
-import evennia
-
 CMD_NOMATCH = syscmdkeys.CMD_NOMATCH
 CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
 
@@ -398,7 +395,7 @@ class MenuNode(object):
             else:
                 # this is the operable command, it moves us to the next node.
                 cmd = CmdMenuNode()
-                cmd.key = str(i + 1)
+                cmd.set_key(str(i + 1))
                 cmd.link = link
                 def _callback(self):
                     self.menutree.goto(self.link)
@@ -406,7 +403,7 @@ class MenuNode(object):
             # also custom commands get access to the menutree.
             cmd.menutree = menutree
             if self.keywords[i] and cmd.key not in (CMD_NOMATCH, CMD_NOINPUT):
-                cmd.aliases = [self.keywords[i]]
+                cmd.set_aliases(self.keywords[i])
             self.cmdset.add(cmd)
 
     def __str__(self):
