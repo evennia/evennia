@@ -205,7 +205,7 @@ class ANSIParser(object):
 
         # check cached parsings
         global _PARSE_CACHE
-        cachekey = "%s-%s-%s" % (string, strip_ansi, xterm256)
+        cachekey = "%s-%s-%s-%s" % (string, strip_ansi, xterm256, mxp)
         if cachekey in _PARSE_CACHE:
             return _PARSE_CACHE[cachekey]
 
