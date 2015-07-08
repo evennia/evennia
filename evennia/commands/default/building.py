@@ -533,7 +533,7 @@ class CmdDesc(MuxCommand):
 
     def edit_handler(self):
         if self.rhs:
-            self.msg("{rYou may specify a description, or use the edit switch, "
+            self.msg("{rYou may specify a value, or use the edit switch, "
                      "but not both.{n")
             return
         if self.args:
@@ -551,15 +551,12 @@ class CmdDesc(MuxCommand):
             Save line buffer to the desc prop. This should
             return True if successful and also report its status to the user.
             """
-            obj.db.desc = self.editor.buffer
-            self.caller.msg("Saved.")
+            obj.db.desc = buf
+            caller.msg("Saved.")
             return True
 
-        self.editor = EvEditor(
-                self.caller,
-                loadfunc=load,
-                savefunc=save,
-                key="desc")
+        # launch the editor
+        EvEditor(self.caller, loadfunc=load, savefunc=save, key="desc")
         return
 
     def func(self):
@@ -1351,6 +1348,9 @@ class CmdSetAttribute(ObjManipCommand):
       @set <obj>/<attr>
       @set *<player>/attr = <value>
 
+    Switch:
+        edit: Open the line editor (string values only)
+
     Sets attributes on objects. The second form clears
     a previously set attribute while the last form
     inspects the current value of the attribute
@@ -1430,6 +1430,25 @@ class CmdSetAttribute(ObjManipCommand):
                     "to put quotes around all strings inside lists and "
                     "dicts.{n")
 
+    def edit_handler(self, obj, attr):
+        "Activate the line editor"
+        def load(caller):
+            "Called for the editor to load the buffer"
+            old_value = obj.attributes.get(attr)
+            if old_value is not None and not isinstance(old_value, basestring):
+                typ = type(old_value).__name__
+                self.caller.msg("{RWARNING! Saving this buffer will overwrite the "\
+                                "current attribute (of type %s) with a string!{n" % typ)
+                return str(old_value)
+            return old_value
+        def save(caller, buf):
+            "Called when editor saves its buffer."
+            obj.attributes.add(attr, buf)
+            caller.msg("Saved Attribute %s." % attr)
+        # start the editor
+        EvEditor(self.caller, load, save, key="%s/%s" % (obj, attr))
+
+
     def func(self):
         "Implement the set attribute - a limited form of @py."
 
@@ -1454,6 +1473,14 @@ class CmdSetAttribute(ObjManipCommand):
             return
 
         string = ""
+        if "edit" in self.switches:
+            # edit in the line editor
+            if len(attrs) > 1:
+                caller.msg("The Line editor can only be applied " \
+                           "to one attribute at a time.")
+                return
+            self.edit_handler(obj, attrs[0])
+            return
         if not value:
             if self.rhs is None:
                 # no = means we inspect the attribute(s)

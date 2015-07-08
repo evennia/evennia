@@ -105,15 +105,17 @@ _ERROR_LOADFUNC = \
 {rBuffer load function error. Could not load initial data.{n
 """
 
-_ERROR_NO_SAVEFUNC = \
+_ERROR_SAVEFUNC = \
 """
-{rNo save function defined. Buffer cannot be saved.{n
+{error}
+
+{rSave function returned an error. Buffer not saved.{n
 """
 
-_DEFAULT_NO_QUITFUNC = \
-"""
-Exited editor.
-"""
+_ERROR_NO_SAVEFUNC = "{rNo save function defined. Buffer cannot be saved.{n"
+
+_MSG_SAVE_NO_CHANGE = "No changes need saving"
+_DEFAULT_NO_QUITFUNC = "Exited editor."
 
 _ERROR_QUITFUNC = \
 """
@@ -121,6 +123,11 @@ _ERROR_QUITFUNC = \
 
 {rQuit function gave an error. Skipping.{n
 """
+
+_MSG_NO_UNDO = "Nothing to undo"
+_MSG_NO_REDO = "Nothing to redo"
+_MSG_UNDO = "Undid one step."
+_MSG_REDO = "Redid one step."
 
 #------------------------------------------------------------
 #
@@ -325,78 +332,75 @@ class CmdEditorGroup(CmdEditorBase):
         lstart, lend = self.lstart, self.lend
         cmd = self.cmdstring
         echo_mode = self.editor._echo_mode
-        string = ""
 
         if cmd == ":":
             # Echo buffer
             if self.linerange:
                 buf = linebuffer[lstart:lend]
-                string = editor.display_buffer(buf=buf, offset=lstart)
+                editor.display_buffer(buf=buf, offset=lstart)
             else:
-                string = editor.display_buffer()
+                editor.display_buffer()
         elif cmd == "::":
             # Echo buffer without the line numbers and syntax parsing
             if self.linerange:
                 buf = linebuffer[lstart:lend]
-                string = editor.display_buffer(buf=buf,
-                                               offset=lstart,
-                                               linenums=False)
+                editor.display_buffer(buf=buf,
+                                      offset=lstart,
+                                      linenums=False, raw=True)
             else:
-                string = editor.display_buffer(linenums=False)
-            self.caller.msg(string, raw=True)
-            return
+                editor.display_buffer(linenums=False, raw=True)
         elif cmd == ":::":
             # Insert single colon alone on a line
             editor.update_buffer(editor.buffer + "\n:")
             if echo_mode:
-                string = "Single ':' added to buffer."
+                caller.msg("Single ':' added to buffer.")
         elif cmd == ":h":
             # help entry
-            string = editor.display_help()
+            editor.display_help()
         elif cmd == ":w":
             # save without quitting
-            string = editor.save_buffer()
+            editor.save_buffer()
         elif cmd == ":wq":
             # save and quit
-            string = editor.save_buffer()
-            string += " " + editor.quit()
+            editor.save_buffer()
+            editor.quit()
         elif cmd == ":q":
             # quit. If not saved, will ask
             if self.editor._unsaved:
                 caller.cmdset.add(SaveYesNoCmdSet)
                 caller.msg("Save before quitting? {lcyes{lt[Y]{le/{lcno{ltN{le")
             else:
-                string = editor.quit()
+                editor.quit()
         elif cmd == ":q!":
             # force quit, not checking saving
-            string = editor.quit()
+            editor.quit()
         elif cmd == ":u":
             # undo
-            string = editor.update_undo(-1)
+            editor.update_undo(-1)
         elif cmd == ":uu":
             # redo
-            string = editor.update_undo(1)
+            editor.update_undo(1)
         elif cmd == ":UU":
             # reset buffer
             editor.update_buffer(editor._pristine_buffer)
-            string = "Reverted all changes to the buffer back to original state."
+            caller.msg("Reverted all changes to the buffer back to original state.")
         elif cmd == ":dd":
             # :dd <l> - delete line <l>
             buf = linebuffer[:lstart] + linebuffer[lend:]
             editor.update_buffer(buf)
-            string = "Deleted %s." % (self.lstr)
+            caller.msg("Deleted %s." % (self.lstr))
         elif cmd == ":dw":
             # :dw <w> - delete word in entire buffer
             # :dw <l> <w> delete word only on line(s) <l>
             if not self.arg1:
-                string = "You must give a search word to delete."
+                caller.msg("You must give a search word to delete.")
             else:
                 if not self.linerange:
                     lstart = 0
                     lend = self.cline + 1
-                    string = "Removed %s for lines %i-%i." % (self.arg1, lstart + 1, lend + 1)
+                    caller.msg("Removed %s for lines %i-%i." % (self.arg1, lstart + 1, lend + 1))
                 else:
-                    string = "Removed %s for %s." % (self.arg1, self.lstr)
+                    caller.msg("Removed %s for %s." % (self.arg1, self.lstr))
                 sarea = "\n".join(linebuffer[lstart:lend])
                 sarea = re.sub(r"%s" % self.arg1.strip("\'").strip('\"'), "", sarea, re.MULTILINE)
                 buf = linebuffer[:lstart] + sarea.split("\n") + linebuffer[lend:]
@@ -404,73 +408,73 @@ class CmdEditorGroup(CmdEditorBase):
         elif cmd == ":DD":
             # clear buffer
             editor.update_buffer("")
-            string = "Cleared %i lines from buffer." % self.nlines
+            caller.msg("Cleared %i lines from buffer." % self.nlines)
         elif cmd == ":y":
             # :y <l> - yank line(s) to copy buffer
             cbuf = linebuffer[lstart:lend]
             editor._copy_buffer = cbuf
-            string = "%s, %s yanked." % (self.lstr.capitalize(), cbuf)
+            caller.msg("%s, %s yanked." % (self.lstr.capitalize(), cbuf))
         elif cmd == ":x":
             # :x <l> - cut line to copy buffer
             cbuf = linebuffer[lstart:lend]
             editor._copy_buffer = cbuf
             buf = linebuffer[:lstart] + linebuffer[lend:]
             editor.update_buffer(buf)
-            string = "%s, %s cut." % (self.lstr.capitalize(), cbuf)
+            caller.msg("%s, %s cut." % (self.lstr.capitalize(), cbuf))
         elif cmd == ":p":
             # :p <l> paste line(s) from copy buffer
             if not editor._copy_buffer:
-                string = "Copy buffer is empty."
+                caller.msg("Copy buffer is empty.")
             else:
                 buf = linebuffer[:lstart] + editor._copy_buffer + linebuffer[lstart:]
                 editor.update_buffer(buf)
-                string = "Copied buffer %s to %s." % (editor._copy_buffer, self.lstr)
+                caller.msg("Copied buffer %s to %s." % (editor._copy_buffer, self.lstr))
         elif cmd == ":i":
             # :i <l> <txt> - insert new line
             new_lines = self.args.split('\n')
             if not new_lines:
-                string = "You need to enter a new line and where to insert it."
+                caller.msg("You need to enter a new line and where to insert it.")
             else:
                 buf = linebuffer[:lstart] + new_lines + linebuffer[lstart:]
                 editor.update_buffer(buf)
-                string = "Inserted %i new line(s) at %s." % (len(new_lines), self.lstr)
+                caller.msg("Inserted %i new line(s) at %s." % (len(new_lines), self.lstr))
         elif cmd == ":r":
             # :r <l> <txt> - replace lines
             new_lines = self.args.split('\n')
             if not new_lines:
-                string = "You need to enter a replacement string."
+                caller.msg("You need to enter a replacement string.")
             else:
                 buf = linebuffer[:lstart] + new_lines + linebuffer[lend:]
                 editor.update_buffer(buf)
-                string = "Replaced %i line(s) at %s." % (len(new_lines), self.lstr)
+                caller.msg("Replaced %i line(s) at %s." % (len(new_lines), self.lstr))
         elif cmd == ":I":
             # :I <l> <txt> - insert text at beginning of line(s) <l>
             if not self.args:
-                string = "You need to enter text to insert."
+                caller.msg("You need to enter text to insert.")
             else:
                 buf = linebuffer[:lstart] + ["%s%s" % (self.args, line) for line in linebuffer[lstart:lend]] + linebuffer[lend:]
                 editor.update_buffer(buf)
-                string = "Inserted text at beginning of %s." % self.lstr
+                caller.msg("Inserted text at beginning of %s." % self.lstr)
         elif cmd == ":A":
             # :A <l> <txt> - append text after end of line(s)
             if not self.args:
-                string = "You need to enter text to append."
+                caller.msg("You need to enter text to append.")
             else:
                 buf = linebuffer[:lstart] + ["%s%s" % (line, self.args) for line in linebuffer[lstart:lend]] + linebuffer[lend:]
                 editor.update_buffer(buf)
-                string = "Appended text to end of %s." % self.lstr
+                caller.msg("Appended text to end of %s." % self.lstr)
         elif cmd == ":s":
             # :s <li> <w> <txt> - search and replace words
             # in entire buffer or on certain lines
             if not self.arg1 or not self.arg2:
-                string = "You must give a search word and something to replace it with."
+                caller.msg("You must give a search word and something to replace it with.")
             else:
                 if not self.linerange:
                     lstart = 0
                     lend = self.cline + 1
-                    string = "Search-replaced %s -> %s for lines %i-%i." % (self.arg1, self.arg2, lstart + 1 , lend)
+                    caller.msg("Search-replaced %s -> %s for lines %i-%i." % (self.arg1, self.arg2, lstart + 1 , lend))
                 else:
-                    string = "Search-replaced %s -> %s for %s." % (self.arg1, self.arg2, self.lstr)
+                    caller.msg("Search-replaced %s -> %s for %s." % (self.arg1, self.arg2, self.lstr))
                 sarea = "\n".join(linebuffer[lstart:lend])
 
                 regex = r"%s|^%s(?=\s)|(?<=\s)%s(?=\s)|^%s$|(?<=\s)%s$"
@@ -486,9 +490,9 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                string = "Flood filled lines %i-%i." % (lstart + 1 , lend)
+                caller.msg("Flood filled lines %i-%i." % (lstart + 1 , lend))
             else:
-                string = "Flood filled %s." % self.lstr
+                caller.msg("Flood filled %s." % self.lstr)
             fbuf = "\n".join(linebuffer[lstart:lend])
             fbuf = fill(fbuf, width=width)
             buf = linebuffer[:lstart] + fbuf.split("\n") + linebuffer[lend:]
@@ -499,9 +503,9 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                string = "Indented lines %i-%i." % (lstart + 1 , lend)
+                caller.msg("Indented lines %i-%i." % (lstart + 1 , lend))
             else:
-                string = "Indented %s." % self.lstr
+                caller.msg("Indented %s." % self.lstr)
             fbuf = [indent + line for line in linebuffer[lstart:lend]]
             buf = linebuffer[:lstart] + fbuf + linebuffer[lend:]
             editor.update_buffer(buf)
@@ -510,9 +514,9 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                string = "Removed left margin (dedented) lines %i-%i." % (lstart + 1 , lend)
+                caller.msg("Removed left margin (dedented) lines %i-%i." % (lstart + 1 , lend))
             else:
-                string = "Removed left margin (dedented) %s." % self.lstr
+                caller.msg("Removed left margin (dedented) %s." % self.lstr)
             fbuf = "\n".join(linebuffer[lstart:lend])
             fbuf = dedent(fbuf)
             buf = linebuffer[:lstart] + fbuf.split("\n") + linebuffer[lend:]
@@ -520,8 +524,7 @@ class CmdEditorGroup(CmdEditorBase):
         elif cmd == ":echo":
             # set echoing on/off
             editor._echo_mode = not editor._echo_mode
-            string = "Echo mode set to %s" % editor._echo_mode
-        caller.msg(string)
+            caller.msg("Echo mode set to %s" % editor._echo_mode)
 
 
 class EvEditorCmdSet(CmdSet):
@@ -615,7 +618,7 @@ class EvEditor(object):
         self._echo_mode = True
 
         # show the buffer ui
-        self._caller.msg(self.display_buffer())
+        self.display_buffer()
 
     def load_buffer(self):
         """
@@ -668,11 +671,10 @@ class EvEditor(object):
                     # save worked. The saving function is responsible for
                     # any status messages.
                     self._unsaved = False
-                return ""
             except Exception, e:
-                return "%s\n{rSave function gave an error. Buffer not saved." % e
+                self._caller.msg(_ERROR_SAVEFUNC.format(error=e))
         else:
-            return "No changes need saving."
+            self._caller.msg(_MSG_SAVE_NO_CHANGE)
 
     def update_undo(self, step=None):
         """
@@ -682,24 +684,25 @@ class EvEditor(object):
         if step and step < 0:
             # undo
             if self._undo_pos <= 0:
-                return "Nothing to undo."
-            self._undo_pos = max(0, self._undo_pos + step)
-            self._buffer = self._undo_buffer[self._undo_pos]
-            return "Undo."
+                self._caller.msg(_MSG_NO_UNDO)
+            else:
+                self._undo_pos = max(0, self._undo_pos + step)
+                self._buffer = self._undo_buffer[self._undo_pos]
+                self._caller.msg(_MSG_UNDO)
         elif step and step > 0:
             # redo
             if self._undo_pos >= len(self._undo_buffer) - 1 or self._undo_pos + 1 >= self._undo_max:
-                return "Nothing to redo."
-            self._undo_pos = min(self._undo_pos + step, min(len(self._undo_buffer), self._undo_max) - 1)
-            self._buffer = self._undo_buffer[self._undo_pos]
-            return "Redo."
+                self._caller.msg(_MSG_NO_REDO)
+            else:
+                self._undo_pos = min(self._undo_pos + step, min(len(self._undo_buffer), self._undo_max) - 1)
+                self._buffer = self._undo_buffer[self._undo_pos]
+                self._caller.msg(_MSG_REDO)
         if not self._undo_buffer or (self._undo_buffer and self._buffer != self._undo_buffer[self._undo_pos]):
             # save undo state
             self._undo_buffer = self._undo_buffer[:self._undo_pos + 1] + [self._buffer]
             self._undo_pos = len(self._undo_buffer) - 1
-        print "saving undo buffer:", self._undo_buffer, self._undo_pos
 
-    def display_buffer(self, buf=None, offset=0, linenums=True):
+    def display_buffer(self, buf=None, offset=0, linenums=True, raw=False):
         """
         This displays the line editor buffer, or selected parts of it.
 
@@ -725,86 +728,11 @@ class EvEditor(object):
         else:
             main = "\n".join(lines)
         string = "%s\n%s\n%s" % (header, main, footer)
-        return string
+        self._caller.msg(string, raw=raw)
 
     def display_help(self):
         """
         Shows the help entry for the editor.
         """
         string = self._sep * _DEFAULT_WIDTH + _HELP_TEXT + self._sep * _DEFAULT_WIDTH
-        return string
-
-
-#------------------------------------------------------------------
-#
-# Editor access command for editing a given attribute on an object.
-#
-#------------------------------------------------------------------
-
-class CmdEditor(Command):
-    """
-    Start editor
-
-    Usage:
-        @editor <obj>/<attr>
-
-    This will start Evennia's powerful line editor to edit an
-    Attribute. The editor has a host of commands on its own. Use :h
-    for a list of commands.
-
-    """
-
-    key = "@editor"
-    aliases = ["@edit"]
-    locks = "cmd:perm(editor) or perm(Builders)"
-    help_category = "Building"
-
-    def func(self):
-        "setup and start the editor"
-
-        if not self.args or not '/' in self.args:
-            self.caller.msg("Usage: @editor <obj>/<attrname>")
-            return
-        caller = self.caller
-        objname, attrname = [part.strip() for part in self.args.split("/", 1)]
-        target = caller.search(objname)
-        if not target:
-            return
-
-        # hook save/load functions
-        def load_attr(caller):
-            "inital loading of buffer data from given attribute."
-            old_value = target.attributes.get(attrname)
-            if old_value is not None and not isinstance(old_value, basestring):
-                typ = type(old_value).__name__
-                self.caller.msg("{RWARNING! Saving this buffer will overwrite the "\
-                                "current attribute (of type %s) with a string!{n" % typ)
-            return old_value and str(old_value) or ""
-
-        def save_attr(caller, buf):
-            """
-            Save line buffer to given attribute name. This should
-            return True if successful and also report its status.
-            """
-            target.attributes.add(attrname, buf)
-            self.caller.msg("Saved.")
-            return True
-
-        def quit_hook(caller):
-            """
-            Example quit hook. Since it's given, it's responsible for
-            giving feedback messages.
-            """
-            del caller.ndb._editing_attr
-            caller.msg("Exited Editor.")
-
-        editor_key = "%s/%s" % (self.objname, self.attrname)
-
-        # start editor, it will handle things from here. We need to
-        # store it on the command object since we set up callback functions
-        # to refer to it that way.
-        self.editor = EvEditor(self.caller,
-                               loadfunc=load_attr,
-                               savefunc=save_attr,
-                               quitfunc=quit_hook,
-                               key=editor_key)
+        self._caller.msg(string)
