@@ -133,7 +133,7 @@ from django.conf import settings
 from evennia import syscmdkeys
 from evennia import Command, CmdSet
 from evennia.utils.evtable import EvTable
-from evennia.utils.ansi import ANSIString, strip_raw_ansi
+from evennia.utils.ansi import ANSIString, strip_ansi
 from evennia.utils.utils import mod_import, make_iter, pad, m_len
 
 # read from protocol NAWS later?
@@ -200,6 +200,7 @@ class CmdEvMenuNode(Command):
         cmd_on_quit = menu.cmd_on_quit
         default = menu.default
 
+        print "cmd, options:", cmd, options
         if cmd in options:
             # this will overload the other commands
             # if it has the same name!
@@ -388,12 +389,12 @@ class EvMenu(object):
             table_width_max = max(table_width_max,
                                   max(m_len(p) for p in key.split("\n")) +
                                   max(m_len(p) for p in desc.split("\n")) + colsep)
-            raw_key = strip_raw_ansi(key)
+            raw_key = strip_ansi(key)
             if raw_key != key:
                 # already decorations in key definition
                 table.append(ANSIString(" {lc%s{lt%s{le: %s" % (raw_key, key, desc)))
             else:
-                # add a default color to key
+                # add a default white color to key
                 table.append(ANSIString(" {lc%s{lt{w%s{n{le: %s" % (raw_key, raw_key, desc)))
 
         ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
@@ -429,7 +430,6 @@ class EvMenu(object):
         total_width = max(total_width, nodetext_width_max)
         separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
         separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
-        print "table:", unicode(table)
         return separator1 + nodetext + separator2 + unicode(table)
 
     def _execute_node(self, nodename, raw_string):
@@ -551,7 +551,7 @@ class EvMenu(object):
                     display_options.append((keys[0], desc))
                     for key in keys:
                         if goto or execute:
-                            self.options[strip_raw_ansi(key).strip().lower()] = (goto, execute)
+                            self.options[strip_ansi(key).strip().lower()] = (goto, execute)
 
         self.nodetext = self._format_node(nodetext, display_options)
 
