@@ -130,17 +130,19 @@ evennia.utils.evdemo`.
 from textwrap import dedent
 from inspect import isfunction, getargspec
 from django.conf import settings
-from evennia import syscmdkeys
 from evennia import Command, CmdSet
 from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import ANSIString, strip_ansi
 from evennia.utils.utils import mod_import, make_iter, pad, m_len
+from evennia.commands import cmdhandler
 
 # read from protocol NAWS later?
 _MAX_TEXT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
-_CMD_NOMATCH = syscmdkeys.CMD_NOMATCH
-_CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
+# we use cmdhandler instead of evennia.syscmdkeys to
+# avoid some cases of loading before evennia init'd
+_CMD_NOMATCH = cmdhandler.CMD_NOMATCH
+_CMD_NOINPUT = cmdhandler.CMD_NOINPUT
 
 # Return messages
 

@@ -1,9 +1,9 @@
 """
-Evennia Line Editor
+EvEditor (Evennia Line Editor)
 
 This implements an advanced line editor for editing longer texts
-in-game. The editor mimics the command mechanisms of the VI editor as
-far as possible.
+in-game. The editor mimics the command mechanisms of the "VI" editor
+(a famous line-by-line editor) as far as reasonable.
 
 Features of the editor:
 
@@ -13,27 +13,90 @@ Features of the editor:
  - formatting of buffer, or selection, to certain width + indentations.
  - allow to echo the input or not, depending on your client.
 
-Testing / Tutorial:
+To use the editor, just import EvEditor from this module
+and initialize it:
 
-Whereas the editor is intended to be called from other commands that
-requires more elaborate text editing of data, there is also a
-stand-alone editor command for editing Attributes at the end of this
-module. To test it it just import and add it to your default `cmdset`.
+    from evennia.utils.eveditor import EvEditor
+
+    EvEditor(caller,
+             loadfunc=None, loadfunc_args=None,
+             savefunc=None, savefunc_args=None,
+             quitfunc=None, quitfunc_args=None,
+             key=""):
+
+Where the load/save/quitfunc are callbacks (with matching arguments)
+to trigger when the editor loads, saves and quits respectively.
 
 """
 
 import re
 from django.conf import settings
 from evennia import Command, CmdSet, utils
-from evennia import syscmdkeys
+from evennia.commands import cmdhandler
 
-__all__ = ("CmdEditor", )
+# we use cmdhandler instead of evennia.syscmdkeys to
+# avoid some cases of loading before evennia init'd
+_CMD_NOMATCH = cmdhandler.CMD_NOMATCH
+_CMD_NOINPUT = cmdhandler.CMD_NOINPUT
 
-CMD_NOMATCH = syscmdkeys.CMD_NOMATCH
-CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
-
-RE_GROUP = re.compile(r"\".*?\"|\'.*?\'|\S*")
+_RE_GROUP = re.compile(r"\".*?\"|\'.*?\'|\S*")
+# use NAWS in the future?
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
+
+#------------------------------------------------------------
+#
+# texts
+#
+#------------------------------------------------------------
+
+_HELP_TEXT = \
+"""
+ <txt>  - any non-command is appended to the end of the buffer.
+ :  <l> - view buffer or only line <l>
+ :: <l> - view buffer without line numbers or other parsing
+ :::    - print a ':' as the only character on the line...
+ :h     - this help.
+
+ :w     - saves the buffer (don't quit)
+ :wq    - save buffer and quit
+ :q     - quits (will be asked to save if buffer was changed)
+ :q!    - quit without saving, no questions asked
+
+ :u     - (undo) step backwards in undo history
+ :uu    - (redo) step forward in undo history
+ :UU    - reset all changes back to initial
+
+ :dd <l>     - delete line <n>
+ :dw <l> <w> - delete word or regex <w> in entire buffer or on line <l>
+ :DD         - clear buffer
+
+ :y  <l>        - yank (copy) line <l> to the copy buffer
+ :x  <l>        - cut line <l> and store it in the copy buffer
+ :p  <l>        - put (paste) previously copied line directly after <l>
+ :i  <l> <txt>  - insert new text <txt> at line <l>. Old line will move down
+ :r  <l> <txt>  - replace line <l> with text <txt>
+ :I  <l> <txt>  - insert text at the beginning of line <l>
+ :A  <l> <txt>  - append text after the end of line <l>
+
+ :s <l> <w> <txt> - search/replace word or regex <w> in buffer or on line <l>
+
+ :f <l>    - flood-fill entire buffer or line <l>
+ :fi <l>   - indent entire buffer or line <l>
+ :fd <l>   - de-indent entire buffer or line <l>
+
+ :echo - turn echoing of the input on/off (helpful for some clients)
+
+    Legend:
+    <l> - line numbers, or range lstart:lend, e.g. '3:7'.
+    <w> - one word or several enclosed in quotes.
+    <txt> - longer string, usually not needed to be enclosed in quotes.
+"""
+
+#------------------------------------------------------------
+#
+# Handle yes/no quit question
+#
+#------------------------------------------------------------
 
 class CmdSaveYesNo(Command):
     """
@@ -41,8 +104,8 @@ class CmdSaveYesNo(Command):
     nomatches (defaults to Yes), and avoid saves only if
     command was given specifically as "no" or "n".
     """
-    key = CMD_NOMATCH
-    aliases = CMD_NOINPUT
+    key = _CMD_NOMATCH
+    aliases = _CMD_NOINPUT
     locks = "cmd:all()"
     help_cateogory = "LineEditor"
 
@@ -71,6 +134,12 @@ class SaveYesNoCmdSet(CmdSet):
         "at cmdset creation"
         self.add(CmdSaveYesNo())
 
+
+#------------------------------------------------------------
+#
+# Editor commands
+#
+#------------------------------------------------------------
 
 class CmdEditorBase(Command):
     """
@@ -107,7 +176,7 @@ class CmdEditorBase(Command):
         # will be kept together and extra whitespace preserved. You
         # can input quotes on the line by alternating single and
         # double quotes.
-        arglist = [part for part in RE_GROUP.findall(self.args) if part]
+        arglist = [part for part in _RE_GROUP.findall(self.args) if part]
         temp = []
         for arg in arglist:
             # we want to clean the quotes, but only one type,
@@ -186,8 +255,8 @@ class CmdLineInput(CmdEditorBase):
     """
     No command match - Inputs line of text into buffer.
     """
-    key = CMD_NOMATCH
-    aliases = [CMD_NOINPUT]
+    key = _CMD_NOMATCH
+    aliases = _CMD_NOINPUT
 
     def func(self):
         """
@@ -267,9 +336,6 @@ class CmdEditorGroup(CmdEditorBase):
             if self.editor.unsaved:
                 caller.cmdset.add(SaveYesNoCmdSet)
                 caller.msg("Save before quitting? {lcyes{lt[Y]{le/{lcno{ltN{le")
-                #prompt_yesno(caller, "Save before quitting?",
-                #             yescode = "self.caller.ndb._lineeditor.save_buffer()\nself.caller.ndb._lineeditor.quit()",
-                #             nocode = "self.caller.msg(self.caller.ndb._lineeditor.quit())", default="Y")
             else:
                 string = editor.quit()
         elif cmd == ":q!":
@@ -429,17 +495,23 @@ class CmdEditorGroup(CmdEditorBase):
         caller.msg(string)
 
 
-class EditorCmdSet(CmdSet):
+class EvEditorCmdSet(CmdSet):
     "CmdSet for the editor commands"
     key = "editorcmdset"
     mergetype = "Replace"
 
+#------------------------------------------------------------
+#
+# Main Editor object
+#
+#------------------------------------------------------------
 
-class LineEditor(object):
+class EvEditor(object):
     """
     This defines a line editor object. It creates all relevant commands
     and tracks the current state of the buffer. It also cleans up after
     itself.
+
     """
 
     def __init__(self, caller,
@@ -448,23 +520,29 @@ class LineEditor(object):
                  quitfunc=None, quitfunc_args=None,
                  key=""):
         """
-        caller - who is using the editor.
+        Args:
+            caller (Object): Who is using the editor.
+            loadfunc (callable, optional): This will be called as
+                `func(*loadfunc_args)` when the editor is first started,
+                e.g. for pre-loading text into it.
+            loadfunc_args (tuple, optional): Optional tuple of
+                arguments to supply to `loadfunc`.
+            savefunc (callable, optional): This will be called as
+                `func(*savefunc_args)` when the save-command is given and
+                is used to actually determine where/how result is saved.
+                It should return `True` if save was successful and also
+                handle any feedback to the user.
+            savefunc_args (tuple, optional): Optional tuple of
+                arguments to supply to `savefunc`.
+            quitfunc (callable, optional): This will optionally be
+                called as `func(*quitfunc_args)` when the editor is
+                exited. If defined, it should handle all wanted feedback
+                to the user.
+            quitfunc_args (tuple, optional): Optional tuple of arguments to
+                supply to `quitfunc`.
+            key (str, optional): An optional key for naming this
+                session and make it unique from other editing sessions.
 
-        loadfunc - this will be called as `func(*loadfunc_args)` when the
-                   editor is first started, e.g. for pre-loading text into it.
-        loadfunc_args - optional tuple of arguments to supply to `loadfunc`.
-        savefunc - this will be called as `func(*savefunc_args)` when the
-                   save-command is given and is used to actually determine
-                   where/how result is saved. It should return `True` if save
-                   was successful and also handle any feedback to the user.
-        savefunc_args - optional tuple of arguments to supply to `savefunc`.
-        quitfunc - this will optionally be called as `func(*quitfunc_args)`
-                   when the editor is exited. If defined, it should handle
-                   all wanted feedback to the user.
-        quitfunc_args - optional tuple of arguments to supply to `quitfunc`.
-
-        key = an optional key for naming this session (such as which attribute
-              is being edited).
         """
         self.key = key
         self.caller = caller
@@ -497,7 +575,7 @@ class LineEditor(object):
         cmd2.obj = self
         cmd2.editor = self
         # Populate cmdset and add it to caller
-        editor_cmdset = EditorCmdSet()
+        editor_cmdset = EvEditorCmdSet()
         editor_cmdset.add(cmd1)
         editor_cmdset.add(cmd2)
         self.caller.cmdset.add(editor_cmdset)
@@ -544,7 +622,7 @@ class LineEditor(object):
             except Exception, e:
                 self.caller.msg("%s\n{Quit function gave an error. Skipping.{n" % e)
         del self.caller.ndb._lineeditor
-        self.caller.cmdset.remove(EditorCmdSet)
+        self.caller.cmdset.remove(EvEditorCmdSet)
         if self.quitfunc:
             # if quitfunc is defined, it should manage exit messages.
             return ""
@@ -620,53 +698,15 @@ class LineEditor(object):
         """
         Shows the help entry for the editor.
         """
-        string = self.sep * _DEFAULT_WIDTH + """
-<txt>  - any non-command is appended to the end of the buffer.
-:  <l> - view buffer or only line <l>
-:: <l> - view buffer without line numbers or other parsing
-:::    - print a ':' as the only character on the line...
-:h     - this help.
-
-:w     - saves the buffer (don't quit)
-:wq    - save buffer and quit
-:q     - quits (will be asked to save if buffer was changed)
-:q!    - quit without saving, no questions asked
-
-:u     - (undo) step backwards in undo history
-:uu    - (redo) step forward in undo history
-:UU    - reset all changes back to initial
-
-:dd <l>     - delete line <n>
-:dw <l> <w> - delete word or regex <w> in entire buffer or on line <l>
-:DD         - clear buffer
-
-:y  <l>        - yank (copy) line <l> to the copy buffer
-:x  <l>        - cut line <l> and store it in the copy buffer
-:p  <l>        - put (paste) previously copied line directly after <l>
-:i  <l> <txt>  - insert new text <txt> at line <l>. Old line will move down
-:r  <l> <txt>  - replace line <l> with text <txt>
-:I  <l> <txt>  - insert text at the beginning of line <l>
-:A  <l> <txt>  - append text after the end of line <l>
-
-:s <l> <w> <txt> - search/replace word or regex <w> in buffer or on line <l>
-
-:f <l>    - flood-fill entire buffer or line <l>
-:fi <l>   - indent entire buffer or line <l>
-:fd <l>   - de-indent entire buffer or line <l>
-
-:echo - turn echoing of the input on/off (helpful for some clients)
-
-   Legend:
-   <l> - line numbers, or range lstart:lend, e.g. '3:7'.
-   <w> - one word or several enclosed in quotes.
-   <txt> - longer string, usually not needed to be enclosed in quotes.
-""" + self.sep * _DEFAULT_WIDTH
+        string = self.sep * _DEFAULT_WIDTH + _HELP_TEXT + self.sep * _DEFAULT_WIDTH
         return string
 
 
+#------------------------------------------------------------------
 #
 # Editor access command for editing a given attribute on an object.
 #
+#------------------------------------------------------------------
 
 class CmdEditor(Command):
     """
@@ -722,11 +762,12 @@ class CmdEditor(Command):
             self.caller.msg("Exited Editor.")
 
         editor_key = "%s/%s" % (self.objname, self.attrname)
-        # start editor, it will handle things from here.
-        self.editor = utils.get_line_editor()(
-            self.caller,
-            loadfunc=load_attr,
-            savefunc=save_attr,
-            quitfunc=quit_hook,
-            key=editor_key
-        )
+
+        # start editor, it will handle things from here. We need to
+        # store it on the command object since we set up callback functions
+        # to refer to it that way.
+        self.editor = EvEditor(self.caller,
+                               loadfunc=load_attr,
+                               savefunc=save_attr,
+                               quitfunc=quit_hook,
+                               key=editor_key)

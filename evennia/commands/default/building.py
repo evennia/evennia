@@ -13,6 +13,7 @@ from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.utils import create, utils, search
 from evennia.utils.utils import inherits_from
+from evennia.utils.eveditor import EvEditor
 from evennia.utils.spawner import spawn
 from evennia.utils.ansi import raw
 
@@ -554,12 +555,11 @@ class CmdDesc(MuxCommand):
             self.caller.msg("Saved.")
             return True
 
-        self.editor = utils.get_line_editor()(
-            self.caller,
-            loadfunc=load,
-            savefunc=save,
-            key="desc",
-        )
+        self.editor = EvEditor(
+                self.caller,
+                loadfunc=load,
+                savefunc=save,
+                key="desc")
         return
 
     def func(self):
