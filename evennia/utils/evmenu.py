@@ -153,6 +153,7 @@ _HELP_FULL = _("Commands: <menu option>, help, quit")
 _HELP_NO_QUIT = _("Commands: <menu option>, help")
 _HELP_NO_OPTIONS = _("Commands: help, quit")
 _HELP_NO_OPTIONS_NO_QUIT = _("Commands: help")
+_HELP_NO_OPTION_MATCH = _("Choose an option or try 'help'.")
 
 
 class EvMenuError(RuntimeError):
@@ -222,7 +223,7 @@ class CmdEvMenuNode(Command):
             if goto:
                 menu.goto(goto, raw_string)
         else:
-            caller.msg("Choose an option or try 'help'.")
+            caller.msg(_HELP_NO_OPTION_MATCH)
 
         if not (options or default):
             # no options - we are at the end of the menu.
@@ -387,7 +388,13 @@ class EvMenu(object):
             table_width_max = max(table_width_max,
                                   max(m_len(p) for p in key.split("\n")) +
                                   max(m_len(p) for p in desc.split("\n")) + colsep)
-            table.append(ANSIString(" {lc%s{lt%s{le: %s" % (key, key, desc)))
+            raw_key = strip_raw_ansi(key)
+            if raw_key != key:
+                # already decorations in key definition
+                table.append(ANSIString(" {lc%s{lt%s{le: %s" % (raw_key, key, desc)))
+            else:
+                # add a default color to key
+                table.append(ANSIString(" {lc%s{lt{w%s{n{le: %s" % (raw_key, raw_key, desc)))
 
         ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
         nlastcol = nlist % ncols # number of elements left in last row
@@ -422,6 +429,7 @@ class EvMenu(object):
         total_width = max(total_width, nodetext_width_max)
         separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
         separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
+        print "table:", unicode(table)
         return separator1 + nodetext + separator2 + unicode(table)
 
     def _execute_node(self, nodename, raw_string):
