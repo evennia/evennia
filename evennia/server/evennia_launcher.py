@@ -260,6 +260,25 @@ MENU = \
     +---------------------------------------------------------------+
     """
 
+ERROR_LOGDIR_MISSING = \
+    """
+    ERROR: One or more log-file directory locations could not be
+    found:
+
+    {logfiles}
+
+    This is simple to fix: Just manually create the missing log
+    directory (or directories) and re-launch the server (the log files
+    will be created automatically).
+
+    (Explanation: Evennia creates the log directory automatically when
+    initializating a new game directory. This error usually happens if
+    you used git to clone a pre-created game directory - since log
+    files are in .gitignore they will not be cloned, which leads to
+    the log directory also not being created.)
+
+    """
+
 ERROR_PYTHON_VERSION = \
     """
     ERROR: Python {pversion} used. Evennia requires version
@@ -766,6 +785,16 @@ def init_game_directory(path, check_db=True):
     SERVER_LOGFILE = settings.SERVER_LOG_FILE
     PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
     HTTP_LOGFILE = settings.HTTP_LOG_FILE
+
+    # verify existence of log file dir (this can be missing e.g.
+    # if the game dir itself was cloned since log files are in .gitignore)
+    logdirs = [logfile.rsplit(os.path.sep, 1)
+                for logfile in (SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE)]
+    if not all(os.path.isdir(pathtup[0]) for pathtup in logdirs):
+        errstr = "\n    ".join("%s (log file %s)" % (pathtup[0], pathtup[1]) for pathtup in logdirs
+                if not os.path.isdir(pathtup[0]))
+        print ERROR_LOGDIR_MISSING.format(logfiles=errstr)
+        sys.exit()
 
     if os.name == 'nt':
         # We need to handle Windows twisted separately. We create a
