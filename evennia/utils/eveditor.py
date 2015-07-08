@@ -408,23 +408,23 @@ class CmdEditorGroup(CmdEditorBase):
         elif cmd == ":y":
             # :y <l> - yank line(s) to copy buffer
             cbuf = linebuffer[lstart:lend]
-            editor.copy_buffer = cbuf
+            editor._copy_buffer = cbuf
             string = "%s, %s yanked." % (self.lstr.capitalize(), cbuf)
         elif cmd == ":x":
             # :x <l> - cut line to copy buffer
             cbuf = linebuffer[lstart:lend]
-            editor.copy_buffer = cbuf
+            editor._copy_buffer = cbuf
             buf = linebuffer[:lstart] + linebuffer[lend:]
             editor.update_buffer(buf)
             string = "%s, %s cut." % (self.lstr.capitalize(), cbuf)
         elif cmd == ":p":
             # :p <l> paste line(s) from copy buffer
-            if not editor.copy_buffer:
+            if not editor._copy_buffer:
                 string = "Copy buffer is empty."
             else:
-                buf = linebuffer[:lstart] + editor.copy_buffer + linebuffer[lstart:]
+                buf = linebuffer[:lstart] + editor._copy_buffer + linebuffer[lstart:]
                 editor.update_buffer(buf)
-                string = "Copied buffer %s to %s." % (editor.copy_buffer, self.lstr)
+                string = "Copied buffer %s to %s." % (editor._copy_buffer, self.lstr)
         elif cmd == ":i":
             # :i <l> <txt> - insert new line
             new_lines = self.args.split('\n')
@@ -520,7 +520,7 @@ class CmdEditorGroup(CmdEditorBase):
         elif cmd == ":echo":
             # set echoing on/off
             editor._echo_mode = not editor._echo_mode
-            string = "Echo mode set to %s" % editor.echo_mode
+            string = "Echo mode set to %s" % editor._echo_mode
         caller.msg(string)
 
 
