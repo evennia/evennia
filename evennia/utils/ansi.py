@@ -354,6 +354,13 @@ def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp
     return parser.parse_ansi(string, strip_ansi=strip_ansi, xterm256=xterm256, mxp=mxp)
 
 
+def strip_ansi(string, parser=ANSI_PARSER):
+    """
+    Strip all ansi from the string.
+
+    """
+    return parser.parse_ansi(string, strip_ansi=True)
+
 def strip_raw_ansi(string, parser=ANSI_PARSER):
     """
     Remove raw ansi codes from string
