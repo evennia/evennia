@@ -3,6 +3,10 @@ Evennia menu system.
 
 Contribution - Griatch 2011
 
+> Note that the evennia/utils/menu.py module is probably a better and
+more flexible implementation of a menu system than this. Try that
+first.
+
 This module offers the ability for admins to let their game be fully
 or partly menu-driven. Menu choices can be numbered or use arbitrary
 keys. There are also some formatting options, such a putting options

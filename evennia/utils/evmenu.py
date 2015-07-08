@@ -1,48 +1,66 @@
 """
-(Better) MenuSystem
+EvMenu
 
-Evennia contribution - Griatch 2015
+This implements a full menu system for Evennia. It is considerably
+more flexible than the older contrib/menusystem.py and also uses
+menu plugin modules.
 
+To start the menu, just import the EvMenu class from this module,
 
-This implements a better menu system for Evennia. Contrary to the old
-contrib menusystem, this is controlled from a simple module with
-function definitions, rather than building a set of classes with
-arguments.
+```python
 
-To start the menu, just import the Menu class from this module,
-and call
+    from evennia.utils.evmenu import EvMenu
 
-    from evennia.contrib.bettermenusystem import Menu
-
-    Menu(caller, menu_module_path,
-         startnode="start", allow_quit=True,
-         cmdset_mergetype="Replace", cmdset_priority=1):
+    EvMenu(caller, menu_module_path,
+         startnode="start",
+         cmdset_mergetype="Replace", cmdset_priority=1,
+         allow_quit=True, cmd_on_quit="look")
+```
 
 Where `caller` is the Object to use the menu on - it will get a new
 cmdset while using the Menu. The menu_module_path is the python path
 to a python module containing function defintions.  By adjusting the
 keyword options of the Menu() initialization call you can start the
 menu at different places in the menu definition file, adjust if the
-menu command should overload the normal commands or not etc.
+menu command should overload the normal commands or not, etc.
 
-The menu is defined in a module with function defintions:
+The menu is defined in a module (this can be the same module as the
+command definition too) with function defintions:
+
+```python
 
     def nodename1(caller):
         # code
         return text, options
 
-The return values must be given in the above order, but each can be
-given as None as well
+    def nodename2(caller, input_string):
+        # code
+        return text, options
+```
 
-    text (str or tuple): Text shown at this node. If a tuple, the second
+Where caller is the object using the menu and input_string is the
+command entered by the user on the *previous* node (the command
+entered to get to this node). The node function code will only be
+executed once per node-visit and the system will accept nodes with
+both one or two arguments interchangeably.
+
+The return values must be given in the above order, but each can be
+returned as None as well. If the options are returned as None, the
+menu is immediately exited and the default "look" command is called.
+
+    text (str, tuple or None): Text shown at this node. If a tuple, the second
         element in the tuple is a help text to display at this node when
         the user enters the menu help command there.
-    helptext (str): Help text shown at this node.
-    options (tuple): ( {'key': name,   # can also be a list of aliases
-                        'desc': description, # option description
-                        'goto': nodekey,  # node to go to when chosen
-                        'exec': nodekey, # node or callback to trigger as callback when chosen
-                        {...}, ...)
+    options (tuple, dict or None): ( {'key': name,   # can also be a list of aliases. A special key is "_default", which
+                                                     # marks this option as the default fallback when no other
+                                                     # option matches the user input.
+                                      'desc': description, # option description
+                                      'goto': nodekey,  # node to go to when chosen
+                                      'exec': nodekey, # node or callback to trigger as callback when chosen. If a node
+                                                       # key is given the node will be executed once but its return u
+                                                       # values are ignored. If a callable is given, it must accept
+                                                       # one or two args, like any node.
+                                {...}, ...)
 
 If key is not given, the option will automatically be identified by
 its number 1..N.
@@ -103,7 +121,9 @@ The menu tree is exited either by using the in-menu quit command or by
 reaching a node without any options.
 
 
-For a menu demo, import CmdTestDemo form this
+For a menu demo, import CmdTestDemo from this module and add it to
+your default cmdset. Run it with this module, like `testdemo
+evennia.utils.evdemo`.
 
 """
 
@@ -113,7 +133,7 @@ from django.conf import settings
 from evennia import syscmdkeys
 from evennia import Command, CmdSet
 from evennia.utils.evtable import EvTable
-from evennia.utils.ansi import ANSIString
+from evennia.utils.ansi import ANSIString, strip_raw_ansi
 from evennia.utils.utils import mod_import, make_iter, pad, m_len
 
 # read from protocol NAWS later?
@@ -124,17 +144,18 @@ _CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
 
 # Return messages
 
-_ERR_NOT_IMPLEMENTED = "Menu node '{nodename}' is not implemented. Make another choice."
-_ERR_GENERAL = "Error in menu node '{nodename}'."
-_ERR_NO_OPTION_DESC = "No description."
-_HELP_FULL = "Commands: <menu option>, help, quit"
-_HELP_NO_QUIT = "Commands: <menu option>, help"
-_HELP_NO_OPTIONS = "Commands: help, quit"
-_HELP_NO_OPTIONS_NO_QUIT = "Commands: help"
+# i18n
+from django.utils.translation import ugettext as _
+_ERR_NOT_IMPLEMENTED = _("Menu node '{nodename}' is not implemented. Make another choice.")
+_ERR_GENERAL = _("Error in menu node '{nodename}'.")
+_ERR_NO_OPTION_DESC = _("No description.")
+_HELP_FULL = _("Commands: <menu option>, help, quit")
+_HELP_NO_QUIT = _("Commands: <menu option>, help")
+_HELP_NO_OPTIONS = _("Commands: help, quit")
+_HELP_NO_OPTIONS_NO_QUIT = _("Commands: help")
 
 
-
-class MenuError(RuntimeError):
+class EvMenuError(RuntimeError):
     """
     Error raised by menu when facing internal errors.
 
@@ -147,7 +168,7 @@ class MenuError(RuntimeError):
 #
 #------------------------------------------------------------
 
-class CmdMenuNode(Command):
+class CmdEvMenuNode(Command):
     """
     Menu options.
 
@@ -168,13 +189,14 @@ class CmdMenuNode(Command):
         if not menu:
             err = "Menu object not found as %s.ndb._menutree!" % (caller)
             self.caller.msg(err)
-            raise MenuError(err)
+            raise EvMenuError(err)
 
         # flags and data
         raw_string = self.raw_string
         cmd = raw_string.strip().lower()
         options = menu.options
         allow_quit = menu.allow_quit
+        cmd_on_quit = menu.cmd_on_quit
         default = menu.default
 
         if cmd in options:
@@ -191,7 +213,8 @@ class CmdMenuNode(Command):
             caller.msg(menu.helptext)
         elif allow_quit and cmd in ("quit", "q", "exit"):
             menu.close_menu()
-            caller.execute_cmd("look")
+            if cmd_on_quit is not None:
+                caller.execute_cmd(cmd_on_quit)
         elif default:
             goto, callback = default
             if callback:
@@ -204,10 +227,11 @@ class CmdMenuNode(Command):
         if not (options or default):
             # no options - we are at the end of the menu.
             menu.close_menu()
-            caller.execute_cmd("looK")
+            if cmd_on_quit is not None:
+                caller.execute_cmd(cmd_on_quit)
 
 
-class MenuCmdSet(CmdSet):
+class EvMenuCmdSet(CmdSet):
     """
     The Menu cmdset replaces the current cmdset.
 
@@ -223,7 +247,7 @@ class MenuCmdSet(CmdSet):
         """
         Called when creating the set.
         """
-        self.add(CmdMenuNode())
+        self.add(CmdEvMenuNode())
 
 #------------------------------------------------------------
 #
@@ -231,14 +255,15 @@ class MenuCmdSet(CmdSet):
 #
 #------------------------------------------------------------
 
-class Menu(object):
+class EvMenu(object):
     """
     This object represents an operational menu. It is initialized from
     a menufile.py instruction.
 
     """
     def __init__(self, caller, menufile, startnode="start",
-                 allow_quit=True, cmdset_mergetype="Replace", cmdset_priority=1):
+                 cmdset_mergetype="Replace", cmdset_priority=1,
+                 allow_quit=True, cmd_on_quit="look"):
         """
         Initialize the menu tree and start the caller onto the first node.
 
@@ -246,9 +271,6 @@ class Menu(object):
             caller (str): The user of the menu.
             menufile (str): The full or relative path to the menufile.
             startnode (str, optional): The starting node in the menufile.
-            allow_quit (bool, optional): Allow user to use quit or
-                exit to leave the menu at any point. Recommended during
-                development!
             cmdset_mergetype (str, optional): 'Replace' (default) means the menu
                 commands will be exclusive - no other normal commands will
                 be usable while the user is in the menu. 'Union' means the
@@ -261,8 +283,17 @@ class Menu(object):
             cmdset_priority (int, optional): The merge priority for the
                 menu command set. The default (1) is usually enough for most
                 types of menus.
+            allow_quit (bool, optional): Allow user to use quit or
+                exit to leave the menu at any point. Recommended during
+                development!
+            cmd_on_quit (str or None, optional): When exiting the menu
+                (either by reaching a node with no options or by using the
+                in-built quit command (activated with `allow_quit`), this
+                command string will be executed. Set to None to not call
+                any command.
+
         Raises:
-            MenuError: If the start/end node is not found in menu tree.
+            EvMenuError: If the start/end node is not found in menu tree.
 
         """
         self._caller = caller
@@ -270,10 +301,11 @@ class Menu(object):
         self._menutree = self._parse_menufile(menufile)
 
         if startnode not in self._menutree:
-            raise MenuError("Start node '%s' not in menu tree!" % startnode)
+            raise EvMenuError("Start node '%s' not in menu tree!" % startnode)
 
         # variables made available to the command
         self.allow_quit = allow_quit
+        self.cmd_on_quit = cmd_on_quit
         self.default = None
         self.nodetext = None
         self.helptext = None
@@ -283,7 +315,7 @@ class Menu(object):
         self._caller.ndb._menutree = self
 
         # set up the menu command on the caller
-        menu_cmdset = MenuCmdSet()
+        menu_cmdset = EvMenuCmdSet()
         menu_cmdset.mergetype = str(cmdset_mergetype).lower().capitalize() or "Replace"
         menu_cmdset.priority = int(cmdset_priority)
         self._caller.cmdset.add(menu_cmdset)
@@ -355,7 +387,7 @@ class Menu(object):
             table_width_max = max(table_width_max,
                                   max(m_len(p) for p in key.split("\n")) +
                                   max(m_len(p) for p in desc.split("\n")) + colsep)
-            table.append(ANSIString(" {lc%s{lt{w%s{n{le: %s" % (key, key, desc)))
+            table.append(ANSIString(" {lc%s{lt%s{le: %s" % (key, key, desc)))
 
         ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
         nlastcol = nlist % ncols # number of elements left in last row
@@ -411,7 +443,7 @@ class Menu(object):
             node = self._menutree[nodename]
         except KeyError:
             self._caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename))
-            raise MenuError
+            raise EvMenuError
         try:
             # the node should return data as (text, options)
             if len(getargspec(node).args) > 1:
@@ -422,7 +454,7 @@ class Menu(object):
                 nodetext, options = node(self._caller)
         except KeyError:
             self._caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename))
-            raise MenuError
+            raise EvMenuError
         except Exception:
             self._caller.msg(_ERR_GENERAL.format(nodename=nodename))
             raise
@@ -458,7 +490,7 @@ class Menu(object):
             try:
                 # execute the node; we make no use of the return values here.
                 self._execute_node(nodename, raw_string)
-            except MenuError:
+            except EvMenuError:
                 return
 
     def goto(self, nodename, raw_string):
@@ -475,7 +507,7 @@ class Menu(object):
         try:
             # execute the node, make use of the returns.
             nodetext, options = self._execute_node(nodename, raw_string)
-        except MenuError:
+        except EvMenuError:
             return
 
         # validation of the node return values
@@ -511,7 +543,7 @@ class Menu(object):
                     display_options.append((keys[0], desc))
                     for key in keys:
                         if goto or execute:
-                            self.options[key.strip().lower()] = (goto, execute)
+                            self.options[strip_raw_ansi(key).strip().lower()] = (goto, execute)
 
         self.nodetext = self._format_node(nodetext, display_options)
 
@@ -529,7 +561,7 @@ class Menu(object):
         """
         Shutdown menu; occurs when reaching the end node.
         """
-        self._caller.cmdset.remove(MenuCmdSet)
+        self._caller.cmdset.remove(EvMenuCmdSet)
         del self._caller.ndb._menutree
 
 
@@ -595,6 +627,7 @@ def test_view_node(caller):
     text = """
     Your name is {g%s{n!
 
+    click {lclook{lthere{le to trigger a look command under MXP.
     This node's option has no explicit key (nor the "_default" key
     set), and so gets assigned a number automatically. You can infact
     -always- use numbers (1...N) to refer to listed options also if you
@@ -632,7 +665,6 @@ def test_end_node(caller):
     return text, None
 
 
-
 class CmdTestMenu(Command):
     """
     Test menu
@@ -648,7 +680,7 @@ class CmdTestMenu(Command):
     def func(self):
 
         if not self.args:
-            self.caller.msg("Usage: testmenu <menumodule>")
+            self.caller.msg("Usage: testmenu menumodule")
             return
         # start menu
-        Menu(self.caller, self.args.strip(), startnode="test_start_node", cmdset_mergetype="Replace")
+        EvMenu(self.caller, self.args.strip(), startnode="test_start_node", cmdset_mergetype="Replace")
