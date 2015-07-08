@@ -18,20 +18,26 @@ and initialize it:
 
     from evennia.utils.eveditor import EvEditor
 
-    EvEditor(caller,
-             loadfunc=None, loadfunc_args=None,
-             savefunc=None, savefunc_args=None,
-             quitfunc=None, quitfunc_args=None,
-             key=""):
+    EvEditor(caller, loadfunc=None, savefunc=None, quitfunc=None, key="")
 
-Where the load/save/quitfunc are callbacks (with matching arguments)
-to trigger when the editor loads, saves and quits respectively.
+ - caller is the user of the editor, the one to see all feedback.
+ - loadfunc(caller) is called when the editor is first launched; the
+   return from this function is loaded as the starting buffer in the
+   editor.
+ - safefunc(caller, buffer) is called with the current buffer when
+   saving in the editor. The function should return True/False depending
+   on if the saving was successful or not.
+ - quitfunc(caller) is called when the editor exits. If this is given,
+   no automatic quit messages will be given.
+ - key is an optional identifier for the editing session, to be
+   displayed in the editor.
 
 """
 
 import re
 from django.conf import settings
-from evennia import Command, CmdSet, utils
+from evennia import Command, CmdSet
+from evennia.utils import is_iter, fill, dedent
 from evennia.commands import cmdhandler
 
 # we use cmdhandler instead of evennia.syscmdkeys to
@@ -57,14 +63,14 @@ _HELP_TEXT = \
  :::    - print a ':' as the only character on the line...
  :h     - this help.
 
- :w     - saves the buffer (don't quit)
+ :w     - save the buffer (don't quit)
  :wq    - save buffer and quit
- :q     - quits (will be asked to save if buffer was changed)
+ :q     - quit (will be asked to save if buffer was changed)
  :q!    - quit without saving, no questions asked
 
  :u     - (undo) step backwards in undo history
  :uu    - (redo) step forward in undo history
- :UU    - reset all changes back to initial
+ :UU    - reset all changes back to initial state
 
  :dd <l>     - delete line <n>
  :dw <l> <w> - delete word or regex <w> in entire buffer or on line <l>
@@ -90,6 +96,30 @@ _HELP_TEXT = \
     <l> - line numbers, or range lstart:lend, e.g. '3:7'.
     <w> - one word or several enclosed in quotes.
     <txt> - longer string, usually not needed to be enclosed in quotes.
+"""
+
+_ERROR_LOADFUNC = \
+"""
+{error}
+
+{rBuffer load function error. Could not load initial data.{n
+"""
+
+_ERROR_NO_SAVEFUNC = \
+"""
+{rNo save function defined. Buffer cannot be saved.{n
+"""
+
+_DEFAULT_NO_QUITFUNC = \
+"""
+Exited editor.
+"""
+
+_ERROR_QUITFUNC = \
+"""
+{error}
+
+{rQuit function gave an error. Skipping.{n
 """
 
 #------------------------------------------------------------
@@ -167,7 +197,7 @@ class CmdEditorBase(Command):
 
         linebuffer = []
         if self.editor:
-            linebuffer = self.editor.buffer.split("\n")
+            linebuffer = self.editor.get_buffer().split("\n")
         nlines = len(linebuffer)
 
         # The regular expression will split the line by whitespaces,
@@ -246,10 +276,6 @@ class CmdEditorBase(Command):
         self.arg1 = arg1
         self.arg2 = arg2
 
-    def func(self):
-        "Implements the Editor commands"
-        pass
-
 
 class CmdLineInput(CmdEditorBase):
     """
@@ -262,15 +288,18 @@ class CmdLineInput(CmdEditorBase):
         """
         Adds the line without any formatting changes.
         """
-        # add a line of text
-        if not self.editor.buffer:
+        editor = self.editor
+        buf = editor.get_buffer()
+
+        # add a line of text to buffer
+        if not buf:
             buf = self.args
         else:
-            buf = self.editor.buffer + "\n%s" % self.args
+            buf = buf + "\n%s" % self.args
         self.editor.update_buffer(buf)
-        if self.editor.echo_mode:
+        if self.editor._echo_mode:
             # need to do it here or we will be off one line
-            cline = len(self.editor.buffer.split('\n'))
+            cline = len(self.editor.get_buffer().split('\n'))
             self.caller.msg("{b%02i|{n %s" % (cline, self.args))
 
 
@@ -295,7 +324,7 @@ class CmdEditorGroup(CmdEditorBase):
         linebuffer = self.linebuffer
         lstart, lend = self.lstart, self.lend
         cmd = self.cmdstring
-        echo_mode = self.editor.echo_mode
+        echo_mode = self.editor._echo_mode
         string = ""
 
         if cmd == ":":
@@ -333,7 +362,7 @@ class CmdEditorGroup(CmdEditorBase):
             string += " " + editor.quit()
         elif cmd == ":q":
             # quit. If not saved, will ask
-            if self.editor.unsaved:
+            if self.editor._unsaved:
                 caller.cmdset.add(SaveYesNoCmdSet)
                 caller.msg("Save before quitting? {lcyes{lt[Y]{le/{lcno{ltN{le")
             else:
@@ -349,7 +378,7 @@ class CmdEditorGroup(CmdEditorBase):
             string = editor.update_undo(1)
         elif cmd == ":UU":
             # reset buffer
-            editor.update_buffer(editor.pristine_buffer)
+            editor.update_buffer(editor._pristine_buffer)
             string = "Reverted all changes to the buffer back to original state."
         elif cmd == ":dd":
             # :dd <l> - delete line <l>
@@ -461,7 +490,7 @@ class CmdEditorGroup(CmdEditorBase):
             else:
                 string = "Flood filled %s." % self.lstr
             fbuf = "\n".join(linebuffer[lstart:lend])
-            fbuf = utils.fill(fbuf, width=width)
+            fbuf = fill(fbuf, width=width)
             buf = linebuffer[:lstart] + fbuf.split("\n") + linebuffer[lend:]
             editor.update_buffer(buf)
         elif cmd == ":fi":
@@ -485,12 +514,12 @@ class CmdEditorGroup(CmdEditorBase):
             else:
                 string = "Removed left margin (dedented) %s." % self.lstr
             fbuf = "\n".join(linebuffer[lstart:lend])
-            fbuf = utils.dedent(fbuf)
+            fbuf = dedent(fbuf)
             buf = linebuffer[:lstart] + fbuf.split("\n") + linebuffer[lend:]
             editor.update_buffer(buf)
         elif cmd == ":echo":
             # set echoing on/off
-            editor.echo_mode = not editor.echo_mode
+            editor._echo_mode = not editor._echo_mode
             string = "Echo mode set to %s" % editor.echo_mode
         caller.msg(string)
 
@@ -514,28 +543,21 @@ class EvEditor(object):
 
     """
 
-    def __init__(self, caller,
-                 loadfunc=None, loadfunc_args=None,
-                 savefunc=None, savefunc_args=None,
-                 quitfunc=None, quitfunc_args=None,
-                 key=""):
+    def __init__(self, caller, loadfunc=None, savefunc=None,
+                 quitfunc=None, key=""):
         """
         Args:
             caller (Object): Who is using the editor.
             loadfunc (callable, optional): This will be called as
-                `func(*loadfunc_args)` when the editor is first started,
-                e.g. for pre-loading text into it.
-            loadfunc_args (tuple, optional): Optional tuple of
-                arguments to supply to `loadfunc`.
+                `loadfunc(caller)` when the editor is first started. Its
+                return will be used as the editor's starting buffer.
             savefunc (callable, optional): This will be called as
-                `func(*savefunc_args)` when the save-command is given and
+                `savefunc(caller, buffer)` when the save-command is given and
                 is used to actually determine where/how result is saved.
                 It should return `True` if save was successful and also
                 handle any feedback to the user.
-            savefunc_args (tuple, optional): Optional tuple of
-                arguments to supply to `savefunc`.
             quitfunc (callable, optional): This will optionally be
-                called as `func(*quitfunc_args)` when the editor is
+                called as `quitfunc(caller)` when the editor is
                 exited. If defined, it should handle all wanted feedback
                 to the user.
             quitfunc_args (tuple, optional): Optional tuple of arguments to
@@ -544,28 +566,25 @@ class EvEditor(object):
                 session and make it unique from other editing sessions.
 
         """
-        self.key = key
-        self.caller = caller
-        self.caller.ndb._lineeditor = self
-        self.buffer = ""
-        self.unsaved = False
+        self._key = key
+        self._caller = caller
+        self._caller.ndb._lineeditor = self
+        self._buffer = ""
+        self._unsaved = False
 
         if loadfunc:
-            # execute command for loading initial data
-            try:
-                args = loadfunc_args or ()
-                self.buffer = loadfunc(*args)
-            except Exception, e:
-                caller.msg("%s\n{rBuffer load function error. Could not load initial data.{n" % e)
-        if not savefunc:
-            # If no save function is defined, save an error-reporting function
-            err = "{rNo save function defined. Buffer cannot be saved.{n"
-            caller.msg(err)
-            savefunc = lambda: self.caller.msg(err)
-        self.savefunc = savefunc
-        self.savefunc_args = savefunc_args or ()
-        self.quitfunc = quitfunc
-        self.quitfunc_args = quitfunc_args or ()
+            self._loadfunc = loadfunc
+        else:
+            self._loadfunc = lambda caller: self._buffer
+        self.load_buffer()
+        if savefunc:
+            self._savefunc = savefunc
+        else:
+            self._savefunc = lambda caller: caller.msg(_ERROR_NO_SAVEFUNC)
+        if quitfunc:
+            self._quitfunc = quitfunc
+        else:
+            self._quitfunc = lambda caller: caller.msg(_DEFAULT_NO_QUITFUNC)
 
         # Create the commands we need
         cmd1 = CmdLineInput()
@@ -578,68 +597,77 @@ class EvEditor(object):
         editor_cmdset = EvEditorCmdSet()
         editor_cmdset.add(cmd1)
         editor_cmdset.add(cmd2)
-        self.caller.cmdset.add(editor_cmdset)
+        self._caller.cmdset.add(editor_cmdset)
 
         # store the original version
-        self.pristine_buffer = self.buffer
-        self.sep = "-"
+        self._pristine_buffer = self._buffer
+        self._sep = "-"
 
         # undo operation buffer
-        self.undo_buffer = [self.buffer]
-        self.undo_pos = 0
-        self.undo_max = 20
+        self._undo_buffer = [self._buffer]
+        self._undo_pos = 0
+        self._undo_max = 20
 
         # copy buffer
-        self.copy_buffer = []
+        self._copy_buffer = []
 
         # echo inserted text back to caller
-        self.echo_mode = False
+        self._echo_mode = True
 
         # show the buffer ui
-        self.caller.msg(self.display_buffer())
+        self._caller.msg(self.display_buffer())
+
+    def load_buffer(self):
+        """
+        Load the buffer using the load function hook.
+        """
+        try:
+            self._buffer = self._loadfunc(self._caller)
+        except Exception, e:
+            self._caller.msg(_ERROR_LOADFUNC.format(error=e))
+
+    def get_buffer(self):
+        """
+        Return the current buffer
+        """
+        return self._buffer
 
     def update_buffer(self, buf):
         """
-        This should be called when the buffer has been changed somehow.
-        It will handle unsaved flag and undo updating.
+        This should be called when the buffer has been changed
+        somehow.  It will handle unsaved flag and undo updating.
         """
-        if utils.is_iter(buf):
+        if is_iter(buf):
             buf = "\n".join(buf)
 
-        if buf != self.buffer:
-            self.buffer = buf
+        if buf != self._buffer:
+            self._buffer = buf
             self.update_undo()
-            self.unsaved = True
+            self._unsaved = True
 
     def quit(self):
         """
         Cleanly exit the editor.
         """
-        if self.quitfunc:
-            # call quit function hook if available
-            try:
-                self.quitfunc(*self.quitfunc_args)
-            except Exception, e:
-                self.caller.msg("%s\n{Quit function gave an error. Skipping.{n" % e)
-        del self.caller.ndb._lineeditor
-        self.caller.cmdset.remove(EvEditorCmdSet)
-        if self.quitfunc:
-            # if quitfunc is defined, it should manage exit messages.
-            return ""
-        return "Exited editor."
+        try:
+            self._quitfunc(self._caller)
+        except Exception, e:
+            self._caller.msg(_ERROR_QUITFUNC.format(error=e))
+        del self._caller.ndb._lineeditor
+        self._caller.cmdset.remove(EvEditorCmdSet)
 
     def save_buffer(self):
         """
         Saves the content of the buffer. The 'quitting' argument is a bool
         indicating whether or not the editor intends to exit after saving.
         """
-        if self.unsaved:
+        if self._unsaved:
             try:
-                if self.savefunc(*self.savefunc_args):
+                if self._savefunc(self._caller, self._buffer):
                     # Save codes should return a true value to indicate
                     # save worked. The saving function is responsible for
                     # any status messages.
-                    self.unsaved = False
+                    self._unsaved = False
                 return ""
             except Exception, e:
                 return "%s\n{rSave function gave an error. Buffer not saved." % e
@@ -652,20 +680,24 @@ class EvEditor(object):
 
         """
         if step and step < 0:
-            if self.undo_pos <= 0:
+            # undo
+            if self._undo_pos <= 0:
                 return "Nothing to undo."
-            self.undo_pos = max(0, self.undo_pos + step)
-            self.buffer = self.undo_buffer[self.undo_pos]
+            self._undo_pos = max(0, self._undo_pos + step)
+            self._buffer = self._undo_buffer[self._undo_pos]
             return "Undo."
         elif step and step > 0:
-            if self.undo_pos >= len(self.undo_buffer) - 1 or self.undo_pos + 1 >= self.undo_max:
+            # redo
+            if self._undo_pos >= len(self._undo_buffer) - 1 or self._undo_pos + 1 >= self._undo_max:
                 return "Nothing to redo."
-            self.undo_pos = min(self.undo_pos + step, min(len(self.undo_buffer), self.undo_max) - 1)
-            self.buffer = self.undo_buffer[self.undo_pos]
+            self._undo_pos = min(self._undo_pos + step, min(len(self._undo_buffer), self._undo_max) - 1)
+            self._buffer = self._undo_buffer[self._undo_pos]
             return "Redo."
-        if not self.undo_buffer or (self.undo_buffer and self.buffer != self.undo_buffer[self.undo_pos]):
-            self.undo_buffer = self.undo_buffer[:self.undo_pos + 1] + [self.buffer]
-            self.undo_pos = len(self.undo_buffer) - 1
+        if not self._undo_buffer or (self._undo_buffer and self._buffer != self._undo_buffer[self._undo_pos]):
+            # save undo state
+            self._undo_buffer = self._undo_buffer[:self._undo_pos + 1] + [self._buffer]
+            self._undo_pos = len(self._undo_buffer) - 1
+        print "saving undo buffer:", self._undo_buffer, self._undo_pos
 
     def display_buffer(self, buf=None, offset=0, linenums=True):
         """
@@ -675,8 +707,8 @@ class EvEditor(object):
         the starting line number, to get the linenum display right.
         """
         if buf == None:
-            buf = self.buffer
-        if utils.is_iter(buf):
+            buf = self._buffer
+        if is_iter(buf):
             buf = "\n".join(buf)
 
         lines = buf.split('\n')
@@ -684,9 +716,10 @@ class EvEditor(object):
         nwords = len(buf.split())
         nchars = len(buf)
 
-        sep = self.sep
-        header = "{n" + sep * 10 + "Line Editor [%s]" % self.key + sep * (_DEFAULT_WIDTH-25-len(self.key))
-        footer = "{n" + sep * 10 + "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) + sep * 12 + "(:h for help)" + sep * 23
+        sep = self._sep
+        header = "{n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH-25-len(self._key))
+        footer = "{n" + sep * 10 + "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) \
+                    + sep * 12 + "(:h for help)" + sep * 23
         if linenums:
             main = "\n".join("{b%02i|{n %s" % (iline + 1 + offset, line) for iline, line in enumerate(lines))
         else:
@@ -698,7 +731,7 @@ class EvEditor(object):
         """
         Shows the help entry for the editor.
         """
-        string = self.sep * _DEFAULT_WIDTH + _HELP_TEXT + self.sep * _DEFAULT_WIDTH
+        string = self._sep * _DEFAULT_WIDTH + _HELP_TEXT + self._sep * _DEFAULT_WIDTH
         return string
 
 
@@ -732,34 +765,38 @@ class CmdEditor(Command):
         if not self.args or not '/' in self.args:
             self.caller.msg("Usage: @editor <obj>/<attrname>")
             return
-        self.objname, self.attrname = [part.strip()
-                                            for part in self.args.split("/", 1)]
-        self.obj = self.caller.search(self.objname)
-        if not self.obj:
+        caller = self.caller
+        objname, attrname = [part.strip() for part in self.args.split("/", 1)]
+        target = caller.search(objname)
+        if not target:
             return
 
         # hook save/load functions
-        def load_attr():
+        def load_attr(caller):
             "inital loading of buffer data from given attribute."
-            target = self.obj.attributes.get(self.attrname)
-            if target is not None and not isinstance(target, basestring):
-                typ = type(target).__name__
+            old_value = target.attributes.get(attrname)
+            if old_value is not None and not isinstance(old_value, basestring):
+                typ = type(old_value).__name__
                 self.caller.msg("{RWARNING! Saving this buffer will overwrite the "\
                                 "current attribute (of type %s) with a string!{n" % typ)
-            return target and str(target) or ""
+            return old_value and str(old_value) or ""
 
-        def save_attr():
+        def save_attr(caller, buf):
             """
             Save line buffer to given attribute name. This should
             return True if successful and also report its status.
             """
-            self.obj.attributes.add(self.attrname, self.editor.buffer)
+            target.attributes.add(attrname, buf)
             self.caller.msg("Saved.")
             return True
 
-        def quit_hook():
-            "Example quit hook. Since it's given, it's responsible for giving feedback messages."
-            self.caller.msg("Exited Editor.")
+        def quit_hook(caller):
+            """
+            Example quit hook. Since it's given, it's responsible for
+            giving feedback messages.
+            """
+            del caller.ndb._editing_attr
+            caller.msg("Exited Editor.")
 
         editor_key = "%s/%s" % (self.objname, self.attrname)
 

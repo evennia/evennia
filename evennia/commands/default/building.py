@@ -543,10 +543,10 @@ class CmdDesc(MuxCommand):
         if not obj:
             return
 
-        def load():
+        def load(caller):
             return obj.db.desc or ""
 
-        def save():
+        def save(caller, buf):
             """
             Save line buffer to the desc prop. This should
             return True if successful and also report its status to the user.
