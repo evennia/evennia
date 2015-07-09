@@ -102,6 +102,7 @@ class EvMore(object):
 
         """
         self._caller = caller
+        self._kwargs = kwargs
         lines = text.split("\n")
         self._pages = []
         self._npages = []
@@ -121,7 +122,6 @@ class EvMore(object):
             # go into paging mode
             # first pass on the msg kwargs
             caller.ndb._more = self
-            caller.msg(**kwargs)
             caller.cmdset.add(CmdSetMore)
 
             # goto top of the text
@@ -136,7 +136,7 @@ class EvMore(object):
         page = _DISPLAY.format(text=text,
                                pageno=pos + 1,
                                pagemax=self._npages)
-        self._caller.msg(page)
+        self._caller.msg(text=page, **self._kwargs)
 
     def page_top(self):
         """
