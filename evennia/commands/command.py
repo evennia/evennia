@@ -109,6 +109,7 @@ class Command(object):
                 help entries and lists)
     cmd.obj - the object on which this command is defined. If a default command,
                  this is usually the same as caller.
+    cmd.rawstring - the full raw string input, including any args and no parsing.
 
     The following class properties can/should be defined on your child class:
 
