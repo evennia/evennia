@@ -39,15 +39,17 @@ class Attribute(SharedMemoryModel):
     attributes on the fly as we like.
 
     The Attribute class defines the following properties:
-        key - primary identifier.
-        lock_storage - perm strings.
-        obj - which object the attribute is defined on.
-        date_created - when the attribute was created.
-        value - the data stored in the attribute, in pickled form
-                using wrappers to be able to store/retrieve models.
-        strvalue - string-only data. This data is not pickled and is
-                    thus faster to search for in the database.
-        category - optional character string for grouping the Attribute.
+     - key (str): Primary identifier.
+     - lock_storage (str): Perm strings.
+     - model (str): A string defining the model this is connected to. This
+        is a natural_key, like "objects.objectdb"
+     - date_created (datetime): When the attribute was created.
+     - value (any): The data stored in the attribute, in pickled form
+        using wrappers to be able to store/retrieve models.
+     - strvalue (str): String-only data. This data is not pickled and
+        is thus faster to search for in the database.
+     - category (str): Optional character string for grouping the
+        Attribute.
 
     """
 
@@ -76,7 +78,7 @@ class Attribute(SharedMemoryModel):
     db_model = models.CharField(
         'model', max_length=32, db_index=True, blank=True, null=True,
         help_text="Which model of object this attribute is attached to (A "
-                  "natural key like 'objects.dbobject'). You should not change "
+                  "natural key like 'objects.objectdb'). You should not change "
                   "this value unless you know what you are doing.")
     # subclass of Attribute (None or nick)
     db_attrtype = models.CharField(
@@ -166,18 +168,20 @@ class Attribute(SharedMemoryModel):
         Determines if another object has permission to access.
 
         Args:
-            accessing_obj (object): object trying to access this one.
-            access_type (optional): type of access sought.
-            default (optional): what to return if no lock of access_type was found
-
-        Kwargs:
-            **kwargs: passed to `at_access` hook along with `result`.
+            accessing_obj (object): Entity trying to access this one.
+            access_type (str, optional): Type of access sought, see
+                the lock documentation.
+            default (bool, optional): What result to return if no lock
+                of access_type was found. The default, `False`, means a lockdown
+                policy, only allowing explicit access.
+            kwargs (any, optional): Not used; here to make the API consistent with
+                other access calls.
 
         Returns:
-            result:
+            result (bool): If the lock was passed or not.
+
         """
         result = self.locks.check(accessing_obj, access_type=access_type, default=default)
-        #self.at_access(result, **kwargs)
         return result
 
 
@@ -196,7 +200,7 @@ class AttributeHandler(object):
     _attrtype = None
 
     def __init__(self, obj):
-        "Initialize handler"
+        "Initialize handler."
         self.obj = obj
         self._objid = obj.id
         self._model = to_str(obj.__dbclass__.__name__.lower())
@@ -216,7 +220,16 @@ class AttributeHandler(object):
         Checks if the given Attribute (or list of Attributes) exists on
         the object.
 
-        If an iterable is given, returns list of booleans.
+        Args:
+            key (str or iterable): The Attribute key or keys to check for.
+            category (str): Limit the check to Attributes with this
+                category (note, that `None` is the default category).
+
+        Returns:
+            has_attribute (bool or list): If the Attribute exists on
+                this object or not. If `key` was given as an iterable then
+                the return is a list of booleans.
+
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
@@ -228,21 +241,38 @@ class AttributeHandler(object):
 
     def get(self, key=None, category=None, default=None, return_obj=False,
             strattr=False, raise_exception=False, accessing_obj=None,
-            default_access=True, not_found_none=False):
+            default_access=True):
         """
-        Returns the value of the given Attribute or list of Attributes.
-        `strattr` will cause the string-only value field instead of the normal
-        pickled field data. Use to get back values from Attributes added with
-        the `strattr` keyword.
+        Get the Attribute.
 
-        If `return_obj=True`, return the matching Attribute object
-        instead. Returns `default` if no matches (or [ ] if `key` was a list
-        with no matches). If `raise_exception=True`, failure to find a
-        match will raise `AttributeError` instead.
+        Args:
+            key (str or list, optional): the attribute identifier or
+                multiple attributes to get. if a list of keys, the
+                method will return a list.
+            category (str, optional): the category within which to
+                retrieve attribute(s).
+            default (any, optional): The value to return if an
+                Attribute was not defined.
+            return_obj (bool, optional): If set, the return is not the value of the
+                Attribute but the Attribute object itself.
+            strattr (bool, optional): Return the `strvalue` field of
+                the Attribute rather than the usual `value`, this is a
+                string-only value for quick database searches.
+            raise_exception (bool, optional): When an Attribute is not
+                found, the return from this is usually `default`. If this
+                is set, an exception is raised instead.
+            accessing_obj (object, optional): If set, an `attrread`
+                permission lock will be checked before returning each
+                looked-after Attribute.
 
-        If `accessing_obj` is given, its `attrread` permission lock will be
-        checked before displaying each looked-after Attribute. If no
-        `accessing_obj` is given, no check will be done.
+        Returns:
+            result (any, Attribute or list): A list of varying type depending
+                on the arguments given.
+
+        Raises:
+            AttributeError: If `raise_exception` is set and no matching Attribute
+                was found matching `key`.
+
         """
 
         class RetDefault(object):
@@ -288,12 +318,21 @@ class AttributeHandler(object):
         """
         Add attribute to object, with optional `lockstring`.
 
-        If `strattr` is set, the `db_strvalue` field will be used (no pickling).
-        Use the `get()` method with the `strattr` keyword to get it back.
+        Args:
+            key (str): An Attribute name to add.
+            value (any or str): The value of the Attribute. If
+                `strattr` keyword is set, this *must* be a string.
+            category (str, optional): The category for the Attribute.
+                The default `None` is the normal category used.
+            lockstring (str, optional): A lock string limiting access
+                to the attribute.
+            accessing_obj (object, optional): An entity to check for
+                the `attrcreate` access-type. If not passing, this method
+                will be exited.
+            default_access (bool, optional): What access to grant if
+                `accessing_obj` is given but no lock of the type
+                `attrcreate` is defined on the Attribute in question.
 
-        If `accessing_obj` is given, `self.obj`'s  `attrcreate` lock access
-        will be checked against it. If no `accessing_obj` is given, no check
-        will be done.
         """
         if accessing_obj and not self.obj.access(accessing_obj,
                                       self._attrcreate, default=default_access):
@@ -334,11 +373,27 @@ class AttributeHandler(object):
             strattr=False, accessing_obj=None, default_access=True):
         """
         Batch-version of `add()`. This is more efficient than
-        repeat-calling add.
+        repeat-calling add when having many Attributes to add.
 
-        `key` and `value` must be sequences of the same length, each
-        representing a key-value pair.
+        Args:
+            key (list): A list of Attribute names to add.
+            value (list): A list of values. It must match the `key`
+                list.  If `strattr` keyword is set, all entries *must* be
+                strings.
+            category (str, optional): The category for the Attribute.
+                The default `None` is the normal category used.
+            lockstring (str, optional): A lock string limiting access
+                to the attribute.
+            accessing_obj (object, optional): An entity to check for
+                the `attrcreate` access-type. If not passing, this method
+                will be exited.
+            default_access (bool, optional): What access to grant if
+                `accessing_obj` is given but no lock of the type
+                `attrcreate` is defined on the Attribute in question.
 
+        Raises:
+            RuntimeError: If `key` and `value` lists are not of the
+                same lengths.
         """
         if accessing_obj and not self.obj.access(accessing_obj,
                                       self._attrcreate, default=default_access):
@@ -390,8 +445,24 @@ class AttributeHandler(object):
         """
         Remove attribute or a list of attributes from object.
 
-        If `accessing_obj` is given, will check against the `attredit` lock.
-        If not given, this check is skipped.
+        Args:
+            key (str): An Attribute key to remove.
+            raise_exception (bool, optional): If set, not finding the
+                Attribute to delete will raise an exception instead of
+                just quietly failing.
+            category (str, optional): The category within which to
+                remove the Attribute.
+            accessing_obj (object, optional): An object to check
+                against the `attredit` lock. If not given, the check will
+                be skipped.
+            default_access (bool, optional): The fallback access to
+                grant if `accessing_obj` is given but there is no
+                `attredit` lock set on the Attribute in question.
+
+        Raises:
+            AttributeError: If `raise_exception` is set and no matching Attribute
+                was found matching `key`.
+
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
@@ -409,9 +480,17 @@ class AttributeHandler(object):
 
     def clear(self, category=None, accessing_obj=None, default_access=True):
         """
-        Remove all Attributes on this object. If `accessing_obj` is
-        given, check the `attredit` lock on each Attribute before
-        continuing. If not given, skip check.
+        Remove all Attributes on this object.
+
+        Args:
+            category (str, optional): If given, clear only Attributes
+                of this category.
+            accessing_obj (object, optional): If given, check the
+                `attredit` lock on each Attribute before continuing.
+            default_access (bool, optional): Use this permission as
+                fallback if `access_obj` is given but there is no lock of
+                type `attredit` on the Attribute in question.
+
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
@@ -426,9 +505,18 @@ class AttributeHandler(object):
         """
         Return all Attribute objects on this object.
 
-        If `accessing_obj` is given, check the `attrread` lock on
-        each attribute before returning them. If not given, this
-        check is skipped.
+        Args:
+            accessing_obj (object, optional): Check the `attrread`
+                lock on each attribute before returning them. If not
+                given, this check is skipped.
+            default_access (bool, optional): Use this permission as a
+                fallback if `accessing_obj` is given but one or more
+                Attributes has no lock of type `attrread` defined on them.
+
+        Returns:
+            Attributes (list): All the Attribute objects (note: Not
+                their values!) in the handler.
+
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
@@ -442,31 +530,92 @@ class AttributeHandler(object):
 
 class NickHandler(AttributeHandler):
     """
-    Handles the addition and removal of Nicks
-    (uses Attributes' `strvalue` and `category` fields)
+    Handles the addition and removal of Nicks. Nicks are special
+    versions of Attributes with an `_attrtype` hardcoded to `nick`.
+    They also always use the `strvalue` fields for their data.
 
-    Nicks are stored as Attributes
-    with categories `nick_<nicktype>`
     """
     _attrtype = "nick"
 
     def has(self, key, category="inputline"):
+        """
+        Args:
+            key (str or iterable): The Nick key or keys to check for.
+            category (str): Limit the check to Nicks with this
+                category (note, that `None` is the default category).
+
+        Returns:
+            has_nick (bool or list): If the Nick exists on this object
+                or not. If `key` was given as an iterable then the return
+                is a list of booleans.
+
+        """
         return super(NickHandler, self).has(key, category=category)
 
     def get(self, key=None, category="inputline", **kwargs):
-        "Get the replacement value matching the given key and category"
+        """
+        Get the replacement value matching the given key and category
+
+        Args:
+            key (str or list, optional): the attribute identifier or
+                multiple attributes to get. if a list of keys, the
+                method will return a list.
+            category (str, optional): the category within which to
+                retrieve the nick. The "inputline" means replacing data
+                sent by the user.
+            kwargs (any, optional): These are passed on to `AttributeHandler.get`.
+
+        """
         return super(NickHandler, self).get(key=key, category=category, strattr=True, **kwargs)
 
     def add(self, key, replacement, category="inputline", **kwargs):
-        "Add a new nick"
+        """
+        Add a new nick.
+
+        Args:
+            key (str): A key for the nick to match for.
+            replacement (str): The string to replace `key` with (the "nickname").
+            category (str, optional): the category within which to
+                retrieve the nick. The "inputline" means replacing data
+                sent by the user.
+            kwargs (any, optional): These are passed on to `AttributeHandler.get`.
+
+        """
         super(NickHandler, self).add(key, replacement, category=category, strattr=True, **kwargs)
 
     def remove(self, key, category="inputline", **kwargs):
-        "Remove Nick with matching category"
+        """
+        Remove Nick with matching category.
+
+        Args:
+            key (str): A key for the nick to match for.
+            category (str, optional): the category within which to
+                removethe nick. The "inputline" means replacing data
+                sent by the user.
+            kwargs (any, optional): These are passed on to `AttributeHandler.get`.
+
+        """
         super(NickHandler, self).remove(key, category=category, **kwargs)
 
     def nickreplace(self, raw_string, categories=("inputline", "channel"), include_player=True):
-        "Replace entries in raw_string with nick replacement"
+        """
+        Apply nick replacement of entries in raw_string with nick replacement.
+
+        Args:
+            raw_string (str): The string in which to perform nick
+                replacement.
+            categories (tuple, optional): Replacement categories in
+                which to perform the replacement, such as "inputline",
+                "channel" etc.
+            include_player (bool, optional): Also include replacement
+                with nicks stored on the Player level.
+            kwargs (any, optional): Not used.
+
+        Returns:
+            string (str): A string with matching keys replaced with
+                their nick equivalents.
+
+        """
         raw_string
         obj_nicks, player_nicks = [], []
         for category in make_iter(categories):
@@ -491,35 +640,83 @@ class NAttributeHandler(object):
     for the `AttributeHandler`.
     """
     def __init__(self, obj):
-        "initialized on the object"
+        """
+        Initialized on the object
+        """
         self._store = {}
         self.obj = weakref.proxy(obj)
 
     def has(self, key):
-        "Check if object has this attribute or not"
+        """
+        Check if object has this attribute or not.
+
+        Args:
+            key (str): The Nattribute key to check.
+
+        Returns:
+            has_nattribute (bool): If Nattribute is set or not.
+
+        """
         return key in self._store
 
     def get(self, key):
-        "Returns named key value"
+        """
+        Get the named key value.
+
+        Args:
+            key (str): The Nattribute key to get.
+
+        Returns:
+            the value of the Nattribute.
+
+        """
         return self._store.get(key, None)
 
     def add(self, key, value):
-        "Add new key and value"
+        """
+        Add new key and value.
+
+        Args:
+            key (str): The name of Nattribute to add.
+            value (any): The value to store.
+
+        """
         self._store[key] = value
         self.obj.set_recache_protection()
 
     def remove(self, key):
-        "Remove key from storage"
+        """
+        Remove Nattribute from storage.
+
+        Args:
+            key (str): The name of the Nattribute to remove.
+
+        """
         if key in self._store:
             del self._store[key]
         self.obj.set_recache_protection(self._store)
 
     def clear(self):
-        "Remove all nattributes from handler"
+        """
+        Remove all NAttributes from handler.
+
+        """
         self._store = {}
 
     def all(self, return_tuples=False):
-        "List all keys or (keys, values) stored, except _keys"
+        """
+        List the contents of the handler.
+
+        Args:
+            return_tuples (bool, optional): Defines if the Nattributes
+                are returns as a list of keys or as a list of `(key, value)`.
+
+        Returns:
+            nattributes (list): A list of keys `[key, key, ...]` or a
+                list of tuples `[(key, value), ...]` depending on the
+                setting of `return_tuples`.
+
+        """
         if return_tuples:
             return [(key, value) for (key, value) in self._store.items() if not key.startswith("_")]
         return [key for key in self._store if not key.startswith("_")]
