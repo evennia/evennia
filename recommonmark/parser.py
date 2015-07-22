@@ -62,7 +62,7 @@ class CommonMarkParser(parsers.Parser):
             self.verbatim(block.string_content)
         elif (block.t == "FencedCode"):
             if len(block.strings) and len(block.strings[0]):
-                self.code(block.strings[0], block.string_content)
+                self.code(block.strings[0].strip(), block.string_content)
             else:
                 self.verbatim(block.string_content)
         elif (block.t == "ReferenceDef"):
