@@ -490,7 +490,7 @@ class CmdCreate(ObjManipCommand):
 
             # create object (if not a valid typeclass, the default
             # object typeclass will automatically be used)
-            lockstring = "control:id(%s);examine:perm(Builders);delete:id(%s) or perm(Wizards)" % (caller.id, caller.id)
+            lockstring = "control:id(%s);delete:id(%s) or perm(Wizards)" % (caller.id, caller.id)
             obj = create.create_object(typeclass, name, caller,
                                        home=caller, aliases=aliases,
                                        locks=lockstring, report_to=caller)
