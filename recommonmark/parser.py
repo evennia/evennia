@@ -1,7 +1,11 @@
 from contextlib import contextmanager
 import itertools
 
-from docutils import parsers, nodes
+from docutils import parsers, nodes, utils
+
+from docutils.parsers.rst import roles, states
+from docutils.utils.code_analyzer import Lexer, LexerError
+
 from CommonMark import DocParser, HTMLRenderer
 from warnings import warn
 
@@ -57,8 +61,10 @@ class CommonMarkParser(parsers.Parser):
         elif (block.t == "IndentedCode"):
             self.verbatim(block.string_content)
         elif (block.t == "FencedCode"):
-            # FIXME: add pygment support as done in code_role in rst/roles.py
-            self.verbatim(block.string_content)
+            if len(block.strings) and len(block.strings[0]):
+                self.code(block.strings[0], block.string_content)
+            else:
+                self.verbatim(block.string_content)
         elif (block.t == "ReferenceDef"):
             self.reference(block)
         elif (block.t == "HorizontalRule"):
@@ -115,6 +121,31 @@ class CommonMarkParser(parsers.Parser):
             text = text[:-1]
         verbatim_node.append(nodes.Text(text))
         self.current_node.append(verbatim_node)
+
+    def code(self, language, text):
+        classes = ['code']
+        if language:
+            classes.append(language)
+
+        try:
+            tokens = Lexer(utils.unescape(text, 1), language, True)
+        except LexerError:
+            msg = inliner.reporter.warning(error)
+            prb = inliner.problematic(rawtext, rawtext, msg)
+            return [prb], [msg]
+
+        node = nodes.literal_block(text, '', classes=classes)
+
+        # analyze content and add nodes for every token
+        for classes, value in tokens:
+            # print (classes, value)
+            if classes:
+                node += nodes.inline(value, value, classes=classes)
+            else:
+                # insert as Text to decrease the verbosity of the output
+                node += nodes.Text(value, value)
+
+        self.current_node.append(node)
 
     def paragraph(self, block):
         p = nodes.paragraph()
