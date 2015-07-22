@@ -138,7 +138,6 @@ class CommonMarkParser(parsers.Parser):
 
         # analyze content and add nodes for every token
         for classes, value in tokens:
-            # print (classes, value)
             if classes:
                 node += nodes.inline(value, value, classes=classes)
             else:
