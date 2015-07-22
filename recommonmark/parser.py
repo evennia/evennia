@@ -129,10 +129,8 @@ class CommonMarkParser(parsers.Parser):
 
         try:
             tokens = Lexer(utils.unescape(text, 1), language, True)
-        except LexerError:
-            msg = inliner.reporter.warning(error)
-            prb = inliner.problematic(rawtext, rawtext, msg)
-            return [prb], [msg]
+        except LexerError as error:
+            raise error
 
         node = nodes.literal_block(text, '', classes=classes)
 
