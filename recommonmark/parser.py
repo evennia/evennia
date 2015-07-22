@@ -123,7 +123,7 @@ class CommonMarkParser(parsers.Parser):
         self.current_node.append(verbatim_node)
 
     def code(self, language, text):
-        classes = ['code']
+        classes = ['code', 'highlight']
         if language:
             classes.append(language)
 
