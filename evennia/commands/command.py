@@ -109,6 +109,7 @@ class Command(object):
                 help entries and lists)
     cmd.obj - the object on which this command is defined. If a default command,
                  this is usually the same as caller.
+    cmd.rawstring - the full raw string input, including any args and no parsing.
 
     The following class properties can/should be defined on your child class:
 
@@ -150,9 +151,12 @@ class Command(object):
     #   sessid - which session-id (if any) is responsible for triggering this command
 
     def __init__(self, **kwargs):
-        """the lockhandler works the same as for objects.
+        """
+        The lockhandler works the same as for objects.
         optional kwargs will be set as properties on the Command at runtime,
-        overloading evential same-named class properties."""
+        overloading evential same-named class properties.
+
+        """
         if kwargs:
             _init_command(self, **kwargs)
 
@@ -161,27 +165,38 @@ class Command(object):
         return LockHandler(self)
 
     def __str__(self):
-        "Print the command"
+        """
+        Print the command key
+        """
         return self.key
 
     def __eq__(self, cmd):
         """
         Compare two command instances to each other by matching their
         key and aliases.
-        input can be either a cmd object or the name of a command.
+
+        Args:
+            cmd (Command or str): Allows for equating both Command
+                objects and their keys.
+
+        Returns:
+            equal (bool): If the commands are equal or not.
+
         """
         try:
             # first assume input is a command (the most common case)
-            return cmd.key in self._matchset
+            return self._matchset.intersection(cmd._matchset)
+            #return cmd.key in self._matchset
         except AttributeError:
             # probably got a string
             return cmd in self._matchset
 
     def __ne__(self, cmd):
         """
-        The logical negation of __eq__. Since this is one of the
-        most called methods in Evennia (along with __eq__) we do some
-        code-duplication here rather than issuing a method-lookup to __eq__.
+        The logical negation of __eq__. Since this is one of the most
+        called methods in Evennia (along with __eq__) we do some
+        code-duplication here rather than issuing a method-lookup to
+        __eq__.
         """
         try:
             return not cmd.key in self._matcheset
@@ -190,14 +205,65 @@ class Command(object):
 
     def __contains__(self, query):
         """
-        This implements searches like 'if query in cmd'. It's a fuzzy matching
-        used by the help system, returning True if query can be found
-        as a substring of the commands key or its aliases.
+        This implements searches like 'if query in cmd'. It's a fuzzy
+        matching used by the help system, returning True if query can
+        be found as a substring of the commands key or its aliases.
 
-        query (str) - query to match against. Should be lower case.
+        Args:
+            query (str): query to match against. Should be lower case.
+
+        Returns:
+            result (bool): Fuzzy matching result.
 
         """
         return any(query in keyalias for keyalias in self._keyaliases)
+
+    def _optimize(self):
+        """
+        Optimize the key and aliases for lookups.
+        """
+        # optimization - a set is much faster to match against than a list
+        self._matchset = set([self.key] + self.aliases)
+        # optimization for looping over keys+aliases
+        self._keyaliases = tuple(self._matchset)
+
+    def set_key(self, new_key):
+        """
+        Update key.
+
+        Args:
+            new_key (str): The new key.
+
+        Notes:
+            This is necessary to use to make sure the optimization
+            caches are properly updated as well.
+
+        """
+        self.key = new_key.lower()
+        self._optimize()
+
+    def set_aliases(self, new_aliases):
+        """
+        Update aliases.
+
+        Args:
+            new_aliases (list):
+
+        Notes:
+            This is necessary to use to make sure the optimization
+            caches are properly updated as well.
+
+        """
+        if not is_iter(new_aliases):
+            try:
+                self.aliases = [str(alias).strip().lower()
+                                for alias in self.aliases.split(',')]
+            except Exception:
+                self.aliases = []
+        self.aliases = list(set(alias for alias in self.aliases
+                            if alias and alias != self.key))
+        self._optimize()
+
 
     def match(self, cmdname):
         """
@@ -205,7 +271,11 @@ class Command(object):
         in order to determine if this is the one we wanted. cmdname was
         previously extracted from the raw string by the system.
 
-        cmdname (str) is always lowercase when reaching this point.
+        Args:
+            cmdname (str): Always lowercase when reaching this point.
+
+        Returns:
+            result (bool): Match result.
 
         """
         return cmdname in self._matchset
@@ -216,25 +286,38 @@ class Command(object):
         is allowed to execute this command. It should return a boolean
         value and is not normally something that need to be changed since
         it's using the Evennia permission system directly.
+
+        Args:
+            srcobj (Object): Object trying to gain permission
+            access_type (str, optional): The lock type to check.
+            default (bool, optional): The fallbacl result if no lock
+                of matching `access_type` is found on this Command.
+
         """
         return self.lockhandler.check(srcobj, access_type, default=default)
 
     def msg(self, msg="", to_obj=None, from_obj=None,
             sessid=None, all_sessions=False, **kwargs):
         """
-        This is a shortcut instad of calling msg() directly on an object - it
-        will detect if caller is an Object or a Player and also appends
-        self.sessid automatically.
+        This is a shortcut instad of calling msg() directly on an
+        object - it will detect if caller is an Object or a Player and
+        also appends self.sessid automatically.
 
-        msg - text string of message to send
-        to_obj - target object of message. Defaults to self.caller
-        from_obj - source of message. Defaults to to_obj
-        data - optional dictionary of data
-        sessid - supply data only to a unique sessid (normally not used -
-           this is only potentially useful if to_obj is a Player object
-           different from self.caller or self.caller.player)
-        all_sessions (bool) - default is to send only to the session
-           connected to the target object
+        Args:
+            msg (str, optional): Text string of message to send.
+            to_obj (Object, optional): Target object of message. Defaults to self.caller.
+            from_obj (Object, optional): Source of message. Defaults to to_obj.
+            sessid (int, optional): Supply data only to a unique
+                session id (normally not used - this is only potentially
+                useful if to_obj is a Player object different from
+                self.caller or self.caller.player).
+            all_sessions (bool): Default is to send only to the session
+               connected to the target object
+
+        Kwargs:
+            kwargs (any): These are all passed on to the message mechanism. Common
+                keywords are `oob` and `raw`.
+
         """
         from_obj = from_obj or self.caller
         to_obj = to_obj or from_obj
@@ -263,9 +346,10 @@ class Command(object):
 
     def at_pre_cmd(self):
         """
-        This hook is called before self.parse() on all commands.
-        If this hook returns anything but False/None, the command
+        This hook is called before self.parse() on all commands.  If
+        this hook returns anything but False/None, the command
         sequence is aborted.
+
         """
         pass
 
@@ -273,27 +357,30 @@ class Command(object):
         """
         This hook is called after the command has finished executing
         (after self.func()).
+
         """
         pass
 
     def parse(self):
         """
         Once the cmdhandler has identified this as the command we
-        want, this function is run. If many of your commands have
-        a similar syntax (for example 'cmd arg1 = arg2') you should simply
-        define this once and just let other commands of the same form
-        inherit from this. See the docstring of this module for
-        which object properties are available to use
-        (notably self.args).
+        want, this function is run. If many of your commands have a
+        similar syntax (for example 'cmd arg1 = arg2') you should
+        simply define this once and just let other commands of the
+        same form inherit from this. See the docstring of this module
+        for which object properties are available to use (notably
+        self.args).
+
         """
         pass
 
     def func(self):
         """
-        This is the actual executing part of the command.
-        It is called directly after self.parse(). See the docstring
-        of this module for which object properties are available
-        (beyond those set in self.parse())
+        This is the actual executing part of the command.  It is
+        called directly after self.parse(). See the docstring of this
+        module for which object properties are available (beyond those
+        set in self.parse())
+
         """
         # a simple test command to show the available properties
         string = "-" * 50
@@ -310,3 +397,21 @@ class Command(object):
         string += fill("current cmdset (self.cmdset): {w%s{n\n" % (self.cmdset.key if self.cmdset.key else self.cmdset.__class__))
 
         self.caller.msg(string)
+
+    def get_extra_info(self, caller, **kwargs):
+        """
+        Display some extra information that may help distinguish this command from others, for instance,
+        in a disambiguity prompt.
+
+        If this command is a potential match in an ambiguous situation, one distinguishing
+        feature may be its attachment to a nearby object, so we include this if available.
+
+        Args:
+            caller (TypedObject): The caller who typed an ambiguous term handed to the search function.
+
+        Returns:
+            A string with identifying information to disambiguate the object, conventionally with a preceding space.
+        """
+        if hasattr(self, 'obj') and self.obj != caller:
+            return " (%s)" % self.obj.get_display_name(caller)
+        return ""

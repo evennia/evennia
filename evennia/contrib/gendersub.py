@@ -8,8 +8,8 @@ insert custom markers in their text to indicate gender-aware
 messaging. It relies on a modified msg() and is meant as an
 inspiration and starting point to how to do stuff like this.
 
-When in use, all messages being sent to the character will make use
-of the character's gender, for example the echo
+When in use, all messages being sent to the character will make use of
+the character's gender, for example the echo
 
 ```
 char.msg("%s falls on {p face with a thud." % char.key)
@@ -66,7 +66,7 @@ class SetGender(Command):
         Implements the command.
         """
         caller = self.caller
-        arg = self.args.lower()
+        arg = self.args.strip().lower()
         if not arg in ("male", "female", "neutral"):
             caller.msg("Usage: @gender male|female|neutral")
             return

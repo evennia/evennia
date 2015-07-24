@@ -74,8 +74,9 @@ AMP_ENABLED = AMP_HOST and AMP_PORT and AMP_INTERFACE
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 def _portal_maintenance():
     """
-    The maintenance function handles repeated checks and updates
-    that the server needs to do. It is called every minute.
+    The maintenance function handles repeated checks and updates that
+    the server needs to do. It is called every minute.
+
     """
     # check for idle sessions
     now = time.time()
@@ -85,6 +86,7 @@ def _portal_maintenance():
                     if (now - sess.cmd_last) > _IDLE_TIMEOUT]:
         session.data_out(reason)
         PORTAL_SESSIONS.disconnect(session)
+
 if _IDLE_TIMEOUT > 0:
     # only start the maintenance task if we care about idling.
     _maintenance_task = LoopingCall(_portal_maintenance)
@@ -97,16 +99,18 @@ if _IDLE_TIMEOUT > 0:
 class Portal(object):
 
     """
-    The main Portal server handler. This object sets up the database and
-    tracks and interlinks all the twisted network services that make up
-    Portal.
+    The main Portal server handler. This object sets up the database
+    and tracks and interlinks all the twisted network services that
+    make up Portal.
+
     """
 
     def __init__(self, application):
         """
         Setup the server.
 
-        application - an instantiated Twisted application
+        Args:
+            application (Application): An instantiated Twisted application
 
         """
         sys.path.append('.')
@@ -125,9 +129,13 @@ class Portal(object):
 
     def set_restart_mode(self, mode=None):
         """
-        This manages the flag file that tells the runner if the server should
-        be restarted or is shutting down. Valid modes are True/False and None.
-        If mode is None, no change will be done to the flag file.
+        This manages the flag file that tells the runner if the server
+        should be restarted or is shutting down.
+
+        Args:
+            mode (bool or None): Valid modes are True/False and None.
+                If mode is None, no change will be done to the flag file.
+
         """
         if mode is None:
             return
@@ -139,15 +147,19 @@ class Portal(object):
         """
         Shuts down the server from inside it.
 
-        restart - True/False sets the flags so the server will be
-                  restarted or not. If None, the current flag setting
-                  (set at initialization or previous runs) is used.
-        _reactor_stopping - this is set if server is already in the process of
-                  shutting down; in this case we don't need to stop it again.
+        Args:
+            restart (bool or None, optional): True/False sets the
+                flags so the server will be restarted or not. If None, the
+                current flag setting (set at initialization or previous
+                runs) is used.
+            _reactor_stopping (bool, optional): This is set if server
+                is already in the process of shutting down; in this case
+                we don't need to stop it again.
 
         Note that restarting (regardless of the setting) will not work
         if the Portal is currently running in daemon mode. In that
         case it always needs to be restarted manually.
+
         """
         if _reactor_stopping and hasattr(self, "shutdown_complete"):
             # we get here due to us calling reactor.stop below. No need

@@ -158,8 +158,16 @@ class ExtendedRoom(DefaultRoom):
 
     def replace_timeslots(self, raw_desc, curr_time):
         """
-        Filter so that only time markers `<timeslot>...</timeslot>` of the
-        correct timeslot remains in the description.
+        Filter so that only time markers `<timeslot>...</timeslot>` of
+        the correct timeslot remains in the description.
+
+        Args:
+            raw_desc (str): The unmodified description.
+            curr_time (str): A timeslot identifier.
+
+        Returns:
+            description (str): A possibly moified description.
+
         """
         if raw_desc:
             regextuple = REGEXMAP[curr_time]
@@ -171,14 +179,24 @@ class ExtendedRoom(DefaultRoom):
 
     def return_detail(self, key):
         """
-        This will attempt to match a "detail" to look for in the room. A detail
-        is a way to offer more things to look at in a room without having to
-        add new objects. For this to work, we require a custom `look` command that
-        allows for `look <detail>` - the look command should defer to this
-        method on the current location (if it exists) before giving up on
-        finding the target.
+        This will attempt to match a "detail" to look for in the room.
 
-        Details are not season-sensitive, but are parsed for timeslot markers.
+        Args:
+            key (str): A detail identifier.
+
+        Returns:
+            detail (str or None): A detail mathing the given key.
+
+        Notes:
+            A detail is a way to offer more things to look at in a room
+            without having to add new objects. For this to work, we
+            require a custom `look` command that allows for `look
+            <detail>` - the look command should defer to this method on
+            the current location (if it exists) before giving up on
+            finding the target.
+
+            Details are not season-sensitive, but are parsed for timeslot
+            markers.
         """
         try:
             detail = self.db.details.get(key.lower(), None)
@@ -192,7 +210,17 @@ class ExtendedRoom(DefaultRoom):
         return None
 
     def return_appearance(self, looker):
-        "This is called when e.g. the look command wants to retrieve the description of this object."
+        """
+        This is called when e.g. the look command wants to retrieve
+        the description of this object.
+
+        Args:
+            looker (Object): The object looking at us.
+
+        Returns:
+            description (str): Our description.
+
+        """
         raw_desc = self.db.raw_desc or ""
         update = False
 
@@ -349,25 +377,27 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
             if not location:
                 caller.msg("No location to detail!")
                 return
-            if not self.rhs:
-                # no '=' used - list content of given detail
-                if self.args in location.db.details:
-                    string = "{wDetail '%s' on %s:\n{n" % (self.args, location)
-                    string += location.db.details[self.args]
-                    caller.msg(string)
-                    return
+            if self.switches and self.switches[0] in 'del':
+                # removing a detail.
+                if self.lhs in location.db.details:
+                    del location.db.details[self.lhs]
+                caller.msg("Detail %s deleted, if it existed." % self.lhs)
+                self.reset_times(location)
+                return
             if not self.args:
                 # No args given. Return all details on location
                 string = "{wDetails on %s{n:\n" % location
                 string += "\n".join(" {w%s{n: %s" % (key, utils.crop(text)) for key, text in location.db.details.items())
                 caller.msg(string)
                 return
-            if self.switches and self.switches[0] in 'del':
-                # removing a detail.
-                if self.lhs in location.db.details:
-                    del location.db.detail
-                caller.msg("Detail %s deleted, if it existed." % self.lhs)
-                self.reset_times(location)
+            if not self.rhs:
+                # no '=' used - list content of given detail
+                if self.args in location.db.details:
+                    string = "{wDetail '%s' on %s:\n{n" % (self.args, location)
+                    string += str(location.db.details[self.args])
+                    caller.msg(string)
+                else:
+                    caller.msg("Detail '%s' not found." % self.args)
                 return
             # setting a detail
             location.db.details[self.lhs] = self.rhs
@@ -410,7 +440,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 self.reset_times(location)
                 caller.msg("Seasonal description was set on %s." % location.key)
             else:
-                # Not seasonal desc set, maybe this is not an extended room
+                # No seasonal desc set, maybe this is not an extended room
                 if self.rhs:
                     text = self.rhs
                     obj = caller.search(self.lhs)
@@ -419,14 +449,12 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 else:
                     text = self.args
                     obj = location
-                obj.db.desc = self.rhs # a compatibility fallback
-                if utils.inherits_from(obj, ExtendedRoom):
-                    # this is an extended room, we need to reset
-                    # times and set general_desc
+                obj.db.desc = text # a compatibility fallback
+                if obj.attributes.has("general_desc"):
                     obj.db.general_desc = text
-                    self.reset_times(obj)
                     caller.msg("General description was set on %s." % obj.key)
                 else:
+                    # this is not an ExtendedRoom.
                     caller.msg("The description was set on %s." % obj.key)
 
 

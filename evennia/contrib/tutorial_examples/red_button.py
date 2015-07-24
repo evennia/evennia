@@ -66,6 +66,7 @@ class RedButton(DefaultObject):
         """
         Opens the glass lid and start the timer so it will soon close
         again.
+
         """
 
         if self.db.lid_open:
@@ -91,6 +92,7 @@ class RedButton(DefaultObject):
         Close the glass lid. This validates all scripts on the button,
         which means that scripts only being valid when the lid is open
         will go away automatically.
+
         """
 
         if not self.db.lid_open:
@@ -111,6 +113,9 @@ class RedButton(DefaultObject):
         """
         Breaks the lamp in the button, stopping it from blinking.
 
+        Args:
+            feedback (bool): Show a message about breaking the lamp.
+
         """
         self.db.lamp_works = False
         desc = self.db.desc_lamp_broken
@@ -126,7 +131,10 @@ class RedButton(DefaultObject):
     def press_button(self, pobject):
         """
         Someone was foolish enough to press the button!
-        pobject - the person pressing the button
+
+        Args:
+            pobject (Object): The person pressing the button
+
         """
         # deactivate the button so it won't flash/close lid etc.
         self.scripts.add(scriptexamples.DeactivateButtonEvent)

@@ -49,62 +49,60 @@ class DefaultPlayer(PlayerDB):
 
     * Available properties (only available on initiated typeclass objects)
 
-     key (string) - name of player
-     name (string)- wrapper for user.username
-     aliases (list of strings) - aliases to the object. Will be saved to
-                        database as AliasDB entries but returned as strings.
-     dbref (int, read-only) - unique #id-number. Also "id" can be used.
-     date_created (string) - time stamp of object creation
-     permissions (list of strings) - list of permission strings
-
-     user (User, read-only) - django User authorization object
-     obj (Object) - game object controlled by player. 'character' can also
-                    be used.
-     sessions (list of Sessions) - sessions connected to this player
-     is_superuser (bool, read-only) - if the connected user is a superuser
+     - key (string) - name of player
+     - name (string)- wrapper for user.username
+     - aliases (list of strings) - aliases to the object. Will be saved to
+            database as AliasDB entries but returned as strings.
+     - dbref (int, read-only) - unique #id-number. Also "id" can be used.
+     - date_created (string) - time stamp of object creation
+     - permissions (list of strings) - list of permission strings
+     - user (User, read-only) - django User authorization object
+     - obj (Object) - game object controlled by player. 'character' can also
+                     be used.
+     - sessions (list of Sessions) - sessions connected to this player
+     - is_superuser (bool, read-only) - if the connected user is a superuser
 
     * Handlers
 
-     locks - lock-handler: use locks.add() to add new lock strings
-     db - attribute-handler: store/retrieve database attributes on this
-                             self.db.myattr=val, val=self.db.myattr
-     ndb - non-persistent attribute handler: same as db but does not
-                                 create a database entry when storing data
-     scripts - script-handler. Add new scripts to object with scripts.add()
-     cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
-     nicks - nick-handler. New nicks with nicks.add().
+     - locks - lock-handler: use locks.add() to add new lock strings
+     - db - attribute-handler: store/retrieve database attributes on this
+                              self.db.myattr=val, val=self.db.myattr
+     - ndb - non-persistent attribute handler: same as db but does not
+                                  create a database entry when storing data
+     - scripts - script-handler. Add new scripts to object with scripts.add()
+     - cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
+     - nicks - nick-handler. New nicks with nicks.add().
 
     * Helper methods
 
-     msg(outgoing_string, from_obj=None, **kwargs)
-     #swap_character(new_character, delete_old_character=False)
-     execute_cmd(raw_string)
-     search(ostring, global_search=False, attribute_name=None,
-                     use_nicks=False, location=None,
-                     ignore_errors=False, player=False)
-     is_typeclass(typeclass, exact=False)
-     swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
-     access(accessing_obj, access_type='read', default=False)
-     check_permstring(permstring)
+     - msg(outgoing_string, from_obj=None, **kwargs)
+     - execute_cmd(raw_string)
+     - search(ostring, global_search=False, attribute_name=None,
+                      use_nicks=False, location=None,
+                      ignore_errors=False, player=False)
+     - is_typeclass(typeclass, exact=False)
+     - swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
+     - access(accessing_obj, access_type='read', default=False, no_superuser_bypass=False)
+     - check_permstring(permstring)
 
     * Hook methods
 
      basetype_setup()
      at_player_creation()
 
-     - note that the following hooks are also found on Objects and are
+     > note that the following hooks are also found on Objects and are
        usually handled on the character level:
 
-     at_init()
-     at_access()
-     at_cmdset_get(**kwargs)
-     at_first_login()
-     at_post_login(sessid=None)
-     at_disconnect()
-     at_message_receive()
-     at_message_send()
-     at_server_reload()
-     at_server_shutdown()
+     - at_init()
+     - at_access()
+     - at_cmdset_get(**kwargs)
+     - at_first_login()
+     - at_post_login(sessid=None)
+     - at_disconnect()
+     - at_message_receive()
+     - at_message_send()
+     - at_server_reload()
+     - at_server_shutdown()
 
      """
 
@@ -130,8 +128,16 @@ class DefaultPlayer(PlayerDB):
 
     def get_session(self, sessid):
         """
-        Return session with given sessid connected to this player.
-        note that the sessionhandler also accepts sessid as an iterable.
+        Retrieve given session.
+
+        Args:
+            sessid (int or list): A session id or list of such to retrieve.
+
+        Returns:
+            session (Session or list): One or more Sessions matching
+                the given `sessid`s while also being connected to this
+                Player.
+
         """
         global _SESSIONS
         if not _SESSIONS:
@@ -139,7 +145,14 @@ class DefaultPlayer(PlayerDB):
         return _SESSIONS.session_from_player(self, sessid)
 
     def get_all_sessions(self):
-        "Return all sessions connected to this player"
+        """
+        Get all sessions connected to this player.
+
+        Returns:
+            sessions (list): All Sessions currently connected to this
+                player.
+
+        """
         global _SESSIONS
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
@@ -148,8 +161,13 @@ class DefaultPlayer(PlayerDB):
 
     def disconnect_session_from_player(self, sessid):
         """
-        Access method for disconnecting a given session from the player
-        (connection happens automatically in the sessionhandler)
+        Access method for disconnecting a given session from the
+        player (connection happens automatically in the
+        sessionhandler)
+
+        Args:
+            sessid (int): Session id to disconnect.
+
         """
         # this should only be one value, loop just to make sure to
         # clean everything
@@ -171,9 +189,10 @@ class DefaultPlayer(PlayerDB):
             obj (Object): the object to start puppeting
 
         Raises:
-            RuntimeError with message if puppeting is not possible
+            RuntimeError: If puppeting is not possible, the
+                `exception.msg` will contain the reason.
 
-        returns True if successful, False otherwise
+
         """
         # safety checks
         if not obj:
@@ -231,13 +250,14 @@ class DefaultPlayer(PlayerDB):
 
     def unpuppet_object(self, sessid):
         """
-        Disengage control over an object
+        Disengage control over an object.
 
         Args:
-            sessid(int): the session id to disengage
+            sessid(int): The session id to disengage.
 
         Raises:
-            RuntimeError with message about error.
+            RuntimeError With message about error.
+
         """
         if _MULTISESSION_MODE == 1:
             sessions = self.get_all_sessions()
@@ -262,41 +282,49 @@ class DefaultPlayer(PlayerDB):
 
     def unpuppet_all(self):
         """
-        Disconnect all puppets. This is called by server
-        before a reset/shutdown.
+        Disconnect all puppets. This is called by server before a
+        reset/shutdown.
         """
         for session in (sess for sess in self.get_all_sessions() if sess.puppet):
             self.unpuppet_object(session.sessid)
 
-    def get_puppet(self, sessid, return_dbobj=False):
+    def get_puppet(self, sessid):
         """
         Get an object puppeted by this session through this player. This is
         the main method for retrieving the puppeted object from the
         player's end.
 
-        sessid - return character connected to this sessid,
+        Args:
+            sessid (int): Find puppeted object based on this sessid.
+
+        Returns:
+            puppet (Object): The matching puppeted object, if any.
 
         """
         session = self.get_session(sessid)
-        if not session:
-            return None
-        if return_dbobj:
-            return session.puppet
-        return session.puppet and session.puppet or None
+        return session.puppet if session and session.puppet else None
 
     def get_all_puppets(self):
         """
-        Get all currently puppeted objects as a list.
+        Get all currently puppeted objects.
+
+        Returns:
+            puppets (list): All puppeted objects currently controlled
+                by this Player.
+
         """
         return list(set(session.puppet for session in self.get_all_sessions()
                                                     if session.puppet))
 
     def __get_single_puppet(self):
         """
-        This is a legacy convenience link for users of
-        MULTISESSION_MODE 0 or 1. It will return
-        only the first puppet. For mode 2, this returns
-        a list of all characters.
+        This is a legacy convenience link for use with `MULTISESSION_MODE`.
+
+        Returns:
+            puppets (Object or list): Users of `MULTISESSION_MODE` 0 or 1 will
+                always get the first puppet back. Users of higher `MULTISESSION_MODE`s will
+                get a list of all puppeted objects.
+
         """
         puppets = self.get_all_puppets()
         if _MULTISESSION_MODE in (0, 1):
@@ -310,6 +338,11 @@ class DefaultPlayer(PlayerDB):
     def delete(self, *args, **kwargs):
         """
         Deletes the player permanently.
+
+        Notes:
+            `*args` and `**kwargs` are passed on to the base delete
+             mechanism (these are usually not used).
+
         """
         for session in self.get_all_sessions():
             # unpuppeting all objects and disconnecting the user, if any
@@ -342,6 +375,7 @@ class DefaultPlayer(PlayerDB):
                 send. If given, overrules MULTISESSION_MODE.
         Notes:
             All other keywords are passed on to the protocol.
+
         """
         text = to_str(text, force_string=True) if text else ""
         if from_obj:
@@ -375,12 +409,18 @@ class DefaultPlayer(PlayerDB):
         command. It takes player nicks into account, but not nicks of
         eventual puppets.
 
-        raw_string - raw command input coming from the command line.
-        sessid - the optional session id to be responsible for the command-send
-        **kwargs - other keyword arguments will be added to the found command
-                   object instace as variables before it executes. This is
-                   unused by default Evennia but may be used to set flags and
-                   change operating paramaters for commands at run-time.
+        Args:
+            raw_string (str): Raw command input coming from the command line.
+            sessid (int, optional): The optional session id to be
+                responsible for the command-send
+
+        Kwargs:
+            kwargs (any): Other keyword arguments will be added to the
+                found command object instance as variables before it
+                executes. This is unused by default Evennia but may be
+                used to set flags and change operating paramaters for
+                commands at run-time.
+
         """
         raw_string = to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string,
@@ -400,18 +440,26 @@ class DefaultPlayer(PlayerDB):
     def search(self, searchdata, return_puppet=False,
                nofound_string=None, multimatch_string=None, **kwargs):
         """
-        This is similar to the ObjectDB search method but will search for
-        Players only. Errors will be echoed, and None returned if no Player
-        is found.
-        searchdata - search criterion, the Player's key or dbref to search for
-        return_puppet  - will try to return the object the player controls
-                           instead of the Player object itself. If no
-                           puppeted object exists (since Player is OOC), None will
-                           be returned.
-        nofound_string - optional custom string for not-found error message.
-        multimatch_string - optional custom string for multimatch error header.
-        Extra keywords are ignored, but are allowed in call in order to make
-                           API more consistent with objects.models.TypedObject.search.
+        This is similar to `DefaultObject.search` but will search for
+        Players only.
+
+        Args:
+            searchdata (str or int): Search criterion, the Player's
+                key or dbref to search for.
+            return_puppet (bool, optional): Instructs the method to
+                return matches as the object the Player controls rather
+                than the Player itself (or None) if nothing is puppeted).
+            nofound_string (str, optional): A one-time error message
+                to echo if `searchdata` leads to no matches. If not given,
+                will fall back to the default handler.
+            multimatch_string (str, optional): A one-time error
+                message to echo if `searchdata` leads to multiple matches.
+                If not given, will fall back to the default handler.
+        Notes:
+            Extra keywords are ignored, but are allowed in call in
+            order to make API more consistent with
+            objects.models.TypedObject.search.
+
         """
         # handle me, self and *me, *self
         if isinstance(searchdata, basestring):
@@ -429,21 +477,28 @@ class DefaultPlayer(PlayerDB):
                 return None
         return matches
 
-    def access(self, accessing_obj, access_type='read', default=False, **kwargs):
+    def access(self, accessing_obj, access_type='read', default=False, no_superuser_bypass=False, **kwargs):
         """
-        Determines if another object has permission to access this object
-        in whatever way.
+        Determines if another object has permission to access this
+        object in whatever way.
 
         Args:
-          accessing_obj (Object): Object trying to access this one
-          access_type (str): Type of access sought
-          default (bool): What to return if no lock of access_type was found
+          accessing_obj (Object): Object trying to access this one.
+          access_type (str, optional): Type of access sought.
+          default (bool, optional): What to return if no lock of
+            access_type was found
+          no_superuser_bypass (bool, optional): Turn off superuser
+            lock bypassing. Be careful with this one.
 
         Kwargs:
-          Passed to the at_access hook along with the result.
+          kwargs (any): Passed to the at_access hook along with the result.
+
+        Returns:
+            result (bool): Result of access check.
 
         """
-        result = super(DefaultPlayer, self).access(accessing_obj, access_type=access_type, default=default)
+        result = super(DefaultPlayer, self).access(accessing_obj, access_type=access_type,
+                                                   default=default, no_superuser_bypass=no_superuser_bypass)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 
@@ -451,13 +506,13 @@ class DefaultPlayer(PlayerDB):
 
     def basetype_setup(self):
         """
-        This sets up the basic properties for a player.
-        Overload this with at_player_creation rather than
-        changing this method.
+        This sets up the basic properties for a player. Overload this
+        with at_player_creation rather than changing this method.
 
         """
         # A basic security setup
-        lockstring = "examine:perm(Wizards);edit:perm(Wizards);delete:perm(Wizards);boot:perm(Wizards);msg:all()"
+        lockstring = "examine:perm(Wizards);edit:perm(Wizards);" \
+                     "delete:perm(Wizards);boot:perm(Wizards);msg:all()"
         self.locks.add(lockstring)
 
         # The ooc player cmdset
@@ -465,14 +520,15 @@ class DefaultPlayer(PlayerDB):
 
     def at_player_creation(self):
         """
-        This is called once, the very first time
-        the player is created (i.e. first time they
-        register with the game). It's a good place
-        to store attributes all players should have,
-        like configuration values etc.
+        This is called once, the very first time the player is created
+        (i.e. first time they register with the game). It's a good
+        place to store attributes all players should have, like
+        configuration values etc.
+
         """
         # set an (empty) attribute holding the characters this player has
-        lockstring = "attrread:perm(Admins);attredit:perm(Admins);attrcreate:perm(Admins)"
+        lockstring = "attrread:perm(Admins);attredit:perm(Admins);" \
+                     "attrcreate:perm(Admins)"
         self.attributes.add("_playable_characters", [], lockstring=lockstring)
 
     def at_init(self):
@@ -484,6 +540,7 @@ class DefaultPlayer(PlayerDB):
         restart or reload. In the case of player objects, this usually
         happens the moment the player logs in or reconnects after a
         reload.
+
         """
         pass
 
@@ -499,6 +556,7 @@ class DefaultPlayer(PlayerDB):
         This is a generic hook called by Evennia when this object is
         saved to the database the very first time.  You generally
         don't override this method but the hooks called by it.
+
         """
         self.basetype_setup()
         self.at_player_creation()
@@ -518,28 +576,46 @@ class DefaultPlayer(PlayerDB):
 
     def at_access(self, result, accessing_obj, access_type, **kwargs):
         """
-        This is called with the result of an access call, along with
-        any kwargs used for that call. The return of this method does
-        not affect the result of the lock check. It can be used e.g. to
-        customize error messages in a central location or other effects
-        based on the access result.
+        This is triggered after an access-call on this Player has
+            completed.
+
+        Args:
+            result (bool): The result of the access check.
+            accessing_obj (any): The object requesting the access
+                check.
+            access_type (str): The type of access checked.
+
+        Kwargs:
+            kwargs (any): These are passed on from the access check
+                and can be used to relay custom instructions from the
+                check mechanism.
+
+        Notes:
+            This method cannot affect the result of the lock check and
+            its return value is not used in any way. It can be used
+            e.g.  to customize error messages in a central location or
+            create other effects based on the access result.
+
         """
         pass
 
     def at_cmdset_get(self, **kwargs):
         """
-        Called just before cmdsets on this player are requested by the
-        command handler. If changes need to be done on the fly to the
+        Called just *before* cmdsets on this player are requested by
+        the command handler. The cmdsets are available as
+        `self.cmdset`. If changes need to be done on the fly to the
         cmdset before passing them on to the cmdhandler, this is the
         place to do it.  This is called also if the player currently
-        have no cmdsets.  kwargs are usually not used unless the
+        have no cmdsets. kwargs are usually not used unless the
         cmdset is generated dynamically.
+
         """
         pass
 
     def at_first_login(self):
         """
         Called the very first time this player logs into the game.
+
         """
         pass
 
@@ -547,11 +623,19 @@ class DefaultPlayer(PlayerDB):
         """
         Called every time the user logs in, just before the actual
         login-state is set.
+
         """
         pass
 
     def _send_to_connect_channel(self, message):
-        "Helper method for loading the default comm channel"
+        """
+        Helper method for loading and sending to the comm channel
+        dedicated to connection messages.
+
+        Args:
+            message (str): A message to send to the connect channel.
+
+        """
         global _CONNECT_CHANNEL
         if not _CONNECT_CHANNEL:
             try:
@@ -569,8 +653,16 @@ class DefaultPlayer(PlayerDB):
     def at_post_login(self, sessid=None):
         """
         Called at the end of the login process, just before letting
-        the player loose. This is called before an eventual Character's
-        at_post_login hook.
+        the player loose.
+
+        Args:
+            sessid (int, optional): Session logging in, if any.
+
+        Notes:
+            This is called *before* an eventual Character's
+            `at_post_login` hook. By default it is used to set up
+            auto-puppeting based on `MULTISESSION_MODE`.
+
         """
         self._send_to_connect_channel("{G%s connected{n" % self.key)
         if _MULTISESSION_MODE == 0:
@@ -588,13 +680,18 @@ class DefaultPlayer(PlayerDB):
     def at_disconnect(self, reason=None):
         """
         Called just before user is disconnected.
+
+        Args:
+            reason (str, optional): The reason given for the disconnect,
+                (echoed to the connection channel by default).
+
         """
         reason = reason and "(%s)" % reason or ""
         self._send_to_connect_channel("{R%s disconnected %s{n" % (self.key, reason))
 
     def at_post_disconnect(self):
         """
-        This is called after disconnection is complete. No messages
+        This is called *after* disconnection is complete. No messages
         can be relayed to the player from here. After this call, the
         player should not be accessed any more, making this a good
         spot for deleting it (in the case of a guest player account,
@@ -604,25 +701,24 @@ class DefaultPlayer(PlayerDB):
 
     def at_message_receive(self, message, from_obj=None):
         """
-        Called when any text is emitted to this
-        object. If it returns False, no text
-        will be sent automatically.
+        This is currently unused.
+
         """
         return True
 
     def at_message_send(self, message, to_object):
         """
-        Called whenever this object tries to send text
-        to another object. Only called if the object supplied
-        itself as a sender in the msg() call.
+        This is currently unused.
+
         """
         pass
 
     def at_server_reload(self):
         """
         This hook is called whenever the server is shutting down for
-        restart/reboot. If you want to, for example, save non-persistent
-        properties across a restart, this is the place to do it.
+        restart/reboot. If you want to, for example, save
+        non-persistent properties across a restart, this is the place
+        to do it.
         """
         pass
 
@@ -636,21 +732,26 @@ class DefaultPlayer(PlayerDB):
 
 class DefaultGuest(DefaultPlayer):
     """
-    This class is used for guest logins. Unlike Players, Guests and their
-    characters are deleted after disconnection.
+    This class is used for guest logins. Unlike Players, Guests and
+    their characters are deleted after disconnection.
     """
     def at_post_login(self, sessid=None):
         """
         In theory, guests only have one character regardless of which
         MULTISESSION_MODE we're in. They don't get a choice.
+
+        Args:
+            sessid (int, optional): Id of Session connecting.
+
         """
         self._send_to_connect_channel("{G%s connected{n" % self.key)
         self.puppet_object(sessid, self.db._last_puppet)
 
     def at_disconnect(self):
         """
-        A Guest's characters aren't meant to linger on the server. When a
-        Guest disconnects, we remove its character.
+        A Guest's characters aren't meant to linger on the server.
+        When a Guest disconnects, we remove its character.
+
         """
         super(DefaultGuest, self).at_disconnect()
         characters = self.db._playable_characters
@@ -659,7 +760,8 @@ class DefaultGuest(DefaultPlayer):
 
     def at_server_shutdown(self):
         """
-        We repeat at_disconnect() here just to be on the safe side.
+        We repeat the functionality of `at_disconnect()` here just to
+        be on the safe side.
         """
         super(DefaultGuest, self).at_server_shutdown()
         characters = self.db._playable_characters
@@ -668,8 +770,9 @@ class DefaultGuest(DefaultPlayer):
 
     def at_post_disconnect(self):
         """
-        Guests aren't meant to linger on the server, either. We need to wait
-        until after the Guest disconnects to delete it, though.
+        Guests aren't meant to linger on the server, either. We need
+        to wait until after the Guest disconnects to delete it,
+        though.
         """
         super(DefaultGuest, self).at_post_disconnect()
         self.delete()

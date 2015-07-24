@@ -83,11 +83,28 @@ RE_MXP = re.compile(r'\{lc(.*?)\{lt(.*?)\{le', re.DOTALL)
 RE_ANSI_ESCAPES = re.compile(r"(%s)" % "|".join(("{{", "%%", "\\\\")), re.DOTALL)
 
 def sub_irc(ircmatch):
+    """
+    Substitute irc color info. Used by re.sub.
+
+    Args:
+        ircmatch (Match): The match from regex.
+
+    Returns:
+        colored (str): A string with converted IRC colors.
+
+    """
     return IRC_COLOR_MAP.get(ircmatch.group(), "")
 
 def parse_irc_colors(string):
     """
     Parse {-type syntax and replace with IRC color markers
+
+    Args:
+        string (str): String to parse for IRC colors.
+
+    Returns:
+        parsed_string (str): String with replaced IRC colors.
+
     """
     in_string = utils.to_str(string)
     parsed_string = ""
@@ -105,6 +122,7 @@ class IRCBot(irc.IRCClient, Session):
     """
     An IRC bot that tracks actitivity in a channel as well
     as sends text to it when prompted
+
     """
     lineRate = 1
 
@@ -117,9 +135,9 @@ class IRCBot(irc.IRCClient, Session):
 
     def signedOn(self):
         """
-        This is called when we successfully connect to
-        the network. We make sure to now register with
-        the game as a full session.
+        This is called when we successfully connect to the network. We
+        make sure to now register with the game as a full session.
+
         """
         self.join(self.channel)
         self.stopping = False
@@ -135,7 +153,11 @@ class IRCBot(irc.IRCClient, Session):
 
     def disconnect(self, reason=None):
         """
-        Called by sessionhandler to disconnect this protocol
+        Called by sessionhandler to disconnect this protocol.
+
+        Args:
+            reason (str): Motivation for the disconnect.
+
         """
         print "irc disconnect called!"
         self.sessionhandler.disconnect(self)
@@ -143,23 +165,53 @@ class IRCBot(irc.IRCClient, Session):
         self.transport.loseConnection()
 
     def privmsg(self, user, channel, msg):
-        "A message was sent to channel"
+        """
+        Called when the connected channel receives a message.
+
+        Args:
+            user (str): User name sending the message.
+            channel (str): Channel name seeing the message.
+            msg (str): The message arriving from channel.
+
+        """
         if not msg.startswith('***'):
             user = user.split('!', 1)[0]
             self.data_in("bot_data_in %s@%s: %s" % (user, channel, msg))
 
     def action(self, user, channel, msg):
-        "An action was done in channel"
+        """
+        Called when an action is detected in channel.
+
+        Args:
+            user (str): User name sending the message.
+            channel (str): Channel name seeing the message.
+            msg (str): The message arriving from channel.
+
+        """
         if not msg.startswith('**'):
             user = user.split('!', 1)[0]
             self.data_in("bot_data_in %s@%s %s" % (user, channel, msg))
 
     def data_in(self, text=None, **kwargs):
-        "Data IRC -> Server"
+        """
+        Data IRC -> Server.
+
+        Kwargs:
+            text (str): Ingoing text.
+            kwargs (any): Other data from protocol.
+
+        """
         self.sessionhandler.data_in(self, text=text, **kwargs)
 
     def data_out(self, text=None, **kwargs):
-        "Data from server-> IRC"
+        """
+        Data from server-> IRC.
+
+        Kwargs:
+            text (str): Outgoing text.
+            kwargs (any): Other data to protocol.
+
+        """
         if text.startswith("bot_data_out"):
             text = text.split(" ", 1)[1]
             text = parse_irc_colors(text)
@@ -168,8 +220,9 @@ class IRCBot(irc.IRCClient, Session):
 
 class IRCBotFactory(protocol.ReconnectingClientFactory):
     """
-    Creates instances of AnnounceBot, connecting with
-    a staggered increase in delay
+    Creates instances of AnnounceBot, connecting with a staggered
+    increase in delay
+
     """
     # scaling reconnect time
     initialDelay = 1
@@ -177,7 +230,20 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
     maxDelay = 60
 
     def __init__(self, sessionhandler, uid=None, botname=None, channel=None, network=None, port=None):
-        "Storing some important protocol properties"
+        """
+        Storing some important protocol properties.
+
+        Args:
+            sessionhandler (SessionHandler): Reference to the main Sessionhandler.
+
+        Kwargs:
+            uid (int): Bot user id.
+            botname (str): Bot name (seen in IRC channel).
+            channel (str): IRC channel to connect to.
+            network (str): Network address to connect to.
+            port (str): Port of the network.
+
+        """
         self.sessionhandler = sessionhandler
         self.uid = uid
         self.nickname = str(botname)
@@ -187,7 +253,13 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
         self.bot = None
 
     def buildProtocol(self, addr):
-        "Build the protocol and assign it some properties"
+        """
+        Build the protocol and assign it some properties.
+
+        Args:
+            addr (str): Not used; using factory data.
+
+        """
         protocol = IRCBot()
         protocol.factory = self
         protocol.nickname = self.nickname
@@ -197,18 +269,43 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
         return protocol
 
     def startedConnecting(self, connector):
-        "Tracks reconnections for debugging"
+        """
+        Tracks reconnections for debugging.
+
+        Args:
+            connector (Connector): Represents the connection.
+
+        """
         logger.log_infomsg("(re)connecting to %s" % self.channel)
 
     def clientConnectionFailed(self, connector, reason):
+        """
+        Called when Client failed to connect.
+
+        Args:
+            connector (Connection): Represents the connection.
+            reason (str): The reason for the failure.
+
+        """
         self.retry(connector)
 
     def clientConnectionLost(self, connector, reason):
+        """
+        Called when Client looses connection.
+
+        Args:
+            connector (Connection): Represents the connection.
+            reason (str): The reason for the failure.
+
+        """
         if not self.bot.stopping:
             self.retry(connector)
 
     def start(self):
-        "Connect session to sessionhandler"
+        """
+        Connect session to sessionhandler.
+
+        """
         if self.port:
             service = internet.TCPClient(self.network, int(self.port), self)
             self.sessionhandler.portal.services.addService(service)

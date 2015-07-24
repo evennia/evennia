@@ -237,6 +237,7 @@ def oob_report(session, *args, **kwargs):
     Notes:
         When the property updates, the monitor will send a MSDP_ARRAY
         to the session of the form `(SEND, fieldname, new_value)`
+
     Examples:
         ("REPORT", "CHARACTER_NAME")
         ("MSDP_TABLE", "CHARACTER_NAME", "Amanda")
@@ -268,6 +269,11 @@ def oob_return_field_report(session, fieldname, obj, *args, **kwargs):
     changes. It is not part of the official MSDP specification but is
     a callback used by the monitor to format the result before sending
     it on.
+
+    Args:
+        session (Session): The Session object controlling this oob function.
+        fieldname (str): The name of the Field to report on.
+
     """
     session.msg(oob=("MSDP_TABLE", (),
                      {fieldname: to_str(getattr(obj, fieldname), force_string=True)}))
@@ -283,6 +289,11 @@ def oob_return_attribute_report(session, fieldname, obj, *args, **kwargs):
     This command is not part of the official MSDP specification but is
     a callback used by the monitor to format the result before sending
     it on.
+
+    Args:
+        session (Session): The Session object controlling this oob function.
+        fieldname (str): The name of the Attribute to report on.
+
     """
     session.msg(oob=("MSDP_TABLE", (),
                      {obj.db_key: to_str(getattr(obj, fieldname), force_string=True)}))
@@ -292,6 +303,10 @@ def oob_return_attribute_report(session, fieldname, obj, *args, **kwargs):
 def oob_unreport(session, *args, **kwargs):
     """
     This removes tracking for the given data.
+
+    Args:
+        session (Session): Session controling this command.
+
     """
     obj = session.get_puppet_or_player()
     if obj:
@@ -330,6 +345,7 @@ def oob_list(session, mode, *args, **kwargs):
     Examples:
         oob in: LIST COMMANDS
         oob out: (COMMANDS, (SEND, REPORT, LIST, ...)
+
     """
     mode = mode.upper()
     if mode == "COMMANDS":

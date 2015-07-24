@@ -23,7 +23,7 @@ class Command(BaseCommand):
     # these need to be specified
 
     key = "MyCommand"
-    aliases = ["mycmd", "myc"]
+    aliases = []
     locks = "cmd:all()"
     help_category = "General"
 

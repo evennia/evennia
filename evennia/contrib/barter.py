@@ -104,7 +104,9 @@ class TradeTimeout(DefaultScript):
     This times out the trade request, in case player B did not reply in time.
     """
     def at_script_creation(self):
-        "called when script is first created"
+        """
+        Called when script is first created
+        """
         self.key = "trade_request_timeout"
         self.desc = "times out trade requests"
         self.interval = TRADE_TIMEOUT
@@ -113,13 +115,17 @@ class TradeTimeout(DefaultScript):
         self.persistent = False
 
     def at_repeat(self):
-        "called once"
+        """
+        called once
+        """
         if self.ndb.tradeevent:
             self.obj.ndb.tradeevent.finish(force=True)
         self.obj.msg("Trade request timed out.")
 
     def is_valid(self):
-        "Only valid if the trade has not yet started"
+        """
+        Only valid if the trade has not yet started
+        """
         return self.obj.ndb.tradeevent and not self.obj.ndb.tradeevent.trade_started
 
 
@@ -130,12 +136,19 @@ class TradeHandler(object):
     """
     def __init__(self, partA, partB):
         """
-        Initializes the trade. This is called when part A tries to initiate
-        a trade with part B. The trade will not start until part B repeats
-        this command (B will then call the self.join() command)
+        Initializes the trade. This is called when part A tries to
+        initiate a trade with part B. The trade will not start until
+        part B repeats this command (B will then call the self.join()
+        command)
 
-        We also store the back-reference from the respective party to
-        this object.
+        Args:
+            partA (object): The party trying to start barter.
+            partB (object): The party asked to barter.
+
+        Notes:
+            We also store the back-reference from the respective party
+            to this object.
+
         """
         # parties
         self.partA = partA
@@ -152,9 +165,14 @@ class TradeHandler(object):
 
     def msg(self, party, string):
         """
-        Relay a message to the other party. This allows
-        the calling command to not have to worry about
-        which party they are in the handler.
+        Relay a message to the other party. This allows the calling
+        command to not have to worry about which party they are in the
+        handler.
+
+        Args:
+            party (object): One of partA or B. The method will figure
+                out which is which.
+            string (str): Text to send.
         """
         if self.partA == party:
             self.partB.msg(string)
@@ -165,7 +183,16 @@ class TradeHandler(object):
             self.party.msg(string)
 
     def get_other(self, party):
-        "Returns the other party of the trade"
+        """
+        Returns the other party of the trade
+
+        Args:
+            partyX (object): One of the parties of the negotiation
+
+        Returns:
+            partyY (object): The other party, not partyX.
+
+        """
         if self.partA == party:
             return self.partB
         if self.partB == party:
@@ -175,6 +202,10 @@ class TradeHandler(object):
     def join(self, partB):
         """
         This is used once B decides to join the trade
+
+        Args:
+            partB (object): The party accepting the barter.
+
         """
         print "join:", self.partB, partB, self.partB == partB, type(self.partB), type(partB)
         if self.partB == partB:
@@ -186,7 +217,11 @@ class TradeHandler(object):
 
     def unjoin(self, partB):
         """
-        This is used if B decides not to join the trade
+        This is used if B decides not to join the trade.
+
+        Args:
+            partB (object): The party leaving the barter.
+
         """
         if self.partB == partB:
             self.finish()
@@ -198,6 +233,11 @@ class TradeHandler(object):
         Change the current standing offer. We leave it up to the
         command to do the actual checks that the offer consists
         of real, valid, objects.
+
+        Args:
+            party (object): Who is making the offer
+            args (objects or str): Offerings.
+
         """
         if self.trade_started:
             # reset accept statements whenever an offer changes
@@ -212,15 +252,25 @@ class TradeHandler(object):
 
     def list(self):
         """
-        Returns two lists of objects on offer, separated by partA/B.
+        List current offers.
+
+        Returns:
+            offers (tuple): A tuple with two lists, (A_offers, B_offers).
+
         """
         return self.partA_offers, self.partB_offers
 
     def search(self, offername):
         """
-        Returns an object on offer, based on a search criterion.
-        If the search criterion is an integer, treat it as an
-        index to return in the list of offered items
+        Search current offers.
+
+        Args:
+            offername (str or int): Object to search for, or its index in
+                the list of offered items.
+
+        Returns:
+            offer (object): An object on offer, based on the search criterion.
+
         """
         all_offers = self.partA_offers + self.partB_offers
         if isinstance(offername, int):
@@ -242,7 +292,18 @@ class TradeHandler(object):
         """
         Accept the current offer.
 
-        Returns True if this closes the deal, False otherwise
+        Args:
+            party (object): The party accepting the deal.
+
+        Returns:
+            result (object): `True` if this closes the deal, `False`
+                otherwise
+
+        Notes:
+            This will only close the deal if both parties have
+            accepted independently. This is done by calling the
+            `finish()` method.
+
         """
         if self.trade_started:
             if party == self.partA:
@@ -255,9 +316,20 @@ class TradeHandler(object):
 
     def decline(self, party):
         """
-        Remove an previously accepted status (changing ones mind)
+        Decline the offer (or change one's mind).
 
-        returns True if there was really a status to change, False otherwise.
+        Args:
+            party (object): Party declining the deal.
+
+        Returns:
+            did_decline (bool): `True` if there was really an
+                `accepted` status to change, `False` otherwise.
+
+        Notes:
+            If previously having used the `accept` command, this
+            function will only work as long as the other party has not
+            yet accepted.
+
         """
         if self.trade_started:
             if party == self.partA:
@@ -276,6 +348,12 @@ class TradeHandler(object):
     def finish(self, force=False):
         """
         Conclude trade - move all offers and clean up
+
+        Args:
+            force (bool, optional): Force cleanup regardless of if the
+                trade was accepted or not (if not, no goods will change
+                hands but trading will stop anyway)
+
         """
         fin = False
         if self.trade_started and self.partA_accepted and self.partB_accepted:
@@ -303,8 +381,8 @@ class TradeHandler(object):
 
 class CmdTradeBase(Command):
     """
-    Base command for Trade commands to inherit from. Implements
-    the custom parsing.
+    Base command for Trade commands to inherit from. Implements the
+    custom parsing.
     """
     def parse(self):
         """

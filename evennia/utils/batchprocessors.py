@@ -31,9 +31,6 @@ etc. You also need to know Python and Evennia's API. Hence it's
 recommended that the batch-code processor is limited only to
 superusers or highly trusted staff.
 
-
-=======================================================================
-
 Batch-command processor file syntax
 
 The batch-command processor accepts 'batchcommand files' e.g
@@ -44,9 +41,11 @@ had been run at the game prompt.
 Each Evennia command must be delimited by a line comment to mark its
 end.
 
+```
 #INSERT path.batchcmdfile - this as the first entry on a line will
       import and run a batch.ev file in this position, as if it was
       written in this file.
+```
 
 This way entire game worlds can be created and planned offline; it is
 especially useful in order to create long room descriptions where a
@@ -110,16 +109,16 @@ as automatic deletion of created objects etc. You can however also run
 a batch-code Python file directly using Python.
 
 Code blocks are separated by python comments starting with special
-code words.
+code words:
 
-#HEADER - this denotes commands global to the entire file, such as
+HEADER - this denotes commands global to the entire file, such as
           import statements and global variables. They will
           automatically be pasted at the top of all code
           blocks. Observe that changes to these variables made in one
           block is not preserved between blocks!
-#CODE
-#CODE (info)
-#CODE (info) objname1, objname1, ... -
+CODE
+CODE (info)
+CODE (info) objname1, objname1, ... -
            This designates a code block that will be executed like a
            stand-alone piece of code together with any #HEADER
            defined. (info) text is used by the interactive mode to
@@ -130,7 +129,7 @@ code words.
            command myobj = create.create_object(...), you could put
            'myobj' in the #CODE header regardless of what the created
            object is actually called in-game.
-#INSERT path.filename - This imports another batch_code.py file and
+INSERT path.filename - This imports another batch_code.py file and
           runs it in the given position.  paths are given as python
           path. The inserted file will retain its own HEADERs which
           will not be mixed with the HEADERs of the file importing

@@ -1,8 +1,9 @@
 """
-The script handler makes sure to check through all stored scripts
-to make sure they are still relevant.
-A scripthandler is automatically added to all game objects. You
-access it through the property `scripts` on the game object.
+The script handler makes sure to check through all stored scripts to
+make sure they are still relevant. A scripthandler is automatically
+added to all game objects. You access it through the property
+`scripts` on the game object.
+
 """
 
 from evennia.scripts.models import ScriptDB
@@ -14,20 +15,24 @@ from django.utils.translation import ugettext as _
 class ScriptHandler(object):
     """
     Implements the handler.  This sits on each game object.
+
     """
     def __init__(self, obj):
         """
         Set up internal state.
-        obj - a reference to the object this handler is attached to.
 
-        We retrieve all scripts attached to this object and check
-        if they are all persistent. If they are not, they are just
-        cruft left over from a server shutdown.
+        Args:
+            obj (Object): A reference to the object this handler is
+                attached to.
+
         """
         self.obj = obj
 
     def __str__(self):
-        "List the scripts tied to this object"
+        """
+        List the scripts tied to this object.
+
+        """
         scripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj)
         string = ""
         for script in scripts:
@@ -51,12 +56,14 @@ class ScriptHandler(object):
         """
         Add a script to this object.
 
-        scriptclass - either a class object
-             inheriting from Script, an instantiated script object
-             or a python path to such a class object.
-        key - optional identifier for the script (often set in script
-              definition)
-        autostart - start the script upon adding it
+        Args:
+            scriptclass (Scriptclass, Script or str): Either a class
+                object inheriting from DefaultScript, an instantiated
+                script object or a python path to such a class object.
+            key (str, optional): Identifier for the script (often set
+                in script definition and listings)
+            autostart (bool, optional): Start the script upon adding it.
+
         """
         if self.obj.__dbclass__.__name__ == "PlayerDB":
             # we add to a Player, not an Object
@@ -71,56 +78,74 @@ class ScriptHandler(object):
             return False
         return True
 
-    def start(self, scriptid):
+    def start(self, key):
         """
-        Find an already added script and force-start it
+        Find scripts and force-start them
+
+        Args:
+            key (str): The script's key or dbref.
+
+        Returns:
+            nr_started (int): The number of started scripts found.
+
         """
-        scripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptid)
+        scripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=key)
         num = 0
         for script in scripts:
             num += script.start()
         return num
 
-    def get(self, scriptid):
+    def get(self, key):
         """
-        Return one or all scripts on this object matching `scriptid`. Will return
-        a list.
-        """
-        return ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptid)
+        Search scripts on this object.
 
-    def delete(self, scriptid=None):
+        Args:
+            key (str): Search criterion, the script's key or dbref.
+
+        Returns:
+            scripts (list): The found scripts matching `key`.
+
+        """
+        return ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=key)
+
+    def delete(self, key=None):
         """
         Forcibly delete a script from this object.
 
-        scriptid can be a script key or the path to a script (in the
-                 latter case all scripts with this path will be deleted!)
-                 If no scriptid is set, delete all scripts on the object.
+        Args:
+            key (str, optional): A script key or the path to a script (in the
+                latter case all scripts with this path will be deleted!)
+                If no key is given, delete *all* scripts on the object!
 
         """
-        delscripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptid)
+        delscripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=key)
         if not delscripts:
-            delscripts = [script for script in ScriptDB.objects.get_all_scripts_on_obj(self.obj) if script.path == scriptid]
+            delscripts = [script for script in ScriptDB.objects.get_all_scripts_on_obj(self.obj) if script.path == key]
         num = 0
         for script in delscripts:
             num += script.stop()
         return num
+    # alias to delete
+    stop = delete
 
-    def stop(self, scriptid=None):
+    def all(self):
         """
-        Alias for delete. scriptid can be a script key or a script path string.
-        """
-        return self.delete(scriptid)
+        Get all scripts stored in this handler.
 
-    def all(self, scriptid=None):
         """
-        Get all scripts stored in the handler, alternatively all matching a key.
-        """
-        return ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=scriptid)
+        return ScriptDB.objects.get_all_scripts_on_obj(self.obj)
 
     def validate(self, init_mode=False):
         """
-        Runs a validation on this object's scripts only.
-        This should be called regularly to crank the wheels.
+        Runs a validation on this object's scripts only.  This should
+        be called regularly to crank the wheels.
+
+        Args:
+            init_mode (str, optional): - This is used during server
+                upstart and can have three values:
+                - `False` (no init mode). Called during run.
+                - `"reset"` - server reboot. Kill non-persistent scripts
+                - `"reload"` - server reload. Keep non-persistent scripts.
+
         """
         ScriptDB.objects.validate(obj=self.obj, init_mode=init_mode)
-

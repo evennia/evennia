@@ -54,10 +54,11 @@ PORTAL_RESTART = None
 SERVER_PY_FILE = None
 PORTAL_PY_FILE = None
 
+
 PYTHON_MIN = '2.7'
-TWISTED_MIN = '12.0'
-DJANGO_MIN = '1.7'
-DJANGO_REC = '1.7'
+TWISTED_MIN = '15.2.1'
+DJANGO_MIN = '1.8'
+DJANGO_REC = '1.8'
 
 sys.path[1] = EVENNIA_ROOT
 
@@ -259,16 +260,35 @@ MENU = \
     +---------------------------------------------------------------+
     """
 
+ERROR_LOGDIR_MISSING = \
+    """
+    ERROR: One or more log-file directory locations could not be
+    found:
+
+    {logfiles}
+
+    This is simple to fix: Just manually create the missing log
+    directory (or directories) and re-launch the server (the log files
+    will be created automatically).
+
+    (Explanation: Evennia creates the log directory automatically when
+    initializating a new game directory. This error usually happens if
+    you used git to clone a pre-created game directory - since log
+    files are in .gitignore they will not be cloned, which leads to
+    the log directory also not being created.)
+
+    """
+
 ERROR_PYTHON_VERSION = \
     """
     ERROR: Python {pversion} used. Evennia requires version
     {python_min} or higher (but not 3.x).
     """
 
-WARNING_TWISTED_VERSION = \
+ERROR_TWISTED_VERSION = \
     """
-    WARNING: Twisted {tversion} found. Evennia recommends
-    v{twisted_min} or higher."
+    ERROR: Twisted {tversion} found. Evennia requires
+    version {twisted_min} or higher.
     """
 
 ERROR_NOTWISTED = \
@@ -278,8 +298,13 @@ ERROR_NOTWISTED = \
 
 ERROR_DJANGO_MIN = \
     """
-    ERROR: Django {dversion} found. Evennia requires version
-    {django_min} or higher.
+    ERROR: Django {dversion} found. Evennia requires version {django_min}
+    or higher.
+
+    Install it with for example `pip install --upgrade django`
+    or with `pip install django=={django_min}` to get a specific version.
+
+    It's also a good idea to run `evennia migrate` after this upgrade.
     """
 
 NOTE_DJANGO_MIN = \
@@ -291,8 +316,8 @@ NOTE_DJANGO_MIN = \
 NOTE_DJANGO_NEW = \
     """
     NOTE: Django {dversion} found. This is newer than Evennia's
-    recommended version (v{django_rec}). It will probably work, but
-    may be new enough not to be fully tested yet. Report any issues."
+    recommended version (v{django_rec}). It might work, but may be new
+    enough to not be fully tested yet. Report any issues.
     """
 
 ERROR_NODJANGO = \
@@ -309,6 +334,7 @@ ERROR_NODJANGO = \
 def evennia_version():
     """
     Get the Evennia version info from the main package.
+
     """
     version = "Unknown"
     try:
@@ -329,6 +355,10 @@ def check_main_evennia_dependencies():
     """
     Checks and imports the Evennia dependencies. This must be done
     already before the paths are set up.
+
+    Returns:
+        not_error (bool): True if no dependency error was found.
+
     """
     error = False
 
@@ -342,7 +372,8 @@ def check_main_evennia_dependencies():
         import twisted
         tversion = twisted.version.short()
         if tversion < TWISTED_MIN:
-            print WARNING_TWISTED_VERSION.format(tversion=tversion, twisted_min=TWISTED_MIN)
+            print ERROR_TWISTED_VERSION.format(tversion=tversion, twisted_min=TWISTED_MIN)
+            error = True
     except ImportError:
         print ERROR_NOTWISTED
         error = True
@@ -363,12 +394,15 @@ def check_main_evennia_dependencies():
         error = True
     if error:
         sys.exit()
+    # return True/False if error was reported or not
+    return not error
 
 
 def set_gamedir(path):
     """
     Set GAMEDIR based on path, by figuring out where the setting file
     is inside the directory tree.
+
     """
 
     global GAMEDIR
@@ -393,6 +427,7 @@ def set_gamedir(path):
 def create_secret_key():
     """
     Randomly create the secret key for the settings file
+
     """
     import random
     import string
@@ -407,6 +442,7 @@ def create_settings_file():
     """
     Uses the template settings file to build a working
     settings file.
+
     """
     settings_path = os.path.join(GAMEDIR, "server", "conf", "settings.py")
     with open(settings_path, 'r') as f:
@@ -429,6 +465,10 @@ def create_game_directory(dirname):
     Initialize a new game directory named dirname
     at the current path. This means copying the
     template directory from evennia's root.
+
+    Args:
+        dirname (str): The directory name to create.
+
     """
     global GAMEDIR
     GAMEDIR = os.path.abspath(os.path.join(CURRENT_DIR, dirname))
@@ -442,18 +482,26 @@ def create_game_directory(dirname):
 
 
 def create_superuser():
-    "Create the superuser player"
+    """
+    Create the superuser player
+
+    """
     print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
     django.core.management.call_command("createsuperuser", interactive=True)
 
 
 def check_database():
     """
-    Check database exists
+    Check so the database exists.
+
+    Returns:
+        exists (bool): `True` if the database exists, otherwise `False`.
     """
     # Check so a database exists and is accessible
     from django.db import connection
     tables = connection.introspection.get_table_list(connection.cursor())
+    if not tables or not isinstance(tables[0], basestring): # django 1.8+
+        tables = [tableinfo.name for tableinfo in tables]
     if tables and u'players_playerdb' in tables:
         # database exists and seems set up. Initialize evennia.
         import evennia
@@ -503,7 +551,11 @@ def check_database():
 
 def getenv():
     """
-    Get current environment and add PYTHONPATH
+    Get current environment and add PYTHONPATH.
+
+    Returns:
+        env (dict): Environment global dict.
+
     """
     sep = ";" if os.name == 'nt' else ":"
     env = os.environ.copy()
@@ -513,8 +565,14 @@ def getenv():
 
 def get_pid(pidfile):
     """
-    Get the PID (Process ID) by trying to access
-    an PID file.
+    Get the PID (Process ID) by trying to access an PID file.
+
+    Args:
+        pidfile (str): The path of the pid file.
+
+    Returns:
+        pid (str): The process id.
+
     """
     pid = None
     if os.path.exists(pidfile):
@@ -528,6 +586,10 @@ def del_pid(pidfile):
     The pidfile should normally be removed after a process has
     finished, but when sending certain signals they remain, so we need
     to clean them manually.
+
+    Args:
+        pidfile (str): The path of the pid file.
+
     """
     if os.path.exists(pidfile):
         os.remove(pidfile)
@@ -538,6 +600,15 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART
     Send a kill signal to a process based on PID. A customized
     success/error message will be returned. If clean=True, the system
     will attempt to manually remove the pid file.
+
+    Args:
+        pidfile (str): The path of the pidfile to get the PID from.
+        signal (int, optional): Signal identifier.
+        succmsg (str, optional): Message to log on success.
+        errmsg (str, optional): Message to log on failure.
+        restart_file (str, optional): Restart file location.
+        restart (bool, optional): Are we in restart mode or not.
+
     """
     pid = get_pid(pidfile)
     if pid:
@@ -565,7 +636,14 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART
 
 def show_version_info(about=False):
     """
-    Display version info
+    Display version info.
+
+    Args:
+        about (bool): Include ABOUT info as well as version numbers.
+
+    Returns:
+        version_info (str): A complete version info string.
+
     """
     import os, sys
     import twisted
@@ -581,10 +659,15 @@ def show_version_info(about=False):
 def error_check_python_modules():
     """
     Import settings modules in settings. This will raise exceptions on
-    pure python-syntax issues which are hard to catch gracefully
-    with exceptions in the engine (since they are formatting errors in
-    the python source files themselves). Best they fail already here
+    pure python-syntax issues which are hard to catch gracefully with
+    exceptions in the engine (since they are formatting errors in the
+    python source files themselves). Best they fail already here
     before we get any further.
+
+    Raises:
+        DeprecationWarning: For trying to access various modules
+        (usually in `settings.py`) which are no longer supported.
+
     """
     from django.conf import settings
     def imp(path, split=True):
@@ -597,6 +680,7 @@ def error_check_python_modules():
     imp(settings.COMMAND_PARSER)
     imp(settings.SEARCH_AT_RESULT)
     imp(settings.SEARCH_AT_MULTIMATCH_INPUT)
+    imp(settings.SEARCH_AT_MULTIMATCH_CMD)
     imp(settings.CONNECTION_SCREEN_MODULE)
     #imp(settings.AT_INITIAL_SETUP_HOOK_MODULE, split=False)
     for path in settings.LOCK_FUNC_MODULES:
@@ -646,8 +730,13 @@ def error_check_python_modules():
 def init_game_directory(path, check_db=True):
     """
     Try to analyze the given path to find settings.py - this defines
-    the game directory and also sets PYTHONPATH as well as the
-    django path.
+    the game directory and also sets PYTHONPATH as well as the django
+    path.
+
+    Args:
+        path (str): Path to new game directory, including its name.
+        check_db (bool, optional): Check if the databae exists.
+
     """
     # set the GAMEDIR path
     set_gamedir(path)
@@ -697,6 +786,16 @@ def init_game_directory(path, check_db=True):
     PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
     HTTP_LOGFILE = settings.HTTP_LOG_FILE
 
+    # verify existence of log file dir (this can be missing e.g.
+    # if the game dir itself was cloned since log files are in .gitignore)
+    logdirs = [logfile.rsplit(os.path.sep, 1)
+                for logfile in (SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE)]
+    if not all(os.path.isdir(pathtup[0]) for pathtup in logdirs):
+        errstr = "\n    ".join("%s (log file %s)" % (pathtup[0], pathtup[1]) for pathtup in logdirs
+                if not os.path.isdir(pathtup[0]))
+        print ERROR_LOGDIR_MISSING.format(logfiles=errstr)
+        sys.exit()
+
     if os.name == 'nt':
         # We need to handle Windows twisted separately. We create a
         # batchfile in game/server, linking to the actual binary
@@ -743,8 +842,14 @@ def run_dummyrunner(number_of_dummies):
     """
     Start an instance of the dummyrunner
 
-    The dummy players' behavior can be customized by adding a
-    dummyrunner_settings.py config file in the game's conf directory.
+    Args:
+        number_of_dummies (int): The number of dummy players to start.
+
+    Notes:
+        The dummy players' behavior can be customized by adding a
+        `dummyrunner_settings.py` config file in the game's conf/
+        directory.
+
     """
     number_of_dummies = str(int(number_of_dummies)) if number_of_dummies else 1
     cmdstr = [sys.executable, EVENNIA_DUMMYRUNNER, "-N", number_of_dummies]
@@ -758,8 +863,12 @@ def run_dummyrunner(number_of_dummies):
 
 def list_settings(keys):
     """
-    Display the server settings. We only display
-    the Evennia specific settings here.
+    Display the server settings. We only display the Evennia specific
+    settings here. The result will be printed to the terminal.
+
+    Args:
+        keys (str or list): Setting key or keys to inspect.
+
     """
     from importlib import import_module
     from evennia.utils import evtable
@@ -785,6 +894,7 @@ def list_settings(keys):
 def run_menu():
     """
     This launches an interactive menu.
+
     """
     while True:
         # menu loop
@@ -849,10 +959,12 @@ def server_operation(mode, service, interactive, profiler):
     """
     Handle argument options given on the command line.
 
-    mode - str; start/stop etc
-    service - str; server, portal or all
-    interactive - bool; use interactive mode or daemon
-    profiler - run the service under the profiler
+    Args:
+        mode (str): Start/stop/restart and so on.
+        service (str): "server", "portal" or "all".
+        interactive (bool). Use interactive mode or daemon.
+        profiler (bool): Run the service under the profiler.
+
     """
 
     cmdstr = [sys.executable, EVENNIA_RUNNER]
@@ -921,7 +1033,8 @@ def server_operation(mode, service, interactive, profiler):
 
 def main():
     """
-    Run the evennia main program.
+    Run the evennia launcher main program.
+
     """
 
     # set up argument parser

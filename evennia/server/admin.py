@@ -8,7 +8,10 @@ from evennia.server.models import ServerConfig
 
 
 class ServerConfigAdmin(admin.ModelAdmin):
-    "Custom admin for server configs"
+    """
+    Custom admin for server configs
+
+    """
     list_display = ('db_key', 'db_value')
     list_display_links = ('db_key',)
     ordering = ['db_key', 'db_value']

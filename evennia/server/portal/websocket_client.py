@@ -13,9 +13,9 @@ the client must send data on the following form:
 
     OOB{"func1":[args], "func2":[args], ...}
 
-where the dict is JSON encoded. The initial OOB-prefix
-is used to identify this type of communication, all other data
-is considered plain text (command input).
+where the dict is JSON encoded. The initial OOB-prefix is used to
+identify this type of communication, all other data is considered
+plain text (command input).
 
 Example of call from a javascript client:
 
@@ -43,6 +43,7 @@ class WebSocketClient(Protocol, Session):
     def connectionMade(self):
         """
         This is called when the connection is first established.
+
         """
         client_address = self.transport.client
         self.init_session("websocket", client_address, self.factory.sessionhandler)
@@ -52,8 +53,12 @@ class WebSocketClient(Protocol, Session):
 
     def disconnect(self, reason=None):
         """
-        generic hook for the engine to call in order to
+        Generic hook for the engine to call in order to
         disconnect this protocol.
+
+        Args:
+            reason (str): Motivation for the disconnection.
+
         """
         if reason:
             self.data_out(text=reason)
@@ -61,25 +66,30 @@ class WebSocketClient(Protocol, Session):
 
     def connectionLost(self, reason):
         """
-        this is executed when the connection is lost for
-        whatever reason. it can also be called directly, from
-        the disconnect method
+        This is executed when the connection is lost for whatever
+        reason. it can also be called directly, from the disconnect
+        method
+
+        Args:
+            reason (str): Motivation for the lost connection.
+
         """
         self.sessionhandler.disconnect(self)
         self.transport.close()
 
     def dataReceived(self, string):
         """
-        Method called when data is coming in over
-        the websocket connection.
+        Method called when data is coming in over the websocket
+        connection.
 
-        Type of data is identified by a 3-character
-        prefix.
-            OOB - This is an Out-of-band instruction. If so,
-                  the remaining string should be a json-packed
-                  string on the form {oobfuncname: [args, ], ...}
-            CMD - plain text data, to be treated like a game
-                  input command.
+        Args:
+            string (str): Type of data is identified by a 3-character
+                prefix:
+                    - "OOB" This is an Out-of-band instruction. If so,
+                        the remaining string should be a json-packed
+                        string on the form {oobfuncname: [args, ], ...}
+                    - "CMD" plain text data, to be treated like a game
+                        input command.
         """
         mode = string[:3]
         data = string[3:]
@@ -92,14 +102,27 @@ class WebSocketClient(Protocol, Session):
             self.data_in(text=data)
 
     def sendLine(self, line):
-        "send data to client"
+        """
+        Send data to client.
+
+        Args:
+            line (str): Text to send.
+
+        """
         return self.transport.write(line)
 
     def json_decode(self, data):
         """
-        Decodes incoming data from the client
+        Decodes incoming data from the client.
 
-        [cmdname, [args],{kwargs}] -> cmdname *args **kwargs
+        Args:
+            data (JSON): JSON object to unpack.
+
+        Raises:
+            Exception: If receiving a malform OOB request.
+
+        Notes:
+            [cmdname, [args],{kwargs}] -> cmdname *args **kwargs
 
         """
         try:
@@ -111,10 +134,15 @@ class WebSocketClient(Protocol, Session):
 
     def json_encode(self, cmdname, *args, **kwargs):
         """
-        Encode OOB data for sending to client
+        Encode OOB data for sending to client.
 
-        cmdname *args -> cmdname [json array]
-        cmdname **kwargs -> cmdname {json object}
+        Args:
+            cmdname (str): OOB command name.
+            args, kwargs (any): Arguments to oob command.
+
+        Notes:
+            cmdname *args -> cmdname [json array]
+            cmdname **kwargs -> cmdname {json object}
 
         """
         cmdtuple = [cmdname, list(args), kwargs]
@@ -122,20 +150,25 @@ class WebSocketClient(Protocol, Session):
 
     def data_in(self, text=None, **kwargs):
         """
-        Data Websocket -> Server
+        Data User > Evennia.
+
+        Kwargs:
+            text (str): Incoming text.
+            kwargs (any): Options from protocol.
+
         """
         self.sessionhandler.data_in(self, text=text, **kwargs)
 
     def data_out(self, text=None, **kwargs):
         """
-        Data Evennia -> Player.
-        generic hook method for engine to call in order to send data
-        through the websocket connection.
+        Data Evennia -> User. A generic hook method for engine to call
+        in order to send data through the websocket connection.
 
-        valid webclient kwargs:
-            oob=<string> - supply an Out-of-Band instruction.
-            raw=True - no parsing at all (leave ansi-to-html markers unparsed)
-            nomarkup=True - clean out all ansi/html markers and tokens
+        Kwargs:
+            oob (str or tuple): Supply an Out-of-Band instruction.
+            raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
+            nomarkup (bool): Clean out all ansi/html markers and tokens.
+
         """
         try:
             text = to_str(text if text else "", encoding=self.encoding)

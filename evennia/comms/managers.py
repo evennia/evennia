@@ -1,5 +1,7 @@
 """
-These managers handles the
+These managers define helper methods for accessing the database from
+Comm system components.
+
 """
 
 from django.db import models
@@ -17,7 +19,9 @@ _SESSIONS = None
 
 
 class CommError(Exception):
-    "Raise by comm system, to allow feedback to player when caught."
+    """
+    Raised by comm system, to allow feedback to player when caught.
+    """
     pass
 
 
@@ -27,9 +31,17 @@ class CommError(Exception):
 
 def dbref(dbref, reqhash=True):
     """
-    Valid forms of dbref (database reference number)
-    are either a string '#N' or an integer N.
-    Output is the integer part.
+    Valid forms of dbref (database reference number) are either a
+    string '#N' or an integer N.
+
+    Args:
+        dbref (int or str): A possible dbref to check syntactically.
+        reqhash (bool): Require an initial hash `#` to accept.
+
+    Returns:
+        is_dbref (int or None): The dbref integer part if a valid
+            dbref, otherwise `None`.
+
     """
     if reqhash and not (isinstance(dbref, basestring) and dbref.startswith("#")):
         return None
@@ -44,7 +56,19 @@ def dbref(dbref, reqhash=True):
 
 
 def identify_object(inp):
-    "identify if an object is a player or an object; return its database model"
+    """
+    Helper function. Identifies if an object is a player or an object;
+    return its database model
+
+    Args:
+        inp (any): Entity to be idtified.
+
+    Returns:
+        identified (tuple): This is a tuple with (`inp`, identifier)
+            where `identifier` is one of "player", "object", "channel",
+            "string", "dbref" or None.
+
+    """
     if hasattr(inp, "__dbclass__"):
         clsname = inp.__dbclass__.__name__
         if clsname == "PlayerDB":
@@ -63,11 +87,16 @@ def identify_object(inp):
 
 def to_object(inp, objtype='player'):
     """
-    Locates the object related to the given
-    playername or channel key. If input was already
-    the correct object, return it.
-    inp - the input object/string
-    objtype - 'player' or 'channel'
+    Locates the object related to the given playername or channel key.
+    If input was already the correct object, return it.
+
+    Args:
+        inp (any): The input object/string
+        objtype (str): Either 'player' or 'channel'.
+
+    Returns:
+        obj (object): The correct object related to `inp`.
+
     """
     obj, typ = identify_object(inp)
     if typ == objtype:
@@ -104,46 +133,68 @@ def to_object(inp, objtype='player'):
 
 class MsgManager(models.Manager):
     """
-    This MsgManager implements methods for searching
-    and manipulating Messages directly from the database.
+    This MsgManager implements methods for searching and manipulating
+    Messages directly from the database.
 
-    These methods will all return database objects
-    (or QuerySets) directly.
+    These methods will all return database objects (or QuerySets)
+    directly.
 
     A Message represents one unit of communication, be it over a
     Channel or via some form of in-game mail system. Like an e-mail,
     it always has a sender and can have any number of receivers (some
     of which may be Channels).
 
-    Evennia-specific:
-     get_message_by_id
-     get_messages_by_sender
-     get_messages_by_receiver
-     get_messages_by_channel
-     text_search
-     message_search (equivalent to evennia.search_messages)
     """
 
-    def identify_object(self, obj):
-        "method version for easy access"
-        return identify_object(obj)
+    def identify_object(self, inp):
+        """
+        Wrapper to identify_object if accessing via the manager directly.
+
+        Args:
+            inp (any): Entity to be idtified.
+
+        Returns:
+            identified (tuple): This is a tuple with (`inp`, identifier)
+                where `identifier` is one of "player", "object", "channel",
+                "string", "dbref" or None.
+
+        """
+        return identify_object(inp)
 
     def get_message_by_id(self, idnum):
-        "Retrieve message by its id."
+        """
+        Retrieve message by its id.
+
+        Args:
+            idnum (int or str): The dbref to retrieve.
+
+        Returns:
+            message (Msg): The message.
+
+        """
         try:
             return self.get(id=self.dbref(idnum, reqhash=False))
         except Exception:
             return None
 
-    def get_messages_by_sender(self, obj, exclude_channel_messages=False):
+    def get_messages_by_sender(self, sender, exclude_channel_messages=False):
         """
         Get all messages sent by one entity - this could be either a
         player or an object
 
-        only_non_channel: only return messages -not- aimed at a channel
-        (e.g. private tells)
+        Args:
+            sender (Player or Object): The sender of the message.
+            exclude_channel_messages (bool, optional): Only return messages
+                not aimed at a channel (that is, private tells for example)
+
+        Returns:
+            messages (list): List of matching messages
+
+        Raises:
+            CommError: For incorrect sender types.
+
         """
-        obj, typ = identify_object(obj)
+        obj, typ = identify_object(sender)
         if exclude_channel_messages:
             # explicitly exclude channel recipients
             if typ == 'player':
@@ -163,11 +214,21 @@ class MsgManager(models.Manager):
             else:
                 raise CommError
 
-    def get_messages_by_receiver(self, obj):
+    def get_messages_by_receiver(self, recipient):
         """
-        Get all messages sent to one give recipient
+        Get all messages sent to one given recipient.
+
+        Args:
+            recipient (Object, Player or Channel): The recipient of the messages to search for.
+
+        Returns:
+            messages (list): Matching messages.
+
+        Raises:
+            CommError: If the `recipient` is not of a valid type.
+
         """
-        obj, typ = identify_object(obj)
+        obj, typ = identify_object(recipient)
         if typ == 'player':
             return list(self.filter(db_receivers_players=obj).exclude(db_hide_from_players=obj))
         elif typ == 'object':
@@ -179,23 +240,36 @@ class MsgManager(models.Manager):
 
     def get_messages_by_channel(self, channel):
         """
-        Get all messages sent to one channel
+        Get all persistent messages sent to one channel.
+
+        Args:
+            channel (Channel): The channel to find messages for.
+
+        Returns:
+            messages (list): Persistent Msg objects saved for this channel.
+
         """
         return self.filter(db_receivers_channels=channel).exclude(db_hide_from_channels=channel)
 
     def message_search(self, sender=None, receiver=None, freetext=None, dbref=None):
         """
-        Search the message database for particular messages. At least one
-        of the arguments must be given to do a search.
+        Search the message database for particular messages. At least
+        one of the arguments must be given to do a search.
 
-        sender - get messages sent by a particular player or object
-        receiver - get messages received by a certain player,object or channel
-        freetext - Search for a text string in a message.
-                   NOTE: This can potentially be slow, so make sure to supply
-                   one of the other arguments to limit the search.
-        dbref - (int) the exact database id of the message. This will override
-                all other search criteria since it's unique and
-                always gives a list with only one match.
+        Args:
+            sender (Object or Player, optional): Get messages sent by a particular player or object
+            receiver (Object, Player or Channel, optional): Get messages
+                received by a certain player,object or channel
+            freetext (str): Search for a text string in a message.  NOTE:
+                This can potentially be slow, so make sure to supply one of
+                the other arguments to limit the search.
+            dbref (int): The exact database id of the message. This will override
+                    all other search criteria since it's unique and
+                    always gives only one match.
+
+        Returns:
+            messages (list or Msg): A list of message matches or a single match if `dbref` was given.
+
         """
         # unique msg id
         if dbref:
@@ -241,28 +315,26 @@ class MsgManager(models.Manager):
 
 class ChannelDBManager(TypedObjectManager):
     """
-    This ChannelManager implements methods for searching
-    and manipulating Channels directly from the database.
+    This ChannelManager implements methods for searching and
+    manipulating Channels directly from the database.
 
-    These methods will all return database objects
-    (or QuerySets) directly.
+    These methods will all return database objects (or QuerySets)
+    directly.
 
-    A Channel is an in-game venue for communication. It's
-    essentially representation of a re-sender: Users sends
-    Messages to the Channel, and the Channel re-sends those
-    messages to all users subscribed to the Channel.
-
-    Evennia-specific:
-    get_all_channels
-    get_channel(channel)
-    get_subscriptions(player)
-    channel_search (equivalent to evennia.search_channel)
+    A Channel is an in-game venue for communication. It's essentially
+    representation of a re-sender: Users sends Messages to the
+    Channel, and the Channel re-sends those messages to all users
+    subscribed to the Channel.
 
     """
     @returns_typeclass_list
     def get_all_channels(self):
         """
-        Returns all channels in game.
+        Get all channels.
+
+        Returns:
+            channels (list): All channels in game.
+
         """
         return self.all()
 
@@ -271,6 +343,13 @@ class ChannelDBManager(TypedObjectManager):
         """
         Return the channel object if given its key.
         Also searches its aliases.
+
+        Args:
+            channelkey (str): Channel key to search for.
+
+        Returns:
+            channel (Channel or None): A channel match.
+
         """
         # first check the channel key
         channels = self.filter(db_key__iexact=channelkey)
@@ -283,15 +362,22 @@ class ChannelDBManager(TypedObjectManager):
         return None
 
     @returns_typeclass_list
-    def get_subscriptions(self, entity):
+    def get_subscriptions(self, subscriber):
         """
-        Return all channels a given player is subscribed to
+        Return all channels a given entity is subscribed to.
+
+        Args:
+            subscriber (Object or Player): The one subscribing.
+
+        Returns:
+            subscriptions (list): Channel subscribed to.
+
         """
-        clsname = entity.__dbclass__.__name__
+        clsname = subscriber.__dbclass__.__name__
         if clsname == "PlayerDB":
-            return entity.subscription_set.all()
+            return subscriber.subscription_set.all()
         if clsname == "ObjectDB":
-            return entity.object_subscription_set.all()
+            return subscriber.object_subscription_set.all()
         return []
 
     @returns_typeclass_list
@@ -299,8 +385,11 @@ class ChannelDBManager(TypedObjectManager):
         """
         Search the channel database for a particular channel.
 
-        ostring - the key or database id of the channel.
-        exact - require an exact key match (still not case sensitive)
+        Args:
+            ostring (str): The key or database id of the channel.
+            exact (bool, optional): Require an exact (but not
+                case sensitive) match.
+
         """
         channels = []
         if not ostring: return channels
@@ -324,6 +413,9 @@ class ChannelDBManager(TypedObjectManager):
         return channels
 
 class ChannelManager(ChannelDBManager, TypeclassManager):
+    """
+    Wrapper to group the typeclass manager to a consistent name.
+    """
     pass
 
 

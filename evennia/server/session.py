@@ -1,6 +1,6 @@
 """
-This defines a generic session class. All connection instances (both
-on Portal and Server side) should inherit from this class.
+This module defines a generic session class. All connection instances
+(both on Portal and Server side) should inherit from this class.
 
 """
 
@@ -18,13 +18,13 @@ class Session(object):
 
     Each connection will see two session instances created:
 
-     1) A Portal session. This is customized for the respective connection
+     1. A Portal session. This is customized for the respective connection
         protocols that Evennia supports, like Telnet, SSH etc. The Portal
         session must call init_session() as part of its initialization. The
         respective hook methods should be connected to the methods unique
         for the respective protocol so that there is a unified interface
         to Evennia.
-     2) A Server session. This is the same for all connected players,
+     2. A Server session. This is the same for all connected players,
         regardless of how they connect.
 
     The Portal and Server have their own respective sessionhandlers. These
@@ -44,9 +44,14 @@ class Session(object):
         """
         Initialize the Session. This should be called by the protocol when
         a new session is established.
-        protocol_key - telnet, ssh, ssl or web
-        address - client address
-        sessionhandler - reference to the sessionhandler instance
+
+        Args:
+            protocol_key (str): By default, one of 'telnet', 'ssh',
+                'ssl' or 'web'.
+            address (str): Client address.
+            sessionhandler (SessionHandler): Reference to the
+                main sessionhandler instance.
+
         """
         # This is currently 'telnet', 'ssh', 'ssl' or 'web'
         self.protocol_key = protocol_key
@@ -85,15 +90,24 @@ class Session(object):
 
     def get_sync_data(self):
         """
-        Return all data relevant to sync the session
+        Get all data relevant to sync the session.
+
+        Args:
+            syncdata (dict): All syncdata values, based on
+                the keys given by self._attrs_to_sync.
+
         """
         return dict((key, value) for key, value in self.__dict__.items()
                                                   if key in self._attrs_to_sync)
 
     def load_sync_data(self, sessdata):
         """
-        Takes a session dictionary, as created by get_sync_data,
-        and loads it into the correct properties of the session.
+        Takes a session dictionary, as created by get_sync_data, and
+        loads it into the correct properties of the session.
+
+        Args:
+            sessdata (dict): Session data dictionary.
+
         """
         for propname, value in sessdata.items():
             setattr(self, propname, value)
@@ -103,6 +117,7 @@ class Session(object):
         Called after a session has been fully synced (including
         secondary operations such as setting self.player based
         on uid etc).
+
         """
         pass
 
@@ -112,19 +127,33 @@ class Session(object):
         """
         generic hook called from the outside to disconnect this session
         should be connected to the protocols actual disconnect mechanism.
+
+        Args:
+            reason (str): Eventual text motivating the disconnect.
+
         """
         pass
 
     def data_out(self, text=None, **kwargs):
         """
-        generic hook for sending data out through the protocol. Server
+        Generic hook for sending data out through the protocol. Server
         protocols can use this right away. Portal sessions
         should overload this to format/handle the outgoing data as needed.
+
+        Kwargs:
+            text (str): Text data
+            kwargs (any): Other data to the protocol.
+
         """
         pass
 
     def data_in(self, text=None, **kwargs):
         """
-        hook for protocols to send incoming data to the engine.
+        Hook for protocols to send incoming data to the engine.
+
+        Kwargs:
+            text (str): Text data
+            kwargs (any): Other data from the protocol.
+
         """
         pass

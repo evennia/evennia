@@ -55,21 +55,23 @@ class PlayerDB(TypedObject, AbstractUser):
     our liking.
 
     The TypedObject supplies the following (inherited) properties:
-      key - main name
-      typeclass_path - the path to the decorating typeclass
-      typeclass - auto-linked typeclass
-      date_created - time stamp of object creation
-      permissions - perm strings
-      dbref - #id of object
-      db - persistent attribute storage
-      ndb - non-persistent attribute storage
+
+      - key - main name
+      - typeclass_path - the path to the decorating typeclass
+      - typeclass - auto-linked typeclass
+      - date_created - time stamp of object creation
+      - permissions - perm strings
+      - dbref - #id of object
+      - db - persistent attribute storage
+      - ndb - non-persistent attribute storage
 
     The PlayerDB adds the following properties:
-      user - Connected User object. django field, needs to be save():d.
-      name - alias for user.username
-      sessions - sessions connected to this player
-      is_superuser - bool if this player is a superuser
-      is_bot - bool if this player is a bot and not a real player
+
+      - is_connected - If any Session is currently connected to this Player
+      - name - alias for user.username
+      - sessions - sessions connected to this player
+      - is_superuser - bool if this player is a superuser
+      - is_bot - bool if this player is a bot and not a real player
 
     """
 
@@ -96,9 +98,9 @@ class PlayerDB(TypedObject, AbstractUser):
     # defaults
     __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
     __defaultclasspath__ = "evennia.players.players.DefaultPlayer"
+    __applabel__ = "players"
 
     class Meta:
-        app_label = 'players'
         verbose_name = 'Player'
 
     # alias to the objs property
@@ -115,7 +117,7 @@ class PlayerDB(TypedObject, AbstractUser):
     # cmdset_storage property
     # This seems very sensitive to caching, so leaving it be for now /Griatch
     #@property
-    def cmdset_storage_get(self):
+    def __cmdset_storage_get(self):
         """
         Getter. Allows for value = self.name. Returns a list of cmdset_storage.
         """
@@ -124,7 +126,7 @@ class PlayerDB(TypedObject, AbstractUser):
         return [path.strip() for path in storage.split(',')] if storage else []
 
     #@cmdset_storage.setter
-    def cmdset_storage_set(self, value):
+    def __cmdset_storage_set(self, value):
         """
         Setter. Allows for self.name = value. Stores as a comma-separated
         string.
@@ -133,11 +135,11 @@ class PlayerDB(TypedObject, AbstractUser):
         _GA(self, "save")()
 
     #@cmdset_storage.deleter
-    def cmdset_storage_del(self):
+    def __cmdset_storage_del(self):
         "Deleter. Allows for del self.name"
         _SA(self, "db_cmdset_storage", None)
         _GA(self, "save")()
-    cmdset_storage = property(cmdset_storage_get, cmdset_storage_set, cmdset_storage_del)
+    cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set, __cmdset_storage_del)
 
     #
     # property/field access

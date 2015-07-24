@@ -31,9 +31,14 @@ UPSTREAM_IPS = settings.UPSTREAM_IPS
 #
 
 class HTTPChannelWithXForwardedFor(http.HTTPChannel):
+    """
+    HTTP xforward class
+
+    """
     def allHeadersReceived(self):
         """
         Check to see if this is a reverse proxied connection.
+
         """
         CLIENT = 0
         http.HTTPChannel.allHeadersReceived(self)
@@ -55,7 +60,15 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
         """
         Create and return a proxy resource with the same proxy configuration
         as this one, except that its path also contains the segment given by
-        C{path} at the end.
+        path at the end.
+
+        Args:
+            path (str): Url path.
+            request (Request object): Incoming request.
+
+        Return:
+            resource (EvenniaReverseProxyResource): A proxy resource.
+
         """
         return EvenniaReverseProxyResource(
             self.host, self.port, self.path + '/' + urlquote(path, safe=""),
@@ -64,6 +77,13 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
     def render(self, request):
         """
         Render a request by forwarding it to the proxied server.
+
+        Args:
+            request (Request): Incoming request.
+
+        Returns:
+            not_done (char): Indicator to note request not yet finished.
+
         """
         # RFC 2616 tells us that we can omit the port if it's the default port,
         # but we have to provide it otherwise
@@ -92,15 +112,24 @@ class DjangoWebRoot(resource.Resource):
     """
     def __init__(self, pool):
         """
-        Setup the django+twisted resource
+        Setup the django+twisted resource.
+
+        Args:
+            pool (ThreadPool): The twisted threadpool.
+
         """
         resource.Resource.__init__(self)
         self.wsgi_resource = WSGIResource(reactor, pool, WSGIHandler())
 
     def getChild(self, path, request):
         """
-        To make things work we nudge the
-        url tree to make this the root.
+        To make things work we nudge the url tree to make this the
+        root.
+
+        Args:
+            path (str): Url path.
+            request (Request object): Incoming request.
+
         """
         path0 = request.prepath.pop(0)
         request.postpath.insert(0, path0)
@@ -118,18 +147,32 @@ class WSGIWebServer(internet.TCPServer):
     so as to register correctly with the twisted daemon.
 
     call with WSGIWebServer(threadpool, port, wsgi_resource)
+
     """
     def __init__(self, pool, *args, **kwargs):
-        "This just stores the threadpool"
+        """
+        This just stores the threadpool.
+
+        Args:
+            pool (ThreadPool): The twisted threadpool.
+            args, kwargs (any): Passed on to the TCPServer.
+
+        """
         self.pool = pool
         internet.TCPServer.__init__(self, *args, **kwargs)
 
     def startService(self):
-        "Start the pool after the service"
+        """
+        Start the pool after the service starts.
+
+        """
         internet.TCPServer.startService(self)
         self.pool.start()
 
     def stopService(self):
-        "Safely stop the pool after service stop."
+        """
+        Safely stop the pool after the service stops.
+
+        """
         internet.TCPServer.stopService(self)
         self.pool.stop()

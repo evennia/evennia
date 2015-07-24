@@ -19,8 +19,10 @@ CMDSET_UNLOGGEDIN = "contrib.menu_login.UnloggedInCmdSet"
 
 That's it. Reload the server and try to log in to see it.
 
-The initial login "graphic" is taken from strings in the module given
-by settings.CONNECTION_SCREEN_MODULE.
+You will want to change the login "graphic", which defaults to give
+information about commands which are not used in this version of the
+login. You can change the screen used by editing
+`mygame/server/conf/connection_screens.py`.
 
 """
 
@@ -29,6 +31,7 @@ import traceback
 from django.conf import settings
 from evennia import managers
 from evennia import utils, logger, create_player
+from evennia import ObjectDB
 from evennia import Command, CmdSet
 from evennia import syscmdkeys
 from evennia.server.models import ServerConfig
@@ -39,6 +42,7 @@ CMD_LOGINSTART = syscmdkeys.CMD_LOGINSTART
 CMD_NOINPUT = syscmdkeys.CMD_NOINPUT
 CMD_NOMATCH = syscmdkeys.CMD_NOMATCH
 
+MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 
 
@@ -208,28 +212,21 @@ class CmdPasswordCreate(Command):
             self.caller.msg(string)
             self.menutree.goto("node2b")
             return
-        # everything's ok. Create the new player account. Don't create
-        # a Character here.
+        # everything's ok. Create the new player account and possibly the character
+        # depending on the multisession mode
+
+        from evennia.commands.default import unloggedin
+        # we make use of the helper functions from the default set here.
         try:
             permissions = settings.PERMISSION_PLAYER_DEFAULT
-            typeclass = settings.BASE_PLAYER_TYPECLASS
-            new_player = create_player(playername, None, password,
-                                       typeclass=typeclass,
-                                       permissions=permissions)
-            if not new_player:
-                self.msg("There was an error creating the Player. This error was logged. Contact an admin.")
-                self.menutree.goto("START")
-                return
-            utils.init_new_player(new_player)
-
-            # join the new player to the public channel
-            pchanneldef = settings.CHANNEL_PUBLIC
-            if pchanneldef:
-                pchannel = managers.channels.get_channel(pchanneldef[0])
-                if not pchannel.connect(new_player):
-                    string = "New player '%s' could not connect to public channel!" % new_player.key
-                    logger.log_errmsg(string)
-
+            typeclass = settings.BASE_CHARACTER_TYPECLASS
+            new_player = unloggedin._create_player(self.caller, playername,
+                                               password, permissions)
+            if new_player:
+                if MULTISESSION_MODE < 2:
+                    default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
+                    unloggedin._create_character(self.caller, new_player, typeclass,
+                                                 default_home, permissions)
             # tell the caller everything went well.
             string = "{gA new account '%s' was created. Now go log in from the menu!{n"
             self.caller.msg(string % (playername))
@@ -302,26 +299,21 @@ node1a = MenuNode("node1a", text="Please enter your account name (empty to abort
                   links=["START", "node1b"],
                   helptext=["Enter the account name you previously registered with."],
                   keywords=[CMD_NOINPUT, CMD_NOMATCH],
-                  selectcmds=[CmdBackToStart, CmdUsernameSelect],
-                  nodefaultcmds=True) # if we don't, default help/look will be triggered by names starting with l/h ...
+                  selectcmds=[CmdBackToStart, CmdUsernameSelect])
 node1b = MenuNode("node1b", text="Please enter your password (empty to go back).",
                   links=["node1a", "END"],
                   keywords=[CMD_NOINPUT, CMD_NOMATCH],
-                  selectcmds=[CmdPasswordSelectBack, CmdPasswordSelect],
-                  nodefaultcmds=True)
-
+                  selectcmds=[CmdPasswordSelectBack, CmdPasswordSelect])
 node2a = MenuNode("node2a", text="Please enter your desired account name (empty to abort).",
                   links=["START", "node2b"],
                   helptext="Account name can max be 30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only.",
                   keywords=[CMD_NOINPUT, CMD_NOMATCH],
-                  selectcmds=[CmdBackToStart, CmdUsernameCreate],
-                  nodefaultcmds=True)
+                  selectcmds=[CmdBackToStart, CmdUsernameCreate])
 node2b = MenuNode("node2b", text="Please enter your password (empty to go back).",
                   links=["node2a", "START"],
                   helptext="Try to pick a long and hard-to-guess password.",
                   keywords=[CMD_NOINPUT, CMD_NOMATCH],
-                  selectcmds=[CmdPasswordCreateBack, CmdPasswordCreate],
-                  nodefaultcmds=True)
+                  selectcmds=[CmdPasswordCreateBack, CmdPasswordCreate])
 node3 = MenuNode("node3", text=LOGIN_SCREEN_HELP,
                  links=["START"],
                  helptext="",
@@ -348,7 +340,7 @@ class CmdUnloggedinLook(Command):
     to the menu's own look command..
     """
     key = CMD_LOGINSTART
-    aliases = ["look", "l"]
+    # obs, this should NOT have aliases for look or l, this will clash with the menu version!
     locks = "cmd:all()"
     arg_regex = r"^$"
 

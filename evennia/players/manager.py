@@ -43,22 +43,37 @@ class PlayerDBManager(TypedObjectManager, UserManager):
     """
     def num_total_players(self):
         """
-        Returns the total number of registered players.
+        Get total number of players.
+
+        Returns:
+            count (int): The total number of registered players.
+
         """
         return self.count()
 
     @returns_typeclass_list
     def get_connected_players(self):
         """
-        Returns a list of player objects with currently connected users/players.
+        Get all currently connected players.
+
+        Returns:
+            count (list): Player objects with currently
+                connected sessions.
+
         """
         return self.filter(db_is_connected=True)
 
     @returns_typeclass_list
     def get_recently_created_players(self, days=7):
         """
-        Returns a QuerySet containing the player User accounts that have been
-        connected within the last <days> days.
+        Get players recently created.
+
+        Args:
+            days (int, optional): How many days in the past "recently" means.
+
+        Returns:
+            players (list): The Players created the last `days` interval.
+
         """
         end_date = timezone.now()
         tdelta = datetime.timedelta(days)
@@ -68,10 +83,15 @@ class PlayerDBManager(TypedObjectManager, UserManager):
     @returns_typeclass_list
     def get_recently_connected_players(self, days=7):
         """
-        Returns a QuerySet containing the player accounts that have been
-        connected within the last <days> days.
+        Get players recently connected to the game.
 
-        days - number of days backwards to check
+        Args:
+            days (int, optional): Number of days backwards to check
+
+        Returns:
+            players (list): The Players connected to the game in the
+                last `days` interval.
+
         """
         end_date = timezone.now()
         tdelta = datetime.timedelta(days)
@@ -82,14 +102,29 @@ class PlayerDBManager(TypedObjectManager, UserManager):
     @returns_typeclass
     def get_player_from_email(self, uemail):
         """
-        Returns a player object when given an email address.
+        Search player by
+        Returns a player object based on email address.
+
+        Args:
+            uemail (str): An email address to search for.
+
+        Returns:
+            player (Player): A found player, if found.
+
         """
         return self.filter(email__iexact=uemail)
 
     @returns_typeclass
     def get_player_from_uid(self, uid):
         """
-        Returns a player object based on User id.
+        Get a player by id.
+
+        Args:
+            uid (int): Player database id.
+
+        Returns:
+            player (Player): The result.
+
         """
         try:
             return self.get(id=uid)
@@ -98,7 +133,16 @@ class PlayerDBManager(TypedObjectManager, UserManager):
 
     @returns_typeclass
     def get_player_from_name(self, uname):
-        "Get player object based on name"
+        """
+        Get player object based on name.
+
+        Args:
+            uname (str): The Player name to search for.
+
+        Returns:
+            player (Player): The found player.
+
+        """
         try:
             return self.get(username__iexact=uname)
         except self.model.DoesNotExist:
@@ -110,8 +154,13 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         Searches for a particular player by name or
         database id.
 
-        ostring - a string or database id.
-        exact - allow for a partial match
+        Args:
+            ostring (str or int): A key string or database id.
+            exact (bool, optional): Only valid for string matches. If
+                `True`, requires exact (non-case-sensitive) match,
+                otherwise also match also keys containing the `ostring`
+                (non-case-sensitive fuzzy match).
+
         """
         dbref = self.dbref(ostring)
         if dbref or dbref == 0:
@@ -124,33 +173,6 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         else:
             return self.filter(username__icontains=ostring)
 
-#    def swap_character(self, player, new_character, delete_old_character=False):
-#        """
-#        This disconnects a player from the current character (if any) and
-#        connects to a new character object.
-#
-#        """
-#
-#        if new_character.player:
-#            # the new character is already linked to a player!
-#            return False
-#
-#        # do the swap
-#        old_character = player.character
-#        if old_character:
-#            old_character.player = None
-#        try:
-#            player.character = new_character
-#            new_character.player = player
-#        except Exception:
-#            # recover old setup
-#            if old_character:
-#                old_character.player = player
-#                player.character = old_character
-#            return False
-#        if old_character and delete_old_character:
-#            old_character.delete()
-#        return True
 
 class PlayerManager(PlayerDBManager, TypeclassManager):
     pass

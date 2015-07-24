@@ -5,10 +5,18 @@ from evennia.typeclasses.models import Attribute, Tag
 
 
 class TagAdmin(admin.ModelAdmin):
+    """
+    A django Admin wrapper for Tags.
+
+    """
     fields = ('db_key', 'db_category', 'db_data')
 
 
 class TagInline(admin.TabularInline):
+    """
+    A handler for inline Tags.
+
+    """
     # Set this to the through model of your desired M2M when subclassing.
     model = None
     raw_id_fields = ('tag',)
@@ -17,7 +25,8 @@ class TagInline(admin.TabularInline):
 
 class AttributeInline(admin.TabularInline):
     """
-    Inline creation of player attributes
+    Inline creation of player attributes.j
+
     """
     # Set this to the through model of your desired M2M when subclassing.
     model = None
@@ -50,7 +59,8 @@ class AttributeInline(admin.TabularInline):
 
 class AttributeAdmin(ModelAdmin):
     """
-    Defines how to display the attributes
+    Defines how to display the attributes.
+
     """
     search_fields = ('db_key', 'db_strvalue', 'db_value')
     list_display = ('db_key', 'db_strvalue', 'db_value')

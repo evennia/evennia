@@ -60,12 +60,13 @@ class ServerSession(Session):
 
     def at_sync(self):
         """
-        This is called whenever a session has been resynced with the portal.
-        At this point all relevant attributes have already been set and
-        self.player been assigned (if applicable).
+        This is called whenever a session has been resynced with the
+        portal.  At this point all relevant attributes have already
+        been set and self.player been assigned (if applicable).
 
-        Since this is often called after a server restart we need to set up
-        the session as it was.
+        Since this is often called after a server restart we need to
+        set up the session as it was.
+
         """
         global _ObjectDB
         if not _ObjectDB:
@@ -94,7 +95,9 @@ class ServerSession(Session):
         """
         Hook called by sessionhandler when the session becomes authenticated.
 
-        player - the player associated with the session
+        Args:
+            player (Player): The player associated with the session.
+
         """
         self.player = player
         self.uid = self.player.id
@@ -115,6 +118,7 @@ class ServerSession(Session):
     def at_disconnect(self):
         """
         Hook called by sessionhandler when disconnecting this session.
+
         """
         if self.logged_in:
             sessid = self.sessid
@@ -136,21 +140,32 @@ class ServerSession(Session):
     def get_player(self):
         """
         Get the player associated with this session
+
+        Returns:
+            player (Player): The associated Player.
+
         """
         return self.logged_in and self.player
 
     def get_puppet(self):
         """
-        Returns the in-game character associated with this session.
-        This returns the typeclass of the object.
+        Get the in-game character associated with this session.
+
+        Returns:
+            puppet (Object): The puppeted object, if any.
+
         """
         return self.logged_in and self.puppet
     get_character = get_puppet
 
     def get_puppet_or_player(self):
         """
-        Returns session if not logged in; puppet if one exists,
-        otherwise return the player.
+        Get puppet or player.
+
+        Returns:
+            controller (Object or Player): The puppet if one exists,
+                otherwise return the player.
+
         """
         if self.logged_in:
             return self.puppet if self.puppet else self.player
@@ -159,6 +174,12 @@ class ServerSession(Session):
     def log(self, message, channel=True):
         """
         Emits session info to the appropriate outputs and info channels.
+
+        Args:
+            message (str): The message to log.
+            channel (bool, optional): Log to the CHANNEL_CONNECTINFO channel
+                in addition to the server log.
+
         """
         if channel:
             try:
@@ -173,7 +194,8 @@ class ServerSession(Session):
         """
         Return eventual eventual width and height reported by the
         client. Note that this currently only deals with a single
-        client window (windowID==0) as in traditional telnet session
+        client window (windowID==0) as in a traditional telnet session.
+
         """
         flags = self.protocol_flags
         width = flags.get('SCREENWIDTH', {}).get(0, settings.CLIENT_DEFAULT_WIDTH)
@@ -182,8 +204,9 @@ class ServerSession(Session):
 
     def update_session_counters(self, idle=False):
         """
-        Hit this when the user enters a command in order to update idle timers
-        and command counters.
+        Hit this when the user enters a command in order to update
+        idle timers and command counters.
+
         """
         # Store the timestamp of the user's last command.
         if not idle:
@@ -194,11 +217,15 @@ class ServerSession(Session):
 
     def data_in(self, text=None, **kwargs):
         """
-        Send User->Evennia. This will in effect
-        execute a command string on the server.
+        Send data User->Evennia. This will in effect execute a command
+        string on the server.
 
-        Note that oob data is already sent to the
+        Note that oob data is already sent separately to the
         oobhandler at this point.
+
+        Kwargs:
+            text (str): A text to relay
+            kwargs (any): Other parameters from the protocol.
 
         """
         #explicitly check for None since text can be an empty string, which is
@@ -227,6 +254,11 @@ class ServerSession(Session):
     def data_out(self, text=None, **kwargs):
         """
         Send Evennia -> User
+
+        Kwargs:
+            text (str): A text to relay
+            kwargs (any): Other parameters to the protocol.
+
         """
         text = text if text else ""
         if _INLINEFUNC_ENABLED and not "raw" in kwargs:
@@ -244,12 +276,14 @@ class ServerSession(Session):
     msg = data_out
 
     def __eq__(self, other):
+        "Handle session comparisons"
         return self.address == other.address
 
     def __str__(self):
         """
         String representation of the user session class. We use
         this a lot in the server logs.
+
         """
         symbol = ""
         if self.logged_in and hasattr(self, "player") and self.player:
@@ -264,15 +298,16 @@ class ServerSession(Session):
         return "%s%s@%s" % (self.uname, symbol, address)
 
     def __unicode__(self):
-        """
-        Unicode representation
-        """
+        "Unicode representation"
         return u"%s" % str(self)
 
     # Dummy API hooks for use during non-loggedin operation
 
     def at_cmdset_get(self, **kwargs):
-        "dummy hook all objects with cmdsets need to have"
+        """
+        A dummy hook all objects with cmdsets need to have
+        """
+
         pass
 
     # Mock db/ndb properties for allowing easy storage on the session
@@ -286,6 +321,7 @@ class ServerSession(Session):
         to this is guaranteed to be cleared when a server is shutdown.
         Syntax is same as for the _get_db_holder() method and
         property, e.g. obj.ndb.attr = value etc.
+
         """
         try:
             return self._ndb_holder
@@ -307,7 +343,13 @@ class ServerSession(Session):
 
     #@ndb.setter
     def ndb_set(self, value):
-        "Stop accidentally replacing the db object"
+        """
+        Stop accidentally replacing the db object
+
+        Args:
+            value (any): A value to store in the ndb.
+
+        """
         string = "Cannot assign directly to ndb object! "
         string = "Use ndb.attr=value instead."
         raise Exception(string)
@@ -322,5 +364,5 @@ class ServerSession(Session):
     # Mock access method for the session (there is no lock info
     # at this stage, so we just present a uniform API)
     def access(self, *args, **kwargs):
-        "Dummy method."
+        "Dummy method to mimic the logged-in API."
         return True

@@ -228,7 +228,7 @@ class CmdSetHelp(MuxCommand):
             if 'merge' in switches:
                 old_entry.entrytext += " " + self.rhs
             else:
-                old_entry.entrytext += "\n\n%s" % self.rhs
+                old_entry.entrytext += "\n%s" % self.rhs
             self.msg("Entry updated:\n%s" % old_entry.entrytext)
             return
         if 'delete' in switches or 'del' in switches:

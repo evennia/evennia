@@ -32,6 +32,9 @@ SERVER_LOG_FILE = os.path.join(LOG_DIR, 'server.log')
 PORTAL_LOG_FILE = os.path.join(LOG_DIR, 'portal.log')
 HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
 
+# Other defaults
+PROTOTYPE_MODULES = ("world.prototypes",)
+
 ######################################################################
 # Evennia Database config
 ######################################################################
@@ -40,7 +43,7 @@ HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
 # ENGINE - path to the the database backend. Possible choices are:
 #            'django.db.backends.sqlite3', (default)
 #            'django.db.backends.mysql',
-#            'django.db.backends.postgresql_psycopg2' (see Issue 241),
+#            'django.db.backends.postgresql_psycopg2',
 #            'django.db.backends.oracle' (untested).
 # NAME - database name, or path to the db file for sqlite3
 # USER - db admin (unused in sqlite3)

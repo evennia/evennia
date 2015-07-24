@@ -285,6 +285,9 @@ class Evennia(object):
         if mode in ('True', 'reload'):
             # True was the old reload flag, kept for compatibilty
             self.at_server_reload_start()
+        elif mode == 'reset':
+            # only run hook, don't purge sessions
+            self.at_server_cold_start()
         elif mode in ('reset', 'shutdown'):
             self.at_server_cold_start()
             # clear eventual lingering session storages
@@ -320,7 +323,8 @@ class Evennia(object):
                'reload' - server restarts, no "persistent" scripts
                           are stopped, at_reload hooks called.
                'reset' - server restarts, non-persistent scripts stopped,
-                         at_shutdown hooks called.
+                         at_shutdown hooks called but sessions will not
+                         be disconnected.
                'shutdown' - like reset, but server will not auto-restart.
                None - keep currently set flag from flag file.
         _reactor_stopping - this is set if server is stopped by a kill
@@ -334,7 +338,6 @@ class Evennia(object):
             defer.returnValue(None)
 
         mode = self.set_restart_mode(mode)
-        # call shutdown hooks on all cached objects
 
         from evennia.objects.models import ObjectDB
         #from evennia.players.models import PlayerDB
@@ -342,38 +345,39 @@ class Evennia(object):
 
         if mode == 'reload':
             # call restart hooks
+            ServerConfig.objects.conf("server_restart_mode", "reload")
             yield [o.at_server_reload() for o in ObjectDB.get_all_cached_instances()]
             yield [p.at_server_reload() for p in PlayerDB.get_all_cached_instances()]
             yield [(s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
             yield self.sessions.all_sessions_portal_sync()
-            ServerConfig.objects.conf("server_restart_mode", "reload")
-
+            self.at_server_reload_stop()
+            # only save OOB state on reload, not on shutdown/reset
             from evennia.server.oobhandler import OOB_HANDLER
             OOB_HANDLER.save()
-            from evennia.scripts.tickerhandler import TICKER_HANDLER
-            TICKER_HANDLER.save()
-
-            self.at_server_reload_stop()
-
         else:
             if mode == 'reset':
-                # don't unset the is_connected flag on reset, otherwise
-                # same as shutdown
+                # like shutdown but don't unset the is_connected flag and don't disconnect sessions
                 yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
                 yield [p.at_server_shutdown() for p in PlayerDB.get_all_cached_instances()]
+                if self.amp_protocol:
+                    yield self.sessions.all_sessions_portal_sync()
             else:  # shutdown
                 yield [_SA(p, "is_connected", False) for p in PlayerDB.get_all_cached_instances()]
                 yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
                 yield [(p.unpuppet_all(), p.at_server_shutdown())
                                        for p in PlayerDB.get_all_cached_instances()]
+                yield ObjectDB.objects.clear_all_sessids()
             yield [(s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
-            yield [s.at_server_shutdown() for s in ScriptDB.get_all_cached_instances()]
-            yield ObjectDB.objects.clear_all_sessids()
             ServerConfig.objects.conf("server_restart_mode", "reset")
-
             self.at_server_cold_stop()
 
+        # tickerhandler state should always be saved.
+        from evennia.scripts.tickerhandler import TICKER_HANDLER
+        TICKER_HANDLER.save()
+
+        # always called, also for a reload
         self.at_server_stop()
+
         # if _reactor_stopping is true, reactor does not need to
         # be stopped again.
         if os.name == 'nt' and os.path.exists(SERVER_PIDFILE):
@@ -383,6 +387,7 @@ class Evennia(object):
             # this will also send a reactor.stop signal, so we set a
             # flag to avoid loops.
             self.shutdown_complete = True
+            # kill the server
             reactor.callLater(0, reactor.stop)
 
     # server start/stop hooks

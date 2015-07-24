@@ -18,13 +18,14 @@ Server - (AMP server) Handles all mud operations. The server holds its own list
 
 # imports needed on both server and portal side
 import os
+from time import time
 from collections import defaultdict
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
 from twisted.protocols import amp
-from twisted.internet import protocol
+from twisted.internet import protocol, task
 from twisted.internet.defer import Deferred
 from evennia.utils.utils import to_str, variable_from_module
 
@@ -40,13 +41,26 @@ SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server session sync
 SCONN = chr(9)        # server creating new connection (for irc/imc2 bots etc)
 PCONNSYNC = chr(10)   # portal post-syncing a session
+AMP_MAXLEN = 65535    # max allowed data length in AMP protocol (cannot be changed)
 
-MAXLEN = 65535  # max allowed data length in AMP protocol
+BATCH_RATE = 500    # max commands/sec before switching to batch-sending
+BATCH_TIMEOUT = 1.0 # how often to poll to empty batch queue, in seconds
+
+# buffers
+_SENDBATCH = defaultdict(list)
 _MSGBUFFER = defaultdict(list)
 
 def get_restart_mode(restart_file):
     """
     Parse the server/portal restart status
+
+    Args:
+        restart_file (str): Path to restart.dat file.
+
+    Returns:
+        restart_mode (bool): If the file indicates the server is in
+            restart mode or not.
+
     """
     if os.path.exists(restart_file):
         flag = open(restart_file, 'r').read()
@@ -61,15 +75,27 @@ class AmpServerFactory(protocol.ServerFactory):
     """
     def __init__(self, server):
         """
-        server: The Evennia server service instance
-        protocol: The protocol the factory creates instances of.
+        Initialize the factory.
+
+        Args:
+            server (Server): The Evennia server service instance.
+            protocol (Protocol): The protocol the factory creates
+                instances of.
+
         """
         self.server = server
         self.protocol = AMPProtocol
 
     def buildProtocol(self, addr):
         """
-        Start a new connection, and store it on the service object
+        Start a new connection, and store it on the service object.
+
+        Args:
+            addr (str): Connection address. Not used.
+
+        Returns:
+            protocol (Protocol): The created protocol.
+
         """
         #print "Evennia Server connected to Portal at %s." % addr
         self.server.amp_protocol = AMPProtocol()
@@ -81,6 +107,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     """
     This factory creates an instance of the Portal, an AMPProtocol
     instances to use to connect
+
     """
     # Initial reconnect delay in seconds.
     initialDelay = 1
@@ -88,12 +115,24 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     maxDelay = 1
 
     def __init__(self, portal):
+        """
+        Initializes the client factory.
+
+        Args:
+            portal (Portal): Portal instance.
+
+        """
         self.portal = portal
         self.protocol = AMPProtocol
 
     def startedConnecting(self, connector):
         """
         Called when starting to try to connect to the MUD server.
+
+        Args:
+            connector (Connector): Twisted Connector instance representing
+                this connection.
+
         """
         pass
         #print 'AMP started to connect:', connector
@@ -101,6 +140,10 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     def buildProtocol(self, addr):
         """
         Creates an AMPProtocol instance when connecting to the server.
+
+        Args:
+            addr (str): Connection address. Not used.
+
         """
         #print "Portal connected to Evennia server at %s." % addr
         self.resetDelay()
@@ -111,6 +154,12 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     def clientConnectionLost(self, connector, reason):
         """
         Called when the AMP connection to the MUD server is lost.
+
+        Args:
+            connector (Connector): Twisted Connector instance representing
+                this connection.
+            reason (str): Eventual text describing why connection was lost.
+
         """
         if hasattr(self, "server_restart_mode"):
             self.maxDelay = 1
@@ -123,6 +172,12 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     def clientConnectionFailed(self, connector, reason):
         """
         Called when an AMP connection attempt to the MUD server fails.
+
+        Args:
+            connector (Connector): Twisted Connector instance representing
+                this connection.
+            reason (str): Eventual text describing why connection failed.
+
         """
         if hasattr(self, "server_restart_mode"):
             self.maxDelay = 1
@@ -136,73 +191,73 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
 
 class MsgPortal2Server(amp.Command):
     """
-    Message portal -> server
+    Message Portal -> Server
+
     """
     key = "MsgPortal2Server"
-    arguments = [('sessid', amp.Integer()),
+    arguments = [('hashid', amp.String()),
+                 ('data', amp.String()),
                  ('ipart', amp.Integer()),
-                 ('nparts', amp.Integer()),
-                 ('msg', amp.String()),
-                 ('data', amp.String())]
+                 ('nparts', amp.Integer())]
     errors = [(Exception, 'EXCEPTION')]
     response = []
 
 
 class MsgServer2Portal(amp.Command):
     """
-    Message server -> portal
+    Message Server -> Portal
+
     """
     key = "MsgServer2Portal"
-    arguments = [('sessid', amp.Integer()),
+    arguments = [('hashid', amp.String()),
+                 ('data', amp.String()),
                  ('ipart', amp.Integer()),
-                 ('nparts', amp.Integer()),
-                 ('msg', amp.String()),
-                 ('data', amp.String())]
+                 ('nparts', amp.Integer())]
     errors = [(Exception, 'EXCEPTION')]
     response = []
 
 
 class ServerAdmin(amp.Command):
     """
-    Portal -> Server
+    Administration Portal -> Server
 
-    Sent when the portal needs to perform admin
-     operations on the server, such as when a new
-     session connects or resyncs
+    Sent when the portal needs to perform admin operations on the
+    server, such as when a new session connects or resyncs
+
     """
     key = "ServerAdmin"
-    arguments = [('sessid', amp.Integer()),
+    arguments = [('hashid', amp.String()),
+                 ('data', amp.String()),
                  ('ipart', amp.Integer()),
-                 ('nparts', amp.Integer()),
-                 ('operation', amp.String()),
-                 ('data', amp.String())]
+                 ('nparts', amp.Integer())]
     errors = [(Exception, 'EXCEPTION')]
     response = []
 
 
 class PortalAdmin(amp.Command):
     """
-    Server -> Portal
+    Administration Server -> Portal
 
-    Sent when the server needs to perform admin
-     operations on the portal.
+    Sent when the server needs to perform admin operations on the
+    portal.
+
     """
     key = "PortalAdmin"
-    arguments = [('sessid', amp.Integer()),
+    arguments = [('hashid', amp.String()),
+                 ('data', amp.String()),
                  ('ipart', amp.Integer()),
-                 ('nparts', amp.Integer()),
-                 ('operation', amp.String()),
-                 ('data', amp.String())]
+                 ('nparts', amp.Integer())]
     errors = [(Exception, 'EXCEPTION')]
     response = []
 
 
 class FunctionCall(amp.Command):
     """
-    Bidirectional
+    Bidirectional Server <-> Portal
 
-    Sent when either process needs to call an
-    arbitrary function in the other.
+    Sent when either process needs to call an arbitrary function in
+    the other. This does not use the batch-send functionality.
+
     """
     key = "FunctionCall"
     arguments = [('module', amp.String()),
@@ -213,13 +268,10 @@ class FunctionCall(amp.Command):
     response = [('result', amp.String())]
 
 
-# Helper functions
+# Helper functions for pickling.
 
 dumps = lambda data: to_str(pickle.dumps(to_str(data), pickle.HIGHEST_PROTOCOL))
 loads = lambda data: pickle.loads(to_str(data))
-
-# multipart message store
-
 
 
 #------------------------------------------------------------
@@ -229,22 +281,38 @@ loads = lambda data: pickle.loads(to_str(data))
 class AMPProtocol(amp.AMP):
     """
     This is the protocol that the MUD server and the proxy server
-    communicate to each other with. AMP is a bi-directional protocol, so
-    both the proxy and the MUD use the same commands and protocol.
+    communicate to each other with. AMP is a bi-directional protocol,
+    so both the proxy and the MUD use the same commands and protocol.
 
-    AMP specifies responder methods here and connect them to amp.Command
-    subclasses that specify the datatypes of the input/output of these methods.
+    AMP specifies responder methods here and connect them to
+    amp.Command subclasses that specify the datatypes of the
+    input/output of these methods.
+
     """
 
     # helper methods
 
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize protocol with some things that need to be in place
+        already before connecting both on portal and server.
+
+        """
+        self.min_batch_step = 1.0 / BATCH_RATE
+        self.lastsend = time()
+        self.task = task.LoopingCall(self.batch_send, None, None)
+        self.task.start(BATCH_TIMEOUT)
+
+
     def connectionMade(self):
         """
-        This is called when a connection is established
-        between server and portal. AMP calls it on both sides,
-        so we need to make sure to only trigger resync from the
-        portal side.
+        This is called when a connection is established between server
+        and portal. AMP calls it on both sides, so we need to make
+        sure to only trigger resync from the portal side.
+
         """
+        # this makes for a factor x10 faster sends!
+        self.transport.setTcpNoDelay(True)
         if hasattr(self.factory, "portal"):
             # only the portal has the 'portal' property, so we know we are
             # on the portal side and can initialize the connection.
@@ -259,152 +327,249 @@ class AMPProtocol(amp.AMP):
     # Error handling
 
     def errback(self, e, info):
-        "error handler, to avoid dropping connections on server tracebacks."
-        f = e.trap(Exception)
+        """
+        Error callback.
+        Handles errors to avoid dropping connections on server tracebacks.
+
+        Args:
+            e (Failure): Deferred error instance.
+            info (str): Error string.
+
+        """
+        e.trap(Exception)
         print "AMP Error for %(info)s: %(e)s" % {'info': info,
                                                  'e': e.getErrorMessage()}
 
-    def safe_send(self, command, sessid, **kwargs):
+    def batch_send(self, command, sessid, **kwargs):
         """
-        This helper method splits the sending of a message into
-        multiple parts with a maxlength of MAXLEN. This is to avoid
-        repetition in two sending commands. when calling this the
-        maximum length has already been exceeded.  The max-length will
-        be checked for all kwargs and these will be used as argument
-        to the command. The command type must have keywords ipart and
-        nparts to track the parts and put them back together on the
-        other side.
+        This will batch data together to send fewer, large batches.
 
-        Returns a deferred or a list of such
+        Args:
+            command (AMP Command): A protocol send command.
+            sessid (int): A unique Session id.
+
+        Kwargs:
+            force_direct (bool): Send direct, without batching data.
+
+        Returns:
+            deferreds (list or None): A list of deferreds firing with
+                as batch parts get sent (or fails).
+
         """
-        to_send = [(key, [string[i:i+MAXLEN] for i in range(0, len(string), MAXLEN)])
-                          for key, string in kwargs.items()]
-        nparts_max = max(len(part[1]) for part in to_send)
-        if nparts_max == 1:
-            # first try to send directly
-            return self.callRemote(command,
-                                   sessid=sessid,
-                                   ipart=0,
-                                   nparts=1,
-                                   **kwargs).addErrback(self.errback, command.key)
+        #print "batch_send 1:", command, sessid
+        global _SENDBATCH
+        if command is None:
+            # called by the automatic cleanup mechanism
+            commands = [cmd for cmd in (MsgPortal2Server, MsgServer2Portal, ServerAdmin, PortalAdmin)
+                        if _SENDBATCH.get(cmd, False)]
+            if not commands:
+                return
         else:
-            # one or more parts were too long for MAXLEN.
-            #print "TooLong triggered!"
-            deferreds = []
-            for ipart in range(nparts_max):
-                part_kwargs = {}
-                for key, str_part in to_send:
-                    try:
-                        part_kwargs[key] = str_part[ipart]
-                    except IndexError:
-                        # means this kwarg needed fewer splits
-                        part_kwargs[key] = ""
-                # send this part
-                #print "amp safe sending:", ipart, nparts_max, str_part
-                deferreds.append(self.callRemote(
-                                 command,
-                                 sessid=sessid,
-                                 ipart=ipart,
-                                 nparts=nparts_max,
-                                 **part_kwargs).addErrback(self.errback, command.key))
-            return deferreds
+            # called to send right away
+            commands = [command]
+            _SENDBATCH[command].append((sessid, kwargs))
 
-    def safe_recv(self, command, sessid, ipart, nparts, **kwargs):
+        force_direct = kwargs.pop("force_direct", False)
+        now = time()
+        #print "batch_send 2:", now, self.lastsend, self.min_batch_step, now-self.lastsend > self.min_batch_step
+
+        if force_direct or now - self.lastsend > self.min_batch_step:
+            for command in commands:
+                batch = dumps(_SENDBATCH[command])
+                _SENDBATCH[command] = []
+                # split in parts small enough to fit in AMP MAXLEN
+                to_send = [batch[i:i+AMP_MAXLEN] for i in range(0, len(batch), AMP_MAXLEN)]
+                nparts = len(to_send)
+                # tag this batch
+                hashid = "%s-%s" % (id(batch), now)
+                if nparts == 1:
+                    deferreds = [self.callRemote(command,
+                                           hashid=hashid,
+                                           data=batch,
+                                           ipart=0,
+                                           nparts=1).addErrback(self.errback, command.key)]
+                else:
+                    deferreds = []
+                    for ipart, part in enumerate(to_send):
+                        deferred = self.callRemote(command,
+                                                   hashid=hashid,
+                                                   data=part,
+                                                   ipart=ipart,
+                                                   nparts=nparts)
+                        deferred.addErrback(self.errback, "%s part %i/%i" % (command.key, ipart, nparts))
+                        deferreds.append(deferred)
+                self.lastsend = time() # don't use now here, keep it as up-to-date as possible
+                return deferreds
+
+
+    def batch_recv(self, hashid, data, ipart, nparts):
         """
-        Safely decode potentially split data coming over the wire. No
-        decoding or parsing is done here, only merging of data split
-        with safe_send().
-        If the data stream is not yet complete, this method will return
-        None, otherwise it will return a dictionary of the (possibly
-        merged) properties.
+        This will receive and unpack data sent as a batch. This both
+        handles too-long data as well as batch-sending very fast-
+        arriving commands.
+
+        Args:
+            hashid (str): Unique hash id representing this batch in
+                the cache buffer.
+            data (str): Data coming over the wire.
+            ipart (int): Index of this part of the batch (ipart/nparts)
+            nparts (int): Total number of parts in this batch.
+
+        Returns:
+            data (str or list): The received data.
+
         """
         global _MSGBUFFER
         if nparts == 1:
-            # the most common case
-            return kwargs
+            # most common case
+            return loads(data)
         else:
-            # part of a multi-part send
-            hashid = "%s_%s" % (command.key, sessid)
-            #print "amp safe receive:", ipart, nparts-1, kwargs
             if ipart < nparts-1:
                 # not yet complete
-                _MSGBUFFER[hashid].append(kwargs)
-                return
+                _MSGBUFFER[hashid].append(data)
+                return []
             else:
-                # all parts in place, put them back together
-                buf = _MSGBUFFER.pop(hashid) + [kwargs]
-                recv_kwargs = dict((key, "".join(kw[key] for kw in buf)) for key in kwargs)
-                return recv_kwargs
+                # all parts in place - deserialize it
+                return loads("".join(_MSGBUFFER.pop(hashid)) + data)
+
 
     # Message definition + helper methods to call/create each message type
 
     # Portal -> Server Msg
 
-    def amp_msg_portal2server(self, sessid, ipart, nparts, msg, data):
+    def amp_msg_portal2server(self, hashid, data, ipart, nparts):
         """
-        Relays message to server. This method is executed on the Server.
+        Relays message to server. This method is executed on the
+        Server.
 
-        Since AMP has a limit of 65355 bytes per message, it's possible the
-        data comes in multiple chunks; if so (nparts>1) we buffer the data
-        and wait for the remaining parts to arrive before continuing.
+        Since AMP has a limit of 65355 bytes per message, it's
+        possible the data comes in multiple chunks; if so (nparts>1)
+        we buffer the data and wait for the remaining parts to arrive
+        before continuing.
+
+        Args:
+            hashid (str): Unique hash identifying this data batch.
+            data (str): Data to send (often a part of a batch)
+            ipart (int): Index of this part of the batch.
+            nparts (int): Total number of batches.
+
         """
-        ret = self.safe_recv(MsgPortal2Server, sessid, ipart, nparts,
-                                                        text=msg, data=data)
-        if ret is not None:
+        batch = self.batch_recv(hashid, data, ipart, nparts)
+        for (sessid, kwargs) in batch:
             #print "msg portal -> server (server side):", sessid, msg, loads(ret["data"])
             self.factory.server.sessions.data_in(sessid,
-                                                 text=ret["text"],
-                                                 **loads(ret["data"]))
+                                             text=kwargs["msg"],
+                                             data=kwargs["data"])
         return {}
     MsgPortal2Server.responder(amp_msg_portal2server)
 
     def call_remote_MsgPortal2Server(self, sessid, msg, data=""):
         """
         Access method called by the Portal and executed on the Portal.
+
+        Args:
+            sessid (int): Unique Session id.
+            msg (str): Message to send over the wire.
+            data (str, optional): Optional data.
+
+        Returns:
+            deferred (Deferred): Asynchronous return.
+
         """
         #print "msg portal->server (portal side):", sessid, msg, data
-        return self.safe_send(MsgPortal2Server, sessid,
-                              msg=msg if msg is not None else "",
-                              data=dumps(data))
+        return self.batch_send(MsgPortal2Server, sessid,
+                               msg=msg if msg is not None else "",
+                               data=data)
 
     # Server -> Portal message
 
-    def amp_msg_server2portal(self, sessid, ipart, nparts, msg, data):
+    def amp_msg_server2portal(self, hashid, data, ipart, nparts):
         """
         Relays message to Portal. This method is executed on the Portal.
+
+        Since AMP has a limit of 65355 bytes per message, it's
+        possible the data comes in multiple chunks; if so (nparts>1)
+        we buffer the data and wait for the remaining parts to arrive
+        before continuing.
+
+        Args:
+            hashid (str): Unique hash identifying this data batch.
+            data (str): Data to send (often a part of a batch)
+            ipart (int): Index of this part of the batch.
+            nparts (int): Total number of batches.
+
         """
-        ret = self.safe_recv(MsgServer2Portal, sessid,
-                             ipart, nparts, text=msg, data=data)
-        if ret is not None:
+        batch = self.batch_recv(hashid, data, ipart, nparts)
+        for (sessid, kwargs) in batch:
             #print "msg server->portal (portal side):", sessid, ret["text"], loads(ret["data"])
             self.factory.portal.sessions.data_out(sessid,
-                                                  text=ret["text"],
-                                                  **loads(ret["data"]))
+                                                  text=kwargs["msg"],
+                                                  data=kwargs["data"])
         return {}
     MsgServer2Portal.responder(amp_msg_server2portal)
 
+    def amp_batch_server2portal(self, hashid, data, ipart, nparts):
+        """
+        Relays batch data to Portal. This method is executed on the Portal.
+
+        Since AMP has a limit of 65355 bytes per message, it's
+        possible the data comes in multiple chunks; if so (nparts>1)
+        we buffer the data and wait for the remaining parts to arrive
+        before continuing.
+
+        Args:
+            hashid (str): Unique hash identifying this data batch.
+            data (str): Data to send (often a part of a batch)
+            ipart (int): Index of this part of the batch.
+            nparts (int): Total number of batches.
+
+        """
+        batch = self.batch_recv(hashid, data, ipart, nparts)
+        if batch is not None:
+            for (sessid, kwargs) in batch:
+                self.factory.portal.sessions.data_out(sessid,
+                                                      text=kwargs["msg"],
+                                                      **kwargs["data"])
+        return {}
+    MsgServer2Portal.responder(amp_batch_server2portal)
+
     def call_remote_MsgServer2Portal(self, sessid, msg, data=""):
         """
-        Access method called by the Server and executed on the Server.
+        Send Message - access method called by the Server and executed on the Server.
+
+        Args:
+            sessid (int): Unique Session id.
+            msg (str): Message to send over the wire.
+            data (str, optional): Extra data.
+
         """
         #print "msg server->portal (server side):", sessid, msg, data
-        return self.safe_send(MsgServer2Portal, sessid,
-                              msg=msg if msg is not None else "",
-                              data=dumps(data))
+        return self.batch_send(MsgServer2Portal, sessid, msg=msg, data=data)
 
     # Server administration from the Portal side
-    def amp_server_admin(self, sessid, ipart, nparts, operation, data):
+    def amp_server_admin(self, hashid, data, ipart, nparts):
         """
         This allows the portal to perform admin
         operations on the server.  This is executed on the Server.
 
-        """
-        ret = self.safe_recv(ServerAdmin, sessid, ipart, nparts,
-                             operation=operation, data=data)
+        Since AMP has a limit of 65355 bytes per message, it's
+        possible the data comes in multiple chunks; if so (nparts>1)
+        we buffer the data and wait for the remaining parts to arrive
+        before continuing.
 
-        if ret is not None:
-            data = loads(ret["data"])
-            operation = ret["operation"]
+        Args:
+            hashid (str): Unique hash identifying this data batch.
+            data (str): Data to send (often a part of a batch)
+            ipart (int): Index of this part of the batch.
+            nparts (int): Total number of batches.
+
+        """
+        #print "serveradmin (server side):", hashid, ipart, nparts
+        batch = self.batch_recv(hashid, data, ipart, nparts)
+
+        for (sessid, kwargs) in batch:
+            operation = kwargs["operation"]
+            data = kwargs["data"]
             server_sessionhandler = self.factory.server.sessions
 
             #print "serveradmin (server side):", sessid, ord(operation), data
@@ -434,24 +599,45 @@ class AMPProtocol(amp.AMP):
 
     def call_remote_ServerAdmin(self, sessid, operation="", data=""):
         """
-        Access method called by the Portal and Executed on the Portal.
+        Administrative access method called by the Portal and Executed
+        on the Portal.
+
+        Args:
+            sessid (int): Session id.
+            operation (char, optional): Identifier for the server operation, as defined by the
+                global variables in `evennia/server/amp.py`.
+            data (str, optional): Data going into the adminstrative operation.
+
         """
         #print "serveradmin (portal side):", sessid, ord(operation), data
-        data = dumps(data)
-        return self.safe_send(ServerAdmin, sessid, operation=operation, data=data)
+        if hasattr(self.factory, "server_restart_mode"):
+            return self.batch_send(ServerAdmin, sessid, force_direct=True, operation=operation, data=data)
+        return self.batch_send(ServerAdmin, sessid, operation=operation, data=data)
 
     # Portal administraton from the Server side
 
-    def amp_portal_admin(self, sessid, ipart, nparts, operation, data):
+    def amp_portal_admin(self, hashid, data, ipart, nparts):
         """
         This allows the server to perform admin
         operations on the portal. This is executed on the Portal.
+
+        Since AMP has a limit of 65355 bytes per message, it's
+        possible the data comes in multiple chunks; if so (nparts>1)
+        we buffer the data and wait for the remaining parts to arrive
+        before continuing.
+
+        Args:
+            hashid (str): Unique hash identifying this data batch.
+            data (str): Data to send (often a part of a batch)
+            ipart (int): Index of this part of the batch.
+            nparts (int): Total number of batches.
+
         """
         #print "portaladmin (portal side):", sessid, ord(operation), data
-        ret = self.safe_recv(PortalAdmin, sessid, ipart, nparts,
-                             operation=operation, data=data)
-        if ret is not None:
-            data = loads(data)
+        batch = self.batch_recv(hashid, data, ipart, nparts)
+        for (sessid, kwargs) in batch:
+            operation = kwargs["operation"]
+            data = kwargs["data"]
             portal_sessionhandler = self.factory.portal.sessions
 
             if operation == SLOGIN:  # server_session_login
@@ -487,16 +673,38 @@ class AMPProtocol(amp.AMP):
 
     def call_remote_PortalAdmin(self, sessid, operation="", data=""):
         """
-        Access method called by the server side.
+        Administrative access method called by the Server side and executed
+        onthe Portal.
+
+        Args:
+            sessid (int): Session id.
+            operation (char, optional): Identifier for the server
+                operation, as defined by the global variables in
+                `evennia/server/amp.py`.
+            data (str, optional): Data going into the adminstrative
+                operation.
+
         """
-        self.safe_send(PortalAdmin, sessid, operation=operation, data=dumps(data))
+        if operation == SSYNC:
+            return self.batch_send(PortalAdmin, sessid, force_direct=True, operation=operation, data=data)
+        return self.batch_send(PortalAdmin, sessid, operation=operation, data=data)
 
     # Extra functions
 
     def amp_function_call(self, module, function, args, **kwargs):
         """
-        This allows Portal- and Server-process to call an arbitrary function
-        in the other process. It is intended for use by plugin modules.
+        This allows Portal- and Server-process to call an arbitrary
+        function in the other process. It is intended for use by
+        plugin modules.
+
+        Args:
+            module (str or module): The module containing the
+                `function` to call.
+            function (str): The name of the function to call in
+                `module`.
+            args, kwargs (any): These will be used as args/kwargs to
+                `function`.
+
         """
         args = loads(args)
         kwargs = loads(kwargs)
@@ -527,6 +735,7 @@ class AMPProtocol(amp.AMP):
         Returns:
             A deferred that fires with the return value of the remote
             function call
+
         """
         return self.callRemote(FunctionCall,
                                module=modulepath,

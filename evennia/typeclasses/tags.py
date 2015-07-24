@@ -1,11 +1,12 @@
 """
-Tags are entities that are attached to objects like Attributes but
-which are unique to an individual object - any number of objects
-can have the same Tag attached to them.
+Tags are entities that are attached to objects in the same way as
+Attributes. But contrary to Attributes, which are unique to an
+individual object, a single Tag can be attached to any number of
+objects at the same time.
 
-Tags are used for tagging, obviously, but the data structure
-is also used for storing Aliases and Permissions. This module
-contains the respective handlers.
+Tags are used for tagging, obviously, but the data structure is also
+used for storing Aliases and Permissions. This module contains the
+respective handlers.
 
 """
 
@@ -24,24 +25,26 @@ _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 
 class Tag(models.Model):
     """
-    Tags are quick markers for objects in-game. An typeobject
-    can have any number of tags, stored via its db_tags property.
-    Tagging similar objects will make it easier to quickly locate the
-    group later (such as when implementing zones). The main advantage
-    of tagging as opposed to using Attributes is speed; a tag is very
+    Tags are quick markers for objects in-game. An typeobject can have
+    any number of tags, stored via its db_tags property.  Tagging
+    similar objects will make it easier to quickly locate the group
+    later (such as when implementing zones). The main advantage of
+    tagging as opposed to using Attributes is speed; a tag is very
     limited in what data it can hold, and the tag key+category is
-    indexed for efficient lookup in the database. Tags are shared between
-    objects - a new tag is only created if the key+category combination
-    did not previously exist, making them unsuitable for storing
-    object-related data (for this a full Attribute
-    should be used).
-    The 'db_data' field is intended as a documentation
-    field for the tag itself, such as to document what this tag+category
-    stands for and display that in a web interface or similar.
+    indexed for efficient lookup in the database. Tags are shared
+    between objects - a new tag is only created if the key+category
+    combination did not previously exist, making them unsuitable for
+    storing object-related data (for this a full Attribute should be
+    used).
+
+    The 'db_data' field is intended as a documentation field for the
+    tag itself, such as to document what this tag+category stands for
+    and display that in a web interface or similar.
 
     The main default use for Tags is to implement Aliases for objects.
     this uses the 'aliases' tag category, which is also checked by the
     default search functions of Evennia to allow quick searches by alias.
+
     """
     db_key = models.CharField('key', max_length=255, null=True,
                               help_text="tag identifier", db_index=True)
@@ -74,15 +77,20 @@ class Tag(models.Model):
 class TagHandler(object):
     """
     Generic tag-handler. Accessed via TypedObject.tags.
+
     """
     _m2m_fieldname = "db_tags"
     _tagtype = None
 
     def __init__(self, obj):
         """
-        Tags are stored internally in the TypedObject.db_tags m2m field
-        with an tag.db_model based on the obj the taghandler is stored on
-        and with a tagtype given by self.handlertype
+        Tags are stored internally in the TypedObject.db_tags m2m
+        field with an tag.db_model based on the obj the taghandler is
+        stored on and with a tagtype given by self.handlertype
+
+        Args:
+            obj (object): The object on which the handler is set.
+
         """
         self.obj = obj
         self._objid = obj.id
@@ -90,7 +98,10 @@ class TagHandler(object):
         self._cache = None
 
     def _recache(self):
-        "Cache all tags of this object"
+        """
+        Cache all tags of this object.
+
+        """
         query = {"%s__id" % self._model : self._objid,
                  "tag__db_tagtype" : self._tagtype}
         tagobjs = [conn.tag for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
@@ -99,7 +110,23 @@ class TagHandler(object):
                             tagobj) for tagobj in tagobjs)
 
     def add(self, tag=None, category=None, data=None):
-        "Add a new tag to the handler. Tag is a string or a list of strings."
+        """
+        Add a new tag to the handler.
+
+        Args:
+            tag (str or list): The name of the tag to add. If a list,
+                add several Tags.
+            category (str, optional): Category of Tag. `None` is the default category.
+            data (str, optional): Info text about the tag(s) added.
+                This can not be used to store object-unique info but only
+                eventual info about the text itself.
+
+        Notes:
+            If the tag + category combination matches an already
+            existing Tag object, this will be re-used and no new Tag
+            will be created.
+
+        """
         if not tag:
             return
         for tagstr in make_iter(tag):
@@ -121,9 +148,21 @@ class TagHandler(object):
 
     def get(self, key, category=None, return_tagobj=False):
         """
-        Get the tag for the given key or list of tags. If
-        return_data=True, return the matching Tag objects instead.
-        Returns a single tag if a unique match, otherwise a list
+        Get the tag for the given key or list of tags.
+
+        Args:
+            key (str or list): The tag or tags to retrieve.
+            category (str, optional): The Tag category to limit the
+                request to. Note that `None` is the valid, default
+                category.
+            return_tagobj (bool, optional): Return the Tag object itself
+                instead of a string representation of the Tag.
+
+        Returns:
+            tags (str, TagObject or list): The matches, either string
+                representations of the tags or the Tag objects themselves
+                depending on `return_tagobj`.
+
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
@@ -135,7 +174,16 @@ class TagHandler(object):
         return ret[0] if len(ret) == 1 else ret
 
     def remove(self, key, category=None):
-        "Remove a tag from the handler based ond key and category."
+        """
+        Remove a tag from the handler based ond key and category.
+
+        Args:
+            key (str or list): The tag or tags to retrieve.
+            category (str, optional): The Tag category to limit the
+                request to. Note that `None` is the valid, default
+                category.
+
+        """
         for key in make_iter(key):
             if not (key or key.strip()):  # we don't allow empty tags
                 continue
@@ -151,8 +199,13 @@ class TagHandler(object):
 
     def clear(self, category=None):
         """
-        Remove all tags from the handle. Optionally, only remove those within
-        a certain category.
+        Remove all tags from the handler.
+
+        Args:
+            category (str, optional): The Tag category to limit the
+                request to. Note that `None` is the valid, default
+                category.
+
         """
         if not category:
             getattr(self.obj, self._m2m_fieldname).clear()
@@ -163,8 +216,19 @@ class TagHandler(object):
     def all(self, category=None, return_key_and_category=False):
         """
         Get all tags in this handler.
-        If category is given, return only Tags with this category.  If
-        return_keys_and_categories is set, return a list of tuples [(key, category), ...]
+
+        Args:
+            category (str, optional): The Tag category to limit the
+                request to. Note that `None` is the valid, default
+                category.
+            return_key_and_category (bool, optional): Return a list of
+                tuples `[(key, category), ...]`.
+
+        Returns:
+            tags (list): A list of tag keys `[tagkey, tagkey, ...]` or
+                a list of tuples `[(key, category), ...]` if
+                `return_key_and_category` is set.
+
         """
         if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
             self._recache()
@@ -191,9 +255,17 @@ class TagHandler(object):
 
 
 class AliasHandler(TagHandler):
+    """
+    A handler for the Alias Tag type.
+
+    """
     _tagtype = "alias"
 
 
 class PermissionHandler(TagHandler):
+    """
+    A handler for the Permission Tag type.
+
+    """
     _tagtype = "permission"
 

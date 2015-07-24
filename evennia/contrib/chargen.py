@@ -2,9 +2,9 @@
 
 Contribution - Griatch 2011
 
-[Note - with the advent of MULTISESSION_MODE=2, this is not really
-as necessary anymore - the ooclook and @charcreate commands in that
-mode replaces this module with better functionality.]
+[Note - with the advent of MULTISESSION_MODE=2, this is not really as
+necessary anymore - the ooclook and @charcreate commands in that mode
+replaces this module with better functionality.]
 
 This is a simple character creation commandset. A suggestion is to
 test this together with menu_login, which doesn't create a Character
@@ -18,11 +18,11 @@ while puppeting a Character already before.
 
 Installation:
 
-Read the instructions in contrib/examples/cmdset.py in
-order to create a new default cmdset module for Evennia to use (copy
-the template up one level, and change the settings file's relevant
-variables to point to the cmdsets inside). If you already have such
-a module you should of course use that.
+Read the instructions in contrib/examples/cmdset.py in order to create
+a new default cmdset module for Evennia to use (copy the template up
+one level, and change the settings file's relevant variables to point
+to the cmdsets inside). If you already have such a module you should
+of course use that.
 
 Next import this module in your custom cmdset module and add the
 following line to the end of OOCCmdSet's at_cmdset_creation():

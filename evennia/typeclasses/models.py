@@ -91,26 +91,12 @@ class TypeclassBase(SharedMemoryModelBase):
         # storage of stats
         attrs["typename"] = name
         attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
-        #defaultpath = attrs["__defaultclasspath__"]
-        #attrs["__defaultclass__"] = class_from_module(attrs["__defaultclasspath__"])
-        #try:
-        #    defaultpath = attrs["__defaultclasspath__"]
-        #    attrs["__defaultclass__"] = class_from_module(attrs["__defaultclasspath__"])
-        #except Exception:
-        #    log_trace("Typeclass error for %s: Default typeclass '%s' could not load. "
-        #              "Falling back to library base." % (name, defaultpath))
-        #    try:
-        #        # two levels down from TypedObject will always be the default base class.
-        #        attrs["__defaultclass__"] = cls.__mro__[cls.__mro__.index(TypedObject)-2]
-        #    except Exception:
-        #        log_trace("Critical error for %s: Neither typeclass, "
-        #                  "default fallback nor base class could load." % name)
-        #        attrs["__defaultclass__"] = cls
 
         # typeclass proxy setup
         if not "Meta" in attrs:
             class Meta:
                 proxy = True
+                app_label = attrs.get("__applabel__", "typeclasses")
             attrs["Meta"] = Meta
         attrs["Meta"].proxy = True
 
@@ -138,7 +124,7 @@ class DbHolder(object):
             attr = _GA(self, _GA(self, 'name')).get("all")
             if attr:
                 return attr
-            return self.all
+            return _GA(self, "all")
         return _GA(self, _GA(self, 'name')).get(attrname)
 
     def __setattr__(self, attrname, value):
@@ -385,10 +371,16 @@ class TypedObject(SharedMemoryModel):
         loaded) typeclass - can be a class object or the python path
         to such an object to match against.
 
-        typeclass - a class or the full python path to the class
-        exact - returns true only
-                if the object's type is exactly this typeclass, ignoring
-                parents.
+        Args:
+            typeclass (str or class): A class or the full python path
+                to the class to check.
+            exact (bool, optional): Returns true only if the object's
+                type is exactly this typeclass, ignoring parents.
+
+        Returns:
+            is_typeclass (bool): If this typeclass matches the given
+                typeclass.
+
         """
         if isinstance(typeclass, basestring):
             typeclass = [typeclass] + ["%s.%s" % (prefix, typeclass) for prefix in settings.TYPECLASS_PATHS]
@@ -419,24 +411,24 @@ class TypedObject(SharedMemoryModel):
         to create a new object and just swap the player over to
         that one instead.
 
-        Arguments:
-        new_typeclass (path/classobj) - type to switch to
-        clean_attributes (bool/list) - will delete all attributes
-                           stored on this object (but not any
-                           of the database fields such as name or
-                           location). You can't get attributes back,
-                           but this is often the safest bet to make
-                           sure nothing in the new typeclass clashes
-                           with the old one. If you supply a list,
-                           only those named attributes will be cleared.
-        run_start_hooks - trigger the start hooks of the object, as if
-                          it was created for the first time.
-        no_default - if this is active, the swapper will not allow for
-                     swapping to a default typeclass in case the given
-                     one fails for some reason. Instead the old one
-                     will be preserved.
+        Args:
+            new_typeclass (str or classobj): Type to switch to.
+            clean_attributes (bool or list, optional): Will delete all
+                attributes stored on this object (but not any of the
+                database fields such as name or location). You can't get
+                attributes back, but this is often the safest bet to make
+                sure nothing in the new typeclass clashes with the old
+                one. If you supply a list, only those named attributes
+                will be cleared.
+            run_start_hooks (bool, optional): Trigger the start hooks
+                of the object, as if it was created for the first time.
+            no_default (bool, optiona): If set, the swapper will not
+                allow for swapping to a default typeclass in case the
+                given one fails for some reason. Instead the old one will
+                be preserved.
         Returns:
-          boolean True/False depending on if the swap worked or not.
+            result (bool): True/False depending on if the swap worked
+                or not.
 
         """
 
@@ -477,21 +469,38 @@ class TypedObject(SharedMemoryModel):
     # Lock / permission methods
     #
 
-    def access(self, accessing_obj, access_type='read', default=False, **kwargs):
+    def access(self, accessing_obj, access_type='read', default=False, no_superuser_bypass=False, **kwargs):
         """
-        Determines if another object has permission to access.
-        accessing_obj - object trying to access this one
-        access_type - type of access sought
-        default - what to return if no lock of access_type was found
-        **kwargs - this is ignored, but is there to make the api consistent with the
-                   object-typeclass method access, which use it to feed to its hook methods.
+        Determines if another object has permission to access this one.
+
+        Args:
+            accessing_obj (str): Object trying to access this one.
+            access_type (str, optional): Type of access sought.
+            default (bool, optional): What to return if no lock of
+                access_type was found
+            no_superuser_bypass (bool, optional): Turn off the
+                superuser lock bypass (be careful with this one).
+
+        Kwargs:
+            kwargs (any): Ignored, but is there to make the api
+                consistent with the object-typeclass method access, which
+                use it to feed to its hook methods.
+
         """
-        return self.locks.check(accessing_obj, access_type=access_type, default=default)
+        return self.locks.check(accessing_obj, access_type=access_type, default=default,
+                                no_superuser_bypass=no_superuser_bypass)
 
     def check_permstring(self, permstring):
         """
-        This explicitly checks if we hold particular permission without
-        involving any locks. It does -not- trigger the at_access hook.
+        This explicitly checks if we hold particular permission
+        without involving any locks.
+
+        Args:
+            permstring (str): The permission string to check against.
+
+        Returns:
+            result (bool): If the permstring is passed or not.
+
         """
         if hasattr(self, "player"):
             if self.player and self.player.is_superuser:
@@ -519,11 +528,16 @@ class TypedObject(SharedMemoryModel):
     #
 
     def _deleted(self, *args, **kwargs):
-        "Scrambling method for already deleted objects"
+        """
+        Scrambling method for already deleted objects
+        """
         raise ObjectDoesNotExist("This object was already deleted!")
 
     def delete(self):
-        "Cleaning up handlers on the typeclass level"
+        """
+        Cleaning up handlers on the typeclass level
+
+        """
         global TICKER_HANDLER
         if not TICKER_HANDLER:
             from evennia.scripts.tickerhandler import TICKER_HANDLER
@@ -542,13 +556,13 @@ class TypedObject(SharedMemoryModel):
     # Memory management
     #
 
-    def flush_from_cache(self):
-        """
-        Flush this object instance from cache, forcing an object reload.
-        Note that this will kill all temporary attributes on this object
-         since it will be recreated as a new Typeclass instance.
-        """
-        self.__class__.flush_cached_instance(self)
+    #def flush_from_cache(self):
+    #    """
+    #    Flush this object instance from cache, forcing an object reload.
+    #    Note that this will kill all temporary attributes on this object
+    #     since it will be recreated as a new Typeclass instance.
+    #    """
+    #    self.__class__.flush_cached_instance(self)
 
     #
     # Attribute storage
@@ -617,3 +631,51 @@ class TypedObject(SharedMemoryModel):
         raise Exception("Cannot delete the ndb object!")
     ndb = property(__ndb_get, __ndb_set, __ndb_del)
 
+    def get_display_name(self, looker, **kwargs):
+        """
+        Displays the name of the object in a viewer-aware manner.
+
+        Args:
+            looker (TypedObject): The object or player that is looking
+                at/getting inforamtion for this object.
+
+        Returns:
+            name (str): A string containing the name of the object,
+                including the DBREF if this user is privileged to control
+                said object.
+
+        Notes:
+            This function could be extended to change how object names
+            appear to users in character, but be wary. This function
+            does not change an object's keys or aliases when
+            searching, and is expected to produce something useful for
+            builders.
+
+        """
+        if self.access(looker, access_type='controls'):
+            return "{}(#{})".format(self.name, self.id)
+        return self.name
+
+    def get_extra_info(self, looker, **kwargs):
+        """
+        Used when an object is in a list of ambiguous objects as an
+        additional information tag.
+
+        For instance, if you had potions which could have varying
+        levels of liquid left in them, you might want to display how
+        many drinks are left in each when selecting which to drop, but
+        not in your normal inventory listing.
+
+        Args:
+            looker (TypedObject): The object or player that is looking
+                at/getting information for this object.
+
+        Returns:
+            info (str): A string with disambiguating information,
+                conventionally with a leading space.
+
+        """
+
+        if self.location == looker:
+            return " (carried)"
+        return ""

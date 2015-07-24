@@ -6,22 +6,31 @@ from django.db import models
 
 class ServerConfigManager(models.Manager):
     """
-    This ServerConfigManager implements methods for searching
-    and manipulating ServerConfigs directly from the database.
+    This ServerConfigManager implements methods for searching and
+    manipulating ServerConfigs directly from the database.
 
-    These methods will all return database objects
-    (or QuerySets) directly.
+    These methods will all return database objects (or QuerySets)
+    directly.
 
-    ServerConfigs are used to store certain persistent settings for the
-    server at run-time.
-
-    Evennia-specific:
-    conf
+    ServerConfigs are used to store certain persistent settings for
+    the server at run-time.
 
     """
     def conf(self, key=None, value=None, delete=False, default=None):
         """
-        Access and manipulate config values
+        Add, retrieve and manipulate config values.
+
+        Args:
+            key (str, optional): Name of config.
+            value (str, optional): Data to store in this config value.
+            delete (bool, optional): If `True`, delete config with `key`.
+            default (str, optional): Use when retrieving a config value
+                by a key that does not exist.
+        Returns:
+            all (list): If `key` was not given - all stored config values.
+            value (str): If `key` was given, this is the stored value, or
+                `default` if no matching `key` was found.
+
         """
         if not key:
             return self.all()
@@ -43,8 +52,13 @@ class ServerConfigManager(models.Manager):
 
     def get_mysql_db_version(self):
         """
-        This is a helper method for getting the version string
-        of a mysql database.
+        This is a helper method for specifically getting the version
+        string of a MySQL database.
+
+        Returns:
+            mysql_version (str): The currently used mysql database
+                version.
+
         """
         from django.db import connection
         conn = connection.cursor()

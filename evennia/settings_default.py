@@ -71,8 +71,8 @@ WEBSOCKET_CLIENT_ENABLED = True
 WEBSOCKET_CLIENT_PORT = 8001
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSOCKET_CLIENT_INTERFACE = '0.0.0.0'
-# Actual URL for webclient component to reach the websocket. The first
-# port number in the WEBSOCKET_PORTS list will be automatically appended.
+# Actual URL for webclient component to reach the websocket.
+# The WEBSOCKET_CLIENT_PORT will be automatically appended to this URL.
 WEBSOCKET_CLIENT_URL = "ws://localhost"
 # Activate SSH protocol communication (SecureShell)
 SSH_ENABLED = False
@@ -179,6 +179,19 @@ AMP_INTERFACE = '127.0.0.1'
 # be necessary (use @server to see how many objects are in the idmapper
 # cache at any time). Setting this to None disables the cache cap.
 IDMAPPER_CACHE_MAXSIZE = 200      # (MB)
+# This determines how many connections per second the Portal should
+# accept, as a DoS countermeasure. If the rate exceeds this number, incoming
+# connections will be queued to this rate, so none will be lost.
+# Must be set to a value > 0.
+MAX_CONNECTION_RATE = 5
+# Determine how many commands per second a given Session is allowed
+# to send to the Portal via a connected protocol. Too high rate will
+# drop the command and echo a warning. Note that this will also cap
+# OOB messages so don't set it too low if you expect a lot of events
+# from the client! To turn the limiter off, set to <= 0.
+MAX_COMMAND_RATE = 80
+# The warning to echo back to users if they send commands too fast
+COMMAND_RATE_WARNING ="You entered commands too fast. Wait a moment and try again."
 
 ######################################################################
 # Evennia Database config
@@ -188,7 +201,7 @@ IDMAPPER_CACHE_MAXSIZE = 200      # (MB)
 # ENGINE - path to the the database backend. Possible choices are:
 #            'django.db.backends.sqlite3', (default)
 #            'django.db.backends.mysql',
-#            'django.db.backends.'postgresql_psycopg2' (see Issue 241),
+#            'django.db.backends.'postgresql_psycopg2',
 #            'django.db.backends.oracle' (untested).
 # NAME - database name, or path to the db file for sqlite3
 # USER - db admin (unused in sqlite3)
@@ -227,6 +240,9 @@ SEARCH_AT_RESULT = "evennia.commands.cmdparser.at_search_result"
 # object matches (so you can separate between same-named
 # objects without using dbrefs).
 SEARCH_AT_MULTIMATCH_INPUT = "evennia.commands.cmdparser.at_multimatch_input"
+# The parser used in order to separate multiple
+# command matches (so you can separate between same-named commands)
+SEARCH_AT_MULTIMATCH_CMD = "evennia.commands.cmdparser.at_multimatch_cmd"
 # The module holding text strings for the connection screen.
 # This module should contain one or more variables
 # with strings defining the look of the screen.
@@ -235,7 +251,7 @@ CONNECTION_SCREEN_MODULE = "server.conf.connection_screens"
 # named at_initial_setup(). This hook method can be used to customize
 # the server's initial setup sequence (the very first startup of the system).
 # The check will fail quietly if module doesn't exist or fails to load.
-AT_INITIAL_SETUP_HOOK_MODULE = "server.conf.at_initial_setup_hook"
+AT_INITIAL_SETUP_HOOK_MODULE = "server.conf.at_initial_setup"
 # Module containing your custom at_server_start(), at_server_reload() and
 # at_server_stop() methods. These methods will be called every time
 # the server starts, reloads and resets/stops respectively.
@@ -282,12 +298,7 @@ CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
 # Command set for players without a character (ooc)
 CMDSET_PLAYER = "commands.default_cmdsets.PlayerCmdSet"
 # Location to search for cmdsets if full path not given
-CMDSET_PATHS = ["commands"]
-
-# Line editor path. Points to a line editor class that commands may use to give
-# users extended editing control. See the default path for a reference implementation
-# and usage.
-LINE_EDITOR = 'evennia.commands.default.lineeditor.LineEditor'
+CMDSET_PATHS = ["commands", "evennia", "contribs"]
 
 ######################################################################
 # Typeclasses and other paths
@@ -300,7 +311,7 @@ SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
 # immediately entered path fail to find a typeclass. It allows for
 # shorter input strings. They must either base off the game directory
 # or start from the evennia library.
-TYPECLASS_PATHS = ["typeclasses", "evennia.contrib", "evennia.contrib.tutorial_examples"]
+TYPECLASS_PATHS = ["typeclasses", "evennia", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 
 # Typeclass for player objects (linked to a character) (fallback)
 BASE_PLAYER_TYPECLASS = "typeclasses.players.Player"

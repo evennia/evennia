@@ -1,8 +1,9 @@
 """
 The default command parser. Use your own by assigning
-settings.COMMAND_PARSER to a Python path to a module containing the
-replacing cmdparser function. The replacement parser must matches
-on the sme form as the default cmdparser.
+`settings.COMMAND_PARSER` to a Python path to a module containing the
+replacing cmdparser function. The replacement parser must accept the
+same inputs as the default one.
+
 """
 
 from django.utils.translation import ugettext as _
@@ -13,32 +14,50 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
     This function is called by the cmdhandler once it has
     gathered and merged all valid cmdsets valid for this particular parsing.
 
-    raw_string - the unparsed text entered by the caller.
-    cmdset - the merged, currently valid cmdset
-    caller - the caller triggering this parsing
-    match_index - an optional integer index to pick a given match in a
-                  list of same-named command matches.
+    Args:
+        raw_string (str): The unparsed text entered by the caller.
+        cmdset (CmdSet): The merged, currently valid cmdset
+        caller (Session, Player or Object): The caller triggering this parsing.
+        match_index (int, optional): Index to pick a given match in a
+            list of same-named command matches. If this is given, it suggests
+            this is not the first time this function was called: normally
+            the first run resulted in a multimatch, and the index is given
+            to select between the results for the second run.
 
-    The cmdparser understand the following command combinations (where
-    [] marks optional parts.
+    Notes:
+        The cmdparser understand the following command combinations (where
+        [] marks optional parts.
 
-    [cmdname[ cmdname2 cmdname3 ...] [the rest]
+        ```
+        [cmdname[ cmdname2 cmdname3 ...] [the rest]
+        ```
 
-    A command may consist of any number of space-separated words of any
-    length, and contain any character. It may also be empty.
+        A command may consist of any number of space-separated words of any
+        length, and contain any character. It may also be empty.
 
-    The parser makes use of the cmdset to find command candidates. The
-    parser return a list of matches. Each match is a tuple with its
-    first three elements being the parsed cmdname (lower case),
-    the remaining arguments, and the matched cmdobject from the cmdset.
+        The parser makes use of the cmdset to find command candidates. The
+        parser return a list of matches. Each match is a tuple with its
+        first three elements being the parsed cmdname (lower case),
+        the remaining arguments, and the matched cmdobject from the cmdset.
+
     """
 
     def create_match(cmdname, string, cmdobj):
         """
-        Evaluates the quality of a match by counting how many chars of cmdname
-        matches string (counting from beginning of string). We also calculate
-        a ratio from 0-1 describing how much cmdname matches string.
-        We return a tuple (cmdname, count, ratio, args, cmdobj).
+        Builds a command match by splitting the incoming string and
+        evaluating the quality of the match.
+
+        Args:
+            cmdname (str): Name of command to check for.
+            string (str): The string to match against.
+            cmdobj (str): The full Command instance.
+
+        Returns:
+            match (tuple): This is on the form (cmdname, args, cmdobj, cmdlen, mratio), where
+                `cmdname` is the command's name and `args` the rest of the incoming string,
+                without said command name. `cmdobj` is the Command instance, the cmdlen is
+                the same as len(cmdname) and mratio is a measure of how big a part of the
+                full input string the cmdname takes up - an exact match would be 1.0.
 
         """
         cmdlen, strlen = len(cmdname), len(string)
@@ -47,7 +66,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         return (cmdname, args, cmdobj, cmdlen, mratio)
 
     if not raw_string:
-        return None
+        return []
 
     matches = []
 
@@ -118,6 +137,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
 #
 # SEARCH_AT_RESULT
 # SEARCH_AT_MULTIMATCH_INPUT
+# SEARCH_AT_MULTIMATCH_CMD
 #
 # The the replacing functions must have the same inputs and outputs as
 # those in this module.
@@ -126,27 +146,31 @@ def at_search_result(msg_obj, ostring, results, global_search=False,
                      nofound_string=None, multimatch_string=None, quiet=False):
     """
     Called by search methods after a result of any type has been found.
+    Takes a search result (a list) and formats eventual errors.
 
-    Takes a search result (a list) and
-    formats eventual errors.
-
-    msg_obj - object to receive feedback.
-    ostring - original search string
-    results - list of found matches (0, 1 or more)
-    global_search - if this was a global_search or not
-            (if it is, there might be an idea of supplying
-            dbrefs instead of only numbers)
-    nofound_string - optional custom string for not-found error message.
-    multimatch_string - optional custom string for multimatch error header
-    quiet - work normally, but don't echo to caller, just return the
+    Args:
+        msg_obj (Object): Object to receive feedback.
+        ostring (str): Original search string
+        results (list): List of found matches (0, 1 or more)
+        global_search (bool, optional): I this was a global_search or not (if it
+            is, there might be an idea of supplying dbrefs instead of only
+            numbers)
+        nofound_string (str, optional): Custom string for not-found error message.
+        multimatch_string (str, optional): Custom string for multimatch error header
+        quiet (bool, optional): Work normally, but don't echo to caller, just return the
             results.
 
-    Multiple matches are returned to the searching object
-    as
-     1-object
-     2-object
-     3-object
-       etc
+    Returns:
+        result (Object or None): The filtered object. If None, it suggests a
+            nofound/multimatch error and the error message was sent directly to `msg_obj`. If
+            the `multimatch_strin` was not given, the multimatch error will be returned as
+
+                ```
+                 1-object
+                 2-object
+                 3-object
+                   etc
+                ```
 
     """
     string = ""
@@ -163,9 +187,6 @@ def at_search_result(msg_obj, ostring, results, global_search=False,
         # we have more than one match. We will display a
         # list of the form 1-objname, 2-objname etc.
 
-        # check if the msg_object may se dbrefs
-        show_dbref = global_search
-
         if multimatch_string:
             # custom header
             string = multimatch_string
@@ -175,14 +196,7 @@ def at_search_result(msg_obj, ostring, results, global_search=False,
             string = _(string)
 
         for num, result in enumerate(results):
-            invtext = ""
-            dbreftext = ""
-            if hasattr(result, _("location")) and result.location == msg_obj:
-                invtext = _(" (carried)")
-            if show_dbref:
-                dbreftext = "(#%i)" % result.dbid
-            string += "\n %i-%s%s%s" % (num + 1, result.name,
-                                        dbreftext, invtext)
+            string += "\n %i-%s%s" % (num + 1, result.name, result.get_extra_info(msg_obj))
         results = None
     else:
         # we have exactly one match.
@@ -202,33 +216,36 @@ def at_multimatch_input(ostring):
     if the user wants to differentiate between multiple matches
     (usually found during a previous search).
 
-    This method should separate out any identifiers from the search
-    string used to differentiate between same-named objects. The
-    result should be a tuple (index, search_string) where the index
-    gives which match among multiple matches should be used (1 being
-    the lowest number, rather than 0 as in Python).
+    Args:
+        ostring (str): The search criterion. The parser will specifically
+            understand input on a form like `2-object` to separate
+            multimatches from each other.
 
-    This parser version will identify search strings on the following
-    forms
+    Returns:
+        selection (tuple):  This  is on the form (index, ostring).
 
-      2-object
+    Notes:
+        This method should separate out any identifiers from the search
+        string used to differentiate between same-named objects. The
+        result should be a tuple (index, search_string) where the index
+        gives which match among multiple matches should be used (1 being
+        the lowest number, rather than 0 as in Python).
 
-    This will be parsed to (2, "object") and, if applicable, will tell
-    the engine to pick the second from a list of same-named matches of
-    objects called "object".
+        This will be parsed to (2, "object") and, if applicable, will tell
+        the engine to pick the second from a list of same-named matches of
+        objects called "object".
 
-    Ex for use in a game session:
-
-     > look
-    You see: ball, ball, ball and ball.
-     > get ball
-    There where multiple matches for ball:
-        1-ball
-        2-ball
-        3-ball
-        4-ball
-     > get 3-ball
-     You get the ball.
+    Example:
+         > look
+        You see: ball, ball, ball and ball.
+         > get ball
+        There where multiple matches for ball:
+            1-ball
+            2-ball
+            3-ball
+            4-ball
+         > get 3-ball
+         You get the ball.
 
     """
 
@@ -250,32 +267,21 @@ def at_multimatch_input(ostring):
 def at_multimatch_cmd(caller, matches):
     """
     Format multiple command matches to a useful error.
+
+    Args:
+        caller (Object): Calling object.
+        matches (list): A list of matchtuples `(num, Command)`.
+
+    Returns:
+        formatted (str): A nicely formatted string, including
+            eventual errors.
+
     """
     string = "There were multiple matches:"
     for num, match in enumerate(matches):
         # each match is a tuple (candidate, cmd)
         cmdname, arg, cmd, dum, dum = match
 
-        is_channel = hasattr(cmd, "is_channel") and cmd.is_channel
-        if is_channel:
-            is_channel = _(" (channel)")
-        else:
-            is_channel = ""
-        if cmd.is_exit and cmd.destination:
-            is_exit = (" (exit to %s)") % cmd.destination
-        else:
-            is_exit = ""
-
-        id1 = ""
-        id2 = ""
-        if (not (is_channel or is_exit) and
-            (hasattr(cmd, 'obj') and cmd.obj != caller) and
-             hasattr(cmd.obj, "key")):
-            # the command is defined on some other object
-            id1 = "%s-%s" % (num + 1, cmdname)
-            id2 = " (%s)" % (cmd.obj.key)
-        else:
-            id1 = "%s-%s" % (num + 1, cmdname)
-            id2 = ""
-        string += "\n  %s%s%s%s" % (id1, id2, is_channel, is_exit)
+        get_extra_info = cmd.get_extra_info(caller)
+        string += "\n %s-%s%s" % (num + 1, cmdname, get_extra_info)
     return string

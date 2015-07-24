@@ -23,29 +23,50 @@ MSSPTable_CUSTOM = utils.variable_from_module(settings.MSSP_META_MODULE, "MSSPTa
 
 class Mssp(object):
     """
-    Implements the MSSP protocol. Add this to a
-    variable on the telnet protocol to set it up.
+    Implements the MSSP protocol. Add this to a variable on the telnet
+    protocol to set it up.
+
     """
     def __init__(self, protocol):
         """
-        initialize MSSP by storing protocol on ourselves
-        and calling the client to see if it supports
-        MSSP.
+        initialize MSSP by storing protocol on ourselves and calling
+        the client to see if it supports MSSP.
+
+        Args:
+            protocol (Protocol): The active protocol instance.
+
         """
         self.protocol = protocol
         self.protocol.will(MSSP).addCallbacks(self.do_mssp, self.no_mssp)
 
     def get_player_count(self):
-        "Get number of logged-in players"
+        """
+        Get number of logged-in players.
+
+        Returns:
+            count (int): The number of players in the MUD.
+
+        """
         return str(self.protocol.sessionhandler.count_loggedin())
 
     def get_uptime(self):
-        "Get how long the portal has been online (reloads are not counted)"
+        """
+        Get how long the portal has been online (reloads are not counted).
+
+        Returns:
+            uptime (int): Number of seconds of uptime.
+
+        """
         return str(self.protocol.sessionhandler.uptime)
 
     def no_mssp(self, option):
         """
-        This is the normal operation.
+        Called when mssp is not requested. This is the normal
+        operation.
+
+        Args:
+            option (Option): Not used.
+
         """
         self.protocol.handshake_done()
         pass
@@ -53,6 +74,10 @@ class Mssp(object):
     def do_mssp(self, option):
         """
         Negotiate all the information.
+
+        Args:
+            option (Option): Not used.
+
         """
 
         self.mssp_table =  {

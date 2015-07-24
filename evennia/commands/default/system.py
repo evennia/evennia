@@ -65,10 +65,18 @@ class CmdReset(MuxCommand):
     Usage:
       @reset
 
-    A cold reboot. This works like a mixture of @reload and @shutdown,
-    - all shutdown hooks will be called and non-persistent scripts will
-    be purged. But the Portal will not be affected and the server will
-    automatically restart again.
+    Notes:
+      For normal updating you are recommended to use @reload rather
+      than this command. Use @shutdown for a complete stop of
+      everything.
+
+    This emulates a cold reboot of the Server component of Evennia.
+    The difference to @shutdown is that the Server will auto-reboot
+    and that it does not affect the Portal, so no users will be
+    disconnected. Contrary to @reload however, all shutdown hooks will
+    be called and any non-database saved scripts, ndb-attributes,
+    cmdsets etc will be wiped.
+
     """
     key = "@reset"
     aliases = ['@reboot']
@@ -110,8 +118,8 @@ class CmdShutdown(MuxCommand):
             announcement += "%s\n" % self.args
         logger.log_infomsg('Server shutdown by %s.' % self.caller.name)
         SESSIONS.announce_all(announcement)
-        SESSIONS.portal_shutdown()
         SESSIONS.server.shutdown(mode='shutdown')
+        SESSIONS.portal_shutdown()
 
 
 class CmdPy(MuxCommand):
@@ -421,7 +429,7 @@ class CmdPlayers(MuxCommand):
         "List the players"
 
         caller = self.caller
-        if self.args and self.args.is_digit():
+        if self.args and self.args.isdigit():
             nlim = int(self.args)
         else:
             nlim = 10
@@ -743,7 +751,7 @@ class CmdServerLoad(MuxCommand):
             total_num, cachedict = _IDMAPPER.cache_size()
             sorted_cache = sorted([(key, num) for key, num in cachedict.items() if num > 0],
                                     key=lambda tup: tup[1], reverse=True)
-            memtable = EvTable("entity name", "number", "idmapper %%", align="l")
+            memtable = EvTable("entity name", "number", "idmapper %", align="l")
             for tup in sorted_cache:
                 memtable.add_row(tup[0], "%i" % tup[1], "%.2f" % (float(tup[1]) / total_num * 100))
 

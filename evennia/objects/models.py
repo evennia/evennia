@@ -26,11 +26,10 @@ from evennia.utils.utils import (make_iter, dbref, lazy_property)
 
 class ContentsHandler(object):
     """
-    Handles and caches the contents of an object
-    to avoid excessive lookups (this is done very
-    often due to cmdhandler needing to look for
-    object-cmdsets). It is stored on the 'contents_cache'
-    property of the ObjectDB.
+    Handles and caches the contents of an object to avoid excessive
+    lookups (this is done very often due to cmdhandler needing to look
+    for object-cmdsets). It is stored on the 'contents_cache' property
+    of the ObjectDB.
     """
     def __init__(self, obj):
         """
@@ -42,7 +41,8 @@ class ContentsHandler(object):
 
         """
         self.obj = obj
-        self._cache = {}
+        self._pkcache = {}
+        self._idcache = obj.__class__.__instance_cache__
         self.init()
 
     def init(self):
@@ -50,7 +50,7 @@ class ContentsHandler(object):
         Re-initialize the content cache
 
         """
-        self._cache.update(dict((obj.pk, obj) for obj in
+        self._pkcache.update(dict((obj.pk, None) for obj in
                             ObjectDB.objects.filter(db_location=self.obj)))
 
     def get(self, exclude=None):
@@ -64,10 +64,16 @@ class ContentsHandler(object):
             objects (list): the Objects inside this location
 
         """
+        pks = self._pkcache.keys()
         if exclude:
-            exclude = [excl.pk for excl in make_iter(exclude)]
-            return [obj for key, obj in self._cache.items() if key not in exclude]
-        return self._cache.values()
+            pks = [pk for pk in pks if pk not in [excl.pk for excl in make_iter(exclude)]]
+        try:
+            return [self._idcache[pk] for pk in pks]
+        except KeyError:
+            # this can happen if the idmapper cache was cleared for an object
+            # in the contents cache. If so we need to re-initialize and try again.
+            self.init()
+            return self.get(exclude=exclude)
 
     def add(self, obj):
         """
@@ -77,7 +83,7 @@ class ContentsHandler(object):
             obj (Object): object to add
 
         """
-        self._cache[obj.pk] = obj
+        self._pkcache[obj.pk] = None
 
     def remove(self, obj):
         """
@@ -87,14 +93,14 @@ class ContentsHandler(object):
             obj (Object): object to remove
 
         """
-        self._cache.pop(obj.pk, None)
+        self._pkcache.pop(obj.pk, None)
 
     def clear(self):
         """
         Clear the contents cache and re-initialize
 
         """
-        self._cache = {}
+        self._pkcache = {}
         self._init()
 
 #------------------------------------------------------------
@@ -114,31 +120,32 @@ class ObjectDB(TypedObject):
     type class with new database-stored variables.
 
     The TypedObject supplies the following (inherited) properties:
-      key - main name
-      name - alias for key
-      typeclass_path - the path to the decorating typeclass
-      typeclass - auto-linked typeclass
-      date_created - time stamp of object creation
-      permissions - perm strings
-      locks - lock definitions (handler)
-      dbref - #id of object
-      db - persistent attribute storage
-      ndb - non-persistent attribute storage
+
+      - key - main name
+      - name - alias for key
+      - db_typeclass_path - the path to the decorating typeclass
+      - db_date_created - time stamp of object creation
+      - permissions - perm strings
+      - locks - lock definitions (handler)
+      - dbref - #id of object
+      - db - persistent attribute storage
+      - ndb - non-persistent attribute storage
 
     The ObjectDB adds the following properties:
-      player - optional connected player (always together with sessid)
-      sessid - optional connection session id (always together with player)
-      location - in-game location of object
-      home - safety location for object (handler)
 
-      scripts - scripts assigned to object (handler from typeclass)
-      cmdset - active cmdset on object (handler from typeclass)
-      aliases - aliases for this object (property)
-      nicks - nicknames for *other* things in Evennia (handler)
-      sessions - sessions connected to this object (see also player)
-      has_player - bool if an active player is currently connected
-      contents - other objects having this object as location
-      exits - exits from this object
+      - player - optional connected player (always together with sessid)
+      - sessid - optional connection session id (always together with player)
+      - location - in-game location of object
+      - home - safety location for object (handler)
+      - scripts - scripts assigned to object (handler from typeclass)
+      - cmdset - active cmdset on object (handler from typeclass)
+      - aliases - aliases for this object (property)
+      - nicks - nicknames for *other* things in Evennia (handler)
+      - sessions - sessions connected to this object (see also player)
+      - has_player - bool if an active player is currently connected
+      - contents - other objects having this object as location
+      - exits - exits from this object
+
     """
     #
     # ObjectDB Database model setup
@@ -182,6 +189,7 @@ class ObjectDB(TypedObject):
     # defaults
     __settingsclasspath__ = settings.BASE_OBJECT_TYPECLASS
     __defaultclasspath__ = "evennia.objects.objects.DefaultObject"
+    __applabel__ = "objects"
 
     @lazy_property
     def contents_cache(self):
@@ -277,6 +285,9 @@ class ObjectDB(TypedObject):
         _safe_contents_update to know if the save was triggered via
         the location handler (which updates the contents cache) or
         not.
+
+        Args:
+            new (bool): Set if this location has not yet been saved before.
 
         """
         if not hasattr(self, "_safe_contents_update"):

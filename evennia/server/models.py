@@ -30,8 +30,9 @@ class ServerConfig(WeakSharedMemoryModel):
     On-the fly storage of global settings.
 
     Properties defined on ServerConfig:
-      key - main identifier
-      value - value stored in key. This is a pickled storage.
+
+      - key: Main identifier
+      - value: Value stored in key. This is a pickled storage.
 
     """
 
@@ -112,7 +113,12 @@ class ServerConfig(WeakSharedMemoryModel):
 
     def store(self, key, value):
         """
-        Wrap the storage (handles pickling)
+        Wrap the storage.
+
+        Args:
+            key (str): The name of this store.
+            value (str): The data to store with this `key`.
+
         """
         self.key = key
         self.value = value
