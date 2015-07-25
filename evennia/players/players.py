@@ -686,6 +686,7 @@ class DefaultPlayer(PlayerDB):
         Args:
             session (session): Session logging in.
         """
+        pass
 
     def at_disconnect(self, reason=None):
         """
