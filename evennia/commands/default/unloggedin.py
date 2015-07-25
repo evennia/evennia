@@ -166,8 +166,9 @@ class CmdUnconnectedConnect(MuxCommand):
             session.msg(string)
             # this just updates the throttle
             _throttle(session, storage=_LATEST_FAILED_LOGINS)
-            # calls player hook for a failed login.
-            player.at_failed_login(session)
+            # calls player hook for a failed login if possible.
+            if player:
+                player.at_failed_login(session)
             return
 
         # Check IP and/or name bans
