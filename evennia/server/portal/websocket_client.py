@@ -19,12 +19,12 @@ plain text (command input).
 
 Example of call from a javascript client:
 
-    websocket = new WeSocket("ws://localhost:8021")
-    var msg1 = "WebSocket Test"
-    websocket.send(msg1)
-    var msg2 = JSON.stringify({"testfunc":[[1,2,3], {"kwarg":"val"}]})
-    websocket.send("OOB" + msg2)
-    websocket.close()
+    var websocket = new WebSocket("ws://localhost:8021");
+    var msg1 = "WebSocket Test";
+    websocket.send(msg1);
+    var msg2 = JSON.stringify({ testfunc: [[1, 2, 3], { kwarg: "val" }] });
+    websocket.send("OOB" + msg2);
+    websocket.close();
 
 """
 import json
