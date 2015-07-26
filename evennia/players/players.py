@@ -740,6 +740,70 @@ class DefaultPlayer(PlayerDB):
         """
         pass
 
+    def add_new_character(self, character):
+        """
+        This method is called whenever a new character is added to a
+        player's roster. Most useful in Multisession Mode 2+.
+        """
+        old_player = character.db._player
+        if old_player:
+            old_player.remove_character(character)
+        character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
+                                (character.id, self.id))
+        self.db._playable_characters.append(character)
+
+    def remove_character(self, character):
+        """
+        This method is called by add_new_character if a character
+        already 'belongs' to a player. It cleans up the relevant
+        data.
+        """
+        if character in self.db._playable_characters:
+            self.db._playable_characters.remove(character)
+        if self.db._last_puppet == character:
+            del self.db._last_puppet
+
+    @property
+    def max_character_slots(self):
+        """
+        Returns an integer of how many characters a player can have.
+        Checked by @charcreate. Just returns the value of
+        MAX_NR_CHARACTERS by default. Useful for implementing
+        flexible character slots.
+        """
+        return settings.MAX_NR_CHARACTERS
+
+    @property
+    def total_characters(self):
+        """
+        Returns an integer of how many character slots are in use.
+        This calls the property .slot_exempt on each character, to
+        account for special characters that might be exempt.
+        """
+        count = 0
+        for character in self.db._playable_characters:
+            if not character.slot_exempt:
+                count += 1
+        return count
+
+    @property
+    def total_characters_full(self):
+        """
+        Like total_characters, but ignores exempt status.
+        """
+        return len(self.db._playable_characters)
+
+    def setup_starting_channels(self):
+        """
+        Called by utils.init_new_player() when a player is first created.
+        Override to choose different starting channels.
+        """
+        # join the new player to the public channel
+        pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
+        if not pchannel.connect(self):
+            string = "New player '%s' could not connect to public channel!" % self.key
+            logger.log_errmsg(string)
+
 
 class DefaultGuest(DefaultPlayer):
     """

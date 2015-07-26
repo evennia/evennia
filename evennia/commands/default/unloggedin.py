@@ -10,7 +10,6 @@ from django.conf import settings
 from evennia.players.models import PlayerDB
 from evennia.objects.models import ObjectDB
 from evennia.server.models import ServerConfig
-from evennia.comms.models import ChannelDB
 
 from evennia.utils import create, logger, utils, ansi
 from evennia.commands.default.muxcommand import MuxCommand
@@ -125,15 +124,10 @@ class CmdUnconnectedConnect(MuxCommand):
                         return
 
                     password = "%016x" % getrandbits(64)
-                    home = ObjectDB.objects.get_id(settings.GUEST_HOME)
-                    permissions = settings.PERMISSION_GUEST_DEFAULT
-                    typeclass = settings.BASE_CHARACTER_TYPECLASS
-                    ptypeclass = settings.BASE_GUEST_TYPECLASS
-                    new_player = _create_player(session, playername, password,
-                                                permissions, ptypeclass)
+
+                    new_player = _create_player(session, playername, password, guest=True)
                     if new_player:
-                        _create_character(session, new_player, typeclass,
-                                        home, permissions)
+                        _create_character(session, new_player, guest=True)
                         session.sessionhandler.login(session, new_player)
 
                 except Exception:
@@ -261,20 +255,15 @@ class CmdUnconnectedCreate(MuxCommand):
             # this is a banned IP or name!
             string = "{rYou have been banned and cannot continue from here." \
                      "\nIf you feel this ban is in error, please email an admin.{x"
-            session.msg(string)
-            session.execute_cmd("quit")
+            session.sessionhandler.disconnect(session, string)
             return
 
         # everything's ok. Create the new player account.
         try:
-            permissions = settings.PERMISSION_PLAYER_DEFAULT
-            typeclass = settings.BASE_CHARACTER_TYPECLASS
-            new_player = _create_player(session, playername, password, permissions)
+            new_player = _create_player(session, playername, password)
             if new_player:
                 if MULTISESSION_MODE < 2:
-                    default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-                    _create_character(session, new_player, typeclass,
-                                    default_home, permissions)
+                    _create_character(session, new_player)
                 # tell the caller everything went well.
                 string = "A new account '%s' was created. Welcome!"
                 if " " in playername:
@@ -459,54 +448,53 @@ class CmdUnconnectedScreenreader(MuxCommand):
         self.caller.msg(string)
 
 
-def _create_player(session, playername, password, permissions, typeclass=None):
+def _create_player(session, playername, password, guest=False):
     """
     Helper function, creates a player of the specified typeclass.
     """
+
+    if guest:
+        typeclass = settings.GUEST_PLAYER_TYPECLASS
+        permissions = settings.PERMISSION_GUEST_DEFAULT
+    else:
+        typeclass = None
+        permissions = None
+
     try:
-        new_player = create.create_player(playername, None, password,
-                                          permissions=permissions, typeclass=typeclass)
+        new_player = create.create_player(playername, None, password, permissions=permissions, typeclass=typeclass)
 
     except Exception, e:
         session.msg("There was an error creating the Player:\n%s\n If this problem persists, contact an admin." % e)
         logger.log_trace()
         return False
 
-    # This needs to be called so the engine knows this player is
-    # logging in for the first time. (so it knows to call the right
-    # hooks during login later)
-    utils.init_new_player(new_player)
-
-    # join the new player to the public channel
-    pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
-    if not pchannel.connect(new_player):
-        string = "New player '%s' could not connect to public channel!" % new_player.key
-        logger.log_errmsg(string)
     return new_player
 
 
-def _create_character(session, new_player, typeclass, home, permissions):
+def _create_character(session, new_player, home=None, guest=False):
     """
     Helper function, creates a character based on a player's name.
     This is meant for Guest and MULTISESSION_MODE < 2 situations.
     """
+    if guest:
+        typeclass = settings.GUEST_CHARACTER_TYPECLASS
+        permissions = settings.PERMISSION_GUEST_DEFAULT
+        home = ObjectDB.objects.get_id(settings.GUEST_HOME)
+    else:
+        typeclass = None
+        permissions = None
+        home = None
+
     try:
-        new_character = create.create_object(typeclass, key=new_player.key,
-                                  home=home, permissions=permissions)
-        # set playable character list
-        new_player.db._playable_characters.append(new_character)
+        new_character = create.create_character(key=new_player.key, player=new_player, typeclass=typeclass,
+                                                permissions=permissions, home=home)
 
-        # allow only the character itself and the player to puppet this character (and Immortals).
-        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
-                                (new_character.id, new_player.id))
-
-        # If no description is set, set a default description
-        if not new_character.db.desc:
-            new_character.db.desc = "This is a Player."
         # We need to set this to have @ic auto-connect to this character
         new_player.db._last_puppet = new_character
+
     except Exception, e:
         session.msg("There was an error creating the Character:\n%s\n If this problem persists, contact an admin." % e)
         logger.log_trace()
         return False
 
+    return new_character

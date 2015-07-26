@@ -1407,6 +1407,9 @@ class DefaultCharacter(DefaultObject):
         self.execute_cmd("look")
         if self.location:
             self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
+        if self.db.FIRST_PUPPET:
+            del self.db.FIRST_PUPPET
+            self.at_first_puppet()
 
     def at_post_unpuppet(self, player, sessid=None):
         """
@@ -1425,6 +1428,21 @@ class DefaultCharacter(DefaultObject):
             self.db.prelogout_location = self.location
             self.location = None
 
+    @property
+    def slot_exempt(self):
+        """
+        Returns boolean value for whether this character should be exempt
+        from counting towards a player's total characters. False by default.
+        Meant to be overridden for custom slot implementations.
+        """
+        return False
+
+    def at_first_puppet(self):
+        """
+        This hook is called the very first time a player goes @ic as this
+        character.
+        """
+        pass
 #
 # Base Room object
 #
