@@ -800,9 +800,11 @@ class DefaultPlayer(PlayerDB):
         """
         # join the new player to the public channel
         pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
-        if not pchannel.connect(self):
-            string = "New player '%s' could not connect to public channel!" % self.key
-            logger.log_errmsg(string)
+        if pchannel:
+            connected = pchannel.connect(self)
+            if not connected:
+                string = "New player '%s' could not connect to public channel!" % self.key
+                logger.log_errmsg(string)
 
 
 class DefaultGuest(DefaultPlayer):
