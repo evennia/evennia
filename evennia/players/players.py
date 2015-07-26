@@ -677,6 +677,17 @@ class DefaultPlayer(PlayerDB):
             # screen. We execute look on the player.
             self.execute_cmd("look", sessid=sessid)
 
+    def at_failed_login(self, session):
+        """
+        Called by the login process if a user account is targeted correctly
+        but provided with an invalid password. By default it does nothing,
+        but exists to be overriden.
+
+        Args:
+            session (session): Session logging in.
+        """
+        pass
+
     def at_disconnect(self, reason=None):
         """
         Called just before user is disconnected.
