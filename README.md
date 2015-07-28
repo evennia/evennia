@@ -25,7 +25,8 @@ that leverage `docutils` for generation of different types of documents.
 recommonmark is mainly derived from [remarkdown][rmd] by Steve Genoud and
 leverages the python CommonMark implementation.
 
-It was originally created by [Luca Barbato][lu-zero] as recommonmark.
+It was originally created by [Luca Barbato][lu-zero],
+and is now maintained in the Read the Docs (rtfd) GitHub organization.
 
 [cm]: http://commonmark.org
 [pcm]: https://github.com/rolandshoemaker/CommonMark-py
