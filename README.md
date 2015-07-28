@@ -25,10 +25,13 @@ that leverage `docutils` for generation of different types of documents.
 recommonmark is mainly derived from [remarkdown][rmd] by Steve Genoud and
 leverages the python CommonMark implementation.
 
+It was originally created by [Luca Barbato][lu-zero] as recommonmark.
+
 [cm]: http://commonmark.org
 [pcm]: https://github.com/rolandshoemaker/CommonMark-py
 [rmd]: https://github.com/sgenoud/remarkdown
 [prs]: https://github.com/python-parsley/parsley
+[lu-zero]: https://github.com/lu-zero
 
 [dc]: http://docutils.sourceforge.net/docs/ref/doctree.html
 [sphinx-issue]: https://bitbucket.org/birkenfeld/sphinx/issue/825/markdown-capable-sphinx
