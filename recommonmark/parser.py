@@ -124,6 +124,13 @@ class CommonMarkParser(parsers.Parser):
 
     def code(self, language, text):
         classes = ['code', 'highlight']
+
+        # embedded rst in codeblocks
+        if language == 'eval_rst':
+            rst_parser = parsers.rst.Parser()
+            rst_parser.parse(text, self.current_node.document)
+            return
+
         if language:
             classes.append(language)
 
