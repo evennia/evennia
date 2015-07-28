@@ -1,7 +1,8 @@
 # recommonmark
 
-A `docutils`-compatibility bridge to [CommonMark][cm] derived from
-[remarkdown][rmd].
+A `docutils`-compatibility bridge to [CommonMark][cm].
+
+This allows you to write CommonMark inside of Docutils & Sphinx projects.
 
 ## Why a bridge?
 
