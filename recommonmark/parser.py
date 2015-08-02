@@ -4,7 +4,6 @@ import itertools
 from docutils import parsers, nodes, utils
 
 from docutils.parsers.rst import roles, states
-from docutils.utils.code_analyzer import Lexer, LexerError
 
 from CommonMark import DocParser, HTMLRenderer
 from warnings import warn
@@ -123,32 +122,7 @@ class CommonMarkParser(parsers.Parser):
         self.current_node.append(verbatim_node)
 
     def code(self, language, text):
-        classes = ['code', 'highlight']
-
-        # embedded rst in codeblocks
-        if language == 'eval_rst':
-            rst_parser = parsers.rst.Parser()
-            rst_parser.parse(text, self.current_node.document)
-            return
-
-        if language:
-            classes.append(language)
-
-        try:
-            tokens = Lexer(utils.unescape(text, 1), language, True)
-        except LexerError as error:
-            raise error
-
-        node = nodes.literal_block(text, '', classes=classes)
-
-        # analyze content and add nodes for every token
-        for classes, value in tokens:
-            if classes:
-                node += nodes.inline(value, value, classes=classes)
-            else:
-                # insert as Text to decrease the verbosity of the output
-                node += nodes.Text(value, value)
-
+        node = nodes.literal_block(text, '', language=language)
         self.current_node.append(node)
 
     def paragraph(self, block):

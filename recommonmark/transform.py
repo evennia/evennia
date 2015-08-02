@@ -3,6 +3,7 @@ import os
 import sys
 from states import DummyStateMachine
 from docutils import nodes, transforms
+from docutils.statemachine import StringList
 
 class AutoStructify(transforms.Transform):
     """Automatically try to transform blocks to sphinx directives.
@@ -162,27 +163,95 @@ class AutoStructify(transforms.Transform):
             node['refuri'] = uri
             return None
 
+    def auto_code_block(self, node):
+        """Try to automatically generate nodes for codeblock syntax.
+
+        Parameters
+        ----------
+        node : nodes.literal_block
+            Original codeblock node
+        Returns
+        -------
+        tocnode: docutils node
+            The converted toc tree node, None if conversion is not possible.
+        """
+
+        assert isinstance(node, nodes.literal_block)
+        if 'language' not in node:
+            return None
+        self.state_machine.reset(self.document,
+                                 node.parent,
+                                 self.current_level)
+        content = node.rawsource.split('\n')
+        language = node['language']
+        if language == 'math':
+            return self.state_machine.run_directive(
+            'math', content=content)
+        elif language == 'eval_rst':
+            # allow embed non section level rst
+            node = nodes.section()
+            self.state_machine.state.nested_parse(
+                StringList(content, source=node.rawsource),
+                0, node=node, match_titles=False)
+            return node.children[:]
+        # embedded rst in codeblocks
+        if language == 'eval_rst':
+            rst_parser = parsers.rst.Parser()
+            rst_parser.parse(text, self.current_node.document)
+            return
+            return None
+        else:
+            return self.state_machine.run_directive(
+                'code-block', arguments=[language],
+                content=content)
+
+    def find_replace(self, node):
+        """Try to find replace node for current node.
+
+        Parameters
+        ----------
+        node : docutil node
+            Node to find replacement for.
+
+        Returns
+        -------
+        nodes : node or list of node
+            The replacement nodes of current node.
+            Returns None if no replacement can be found.
+        """
+        newnode = None
+        if isinstance(node, nodes.Sequential):
+            newnode = self.auto_toc_tree(node)
+        elif isinstance(node, nodes.reference):
+            newnode = self.auto_doc_ref(node)
+        elif isinstance(node, nodes.literal_block):
+            newnode = self.auto_code_block(node)
+        return newnode
+
     def traverse(self, node):
         """Traverse the document tree rooted at node.
 
         node : docutil node
             current root node to traverse
         """
-        newnode = None
         old_level = self.current_level
         if isinstance(node, nodes.section):
             if 'level' in node:
                 self.current_level = node['level']
-        elif isinstance(node, nodes.Sequential):
-            newnode = self.auto_toc_tree(node)
-        elif isinstance(node, nodes.reference):
-            newnode = self.auto_doc_ref(node)
+        to_visit = []
+        to_replace = []
+        for c in node.children[:]:
+            newnode = self.find_replace(c)
+            if newnode is not None:
+                to_replace.append((c, newnode))
+            else:
+                to_visit.append(c)
 
-        if newnode:
-            node.replace_self(newnode)
-        else:
-            for c in node.children[:]:
-                self.traverse(c)
+        for oldnode, newnodes in to_replace:
+            node.replace(oldnode, newnodes)
+
+        for child in to_visit:
+            self.traverse(child)
         self.current_level = old_level
 
     def apply(self):
