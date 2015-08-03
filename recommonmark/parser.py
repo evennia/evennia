@@ -122,7 +122,7 @@ class CommonMarkParser(parsers.Parser):
         self.current_node.append(verbatim_node)
 
     def code(self, language, text):
-        node = nodes.literal_block(text, '', language=language)
+        node = nodes.literal_block(text, text, language=language)
         self.current_node.append(node)
 
     def paragraph(self, block):
