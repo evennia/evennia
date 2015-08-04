@@ -16,9 +16,10 @@ class AutoStructify(transforms.Transform):
 
     default_config = {
         'enable_auto_doc_ref': True,
+        'auto_toc_tree_section': None,
         'enable_auto_toc_tree': True,
         'enable_eval_rst': True,
-        'enable_math': False,
+        'enable_math': True,
         'url_resolver': lambda x: x,
         }
 
@@ -94,6 +95,20 @@ class AutoStructify(transforms.Transform):
         """
         if not self.config['enable_auto_toc_tree']:
             return None
+        # when auto_toc_tree_section is set
+        # only auto generate toctree under the specified section title
+        sec = self.config['auto_toc_tree_section']
+        if sec is not None:
+            if node.parent is None:
+                return None
+            if not isinstance(node.parent, nodes.section):
+                return None
+            title = node.parent.children[0]
+            if not isinstance(title, nodes.title):
+                return None
+            if title.astext().strip() != sec:
+                return None
+
         numbered = None
         if isinstance(node, nodes.bullet_list):
             numbered = 0
@@ -248,6 +263,7 @@ class AutoStructify(transforms.Transform):
         self.current_level = old_level
 
     def apply(self):
+        """Apply the transformation by configuration."""
         # only transform markdowns
         source = self.document['source']
         if not source.endswith('.md'):

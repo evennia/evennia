@@ -38,6 +38,7 @@ class _SectionHandler(object):
 
 
 class CommonMarkParser(parsers.Parser):
+    """Parser of recommonmark."""
     supported = ('md', 'markdown')
 
     def convert_blocks(self, blocks):
