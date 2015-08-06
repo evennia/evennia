@@ -433,7 +433,9 @@ CLIENT_DEFAULT_HEIGHT = 45 # telnet standard is 24 but does anyone use such
 # This enables guest logins, by default via "connect guest"
 GUEST_ENABLED = False
 # Typeclass for guest player objects (linked to a character)
-BASE_GUEST_TYPECLASS = "typeclasses.players.Guest"
+GUEST_PLAYER_TYPECLASS = "typeclasses.players.Guest"
+# Typeclass for guest character objects.
+GUEST_CHARACTER_TYPECLASS = BASE_CHARACTER_TYPECLASS
 # The permission given to guests
 PERMISSION_GUEST_DEFAULT = "Guests"
 # The default home location used for guests.

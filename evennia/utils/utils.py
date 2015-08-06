@@ -947,14 +947,21 @@ object_from_module = class_from_module
 def init_new_player(player):
     """
     Helper method to call all hooks, set flags etc on a newly created
-    player (and potentially their character, if it exists already).
+    player.
     """
     # the FIRST_LOGIN flags are necessary for the system to call
     # the relevant first-login hooks.
-    #if player.character:
-    #    player.character.db.FIRST_LOGIN = True
-    player.db.FIRST_LOGIN = True
 
+    player.db.FIRST_LOGIN = True
+    player.setup_starting_channels()
+
+def init_new_character(character):
+    """
+    Helper method to call all hooks, set flags etc on a newly created
+    character.
+    """
+    character.db.desc = 'This is a Player.'
+    character.db.FIRST_PUPPET = True
 
 def string_similarity(string1, string2):
     """

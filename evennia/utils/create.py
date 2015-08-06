@@ -25,7 +25,7 @@ from django.conf import settings
 from django.db import IntegrityError
 from django.utils import timezone
 from evennia.utils import logger
-from evennia.utils.utils import make_iter, class_from_module, dbid_to_obj
+from evennia.utils.utils import make_iter, class_from_module, dbid_to_obj, init_new_player, init_new_character
 
 # delayed imports
 _User = None
@@ -44,7 +44,7 @@ _channelhandler = None
 
 # limit symbol import from API
 __all__ = ("create_object", "create_script", "create_help_entry",
-           "create_message", "create_channel", "create_player")
+           "create_message", "create_channel", "create_player", "create_character")
 
 _GA = object.__getattribute__
 
@@ -115,6 +115,44 @@ def create_object(typeclass=None, key=None, location=None,
 #alias for create_object
 object = create_object
 
+
+def create_character(typeclass=None, key=None, location=None,
+                  home=None, permissions=None, locks=None,
+                  aliases=None, tags=None, report_to=None, nohome=False, player=None):
+    """
+
+    Create a new in-game character. This is basically a wrapper for create_object.
+
+    keywords:
+        typeclass - class or python path to a typeclass
+        key - name of the new object. If not set, a name of #dbref will be set.
+        home - obj or #dbref to use as the object's home location
+        permissions - a comma-separated string of permissions
+        locks - one or more lockstrings, separated by semicolons
+        aliases - a list of alternative keys
+        tags - a list of tag keys (using no category)
+
+        nohome - this allows the creation of objects without a default home location;
+                 only used when creating the default location itself or during unittests
+        player - a player object who 'owns' the character.
+    """
+
+    typeclass = typeclass if typeclass else settings.BASE_CHARACTER_TYPECLASS
+    permissions = permissions if permissions else settings.PERMISSION_PLAYER_DEFAULT
+    location = location if location else settings.START_LOCATION
+
+    new_character = create_object(typeclass=typeclass, key=key, location=location, home=home, permissions=permissions,
+                                  locks=locks, aliases=aliases, tags=tags, report_to=report_to, nohome=nohome)
+
+    # A player is provided? Call the hook to setup the character's puppet permissions and .db attributes!
+    if player:
+        player.add_new_character(new_character)
+
+    init_new_character(new_character)
+    return new_character
+
+# Alias for create_character
+character = create_character
 
 #
 # Script creation
@@ -377,6 +415,7 @@ def create_player(key, email, password,
     # at_first_save hook on the typeclass, where the _createdict
     # can be used.
     new_player.save()
+    init_new_player(new_player)
     return new_player
 
 # alias

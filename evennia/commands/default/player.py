@@ -176,31 +176,16 @@ class CmdCharCreate(MuxPlayerCommand):
             return
         key = self.lhs
         desc = self.rhs
-        if not player.is_superuser and \
-            (player.db._playable_characters and
-                len(player.db._playable_characters) >= MAX_NR_CHARACTERS):
-            self.msg("You may only create a maximum of %i characters." % MAX_NR_CHARACTERS)
+        max_characters = player.max_character_slots
+        total_characters = player.total_characters
+        if not player.is_superuser and (total_characters >= max_characters):
+            self.msg("You may only create a maximum of %i characters." % max_characters)
             return
-        # create the character
-        from evennia.objects.models import ObjectDB
 
-        start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
-        default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-        typeclass = settings.BASE_CHARACTER_TYPECLASS
-        permissions = settings.PERMISSION_PLAYER_DEFAULT
+        new_character = create.create_character(key=key, player=player)
 
-        new_character = create.create_object(typeclass, key=key,
-                                             location=start_location,
-                                             home=default_home,
-                                             permissions=permissions)
-        # only allow creator (and immortals) to puppet this char
-        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
-                                (new_character.id, player.id))
-        player.db._playable_characters.append(new_character)
         if desc:
             new_character.db.desc = desc
-        elif not new_character.db.desc:
-            new_character.db.desc = "This is a Player."
         self.msg("Created new character %s. Use {w@ic %s{n to enter the game as this character." % (new_character.key, new_character.key))
 
 
