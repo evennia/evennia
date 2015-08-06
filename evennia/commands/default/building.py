@@ -1655,8 +1655,7 @@ class CmdWipe(ObjManipCommand):
             return
         if not attrs:
             # wipe everything
-            for attr in obj.get_all_attributes():
-                attr.delete()
+            obj.attributes.clear()
             string = "Wiped all attributes on %s." % obj.name
         else:
             for attrname in attrs:
