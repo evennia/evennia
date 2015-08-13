@@ -34,7 +34,6 @@ __all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit",
            "CmdColorTest", "CmdQuell")
 
 # force max nr chars to 1 if mode is 0 or 1
-MAX_NR_CHARACTERS = MULTISESSION_MODE < 2 and 1 or MAX_NR_CHARACTERS
 BASE_PLAYER_TYPECLASS = settings.BASE_PLAYER_TYPECLASS
 
 PERMISSION_HIERARCHY = settings.PERMISSION_HIERARCHY
@@ -104,7 +103,9 @@ class CmdOOCLook(MuxPlayerCommand):
         string += "\n\n {whelp{n - more commands"
         string += "\n {wooc <Text>{n - talk on public channel"
 
-        if is_su or len(characters) < MAX_NR_CHARACTERS:
+        charmax = MAX_NR_CHARACTERS if MULTISESSION_MODE > 1 else 1
+
+        if is_su or len(characters) < charmax:
             if not characters:
                 string += "\n\n You don't have any characters yet. See {whelp @charcreate{n for creating one."
             else:
@@ -117,7 +118,7 @@ class CmdOOCLook(MuxPlayerCommand):
                 string += "\n\nAvailable character%s (%i/unlimited):" % (string_s_ending, len(characters))
             else:
                 string += "\n\nAvailable character%s%s:"  % (string_s_ending,
-                         MAX_NR_CHARACTERS > 1 and " (%i/%i)" % (len(characters), MAX_NR_CHARACTERS) or "")
+                         charmax > 1 and " (%i/%i)" % (len(characters), charmax) or "")
 
             for char in characters:
                 csessid = char.sessid.get()
@@ -176,10 +177,13 @@ class CmdCharCreate(MuxPlayerCommand):
             return
         key = self.lhs
         desc = self.rhs
+
+        charmax = MAX_NR_CHARACTERS if MULTISESSION_MODE > 1 else 1
+
         if not player.is_superuser and \
             (player.db._playable_characters and
-                len(player.db._playable_characters) >= MAX_NR_CHARACTERS):
-            self.msg("You may only create a maximum of %i characters." % MAX_NR_CHARACTERS)
+                len(player.db._playable_characters) >= charmax):
+            self.msg("You may only create a maximum of %i characters." % charmax)
             return
         # create the character
         from evennia.objects.models import ObjectDB
