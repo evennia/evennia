@@ -592,7 +592,7 @@ class CmdColorTest(MuxPlayerCommand):
                 string += "\n " + " ".join(row)
             #print string
             self.msg(string)
-            self.msg("{{X : black. {{/ : return, {{- : tab, {{_ : space, {{* : invert")
+            self.msg("{{X : black. {{/ : return, {{- : tab, {{_ : space, {{* : invert, {{u : underline")
             self.msg("To combine background and foreground, add background marker last, e.g. {{r{{[b.")
 
         elif self.args.startswith("x"):

@@ -252,6 +252,7 @@ class ANSIParser(object):
         (r'{_', ANSI_SPACE),           # space
         (r'{*', ANSI_INVERSE),        # invert
         (r'{^', ANSI_BLINK),          # blinking text (very annoying and not supported by all clients)
+        (r'{u', ANSI_UNDERLINE),       # underline
 
         (r'{r', hilite + ANSI_RED),
         (r'{g', hilite + ANSI_GREEN),
