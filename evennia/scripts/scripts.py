@@ -109,10 +109,11 @@ class ExtendedLoopingCall(LoopingCall):
         """
         assert self.running, ("Tried to fire an ExtendedLoopingCall "
                               "that was not running.")
-        if self.call is not None:
-            self.call.cancel()
-            self.call.callback()
-            self()
+        self.call.cancel()
+        self.call = None
+        self.starttime = self.clock.seconds()
+        self()
+
 
     def next_call_time(self):
         """
