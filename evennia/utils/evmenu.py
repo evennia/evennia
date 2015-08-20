@@ -575,6 +575,82 @@ class EvMenu(object):
         del self._caller.ndb._menutree
 
 
+# -------------------------------------------------------------------------------------------------
+#
+# Simple input shortcuts
+#
+# -------------------------------------------------------------------------------------------------
+
+class CmdGetInput(Command):
+    """
+    Enter your data and press return.
+    """
+    key = _CMD_NOMATCH
+    aliases = _CMD_NOINPUT
+
+    def func(self):
+        "This is called when user enters anything."
+        caller = self.caller
+        callback = caller.ndb._getinputcallback
+        prompt = caller.ndb._getinputprompt
+        result = self.raw_string
+
+        ok = not callback(caller, prompt, result)
+        if ok:
+            # only clear the state if the callback does not return
+            # anything
+            del caller.ndb._getinputcallback
+            del caller.ndb._getinputprompt
+            caller.cmdset.remove(InputCmdSet)
+
+
+class InputCmdSet(CmdSet):
+    """
+    This stores the input command
+    """
+    key = "input_cmdset"
+    priority = 1
+    mergetype = "Replace"
+    no_objs = True
+    no_exits = True
+    no_channels = False
+
+    def at_cmdset_creation(self):
+        "called once at creation"
+        self.add(CmdGetInput())
+
+
+def get_input(caller, prompt, callback):
+    """
+    This is a helper function for easily request input from
+    the caller.
+
+    Args:
+        caller (Player or Object): The entity being asked
+            the question. This should usually be an object
+            controlled by a user.
+        prompt (str): This text will be shown to the user,
+            in order to let them know their input is needed.
+        callback (callable): A function that will be called
+            when the user enters a reply. It must take three
+            arguments: the `caller`, the `prompt` text and the
+            `result` of the input given by the user. If the
+            callback doesn't return anything or return False,
+            the input prompt will be cleaned up and exited. If
+            returning True, the prompt will remain and continue to
+            accept input.
+
+    Raises:
+        RuntimeError: If the given callback is not callable.
+
+    """
+    if not callable(callback):
+        raise RuntimeError("get_input: input callback is not callable.")
+    caller.ndb._getinputcallback = callback
+    caller.ndb._getinputprompt = prompt
+    caller.cmdset.add(InputCmdSet)
+    caller.msg(prompt)
+
 
 #------------------------------------------------------------
 #
