@@ -21,9 +21,8 @@ on your sources.
    - Python modules (builtins and standard library)
    - Twisted modules
    - Django modules
-   - Evennia src/ modules
-   - Evennia game/ modules
-   - Evennia 'ev' API imports
+   - Evennia library modules (`evennia`)
+   - Evennia contrib modules (`evennia.contrib`)
  * All modules, classes, functions and modules should have doc
    strings formatted as described below
 
