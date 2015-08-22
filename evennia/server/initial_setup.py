@@ -109,7 +109,7 @@ def create_objects():
     try:
         god_player.db._playable_characters.append(god_character)
     except AttributeError:
-        pass
+        god_player.db_playable_characters = [god_character]
 
     room_typeclass = settings.BASE_ROOM_TYPECLASS
     limbo_obj = create.create_object(room_typeclass, _('Limbo'), nohome=True)
