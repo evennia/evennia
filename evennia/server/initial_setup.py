@@ -105,7 +105,11 @@ def create_objects():
 
     god_player.attributes.add("_first_login", True)
     god_player.attributes.add("_last_puppet", god_character)
-    god_player.db._playable_characters.append(god_character)
+
+    try:
+        god_player.db._playable_characters.append(god_character)
+    except AttributeError:
+        pass
 
     room_typeclass = settings.BASE_ROOM_TYPECLASS
     limbo_obj = create.create_object(room_typeclass, _('Limbo'), nohome=True)
