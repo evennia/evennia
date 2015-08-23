@@ -4,6 +4,8 @@ A `docutils`-compatibility bridge to [CommonMark][cm].
 
 This allows you to write CommonMark inside of Docutils & Sphinx projects.
 
+Documentation: <http://recommonmark.readthedocs.org>
+
 ## Why a bridge?
 
 Many python tools (mostly for documentation creation) rely on `docutils`.
