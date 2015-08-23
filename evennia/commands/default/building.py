@@ -201,11 +201,21 @@ class CmdCopy(ObjManipCommand):
     locks = "cmd:perm(copy) or perm(Builder)"
     help_category = "Building"
 
+    def check_target_location(self, target_location):
+        """
+        Check from object to make sure that it is alright to copy.
+
+        Used for overriding in subclassed commands, and is responsible for displaying
+        its own error messages.
+        """
+        return True
+
     def func(self):
         """Uses ObjManipCommand.parse()"""
 
         caller = self.caller
         args = self.args
+        self.copied_obj = None
         if not args:
             caller.msg("Usage: @copy <obj> [=<new_name>[;alias;alias..]]"
                        "[:<new_location>] [, <new_name2>...]")
@@ -219,9 +229,9 @@ class CmdCopy(ObjManipCommand):
                 return
             to_obj_name = "%s_copy" % from_obj_name
             to_obj_aliases = ["%s_copy" % alias for alias in from_obj.aliases.all()]
-            copiedobj = ObjectDB.objects.copy_object(from_obj, new_key=to_obj_name,
-                                                     new_aliases=to_obj_aliases)
-            if copiedobj:
+            self.copied_obj = ObjectDB.objects.copy_object(from_obj, new_key=to_obj_name,
+                                                           new_aliases=to_obj_aliases)
+            if self.copied_obj:
                 string = "Identical copy of %s, named '%s' was created." % (from_obj_name, to_obj_name)
             else:
                 string = "There was an error copying %s."
@@ -239,14 +249,14 @@ class CmdCopy(ObjManipCommand):
                 if to_obj_location:
                     to_obj_location = caller.search(to_obj_location,
                                                     global_search=True)
-                    if not to_obj_location:
+                    if not to_obj_location or not self.check_target_location(to_obj_location):
                         return
 
-                copiedobj = ObjectDB.objects.copy_object(from_obj,
-                                                         new_key=to_obj_name,
-                                                         new_location=to_obj_location,
-                                                         new_aliases=to_obj_aliases)
-                if copiedobj:
+                self.copied_obj = ObjectDB.objects.copy_object(from_obj,
+                                                               new_key=to_obj_name,
+                                                               new_location=to_obj_location,
+                                                               new_aliases=to_obj_aliases)
+                if self.copied_obj:
                     string = "Copied %s to '%s' (aliases: %s)." % (from_obj_name, to_obj_name,
                                                                    to_obj_aliases)
                 else:
