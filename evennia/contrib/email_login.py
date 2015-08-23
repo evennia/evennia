@@ -19,7 +19,7 @@ Installation is simple:
 To your settings file, add/edit the line:
 
 ```python
-CMDSET_UNLOGGEDIN = "contrib.email-login.UnloggedinCmdSet"
+CMDSET_UNLOGGEDIN = "contrib.email_login.UnloggedinCmdSet"
 ```
 
 That's it. Reload the server and try to log in to see it.
