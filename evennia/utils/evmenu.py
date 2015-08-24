@@ -29,11 +29,12 @@ command definition too) with function defintions:
 
 ```python
 
-    def nodename1(caller):
+    def node1(caller):
+        # (this is the start node if called like above)
         # code
         return text, options
 
-    def nodename2(caller, input_string):
+    def node_with_other_namen(caller, input_string):
         # code
         return text, options
 ```
@@ -71,7 +72,7 @@ Example:
 
     # in menu_module.py
 
-    def start(caller):
+    def node1(caller):
         text = ("This is a node text",
                 "This is help text for this node")
         options = ({"key": "testing",
