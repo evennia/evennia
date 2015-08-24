@@ -12,7 +12,7 @@ To start the menu, just import the EvMenu class from this module,
     from evennia.utils.evmenu import EvMenu
 
     EvMenu(caller, menu_module_path,
-         startnode="start",
+         startnode="node1",
          cmdset_mergetype="Replace", cmdset_priority=1,
          allow_quit=True, cmd_on_quit="look")
 ```
@@ -71,15 +71,15 @@ Example:
 
     # in menu_module.py
 
-    def node1(caller):
+    def start(caller):
         text = ("This is a node text",
                 "This is help text for this node")
         options = ({"key": "testing",
-                    "desc": "Select this to go to node 2"
+                    "desc": "Select this to go to node 2",
                     "goto": "node2",
                     "exec": "callback1"},
-                   {"desc": "Go to node 3."
-                    "goto": "node3"} )
+                   {"desc": "Go to node 3.",
+                    "goto": "node3"})
         return text, options
 
     def callback1(caller):
