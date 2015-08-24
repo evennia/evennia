@@ -534,7 +534,7 @@ class CmdPressButton(Command):
     Presses a button.
     """
     key = "press"
-    aliases = ["press button", "button", "push", "push button"]
+    aliases = ["press button", "button", "push button"]
     # only accessible if the button was found and there is light. This checks
     # the Attribute button_exposed on the Wall object so that
     # you can only push the button when the puzzle is solved. It also
