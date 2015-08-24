@@ -41,7 +41,11 @@ def returns_typeclass(method):
     def func(self, *args, **kwargs):
         self.__doc__ = method.__doc__
         query = method(self, *args, **kwargs)
-        return query
+        if hasattr(query, "__iter__"):
+            result = list(query)
+            return result[0] if result else None
+        else:
+            return query
     return update_wrapper(func, method)
 
 # Managers
