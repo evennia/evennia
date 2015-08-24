@@ -28,6 +28,7 @@ All the features are by default enabled
 * auto_toc_tree_section: when setted,  [Auto Toc Tree](#auto-toc-tree) will only be enabled on section that matches the title.
 * enable_auto_doc_ref: whether enable [Auto Doc Ref](#auto-doc-ref) feature.
 * enable_math: whether eanble [Math Formula](#math-formula)
+* enable_inline_math: whether eanble [Inline Math](#inline-math)
 * enable_eval_rst: whether [Embed reStructuredText](#embed-restructuredtext) is enabled.
 * url_resolver: a function that maps a existing relative position in the document to a http link
 
@@ -107,7 +108,7 @@ def function():
 ```
 
 ### Math Formula
-You can normally write latex math formula with ```math``` codeblock.
+You can normally write latex math formula with ```math``` codeblock. See also [Inline Math](#inline-math).
 
 Example
 ```
@@ -137,3 +138,20 @@ will be rendered as
     :show-inheritance:
 ```
 This example used to use sphinx autodoc to insert document of AutoStructify class definition into the document.
+
+
+Inline Math
+-----------
+Besides the [Math Formula](#math-formula), you can also write latex math in inline codeblock text. You can do so by inserting ```$```
+in the beginning and end of inline codeblock.
+
+Example
+
+```
+This formula ``$ y=\sum_{i=1}^n g(x_i) $``
+```
+
+will be rendered as:
+
+This formula ``$ y=\sum_{i=1}^n g(x_i) $``
+

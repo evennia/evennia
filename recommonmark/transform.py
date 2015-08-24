@@ -20,6 +20,7 @@ class AutoStructify(transforms.Transform):
         'enable_auto_toc_tree': True,
         'enable_eval_rst': True,
         'enable_math': True,
+        'enable_inline_math': True,
         'url_resolver': lambda x: x,
         }
 
@@ -175,6 +176,37 @@ class AutoStructify(transforms.Transform):
             node['refuri'] = uri
             return None
 
+    def auto_inline_code(self, node):
+        """Try to automatically generate nodes for inline literals.
+
+        Parameters
+        ----------
+        node : nodes.literal
+            Original codeblock node
+        Returns
+        -------
+        tocnode: docutils node
+            The converted toc tree node, None if conversion is not possible.
+        """
+        assert isinstance(node, nodes.literal)
+        if len(node.children) != 1:
+            return None
+        content = node.children[0]
+        if not isinstance(content, nodes.Text):
+            return None
+        content = content.astext().strip()
+        if content.startswith('$')  and content.endswith('$'):
+            if not self.config['enable_inline_math']:
+                return None
+            content = content[1:-1]
+            self.state_machine.reset(self.document,
+                                     node.parent,
+                                     self.current_level)
+            return self.state_machine.run_role('math', content=content)
+        else:
+            return None
+
+
     def auto_code_block(self, node):
         """Try to automatically generate nodes for codeblock syntax.
 
@@ -234,6 +266,8 @@ class AutoStructify(transforms.Transform):
             newnode = self.auto_doc_ref(node)
         elif isinstance(node, nodes.literal_block):
             newnode = self.auto_code_block(node)
+        elif isinstance(node, nodes.literal):
+            newnode = self.auto_inline_code(node)
         return newnode
 
     def traverse(self, node):
