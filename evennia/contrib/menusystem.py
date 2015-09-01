@@ -3,7 +3,7 @@ Evennia menu system.
 
 Contribution - Griatch 2011
 
-> Note that the evennia/utils/menu.py module is probably a better and
+> Note that the evennia/utils/evmenu.py module is probably a better and
 more flexible implementation of a menu system than this. Try that
 first.
 
