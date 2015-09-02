@@ -204,7 +204,6 @@ class DefaultObject(ObjectDB):
         return self.contents_cache.get(exclude=exclude)
     contents = property(contents_get)
 
-
     @property
     def exits(self):
         """
@@ -1264,7 +1263,7 @@ class DefaultObject(ObjectDB):
                                                     con.access(looker, "view"))
         exits, users, things = [], [], []
         for con in visible:
-            key = con.key
+            key = con.get_display_name(looker)
             if con.destination:
                 exits.append(key)
             elif con.has_player:
@@ -1272,7 +1271,7 @@ class DefaultObject(ObjectDB):
             else:
                 things.append(key)
         # get description, build string
-        string = "{c%s{n\n" % self.key
+        string = "{c%s{n\n" % self.get_display_name(looker)
         desc = self.db.desc
         if desc:
             string += "%s" % desc
