@@ -591,6 +591,7 @@ STATICFILES_IGNORE_PATTERNS = ('README.md',)
 ACTIVE_TEMPLATE = 'prosimii'
 # We setup the location of the website template as well as the admin site.
 TEMPLATE_DIRS = (
+    os.path.join(GAME_DIR, "web", "template_overrides", ACTIVE_TEMPLATE),
     os.path.join(GAME_DIR, "web", "template_overrides"),
     os.path.join(EVENNIA_DIR, "web", "templates", ACTIVE_TEMPLATE),
     os.path.join(EVENNIA_DIR, "web", "templates"),)
