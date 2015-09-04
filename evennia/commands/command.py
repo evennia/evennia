@@ -61,7 +61,7 @@ def _init_command(mcs, **kwargs):
     mcs.lock_storage = ";".join(temp)
 
     if hasattr(mcs, 'arg_regex') and isinstance(mcs.arg_regex, basestring):
-        mcs.arg_regex = re.compile(r"%s" % mcs.arg_regex, re.I)
+        mcs.arg_regex = re.compile(r"%s" % mcs.arg_regex, re.I + re.UNICODE)
     if not hasattr(mcs, "auto_help"):
         mcs.auto_help = True
     if not hasattr(mcs, 'is_exit'):

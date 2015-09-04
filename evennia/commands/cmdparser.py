@@ -60,7 +60,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
                 full input string the cmdname takes up - an exact match would be 1.0.
 
         """
-        cmdlen, strlen = len(cmdname), len(string)
+        cmdlen, strlen = len(unicode(cmdname)), len(unicode(string))
         mratio = 1 - (strlen - cmdlen) / (1.0 * strlen)
         args = string[cmdlen:]
         return (cmdname, args, cmdobj, cmdlen, mratio)
