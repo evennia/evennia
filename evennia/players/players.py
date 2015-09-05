@@ -615,6 +615,10 @@ class DefaultPlayer(PlayerDB):
     def at_first_login(self):
         """
         Called the very first time this player logs into the game.
+        Note that this is called *before* at_pre_login, so no session
+        is established and usually no character is yet assigned at
+        this point. This hook is intended for player-specific setup
+        like configurations.
 
         """
         pass

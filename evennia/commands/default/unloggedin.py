@@ -186,8 +186,8 @@ class CmdUnconnectedConnect(MuxCommand):
         # actually do the login. This will call all other hooks:
         #   session.at_login()
         #   player.at_init()  # always called when object is loaded from disk
+        #   player.at_first_login()  # only once, for player-centric setup
         #   player.at_pre_login()
-        #   player.at_first_login()  # only once
         #   player.at_post_login(sessid=sessid)
         session.sessionhandler.login(session, player)
 
