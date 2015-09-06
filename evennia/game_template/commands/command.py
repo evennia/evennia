@@ -19,6 +19,15 @@ class Command(BaseCommand):
     used by Evennia to create the automatic help entry for
     the command, so make sure to document consistently here.
 
+    Each Command implements the following methods, called
+    in this order:
+        - at_pre_command(): If this returns True, execution is aborted.
+        - parse(): Should perform any extra parsing needed on self.args
+            and store the result on self.
+        - func(): Performs the actual work.
+        - at_post_command(): Extra actions, often things done after
+            every command, like prompts.
+
     """
     # these need to be specified
 
