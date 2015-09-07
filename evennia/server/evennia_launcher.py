@@ -130,8 +130,8 @@ WARNING_RUNSERVER = \
 
 ERROR_SETTINGS = \
     """
-    There was an error importing Evennia's config file {settingspath}. There is usually
-    one of three reasons for this:
+    There was an error importing Evennia's config file {settingspath}.
+    There is usually one of three reasons for this:
         1) You are not running this command from your game directory.
            Change directory to your game directory and try again (or
            create a new game directory using evennia --init <dirname>)
@@ -204,7 +204,7 @@ VERSION_INFO = \
     Django: {django}{about}
     """
 
-ABOUT_INFO= \
+ABOUT_INFO = \
     """
     Evennia MUD/MUX/MU* development system
 
@@ -229,8 +229,8 @@ HELP_ENTRY = \
     Reload with (5) to update the server with your changes without
     disconnecting any players.
 
-    Note: Reload and stop are sometimes poorly supported in Windows. If you have
-    issues, log into the game to stop or restart the server instead.
+    Note: Reload and stop are sometimes poorly supported in Windows. If you
+    have issues, log into the game to stop or restart the server instead.
     """
 
 MENU = \
@@ -331,6 +331,7 @@ ERROR_NODJANGO = \
 #
 #------------------------------------------------------------
 
+
 def evennia_version():
     """
     Get the Evennia version info from the main package.
@@ -343,7 +344,10 @@ def evennia_version():
     except ImportError:
         pass
     try:
-        version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip())
+        rev = check_output(
+            "git rev-parse --short HEAD",
+            shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip()
+        version = "%s (rev %s)" % (version, rev)
     except (IOError, CalledProcessError):
         pass
     return version
@@ -372,7 +376,8 @@ def check_main_evennia_dependencies():
         import twisted
         tversion = twisted.version.short()
         if tversion < TWISTED_MIN:
-            print ERROR_TWISTED_VERSION.format(tversion=tversion, twisted_min=TWISTED_MIN)
+            print ERROR_TWISTED_VERSION.format(
+                tversion=tversion, twisted_min=TWISTED_MIN)
             error = True
     except ImportError:
         print ERROR_NOTWISTED
@@ -383,12 +388,15 @@ def check_main_evennia_dependencies():
         # only the main version (1.5, not 1.5.4.0)
         dversion_main = ".".join(dversion.split(".")[:2])
         if dversion < DJANGO_MIN:
-            print ERROR_DJANGO_MIN.format(dversion=dversion_main, django_min=DJANGO_MIN)
+            print ERROR_DJANGO_MIN.format(
+                dversion=dversion_main, django_min=DJANGO_MIN)
             error = True
         elif DJANGO_MIN <= dversion < DJANGO_REC:
-            print NOTE_DJANGO_MIN.format(dversion=dversion_main, django_rec=DJANGO_REC)
+            print NOTE_DJANGO_MIN.format(
+                dversion=dversion_main, django_rec=DJANGO_REC)
         elif DJANGO_REC < dversion_main:
-            print NOTE_DJANGO_NEW.format(dversion=dversion_main, django_rec=DJANGO_REC)
+            print NOTE_DJANGO_NEW.format(
+                dversion=dversion_main, django_rec=DJANGO_REC)
     except ImportError:
         print ERROR_NODJANGO
         error = True
@@ -449,9 +457,10 @@ def create_settings_file():
         settings_string = f.read()
 
     # tweak the settings
-    setting_dict = {"settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
-                    "servername":"\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1].capitalize(),
-                    "secret_key":"\'%s\'" % create_secret_key()}
+    setting_dict = {
+        "settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
+        "servername": "\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1].capitalize(),
+        "secret_key": "\'%s\'" % create_secret_key()}
 
     # modify the settings
     settings_string = settings_string.format(**setting_dict)
@@ -486,7 +495,9 @@ def create_superuser():
     Create the superuser player
 
     """
-    print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
+    print(
+        "\nCreate a superuser below. The superuser is Player #1, the 'owner' "
+        "account of the server.\n")
     django.core.management.call_command("createsuperuser", interactive=True)
 
 
@@ -518,17 +529,17 @@ def check_database():
 
         other_superuser = PlayerDB.objects.filter(is_superuser=True)
         if other_superuser:
-             # Another superuser was found, but not with id=1. This may
-             # happen if using flush (the auto-id starts at a higher
-             # value). Wwe copy this superuser into id=1. To do
-             # this we must deepcopy it, delete it then save the copy
-             # with the new id. This allows us to avoid the UNIQUE
-             # constraint on usernames.
+            # Another superuser was found, but not with id=1. This may
+            # happen if using flush (the auto-id starts at a higher
+            # value). Wwe copy this superuser into id=1. To do
+            # this we must deepcopy it, delete it then save the copy
+            # with the new id. This allows us to avoid the UNIQUE
+            # constraint on usernames.
             other = other_superuser[0]
             other_id = other.id
             other_key = other.username
-            print WARNING_MOVING_SUPERUSER.format(other_key=other_key,
-                                                 other_id=other_id)
+            print WARNING_MOVING_SUPERUSER.format(
+                other_key=other_key, other_id=other_id)
             res = ""
             while res.upper() != "Y":
                 # ask for permission
@@ -595,7 +606,8 @@ def del_pid(pidfile):
         os.remove(pidfile)
 
 
-def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART, restart=False):
+def kill(pidfile, signal=SIG, succmsg="", errmsg="",
+         restart_file=SERVER_RESTART, restart=False):
     """
     Send a kill signal to a process based on PID. A customized
     success/error message will be returned. If clean=True, the system
@@ -616,7 +628,8 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART
             os.remove(pidfile)
         # set restart/norestart flag
         if restart:
-            django.core.management.call_command('collectstatic', interactive=False, verbosity=0)
+            django.core.management.call_command(
+                'collectstatic', interactive=False, verbosity=0)
             with open(restart_file, 'w') as f:
                 f.write("reload")
         else:
@@ -645,15 +658,16 @@ def show_version_info(about=False):
         version_info (str): A complete version info string.
 
     """
-    import os, sys
+    import os
+    import sys
     import twisted
     import django
 
-    return VERSION_INFO.format(version=EVENNIA_VERSION,
-                             about=ABOUT_INFO if about else "",
-                             os=os.name, python=sys.version.split()[0],
-                             twisted=twisted.version.short(),
-                             django=django.get_version())
+    return VERSION_INFO.format(
+        version=EVENNIA_VERSION, about=ABOUT_INFO if about else "",
+        os=os.name, python=sys.version.split()[0],
+        twisted=twisted.version.short(),
+        django=django.get_version())
 
 
 def error_check_python_modules():
@@ -687,22 +701,31 @@ def error_check_python_modules():
         imp(path, split=False)
     # cmdsets
 
-    deprstring = "settings.%s should be renamed to %s. If defaults are used, " \
-                 "their path/classname must be updated (see evennia/settings_default.py)."
+    deprstring = ("settings.%s should be renamed to %s. If defaults are used, "
+                  "their path/classname must be updated "
+                  "(see evennia/settings_default.py).")
     if hasattr(settings, "CMDSET_DEFAULT"):
-        raise DeprecationWarning(deprstring % ("CMDSET_DEFAULT", "CMDSET_CHARACTER"))
+        raise DeprecationWarning(deprstring % (
+            "CMDSET_DEFAULT", "CMDSET_CHARACTER"))
     if hasattr(settings, "CMDSET_OOC"):
         raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_PLAYER"))
     if settings.WEBSERVER_ENABLED and not isinstance(settings.WEBSERVER_PORTS[0], tuple):
-        raise DeprecationWarning("settings.WEBSERVER_PORTS must be on the form [(proxyport, serverport), ...]")
+        raise DeprecationWarning(
+            "settings.WEBSERVER_PORTS must be on the form "
+            "[(proxyport, serverport), ...]")
     if hasattr(settings, "BASE_COMM_TYPECLASS"):
-        raise DeprecationWarning(deprstring % ("BASE_COMM_TYPECLASS", "BASE_CHANNEL_TYPECLASS"))
+        raise DeprecationWarning(deprstring % (
+            "BASE_COMM_TYPECLASS", "BASE_CHANNEL_TYPECLASS"))
     if hasattr(settings, "COMM_TYPECLASS_PATHS"):
-        raise DeprecationWarning(deprstring % ("COMM_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS"))
+        raise DeprecationWarning(deprstring % (
+            "COMM_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS"))
     if hasattr(settings, "CHARACTER_DEFAULT_HOME"):
-        raise DeprecationWarning("settings.CHARACTER_DEFAULT_HOME should be renamed to DEFAULT_HOME. " \
-                "See also settings.START_LOCATION (see evennia/settings_default.py).")
-    deprstring = "settings.%s is now merged into settings.TYPECLASS_PATHS. Update your settings file."
+        raise DeprecationWarning(
+            "settings.CHARACTER_DEFAULT_HOME should be renamed to "
+            "DEFAULT_HOME. See also settings.START_LOCATION "
+            "(see evennia/settings_default.py).")
+    deprstring = ("settings.%s is now merged into settings.TYPECLASS_PATHS. "
+                  "Update your settings file.")
     if hasattr(settings, "OBJECT_TYPECLASS_PATHS"):
         raise DeprecationWarning(deprstring % "OBJECT_TYPECLASS_PATHS")
     if hasattr(settings, "SCRIPT_TYPECLASS_PATHS"):
@@ -712,12 +735,13 @@ def error_check_python_modules():
     if hasattr(settings, "CHANNEL_TYPECLASS_PATHS"):
         raise DeprecationWarning(deprstring % "CHANNEL_TYPECLASS_PATHS")
 
-
-
     from evennia.commands import cmdsethandler
-    if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None): print "Warning: CMDSET_UNLOGGED failed to load!"
-    if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None): print "Warning: CMDSET_CHARACTER failed to load"
-    if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None): print "Warning: CMDSET_PLAYER failed to load"
+    if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None):
+        print("Warning: CMDSET_UNLOGGED failed to load!")
+    if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None):
+        print("Warning: CMDSET_CHARACTER failed to load")
+    if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None):
+        print("Warning: CMDSET_PLAYER failed to load")
     # typeclasses
     imp(settings.BASE_PLAYER_TYPECLASS)
     imp(settings.BASE_OBJECT_TYPECLASS)
@@ -828,15 +852,17 @@ def init_game_directory(path, check_db=True):
 
             # note that we hope the twistd package won't change here, since we
             # try to get to the executable by relative path.
-            twistd_path = os.path.abspath(os.path.join(twistd_dir,
-                            os.pardir, os.pardir, os.pardir, os.pardir,
-                            'scripts', 'twistd.py'))
+            twistd_path = os.path.abspath(
+                os.path.join(twistd_dir, os.pardir, os.pardir, os.pardir,
+                             os.pardir, 'scripts', 'twistd.py'))
 
             with open(batpath, 'w') as bat_file:
                 # build a custom bat file for windows
-                bat_file.write("@\"%s\" \"%s\" %%*" % (sys.executable, twistd_path))
+                bat_file.write("@\"%s\" \"%s\" %%*" % (
+                    sys.executable, twistd_path))
 
             print INFO_WINDOWS_BATFILE.format(twistd_path=twistd_path)
+
 
 def run_dummyrunner(number_of_dummies):
     """
@@ -853,13 +879,14 @@ def run_dummyrunner(number_of_dummies):
     """
     number_of_dummies = str(int(number_of_dummies)) if number_of_dummies else 1
     cmdstr = [sys.executable, EVENNIA_DUMMYRUNNER, "-N", number_of_dummies]
-    config_file  = os.path.join(SETTINGS_PATH, "dummyrunner_settings.py")
+    config_file = os.path.join(SETTINGS_PATH, "dummyrunner_settings.py")
     if os.path.exists(config_file):
         cmdstr.extend(["--config", config_file])
     try:
         call(cmdstr, env=getenv())
     except KeyboardInterrupt:
         pass
+
 
 def list_settings(keys):
     """
@@ -885,7 +912,8 @@ def list_settings(keys):
         # a specific key
         table = evtable.EvTable(width=131)
         keys = [key.upper() for key in keys]
-        confs = dict((key,var) for key, var in evsettings.__dict__.items() if key in keys)
+        confs = dict((key, var) for key, var in evsettings.__dict__.items()
+                     if key in keys)
         for key, val in confs.items():
             table.add_row(key, str(val))
     print table
@@ -988,47 +1016,65 @@ def server_operation(mode, service, interactive, profiler):
             if interactive:
                 cmdstr.append('--iportal')
             cmdstr.append('--noserver')
-            django.core.management.call_command('collectstatic', verbosity=1, interactive=False)
-        else:  # all
+            django.core.management.call_command(
+                'collectstatic', verbosity=1, interactive=False)
+        else:
+            # all
             # for convenience we don't start logging of
             # portal, only of server with this command.
             if profiler:
-                cmdstr.append('--pserver') # this is the common case
+                # this is the common case
+                cmdstr.append('--pserver')
             if interactive:
                 cmdstr.append('--iserver')
-            django.core.management.call_command('collectstatic', verbosity=1, interactive=False)
-        cmdstr.extend([GAMEDIR, TWISTED_BINARY, SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE])
+            django.core.management.call_command(
+                'collectstatic', verbosity=1, interactive=False)
+        cmdstr.extend([
+            GAMEDIR, TWISTED_BINARY, SERVER_LOGFILE,
+            PORTAL_LOGFILE, HTTP_LOGFILE])
         # start the server
         Popen(cmdstr, env=getenv())
 
     elif mode == 'reload':
         # restarting services
         if os.name == 'nt':
-            print "Restarting from command line is not supported under Windows. Log into the game to restart."
+            print(
+                "Restarting from command line is not supported under Windows. "
+                "Log into the game to restart.")
             return
         if service == 'server':
-            kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % 'Server', SERVER_RESTART, restart=True)
+            kill(SERVER_PIDFILE, SIG, "Server reloaded.",
+                 errmsg % 'Server', SERVER_RESTART, restart=True)
         elif service == 'portal':
-            print """
-          Note: Portal usually doesnt't need to be reloaded unless you are debugging in interactive mode.
-          If Portal was running in default Daemon mode, it cannot be restarted. In that case you have
-          to restart it manually with 'evennia.py start portal'
-          """
-            kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped, if it was in daemon mode).", errmsg % 'Portal', PORTAL_RESTART, restart=True)
-        else: # all
+            print(
+                "Note: Portal usually doesnt't need to be reloaded unless you "
+                "are debugging in interactive mode. If Portal was running in "
+                "default Daemon mode, it cannot be restarted. In that case "
+                "you have to restart it manually with 'evennia.py "
+                "start portal'")
+            kill(PORTAL_PIDFILE, SIG,
+                 "Portal reloaded (or stopped, if it was in daemon mode).",
+                 errmsg % 'Portal', PORTAL_RESTART, restart=True)
+        else:
+            # all
             # default mode, only restart server
-            kill(SERVER_PIDFILE, SIG, "Server reload.", errmsg % 'Server', SERVER_RESTART, restart=True)
+            kill(SERVER_PIDFILE, SIG,
+                 "Server reload.",
+                 errmsg % 'Server', SERVER_RESTART, restart=True)
 
     elif mode == 'stop':
         # stop processes, avoiding reload
         if service == 'server':
-            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', SERVER_RESTART)
+            kill(SERVER_PIDFILE, SIG,
+                 "Server stopped.", errmsg % 'Server', SERVER_RESTART)
         elif service == 'portal':
-            kill(PORTAL_PIDFILE, SIG, "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART)
+            kill(PORTAL_PIDFILE, SIG,
+                 "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART)
         else:
-            kill(PORTAL_PIDFILE, SIG, "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART)
-            kill(SERVER_PIDFILE, SIG, "Server stopped.", errmsg % 'Server', SERVER_RESTART)
-
+            kill(PORTAL_PIDFILE, SIG,
+                 "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART)
+            kill(SERVER_PIDFILE, SIG,
+                 "Server stopped.", errmsg % 'Server', SERVER_RESTART)
 
 
 def main():
@@ -1040,28 +1086,44 @@ def main():
     # set up argument parser
 
     parser = ArgumentParser(description=CMDLINE_HELP)
-    parser.add_argument('-v', '--version', action='store_true',
-                      dest='show_version', default=False,
-                      help="Show version info.")
-    parser.add_argument('-i', '--interactive', action='store_true',
-                      dest='interactive', default=False,
-                      help="Start given processes in interactive mode.")
-    parser.add_argument('--init', action='store', dest="init", metavar="name",
-                        help="Creates a new game directory 'name' at the current location.")
-    parser.add_argument('-l', nargs='+', action='store', dest='listsetting', metavar="key",
-                      help="List values for server settings. Use 'all' to list all available keys.")
-    parser.add_argument('--profiler', action='store_true', dest='profiler', default=False,
-                      help="Start given server component under the Python profiler.")
-    parser.add_argument('--dummyrunner', nargs=1, action='store', dest='dummyrunner', metavar="N",
-                        help="Tests a running server by connecting N dummy players to it.")
-    parser.add_argument('--settings', nargs=1, action='store', dest='altsettings', default=None, metavar="filename.py",
-                      help="Start evennia with alternative settings file in gamedir/server/conf/.")
-    parser.add_argument("option", nargs='?', default="noop",
-                        help="Operational mode: 'start', 'stop', 'restart' or 'menu'.")
-    parser.add_argument("service", metavar="component", nargs='?', default="all",
-                        help="Server component to operate on: 'server', 'portal' or 'all' (default).")
-    parser.epilog = "Example django-admin commands: 'migrate', 'flush', 'shell' and 'dbshell'. " \
-                    "See the django documentation for more django-admin commands."
+    parser.add_argument(
+        '-v', '--version', action='store_true',
+        dest='show_version', default=False,
+        help="Show version info.")
+    parser.add_argument(
+        '-i', '--interactive', action='store_true',
+        dest='interactive', default=False,
+        help="Start given processes in interactive mode.")
+    parser.add_argument(
+        '--init', action='store', dest="init", metavar="name",
+        help="Creates a new game directory 'name' at the current location.")
+    parser.add_argument(
+        '-l', nargs='+', action='store', dest='listsetting', metavar="key",
+        help=("List values for server settings. Use 'all' to list all "
+              "available keys."))
+    parser.add_argument(
+        '--profiler', action='store_true', dest='profiler', default=False,
+        help="Start given server component under the Python profiler.")
+    parser.add_argument(
+        '--dummyrunner', nargs=1, action='store', dest='dummyrunner',
+        metavar="N",
+        help="Tests a running server by connecting N dummy players to it.")
+    parser.add_argument(
+        '--settings', nargs=1, action='store', dest='altsettings',
+        default=None, metavar="filename.py",
+        help=("Start evennia with alternative settings file in "
+              "gamedir/server/conf/."))
+    parser.add_argument(
+        "option", nargs='?', default="noop",
+        help="Operational mode: 'start', 'stop', 'restart' or 'menu'.")
+    parser.add_argument(
+        "service", metavar="component", nargs='?', default="all",
+        help=("Server component to operate on: "
+              "'server', 'portal' or 'all' (default)."))
+    parser.epilog = (
+        "Example django-admin commands: "
+        "'migrate', 'flush', 'shell' and 'dbshell'. "
+        "See the django documentation for more django-admin commands.")
 
     args, unknown_args = parser.parse_known_args()
 
@@ -1078,13 +1140,14 @@ def main():
     elif args.init:
         # initialization of game directory
         create_game_directory(args.init)
-        print CREATED_NEW_GAMEDIR.format(gamedir=args.init,
-                                         settings_path=os.path.join(args.init, SETTINGS_PATH))
+        print CREATED_NEW_GAMEDIR.format(
+            gamedir=args.init,
+            settings_path=os.path.join(args.init, SETTINGS_PATH))
         sys.exit()
 
     if args.show_version:
         # show the version info
-        print show_version_info(option=="help")
+        print show_version_info(option == "help")
         sys.exit()
 
     if args.altsettings:
@@ -1093,7 +1156,8 @@ def main():
         global SETTINGSFILE, SETTINGS_DOTPATH
         SETTINGSFILE = sfile
         SETTINGS_DOTPATH = "server.conf.%s" % sfile.rstrip(".py")
-        print "Using settings file '%s' (%s)." % (SETTINGSFILE, SETTINGS_DOTPATH)
+        print "Using settings file '%s' (%s)." % (
+            SETTINGSFILE, SETTINGS_DOTPATH)
 
     if args.dummyrunner:
         # launch the dummy runner
@@ -1131,7 +1195,7 @@ def main():
                 if arg.startswith("--"):
                     print "arg:", arg
                     if "=" in arg:
-                        arg, value  = [p.strip() for p in arg.split("=", 1)]
+                        arg, value = [p.strip() for p in arg.split("=", 1)]
                     else:
                         value = True
                     kwargs[arg.lstrip("--")] = [value]
