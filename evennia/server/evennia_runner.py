@@ -217,6 +217,8 @@ def main():
                         default=False, help='Do not start Server process')
     parser.add_argument('--noportal', action='store_true', dest='noportal',
                         default=False, help='Do not start Portal process')
+    parser.add_argument('--logserver', action='store_true', dest='logserver',
+                        default=False, help='Log Server output to logfile')
     parser.add_argument('--iserver', action='store_true', dest='iserver',
                         default=False, help='Server in interactive mode')
     parser.add_argument('--iportal', action='store_true', dest='iportal',
@@ -285,7 +287,7 @@ def main():
         server_argv = None
     else:
         set_restart_mode(SERVER_RESTART, "shutdown")
-        if args.iserver:
+        if not args.logserver:
             # don't log to server logfile
             del server_argv[2]
             print "\nStarting Evennia Server (output to stdout)."

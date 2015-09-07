@@ -989,7 +989,7 @@ def run_menu():
         return
 
 
-def server_operation(mode, service, interactive, profiler):
+def server_operation(mode, service, interactive, profiler, logserver=False):
     """
     Handle argument options given on the command line.
 
@@ -998,6 +998,8 @@ def server_operation(mode, service, interactive, profiler):
         service (str): "server", "portal" or "all".
         interactive (bool). Use interactive mode or daemon.
         profiler (bool): Run the service under the profiler.
+        logserver (bool, optional): Log Server data to logfile
+            specified by settings.SERVER_LOG_FILE.
 
     """
 
@@ -1015,6 +1017,8 @@ def server_operation(mode, service, interactive, profiler):
                 cmdstr.append('--pserver')
             if interactive:
                 cmdstr.append('--iserver')
+            if logserver:
+                cmdstr.append('--logserver')
             cmdstr.append('--noportal')
         elif service == 'portal':
             if profiler:
@@ -1033,6 +1037,8 @@ def server_operation(mode, service, interactive, profiler):
                 cmdstr.append('--pserver')
             if interactive:
                 cmdstr.append('--iserver')
+            if logserver:
+                cmdstr.append('--logserver')
             django.core.management.call_command(
                 'collectstatic', verbosity=1, interactive=False)
         cmdstr.extend([
@@ -1110,10 +1116,14 @@ def main():
         dest='interactive', default=False,
         help="Start given processes in interactive mode.")
     parser.add_argument(
+        '-l', '--log', action='store_true',
+        dest="logserver", default=False,
+        help="Log Server data to log file.")
+    parser.add_argument(
         '--init', action='store', dest="init", metavar="name",
         help="Creates a new game directory 'name' at the current location.")
     parser.add_argument(
-        '-l', nargs='+', action='store', dest='listsetting', metavar="key",
+        '--list', nargs='+', action='store', dest='listsetting', metavar="key",
         help=("List values for server settings. Use 'all' to list all "
               "available keys."))
     parser.add_argument(
@@ -1189,7 +1199,7 @@ def main():
     elif option in ('start', 'reload', 'stop'):
         # operate the server directly
         init_game_directory(CURRENT_DIR, check_db=True)
-        server_operation(option, service, args.interactive, args.profiler)
+        server_operation(option, service, args.interactive, args.profiler, args.logserver)
     elif option != "noop":
         # pass-through to django manager
         check_db = False
