@@ -7,6 +7,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 VERSION_PATH = os.path.join('evennia', 'VERSION.txt')
 OS_WINDOWS = os.name == "nt"
 
+
 def get_requirements():
     """
     To update the requirements for Evennia, edit the requirements.txt
@@ -67,10 +68,10 @@ def package_data():
 setup(
     name='evennia',
     version=get_version(),
-    author = "Evennia community",
-    maintainer = "Griatch",
-    maintainer_email = "griatch AT gmail DOT com",
-    url = "http://www.evennia.com",
+    author="Evennia community",
+    maintainer="Griatch",
+    maintainer_email="griatch AT gmail DOT com",
+    url="http://www.evennia.com",
     description='A full-featured MUD building toolkit.',
     packages=find_packages(),
     scripts=get_scripts(),
