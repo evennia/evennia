@@ -1033,7 +1033,9 @@ def server_operation(mode, service, interactive, profiler):
             GAMEDIR, TWISTED_BINARY, SERVER_LOGFILE,
             PORTAL_LOGFILE, HTTP_LOGFILE])
         # start the server
-        Popen(cmdstr, env=getenv())
+        process = Popen(cmdstr, env=getenv())
+        if interactive:
+            process.wait()
 
     elif mode == 'reload':
         # restarting services
