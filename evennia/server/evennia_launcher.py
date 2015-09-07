@@ -1034,8 +1034,13 @@ def server_operation(mode, service, interactive, profiler):
             PORTAL_LOGFILE, HTTP_LOGFILE])
         # start the server
         process = Popen(cmdstr, env=getenv())
+
         if interactive:
-            process.wait()
+            try:
+                process.wait()
+            except KeyboardInterrupt:
+                print "\nKeyboard interrupt sent in interactive mode.\n"
+
 
     elif mode == 'reload':
         # restarting services

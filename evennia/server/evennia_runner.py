@@ -184,7 +184,10 @@ def start_services(server_argv, portal_argv):
     while True:
 
         # this blocks until something is actually returned.
-        message, rc = processes.get()
+        try:
+            message, rc = processes.get()
+        except KeyboardInterrupt:
+            break
 
         # restart only if process stopped cleanly
         if (message == "server_stopped" and int(rc) == 0 and
