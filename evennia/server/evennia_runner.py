@@ -187,6 +187,7 @@ def start_services(server_argv, portal_argv):
         try:
             message, rc = processes.get()
         except KeyboardInterrupt:
+            # this only matters in interactive mode
             break
 
         # restart only if process stopped cleanly

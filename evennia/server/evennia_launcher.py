@@ -16,6 +16,7 @@ import shutil
 import importlib
 from argparse import ArgumentParser
 from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
+import twisted
 import django
 
 # Signal processing
@@ -323,6 +324,11 @@ NOTE_DJANGO_NEW = \
 ERROR_NODJANGO = \
     """
     ERROR: Django does not seem to be installed.
+    """
+
+NOTE_KEYBOARDINTERRUPT = \
+    """
+    STOP: Caught keyboard interrupt while in interactive mode.
     """
 
 #------------------------------------------------------------
@@ -1039,8 +1045,10 @@ def server_operation(mode, service, interactive, profiler):
             try:
                 process.wait()
             except KeyboardInterrupt:
-                print "\nKeyboard interrupt sent in interactive mode.\n"
-
+                server_operation("stop", "portal", False, False)
+                return
+            finally:
+                print NOTE_KEYBOARDINTERRUPT
 
     elif mode == 'reload':
         # restarting services
