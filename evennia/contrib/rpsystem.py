@@ -77,6 +77,7 @@ _EMOTE_MULTIMATCH_ERROR = \
 _LANGUAGE_NOMATCH_ERROR = \
 """{{RNo language named {{r{langname}{{n"""
 
+_RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.UNICODE
 
 # The prefix is the (single-character) symbol used to find the start
 # of a object reference, such as /tall (note that
@@ -94,21 +95,22 @@ _NUM_SEP = "-"
 # separate multimatches from one another and word is the first word in the
 # marker. So entering "/tall man" will return groups ("", "tall")
 # and "/2-tall man" will return groups ("2", "tall").
-_RE_OBJ_REF_START = re.compile(r"%s(?:([0-9]+)%s)*(\w+)" % (_PREFIX, _NUM_SEP),
-                               re.MULTILINE + re.UNICODE + re.IGNORECASE)
+_RE_OBJ_REF_START = re.compile(r"%s(?:([0-9]+)%s)*(\w+)" %
+                    (_PREFIX, _NUM_SEP), _RE_FLAGS)
 
 # Reference markers are used internally when distributing the emote to
 # all that can see it. They are never seen by players and are on the form {#dbref}.
 _RE_REF = re.compile(r"\{+\#([0-9]+)\}+")
 
 # This regex is used to quickly reference one self in an emote.
-_RE_SELF_REF = re.compile(r"/me|@", re.UNICODE + re.IGNORECASE)
+_RE_SELF_REF = re.compile(r"/me|@", _RE_FLAGS)
 
 # reference markers for language
 _RE_REF_LANG = re.compile(r"\{+\##([0-9]+)\}+")
 # language says in the emote are on the form "..." or langname"..." (no spaces).
 # this regex returns in groups (langname, say), where langname can be empty.
 _RE_LANGUAGE = re.compile(r"(?:(\w+))*(\".+?\")")
+
 
 #TODO
 # make this into a pluggable language module for handling
@@ -296,7 +298,7 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
     if _RE_SELF_REF.search(emote):
         key = "#%i" % sender.id
         emote = _RE_SELF_REF.sub("{%s}" % key, emote)
-        mapping[key] = sender
+        mapping[key] = sender.db.sdesc or sender.key
 
     # we now loop over all references and analyze them
     errors = []
@@ -312,11 +314,12 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
         istart = istart0 + 1 + (len(num_identifier) + 1 if num_identifier else 0)
 
         # loop over all candidate regexes and match against the string following the match
-        matches = ((re_match(reg, emote[istart:], re.M + re.M + re.U), obj, text) for reg, obj, text  in candidate_regexes)
+        matches = ((re_match(reg, emote[istart:], _RE_FLAGS), obj, text)
+                    for reg, obj, text  in candidate_regexes)
 
         # score matches by how long part of the string was matched
         matches = [(match.endpos if match else -1, obj, text) for match, obj, text in matches]
-        maxscore = max(score for score, obj in matches)
+        maxscore = max(score for score, obj, text in matches)
 
         # analyze result
         if maxscore == -1:
@@ -325,35 +328,36 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
             continue
 
         # we have a valid maxscore, extract all matches with this value
-        bestmatches = [obj for score, obj in matches if maxscore == score]
+        bestmatches = [(obj, text) for score, obj, text in matches if maxscore == score]
         nmatches = len(bestmatches)
+        print "nmatches:", nmatches, bestmatches
         if nmatches == 1:
             # an exact match.
-            obj = bestmatches[0]
+            obj = bestmatches[0][0]
         if nmatches:
             # several matches have the same score.
             inum = max(0, int(num_identifier) - 1) if num_identifier else None
-            if all(bestmatches[0].id == obj.id for obj in bestmatches):
+            if all(bestmatches[0][0].id == obj.id for obj, text in bestmatches):
                 # multi-matches all references the same obj (could happen with clashing recogs/sdescs)
-                obj = bestmatches[0]
+                obj = bestmatches[0][0]
             else:
                 # was a numberical identifier given to help us separate the multi-match?
                 if inum is None or inum > nmatches:
                     # no match or invalid match id given
                     refname = marker_match.group()
                     reflist = ["%s%s%s (%s)" % (inum, _NUM_SEP, refname, text)
-                            for inum, (score, obj, text) in enumerate(bestmatches) if score == maxscore]
+                            for inum, (obj, text) in enumerate(bestmatches) if score == maxscore]
                     errors.append(_EMOTE_MULTIMATCH_ERROR.format(ref=marker_match.group(), reflist=reflist))
                     continue
                 else:
                     # A valid inum is given. Use this to separate data
-                    obj = bestmatches[inum]
+                    obj = bestmatches[inum][0]
 
         # if we get to this point we have identifed a local object tied to this sdesc or recog marker.
         # we replace it with the interal representation on the form {#dbref}.
         key = "#%i" % obj.id
         emote = emote[:istart0] + "{%s}" % key + emote[score:]
-        mapping[key] = obj
+        mapping[key] = obj.db.sdesc or obj.key
 
     if errors:
         # make sure to not let errors through.
@@ -386,6 +390,7 @@ def receive_emote(sender, receiver, emote, sdesc_mapping, language_mapping):
         This function will translage all text back based both on sdesc
         and recog mappings, but will give presedence to recog mappings.
     """
+    print "receive_emote:", sender, receiver, emote, sdesc_mapping, language_mapping
     # we make a local copy that we can modify
     mapping = copy(sdesc_mapping)
     # overload mapping with receiver's recogs (which is on the same form)
@@ -394,7 +399,7 @@ def receive_emote(sender, receiver, emote, sdesc_mapping, language_mapping):
     # handle the language mapping, which always produce different keys ##nn
     for key, (langname, saytext) in language_mapping.iteritems():
         mapping[key] = _LANGUAGE_TRANSLATE(sender, receiver, langname, saytext)
-    return emote.format(**mapping)
+    receiver.msg(emote.format(**mapping))
 
 
 def send_emote(sender, receivers, emote, no_anonymous=True):
@@ -422,11 +427,11 @@ def send_emote(sender, receivers, emote, no_anonymous=True):
         sender.msg(err.message)
         return
 
-    if no_anonymous and not sender in sdesc_mapping.values():
+    if no_anonymous and not "#%i" % sender.id in sdesc_mapping:
         # no self-reference in the emote - add to the end
         key = "#%i" % sender.id
         emote = "%s [%s]" % (emote, "{%s}" % key)
-        sdesc_mapping[key] = sender
+        sdesc_mapping[key] = sender.db.sdesc or sender.key
 
     # broadcast emote
     for receiver in receivers:
