@@ -291,7 +291,11 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
     candidate_regexes = [
             (recog_regex, obj, sdesc) for obj, (recog_regex, sdesc)
             in sender.db.recog_objmap.items() if obj in candidates] + \
-            [obj.db.sdesc_regex_tuple or ("", None, None) for obj in candidates]
+            [obj.db.sdesc_regex_tuple for obj in candidates]
+    # pre-compile the regexes while filtering empty tuples
+    print candidate_regexes
+    candidate_regexes = [(re.compile(tup[0], _RE_FLAGS), tup[1], tup[2])
+                         for tup in candidate_regexes if tup]
 
     # handle self-reference first
     mapping = {}
@@ -308,17 +312,19 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
         # start index forward for all candidates.
 
         # first see if there is a number given (e.g. 1-tall)
-        num_identifier, _ = marker_match.groups("")
+        num_identifier, _ = marker_match.groups("") # return "" if no match, rather than None
         istart0 = marker_match.start()
-        # +1 for _PREFIX, +1 for _NUM_SEP, if defined
-        istart = istart0 + 1 + (len(num_identifier) + 1 if num_identifier else 0)
+        # +1 for _NUM_SEP, if defined
+        istart = istart0 + (len(num_identifier) + 1 if num_identifier else 0)
 
+        print "marker match:", marker_match.group(), istart0, istart, emote[istart:]
+        #print "candidates:", [tup[2] for tup in candidate_regexes]
         # loop over all candidate regexes and match against the string following the match
-        matches = ((re_match(reg, emote[istart:], _RE_FLAGS), obj, text)
-                    for reg, obj, text  in candidate_regexes)
+        matches = ((reg.match(emote[istart:]), obj, text) for reg, obj, text in candidate_regexes)
 
         # score matches by how long part of the string was matched
         matches = [(match.endpos if match else -1, obj, text) for match, obj, text in matches]
+        #print "matches:", matches
         maxscore = max(score for score, obj, text in matches)
 
         # analyze result
@@ -331,6 +337,7 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
         bestmatches = [(obj, text) for score, obj, text in matches if maxscore == score]
         nmatches = len(bestmatches)
         print "nmatches:", nmatches, bestmatches
+
         if nmatches == 1:
             # an exact match.
             obj = bestmatches[0][0]
@@ -355,8 +362,9 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
 
         # if we get to this point we have identifed a local object tied to this sdesc or recog marker.
         # we replace it with the interal representation on the form {#dbref}.
+        print "replace emote:", istart, maxscore, emote, emote[istart + maxscore:]
         key = "#%i" % obj.id
-        emote = emote[:istart0] + "{%s}" % key + emote[score:]
+        emote = emote[:istart0] + "{%s}" % key + emote[istart + maxscore - 1:]
         mapping[key] = obj.db.sdesc or obj.key
 
     if errors:
@@ -390,7 +398,6 @@ def receive_emote(sender, receiver, emote, sdesc_mapping, language_mapping):
         This function will translage all text back based both on sdesc
         and recog mappings, but will give presedence to recog mappings.
     """
-    print "receive_emote:", sender, receiver, emote, sdesc_mapping, language_mapping
     # we make a local copy that we can modify
     mapping = copy(sdesc_mapping)
     # overload mapping with receiver's recogs (which is on the same form)
@@ -399,6 +406,8 @@ def receive_emote(sender, receiver, emote, sdesc_mapping, language_mapping):
     # handle the language mapping, which always produce different keys ##nn
     for key, (langname, saytext) in language_mapping.iteritems():
         mapping[key] = _LANGUAGE_TRANSLATE(sender, receiver, langname, saytext)
+    # coloring
+    mapping  = dict((key, "{b%s{n" % val) for key, val in mapping.iteritems())
     receiver.msg(emote.format(**mapping))
 
 
@@ -418,7 +427,7 @@ def send_emote(sender, receivers, emote, no_anonymous=True):
             if so.
 
     """
-
+    print "receivers:", receivers
     try:
         emote, sdesc_mapping = parse_sdescs_and_recogs(sender, receivers, emote)
         emote, language_mapping = parse_language(sender, emote)
