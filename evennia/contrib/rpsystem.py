@@ -83,6 +83,7 @@ _RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.UNICODE
 # of a object reference, such as /tall (note that
 # the system will understand multi-word references).
 _PREFIX = "/"
+_RE_PREFIX = re.compile(r"^/", re.UNICODE)
 
 # The num_sep is the (single-character) symbol used to separate the
 # sdesc from the number when  trying to separate identical sdescs from
@@ -323,8 +324,8 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
         matches = ((reg.match(emote[istart:]), obj, text) for reg, obj, text in candidate_regexes)
 
         # score matches by how long part of the string was matched
-        matches = [(match.endpos if match else -1, obj, text) for match, obj, text in matches]
-        #print "matches:", matches
+        matches = [(match.end() if match else -1, obj, text) for match, obj, text in matches]
+        print "matches:", istart, matches
         maxscore = max(score for score, obj, text in matches)
 
         # analyze result
@@ -348,13 +349,14 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
                 # multi-matches all references the same obj (could happen with clashing recogs/sdescs)
                 obj = bestmatches[0][0]
             else:
-                # was a numberical identifier given to help us separate the multi-match?
+                # was a numerical identifier given to help us separate the multi-match?
                 if inum is None or inum > nmatches:
                     # no match or invalid match id given
                     refname = marker_match.group()
-                    reflist = ["%s%s%s (%s)" % (inum, _NUM_SEP, refname, text)
+                    reflist = ["%s%s%s (%s)" % (inum+1, _NUM_SEP, _RE_PREFIX.sub("", refname), text)
                             for inum, (obj, text) in enumerate(bestmatches) if score == maxscore]
-                    errors.append(_EMOTE_MULTIMATCH_ERROR.format(ref=marker_match.group(), reflist=reflist))
+                    errors.append(_EMOTE_MULTIMATCH_ERROR.format(
+                                  ref=marker_match.group(), reflist="\n    ".join(reflist)))
                     continue
                 else:
                     # A valid inum is given. Use this to separate data
@@ -364,7 +366,7 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
         # we replace it with the interal representation on the form {#dbref}.
         print "replace emote:", istart, maxscore, emote, emote[istart + maxscore:]
         key = "#%i" % obj.id
-        emote = emote[:istart0] + "{%s}" % key + emote[istart + maxscore - 1:]
+        emote = emote[:istart0] + "{%s}" % key + emote[istart + maxscore:]
         mapping[key] = obj.db.sdesc or obj.key
 
     if errors:
@@ -406,7 +408,12 @@ def receive_emote(sender, receiver, emote, sdesc_mapping, language_mapping):
     # handle the language mapping, which always produce different keys ##nn
     for key, (langname, saytext) in language_mapping.iteritems():
         mapping[key] = _LANGUAGE_TRANSLATE(sender, receiver, langname, saytext)
-    # coloring
+    # make sure receiver always sees their real name
+    rkey = "#%i" % receiver.id
+    if rkey in mapping:
+        mapping[rkey] = receiver.key
+
+    #TODO - color handling
     mapping  = dict((key, "{b%s{n" % val) for key, val in mapping.iteritems())
     receiver.msg(emote.format(**mapping))
 
