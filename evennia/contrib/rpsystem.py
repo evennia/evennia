@@ -164,6 +164,8 @@ def ordered_permutation_regex(sentence):
          "the very tall man", "the very tall", "very tall man",
          "very tall", "the very", "tall man", "the", "very", "tall",
          and "man".
+         We also add regex to make sure it also accepts num-specifiers,
+         like /2-tall.
 
     """
     # escape {#nnn} markers from sentence, replace with nnn
@@ -183,10 +185,10 @@ def ordered_permutation_regex(sentence):
             elif comb:
                 break
         if comb:
-            solution.append(_PREFIX + " ".join(comb))
+            solution.append(_PREFIX + r"[0-9]*%s*" % _NUM_SEP + " ".join(comb))
 
     # compile into a match regex, first matching the longest down to the shortest components
-    regex = r"|".join(sorted(set(solution), key=lambda o:len(o), reverse=True))#, re.MULTILINE + re.IGNORECASE + re.UNICODE
+    regex = r"|".join(sorted(set(solution), key=lambda o:len(o), reverse=True))
     return regex
 
 
@@ -314,9 +316,10 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
 
         # first see if there is a number given (e.g. 1-tall)
         num_identifier, _ = marker_match.groups("") # return "" if no match, rather than None
+        print "num_identifier", num_identifier
         istart0 = marker_match.start()
         # +1 for _NUM_SEP, if defined
-        istart = istart0 + (len(num_identifier) + 1 if num_identifier else 0)
+        istart = istart0 #+ (len(num_identifier) + 1 if num_identifier else 0)
 
         print "marker match:", marker_match.group(), istart0, istart, emote[istart:]
         #print "candidates:", [tup[2] for tup in candidate_regexes]
