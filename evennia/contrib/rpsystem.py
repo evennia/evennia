@@ -122,7 +122,7 @@ _LANGUAGE_MODULE = None # load code here
 # langname can be None if not specified explicitly.
 _LANGUAGE_AVAILABLE = lambda langname: True
 #TODO function to translate a string in a given language
-_LANGUAGE_TRANSLATE = lambda speaker, listener, language, text: text
+_LANGUAGE_TRANSLATE = lambda speaker, listener, language, text: "%s%s" % ("(%s" % language if language else "", text)
 #TODO list available languages
 _LANGUAGE_LIST = lambda: []
 
@@ -233,7 +233,8 @@ def parse_language(speaker, emote):
         # process matches backwards to be able to replace
         # in-place without messing up indexes for future matches
         # note that saytext includes surrounding "...".
-        langname, saytext = say_match.group()
+        langname, saytext = say_match.groups()
+        print "language:", langname, saytext
         if not _LANGUAGE_AVAILABLE(langname):
             errors.append(_LANGUAGE_NOMATCH_ERROR.format(langname=langname))
             continue
@@ -254,7 +255,7 @@ def parse_language(speaker, emote):
     return emote, mapping
 
 
-def parse_sdescs_and_recogs(sender, candidates, emote):
+def parse_sdescs_and_recogs(sender, candidates, emote, map_obj=False):
     """
     Read a textraw emote and parse it into an intermediary
     format for distributing to all observers.
@@ -265,12 +266,15 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
         candidates (iterable): A list of objects valid for referencing
             in the emote.
     emote (str): The incoming emote from the caller.
+    map_obj (bool, optional): Return a mapping including the real db
+        object rather than the sdesc.
 
     Returns:
-        (emote, mapping) (tuple): A tuple where the emote is
-            the emote string, with all references replaced with
-            internal-representation {#dbref} markers and mapping
-            is a dictionary {"#dbref":obj,...}
+        (emote, mapping) (tuple): A tuple where the emote is the emote
+            string, with all references replaced with
+            internal-representation {#dbref} markers and mapping is a
+            dictionary `{"#dbref":"sdesc", ...}` if `map_obj` is
+            `False` (default) and `{"#dbref":obj,...}` otherwise.
 
     Raises:
         EmoteException: For various ref-matching errors.
@@ -301,11 +305,13 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
                          for tup in candidate_regexes if tup]
 
     # handle self-reference first
+    objlist = []
     mapping = {}
     if _RE_SELF_REF.search(emote):
         key = "#%i" % sender.id
         emote = _RE_SELF_REF.sub("{%s}" % key, emote)
-        mapping[key] = sender.db.sdesc or sender.key
+        mapping[key] = sender if map_obj else (sender.db.sdesc or sender.key)
+        objlist.append(sender)
 
     # we now loop over all references and analyze them
     errors = []
@@ -370,7 +376,8 @@ def parse_sdescs_and_recogs(sender, candidates, emote):
         print "replace emote:", istart, maxscore, emote, emote[istart + maxscore:]
         key = "#%i" % obj.id
         emote = emote[:istart0] + "{%s}" % key + emote[istart + maxscore:]
-        mapping[key] = obj.db.sdesc or obj.key
+        mapping[key] = obj if map_obj else (obj.db.sdesc or obj.key)
+        objlist.append(obj)
 
     if errors:
         # make sure to not let errors through.
@@ -406,11 +413,14 @@ def receive_emote(sender, receiver, emote, sdesc_mapping, language_mapping):
     # we make a local copy that we can modify
     mapping = copy(sdesc_mapping)
     # overload mapping with receiver's recogs (which is on the same form)
+    print "receiver.db.recog_refmap:", receiver, receiver.db.recog_refmap
+    print "mapping:", mapping
     if receiver.db.recog_refmap:
         mapping.update(receiver.db.recog_refmap)
     # handle the language mapping, which always produce different keys ##nn
     for key, (langname, saytext) in language_mapping.iteritems():
-        mapping[key] = _LANGUAGE_TRANSLATE(sender, receiver, langname, saytext)
+        # color say's white
+        mapping[key] = "{w%s{n" % _LANGUAGE_TRANSLATE(sender, receiver, langname, saytext)
     # make sure receiver always sees their real name
     rkey = "#%i" % receiver.id
     if rkey in mapping:
@@ -591,21 +601,23 @@ class CmdRecog(Command): # assign personal alias to object in room
 
     def parse(self):
         "Parse for the sdesc as alias structure"
-        self.sdesc, self.alias = [part.strip() for part in self.args.split(" as ", 2)]
+        if "as" in self.args:
+            self.sdesc, self.alias = [part.strip() for part in self.args.split(" as ", 2)]
+        else:
+            self.sdesc = self.alias = None
 
     def func(self):
         "Assign the recog"
         caller = self.caller
-        if not all(self.args, self.sdesc, self.alias):
+        if not all((self.args, self.sdesc, self.alias)):
             caller.msg("Usage: recog <sdesc> as <alias>")
+            return
         sdesc = self.sdesc
-        if not sdesc.startswith("/"):
-            # we make use of the emote parse mapper so
-            # we need to prep the sdesc a little
-            sdesc = "/%s" % sdesc
+        alias = self.alias
+        prefixed_sdesc = sdesc if sdesc.startswith(_PREFIX) else _PREFIX + sdesc
         candidates = caller.location.contents
         try:
-            _, mapping = parse_sdescs_and_recogs(candidates, sdesc)
+            _, mapping = parse_sdescs_and_recogs(caller, candidates, prefixed_sdesc, map_obj=True)
 
         except EmoteError as err:
             # errors are handled already here
@@ -613,8 +625,8 @@ class CmdRecog(Command): # assign personal alias to object in room
             return
         obj = mapping.values()[0]
         # we have all we need, add the recog alias
-        alias = caller.set_recog(obj, self.alias)
-        caller.msg("You will now remember {w%s{n as {w%s{n." % (sdesc, alias))
+        alias = caller.set_recog(obj, alias)
+        caller.msg("You will now remember {w%s{n as {w%s{n." % (obj.db.sdesc, alias))
 
 
 class CmdLanguage(Command): # list available languages
@@ -710,9 +722,10 @@ class RPObject(DefaultObject):
                 _RE_OBJ_REF_START.sub("", recog)))))
 
         # mapping #dbref:obj
-        self.db.recog_refmap.update("{#%i}" % obj.id, recog)
+        self.db.recog_refmap["#%i" % obj.id] = recog
         # mapping obj:(regex, recog)
         self.db.recog_objmap[obj] = (ordered_permutation_regex(recog), recog)
+        return recog
 
     def get_recog(self, obj):
         """
