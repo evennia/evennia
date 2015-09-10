@@ -255,6 +255,7 @@ def parse_language(speaker, emote):
     return emote, mapping
 
 
+
 def parse_sdescs_and_recogs(sender, candidates, emote, map_obj=False):
     """
     Read a textraw emote and parse it into an intermediary
@@ -738,6 +739,17 @@ class RPObject(DefaultObject):
 
         """
         return self.db.recog_objmap.get(obj, (None, None))[1]
+
+#    def search(self, searchdata, **kwargs):
+#        """
+#        This version of search will pre-parse searchdata
+#        for eventual matches against sdescs in candidates.
+#        """
+#        if isinstance(searchdata, basestring):
+#            pass
+#        if not candidates:
+
+
 
     def get_display_name(self, looker, **kwargs):
         """
