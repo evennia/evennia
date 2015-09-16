@@ -11,8 +11,11 @@ from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONN
 _MOD_IMPORT = None
 
 # throttles
-_MIN_TIME_BETWEEN_CONNECTS = 1.0 / float(settings.MAX_CONNECTION_RATE) if float(settings.MAX_CONNECTION_RATE) > 0 else 1.0 / 5.0
-_MIN_TIME_BETWEEN_CMDS = 1.0 / float(settings.MAX_COMMAND_RATE) if float(settings.MAX_COMMAND_RATE) > 0 else -10
+_MAX_CONNECTION_RATE = float(settings.MAX_CONNECTION_RATE)
+_MAX_COMMAND_RATE = float(settings.MAX_COMMAND_RATE)
+
+_MIN_TIME_BETWEEN_CONNECTS = 1.0 / float(settings.MAX_CONNECTION_RATE)
+#_MIN_TIME_BETWEEN_COMMANDS = 1.0 / float(settings.MAX_COMMAND_RATE)
 _ERROR_COMMAND_OVERFLOW = settings.COMMAND_RATE_WARNING
 
 #------------------------------------------------------------
@@ -40,7 +43,11 @@ class PortalSessionHandler(SessionHandler):
         self.latest_sessid = 0
         self.uptime = time()
         self.connection_time = 0
-        self.time_last_connect = time()
+
+        self.connection_counter = 0
+        self.connection_counter_reset = time()
+        self.command_counter = 0
+        self.command_counter_reset = time()
 
     def at_server_connection(self):
         """
@@ -74,11 +81,14 @@ class PortalSessionHandler(SessionHandler):
             session.sessid = self.latest_sessid
 
         now = time()
+        self.connection_counter += 1
 
-        if now - self.time_last_connect <  _MIN_TIME_BETWEEN_CONNECTS:
-            # we have too many connections per second. Delay.
-            #print "  delaying connecting", session.sessid
-            reactor.callLater(_MIN_TIME_BETWEEN_CONNECTS, self.connect, session)
+        if self.connection_counter > _MAX_CONNECTION_RATE:
+            if now - self.connection_counter_reset < 1.0:
+                # our rate is higher than MAX_CONNECTION_RATE / second
+                reactor.callLater(_MIN_TIME_BETWEEN_CONNECTS, self.connect, session)
+            self.connection_counter = 0
+            self.last_connetion_counter_reset = now
             return
 
         if not self.portal.amp_protocol:
@@ -86,8 +96,6 @@ class PortalSessionHandler(SessionHandler):
             # booting up), try again a little later
             reactor.callLater(0.5, self.connect, session)
             return
-
-        self.time_last_connect = now
 
         # sync with server-side
         sessdata = session.get_sync_data()
@@ -358,12 +366,19 @@ class PortalSessionHandler(SessionHandler):
             Data is serialized before passed on.
 
         """
+        now = time()
         # data throttle (anti DoS measure)
-        prev_cmd_last = session.cmd_last
-        session.cmd_last = time()
-        if session.cmd_last - prev_cmd_last < _MIN_TIME_BETWEEN_CMDS:
-            self.data_out(session.sessid, text=_ERROR_COMMAND_OVERFLOW)
-            return
+        self.command_counter += 1
+        if self.command_counter > _MAX_COMMAND_RATE:
+            self.command_counter = 0
+            if now - session.cmd_last < 1.0:
+                session.cmd_last = now
+                #reactor.callLater(_MIN_TIME_BETWEEN_COMMANDS,
+                #        self.data_in(session, text=text, **kwargs))
+                self.data_out(session.sessid, text=_ERROR_COMMAND_OVERFLOW)
+                return
+        session.cmd_last = now
+
         # relay data to Server
         self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
                                                               msg=text,
