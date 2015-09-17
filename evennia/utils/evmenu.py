@@ -266,7 +266,7 @@ class EvMenu(object):
     a menufile.py instruction.
 
     """
-    def __init__(self, caller, menufile, startnode="start",
+    def __init__(self, caller, menudata, startnode="start",
                  cmdset_mergetype="Replace", cmdset_priority=1,
                  allow_quit=True, cmd_on_quit="look"):
         """
@@ -274,8 +274,15 @@ class EvMenu(object):
 
         Args:
             caller (str): The user of the menu.
-            menufile (str): The full or relative path to the menufile.
-            startnode (str, optional): The starting node in the menufile.
+            menudata (str, module or dict): The full or relative path to the module
+                holding the menu tree data. All global functions in this module
+                whose name doesn't start with '_ ' will be parsed as menu nodes.
+                Also the module itself is accepted as input. Finally, a dictionary
+                menu tree can be given directly. This must then be a mapping
+                `{"nodekey":callable,...}` where `callable` must be called as
+                and return the data expected of a menu node. This allows for
+                dynamic menu creation.
+            startnode (str, optional): The starting node name in the menufile.
             cmdset_mergetype (str, optional): 'Replace' (default) means the menu
                 commands will be exclusive - no other normal commands will
                 be usable while the user is in the menu. 'Union' means the
@@ -303,7 +310,7 @@ class EvMenu(object):
         """
         self._caller = caller
         self._startnode = startnode
-        self._menutree = self._parse_menufile(menufile)
+        self._menutree = self._parse_menudata(menudata)
 
         if startnode not in self._menutree:
             raise EvMenuError("Start node '%s' not in menu tree!" % startnode)
@@ -327,22 +334,30 @@ class EvMenu(object):
         # start the menu
         self.goto(self._startnode, "")
 
-    def _parse_menufile(self, menufile):
+    def _parse_menudata(self, menudata):
         """
-        Parse a menufile, split it into #node sections, convert
-        each to an executable python code and store in a dictionary map.
+        Parse a menufile for node functions and store in dictionary
+        map. Alternatively, accept a pre-made mapping dictionary of
+        node functions.
 
         Args:
-            menufile (str or module): The python.path to the menufile,
-                or the python module itself.
+            menudata (str, module or dict): The python.path to the menufile,
+                or the python module itself. If a dict, this should be a
+                mapping nodename:callable, where the callable must match
+                the criteria for a menu node.
 
         Returns:
             menutree (dict): A {nodekey: func}
 
         """
-        module = mod_import(menufile)
-        return dict((key, func) for key, func in module.__dict__.items()
-                    if isfunction(func) and not key.startswith("_"))
+        if isinstance(menudata, dict):
+            # This is assumed to be a pre-loaded menu tree.
+            return menudata
+        else:
+            # a python path of a module
+            module = mod_import(menudata)
+            return dict((key, func) for key, func in module.__dict__.items()
+                        if isfunction(func) and not key.startswith("_"))
 
     def _format_node(self, nodetext, optionlist):
         """
