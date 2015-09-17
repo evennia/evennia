@@ -163,7 +163,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             parsed data directly to self.data_in.
 
         """
-
         if data and data[0] == IAC or self.iaw_mode:
             try:
                 #print "IAC mode"

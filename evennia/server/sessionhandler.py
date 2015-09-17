@@ -602,7 +602,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         from evennia.server.profiling.timetrace import timetrace
-        text = timetrace(text, "ServerSession.data_in")
+        text = timetrace(text, "ServerSessionHandler.data_in")
         session = self.sessions.get(sessid, None)
         if session:
             text = text and to_unicode(strip_control_sequences(text), encoding=session.encoding)

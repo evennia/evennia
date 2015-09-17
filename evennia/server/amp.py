@@ -355,6 +355,17 @@ class AMPProtocol(amp.AMP):
                 as batch parts get sent (or fails).
 
         """
+        now = time()
+        batch = dumps([(sessid, kwargs)])
+        hashid = "%s-%s" % (id(batch), now)
+        deferreds = [self.callRemote(command,
+                               hashid=hashid,
+                               data=batch,
+                               ipart=0,
+                               nparts=1).addErrback(self.errback, command.key)]
+        return deferreds
+
+
         global _SENDBATCH
 
         if command:
@@ -472,6 +483,8 @@ class AMPProtocol(amp.AMP):
         batch = self.batch_recv(hashid, data, ipart, nparts)
         for (sessid, kwargs) in batch:
             #print "msg portal -> server (server side):", sessid, msg, loads(ret["data"])
+            from evennia.server.profiling.timetrace import timetrace
+            kwargs["msg"] = timetrace(kwargs["msg"], "AMP.amp_msg_portal2server")
             self.factory.server.sessions.data_in(sessid,
                                              text=kwargs["msg"],
                                              data=kwargs["data"])
@@ -496,7 +509,7 @@ class AMPProtocol(amp.AMP):
         msg = timetrace(msg, "AMP.call_remote_MsgPortal2Server")
         return self.batch_send(MsgPortal2Server, sessid,
                                msg=msg if msg is not None else "",
-                               data=data)
+                               data=data, force_send=True)
 
     # Server -> Portal message
 
