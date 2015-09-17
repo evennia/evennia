@@ -555,6 +555,8 @@ class ServerSessionHandler(SessionHandler):
                 Useful for connection handling messages.
 
         """
+        from evennia.server.profiling.timetrace import timetrace
+        text = timetrace(text, "ServerSessionHandler.data_out")
         sessions = make_iter(session)
         session = sessions[0]
         text = text and to_str(to_unicode(text), encoding=session.encoding)
@@ -599,6 +601,8 @@ class ServerSessionHandler(SessionHandler):
             kwargs (any): Other data from protocol.
 
         """
+        from evennia.server.profiling.timetrace import timetrace
+        text = timetrace(text, "ServerSession.data_in")
         session = self.sessions.get(sessid, None)
         if session:
             text = text and to_unicode(strip_control_sequences(text), encoding=session.encoding)

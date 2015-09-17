@@ -492,6 +492,8 @@ class AMPProtocol(amp.AMP):
 
         """
         #print "msg portal->server (portal side):", sessid, msg, data
+        from evennia.server.profiling.timetrace import timetrace
+        msg = timetrace(msg, "AMP.call_remote_MsgPortal2Server")
         return self.batch_send(MsgPortal2Server, sessid,
                                msg=msg if msg is not None else "",
                                data=data)
@@ -517,6 +519,8 @@ class AMPProtocol(amp.AMP):
         batch = self.batch_recv(hashid, data, ipart, nparts)
         for (sessid, kwargs) in batch:
             #print "msg server->portal (portal side):", sessid, ret["text"], loads(ret["data"])
+            from evennia.server.profiling.timetrace import timetrace
+            kwargs["msg"] = timetrace(kwargs["msg"], "AMP.amp_msg_server2portal")
             self.factory.portal.sessions.data_out(sessid,
                                                   text=kwargs["msg"],
                                                   data=kwargs["data"])
@@ -542,6 +546,8 @@ class AMPProtocol(amp.AMP):
         batch = self.batch_recv(hashid, data, ipart, nparts)
         if batch is not None:
             for (sessid, kwargs) in batch:
+                from evennia.server.profiling.timetrace import timetrace
+                kwargs["msg"] = timetrace(kwargs["msg"], "AMP.amp_batch_server2portal")
                 self.factory.portal.sessions.data_out(sessid,
                                                       text=kwargs["msg"],
                                                       **kwargs["data"])
@@ -558,6 +564,8 @@ class AMPProtocol(amp.AMP):
             data (str, optional): Extra data.
 
         """
+        from evennia.server.profiling.timetrace import timetrace
+        msg = timetrace(msg, "AMP.call_remote_MsgServer2Portal")
         #print "msg server->portal (server side):", sessid, msg, data
         return self.batch_send(MsgServer2Portal, sessid, msg=msg, data=data)
 

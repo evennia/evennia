@@ -366,6 +366,8 @@ class PortalSessionHandler(SessionHandler):
             Data is serialized before passed on.
 
         """
+        from evennia.server.profiling.timetrace import timetrace
+        text = timetrace(text, "portalsessionhandler.data_out")
         now = time()
         # data throttle (anti DoS measure)
         self.command_counter += 1
@@ -398,6 +400,8 @@ class PortalSessionHandler(SessionHandler):
             kwargs (any): Other data from protocol.
 
         """
+        from evennia.server.profiling.timetrace import timetrace
+        text = timetrace(text, "portalsessionhandler.data_out")
         session = self.sessions.get(sessid, None)
         if session:
             # convert oob to the generic format
