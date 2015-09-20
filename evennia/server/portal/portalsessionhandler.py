@@ -3,6 +3,8 @@ Sessionhandler for portal sessions
 """
 
 from time import time
+from collections import deque
+from twisted.internet.task import LoopingCall
 from twisted.internet import reactor
 from django.conf import settings
 from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC
@@ -15,8 +17,9 @@ _MAX_CONNECTION_RATE = float(settings.MAX_CONNECTION_RATE)
 _MAX_COMMAND_RATE = float(settings.MAX_COMMAND_RATE)
 
 _MIN_TIME_BETWEEN_CONNECTS = 1.0 / float(settings.MAX_CONNECTION_RATE)
-#_MIN_TIME_BETWEEN_COMMANDS = 1.0 / float(settings.MAX_COMMAND_RATE)
 _ERROR_COMMAND_OVERFLOW = settings.COMMAND_RATE_WARNING
+
+_CONNECTION_QUEUE = deque()
 
 #------------------------------------------------------------
 # Portal-SessionHandler class
@@ -44,8 +47,8 @@ class PortalSessionHandler(SessionHandler):
         self.uptime = time()
         self.connection_time = 0
 
-        self.connection_counter = 0
-        self.connection_counter_reset = time()
+        self.connection_last = time()
+        self.connection_task = None
         self.command_counter = 0
         self.command_counter_reset = time()
 
@@ -73,38 +76,43 @@ class PortalSessionHandler(SessionHandler):
             tester with a large number of connector dummies.
 
         """
-        session.server_connected = False
+        global _CONNECTION_QUEUE
 
-        if not session.sessid:
-            # only assign if we were not delayed
+        if session:
+            # assign if we are first-connectors
             self.latest_sessid += 1
             session.sessid = self.latest_sessid
-
+            session.server_connected = False
+            _CONNECTION_QUEUE.appendleft(session)
+            if len(_CONNECTION_QUEUE) > 1:
+                session.data_out("%s DoS protection is active. You are queued to connect in %g seconds ..." % (
+                                 settings.SERVERNAME,
+                                 len(_CONNECTION_QUEUE)*_MIN_TIME_BETWEEN_CONNECTS))
         now = time()
-        self.connection_counter += 1
-
-        if self.connection_counter > _MAX_CONNECTION_RATE:
-            if now - self.connection_counter_reset < 1.0:
-                # our rate is higher than MAX_CONNECTION_RATE / second
-                reactor.callLater(_MIN_TIME_BETWEEN_CONNECTS, self.connect, session)
-            self.connection_counter = 0
-            self.last_connetion_counter_reset = now
+        if (now - self.connection_last < _MIN_TIME_BETWEEN_CONNECTS) or not self.portal.amp_protocol:
+            if not session or not self.connection_task:
+                self.connection_task = reactor.callLater(_MIN_TIME_BETWEEN_CONNECTS, self.connect, None)
+            self.connection_last = now
             return
+        elif not session:
+            if _CONNECTION_QUEUE:
+                # keep launching tasks until queue is empty
+                self.connection_task = reactor.callLater(_MIN_TIME_BETWEEN_CONNECTS, self.connect, None)
+            else:
+                self.connection_task = None
+        self.connection_last = now
 
-        if not self.portal.amp_protocol:
-            # if amp is not yet ready (usually because the server is
-            # booting up), try again a little later
-            reactor.callLater(0.5, self.connect, session)
-            return
+        if _CONNECTION_QUEUE:
+            # sync with server-side
+            session = _CONNECTION_QUEUE.pop()
+            sessdata = session.get_sync_data()
 
-        # sync with server-side
-        sessdata = session.get_sync_data()
-        self.sessions[session.sessid] = session
-        session.server_connected = True
-        #print "connecting", session.sessid, " number:", len(self.sessions)
-        self.portal.amp_protocol.call_remote_ServerAdmin(session.sessid,
-                                                         operation=PCONN,
-                                                         data=sessdata)
+            self.sessions[session.sessid] = session
+            session.server_connected = True
+            #print "connecting", session.sessid, " number:", len(self.sessions)
+            self.portal.amp_protocol.call_remote_ServerAdmin(session.sessid,
+                                                             operation=PCONN,
+                                                             data=sessdata)
 
     def sync(self, session):
         """
@@ -144,6 +152,12 @@ class PortalSessionHandler(SessionHandler):
             session (PortalSession): Session to disconnect.
 
         """
+        global _CONNECTION_QUEUE
+        if session in _CONNECTION_QUEUE:
+            # connection was already dropped before we had time
+            # to forward this to the Server, so now we just remove it.
+            _CONNECTION_QUEUE.remove(session)
+            return
         sessid = session.sessid
         self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
                                                          operation=PDISCONN)
