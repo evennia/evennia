@@ -425,9 +425,6 @@ class DefaultObject(ObjectDB):
             All extra kwargs will be passed on to the protocol.
 
         """
-        from evennia.server.profiling.timetrace import timetrace
-        text = timetrace(text, "Object.msg")
-
         text = to_str(text, force_string=True) if text != None else ""
         if from_obj:
             # call hook

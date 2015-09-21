@@ -284,16 +284,16 @@ class ServerSessionHandler(SessionHandler):
         """
         data = {"protocol_path":protocol_path,
                 "config":configdict}
-        self.server.amp_protocol.call_remote_PortalAdmin(0,
-                                                         operation=SCONN,
-                                                         data=data)
+        self.server.amp_protocol.send_AdminServer2Portal(0,
+                                                  operation=SCONN,
+                                                  data=data)
 
     def portal_shutdown(self):
         """
         Called by server when shutting down the portal.
 
         """
-        self.server.amp_protocol.call_remote_PortalAdmin(0,
+        self.server.amp_protocol.send_AdminServer2Portal(0,
                                                          operation=SSHUTD,
                                                          data="")
 
@@ -343,7 +343,7 @@ class ServerSessionHandler(SessionHandler):
         # sync the portal to the session
         sessdata = {"logged_in": True}
         if not testmode:
-            self.server.amp_protocol.call_remote_PortalAdmin(session.sessid,
+            self.server.amp_protocol.send_AdminServer2Portal(session.sessid,
                                                          operation=SLOGIN,
                                                          data=sessdata)
         player.at_post_login(sessid=session.sessid)
@@ -373,7 +373,7 @@ class ServerSessionHandler(SessionHandler):
         sessid = session.sessid
         del self.sessions[sessid]
         # inform portal that session should be closed.
-        self.server.amp_protocol.call_remote_PortalAdmin(sessid,
+        self.server.amp_protocol.send_AdminServer2Portal(sessid,
                                                          operation=SDISCONN,
                                                          data=reason)
 
@@ -384,7 +384,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         sessdata = self.get_all_sync_data()
-        return self.server.amp_protocol.call_remote_PortalAdmin(0,
+        return self.server.amp_protocol.send_AdminServer2Portal(0,
                                                          operation=SSYNC,
                                                          data=sessdata)
 
@@ -400,7 +400,7 @@ class ServerSessionHandler(SessionHandler):
         for session in self.sessions:
             del session
         # tell portal to disconnect all sessions
-        self.server.amp_protocol.call_remote_PortalAdmin(0,
+        self.server.amp_protocol.send_AdminServer2Portal(0,
                                                          operation=SDISCONNALL,
                                                          data=reason)
 
@@ -555,8 +555,9 @@ class ServerSessionHandler(SessionHandler):
                 Useful for connection handling messages.
 
         """
-        from evennia.server.profiling.timetrace import timetrace
-        text = timetrace(text, "ServerSessionHandler.data_out")
+        #from evennia.server.profiling.timetrace import timetrace
+        #text = timetrace(text, "ServerSessionHandler.data_out")
+
         sessions = make_iter(session)
         session = sessions[0]
         text = text and to_str(to_unicode(text), encoding=session.encoding)
@@ -584,9 +585,9 @@ class ServerSessionHandler(SessionHandler):
 
         # send to all found sessions
         for session in sessions:
-            self.server.amp_protocol.call_remote_MsgServer2Portal(sessid=session.sessid,
-                                                                  msg=text,
-                                                                  data=kwargs)
+            self.server.amp_protocol.send_MsgServer2Portal(sessid=session.sessid,
+                                                           msg=text,
+                                                           data=kwargs)
 
     def data_in(self, sessid, text="", **kwargs):
         """
@@ -601,8 +602,8 @@ class ServerSessionHandler(SessionHandler):
             kwargs (any): Other data from protocol.
 
         """
-        from evennia.server.profiling.timetrace import timetrace
-        text = timetrace(text, "ServerSessionHandler.data_in")
+        #from evennia.server.profiling.timetrace import timetrace
+        #text = timetrace(text, "ServerSessionHandler.data_in")
         session = self.sessions.get(sessid, None)
         if session:
             text = text and to_unicode(strip_control_sequences(text), encoding=session.encoding)

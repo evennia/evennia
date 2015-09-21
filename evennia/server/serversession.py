@@ -228,8 +228,8 @@ class ServerSession(Session):
             kwargs (any): Other parameters from the protocol.
 
         """
-        from evennia.server.profiling.timetrace import timetrace
-        text = timetrace(text, "ServerSession.data_in")
+        #from evennia.server.profiling.timetrace import timetrace
+        #text = timetrace(text, "ServerSession.data_in")
 
         #explicitly check for None since text can be an empty string, which is
         #also valid
@@ -263,8 +263,8 @@ class ServerSession(Session):
             kwargs (any): Other parameters to the protocol.
 
         """
-        from evennia.server.profiling.timetrace import timetrace
-        text = timetrace(text, "ServerSession.data_out")
+        #from evennia.server.profiling.timetrace import timetrace
+        #text = timetrace(text, "ServerSession.data_out")
 
         text = text if text else ""
         if _INLINEFUNC_ENABLED and not "raw" in kwargs:

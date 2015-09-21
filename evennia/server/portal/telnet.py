@@ -255,8 +255,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             kwargs (any): Options from the protocol.
 
         """
-        from evennia.server.profiling.timetrace import timetrace
-        text = timetrace(text, "telnet.data_in")
+        #from evennia.server.profiling.timetrace import timetrace
+        #text = timetrace(text, "telnet.data_in")
+
         self.sessionhandler.data_in(self, text=text, **kwargs)
 
     def data_out(self, text=None, **kwargs):
@@ -291,8 +292,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             are given.
 
         """
-        from evennia.server.profiling.timetrace import timetrace
-        text = timetrace(text, "telnet.data_out", final=True)
+        ## profiling, debugging
+        #if text.startswith("TEST_MESSAGE"): 1/0
+        #from evennia.server.profiling.timetrace import timetrace
+        #text = timetrace(text, "telnet.data_out", final=True)
+
         try:
             text = utils.to_str(text if text else "", encoding=self.encoding)
         except Exception, e:

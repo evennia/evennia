@@ -183,7 +183,7 @@ IDMAPPER_CACHE_MAXSIZE = 200      # (MB)
 # accept, as a DoS countermeasure. If the rate exceeds this number, incoming
 # connections will be queued to this rate, so none will be lost.
 # Must be set to a value > 0.
-MAX_CONNECTION_RATE = 5
+MAX_CONNECTION_RATE = 2
 # Determine how many commands per second a given Session is allowed
 # to send to the Portal via a connected protocol. Too high rate will
 # drop the command and echo a warning. Note that this will also cap

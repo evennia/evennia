@@ -32,7 +32,7 @@ def timetrace(message, idstring, tracemessage="TEST_MESSAGE", final=False):
         print "** timetrace (%s): dT=%fs, total=%fs." % (idstring, t1-tlast, t1-t0)
 
         if final:
-            message = "%s (total %f)" % (tracemessage, t1-t0)
+            message = " ****  %s (total %f) **** " % (tracemessage, t1-t0)
         else:
             message = "%s %f %f" % (tracemessage, t1, t0)
     return message
