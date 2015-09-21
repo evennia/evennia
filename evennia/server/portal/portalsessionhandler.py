@@ -51,6 +51,7 @@ class PortalSessionHandler(SessionHandler):
         self.connection_task = None
         self.command_counter = 0
         self.command_counter_reset = time()
+        self.command_overflow = False
 
     def at_server_connection(self):
         """
@@ -110,7 +111,7 @@ class PortalSessionHandler(SessionHandler):
             self.sessions[session.sessid] = session
             session.server_connected = True
             #print "connecting", session.sessid, " number:", len(self.sessions)
-            self.portal.amp_protocol.call_remote_ServerAdmin(session.sessid,
+            self.portal.amp_protocol.send_AdminPortal2Server(session.sessid,
                                                              operation=PCONN,
                                                              data=sessdata)
 
@@ -139,7 +140,7 @@ class PortalSessionHandler(SessionHandler):
                                                                                        "conn_time",
                                                                                        "protocol_flags",
                                                                                        "server_data",))
-                self.portal.amp_protocol.call_remote_ServerAdmin(session.sessid,
+                self.portal.amp_protocol.send_AdminPortal2Server(session.sessid,
                                                                  operation=PCONNSYNC,
                                                                  data=sessdata)
 
@@ -159,7 +160,7 @@ class PortalSessionHandler(SessionHandler):
             _CONNECTION_QUEUE.remove(session)
             return
         sessid = session.sessid
-        self.portal.amp_protocol.call_remote_ServerAdmin(sessid,
+        self.portal.amp_protocol.send_AdminPortal2Server(sessid,
                                                          operation=PDISCONN)
 
     def server_connect(self, protocol_path="", config=dict()):
@@ -380,25 +381,34 @@ class PortalSessionHandler(SessionHandler):
             Data is serialized before passed on.
 
         """
-        from evennia.server.profiling.timetrace import timetrace
-        text = timetrace(text, "portalsessionhandler.data_out")
-        now = time()
-        # data throttle (anti DoS measure)
-        self.command_counter += 1
-        if self.command_counter > _MAX_COMMAND_RATE:
-            self.command_counter = 0
-            if now - session.cmd_last < 1.0:
-                session.cmd_last = now
-                #reactor.callLater(_MIN_TIME_BETWEEN_COMMANDS,
-                #        self.data_in(session, text=text, **kwargs))
+        #from evennia.server.profiling.timetrace import timetrace
+        #text = timetrace(text, "portalsessionhandler.data_in")
+
+        if session:
+            if self.command_counter > _MAX_COMMAND_RATE:
+                # data throttle (anti DoS measure)
+                now = time()
+                dT = now - self.command_counter_reset
+                print " command rate:", _MAX_COMMAND_RATE / dT, dT, self.command_counter
+                self.command_counter = 0
+                self.command_counter_reset = now
+                self.command_overflow = dT < 1.0
+                if self.command_overflow:
+                    reactor.callLater(1.0, self.data_in, None)
+            if self.command_overflow:
                 self.data_out(session.sessid, text=_ERROR_COMMAND_OVERFLOW)
                 return
-        session.cmd_last = now
+            # relay data to Server
+            self.command_counter += 1
+            self.portal.amp_protocol.send_MsgPortal2Server(session.sessid,
+                                                       msg=text,
+                                                       data=kwargs)
+        else:
+           # called by the callLater callback
+            if self.command_overflow:
+                self.command_overflow = False
+                reactor.callLater(1.0, self.data_in, None)
 
-        # relay data to Server
-        self.portal.amp_protocol.call_remote_MsgPortal2Server(session.sessid,
-                                                              msg=text,
-                                                              data=kwargs)
 
     def data_out(self, sessid, text=None, **kwargs):
         """
@@ -414,8 +424,9 @@ class PortalSessionHandler(SessionHandler):
             kwargs (any): Other data from protocol.
 
         """
-        from evennia.server.profiling.timetrace import timetrace
-        text = timetrace(text, "portalsessionhandler.data_out")
+        #from evennia.server.profiling.timetrace import timetrace
+        #text = timetrace(text, "portalsessionhandler.data_out")
+
         session = self.sessions.get(sessid, None)
         if session:
             # convert oob to the generic format
