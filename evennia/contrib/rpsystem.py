@@ -60,6 +60,8 @@ import itertools
 from copy import copy
 from evennia import DefaultObject, DefaultCharacter
 from evennia import Command
+from evennia import ansi
+from evennia.utils.utils import lazy_property
 
 #------------------------------------------------------------
 # Emote parser
@@ -140,6 +142,8 @@ class EmoteError(Exception):
 class SdescError(Exception):
     pass
 
+class RecogError(Exception):
+    pass
 
 class LanguageError(Exception):
     pass
@@ -170,6 +174,8 @@ def ordered_permutation_regex(sentence):
     """
     # escape {#nnn} markers from sentence, replace with nnn
     sentence = _RE_REF.sub("\1", sentence)
+    # escape {##nnn} markers, replace with nnn
+    sentence = _RE_REF_LANG.sub("\1", sentence)
     # escape self-ref marker from sentence
     sentence = _RE_SELF_REF.sub("", sentence)
 
@@ -296,14 +302,12 @@ def parse_sdescs_and_recogs(sender, candidates, emote, map_obj=False):
     emote = _RE_REF.sub("\1", emote)
 
     # build all candidate regex tuples
-    candidate_regexes = [
-            (recog_regex, obj, sdesc) for obj, (recog_regex, sdesc)
-            in sender.db.recog_objmap.items() if obj in candidates] + \
-            [obj.db.sdesc_regex_tuple for obj in candidates]
-    # pre-compile the regexes while filtering empty tuples
-    print candidate_regexes
-    candidate_regexes = [(re.compile(tup[0], _RE_FLAGS), tup[1], tup[2])
-                         for tup in candidate_regexes if tup]
+    candidate_regexes = [sender.recog.get_regex_tuple(obj)
+            for obj in candidates if hasattr(obj, "recog")] + \
+                        [obj.sdesc.get_regex_tuple()
+            for obj in candidates if hasattr(obj, "sdesc")]
+    # filter out non-found data
+    candidate_regexes = [tup for tup in candidate_regexes if tup]
 
     # handle self-reference first
     objlist = []
@@ -416,8 +420,10 @@ def receive_emote(sender, receiver, emote, sdesc_mapping, language_mapping):
     # overload mapping with receiver's recogs (which is on the same form)
     print "receiver.db.recog_refmap:", receiver, receiver.db.recog_refmap
     print "mapping:", mapping
-    if receiver.db.recog_refmap:
-        mapping.update(receiver.db.recog_refmap)
+    try:
+        mapping.update(receiver.recog.ref2recog)
+    except AttributeError:
+        pass
     # handle the language mapping, which always produce different keys ##nn
     for key, (langname, saytext) in language_mapping.iteritems():
         # color say's white
@@ -461,7 +467,7 @@ def send_emote(sender, receivers, emote, no_anonymous=True):
         # no self-reference in the emote - add to the end
         key = "#%i" % sender.id
         emote = "%s [%s]" % (emote, "{%s}" % key)
-        sdesc_mapping[key] = sender.db.sdesc or sender.key
+        sdesc_mapping[key] = sender.sdesc.get() or sender.key
 
     # broadcast emote
     for receiver in receivers:
@@ -478,6 +484,7 @@ class RPCommand(Command):
     def parse(self):
         "strip extra whitespace"
         self.args = self.args.strip()
+
 
 class CmdEmote(RPCommand):  # replaces the main emote
     """
@@ -534,7 +541,7 @@ class CmdSdesc(RPCommand): # set/look at own sdesc
             caller.msg("Usage: sdesc <sdesc-text>")
             return
         else:
-            sdesc = caller.set_sdesc(self.args)
+            sdesc = caller.sdesc.add(self.args)
             caller.msg("Your sdesc was set to '%s'." % sdesc)
 
 
@@ -649,6 +656,205 @@ class CmdLanguage(Command): # list available languages
         self.caller.msg("Languages available: %s" % ", ".join(_LANGUAGE_LIST))
 
 
+# Handlers
+
+class SdescHandler(object):
+    """
+    This Handler wraps all operations with sdescs. We
+    need to use this since we do a lot preparations on
+    sdescs when updating them, in order for them to be
+    efficient to search for and query.
+    """
+    def __init__(self, obj):
+        """
+        Initialize the handler
+
+        Args:
+            obj (Object): The entity on which this handler is stored.
+
+        """
+        self.obj = obj
+        self.sdesc = ""
+        self.sdesc_regex = ""
+        self._cache()
+
+    def _cache(self):
+        """
+        Cache data from storage
+
+        """
+        self.sdesc = self.obj.attributes.get("sdesc", default="")
+        sdesc_regex = self.obj.attributes.get("sdesc_regex", default="")
+        self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
+
+    def add(self, sdesc, max_length=60):
+        """
+        Add a new sdesc to object, replacing the old one.
+
+        Args:
+            sdesc (str): The sdesc to set. This may be stripped
+                of control sequences before setting.
+            max_length (int, optional): The max limit of the sdesc.
+
+        Returns:
+            sdesc (str): The actually set sdesc.
+
+        Raises:
+            SdescError: If the sdesc can not be set or is longer than
+            `max_length`.
+
+        """
+        # strip emote components from sdesc
+        sdesc = _RE_REF.sub("\1",
+                _RE_REF_LANG.sub("\1",
+                _RE_SELF_REF.sub("",
+                _RE_LANGUAGE.sub("",
+                _RE_OBJ_REF_START.sub("", sdesc)))))
+
+        # make an sdesc clean of ANSI codes
+        cleaned_sdesc = ansi.strip_ansi(sdesc)
+        if len(cleaned_sdesc) > max_length:
+            raise SdescError("Too long sdesc")
+
+        # store to attributes
+        sdesc_regex = ordered_permutation_regex(cleaned_sdesc)
+        self.obj.attributes.add("sdesc", sdesc)
+        self.obj.attributes.add("sdesc_regex", sdesc_regex)
+        # local caching
+        self.sdesc = sdesc
+        self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
+
+        return sdesc
+
+    def get(self):
+        """
+        Simple getter.
+
+        """
+        return self.sdesc
+
+    def get_regex_tuple(self):
+        """
+        Return data for sdesc/recog handling
+
+        Returns:
+            tup (tuple): tuple (sdesc_regex, obj, sdesc)
+
+        """
+        return self.sdesc_regex, self.obj, self.sdesc
+
+
+class RecogHandler(object):
+    """
+    This handler manages the recognition mapping
+    of an Object.
+
+    """
+    def __init__(self, obj):
+        """
+        Initialize the handler
+
+        Args:
+            obj (Object): The entity on which this handler is stored.
+
+        """
+        self.obj = obj
+        # mappings
+        self.ref2recog = {}
+        self.obj2regex = {}
+        self.obj2recog = {}
+
+    def _cache(self):
+        """
+        Load data to handler cache
+        """
+        self.ref2recog = self.obj.attributes.get("recog_ref2recog", default={})
+        obj2regex = self.obj.attributes.get("recog_obj2regex", default={})
+        obj2recog = self.obj.attributes.get("recog_obj2recog", default={})
+        self.obj2regex = dict((obj, re.compile(regex, _RE_FLAGS))
+                            for obj, regex in obj2regex.items() if obj)
+        self.obj2recog = dict((obj, recog)
+                            for obj, recog in obj2recog.items() if obj)
+
+    def add(self, obj, recog, max_length=60):
+        """
+        Assign a custom recog (nick) to the given object.
+
+        Args:
+            obj (Object): The object ot associate with the recog
+                string. This is usually determined from the sdesc in the
+                room by a call to parse_sdescs_and_recogs, but can also be
+                given.
+            recog (str): The replacement string to use with this object.
+            max_length (int, optional): The max length of the recog string.
+
+        Returns:
+            recog (str): The (possibly cleaned up) recog string actually set.
+
+        Raises:
+            SdescError: When recog could not be set or sdesc longer
+                than `max_length`.
+
+
+        """
+        # strip emote components from recog
+        recog = _RE_REF.sub("\1",
+                _RE_REF_LANG.sub("\1",
+                _RE_SELF_REF.sub("",
+                _RE_LANGUAGE.sub("",
+                _RE_OBJ_REF_START.sub("", recog)))))
+
+        # make an recog clean of ANSI codes
+        cleaned_recog = ansi.strip_ansi(recog)
+        if len(cleaned_recog) > max_length:
+            raise RecogError("Too long recog")
+
+        # mapping #dbref:obj
+        key = "#%i" % obj.id
+        self.db.ref2recog[key] = recog
+        self.db.obj2recog[obj] = recog
+        regex = ordered_permutation_regex(cleaned_recog)
+        self.db.obj2regex[obj] = regex
+        # local caching
+        self.ref2recog[key] = recog
+        self.obj2recog[obj] = recog
+        self.obj2regex[obj] = re.compile(regex, _RE_FLAGS)
+        return recog
+
+    def get(self, obj):
+        """
+        Get recog replacement string, if one exists.
+
+        Args:
+            obj (Object): The object, whose sdesc to replace
+        Returns:
+            recog (str): The replacement string to use.
+        """
+        return self.obj2recog.get(obj)
+
+    def remove(self, obj):
+        """
+        Clear recog for a given object.
+
+        Args:
+            obj (Object): The object for which to remove recog.
+        """
+        if obj in self.db.obj2recog:
+            del self.db.obj2recog[obj]
+            del self.db.obj2regex[obj]
+            del self.db.ref2regex["#%i" % obj.id]
+        self._cache()
+
+    def get_regex_tuple(self, obj):
+        """
+        Returns:
+            rec (tuple): Tuple (recog_regex, obj, recog)
+        """
+        if obj in self.obj2recog:
+            return self.obj2regex[obj], obj, self.obj2regex[obj]
+        return None
+
+
 #------------------------------------------------------------
 # RP Object typeclass
 #------------------------------------------------------------
@@ -660,6 +866,15 @@ class RPObject(DefaultObject):
     name replacement and look extensions.
     """
 
+    # Handlers
+    @lazy_property
+    def sdesc(self):
+        return SdescHandler(self)
+
+    @lazy_property
+    def recog(self):
+        return RecogHandler(self)
+
     def at_object_creation(self):
         """
         Called at initial creation.
@@ -670,85 +885,41 @@ class RPObject(DefaultObject):
         self.db.pose = ""
         self.db.pose_default = "is here."
 
-        self.db.sdesc = None
-        self.db.sdesc_regex_tuple = None
-        self.set_sdesc("A normal person")
-        self.db.recog_refmap = {}
-        self.db.recog_objmap = {}
+        self.db.sdesc = ""
+        self.db.sdesc_regex = ""
 
-    def set_sdesc(self, sdesc):
+        self.db.recog_ref2recog = {}
+        self.db.recog_obj2regex = {}
+        self.db.recog_obj2recog = {}
+
+        # initializing
+        self.sdesc.add("A normal person")
+
+    def search(self, searchdata, **kwargs):
         """
-        Assign a new sdesc to this character. It's important
-        to use this in order to set up all mappings.
+        This version of search will pre-parse searchdata for eventual
+        matches against recogs and sdescs of candidates in the same
+        location.
 
         Args:
-            sdesc (str): The short description to set.
+            searchdata (str): Search string.
 
-        Returns:
-            sdesc (str): The (possibly cleaned up) sdesc actually set.
-
-        """
-        # strip emote components from sdesc
-        sdesc = _RE_REF.sub("\1",
-                _RE_REF_LANG.sub("\1",
-                _RE_SELF_REF.sub("",
-                _RE_LANGUAGE.sub("",
-                _RE_OBJ_REF_START.sub("", sdesc)))))
-
-        self.db.sdesc = sdesc
-        self.db.sdesc_regex_tuple = (ordered_permutation_regex(sdesc), self, sdesc)
-        return sdesc
-
-    def set_recog(self, obj, recog):
-        """
-        Assign a custom recog (nick) to the given sdesc. This
-        requires that the sdesc exists in the same room as us.
-
-        Args:
-            obj (Object): The object ot associate with the recog string. This
-                is usually determined from the sdesc in the room by a call to
-                parse_sdescs_and_recogs, but can also be given, say as part
-                of changing an existing recog value.given, say as part
-            recog (str): The replacement string to use for this sdesc.
-
-        Returns:
-            recog (str): The (possibly cleaned up) recog string actually set.
+        Notes:
+            Recog/sdesc matching is always turned off if the keyword
+            `global_search` is set or `candidates` are given.
 
         """
-        # strip emote components from recog
-        recog = _RE_REF.sub("\1",
-                _RE_REF_LANG.sub("\1",
-                _RE_SELF_REF.sub("",
-                _RE_LANGUAGE.sub("",
-                _RE_OBJ_REF_START.sub("", recog)))))
-
-        # mapping #dbref:obj
-        self.db.recog_refmap["#%i" % obj.id] = recog
-        # mapping obj:(regex, recog)
-        self.db.recog_objmap[obj] = (ordered_permutation_regex(recog), recog)
-        return recog
-
-    def get_recog(self, obj):
-        """
-        Get recog replacement string, if one exists.
-
-        Args:
-            obj (Object): The object, whose sdesc to replace
-        Returns:
-            recog (str): The replacement string to use.
-
-        """
-        return self.db.recog_objmap.get(obj, (None, None))[1]
-
-#    def search(self, searchdata, **kwargs):
-#        """
-#        This version of search will pre-parse searchdata
-#        for eventual matches against sdescs in candidates.
-#        """
-#        if isinstance(searchdata, basestring):
-#            pass
-#        if not candidates:
-
+        if (isinstance(searchdata, basestring) and not
+                (kwargs.get("global_search") or
+                 kwargs.get("candidates"))):
+            try:
+                _, mapping = parse_sdescs_and_recogs(self,
+                        self.location.contents, _PREFIX + searchdata, map_obj=True)
+                return mapping.values()[0]
+            except EmoteError:
+                pass
+        # fall back to original search method
+        return super(RPObject, self).search(searchdata, **kwargs)
 
 
     def get_display_name(self, looker, **kwargs):
@@ -771,7 +942,7 @@ class RPObject(DefaultObject):
         """
         idstr = " (#%s)" % self.id if self.access(looker, access_type='control') else ""
         try:
-            recog = looker.get_recog(self)
+            recog = looker.recog.get(self)
         except AttributeError:
             recog = None
         sdesc = recog or self.db.sdesc or self.key
