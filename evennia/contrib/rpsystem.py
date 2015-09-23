@@ -922,8 +922,7 @@ class RecogHandler(object):
 class RPObject(DefaultObject):
     """
     This class is meant as a mix-in or parent for objects in an
-    rp-heavy game. It implements the base functionality for sdescs,
-    name replacement and look extensions.
+    rp-heavy game. It implements the base functionality for poses.
     """
 
     def at_object_creation(self):
@@ -986,6 +985,9 @@ class RPObject(DefaultObject):
                 including the DBREF if this user is privileged to control
                 said object.
 
+        Notes:
+            The RPObject version doesn't add color to its display.
+
         """
         idstr = "(#%s)" % self.id if self.access(looker, access_type='control') else ""
         try:
@@ -994,8 +996,15 @@ class RPObject(DefaultObject):
             recog = None
         sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
         pose = " %s" % self.db.pose or "" if kwargs.get("pose", False) else ""
-        return "{c%s{n%s%s" % (sdesc, idstr, pose)
+        return "%s%s%s" % (sdesc, idstr, pose)
 
+
+class RPRoom(DefaultRoom):
+    """
+    Rooms don't have sdescs nor poses of their own, so we just modify
+    `return_appearance` here to make sure it properly displays poses
+    of objects in the room.
+    """
     def return_appearance(self, looker):
         """
         This formats a description. It is the hook a 'look' command
@@ -1030,16 +1039,9 @@ class RPObject(DefaultObject):
         return string
 
 
-class RPRoom(DefaultRoom):
-    """
-    Rooms don't have sdescs nor poses of their own, so we
-    just borrow its return_appearance hook here.
-    """
-    return_appearance = RPObject.__dict__["return_appearance"]
-
 class RPCharacter(DefaultCharacter, RPObject):
     """
-    This is a character aware of RP systems.
+    This is a character class that has poses, sdesc and recog.
     """
     # Handlers
     @lazy_property
@@ -1049,6 +1051,37 @@ class RPCharacter(DefaultCharacter, RPObject):
     @lazy_property
     def recog(self):
         return RecogHandler(self)
+
+    def get_display_name(self, looker, **kwargs):
+        """
+        Displays the name of the object in a viewer-aware manner.
+
+        Args:
+            looker (TypedObject): The object or player that is looking
+                at/getting inforamtion for this object.
+
+        Kwargs:
+            pose (bool): Include the pose (if available) in the return.
+
+        Returns:
+            name (str): A string of the sdesc containing the name of the object,
+            if this is defined.
+                including the DBREF if this user is privileged to control
+                said object.
+
+        Notes:
+            The RPCharacter version of this method colors its display to make
+            characters stand out from other objects.
+
+        """
+        idstr = "(#%s)" % self.id if self.access(looker, access_type='control') else ""
+        try:
+            recog = looker.recog.get(self)
+        except AttributeError:
+            recog = None
+        sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
+        pose = " %s" % self.db.pose or "" if kwargs.get("pose", False) else ""
+        return "{c%s{n%s%s" % (sdesc, idstr, pose)
 
     def at_object_creation(self):
         """
@@ -1065,5 +1098,5 @@ class RPCharacter(DefaultCharacter, RPObject):
 
         self.cmdset.add(RPSystemCmdSet, permanent=True)
         # initializing sdesc
-        self.sdesc.add("A normal item")
+        self.sdesc.add("A normal person")
 
