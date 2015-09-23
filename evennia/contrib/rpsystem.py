@@ -1,7 +1,7 @@
 """
 RP base system for Evennia
 
-Contrib by Griatch, 2015
+Contribution - Griatch, 2015
 
 
 This RP base system introduces the following features to a game,
@@ -67,6 +67,20 @@ from evennia.utils.utils import lazy_property
 # Emote parser
 #------------------------------------------------------------
 
+# Settings
+
+# The prefix is the (single-character) symbol used to find the start
+# of a object reference, such as /tall (note that
+# the system will understand multi-word references).
+_PREFIX = "/"
+
+# The num_sep is the (single-character) symbol used to separate the
+# sdesc from the number when  trying to separate identical sdescs from
+# one another. This is the same syntax used in the rest of Evennia, so
+# by default, multiple "tall" can be separated by entering 1-tall,
+# 2-tall etc.
+_NUM_SEP = "-"
+
 # Texts
 
 _EMOTE_NOMATCH_ERROR = \
@@ -81,11 +95,7 @@ _LANGUAGE_NOMATCH_ERROR = \
 
 _RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.UNICODE
 
-# The prefix is the (single-character) symbol used to find the start
-# of a object reference, such as /tall (note that
-# the system will understand multi-word references).
-_PREFIX = "/"
-_RE_PREFIX = re.compile(r"^/", re.UNICODE)
+_RE_PREFIX = re.compile(r"^%s" % _PREFIX, re.UNICODE)
 
 # The num_sep is the (single-character) symbol used to separate the
 # sdesc from the number when  trying to separate identical sdescs from
@@ -121,15 +131,19 @@ _RE_LANGUAGE = re.compile(r"(?:(\w+))*(\".+?\")")
 #TODO
 # make this into a pluggable language module for handling
 # language errors and translations.
-
 _LANGUAGE_MODULE = None # load code here
 #TODO function determining if a given langname exists. Note that
 # langname can be None if not specified explicitly.
 _LANGUAGE_AVAILABLE = lambda langname: True
 #TODO function to translate a string in a given language
-_LANGUAGE_TRANSLATE = lambda speaker, listener, language, text: "%s%s" % ("(%s" % language if language else "", text)
+_LANGUAGE_TRANSLATE = lambda speaker, listener, language, text: "%s%s" % ("(%s)" % language if language else "", text)
 #TODO list available languages
 _LANGUAGE_LIST = lambda: []
+
+# color markup to use for coloring sdescs/recog strings
+# in emotes and spoken language quotes.
+_LANGUAGE_COLOR = lambda obj: "{w"
+_RECOG_COLOR = lambda obj: "{b"
 
 
 # the emote parser works in two steps:
@@ -378,7 +392,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
         elif nmatches == 1:
             key = "#%i" % obj.id
             string = string[:istart0] + "{%s}" % key + string[istart + maxscore:]
-            mapping[key] = obj if search_mode else (obj.db.sdesc or obj.key)
+            mapping[key] = obj if search_mode else (obj.sdesc.get() or obj.key)
         else:
             refname = marker_match.group()
             reflist = ["%s%s%s (%s%s)" % (inum+1, _NUM_SEP,
@@ -452,15 +466,17 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
             pass
         # handle the language mapping, which always produce different keys ##nn
         for key, (langname, saytext) in language_mapping.iteritems():
-            # color say's white
-            mapping[key] = "{w%s{n" % _LANGUAGE_TRANSLATE(sender, receiver, langname, saytext)
+            # color says
+            mapping[key] = "%s%s{n" % (_LANGUAGE_COLOR(receiver),
+                        _LANGUAGE_TRANSLATE(sender, receiver, langname, saytext))
         # make sure receiver always sees their real name
         rkey = "#%i" % receiver.id
         if rkey in mapping:
             mapping[rkey] = receiver.key
 
-        #TODO - color handling
-        mapping  = dict((key, "%s" % val) for key, val in mapping.iteritems())
+        # add color to recog strings
+        mapping  = dict((key, "%s%s{n" % (_RECOG_COLOR(receiver), val))
+                         for key, val in mapping.iteritems())
 
         # do the template replacement
         receiver.msg(emote.format(**mapping))
