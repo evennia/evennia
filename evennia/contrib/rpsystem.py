@@ -58,8 +58,8 @@ import re
 from re import match as re_match
 import itertools
 from copy import copy
-from evennia import DefaultObject, DefaultCharacter
-from evennia import Command
+from evennia import DefaultObject, DefaultCharacter, DefaultRoom
+from evennia import Command, CmdSet
 from evennia import ansi
 from evennia.utils.utils import lazy_property
 
@@ -142,8 +142,10 @@ class EmoteError(Exception):
 class SdescError(Exception):
     pass
 
+
 class RecogError(Exception):
     pass
+
 
 class LanguageError(Exception):
     pass
@@ -240,7 +242,6 @@ def parse_language(speaker, emote):
         # in-place without messing up indexes for future matches
         # note that saytext includes surrounding "...".
         langname, saytext = say_match.groups()
-        print "language:", langname, saytext
         if not _LANGUAGE_AVAILABLE(langname):
             errors.append(_LANGUAGE_NOMATCH_ERROR.format(langname=langname))
             continue
@@ -326,19 +327,16 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
 
         # first see if there is a number given (e.g. 1-tall)
         num_identifier, _ = marker_match.groups("") # return "" if no match, rather than None
-        print "num_identifier", num_identifier
         istart0 = marker_match.start()
         # +1 for _NUM_SEP, if defined
         istart = istart0 #+ (len(num_identifier) + 1 if num_identifier else 0)
 
-        print "marker match:", marker_match.group(), istart0, istart, string[istart:]
         #print "candidates:", [tup[2] for tup in candidate_regexes]
         # loop over all candidate regexes and match against the string following the match
         matches = ((reg.match(string[istart:]), obj, text) for reg, obj, text in candidate_regexes)
 
         # score matches by how long part of the string was matched
         matches = [(match.end() if match else -1, obj, text) for match, obj, text in matches]
-        print "matches:", istart, matches
         maxscore = max(score for score, obj, text in matches)
 
         # we have a valid maxscore, extract all matches with this value
@@ -428,8 +426,6 @@ def receive_emote(sender, receiver, emote, sdesc_mapping, language_mapping):
     # we make a local copy that we can modify
     mapping = copy(sdesc_mapping)
     # overload mapping with receiver's recogs (which is on the same form)
-    print "receiver.db.recog_refmap:", receiver, receiver.db.recog_refmap
-    print "mapping:", mapping
     try:
         mapping.update(receiver.recog.ref2recog)
     except AttributeError:
@@ -464,7 +460,6 @@ def send_emote(sender, receivers, emote, no_anonymous=True):
             if so.
 
     """
-    print "receivers:", receivers
     try:
         emote, sdesc_mapping = parse_sdescs_and_recogs(sender, receivers, emote)
         emote, language_mapping = parse_language(sender, emote)
@@ -527,8 +522,11 @@ class CmdEmote(RPCommand):  # replaces the main emote
             self.caller.msg("What do you want to do?")
         else:
             # we also include ourselves here.
+            emote = self.args
             targets = self.caller.location.contents
-            send_emote(self.caller, targets, self.args, no_anonymous=True)
+            if not emote.endswith("."):
+                emote = "%s." % emote
+            send_emote(self.caller, targets, emote, no_anonymous=True)
 
 
 class CmdSdesc(RPCommand): # set/look at own sdesc
@@ -562,14 +560,18 @@ class CmdPose(Command): # set current pose and default pose
     Usage:
         pose <pose>
         pose default <pose>
+        pose reset
+        pose obj = <pose>
 
     Examples:
         pose leans against the tree
         pose is talking to the barkeep.
+        pose box = is sitting on the floor.
 
     Set a static pose. This is the end of a full sentence that
     starts with your sdesc. If no full stop is given, it will
-    be added automatically. The default pose means
+    be added automatically. The default pose is the pose you
+    get when using pose reset.
 
     """
     key = "pose"
@@ -580,8 +582,17 @@ class CmdPose(Command): # set current pose and default pose
         """
         args = self.args.strip()
         default = args.startswith("default")
+        reset = args.startswith("reset")
         if default:
-            args = args.strip("default ")
+            args = re.sub(r"^default", "", args)
+        if reset:
+            args = re.sub(r"^reset", "", args)
+        target = None
+        if "=" in args:
+            target, args = [part.strip() for part in args.split("=", 1)]
+
+        self.target = target
+        self.reset = reset
         self.default = default
         self.args = args.strip()
 
@@ -589,16 +600,40 @@ class CmdPose(Command): # set current pose and default pose
         "Create the pose"
         caller = self.caller
         pose = self.args
-        if not pose:
-            caller.msg("Usage: pose <pose-text> OR pose default <pose-text>")
+        target = self.target
+        if not pose and not self.reset:
+            caller.msg("Usage: pose <pose-text> OR pose default <pose-text> OR pose reset")
+            return
+
+        if not pose.endswith("."):
+            pose = "%s." % pose
+        if target:
+            # affect something else
+            target = caller.search(target)
+            if not target:
+                return
+            if not target.access(caller, "edit"):
+                caller.msg("You can't pose that.")
+                return
         else:
-            if not pose.endswith("."):
-                pose = "%s." % pose
-            if self.default:
-                caller.db.pose_default = pose
-            else:
-                caller.db.pose = pose
-            caller.msg("Your pose is now '%s %s'." % pose)
+            target = caller
+
+        if not target.attributes.has("pose"):
+            caller.msg("%s cannot be posed." % target.key)
+            return
+
+        target_name = target.sdesc.get() if hasattr(target, "sdesc") else target.key
+        # set the pose
+        if self.reset:
+            pose = target.db.pose_default
+            target.db.pose = pose
+        elif self.default:
+            target.db.pose_default = pose
+            caller.msg("Default pose is now '%s %s'." % (target_name, pose))
+            return
+        else:
+            caller.db.pose = pose
+        caller.msg("Pose will read '%s %s'." % (target_name, pose))
 
 
 class CmdRecog(Command): # assign personal alias to object in room
@@ -668,7 +703,21 @@ class CmdLanguage(Command): # list available languages
         self.caller.msg("Languages available: %s" % ", ".join(_LANGUAGE_LIST))
 
 
-# Handlers
+class RPSystemCmdSet(CmdSet):
+    """
+    Mix-in for adding rp-commands to default cmdset.
+    """
+    def at_cmdset_creation(self):
+        self.add(CmdEmote())
+        self.add(CmdSdesc())
+        self.add(CmdPose())
+        self.add(CmdRecog())
+        self.add(CmdLanguage())
+
+
+#------------------------------------------------------------
+# Handlers for sdesc and recog
+#------------------------------------------------------------
 
 class SdescHandler(object):
     """
@@ -695,8 +744,8 @@ class SdescHandler(object):
         Cache data from storage
 
         """
-        self.sdesc = self.obj.attributes.get("sdesc", default="")
-        sdesc_regex = self.obj.attributes.get("sdesc_regex", default="")
+        self.sdesc = self.obj.attributes.get("_sdesc", default="")
+        sdesc_regex = self.obj.attributes.get("_sdesc_regex", default="")
         self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
 
     def add(self, sdesc, max_length=60):
@@ -730,8 +779,8 @@ class SdescHandler(object):
 
         # store to attributes
         sdesc_regex = ordered_permutation_regex(cleaned_sdesc)
-        self.obj.attributes.add("sdesc", sdesc)
-        self.obj.attributes.add("sdesc_regex", sdesc_regex)
+        self.obj.attributes.add("_sdesc", sdesc)
+        self.obj.attributes.add("_sdesc_regex", sdesc_regex)
         # local caching
         self.sdesc = sdesc
         self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
@@ -780,9 +829,9 @@ class RecogHandler(object):
         """
         Load data to handler cache
         """
-        self.ref2recog = self.obj.attributes.get("recog_ref2recog", default={})
-        obj2regex = self.obj.attributes.get("recog_obj2regex", default={})
-        obj2recog = self.obj.attributes.get("recog_obj2recog", default={})
+        self.ref2recog = self.obj.attributes.get("_recog_ref2recog", default={})
+        obj2regex = self.obj.attributes.get("_recog_obj2regex", default={})
+        obj2recog = self.obj.attributes.get("_recog_obj2recog", default={})
         self.obj2regex = dict((obj, re.compile(regex, _RE_FLAGS))
                             for obj, regex in obj2regex.items() if obj)
         self.obj2recog = dict((obj, recog)
@@ -822,10 +871,10 @@ class RecogHandler(object):
 
         # mapping #dbref:obj
         key = "#%i" % obj.id
-        self.db.ref2recog[key] = recog
-        self.db.obj2recog[obj] = recog
+        self.db._ref2recog[key] = recog
+        self.db._obj2recog[obj] = recog
         regex = ordered_permutation_regex(cleaned_recog)
-        self.db.obj2regex[obj] = regex
+        self.db._obj2regex[obj] = regex
         # local caching
         self.ref2recog[key] = recog
         self.obj2recog[obj] = recog
@@ -867,24 +916,15 @@ class RecogHandler(object):
 
 
 #------------------------------------------------------------
-# RP Object typeclass
+# RP typeclasses
 #------------------------------------------------------------
 
 class RPObject(DefaultObject):
     """
-    This class is meant as a mix-in or parent for characters in an
+    This class is meant as a mix-in or parent for objects in an
     rp-heavy game. It implements the base functionality for sdescs,
     name replacement and look extensions.
     """
-
-    # Handlers
-    @lazy_property
-    def sdesc(self):
-        return SdescHandler(self)
-
-    @lazy_property
-    def recog(self):
-        return RecogHandler(self)
 
     def at_object_creation(self):
         """
@@ -896,15 +936,6 @@ class RPObject(DefaultObject):
         self.db.pose = ""
         self.db.pose_default = "is here."
 
-        self.db.sdesc = ""
-        self.db.sdesc_regex = ""
-
-        self.db.recog_ref2recog = {}
-        self.db.recog_obj2regex = {}
-        self.db.recog_obj2recog = {}
-
-        # initializing
-        self.sdesc.add("A normal person")
 
     def search(self, searchdata, **kwargs):
         """
@@ -926,12 +957,10 @@ class RPObject(DefaultObject):
             matches = parse_sdescs_and_recogs(self, self.location.contents,
                         _PREFIX + searchdata, search_mode=True)
             nmatches = len(matches)
-            print "matches:", matches
             if nmatches == 1:
                 return matches[0]
             elif nmatches > 1:
                 # multimatch
-                print matches
                 reflist = ["%s%s%s (%s)" % (inum+1, _NUM_SEP, searchdata, obj.sdesc.get())
                         for inum, obj in enumerate(matches)]
                 self.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=searchdata,reflist="\n    ".join(reflist)))
@@ -958,14 +987,14 @@ class RPObject(DefaultObject):
                 said object.
 
         """
-        idstr = " (#%s)" % self.id if self.access(looker, access_type='control') else ""
+        idstr = "(#%s)" % self.id if self.access(looker, access_type='control') else ""
         try:
             recog = looker.recog.get(self)
         except AttributeError:
             recog = None
-        sdesc = recog or self.db.sdesc or self.key
+        sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
         pose = " %s" % self.db.pose or "" if kwargs.get("pose", False) else ""
-        return "%s%s%s" % (sdesc, pose, idstr)
+        return "{c%s{n%s%s" % (sdesc, idstr, pose)
 
     def return_appearance(self, looker):
         """
@@ -986,7 +1015,7 @@ class RPObject(DefaultObject):
             if con.destination:
                 exits.append(key)
             elif con.has_player:
-                users.append("{c%s{n" % key)
+                users.append(key)
             else:
                 things.append(key)
         # get description, build string
@@ -997,13 +1026,44 @@ class RPObject(DefaultObject):
         if exits:
             string += "\n{wExits:{n " + ", ".join(exits)
         if users or things:
-            string += "\n{wYou see:{n " + "\n ".join(users + things)
+            string += "\n " + "\n ".join(users + things)
         return string
 
+
+class RPRoom(DefaultRoom):
+    """
+    Rooms don't have sdescs nor poses of their own, so we
+    just borrow its return_appearance hook here.
+    """
+    return_appearance = RPObject.__dict__["return_appearance"]
 
 class RPCharacter(DefaultCharacter, RPObject):
     """
     This is a character aware of RP systems.
     """
+    # Handlers
+    @lazy_property
+    def sdesc(self):
+        return SdescHandler(self)
+
+    @lazy_property
+    def recog(self):
+        return RecogHandler(self)
+
     def at_object_creation(self):
+        """
+        Called at initial creation.
+        """
         super(RPCharacter, self).at_object_creation()
+
+        self.db._sdesc = ""
+        self.db._sdesc_regex = ""
+
+        self.db._recog_ref2recog = {}
+        self.db._recog_obj2regex = {}
+        self.db._recog_obj2recog = {}
+
+        self.cmdset.add(RPSystemCmdSet, permanent=True)
+        # initializing sdesc
+        self.sdesc.add("A normal item")
+
