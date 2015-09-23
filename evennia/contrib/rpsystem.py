@@ -262,7 +262,7 @@ def parse_language(speaker, emote):
 
 
 
-def parse_sdescs_and_recogs(sender, candidates, emote, map_obj=False):
+def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
     """
     Read a textraw emote and parse it into an intermediary
     format for distributing to all observers.
@@ -272,16 +272,20 @@ def parse_sdescs_and_recogs(sender, candidates, emote, map_obj=False):
             recog data will be considered in the parsing.
         candidates (iterable): A list of objects valid for referencing
             in the emote.
-    emote (str): The incoming emote from the caller.
-    map_obj (bool, optional): Return a mapping including the real db
-        object rather than the sdesc.
+    string (str): The string (like an emote) we want to analyze for keywords.
+    search_mode (bool, optional): If `True`, the "emote" is a query string
+        we want to analyze. If so, the return value is changed.
 
     Returns:
-        (emote, mapping) (tuple): A tuple where the emote is the emote
-            string, with all references replaced with
-            internal-representation {#dbref} markers and mapping is a
-            dictionary `{"#dbref":"sdesc", ...}` if `map_obj` is
-            `False` (default) and `{"#dbref":obj,...}` otherwise.
+        (emote, mapping) (tuple): If `search_mode` is `False`
+            (default), a tuple where the emote is the emote string, with
+            all references replaced with internal-representation {#dbref}
+            markers and mapping is a dictionary `{"#dbref":"sdesc", ...}`
+            if `map_obj` is `False` (default) and `{"#dbref":obj,...}`
+            otherwise.
+        result (list): If `search_mode` is `True` we are
+            performing a search query on `string`, looking for a specific
+            object. A list with zero, one or more matches.
 
     Raises:
         EmoteException: For various ref-matching errors.
@@ -296,31 +300,26 @@ def parse_sdescs_and_recogs(sender, candidates, emote, map_obj=False):
         - says, "..." are
 
     """
-
-    # escape mapping syntax on the form {#id} if it exists already in emote,
-    # if so it is replaced with just "id".
-    emote = _RE_REF.sub("\1", emote)
-
-    # build all candidate regex tuples
-    candidate_regexes = [sender.recog.get_regex_tuple(obj)
+    # Load all candidate regex tuples [(regex, obj, sdesc/recog),...]
+    candidate_regexes = \
+            [(_RE_SELF_REF, sender, sender.sdesc.get())] + \
+                        [sender.recog.get_regex_tuple(obj)
             for obj in candidates if hasattr(obj, "recog")] + \
                         [obj.sdesc.get_regex_tuple()
             for obj in candidates if hasattr(obj, "sdesc")]
     # filter out non-found data
     candidate_regexes = [tup for tup in candidate_regexes if tup]
 
-    # handle self-reference first
-    objlist = []
-    mapping = {}
-    if _RE_SELF_REF.search(emote):
-        key = "#%i" % sender.id
-        emote = _RE_SELF_REF.sub("{%s}" % key, emote)
-        mapping[key] = sender if map_obj else (sender.db.sdesc or sender.key)
-        objlist.append(sender)
+    # escape mapping syntax on the form {#id} if it exists already in emote,
+    # if so it is replaced with just "id".
+    string = _RE_REF.sub("\1", string)
 
     # we now loop over all references and analyze them
+    mapping = {}
     errors = []
-    for marker_match in reversed(list(_RE_OBJ_REF_START.finditer(emote))):
+    obj = None
+    nmatches = 0
+    for marker_match in reversed(list(_RE_OBJ_REF_START.finditer(string))):
         # we scan backwards so we can replace in-situ without messing
         # up later occurrences. Given a marker match, query from
         # start index forward for all candidates.
@@ -332,57 +331,68 @@ def parse_sdescs_and_recogs(sender, candidates, emote, map_obj=False):
         # +1 for _NUM_SEP, if defined
         istart = istart0 #+ (len(num_identifier) + 1 if num_identifier else 0)
 
-        print "marker match:", marker_match.group(), istart0, istart, emote[istart:]
+        print "marker match:", marker_match.group(), istart0, istart, string[istart:]
         #print "candidates:", [tup[2] for tup in candidate_regexes]
         # loop over all candidate regexes and match against the string following the match
-        matches = ((reg.match(emote[istart:]), obj, text) for reg, obj, text in candidate_regexes)
+        matches = ((reg.match(string[istart:]), obj, text) for reg, obj, text in candidate_regexes)
 
         # score matches by how long part of the string was matched
         matches = [(match.end() if match else -1, obj, text) for match, obj, text in matches]
         print "matches:", istart, matches
         maxscore = max(score for score, obj, text in matches)
 
-        # analyze result
-        if maxscore == -1:
-            # No matches
-            errors.append(_EMOTE_NOMATCH_ERROR.format(ref=marker_match.group()))
-            continue
-
         # we have a valid maxscore, extract all matches with this value
-        bestmatches = [(obj, text) for score, obj, text in matches if maxscore == score]
+        bestmatches = [(obj, text) for score, obj, text in matches if maxscore == score != -1]
         nmatches = len(bestmatches)
-        print "nmatches:", nmatches, bestmatches
 
-        if nmatches == 1:
+        if not nmatches:
+            # no matches
+            obj = None
+            nmatches = 0
+        elif nmatches == 1:
             # an exact match.
             obj = bestmatches[0][0]
-        if nmatches:
-            # several matches have the same score.
-            inum = max(0, int(num_identifier) - 1) if num_identifier else None
-            if all(bestmatches[0][0].id == obj.id for obj, text in bestmatches):
-                # multi-matches all references the same obj (could happen with clashing recogs/sdescs)
-                obj = bestmatches[0][0]
+            nmatches = 1
+        elif all(bestmatches[0][0].id == obj.id for obj, text in bestmatches):
+            # multi-match but all reference the same obj (could happen
+            # with clashing recogs/sdescs)
+            obj = bestmatches[0][0]
+            nmatches = 1
+        else:
+            # multi-match.
+            # was a numerical identifier given to help us separate the multi-match?
+            inum = min(max(0, int(num_identifier) - 1), nmatches-1) if num_identifier else None
+            if inum is not None:
+                # A valid inum is given. Use this to separate data
+                obj = bestmatches[inum][0]
+                nmatches = 1
             else:
-                # was a numerical identifier given to help us separate the multi-match?
-                if inum is None or inum > nmatches:
-                    # no match or invalid match id given
-                    refname = marker_match.group()
-                    reflist = ["%s%s%s (%s)" % (inum+1, _NUM_SEP, _RE_PREFIX.sub("", refname), text)
-                            for inum, (obj, text) in enumerate(bestmatches) if score == maxscore]
-                    errors.append(_EMOTE_MULTIMATCH_ERROR.format(
-                                  ref=marker_match.group(), reflist="\n    ".join(reflist)))
-                    continue
-                else:
-                    # A valid inum is given. Use this to separate data
-                    obj = bestmatches[inum][0]
+                # no identifier given - a real multimatch
+                obj = bestmatches
 
-        # if we get to this point we have identifed a local object tied to this sdesc or recog marker.
-        # we replace it with the interal representation on the form {#dbref}.
-        print "replace emote:", istart, maxscore, emote, emote[istart + maxscore:]
-        key = "#%i" % obj.id
-        emote = emote[:istart0] + "{%s}" % key + emote[istart + maxscore:]
-        mapping[key] = obj if map_obj else (obj.db.sdesc or obj.key)
-        objlist.append(obj)
+        if search_mode:
+            # single-object search
+            break
+        elif nmatches == 0:
+            errors.append(_EMOTE_NOMATCH_ERROR.format(ref=marker_match.group()))
+        elif nmatches == 1:
+            key = "#%i" % obj.id
+            string = string[:istart0] + "{%s}" % key + string[istart + maxscore:]
+            mapping[key] = obj if search_mode else (obj.db.sdesc or obj.key)
+        else:
+            refname = marker_match.group()
+            reflist = ["%s%s%s (%s)" % (inum+1, _NUM_SEP, _RE_PREFIX.sub("", refname), text)
+                    for inum, (obj, text) in enumerate(bestmatches) if score == maxscore]
+            errors.append(_EMOTE_MULTIMATCH_ERROR.format(
+                          ref=marker_match.group(), reflist="\n    ".join(reflist)))
+    if search_mode:
+        # return list of object(s) matching
+        if nmatches == 0:
+            return []
+        elif nmatches == 1:
+            return [obj]
+        else:
+            return [tup[0] for tup in obj]
 
     if errors:
         # make sure to not let errors through.
@@ -390,7 +400,7 @@ def parse_sdescs_and_recogs(sender, candidates, emote, map_obj=False):
 
     # at this point all references have been replaced with {#xxx} markers and the mapping contains
     # a 1:1 mapping between those inline markers and objects.
-    return emote, mapping
+    return string, mapping
 
 
 def receive_emote(sender, receiver, emote, sdesc_mapping, language_mapping):
@@ -624,17 +634,19 @@ class CmdRecog(Command): # assign personal alias to object in room
         alias = self.alias
         prefixed_sdesc = sdesc if sdesc.startswith(_PREFIX) else _PREFIX + sdesc
         candidates = caller.location.contents
-        try:
-            _, mapping = parse_sdescs_and_recogs(caller, candidates, prefixed_sdesc, map_obj=True)
-
-        except EmoteError as err:
-            # errors are handled already here
-            caller.msg(err.message)
-            return
-        obj = mapping.values()[0]
-        # we have all we need, add the recog alias
-        alias = caller.set_recog(obj, alias)
-        caller.msg("You will now remember {w%s{n as {w%s{n." % (obj.db.sdesc, alias))
+        matches = parse_sdescs_and_recogs(caller, candidates, prefixed_sdesc, search_mode=True)
+        nmatches = len(matches)
+        # handle 0, 1 and >1 matches
+        if nmatches == 0:
+            caller.msg(_EMOTE_NOMATCH_ERROR.format(ref=sdesc))
+        elif nmatches > 1:
+            reflist = ["%s%s%s (%s)" % (inum+1, _NUM_SEP, _RE_PREFIX.sub("", sdesc), obj.sdesc.get())
+                    for inum, obj in enumerate(matches)]
+            caller.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=sdesc,reflist="\n    ".join(reflist)))
+        else:
+            # we have all we need, add the recog alias
+            alias = caller.recog.add(obj, alias)
+            caller.msg("You will now remember {w%s{n as {w%s{n." % (obj.db.sdesc, alias))
 
 
 class CmdLanguage(Command): # list available languages
@@ -795,7 +807,6 @@ class RecogHandler(object):
             SdescError: When recog could not be set or sdesc longer
                 than `max_length`.
 
-
         """
         # strip emote components from recog
         recog = _RE_REF.sub("\1",
@@ -912,13 +923,20 @@ class RPObject(DefaultObject):
         if (isinstance(searchdata, basestring) and not
                 (kwargs.get("global_search") or
                  kwargs.get("candidates"))):
-            try:
-                _, mapping = parse_sdescs_and_recogs(self,
-                        self.location.contents, _PREFIX + searchdata, map_obj=True)
-                return mapping.values()[0]
-            except EmoteError:
-                pass
-        # fall back to original search method
+            matches = parse_sdescs_and_recogs(self, self.location.contents,
+                        _PREFIX + searchdata, search_mode=True)
+            nmatches = len(matches)
+            print "matches:", matches
+            if nmatches == 1:
+                return matches[0]
+            elif nmatches > 1:
+                # multimatch
+                print matches
+                reflist = ["%s%s%s (%s)" % (inum+1, _NUM_SEP, searchdata, obj.sdesc.get())
+                        for inum, obj in enumerate(matches)]
+                self.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=searchdata,reflist="\n    ".join(reflist)))
+                return
+        # fall back to normal search
         return super(RPObject, self).search(searchdata, **kwargs)
 
 
