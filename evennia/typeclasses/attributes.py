@@ -239,7 +239,7 @@ class AttributeHandler(object):
         ret = [self._cache.get(skey) for skey in searchkeys if skey in self._cache]
         return ret[0] if len(ret) == 1 else ret
 
-    def get(self, key=None, category=None, default=None, return_obj=False,
+    def get(self, key=None, default=None, category=None, return_obj=False,
             strattr=False, raise_exception=False, accessing_obj=None,
             default_access=True):
         """

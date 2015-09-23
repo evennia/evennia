@@ -146,12 +146,13 @@ class TagHandler(object):
             cachestring = "%s-%s" % (tagstr, category)
             self._cache[cachestring] = tagobj
 
-    def get(self, key, category=None, return_tagobj=False):
+    def get(self, key, default=None, category=None, return_tagobj=False):
         """
         Get the tag for the given key or list of tags.
 
         Args:
             key (str or list): The tag or tags to retrieve.
+            default (any, optional): The value to return in case of no match.
             category (str, optional): The Tag category to limit the
                 request to. Note that `None` is the valid, default
                 category.
@@ -171,7 +172,7 @@ class TagHandler(object):
         searchkey = ["%s-%s" % (key.strip().lower(), category) if key is not None else None for key in make_iter(key)]
         ret = [val for val in (self._cache.get(keystr) for keystr in searchkey) if val]
         ret = [to_str(tag.db_data) for tag in ret] if return_tagobj else ret
-        return ret[0] if len(ret) == 1 else ret
+        return ret[0] if len(ret) == 1 else (ret if ret else default)
 
     def remove(self, key, category=None):
         """
