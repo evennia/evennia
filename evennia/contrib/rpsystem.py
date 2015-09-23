@@ -108,6 +108,9 @@ _RE_REF = re.compile(r"\{+\#([0-9]+)\}+")
 # This regex is used to quickly reference one self in an emote.
 _RE_SELF_REF = re.compile(r"/me|@", _RE_FLAGS)
 
+# regex for non-alphanumberic end of a string
+_RE_CHAREND = re.compile(r"\W+$", _RE_FLAGS)
+
 # reference markers for language
 _RE_REF_LANG = re.compile(r"\{+\##([0-9]+)\}+")
 # language says in the emote are on the form "..." or langname"..." (no spaces).
@@ -262,7 +265,6 @@ def parse_language(speaker, emote):
     return emote, mapping
 
 
-
 def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
     """
     Read a textraw emote and parse it into an intermediary
@@ -379,7 +381,9 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
             mapping[key] = obj if search_mode else (obj.db.sdesc or obj.key)
         else:
             refname = marker_match.group()
-            reflist = ["%s%s%s (%s)" % (inum+1, _NUM_SEP, _RE_PREFIX.sub("", refname), text)
+            reflist = ["%s%s%s (%s%s)" % (inum+1, _NUM_SEP,
+                    _RE_PREFIX.sub("", refname), text,
+                    " (%s)" % sender.key if sender == obj else "")
                     for inum, (obj, text) in enumerate(bestmatches) if score == maxscore]
             errors.append(_EMOTE_MULTIMATCH_ERROR.format(
                           ref=marker_match.group(), reflist="\n    ".join(reflist)))
@@ -401,50 +405,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
     return string, mapping
 
 
-def receive_emote(sender, receiver, emote, sdesc_mapping, language_mapping):
-    """
-    Receive a pre-parsed emote.
-
-    Args:
-        sender (Object): The object sending the emote.
-        receiver (Object): The object receiving (seeing) the emote.
-        emote (str): A pre-parsed emote string created with
-            `parse_emote`, with {#dbref} and {##nn} references for
-            objects and languages respectively.
-        sdesc_mapping (dict): A mapping between "#dbref" keys and
-            objects.
-        language_mapping (dict): A mapping "##dbref" and (langname, saytext).
-
-    Returns:
-        finished_emote (str): The finished and ready-to-send emote
-            string, customized for receiver.
-
-    Notes:
-        This function will translage all text back based both on sdesc
-        and recog mappings, but will give presedence to recog mappings.
-    """
-    # we make a local copy that we can modify
-    mapping = copy(sdesc_mapping)
-    # overload mapping with receiver's recogs (which is on the same form)
-    try:
-        mapping.update(receiver.recog.ref2recog)
-    except AttributeError:
-        pass
-    # handle the language mapping, which always produce different keys ##nn
-    for key, (langname, saytext) in language_mapping.iteritems():
-        # color say's white
-        mapping[key] = "{w%s{n" % _LANGUAGE_TRANSLATE(sender, receiver, langname, saytext)
-    # make sure receiver always sees their real name
-    rkey = "#%i" % receiver.id
-    if rkey in mapping:
-        mapping[rkey] = receiver.key
-
-    #TODO - color handling
-    mapping  = dict((key, "{b%s{n" % val) for key, val in mapping.iteritems())
-    receiver.msg(emote.format(**mapping))
-
-
-def send_emote(sender, receivers, emote, no_anonymous=True):
+def send_emote(sender, receivers, emote, anonymous_add="first"):
     """
     Main access function for distribute an emote.
 
@@ -454,10 +415,12 @@ def send_emote(sender, receivers, emote, no_anonymous=True):
             will also form the basis for which sdescs are
             'valid' to use in the emote.
         emote (str): The raw emote string as input by emoter.
-        no_anonymous (bool, optional): Do not allow anonynous
-            emotes, that is, emotes without sender self-referencing,
-            but add an extra reference to the end of the emote
-            if so.
+        anonymous_add (str or None, optional): If `sender` is not
+            self-referencing in the emote, this will auto-add
+            `sender`'s data to the emote. Possible values are
+            - None: No auto-add at anonymous emote
+            - 'last': Add sender to the end of emote as [sender]
+            - 'first': Prepend sender to start of emote.
 
     """
     try:
@@ -468,15 +431,39 @@ def send_emote(sender, receivers, emote, no_anonymous=True):
         sender.msg(err.message)
         return
 
-    if no_anonymous and not "#%i" % sender.id in sdesc_mapping:
+    if anonymous_add and not "#%i" % sender.id in sdesc_mapping:
         # no self-reference in the emote - add to the end
         key = "#%i" % sender.id
-        emote = "%s [%s]" % (emote, "{%s}" % key)
         sdesc_mapping[key] = sender.sdesc.get() or sender.key
+        if anonymous_add == 'first':
+            possessive = "" if emote.startswith('\'') else " "
+            emote = "%s%s%s" % ("{%s}" % key, possessive, emote)
+        else:
+            emote = "%s [%s]" % (emote, "{%s}" % key)
 
-    # broadcast emote
+    # broadcast emote to everyone
     for receiver in receivers:
-        receive_emote(sender, receiver, emote, sdesc_mapping, language_mapping)
+        # we make a temporary copy that we can modify
+        mapping = copy(sdesc_mapping)
+        # overload mapping with receiver's recogs (which is on the same form)
+        try:
+            mapping.update(receiver.recog.ref2recog)
+        except AttributeError:
+            pass
+        # handle the language mapping, which always produce different keys ##nn
+        for key, (langname, saytext) in language_mapping.iteritems():
+            # color say's white
+            mapping[key] = "{w%s{n" % _LANGUAGE_TRANSLATE(sender, receiver, langname, saytext)
+        # make sure receiver always sees their real name
+        rkey = "#%i" % receiver.id
+        if rkey in mapping:
+            mapping[rkey] = receiver.key
+
+        #TODO - color handling
+        mapping  = dict((key, "%s" % val) for key, val in mapping.iteritems())
+
+        # do the template replacement
+        receiver.msg(emote.format(**mapping))
 
 
 #------------------------------------------------------------
@@ -524,9 +511,9 @@ class CmdEmote(RPCommand):  # replaces the main emote
             # we also include ourselves here.
             emote = self.args
             targets = self.caller.location.contents
-            if not emote.endswith("."):
+            if not emote.endswith((".", "!")):
                 emote = "%s." % emote
-            send_emote(self.caller, targets, emote, no_anonymous=True)
+            send_emote(self.caller, targets, emote, anonymous_add='first')
 
 
 class CmdSdesc(RPCommand): # set/look at own sdesc
@@ -549,7 +536,9 @@ class CmdSdesc(RPCommand): # set/look at own sdesc
             caller.msg("Usage: sdesc <sdesc-text>")
             return
         else:
-            sdesc = caller.sdesc.add(self.args)
+            # strip non-alfanum chars from end of sdesc
+            sdesc = _RE_CHAREND.sub("", self.args)
+            sdesc = caller.sdesc.add(sdesc)
             caller.msg("Your sdesc was set to '%s'." % sdesc)
 
 
@@ -562,6 +551,8 @@ class CmdPose(Command): # set current pose and default pose
         pose default <pose>
         pose reset
         pose obj = <pose>
+        pose default obj = <pose>
+        pose reset obj =
 
     Examples:
         pose leans against the tree
@@ -632,7 +623,7 @@ class CmdPose(Command): # set current pose and default pose
             caller.msg("Default pose is now '%s %s'." % (target_name, pose))
             return
         else:
-            caller.db.pose = pose
+            target.db.pose = pose
         caller.msg("Pose will read '%s %s'." % (target_name, pose))
 
 
@@ -675,13 +666,17 @@ class CmdRecog(Command): # assign personal alias to object in room
         if nmatches == 0:
             caller.msg(_EMOTE_NOMATCH_ERROR.format(ref=sdesc))
         elif nmatches > 1:
-            reflist = ["%s%s%s (%s)" % (inum+1, _NUM_SEP, _RE_PREFIX.sub("", sdesc), obj.sdesc.get())
+            reflist = ["%s%s%s (%s%s)" % (inum+1, _NUM_SEP,
+                _RE_PREFIX.sub("", sdesc), caller.recog.get(obj),
+                " (%s)" % caller.key if caller == obj else "")
                     for inum, obj in enumerate(matches)]
             caller.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=sdesc,reflist="\n    ".join(reflist)))
         else:
             # we have all we need, add the recog alias
+            obj = matches[0]
+            sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
             alias = caller.recog.add(obj, alias)
-            caller.msg("You will now remember {w%s{n as {w%s{n." % (obj.db.sdesc, alias))
+            caller.msg("You will now remember {w%s{n as {w%s{n." % (sdesc, alias))
 
 
 class CmdLanguage(Command): # list available languages
@@ -871,10 +866,11 @@ class RecogHandler(object):
 
         # mapping #dbref:obj
         key = "#%i" % obj.id
-        self.db._ref2recog[key] = recog
-        self.db._obj2recog[obj] = recog
+        print "self.obj:", self.obj, self.obj.db._ref2recog
+        self.obj.db._recog_ref2recog[key] = recog
+        self.obj.db._recog_obj2recog[obj] = recog
         regex = ordered_permutation_regex(cleaned_recog)
-        self.db._obj2regex[obj] = regex
+        self.obj.db._recog_obj2regex[obj] = regex
         # local caching
         self.ref2recog[key] = recog
         self.obj2recog[obj] = recog
@@ -883,14 +879,16 @@ class RecogHandler(object):
 
     def get(self, obj):
         """
-        Get recog replacement string, if one exists.
+        Get recog replacement string, if one exists, otherwise
+        get sdesc and as a last resort, the object's key.
 
         Args:
             obj (Object): The object, whose sdesc to replace
         Returns:
             recog (str): The replacement string to use.
         """
-        return self.obj2recog.get(obj)
+        return self.obj2recog.get(obj, obj.sdesc.get()
+                    if hasattr(obj, "sdesc") else obj.key)
 
     def remove(self, obj):
         """
@@ -900,9 +898,9 @@ class RecogHandler(object):
             obj (Object): The object for which to remove recog.
         """
         if obj in self.db.obj2recog:
-            del self.db.obj2recog[obj]
-            del self.db.obj2regex[obj]
-            del self.db.ref2regex["#%i" % obj.id]
+            del self.db._recog_obj2recog[obj]
+            del self.db._recog_obj2regex[obj]
+            del self.db._recog_ref2regex["#%i" % obj.id]
         self._cache()
 
     def get_regex_tuple(self, obj):
@@ -953,16 +951,35 @@ class RPObject(DefaultObject):
         if (isinstance(searchdata, basestring) and not
                 (kwargs.get("global_search") or
                  kwargs.get("candidates"))):
-            matches = parse_sdescs_and_recogs(self, self.location.contents,
+            # searchdata is a string; common self-references
+            if searchdata.lower() in ("here", ):
+                return [self.location] if "quiet" in kwargs else self.location
+            if searchdata.lower() in ("me", "self",):
+                return [self] if "quiet" in kwargs else self
+            if searchdata.lower() == self.key.lower():
+                return [self] if "quiet" in kwargs else self
+
+            # sdesc/recog matching
+            candidates = self.location.contents
+            matches = parse_sdescs_and_recogs(self, candidates,
                         _PREFIX + searchdata, search_mode=True)
             nmatches = len(matches)
             if nmatches == 1:
                 return matches[0]
             elif nmatches > 1:
                 # multimatch
-                reflist = ["%s%s%s (%s)" % (inum+1, _NUM_SEP, searchdata, obj.sdesc.get())
+                reflist = ["%s%s%s (%s%s)" % (inum+1, _NUM_SEP, searchdata, self.recog.get(obj),
+                        " (%s)" % self.key if self == obj else "")
                         for inum, obj in enumerate(matches)]
                 self.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=searchdata,reflist="\n    ".join(reflist)))
+                return
+
+            if not self.locks.check_lockstring(self, "perm(Builders)"):
+                # we block lookup unless we have access to continue
+                if "nofound_string" in kwargs:
+                    self.msg(kwargs["nofound_string"])
+                else:
+                    self.msg("There is nothing here called '%s'." % searchdata)
                 return
         # fall back to normal search
         return super(RPObject, self).search(searchdata, **kwargs)

@@ -503,6 +503,8 @@ class LockHandler(object):
              or (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser)
              or (hasattr(accessing_obj, 'get_player') and (not accessing_obj.get_player() or accessing_obj.get_player().is_superuser))):
                 return True
+        if not ":" in lockstring:
+            lockstring = "%s:%s" % ("_dummy", lockstring)
 
         locks = self._parse_lockstring(lockstring)
 
