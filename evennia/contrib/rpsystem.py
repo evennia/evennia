@@ -1138,6 +1138,7 @@ class RPCharacter(DefaultCharacter, RPObject):
             the evennia.contrib.rplanguage module.
 
         """
-        from evennia.contrib import rplanguage
-        #return "{w%s{n" % text
-        return "{w%s{n" % rplanguage.obfuscate_language(text, level=1.0)
+        return "{w%s{n" % text
+
+        #from evennia.contrib import rplanguage
+        #return "{w%s{n" % rplanguage.obfuscate_language(text, level=1.0)

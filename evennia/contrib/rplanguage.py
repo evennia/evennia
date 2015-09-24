@@ -152,6 +152,7 @@ class LanguageHandler(DefaultScript):
     def at_script_creation(self):
         "Called when script is first started"
         self.key = "language_handler"
+        self.persistent = True
         self.db.language_storage = {}
 
 
