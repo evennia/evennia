@@ -55,7 +55,6 @@ Tall man (assuming his name is Tom) sees:
 """
 
 import re
-from re import match as re_match
 import itertools
 from copy import copy
 from evennia import DefaultObject, DefaultCharacter, DefaultRoom
@@ -89,9 +88,6 @@ _EMOTE_NOMATCH_ERROR = \
 _EMOTE_MULTIMATCH_ERROR = \
 """{{RMultiple possibilities for {ref}:
     {{r{reflist}{{n"""
-
-_LANGUAGE_NOMATCH_ERROR = \
-"""{{RNo language named {{r{langname}{{n"""
 
 _RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.UNICODE
 
@@ -127,25 +123,6 @@ _RE_REF_LANG = re.compile(r"\{+\##([0-9]+)\}+")
 # this regex returns in groups (langname, say), where langname can be empty.
 _RE_LANGUAGE = re.compile(r"(?:(\w+))*(\".+?\")")
 
-
-#TODO
-# make this into a pluggable language module for handling
-# language errors and translations.
-_LANGUAGE_MODULE = None # load code here
-#TODO function determining if a given langname exists. Note that
-# langname can be None if not specified explicitly.
-_LANGUAGE_AVAILABLE = lambda langname: True
-#TODO function to translate a string in a given language
-_LANGUAGE_TRANSLATE = lambda speaker, listener, language, text: "%s%s" % ("(%s)" % language if language else "", text)
-#TODO list available languages
-_LANGUAGE_LIST = lambda: []
-
-# color markup to use for coloring sdescs/recog strings
-# in emotes and spoken language quotes.
-_LANGUAGE_COLOR = lambda obj: "{w"
-_RECOG_COLOR = lambda obj: "{b"
-
-
 # the emote parser works in two steps:
 #  1) convert the incoming emote into an intermediary
 #     form with all object references mapped to ids.
@@ -166,6 +143,12 @@ class RecogError(Exception):
 
 class LanguageError(Exception):
     pass
+
+
+def _dummy_process(text, *args, **kwargs):
+    "Pass-through processor"
+    return text
+
 
 
 def ordered_permutation_regex(sentence):
@@ -259,10 +242,6 @@ def parse_language(speaker, emote):
         # in-place without messing up indexes for future matches
         # note that saytext includes surrounding "...".
         langname, saytext = say_match.groups()
-        if not _LANGUAGE_AVAILABLE(langname):
-            errors.append(_LANGUAGE_NOMATCH_ERROR.format(langname=langname))
-            continue
-
         istart, iend = say_match.start(), say_match.end()
         # the key is simply the running match in the emote
         key = "##%i" % imatch
@@ -465,17 +444,25 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
         except AttributeError:
             pass
         # handle the language mapping, which always produce different keys ##nn
+        try:
+            process_language = receiver.process_language
+        except AttributeError:
+            process_language = _dummy_process
         for key, (langname, saytext) in language_mapping.iteritems():
             # color says
-            mapping[key] = "%s%s{n" % (_LANGUAGE_COLOR(receiver),
-                        _LANGUAGE_TRANSLATE(sender, receiver, langname, saytext))
+            mapping[key] = process_language(saytext, sender, langname)
         # make sure receiver always sees their real name
         rkey = "#%i" % receiver.id
         if rkey in mapping:
             mapping[rkey] = receiver.key
 
-        # add color to recog strings
-        mapping  = dict((key, "%s%s{n" % (_RECOG_COLOR(receiver), val))
+        # add color to sdesc strings
+        try:
+            process_sdesc = receiver.process_sdesc
+        except AttributeError:
+            process_sdesc = _dummy_process
+
+        mapping  = dict((key, process_sdesc(val, receiver))
                          for key, val in mapping.iteritems())
 
         # do the template replacement
@@ -695,25 +682,6 @@ class CmdRecog(Command): # assign personal alias to object in room
             caller.msg("You will now remember {w%s{n as {w%s{n." % (sdesc, alias))
 
 
-class CmdLanguage(Command): # list available languages
-    """
-    List the available languages.
-
-    Usages:
-      languages
-
-    This will display a list of all languages available
-    and the short names needed to speak a given language in
-    an emote.
-
-    """
-    key = "language"
-
-    def func(self):
-        "simple list"
-        self.caller.msg("Languages available: %s" % ", ".join(_LANGUAGE_LIST))
-
-
 class RPSystemCmdSet(CmdSet):
     """
     Mix-in for adding rp-commands to default cmdset.
@@ -723,7 +691,6 @@ class RPSystemCmdSet(CmdSet):
         self.add(CmdSdesc())
         self.add(CmdPose())
         self.add(CmdRecog())
-        self.add(CmdLanguage())
 
 
 #------------------------------------------------------------
@@ -1133,3 +1100,44 @@ class RPCharacter(DefaultCharacter, RPObject):
         # initializing sdesc
         self.sdesc.add("A normal person")
 
+    def process_sdesc(self, sdesc, obj, **kwargs):
+        """
+        Allows to customize how your sdesc is displayed (primarily by
+        changing colors).
+
+        Args:
+            sdesc (str): The sdesc to display.
+            obj (Object): The object to which the adjoining sdesc
+                belongs (can be yourself).
+
+        Returns:
+            sdesc (str): The processed sdesc ready
+                for display.
+
+        """
+        return "{b%s{n" % sdesc
+
+    def process_language(self, text, speaker, language, **kwargs):
+        """
+        Allows to process the spoken text, for example
+        by obfuscating language based on your and the
+        speaker's language skills. Also a good place to
+        put coloring.
+
+        Args:
+            text (str): The text to process.
+            speaker (Object): The object delivering the text.
+            language (str): An identifier string for the language.
+
+        Return:
+            text (str): The optionally processed text.
+
+        Notes:
+            This is designed to work together with a string obfuscator
+            such as the `obfuscate_language` or `obfuscate_whisper` in
+            the evennia.contrib.rplanguage module.
+
+        """
+        from evennia.contrib import rplanguage
+        #return "{w%s{n" % text
+        return "{w%s{n" % rplanguage.obfuscate_language(text, level=1.0)

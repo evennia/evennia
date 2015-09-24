@@ -1404,8 +1404,8 @@ class DefaultCharacter(DefaultObject):
         """
         self.msg("\nYou become {c%s{n.\n" % self.name)
         self.execute_cmd("look")
-        if self.location:
-            self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
+        for obj in (obj for obj in self.location.contents if obj != self):
+            obj.msg("%s has entered the game." % self.get_display_name(obj))
 
     def at_post_unpuppet(self, player, sessid=None):
         """

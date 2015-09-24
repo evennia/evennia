@@ -106,8 +106,11 @@ from evennia import DefaultScript
 #------------------------------------------------------------
 
 # default language grammar
-_PHONEMES = "ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua uh uw y p b t d f v t dh s z sh zh ch jh k ng g m n l r w"
+_PHONEMES = "ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua uh uw a e i u y p b t d f v t dh s z sh zh ch jh k ng g m n l r w"
 _VOWELS = "eaoiuy"
+# these must be able to be constructed from phonemes (so for example,
+# if you have v here, there must exixt at least one single-character
+# vowel phoneme defined above)
 _GRAMMAR = "v cv vc cvv vcc vcv cvcc vccv cvccv cvcvcc cvccvcv vccvccvc cvcvccvv cvcvcvcvv"
 
 _RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.UNICODE
@@ -281,37 +284,36 @@ class LanguageHandler(DefaultScript):
         lword = len(word)
         if len(word) <= self.level:
             # below level. Don't translate
-            self.lastword = word
-            return word
-        elif word.istitle() and not self.lastword.istitle():
-            # capitalized word inside text - treat as a
-            # name (don't translate) but don't allow several in a row.
-            new_word = "%s%s%s" % (self.language["noun_prefix"], word, self.language["noun_postfix"])
-            self.lastword = word
-            return new_word
+            new_word = word
         else:
             # translate the word
             new_word = self.language["translation"].get(word.lower(), "")
             if not new_word:
-                # make up translation on the fly. Length can
-                # vary from un-translated word.
-                wlen = max(0, lword + sum(randint(-1,1) for i
-                            in range(self.language["word_length_variance"])))
-                grammar = self.language["grammar"]
-                if wlen not in grammar:
-                    # this word has no direct translation!
-                    return ""
-                structure = choice(grammar[wlen])
-                grammar2phonemes = self.language["grammar2phonemes"]
-                for match in _RE_GRAMMAR.finditer(structure):
-                    # there are only four combinations: vv,cc,c,v
-                    new_word += choice(grammar2phonemes[match.group()])
-        if word.istitle():
-            # capitalize words correctly
-            new_word = new_word.capitalize()
-        if len(word) > 1 and word.isupper():
-            # keep LOUD words loud also when translated
-            new_word = new_word.upper()
+                if word.istitle():
+                    # capitalized word we don't have a translation for -
+                    # treat as a name (don't translate)
+                    print "noun ..."
+                    new_word = "%s%s%s" % (self.language["noun_prefix"], word, self.language["noun_postfix"])
+                else:
+                    # make up translation on the fly. Length can
+                    # vary from un-translated word.
+                    wlen = max(0, lword + sum(randint(-1,1) for i
+                                in range(self.language["word_length_variance"])))
+                    grammar = self.language["grammar"]
+                    if wlen not in grammar:
+                        # this word has no direct translation!
+                        return ""
+                    structure = choice(grammar[wlen])
+                    grammar2phonemes = self.language["grammar2phonemes"]
+                    for match in _RE_GRAMMAR.finditer(structure):
+                        # there are only four combinations: vv,cc,c,v
+                        new_word += choice(grammar2phonemes[match.group()])
+            if word.istitle():
+                # capitalize words the same way
+                new_word = new_word.capitalize()
+            if len(word) > 1 and word.isupper():
+                # keep LOUD words loud also when translated
+                new_word = new_word.upper()
         return new_word
 
     def translate(self, text, level=0.0, language="default"):
@@ -340,8 +342,6 @@ class LanguageHandler(DefaultScript):
 
         # configuring the translation
         self.level = int(10 * (1.0 - max(0, min(level, 1.0))))
-        self.lastword = ""
-
         return _RE_WORD.sub(self._translate_sub, text)
 
 
@@ -355,7 +355,7 @@ def obfuscate_language(text, level=0.0, language="default"):
     Args:
         text (str): Text to obfuscate.
         level (real, optional): A value from 0.0-1.0 determining
-            the level of obfuscation where 0 means no obfuscation
+            the level of obfuscation where 0 means no jobfuscation
             (string returned unchanged) and 1.0 means the entire
             string is obfuscated.
         language (str, optional): The identifier of a language
@@ -392,6 +392,26 @@ def add_language(**kwargs):
                 from evennia import create_script
                 _LANGUAGE_HANDLER = create_script(LanguageHandler)
     _LANGUAGE_HANDLER.add(**kwargs)
+
+
+def available_languages():
+    """
+    Returns all available language keys.
+
+    Returns:
+        languages (list): List of key strings of all available
+        languages.
+    """
+    global _LANGUAGE_HANDLER
+    if not _LANGUAGE_HANDLER:
+        try:
+            _LANGUAGE_HANDLER = LanguageHandler.objects.get(db_key="language_handler")
+        except LanguageHandler.DoesNotExist:
+            if not _LANGUAGE_HANDLER:
+                from evennia import create_script
+                _LANGUAGE_HANDLER = create_script(LanguageHandler)
+    return _LANGUAGE_HANDLER.attributes.get("language_storage", {}).keys()
+
 
 
 #------------------------------------------------------------
