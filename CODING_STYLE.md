@@ -180,6 +180,12 @@ good idea, for a small number of arguments though, just using `Args:`
 and marking keywords as `optional` will shorten the docstring and make
 it easier to read.
 
+### Default Commands
+
+These represent a special case since Commands in Evennia are using their
+class docstrings to represent the in-game help entry for that command. 
+So for the default look of Command class docstrings see instead 
+[the default command documentation policy][command-docstrings].
 
 ## Ask Questions!
 
@@ -193,3 +199,4 @@ or in the chat.
 [googlestyle]: http://google-styleguide.googlecode.com/svn/trunk/pyguide.html?showone=Comments#Comments
 [githubmarkdown]: https://help.github.com/articles/github-flavored-markdown/
 [markdown-hilight]: https://help.github.com/articles/github-flavored-markdown/#syntax-highlighting
+[command-docstrings]: https://github.com/evennia/evennia/wiki/Using%20MUX%20As%20a%20Standard#documentation-policy
