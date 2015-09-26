@@ -961,7 +961,7 @@ class CmdMask(RPCommand):
             if caller.db.unmasked_sdesc:
                 caller.msg("You are already wearing a mask.")
                 return
-            sdesc = self.args.strip()
+            sdesc = _RE_CHAREND.sub("", self.args)
             if len(sdesc) > 60:
                 caller.msg("Your masked sdesc is too long.")
                 return
