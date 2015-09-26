@@ -582,6 +582,7 @@ class RecogHandler(object):
         self.ref2recog = {}
         self.obj2regex = {}
         self.obj2recog = {}
+        self._cache()
 
     def _cache(self):
         """
@@ -890,7 +891,7 @@ class CmdRecog(Command): # assign personal alias to object in room
             caller.msg("Usage: recog <sdesc> as <alias>")
             return
         sdesc = self.sdesc
-        alias = self.alias
+        alias = self.alias.rstrip(".?!")
         prefixed_sdesc = sdesc if sdesc.startswith(_PREFIX) else _PREFIX + sdesc
         candidates = caller.location.contents
         matches = parse_sdescs_and_recogs(caller, candidates, prefixed_sdesc, search_mode=True)
