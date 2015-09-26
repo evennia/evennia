@@ -70,7 +70,7 @@ from evennia.utils.utils import lazy_property
 
 # The prefix is the (single-character) symbol used to find the start
 # of a object reference, such as /tall (note that
-# the system will understand multi-word references).
+# the system will understand multi-word references like '/a tall man' too).
 _PREFIX = "/"
 
 # The num_sep is the (single-character) symbol used to separate the
@@ -149,6 +149,8 @@ def _dummy_process(text, *args, **kwargs):
     "Pass-through processor"
     return text
 
+
+# emoting mechanisms
 
 
 def ordered_permutation_regex(sentence):
@@ -596,7 +598,7 @@ class CmdPose(Command): # set current pose and default pose
         pose = self.args
         target = self.target
         if not pose and not self.reset:
-            caller.msg("Usage: pose <pose-text> OR pose default <pose-text> OR pose reset")
+            caller.msg("Usage: pose <pose-text> OR pose obj = <pose-text>")
             return
 
         if not pose.endswith("."):
@@ -626,7 +628,13 @@ class CmdPose(Command): # set current pose and default pose
             caller.msg("Default pose is now '%s %s'." % (target_name, pose))
             return
         else:
-            target.db.pose = pose
+            # set the pose. We do one-time ref->sdesc mapping here.
+            parsed, mapping = parse_sdescs_and_recogs(caller, caller.location.contents, pose)
+            print mapping
+            mapping = dict((ref, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
+                            for ref, obj in mapping.iteritems())
+            parsed = parsed.format(**mapping)
+            target.db.pose = parsed
         caller.msg("Pose will read '%s %s'." % (target_name, pose))
 
 
@@ -994,16 +1002,9 @@ class ContribRPObject(DefaultObject):
         except AttributeError:
             recog = None
         sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
-        pose = " %s" % self.db.pose or "" if kwargs.get("pose", False) else ""
+        pose = " %s" % ((self.db.pose or "") if kwargs.get("pose", False) else "")
         return "%s%s%s" % (sdesc, idstr, pose)
 
-
-class ContribRPRoom(DefaultRoom):
-    """
-    Rooms don't have sdescs nor poses of their own, so we just modify
-    `return_appearance` here to make sure it properly displays poses
-    of objects in the room.
-    """
     def return_appearance(self, looker):
         """
         This formats a description. It is the hook a 'look' command
@@ -1036,6 +1037,12 @@ class ContribRPRoom(DefaultRoom):
         if users or things:
             string += "\n " + "\n ".join(users + things)
         return string
+
+class ContribRPRoom(ContribRPObject):
+    """
+    Dummy inheritance for rooms.
+    """
+    pass
 
 
 class ContribRPCharacter(DefaultCharacter, ContribRPObject):
@@ -1079,6 +1086,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         except AttributeError:
             recog = None
         sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
+        print "get_display_name:", self,sdesc, self.db.pose
         pose = " %s" % self.db.pose or "" if kwargs.get("pose", False) else ""
         return "{c%s{n%s%s" % (sdesc, idstr, pose)
 
