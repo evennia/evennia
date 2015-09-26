@@ -260,7 +260,6 @@ def parse_language(speaker, emote):
         # in-place without messing up indexes for future matches
         # note that saytext includes surrounding "...".
         langname, saytext = say_match.groups()
-        print "lang match:", langname, saytext
         istart, iend = say_match.start(), say_match.end()
         # the key is simply the running match in the emote
         key = "##%i" % imatch
