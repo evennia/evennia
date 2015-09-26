@@ -57,7 +57,7 @@ Tall man (assuming his name is Tom) sees:
 import re
 import itertools
 from copy import copy
-from evennia import DefaultObject, DefaultCharacter, DefaultRoom
+from evennia import DefaultObject, DefaultCharacter
 from evennia import Command, CmdSet
 from evennia import ansi
 from evennia.utils.utils import lazy_property
@@ -278,9 +278,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
         (emote, mapping) (tuple): If `search_mode` is `False`
             (default), a tuple where the emote is the emote string, with
             all references replaced with internal-representation {#dbref}
-            markers and mapping is a dictionary `{"#dbref":"sdesc", ...}`
-            if `map_obj` is `False` (default) and `{"#dbref":obj,...}`
-            otherwise.
+            markers and mapping is a dictionary `{"#dbref":obj, ...}`.
         result (list): If `search_mode` is `True` we are
             performing a search query on `string`, looking for a specific
             object. A list with zero, one or more matches.
@@ -373,7 +371,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
         elif nmatches == 1:
             key = "#%i" % obj.id
             string = string[:istart0] + "{%s}" % key + string[istart + maxscore:]
-            mapping[key] = obj if search_mode else (obj.sdesc.get() or obj.key)
+            mapping[key] = obj
         else:
             refname = marker_match.group()
             reflist = ["%s%s%s (%s%s)" % (inum+1, _NUM_SEP,
@@ -419,17 +417,21 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
 
     """
     try:
-        emote, sdesc_mapping = parse_sdescs_and_recogs(sender, receivers, emote)
+        emote, obj_mapping = parse_sdescs_and_recogs(sender, receivers, emote)
         emote, language_mapping = parse_language(sender, emote)
     except (EmoteError, LanguageError) as err:
         # handle all error messages, don't hide actual coding errors
         sender.msg(err.message)
         return
 
+    # convert to sdescs
+    sdesc_mapping = dict((ref, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
+                         for ref, obj in obj_mapping.iteritems())
+
     if anonymous_add and not "#%i" % sender.id in sdesc_mapping:
         # no self-reference in the emote - add to the end
         key = "#%i" % sender.id
-        sdesc_mapping[key] = sender.sdesc.get() or sender.key
+        sdesc_mapping[key] = sender
         if anonymous_add == 'first':
             possessive = "" if emote.startswith('\'') else " "
             emote = "%s%s%s" % ("{%s}" % key, possessive, emote)
@@ -469,236 +471,6 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
 
         # do the template replacement
         receiver.msg(emote.format(**mapping))
-
-
-#------------------------------------------------------------
-# RP Commands
-#------------------------------------------------------------
-
-
-class RPCommand(Command):
-    "simple parent"
-    def parse(self):
-        "strip extra whitespace"
-        self.args = self.args.strip()
-
-
-class CmdEmote(RPCommand):  # replaces the main emote
-    """
-    Emote an action, allowing dynamic replacement of
-    text in the emote.
-
-    Usage:
-      emote text
-
-    Example:
-      emote /me looks around.
-      emote With a flurry /me attacks /tall man with his sword.
-      emote "Hello", /me says.
-
-    Describes an event in the world. This allows the use of /ref
-    markers to replace with the short descriptions or recognized
-    strings of objects in the same room. These will be translated to
-    emotes to match each person seeing it. Use "..." for saying
-    things and langcode"..." without spaces to say something in
-    a different language.
-
-    """
-    key = "emote"
-    aliases = [":"]
-    locks = "cmd:all()"
-
-    def func(self):
-        "Perform the emote."
-        if not self.args:
-            self.caller.msg("What do you want to do?")
-        else:
-            # we also include ourselves here.
-            emote = self.args
-            targets = self.caller.location.contents
-            if not emote.endswith((".", "!")):
-                emote = "%s." % emote
-            send_emote(self.caller, targets, emote, anonymous_add='first')
-
-
-class CmdSdesc(RPCommand): # set/look at own sdesc
-    """
-    Assign yourself a short description (sdesc).
-
-    Usage:
-      sdesc <short description>
-
-    Assigns a short description to yourself.
-
-    """
-    key = "sdesc"
-    locks = "cmd:all()"
-
-    def func(self):
-        "Assign the sdesc"
-        caller = self.caller
-        if not self.args:
-            caller.msg("Usage: sdesc <sdesc-text>")
-            return
-        else:
-            # strip non-alfanum chars from end of sdesc
-            sdesc = _RE_CHAREND.sub("", self.args)
-            sdesc = caller.sdesc.add(sdesc)
-            caller.msg("Your sdesc was set to '%s'." % sdesc)
-
-
-class CmdPose(Command): # set current pose and default pose
-    """
-    Set a static pose
-
-    Usage:
-        pose <pose>
-        pose default <pose>
-        pose reset
-        pose obj = <pose>
-        pose default obj = <pose>
-        pose reset obj =
-
-    Examples:
-        pose leans against the tree
-        pose is talking to the barkeep.
-        pose box = is sitting on the floor.
-
-    Set a static pose. This is the end of a full sentence that
-    starts with your sdesc. If no full stop is given, it will
-    be added automatically. The default pose is the pose you
-    get when using pose reset.
-
-    """
-    key = "pose"
-
-    def parse(self):
-        """
-        Extract the "default" alternative to the pose.
-        """
-        args = self.args.strip()
-        default = args.startswith("default")
-        reset = args.startswith("reset")
-        if default:
-            args = re.sub(r"^default", "", args)
-        if reset:
-            args = re.sub(r"^reset", "", args)
-        target = None
-        if "=" in args:
-            target, args = [part.strip() for part in args.split("=", 1)]
-
-        self.target = target
-        self.reset = reset
-        self.default = default
-        self.args = args.strip()
-
-    def func(self):
-        "Create the pose"
-        caller = self.caller
-        pose = self.args
-        target = self.target
-        if not pose and not self.reset:
-            caller.msg("Usage: pose <pose-text> OR pose obj = <pose-text>")
-            return
-
-        if not pose.endswith("."):
-            pose = "%s." % pose
-        if target:
-            # affect something else
-            target = caller.search(target)
-            if not target:
-                return
-            if not target.access(caller, "edit"):
-                caller.msg("You can't pose that.")
-                return
-        else:
-            target = caller
-
-        if not target.attributes.has("pose"):
-            caller.msg("%s cannot be posed." % target.key)
-            return
-
-        target_name = target.sdesc.get() if hasattr(target, "sdesc") else target.key
-        # set the pose
-        if self.reset:
-            pose = target.db.pose_default
-            target.db.pose = pose
-        elif self.default:
-            target.db.pose_default = pose
-            caller.msg("Default pose is now '%s %s'." % (target_name, pose))
-            return
-        else:
-            # set the pose. We do one-time ref->sdesc mapping here.
-            parsed, mapping = parse_sdescs_and_recogs(caller, caller.location.contents, pose)
-            print mapping
-            mapping = dict((ref, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
-                            for ref, obj in mapping.iteritems())
-            parsed = parsed.format(**mapping)
-            target.db.pose = parsed
-        caller.msg("Pose will read '%s %s'." % (target_name, pose))
-
-
-class CmdRecog(Command): # assign personal alias to object in room
-    """
-    Recognize another person in the same room.
-
-    Usage:
-      recog sdesc as alias
-
-    Example:
-        recog tall man as Griatch
-
-    This will assign a personal alias for a person.
-
-    """
-    key = "recog"
-    aliases = ["recognize"]
-
-    def parse(self):
-        "Parse for the sdesc as alias structure"
-        if "as" in self.args:
-            self.sdesc, self.alias = [part.strip() for part in self.args.split(" as ", 2)]
-        else:
-            self.sdesc = self.alias = None
-
-    def func(self):
-        "Assign the recog"
-        caller = self.caller
-        if not all((self.args, self.sdesc, self.alias)):
-            caller.msg("Usage: recog <sdesc> as <alias>")
-            return
-        sdesc = self.sdesc
-        alias = self.alias
-        prefixed_sdesc = sdesc if sdesc.startswith(_PREFIX) else _PREFIX + sdesc
-        candidates = caller.location.contents
-        matches = parse_sdescs_and_recogs(caller, candidates, prefixed_sdesc, search_mode=True)
-        nmatches = len(matches)
-        # handle 0, 1 and >1 matches
-        if nmatches == 0:
-            caller.msg(_EMOTE_NOMATCH_ERROR.format(ref=sdesc))
-        elif nmatches > 1:
-            reflist = ["%s%s%s (%s%s)" % (inum+1, _NUM_SEP,
-                _RE_PREFIX.sub("", sdesc), caller.recog.get(obj),
-                " (%s)" % caller.key if caller == obj else "")
-                    for inum, obj in enumerate(matches)]
-            caller.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=sdesc,reflist="\n    ".join(reflist)))
-        else:
-            # we have all we need, add the recog alias
-            obj = matches[0]
-            sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
-            alias = caller.recog.add(obj, alias)
-            caller.msg("You will now remember {w%s{n as {w%s{n." % (sdesc, alias))
-
-
-class RPSystemCmdSet(CmdSet):
-    """
-    Mix-in for adding rp-commands to default cmdset.
-    """
-    def at_cmdset_creation(self):
-        self.add(CmdEmote())
-        self.add(CmdSdesc())
-        self.add(CmdPose())
-        self.add(CmdRecog())
 
 
 #------------------------------------------------------------
@@ -876,9 +648,21 @@ class RecogHandler(object):
             obj (Object): The object, whose sdesc to replace
         Returns:
             recog (str): The replacement string to use.
+
+        Notes:
+            This method will respect a "enable_recog" lock set on
+            `obj` (True by default) in order to turn off recog
+            mechanism. This is useful for adding masks/hoods etc.
         """
-        return self.obj2recog.get(obj, obj.sdesc.get()
-                    if hasattr(obj, "sdesc") else obj.key)
+        if obj.access(self.obj, "enable_recog", default=True):
+            # check an eventual recog_masked lock on the object
+            # to avoid revealing masked characters. If lock
+            # does not exist, pass automatically.
+            return self.obj2recog.get(obj, obj.sdesc.get()
+                        if hasattr(obj, "sdesc") else obj.key)
+        else:
+            # recog_mask logk not passed, disable recog
+            return obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
 
     def remove(self, obj):
         """
@@ -901,6 +685,288 @@ class RecogHandler(object):
         if obj in self.obj2recog:
             return self.obj2regex[obj], obj, self.obj2regex[obj]
         return None
+
+#------------------------------------------------------------
+# RP Commands
+#------------------------------------------------------------
+
+
+class RPCommand(Command):
+    "simple parent"
+    def parse(self):
+        "strip extra whitespace"
+        self.args = self.args.strip()
+
+
+class CmdEmote(RPCommand):  # replaces the main emote
+    """
+    Emote an action, allowing dynamic replacement of
+    text in the emote.
+
+    Usage:
+      emote text
+
+    Example:
+      emote /me looks around.
+      emote With a flurry /me attacks /tall man with his sword.
+      emote "Hello", /me says.
+
+    Describes an event in the world. This allows the use of /ref
+    markers to replace with the short descriptions or recognized
+    strings of objects in the same room. These will be translated to
+    emotes to match each person seeing it. Use "..." for saying
+    things and langcode"..." without spaces to say something in
+    a different language.
+
+    """
+    key = "emote"
+    aliases = [":"]
+    locks = "cmd:all()"
+
+    def func(self):
+        "Perform the emote."
+        if not self.args:
+            self.caller.msg("What do you want to do?")
+        else:
+            # we also include ourselves here.
+            emote = self.args
+            targets = self.caller.location.contents
+            if not emote.endswith((".", "!")):
+                emote = "%s." % emote
+            send_emote(self.caller, targets, emote, anonymous_add='first')
+
+
+class CmdSdesc(RPCommand): # set/look at own sdesc
+    """
+    Assign yourself a short description (sdesc).
+
+    Usage:
+      sdesc <short description>
+
+    Assigns a short description to yourself.
+
+    """
+    key = "sdesc"
+    locks = "cmd:all()"
+
+    def func(self):
+        "Assign the sdesc"
+        caller = self.caller
+        if not self.args:
+            caller.msg("Usage: sdesc <sdesc-text>")
+            return
+        else:
+            # strip non-alfanum chars from end of sdesc
+            sdesc = _RE_CHAREND.sub("", self.args)
+            sdesc = caller.sdesc.add(sdesc)
+            caller.msg("Your sdesc was set to '%s'." % sdesc)
+
+
+class CmdPose(Command): # set current pose and default pose
+    """
+    Set a static pose
+
+    Usage:
+        pose <pose>
+        pose default <pose>
+        pose reset
+        pose obj = <pose>
+        pose default obj = <pose>
+        pose reset obj =
+
+    Examples:
+        pose leans against the tree
+        pose is talking to the barkeep.
+        pose box = is sitting on the floor.
+
+    Set a static pose. This is the end of a full sentence that starts
+    with your sdesc. If no full stop is given, it will be added
+    automatically. The default pose is the pose you get when using
+    pose reset. Note that you can use sdescs/recogs to reference
+    people in your pose, but these always appear as that person's
+    sdesc in the emote, regardless of who is seeing it.
+
+    """
+    key = "pose"
+
+    def parse(self):
+        """
+        Extract the "default" alternative to the pose.
+        """
+        args = self.args.strip()
+        default = args.startswith("default")
+        reset = args.startswith("reset")
+        if default:
+            args = re.sub(r"^default", "", args)
+        if reset:
+            args = re.sub(r"^reset", "", args)
+        target = None
+        if "=" in args:
+            target, args = [part.strip() for part in args.split("=", 1)]
+
+        self.target = target
+        self.reset = reset
+        self.default = default
+        self.args = args.strip()
+
+    def func(self):
+        "Create the pose"
+        caller = self.caller
+        pose = self.args
+        target = self.target
+        if not pose and not self.reset:
+            caller.msg("Usage: pose <pose-text> OR pose obj = <pose-text>")
+            return
+
+        if not pose.endswith("."):
+            pose = "%s." % pose
+        if target:
+            # affect something else
+            target = caller.search(target)
+            if not target:
+                return
+            if not target.access(caller, "edit"):
+                caller.msg("You can't pose that.")
+                return
+        else:
+            target = caller
+
+        if not target.attributes.has("pose"):
+            caller.msg("%s cannot be posed." % target.key)
+            return
+
+        target_name = target.sdesc.get() if hasattr(target, "sdesc") else target.key
+        # set the pose
+        if self.reset:
+            pose = target.db.pose_default
+            target.db.pose = pose
+        elif self.default:
+            target.db.pose_default = pose
+            caller.msg("Default pose is now '%s %s'." % (target_name, pose))
+            return
+        else:
+            # set the pose. We do one-time ref->sdesc mapping here.
+            parsed, mapping = parse_sdescs_and_recogs(caller, caller.location.contents, pose)
+            mapping = dict((ref, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
+                            for ref, obj in mapping.iteritems())
+            pose = parsed.format(**mapping)
+
+            if len(target_name) + len(pose) > 60:
+                caller.msg("Your pose '%s' is too long." % pose)
+                return
+
+            target.db.pose = pose
+
+        caller.msg("Pose will read '%s %s'." % (target_name, pose))
+
+
+class CmdRecog(Command): # assign personal alias to object in room
+    """
+    Recognize another person in the same room.
+
+    Usage:
+      recog sdesc as alias
+
+    Example:
+        recog tall man as Griatch
+
+    This will assign a personal alias for a person.
+
+    """
+    key = "recog"
+    aliases = ["recognize"]
+
+    def parse(self):
+        "Parse for the sdesc as alias structure"
+        if "as" in self.args:
+            self.sdesc, self.alias = [part.strip() for part in self.args.split(" as ", 2)]
+        else:
+            self.sdesc = self.alias = None
+
+    def func(self):
+        "Assign the recog"
+        caller = self.caller
+        if not all((self.args, self.sdesc, self.alias)):
+            caller.msg("Usage: recog <sdesc> as <alias>")
+            return
+        sdesc = self.sdesc
+        alias = self.alias
+        prefixed_sdesc = sdesc if sdesc.startswith(_PREFIX) else _PREFIX + sdesc
+        candidates = caller.location.contents
+        matches = parse_sdescs_and_recogs(caller, candidates, prefixed_sdesc, search_mode=True)
+        nmatches = len(matches)
+        # handle 0, 1 and >1 matches
+        if nmatches == 0:
+            caller.msg(_EMOTE_NOMATCH_ERROR.format(ref=sdesc))
+        elif nmatches > 1:
+            reflist = ["%s%s%s (%s%s)" % (inum+1, _NUM_SEP,
+                _RE_PREFIX.sub("", sdesc), caller.recog.get(obj),
+                " (%s)" % caller.key if caller == obj else "")
+                    for inum, obj in enumerate(matches)]
+            caller.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=sdesc,reflist="\n    ".join(reflist)))
+        else:
+            # we have all we need, add the recog alias
+            obj = matches[0]
+            sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
+            alias = caller.recog.add(obj, alias)
+            caller.msg("You will now remember {w%s{n as {w%s{n." % (sdesc, alias))
+
+class CmdMask(Command):
+    """
+    Wear a mask
+
+    Usage:
+        mask <new sdesc>
+        unmask
+
+    This will put on a mask to hide your identity. When wearing
+    a mask, your sdesc will be replaced by the sdesc you pick and
+    people's recognitions of you will be disabled.
+
+    """
+    key = "mask"
+    aliases = ["unmask"]
+
+    def func(self):
+        caller = self.caller
+        if self.cmdstring == "mask":
+            # wear a mask
+            if not self.args:
+                caller.msg("Usage: (un)wearmask sdesc")
+                return
+            if caller.db.unmasked_sdesc:
+                caller.msg("You are already wearing a mask.")
+                return
+            sdesc = self.args.strip()
+            if len(sdesc) > 60:
+                caller.msg("Your masked sdesc is too long.")
+                return
+            caller.db.unmasked_sdesc = caller.sdesc.get()
+            caller.locks.add("enable_recog:false()")
+            caller.sdesc.add(sdesc)
+            caller.msg("You wear a mask as '%s'." % sdesc)
+        else:
+            #unmask
+            old_sdesc = caller.db.unmasked_sdesc
+            if not old_sdesc:
+                caller.msg("You are not wearing a mask.")
+                return
+            del caller.db.unmasked_sdesc
+            caller.locks.remove("enable_recog")
+            caller.sdesc.add(old_sdesc)
+            caller.msg("You remove your mask and is again '%s'." % old_sdesc)
+
+
+class RPSystemCmdSet(CmdSet):
+    """
+    Mix-in for adding rp-commands to default cmdset.
+    """
+    def at_cmdset_creation(self):
+        self.add(CmdEmote())
+        self.add(CmdSdesc())
+        self.add(CmdPose())
+        self.add(CmdRecog())
+        self.add(CmdMask())
 
 
 #------------------------------------------------------------
@@ -1038,6 +1104,7 @@ class ContribRPObject(DefaultObject):
             string += "\n " + "\n ".join(users + things)
         return string
 
+
 class ContribRPRoom(ContribRPObject):
     """
     Dummy inheritance for rooms.
@@ -1086,7 +1153,6 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         except AttributeError:
             recog = None
         sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
-        print "get_display_name:", self,sdesc, self.db.pose
         pose = " %s" % self.db.pose or "" if kwargs.get("pose", False) else ""
         return "{c%s{n%s%s" % (sdesc, idstr, pose)
 
