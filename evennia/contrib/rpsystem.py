@@ -73,7 +73,6 @@ Tall man (assuming his name is Tom) sees:
 import re
 from re import escape as re_escape
 import itertools
-from copy import copy
 from evennia import DefaultObject, DefaultCharacter
 from evennia import Command, CmdSet
 from evennia import ansi
@@ -212,7 +211,7 @@ def ordered_permutation_regex(sentence):
             elif comb:
                 break
         if comb:
-            solution.append(_PREFIX + r"[0-9]*%s*%s(?=\s|$)+" % (_NUM_SEP, re_escape(" ".join(comb)).rstrip("\\")))
+            solution.append(_PREFIX + r"[0-9]*%s*%s(?=\W|$)+" % (_NUM_SEP, re_escape(" ".join(comb)).rstrip("\\")))
 
     # combine into a match regex, first matching the longest down to the shortest components
     regex = r"|".join(sorted(set(solution), key=lambda o:len(o), reverse=True))

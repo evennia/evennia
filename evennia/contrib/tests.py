@@ -77,10 +77,12 @@ class TestRPSystem(EvenniaTest):
 
     def test_ordered_permutation_regex(self):
         self.assertEqual(rpsystem.ordered_permutation_regex(sdesc0),
-                '/[0-9]*-*A nice sender of emotes|/[0-9]*-*nice sender of emotes|/[0-9]*-*sender ' \
-                'of emotes|/[0-9]*-*A nice sender of|/[0-9]*-*nice sender of|/[0-9]*-*A nice ' \
-                'sender|/[0-9]*-*nice sender|/[0-9]*-*of emotes|/[0-9]*-*sender of|/[0-9]*-*emotes|/[0-9]*-*' \
-                'A nice|/[0-9]*-*sender|/[0-9]*-*nice|/[0-9]*-*of|/[0-9]*-*A')
+            '/[0-9]*-*A\\ nice\\ sender\\ of\\ emotes(?=\\W|$)+|/[0-9]*-*nice\\ sender\\ ' \
+            'of\\ emotes(?=\\W|$)+|/[0-9]*-*A\\ nice\\ sender\\ of(?=\\W|$)+|/[0-9]*-*sender\\ ' \
+            'of\\ emotes(?=\\W|$)+|/[0-9]*-*nice\\ sender\\ of(?=\\W|$)+|/[0-9]*-*A\\ nice\\ ' \
+            'sender(?=\\W|$)+|/[0-9]*-*nice\\ sender(?=\\W|$)+|/[0-9]*-*of\\ emotes(?=\\W|$)+' \
+            '|/[0-9]*-*sender\\ of(?=\\W|$)+|/[0-9]*-*A\\ nice(?=\\W|$)+|/[0-9]*-*sender(?=\\W|$)+' \
+            '|/[0-9]*-*emotes(?=\\W|$)+|/[0-9]*-*nice(?=\\W|$)+|/[0-9]*-*of(?=\\W|$)+|/[0-9]*-*A(?=\\W|$)+')
 
     def test_sdesc_handler(self):
         self.speaker.sdesc.add(sdesc0)
@@ -89,8 +91,9 @@ class TestRPSystem(EvenniaTest):
         self.assertEqual(self.speaker.sdesc.get(), "This is 324 ignored")
         self.speaker.sdesc.add("Testing three words")
         self.assertEqual(self.speaker.sdesc.get_regex_tuple()[0].pattern,
-                '/[0-9]*-*Testing three words|/[0-9]*-*Testing three|/[0-9]' \
-                '*-*three words|/[0-9]*-*Testing|/[0-9]*-*words|/[0-9]*-*three')
+                '/[0-9]*-*Testing\\ three\\ words(?=\\W|$)+|/[0-9]*-*Testing\\ ' \
+                'three(?=\\W|$)+|/[0-9]*-*three\\ words(?=\\W|$)+|/[0-9]*-*Testing'\
+                '(?=\\W|$)+|/[0-9]*-*three(?=\\W|$)+|/[0-9]*-*words(?=\\W|$)+')
 
     def test_recog_handler(self):
         self.speaker.sdesc.add(sdesc0)
@@ -100,7 +103,7 @@ class TestRPSystem(EvenniaTest):
         self.assertEqual(self.speaker.recog.get(self.receiver1), recog01)
         self.assertEqual(self.speaker.recog.get(self.receiver2), recog02)
         self.assertEqual(self.speaker.recog.get_regex_tuple(self.receiver1)[0].pattern,
-                '/[0-9]*-*Mr Receiver|/[0-9]*-*Receiver|/[0-9]*-*Mr')
+                '/[0-9]*-*Mr\\ Receiver(?=\\W|$)+|/[0-9]*-*Receiver(?=\\W|$)+|/[0-9]*-*Mr(?=\\W|$)+')
         self.speaker.recog.remove(self.receiver1)
         self.assertEqual(self.speaker.recog.get(self.receiver1), sdesc1)
 
