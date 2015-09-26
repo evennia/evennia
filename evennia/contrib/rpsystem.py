@@ -899,7 +899,7 @@ class RecogHandler(object):
 # RP typeclasses
 #------------------------------------------------------------
 
-class RPObject(DefaultObject):
+class ContribRPObject(DefaultObject):
     """
     This class is meant as a mix-in or parent for objects in an
     rp-heavy game. It implements the base functionality for poses.
@@ -909,7 +909,7 @@ class RPObject(DefaultObject):
         """
         Called at initial creation.
         """
-        super(RPObject, self).at_object_creation
+        super(ContribRPObject, self).at_object_creation
 
         # emoting/recog data
         self.db.pose = ""
@@ -964,7 +964,7 @@ class RPObject(DefaultObject):
                     self.msg("There is nothing here called '%s'." % searchdata)
                 return
         # fall back to normal search
-        return super(RPObject, self).search(searchdata, **kwargs)
+        return super(ContribRPObject, self).search(searchdata, **kwargs)
 
 
     def get_display_name(self, looker, **kwargs):
@@ -998,7 +998,7 @@ class RPObject(DefaultObject):
         return "%s%s%s" % (sdesc, idstr, pose)
 
 
-class RPRoom(DefaultRoom):
+class ContribRPRoom(DefaultRoom):
     """
     Rooms don't have sdescs nor poses of their own, so we just modify
     `return_appearance` here to make sure it properly displays poses
@@ -1038,7 +1038,7 @@ class RPRoom(DefaultRoom):
         return string
 
 
-class RPCharacter(DefaultCharacter, RPObject):
+class ContribRPCharacter(DefaultCharacter, ContribRPObject):
     """
     This is a character class that has poses, sdesc and recog.
     """
@@ -1086,7 +1086,7 @@ class RPCharacter(DefaultCharacter, RPObject):
         """
         Called at initial creation.
         """
-        super(RPCharacter, self).at_object_creation()
+        super(ContribRPCharacter, self).at_object_creation()
 
         self.db._sdesc = ""
         self.db._sdesc_regex = ""

@@ -65,15 +65,15 @@ sdesc2 = "Another nice colliding sdesc-guy for tests"
 recog01 = "Mr Receiver"
 recog02 = "Mr Receiver2"
 recog10 = "Mr Sender"
-emote = "With a flair, /me looks at /first and /colliding. She says \"This is a test.\""
+emote = "With a flair, /me looks at /first and /colliding sdesc-guy. She says \"This is a test.\""
 
 class TestRPSystem(EvenniaTest):
     def setUp(self):
         super(TestRPSystem, self).setUp()
-        self.room = create_object(rpsystem.RPRoom, key="Location")
-        self.speaker = create_object(rpsystem.RPCharacter, key="Sender", location=self.room)
-        self.receiver1 = create_object(rpsystem.RPCharacter, key="Receiver1", location=self.room)
-        self.receiver2 = create_object(rpsystem.RPCharacter, key="Receiver2", location=self.room)
+        self.room = create_object(rpsystem.ContribRPRoom, key="Location")
+        self.speaker = create_object(rpsystem.ContribRPCharacter, key="Sender", location=self.room)
+        self.receiver1 = create_object(rpsystem.ContribRPCharacter, key="Receiver1", location=self.room)
+        self.receiver2 = create_object(rpsystem.ContribRPCharacter, key="Receiver2", location=self.room)
 
     def test_ordered_permutation_regex(self):
         self.assertEqual(rpsystem.ordered_permutation_regex(sdesc0),
@@ -106,7 +106,7 @@ class TestRPSystem(EvenniaTest):
 
     def test_parse_language(self):
         self.assertEqual(rpsystem.parse_language(self.speaker, emote),
-                ('With a flair, /me looks at /first and /colliding. She says {##0}',
+                ('With a flair, /me looks at /first and /colliding sdesc-guy. She says {##0}',
                     {'##0': (None, '"This is a test."')}) )
 
     def parse_sdescs_and_recogs(self):
@@ -122,7 +122,7 @@ class TestRPSystem(EvenniaTest):
         self.speaker.recog.add(self.receiver1, recog01)
         self.assertEqual(rpsystem.parse_sdescs_and_recogs(speaker, candidates, emote), result)
 
-    def send_emote(self):
+    def test_send_emote(self):
         speaker = self.speaker
         receiver1 = self.receiver1
         receiver2 = self.receiver2
@@ -140,5 +140,13 @@ class TestRPSystem(EvenniaTest):
                 '{bAnother nice colliding sdesc-guy for tests{n. She says {b{w"This is a test."{n{n')
         self.assertEqual(self.out2, 'With a flair, {bA nice sender of emotes{n looks at {bThe first ' \
                 'receiver of emotes.{n and {bReceiver2{n. She says {b{w"This is a test."{n{n')
+
+    def test_rpsearch(self):
+        self.speaker.sdesc.add(sdesc0)
+        self.receiver1.sdesc.add(sdesc1)
+        self.receiver2.sdesc.add(sdesc2)
+        self.speaker.msg = lambda text, **kwargs: setattr(self, "out0", text)
+        self.assertEqual(self.speaker.search("receiver of emotes"), self.receiver1)
+        self.assertEqual(self.speaker.search("colliding"), self.receiver2)
 
 
