@@ -364,7 +364,7 @@ class LockHandler(object):
             return self.locks.get(access_type, ["", "", ""])[2]
         return str(self)
 
-    def delete(self, access_type):
+    def remove(self, access_type):
         """
         Remove a particular lock from the handler
 
@@ -381,6 +381,7 @@ class LockHandler(object):
             self._save_locks()
             return True
         return False
+    delete = remove # alias for historical reasons
 
     def clear(self):
         """
