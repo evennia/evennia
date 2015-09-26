@@ -928,7 +928,7 @@ class CmdRecog(RPCommand): # assign personal alias to object in room
             obj = matches[0]
             if not obj.access(self.obj, "enable_recog", default=True):
                 # don't apply recog if object doesn't allow it (e.g. by being masked).
-                caller.msg("It serves no purpose to recognize someone in disguise.")
+                caller.msg("You can't recognize someone who is masked!")
                 return
             if self.cmdstring == "forget":
                 # remove existing recog
