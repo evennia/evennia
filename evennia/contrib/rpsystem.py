@@ -137,7 +137,7 @@ _RE_CHAREND = re.compile(r"\W+$", _RE_FLAGS)
 _RE_REF_LANG = re.compile(r"\{+\##([0-9]+)\}+")
 # language says in the emote are on the form "..." or langname"..." (no spaces).
 # this regex returns in groups (langname, say), where langname can be empty.
-_RE_LANGUAGE = re.compile(r"(?:(\w+))*(\".+?\")")
+_RE_LANGUAGE = re.compile(r"(?:\((\w+)\))*(\".+?\")")
 
 # the emote parser works in two steps:
 #  1) convert the incoming emote into an intermediary
@@ -260,6 +260,7 @@ def parse_language(speaker, emote):
         # in-place without messing up indexes for future matches
         # note that saytext includes surrounding "...".
         langname, saytext = say_match.groups()
+        print "lang match:", langname, saytext
         istart, iend = say_match.start(), say_match.end()
         # the key is simply the running match in the emote
         key = "##%i" % imatch
@@ -1240,7 +1241,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             the evennia.contrib.rplanguage module.
 
         """
-        return "{w%s{n" % text
+        return "%s{w%s{n" % ("{W(%s)" % language if language else "", text)
 
         #from evennia.contrib import rplanguage
         #return "{w%s{n" % rplanguage.obfuscate_language(text, level=1.0)
