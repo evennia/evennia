@@ -71,6 +71,7 @@ Tall man (assuming his name is Tom) sees:
 """
 
 import re
+from re import escape as re_escape
 import itertools
 from copy import copy
 from evennia import DefaultObject, DefaultCharacter
@@ -211,9 +212,9 @@ def ordered_permutation_regex(sentence):
             elif comb:
                 break
         if comb:
-            solution.append(_PREFIX + r"[0-9]*%s*" % _NUM_SEP + " ".join(comb))
+            solution.append(_PREFIX + r"[0-9]*%s*%s(?=\s|$)+" % (_NUM_SEP, re_escape(" ".join(comb)).rstrip("\\")))
 
-    # compile into a match regex, first matching the longest down to the shortest components
+    # combine into a match regex, first matching the longest down to the shortest components
     regex = r"|".join(sorted(set(solution), key=lambda o:len(o), reverse=True))
     return regex
 
@@ -335,6 +336,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
         # we scan backwards so we can replace in-situ without messing
         # up later occurrences. Given a marker match, query from
         # start index forward for all candidates.
+        #print "marker_match:", marker_match.re.pattern, marker_match.groups()
 
         # first see if there is a number given (e.g. 1-tall)
         num_identifier, _ = marker_match.groups("") # return "" if no match, rather than None
@@ -346,6 +348,8 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
         # loop over all candidate regexes and match against the string following the match
         matches = ((reg.match(string[istart:]), obj, text) for reg, obj, text in candidate_regexes)
 
+        #print "matches:", [m[0].re.pattern for m in matches if m[0]]
+
         # score matches by how long part of the string was matched
         matches = [(match.end() if match else -1, obj, text) for match, obj, text in matches]
         maxscore = max(score for score, obj, text in matches)
@@ -353,6 +357,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
         # we have a valid maxscore, extract all matches with this value
         bestmatches = [(obj, text) for score, obj, text in matches if maxscore == score != -1]
         nmatches = len(bestmatches)
+
 
         if not nmatches:
             # no matches
@@ -440,14 +445,10 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
         sender.msg(err.message)
         return
 
-    # convert to sdescs
-    sdesc_mapping = dict((ref, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
-                         for ref, obj in obj_mapping.iteritems())
-
-    if anonymous_add and not "#%i" % sender.id in sdesc_mapping:
+    if anonymous_add and not "#%i" % sender.id in obj_mapping:
         # no self-reference in the emote - add to the end
         key = "#%i" % sender.id
-        sdesc_mapping[key] = sender
+        obj_mapping[key] = sender
         if anonymous_add == 'first':
             possessive = "" if emote.startswith('\'') else " "
             emote = "%s%s%s" % ("{%s}" % key, possessive, emote)
@@ -457,12 +458,12 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
     # broadcast emote to everyone
     for receiver in receivers:
         # we make a temporary copy that we can modify
-        mapping = copy(sdesc_mapping)
-        # overload mapping with receiver's recogs (which is on the same form)
         try:
-            mapping.update(receiver.recog.ref2recog)
+            recog_get = receiver.recog.get
+            mapping = dict((ref, recog_get(obj)) for ref, obj in obj_mapping.items())
         except AttributeError:
-            pass
+            mapping = dict((ref, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
+                            for ref, obj in obj_mapping.items())
         # handle the language mapping, which always produce different keys ##nn
         try:
             process_language = receiver.process_language
@@ -678,7 +679,7 @@ class RecogHandler(object):
             return self.obj2recog.get(obj, obj.sdesc.get()
                         if hasattr(obj, "sdesc") else obj.key)
         else:
-            # recog_mask logk not passed, disable recog
+            # recog_mask log not passed, disable recog
             return obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
 
     def remove(self, obj):
@@ -699,7 +700,7 @@ class RecogHandler(object):
         Returns:
             rec (tuple): Tuple (recog_regex, obj, recog)
         """
-        if obj in self.obj2recog:
+        if obj in self.obj2recog and obj.access(self.obj, "enable_recog", default=True):
             return self.obj2regex[obj], obj, self.obj2regex[obj]
         return None
 
@@ -776,10 +777,10 @@ class CmdSdesc(RPCommand): # set/look at own sdesc
             # strip non-alfanum chars from end of sdesc
             sdesc = _RE_CHAREND.sub("", self.args)
             sdesc = caller.sdesc.add(sdesc)
-            caller.msg("Your sdesc was set to '%s'." % sdesc)
+            caller.msg("%s's sdesc was set to '%s'." % (caller.key, sdesc))
 
 
-class CmdPose(Command): # set current pose and default pose
+class CmdPose(RPCommand): # set current pose and default pose
     """
     Set a static pose
 
@@ -877,7 +878,7 @@ class CmdPose(Command): # set current pose and default pose
         caller.msg("Pose will read '%s %s'." % (target_name, pose))
 
 
-class CmdRecog(Command): # assign personal alias to object in room
+class CmdRecog(RPCommand): # assign personal alias to object in room
     """
     Recognize another person in the same room.
 
@@ -886,25 +887,28 @@ class CmdRecog(Command): # assign personal alias to object in room
 
     Example:
         recog tall man as Griatch
+        forget griatch
 
-    This will assign a personal alias for a person.
+    This will assign a personal alias for a person, or
+    forget said alias.
 
     """
     key = "recog"
-    aliases = ["recognize"]
+    aliases = ["recognize", "forget"]
 
     def parse(self):
         "Parse for the sdesc as alias structure"
         if "as" in self.args:
             self.sdesc, self.alias = [part.strip() for part in self.args.split(" as ", 2)]
-        else:
-            self.sdesc = self.alias = None
+        elif self.args:
+            self.sdesc = self.args.strip()
+            self.alias = ""
 
     def func(self):
         "Assign the recog"
         caller = self.caller
-        if not all((self.args, self.sdesc, self.alias)):
-            caller.msg("Usage: recog <sdesc> as <alias>")
+        if not self.args:
+            caller.msg("Usage: recog <sdesc> as <alias> or forget <alias>")
             return
         sdesc = self.sdesc
         alias = self.alias.rstrip(".?!")
@@ -922,13 +926,17 @@ class CmdRecog(Command): # assign personal alias to object in room
                     for inum, obj in enumerate(matches)]
             caller.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=sdesc,reflist="\n    ".join(reflist)))
         else:
-            # we have all we need, add the recog alias
             obj = matches[0]
-            sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
-            alias = caller.recog.add(obj, alias)
-            caller.msg("%s will now remember {w%s{n as {w%s{n." % (caller.key, sdesc, alias))
+            if self.cmdstring == "forget":
+                # remove existing recog
+                caller.recog.remove(obj)
+                caller.msg("%s will know only '%s'." % (caller.key, obj.recog.get(obj)))
+            else:
+                sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
+                alias = caller.recog.add(obj, alias)
+                caller.msg("%s will now remember {w%s{n as {w%s{n." % (caller.key, sdesc, alias))
 
-class CmdMask(Command):
+class CmdMask(RPCommand):
     """
     Wear a mask
 
@@ -1052,7 +1060,7 @@ class ContribRPObject(DefaultObject):
                 if "nofound_string" in kwargs:
                     self.msg(kwargs["nofound_string"])
                 else:
-                    self.msg("There is nothing here called '%s'." % searchdata)
+                    self.msg("There is no '%s' here." % searchdata)
                 return
         # fall back to normal search
         return super(ContribRPObject, self).search(searchdata, **kwargs)
