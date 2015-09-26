@@ -4,21 +4,19 @@ Language and whisper obfuscation system
 Evennia contrib - Griatch 2015
 
 
-This module is intented to be used with an emoting system
-(such as contrib/rpsystem.py). It offers the ability to
-obfuscate spoken words in the game in various ways:
+This module is intented to be used with an emoting system (such as
+contrib/rpsystem.py). It offers the ability to obfuscate spoken words
+in the game in various ways:
 
-- Language: The language functionality defines a
-  pseudo-language map to any number of languages.
-  The string will be obfuscated depending on a scaling
-  that (most likely) will be input as a weighted average of
-  the language skill of the speaker and listener.
-- Whisper: The whisper functionality will gradually
-  "fade out" a whisper along as scale 0-1, where the
-  fading is based on gradually removing sections of the
-  whisper that is (supposedly) easier to overhear (for
-  example "s" sounds tend to be audible even when no
-  other meaning can be determined).
+- Language: The language functionality defines a pseudo-language map
+    to any number of languages.  The string will be obfuscated depending
+    on a scaling that (most likely) will be input as a weighted average of
+    the language skill of the speaker and listener.
+- Whisper: The whisper functionality will gradually "fade out" a
+    whisper along as scale 0-1, where the fading is based on gradually
+    removing sections of the whisper that is (supposedly) easier to
+    overhear (for example "s" sounds tend to be audible even when no other
+    meaning can be determined).
 
 Usage:
 
@@ -82,8 +80,8 @@ Usage:
     ```
 
     This will produce a decicively more "rounded" and "soft" language
-    than the default one. The few manual_translations also make sure to
-    make it at least look superficially "reasonable".
+    than the default one. The few manual_translations also make sure
+    to make it at least look superficially "reasonable".
 
     The `auto_translations` keyword is useful, this accepts either a
     list or a path to a file of words (one per line) to automatically
