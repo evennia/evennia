@@ -926,7 +926,7 @@ class CmdRecog(Command): # assign personal alias to object in room
             obj = matches[0]
             sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
             alias = caller.recog.add(obj, alias)
-            caller.msg("You will now remember {w%s{n as {w%s{n." % (sdesc, alias))
+            caller.msg("%s will now remember {w%s{n as {w%s{n." % (caller.key, sdesc, alias))
 
 class CmdMask(Command):
     """
