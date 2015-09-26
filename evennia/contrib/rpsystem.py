@@ -926,6 +926,10 @@ class CmdRecog(RPCommand): # assign personal alias to object in room
             caller.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=sdesc,reflist="\n    ".join(reflist)))
         else:
             obj = matches[0]
+            if not obj.access(self.obj, "enable_recog", default=True):
+                # don't apply recog if object doesn't allow it (e.g. by being masked).
+                caller.msg("It serves no purpose to recognize someone in disguise.")
+                return
             if self.cmdstring == "forget":
                 # remove existing recog
                 caller.recog.remove(obj)
@@ -962,6 +966,7 @@ class CmdMask(RPCommand):
                 caller.msg("You are already wearing a mask.")
                 return
             sdesc = _RE_CHAREND.sub("", self.args)
+            sdesc = "%s {H[masked]{n" % sdesc
             if len(sdesc) > 60:
                 caller.msg("Your masked sdesc is too long.")
                 return
