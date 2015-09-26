@@ -158,8 +158,8 @@ class LanguageHandler(DefaultScript):
 
     def add(self, key="default", phonemes=_PHONEMES,
             grammar=_GRAMMAR, word_length_variance=0, noun_prefix="",
-            noun_postfix="", vowels=_VOWELS, manual_translation=None,
-            auto_translations="word_frequency.txt", force=False):
+            noun_postfix="", vowels=_VOWELS, manual_translations=None,
+            auto_translations=None, force=False):
         """
         Add a new language. Note that you generally only need to do
         this once per language and that adding an existing language
@@ -185,7 +185,7 @@ class LanguageHandler(DefaultScript):
                 in this language (if any, usually best to avoid combining
                 with `noun_prefix` or language becomes very wordy).
             vowels (str, optional): Every vowel allowed in this language.
-            manual_translation (dict, optional): This allows for custom-setting
+            manual_translations (dict, optional): This allows for custom-setting
                 certain words in the language to mean the same thing. It is
                 on the form `{real_word: fictional_word}`, for example
                 `{"the", "y'e"}` .
@@ -253,9 +253,9 @@ class LanguageHandler(DefaultScript):
                     new_word += choice(grammar2phonemes[match.group()])
                 translation[word.lower()] = new_word.lower()
 
-        if manual_translation:
+        if manual_translations:
             # update with manual translations
-            translation.update(dict((key.lower(), value.lower()) for key, value in manual_translation.items()))
+            translation.update(dict((key.lower(), value.lower()) for key, value in manual_translations.items()))
 
         # store data
         storage = {"translation" : translation,
@@ -293,7 +293,6 @@ class LanguageHandler(DefaultScript):
                 if word.istitle():
                     # capitalized word we don't have a translation for -
                     # treat as a name (don't translate)
-                    print "noun ..."
                     new_word = "%s%s%s" % (self.language["noun_prefix"], word, self.language["noun_postfix"])
                 else:
                     # make up translation on the fly. Length can

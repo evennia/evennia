@@ -175,11 +175,11 @@ def ordered_permutation_regex(sentence):
 
     """
     # escape {#nnn} markers from sentence, replace with nnn
-    sentence = _RE_REF.sub("\1", sentence)
+    sentence = _RE_REF.sub(r"\1", sentence)
     # escape {##nnn} markers, replace with nnn
-    sentence = _RE_REF_LANG.sub("\1", sentence)
+    sentence = _RE_REF_LANG.sub(r"\1", sentence)
     # escape self-ref marker from sentence
-    sentence = _RE_SELF_REF.sub("", sentence)
+    sentence = _RE_SELF_REF.sub(r"", sentence)
 
     # ordered permutation algorithm
     words = sentence.split()
@@ -233,7 +233,7 @@ def parse_language(speaker, emote):
     """
     # escape mapping syntax on the form {##id} if it exists already in emote,
     # if so it is replaced with just "id".
-    emote = _RE_REF_LANG.sub("\1", emote)
+    emote = _RE_REF_LANG.sub(r"\1", emote)
 
     errors = []
     mapping = {}
@@ -308,7 +308,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
 
     # escape mapping syntax on the form {#id} if it exists already in emote,
     # if so it is replaced with just "id".
-    string = _RE_REF.sub("\1", string)
+    string = _RE_REF.sub(r"\1", string)
 
     # we now loop over all references and analyze them
     mapping = {}
@@ -744,11 +744,11 @@ class SdescHandler(object):
 
         """
         # strip emote components from sdesc
-        sdesc = _RE_REF.sub("\1",
-                _RE_REF_LANG.sub("\1",
-                _RE_SELF_REF.sub("",
-                _RE_LANGUAGE.sub("",
-                _RE_OBJ_REF_START.sub("", sdesc)))))
+        sdesc = _RE_REF.sub(r"\1",
+                _RE_REF_LANG.sub(r"\1",
+                _RE_SELF_REF.sub(r"",
+                _RE_LANGUAGE.sub(r"",
+                _RE_OBJ_REF_START.sub(r"", sdesc)))))
 
         # make an sdesc clean of ANSI codes
         cleaned_sdesc = ansi.strip_ansi(sdesc)
@@ -836,11 +836,11 @@ class RecogHandler(object):
 
         """
         # strip emote components from recog
-        recog = _RE_REF.sub("\1",
-                _RE_REF_LANG.sub("\1",
-                _RE_SELF_REF.sub("",
-                _RE_LANGUAGE.sub("",
-                _RE_OBJ_REF_START.sub("", recog)))))
+        recog = _RE_REF.sub(r"\1",
+                _RE_REF_LANG.sub(r"\1",
+                _RE_SELF_REF.sub(r"",
+                _RE_LANGUAGE.sub(r"",
+                _RE_OBJ_REF_START.sub(r"", recog)))))
 
         # make an recog clean of ANSI codes
         cleaned_recog = ansi.strip_ansi(recog)
@@ -849,7 +849,6 @@ class RecogHandler(object):
 
         # mapping #dbref:obj
         key = "#%i" % obj.id
-        print "self.obj:", self.obj, self.obj.db._ref2recog
         self.obj.db._recog_ref2recog[key] = recog
         self.obj.db._recog_obj2recog[obj] = recog
         regex = ordered_permutation_regex(cleaned_recog)
@@ -880,10 +879,10 @@ class RecogHandler(object):
         Args:
             obj (Object): The object for which to remove recog.
         """
-        if obj in self.db.obj2recog:
-            del self.db._recog_obj2recog[obj]
-            del self.db._recog_obj2regex[obj]
-            del self.db._recog_ref2regex["#%i" % obj.id]
+        if obj in self.obj2recog:
+            del self.obj.db._recog_obj2recog[obj]
+            del self.obj.db._recog_obj2regex[obj]
+            del self.obj.db._recog_ref2recog["#%i" % obj.id]
         self._cache()
 
     def get_regex_tuple(self, obj):
