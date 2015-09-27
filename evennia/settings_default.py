@@ -71,9 +71,12 @@ WEBSOCKET_CLIENT_ENABLED = True
 WEBSOCKET_CLIENT_PORT = 8001
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSOCKET_CLIENT_INTERFACE = '0.0.0.0'
-# Actual URL for webclient component to reach the websocket.
-# The WEBSOCKET_CLIENT_PORT will be automatically appended to this URL.
-WEBSOCKET_CLIENT_URL = "ws://localhost"
+# Actual URL for webclient component to reach the websocket. You only need
+# to set this if you know you need it, like using some sort of proxy setup.
+# If given it must be on the form "ws://hostname" (WEBSOCKET_CLIENT_PORT will
+# be automatically appended). If left at None, the client will itself
+# figure out this url based on the server's hostname.
+WEBSOCKET_CLIENT_URL = None
 # Activate SSH protocol communication (SecureShell)
 SSH_ENABLED = False
 # Ports to use for SSH

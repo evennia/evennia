@@ -24,7 +24,11 @@
         <script language="javascript" type="text/javascript">
             if ("WebSocket" in window) {
                 <!-- Importing the Evennia websocket webclient component (requires jQuery)  -->
-                var wsurl = "{{websocket_url}}";
+                {% if websocket_url %}
+                    var wsurl = "{{websocket_url}}:{{websocket_port}}";
+                {% else %}
+                    var wsurl = "ws://" + this.location.hostname + ":{{websocket_port}}";
+                {% endif %}
                 document.write("\<script src=\"{% static "webclient/js/evennia_websocket_webclient.js" %}\" type=\"text/javascript\" charset=\"utf-8\"\>\</script\>")}
             else {
                 <!-- No websocket support in browser. Importing the Evennia ajax webclient component (requires jQuery)  -->
