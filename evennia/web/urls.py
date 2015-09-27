@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # favicon
-    url(r'^favicon\.ico$',  RedirectView.as_view(url='/media/images/favicon.ico')),
+    url(r'^favicon\.ico$',  RedirectView.as_view(url='/media/images/favicon.ico', permanent=False)),
 
     # ajax stuff
     url(r'^webclient/', include('evennia.web.webclient.urls', namespace='webclient', app_name='webclient')),

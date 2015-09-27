@@ -239,7 +239,7 @@ class AttributeHandler(object):
         ret = [self._cache.get(skey) for skey in searchkeys if skey in self._cache]
         return ret[0] if len(ret) == 1 else ret
 
-    def get(self, key=None, category=None, default=None, return_obj=False,
+    def get(self, key=None, default=None, category=None, return_obj=False,
             strattr=False, raise_exception=False, accessing_obj=None,
             default_access=True):
         """
@@ -326,6 +326,8 @@ class AttributeHandler(object):
                 The default `None` is the normal category used.
             lockstring (str, optional): A lock string limiting access
                 to the attribute.
+            strattr (bool, optional): Make this a string-only Attribute.
+                This is only ever useful for optimization purposes.
             accessing_obj (object, optional): An entity to check for
                 the `attrcreate` access-type. If not passing, this method
                 will be exited.
@@ -384,6 +386,8 @@ class AttributeHandler(object):
                 The default `None` is the normal category used.
             lockstring (str, optional): A lock string limiting access
                 to the attribute.
+            strattr (bool, optional): Make this a string-only Attribute.
+                This is only ever useful for optimization purposes.
             accessing_obj (object, optional): An entity to check for
                 the `attrcreate` access-type. If not passing, this method
                 will be exited.

@@ -364,7 +364,7 @@ class LockHandler(object):
             return self.locks.get(access_type, ["", "", ""])[2]
         return str(self)
 
-    def delete(self, access_type):
+    def remove(self, access_type):
         """
         Remove a particular lock from the handler
 
@@ -381,6 +381,7 @@ class LockHandler(object):
             self._save_locks()
             return True
         return False
+    delete = remove # alias for historical reasons
 
     def clear(self):
         """
@@ -503,6 +504,8 @@ class LockHandler(object):
              or (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser)
              or (hasattr(accessing_obj, 'get_player') and (not accessing_obj.get_player() or accessing_obj.get_player().is_superuser))):
                 return True
+        if not ":" in lockstring:
+            lockstring = "%s:%s" % ("_dummy", lockstring)
 
         locks = self._parse_lockstring(lockstring)
 

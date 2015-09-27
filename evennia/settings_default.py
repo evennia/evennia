@@ -71,9 +71,12 @@ WEBSOCKET_CLIENT_ENABLED = True
 WEBSOCKET_CLIENT_PORT = 8001
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSOCKET_CLIENT_INTERFACE = '0.0.0.0'
-# Actual URL for webclient component to reach the websocket.
-# The WEBSOCKET_CLIENT_PORT will be automatically appended to this URL.
-WEBSOCKET_CLIENT_URL = "ws://localhost"
+# Actual URL for webclient component to reach the websocket. You only need
+# to set this if you know you need it, like using some sort of proxy setup.
+# If given it must be on the form "ws://hostname" (WEBSOCKET_CLIENT_PORT will
+# be automatically appended). If left at None, the client will itself
+# figure out this url based on the server's hostname.
+WEBSOCKET_CLIENT_URL = None
 # Activate SSH protocol communication (SecureShell)
 SSH_ENABLED = False
 # Ports to use for SSH
@@ -233,16 +236,16 @@ CONN_MAX_AGE = 3600 * 7
 # The command parser module to use. See the default module for which
 # functions it must implement
 COMMAND_PARSER = "evennia.commands.cmdparser.cmdparser"
-# The handler that outputs errors when searching
-# objects using object.search().
-SEARCH_AT_RESULT = "evennia.commands.cmdparser.at_search_result"
-# The parser used in order to separate multiple
-# object matches (so you can separate between same-named
-# objects without using dbrefs).
-SEARCH_AT_MULTIMATCH_INPUT = "evennia.commands.cmdparser.at_multimatch_input"
-# The parser used in order to separate multiple
-# command matches (so you can separate between same-named commands)
-SEARCH_AT_MULTIMATCH_CMD = "evennia.commands.cmdparser.at_multimatch_cmd"
+# On a multi-match when search objects or commands, the user has the
+# ability to search again with an index marker that differentiates
+# the results. If multiple "box" objects are found, they can by
+# default use 1-box, 2-box etc to refine the search. Below you
+# can change the index separator character used.
+SEARCH_MULTIMATCH_SEPARATOR = '-'
+# The handler that outputs errors when using any API-level search
+# (not manager methods). This function should correctly report errors
+# both for command- and object-searches.
+SEARCH_AT_RESULT = "evennia.utils.utils.at_search_result"
 # The module holding text strings for the connection screen.
 # This module should contain one or more variables
 # with strings defining the look of the screen.

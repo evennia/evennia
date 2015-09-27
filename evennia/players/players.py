@@ -459,7 +459,7 @@ class DefaultPlayer(PlayerDB):
         Notes:
             Extra keywords are ignored, but are allowed in call in
             order to make API more consistent with
-            objects.models.TypedObject.search.
+            objects.objects.DefaultObject.search.
 
         """
         # handle me, self and *me, *self
@@ -468,7 +468,7 @@ class DefaultPlayer(PlayerDB):
             if searchdata.lower() in ("me", "*me", "self", "*self",):
                 return self
         matches = self.__class__.objects.player_search(searchdata)
-        matches = _AT_SEARCH_RESULT(self, searchdata, matches, global_search=True,
+        matches = _AT_SEARCH_RESULT(matches, self, query=searchdata,
                                     nofound_string=nofound_string,
                                     multimatch_string=multimatch_string)
         if matches and return_puppet:

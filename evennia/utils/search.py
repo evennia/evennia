@@ -45,6 +45,11 @@ Channel = ContentType.objects.get(app_label="comms", model="channeldb").model_cl
 HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_class()
 Tag = ContentType.objects.get(app_label="typeclasses", model="tag").model_class()
 
+
+#------------------------------------------------------------------
+# Search manager-wrappers
+#------------------------------------------------------------------
+
 #
 # Search objects as a character
 #

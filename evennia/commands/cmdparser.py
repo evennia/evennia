@@ -6,8 +6,12 @@ same inputs as the default one.
 
 """
 
-from django.utils.translation import ugettext as _
+import re
+from django.conf import settings
 from evennia.utils.logger import log_trace
+
+_MULTIMATCH_SEPARATOR = settings.SEARCH_MULTIMATCH_SEPARATOR
+_MULTIMATCH_REGEX = re.compile(r"([0-9]+)%s(.*)" % _MULTIMATCH_SEPARATOR, re.I + re.U)
 
 def cmdparser(raw_string, cmdset, caller, match_index=None):
     """
@@ -83,16 +87,14 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
             log_trace("cmdhandler error. raw_input:%s" % raw_string)
 
     if not matches:
-        # no matches found.
-        if '-' in raw_string:
-            # This could be due to the user trying to identify the
-            # command with a #num-<command> style syntax.
-            mindex, new_raw_string = raw_string.split("-", 1)
-            if mindex.isdigit():
-                mindex = int(mindex) - 1
-                # feed result back to parser iteratively
-                return cmdparser(new_raw_string, cmdset,
-                                 caller, match_index=mindex)
+        # no matches found
+        num_ref_match = _MULTIMATCH_REGEX.match(raw_string)
+        if num_ref_match:
+            # the user might be trying to identify the command
+            # with a #num-command style syntax.
+            mindex, new_raw_string = num_ref_match.groups()
+            return cmdparser(new_raw_string, cmdset,
+                                 caller, match_index=int(mindex))
 
     # only select command matches we are actually allowed to call.
     matches = [match for match in matches if match[2].access(caller, 'cmd')]
@@ -127,161 +129,3 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
     # no matter what we have at this point, we have to return it.
     return matches
 
-#------------------------------------------------------------
-# Search parsers and support methods
-#------------------------------------------------------------
-#
-# Default functions for formatting and processing searches.
-#
-# You can replace these from the settings file by setting the variables
-#
-# SEARCH_AT_RESULT
-# SEARCH_AT_MULTIMATCH_INPUT
-# SEARCH_AT_MULTIMATCH_CMD
-#
-# The the replacing functions must have the same inputs and outputs as
-# those in this module.
-#
-def at_search_result(msg_obj, ostring, results, global_search=False,
-                     nofound_string=None, multimatch_string=None, quiet=False):
-    """
-    Called by search methods after a result of any type has been found.
-    Takes a search result (a list) and formats eventual errors.
-
-    Args:
-        msg_obj (Object): Object to receive feedback.
-        ostring (str): Original search string
-        results (list): List of found matches (0, 1 or more)
-        global_search (bool, optional): I this was a global_search or not (if it
-            is, there might be an idea of supplying dbrefs instead of only
-            numbers)
-        nofound_string (str, optional): Custom string for not-found error message.
-        multimatch_string (str, optional): Custom string for multimatch error header
-        quiet (bool, optional): Work normally, but don't echo to caller, just return the
-            results.
-
-    Returns:
-        result (Object or None): The filtered object. If None, it suggests a
-            nofound/multimatch error and the error message was sent directly to `msg_obj`. If
-            the `multimatch_strin` was not given, the multimatch error will be returned as
-
-                ```
-                 1-object
-                 2-object
-                 3-object
-                   etc
-                ```
-
-    """
-    string = ""
-    if not results:
-        # no results.
-        if nofound_string:
-            # custom return string
-            string = nofound_string
-        else:
-            string = _("Could not find '%s'." % ostring)
-        results = None
-
-    elif len(results) > 1:
-        # we have more than one match. We will display a
-        # list of the form 1-objname, 2-objname etc.
-
-        if multimatch_string:
-            # custom header
-            string = multimatch_string
-        else:
-            string = "More than one match for '%s'" % ostring
-            string += " (please narrow target):"
-            string = _(string)
-
-        for num, result in enumerate(results):
-            string += "\n %i-%s%s" % (num + 1, result.name, result.get_extra_info(msg_obj))
-        results = None
-    else:
-        # we have exactly one match.
-        results = results[0]
-
-    if string and not quiet:
-        msg_obj.msg(string.strip())
-    return results
-
-
-def at_multimatch_input(ostring):
-    """
-    Parse number-identifiers.
-
-    This parser will be called by the engine when a user supplies
-    a search term. The search term must be analyzed to determine
-    if the user wants to differentiate between multiple matches
-    (usually found during a previous search).
-
-    Args:
-        ostring (str): The search criterion. The parser will specifically
-            understand input on a form like `2-object` to separate
-            multimatches from each other.
-
-    Returns:
-        selection (tuple):  This  is on the form (index, ostring).
-
-    Notes:
-        This method should separate out any identifiers from the search
-        string used to differentiate between same-named objects. The
-        result should be a tuple (index, search_string) where the index
-        gives which match among multiple matches should be used (1 being
-        the lowest number, rather than 0 as in Python).
-
-        This will be parsed to (2, "object") and, if applicable, will tell
-        the engine to pick the second from a list of same-named matches of
-        objects called "object".
-
-    Example:
-         > look
-        You see: ball, ball, ball and ball.
-         > get ball
-        There where multiple matches for ball:
-            1-ball
-            2-ball
-            3-ball
-            4-ball
-         > get 3-ball
-         You get the ball.
-
-    """
-
-    if not isinstance(ostring, basestring):
-        return (None, ostring)
-    if not '-' in ostring:
-        return (None, ostring)
-    try:
-        index = ostring.find('-')
-        number = int(ostring[:index]) - 1
-        return (number, ostring[index + 1:])
-    except ValueError:
-        #not a number; this is not an identifier.
-        return (None, ostring)
-    except IndexError:
-        return (None, ostring)
-
-
-def at_multimatch_cmd(caller, matches):
-    """
-    Format multiple command matches to a useful error.
-
-    Args:
-        caller (Object): Calling object.
-        matches (list): A list of matchtuples `(num, Command)`.
-
-    Returns:
-        formatted (str): A nicely formatted string, including
-            eventual errors.
-
-    """
-    string = "There were multiple matches:"
-    for num, match in enumerate(matches):
-        # each match is a tuple (candidate, cmd)
-        cmdname, arg, cmd, dum, dum = match
-
-        get_extra_info = cmd.get_extra_info(caller)
-        string += "\n %s-%s%s" % (num + 1, cmdname, get_extra_info)
-    return string
