@@ -340,14 +340,10 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
         # first see if there is a number given (e.g. 1-tall)
         num_identifier, _ = marker_match.groups("") # return "" if no match, rather than None
         istart0 = marker_match.start()
-        # +1 for _NUM_SEP, if defined
-        istart = istart0 #+ (len(num_identifier) + 1 if num_identifier else 0)
+        istart = istart0
 
-        #print "candidates:", [tup[2] for tup in candidate_regexes]
         # loop over all candidate regexes and match against the string following the match
         matches = ((reg.match(string[istart:]), obj, text) for reg, obj, text in candidate_regexes)
-
-        #print "matches:", [m[0].re.pattern for m in matches if m[0]]
 
         # score matches by how long part of the string was matched
         matches = [(match.end() if match else -1, obj, text) for match, obj, text in matches]
@@ -367,8 +363,8 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
             obj = bestmatches[0][0]
             nmatches = 1
         elif all(bestmatches[0][0].id == obj.id for obj, text in bestmatches):
-            # multi-match but all reference the same obj (could happen
-            # with clashing recogs/sdescs)
+            # multi-match but all matches actually reference the same
+            # obj (could happen with clashing recogs + sdescs)
             obj = bestmatches[0][0]
             nmatches = 1
         else:
@@ -376,15 +372,15 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
             # was a numerical identifier given to help us separate the multi-match?
             inum = min(max(0, int(num_identifier) - 1), nmatches-1) if num_identifier else None
             if inum is not None:
-                # A valid inum is given. Use this to separate data
+                # A valid inum is given. Use this to separate data.
                 obj = bestmatches[inum][0]
                 nmatches = 1
             else:
-                # no identifier given - a real multimatch
+                # no identifier given - a real multimatch.
                 obj = bestmatches
 
         if search_mode:
-            # single-object search
+            # single-object search mode. Don't continue loop.
             break
         elif nmatches == 0:
             errors.append(_EMOTE_NOMATCH_ERROR.format(ref=marker_match.group()))
