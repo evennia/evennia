@@ -213,10 +213,10 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
                 logger.log_trace()
                 return
 
-            # This needs to be called so the engine knows this player is
+            # This needs to be set so the engine knows this player is
             # logging in for the first time. (so it knows to call the right
             # hooks during login later)
-            utils.init_new_player(new_player)
+            new_player.db.FIRST_LOGIN = True
 
             # join the new player to the public channel
             pchanneldef = settings.CHANNEL_PUBLIC

@@ -13,6 +13,9 @@ class SharedMemoryManager(Manager):
     # still use the singleton cache, but the active model isn't required
     # to be a SharedMemoryModel.
     def get(self, **kwargs):
+        """
+        Data entity lookup.
+        """
         items = kwargs.keys()
         inst = None
         if len(items) == 1:

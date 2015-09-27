@@ -631,7 +631,9 @@ class EvEditor(object):
 
     def get_buffer(self):
         """
-        Return the current buffer
+        Return:
+            buffer (str): The current buffer.
+
         """
         return self._buffer
 
@@ -639,6 +641,10 @@ class EvEditor(object):
         """
         This should be called when the buffer has been changed
         somehow.  It will handle unsaved flag and undo updating.
+
+        Args:
+            buf (str): The text to update the buffer with.
+
         """
         if is_iter(buf):
             buf = "\n".join(buf)
@@ -651,6 +657,7 @@ class EvEditor(object):
     def quit(self):
         """
         Cleanly exit the editor.
+
         """
         try:
             self._quitfunc(self._caller)
@@ -663,6 +670,7 @@ class EvEditor(object):
         """
         Saves the content of the buffer. The 'quitting' argument is a bool
         indicating whether or not the editor intends to exit after saving.
+
         """
         if self._unsaved:
             try:
@@ -679,6 +687,12 @@ class EvEditor(object):
     def update_undo(self, step=None):
         """
         This updates the undo position.
+
+        Args:
+            step (int, optional): The amount of steps
+                to progress the undo position to. This
+                may be a negative value for undo and
+                a positive value for redo.
 
         """
         if step and step < 0:
@@ -706,8 +720,15 @@ class EvEditor(object):
         """
         This displays the line editor buffer, or selected parts of it.
 
-        If `buf` is set and is not the full buffer, `offset` should define
-        the starting line number, to get the linenum display right.
+        Args:
+            buf (str, optional): The buffer or part of buffer to display.
+            offset (int, optional): If `buf` is set and is not the full buffer,
+                `offset` should define the actual starting line number, to
+                get the linenum display right.
+            linenums (bool, optional): Show line numbers in buffer.
+            raw (bool, optional): Tell protocol to not parse
+                formatting information.
+
         """
         if buf == None:
             buf = self._buffer
@@ -733,6 +754,7 @@ class EvEditor(object):
     def display_help(self):
         """
         Shows the help entry for the editor.
+
         """
         string = self._sep * _DEFAULT_WIDTH + _HELP_TEXT + self._sep * _DEFAULT_WIDTH
         self._caller.msg(string)

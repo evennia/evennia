@@ -92,7 +92,10 @@ _handle_dbref = lambda inp: dbid_to_obj(inp, ObjectDB)
 
 
 def _validate_prototype(key, prototype, protparents, visited):
-    "Run validation on a prototype, checking for inifinite regress"
+    """
+    Run validation on a prototype, checking for inifinite regress.
+
+    """
     assert isinstance(prototype, dict)
     if id(prototype) in visited:
         raise RuntimeError("%s has infinite nesting of prototypes." % key or prototype)
@@ -110,9 +113,10 @@ def _validate_prototype(key, prototype, protparents, visited):
 
 def _get_prototype(dic, prot, protparents):
     """
-    Recursively traverse a prototype dictionary,
-    including multiple inheritance. Use _validate_prototype
-    before this, we don't check for infinite recursion here.
+    Recursively traverse a prototype dictionary, including multiple
+    inheritance. Use _validate_prototype before this, we don't check
+    for infinite recursion here.
+
     """
     if "prototype" in dic:
         # move backwards through the inheritance
@@ -130,10 +134,11 @@ def _batch_create_object(*objparams):
     optimized for speed. It does NOT check and convert various input
     so make sure the spawned Typeclass works before using this!
 
-    Input:
-    objsparams - each argument should be a tuple of arguments for the respective
-                 creation/add handlers in the following order:
-                    (create, permissions, locks, aliases, nattributes, attributes)
+    Args:
+        objsparams (any): Aach argument should be a tuple of arguments
+            for the respective creation/add handlers in the following
+            order: (create, permissions, locks, aliases, nattributes,
+            attributes)
     Returns:
         objects (list): A list of created objects
 
@@ -168,16 +173,17 @@ def spawn(*prototypes, **kwargs):
     Spawn a number of prototyped objects. Each argument should be a
     prototype dictionary.
 
-    keyword args:
-        prototype_modules - a python-path to a
-            prototype module, or a list of such paths. These will be used
-            to build the global protparents dictionary accessible by the
-            input prototypes. If not given, it will instead look for modules
+    Kwargs:
+        prototype_modules (str or list): A python-path to a prototype
+            module, or a list of such paths. These will be used to build
+            the global protparents dictionary accessible by the input
+            prototypes. If not given, it will instead look for modules
             defined by settings.PROTOTYPE_MODULES.
-        prototype_parents - a dictionary holding a custom prototype-parent dictionary. Will
-                      overload same-named prototypes from prototype_modules.
-        return_prototypes - only return a list of the prototype-parents
-                            (no object creation happens)
+        prototype_parents (dict): A dictionary holding a custom
+            prototype-parent dictionary. Will overload same-named
+            prototypes from prototype_modules.
+        return_prototypes (bool): Only return a list of the
+            prototype-parents (no object creation happens)
     """
 
     protparents = {}

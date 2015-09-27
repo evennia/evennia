@@ -40,22 +40,34 @@ _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 def is_iter(iterable):
     """
-    Checks if an object behaves iterably. However,
-    strings are not accepted as iterable (although
-    they are actually iterable), since string iterations
-    are usually not what we want to do with a string.
-    """
-    # use a try..except here to avoid a property
-    # lookup when using this from a typeclassed entity
-    try:
-        _GA(iterable, '__iter__')
-        return True
-    except AttributeError:
-        return False
+    Checks if an object behaves iterably.
 
+    Args:
+        iterable (any): Entity to check for iterability.
+
+    Returns:
+        is_iterable (bool): If `iterable` is iterable or not.
+
+    Notes:
+        Strings are *not* accepted as iterable (although they are
+        actually iterable), since string iterations are usually not
+        what we want to do with a string.
+
+    """
+    return hasattr(iterable, '__iter__')
 
 def make_iter(obj):
-    "Makes sure that the object is always iterable."
+    """
+    Makes sure that the object is always iterable.
+
+    Args:
+        obj (any): Object to make iterable.
+
+    Returns:
+        iterable (list or iterable): The same object
+            passed-through or made iterable.
+
+    """
     return not hasattr(obj, '__iter__') and [obj] or obj
 
 
@@ -63,10 +75,15 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
     """
     Safely wrap text to a certain number of characters.
 
-    text: (str) The text to wrap.
-    width: (int) The number of characters to wrap to.
-    indent: (int) How much to indent new lines (the first line
-                  will not be indented)
+    Args:
+        text (str): The text to wrap.
+        width (int, optional): The number of characters to wrap to.
+        indent (int): How much to indent new lines (the first line
+            will not be indented)
+
+    Returns:
+        text (str): Properly wrapped text.
+
     """
     if not text:
         return ""
@@ -76,10 +93,21 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
 # alias - fill
 fill = wrap
 
+
 def pad(text, width=_DEFAULT_WIDTH, align="c", fillchar=" "):
     """
-    Pads to a given width, align is one of c,l,r
-    and fillchar defaults to the space character.
+    Pads to a given width.
+
+    Args:
+        text (str): Text to pad.
+        width (int, optional): The width to pad to, in characters.
+        align (str, optional): This is one of 'c', 'l' or 'r' (center,
+            left or right).
+        fillchar (str, optional): The character to fill with.
+
+    Returns:
+        text (str): The padded text.
+
     """
     align = align if align in ('c', 'l', 'r') else 'c'
     fillchar = fillchar[0] if fillchar else " "
@@ -90,12 +118,24 @@ def pad(text, width=_DEFAULT_WIDTH, align="c", fillchar=" "):
     else:
         return text.center(width, fillchar)
 
+
 def crop(text, width=_DEFAULT_WIDTH, suffix="[...]"):
     """
-    Crop text to a certain width, adding `suffix` to show that the line
-    continues. Cropping will be done so that the suffix will also fit
-    within the given width. If width is too small to fit both crop
-    and suffix, crop without the suffix.
+    Crop text to a certain width, throwing away text from too-long
+    lines.
+
+    Args:
+        text (str): Text to crop.
+        width (int, optional): Width of line to crop, in characters.
+        suffix (str, optional): This is appended to the end of cropped
+            lines to show that the line actually continues. Cropping
+            will be done so that the suffix will also fit within the
+            given width. If width is too small to fit both crop and
+            suffix, the suffix will be dropped.
+
+    Returns:
+        text (str): The cropped text.
+
     """
 
     utext = to_unicode(text)
@@ -110,11 +150,19 @@ def crop(text, width=_DEFAULT_WIDTH, suffix="[...]"):
 
 def dedent(text):
     """
-    Safely clean all whitespace at the left
-    of a paragraph. This is useful for preserving
-    triple-quoted string indentation while still
-    shifting it all to be next to the left edge of
-    the display.
+    Safely clean all whitespace at the left of a paragraph.
+
+    Args:
+        text (str): The text to dedent.
+
+    Returns:
+        text (str): Dedented string.
+
+    Notes:
+        This is useful for preserving triple-quoted string indentation
+        while still shifting it all to be next to the left edge of the
+        display.
+
     """
     if not text:
         return ""
@@ -123,19 +171,31 @@ def dedent(text):
 
 def list_to_string(inlist, endsep="and", addquote=False):
     """
-    This pretty-formats a list as string output, adding
-    an optional alternative separator to the second to last entry.
-    If `addquote` is `True`, the outgoing strings will be surrounded by quotes.
+    This pretty-formats a list as string output, adding an optional
+    alternative separator to the second to last entry.  If `addquote`
+    is `True`, the outgoing strings will be surrounded by quotes.
+
+    Args:
+        inlist (list): The list to print.
+        endsep (str, optional): If set, the last item separator will
+            be replaced with this value.
+        addquote (bool, optional): This will surround all outgoing
+            values with double quotes.
+
+    Returns:
+        liststr (str): The list represented as a string.
 
     Examples:
-    ```
-     no endsep:
-        [1,2,3] -> '1, 2, 3'
-     with endsep=='and':
-        [1,2,3] -> '1, 2 and 3'
-     with addquote and endsep
-        [1,2,3] -> '"1", "2" and "3"'
-    ```
+
+        ```python
+         # no endsep:
+            [1,2,3] -> '1, 2, 3'
+         # with endsep=='and':
+            [1,2,3] -> '1, 2 and 3'
+         # with addquote and endsep
+            [1,2,3] -> '"1", "2" and "3"'
+        ```
+
     """
     if not endsep:
         endsep = ","
@@ -155,10 +215,17 @@ def list_to_string(inlist, endsep="and", addquote=False):
 
 def wildcard_to_regexp(instring):
     """
-    Converts a player-supplied string that may have wildcards in it to regular
-    expressions. This is useful for name matching.
+    Converts a player-supplied string that may have wildcards in it to
+    regular expressions. This is useful for name matching.
 
-    instring: (string) A string that may potentially contain wildcards (`*` or `?`).
+    Args:
+        instring (string): A string that may potentially contain
+            wildcards (`*` or `?`).
+
+    Returns:
+        regex (str): A string where wildcards were replaced with
+            regular expressions.
+
     """
     regexp_string = ""
 
@@ -182,10 +249,13 @@ def time_format(seconds, style=0):
     """
     Function to return a 'prettified' version of a value in seconds.
 
-    Style 0: 1d 08:30
-    Style 1: 1d
-    Style 2: 1 day, 8 hours, 30 minutes
-    Style 3: 1 day, 8 hours, 30 minutes, 10 seconds
+    Args:
+        seconds (int): Number if seconds to format.
+        style (int): One of the following styles:
+            0. "1d 08:30"
+            1. "1d"
+            2. "1 day, 8 hours, 30 minutes"
+            3. "1 day, 8 hours, 30 minutes, 10 seconds"
     """
     if seconds < 0:
         seconds = 0
@@ -208,8 +278,8 @@ def time_format(seconds, style=0):
             retval = '%id %02i:%02i' % (days, hours, minutes,)
         else:
             retval = '%02i:%02i' % (hours, minutes,)
-
         return retval
+
     elif style is 1:
         """
         Simple, abbreviated form that only shows the highest time amount.
@@ -275,8 +345,15 @@ def time_format(seconds, style=0):
 
 def datetime_format(dtobj):
     """
-    Takes a datetime object instance (e.g. from Django's `DateTimeField`)
-    and returns a string describing how long ago that date was.
+    Pretty-prints the time since a given time.
+
+    Args:
+        dtobj (datetime): An datetime object, e.g. from Django's
+            `DateTimeField`.
+
+    Returns:
+        deltatime (str): A string describing how long ago `dtobj`
+            took place.
 
     """
 
@@ -302,16 +379,26 @@ def datetime_format(dtobj):
 def host_os_is(osname):
     """
     Check to see if the host OS matches the query.
-    Common osnames are
-      posix
-      nt
+
+    Args:
+        osname (str): Common names are "posix" (linux/unix/mac) and
+            "nt" (windows).
+
+    Args:
+        is_os (bool): If the os matches or not.
+
     """
-    if os.name == osname:
-        return True
-    return False
+    return os.name == osname
 
 
 def get_evennia_version():
+    """
+    Helper method for getting the current evennia version.
+
+    Returns:
+        version (str): The version string.
+
+    """
     import evennia
     return evennia.__version__
 
@@ -345,11 +432,17 @@ def pypath_to_realpath(python_path, file_ending='.py'):
 
 def dbref(dbref, reqhash=True):
     """
-    Converts/checks if input is a valid dbref.  If `reqhash` is set,
-    only input strings on the form '#N', where N is an integer is
-    accepted. Otherwise strings '#N', 'N' and integers N are all
-    accepted.
-    Output is the integer part.
+    Converts/checks if input is a valid dbref.
+
+    Args:
+        dbref (int or str): A datbase ref on the form N or #N.
+        reqhash (bool, optional): Require the #N form to accept
+            input as a valid dbref.
+
+    Returns:
+        dbref (int or None): The integer part of the dbref or `None`
+            if input was not a valid dbref.
+
     """
     if reqhash:
         num = (int(dbref.lstrip('#')) if (isinstance(dbref, basestring) and
@@ -366,10 +459,22 @@ def dbref(dbref, reqhash=True):
 
 def dbid_to_obj(inp, objclass, raise_errors=True):
     """
-    Convert a #dbid to a valid object of `objclass`. `objclass`
-    should be a valid object class to filter against (`objclass.filter` ...)
-    If not `raise_errors` is set, this will swallow errors of non-existing
-    objects.
+    Convert a #dbid to a valid object.
+
+    Args:
+        inp (str or int): A valid dbref.
+        objclass (class): A valid django model to filter against.
+        raise_errors (bool, optional): Whether to raise errors
+            or return `None` on errors.
+
+    Returns:
+        obj (Object or None): An entity loaded from the dbref.
+
+    Raises:
+        Exception: If `raise_errors` is `True` and
+            `objclass.objects.get(id=dbref)` did not return a valid
+            object.
+
     """
     dbid = dbref(inp)
     if not dbid:
@@ -389,13 +494,28 @@ def dbid_to_obj(inp, objclass, raise_errors=True):
             raise
         return inp
 
+
 def to_unicode(obj, encoding='utf-8', force_string=False):
     """
-    This decodes a suitable object to the unicode format. Note that
-    one needs to encode it back to utf-8 before writing to disk or
-    printing. Note that non-string objects are let through without
-    conversion - this is important for e.g. Attributes. Use
-    `force_string` to enforce conversion of objects to string.
+    This decodes a suitable object to the unicode format.
+
+    Args:
+        obj (any): Object to decode to unicode.
+        encoding (str, optional): The encoding type to use for the
+            dedoding.
+        force_string (bool, optional): Always convert to string, no
+            matter what type `obj` is initially.
+
+    Returns:
+        result (unicode or any): Will return a unicode object if input
+            was a string. If input was not a string, the original will be
+            returned unchanged unless `force_string` is also set.
+
+    Notes:
+        One needs to encode the obj back to utf-8 before writing to disk
+        or printing. That non-string objects are let through without
+        conversion is important for e.g. Attributes.
+
     """
 
     if force_string and not isinstance(obj, basestring):
@@ -427,10 +547,20 @@ def to_unicode(obj, encoding='utf-8', force_string=False):
 def to_str(obj, encoding='utf-8', force_string=False):
     """
     This encodes a unicode string back to byte-representation,
-    for printing, writing to disk etc. Note that non-string
-    objects are let through without modification - this is
-    required e.g. for Attributes. Use `force_string` to force
-    conversion of objects to strings.
+    for printing, writing to disk etc.
+
+    Args:
+        obj (any): Object to encode to bytecode.
+        encoding (str, optional): The encoding type to use for the
+            encoding.
+        force_string (bool, optional): Always convert to string, no
+            matter what type `obj` is initially.
+
+    Notes:
+        Non-string objects are let through without modification - this
+        is required e.g. for Attributes. Use `force_string` to force
+        conversion of objects to strings.
+
     """
 
     if force_string and not isinstance(obj, basestring):
@@ -460,8 +590,16 @@ def validate_email_address(emailaddress):
     """
     Checks if an email address is syntactically correct.
 
-    (This snippet was adapted from
-    http://commandline.org.uk/python/email-syntax-check.)
+    Args:
+        emailaddress (str): Email address to validate.
+
+    Returns:
+        is_valid (bool): If this is a valid email or not.
+
+    Notes.
+        (This snippet was adapted from
+        http://commandline.org.uk/python/email-syntax-check.)
+
     """
 
     emailaddress = r"%s" % emailaddress
@@ -498,11 +636,23 @@ def validate_email_address(emailaddress):
 
 def inherits_from(obj, parent):
     """
-    Takes an object and tries to determine if it inherits at any distance
-    from parent. What differs this function from e.g. `isinstance()`
-    is that `obj` may be both an instance and a class, and parent
-    may be an instance, a class, or the python path to a class (counting
-    from the evennia root directory).
+    Takes an object and tries to determine if it inherits at *any*
+    distance from parent.
+
+    Args:
+        obj (any): Object to analyze. This may be either an instance
+            or a class.
+        parent (any): Can be either instance, class or python path to class.
+
+    Returns:
+        inherits_from (bool): If `parent` is a parent to `obj` or not.
+
+    Notes:
+        What differs this function from e.g.  `isinstance()` is that `obj`
+        may be both an instance and a class, and parent may be an
+        instance, a class, or the python path to a class (counting from
+        the evennia root directory).
+
     """
 
     if callable(obj):
@@ -524,9 +674,13 @@ def inherits_from(obj, parent):
 
 def server_services():
     """
-    Lists all services active on the Server. Observe that
-    since services are launched in memory, this function will
-    only return any results if called from inside the game.
+    Lists all services active on the Server. Observe that since
+    services are launched in memory, this function will only return
+    any results if called from inside the game.
+
+    Returns:
+        services (dict): A dict of available services.
+
     """
     from evennia.server.sessionhandler import SESSIONS
     if hasattr(SESSIONS, "server") and hasattr(SESSIONS.server, "services"):
@@ -543,7 +697,13 @@ def uses_database(name="sqlite3"):
     Checks if the game is currently using a given database. This is a
     shortcut to having to use the full backend name.
 
-    name - one of 'sqlite3', 'mysql', 'postgresql_psycopg2' or 'oracle'
+    Args:
+        name (str): One of 'sqlite3', 'mysql', 'postgresql_psycopg2'
+        or 'oracle'.
+
+    Returns:
+        uses (bool): If the given database is used or not.
+
     """
     try:
         engine = settings.DATABASES["default"]["ENGINE"]
@@ -555,17 +715,21 @@ def uses_database(name="sqlite3"):
 def delay(delay=2, callback=None, retval=None):
     """
     Delay the return of a value.
-    Inputs:
-      delay (int) - the delay in seconds
-      callback (func() or func(retval)) - if given, will be called without
-                     arguments or with `retval` after delay seconds.
-      retval (any) - this will be returned by this function after a delay,
-                     or as input to callback.
+
+    Args:
+      delay (int): The delay in seconds
+      callback (callable, optional): Will be called without arguments
+        or with `retval` after delay seconds.
+      retval (any, optional): Whis will be returned by this function
+        after a delay, or as input to callback.
+
     Returns:
-      deferred that will fire with callback after `delay` seconds. Note that
-      if `delay()` is used in the commandhandler callback chain, the callback
-      chain can be defined directly in the command body and don't need to be
-      specified here.
+        deferred (deferred): Will fire fire with callback after
+            `delay` seconds. Note that if `delay()` is used in the
+            commandhandler callback chain, the callback chain can be
+            defined directly in the command body and don't need to be
+            specified here.
+
     """
     callb = callback or defer.Deferred().callback
     if retval is not None:
@@ -579,14 +743,18 @@ _OBJECTMODELS = None
 def clean_object_caches(obj):
     """
     Clean all object caches on the given object.
+
+    Args:
+        obj (Object instace): An object whose caches to clean.
+
+    Notes:
+        This is only the contents cache these days.
+
     """
     global _TYPECLASSMODELS, _OBJECTMODELS
     if not _TYPECLASSMODELS:
         from evennia.typeclasses import models as _TYPECLASSMODELS
-    #if not _OBJECTMODELS:
-    #    from evennia.objects import models as _OBJECTMODELS
 
-    #print "recaching:", obj
     if not obj:
         return
     # contents cache
@@ -612,45 +780,39 @@ def run_async(to_execute, *args, **kwargs):
     """
     Runs a function or executes a code snippet asynchronously.
 
-    Inputs:
-    to_execute (callable) - if this is a callable, it will
-            be executed with *args and non-reserved *kwargs as
-            arguments.
-            The callable will be executed using ProcPool, or in
-            a thread if ProcPool is not available.
+    Args:
+        to_execute (callable): If this is a callable, it will be
+            executed with *args and non-reserved *kwargs as arguments.
+            The callable will be executed using ProcPool, or in a thread
+            if ProcPool is not available.
 
-    reserved kwargs:
-        'at_return' -should point to a callable with one argument.
-                    It will be called with the return value from
-                    to_execute.
-        'at_return_kwargs' - this dictionary which be used as keyword
-                             arguments to the at_return callback.
-        'at_err' - this will be called with a Failure instance if
-                       there is an error in to_execute.
-        'at_err_kwargs' - this dictionary will be used as keyword
-                          arguments to the at_err errback.
+    Kwargs:
+        at_return (callable): Should point to a callable with one
+            argument.  It will be called with the return value from
+            to_execute.
+        at_return_kwargs (dict): This dictionary will be used as
+            keyword arguments to the at_return callback.
+        at_err (callable): This will be called with a Failure instance
+            if there is an error in to_execute.
+        at_err_kwargs (dict): This dictionary will be used as keyword
+            arguments to the at_err errback.
 
-    *args   - these args will be used
-              as arguments for that function. If to_execute is a string
-              *args are not used.
-    *kwargs - these kwargs will be used
-              as keyword arguments in that function. If a string, they
-              instead are used to define the executable environment
-              that should be available to execute the code in to_execute.
+    Notes:
+        All other `*args` and `**kwargs` will be passed on to
+        `to_execute`. Run_async will relay executed code to a thread
+        or procpool.
 
-    run_async will relay executed code to a thread or procpool.
+        Use this function with restrain and only for features/commands
+        that you know has no influence on the cause-and-effect order of your
+        game (commands given after the async function might be executed before
+        it has finished). Accessing the same property from different threads
+        can lead to unpredicted behaviour if you are not careful (this is called a
+        "race condition").
 
-    Use this function with restrain and only for features/commands
-    that you know has no influence on the cause-and-effect order of your
-    game (commands given after the async function might be executed before
-    it has finished). Accessing the same property from different threads
-    can lead to unpredicted behaviour if you are not careful (this is called a
-    "race condition").
-
-    Also note that some databases, notably sqlite3, don't support access from
-    multiple threads simultaneously, so if you do heavy database access from
-    your `to_execute` under sqlite3 you will probably run very slow or even get
-    tracebacks.
+        Also note that some databases, notably sqlite3, don't support access from
+        multiple threads simultaneously, so if you do heavy database access from
+        your `to_execute` under sqlite3 you will probably run very slow or even get
+        tracebacks.
 
     """
 
@@ -676,9 +838,12 @@ def run_async(to_execute, *args, **kwargs):
 def check_evennia_dependencies():
     """
     Checks the versions of Evennia's dependencies including making
-    some checks for runtime libraries
+    some checks for runtime libraries.
 
-    Returns False if a show-stopping version mismatch is found.
+    Returns:
+        result (bool): `False` if a show-stopping version mismatch is
+            found.
+
     """
 
     # check main dependencies
@@ -711,6 +876,14 @@ def check_evennia_dependencies():
 def has_parent(basepath, obj):
     """
     Checks if `basepath` is somewhere in `obj`s parent tree.
+
+    Args:
+        basepath (str): Python dotpath to compare against obj path.
+        obj (any): Object whose path is to be checked.
+
+    Returns:
+        has_parent (bool): If the check was successful or not.
+
     """
     try:
         return any(cls for cls in obj.__class__.mro()
@@ -726,15 +899,15 @@ def mod_import(module):
     A generic Python module loader.
 
     Args:
-        module - this can be either a Python path (dot-notation like
-                 `evennia.objects.models`), an absolute path
-                 (e.g. `/home/eve/evennia/evennia/objects.models.py`)
-                 or an already imported module object (e.g. `models`)
+        module (str, module): This can be either a Python path
+            (dot-notation like `evennia.objects.models`), an absolute path
+            (e.g. `/home/eve/evennia/evennia/objects.models.py`) or an
+            already imported module object (e.g. `models`)
     Returns:
-        an imported module. If the input argument was already a model,
-        this is returned as-is, otherwise the path is parsed and imported.
-    Error:
-        returns `None`. The error is also logged.
+        module (module or None): An imported module. If the input argument was
+        already a module, this is returned as-is, otherwise the path is
+        parsed and imported. Returns `None` and logs error if import failed.
+
     """
 
     def log_trace(errmsg=None):
@@ -800,8 +973,21 @@ def mod_import(module):
 
 def all_from_module(module):
     """
-    Return all global-level variables from a module as a dict.
-    Ignores modules and variable names starting with an underscore.
+    Return all global-level variables from a module.
+
+    Args:
+        module (str, module): This can be either a Python path
+            (dot-notation like `evennia.objects.models`), an absolute path
+            (e.g. `/home/eve/evennia/evennia/objects.models.py`) or an
+            already imported module object (e.g. `models`)
+
+    Returns:
+        variables (dict): A dict of {variablename: variable} for all
+            variables in the given module.
+
+    Notes:
+        Ignores modules and variable names starting with an underscore.
+
     """
     mod = mod_import(module)
     if not mod:
@@ -812,23 +998,24 @@ def all_from_module(module):
 
 def variable_from_module(module, variable=None, default=None):
     """
-    Retrieve a variable or list of variables from a module. The variable(s)
-    must be defined globally in the module. If no variable is given (or a
-    list entry is `None`), all global variables are extracted from the module.
-
-    If `module` cannot be imported or a given `variable` not found, `default`
-    is returned.
+    Retrieve a variable or list of variables from a module. The
+    variable(s) must be defined globally in the module. If no variable
+    is given (or a list entry is `None`), all global variables are
+    extracted from the module.
 
     Args:
-      module (string or module)- python path, absolute path or a module.
-      variable (string or iterable) - single variable name or iterable of
-                                      variable names to extract.
-      default (string) - default value to use if a variable fails
-                         to be extracted. Ignored if `variable` is not given.
+      module (string or module): Python path, absolute path or a module.
+      variable (string or iterable, optional): Single variable name or iterable
+          of variable names to extract. If not given, all variables in
+          the module will be returned.
+      default (string, optional): Default value to use if a variable fails to
+          be extracted. Ignored if `variable` is not given.
+
     Returns:
-      a single value or a list of values depending on the type of
-        `variable` argument. Errors in lists are replaced by the
-        `default` argument.
+        variables (value or list): A single value or a list of values
+        depending on if `variable` is given or not. Errors in lists
+        are replaced by the `default` argument.
+
     """
 
     if not module:
@@ -856,8 +1043,20 @@ def string_from_module(module, variable=None, default=None):
     """
     This is a wrapper for `variable_from_module` that requires return
     value to be a string to pass. It's primarily used by login screen.
-    if `variable` is not set, returns a list of all string variables in
-    `module`.
+
+    Args:
+      module (string or module): Python path, absolute path or a module.
+      variable (string or iterable, optional): Single variable name or iterable
+          of variable names to extract. If not given, all variables in
+          the module will be returned.
+      default (string, optional): Default value to use if a variable fails to
+          be extracted. Ignored if `variable` is not given.
+
+    Returns:
+        variables (value or list): A single (string) value or a list of values
+        depending on if `variable` is given or not. Errors in lists (such
+        as the value not being a string) are replaced by the `default` argument.
+
     """
     val = variable_from_module(module, variable=variable, default=default)
     if val:
@@ -868,11 +1067,19 @@ def string_from_module(module, variable=None, default=None):
             return result if result else default
     return default
 
+
 def random_string_from_module(module):
     """
     Returns a random global string from a module.
+
+    Args:
+        module (string or module): Python path, absolute path or a module.
+
+    Returns:
+        random (string): A random stribg variable from `module`.
     """
     return random.choice(string_from_module(module))
+
 
 def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
     """
@@ -880,11 +1087,18 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
     `path` will be tried, then all given `defaultpaths` will be
     prepended to see a match is found.
 
-    path - full or partial python path.
-    variable - name of variable to import from module.
-    defaultpaths - an iterable of python paths to attempt
-                   in order if importing directly from
-                   `path` doesn't work.
+    Args:
+        path (str): Full or partial python path.
+        variable (str): Name of variable to import from module.
+        default (string, optional): Default value to use if a variable fails to
+          be extracted. Ignored if `variable` is not given.
+        defaultpaths (iterable, options): Python paths to attempt in order if
+            importing directly from `path` doesn't work.
+
+    Returns:
+        value (any): The variable imported from the module, or `default`, if
+            not found.
+
     """
     paths = [path] + make_iter(defaultpaths)
     for modpath in paths:
@@ -898,13 +1112,23 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
             return getattr(mod, variable, default)
     return default
 
+
 def class_from_module(path, defaultpaths=None):
     """
     Return a class from a module, given the module's path. This is
     primarily used to convert db_typeclass_path:s to classes.
 
-    if a list of `defaultpaths` is given, try subsequent runs by
-    prepending those paths to the given `path`.
+    Args:
+        path (str): Full Python dot-path to module.
+        defaultpaths (iterable, optional): If a direc import from `path` fails,
+            try subsequent imports by prepending those paths to `path`.
+
+    Returns:
+        class (Class): An uninstatiated class recovered from path.
+
+    Raises:
+        ImportError: If all loading failed.
+
     """
     cls = None
     if defaultpaths:
@@ -949,14 +1173,10 @@ object_from_module = class_from_module
 
 def init_new_player(player):
     """
-    Helper method to call all hooks, set flags etc on a newly created
-    player (and potentially their character, if it exists already).
+    Deprecated.
     """
-    # the FIRST_LOGIN flags are necessary for the system to call
-    # the relevant first-login hooks.
-    #if player.character:
-    #    player.character.db.FIRST_LOGIN = True
-    player.db.FIRST_LOGIN = True
+    from evennia.utils import logger
+    logger.log_depmsg("evennia.utils.utils.init_new_player is DEPRECATED and should not be used.")
 
 
 def string_similarity(string1, string2):
@@ -967,8 +1187,14 @@ def string_similarity(string1, string2):
     The measure-vectors used is simply a "bag of words" type histogram
     (but for letters).
 
-    The function returns a value 0...1 rating how similar the two strings
-    are. The strings can contain multiple words.
+    Args:
+        string1 (str): String to compare (may contain any number of words).
+        string2 (str): Second string to compare (any number of words).
+
+    Returns:
+        similarity (float): A value 0...1 rating how similar the two
+            strings are.
+
     """
     vocabulary = set(list(string1 + string2))
     vec1 = [string1.count(v) for v in vocabulary]

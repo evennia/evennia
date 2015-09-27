@@ -168,17 +168,17 @@ class EvForm(object):
         """
         Initiate the form
 
-        keywords:
-            filename - path to template file
-            form - dictionary of {"CELLCHAR":char,
-                                  "TABLECHAR":char,
-                                  "FORM":templatestring}
+        Kwargs:
+            filename (str): Path to template file.
+            cells (dict): A dictionary mapping of {id:text}
+            tables (dict): A dictionary mapping of {id:EvTable}.
+            form (dict): A dictionary of {"CELLCHAR":char,
+                                          "TABLECHAR":char,
+                                          "FORM":templatestring}
                     if this is given, filename is not read.
-            cells - a dictionary mapping of {id:text}
-            tables -  dictionary mapping of {id:EvTable}
-
-        other kwargs are fed as options to the EvCells and EvTables
-        (see `evtable.EvCell` and `evtable.EvTable` for more info).
+        Notes:
+            Other kwargs are fed as options to the EvCells and EvTables
+            (see `evtable.EvCell` and `evtable.EvTable` for more info).
 
         """
         self.filename = filename
@@ -204,8 +204,9 @@ class EvForm(object):
 
     def _parse_rectangles(self, cellchar, tablechar, form, **kwargs):
         """
-        Parse a form for rectangular formfields identified by
-        formchar enclosing an identifier.
+        Parse a form for rectangular formfields identified by formchar
+        enclosing an identifier.
+
         """
 
         # update options given at creation with new input - this
@@ -337,6 +338,7 @@ class EvForm(object):
     def _populate_form(self, raw_form, mapping):
         """
         Insert cell contents into form at given locations
+
         """
         form = copy.copy(raw_form)
         for key, (iy0, ix0, width, height, cell_or_table) in mapping.items():
@@ -352,11 +354,13 @@ class EvForm(object):
         """
         Add mapping for form.
 
-        cells - a dictionary of {identifier:celltext}
-        tables - a dictionary of {identifier:table}
+        Args:
+            cells (dict): A dictionary of {identifier:celltext}
+            tables (dict): A dictionary of {identifier:table}
 
-        kwargs will be forwarded to tables/cells. See
-        evtable.EvCell and evtable.EvTable for info.
+        Notes:
+            kwargs will be forwarded to tables/cells. See
+            `evtable.EvCell` and `evtable.EvTable` for info.
 
         """
         # clean kwargs (these cannot be overridden)
@@ -373,7 +377,15 @@ class EvForm(object):
 
     def reload(self, filename=None, form=None, **kwargs):
         """
-        Creates the form from a stored file name
+        Creates the form from a stored file name.
+
+        Args:
+            filename (str): The file to read from.
+            form (dict): A mapping for the form.
+
+        Notes:
+            Kwargs are passed through to Cel creation.
+
         """
         # clean kwargs (these cannot be overridden)
         kwargs.pop("enforce_size", None)

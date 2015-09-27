@@ -65,21 +65,52 @@ def _format(seconds, *divisors) :
 # Access functions
 
 def runtime(format=False):
-    "Get the total runtime of the server since first start (minus downtimes)"
+    """
+    Get the total runtime of the server since first start (minus
+    downtimes)
+
+    Args:
+        format (bool, optional): Format into a time representation.
+
+    Returns:
+        time (float or tuple): The runtime or the same time split up
+            into time units.
+
+    """
     runtime = SERVER_RUNTIME + (time() - SERVER_RUNTIME_LAST_UPDATED)
     if format:
         return _format(runtime, 31536000, 2628000, 604800, 86400, 3600, 60)
     return runtime
 
 def uptime(format=False):
-    "Get the current uptime of the server since last reload"
+    """
+    Get the current uptime of the server since last reload
+
+    Args:
+        format (bool, optional): Format into time representation.
+
+    Returns:
+        time (float or tuple): The uptime or the same time split up
+            into time units.
+
+    """
     uptime = time() - SERVER_START_TIME
     if format:
         return _format(uptime, 31536000, 2628000, 604800, 86400, 3600, 60)
     return uptime
 
 def gametime(format=False):
-    "Get the total gametime of the server since first start (minus downtimes)"
+    """
+    Get the total gametime of the server since first start (minus downtimes)
+
+    Args:
+        format (bool, optional): Format into time representation.
+
+    Returns:
+        time (float or tuple): The gametime or the same time split up
+            into time units.
+
+    """
     gametime = runtime() * TIMEFACTOR
     if format:
         return _format(gametime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
@@ -94,9 +125,18 @@ def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
     in-game, you will be able to find the number of real-world seconds this
     corresponds to (hint: Interval events deal with real life seconds).
 
+    Kwargs:
+        times (int): The various components of the time.
+        format (bool): Formatting the output.
+
+    Returns:
+        time (float or tuple): The realtime difference or the same
+            time split up into time units.
+
     Example:
-     gametime_to_realtime(days=2) -> number of seconds in real life from
-                                now after which 2 in-game days will have passed.
+         gametime_to_realtime(days=2) -> number of seconds in real life from
+                        now after which 2 in-game days will have passed.
+
     """
     realtime = (secs + mins * MIN + hrs * HOUR + days * DAY + weeks * WEEK + \
                 months * MONTH + yrs * YEAR) / TIMEFACTOR
@@ -109,12 +149,21 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
                          weeks=0, months=0, yrs=0, format=False):
     """
     This method calculates how much in-game time a real-world time
-    interval would correspond to. This is usually a lot less interesting
-    than the other way around.
+    interval would correspond to. This is usually a lot less
+    interesting than the other way around.
+
+    Kwargs:
+        times (int): The various components of the time.
+        format (bool): Formatting the output.
+
+    Returns:
+        time (float or tuple): The gametime difference or the same
+            time split up into time units.
 
      Example:
       realtime_to_gametime(days=2) -> number of game-world seconds
                                       corresponding to 2 real days.
+
     """
     gametime = TIMEFACTOR * (secs + mins * 60 + hrs * 3600 + days * 86400 +
                              weeks * 604800 + months * 2628000 + yrs * 31536000)

@@ -24,9 +24,13 @@ _TIMEZONE = None
 
 def log_trace(errmsg=None):
     """
-    Log a traceback to the log. This should be called
-    from within an exception. errmsg is optional and
-    adds an extra line with added info.
+    Log a traceback to the log. This should be called from within an
+    exception.
+
+    Args:
+        errmsg (str, optional): Adds an extra line with added info
+            at the end of the traceback in the log.
+
     """
     tracestring = format_exc()
     try:
@@ -49,7 +53,9 @@ def log_err(errmsg):
     """
     Prints/logs an error message to the server log.
 
-    errormsg: (string) The message to be logged.
+    Args:
+        errormsg (str): The message to be logged.
+
     """
     try:
         errmsg = str(errmsg)
@@ -65,7 +71,9 @@ def log_warn(warnmsg):
     """
     Prints/logs any warnings that aren't critical but should be noted.
 
-    warnmsg: (string) The message to be logged.
+    Args:
+        warnmsg (str): The message to be logged.
+
     """
     try:
         warnmsg = str(warnmsg)
@@ -94,7 +102,10 @@ log_infomsg = log_info
 
 def log_dep(depmsg):
     """
-    Prints a deprecation message
+    Prints a deprecation message.
+
+    Args:
+        depmsg (str): The deprecation message to log.
     """
     try:
         depmsg = str(depmsg)
@@ -111,9 +122,13 @@ LOG_FILE_HANDLES = {} # holds open log handles
 
 def log_file(msg, filename="game.log"):
     """
-    Arbitrary file logger using threads.  Filename defaults to
-    'game.log'. All logs will appear in the logs directory and log
-    entries will start on new lines following datetime info.
+    Arbitrary file logger using threads.
+
+    Args:
+        filename (str, optional): Defaults to 'game.log'. All logs
+            will appear in the logs directory and log entries will start
+            on new lines following datetime info.
+
     """
     global LOG_FILE_HANDLES, _LOGDIR, _TIMEZONE
 
@@ -131,6 +146,7 @@ def log_file(msg, filename="game.log"):
         # manually or log file won't be written to until the
         # write buffer is full.
         filehandle.flush()
+
     def errback(failure):
         "Catching errors to normal log"
         log_trace()

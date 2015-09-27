@@ -192,13 +192,23 @@ RE_CODE_SPLIT = re.compile(r"(^\#CODE.*?$|^\#HEADER)$", re.MULTILINE)
 
 def read_batchfile(pythonpath, file_ending='.py'):
     """
-    This reads the contents of a batch-file.
-    Filename is considered to be a python path to a batch file
-    relative the directory specified in `settings.py`.
+    This reads the contents of a batch-file.  Filename is considered
+    to be a python path to a batch file relative the directory
+    specified in `settings.py`.
 
-    file_ending specify which batchfile ending should be
-    assumed (.ev or .py). The ending should not be included
-    in the python path.
+    file_ending specify which batchfile ending should be assumed (.ev
+    or .py). The ending should not be included in the python path.
+
+    Args:
+        pythonpath (str): A dot-python path to a file.
+        file_ending (str): The file ending of this file (.ev or .py)
+
+    Returns:
+        text (str): The text content of the batch file.
+
+    Raises:
+        IOError: If problems reading file.
+
     """
 
     # open the file
@@ -293,6 +303,7 @@ def tb_filename(tb):
 
 
 def tb_iter(tb):
+    "Traceback iterator."
     while tb is not None:
         yield tb
         tb = tb.tb_next
@@ -309,13 +320,22 @@ class BatchCodeProcessor(object):
         This parses the lines of a batchfile according to the following
         rules:
 
-        1) Lines starting with #HEADER starts a header block (ends other blocks)
-        2) Lines starting with #CODE begins a code block (ends other blocks)
-        3) #CODE headers may be of the following form:
-                              #CODE (info) objname, objname2, ...
-        4) Lines starting with #INSERT are on form #INSERT filename.
-        5) All lines outside blocks are stripped.
-        6) All excess whitespace beginning/ending a block is stripped.
+        Args:
+            pythonpath (str): The dot-python path to the file.
+            debug (bool, optional): Insert delete-commands for
+                deleting created objects.
+
+        Returns:
+            codeblocks (list): A list of all #CODE blocks.
+
+        Notes:
+            1. Lines starting with #HEADER starts a header block (ends other blocks)
+            2. Lines starting with #CODE begins a code block (ends other blocks)
+            3. #CODE headers may be of the following form:
+                                  #CODE (info) objname, objname2, ...
+            4. Lines starting with #INSERT are on form #INSERT filename.
+            5. All lines outside blocks are stripped.
+            6. All excess whitespace beginning/ending a block is stripped.
 
         """
 
@@ -373,9 +393,17 @@ class BatchCodeProcessor(object):
 
     def code_exec(self, code, extra_environ=None, debug=False):
         """
-        Execute a single code block, including imports and appending global vars
+        Execute a single code block, including imports and appending
+        global vars.
 
-        extra_environ - dict with environment variables
+        Args:
+            code (str): Code to run.
+            extra_environ (dict): Environment variables to run with code.
+            debug (bool, optional): Insert delete statements for objects.
+
+        Returns:
+            err (str or None): An error code or None (ok).
+
         """
         # define the execution environment
         environdict = {"settings_module": settings}

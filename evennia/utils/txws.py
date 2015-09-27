@@ -228,7 +228,7 @@ def make_hybi07_frame_dwim(buf):
     """
     Make a HyBi-07 frame with binary or text data according to the type of buf.
     """
-    
+
     # TODO: eliminate magic numbers.
     if isinstance(buf, str):
         return make_hybi07_frame(buf, opcode=0x2)
@@ -349,7 +349,7 @@ class WebSocketProtocol(ProtocolWrapper):
     def setBinaryMode(self, mode):
         """
         If True, send str as binary and unicode as text.
-        
+
         Defaults to false for backwards compatibility.
         """
         self.do_binary_frames = bool(mode)

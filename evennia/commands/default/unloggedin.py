@@ -472,10 +472,10 @@ def _create_player(session, playername, password, permissions, typeclass=None):
         logger.log_trace()
         return False
 
-    # This needs to be called so the engine knows this player is
+    # This needs to be set so the engine knows this player is
     # logging in for the first time. (so it knows to call the right
     # hooks during login later)
-    utils.init_new_player(new_player)
+    new_player.db.FIRST_LOGIN = True
 
     # join the new player to the public channel
     pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])

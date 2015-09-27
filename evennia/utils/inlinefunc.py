@@ -1,8 +1,8 @@
 """
 Inlinefunc
 
-This is a simple inline text language for use to custom-format text
-in Evennia. It is applied BEFORE ANSI/MUX parsing is applied.
+This is a simple inline text language for use to custom-format text in
+Evennia. It is applied BEFORE ANSI/MUX parsing is applied.
 
 To activate Inlinefunc, settings.INLINEFUNC_ENABLED must be set.
 
@@ -52,7 +52,10 @@ _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 # inline functions
 
 def pad(text, *args, **kwargs):
-    "Pad to width. pad(text, width=78, align='c', fillchar=' ')"
+    """
+    Pad to width. pad(text, width=78, align='c', fillchar=' ')
+
+    """
     width = _DEFAULT_WIDTH
     align = 'c'
     fillchar = ' '
@@ -67,8 +70,12 @@ def pad(text, *args, **kwargs):
             break
     return utils.pad(text, width=width, align=align, fillchar=fillchar)
 
+
 def crop(text, *args, **kwargs):
-    "Crop to width. crop(text, width=78, suffix='[...]')"
+    """
+    Crop to width. crop(text, width=78, suffix='[...]')
+
+    """
     width = _DEFAULT_WIDTH
     suffix = "[...]"
     for iarg, arg in enumerate(args):
@@ -80,8 +87,12 @@ def crop(text, *args, **kwargs):
             break
     return utils.crop(text, width=width, suffix=suffix)
 
+
 def wrap(text, *args, **kwargs):
-    "Wrap/Fill text to width. fill(text, width=78, indent=0)"
+    """
+    Wrap/Fill text to width. fill(text, width=78, indent=0)
+
+    """
     width = _DEFAULT_WIDTH
     indent = 0
     for iarg, arg in enumerate(args):
@@ -91,16 +102,24 @@ def wrap(text, *args, **kwargs):
             indent = int(arg) if arg.isdigit() else indent
     return utils.wrap(text, width=width, indent=indent)
 
+
 def time(text, *args, **kwargs):
-    "Inserts current time"
+    """
+    Inserts current time.
+
+    """
     import time
     strformat = "%h %d, %H:%M"
     if args and args[0]:
         strformat = str(args[0])
     return time.strftime(strformat)
 
+
 def you(text, *args, **kwargs):
-    "Inserts your name"
+    """
+    Inserts your name.
+
+    """
     name = "You"
     sess = kwargs.get("session")
     if sess and sess.puppet:
@@ -139,23 +158,40 @@ def _execute_inline_function(funcname, text, session):
     Get the enclosed text between {funcname(...) and {/funcname
     and execute the inline function to replace the whole block
     with the result.
-    Note that this lookup is "dumb" - we just grab the first end
-    tag we find. So to work correctly this function must be called
-    "inside out" on a nested function tree, so each call only works
-    on a "flat" tag.
+
+    Args:
+        funcname (str): Inlinefunction identifier.
+        text (str): Text to process.
+        session (Session): Session object.
+
+    Notes:
+        This lookup is "dumb" - we just grab the first end tag we find. So
+        to work correctly this function must be called "inside out" on a
+        nested function tree, so each call only works on a "flat" tag.
+
     """
     def subfunc(match):
-        "replace the entire block with the result of the function call"
+        """
+        replace the entire block with the result of the function call
+
+        """
         args = [part.strip() for part in match.group(1).split(",")]
         intext = match.group(2)
         kwargs = {"session":session}
         return _INLINE_FUNCS[funcname][0](intext, *args, **kwargs)
     return _INLINE_FUNCS[funcname][1].sub(subfunc, text)
 
+
 def _execute_inline_single_function(funcname, text, session):
     """
     Get the arguments of a single function call (no matching end tag)
     and execute it with an empty text input.
+
+    Args:
+        funcname (str): Function identifier.
+        text (str): String to process.
+        session (Session): Session id.
+
     """
     def subfunc(match):
         "replace the single call with the result of the function call"
@@ -164,12 +200,20 @@ def _execute_inline_single_function(funcname, text, session):
         return _INLINE_FUNCS[funcname][0]("", *args, **kwargs)
     return _INLINE_FUNCS[funcname][2].sub(subfunc, text)
 
+
 def parse_inlinefunc(text, strip=False, session=None):
     """
     Parse inline function-replacement.
 
-    strip - remove all supported inlinefuncs from text
-    session - session calling for the parsing
+    Args:
+        text (str): Text to parse.
+        strip (bool, optional): Remove all supported inlinefuncs from text.
+        session (bool): Session calling for the parsing.
+
+    Returns:
+        text (str): Parsed text with processed results of
+            inlinefuncs.
+
     """
 
     if strip:
@@ -203,6 +247,7 @@ def parse_inlinefunc(text, strip=False, session=None):
         outstack.append(part)
 
     return "".join(outstack)
+
 
 def _test():
     # this should all be handled
