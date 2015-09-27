@@ -400,18 +400,22 @@ class Command(object):
 
     def get_extra_info(self, caller, **kwargs):
         """
-        Display some extra information that may help distinguish this command from others, for instance,
-        in a disambiguity prompt.
+        Display some extra information that may help distinguish this
+        command from others, for instance, in a disambiguity prompt.
 
-        If this command is a potential match in an ambiguous situation, one distinguishing
-        feature may be its attachment to a nearby object, so we include this if available.
+        If this command is a potential match in an ambiguous
+        situation, one distinguishing feature may be its attachment to
+        a nearby object, so we include this if available.
 
         Args:
-            caller (TypedObject): The caller who typed an ambiguous term handed to the search function.
+            caller (TypedObject): The caller who typed an ambiguous
+            term handed to the search function.
 
         Returns:
-            A string with identifying information to disambiguate the object, conventionally with a preceding space.
+            A string with identifying information to disambiguate the
+            object, conventionally with a preceding space.
+
         """
         if hasattr(self, 'obj') and self.obj != caller:
-            return " (%s)" % self.obj.get_display_name(caller)
+            return " (%s)" % self.obj.get_display_name(caller).strip()
         return ""

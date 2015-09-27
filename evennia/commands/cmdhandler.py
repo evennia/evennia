@@ -71,7 +71,7 @@ CMD_CHANNEL = "__send_to_channel_command"
 CMD_LOGINSTART = "__unloggedin_look_command"
 
 # Function for handling multiple command matches.
-_AT_MULTIMATCH_CMD = utils.variable_from_module(*settings.SEARCH_AT_MULTIMATCH_CMD.rsplit('.', 1))
+_SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
 # Output strings
 
@@ -488,7 +488,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                     syscmd.matches = matches
                 else:
                     # fall back to default error handling
-                    sysarg = yield _AT_MULTIMATCH_CMD(caller, matches)
+                    sysarg = yield _SEARCH_AT_RESULT([match[2] for match in matches], caller, query=match[0])
                 raise ExecSystemCommand(syscmd, sysarg)
 
             if len(matches) == 1:

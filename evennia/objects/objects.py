@@ -334,7 +334,8 @@ class DefaultObject(ObjectDB):
                                                  exact=exact)
         if quiet:
             return results
-        return  _AT_SEARCH_RESULT(self, searchdata, results, global_search, nofound_string, multimatch_string)
+        return  _AT_SEARCH_RESULT(results, self, query=searchdata,
+                nofound_string=nofound_string, multimatch_string=multimatch_string)
 
     def search_player(self, searchdata, quiet=False):
         """

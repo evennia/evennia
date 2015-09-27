@@ -21,6 +21,9 @@ from collections import defaultdict
 from twisted.internet import threads, defer, reactor
 from django.conf import settings
 from django.utils import timezone
+from django.utils.translation import ugettext as _
+
+_MULTIMATCH_SEPARATOR = settings.SEARCH_MULTIMATCH_SEPARATOR
 
 try:
     import cPickle as pickle
@@ -1226,3 +1229,60 @@ def m_len(target):
     if inherits_from(target, basestring):
         return len(ANSI_PARSER.strip_mxp(target))
     return len(target)
+
+#------------------------------------------------------------------
+# Search handler function
+#------------------------------------------------------------------
+#
+# Replace this hook function by changing settings.SEARCH_AT_RESULT.
+#
+
+def at_search_result(matches, caller, query="", quiet=False, **kwargs):
+    """
+    This is a generic hook for handling all processing of a search
+    result, including error reporting.
+
+    Args:
+        matches (list): This is a list of 0, 1 or more typeclass instances,
+            the matched result of the search. If 0, a nomatch error should
+            be echoed, and if >1, multimatch errors should be given. Only
+            if a single match should the result pass through.
+        caller (Object): The object performing the search and/or which should
+        receive error messages.
+    query (str, optional): The search query used to produce `matches`.
+        quiet (bool, optional): If `True`, no messages will be echoed to caller
+            on errors.
+
+    Kwargs:
+        nofound_string (str): Replacement string to echo on a notfound error.
+        multimatch_string (str): Replacement string to echo on a multimatch error.
+
+    Returns:
+        processed_result (Object or None): This is always a single result
+            or `None`. If `None`, any error reporting/handling should
+            already have happened.
+    """
+
+    error = ""
+    if not matches:
+        # no results.
+        error = kwargs.get("nofound_string", _("Could not find '%s'." % query))
+        matches = None
+    elif len(matches) > 1:
+        error = kwargs.get("multimatch_string", None)
+        if not error:
+            error = _("More than one match for '%s'" \
+                     " (please narrow target):" % query)
+            for num, result in enumerate(matches):
+                error += "\n %i%s%s%s" % (
+                    num + 1, _MULTIMATCH_SEPARATOR,
+                    result.get_display_name(caller) if hasattr(result, "get_display_name") else result.key,
+                    result.get_extra_info(caller))
+        matches = None
+    else:
+        # exactly one match
+        matches = matches[0]
+
+    if error and not quiet:
+        caller.msg(error.strip())
+    return matches

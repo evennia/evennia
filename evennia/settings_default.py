@@ -236,16 +236,16 @@ CONN_MAX_AGE = 3600 * 7
 # The command parser module to use. See the default module for which
 # functions it must implement
 COMMAND_PARSER = "evennia.commands.cmdparser.cmdparser"
-# The handler that outputs errors when searching
-# objects using object.search().
-SEARCH_AT_RESULT = "evennia.commands.cmdparser.at_search_result"
-# The parser used in order to separate multiple
-# object matches (so you can separate between same-named
-# objects without using dbrefs).
-SEARCH_AT_MULTIMATCH_INPUT = "evennia.commands.cmdparser.at_multimatch_input"
-# The parser used in order to separate multiple
-# command matches (so you can separate between same-named commands)
-SEARCH_AT_MULTIMATCH_CMD = "evennia.commands.cmdparser.at_multimatch_cmd"
+# On a multi-match when search objects or commands, the user has the
+# ability to search again with an index marker that differentiates
+# the results. If multiple "box" objects are found, they can by
+# default use 1-box, 2-box etc to refine the search. Below you
+# can change the index separator character used.
+SEARCH_MULTIMATCH_SEPARATOR = '-'
+# The handler that outputs errors when using any API-level search
+# (not manager methods). This function should correctly report errors
+# both for command- and object-searches.
+SEARCH_AT_RESULT = "evennia.utils.utils.at_search_result"
 # The module holding text strings for the connection screen.
 # This module should contain one or more variables
 # with strings defining the look of the screen.
