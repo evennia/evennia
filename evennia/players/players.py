@@ -11,6 +11,7 @@ instead for most things).
 
 """
 
+import time
 from django.conf import settings
 from django.utils import timezone
 from evennia.typeclasses.models import TypeclassBase
@@ -744,6 +745,23 @@ class DefaultPlayer(PlayerDB):
         """
         pass
 
+    def idle_time(self):
+        """
+        Returns the idle time of the least idle session in seconds. If
+        no sessions are connected it returns nothing.
+        """
+        idle = [session.cmd_last_visible for session in self.sessions]
+        if idle:
+            return time.time() - float(max(idle))
+
+    def connection_time(self):
+        """
+        Returns the maximum connection time of all connected sessions
+        in seconds. Returns nothing if there are no sessions.
+        """
+        conn = [session.conn_time for session in self.sessions]
+        if conn:
+            return time.time() - float(min(conn))
 
 class DefaultGuest(DefaultPlayer):
     """
