@@ -1210,18 +1210,21 @@ def string_similarity(string1, string2):
 
 def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
     """
-    Given a `string` and a `vocabulary`, return a match or a list of suggestions
-    based on string similarity.
+    Given a `string` and a `vocabulary`, return a match or a list of
+    suggestions based on string similarity.
 
     Args:
-        string (str)- a string to search for.
-        vocabulary (iterable) - a list of available strings.
-        cutoff (int, 0-1) - limit the similarity matches (higher, the more
-                            exact is required).
-        maxnum (int) - maximum number of suggestions to return.
+        string (str): A string to search for.
+        vocabulary (iterable): A list of available strings.
+        cutoff (int, 0-1): Limit the similarity matches (the higher
+            the value, the more exact a match is required).
+        maxnum (int): Maximum number of suggestions to return.
+
     Returns:
-        list of suggestions from `vocabulary` (could be empty if there are
-        no matches).
+        suggestions (list): Suggestions from `vocabulary` that fall
+            under the `cutoff` setting. Could be empty if there are no
+            matches.
+
     """
     return [tup[1] for tup in sorted([(string_similarity(string, sugg), sugg)
                                        for sugg in vocabulary],
@@ -1231,19 +1234,21 @@ def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
 
 def string_partial_matching(alternatives, inp, ret_index=True):
     """
-    Partially matches a string based on a list of `alternatives`. Matching
-    is made from the start of each subword in each alternative. Case is not
-    important. So e.g. "bi sh sw" or just "big" or "shiny" or "sw" will match
-    "Big shiny sword". Scoring is done to allow to separate by most common
-    demoninator. You will get multiple matches returned if appropriate.
+    Partially matches a string based on a list of `alternatives`.
+    Matching is made from the start of each subword in each
+    alternative. Case is not important. So e.g. "bi sh sw" or just
+    "big" or "shiny" or "sw" will match "Big shiny sword". Scoring is
+    done to allow to separate by most common demoninator. You will get
+    multiple matches returned if appropriate.
 
-    Input:
-        alternatives (list of str) - list of possible strings to match.
-        inp (str) - search criterion.
-        ret_index (bool) - return list of indices (from alternatives
-                           array) or strings.
+    Args:
+        alternatives (list of str): A list of possible strings to
+            match.
+        inp (str): Search criterion.
+        ret_index (bool, optional): Return list of indices (from alternatives
+            array) instead of strings.
     Returns:
-        list of matching indices or strings, or an empty list.
+        matches (list): String-matches or indices if `ret_index` is `True`.
 
     """
     if not alternatives or not inp:
@@ -1279,31 +1284,37 @@ def string_partial_matching(alternatives, inp, ret_index=True):
 
 def format_table(table, extra_space=1):
     """
-    Note: `evennia.utils.prettytable` is more powerful than this, but this
+    Note: `evennia.utils.evtable` is more powerful than this, but this
     function can be useful when the number of columns and rows are
     unknown and must be calculated on the fly.
 
-    Takes a table of columns: [[val,val,val,...], [val,val,val,...], ...]
-    where each val will be placed on a separate row in the column. All
-    columns must have the same number of rows (some positions may be
-    empty though).
+    Args.
+        table (list): A list of lists to represent columns in the
+            table: `[[val,val,val,...], [val,val,val,...], ...]`, where
+            each val will be placed on a separate row in the
+            column. All columns must have the same number of rows (some
+            positions may be empty though).
+        extra_space (int, optional): Sets how much *minimum* extra
+            padding (in characters) should  be left between columns.
 
-    The function formats the columns to be as wide as the widest member
-    of each column.
+    Returns:
+        table (list): A list of lists representing the rows to print
+            out one by one.
 
-    `extra_space` defines how much *minimum* extra padding should  be left between
-    columns.
+    Notes:
+        The function formats the columns to be as wide as the widest member
+        of each column.
 
-    print the resulting list e.g. with:
+    Examples:
 
-    ```python
-    for ir, row in enumarate(ftable):
-        if ir == 0:
-            # make first row white
-            string += "\n{w" + ""join(row) + "{n"
-        else:
-            string += "\n" + "".join(row)
-    print string
+        ```python
+        for ir, row in enumarate(ftable):
+            if ir == 0:
+                # make first row white
+                string += "\n{w" + ""join(row) + "{n"
+            else:
+                string += "\n" + "".join(row)
+        print string
     ```
     """
     if not table:
@@ -1316,17 +1327,25 @@ def format_table(table, extra_space=1):
                        for icol, col in enumerate(table)])
     return ftable
 
+
 def get_evennia_pids():
     """
-    Get the currently valid PIDs (Process IDs) of the Portal and Server
-    by trying to access a PID file. This can be used to determine if we
-    are in a subprocess by something like:
+    Get the currently valid PIDs (Process IDs) of the Portal and
+    Server by trying to access a PID file.
 
-    ```python
-    self_pid = os.getpid()
-    server_pid, portal_pid = get_evennia_pids()
-    is_subprocess = self_pid not in (server_pid, portal_pid)
-    ```
+    Returns:
+        server, portal (tuple): The PIDs of the respective processes,
+            or two `None` values if not found.
+
+    Examples:
+        This can be used to determine if we are in a subprocess by
+        something like:
+
+        ```python
+        self_pid = os.getpid()
+        server_pid, portal_pid = get_evennia_pids()
+        is_subprocess = self_pid not in (server_pid, portal_pid)
+        ```
     """
     server_pidfile = os.path.join(settings.GAME_DIR, 'server.pid')
     portal_pidfile = os.path.join(settings.GAME_DIR, 'portal.pid')
@@ -1347,14 +1366,9 @@ from gc import get_referents
 from sys import getsizeof
 def deepsize(obj, max_depth=4):
     """
-    Get not only size of the given object, but also the
-    size of objects referenced by the object, down to
-    `max_depth` distance from the object.
-
-    Note that this measure is necessarily approximate
-    since some memory is shared between objects. The
-    `max_depth` of 4 is roughly tested to give reasonable
-    size information about database models and their handlers.
+    Get not only size of the given object, but also the size of
+    objects referenced by the object, down to `max_depth` distance
+    from the object.
 
     Args:
         obj (object): the object to be measured.
@@ -1364,6 +1378,13 @@ def deepsize(obj, max_depth=4):
 
     Returns:
         size (int): deepsize of `obj` in Bytes.
+
+    Notes:
+        This measure is necessarily approximate since some
+        memory is shared between objects. The `max_depth` of 4 is roughly
+        tested to give reasonable size information about database models
+        and their handlers.
+
     """
     def _recurse(o, dct, depth):
         if max_depth >= 0 and depth > max_depth:
@@ -1383,8 +1404,8 @@ def deepsize(obj, max_depth=4):
 _missing = object()
 class lazy_property(object):
     """
-    Delays loading of property until first access. Credit goes to
-    the Implementation in the werkzeug suite:
+    Delays loading of property until first access. Credit goes to the
+    Implementation in the werkzeug suite:
     http://werkzeug.pocoo.org/docs/utils/#werkzeug.utils.cached_property
 
     This should be used as a decorator in a class and in Evennia is
@@ -1396,8 +1417,8 @@ class lazy_property(object):
             return AttributeHandler(self)
         ```
 
-    Once initialized, the `AttributeHandler` will be available
-    as a property "attributes" on the object.
+    Once initialized, the `AttributeHandler` will be available as a
+    property "attributes" on the object.
 
     """
     def __init__(self, func, name=None, doc=None):
@@ -1421,19 +1442,34 @@ _STRIP_ANSI = None
 _RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([unichr(c) for c in range(0,32)])))# + range(127,160)])))
 def strip_control_sequences(string):
     """
-    remove non-print text sequences from `string`.
+    Remove non-print text sequences.
+
+    Args:
+        string (str): Text to strip.
+
+    Returns.
+        text (str): Stripped text.
+
     """
     global _STRIP_ANSI
     if not _STRIP_ANSI:
         from evennia.utils.ansi import strip_raw_ansi as _STRIP_ANSI
     return _RE_CONTROL_CHAR.sub('', _STRIP_ANSI(string))
 
+
 def calledby(callerdepth=1):
     """
-    Only to be used for debug purposes.
-    Insert this debug function in another function; it will print
-    which function called it. With `callerdepth` > 1, it will print the
-    caller of the caller etc.
+    Only to be used for debug purposes. Insert this debug function in
+    another function; it will print which function called it.
+
+    Args:
+        callerdepth (int): Must be larger than 0. When > 1, it will
+            print the caller of the caller etc.
+
+    Returns:
+        calledby (str): A debug string detailing which routine called
+            us.
+
     """
     import inspect, os
     stack = inspect.stack()
@@ -1449,6 +1485,14 @@ def m_len(target):
     """
     Provides length checking for strings with MXP patterns, and falls
     back to normal len for other objects.
+
+    Args:
+        target (string): A string with potential MXP components
+            to search.
+
+    Returns:
+        length (int): The length of `target`, ignoring MXP components.
+
     """
     # Would create circular import if in module root.
     from evennia.utils.ansi import ANSI_PARSER
