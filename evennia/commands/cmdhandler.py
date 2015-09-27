@@ -35,6 +35,7 @@ command line. The processing of a command works as follows:
 
 """
 
+from collections import defaultdict
 from weakref import WeakValueDictionary
 from copy import copy
 from traceback import format_exc
@@ -49,6 +50,11 @@ from django.utils.translation import ugettext as _
 __all__ = ("cmdhandler",)
 _GA = object.__getattribute__
 _CMDSET_MERGE_CACHE = WeakValueDictionary()
+
+# tracks recursive calls by each caller
+# to avoid infinite loops (commands calling themselves)
+_COMMAND_NESTING = defaultdict(lambda: 0)
+_COMMAND_RECURSION_LIMIT = 10
 
 # This decides which command parser is to be used.
 # You have to restart the server for changes to take effect.
@@ -92,6 +98,9 @@ _ERROR_CMDHANDLER = "{traceback}\n"\
                    "Above traceback is from a Command handler bug." \
                    "Please file a bug report with the Evennia project."
 
+_ERROR_RECURSION_LIMIT = "Command recursion limit ({recursion_limit}) " \
+                         "reached for '{raw_string}' ({cmdclass})."
+
 
 def _msg_err(receiver, string):
     """
@@ -110,7 +119,6 @@ def _msg_err(receiver, string):
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."
     pass
-
 
 class ExecSystemCommand(Exception):
     "Run a system command"
@@ -324,6 +332,7 @@ def get_and_merge_cmdsets(caller, session, player, obj,
 
 # Main command-handler function
 
+
 @inlineCallbacks
 def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sessid=None, **kwargs):
     """
@@ -372,10 +381,16 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             cmd (Command): command object
             cmdname (str): name of command
             args (str): extra text entered after the identified command
+
         Returns:
             deferred (Deferred): this will fire with the return of the
                 command's `func` method.
+
+        Raises:
+            RuntimeError: If command recursion limit was reached.
+
         """
+        global _COMMAND_NESTING
         try:
             # Assign useful variables to the instance
             cmd.caller = caller
@@ -403,6 +418,13 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             for key, val in kwargs.items():
                 setattr(cmd, key, val)
 
+            _COMMAND_NESTING[called_by] += 1
+            if _COMMAND_NESTING[called_by] > _COMMAND_RECURSION_LIMIT:
+                err = _ERROR_RECURSION_LIMIT.format(recursion_limit=_COMMAND_RECURSION_LIMIT,
+                                                    raw_string=unformatted_raw_string,
+                                                    cmdclass=cmd.__class__)
+                raise RuntimeError(err)
+
             # pre-command hook
             abort = yield cmd.at_pre_cmd()
             if abort:
@@ -425,6 +447,8 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 caller.ndb.last_cmd = yield copy(cmd)
             else:
                 caller.ndb.last_cmd = None
+            _COMMAND_NESTING[called_by] -= 1
+
             # return result to the deferred
             returnValue(ret)
 
