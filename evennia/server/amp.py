@@ -384,7 +384,7 @@ class AMPProtocol(amp.AMP):
 
     def send_data(self, command, sessid, **kwargs):
         """
-        This will batch data together to send fewer, large batches.
+        Send data across the wire.
 
         Args:
             command (AMP Command): A protocol send command.
