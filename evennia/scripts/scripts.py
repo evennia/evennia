@@ -409,7 +409,6 @@ class DefaultScript(ScriptBase):
             self.repeats = repeats
         if start_delay is not None:
             self.start_delay = start_delay
-        print "starting script again:", self.interval, self.repeats, self.start_delay
         self.start()
 
     def reset_callcount(self, value=0):
