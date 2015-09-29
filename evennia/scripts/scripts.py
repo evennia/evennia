@@ -381,6 +381,53 @@ class DefaultScript(ScriptBase):
             self._start_task()
             return True
 
+    def restart(self, interval=None, repeats=None, start_delay=None):
+        """
+        Restarts an already existing/running Script from the
+        beginning, optionally using different settings. This will
+        first call the stop hooks, and then the start hooks again.
+
+        Args:
+            interval (int, optional): Allows for changing the interval
+                of the Script. Given in seconds.  if `None`, will use the
+                already stored interval.
+            repeats (int, optional): The number of repeats. If unset, will
+                use the previous setting.
+            start_delay (bool, optional): If we should wait `interval` seconds
+                before starting or not. If `None`, re-use the previous setting.
+
+        """
+        try:
+            self.at_stop()
+        except Exception:
+            logger.log_trace()
+        self._stop_task()
+        self.is_active = False
+        if interval is not None:
+            self.interval = interval
+        if repeats is not None:
+            self.repeats = repeats
+        if start_delay is not None:
+            self.start_delay = start_delay
+        print "starting script again:", self.interval, self.repeats, self.start_delay
+        self.start()
+
+    def reset_callcount(self, value=0):
+        """
+        Reset the count of the number of calls done.
+
+        Args:
+            value (int, optional): The repeat value to reset to. Default
+                is to set it all the way back to 0.
+
+        Notes:
+            This is only useful if repeats != 0.
+
+        """
+        task = self.ndb._task
+        if task:
+            task.callcount = max(0, int(value))
+
     def force_repeat(self):
         """
         Fire a premature triggering of the script callback. This
