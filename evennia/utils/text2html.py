@@ -211,17 +211,17 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        c = m.groupdict()
-        if c['htmlchars']:
-            return cgi.escape(c['htmlchars'])
-        if c['lineend']:
+        cdict = match.groupdict()
+        if cdict['htmlchars']:
+            return cgi.escape(cdict['htmlchars'])
+        if cdict['lineend']:
             return '<br>'
-        elif c['space'] == '\t':
+        elif cdict['space'] == '\t':
             return ' ' * self.tabstop
-        elif c['space']:
-            t = m.group().replace('\t', '&nbsp;' * self.tabstop)
-            t = t.replace(' ', '&nbsp;')
-            return t
+        elif cdict['space']:
+            text = match.group().replace('\t', '&nbsp;' * self.tabstop)
+            text = text.replace(' ', '&nbsp;')
+            return text
 
     def parse(self, text, strip_ansi=False):
         """
