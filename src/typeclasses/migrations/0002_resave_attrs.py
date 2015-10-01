@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import datetime
 from south.db import db
 from south.v2 import DataMigration
@@ -32,22 +33,22 @@ class Migration(DataMigration):
                 try:
                     dbobj = orm['objects.ObjectDB'].objects.get(id=dbid)
                 except:
-                    print "could not find objid %i" % dbid
+                    print("could not find objid %i" % dbid)
                     continue
             elif typ == 'playerdb':
                 try:
                     dbobj = orm['players.PlayerDB'].objects.get(id=dbid)
                 except:
-                    print "could not find objid %i" % dbid
+                    print("could not find objid %i" % dbid)
                     continue
             elif typ == 'scriptdb':
                 try:
                     dbobj = orm['scripts.ScriptDB'].objects.get(id=dbid)
                 except:
-                    print "could not find objid %i" % dbid
+                    print("could not find objid %i" % dbid)
                     continue
             else:
-                print "Wrong object type to store on: %s" % typ
+                print("Wrong object type to store on: %s" % typ)
                 continue
             dbattr = orm['typeclasses.Attribute'](db_key=tmpattr.db_key,
                                                   db_value=tmpattr.db_value,

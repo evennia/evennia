@@ -4,6 +4,7 @@ Set up the evennia system. A first startup consists of giving
 the command './manage syncdb' to setup the system and create
 the database.
 """
+from __future__ import print_function
 
 import sys
 import os
@@ -75,7 +76,7 @@ SECRET_KEY = '%s'
     settings_file.close()
 
     # obs - this string cannot be under i18n since settings didn't exist yet.
-    print """
+    print("""
     Welcome to Evennia!
 
     This looks like your first startup, so we created a fresh
@@ -87,7 +88,7 @@ SECRET_KEY = '%s'
         python manage.py syncdb
     followed by
         python manage.py migrate
-    """
+    """)
 
 
 #------------------------------------------------------------
@@ -111,7 +112,7 @@ except Exception:
        to see if this resolves the issue. Evennia should not require you to define any
        environment variables manually.
     """ % {'file': __file__}
-    print string
+    print(string)
     sys.exit(1)
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
@@ -129,12 +130,12 @@ if __name__ == "__main__":
     from src.utils.utils import check_evennia_dependencies
     if check_evennia_dependencies():
         if len(sys.argv) > 1 and sys.argv[1] in ('runserver', 'testserver'):
-            print """
+            print("""
             WARNING: There is no need to run the Django development
             webserver to test out Evennia web features (the web client
             will in fact not work since the Django test server knows
             nothing about MUDs).  Instead, just start Evennia with the
             webserver component active (this is the default).
-            """
+            """)
         from django.core.management import execute_from_command_line
         execute_from_command_line(sys.argv)

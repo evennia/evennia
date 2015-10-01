@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -105,7 +106,7 @@ class Migration(SchemaMigration):
 
         if not db.dry_run:
             if orm["comms.Msg"].objects.count():
-                print "deleting old Msgs before migrating ..."
+                print("deleting old Msgs before migrating ...")
             for msg in orm["comms.Msg"].objects.all():
                 msg.delete()
 

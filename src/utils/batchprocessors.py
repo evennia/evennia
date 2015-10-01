@@ -212,11 +212,11 @@ def read_batchfile(pythonpath, file_ending='.py'):
             try:
                 fobj = codecs.open(abspath, 'r', encoding=file_encoding)
                 text = fobj.read()
-            except IOError, e:
+            except IOError as e:
                 # could not find the file
                 fileerr.append(str(e))
                 break
-            except (ValueError, UnicodeDecodeError), e:
+            except (ValueError, UnicodeDecodeError) as e:
                 # this means an encoding error; try another encoding
                 decoderr.append(str(e))
                 continue

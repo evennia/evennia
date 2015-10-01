@@ -412,7 +412,7 @@ def cmdhandler(called_by, raw_string, testing=False, callertype="session", sessi
             # not use this at all.
             returnValue(ret)
 
-        except ExecSystemCommand, exc:
+        except ExecSystemCommand as exc:
             # Not a normal command: run a system command, if available,
             # or fall back to a return string.
             syscmd = exc.syscmd

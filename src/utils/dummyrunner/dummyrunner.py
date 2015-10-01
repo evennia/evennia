@@ -30,6 +30,7 @@ in your settings. See utils.dummyrunner_actions.py
 for instructions on how to define this module.
 
 """
+from __future__ import print_function
 
 import os, sys, time, random
 from optparse import OptionParser
@@ -148,7 +149,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
     def connectionMade(self):
 
         # public properties
-        self.cid = CID.next()
+        self.cid = next(CID)
         self.istep = 0
         self.exits = [] # exit names created
         self.objs = [] # obj names created
@@ -170,7 +171,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
     def dataReceived(self, data):
         "Echo incoming data to stdout"
         if self._echo_all:
-            print data
+            print(data)
 
     def connectionLost(self, reason):
         "loosing the connection"
@@ -178,16 +179,16 @@ class DummyClient(telnet.StatefulTelnetProtocol):
 
     def error(self, err):
         "error callback"
-        print err
+        print(err)
 
     def counter(self):
         "produces a unique id, also between clients"
-        return OID.next()
+        return next(OID)
 
     def logout(self):
         "Causes the client to log out of the server. Triggered by ctrl-c signal."
         cmd, report = self._actions[1](self)
-        print "client %i %s (%s actions)" % (self.cid, report, self.istep)
+        print("client %i %s (%s actions)" % (self.cid, report, self.istep))
         self.sendLine(cmd)
 
     def step(self):
@@ -211,9 +212,9 @@ class DummyClient(telnet.StatefulTelnetProtocol):
             self._ncmds = len(self._cmdlist)
         # output
         if self.istep == 0 and not (self._echo_brief or self._echo_all):
-            print "client %i %s" % (self.cid, self._report)
+            print("client %i %s" % (self.cid, self._report))
         elif self.istep == 0 or self._echo_brief or self._echo_all:
-            print "client %i %s (%i/%i)" % (self.cid, self._report, self._ncmds-(len(self._cmdlist)-1), self._ncmds)
+            print("client %i %s (%i/%i)" % (self.cid, self._report, self._ncmds-(len(self._cmdlist)-1), self._ncmds))
         # launch the action by popping the first element from cmdlist (don't hide tracebacks)
         self.sendLine(str(self._cmdlist.pop(0)))
         self.istep += 1 # only steps up if an action is taken
@@ -276,7 +277,7 @@ if __name__ == '__main__':
         if nargs > 1: timestep = max(1, int(args[1]))
         if nargs > 2: port = int(args[2])
     except Exception:
-        print HELPTEXT
+        print(HELPTEXT)
         sys.exit()
 
     # import the ACTION tuple from a given module
@@ -287,9 +288,9 @@ if __name__ == '__main__':
         action_modpath = "src.utils.dummyrunner.dummyrunner_actions"
     actions = utils.variable_from_module(action_modpath, "ACTIONS")
 
-    print "Connecting %i dummy client(s) to port %i using a %i second timestep ... " % (nclients, port, timestep)
+    print("Connecting %i dummy client(s) to port %i using a %i second timestep ... " % (nclients, port, timestep))
     t0 = time.time()
     start_all_dummy_clients(actions, nclients, timestep, port,
                        verbose=options.verbose)
     ttot = time.time() - t0
-    print "... dummy client runner finished after %i seconds." % ttot
+    print("... dummy client runner finished after %i seconds." % ttot)

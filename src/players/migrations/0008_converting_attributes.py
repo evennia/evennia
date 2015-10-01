@@ -392,7 +392,7 @@ class Migration(DataMigration):
                     val = ("simple", val)
                 attr.db_value = to_unicode(pickle.dumps(to_str(to_attr(from_attr(attr, val)))))
                 attr.save()
-            except TypeError, RuntimeError:
+            except TypeError as RuntimeError:
                 pass
 
 

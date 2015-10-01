@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 
 from twisted.application import service
@@ -60,7 +61,7 @@ class AMPouleService(service.Service):
             reactor.callLater(0, self.pool.start)
         except:
             import traceback
-            print traceback.format_exc()
+            print(traceback.format_exc())
 
     def stopService(self):
         service.Service.stopService(self)

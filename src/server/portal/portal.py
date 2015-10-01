@@ -7,6 +7,7 @@ sets up all the networking features.  (this is done automatically
 by game/evennia.py).
 
 """
+from __future__ import print_function
 
 import sys
 import os
@@ -104,7 +105,7 @@ class Portal(object):
         if mode is None:
             return
         f = open(PORTAL_RESTART, 'w')
-        print "writing mode=%(mode)s to %(portal_restart)s" % {'mode': mode, 'portal_restart': PORTAL_RESTART}
+        print("writing mode=%(mode)s to %(portal_restart)s" % {'mode': mode, 'portal_restart': PORTAL_RESTART})
         f.write(str(mode))
         f.close()
 
@@ -150,8 +151,8 @@ application = service.Application('Portal')
 # and is where we store all the other services.
 PORTAL = Portal(application)
 
-print '-' * 50
-print ' %(servername)s Portal (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION}
+print('-' * 50)
+print(' %(servername)s Portal (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION})
 
 if AMP_ENABLED:
 
@@ -161,7 +162,7 @@ if AMP_ENABLED:
 
     from src.server import amp
 
-    print '  amp (to Server): %s' % AMP_PORT
+    print('  amp (to Server): %s' % AMP_PORT)
 
     factory = amp.AmpClientFactory(PORTAL)
     amp_client = internet.TCPClient(AMP_HOST, AMP_PORT, factory)
@@ -191,7 +192,7 @@ if TELNET_ENABLED:
             telnet_service.setName('EvenniaTelnet%s' % pstring)
             PORTAL.services.addService(telnet_service)
 
-            print '  telnet%s: %s' % (ifacestr, port)
+            print('  telnet%s: %s' % (ifacestr, port))
 
 
 if SSL_ENABLED:
@@ -216,7 +217,7 @@ if SSL_ENABLED:
             ssl_service.setName('EvenniaSSL%s' % pstring)
             PORTAL.services.addService(ssl_service)
 
-            print "  ssl%s: %s" % (ifacestr, port)
+            print("  ssl%s: %s" % (ifacestr, port))
 
 
 if SSH_ENABLED:
@@ -239,7 +240,7 @@ if SSH_ENABLED:
             ssh_service.setName('EvenniaSSH%s' % pstring)
             PORTAL.services.addService(ssh_service)
 
-            print "  ssl%s: %s" % (ifacestr, port)
+            print("  ssl%s: %s" % (ifacestr, port))
 
 
 if WEBSERVER_ENABLED:
@@ -268,7 +269,7 @@ if WEBSERVER_ENABLED:
                                                interface=interface)
             proxy_service.setName('EvenniaWebProxy%s' % pstring)
             PORTAL.services.addService(proxy_service)
-            print "  webproxy%s%s:%s (<-> %s)" % (webclientstr, ifacestr, proxyport, serverport)
+            print("  webproxy%s%s:%s (<-> %s)" % (webclientstr, ifacestr, proxyport, serverport))
 
 
 if WEBSOCKET_ENABLED:
@@ -292,13 +293,13 @@ if WEBSOCKET_ENABLED:
             websocket_service.setName('EvenniaWebSocket%s' % pstring)
             PORTAL.services.addService(websocket_service)
 
-            print '  websocket%s: %s' % (ifacestr, port)
+            print('  websocket%s: %s' % (ifacestr, port))
 
 for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
     # external plugin services to start
     plugin_module.start_plugin_services(PORTAL)
 
-print '-' * 50  # end of terminal output
+print('-' * 50)  # end of terminal output
 
 if os.name == 'nt':
     # Windows only: Set PID file manually

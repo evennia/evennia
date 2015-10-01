@@ -428,7 +428,7 @@ class LineEditor(object):
             try:
                 args = loadfunc_args or ()
                 self.buffer = loadfunc(*args)
-            except Exception, e:
+            except Exception as e:
                 caller.msg("%s\n{rBuffer load function error. Could not load initial data.{n" % e)
         if not savefunc:
             # If no save function is defined, save an error-reporting function
@@ -490,7 +490,7 @@ class LineEditor(object):
             # call quit function hook if available
             try:
                 self.quitfunc(*self.quitfunc_args)
-            except Exception, e:
+            except Exception as e:
                 self.caller.msg("%s\n{Quit function gave an error. Skipping.{n" % e)
         del self.caller.ndb._lineeditor
         self.caller.cmdset.delete(EditorCmdSet)
@@ -512,7 +512,7 @@ class LineEditor(object):
                     # any status messages.
                     self.unsaved = False
                 return ""
-            except Exception, e:
+            except Exception as e:
                 return "%s\n{rSave function gave an error. Buffer not saved." % e
         else:
             return "No changes need saving."

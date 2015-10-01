@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import datetime
 from south.db import db
 from south.v2 import DataMigration
@@ -22,7 +23,7 @@ class Migration(DataMigration):
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
         if not db.dry_run:
             for profile in orm['players.PlayerDB'].objects.all():
-                print "player orig:", profile.db_key, profile.db_cmdset_storage
+                print("player orig:", profile.db_key, profile.db_cmdset_storage)
                 plyr = orm['players.PlayerDBtmp'].objects.get(id=profile.user_id)
                 plyr.db_cmdset_storage = profile.db_cmdset_storage
                 plyr.db_date_created = profile.db_date_created

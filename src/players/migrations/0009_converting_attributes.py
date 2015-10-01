@@ -275,7 +275,7 @@ class Migration(DataMigration):
                 val = pickle.loads(to_str(attr.db_value))
                 attr.db_value = to_unicode(pickle.dumps(to_str(to_attr(from_attr(attr, val)))))
                 attr.save()
-            except TypeError, RuntimeError:
+            except TypeError as RuntimeError:
                 pass
 
 

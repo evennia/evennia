@@ -114,7 +114,7 @@ class WebSocketProtocol(Protocol, Session):
         """
         try:
             text = to_str(text if text else "", encoding=self.encoding)
-        except Exception, e:
+        except Exception as e:
             self.sendLine(str(e))
         if "oob" in kwargs:
             oobstruct = self.sessionhandler.oobstruct_parser(kwargs.pop("oob"))

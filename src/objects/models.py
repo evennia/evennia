@@ -216,7 +216,7 @@ class ObjectDB(TypedObject):
             errmsg = "Error: %s.location = %s creates a location loop." % (self.key, location)
             logger.log_errmsg(errmsg)
             raise RuntimeError(errmsg)
-        except Exception, e:
+        except Exception as e:
             errmsg = "Error (%s): %s is not a valid location." % (str(e), location)
             logger.log_errmsg(errmsg)
             raise Exception(errmsg)

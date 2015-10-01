@@ -8,10 +8,11 @@ snippet #577349 on http://code.activestate.com.
 
 (extensively modified by Griatch 2010)
 """
+from __future__ import absolute_import
 
 import re
 import cgi
-from ansi import *
+from .ansi import *
 
 
 class TextToHTMLparser(object):

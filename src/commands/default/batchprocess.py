@@ -243,7 +243,7 @@ class CmdBatchCommands(MuxCommand):
 
         try:
             commands = BATCHCMD.parse_file(python_path)
-        except UnicodeDecodeError, err:
+        except UnicodeDecodeError as err:
             caller.msg(_UTF8_ERROR % (python_path, err))
             return
         except IOError:
@@ -350,7 +350,7 @@ class CmdBatchCode(MuxCommand):
         #parse indata file
         try:
             codes = BATCHCODE.parse_file(python_path, debug=debug)
-        except UnicodeDecodeError, err:
+        except UnicodeDecodeError as err:
             caller.msg(_UTF8_ERROR % (python_path, err))
             return
         except IOError:

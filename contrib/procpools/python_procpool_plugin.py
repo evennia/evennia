@@ -23,6 +23,7 @@ not work very well with a high frequency of off-process writes due to
 file locking clashes. Test what works with your mileage.
 
 """
+from __future__ import print_function
 import os
 import sys
 from django.conf import settings
@@ -75,7 +76,7 @@ def start_plugin_services(server):
         return
 
     # terminal output
-    print '  amp (Process Pool): %s' % PROCPOOL_PORT
+    print('  amp (Process Pool): %s' % PROCPOOL_PORT)
 
     from contrib.procpools.ampoule import main as ampoule_main
     from contrib.procpools.ampoule import service as ampoule_service

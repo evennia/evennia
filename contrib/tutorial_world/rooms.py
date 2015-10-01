@@ -3,6 +3,7 @@
 Room Typeclasses for the TutorialWorld.
 
 """
+from __future__ import print_function
 
 import random
 from ev import CmdSet, Script, Command, Room
@@ -407,7 +408,7 @@ class TeleportRoom(TutorialRoom):
         results = search_object(teleport_to)
         if not results or len(results) > 1:
             # we cannot move anywhere since no valid target was found.
-            print "no valid teleport target for %s was found." % teleport_to
+            print("no valid teleport target for %s was found." % teleport_to)
             return
         if character.player.is_superuser:
             # superusers don't get teleported

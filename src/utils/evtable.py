@@ -76,6 +76,7 @@ cell will not "bleed", but it also means that eventual
 colour outside
 
 """
+from __future__ import print_function
 #from textwrap import wrap
 from textwrap import TextWrapper
 from copy import deepcopy, copy
@@ -941,7 +942,7 @@ class EvTable(object):
             for iy, cell in enumerate(col):
                 try:
                     cell.reformat(width=cwidths[ix], **options)
-                except Exception, e:
+                except Exception as e:
                     msg = "ix=%s, iy=%s, width=%s: %s" % (ix, iy, cwidths[ix], e.message)
                     raise Exception ("Error in horizontal allign:\n %s" % msg)
 
@@ -990,7 +991,7 @@ class EvTable(object):
             for iy, cell in enumerate(col):
                 try:
                     cell.reformat(height=cheights[iy], **options)
-                except Exception, e:
+                except Exception as e:
                     msg = "ix=%s, iy=%s, height=%s: %s" % (ix, iy, cheights[iy], e.message)
                     raise Exception ("Error in vertical allign:\n %s" % msg)
 
@@ -1156,9 +1157,9 @@ def _test():
     table = EvTable("{yHeading1{n", "{gHeading2{n", table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
     table.add_column("{rThis is long data{n", "{bThis is even longer data{n")
     table.add_row("This is a single row")
-    print unicode(table)
+    print(unicode(table))
     table.reformat(width=50)
-    print unicode(table)
+    print(unicode(table))
 
 
 

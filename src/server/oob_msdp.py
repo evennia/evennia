@@ -270,7 +270,7 @@ def send(oobhandler, session, *args, **kwargs):
             try:
                 key, value = OOB_SENDABLE.get(name, _NA)(obj)
                 ret[name] = value
-            except Exception, e:
+            except Exception as e:
                 ret[name] = str(e)
     # return result
     session.msg(oob=("send", ret))

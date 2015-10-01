@@ -48,6 +48,7 @@ a  custom handler one can make a custom AT_STARTSTOP_MODULE entry to
 call the handler's save() and restore() methods when the server reboots.
 
 """
+from __future__ import print_function
 from twisted.internet.defer import inlineCallbacks
 from src.scripts.scripts import ExtendedLoopingCall
 from src.server.models import ServerConfig
@@ -108,7 +109,7 @@ class Ticker(object):
             if not subs:
                 self.task.stop()
         elif subs:
-            print "starting with start_delay=", start_delay
+            print("starting with start_delay=", start_delay)
             self.task.start(self.interval, now=False, start_delay=start_delay)
 
     def add(self, store_key, obj, *args, **kwargs):

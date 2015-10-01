@@ -1,6 +1,7 @@
+from __future__ import absolute_import
 from django.test import TestCase
 
-from base import SharedMemoryModel
+from .base import SharedMemoryModel
 from django.db import models
 
 class Category(SharedMemoryModel):

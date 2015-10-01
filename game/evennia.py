@@ -9,6 +9,7 @@ and portal through the runner. Run without arguments to get a
 menu. Run the script with the -h flag to see usage information.
 
 """
+from __future__ import print_function
 import os
 import sys
 import signal
@@ -21,7 +22,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 
 if not os.path.exists('settings.py'):
     # make sure we have a settings.py file.
-    print "    No settings.py file found. launching manage.py ..."
+    print("    No settings.py file found. launching manage.py ...")
 
     # this triggers the settings file creation.
     import game.manage
@@ -151,8 +152,8 @@ from django.db import DatabaseError
 from src.players.models import PlayerDB
 try:
     superuser = PlayerDB.objects.get(id=1)
-except DatabaseError, e:
-    print """
+except DatabaseError as e:
+    print("""
     Your database does not seem to be set up correctly.
     (error was '%s')
 
@@ -162,12 +163,12 @@ except DatabaseError, e:
        python manage.py migrate
 
     When you have a database set up, rerun evennia.py.
-    """ % e
+    """ % e)
     sys.exit()
 except PlayerDB.DoesNotExist:
     # no superuser yet. We need to create it.
     from django.core.management import call_command
-    print "\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n"
+    print("\nCreate a superuser below. The superuser is Player #1, the 'owner' account of the server.\n")
     call_command("createsuperuser", interactive=True)
 
 # Add this to the environmental variable for the 'twistd' command.
@@ -184,13 +185,13 @@ if os.name == 'nt':
         # Test for for win32api
         import win32api
     except ImportError:
-        print """
+        print("""
     ERROR: Unable to import win32api, which Twisted requires to run.
     You may download it from:
 
     http://sourceforge.net/projects/pywin32
       or
-    http://starship.python.net/crew/mhammond/win32/Downloads.html"""
+    http://starship.python.net/crew/mhammond/win32/Downloads.html""")
         sys.exit()
 
     if not os.path.exists('twistd.bat'):
@@ -208,7 +209,7 @@ if os.name == 'nt':
         bat_file = open('twistd.bat', 'w')
         bat_file.write("@\"%s\" \"%s\" %%*" % (sys.executable, twistd_path))
         bat_file.close()
-        print """
+        print("""
     INFO: Since you are running Windows, a file 'twistd.bat' was
     created for you. This is a simple batch file that tries to call
     the twisted executable. Evennia determined this to be:
@@ -221,7 +222,7 @@ if os.name == 'nt':
 
     This procedure is only done once. Run evennia.py again when you
     are ready to start the server.
-    """ % {'twistd_path': twistd_path}
+    """ % {'twistd_path': twistd_path})
         sys.exit()
 
     TWISTED_BINARY = 'twistd.bat'
@@ -260,7 +261,7 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART
     if pid:
         if os.name == 'nt':
             if sys.version < "2.7":
-                print "Windows requires Python 2.7 or higher for this operation."
+                print("Windows requires Python 2.7 or higher for this operation.")
                 return
             os.remove(pidfile)
         # set restart/norestart flag
@@ -270,11 +271,11 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="", restart_file=SERVER_RESTART
         try:
             os.kill(int(pid), signal)
         except OSError:
-            print "Process %(pid)s could not be signalled. The PID file '%(pidfile)s' seems stale. Try removing it." % {'pid': pid, 'pidfile': pidfile}
+            print("Process %(pid)s could not be signalled. The PID file '%(pidfile)s' seems stale. Try removing it." % {'pid': pid, 'pidfile': pidfile})
             return
-        print "Evennia:", succmsg
+        print("Evennia:", succmsg)
         return
-    print "Evennia:", errmsg
+    print("Evennia:", errmsg)
 
 def show_version_info(about=False):
     """
@@ -306,18 +307,18 @@ def run_menu():
     while True:
         # menu loop
 
-        print MENU
+        print(MENU)
         inp = raw_input(" option > ")
 
         # quitting and help
         if inp.lower() == 'q':
             sys.exit()
         elif inp.lower() == 'h':
-            print HELP_ENTRY % EVENNIA_VERSION
+            print(HELP_ENTRY % EVENNIA_VERSION)
             raw_input("press <return> to continue ...")
             continue
         elif inp.lower() in ('v', 'i', 'a'):
-            print show_version_info(about=True)
+            print(show_version_info(about=True))
             raw_input("press <return> to continue ...")
             continue
 
@@ -325,7 +326,7 @@ def run_menu():
         try:
             inp = int(inp)
         except ValueError:
-            print "Not a valid option."
+            print("Not a valid option.")
             continue
         errmsg = "The %s does not seem to be running."
         if inp < 5:
@@ -341,12 +342,12 @@ def run_menu():
         elif inp < 10:
             if inp == 5:
                 if os.name == 'nt':
-                    print "This operation is not supported under Windows. Log into the game to restart/reload the server."
+                    print("This operation is not supported under Windows. Log into the game to restart/reload the server.")
                     return
                 kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % "Server", restart="reload")
             elif inp == 6:
                 if os.name == 'nt':
-                    print "This operation is not supported under Windows."
+                    print("This operation is not supported under Windows.")
                     return
                 kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped if in daemon mode).", errmsg % "Portal", restart=True)
             elif inp == 7:
@@ -358,7 +359,7 @@ def run_menu():
                 kill(SERVER_PIDFILE, SIG, "Stopped Portal.", errmsg % "Portal", PORTAL_RESTART, restart=False)
             return
         else:
-            print "Not a valid option."
+            print("Not a valid option.")
     return None
 
 
@@ -399,16 +400,16 @@ def handle_args(options, mode, service):
     elif mode == 'reload':
         # restarting services
         if os.name == 'nt':
-            print "Restarting from command line is not supported under Windows. Log into the game to restart."
+            print("Restarting from command line is not supported under Windows. Log into the game to restart.")
             return
         if service == 'server':
             kill(SERVER_PIDFILE, SIG, "Server reloaded.", errmsg % 'Server', restart="reload")
         elif service == 'portal':
-            print """
+            print("""
           Note: Portal usually don't need to be reloaded unless you are debugging in interactive mode.
           If Portal was running in default Daemon mode, it cannot be restarted. In that case you have
           to restart it manually with 'evennia.py start portal'
-          """
+          """)
             kill(PORTAL_PIDFILE, SIG, "Portal reloaded (or stopped, if it was in daemon mode).", errmsg % 'Portal', PORTAL_RESTART)
         else: # all
             # default mode, only restart server
@@ -466,9 +467,9 @@ def error_check_python_modules():
                 "See also settings.START_LOCATION (see src/settings_default.py).")
 
     from src.commands import cmdsethandler
-    if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None): print "Warning: CMDSET_UNLOGGED failed to load!"
-    if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None): print "Warning: CMDSET_CHARACTER failed to load"
-    if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None): print "Warning: CMDSET_PLAYER failed to load"
+    if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None): print("Warning: CMDSET_UNLOGGED failed to load!")
+    if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None): print("Warning: CMDSET_CHARACTER failed to load")
+    if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None): print("Warning: CMDSET_PLAYER failed to load")
     # typeclasses
     imp(settings.BASE_PLAYER_TYPECLASS)
     imp(settings.BASE_OBJECT_TYPECLASS)
@@ -496,7 +497,7 @@ def main():
 
     if not args:
         if options.show_version:
-            print show_version_info()
+            print(show_version_info())
             return
         mode = "menu"
         service = 'all'
@@ -507,10 +508,10 @@ def main():
         service = args[1]
 
     if mode not in ['menu', 'start', 'reload', 'stop']:
-        print "mode should be none, 'menu', 'start', 'reload' or 'stop'."
+        print("mode should be none, 'menu', 'start', 'reload' or 'stop'.")
         sys.exit()
     if  service not in ['server', 'portal', 'all']:
-        print "service should be none, 'server', 'portal' or 'all'."
+        print("service should be none, 'server', 'portal' or 'all'.")
         sys.exit()
 
     if mode == 'menu':

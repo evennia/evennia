@@ -6,6 +6,7 @@ leave caching unexpectedly (no use of WeakRefs).
 
 Also adds cache_size() for monitoring the size of the cache.
 """
+from __future__ import absolute_import
 
 import os, threading
 #from twisted.internet import reactor
@@ -16,7 +17,7 @@ from django.db.models.base import Model, ModelBase
 from django.db.models.signals import post_save, pre_delete, post_syncdb
 from src.utils.utils import dbref, get_evennia_pids, to_str
 
-from manager import SharedMemoryManager
+from .manager import SharedMemoryManager
 
 _FIELD_CACHE_GET = None
 _FIELD_CACHE_SET = None

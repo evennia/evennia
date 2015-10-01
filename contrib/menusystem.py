@@ -60,7 +60,7 @@ class CmdMenuNode(Command):
         if self.code:
             try:
                 exec(self.code)
-            except Exception, e:
+            except Exception as e:
                 self.caller.msg("%s\n{rThere was an error with this selection.{n" % e)
         else:
             self.caller.msg("{rThis option is not available.{n")

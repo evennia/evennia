@@ -172,7 +172,7 @@ class Channel(TypeClass):
                 # note our addition of the from_channel keyword here. This could be checked
                 # by a custom player.msg() to treat channel-receives differently.
                 player.msg(msg.message, from_obj=msg.senders, from_channel=self.id)
-            except AttributeError, e:
+            except AttributeError as e:
                 logger.log_trace("%s\nCannot send msg to player '%s'." % (e, player))
 
     def msg(self, msgobj, header=None, senders=None, sender_strings=None,

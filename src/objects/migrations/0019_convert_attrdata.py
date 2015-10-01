@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import datetime
 from south.db import db
 from south.v2 import DataMigration
@@ -382,8 +383,8 @@ class Migration(DataMigration):
                         return mclass.objects.get(id=data.id)
                     except mclass.DoesNotExist: # could happen if object was deleted in the interim.
                         return None
-                except TypeError, e:
-                    print e
+                except TypeError as e:
+                    print(e)
 
             def iter_id2db(item):
                 """

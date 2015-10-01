@@ -420,7 +420,7 @@ class WebSocketProtocol(ProtocolWrapper):
 
         try:
             frames, self.buf = parser(self.buf)
-        except WSException, wse:
+        except WSException as wse:
             # Couldn't parse all the frames, something went wrong, let's bail.
             self.close(wse.args[0])
             return

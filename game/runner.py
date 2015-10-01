@@ -14,6 +14,7 @@ upon returning, or not. A process returning != 0 will always stop, no
 matter the value of this file.
 
 """
+from __future__ import print_function
 import os
 import sys
 from optparse import OptionParser
@@ -42,7 +43,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
 
 if not os.path.exists('settings.py'):
 
-    print "No settings.py file found. Run evennia.py to create it."
+    print("No settings.py file found. Run evennia.py to create it.")
     sys.exit()
 
 # Get the settings
@@ -77,7 +78,7 @@ if os.name == 'nt':
     if not os.path.exists(TWISTED_BINARY):
         err = True
     if err:
-        print "Twisted binary for Windows is not ready to use. Please run evennia.py."
+        print("Twisted binary for Windows is not ready to use. Please run evennia.py.")
         sys.exit()
 
 # Functions
@@ -142,8 +143,8 @@ def start_services(server_argv, portal_argv):
     def server_waiter(queue):
         try:
             rc = Popen(server_argv).wait()
-        except Exception, e:
-            print "Server process error: %(e)s" % {'e': e}
+        except Exception as e:
+            print("Server process error: %(e)s" % {'e': e})
             return
         # this signals the controller that the program finished
         queue.put(("server_stopped", rc))
@@ -151,8 +152,8 @@ def start_services(server_argv, portal_argv):
     def portal_waiter(queue):
         try:
             rc = Popen(portal_argv).wait()
-        except Exception, e:
-            print "Portal process error: %(e)s" % {'e': e}
+        except Exception as e:
+            print("Portal process error: %(e)s" % {'e': e})
             return
         # this signals the controller that the program finished
         queue.put(("portal_stopped", rc))
@@ -166,16 +167,16 @@ def start_services(server_argv, portal_argv):
                 # normal operation: start portal as a daemon;
                 # we don't care to monitor it for restart
                 PORTAL = Popen(portal_argv)
-        except IOError, e:
-            print "Portal IOError: %s\nA possible explanation for this is that 'twistd' is not found." % e
+        except IOError as e:
+            print("Portal IOError: %s\nA possible explanation for this is that 'twistd' is not found." % e)
             return
 
     try:
         if server_argv:
             # start server as a reloadable thread
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
-    except IOError, e:
-        print "Server IOError: %s\nA possible explanation for this is that 'twistd' is not found." % e
+    except IOError as e:
+        print("Server IOError: %s\nA possible explanation for this is that 'twistd' is not found." % e)
         return
 
     # Reload loop
@@ -187,14 +188,14 @@ def start_services(server_argv, portal_argv):
         # restart only if process stopped cleanly
         if (message == "server_stopped" and int(rc) == 0 and
              get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
-            print "Evennia Server stopped. Restarting ..."
+            print("Evennia Server stopped. Restarting ...")
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
             continue
 
         # normally the portal is not reloaded since it's run as a daemon.
         if (message == "portal_stopped" and int(rc) == 0 and
               get_restart_mode(PORTAL_RESTART) == "True"):
-            print "Evennia Portal stopped in interactive mode. Restarting ..."
+            print("Evennia Portal stopped in interactive mode. Restarting ...")
             PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
             continue
         break
@@ -259,7 +260,7 @@ def main():
 
     pid = get_pid(SERVER_PIDFILE)
     if pid and not options.noserver:
-            print "\nEvennia Server is already running as process %(pid)s. Not restarted." % {'pid': pid}
+            print("\nEvennia Server is already running as process %(pid)s. Not restarted." % {'pid': pid})
             options.noserver = True
     if options.noserver:
         server_argv = None
@@ -268,20 +269,20 @@ def main():
         if options.iserver:
             # don't log to server logfile
             del server_argv[2]
-            print "\nStarting Evennia Server (output to stdout)."
+            print("\nStarting Evennia Server (output to stdout).")
         else:
             if CYCLE_LOGFILES:
                 cycle_logfile(SERVER_LOGFILE)
-            print "\nStarting Evennia Server (output to server logfile)."
+            print("\nStarting Evennia Server (output to server logfile).")
         if options.sprof:
             server_argv.extend(sprof_argv)
-            print "\nRunning Evennia Server under cProfile."
+            print("\nRunning Evennia Server under cProfile.")
 
     # Portal
 
     pid = get_pid(PORTAL_PIDFILE)
     if pid and not options.noportal:
-        print "\nEvennia Portal is already running as process %(pid)s. Not restarted." % {'pid': pid}
+        print("\nEvennia Portal is already running as process %(pid)s. Not restarted." % {'pid': pid})
         options.noportal = True
     if options.noportal:
         portal_argv = None
@@ -290,16 +291,16 @@ def main():
             # make portal interactive
             portal_argv[1] = '--nodaemon'
             set_restart_mode(PORTAL_RESTART, True)
-            print "\nStarting Evennia Portal in non-Daemon mode (output to stdout)."
+            print("\nStarting Evennia Portal in non-Daemon mode (output to stdout).")
         else:
             if CYCLE_LOGFILES:
                 cycle_logfile(PORTAL_LOGFILE)
                 cycle_logfile(HTTP_LOGFILE)
             set_restart_mode(PORTAL_RESTART, False)
-            print "\nStarting Evennia Portal in Daemon mode (output to portal logfile)."
+            print("\nStarting Evennia Portal in Daemon mode (output to portal logfile).")
         if options.pprof:
             portal_argv.extend(pprof_argv)
-            print "\nRunning Evennia Portal under cProfile."
+            print("\nRunning Evennia Portal under cProfile.")
 
     # Windows fixes (Windows don't support pidfiles natively)
     if os.name == 'nt':

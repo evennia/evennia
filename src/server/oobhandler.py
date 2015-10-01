@@ -449,14 +449,14 @@ class OOBHandler(object):
             #print "OOB execute_cmd:", session, func_key, args, kwargs, _OOB_FUNCS.keys()
             oobfunc = _OOB_FUNCS[func_key]  # raise traceback if not found
             oobfunc(self, session, *args, **kwargs)
-        except KeyError,e:
+        except KeyError as e:
             errmsg = "OOB Error: function '%s' not recognized: %s" % (func_key, e)
             if _OOB_ERROR:
                 _OOB_ERROR(self, session, errmsg, *args, **kwargs)
             else:
                 logger.log_trace(errmsg)
             raise KeyError(errmsg)
-        except Exception, err:
+        except Exception as err:
             errmsg = "OOB Error: Exception in '%s'(%s, %s):\n%s" % (func_key, args, kwargs, err)
             if _OOB_ERROR:
                 _OOB_ERROR(self, session, errmsg, *args, **kwargs)

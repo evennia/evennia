@@ -137,7 +137,7 @@ class PythonProcPoolChild(AMPChild):
                 ret = ""
         except Exception:
             # use exec instead
-            exec source in available_vars
+            exec(source, available_vars)
             ret = _return.get_returns()
         # get the list of affected objects to recache
         objs = list(set(PROC_MODIFIED_OBJS))

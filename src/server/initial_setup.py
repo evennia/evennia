@@ -5,6 +5,7 @@ other things.
 
 Everything starts at handle_setup()
 """
+from __future__ import print_function
 
 import django
 from django.conf import settings
@@ -44,7 +45,7 @@ def create_objects():
     Creates the #1 player and Limbo room.
     """
 
-    print " Creating objects (Player #1 and Limbo room) ..."
+    print(" Creating objects (Player #1 and Limbo room) ...")
 
     # Set the initial User's account object's username on the #1 object.
     # This object is pure django and only holds name, email and password.
@@ -108,7 +109,7 @@ def create_channels():
     """
     Creates some sensible default channels.
     """
-    print " Creating default channels ..."
+    print(" Creating default channels ...")
 
     # public channel
     key1, aliases, desc, locks = settings.CHANNEL_PUBLIC
@@ -136,7 +137,7 @@ def create_channels():
         game commands to onnect Player #1 to those channels when first
         logging in.
         """ % (key1, key2, key3)
-        print warning
+        print(warning)
         return
 
     # connect the god user to all these channels by default.
@@ -153,7 +154,7 @@ def create_system_scripts():
     """
     from src.scripts import scripts
 
-    print " Creating and starting global scripts ..."
+    print(" Creating and starting global scripts ...")
 
     # check so that all sessions are alive.
     script1 = create.create_script(scripts.CheckSessions)
@@ -162,7 +163,7 @@ def create_system_scripts():
     # update the channel handler to make sure it's in sync
     script3 = create.create_script(scripts.ValidateChannelHandler)
     if not script1 or not script2 or not script3:
-        print " Error creating system scripts."
+        print(" Error creating system scripts.")
 
 
 def start_game_time():
@@ -172,7 +173,7 @@ def start_game_time():
     the total run time of the server as well as its current uptime
     (the uptime can also be found directly from the server though).
     """
-    print " Starting in-game time ..."
+    print(" Starting in-game time ...")
     from src.utils import gametime
     gametime.init_gametime()
 
@@ -197,20 +198,20 @@ def create_admin_media_links():
         dpath = os.path.join(django.__path__[0], 'contrib', 'admin', 'static', 'admin')
     apath = os.path.join(settings.ADMIN_MEDIA_ROOT)
     if os.path.isdir(apath):
-        print " ADMIN_MEDIA_ROOT already exists. Ignored."
+        print(" ADMIN_MEDIA_ROOT already exists. Ignored.")
         return
     if os.name == 'nt':
-        print " Admin-media files copied to ADMIN_MEDIA_ROOT (Windows mode)."
+        print(" Admin-media files copied to ADMIN_MEDIA_ROOT (Windows mode).")
         os.mkdir(apath)
         os.system('xcopy "%s" "%s" /e /q /c' % (dpath, apath))
     if os.name == 'posix':
         try:
             os.symlink(dpath, apath)
-            print " Admin-media symlinked to ADMIN_MEDIA_ROOT."
-        except OSError, e:
-            print " There was an error symlinking Admin-media to ADMIN_MEDIA_ROOT:\n  %s\n   -> \n  %s\n  (%s)\n  If you see issues, link manually." % (dpath, apath, e)
+            print(" Admin-media symlinked to ADMIN_MEDIA_ROOT.")
+        except OSError as e:
+            print(" There was an error symlinking Admin-media to ADMIN_MEDIA_ROOT:\n  %s\n   -> \n  %s\n  (%s)\n  If you see issues, link manually." % (dpath, apath, e))
     else:
-        print " Admin-media files should be copied manually to ADMIN_MEDIA_ROOT."
+        print(" Admin-media files should be copied manually to ADMIN_MEDIA_ROOT.")
 
 
 def at_initial_setup():
@@ -227,7 +228,7 @@ def at_initial_setup():
         mod = __import__(modname, fromlist=[None])
     except (ImportError, ValueError):
         return
-    print " Running at_initial_setup() hook."
+    print(" Running at_initial_setup() hook.")
     if mod.__dict__.get("at_initial_setup", None):
         mod.at_initial_setup()
 
@@ -240,7 +241,7 @@ def reset_server():
     It also checks so the warm-reset mechanism works as it should.
     """
     from src.server.sessionhandler import SESSIONS
-    print " Initial setup complete. Restarting Server once."
+    print(" Initial setup complete. Restarting Server once.")
     SESSIONS.server.shutdown(mode='reset')
 
 

@@ -2,6 +2,7 @@
 This is a simple context factory for auto-creating
 SSL keys and certificates.
 """
+from __future__ import print_function
 
 import os
 import sys
@@ -9,7 +10,7 @@ from twisted.internet import ssl as twisted_ssl
 try:
     import OpenSSL
 except ImportError:
-    print "  SSL_ENABLED requires PyOpenSSL."
+    print("  SSL_ENABLED requires PyOpenSSL.")
     sys.exit(5)
 
 from src.server.portal.telnet import TelnetProtocol
@@ -36,7 +37,7 @@ def verify_SSL_key_and_cert(keyfile, certfile):
         from Crypto.PublicKey import RSA
         from twisted.conch.ssh.keys import Key
 
-        print "  Creating SSL key and certificate ... ",
+        print("  Creating SSL key and certificate ... ", end=' ')
 
         try:
             # create the RSA key and store it.
@@ -44,9 +45,9 @@ def verify_SSL_key_and_cert(keyfile, certfile):
             rsaKey = Key(RSA.generate(KEY_LENGTH))
             keyString = rsaKey.toString(type="OPENSSH")
             file(keyfile, 'w+b').write(keyString)
-        except Exception, e:
-            print "rsaKey error: %(e)s\n WARNING: Evennia could not auto-generate SSL private key." % {'e': e}
-            print "If this error persists, create game/%(keyfile)s yourself using third-party tools." % {'keyfile': keyfile}
+        except Exception as e:
+            print("rsaKey error: %(e)s\n WARNING: Evennia could not auto-generate SSL private key." % {'e': e})
+            print("If this error persists, create game/%(keyfile)s yourself using third-party tools." % {'keyfile': keyfile})
             sys.exit(5)
 
         # try to create the certificate
@@ -58,7 +59,7 @@ def verify_SSL_key_and_cert(keyfile, certfile):
         try:
             #, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             subprocess.call(exestring)
-        except OSError, e:
+        except OSError as e:
             string = "\n".join([
                  "  %s\n" % e,
                  "  Evennia's SSL context factory could not automatically",
@@ -68,9 +69,9 @@ def verify_SSL_key_and_cert(keyfile, certfile):
                  "  for your operating system.",
                  "  Example (linux, using the openssl program): ",
                  "    %s" % exestring])
-            print string
+            print(string)
             sys.exit(5)
-        print "done."
+        print("done.")
 
 
 def getSSLContext():

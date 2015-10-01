@@ -133,6 +133,7 @@ into (when including its borders and at least one line of text), the
 form will raise an error.
 
 """
+from __future__ import print_function
 
 import re
 import copy
@@ -440,4 +441,4 @@ def _test():
                      "B": tableB})
 
     # unicode is required since the example contains non-ascii characters
-    print unicode(form)
+    print(unicode(form))

@@ -50,7 +50,7 @@ class AMPConnector(protocol.ProcessProtocol):
         self.amp = proto
         self.name = name
         if name is None:
-            self.name = gen.next()
+            self.name = next(gen)
 
     def signalProcess(self, signalID):
         """

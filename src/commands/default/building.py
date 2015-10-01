@@ -1558,7 +1558,7 @@ class CmdLock(ObjManipCommand):
                 return
             try:
                 ok = obj.locks.add(lockdef)
-            except LockException, e:
+            except LockException as e:
                 caller.msg(str(e))
             if ok:
                 caller.msg("Added lock '%s' to %s." % (lockdef, obj))

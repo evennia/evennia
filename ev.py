@@ -27,6 +27,8 @@ Notes:
     viewing only - you cannot *change* settings from here in a meaningful
     way but have to update game/settings.py and restart the server.
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
 import sys
 import os
@@ -49,8 +51,7 @@ except IOError:
 ######################################################################
 
 if __name__ == "__main__":
-    print \
-"""
+    print("""
    Evennia MU* creation system (%s)
 
    This module gives access to Evennia's API (Application Programming
@@ -60,7 +61,7 @@ if __name__ == "__main__":
 
    For help configuring and starting the Evennia server, see the
    INSTALL file. More help can be found at http://www.evennia.com.
-""" % __version__
+""" % __version__)
     sys.exit()
 
 ######################################################################
@@ -73,13 +74,13 @@ sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + os.path.sep + "g
 os.environ["DJANGO_SETTINGS_MODULE"] = "game.settings"
 del sys, os
 
-from game import settings
+from .game import settings
 from django.conf import settings as settings_full
 
 try:
     # test this first import to make sure environment is set up correctly
-    from src.help.models import HelpEntry
-except AttributeError, e:
+    from .src.help.models import HelpEntry
+except AttributeError as e:
     err = e.message
     err += "\nError initializing ev.py: Maybe the correct environment variables were not set."
     err += "\nUse \"python game/manage.py shell\" to start an interpreter"
@@ -95,43 +96,43 @@ except AttributeError, e:
 README = __doc__
 
 # help entries
-from src.help.models import HelpEntry
+from .src.help.models import HelpEntry
 
-from src.typeclasses.models import Attribute
+from .src.typeclasses.models import Attribute
 # players
-from src.players.player import Player
-from src.players.models import PlayerDB
+from .src.players.player import Player
+from .src.players.models import PlayerDB
 
 # commands
-from src.commands.command import Command
-from src.commands.cmdset import CmdSet
+from .src.commands.command import Command
+from .src.commands.cmdset import CmdSet
 # (default_cmds is created below)
 
 # locks
-from src.locks import lockfuncs
+from .src.locks import lockfuncs
 
 # scripts
-from src.scripts.scripts import Script
+from .src.scripts.scripts import Script
 
 # comms
-from src.comms.models import Msg, ChannelDB
-from src.comms.comms import Channel
+from .src.comms.models import Msg, ChannelDB
+from .src.comms.comms import Channel
 
 # objects
-from src.objects.objects import Object, Character, Room, Exit
+from .src.objects.objects import Object, Character, Room, Exit
 
 # extras
-from src.typeclasses.models import Attribute, Tag
+from .src.typeclasses.models import Attribute, Tag
 
 # utils
 
-from src.utils.search import *
-from src.utils.create import *
-from src.scripts.tickerhandler import TICKER_HANDLER as tickerhandler
-from src.utils import logger
-from src.utils import utils
-from src.utils import gametime
-from src.utils import ansi
+from .src.utils.search import *
+from .src.utils.create import *
+from .src.scripts.tickerhandler import TICKER_HANDLER as tickerhandler
+from .src.utils import logger
+from .src.utils import utils
+from .src.utils import gametime
+from .src.utils import ansi
 
 
 ######################################################################
@@ -149,7 +150,7 @@ def help(header=False):
     if header:
         return __doc__
     else:
-        import ev
+        from . import ev
         names = [str(var) for var in ev.__dict__ if not var.startswith('_')]
         return ", ".join(names)
 
@@ -163,7 +164,7 @@ class _EvContainer(object):
         "Returns list of contents"
         names = [name for name in self.__class__.__dict__ if not name.startswith('_')]
         names += [name for name in self.__dict__ if not name.startswith('_')]
-        print self.__doc__ + "-" * 60 + "\n" + ", ".join(names)
+        print(self.__doc__ + "-" * 60 + "\n" + ", ".join(names))
     help = property(_help)
 
 
@@ -182,13 +183,13 @@ class DBmanagers(_EvContainer):
     attributes - Attributes.objects
 
     """
-    from src.help.models import HelpEntry
-    from src.players.models import PlayerDB
-    from src.scripts.models import ScriptDB
-    from src.comms.models import Msg, ChannelDB
-    from src.objects.models import ObjectDB
-    from src.server.models import ServerConfig
-    from src.typeclasses.models import Tag, Attribute
+    from .src.help.models import HelpEntry
+    from .src.players.models import PlayerDB
+    from .src.scripts.models import ScriptDB
+    from .src.comms.models import Msg, ChannelDB
+    from .src.objects.models import ObjectDB
+    from .src.server.models import ServerConfig
+    from .src.typeclasses.models import Tag, Attribute
 
     # create container's properties
     helpentries = HelpEntry.objects
@@ -218,10 +219,10 @@ class DefaultCmds(_EvContainer):
 
     """
 
-    from src.commands.default.cmdset_character import CharacterCmdSet
-    from src.commands.default.cmdset_player import PlayerCmdSet
-    from src.commands.default.cmdset_unloggedin import UnloggedinCmdSet
-    from src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
+    from .src.commands.default.cmdset_character import CharacterCmdSet
+    from .src.commands.default.cmdset_player import PlayerCmdSet
+    from .src.commands.default.cmdset_unloggedin import UnloggedinCmdSet
+    from .src.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
     def __init__(self):
         "populate the object with commands"
@@ -231,7 +232,7 @@ class DefaultCmds(_EvContainer):
             cmdlist = utils.variable_from_module(module, module.__all__)
             self.__dict__.update(dict([(c.__name__, c) for c in cmdlist]))
 
-        from src.commands.default import (admin, batchprocess,
+        from .src.commands.default import (admin, batchprocess,
                                           building, comms, general,
                                           player, help, system, unloggedin)
         add_cmds(admin)
@@ -267,7 +268,7 @@ class SystemCmds(_EvContainer):
     access the properties on the imported syscmdkeys object.
 
     """
-    from src.commands import cmdhandler
+    from .src.commands import cmdhandler
     CMD_NOINPUT = cmdhandler.CMD_NOINPUT
     CMD_NOMATCH = cmdhandler.CMD_NOMATCH
     CMD_MULTIMATCH = cmdhandler.CMD_MULTIMATCH

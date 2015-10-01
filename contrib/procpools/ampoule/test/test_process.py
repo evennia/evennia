@@ -1,3 +1,4 @@
+from __future__ import print_function
 
 from signal import SIGHUP
 import math
@@ -239,7 +240,7 @@ main(sys.argv[1])
 
         amp, finished = starter.startPythonProcess(main.AMPConnector(a))
         def _eb(reason):
-            print reason
+            print(reason)
         finished.addErrback(_eb)
         return finished.addCallback(lambda _: self.assertEquals(s.getvalue(), STRING))
 
@@ -283,7 +284,7 @@ main()
                                       env={"FOOBAR": STRING})
         amp, finished = starter.startPythonProcess(main.AMPConnector(a), "I'll be ignored")
         def _eb(reason):
-            print reason
+            print(reason)
         finished.addErrback(_eb)
         return finished.addCallback(lambda _: self.assertEquals(s.getvalue(), STRING))
 
@@ -601,7 +602,7 @@ class TestProcessPool(unittest.TestCase):
                         self.assertEquals(len(pp.processes), pp.min)
                         self.assertEquals(len(pp._finishCallbacks), pp.min)
                         d.callback(None)
-                    except Exception, e:
+                    except Exception as e:
                         d.errback(e)
                 return pp._pruneProcesses().addCallback(__)
             # just to be shure we are called after the pruner

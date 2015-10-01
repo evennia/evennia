@@ -104,6 +104,7 @@ restricted @perm command sets them, but otherwise they are identical
 to any other identifier you can use.
 
 """
+from __future__ import print_function
 
 import re
 import inspect
@@ -429,10 +430,10 @@ def _test():
 
     #obj1.locks.add("edit:attr(test)")
 
-    print "comparing obj2.permissions (%s) vs obj1.locks (%s)" % (obj2.permissions, obj1.locks)
-    print obj1.locks.check(obj2, 'owner')
-    print obj1.locks.check(obj2, 'edit')
-    print obj1.locks.check(obj2, 'examine')
-    print obj1.locks.check(obj2, 'delete')
-    print obj1.locks.check(obj2, 'get')
-    print obj1.locks.check(obj2, 'listen')
+    print("comparing obj2.permissions (%s) vs obj1.locks (%s)" % (obj2.permissions, obj1.locks))
+    print(obj1.locks.check(obj2, 'owner'))
+    print(obj1.locks.check(obj2, 'edit'))
+    print(obj1.locks.check(obj2, 'examine'))
+    print(obj1.locks.check(obj2, 'delete'))
+    print(obj1.locks.check(obj2, 'get'))
+    print(obj1.locks.check(obj2, 'listen'))

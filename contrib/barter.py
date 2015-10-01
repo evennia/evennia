@@ -93,6 +93,7 @@ cmdset. This will make the trade (or barter) command available
 in-game.
 
 """
+from __future__ import print_function
 
 from ev import Command, Script, CmdSet
 
@@ -176,7 +177,7 @@ class TradeHandler(object):
         """
         This is used once B decides to join the trade
         """
-        print "join:", self.partB, partB, self.partB == partB, type(self.partB), type(partB)
+        print("join:", self.partB, partB, self.partB == partB, type(self.partB), type(partB))
         if self.partB == partB:
             self.partB.ndb.tradehandler = self
             self.partB.cmdset.add(CmdsetTrade())

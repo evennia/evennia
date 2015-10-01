@@ -3,6 +3,7 @@ IMC2 packets. These are pretty well documented at:
 http://www.mudbytes.net/index.php?a=articles&s=imc2_protocol
 
 """
+from __future__ import print_function
 import shlex
 from django.conf import settings
 
@@ -791,5 +792,5 @@ class IMC2PacketCloseNotify(IMC2Packet):
 if __name__ == "__main__":
     packstr = "Kayle@MW 1234567 MW!Server02!Server01 ice-msg-b *@* channel=Server01:ichat text=\"*they're going woot\" emote=0 echo=1"
     packstr = "*@Lythelian 1234567 Lythelian!Server01 is-alive *@* versionid=\"Tim's LPC IMC2 client 30-Jan-05 / Dead Souls integrated\" networkname=Mudbytes url=http://dead-souls.net host=70.32.76.142 port=6666 sha256=0"
-    print IMC2Packet(packstr)
+    print(IMC2Packet(packstr))
 

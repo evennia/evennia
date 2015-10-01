@@ -25,6 +25,7 @@ This module also contains the Managers for the respective models; inherit from
 these to create custom managers.
 
 """
+from __future__ import print_function
 
 import sys
 import re
@@ -911,7 +912,7 @@ class TypedObject(SharedMemoryModel):
             module = __import__(modpath, fromlist=["none"])
             return module.__dict__[class_name]
         except ImportError:
-            trc = sys.exc_traceback
+            trc = sys.exc_info()[2]
             if not trc.tb_next:
                 # we separate between not finding the module, and finding
                 # a buggy one.
@@ -938,7 +939,7 @@ class TypedObject(SharedMemoryModel):
         """
         _SA(self, "typeclass_lasterrmsg", message)
         if ServerConfig.objects.conf("server_starting_mode"):
-            print message
+            print(message)
         else:
             logger.log_errmsg(message)
         return

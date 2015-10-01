@@ -8,6 +8,7 @@ communication between the client and server, for updating health bars
 etc.
 
 """
+from __future__ import print_function
 import re
 from src.utils.utils import to_str
 
@@ -119,7 +120,7 @@ class Msdp(object):
 
         # Default MSDP commands
 
-        print "MSDP outgoing:", cmdname, args, kwargs
+        print("MSDP outgoing:", cmdname, args, kwargs)
 
         cupper = cmdname.upper()
         if cupper == "LIST":
