@@ -11,6 +11,8 @@ to launch such a shell (using python or ipython depending on your install).
 See www.evennia.com for full documentation.
 
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
 # Delayed loading of properties
 
@@ -85,7 +87,7 @@ def _create_version():
         with open(os.path.join(root, "VERSION.txt"), 'r') as f:
             version = f.read().strip()
     except IOError as err:
-        print err
+        print(err)
     try:
         version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=root, stderr=STDOUT).strip())
     except (IOError, CalledProcessError):
@@ -117,56 +119,56 @@ def _init():
     global settings,lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, OOB_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER
 
-    from players.players import DefaultPlayer
-    from players.players import DefaultGuest
-    from objects.objects import DefaultObject
-    from objects.objects import DefaultCharacter
-    from objects.objects import DefaultRoom
-    from objects.objects import DefaultExit
-    from comms.comms import DefaultChannel
-    from scripts.scripts import DefaultScript
+    from .players.players import DefaultPlayer
+    from .players.players import DefaultGuest
+    from .objects.objects import DefaultObject
+    from .objects.objects import DefaultCharacter
+    from .objects.objects import DefaultRoom
+    from .objects.objects import DefaultExit
+    from .comms.comms import DefaultChannel
+    from .scripts.scripts import DefaultScript
 
     # Database models
-    from objects.models import ObjectDB
-    from players.models import PlayerDB
-    from scripts.models import ScriptDB
-    from comms.models import ChannelDB
-    from comms.models import Msg
+    from .objects.models import ObjectDB
+    from .players.models import PlayerDB
+    from .scripts.models import ScriptDB
+    from .comms.models import ChannelDB
+    from .comms.models import Msg
 
     # commands
-    from commands.command import Command
-    from commands.cmdset import CmdSet
+    from .commands.command import Command
+    from .commands.cmdset import CmdSet
 
     # search functions
-    from utils.search import search_object
-    from utils.search import search_script
-    from utils.search import search_player
-    from utils.search import search_channel
-    from utils.search import search_help
-    from utils.search import search_tag
+    from .utils.search import search_object
+    from .utils.search import search_script
+    from .utils.search import search_player
+    from .utils.search import search_channel
+    from .utils.search import search_help
+    from .utils.search import search_tag
 
     # create functions
-    from utils.create import create_object
-    from utils.create import create_script
-    from utils.create import create_player
-    from utils.create import create_channel
-    from utils.create import create_message
-    from utils.create import create_help_entry
+    from .utils.create import create_object
+    from .utils.create import create_script
+    from .utils.create import create_player
+    from .utils.create import create_channel
+    from .utils.create import create_message
+    from .utils.create import create_help_entry
 
     # utilities
     from django.conf import settings
-    from locks import lockfuncs
-    from utils import logger
-    from utils import gametime
-    from utils import ansi
-    from utils.spawner import spawn
-    import contrib
+    from .locks import lockfuncs
+    from .utils import logger
+    from .utils import gametime
+    from .utils import ansi
+    from .utils.spawner import spawn
+    from . import contrib
 
     # handlers
-    from scripts.tickerhandler import TICKER_HANDLER
-    from server.oobhandler import OOB_HANDLER
-    from server.sessionhandler import SESSION_HANDLER
-    from comms.channelhandler import CHANNEL_HANDLER
+    from .scripts.tickerhandler import TICKER_HANDLER
+    from .server.oobhandler import OOB_HANDLER
+    from .server.sessionhandler import SESSION_HANDLER
+    from .comms.channelhandler import CHANNEL_HANDLER
 
     # API containers
 
@@ -179,7 +181,7 @@ def _init():
             "Returns list of contents"
             names = [name for name in self.__class__.__dict__ if not name.startswith('_')]
             names += [name for name in self.__dict__ if not name.startswith('_')]
-            print self.__doc__ + "-" * 60 + "\n" + ", ".join(names)
+            print(self.__doc__ + "-" * 60 + "\n" + ", ".join(names))
         help = property(_help)
 
 
@@ -198,14 +200,14 @@ def _init():
         attributes - Attributes.objects
 
         """
-        from help.models import HelpEntry
-        from players.models import PlayerDB
-        from scripts.models import ScriptDB
-        from comms.models import Msg, ChannelDB
-        from objects.models import ObjectDB
-        from server.models import ServerConfig
-        from typeclasses.attributes import Attribute
-        from typeclasses.tags import Tag
+        from .help.models import HelpEntry
+        from .players.models import PlayerDB
+        from .scripts.models import ScriptDB
+        from .comms.models import Msg, ChannelDB
+        from .objects.models import ObjectDB
+        from .server.models import ServerConfig
+        from .typeclasses.attributes import Attribute
+        from .typeclasses.tags import Tag
 
         # create container's properties
         helpentries = HelpEntry.objects
@@ -235,11 +237,11 @@ def _init():
 
         """
 
-        from commands.default.cmdset_character import CharacterCmdSet
-        from commands.default.cmdset_player import PlayerCmdSet
-        from commands.default.cmdset_unloggedin import UnloggedinCmdSet
-        from commands.default.cmdset_session import SessionCmdSet
-        from commands.default.muxcommand import MuxCommand, MuxPlayerCommand
+        from .commands.default.cmdset_character import CharacterCmdSet
+        from .commands.default.cmdset_player import PlayerCmdSet
+        from .commands.default.cmdset_unloggedin import UnloggedinCmdSet
+        from .commands.default.cmdset_session import SessionCmdSet
+        from .commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
         def __init__(self):
             "populate the object with commands"
@@ -249,7 +251,7 @@ def _init():
                 cmdlist = utils.variable_from_module(module, module.__all__)
                 self.__dict__.update(dict([(c.__name__, c) for c in cmdlist]))
 
-            from commands.default import (admin, batchprocess,
+            from .commands.default import (admin, batchprocess,
                                               building, comms, general,
                                               player, help, system, unloggedin)
             add_cmds(admin)
@@ -285,7 +287,7 @@ def _init():
         access the properties on the imported syscmdkeys object.
 
         """
-        from commands import cmdhandler
+        from .commands import cmdhandler
         CMD_NOINPUT = cmdhandler.CMD_NOINPUT
         CMD_NOMATCH = cmdhandler.CMD_NOMATCH
         CMD_MULTIMATCH = cmdhandler.CMD_MULTIMATCH

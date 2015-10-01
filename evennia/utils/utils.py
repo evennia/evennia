@@ -5,6 +5,7 @@ They provide some useful string and conversion methods that might
 be of use when designing your own game.
 
 """
+from __future__ import print_function
 
 import os
 import sys
@@ -869,7 +870,7 @@ def check_evennia_dependencies():
     errstring = errstring.strip()
     if errstring:
         mlen = max(len(line) for line in errstring.split("\n"))
-        print "%s\n%s\n%s" % ("-"*mlen, errstring, '-'*mlen)
+        print("%s\n%s\n%s" % ("-"*mlen, errstring, '-'*mlen))
     return not_error
 
 
@@ -917,7 +918,7 @@ def mod_import(module):
         adds an extra line with added info.
         """
         from twisted.python import log
-        print errmsg
+        print(errmsg)
 
         tracestring = traceback.format_exc()
         if tracestring:
@@ -926,7 +927,7 @@ def mod_import(module):
         if errmsg:
             try:
                 errmsg = to_str(errmsg)
-            except Exception, e:
+            except Exception as e:
                 errmsg = str(e)
             for line in errmsg.splitlines():
                 log.msg('[EE] %s' % line)
@@ -941,7 +942,7 @@ def mod_import(module):
         # first try to import as a python path
         try:
             mod = __import__(module, fromlist=["None"])
-        except ImportError, ex:
+        except ImportError as ex:
             # check just where the ImportError happened (it could have been
             # an erroneous import inside the module as well). This is the
             # trivial way to do it ...
@@ -1104,7 +1105,7 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
     for modpath in paths:
         try:
             mod = import_module(path)
-        except ImportError, ex:
+        except ImportError as ex:
             if not str(ex).startswith ("No module named %s" % path):
                 # this means the module was found but it
                 # triggers an ImportError on import.

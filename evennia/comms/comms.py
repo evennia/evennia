@@ -200,7 +200,7 @@ class DefaultChannel(ChannelDB):
                 # note our addition of the from_channel keyword here. This could be checked
                 # by a custom player.msg() to treat channel-receives differently.
                 entity.msg(msg.message, from_obj=msg.senders, from_channel=self.id)
-            except AttributeError, e:
+            except AttributeError as e:
                 logger.log_trace("%s\nCannot send msg to '%s'." % (e, entity))
 
     def msg(self, msgobj, header=None, senders=None, sender_strings=None,

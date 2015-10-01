@@ -14,6 +14,7 @@ upon returning, or not. A process returning != 0 will always stop, no
 matter the value of this file.
 
 """
+from __future__ import print_function
 import os
 import sys
 from argparse import ArgumentParser
@@ -144,8 +145,8 @@ def start_services(server_argv, portal_argv):
     def server_waiter(queue):
         try:
             rc = Popen(server_argv, env=getenv()).wait()
-        except Exception, e:
-            print PROCESS_ERROR.format(component="Server", traceback=e)
+        except Exception as e:
+            print(PROCESS_ERROR.format(component="Server", traceback=e))
             return
         # this signals the controller that the program finished
         queue.put(("server_stopped", rc))
@@ -153,8 +154,8 @@ def start_services(server_argv, portal_argv):
     def portal_waiter(queue):
         try:
             rc = Popen(portal_argv, env=getenv()).wait()
-        except Exception, e:
-            print PROCESS_ERROR.format(component="Portal", traceback=e)
+        except Exception as e:
+            print(PROCESS_ERROR.format(component="Portal", traceback=e))
             return
         # this signals the controller that the program finished
         queue.put(("portal_stopped", rc))
@@ -168,16 +169,16 @@ def start_services(server_argv, portal_argv):
                 # normal operation: start portal as a daemon;
                 # we don't care to monitor it for restart
                 PORTAL = Popen(portal_argv, env=getenv())
-        except IOError, e:
-            print PROCESS_IOERROR.format(component="Portal", traceback=e)
+        except IOError as e:
+            print(PROCESS_IOERROR.format(component="Portal", traceback=e))
             return
 
     try:
         if server_argv:
             # start server as a reloadable thread
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
-    except IOError, e:
-        print PROCESS_IOERROR.format(component="Server", traceback=e)
+    except IOError as e:
+        print(PROCESS_IOERROR.format(component="Server", traceback=e))
         return
 
     # Reload loop
@@ -193,14 +194,14 @@ def start_services(server_argv, portal_argv):
         # restart only if process stopped cleanly
         if (message == "server_stopped" and int(rc) == 0 and
              get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
-            print PROCESS_RESTART.format(component="Server")
+            print(PROCESS_RESTART.format(component="Server"))
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
             continue
 
         # normally the portal is not reloaded since it's run as a daemon.
         if (message == "portal_stopped" and int(rc) == 0 and
               get_restart_mode(PORTAL_RESTART) == "True"):
-            print PROCESS_RESTART.format(component="Portal")
+            print(PROCESS_RESTART.format(component="Portal"))
             PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
             continue
         break
@@ -281,7 +282,7 @@ def main():
 
     pid = get_pid(SERVER_PIDFILE)
     if pid and not args.noserver:
-            print "\nEvennia Server is already running as process %(pid)s. Not restarted." % {'pid': pid}
+            print("\nEvennia Server is already running as process %(pid)s. Not restarted." % {'pid': pid})
             args.noserver = True
     if args.noserver:
         server_argv = None
@@ -290,20 +291,20 @@ def main():
         if not args.logserver:
             # don't log to server logfile
             del server_argv[2]
-            print "\nStarting Evennia Server (output to stdout)."
+            print("\nStarting Evennia Server (output to stdout).")
         else:
             if not args.nologcycle:
                 cycle_logfile(SERVER_LOGFILE)
-            print "\nStarting Evennia Server (output to server logfile)."
+            print("\nStarting Evennia Server (output to server logfile).")
         if args.pserver:
             server_argv.extend(pserver_argv)
-            print "\nRunning Evennia Server under cProfile."
+            print("\nRunning Evennia Server under cProfile.")
 
     # Portal
 
     pid = get_pid(PORTAL_PIDFILE)
     if pid and not args.noportal:
-        print "\nEvennia Portal is already running as process %(pid)s. Not restarted." % {'pid': pid}
+        print("\nEvennia Portal is already running as process %(pid)s. Not restarted." % {'pid': pid})
         args.noportal = True
     if args.noportal:
         portal_argv = None
@@ -312,16 +313,16 @@ def main():
             # make portal interactive
             portal_argv[1] = '--nodaemon'
             set_restart_mode(PORTAL_RESTART, True)
-            print "\nStarting Evennia Portal in non-Daemon mode (output to stdout)."
+            print("\nStarting Evennia Portal in non-Daemon mode (output to stdout).")
         else:
             if not args.nologcycle:
                 cycle_logfile(PORTAL_LOGFILE)
                 cycle_logfile(HTTP_LOGFILE)
             set_restart_mode(PORTAL_RESTART, False)
-            print "\nStarting Evennia Portal in Daemon mode (output to portal logfile)."
+            print("\nStarting Evennia Portal in Daemon mode (output to portal logfile).")
         if args.pportal:
             portal_argv.extend(pportal_argv)
-            print "\nRunning Evennia Portal under cProfile."
+            print("\nRunning Evennia Portal under cProfile.")
 
     # Windows fixes (Windows don't support pidfiles natively)
     if os.name == 'nt':

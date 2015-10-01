@@ -5,6 +5,7 @@ other things.
 
 Everything starts at handle_setup()
 """
+from __future__ import print_function
 
 import django
 from django.conf import settings
@@ -69,7 +70,7 @@ def create_objects():
 
     """
 
-    print " Creating objects (Player #1 and Limbo room) ..."
+    print(" Creating objects (Player #1 and Limbo room) ...")
 
     # Set the initial User's account object's username on the #1 object.
     # This object is pure django and only holds name, email and password.
@@ -131,7 +132,7 @@ def create_channels():
     Creates some sensible default channels.
 
     """
-    print " Creating default channels ..."
+    print(" Creating default channels ...")
 
     goduser = get_god_player()
     for channeldict in settings.DEFAULT_CHANNELS:
@@ -154,7 +155,7 @@ def at_initial_setup():
         mod = __import__(modname, fromlist=[None])
     except (ImportError, ValueError):
         return
-    print " Running at_initial_setup() hook."
+    print(" Running at_initial_setup() hook.")
     if mod.__dict__.get("at_initial_setup", None):
         mod.at_initial_setup()
 
@@ -168,7 +169,7 @@ def reset_server():
 
     """
     from evennia.server.sessionhandler import SESSIONS
-    print " Initial setup complete. Restarting Server once."
+    print(" Initial setup complete. Restarting Server once.")
     SESSIONS.server.shutdown(mode='reset')
 
 

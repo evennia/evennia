@@ -9,6 +9,7 @@ and portal through the evennia_runner. Run without arguments to get a
 menu. Run the script with the -h flag to see usage information.
 
 """
+from __future__ import print_function
 import os
 import sys
 import signal
@@ -375,18 +376,18 @@ def check_main_evennia_dependencies():
     # Python
     pversion = ".".join(str(num) for num in sys.version_info if type(num) == int)
     if pversion < PYTHON_MIN:
-        print ERROR_PYTHON_VERSION.format(pversion=pversion, python_min=PYTHON_MIN)
+        print(ERROR_PYTHON_VERSION.format(pversion=pversion, python_min=PYTHON_MIN))
         error = True
     # Twisted
     try:
         import twisted
         tversion = twisted.version.short()
         if tversion < TWISTED_MIN:
-            print ERROR_TWISTED_VERSION.format(
-                tversion=tversion, twisted_min=TWISTED_MIN)
+            print(ERROR_TWISTED_VERSION.format(
+                tversion=tversion, twisted_min=TWISTED_MIN))
             error = True
     except ImportError:
-        print ERROR_NOTWISTED
+        print(ERROR_NOTWISTED)
         error = True
     # Django
     try:
@@ -394,17 +395,17 @@ def check_main_evennia_dependencies():
         # only the main version (1.5, not 1.5.4.0)
         dversion_main = ".".join(dversion.split(".")[:2])
         if dversion < DJANGO_MIN:
-            print ERROR_DJANGO_MIN.format(
-                dversion=dversion_main, django_min=DJANGO_MIN)
+            print(ERROR_DJANGO_MIN.format(
+                dversion=dversion_main, django_min=DJANGO_MIN))
             error = True
         elif DJANGO_MIN <= dversion < DJANGO_REC:
-            print NOTE_DJANGO_MIN.format(
-                dversion=dversion_main, django_rec=DJANGO_REC)
+            print(NOTE_DJANGO_MIN.format(
+                dversion=dversion_main, django_rec=DJANGO_REC))
         elif DJANGO_REC < dversion_main:
-            print NOTE_DJANGO_NEW.format(
-                dversion=dversion_main, django_rec=DJANGO_REC)
+            print(NOTE_DJANGO_NEW.format(
+                dversion=dversion_main, django_rec=DJANGO_REC))
     except ImportError:
-        print ERROR_NODJANGO
+        print(ERROR_NODJANGO)
         error = True
     if error:
         sys.exit()
@@ -434,7 +435,7 @@ def set_gamedir(path):
         GAMEDIR = os.path.dirname(os.path.dirname(os.path.dirname(path)))
     else:
         # we don't look further down than this ...
-        print ERROR_NO_GAMEDIR
+        print(ERROR_NO_GAMEDIR)
         sys.exit()
 
 
@@ -488,7 +489,7 @@ def create_game_directory(dirname):
     global GAMEDIR
     GAMEDIR = os.path.abspath(os.path.join(CURRENT_DIR, dirname))
     if os.path.exists(GAMEDIR):
-        print "Cannot create new Evennia game dir: '%s' already exists." % dirname
+        print("Cannot create new Evennia game dir: '%s' already exists." % dirname)
         sys.exit()
     # copy template directory
     shutil.copytree(EVENNIA_TEMPLATE, GAMEDIR)
@@ -527,8 +528,8 @@ def check_database():
     from evennia.players.models import PlayerDB
     try:
         PlayerDB.objects.get(id=1)
-    except django.db.utils.OperationalError, e:
-        print ERROR_DATABASE.format(traceback=e)
+    except django.db.utils.OperationalError as e:
+        print(ERROR_DATABASE.format(traceback=e))
         sys.exit()
     except PlayerDB.DoesNotExist:
         # no superuser yet. We need to create it.
@@ -544,8 +545,8 @@ def check_database():
             other = other_superuser[0]
             other_id = other.id
             other_key = other.username
-            print WARNING_MOVING_SUPERUSER.format(
-                other_key=other_key, other_id=other_id)
+            print(WARNING_MOVING_SUPERUSER.format(
+                other_key=other_key, other_id=other_id))
             res = ""
             while res.upper() != "Y":
                 # ask for permission
@@ -644,13 +645,13 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="",
         try:
             os.kill(int(pid), signal)
         except OSError:
-            print "Process %(pid)s cannot be stopped. "\
+            print("Process %(pid)s cannot be stopped. "\
                   "The PID file 'server/%(pidfile)s' seems stale. "\
-                  "Try removing it." % {'pid': pid, 'pidfile': pidfile}
+                  "Try removing it." % {'pid': pid, 'pidfile': pidfile})
             return
-        print "Evennia:", succmsg
+        print("Evennia:", succmsg)
         return
-    print "Evennia:", errmsg
+    print("Evennia:", errmsg)
 
 
 def show_version_info(about=False):
@@ -783,11 +784,11 @@ def init_game_directory(path, check_db=True):
     # test existence of the settings module
     try:
         from django.conf import settings
-    except Exception, ex:
+    except Exception as ex:
         if not str(ex).startswith("No module named"):
             import traceback
-            print traceback.format_exc().strip()
-        print ERROR_SETTINGS
+            print(traceback.format_exc().strip())
+        print(ERROR_SETTINGS)
         sys.exit()
 
     # this will both check the database and initialize the evennia dir.
@@ -821,7 +822,7 @@ def init_game_directory(path, check_db=True):
     if not all(os.path.isdir(pathtup[0]) for pathtup in logdirs):
         errstr = "\n    ".join("%s (log file %s)" % (pathtup[0], pathtup[1]) for pathtup in logdirs
                 if not os.path.isdir(pathtup[0]))
-        print ERROR_LOGDIR_MISSING.format(logfiles=errstr)
+        print(ERROR_LOGDIR_MISSING.format(logfiles=errstr))
         sys.exit()
 
     if os.name == 'nt':
@@ -839,7 +840,7 @@ def init_game_directory(path, check_db=True):
         try:
             importlib.import_module("win32api")
         except ImportError:
-            print ERROR_WINDOWS_WIN32API
+            print(ERROR_WINDOWS_WIN32API)
             sys.exit()
 
         batpath = os.path.join(EVENNIA_SERVER, TWISTED_BINARY)
@@ -865,7 +866,7 @@ def init_game_directory(path, check_db=True):
                 bat_file.write("@\"%s\" \"%s\" %%*" % (
                     sys.executable, twistd_path))
 
-            print INFO_WINDOWS_BATFILE.format(twistd_path=twistd_path)
+            print(INFO_WINDOWS_BATFILE.format(twistd_path=twistd_path))
 
 
 def run_dummyrunner(number_of_dummies):
@@ -920,7 +921,7 @@ def list_settings(keys):
                      if key in keys)
         for key, val in confs.items():
             table.add_row(key, str(val))
-    print table
+    print(table)
 
 
 def run_menu():
@@ -931,18 +932,18 @@ def run_menu():
     while True:
         # menu loop
 
-        print MENU
+        print(MENU)
         inp = raw_input(" option > ")
 
         # quitting and help
         if inp.lower() == 'q':
             return
         elif inp.lower() == 'h':
-            print HELP_ENTRY
+            print(HELP_ENTRY)
             raw_input("press <return> to continue ...")
             continue
         elif inp.lower() in ('v', 'i', 'a'):
-            print show_version_info(about=True)
+            print(show_version_info(about=True))
             raw_input("press <return> to continue ...")
             continue
 
@@ -950,7 +951,7 @@ def run_menu():
         try:
             inp = int(inp)
         except ValueError:
-            print "Not a valid option."
+            print("Not a valid option.")
             continue
         if inp == 1:
             # start everything, log to log files
@@ -982,7 +983,7 @@ def run_menu():
             # stop portal
             server_operation("stop", "portal", None, None)
         else:
-            print "Not a valid option."
+            print("Not a valid option.")
             continue
         return
 
@@ -1052,7 +1053,7 @@ def server_operation(mode, service, interactive, profiler, logserver=False):
                 server_operation("stop", "portal", False, False)
                 return
             finally:
-                print NOTE_KEYBOARDINTERRUPT
+                print(NOTE_KEYBOARDINTERRUPT)
 
     elif mode == 'reload':
         # restarting services
@@ -1158,19 +1159,19 @@ def main():
 
     if not args:
         # show help pane
-        print CMDLINE_HELP
+        print(CMDLINE_HELP)
         sys.exit()
     elif args.init:
         # initialization of game directory
         create_game_directory(args.init)
-        print CREATED_NEW_GAMEDIR.format(
+        print(CREATED_NEW_GAMEDIR.format(
             gamedir=args.init,
-            settings_path=os.path.join(args.init, SETTINGS_PATH))
+            settings_path=os.path.join(args.init, SETTINGS_PATH)))
         sys.exit()
 
     if args.show_version:
         # show the version info
-        print show_version_info(option == "help")
+        print(show_version_info(option == "help"))
         sys.exit()
 
     if args.altsettings:
@@ -1179,8 +1180,8 @@ def main():
         global SETTINGSFILE, SETTINGS_DOTPATH
         SETTINGSFILE = sfile
         SETTINGS_DOTPATH = "server.conf.%s" % sfile.rstrip(".py")
-        print "Using settings file '%s' (%s)." % (
-            SETTINGSFILE, SETTINGS_DOTPATH)
+        print("Using settings file '%s' (%s)." % (
+            SETTINGSFILE, SETTINGS_DOTPATH))
 
     if args.dummyrunner:
         # launch the dummy runner
@@ -1202,7 +1203,7 @@ def main():
         # pass-through to django manager
         check_db = False
         if option in ('runserver', 'testserver'):
-            print WARNING_RUNSERVER
+            print(WARNING_RUNSERVER)
         if option == "shell":
             # to use the shell we need to initialize it first,
             # and this only works if the database is set up
@@ -1216,7 +1217,7 @@ def main():
         if unknown_args:
             for arg in unknown_args:
                 if arg.startswith("--"):
-                    print "arg:", arg
+                    print("arg:", arg)
                     if "=" in arg:
                         arg, value = [p.strip() for p in arg.split("=", 1)]
                     else:
@@ -1226,13 +1227,13 @@ def main():
                     args.append(arg)
         try:
             django.core.management.call_command(*args, **kwargs)
-        except django.core.management.base.CommandError, exc:
+        except django.core.management.base.CommandError as exc:
             args = ", ".join(args)
             kwargs = ", ".join(["--%s" % kw for kw in kwargs])
-            print ERROR_INPUT.format(traceback=exc, args=args, kwargs=kwargs)
+            print(ERROR_INPUT.format(traceback=exc, args=args, kwargs=kwargs))
     else:
         # no input; print evennia info
-        print ABOUT_INFO
+        print(ABOUT_INFO)
 
 
 if __name__ == '__main__':

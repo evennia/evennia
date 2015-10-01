@@ -87,6 +87,7 @@ DefaultLock:   Exits:          controls who may traverse the exit to
                                           Dark/light script
 ```
 """
+from __future__ import print_function
 
 from django.conf import settings
 from evennia.utils import utils
@@ -473,7 +474,7 @@ def tag(accessing_obj, accessed_obj, *args, **kwargs):
     """
     if hasattr(accessing_obj, "obj"):
         accessing_obj = accessing_obj = accessing_obj.obj
-    print "tag:", args, accessing_obj, accessing_obj.tags.get(*args)
+    print("tag:", args, accessing_obj, accessing_obj.tags.get(*args))
     return accessing_obj.tags.get(*args)
 
 def objtag(accessing_obj, accessed_obj, *args, **kwargs):

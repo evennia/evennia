@@ -565,7 +565,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             # catch it here and don't pass it on.
             pass
 
-        except ExecSystemCommand, exc:
+        except ExecSystemCommand as exc:
             # Not a normal command: run a system command, if available,
             # or fall back to a return string.
             syscmd = exc.syscmd

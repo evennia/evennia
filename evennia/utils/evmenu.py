@@ -127,6 +127,7 @@ your default cmdset. Run it with this module, like `testdemo
 evennia.utils.evdemo`.
 
 """
+from __future__ import print_function
 
 from textwrap import dedent
 from inspect import isfunction, getargspec
@@ -203,7 +204,7 @@ class CmdEvMenuNode(Command):
         cmd_on_quit = menu.cmd_on_quit
         default = menu.default
 
-        print "cmd, options:", cmd, options
+        print("cmd, options:", cmd, options)
         if cmd in options:
             # this will overload the other commands
             # if it has the same name!

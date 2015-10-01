@@ -1,6 +1,7 @@
 """
 Sessionhandler for portal sessions
 """
+from __future__ import print_function
 
 from time import time
 from collections import deque
@@ -389,7 +390,7 @@ class PortalSessionHandler(SessionHandler):
                 # data throttle (anti DoS measure)
                 now = time()
                 dT = now - self.command_counter_reset
-                print " command rate:", _MAX_COMMAND_RATE / dT, dT, self.command_counter
+                print(" command rate:", _MAX_COMMAND_RATE / dT, dT, self.command_counter)
                 self.command_counter = 0
                 self.command_counter_reset = now
                 self.command_overflow = dT < 1.0

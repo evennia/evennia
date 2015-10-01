@@ -75,6 +75,7 @@ otherwise have the same spells as a *goblin wizard* who in turn shares
 many traits with a normal *goblin*.
 
 """
+from __future__ import print_function
 
 import copy
 #TODO
@@ -274,4 +275,4 @@ if __name__ == "__main__":
             }
         }
     # test
-    print [o.key for o in spawn(protparents["GOBLIN"], protparents["GOBLIN_ARCHWIZARD"], prototype_parents=protparents)]
+    print([o.key for o in spawn(protparents["GOBLIN"], protparents["GOBLIN_ARCHWIZARD"], prototype_parents=protparents)])

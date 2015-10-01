@@ -3,6 +3,7 @@ Bots are a special child typeclasses of
 Player that are  controlled by the server.
 
 """
+from __future__ import print_function
 
 from django.conf import settings
 from evennia.players.players import DefaultPlayer
@@ -154,7 +155,7 @@ class Bot(DefaultPlayer):
         a reset.
 
         """
-        print "bot's at_server_shutdown called"
+        print("bot's at_server_shutdown called")
         for session in self.get_all_sessions():
             session.sessionhandler.disconnect(session)
 
@@ -301,7 +302,7 @@ class RSSBot(Bot):
         Echo RSS input to connected channel
 
         """
-        print "execute_cmd rss:", text
+        print("execute_cmd rss:", text)
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel

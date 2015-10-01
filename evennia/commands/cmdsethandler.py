@@ -159,7 +159,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
                 cmdsetclass = cmdsetclass(cmdsetobj)
             errstring = ""
             return cmdsetclass
-        except ImportError, e:
+        except ImportError as e:
             logger.log_trace()
             errstring += _("\nError loading cmdset {path}: \"{error}\"")
             errstring = errstring.format(path=python_path, error=e)
@@ -169,12 +169,12 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             errstring += _("\nError in loading cmdset: No cmdset class '{classname}' in {path}.")
             errstring = errstring.format(classname=classname, path=python_path)
             break
-        except SyntaxError, e:
+        except SyntaxError as e:
             logger.log_trace()
             errstring += _("\nSyntaxError encountered when loading cmdset '{path}': \"{error}\".")
             errstring = errstring.format(path=python_path, error=e)
             break
-        except Exception, e:
+        except Exception as e:
             logger.log_trace()
             errstring += _("\nCompile/Run error when loading cmdset '{path}': \"{error}\".")
             errstring = errstring.format(path=python_path, error=e)
