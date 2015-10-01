@@ -164,7 +164,7 @@ class CmdTutorialLook(default_cmds.CmdLook):
                 else:
                     # no detail found, delegate our result to the normal
                     # error message handler.
-                    _SEARCH_AT_RESULT(caller, args, looking_at_obj)
+                    _SEARCH_AT_RESULT(None, caller, args, looking_at_obj)
                     return
             else:
                 # we found a match, extract it from the list and carry on
