@@ -626,7 +626,7 @@ class EvEditor(object):
         """
         try:
             self._buffer = self._loadfunc(self._caller)
-        except Exception, e:
+        except Exception as e:
             self._caller.msg(_ERROR_LOADFUNC.format(error=e))
 
     def get_buffer(self):
@@ -661,7 +661,7 @@ class EvEditor(object):
         """
         try:
             self._quitfunc(self._caller)
-        except Exception, e:
+        except Exception as e:
             self._caller.msg(_ERROR_QUITFUNC.format(error=e))
         del self._caller.ndb._lineeditor
         self._caller.cmdset.remove(EvEditorCmdSet)
@@ -679,7 +679,7 @@ class EvEditor(object):
                     # save worked. The saving function is responsible for
                     # any status messages.
                     self._unsaved = False
-            except Exception, e:
+            except Exception as e:
                 self._caller.msg(_ERROR_SAVEFUNC.format(error=e))
         else:
             self._caller.msg(_MSG_SAVE_NO_CHANGE)

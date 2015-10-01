@@ -8,6 +8,7 @@ commands needed to control them. Those commands could also have been
 in a separate module (e.g. if they could have been re-used elsewhere.)
 
 """
+from __future__ import print_function
 
 import random
 from evennia import TICKER_HANDLER
@@ -939,7 +940,7 @@ class TeleportRoom(TutorialRoom):
         results = search_object(teleport_to)
         if not results or len(results) > 1:
             # we cannot move anywhere since no valid target was found.
-            print "no valid teleport target for %s was found." % teleport_to
+            print("no valid teleport target for %s was found." % teleport_to)
             return
         if character.is_superuser:
             # superusers don't get teleported

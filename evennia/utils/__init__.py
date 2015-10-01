@@ -4,10 +4,11 @@ modules in Evennia. It also holds the idmapper in-memory caching
 functionality.
 
 """
+from __future__ import absolute_import
 # simple check to determine if we are currently running under pypy.
 try:
     import __pypy__ as is_pypy
 except ImportError:
     is_pypy = False
 
-from utils import *
+from .utils import *

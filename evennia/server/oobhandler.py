@@ -462,7 +462,7 @@ class OOBHandler(TickerHandler):
         # we found an oob command. Execute it.
         try:
             oobfunc(session, *args, **kwargs)
-        except Exception, err:
+        except Exception as err:
             errmsg = "Exception in %s(*%s, **%s):\n%s" % (oobfuncname, args, kwargs, err)
             if _OOB_ERROR:
                 _OOB_ERROR(session, errmsg, *args, **kwargs)

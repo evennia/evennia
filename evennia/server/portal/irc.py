@@ -3,6 +3,7 @@ This connects to an IRC network/channel and launches an 'bot' onto it.
 The bot then pipes what is being said between the IRC channel and one or
 more Evennia channels.
 """
+from __future__ import print_function
 
 import re
 from twisted.application import internet
@@ -159,7 +160,7 @@ class IRCBot(irc.IRCClient, Session):
             reason (str): Motivation for the disconnect.
 
         """
-        print "irc disconnect called!"
+        print("irc disconnect called!")
         self.sessionhandler.disconnect(self)
         self.stopping = True
         self.transport.loseConnection()

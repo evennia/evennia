@@ -258,7 +258,7 @@ class CmdIC(MuxPlayerCommand):
         try:
             player.puppet_object(sessid, new_character)
             player.db._last_puppet = new_character
-        except RuntimeError, exc:
+        except RuntimeError as exc:
             self.msg("{rYou cannot become {C%s{n: %s" % (new_character.name, exc))
 
 
@@ -298,7 +298,7 @@ class CmdOOC(MuxPlayerCommand):
             player.unpuppet_object(sessid)
             self.msg("\n{GYou go OOC.{n\n")
             player.execute_cmd("look", sessid=sessid)
-        except RuntimeError, exc:
+        except RuntimeError as exc:
             self.msg("{rCould not unpuppet from {c%s{n: %s" % (old_char, exc))
 
 class CmdSessions(MuxPlayerCommand):

@@ -3,6 +3,7 @@ These managers define helper methods for accessing the database from
 Comm system components.
 
 """
+from __future__ import print_function
 
 from django.db import models
 from django.db.models import Q
@@ -108,7 +109,7 @@ def to_object(inp, objtype='player'):
             return _PlayerDB.objects.get(user_username__iexact=obj)
         if typ == 'dbref':
             return _PlayerDB.objects.get(id=obj)
-        print objtype, inp, obj, typ, type(inp)
+        print(objtype, inp, obj, typ, type(inp))
         raise CommError()
     elif objtype == 'object':
         if typ == 'player':
@@ -117,14 +118,14 @@ def to_object(inp, objtype='player'):
             return _ObjectDB.objects.get(db_key__iexact=obj)
         if typ == 'dbref':
             return _ObjectDB.objects.get(id=obj)
-        print objtype, inp, obj, typ, type(inp)
+        print(objtype, inp, obj, typ, type(inp))
         raise CommError()
     elif objtype == 'channel':
         if typ == 'string':
             return _ChannelDB.objects.get(db_key__iexact=obj)
         if typ == 'dbref':
             return _ChannelDB.objects.get(id=obj)
-        print objtype, inp, obj, typ, type(inp)
+        print(objtype, inp, obj, typ, type(inp))
         raise CommError()
 
 #

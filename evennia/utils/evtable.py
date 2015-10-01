@@ -114,6 +114,7 @@ you need to re-set the color to have it appear on both sides of the
 table string.
 
 """
+from __future__ import print_function
 #from textwrap import wrap
 from django.conf import settings
 from textwrap import TextWrapper
@@ -1266,7 +1267,7 @@ class EvTable(object):
         for ix, col in enumerate(self.worktable):
             try:
                 col.reformat(width=cwidths[ix], **options)
-            except Exception, e:
+            except Exception as e:
                 msg = "ix=%s, width=%s: %s" % (ix, cwidths[ix], e.message)
                 raise #Exception ("Error in horizontal allign:\n %s" % msg)
 
@@ -1315,7 +1316,7 @@ class EvTable(object):
             for iy, cell in enumerate(col):
                 try:
                     col.reformat_cell(iy, height=cheights[iy], **options)
-                except Exception, e:
+                except Exception as e:
                     msg = "ix=%s, iy=%s, height=%s: %s" % (ix, iy, cheights[iy], e.message)
                     raise Exception ("Error in vertical allign:\n %s" % msg)
 
@@ -1534,11 +1535,11 @@ def _test():
     table = EvTable("{yHeading1{n", "{gHeading2{n", table=[[1,2,3],[4,5,6],[7,8,9]], border="cells", align="l")
     table.add_column("{rThis is long data{n", "{bThis is even longer data{n")
     table.add_row("This is a single row")
-    print unicode(table)
+    print(unicode(table))
     table.reformat(width=50)
-    print unicode(table)
+    print(unicode(table))
     table.reformat_column(3, width=30, align='r')
-    print unicode(table)
+    print(unicode(table))
     return table
 
 

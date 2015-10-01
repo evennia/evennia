@@ -2,6 +2,7 @@
 """
 This package holds the demo game of Evennia.
 """
+from __future__ import absolute_import
 
-import mob, objects, rooms
+from . import mob, objects, rooms
 

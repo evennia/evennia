@@ -30,6 +30,7 @@ in your settings. See utils.dummyrunner_actions.py
 for instructions on how to define this module.
 
 """
+from __future__ import print_function
 
 import sys
 import time
@@ -264,7 +265,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
 
         """
         if not self._logging_out:
-            print "client %s(%s) lost connection (%s)" % (self.key, self.cid, reason)
+            print("client %s(%s) lost connection (%s)" % (self.key, self.cid, reason))
 
     def error(self, err):
         """
@@ -273,7 +274,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         Args:
             err (Failure): Error instance.
         """
-        print err
+        print(err)
 
     def counter(self):
         """
@@ -292,7 +293,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         """
         self._logging_out = True
         cmd = self._logout(self)
-        print "client %s(%s) logout (%s actions)" % (self.key, self.cid, self.istep)
+        print("client %s(%s) logout (%s actions)" % (self.key, self.cid, self.istep))
         self.sendLine(cmd)
 
     def step(self):
@@ -314,7 +315,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
                     # get the login commands
                     self._cmdlist = list(makeiter(self._login(self)))
                     NLOGGED_IN += 1 # this is for book-keeping
-                    print "connecting client %s (%i/%i)..." % (self.key, NLOGGED_IN, NCLIENTS)
+                    print("connecting client %s (%i/%i)..." % (self.key, NLOGGED_IN, NCLIENTS))
                     self._loggedin = True
                 else:
                     # no login yet, so cmdlist not yet set
@@ -356,7 +357,7 @@ def start_all_dummy_clients(nclients):
     actions = DUMMYRUNNER_SETTINGS.ACTIONS
 
     if len(actions) < 2:
-        print ERROR_FEW_ACTIONS
+        print(ERROR_FEW_ACTIONS)
         return
 
     # make sure the probabilities add up to 1
@@ -383,7 +384,7 @@ if __name__ == '__main__':
     try:
         settings.DUMMYRUNNER_MIXIN
     except AttributeError:
-        print ERROR_NO_MIXIN
+        print(ERROR_NO_MIXIN)
         sys.exit()
 
     # parsing command line with default vals
@@ -393,7 +394,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    print INFO_STARTING.format(N=args.nclients[0])
+    print(INFO_STARTING.format(N=args.nclients[0]))
 
     # run the dummyrunner
     t0 = time.time()
@@ -401,4 +402,4 @@ if __name__ == '__main__':
     ttot = time.time() - t0
 
     # output runtime
-    print "... dummy client runner stopped after %s." % time_format(ttot, style=3)
+    print("... dummy client runner stopped after %s." % time_format(ttot, style=3))

@@ -62,7 +62,7 @@ class ExtendedLoopingCall(LoopingCall):
         assert not self.running, ("Tried to start an already running "
                                   "ExtendedLoopingCall.")
         if interval < 0:
-            raise ValueError, "interval must be >= 0"
+            raise ValueError("interval must be >= 0")
         self.running = True
         d = self.deferred = Deferred()
         self.starttime = self.clock.seconds()

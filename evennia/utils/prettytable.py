@@ -29,6 +29,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
 __version__ = "trunk"
 
 import copy
@@ -1375,7 +1376,7 @@ def from_csv(fp, field_names = None, **kwargs):
         if py3k:
             table.field_names = [x.strip() for x in next(reader)]
         else:
-            table.field_names = [x.strip() for x in reader.next()]
+            table.field_names = [x.strip() for x in next(reader)]
 
     for row in reader:
         table.add_row([x.strip() for x in row])

@@ -15,6 +15,7 @@ Server - (AMP server) Handles all mud operations. The server holds its own list
          at startup and when a session connects/disconnects
 
 """
+from __future__ import print_function
 
 # imports needed on both server and portal side
 import os, sys
@@ -379,8 +380,8 @@ class AMPProtocol(amp.AMP):
 
         """
         e.trap(Exception)
-        print "AMP Error for %(info)s: %(e)s" % {'info': info,
-                                                 'e': e.getErrorMessage()}
+        print("AMP Error for %(info)s: %(e)s" % {'info': info,
+                                                 'e': e.getErrorMessage()})
 
     def send_data(self, command, sessid, **kwargs):
         """

@@ -93,6 +93,7 @@ cmdset. This will make the trade (or barter) command available
 in-game.
 
 """
+from __future__ import print_function
 
 from evennia import Command, DefaultScript, CmdSet
 
@@ -207,7 +208,7 @@ class TradeHandler(object):
             partB (object): The party accepting the barter.
 
         """
-        print "join:", self.partB, partB, self.partB == partB, type(self.partB), type(partB)
+        print("join:", self.partB, partB, self.partB == partB, type(self.partB), type(partB))
         if self.partB == partB:
             self.partB.ndb.tradehandler = self
             self.partB.cmdset.add(CmdsetTrade())

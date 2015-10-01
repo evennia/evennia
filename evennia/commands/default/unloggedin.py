@@ -467,7 +467,7 @@ def _create_player(session, playername, password, permissions, typeclass=None):
         new_player = create.create_player(playername, None, password,
                                           permissions=permissions, typeclass=typeclass)
 
-    except Exception, e:
+    except Exception as e:
         session.msg("There was an error creating the Player:\n%s\n If this problem persists, contact an admin." % e)
         logger.log_trace()
         return False
@@ -505,7 +505,7 @@ def _create_character(session, new_player, typeclass, home, permissions):
             new_character.db.desc = "This is a Player."
         # We need to set this to have @ic auto-connect to this character
         new_player.db._last_puppet = new_character
-    except Exception, e:
+    except Exception as e:
         session.msg("There was an error creating the Character:\n%s\n If this problem persists, contact an admin." % e)
         logger.log_trace()
         return False

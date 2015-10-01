@@ -8,6 +8,7 @@ login procedure of the game, tracks sessions etc.
 Using standard ssh client,
 
 """
+from __future__ import print_function
 import os
 
 from twisted.cred.checkers import credentials
@@ -212,7 +213,7 @@ class SshProtocol(Manhole, session.Session):
         """
         try:
             text = utils.to_str(text if text else "", encoding=self.encoding)
-        except Exception, e:
+        except Exception as e:
             self.lineSend(str(e))
             return
         raw = kwargs.get("raw", False)
@@ -338,7 +339,7 @@ def getKeyPair(pubkeyfile, privkeyfile):
 
     if not (os.path.exists(pubkeyfile) and os.path.exists(privkeyfile)):
         # No keypair exists. Generate a new RSA keypair
-        print "  Generating SSH RSA keypair ...",
+        print("  Generating SSH RSA keypair ...", end=' ')
         from Crypto.PublicKey import RSA
 
         KEY_LENGTH = 1024
@@ -349,7 +350,7 @@ def getKeyPair(pubkeyfile, privkeyfile):
         # save keys for the future.
         file(pubkeyfile, 'w+b').write(publicKeyString)
         file(privkeyfile, 'w+b').write(privateKeyString)
-        print " done."
+        print(" done.")
     else:
         publicKeyString = file(pubkeyfile).read()
         privateKeyString = file(privkeyfile).read()
@@ -382,9 +383,9 @@ def makeFactory(configdict):
         publicKey, privateKey = getKeyPair(pubkeyfile, privkeyfile)
         factory.publicKeys = {'ssh-rsa': publicKey}
         factory.privateKeys = {'ssh-rsa': privateKey}
-    except Exception, e:
-        print " getKeyPair error: %(e)s\n WARNING: Evennia could not auto-generate SSH keypair. Using conch default keys instead." % {'e': e}
-        print " If this error persists, create game/%(pub)s and game/%(priv)s yourself using third-party tools." % {'pub': pubkeyfile, 'priv': privkeyfile}
+    except Exception as e:
+        print(" getKeyPair error: %(e)s\n WARNING: Evennia could not auto-generate SSH keypair. Using conch default keys instead." % {'e': e})
+        print(" If this error persists, create game/%(pub)s and game/%(priv)s yourself using third-party tools." % {'pub': pubkeyfile, 'priv': privkeyfile})
 
     factory.services = factory.services.copy()
     factory.services['ssh-userauth'] = ExtraInfoAuthServer
