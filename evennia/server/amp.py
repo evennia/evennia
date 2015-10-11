@@ -249,7 +249,7 @@ class MsgPortal2Server(amp.Command):
 
     """
     key = "MsgPortal2Server"
-    arguments = [('data', Compressed())]
+    arguments = [('packed_data', Compressed())]
     errors = [(Exception, 'EXCEPTION')]
     response = []
 
@@ -260,7 +260,7 @@ class MsgServer2Portal(amp.Command):
 
     """
     key = "MsgServer2Portal"
-    arguments = [('data', Compressed())]
+    arguments = [('packed_data', Compressed())]
     errors = [(Exception, 'EXCEPTION')]
     response = []
 
@@ -274,7 +274,7 @@ class AdminPortal2Server(amp.Command):
 
     """
     key = "AdminPortal2Server"
-    arguments = [('data', Compressed())]
+    arguments = [('packed_data', Compressed())]
     errors = [(Exception, 'EXCEPTION')]
     response = []
 
@@ -288,7 +288,7 @@ class AdminServer2Portal(amp.Command):
 
     """
     key = "AdminServer2Portal"
-    arguments = [('data', Compressed())]
+    arguments = [('packed_data', Compressed())]
     errors = [(Exception, 'EXCEPTION')]
     response = []
 
@@ -361,7 +361,7 @@ class AMPProtocol(amp.AMP):
             sessdata = self.factory.portal.sessions.get_all_sync_data()
             self.send_AdminPortal2Server(0,
                                          PSYNC,
-                                         data=sessdata)
+                                         sessiondata=sessdata)
             self.factory.portal.sessions.at_server_connection()
             if hasattr(self.factory, "server_restart_mode"):
                 del self.factory.server_restart_mode
@@ -398,53 +398,49 @@ class AMPProtocol(amp.AMP):
             (sessid, kwargs).
 
         """
-        batch = dumps((sessid, kwargs))
         return self.callRemote(command,
-                    data=batch).addErrback(self.errback, command.key)
+                               packed_data=dumps((sessid, kwargs))
+                               ).addErrback(self.errback, command.key)
 
     # Message definition + helper methods to call/create each message type
 
     # Portal -> Server Msg
 
     @MsgPortal2Server.responder
-    def server_receive_msgportal2server(self, data):
+    def server_receive_msgportal2server(self, packed_data):
         """
         Receives message arriving to server. This method is executed
         on the Server.
 
         Args:
-            data (str): Data to receive (a pickled tuple (sessid,kwargs))
+            packed_data (str): Data to receive (a pickled tuple (sessid,kwargs))
 
         """
-        sessid, kwargs = loads(data)
+        sessid, kwargs = loads(packed_data)
         #print "msg portal -> server (server side):", sessid, msg, loads(ret["data"])
-        self.factory.server.sessions.data_in(sessid,
-                                             text=kwargs["msg"],
-                                             data=kwargs["data"])
+        self.factory.server.sessions.data_in(sessid, **kwargs)
         return {}
 
-    def send_MsgPortal2Server(self, sessid, msg="", data=""):
+    def send_MsgPortal2Server(self, sessid, text="", **kwargs):
         """
         Access method called by the Portal and executed on the Portal.
 
         Args:
             sessid (int): Unique Session id.
             msg (str): Message to send over the wire.
-            data (str, optional): Optional data.
+            kwargs (any, optional): Optional data.
 
         Returns:
             deferred (Deferred): Asynchronous return.
 
         """
         #print "msg portal->server (portal side):", sessid, msg, data
-        return self.send_data(MsgPortal2Server, sessid,
-                              msg=msg,
-                              data=data)
+        return self.send_data(MsgPortal2Server, sessid, text=text, **kwargs)
 
     # Server -> Portal message
 
     @MsgServer2Portal.responder
-    def portal_receive_server2portal(self, data):
+    def portal_receive_server2portal(self, packed_data):
         """
         Receives message arriving to Portal from Server.
         This method is executed on the Portal.
@@ -455,17 +451,15 @@ class AMPProtocol(amp.AMP):
         before continuing.
 
         Args:
-            data (str): Pickled data (sessid, kwargs) coming over the wire.
+            packed_data (str): Pickled data (sessid, kwargs) coming over the wire.
         """
-        sessid, kwargs = loads(data)
+        sessid, kwargs = loads(packed_data)
         #print "msg server->portal (portal side):", sessid, ret["text"], loads(ret["data"])
-        self.factory.portal.sessions.data_out(sessid,
-                                              text=kwargs["msg"],
-                                              data=kwargs["data"])
+        self.factory.portal.sessions.data_out(sessid, **kwargs)
         return {}
 
 
-    def send_MsgServer2Portal(self, sessid, msg="", data=""):
+    def send_MsgServer2Portal(self, sessid, text="", **kwargs):
         """
         Access method - executed on the Server for sending data
             to Portal.
@@ -473,39 +467,37 @@ class AMPProtocol(amp.AMP):
         Args:
             sessid (int): Unique Session id.
             msg (str, optional): Message to send over the wire.
-            data (str, optional): Extra data.
+            kwargs (any, optiona): Extra data.
 
         """
         #print "msg server->portal (server side):", sessid, msg, data
-        return self.send_data(MsgServer2Portal, sessid, msg=msg, data=data)
+        return self.send_data(MsgServer2Portal, sessid, text=text, **kwargs)
 
     # Server administration from the Portal side
     @AdminPortal2Server.responder
-    def server_receive_adminportal2server(self, data):
+    def server_receive_adminportal2server(self, packed_data):
         """
         Receives admin data from the Portal (allows the portal to
         perform admin operations on the server). This is executed on
         the Server.
 
         Args:
-            data (str): Data to send (often a part of a batch)
+            packed_data (str): Incoming, pickled data.
 
         """
         #print "serveradmin (server side):", hashid, ipart, nparts
-        sessid, kwargs = loads(data)
-
-        operation = kwargs["operation"]
-        data = kwargs["data"]
+        sessid, kwargs = loads(packed_data)
+        operation = kwargs.pop("operation", "")
         server_sessionhandler = self.factory.server.sessions
 
         #print "serveradmin (server side):", sessid, ord(operation), data
 
         if operation == PCONN:  # portal_session_connect
             # create a new session and sync it
-            server_sessionhandler.portal_connect(data)
+            server_sessionhandler.portal_connect(kwargs.get("sessiondata"))
 
         elif operation == PCONNSYNC: #portal_session_sync
-            server_sessionhandler.portal_session_sync(data)
+            server_sessionhandler.portal_session_sync(kwargs.get("sessiondata"))
 
         elif operation == PDISCONN:  # portal_session_disconnect
             # session closed from portal side
@@ -517,12 +509,12 @@ class AMPProtocol(amp.AMP):
             # contains a dict {sessid: {arg1:val1,...}}
             # representing the attributes to sync for each
             # session.
-            server_sessionhandler.portal_sessions_sync(data)
+            server_sessionhandler.portal_sessions_sync(kwargs.get("sessiondata"))
         else:
             raise Exception("operation %(op)s not recognized." % {'op': operation})
         return {}
 
-    def send_AdminPortal2Server(self, sessid, operation="", data=""):
+    def send_AdminPortal2Server(self, sessid, operation="", **kwargs):
         """
         Send Admin instructions from the Portal to the Server.
         Executed
@@ -532,42 +524,41 @@ class AMPProtocol(amp.AMP):
             sessid (int): Session id.
             operation (char, optional): Identifier for the server operation, as defined by the
                 global variables in `evennia/server/amp.py`.
-            data (str, optional): Data going into the adminstrative operation.
+            data (str or dict, optional): Data used in the administrative operation.
 
         """
         #print "serveradmin (portal side):", sessid, ord(operation), data
-        return self.send_data(AdminPortal2Server, sessid, operation=operation, data=data)
+        return self.send_data(AdminPortal2Server, sessid, operation=operation, **kwargs)
 
     # Portal administraton from the Server side
 
     @AdminServer2Portal.responder
-    def portal_receive_adminserver2portal(self, data):
+    def portal_receive_adminserver2portal(self, packed_data):
         """
 
         Receives and handles admin operations sent to the Portal
         This is executed on the Portal.
 
         Args:
-            data (str): Data received, a pickled tuple (sessid, kwargs).
+            packed_data (str): Data received, a pickled tuple (sessid, kwargs).
 
         """
         #print "portaladmin (portal side):", sessid, ord(operation), data
-        sessid, kwargs = loads(data)
-        operation = kwargs["operation"]
-        data = kwargs["data"]
+        sessid, kwargs = loads(packed_data)
+        operation = kwargs.pop("operation")
         portal_sessionhandler = self.factory.portal.sessions
 
         if operation == SLOGIN:  # server_session_login
             # a session has authenticated; sync it.
-            portal_sessionhandler.server_logged_in(sessid, data)
+            portal_sessionhandler.server_logged_in(sessid, kwargs.get("sessiondata"))
 
         elif operation == SDISCONN:  # server_session_disconnect
             # the server is ordering to disconnect the session
-            portal_sessionhandler.server_disconnect(sessid, reason=data)
+            portal_sessionhandler.server_disconnect(sessid, reason=kwargs.get("reason"))
 
         elif operation == SDISCONNALL:  # server_session_disconnect_all
             # server orders all sessions to disconnect
-            portal_sessionhandler.server_disconnect_all(reason=data)
+            portal_sessionhandler.server_disconnect_all(reason=kwargs.get("reason"))
 
         elif operation == SSHUTD:  # server_shutdown
             # the server orders the portal to shut down
@@ -576,18 +567,18 @@ class AMPProtocol(amp.AMP):
         elif operation == SSYNC:  # server_session_sync
             # server wants to save session data to the portal,
             # maybe because it's about to shut down.
-            portal_sessionhandler.server_session_sync(data)
+            portal_sessionhandler.server_session_sync(kwargs.get("sessiondata"))
             # set a flag in case we are about to shut down soon
             self.factory.server_restart_mode = True
 
         elif operation == SCONN: # server_force_connection (for irc/imc2 etc)
-            portal_sessionhandler.server_connect(**data)
+            portal_sessionhandler.server_connect(**kwargs)
 
         else:
             raise Exception("operation %(op)s not recognized." % {'op': operation})
         return {}
 
-    def send_AdminServer2Portal(self, sessid, operation="", data=""):
+    def send_AdminServer2Portal(self, sessid, operation="", **kwargs):
         """
         Administrative access method called by the Server to send an
         instruction to the Portal.
@@ -597,16 +588,15 @@ class AMPProtocol(amp.AMP):
             operation (char, optional): Identifier for the server
                 operation, as defined by the global variables in
                 `evennia/server/amp.py`.
-            data (str, optional): Data going into the adminstrative
-                operation.
+            data (str or dict, optional): Data going into the adminstrative.
 
         """
-        return self.send_data(AdminServer2Portal, sessid, operation=operation, data=data)
+        return self.send_data(AdminServer2Portal, sessid, operation=operation, **kwargs)
 
     # Extra functions
 
     @FunctionCall.responder
-    def receive_functioncall(self, module, function, args, **kwargs):
+    def receive_functioncall(self, module, function, func_args, func_kwargs):
         """
         This allows Portal- and Server-process to call an arbitrary
         function in the other process. It is intended for use by
@@ -617,12 +607,12 @@ class AMPProtocol(amp.AMP):
                 `function` to call.
             function (str): The name of the function to call in
                 `module`.
-            args, kwargs (any): These will be used as args/kwargs to
-                `function`.
+            func_args (str): Pickled args tuple for use in `function` call.
+            func_kwargs (str): Pickled kwargs dict for use in `function` call.
 
         """
-        args = loads(args)
-        kwargs = loads(kwargs)
+        args = loads(func_args)
+        kwargs = loads(func_kwargs)
 
         # call the function (don't catch tracebacks here)
         result = variable_from_module(module, function)(*args, **kwargs)

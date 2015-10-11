@@ -282,11 +282,8 @@ class ServerSessionHandler(SessionHandler):
             the Server.
 
         """
-        data = {"protocol_path":protocol_path,
-                "config":configdict}
-        self.server.amp_protocol.send_AdminServer2Portal(0,
-                                                  operation=SCONN,
-                                                  data=data)
+        self.server.amp_protocol.send_AdminServer2Portal(0, operation=SCONN,
+                                protocol_path=protocol_path, config=configdict)
 
     def portal_shutdown(self):
         """
@@ -294,8 +291,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         self.server.amp_protocol.send_AdminServer2Portal(0,
-                                                         operation=SSHUTD,
-                                                         data="")
+                                                         operation=SSHUTD)
 
     def login(self, session, player, testmode=False):
         """
@@ -338,14 +334,12 @@ class ServerSessionHandler(SessionHandler):
         string = "Logged in: {player} {address} ({nsessions} session(s) total)"
         string = string.format(player=player,address=session.address, nsessions=nsess)
         session.log(string)
-
         session.logged_in = True
         # sync the portal to the session
-        sessdata = {"logged_in": True}
         if not testmode:
             self.server.amp_protocol.send_AdminServer2Portal(session.sessid,
                                                          operation=SLOGIN,
-                                                         data=sessdata)
+                                                         sessiondata={"logged_in": True})
         player.at_post_login(sessid=session.sessid)
 
     def disconnect(self, session, reason=""):
@@ -375,7 +369,7 @@ class ServerSessionHandler(SessionHandler):
         # inform portal that session should be closed.
         self.server.amp_protocol.send_AdminServer2Portal(sessid,
                                                          operation=SDISCONN,
-                                                         data=reason)
+                                                         reason=reason)
 
     def all_sessions_portal_sync(self):
         """
@@ -386,7 +380,7 @@ class ServerSessionHandler(SessionHandler):
         sessdata = self.get_all_sync_data()
         return self.server.amp_protocol.send_AdminServer2Portal(0,
                                                          operation=SSYNC,
-                                                         data=sessdata)
+                                                         sessiondata=sessdata)
 
     def disconnect_all_sessions(self, reason="You have been disconnected."):
         """
@@ -402,7 +396,7 @@ class ServerSessionHandler(SessionHandler):
         # tell portal to disconnect all sessions
         self.server.amp_protocol.send_AdminServer2Portal(0,
                                                          operation=SDISCONNALL,
-                                                         data=reason)
+                                                         reason=reason)
 
     def disconnect_duplicate_sessions(self, curr_session,
                       reason=_("Logged in from elsewhere. Disconnecting.")):
@@ -586,8 +580,8 @@ class ServerSessionHandler(SessionHandler):
         # send to all found sessions
         for session in sessions:
             self.server.amp_protocol.send_MsgServer2Portal(sessid=session.sessid,
-                                                           msg=text,
-                                                           data=kwargs)
+                                                           text=text,
+                                                           **kwargs)
 
     def data_in(self, sessid, text="", **kwargs):
         """
