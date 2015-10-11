@@ -519,17 +519,15 @@ class CmdChannelCreate(MuxPlayerCommand):
         channame = lhs
         aliases = None
         if ';' in lhs:
-            channame, aliases = [part.strip().lower()
-                                 for part in lhs.split(';', 1) if part.strip()]
-            aliases = [alias.strip().lower()
-                       for alias in aliases.split(';') if alias.strip()]
+            channame, aliases = lhs.split(';', 1)
+            aliases = [alias.strip().lower() for alias in aliases.split(';')]
         channel = ChannelDB.objects.channel_search(channame)
         if channel:
             self.msg("A channel with that name already exists.")
             return
         # Create and set the channel up
         lockstring = "send:all();listen:all();control:id(%s)" % caller.id
-        new_chan = create.create_channel(channame,
+        new_chan = create.create_channel(channame.strip(),
                                          aliases,
                                          description,
                                          locks=lockstring)
