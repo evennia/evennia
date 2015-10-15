@@ -62,6 +62,8 @@ DATABASES = {{
 
 ######################################################################
 # Django web features
+# (don't remove these entries, they are needed to override the default
+# locations with your actual GAME_DIR locations at run-time)
 ######################################################################
 
 # Absolute path to the directory that holds file uploads from web apps.
