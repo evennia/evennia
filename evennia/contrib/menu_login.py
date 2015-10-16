@@ -15,7 +15,7 @@ Install is simple:
 
 To your settings file, add/edit the line:
 
-CMDSET_UNLOGGEDIN = "contrib.menu_login.UnloggedInCmdSet"
+CMDSET_UNLOGGEDIN = "contrib.menu_login.UnloggedinCmdSet"
 
 That's it. Reload the server and try to log in to see it.
 
@@ -323,7 +323,7 @@ node3 = MenuNode("node3", text=LOGIN_SCREEN_HELP,
 
 # access commands
 
-class UnloggedInCmdSet(CmdSet):
+class UnloggedinCmdSet(CmdSet):
     "Cmdset for the unloggedin state"
     key = "DefaultUnloggedin"
     priority = 0
