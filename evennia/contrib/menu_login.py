@@ -22,7 +22,7 @@ That's it. Reload the server and try to log in to see it.
 You will want to change the login "graphic", which defaults to give
 information about commands which are not used in this version of the
 login. You can change the screen used by editing
-`mygame/server/conf/connection_screens.py`.
+`$GAME_DIR/server/conf/connection_screens.py`.
 
 """
 
