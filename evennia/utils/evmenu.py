@@ -127,9 +127,9 @@ The menu tree is exited either by using the in-menu quit command or by
 reaching a node without any options.
 
 
-For a menu demo, import CmdTestDemo from this module and add it to
-your default cmdset. Run it with this module, like `testdemo
-evennia.utils.evdemo`.
+For a menu demo, import CmdTestMenu from this module and add it to
+your default cmdset. Run it with this module, like `testmenu
+evennia.utils.evmenu`.
 
 """
 
