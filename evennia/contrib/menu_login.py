@@ -329,7 +329,7 @@ class UnloggedInCmdSet(CmdSet):
     priority = 0
 
     def at_cmdset_creation(self):
-        "Called when cmdset is first  created"
+        "Called when cmdset is first created."
         self.add(CmdUnloggedinLook())
 
 
@@ -337,7 +337,7 @@ class CmdUnloggedinLook(Command):
     """
     An unloggedin version of the look command. This is called by the server
     when the player first connects. It sets up the menu before handing off
-    to the menu's own look command..
+    to the menu's own look command.
     """
     key = CMD_LOGINSTART
     # obs, this should NOT have aliases for look or l, this will clash with the menu version!
