@@ -1536,7 +1536,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
     error = ""
     if not matches:
         # no results.
-        error = kwargs.get("nofound_string", _("Could not find '%s'." % query))
+        error = kwargs.get("nofound_string") or _("Could not find '%s'." % query)
         matches = None
     elif len(matches) > 1:
         error = kwargs.get("multimatch_string", None)

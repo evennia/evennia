@@ -1093,7 +1093,8 @@ class CmdName(ObjManipCommand):
     Usage:
       @name obj = name;alias1;alias2
 
-    Rename an object to something new.
+    Rename an object to something new. Use *obj to
+    rename a player.
 
     """
 
@@ -1107,12 +1108,30 @@ class CmdName(ObjManipCommand):
 
         caller = self.caller
         if not self.args:
-            string = "Usage: @name <obj> = <newname>[;alias;alias;...]"
-            caller.msg(string)
+            caller.msg("Usage: @name <obj> = <newname>[;alias;alias;...]")
             return
 
         if self.lhs_objs:
             objname = self.lhs_objs[0]['name']
+            if objname.startswith("*"):
+                # player mode
+                obj = caller.player.search(objname.lstrip("*"))
+                if obj:
+                    if self.rhs_objs[0]['aliases']:
+                        caller.msg("Players can't have aliases.")
+                        return
+                    newname = self.rhs
+                    if not newname:
+                        caller.msg("No name defined!")
+                        return
+                    if not obj.access(caller, "edit"):
+                        caller.mgs("You don't have right to edit this player %s." % obj)
+                        return
+                    obj.username = newname
+                    obj.save()
+                    caller.msg("Player's name changed to '%s'." % newname)
+                    return
+            # object search, also with *
             obj = caller.search(objname)
             if not obj:
                 return
@@ -1124,6 +1143,9 @@ class CmdName(ObjManipCommand):
             aliases = None
         if not newname and not aliases:
             caller.msg("No names or aliases defined!")
+            return
+        if not obj.access(caller, "edit"):
+            caller.msg("You don't have the right to edit %s." % obj)
             return
         # change the name and set aliases:
         if newname:
