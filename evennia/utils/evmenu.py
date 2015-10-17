@@ -45,6 +45,11 @@ entered to get to this node). The node function code will only be
 executed once per node-visit and the system will accept nodes with
 both one or two arguments interchangeably.
 
+The menu tree itself is available on the caller as
+`caller.ndb._menutree`. This makes it a convenient place to store
+temporary state variables between nodes, since this NAttribute is
+deleted when the menu is exited.
+
 The return values must be given in the above order, but each can be
 returned as None as well. If the options are returned as None, the
 menu is immediately exited and the default "look" command is called.
@@ -203,7 +208,6 @@ class CmdEvMenuNode(Command):
         cmd_on_quit = menu.cmd_on_quit
         default = menu.default
 
-        print "cmd, options:", cmd, options
         if cmd in options:
             # this will overload the other commands
             # if it has the same name!
