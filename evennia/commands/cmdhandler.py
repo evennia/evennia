@@ -95,7 +95,7 @@ _ERROR_NOCMDSETS = "No command sets found! This is a sign of a critical bug." \
                   "\nsome other means for assistance."
 
 _ERROR_CMDHANDLER = "{traceback}\n"\
-                   "Above traceback is from a Command handler bug." \
+                   "Above traceback is from a Command handler bug. " \
                    "Please file a bug report with the Evennia project."
 
 _ERROR_RECURSION_LIMIT = "Command recursion limit ({recursion_limit}) " \
