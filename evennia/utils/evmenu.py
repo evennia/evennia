@@ -54,19 +54,20 @@ The return values must be given in the above order, but each can be
 returned as None as well. If the options are returned as None, the
 menu is immediately exited and the default "look" command is called.
 
-    text (str, tuple or None): Text shown at this node. If a tuple, the second
-        element in the tuple is a help text to display at this node when
-        the user enters the menu help command there.
-    options (tuple, dict or None): ( {'key': name,   # can also be a list of aliases. A special key is "_default", which
-                                                     # marks this option as the default fallback when no other
-                                                     # option matches the user input.
-                                      'desc': description, # option description
-                                      'goto': nodekey,  # node to go to when chosen
-                                      'exec': nodekey, # node or callback to trigger as callback when chosen. If a node
-                                                       # key is given the node will be executed once but its return u
-                                                       # values are ignored. If a callable is given, it must accept
-                                                       # one or two args, like any node.
-                                {...}, ...)
+    text (str, tuple or None): Text shown at this node. If a tuple, the
+        second element in the tuple is a help text to display at this
+        node when the user enters the menu help command there.
+    options (tuple, dict or None): (
+        {'key': name,   # can also be a list of aliases. A special key is
+                        # "_default", which marks this option as the default
+                        # fallback when no other option matches the user input.
+         'desc': description, # optional description
+         'goto': nodekey,  # node to go to when chosen
+         'exec': nodekey}, # node or callback to trigger as callback when chosen.
+                           # If a node key is given, the node will be executed once
+                           # but its return values are ignored. If a callable is
+                           # given, it must accept one or two args, like any node.
+        {...}, ...)
 
 If key is not given, the option will automatically be identified by
 its number 1..N.
