@@ -181,64 +181,25 @@ class EvMenuError(RuntimeError):
 class CmdEvMenuNode(Command):
     """
     Menu options.
-
     """
-    key = "look"
-    aliases = ["l", _CMD_NOMATCH, _CMD_NOINPUT]
+    key = _CMD_NOINPUT
+    aliases = [_CMD_NOMATCH]
     locks = "cmd:all()"
     help_category = "Menu"
 
     def func(self):
         """
         Implement all menu commands.
-
         """
         caller = self.caller
         menu = caller.ndb._menutree
 
         if not menu:
             err = "Menu object not found as %s.ndb._menutree!" % (caller)
-            self.caller.msg(err)
+            caller.msg(err)
             raise EvMenuError(err)
 
-        # flags and data
-        raw_string = self.raw_string
-        cmd = raw_string.strip().lower()
-        options = menu.options
-        allow_quit = menu.allow_quit
-        cmd_on_quit = menu.cmd_on_quit
-        default = menu.default
-
-        if cmd in options:
-            # this will overload the other commands
-            # if it has the same name!
-            goto, callback = options[cmd]
-            if callback:
-                menu.callback(callback, raw_string)
-            if goto:
-                menu.goto(goto, raw_string)
-        elif cmd in ("look", "l"):
-            caller.msg(menu.nodetext)
-        elif cmd in ("help", "h"):
-            caller.msg(menu.helptext)
-        elif allow_quit and cmd in ("quit", "q", "exit"):
-            menu.close_menu()
-            if cmd_on_quit is not None:
-                caller.execute_cmd(cmd_on_quit)
-        elif default:
-            goto, callback = default
-            if callback:
-                menu.callback(callback, raw_string)
-            if goto:
-                menu.goto(goto, raw_string)
-        else:
-            caller.msg(_HELP_NO_OPTION_MATCH)
-
-        if not (options or default):
-            # no options - we are at the end of the menu.
-            menu.close_menu()
-            if cmd_on_quit is not None:
-                caller.execute_cmd(cmd_on_quit)
+        menu.handle(self.raw_string)
 
 
 class EvMenuCmdSet(CmdSet):
@@ -490,6 +451,47 @@ class EvMenu(object):
             self._caller.msg(_ERR_GENERAL.format(nodename=nodename))
             raise
         return nodetext, options
+
+
+    def handle(self, raw_string):
+        # flags and data
+        caller = self._caller
+        cmd = raw_string.strip().lower()
+        options = self.options
+        allow_quit = self.allow_quit
+        cmd_on_quit = self.cmd_on_quit
+        default = self.default
+
+        if cmd in options:
+            # this will overload the other commands
+            # if it has the same name!
+            goto, callback = options[cmd]
+            if callback:
+                self.callback(callback, raw_string)
+            if goto:
+                self.goto(goto, raw_string)
+        elif cmd in ("look", "l"):
+            caller.msg(self.nodetext)
+        elif cmd in ("help", "h"):
+            caller.msg(self.helptext)
+        elif allow_quit and cmd in ("quit", "q", "exit"):
+            self.close_menu()
+            if cmd_on_quit is not None:
+                caller.execute_cmd(cmd_on_quit)
+        elif default:
+            goto, callback = default
+            if callback:
+                self.callback(callback, raw_string)
+            if goto:
+                self.goto(goto, raw_string)
+        else:
+            caller.msg(_HELP_NO_OPTION_MATCH)
+
+        if not (options or default):
+            # no options - we are at the end of the menu.
+            self.close_menu()
+            if cmd_on_quit is not None:
+                caller.execute_cmd(cmd_on_quit)
 
 
     def callback(self, nodename, raw_string):
