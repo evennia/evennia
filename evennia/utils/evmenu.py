@@ -272,7 +272,7 @@ class EvMenu(object):
     """
     def __init__(self, caller, menudata, startnode="start",
                  cmdset_mergetype="Replace", cmdset_priority=1,
-                 allow_quit=True, cmd_on_quit="look"):
+                 allow_quit=True, cmd_on_quit="look", add_lines=True):
         """
         Initialize the menu tree and start the caller onto the first node.
 
@@ -307,6 +307,7 @@ class EvMenu(object):
                 in-built quit command (activated with `allow_quit`), this
                 command string will be executed. Set to None to not call
                 any command.
+            add_lines (bool, optional): Add lines above and below the node text.
 
         Raises:
             EvMenuError: If the start/end node is not found in menu tree.
@@ -322,6 +323,7 @@ class EvMenu(object):
         # variables made available to the command
         self.allow_quit = allow_quit
         self.cmd_on_quit = cmd_on_quit
+        self.add_lines = add_lines
         self.default = None
         self.nodetext = None
         self.helptext = None
@@ -385,14 +387,15 @@ class EvMenu(object):
         # handle the node text
         #
 
-        nodetext = dedent(nodetext).strip()
+        nodetext = dedent(nodetext).strip("\n\r")
 
         nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
+        add_lines = self.add_lines
 
         if not optionlist:
             # return the node text "naked".
-            separator1 = "_" * nodetext_width_max + "\n\n" if nodetext_width_max else ""
-            separator2 = "\n" if nodetext_width_max else "" + "_" * nodetext_width_max
+            separator1 = "_" * nodetext_width_max + "\n\n" if nodetext_width_max and add_lines else ""
+            separator2 = "\n" + "_" * nodetext_width_max if nodetext_width_max and add_lines else ""
             return separator1 + nodetext + separator2
 
         #
@@ -450,8 +453,11 @@ class EvMenu(object):
 
         # build the page
         total_width = max(total_width, nodetext_width_max)
-        separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
-        separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
+        separator1 = ""
+        separator2 = ""
+        if total_width:
+            separator1 = ("_" * total_width + "\n\n" if add_lines else "")
+            separator2 = ("\n" + "_" * total_width if add_lines else "") + "\n\n"
         return separator1 + nodetext + separator2 + unicode(table)
 
     def _execute_node(self, nodename, raw_string):
