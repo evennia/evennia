@@ -208,12 +208,15 @@ class ServerSession(Session):
         idle timers and command counters.
 
         """
+        # Idle time used for timeout calcs.
+        self.cmd_last = time()
+
         # Store the timestamp of the user's last command.
         if not idle:
             # Increment the user's command counter.
             self.cmd_total += 1
             # Player-visible idle time, not used in idle timeout calcs.
-            self.cmd_last_visible = time()
+            self.cmd_last_visible = self.cmd_last
 
     def data_in(self, text=None, **kwargs):
         """
