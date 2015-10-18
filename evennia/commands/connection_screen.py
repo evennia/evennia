@@ -1,6 +1,6 @@
 #
 # This is Evennia's default connection screen. It is imported
-# and run from world/connection_screens.py.
+# and run from server/conf/connection_screens.py.
 #
 
 from django.conf import settings

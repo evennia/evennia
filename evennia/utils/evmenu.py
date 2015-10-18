@@ -45,23 +45,29 @@ entered to get to this node). The node function code will only be
 executed once per node-visit and the system will accept nodes with
 both one or two arguments interchangeably.
 
+The menu tree itself is available on the caller as
+`caller.ndb._menutree`. This makes it a convenient place to store
+temporary state variables between nodes, since this NAttribute is
+deleted when the menu is exited.
+
 The return values must be given in the above order, but each can be
 returned as None as well. If the options are returned as None, the
 menu is immediately exited and the default "look" command is called.
 
-    text (str, tuple or None): Text shown at this node. If a tuple, the second
-        element in the tuple is a help text to display at this node when
-        the user enters the menu help command there.
-    options (tuple, dict or None): ( {'key': name,   # can also be a list of aliases. A special key is "_default", which
-                                                     # marks this option as the default fallback when no other
-                                                     # option matches the user input.
-                                      'desc': description, # option description
-                                      'goto': nodekey,  # node to go to when chosen
-                                      'exec': nodekey, # node or callback to trigger as callback when chosen. If a node
-                                                       # key is given the node will be executed once but its return u
-                                                       # values are ignored. If a callable is given, it must accept
-                                                       # one or two args, like any node.
-                                {...}, ...)
+    text (str, tuple or None): Text shown at this node. If a tuple, the
+        second element in the tuple is a help text to display at this
+        node when the user enters the menu help command there.
+    options (tuple, dict or None): (
+        {'key': name,   # can also be a list of aliases. A special key is
+                        # "_default", which marks this option as the default
+                        # fallback when no other option matches the user input.
+         'desc': description, # optional description
+         'goto': nodekey,  # node to go to when chosen
+         'exec': nodekey}, # node or callback to trigger as callback when chosen.
+                           # If a node key is given, the node will be executed once
+                           # but its return values are ignored. If a callable is
+                           # given, it must accept one or two args, like any node.
+        {...}, ...)
 
 If key is not given, the option will automatically be identified by
 its number 1..N.
@@ -122,9 +128,9 @@ The menu tree is exited either by using the in-menu quit command or by
 reaching a node without any options.
 
 
-For a menu demo, import CmdTestDemo from this module and add it to
-your default cmdset. Run it with this module, like `testdemo
-evennia.utils.evdemo`.
+For a menu demo, import CmdTestMenu from this module and add it to
+your default cmdset. Run it with this module, like `testmenu
+evennia.utils.evmenu`.
 
 """
 from __future__ import print_function
@@ -176,65 +182,25 @@ class EvMenuError(RuntimeError):
 class CmdEvMenuNode(Command):
     """
     Menu options.
-
     """
-    key = "look"
-    aliases = ["l", _CMD_NOMATCH, _CMD_NOINPUT]
+    key = _CMD_NOINPUT
+    aliases = [_CMD_NOMATCH]
     locks = "cmd:all()"
     help_category = "Menu"
 
     def func(self):
         """
         Implement all menu commands.
-
         """
         caller = self.caller
         menu = caller.ndb._menutree
 
         if not menu:
             err = "Menu object not found as %s.ndb._menutree!" % (caller)
-            self.caller.msg(err)
+            caller.msg(err)
             raise EvMenuError(err)
 
-        # flags and data
-        raw_string = self.raw_string
-        cmd = raw_string.strip().lower()
-        options = menu.options
-        allow_quit = menu.allow_quit
-        cmd_on_quit = menu.cmd_on_quit
-        default = menu.default
-
-        print("cmd, options:", cmd, options)
-        if cmd in options:
-            # this will overload the other commands
-            # if it has the same name!
-            goto, callback = options[cmd]
-            if callback:
-                menu.callback(callback, raw_string)
-            if goto:
-                menu.goto(goto, raw_string)
-        elif cmd in ("look", "l"):
-            caller.msg(menu.nodetext)
-        elif cmd in ("help", "h"):
-            caller.msg(menu.helptext)
-        elif allow_quit and cmd in ("quit", "q", "exit"):
-            menu.close_menu()
-            if cmd_on_quit is not None:
-                caller.execute_cmd(cmd_on_quit)
-        elif default:
-            goto, callback = default
-            if callback:
-                menu.callback(callback, raw_string)
-            if goto:
-                menu.goto(goto, raw_string)
-        else:
-            caller.msg(_HELP_NO_OPTION_MATCH)
-
-        if not (options or default):
-            # no options - we are at the end of the menu.
-            menu.close_menu()
-            if cmd_on_quit is not None:
-                caller.execute_cmd(cmd_on_quit)
+        menu.parse_input(self.raw_string)
 
 
 class EvMenuCmdSet(CmdSet):
@@ -269,7 +235,9 @@ class EvMenu(object):
     """
     def __init__(self, caller, menudata, startnode="start",
                  cmdset_mergetype="Replace", cmdset_priority=1,
-                 allow_quit=True, cmd_on_quit="look"):
+                 allow_quit=True, cmd_on_quit="look",
+                 nodetext_formatter=None, options_formatter=None,
+                 node_formatter=None):
         """
         Initialize the menu tree and start the caller onto the first node.
 
@@ -299,11 +267,35 @@ class EvMenu(object):
             allow_quit (bool, optional): Allow user to use quit or
                 exit to leave the menu at any point. Recommended during
                 development!
-            cmd_on_quit (str or None, optional): When exiting the menu
+            cmd_on_quit (callable, str or None, optional): When exiting the menu
                 (either by reaching a node with no options or by using the
                 in-built quit command (activated with `allow_quit`), this
-                command string will be executed. Set to None to not call
-                any command.
+                callback function or command string will be executed.
+                The callback function takes two parameters, the caller then the
+                EvMenu object. This is called after cleanup is complete.
+                Set to None to not call any command.
+            nodetext_formatter (callable, optional): This callable should be on
+                the form `function(nodetext, has_options)`, where `nodetext` is the
+                node text string and `has_options` a boolean specifying if there
+                are options associated with this node. It must return a formatted
+                string.
+            options_formatter (callable, optional): This callable should be on
+                the form `function(optionlist)`, where ` optionlist is a list
+                of option dictionaries, like
+                [{"key":..., "desc",..., "goto": ..., "exec",...}, ...]
+                Each dictionary describes each possible option. Note that this
+                will also be called if there are no options, and so should be
+                able to handle an empty list. This should
+                be formatted into an options list and returned as a string,
+                including the required separator to use between the node text
+                and the options. If not given the default EvMenu style will be used.
+            node_formatter (callable, optional): This callable should be on the
+                form `func(nodetext, optionstext)` where the arguments are strings
+                representing the node text and options respectively (possibly prepared
+                by `nodetext_formatter`/`options_formatter` or by the default styles).
+                It should return a string representing the final look of the node. This
+                can e.g. be used to create line separators that take into account the
+                dynamic width of the parts.
 
         Raises:
             EvMenuError: If the start/end node is not found in menu tree.
@@ -313,16 +305,26 @@ class EvMenu(object):
         self._startnode = startnode
         self._menutree = self._parse_menudata(menudata)
 
+        self._nodetext_formatter = nodetext_formatter
+        self._options_formatter = nodetext_formatter
+        self._node_formatter = node_formatter
+
         if startnode not in self._menutree:
             raise EvMenuError("Start node '%s' not in menu tree!" % startnode)
 
         # variables made available to the command
         self.allow_quit = allow_quit
-        self.cmd_on_quit = cmd_on_quit
+        if isinstance(cmd_on_quit, str):
+            self.cmd_on_quit = lambda caller, menu: caller.execute_cmd(cmd_on_quit)
+        elif callable(cmd_on_quit):
+            self.cmd_on_quit = cmd_on_quit
+        else:
+            self.cmd_on_quit = None
         self.default = None
         self.nodetext = None
         self.helptext = None
         self.options = None
+
 
         # store ourself on the object
         self._caller.ndb._menutree = self
@@ -382,74 +384,85 @@ class EvMenu(object):
         # handle the node text
         #
 
-        nodetext = dedent(nodetext).strip()
+        if self._nodetext_formatter:
+            # use custom formatter
+            nodetext = self._nodetext_formatter(nodetext, len(optionlist))
+        else:
+            nodetext = dedent(nodetext).strip()
 
         nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
-
-        if not optionlist:
-            # return the node text "naked".
-            separator1 = "_" * nodetext_width_max + "\n\n" if nodetext_width_max else ""
-            separator2 = "\n" if nodetext_width_max else "" + "_" * nodetext_width_max
-            return separator1 + nodetext + separator2
 
         #
         # handle the options
         #
 
-        # column separation distance
-        colsep = 4
+        if self._options_formatter:
+            # use custom formatter
+            optionstext = self._options_formatter(optionlist)
+        elif optionlist:
+            # column separation distance
+            colsep = 4
 
-        nlist = len(optionlist)
+            nlist = len(optionlist)
 
-        # get the widest option line in the table.
-        table_width_max = -1
-        table = []
-        for key, desc in optionlist:
-            table_width_max = max(table_width_max,
-                                  max(m_len(p) for p in key.split("\n")) +
-                                  max(m_len(p) for p in desc.split("\n")) + colsep)
-            raw_key = strip_ansi(key)
-            if raw_key != key:
-                # already decorations in key definition
-                table.append(ANSIString(" {lc%s{lt%s{le: %s" % (raw_key, key, desc)))
-            else:
-                # add a default white color to key
-                table.append(ANSIString(" {lc%s{lt{w%s{n{le: %s" % (raw_key, raw_key, desc)))
+            # get the widest option line in the table.
+            table_width_max = -1
+            table = []
+            for key, desc in optionlist:
+                table_width_max = max(table_width_max,
+                                      max(m_len(p) for p in key.split("\n")) +
+                                      max(m_len(p) for p in desc.split("\n")) + colsep)
+                raw_key = strip_ansi(key)
+                if raw_key != key:
+                    # already decorations in key definition
+                    table.append(ANSIString(" {lc%s{lt%s{le: %s" % (raw_key, key, desc)))
+                else:
+                    # add a default white color to key
+                    table.append(ANSIString(" {lc%s{lt{w%s{n{le: %s" % (raw_key, raw_key, desc)))
 
-        ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
-        nlastcol = nlist % ncols # number of elements left in last row
+            ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
+            nlastcol = nlist % ncols # number of elements left in last row
 
-        # get the amount of rows needed (start with 4 rows)
-        nrows = 4
-        while nrows * ncols < nlist:
-            nrows += 1
-        ncols = nlist // nrows # number of full columns
-        nlastcol = nlist % nrows # number of elements in last column
+            # get the amount of rows needed (start with 4 rows)
+            nrows = 4
+            while nrows * ncols < nlist:
+                nrows += 1
+            ncols = nlist // nrows # number of full columns
+            nlastcol = nlist % nrows # number of elements in last column
 
-        # get the final column count
-        ncols = ncols + 1 if nlastcol > 0 else ncols
-        if ncols > 1:
-            # only extend if longer than one column
-            table.extend([" " for i in xrange(nrows-nlastcol)])
+            # get the final column count
+            ncols = ncols + 1 if nlastcol > 0 else ncols
+            if ncols > 1:
+                # only extend if longer than one column
+                table.extend([" " for i in xrange(nrows-nlastcol)])
 
-        # build the actual table grid
-        table = [table[icol*nrows:(icol*nrows) + nrows] for icol in xrange(0, ncols)]
+            # build the actual table grid
+            table = [table[icol*nrows:(icol*nrows) + nrows] for icol in xrange(0, ncols)]
 
-        # adjust the width of each column
-        total_width = 0
-        for icol in xrange(len(table)):
-            col_width = max(max(m_len(p) for p in part.split("\n")) for part in table[icol]) + colsep
-            table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
-            total_width += col_width
+            # adjust the width of each column
+            for icol in xrange(len(table)):
+                col_width = max(max(m_len(p) for p in part.split("\n")) for part in table[icol]) + colsep
+                table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
 
-        # format the table into columns
-        table = EvTable(table=table, border="none")
+            # format the table into columns
+            optionstext = unicode(EvTable(table=table, border="none"))
+        else:
+            optionstext = ""
 
-        # build the page
-        total_width = max(total_width, nodetext_width_max)
-        separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
-        separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
-        return separator1 + nodetext + separator2 + unicode(table)
+        options_width_max = max(m_len(line) for line in optionstext.split("\n"))
+
+        #
+        # format the entire node
+        #
+        if self._node_formatter:
+            # use custom formatter
+            return self._node_formatter(nodetext, optionstext)
+        else:
+            # build the page
+            total_width = max(options_width_max, nodetext_width_max)
+            separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
+            separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
+            return separator1 + nodetext + separator2 + optionstext
 
     def _execute_node(self, nodename, raw_string):
         """
@@ -486,6 +499,56 @@ class EvMenu(object):
             self._caller.msg(_ERR_GENERAL.format(nodename=nodename))
             raise
         return nodetext, options
+
+
+    def _display_nodetext(self):
+        self._caller.msg(self.nodetext)
+
+
+    def _display_helptext(self):
+        self._caller.msg(self.helptext)
+
+
+    def _callback_goto(self, callback, goto, raw_string):
+        if callback:
+            self.callback(callback, raw_string)
+        if goto:
+            self.goto(goto, raw_string)
+
+
+    def parse_input(self, raw_string):
+        """
+        Processes the user' node inputs.
+
+        Args:
+            raw_string (str): The incoming raw_string from the menu
+                command.
+        """
+
+        caller = self._caller
+        cmd = raw_string.strip().lower()
+        allow_quit = self.allow_quit
+
+        if cmd in self.options:
+            # this will take precedence over the default commands
+            # below
+            goto, callback = self.options[cmd]
+            self._callback_goto(callback, goto, raw_string)
+        elif cmd in ("look", "l"):
+            self._display_nodetext()
+        elif cmd in ("help", "h"):
+            self._display_helptext()
+        elif allow_quit and cmd in ("quit", "q", "exit"):
+            self.close_menu()
+        elif self.default:
+            goto, callback = self.default
+            self._callback_goto(callback, goto, raw_string)
+        else:
+            caller.msg(_HELP_NO_OPTION_MATCH)
+
+        if not (self.options or self.default):
+            # no options - we are at the end of the menu.
+            self.close_menu()
 
 
     def callback(self, nodename, raw_string):
@@ -582,7 +645,7 @@ class EvMenu(object):
         else:
             self.helptext = _HELP_NO_OPTIONS if self.allow_quit else _HELP_NO_OPTIONS_NO_QUIT
 
-        self._caller.execute_cmd("look")
+        self._display_nodetext()
 
     def close_menu(self):
         """
@@ -590,6 +653,8 @@ class EvMenu(object):
         """
         self._caller.cmdset.remove(EvMenuCmdSet)
         del self._caller.ndb._menutree
+        if self.cmd_on_quit is not None:
+            self.cmd_on_quit(self._caller, self)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -689,6 +754,9 @@ def test_start_node(caller):
                 "desc": "Set an attribute on yourself.",
                 "exec": lambda caller: caller.attributes.add("menuattrtest", "Test value"),
                 "goto": "test_set_node"},
+               {"key": ("{yL{nook", "l"),
+                "desc": "Look and see a custom message.",
+                "goto": "test_look_node"},
                {"key": ("{yV{niew", "v"),
                 "desc": "View your own name",
                 "goto": "test_view_node"},
@@ -699,6 +767,13 @@ def test_start_node(caller):
                 "goto": "test_displayinput_node"})
     return text, options
 
+
+def test_look_node(caller):
+    text = "Looking again will take you back to the previous message."
+    options = {"key": ("{yL{nook", "l"),
+               "desc": "Go back to the previous menu.",
+               "goto": "test_start_node"}
+    return text, options
 
 def test_set_node(caller):
     text = ("""

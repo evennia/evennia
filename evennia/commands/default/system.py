@@ -194,23 +194,23 @@ class CmdPy(MuxCommand):
                 t0 = timemeasure()
                 ret = eval(pycode_compiled, {}, available_vars)
                 t1 = timemeasure()
-                duration = " (%.4f ms)" % ((t1 - t0) * 1000)
+                duration = " (runtime ~ %.4f ms)" % ((t1 - t0) * 1000)
             else:
                 ret = eval(pycode_compiled, {}, available_vars)
             if mode == "eval":
-                ret = "{n<<< %s%s" % (str(ret), duration)
+                ret = "<<< %s%s" % (str(ret), duration)
             else:
-                ret = "{n<<< Done.%s" % duration
+                ret = "<<< Done (use self.msg() if you want to catch output)%s" % duration
         except Exception:
             errlist = traceback.format_exc().split('\n')
             if len(errlist) > 4:
                 errlist = errlist[4:]
-            ret = "\n".join("{n<<< %s" % line for line in errlist if line)
+            ret = "\n".join("<<< %s" % line for line in errlist if line)
 
         try:
-            self.msg(ret, sessid=self.sessid)
+            self.msg(ret, sessid=self.sessid, raw=True)
         except TypeError:
-            self.msg(ret)
+            self.msg(ret, raw=True)
 
 
 # helper function. Kept outside so it can be imported and run

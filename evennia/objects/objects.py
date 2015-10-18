@@ -370,7 +370,7 @@ class DefaultObject(ObjectDB):
 
         if quiet:
             return results
-        return _AT_SEARCH_RESULT(self, searchdata, results, global_search=True)
+        return _AT_SEARCH_RESULT(results, self, query=searchdata)
 
     def execute_cmd(self, raw_string, sessid=None, **kwargs):
         """

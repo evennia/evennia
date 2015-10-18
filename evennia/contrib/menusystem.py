@@ -281,7 +281,7 @@ class MenuNode(object):
             text (str, optional): The text that will be displayed at
                 top when viewing this node.
         Kwargs:
-            links (list): A liist of keys for unique menunodes this is connected to.
+            links (list): A list of keys for unique menunodes this is connected to.
                 The actual keys will not printed - keywords will be
                 used (or a number)
             linktexts (list)- A list of texts to describe the links. Must

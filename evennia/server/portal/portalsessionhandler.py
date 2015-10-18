@@ -114,7 +114,7 @@ class PortalSessionHandler(SessionHandler):
             #print "connecting", session.sessid, " number:", len(self.sessions)
             self.portal.amp_protocol.send_AdminPortal2Server(session.sessid,
                                                              operation=PCONN,
-                                                             data=sessdata)
+                                                             sessiondata=sessdata)
 
     def sync(self, session):
         """
@@ -143,7 +143,7 @@ class PortalSessionHandler(SessionHandler):
                                                                                        "server_data",))
                 self.portal.amp_protocol.send_AdminPortal2Server(session.sessid,
                                                                  operation=PCONNSYNC,
-                                                                 data=sessdata)
+                                                                 sessiondata=sessdata)
 
     def disconnect(self, session):
         """
@@ -390,7 +390,6 @@ class PortalSessionHandler(SessionHandler):
                 # data throttle (anti DoS measure)
                 now = time()
                 dT = now - self.command_counter_reset
-                print(" command rate:", _MAX_COMMAND_RATE / dT, dT, self.command_counter)
                 self.command_counter = 0
                 self.command_counter_reset = now
                 self.command_overflow = dT < 1.0
@@ -402,8 +401,8 @@ class PortalSessionHandler(SessionHandler):
             # relay data to Server
             self.command_counter += 1
             self.portal.amp_protocol.send_MsgPortal2Server(session.sessid,
-                                                       msg=text,
-                                                       data=kwargs)
+                                                       text=text,
+                                                       **kwargs)
         else:
            # called by the callLater callback
             if self.command_overflow:

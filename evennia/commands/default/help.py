@@ -74,6 +74,7 @@ class CmdHelp(Command):
     """
     key = "help"
     locks = "cmd:all()"
+    arg_regex = r"\s|$"
 
     # this is a special cmdhandler flag that makes the cmdhandler also pack
     # the current cmdset with the call to self.func().
