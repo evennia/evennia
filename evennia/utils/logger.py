@@ -3,10 +3,10 @@ Logging facilities
 
 These are thin wrappers on top of Twisted's logging facilities; logs
 are all directed either to stdout (if Evennia is running in
-interactive mode) or to game/logs.
+interactive mode) or to $GAME_DIR/server/logs.
 
 The log_file() function uses its own threading system to log to
-arbitrary files in game/logs.
+arbitrary files in $GAME_DIR/server/logs.
 
 Note: All logging functions have two aliases, log_type() and
 log_typemsg(). This is for historical, back-compatible reasons.
