@@ -54,19 +54,20 @@ The return values must be given in the above order, but each can be
 returned as None as well. If the options are returned as None, the
 menu is immediately exited and the default "look" command is called.
 
-    text (str, tuple or None): Text shown at this node. If a tuple, the second
-        element in the tuple is a help text to display at this node when
-        the user enters the menu help command there.
-    options (tuple, dict or None): ( {'key': name,   # can also be a list of aliases. A special key is "_default", which
-                                                     # marks this option as the default fallback when no other
-                                                     # option matches the user input.
-                                      'desc': description, # option description
-                                      'goto': nodekey,  # node to go to when chosen
-                                      'exec': nodekey, # node or callback to trigger as callback when chosen. If a node
-                                                       # key is given the node will be executed once but its return u
-                                                       # values are ignored. If a callable is given, it must accept
-                                                       # one or two args, like any node.
-                                {...}, ...)
+    text (str, tuple or None): Text shown at this node. If a tuple, the
+        second element in the tuple is a help text to display at this
+        node when the user enters the menu help command there.
+    options (tuple, dict or None): (
+        {'key': name,   # can also be a list of aliases. A special key is
+                        # "_default", which marks this option as the default
+                        # fallback when no other option matches the user input.
+         'desc': description, # optional description
+         'goto': nodekey,  # node to go to when chosen
+         'exec': nodekey}, # node or callback to trigger as callback when chosen.
+                           # If a node key is given, the node will be executed once
+                           # but its return values are ignored. If a callable is
+                           # given, it must accept one or two args, like any node.
+        {...}, ...)
 
 If key is not given, the option will automatically be identified by
 its number 1..N.
@@ -180,64 +181,25 @@ class EvMenuError(RuntimeError):
 class CmdEvMenuNode(Command):
     """
     Menu options.
-
     """
-    key = "look"
-    aliases = ["l", _CMD_NOMATCH, _CMD_NOINPUT]
+    key = _CMD_NOINPUT
+    aliases = [_CMD_NOMATCH]
     locks = "cmd:all()"
     help_category = "Menu"
 
     def func(self):
         """
         Implement all menu commands.
-
         """
         caller = self.caller
         menu = caller.ndb._menutree
 
         if not menu:
             err = "Menu object not found as %s.ndb._menutree!" % (caller)
-            self.caller.msg(err)
+            caller.msg(err)
             raise EvMenuError(err)
 
-        # flags and data
-        raw_string = self.raw_string
-        cmd = raw_string.strip().lower()
-        options = menu.options
-        allow_quit = menu.allow_quit
-        cmd_on_quit = menu.cmd_on_quit
-        default = menu.default
-
-        if cmd in options:
-            # this will overload the other commands
-            # if it has the same name!
-            goto, callback = options[cmd]
-            if callback:
-                menu.callback(callback, raw_string)
-            if goto:
-                menu.goto(goto, raw_string)
-        elif cmd in ("look", "l"):
-            caller.msg(menu.nodetext)
-        elif cmd in ("help", "h"):
-            caller.msg(menu.helptext)
-        elif allow_quit and cmd in ("quit", "q", "exit"):
-            menu.close_menu()
-            if cmd_on_quit is not None:
-                caller.execute_cmd(cmd_on_quit)
-        elif default:
-            goto, callback = default
-            if callback:
-                menu.callback(callback, raw_string)
-            if goto:
-                menu.goto(goto, raw_string)
-        else:
-            caller.msg(_HELP_NO_OPTION_MATCH)
-
-        if not (options or default):
-            # no options - we are at the end of the menu.
-            menu.close_menu()
-            if cmd_on_quit is not None:
-                caller.execute_cmd(cmd_on_quit)
+        menu.handle(self.raw_string)
 
 
 class EvMenuCmdSet(CmdSet):
@@ -302,11 +264,13 @@ class EvMenu(object):
             allow_quit (bool, optional): Allow user to use quit or
                 exit to leave the menu at any point. Recommended during
                 development!
-            cmd_on_quit (str or None, optional): When exiting the menu
+            cmd_on_quit (callback, str or None, optional): When exiting the menu
                 (either by reaching a node with no options or by using the
                 in-built quit command (activated with `allow_quit`), this
-                command string will be executed. Set to None to not call
-                any command.
+                callback function or command string will be executed.
+                The callback function takes two parameters, the caller then the
+                EvMenu object. This is called after cleanup is complete.
+                Set to None to not call any command.
 
         Raises:
             EvMenuError: If the start/end node is not found in menu tree.
@@ -321,7 +285,12 @@ class EvMenu(object):
 
         # variables made available to the command
         self.allow_quit = allow_quit
-        self.cmd_on_quit = cmd_on_quit
+        if isinstance(cmd_on_quit, str):
+            self.cmd_on_quit = lambda caller, menu: caller.execute_cmd(cmd_on_quit)
+        elif callable(cmd_on_quit):
+            self.cmd_on_quit = cmd_on_quit
+        else:
+            self.cmd_on_quit = None
         self.default = None
         self.nodetext = None
         self.helptext = None
@@ -491,6 +460,49 @@ class EvMenu(object):
         return nodetext, options
 
 
+    def _display_nodetext(self):
+        self._caller.msg(self.nodetext)
+
+
+    def _display_helptext(self):
+        self._caller.msg(self.helptext)
+
+
+    def _callback_goto(self, callback, goto, raw_string):
+        if callback:
+            self.callback(callback, raw_string)
+        if goto:
+            self.goto(goto, raw_string)
+
+
+    def handle(self, raw_string):
+        # flags and data
+        caller = self._caller
+        cmd = raw_string.strip().lower()
+        allow_quit = self.allow_quit
+
+        if cmd in self.options:
+            # this will overload the other commands
+            # if it has the same name!
+            goto, callback = self.options[cmd]
+            self._callback_goto(callback, goto, raw_string)
+        elif cmd in ("look", "l"):
+            self._display_nodetext()
+        elif cmd in ("help", "h"):
+            self._display_helptext()
+        elif allow_quit and cmd in ("quit", "q", "exit"):
+            self.close_menu()
+        elif self.default:
+            goto, callback = self.default
+            self._callback_goto(callback, goto, raw_string)
+        else:
+            caller.msg(_HELP_NO_OPTION_MATCH)
+
+        if not (self.options or self.default):
+            # no options - we are at the end of the menu.
+            self.close_menu()
+
+
     def callback(self, nodename, raw_string):
         """
         Run a node as a callback. This makes no use of the return
@@ -585,7 +597,7 @@ class EvMenu(object):
         else:
             self.helptext = _HELP_NO_OPTIONS if self.allow_quit else _HELP_NO_OPTIONS_NO_QUIT
 
-        self._caller.execute_cmd("look")
+        self._display_nodetext()
 
     def close_menu(self):
         """
@@ -593,6 +605,8 @@ class EvMenu(object):
         """
         self._caller.cmdset.remove(EvMenuCmdSet)
         del self._caller.ndb._menutree
+        if self.cmd_on_quit is not None:
+            self.cmd_on_quit(self._caller, self)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -692,6 +706,9 @@ def test_start_node(caller):
                 "desc": "Set an attribute on yourself.",
                 "exec": lambda caller: caller.attributes.add("menuattrtest", "Test value"),
                 "goto": "test_set_node"},
+               {"key": ("{yL{nook", "l"),
+                "desc": "Look and see a custom message.",
+                "goto": "test_look_node"},
                {"key": ("{yV{niew", "v"),
                 "desc": "View your own name",
                 "goto": "test_view_node"},
@@ -702,6 +719,13 @@ def test_start_node(caller):
                 "goto": "test_displayinput_node"})
     return text, options
 
+
+def test_look_node(caller):
+    text = "Looking again will take you back to the previous message."
+    options = {"key": ("{yL{nook", "l"),
+               "desc": "Go back to the previous menu.",
+               "goto": "test_start_node"}
+    return text, options
 
 def test_set_node(caller):
     text = ("""
