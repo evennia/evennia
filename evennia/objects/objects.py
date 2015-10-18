@@ -549,7 +549,6 @@ class DefaultObject(ObjectDB):
             except Exception:
                 logerr(errtxt % "at_before_move()")
                 #emit_to_obj.msg(errtxt % "at_before_move()")
-                #logger.log_trace()
                 return False
 
         # Save the old location
@@ -570,7 +569,6 @@ class DefaultObject(ObjectDB):
             except Exception:
                 logerr(errtxt % "at_object_leave()")
                 #emit_to_obj.msg(errtxt % "at_object_leave()")
-                #logger.log_trace()
                 return False
 
         if not quiet:
@@ -580,7 +578,6 @@ class DefaultObject(ObjectDB):
             except Exception:
                 logerr(errtxt % "at_announce_move()")
                 #emit_to_obj.msg(errtxt % "at_announce_move()" )
-                #logger.log_trace()
                 return False
 
         # Perform move
@@ -599,7 +596,6 @@ class DefaultObject(ObjectDB):
             except Exception:
                 logerr(errtxt % "announce_move_to()")
                 #emit_to_obj.msg(errtxt % "announce_move_to()")
-                #logger.log_trace()
                 return  False
 
         if move_hooks:
@@ -610,7 +606,6 @@ class DefaultObject(ObjectDB):
             except Exception:
                 logerr(errtxt % "at_object_receive()")
                 #emit_to_obj.msg(errtxt % "at_object_receive()")
-                #logger.log_trace()
                 return False
 
         # Execute eventual extra commands on this object after moving it
@@ -621,7 +616,6 @@ class DefaultObject(ObjectDB):
             except Exception:
                 logerr(errtxt % "at_after_move")
                 #emit_to_obj.msg(errtxt % "at_after_move()")
-                #logger.log_trace()
                 return False
         return True
 

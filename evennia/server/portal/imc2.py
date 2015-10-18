@@ -296,8 +296,6 @@ class IMC2Bot(telnet.StatefulTelnetProtocol, Session):
             self._imc_login(line)
             return
 
-        #logger.log_infomsg("IMC2: RECV> %s" % line)
-
         # Parse the packet and encapsulate it for easy access
         packet = pck.IMC2Packet(self.mudname, packet_str=line)
 
