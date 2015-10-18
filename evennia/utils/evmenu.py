@@ -199,7 +199,7 @@ class CmdEvMenuNode(Command):
             caller.msg(err)
             raise EvMenuError(err)
 
-        menu.handle(self.raw_string)
+        menu.parse_input(self.raw_string)
 
 
 class EvMenuCmdSet(CmdSet):
@@ -388,7 +388,8 @@ class EvMenu(object):
             nodetext = self._nodetext_formatter(nodetext, len(optionlist))
         else:
             nodetext = dedent(nodetext).strip()
-            nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
+
+        nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
 
         #
         # handle the options
@@ -397,7 +398,7 @@ class EvMenu(object):
         if self._options_formatter:
             # use custom formatter
             optionstext = self._options_formatter(optionlist)
-        else:
+        elif optionlist:
             # column separation distance
             colsep = 4
 
@@ -438,14 +439,16 @@ class EvMenu(object):
             table = [table[icol*nrows:(icol*nrows) + nrows] for icol in xrange(0, ncols)]
 
             # adjust the width of each column
-            options_total_width = 0
             for icol in xrange(len(table)):
                 col_width = max(max(m_len(p) for p in part.split("\n")) for part in table[icol]) + colsep
                 table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
-                options_total_width += col_width
 
             # format the table into columns
             optionstext = unicode(EvTable(table=table, border="none"))
+        else:
+            optionstext = ""
+
+        options_width_max = max(m_len(line) for line in optionstext.split("\n"))
 
         #
         # format the entire node
@@ -455,7 +458,7 @@ class EvMenu(object):
             return self._node_formatter(nodetext, optionstext)
         else:
             # build the page
-            total_width = max(options_total_width, nodetext_width_max)
+            total_width = max(options_width_max, nodetext_width_max)
             separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
             separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
             return separator1 + nodetext + separator2 + optionstext
@@ -512,15 +515,22 @@ class EvMenu(object):
             self.goto(goto, raw_string)
 
 
-    def handle(self, raw_string):
-        # flags and data
+    def parse_input(self, raw_string):
+        """
+        Processes the user' node inputs.
+
+        Args:
+            raw_string (str): The incoming raw_string from the menu
+                command.
+        """
+
         caller = self._caller
         cmd = raw_string.strip().lower()
         allow_quit = self.allow_quit
 
         if cmd in self.options:
-            # this will overload the other commands
-            # if it has the same name!
+            # this will take precedence over the default commands
+            # below
             goto, callback = self.options[cmd]
             self._callback_goto(callback, goto, raw_string)
         elif cmd in ("look", "l"):
