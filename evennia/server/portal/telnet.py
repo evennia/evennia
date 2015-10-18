@@ -172,12 +172,12 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 else:
                     self.iaw_mode = False
                 return
-            except Exception, err1:
+            except Exception as err1:
                 conv = ""
                 try:
                     for b in data:
                         conv += " " + repr(ord(b))
-                except Exception, err2:
+                except Exception as err2:
                     conv = str(err2) + ":", str(data)
                 out = "Telnet Error (%s): %s (%s)" % (err1, data, conv)
                 logger.log_trace(out)
@@ -299,7 +299,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         try:
             text = utils.to_str(text if text else "", encoding=self.encoding)
-        except Exception, e:
+        except Exception as e:
             self.sendLine(str(e))
             return
         if "oob" in kwargs and "OOB" in self.protocol_flags:

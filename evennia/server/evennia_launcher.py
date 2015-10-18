@@ -527,7 +527,7 @@ def check_database():
     from evennia.players.models import PlayerDB
     try:
         PlayerDB.objects.get(id=1)
-    except django.db.utils.OperationalError, e:
+    except django.db.utils.OperationalError as e:
         print ERROR_DATABASE.format(traceback=e)
         sys.exit()
     except PlayerDB.DoesNotExist:
@@ -783,7 +783,7 @@ def init_game_directory(path, check_db=True):
     # test existence of the settings module
     try:
         from django.conf import settings
-    except Exception, ex:
+    except Exception as ex:
         if not str(ex).startswith("No module named"):
             import traceback
             print traceback.format_exc().strip()
@@ -1226,7 +1226,7 @@ def main():
                     args.append(arg)
         try:
             django.core.management.call_command(*args, **kwargs)
-        except django.core.management.base.CommandError, exc:
+        except django.core.management.base.CommandError as exc:
             args = ", ".join(args)
             kwargs = ", ".join(["--%s" % kw for kw in kwargs])
             print ERROR_INPUT.format(traceback=exc, args=args, kwargs=kwargs)

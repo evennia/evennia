@@ -208,7 +208,7 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
                 new_player = create.create_player(playername, email, password,
                                                      permissions=permissions)
 
-            except Exception, e:
+            except Exception as e:
                 session.msg("There was an error creating the default Player/Character:\n%s\n If this problem persists, contact an admin." % e)
                 logger.log_trace()
                 return

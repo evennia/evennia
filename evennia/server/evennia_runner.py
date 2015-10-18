@@ -144,7 +144,7 @@ def start_services(server_argv, portal_argv):
     def server_waiter(queue):
         try:
             rc = Popen(server_argv, env=getenv()).wait()
-        except Exception, e:
+        except Exception as e:
             print PROCESS_ERROR.format(component="Server", traceback=e)
             return
         # this signals the controller that the program finished
@@ -153,7 +153,7 @@ def start_services(server_argv, portal_argv):
     def portal_waiter(queue):
         try:
             rc = Popen(portal_argv, env=getenv()).wait()
-        except Exception, e:
+        except Exception as e:
             print PROCESS_ERROR.format(component="Portal", traceback=e)
             return
         # this signals the controller that the program finished
@@ -168,7 +168,7 @@ def start_services(server_argv, portal_argv):
                 # normal operation: start portal as a daemon;
                 # we don't care to monitor it for restart
                 PORTAL = Popen(portal_argv, env=getenv())
-        except IOError, e:
+        except IOError as e:
             print PROCESS_IOERROR.format(component="Portal", traceback=e)
             return
 
@@ -176,7 +176,7 @@ def start_services(server_argv, portal_argv):
         if server_argv:
             # start server as a reloadable thread
             SERVER = thread.start_new_thread(server_waiter, (processes, ))
-    except IOError, e:
+    except IOError as e:
         print PROCESS_IOERROR.format(component="Server", traceback=e)
         return
 

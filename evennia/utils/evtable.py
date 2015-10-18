@@ -1266,7 +1266,7 @@ class EvTable(object):
         for ix, col in enumerate(self.worktable):
             try:
                 col.reformat(width=cwidths[ix], **options)
-            except Exception, e:
+            except Exception as e:
                 msg = "ix=%s, width=%s: %s" % (ix, cwidths[ix], e.message)
                 raise #Exception ("Error in horizontal allign:\n %s" % msg)
 
@@ -1315,7 +1315,7 @@ class EvTable(object):
             for iy, cell in enumerate(col):
                 try:
                     col.reformat_cell(iy, height=cheights[iy], **options)
-                except Exception, e:
+                except Exception as e:
                     msg = "ix=%s, iy=%s, height=%s: %s" % (ix, iy, cheights[iy], e.message)
                     raise Exception ("Error in vertical allign:\n %s" % msg)
 

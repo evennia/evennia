@@ -40,7 +40,7 @@ def log_trace(errmsg=None):
         if errmsg:
             try:
                 errmsg = str(errmsg)
-            except Exception, e:
+            except Exception as e:
                 errmsg = str(e)
             for line in errmsg.splitlines():
                 log.msg('[EE] %s' % line)
@@ -59,7 +59,7 @@ def log_err(errmsg):
     """
     try:
         errmsg = str(errmsg)
-    except Exception, e:
+    except Exception as e:
         errmsg = str(e)
     for line in errmsg.splitlines():
         log.msg('[EE] %s' % line)
@@ -77,7 +77,7 @@ def log_warn(warnmsg):
     """
     try:
         warnmsg = str(warnmsg)
-    except Exception, e:
+    except Exception as e:
         warnmsg = str(e)
     for line in warnmsg.splitlines():
         log.msg('[WW] %s' % line)
@@ -93,7 +93,7 @@ def log_info(infomsg):
     """
     try:
         infomsg = str(infomsg)
-    except Exception, e:
+    except Exception as e:
         infomsg = str(e)
     for line in infomsg.splitlines():
         log.msg('[..] %s' % line)
@@ -109,7 +109,7 @@ def log_dep(depmsg):
     """
     try:
         depmsg = str(depmsg)
-    except Exception, e:
+    except Exception as e:
         depmsg = str(e)
     for line in depmsg.splitlines():
         log.msg('[DP] %s' % line)

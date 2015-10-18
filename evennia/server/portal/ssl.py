@@ -44,7 +44,7 @@ def verify_SSL_key_and_cert(keyfile, certfile):
             rsaKey = Key(RSA.generate(KEY_LENGTH))
             keyString = rsaKey.toString(type="OPENSSH")
             file(keyfile, 'w+b').write(keyString)
-        except Exception, e:
+        except Exception as e:
             print "rsaKey error: %(e)s\n WARNING: Evennia could not auto-generate SSL private key." % {'e': e}
             print "If this error persists, create game/%(keyfile)s yourself using third-party tools." % {'keyfile': keyfile}
             sys.exit(5)
@@ -58,7 +58,7 @@ def verify_SSL_key_and_cert(keyfile, certfile):
         try:
             #, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             subprocess.call(exestring)
-        except OSError, e:
+        except OSError as e:
             string = "\n".join([
                  "  %s\n" % e,
                  "  Evennia's SSL context factory could not automatically",
