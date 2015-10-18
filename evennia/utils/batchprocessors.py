@@ -230,7 +230,7 @@ def read_batchfile(pythonpath, file_ending='.py'):
             try:
                 with codecs.open(abspath, 'r', encoding=file_encoding) as fobj:
                     text = fobj.read()
-            except (ValueError, UnicodeDecodeError), e:
+            except (ValueError, UnicodeDecodeError) as e:
                 # this means an encoding error; try another encoding
                 decoderr.append(str(e))
                 continue

@@ -201,7 +201,7 @@ def oob_send(session, *args, **kwargs):
                 #print "MSDP SEND inp:", name
                 value = OOB_SENDABLE.get(name, _NA)(obj)
                 ret[name] = value
-            except Exception, e:
+            except Exception as e:
                 ret[name] = str(e)
         # return, make sure to use the right case
         session.msg(oob=("MSDP_TABLE", (), ret))

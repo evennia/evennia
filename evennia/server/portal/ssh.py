@@ -212,7 +212,7 @@ class SshProtocol(Manhole, session.Session):
         """
         try:
             text = utils.to_str(text if text else "", encoding=self.encoding)
-        except Exception, e:
+        except Exception as e:
             self.lineSend(str(e))
             return
         raw = kwargs.get("raw", False)
@@ -382,7 +382,7 @@ def makeFactory(configdict):
         publicKey, privateKey = getKeyPair(pubkeyfile, privkeyfile)
         factory.publicKeys = {'ssh-rsa': publicKey}
         factory.privateKeys = {'ssh-rsa': privateKey}
-    except Exception, e:
+    except Exception as e:
         print " getKeyPair error: %(e)s\n WARNING: Evennia could not auto-generate SSH keypair. Using conch default keys instead." % {'e': e}
         print " If this error persists, create game/%(pub)s and game/%(priv)s yourself using third-party tools." % {'pub': pubkeyfile, 'priv': privkeyfile}
 
