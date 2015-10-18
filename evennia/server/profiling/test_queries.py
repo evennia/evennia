@@ -15,10 +15,10 @@ def count_queries(exec_string, setup_string):
     to setup the environment to test.
     """
 
-    exec setup_string
+    exec(setup_string)
 
     num_queries_old = len(connection.queries)
-    exec exec_string
+    exec(exec_string)
     nqueries = len(connection.queries) - num_queries_old
 
     for query in connection.queries[-nqueries if nqueries else 1:]:
