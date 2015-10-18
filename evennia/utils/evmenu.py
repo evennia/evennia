@@ -479,14 +479,12 @@ class EvMenu(object):
         # flags and data
         caller = self._caller
         cmd = raw_string.strip().lower()
-        options = self.options
         allow_quit = self.allow_quit
-        default = self.default
 
-        if cmd in options:
+        if cmd in self.options:
             # this will overload the other commands
             # if it has the same name!
-            goto, callback = options[cmd]
+            goto, callback = self.options[cmd]
             self._callback_goto(callback, goto, raw_string)
         elif cmd in ("look", "l"):
             self._display_nodetext()
@@ -494,13 +492,13 @@ class EvMenu(object):
             self._display_helptext()
         elif allow_quit and cmd in ("quit", "q", "exit"):
             self.close_menu()
-        elif default:
-            goto, callback = default
+        elif self.default:
+            goto, callback = self.default
             self._callback_goto(callback, goto, raw_string)
         else:
             caller.msg(_HELP_NO_OPTION_MATCH)
 
-        if not (options or default):
+        if not (self.options or self.default):
             # no options - we are at the end of the menu.
             self.close_menu()
 
@@ -599,7 +597,7 @@ class EvMenu(object):
         else:
             self.helptext = _HELP_NO_OPTIONS if self.allow_quit else _HELP_NO_OPTIONS_NO_QUIT
 
-        self._caller.execute_cmd("look")
+        self._display_nodetext()
 
     def close_menu(self):
         """
