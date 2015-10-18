@@ -460,6 +460,21 @@ class EvMenu(object):
         return nodetext, options
 
 
+    def _display_nodetext(self):
+        self._caller.msg(self.nodetext)
+
+
+    def _display_helptext(self):
+        self._caller.msg(self.helptext)
+
+
+    def _callback_goto(self, callback, goto, raw_string):
+        if callback:
+            self.callback(callback, raw_string)
+        if goto:
+            self.goto(goto, raw_string)
+
+
     def handle(self, raw_string):
         # flags and data
         caller = self._caller
@@ -472,22 +487,16 @@ class EvMenu(object):
             # this will overload the other commands
             # if it has the same name!
             goto, callback = options[cmd]
-            if callback:
-                self.callback(callback, raw_string)
-            if goto:
-                self.goto(goto, raw_string)
+            self._callback_goto(callback, goto, raw_string)
         elif cmd in ("look", "l"):
-            caller.msg(self.nodetext)
+            self._display_nodetext()
         elif cmd in ("help", "h"):
-            caller.msg(self.helptext)
+            self._display_helptext()
         elif allow_quit and cmd in ("quit", "q", "exit"):
             self.close_menu()
         elif default:
             goto, callback = default
-            if callback:
-                self.callback(callback, raw_string)
-            if goto:
-                self.goto(goto, raw_string)
+            self._callback_goto(callback, goto, raw_string)
         else:
             caller.msg(_HELP_NO_OPTION_MATCH)
 
