@@ -8,19 +8,21 @@ are stored on the Portal side)
 """
 
 import re
+import weakref
 from time import time
 from django.utils import timezone
 from django.conf import settings
 from evennia.comms.models import ChannelDB
 from evennia.utils import logger
 from evennia.utils.inlinefunc import parse_inlinefunc
-from evennia.utils.utils import make_iter
+from evennia.utils.utils import make_iter, lazy_property
 from evennia.commands.cmdhandler import cmdhandler
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
 
 _IDLE_COMMAND = settings.IDLE_COMMAND
 _GA = object.__getattribute__
+_SA = object.__setattr__
 _ObjectDB = None
 _ANSI = None
 _INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
@@ -28,6 +30,121 @@ _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, r
 
 # i18n
 from django.utils.translation import ugettext as _
+
+
+# Handlers for Session.db/ndb operation
+
+class NDbHolder(object):
+    "Holder for allowing property access of attributes"
+    def __init__(self, obj, name, manager_name='attributes'):
+        _SA(self, name, _GA(obj, manager_name))
+        _SA(self, 'name', name)
+
+    def __getattribute__(self, attrname):
+        if attrname == 'all':
+            # we allow to overload our default .all
+            attr = _GA(self, _GA(self, 'name')).get("all")
+            return attr if attr else _GA(self, "all")
+        return _GA(self, _GA(self, 'name')).get(attrname)
+
+    def __setattr__(self, attrname, value):
+        _GA(self, _GA(self, 'name')).add(attrname, value)
+
+    def __delattr__(self, attrname):
+        _GA(self, _GA(self, 'name')).remove(attrname)
+
+    def get_all(self):
+        return _GA(self, _GA(self, 'name')).all()
+    all = property(get_all)
+
+
+class NAttributeHandler(object):
+    """
+    NAttributeHandler version without recache protection.
+    This stand-alone handler manages non-database saving.
+    It is similar to `AttributeHandler` and is used
+    by the `.ndb` handler in the same way as `.db` does
+    for the `AttributeHandler`.
+    """
+    def __init__(self, obj):
+        """
+        Initialized on the object
+        """
+        self._store = {}
+        self.obj = weakref.proxy(obj)
+
+    def has(self, key):
+        """
+        Check if object has this attribute or not.
+
+        Args:
+            key (str): The Nattribute key to check.
+
+        Returns:
+            has_nattribute (bool): If Nattribute is set or not.
+
+        """
+        return key in self._store
+
+    def get(self, key):
+        """
+        Get the named key value.
+
+        Args:
+            key (str): The Nattribute key to get.
+
+        Returns:
+            the value of the Nattribute.
+
+        """
+        return self._store.get(key, None)
+
+    def add(self, key, value):
+        """
+        Add new key and value.
+
+        Args:
+            key (str): The name of Nattribute to add.
+            value (any): The value to store.
+
+        """
+        self._store[key] = value
+
+    def remove(self, key):
+        """
+        Remove Nattribute from storage.
+
+        Args:
+            key (str): The name of the Nattribute to remove.
+
+        """
+        if key in self._store:
+            del self._store[key]
+
+    def clear(self):
+        """
+        Remove all NAttributes from handler.
+
+        """
+        self._store = {}
+
+    def all(self, return_tuples=False):
+        """
+        List the contents of the handler.
+
+        Args:
+            return_tuples (bool, optional): Defines if the Nattributes
+                are returns as a list of keys or as a list of `(key, value)`.
+
+        Returns:
+            nattributes (list): A list of keys `[key, key, ...]` or a
+                list of tuples `[(key, value), ...]` depending on the
+                setting of `return_tuples`.
+
+        """
+        if return_tuples:
+            return [(key, value) for (key, value) in self._store.items() if not key.startswith("_")]
+        return [key for key in self._store if not key.startswith("_")]
 
 
 #------------------------------------------------------------
@@ -323,6 +440,14 @@ class ServerSession(Session):
     # (note that no databse is involved at all here. session.db.attr =
     # value just saves a normal property in memory, just like ndb).
 
+    @lazy_property
+    def nattributes(self):
+        return NAttributeHandler(self)
+
+    @lazy_property
+    def attributes(self):
+        return self.nattributes
+
     #@property
     def ndb_get(self):
         """
@@ -335,19 +460,7 @@ class ServerSession(Session):
         try:
             return self._ndb_holder
         except AttributeError:
-            class NdbHolder(object):
-                "Holder for storing non-persistent attributes."
-                def all(self):
-                    return [val for val in self.__dict__.keys()
-                            if not val.startswith['_']]
-
-                def __getattribute__(self, key):
-                    # return None if no matching attribute was found.
-                    try:
-                        return object.__getattribute__(self, key)
-                    except AttributeError:
-                        return None
-            self._ndb_holder = NdbHolder()
+            self._ndb_holder = NDbHolder(self, "nattrhandler", manager_name="nattributes")
             return self._ndb_holder
 
     #@ndb.setter
