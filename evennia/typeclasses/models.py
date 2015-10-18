@@ -455,7 +455,6 @@ class TypedObject(SharedMemoryModel):
                     if hasattr(self.ndb, nattr):
                         self.nattributes.remove(nattr)
             else:
-                #print "deleting attrs ..."
                 self.attributes.clear()
                 self.nattributes.clear()
 

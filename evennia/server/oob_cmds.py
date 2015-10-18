@@ -198,7 +198,6 @@ def oob_send(session, *args, **kwargs):
     if obj:
         for name in (a.upper() for a in args if a):
             try:
-                #print "MSDP SEND inp:", name
                 value = OOB_SENDABLE.get(name, _NA)(obj)
                 ret[name] = value
             except Exception, e:
@@ -257,7 +256,6 @@ def oob_report(session, *args, **kwargs):
             else:
                 OOB_HANDLER.add_attribute_monitor(obj, session.sessid, propname, "return_attribute_report")
                 ret.append(_GA(obj, "db_value"))
-        #print "ret:", ret
         session.msg(oob=("MSDP_ARRAY", ret))
     else:
         oob_error(session, "You must log in first.")

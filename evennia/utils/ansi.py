@@ -134,10 +134,8 @@ class ANSIParser(object):
 
         if convert:
             colval = 16 + (red * 36) + (green * 6) + blue
-            #print "RGB colours:", red, green, blue
             return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval/100, (colval % 100)/10, colval%10)
         else:
-            #print "ANSI convert:", red, green, blue
             # xterm256 not supported, convert the rgb value to ansi instead
             if red == green and red == blue and red < 2:
                 if background:

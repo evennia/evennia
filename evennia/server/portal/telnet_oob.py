@@ -160,7 +160,6 @@ class TelnetOOB(object):
             else:
                 msdp_string = "%s%s%s" % (MSDP_VAR. cmdname, "".join(
                     ["%s%s%s%s" % (MSDP_VAR, key, MSDP_VAL, val) for key, val in kwargs.items()]))
-        #print "encode msdp result:", cmdname, args, kwargs, "->", msdp_string
         return force_str(msdp_string)
 
     def encode_gmcp(self, cmdname, *args, **kwargs):
@@ -194,7 +193,6 @@ class TelnetOOB(object):
             gmcp_string = "%s %s" % (cmdname, json.dumps(args))
         elif kwargs:
             gmcp_string = "%s %s" % (cmdname, json.dumps(kwargs))
-        #print "gmcp_encode", cmdname, args, kwargs, "->", gmcp_string
         return force_str(gmcp_string).strip()
 
     def decode_msdp(self, data):
@@ -233,8 +231,6 @@ class TelnetOOB(object):
             parts = msdp_regex_val.split(varval)
             variables[parts[0]] = tuple(parts[1:]) if len(parts) > 1 else ("", )
 
-        #print "OOB: MSDP decode:", data, "->", variables, arrays, tables
-
         # send to the sessionhandler
         if data:
             for varname, var in variables.items():
@@ -263,7 +259,6 @@ class TelnetOOB(object):
         if hasattr(data, "__iter__"):
             data = "".join(data)
 
-        #print "decode_gmcp:", data
         if data:
             splits = data.split(None, 1)
             cmdname = splits[0]
@@ -282,7 +277,6 @@ class TelnetOOB(object):
                         args = tuple(struct)
                 else:
                     args = (struct,)
-                #print "gmcp decode:", data, "->", cmdname, args, kwargs
                 self.protocol.data_in(oob=(cmdname, args, kwargs))
 
     # access methods
@@ -296,7 +290,6 @@ class TelnetOOB(object):
             args, kwargs (any): Arguments to OOB command.
 
         """
-        #print "data_out:", encoded_oob
         if self.MSDP:
             encoded_oob = self.encode_msdp(cmdname, *args, **kwargs)
             self.protocol._write(IAC + SB + MSDP + encoded_oob + IAC + SE)

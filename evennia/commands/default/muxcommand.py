@@ -100,7 +100,6 @@ class MuxCommand(Command):
         switches = []
         if args and len(args) > 1 and args[0] == "/":
             # we have a switch, or a set of switches. These end with a space.
-            #print "'%s'" % args
             switches = args[1:].split(None, 1)
             if len(switches) > 1:
                 switches, args = switches

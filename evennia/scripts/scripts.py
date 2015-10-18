@@ -226,7 +226,6 @@ class DefaultScript(ScriptBase):
         callcount = self.ndb._task.callcount
         maxcount = self.db_repeats
         if maxcount > 0 and maxcount <= callcount:
-            #print "stopping script!"
             self.stop()
 
     def _step_task(self):

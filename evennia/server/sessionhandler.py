@@ -607,7 +607,6 @@ class ServerSessionHandler(SessionHandler):
                 if not _OOB_HANDLER:
                     from evennia.server.oobhandler import OOB_HANDLER as _OOB_HANDLER
                 funcname, args, kwargs = kwargs.pop("oob")
-                #print "OOB session.data_in:", funcname, args, kwargs
                 if funcname:
                     _OOB_HANDLER.execute_cmd(session, funcname, *args, **kwargs)
 

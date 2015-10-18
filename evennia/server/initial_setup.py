@@ -198,14 +198,11 @@ def handle_setup(last_step):
                    at_initial_setup,
                    reset_server]
 
-    #print " Initial setup: %s steps." % (len(setup_queue))
-
     # step through queue, from last completed function
     for num, setup_func in enumerate(setup_queue[last_step:]):
         # run the setup function. Note that if there is a
         # traceback we let it stop the system so the config
         # step is not saved.
-        #print "%s..." % num
 
         try:
             setup_func()
