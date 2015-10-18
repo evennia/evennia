@@ -264,11 +264,13 @@ class EvMenu(object):
             allow_quit (bool, optional): Allow user to use quit or
                 exit to leave the menu at any point. Recommended during
                 development!
-            cmd_on_quit (str or None, optional): When exiting the menu
+            cmd_on_quit (callback, str or None, optional): When exiting the menu
                 (either by reaching a node with no options or by using the
                 in-built quit command (activated with `allow_quit`), this
-                command string will be executed. Set to None to not call
-                any command.
+                callback function or command string will be executed.
+                The callback function takes two parameters, the caller then the
+                EvMenu object. This is called after cleanup is complete.
+                Set to None to not call any command.
 
         Raises:
             EvMenuError: If the start/end node is not found in menu tree.
@@ -283,7 +285,12 @@ class EvMenu(object):
 
         # variables made available to the command
         self.allow_quit = allow_quit
-        self.cmd_on_quit = cmd_on_quit
+        if isinstance(cmd_on_quit, str):
+            self.cmd_on_quit = lambda caller, menu: caller.execute_cmd(cmd_on_quit)
+        elif callable(cmd_on_quit):
+            self.cmd_on_quit = cmd_on_quit
+        else:
+            self.cmd_on_quit = None
         self.default = None
         self.nodetext = None
         self.helptext = None
@@ -459,7 +466,6 @@ class EvMenu(object):
         cmd = raw_string.strip().lower()
         options = self.options
         allow_quit = self.allow_quit
-        cmd_on_quit = self.cmd_on_quit
         default = self.default
 
         if cmd in options:
@@ -476,8 +482,6 @@ class EvMenu(object):
             caller.msg(self.helptext)
         elif allow_quit and cmd in ("quit", "q", "exit"):
             self.close_menu()
-            if cmd_on_quit is not None:
-                caller.execute_cmd(cmd_on_quit)
         elif default:
             goto, callback = default
             if callback:
@@ -490,8 +494,6 @@ class EvMenu(object):
         if not (options or default):
             # no options - we are at the end of the menu.
             self.close_menu()
-            if cmd_on_quit is not None:
-                caller.execute_cmd(cmd_on_quit)
 
 
     def callback(self, nodename, raw_string):
@@ -596,6 +598,8 @@ class EvMenu(object):
         """
         self._caller.cmdset.remove(EvMenuCmdSet)
         del self._caller.ndb._menutree
+        if self.cmd_on_quit is not None:
+            self.cmd_on_quit(self._caller, self)
 
 
 # -------------------------------------------------------------------------------------------------
