@@ -90,8 +90,6 @@ class Ttype(object):
         except TypeError:
             pass
 
-        #print "incoming TTYPE option:", option
-
         if self.ttype_step == 0:
             # just start the request chain
             self.protocol.requestNegotiation(TTYPE, SEND)
@@ -153,7 +151,6 @@ class Ttype(object):
                     self.protocol.protocol_flags['TTYPE'][option.upper()] = True
 
             self.protocol.protocol_flags['TTYPE']['init_done'] = True
-            # print "TTYPE final:", self.protocol.protocol_flags['TTYPE']
             # we must sync ttype once it'd done
             self.protocol.handshake_done()
         self.ttype_step += 1

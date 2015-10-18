@@ -286,7 +286,6 @@ class AttributeHandler(object):
         ret = []
         key = [k.strip().lower() for k in make_iter(key) if k]
         category = category.strip().lower() if category is not None else None
-        #print "cache:", self._cache.keys(), key
         if not key:
             # return all with matching category (or no category)
             catkey = "-%s" % category if category is not None else None

@@ -127,7 +127,6 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
 
         try:
             # first try to get from cache
-            #print "importing %s: _CACHED_CMDSETS=%s" % (python_path, _CACHED_CMDSETS)
             cmdsetclass = _CACHED_CMDSETS.get(python_path, None)
 
             if not cmdsetclass:
@@ -243,7 +242,6 @@ class CmdSetHandler(object):
         mergelist = []
         if len(self.cmdset_stack) > 1:
             # We have more than one cmdset in stack; list them all
-            #print self.cmdset_stack, self.mergetype_stack
             for snum, cmdset in enumerate(self.cmdset_stack):
                 mergetype = self.mergetype_stack[snum]
                 permstring = "non-perm"
@@ -310,7 +308,6 @@ class CmdSetHandler(object):
         if init_mode:
             # reimport all permanent cmdsets
             storage = self.obj.cmdset_storage
-            #print "cmdset_storage:", self.obj.cmdset_storage
             if storage:
                 self.cmdset_stack = []
                 for pos, path in enumerate(storage):

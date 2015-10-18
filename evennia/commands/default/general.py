@@ -233,7 +233,6 @@ class CmdGet(MuxCommand):
         if not self.args:
             caller.msg("Get what?")
             return
-        #print "general/get:", caller, caller.location, self.args, caller.location.contents
         obj = caller.search(self.args, location=caller.location)
         if not obj:
             return

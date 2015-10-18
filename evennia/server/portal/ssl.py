@@ -54,7 +54,6 @@ def verify_SSL_key_and_cert(keyfile, certfile):
         # default:
         #openssl req -new -x509 -key ssl.key -out ssl.cert -days 7300
         exestring = "openssl req -new -x509 -key %s -out %s -days %s" % (keyfile, certfile, CERT_EXPIRE)
-        #print "exestring:", exestring
         try:
             #, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             subprocess.call(exestring)

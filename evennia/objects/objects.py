@@ -585,7 +585,6 @@ class DefaultObject(ObjectDB):
 
         # Perform move
         try:
-            #print "move_to location:", destination
             self.location = destination
         except Exception:
             emit_to_obj.msg(errtxt % "location change")

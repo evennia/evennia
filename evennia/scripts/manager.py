@@ -197,7 +197,6 @@ class ScriptDBManager(TypedObjectManager):
             if dbref and self.dbref(dbref, reqhash=False):
                 scripts = self.get_id(dbref)
             elif obj:
-                #print "calling get_all_scripts_on_obj", obj, key, VALIDATE_ITERATION
                 scripts = self.get_all_scripts_on_obj(obj, key=key)
             else:
                 scripts = self.get_all_scripts(key=key) #self.model.get_all_cached_instances()
@@ -207,12 +206,9 @@ class ScriptDBManager(TypedObjectManager):
             VALIDATE_ITERATION -= 1
             return None, None
 
-        #print "scripts to validate: [%s]" % (", ".join(script.key for script in scripts))
         for script in scripts:
-            #print "validating %s (%i) (init_mode=%s)" % (script.key, id(script), init_mode)
             if script.is_valid():
                 nr_started += script.start(force_restart=init_mode)
-                #print "back from start. nr_started=", nr_started
             else:
                 script.stop()
                 nr_stopped += 1

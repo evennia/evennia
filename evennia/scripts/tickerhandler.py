@@ -344,7 +344,6 @@ class TickerHandler(object):
         ticker_storage = ServerConfig.objects.conf(key=self.save_name)
         if ticker_storage:
             self.ticker_storage = dbunserialize(ticker_storage)
-            #print "restore:", self.ticker_storage
             for store_key, (args, kwargs) in self.ticker_storage.items():
                 obj, interval, idstring = store_key
                 obj = unpack_dbobj(obj)

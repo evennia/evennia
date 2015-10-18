@@ -592,7 +592,6 @@ class CmdColorTest(MuxPlayerCommand):
             string = "ANSI colors:"
             for row in table:
                 string += "\n " + " ".join(row)
-            #print string
             self.msg(string)
             self.msg("{{X : black. {{/ : return, {{- : tab, {{_ : space, {{* : invert, {{u : underline")
             self.msg("To combine background and foreground, add background marker last, e.g. {{r{{[b.")

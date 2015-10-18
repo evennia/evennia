@@ -296,7 +296,6 @@ def get_and_merge_cmdsets(caller, session, player, obj,
                 tempmergers = {}
                 for cmdset in cmdsets:
                     prio = cmdset.priority
-                    #print cmdset.key, prio
                     if prio in tempmergers:
                         # merge same-prio cmdset together separately
                         tempmergers[prio] = yield cmdset + tempmergers[prio]
@@ -309,8 +308,6 @@ def get_and_merge_cmdsets(caller, session, player, obj,
                 # Merge all command sets into one, beginning with the lowest-prio one
                 cmdset = cmdsets[0]
                 for merging_cmdset in cmdsets[1:]:
-                    #print "<%s(%s,%s)> onto <%s(%s,%s)>" % (merging_cmdset.key, merging_cmdset.priority, merging_cmdset.mergetype,
-                    #                                        cmdset.key, cmdset.priority, cmdset.mergetype)
                     cmdset = yield merging_cmdset + cmdset
                 # store the full sets for diagnosis
                 cmdset.merged_from = cmdsets
@@ -321,7 +318,6 @@ def get_and_merge_cmdsets(caller, session, player, obj,
 
         for cset in (cset for cset in local_obj_cmdsets if cset):
             cset.duplicates = cset.old_duplicates
-        #print "merged set:", cmdset.key
         returnValue(cmdset)
     except ErrorReported:
         raise

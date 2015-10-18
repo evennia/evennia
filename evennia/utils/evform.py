@@ -245,8 +245,6 @@ class EvForm(object):
                     ix0 = match.end()
                 else:
                     break
-        #print "cell_coords:", cell_coords
-        #print "table_coords:", table_coords
 
         # get rectangles and assign EvCells
         for key, (iy, leftix, rightix) in cell_coords.items():
@@ -255,7 +253,6 @@ class EvForm(object):
             dy_up = 0
             if iy > 0:
                 for i in range(1,iy):
-                    #print "dy_up:", [form[iy-i][ix] for ix in range(leftix, rightix)]
                     if all(form[iy-i][ix] == cellchar for ix in range(leftix, rightix)):
                         dy_up += 1
                     else:
@@ -264,7 +261,6 @@ class EvForm(object):
             dy_down = 0
             if iy < nform-1:
                 for i in range(1,nform-iy-1):
-                    #print "dy_down:", [form[iy+i][ix]for ix in range(leftix, rightix)]
                     if all(form[iy+i][ix] == cellchar for ix in range(leftix, rightix)):
                         dy_down += 1
                     else:
@@ -279,13 +275,10 @@ class EvForm(object):
             # we have all the coordinates we need. Create EvCell.
             data = self.cells_mapping.get(key, "")
             #if key == "1":
-            #    print "creating cell '%s' (%s):" % (key, data)
-            #    print "iy=%s, iyup=%s, iydown=%s, leftix=%s, rightix=%s, width=%s, height=%s" % (iy, iyup, iydown, leftix, rightix, width, height)
 
             options = { "pad_left":0, "pad_right":0, "pad_top":0, "pad_bottom":0, "align":"l", "valign":"t", "enforce_size":True}
             options.update(custom_options)
             #if key=="4":
-            #print "options:", options
 
             mapping[key] = (iyup, leftix, width, height, EvCell(data, width=width, height=height,**options))
 
@@ -296,7 +289,6 @@ class EvForm(object):
             dy_up = 0
             if iy > 0:
                 for i in range(1,iy):
-                    #print "dy_up:", [form[iy-i][ix] for ix in range(leftix, rightix)]
                     if all(form[iy-i][ix] == tablechar for ix in range(leftix, rightix)):
                         dy_up += 1
                     else:
@@ -305,7 +297,6 @@ class EvForm(object):
             dy_down = 0
             if iy < nform-1:
                 for i in range(1,nform-iy-1):
-                    #print "dy_down:", [form[iy+i][ix]for ix in range(leftix, rightix)]
                     if all(form[iy+i][ix] == tablechar for ix in range(leftix, rightix)):
                         dy_down += 1
                     else:
@@ -319,13 +310,10 @@ class EvForm(object):
 
             # we have all the coordinates we need. Create Table.
             table = self.tables_mapping.get(key, None)
-            #print "creating table '%s' (%s):" % (key, data)
-            #print "iy=%s, iyup=%s, iydown=%s, leftix=%s, rightix=%s, width=%s, height=%s" % (iy, iyup, iydown, leftix, rightix, width, height)
 
             options = { "pad_left":0, "pad_right":0, "pad_top":0, "pad_bottom":0,
                         "align":"l", "valign":"t", "enforce_size":True}
             options.update(custom_options)
-            #print "options:", options
 
             if table:
                 table.reformat(width=width, height=height, **options)

@@ -79,7 +79,6 @@ class OpenLidState(DefaultScript):
         automatically checked, so we don't need to worry about
         adding the cmdset to a closed lid-button.
         """
-        #print "In Open at_start (should add cmdset)"
         self.obj.cmdset.add(cmdsetexamples.LidOpenCmdSet)
 
     def is_valid(self):
@@ -215,7 +214,6 @@ class BlinkButtonEvent(DefaultScript):
         """
         Button will keep blinking unless it is broken.
         """
-        #print "self.obj.db.lamp_works:", self.obj.db.lamp_works
         return self.obj.db.lamp_works
 
     def at_repeat(self):
