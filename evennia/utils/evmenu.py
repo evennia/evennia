@@ -706,6 +706,9 @@ def test_start_node(caller):
                 "desc": "Set an attribute on yourself.",
                 "exec": lambda caller: caller.attributes.add("menuattrtest", "Test value"),
                 "goto": "test_set_node"},
+               {"key": ("{yL{nook", "l"),
+                "desc": "Look and see a custom message.",
+                "goto": "test_look_node"},
                {"key": ("{yV{niew", "v"),
                 "desc": "View your own name",
                 "goto": "test_view_node"},
@@ -716,6 +719,13 @@ def test_start_node(caller):
                 "goto": "test_displayinput_node"})
     return text, options
 
+
+def test_look_node(caller):
+    text = "Looking again will take you back to the previous message."
+    options = {"key": ("{yL{nook", "l"),
+               "desc": "Go back to the previous menu.",
+               "goto": "test_start_node"}
+    return text, options
 
 def test_set_node(caller):
     text = ("""
