@@ -30,6 +30,7 @@ except ImportError:
 from twisted.protocols import amp
 from twisted.internet import protocol, reactor
 from twisted.internet.defer import Deferred
+from evennia.utils import logger
 from evennia.utils.utils import to_str, variable_from_module
 
 # communication bits
@@ -377,8 +378,8 @@ class AMPProtocol(amp.AMP):
 
         """
         e.trap(Exception)
-        print("AMP Error for %(info)s: %(e)s" % {'info': info,
-                                                 'e': e.getErrorMessage()})
+        logger.log_err("AMP Error for %(info)s: %(e)s" % {'info': info,
+                                                          'e': e.getErrorMessage()})
 
     def send_data(self, command, sessid, **kwargs):
         """

@@ -8,7 +8,8 @@ from __future__ import print_function
 from django.db import models
 from django.db.models import Q
 from evennia.typeclasses.managers import (TypedObjectManager, TypeclassManager,
-                                      returns_typeclass_list, returns_typeclass)
+                                          returns_typeclass_list, returns_typeclass)
+from evennia.utils import logger
 
 _GA = object.__getattribute__
 _PlayerDB = None
@@ -109,7 +110,7 @@ def to_object(inp, objtype='player'):
             return _PlayerDB.objects.get(user_username__iexact=obj)
         if typ == 'dbref':
             return _PlayerDB.objects.get(id=obj)
-        print(objtype, inp, obj, typ, type(inp))
+        logger.log_err("%s %s %s %s %s", objtype, inp, obj, typ, type(inp))
         raise CommError()
     elif objtype == 'object':
         if typ == 'player':
@@ -118,14 +119,14 @@ def to_object(inp, objtype='player'):
             return _ObjectDB.objects.get(db_key__iexact=obj)
         if typ == 'dbref':
             return _ObjectDB.objects.get(id=obj)
-        print(objtype, inp, obj, typ, type(inp))
+        logger.log_err("%s %s %s %s %s", objtype, inp, obj, typ, type(inp))
         raise CommError()
     elif objtype == 'channel':
         if typ == 'string':
             return _ChannelDB.objects.get(db_key__iexact=obj)
         if typ == 'dbref':
             return _ChannelDB.objects.get(id=obj)
-        print(objtype, inp, obj, typ, type(inp))
+        logger.log_err("%s %s %s %s %s", objtype, inp, obj, typ, type(inp))
         raise CommError()
 
 #
