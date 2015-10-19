@@ -236,7 +236,7 @@ class CmdPasswordCreate(Command):
             # to handle tracebacks ourselves at this point. If we don't, we
             # won't see any errors at all.
             self.caller.msg("An error occurred. Please e-mail an admin if the problem persists.")
-            logger.log_errmsg(traceback.format_exc())
+            logger.log_trace()
 
 
 # Menu entry 3 - help screen
