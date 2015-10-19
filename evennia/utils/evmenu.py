@@ -242,6 +242,8 @@ def evtable_options_formatter(optionlist):
     table_width_max = -1
     table = []
     for key, desc in optionlist:
+        if not (key or desc):
+            continue
         table_width_max = max(table_width_max,
                               max(m_len(p) for p in key.split("\n")) +
                               max(m_len(p) for p in desc.split("\n")) + colsep)
