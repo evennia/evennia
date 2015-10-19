@@ -911,27 +911,6 @@ def mod_import(module):
 
     """
 
-    def log_trace(errmsg=None):
-        """
-        Log a traceback to the log. This should be called
-        from within an exception. `errmsg` is optional and
-        adds an extra line with added info.
-        """
-        from twisted.python import log
-        print(errmsg)
-
-        tracestring = traceback.format_exc()
-        if tracestring:
-            for line in tracestring.splitlines():
-                log.msg('[::] %s' % line)
-        if errmsg:
-            try:
-                errmsg = to_str(errmsg)
-            except Exception as e:
-                errmsg = str(e)
-            for line in errmsg.splitlines():
-                log.msg('[EE] %s' % line)
-
     if not module:
         return None
 
@@ -947,7 +926,6 @@ def mod_import(module):
             # an erroneous import inside the module as well). This is the
             # trivial way to do it ...
             if str(ex) != "Import by filename is not supported.":
-                #log_trace("ImportError inside module '%s': '%s'" % (module, str(ex)))
                 raise
 
             # error in this module. Try absolute path import instead
@@ -960,12 +938,12 @@ def mod_import(module):
             try:
                 result = imp.find_module(modname, [path])
             except ImportError:
-                log_trace("Could not find module '%s' (%s.py) at path '%s'" % (modname, modname, path))
+                logger.log_trace("Could not find module '%s' (%s.py) at path '%s'" % (modname, modname, path))
                 return
             try:
                 mod = imp.load_module(modname, *result)
             except ImportError:
-                log_trace("Could not find or import module %s at path '%s'" % (modname, path))
+                logger.log_trace("Could not find or import module %s at path '%s'" % (modname, path))
                 mod = None
             # we have to close the file handle manually
             result[0].close()
