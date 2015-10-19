@@ -1,7 +1,7 @@
 """Implement some common transforms on parsed AST."""
 import os
 import sys
-from states import DummyStateMachine
+from .states import DummyStateMachine
 from docutils import nodes, transforms
 from docutils.statemachine import StringList
 
