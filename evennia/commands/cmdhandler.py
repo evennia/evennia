@@ -580,7 +580,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
 
         except NoCmdSets:
             # Critical error.
-            logger.log_errmsg("No cmdsets found: %s" % caller)
+            logger.log_err("No cmdsets found: %s" % caller)
             error_to.msg(_ERROR_NOCMDSETS, _nomulti=True)
 
         except Exception:

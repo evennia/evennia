@@ -265,12 +265,12 @@ class ObjectDB(TypedObject):
 
         except RuntimeError:
             errmsg = "Error: %s.location = %s creates a location loop." % (self.key, location)
-            logger.log_errmsg(errmsg)
-            raise #RuntimeError(errmsg)
+            logger.log_trace(errmsg)
+            raise
         except Exception, e:
             errmsg = "Error (%s): %s is not a valid location." % (str(e), location)
-            logger.log_errmsg(errmsg)
-            raise #Exception(errmsg)
+            logger.log_trace(errmsg)
+            raise
 
     def __location_del(self):
         "Cleanly delete the location reference"

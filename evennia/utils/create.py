@@ -245,7 +245,7 @@ def create_help_entry(key, entrytext, category="General", locks=None):
         return new_help
     except IntegrityError:
         string = "Could not add help entry: key '%s' already exists." % key
-        logger.log_errmsg(string)
+        logger.log_err(string)
         return None
     except Exception:
         logger.log_trace()

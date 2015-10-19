@@ -148,8 +148,8 @@ class IRCBot(irc.IRCClient, Session):
         self.uid = int(self.factory.uid)
         self.logged_in = True
         self.factory.sessionhandler.connect(self)
-        logger.log_infomsg("IRC bot '%s' connected to %s at %s:%s." % (self.nickname, self.channel,
-                                                                              self.network, self.port))
+        logger.log_info("IRC bot '%s' connected to %s at %s:%s." % (self.nickname, self.channel,
+                                                                    self.network, self.port))
 
     def disconnect(self, reason=None):
         """
@@ -276,7 +276,7 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
             connector (Connector): Represents the connection.
 
         """
-        logger.log_infomsg("(re)connecting to %s" % self.channel)
+        logger.log_info("(re)connecting to %s" % self.channel)
 
     def clientConnectionFailed(self, connector, reason):
         """

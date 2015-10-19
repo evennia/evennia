@@ -94,7 +94,7 @@ class RSSReader(Session):
 
     def _errback(self, fail):
         "Report error"
-        logger.log_errmsg("RSS feed error: %s" % fail.value)
+        logger.log_err("RSS feed error: %s" % fail.value)
 
     def update(self, init=False):
         """
@@ -139,7 +139,7 @@ class RSSBotFactory(object):
         Called by portalsessionhandler. Starts te bot.
         """
         def errback(fail):
-            logger.log_errmsg(fail.value)
+            logger.log_err(fail.value)
 
         # set up session and connect it to sessionhandler
         self.bot.init_session("rssbot", self.url, self.sessionhandler)
