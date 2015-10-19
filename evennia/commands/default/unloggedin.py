@@ -140,8 +140,7 @@ class CmdUnconnectedConnect(MuxCommand):
                     # We are in the middle between logged in and -not, so we have
                     # to handle tracebacks ourselves at this point. If we don't,
                     # we won't see any errors at all.
-                    string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
-                    session.msg(string % (traceback.format_exc()))
+                    session.msg("An error occurred. Please e-mail an admin if the problem persists.")
                     logger.log_errmsg(traceback.format_exc())
                 finally:
                     return
@@ -287,8 +286,7 @@ class CmdUnconnectedCreate(MuxCommand):
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
-            string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
-            session.msg(string % (traceback.format_exc()))
+            session.msg("An error occurred. Please e-mail an admin if the problem persists.")
             logger.log_errmsg(traceback.format_exc())
 
 
@@ -481,7 +479,7 @@ def _create_player(session, playername, password, permissions, typeclass=None):
     pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
     if not pchannel.connect(new_player):
         string = "New player '%s' could not connect to public channel!" % new_player.key
-        logger.log_errmsg(string)
+        logger.log_err(string)
     return new_player
 
 

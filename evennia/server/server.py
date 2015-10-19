@@ -269,7 +269,6 @@ class Evennia(object):
         #update eventual changed defaults
         self.update_defaults()
 
-        #print "run_init_hooks:", ObjectDB.get_all_cached_instances()
         [o.at_init() for o in ObjectDB.get_all_cached_instances()]
         [p.at_init() for p in PlayerDB.get_all_cached_instances()]
 

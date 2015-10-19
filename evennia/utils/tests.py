@@ -174,7 +174,6 @@ class TestCrop(TestCase):
 
 class TestDedent(TestCase):
     def test_dedent(self):
-        #print "Did TestDedent run?"
         # Empty string, return empty string
         self.assertEqual("", utils.dedent(""))
         # No leading whitespace

@@ -61,12 +61,9 @@ class SharedMemoryModelBase(ModelBase):
 
         instance_key = cls._get_cache_key(args, kwargs)
         # depending on the arguments, we might not be able to infer the PK, so in that case we create a new instance
-        #print "SharedMemoryModelBase.__call__ 1: calledby:", calledby(3)
-        #print "SharedMemoryModelBase.__call__ 2: instance_key:", instance_key
         if instance_key is None:
             return new_instance()
         cached_instance = cls.get_cached_instance(instance_key)
-        #print "SharedMemoryModelBase.__call__ 3: cached_instance:", cached_instance
         if cached_instance is None:
             cached_instance = new_instance()
             cls.cache_instance(cached_instance, new=True)
@@ -114,7 +111,6 @@ class SharedMemoryModelBase(ModelBase):
             "Helper method to create property wrappers with unique names (must be in separate call)"
             def _get(cls, fname):
                 "Wrapper for getting database field"
-                #print "_get:", fieldname, wrappername,_GA(cls,fieldname)
                 if _GA(cls, "_is_deleted"):
                     raise ObjectDoesNotExist("Cannot access %s: Hosting object was already deleted." % fname)
                 return _GA(cls, fieldname)
@@ -196,12 +192,9 @@ class SharedMemoryModelBase(ModelBase):
         for fieldname, field in ((fname, field) for fname, field in attrs.items()
                                   if fname.startswith("db_") and type(field).__name__ != "ManyToManyField"):
             foreignkey = type(field).__name__ == "ForeignKey"
-            #print fieldname, type(field).__name__, field
             wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "", 1)
-            #print fieldname, wrappername
             if wrappername not in attrs:
                 # makes sure not to overload manually created wrappers on the model
-                #print "wrapping %s -> %s" % (fieldname, wrappername)
                 create_wrapper(cls, fieldname, wrappername, editable=field.editable, foreignkey=foreignkey)
 
         return super(SharedMemoryModelBase, cls).__new__(cls, name, bases, attrs)
@@ -452,9 +445,7 @@ def flush_cache(**kwargs):
             else:
                 yield cls
 
-    #print "start flush ..."
     for cls in class_hierarchy([SharedMemoryModel]):
-        #print cls
         cls.flush_instance_cache()
     # run the python garbage collector
     return gc.collect()
@@ -534,8 +525,8 @@ def conditional_flush(max_rmem, force=False):
 
     if ((now - LAST_FLUSH) < AUTO_FLUSH_MIN_INTERVAL) and not force:
         # too soon after last flush.
-        logger.log_warnmsg("Warning: Idmapper flush called more than "\
-                            "once in %s min interval. Check memory usage." % (AUTO_FLUSH_MIN_INTERVAL/60.0))
+        logger.log_warn("Warning: Idmapper flush called more than "\
+                        "once in %s min interval. Check memory usage." % (AUTO_FLUSH_MIN_INTERVAL/60.0))
         return
 
     if os.name == "nt":

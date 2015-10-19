@@ -1225,9 +1225,6 @@ class EvTable(object):
         self._borders()
 
         # equalize widths within each column
-        #print [col.options for col in self.worktable]
-        #print [[cell.get_width() for cell in col] for col in self.worktable]
-        #print [[cell.get_height() for cell in col] for col in self.worktable]
         cwidths = [max(cell.get_width() for cell in col) for col in self.worktable]
 
         if self.width or self.maxwidth and self.maxwidth < sum(cwidths):
@@ -1281,7 +1278,6 @@ class EvTable(object):
                 # get minimum possible cell heights for each collumn
                 cheights_min = [max(cell.get_min_height() for cell in (col[iy] for col in self.worktable)) for iy in xrange(nrowmax)]
                 chmin = sum(cheights_min)
-                #print "cheights_min:", cheights_min
 
                 if chmin > self.height:
                     # we cannot shrink any more
@@ -1309,7 +1305,6 @@ class EvTable(object):
 
                 # we must tell cells to crop instead of expanding
             options["enforce_size"] = True
-        #print "cheights2:", cheights
 
         # reformat table (for vertical align)
         for ix, col in enumerate(self.worktable):
@@ -1323,7 +1318,6 @@ class EvTable(object):
         # calculate actual table width/height in characters
         self.cwidth = sum(cwidths)
         self.cheight = sum(cheights)
-        #print "actual table width, height:", self.cwidth, self.cheight, self.width, self.height
 
     def _generate_lines(self):
         """

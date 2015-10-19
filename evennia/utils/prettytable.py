@@ -1009,8 +1009,6 @@ class PrettyTable(object):
         if self.rowcount == 0 and (not options["print_empty"] or not options["border"]):
             return ""
 
-        #print "prettytable:", self._rows
-
         # Get the rows we need to print, taking into account slicing, sorting, etc.
         rows = self._get_rows(options)
 
@@ -1373,10 +1371,7 @@ def from_csv(fp, field_names = None, **kwargs):
     if field_names:
         table.field_names = field_names
     else:
-        if py3k:
-            table.field_names = [x.strip() for x in next(reader)]
-        else:
-            table.field_names = [x.strip() for x in next(reader)]
+        table.field_names = [x.strip() for x in next(reader)]
 
     for row in reader:
         table.add_row([x.strip() for x in row])

@@ -448,7 +448,6 @@ class OOBHandler(TickerHandler):
                                                     (session, oobfuncname, args, kwargs)
             raise RuntimeError(errmsg)
 
-        #print "execute_oob:", session, oobfuncname, args, kwargs
         try:
             oobfunc = _OOB_FUNCS[oobfuncname]
         except Exception:

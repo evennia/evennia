@@ -116,7 +116,7 @@ class CmdShutdown(MuxCommand):
         announcement = "\nServer is being SHUT DOWN!\n"
         if self.args:
             announcement += "%s\n" % self.args
-        logger.log_infomsg('Server shutdown by %s.' % self.caller.name)
+        logger.log_info('Server shutdown by %s.' % self.caller.name)
         SESSIONS.announce_all(announcement)
         SESSIONS.server.shutdown(mode='shutdown')
         SESSIONS.portal_shutdown()

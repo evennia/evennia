@@ -144,7 +144,7 @@ def _cache_lockfuncs():
             for tup in (tup for tup in inspect.getmembers(mod) if callable(tup[1])):
                 _LOCKFUNCS[tup[0]] = tup[1]
         else:
-            logger.log_errmsg("Couldn't load %s from PERMISSION_FUNC_MODULES." % modulepath)
+            logger.log_err("Couldn't load %s from PERMISSION_FUNC_MODULES." % modulepath)
 
 #
 # pre-compiled regular expressions

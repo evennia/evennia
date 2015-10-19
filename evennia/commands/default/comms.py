@@ -267,13 +267,11 @@ class CmdChannels(MuxPlayerCommand):
         # all channels we have available to listen to
         channels = [chan for chan in ChannelDB.objects.get_all_channels()
                     if chan.access(caller, 'listen')]
-        #print channels
         if not channels:
             self.msg("No channels available.")
             return
         # all channel we are already subscribed to
         subs = ChannelDB.objects.get_subscriptions(caller)
-        #print subs
 
         if self.cmdstring == "comlist":
             # just display the subscribed channels with no extra info

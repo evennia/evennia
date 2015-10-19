@@ -102,7 +102,6 @@ class AmpServerFactory(protocol.ServerFactory):
             protocol (Protocol): The created protocol.
 
         """
-        #print "Evennia Server connected to Portal at %s." % addr
         self.server.amp_protocol = AMPProtocol()
         self.server.amp_protocol.factory = self
         return self.server.amp_protocol
@@ -140,7 +139,6 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
 
         """
         pass
-        #print 'AMP started to connect:', connector
 
     def buildProtocol(self, addr):
         """
@@ -150,7 +148,6 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
             addr (str): Connection address. Not used.
 
         """
-        #print "Portal connected to Evennia server at %s." % addr
         self.resetDelay()
         self.portal.amp_protocol = AMPProtocol()
         self.portal.amp_protocol.factory = self
@@ -418,7 +415,6 @@ class AMPProtocol(amp.AMP):
 
         """
         sessid, kwargs = loads(packed_data)
-        #print "msg portal -> server (server side):", sessid, msg, loads(ret["data"])
         self.factory.server.sessions.data_in(sessid, **kwargs)
         return {}
 
@@ -435,7 +431,6 @@ class AMPProtocol(amp.AMP):
             deferred (Deferred): Asynchronous return.
 
         """
-        #print "msg portal->server (portal side):", sessid, msg, data
         return self.send_data(MsgPortal2Server, sessid, text=text, **kwargs)
 
     # Server -> Portal message
@@ -455,7 +450,6 @@ class AMPProtocol(amp.AMP):
             packed_data (str): Pickled data (sessid, kwargs) coming over the wire.
         """
         sessid, kwargs = loads(packed_data)
-        #print "msg server->portal (portal side):", sessid, ret["text"], loads(ret["data"])
         self.factory.portal.sessions.data_out(sessid, **kwargs)
         return {}
 
@@ -471,7 +465,6 @@ class AMPProtocol(amp.AMP):
             kwargs (any, optiona): Extra data.
 
         """
-        #print "msg server->portal (server side):", sessid, msg, data
         return self.send_data(MsgServer2Portal, sessid, text=text, **kwargs)
 
     # Server administration from the Portal side
@@ -486,12 +479,10 @@ class AMPProtocol(amp.AMP):
             packed_data (str): Incoming, pickled data.
 
         """
-        #print "serveradmin (server side):", hashid, ipart, nparts
         sessid, kwargs = loads(packed_data)
         operation = kwargs.pop("operation", "")
         server_sessionhandler = self.factory.server.sessions
 
-        #print "serveradmin (server side):", sessid, ord(operation), data
 
         if operation == PCONN:  # portal_session_connect
             # create a new session and sync it
@@ -528,7 +519,6 @@ class AMPProtocol(amp.AMP):
             data (str or dict, optional): Data used in the administrative operation.
 
         """
-        #print "serveradmin (portal side):", sessid, ord(operation), data
         return self.send_data(AdminPortal2Server, sessid, operation=operation, **kwargs)
 
     # Portal administraton from the Server side
@@ -544,7 +534,6 @@ class AMPProtocol(amp.AMP):
             packed_data (str): Data received, a pickled tuple (sessid, kwargs).
 
         """
-        #print "portaladmin (portal side):", sessid, ord(operation), data
         sessid, kwargs = loads(packed_data)
         operation = kwargs.pop("operation")
         portal_sessionhandler = self.factory.portal.sessions

@@ -221,6 +221,82 @@ class EvMenuCmdSet(CmdSet):
         """
         self.add(CmdEvMenuNode())
 
+
+def dedent_strip_nodetext_formatter(nodetext, has_options):
+    return dedent(nodetext).strip()
+
+
+def dedent_nodetext_formatter(nodetext, has_options):
+    return dedent(nodetext)
+
+
+def evtable_options_formatter(optionlist):
+    if not optionlist:
+        return ""
+
+    # column separation distance
+    colsep = 4
+
+    nlist = len(optionlist)
+
+    # get the widest option line in the table.
+    table_width_max = -1
+    table = []
+    for key, desc in optionlist:
+        if not (key or desc):
+            continue
+        table_width_max = max(table_width_max,
+                              max(m_len(p) for p in key.split("\n")) +
+                              max(m_len(p) for p in desc.split("\n")) + colsep)
+        raw_key = strip_ansi(key)
+        if raw_key != key:
+            # already decorations in key definition
+            table.append(ANSIString(" {lc%s{lt%s{le: %s" % (raw_key, key, desc)))
+        else:
+            # add a default white color to key
+            table.append(ANSIString(" {lc%s{lt{w%s{n{le: %s" % (raw_key, raw_key, desc)))
+
+    ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
+    nlastcol = nlist % ncols # number of elements left in last row
+
+    # get the amount of rows needed (start with 4 rows)
+    nrows = 4
+    while nrows * ncols < nlist:
+        nrows += 1
+    ncols = nlist // nrows # number of full columns
+    nlastcol = nlist % nrows # number of elements in last column
+
+    # get the final column count
+    ncols = ncols + 1 if nlastcol > 0 else ncols
+    if ncols > 1:
+        # only extend if longer than one column
+        table.extend([" " for i in xrange(nrows - nlastcol)])
+
+    # build the actual table grid
+    table = [table[icol * nrows : (icol * nrows) + nrows] for icol in xrange(0, ncols)]
+
+    # adjust the width of each column
+    for icol in xrange(len(table)):
+        col_width = max(max(m_len(p) for p in part.split("\n")) for part in table[icol]) + colsep
+        table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
+
+    # format the table into columns
+    return unicode(EvTable(table=table, border="none"))
+
+
+def underline_node_formatter(nodetext, optionstext):
+    nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
+    options_width_max = max(m_len(line) for line in optionstext.split("\n"))
+    total_width = max(options_width_max, nodetext_width_max)
+    separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
+    separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
+    return separator1 + nodetext + separator2 + optionstext
+
+
+def null_node_formatter(nodetext, optionstext):
+    return nodetext + "\n\n" + optionstext
+
+
 #------------------------------------------------------------
 #
 # Menu main class
@@ -305,9 +381,20 @@ class EvMenu(object):
         self._startnode = startnode
         self._menutree = self._parse_menudata(menudata)
 
-        self._nodetext_formatter = nodetext_formatter
-        self._options_formatter = nodetext_formatter
-        self._node_formatter = node_formatter
+        if nodetext_formatter is not None:
+            self._nodetext_formatter = nodetext_formatter
+        else:
+            self._nodetext_formatter = dedent_strip_nodetext_formatter
+
+        if options_formatter is not None:
+            self._options_formatter = options_formatter
+        else:
+            self._options_formatter = evtable_options_formatter
+
+        if node_formatter is not None:
+            self._node_formatter = node_formatter
+        else:
+            self._node_formatter = underline_node_formatter
 
         if startnode not in self._menutree:
             raise EvMenuError("Start node '%s' not in menu tree!" % startnode)
@@ -380,89 +467,16 @@ class EvMenu(object):
             growing to make use of the screen space.
 
         """
-        #
+
         # handle the node text
-        #
+        nodetext = self._nodetext_formatter(nodetext, len(optionlist))
 
-        if self._nodetext_formatter:
-            # use custom formatter
-            nodetext = self._nodetext_formatter(nodetext, len(optionlist))
-        else:
-            nodetext = dedent(nodetext).strip()
-
-        nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
-
-        #
         # handle the options
-        #
+        optionstext = self._options_formatter(optionlist)
 
-        if self._options_formatter:
-            # use custom formatter
-            optionstext = self._options_formatter(optionlist)
-        elif optionlist:
-            # column separation distance
-            colsep = 4
-
-            nlist = len(optionlist)
-
-            # get the widest option line in the table.
-            table_width_max = -1
-            table = []
-            for key, desc in optionlist:
-                table_width_max = max(table_width_max,
-                                      max(m_len(p) for p in key.split("\n")) +
-                                      max(m_len(p) for p in desc.split("\n")) + colsep)
-                raw_key = strip_ansi(key)
-                if raw_key != key:
-                    # already decorations in key definition
-                    table.append(ANSIString(" {lc%s{lt%s{le: %s" % (raw_key, key, desc)))
-                else:
-                    # add a default white color to key
-                    table.append(ANSIString(" {lc%s{lt{w%s{n{le: %s" % (raw_key, raw_key, desc)))
-
-            ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
-            nlastcol = nlist % ncols # number of elements left in last row
-
-            # get the amount of rows needed (start with 4 rows)
-            nrows = 4
-            while nrows * ncols < nlist:
-                nrows += 1
-            ncols = nlist // nrows # number of full columns
-            nlastcol = nlist % nrows # number of elements in last column
-
-            # get the final column count
-            ncols = ncols + 1 if nlastcol > 0 else ncols
-            if ncols > 1:
-                # only extend if longer than one column
-                table.extend([" " for i in xrange(nrows-nlastcol)])
-
-            # build the actual table grid
-            table = [table[icol*nrows:(icol*nrows) + nrows] for icol in xrange(0, ncols)]
-
-            # adjust the width of each column
-            for icol in xrange(len(table)):
-                col_width = max(max(m_len(p) for p in part.split("\n")) for part in table[icol]) + colsep
-                table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
-
-            # format the table into columns
-            optionstext = unicode(EvTable(table=table, border="none"))
-        else:
-            optionstext = ""
-
-        options_width_max = max(m_len(line) for line in optionstext.split("\n"))
-
-        #
         # format the entire node
-        #
-        if self._node_formatter:
-            # use custom formatter
-            return self._node_formatter(nodetext, optionstext)
-        else:
-            # build the page
-            total_width = max(options_width_max, nodetext_width_max)
-            separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
-            separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
-            return separator1 + nodetext + separator2 + optionstext
+        return self._node_formatter(nodetext, optionstext)
+
 
     def _execute_node(self, nodename, raw_string):
         """
@@ -769,7 +783,7 @@ def test_start_node(caller):
 
 
 def test_look_node(caller):
-    text = "Looking again will take you back to the previous message."
+    text = ""
     options = {"key": ("{yL{nook", "l"),
                "desc": "Go back to the previous menu.",
                "goto": "test_start_node"}

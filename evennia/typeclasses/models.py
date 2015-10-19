@@ -122,9 +122,7 @@ class DbHolder(object):
         if attrname == 'all':
             # we allow to overload our default .all
             attr = _GA(self, _GA(self, 'name')).get("all")
-            if attr:
-                return attr
-            return _GA(self, "all")
+            return attr if attr else _GA(self, "all")
         return _GA(self, _GA(self, 'name')).get(attrname)
 
     def __setattr__(self, attrname, value):
@@ -457,7 +455,6 @@ class TypedObject(SharedMemoryModel):
                     if hasattr(self.ndb, nattr):
                         self.nattributes.remove(nattr)
             else:
-                #print "deleting attrs ..."
                 self.attributes.clear()
                 self.nattributes.clear()
 

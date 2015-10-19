@@ -335,7 +335,6 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
         # we scan backwards so we can replace in-situ without messing
         # up later occurrences. Given a marker match, query from
         # start index forward for all candidates.
-        #print "marker_match:", marker_match.re.pattern, marker_match.groups()
 
         # first see if there is a number given (e.g. 1-tall)
         num_identifier, _ = marker_match.groups("") # return "" if no match, rather than None

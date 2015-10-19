@@ -2416,7 +2416,6 @@ class CmdTag(MuxCommand):
             category = None
             if ":" in tag:
                 tag, category = [part.strip() for part in tag.split(":", 1)]
-            #print "tag search:", tag, search_category
             objs = search.search_tag(tag, category=category)
             nobjs = len(objs)
             if nobjs > 0:

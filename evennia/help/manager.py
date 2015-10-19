@@ -126,7 +126,7 @@ class HelpEntryManager(models.Manager):
             topic.help_category = default_category
             topic.save()
         string = "Help database moved to category %s" % default_category
-        logger.log_infomsg(string)
+        logger.log_info(string)
 
     def search_help(self, ostring, help_category=None):
         """

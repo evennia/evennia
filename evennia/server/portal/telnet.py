@@ -165,7 +165,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         if data and data[0] == IAC or self.iaw_mode:
             try:
-                #print "IAC mode"
                 super(TelnetProtocol, self).dataReceived(data)
                 if len(data) == 1:
                     self.iaw_mode = True
@@ -196,12 +195,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         # if we get to this point the command should end with a linebreak.
         # We make sure to add it, to fix some clients messing this up.
-        #print "line data in:", repr(data)
         StatefulTelnetProtocol.dataReceived(self, data)
 
     def _write(self, data):
         "hook overloading the one used in plain telnet"
-        # print "_write (%s): %s" % (self.state,  " ".join(str(ord(c)) for c in data))
         data = data.replace('\n', '\r\n').replace('\r\r\n', '\r\n')
         #data = data.replace('\n', '\r\n')
         super(TelnetProtocol, self)._write(mccp_compress(self, data))
@@ -214,7 +211,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             line (str): Line to send.
 
         """
-        #print "sendLine (%s):\n%s" % (self.state, line)
         #escape IAC in line mode, and correctly add \r\n
         line += self.delimiter
         line = line.replace(IAC, IAC + IAC).replace('\n', '\r\n')
@@ -305,7 +301,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         if "oob" in kwargs and "OOB" in self.protocol_flags:
             # oob is a list of [(cmdname, arg, kwarg), ...]
             for cmdname, args, okwargs in kwargs["oob"]:
-                #print "telnet oob data_out:", cmdname, args, kwargs
                 self.oob.data_out(cmdname, *args, **okwargs)
 
         # parse **kwargs, falling back to ttype if nothing is given explicitly
@@ -318,15 +313,12 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         echo = kwargs.get("echo", None)
         mxp = kwargs.get("mxp", self.protocol_flags.get("MXP", False))
 
-        #print "telnet kwargs=%s, message=%s" % (kwargs, text)
-        #print "xterm256=%s, useansi=%s, raw=%s, nomarkup=%s, init_done=%s" % (xterm256, useansi, raw, nomarkup, ttype.get("init_done"))
         if raw:
             # no processing whatsoever
             self.sendLine(text)
         elif text:
             # we need to make sure to kill the color at the end in order
             # to match the webclient output.
-            #print "telnet data out:", self.protocol_flags, id(self.protocol_flags), id(self), "nomarkup: %s, xterm256: %s" % (nomarkup, xterm256)
             linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256, mxp=mxp)
             if mxp:
                 linetosend = mxp_parse(linetosend)

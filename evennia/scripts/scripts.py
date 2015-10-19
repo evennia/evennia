@@ -207,7 +207,7 @@ class DefaultScript(ScriptBase):
             self.db_obj.msg(estring)
         except Exception:
             pass
-        logger.log_errmsg(estring)
+        logger.log_err(estring)
 
     def _step_callback(self):
         """
@@ -226,7 +226,6 @@ class DefaultScript(ScriptBase):
         callcount = self.ndb._task.callcount
         maxcount = self.db_repeats
         if maxcount > 0 and maxcount <= callcount:
-            #print "stopping script!"
             self.stop()
 
     def _step_task(self):

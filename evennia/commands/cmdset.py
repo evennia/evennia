@@ -490,7 +490,6 @@ class CmdSet(object):
                 commands.append(cmd)
             # extra run to make sure to avoid doublets
             self.commands = list(set(commands))
-            #print "In cmdset.add(cmd):", self.key, cmd
             # add system_command to separate list as well,
             # for quick look-up
             if cmd.key.startswith("__"):
