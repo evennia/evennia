@@ -23,6 +23,8 @@ Then add this to your Sphinx conf.py:
 
 	source_suffix = ['.rst', '.md']
 
+This allows you to write both `.md` and `.rst` files inside of the same project.
+
 ## Why a bridge?
 
 Many python tools (mostly for documentation creation) rely on `docutils`.
