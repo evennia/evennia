@@ -1,0 +1,23 @@
+strictness: low
+
+test-warnings: false
+doc-warnings: true
+
+ignore-paths:
+  - docs
+
+pep8:
+    full: true
+    options:
+        max-line-length: 100
+
+pylint:
+  max-line-length: 100
+  disable:
+      - interface-not-implemented
+
+mccabe:
+  run: false
+
+pep257:
+  run: false

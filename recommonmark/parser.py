@@ -1,9 +1,7 @@
 from contextlib import contextmanager
 import itertools
 
-from docutils import parsers, nodes, utils
-
-from docutils.parsers.rst import roles, states
+from docutils import parsers, nodes
 
 from CommonMark import DocParser, HTMLRenderer
 from warnings import warn
@@ -38,6 +36,7 @@ class _SectionHandler(object):
 
 
 class CommonMarkParser(parsers.Parser):
+
     """Parser of recommonmark."""
     supported = ('md', 'markdown')
 
