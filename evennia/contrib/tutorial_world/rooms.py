@@ -940,7 +940,7 @@ class TeleportRoom(TutorialRoom):
         results = search_object(teleport_to)
         if not results or len(results) > 1:
             # we cannot move anywhere since no valid target was found.
-            print("no valid teleport target for %s was found." % teleport_to)
+            character.msg("no valid teleport target for %s was found." % teleport_to)
             return
         if character.is_superuser:
             # superusers don't get teleported
