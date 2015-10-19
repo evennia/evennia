@@ -7,6 +7,7 @@ from docutils.parsers.rst.directives import directive
 
 
 class DummyStateMachine(StateMachineWS):
+
     """A dummy state machine that mimicks the property of statemachine.
 
     This state machine cannot be used for parsing, it is only used to generate
@@ -14,6 +15,7 @@ class DummyStateMachine(StateMachineWS):
     - Call `reset` to reset the state
     - Then call `run_directive` or `run_role` to generate the node.
     """
+
     def __init__(self):
         self.memo = Struct(title_styles=[],
                            inliner=None)
@@ -113,7 +115,7 @@ class DummyStateMachine(StateMachineWS):
                             self.language,
                             self.node.line,
                             self.reporter)
-        vec, msg=  role_fn(name,
+        vec, msg = role_fn(name,
                            rawtext=str(content),
                            text=str(content),
                            lineno=self.node.line,

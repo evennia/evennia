@@ -20,7 +20,7 @@ from recommonmark.parser import CommonMarkParser
 
 def cm2html():
     description = ('Generate html document from markdown sources. '
-                + default_description)
+                   + default_description)
     publish_cmdline(writer_name='html',
                     parser=CommonMarkParser(),
                     description=description)
@@ -28,7 +28,7 @@ def cm2html():
 
 def cm2man():
     description = ('Generate a manpage from markdown sources. '
-                + default_description)
+                   + default_description)
     publish_cmdline(writer_name='manpage',
                     parser=CommonMarkParser(),
                     description=description)
@@ -36,7 +36,7 @@ def cm2man():
 
 def cm2xml():
     description = ('Generate XML document from markdown sources. '
-                + default_description)
+                   + default_description)
     publish_cmdline(writer_name='xml',
                     parser=CommonMarkParser(),
                     description=description)
@@ -44,7 +44,7 @@ def cm2xml():
 
 def cm2pseudoxml():
     description = ('Generate pseudo-XML document from markdown sources. '
-                + default_description)
+                   + default_description)
     publish_cmdline(writer_name='pseudoxml',
                     parser=CommonMarkParser(),
                     description=description)
@@ -52,7 +52,7 @@ def cm2pseudoxml():
 
 def cm2latex():
     description = ('Generate latex document from markdown sources. '
-                + default_description)
+                   + default_description)
     publish_cmdline(writer_name='latex',
                     parser=CommonMarkParser(),
                     description=description)
@@ -60,8 +60,7 @@ def cm2latex():
 
 def cm2xetex():
     description = ('Generate xetex document from markdown sources. '
-                + default_description)
+                   + default_description)
     publish_cmdline(writer_name='latex',
                     parser=CommonMarkParser(),
                     description=description)
-
