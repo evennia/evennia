@@ -6,6 +6,11 @@ This allows you to write CommonMark inside of Docutils & Sphinx projects.
 
 Documentation is available on Read the Docs: <http://recommonmark.readthedocs.org>
 
+Contents
+--------
+* [API Reference](api_ref.md)
+* [AutoStructify Component](auto_structify.md)
+
 ## Getting Started
 
 To use `recommonmark` inside of Sphinx only takes 2 steps. 
@@ -24,6 +29,13 @@ Then add this to your Sphinx conf.py:
 	source_suffix = ['.rst', '.md']
 
 This allows you to write both `.md` and `.rst` files inside of the same project.
+
+## Development
+
+You can run the tests by running `tox` in the top-level of the project.
+
+We are working to expand test coverage,
+but this will at least test basic Python 2 and 3 compatability.
 
 ## Why a bridge?
 
