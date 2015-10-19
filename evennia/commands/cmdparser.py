@@ -5,6 +5,7 @@ replacing cmdparser function. The replacement parser must accept the
 same inputs as the default one.
 
 """
+from __future__ import division
 
 import re
 from django.conf import settings

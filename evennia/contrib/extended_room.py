@@ -66,6 +66,7 @@ Installation/testing:
 3) Use `@desc` and `@detail` to customize the room, then play around!
 
 """
+from __future__ import division
 
 import re
 from django.conf import settings

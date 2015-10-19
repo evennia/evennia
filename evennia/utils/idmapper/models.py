@@ -7,6 +7,7 @@ leave caching unexpectedly (no use of WeakRefs).
 Also adds `cache_size()` for monitoring the size of the cache.
 """
 from __future__ import absolute_import
+from __future__ import division
 
 import os, threading, gc, time
 #from twisted.internet import reactor

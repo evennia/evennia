@@ -1145,7 +1145,7 @@ class PrettyTable(object):
             dHeight = row_height - len(lines)
             if dHeight:
                 if valign == "m":
-                  lines = [""] * int(dHeight / 2) + lines + [""] * (dHeight - int(dHeight / 2))
+                  lines = [""] * (dHeight // 2) + lines + [""] * (dHeight - (dHeight // 2))
                 elif valign == "b":
                   lines = [""] * dHeight + lines
                 else:

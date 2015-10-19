@@ -2,6 +2,7 @@
 Sessionhandler for portal sessions
 """
 from __future__ import print_function
+from __future__ import division
 
 from time import time
 from collections import deque

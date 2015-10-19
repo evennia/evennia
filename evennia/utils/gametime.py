@@ -5,6 +5,7 @@ It also supplies some useful methods to convert between
 in-mud time and real-world time as well allows to get the
 total runtime of the server and the current uptime.
 """
+from __future__ import division
 
 from time import time
 from django.conf import settings
@@ -56,7 +57,7 @@ def _format(seconds, *divisors) :
     results = []
     seconds = int(seconds)
     for divisor in divisors:
-        results.append(seconds / divisor)
+        results.append(seconds // divisor)
         seconds %= divisor
     results.append(seconds)
     return tuple(results)

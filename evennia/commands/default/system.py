@@ -3,6 +3,7 @@
 System commands
 
 """
+from __future__ import division
 
 import traceback
 import os
@@ -690,7 +691,7 @@ class CmdServerLoad(MuxCommand):
             if has_psutil:
                 loadavg = psutil.cpu_percent()
                 _mem = psutil.virtual_memory()
-                rmem = _mem.used  / (1000 * 1000)
+                rmem = _mem.used  / (1000.0 * 1000)
                 pmem = _mem.percent
 
                 if "mem" in self.switches:
