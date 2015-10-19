@@ -673,7 +673,7 @@ class DefaultPlayer(PlayerDB):
         if _CONNECT_CHANNEL:
             _CONNECT_CHANNEL.tempmsg("[%s, %s]: %s" % (_CONNECT_CHANNEL.key, now, message))
         else:
-            logger.log_infomsg("[%s]: %s" % (now, message))
+            logger.log_info("[%s]: %s" % (now, message))
 
     def at_post_login(self, sessid=None):
         """

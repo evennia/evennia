@@ -1176,7 +1176,7 @@ def init_new_player(player):
     Deprecated.
     """
     from evennia.utils import logger
-    logger.log_depmsg("evennia.utils.utils.init_new_player is DEPRECATED and should not be used.")
+    logger.log_dep("evennia.utils.utils.init_new_player is DEPRECATED and should not be used.")
 
 
 def string_similarity(string1, string2):

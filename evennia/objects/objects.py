@@ -17,7 +17,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands import cmdset, command
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
-from evennia.utils.logger import log_trace, log_errmsg
+from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
                              make_iter, to_str, to_unicode)
 
@@ -432,13 +432,13 @@ class DefaultObject(ObjectDB):
             try:
                 from_obj.at_msg_send(text=text, to_obj=self, **kwargs)
             except Exception:
-                log_trace()
+                logger.log_trace()
         try:
             if not self.at_msg_receive(text=text, **kwargs):
                 # if at_msg_receive returns false, we abort message to this object
                 return
         except Exception:
-            log_trace()
+            logger.log_trace()
 
         # session relay
         kwargs['_nomulti'] = kwargs.get('_nomulti', True)
@@ -522,7 +522,7 @@ class DefaultObject(ObjectDB):
             "Simple log helper method"
             trc = traceback.format_exc()
             errstring = "%s%s" % (trc, string)
-            log_trace()
+            logger.log_trace()
             self.msg(errstring)
 
         errtxt = _("Couldn't perform move ('%s'). Contact an admin.")
@@ -585,7 +585,7 @@ class DefaultObject(ObjectDB):
             self.location = destination
         except Exception:
             emit_to_obj.msg(errtxt % "location change")
-            log_trace()
+            logger.log_trace()
             return False
 
         if not quiet:
@@ -642,7 +642,7 @@ class DefaultObject(ObjectDB):
                 default_home = None
         except Exception:
             string = _("Could not find default home '(#%d)'.")
-            log_errmsg(string % default_home_id)
+            logger.log_err(string % default_home_id)
             default_home = None
 
         for obj in self.contents:
@@ -658,7 +658,7 @@ class DefaultObject(ObjectDB):
                 string += "now has a null location."
                 obj.location = None
                 obj.msg(_("Something went wrong! You are dumped into nowhere. Contact an admin."))
-                log_errmsg(string % (obj.name, obj.dbid))
+                logger.log_err(string % (obj.name, obj.dbid))
                 return
 
             if obj.has_player:

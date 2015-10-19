@@ -113,7 +113,7 @@ class _SaverMutable(object):
         elif self._db_obj:
             self._db_obj.value = self
         else:
-            logger.log_errmsg("_SaverMutable %s has no root Attribute to save to." % self)
+            logger.log_err("_SaverMutable %s has no root Attribute to save to." % self)
 
     def _convert_mutables(self, data):
         "converts mutables to Saver* variants and assigns .parent property"

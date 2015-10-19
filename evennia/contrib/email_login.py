@@ -224,7 +224,7 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
                 pchannel = ChannelDB.objects.get_channel(pchanneldef[0])
                 if not pchannel.connect(new_player):
                     string = "New player '%s' could not connect to public channel!" % new_player.key
-                    logger.log_errmsg(string)
+                    logger.log_err(string)
 
             if MULTISESSION_MODE < 2:
                 # if we only allow one character, create one with the same name as Player

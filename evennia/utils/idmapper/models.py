@@ -524,8 +524,8 @@ def conditional_flush(max_rmem, force=False):
 
     if ((now - LAST_FLUSH) < AUTO_FLUSH_MIN_INTERVAL) and not force:
         # too soon after last flush.
-        logger.log_warnmsg("Warning: Idmapper flush called more than "\
-                            "once in %s min interval. Check memory usage." % (AUTO_FLUSH_MIN_INTERVAL/60.0))
+        logger.log_warn("Warning: Idmapper flush called more than "\
+                        "once in %s min interval. Check memory usage." % (AUTO_FLUSH_MIN_INTERVAL/60.0))
         return
 
     if os.name == "nt":

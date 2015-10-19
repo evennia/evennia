@@ -183,7 +183,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
         # returning an empty error cmdset
         errstring = errstring.strip()
         if not no_logging:
-            logger.log_errmsg(errstring)
+            logger.log_err(errstring)
             if emit_to_obj and not ServerConfig.objects.conf("server_starting_mode"):
                 emit_to_obj.msg(errstring)
         err_cmdset = _ErrorCmdSet()

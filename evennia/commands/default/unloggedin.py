@@ -479,7 +479,7 @@ def _create_player(session, playername, password, permissions, typeclass=None):
     pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
     if not pchannel.connect(new_player):
         string = "New player '%s' could not connect to public channel!" % new_player.key
-        logger.log_errmsg(string)
+        logger.log_err(string)
     return new_player
 
 
