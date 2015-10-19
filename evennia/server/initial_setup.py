@@ -12,7 +12,7 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 from evennia.players.models import PlayerDB
 from evennia.server.models import ServerConfig
-from evennia.utils import create
+from evennia.utils import create, logger
 
 
 ERROR_NO_SUPERUSER = \
@@ -70,7 +70,7 @@ def create_objects():
 
     """
 
-    print(" Creating objects (Player #1 and Limbo room) ...")
+    logger.log_info("Creating objects (Player #1 and Limbo room) ...")
 
     # Set the initial User's account object's username on the #1 object.
     # This object is pure django and only holds name, email and password.
@@ -132,7 +132,7 @@ def create_channels():
     Creates some sensible default channels.
 
     """
-    print(" Creating default channels ...")
+    logger.log_info("Creating default channels ...")
 
     goduser = get_god_player()
     for channeldict in settings.DEFAULT_CHANNELS:
@@ -155,7 +155,7 @@ def at_initial_setup():
         mod = __import__(modname, fromlist=[None])
     except (ImportError, ValueError):
         return
-    print(" Running at_initial_setup() hook.")
+    logger.log_info(" Running at_initial_setup() hook.")
     if mod.__dict__.get("at_initial_setup", None):
         mod.at_initial_setup()
 
@@ -169,7 +169,7 @@ def reset_server():
 
     """
     from evennia.server.sessionhandler import SESSIONS
-    print(" Initial setup complete. Restarting Server once.")
+    logger.log_info(" Initial setup complete. Restarting Server once.")
     SESSIONS.server.shutdown(mode='reset')
 
 

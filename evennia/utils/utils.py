@@ -23,6 +23,7 @@ from twisted.internet import threads, defer, reactor
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from evennia.utils import logger
 
 _MULTIMATCH_SEPARATOR = settings.SEARCH_MULTIMATCH_SEPARATOR
 
@@ -870,7 +871,7 @@ def check_evennia_dependencies():
     errstring = errstring.strip()
     if errstring:
         mlen = max(len(line) for line in errstring.split("\n"))
-        print("%s\n%s\n%s" % ("-"*mlen, errstring, '-'*mlen))
+        logger.log_err("%s\n%s\n%s" % ("-"*mlen, errstring, '-'*mlen))
     return not_error
 
 
