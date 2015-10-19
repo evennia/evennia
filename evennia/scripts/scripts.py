@@ -207,7 +207,7 @@ class DefaultScript(ScriptBase):
             self.db_obj.msg(estring)
         except Exception:
             pass
-        logger.log_errmsg(estring)
+        logger.log_err(estring)
 
     def _step_callback(self):
         """

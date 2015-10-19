@@ -305,7 +305,7 @@ class ServerSession(Session):
                 cchan.msg("[%s]: %s" % (cchan.key, message))
             except Exception:
                 pass
-        logger.log_infomsg(message)
+        logger.log_info(message)
 
     def get_client_size(self):
         """

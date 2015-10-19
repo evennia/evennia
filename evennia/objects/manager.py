@@ -207,7 +207,7 @@ class ObjectDBManager(TypedObjectManager):
             return []
         except ValueError:
             from evennia.utils import logger
-            logger.log_errmsg("The property '%s' does not support search criteria of the type %s." % (property_name, type(property_value)))
+            logger.log_err("The property '%s' does not support search criteria of the type %s." % (property_name, type(property_value)))
             return []
 
     @returns_typeclass_list

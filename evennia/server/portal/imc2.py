@@ -228,7 +228,7 @@ class IMC2Bot(telnet.StatefulTelnetProtocol, Session):
             # Only support Plain text passwords.
             # SERVER Sends: PW <servername> <serverpw> version=<version#> <networkname>
 
-            logger.log_infomsg("IMC2: AUTH< %s" % line)
+            logger.log_info("IMC2: AUTH< %s" % line)
 
             line_split = line.split(' ')
             pw_present = line_split[0] == 'PW'
@@ -236,21 +236,21 @@ class IMC2Bot(telnet.StatefulTelnetProtocol, Session):
 
             if "reject" in line_split:
                 auth_message = _("IMC2 server rejected connection.")
-                logger.log_infomsg(auth_message)
+                logger.log_info(auth_message)
                 return
 
             if pw_present:
                 self.server_name = line_split[1]
                 self.network_name = line_split[4]
             elif autosetup_present:
-                logger.log_infomsg(_("IMC2: Autosetup response found."))
+                logger.log_info(_("IMC2: Autosetup response found."))
                 self.server_name = line_split[1]
                 self.network_name = line_split[3]
             self.is_authenticated = True
             self.sequence = int(time())
 
             # Log to stdout and notify over MUDInfo.
-            logger.log_infomsg('IMC2: Authenticated to %s' % self.factory.network)
+            logger.log_info('IMC2: Authenticated to %s' % self.factory.network)
 
             # Ask to see what other MUDs are connected.
             self._send_packet(pck.IMC2PacketKeepAliveRequest())
@@ -274,7 +274,7 @@ class IMC2Bot(telnet.StatefulTelnetProtocol, Session):
         self.uid = int(self.factory.uid)
         self.logged_in = True
         self.factory.sessionhandler.connect(self)
-        logger.log_infomsg("IMC2 bot connected to %s." % self.network)
+        logger.log_info("IMC2 bot connected to %s." % self.network)
         # Send authentication packet. The reply will be caught by lineReceived
         self._send_packet(pck.IMC2PacketAuthPlaintext())
 
@@ -463,7 +463,7 @@ class IMC2BotFactory(protocol.ReconnectingClientFactory):
     def start(self):
         "Connect session to sessionhandler"
         def errback(fail):
-            logger.log_errmsg(fail.value)
+            logger.log_err(fail.value)
 
         if self.port:
             service = internet.TCPClient(self.network, int(self.port), self)

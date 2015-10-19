@@ -88,7 +88,7 @@ class ServerConfig(WeakSharedMemoryModel):
         "Setter. Allows for self.value = value"
         if utils.has_parent('django.db.models.base.Model', value):
             # we have to protect against storing db objects.
-            logger.log_errmsg("ServerConfig cannot store db objects! (%s)" % value)
+            logger.log_err("ServerConfig cannot store db objects! (%s)" % value)
             return
         self.db_value = pickle.dumps(value)
         self.save()

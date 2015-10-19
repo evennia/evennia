@@ -237,7 +237,7 @@ class CmdPasswordCreate(Command):
             # won't see any errors at all.
             string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
             self.caller.msg(string % (traceback.format_exc()))
-            logger.log_errmsg(traceback.format_exc())
+            logger.log_trace()
 
 
 # Menu entry 3 - help screen
