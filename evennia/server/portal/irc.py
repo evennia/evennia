@@ -160,7 +160,6 @@ class IRCBot(irc.IRCClient, Session):
             reason (str): Motivation for the disconnect.
 
         """
-        print("irc disconnect called!")
         self.sessionhandler.disconnect(self)
         self.stopping = True
         self.transport.loseConnection()

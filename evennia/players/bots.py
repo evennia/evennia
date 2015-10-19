@@ -155,7 +155,6 @@ class Bot(DefaultPlayer):
         a reset.
 
         """
-        print("bot's at_server_shutdown called")
         for session in self.get_all_sessions():
             session.sessionhandler.disconnect(session)
 
@@ -302,7 +301,6 @@ class RSSBot(Bot):
         Echo RSS input to connected channel
 
         """
-        print("execute_cmd rss:", text)
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
