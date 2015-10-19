@@ -61,9 +61,9 @@ class DummyStateMachine(StateMachineWS):
         self.input_lines = document['source']
 
     def run_directive(self, name,
-                      arguments=[],
-                      options={},
-                      content=[]):
+                      arguments=None,
+                      options=None,
+                      content=None):
         """Generate directive node given arguments.
 
         Parameters
@@ -97,8 +97,8 @@ class DummyStateMachine(StateMachineWS):
         return direc.run()
 
     def run_role(self, name,
-                 options={},
-                 content=[]):
+                 options=None,
+                 content=None):
         """Generate a role node.
 
         options : dict
