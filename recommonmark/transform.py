@@ -197,7 +197,7 @@ class AutoStructify(transforms.Transform):
         if not isinstance(content, nodes.Text):
             return None
         content = content.astext().strip()
-        if content.startswith('$')  and content.endswith('$'):
+        if content.startswith('$') and content.endswith('$'):
             if not self.config['enable_inline_math']:
                 return None
             content = content[1:-1]
@@ -207,7 +207,6 @@ class AutoStructify(transforms.Transform):
             return self.state_machine.run_role('math', content=content)
         else:
             return None
-
 
     def auto_code_block(self, node):
         """Try to automatically generate nodes for codeblock syntax.
