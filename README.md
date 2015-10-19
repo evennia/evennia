@@ -4,7 +4,24 @@ A `docutils`-compatibility bridge to [CommonMark][cm].
 
 This allows you to write CommonMark inside of Docutils & Sphinx projects.
 
-Documentation: <http://recommonmark.readthedocs.org>
+Documentation is available on Read the Docs: <http://recommonmark.readthedocs.org>
+
+## Getting Started
+
+To use `recommonmark` inside of Sphinx only takes 2 steps. 
+First you install it:
+
+	pip install recommonmark 
+
+Then add this to your Sphinx conf.py:
+
+	from recommonmark.parser import CommonMarkParser
+
+	source_parsers = {
+	    '.md': CommonMarkParser,
+	}
+
+	source_suffix = ['.rst', '.md']
 
 ## Why a bridge?
 
