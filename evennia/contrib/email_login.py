@@ -257,8 +257,7 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
-            string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
-            session.msg(string % (traceback.format_exc()))
+            session.msg("An error occurred. Please e-mail an admin if the problem persists.")
             logger.log_errmsg(traceback.format_exc())
 
 class CmdUnconnectedQuit(MuxCommand):
