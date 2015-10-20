@@ -32,7 +32,7 @@ Example:
 
 An inline function should have the following call signature:
 
-    def funcname(text, *args)
+    def funcname(text, *args, **kwargs)
 
 where the text is always the part between {funcname(args) and
 {/funcname and the *args are taken from the appropriate part of the

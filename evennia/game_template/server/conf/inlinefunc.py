@@ -26,17 +26,26 @@ Example 2 (using "pad" and "time" inlinefuncs):
 To add more inline functions, add them to this module, using
 the following call signature:
 
-    def funcname(text, *args)
+    def funcname(text, *args, **kwargs)
 
-where the text is always the part between {funcname(args) and
+where `text` is always the part between {funcname(args) and
 {/funcname and the *args are taken from the appropriate part of the
-call. It is important that the inline function properly clean the
-incoming args, checking their type and replacing them with sane
+call. If no {/funcname is given, `text` will be the empty string.
+
+It is important that the inline function properly clean the
+incoming `args`, checking their type and replacing them with sane
 defaults if needed. If impossible to resolve, the unmodified text
 should be returned. The inlinefunc should never cause a traceback.
 
+While the inline function should accept **kwargs, the keyword is
+never accepted as a valid call - this is only intended to be used
+internally by Evennia, notably to send the `session` keyword to
+the function; this is the session of the object viewing the string
+and can be used to customize it to each session.
+
 """
 
-#def capitalize(text, *args):
-#    "Silly capitalize example"
+#def capitalize(text, *args, **kwargs):
+#    "Silly capitalize example. Used as {capitalize() ... {/capitalize"
+#    session = kwargs.get("session")
 #    return text.capitalize()
