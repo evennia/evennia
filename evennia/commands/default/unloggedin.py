@@ -178,7 +178,7 @@ class CmdUnconnectedConnect(MuxCommand):
             string = "{rYou have been banned and cannot continue from here." \
                      "\nIf you feel this ban is in error, please email an admin.{x"
             session.msg(string)
-            session.execute_cmd("quit")
+            session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
             return
 
         # actually do the login. This will call all other hooks:
@@ -260,7 +260,7 @@ class CmdUnconnectedCreate(MuxCommand):
             string = "{rYou have been banned and cannot continue from here." \
                      "\nIf you feel this ban is in error, please email an admin.{x"
             session.msg(string)
-            session.execute_cmd("quit")
+            session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
             return
 
         # everything's ok. Create the new player account.
@@ -307,7 +307,6 @@ class CmdUnconnectedQuit(MuxCommand):
     def func(self):
         "Simply close the connection."
         session = self.caller
-        #session.msg("Good bye! Disconnecting ...")
         session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
 
 
