@@ -337,8 +337,8 @@ class CmdSetHandler(object):
         is set as the default one (it will then end up at the bottom of the stack)
 
         Args:
-          cmdset (CmdSet or str): Can be a cmdset object or the python path
-            to such an object.
+            cmdset (CmdSet or str): Can be a cmdset object or the python path
+                to such an object.
             emit_to_obj (Object, optional): An object to receive error messages.
             permanent (bool, optional): This cmdset will remain across a server reboot.
             default_cmdset (Cmdset, optional): Insert this to replace the
