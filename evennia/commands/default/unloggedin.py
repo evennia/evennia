@@ -2,7 +2,6 @@
 Commands that are available from the connect screen.
 """
 import re
-import traceback
 import time
 from collections import defaultdict
 from random import getrandbits
