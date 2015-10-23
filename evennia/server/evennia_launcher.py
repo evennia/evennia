@@ -10,6 +10,7 @@ menu. Run the script with the -h flag to see usage information.
 
 """
 from __future__ import print_function
+from builtins import input
 import os
 import sys
 import signal
@@ -550,7 +551,7 @@ def check_database():
             res = ""
             while res.upper() != "Y":
                 # ask for permission
-                res = raw_input("Continue [Y]/N: ")
+                res = input("Continue [Y]/N: ")
                 if res.upper() == "N":
                     sys.exit()
                 elif not res:
@@ -933,18 +934,18 @@ def run_menu():
         # menu loop
 
         print(MENU)
-        inp = raw_input(" option > ")
+        inp = input(" option > ")
 
         # quitting and help
         if inp.lower() == 'q':
             return
         elif inp.lower() == 'h':
             print(HELP_ENTRY)
-            raw_input("press <return> to continue ...")
+            input("press <return> to continue ...")
             continue
         elif inp.lower() in ('v', 'i', 'a'):
             print(show_version_info(about=True))
-            raw_input("press <return> to continue ...")
+            input("press <return> to continue ...")
             continue
 
         # options
