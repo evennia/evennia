@@ -69,6 +69,7 @@ Tall man (assuming his name is Tom) sees:
 
 
 """
+from builtins import object
 
 import re
 from re import escape as re_escape

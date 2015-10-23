@@ -63,6 +63,7 @@ can then implement separate sets for different situations. For
 example, you can have a 'On a boat' set, onto which you then tack on
 the 'Fishing' set. Fishing from a boat? No problem!
 """
+from builtins import object
 import sys
 from importlib import import_module
 from inspect import trace

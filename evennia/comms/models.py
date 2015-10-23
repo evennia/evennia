@@ -17,6 +17,7 @@ Channels are central objects that act as targets for Msgs. Players can
 connect to channels by use of a ChannelConnect object (this object is
 necessary to easily be able to delete connections on the fly).
 """
+from builtins import object
 
 from django.conf import settings
 from django.utils import timezone

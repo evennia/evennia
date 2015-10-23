@@ -28,6 +28,7 @@ Pickle field implementation for Django.
 Modified for Evennia by Griatch.
 
 """
+from builtins import object
 from ast import literal_eval
 
 from copy import deepcopy

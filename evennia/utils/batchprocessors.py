@@ -167,6 +167,7 @@ caller.msg("The object was created!")
 script = create.create_script()
 ```
 """
+from builtins import object
 
 import re
 import codecs

@@ -1,6 +1,7 @@
 """
 IMC2 client module. Handles connecting to and communicating with an IMC2 server.
 """
+from builtins import object
 
 from time import time
 from twisted.internet import task

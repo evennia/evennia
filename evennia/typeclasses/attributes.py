@@ -8,6 +8,7 @@ which is a non-db version of Attributes.
 
 
 """
+from builtins import object
 import re
 import weakref
 

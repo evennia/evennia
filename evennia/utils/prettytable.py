@@ -30,6 +30,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from __future__ import print_function
+from builtins import object
 __version__ = "trunk"
 
 import copy
