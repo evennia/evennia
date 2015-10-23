@@ -23,6 +23,7 @@ update() on the channelhandler. Or use Channel.objects.delete() which
 does this for you.
 
 """
+from builtins import object
 
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdset, command

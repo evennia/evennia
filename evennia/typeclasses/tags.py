@@ -9,6 +9,7 @@ used for storing Aliases and Permissions. This module contains the
 respective handlers.
 
 """
+from builtins import object
 
 from django.conf import settings
 from django.db import models

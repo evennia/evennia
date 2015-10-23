@@ -11,6 +11,7 @@ the oobhandler's functionality to return data, register a monitor on
 an object's properties or start a repeating action.
 
 """
+from builtins import object
 
 from collections import defaultdict
 from django.conf import settings

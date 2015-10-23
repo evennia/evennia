@@ -9,6 +9,7 @@ NAWS allows telnet clients to report their current window size to the
 client and update it when the size changes
 
 """
+from builtins import object
 from django.conf import settings
 
 NAWS = chr(31)

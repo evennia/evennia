@@ -94,6 +94,7 @@ in-game.
 
 """
 from __future__ import print_function
+from builtins import object
 
 from evennia import Command, DefaultScript, CmdSet
 

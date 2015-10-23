@@ -5,6 +5,7 @@ These are the (default) starting points for all in-game visible
 entities.
 
 """
+from builtins import object
 
 import traceback
 from django.conf import settings

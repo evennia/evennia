@@ -134,6 +134,7 @@ evennia.utils.evmenu`.
 
 """
 from __future__ import print_function
+from builtins import object
 
 from textwrap import dedent
 from inspect import isfunction, getargspec

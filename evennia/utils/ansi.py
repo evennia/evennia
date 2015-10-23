@@ -13,6 +13,7 @@ it is run by Evennia just before returning data to/from the
 user.
 
 """
+from builtins import object
 import re
 from evennia.utils import utils
 from evennia.utils.utils import to_str, to_unicode

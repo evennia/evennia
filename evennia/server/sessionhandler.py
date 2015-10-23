@@ -12,6 +12,7 @@ There are two similar but separate stores of sessions:
          handle network communication but holds no game info.
 
 """
+from builtins import object
 
 from time import time
 from django.conf import settings

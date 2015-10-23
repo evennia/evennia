@@ -104,6 +104,7 @@ to any other identifier you can use.
 
 """
 from __future__ import print_function
+from builtins import object
 
 import re
 import inspect

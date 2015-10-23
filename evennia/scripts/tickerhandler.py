@@ -54,6 +54,7 @@ a  custom handler one can make a custom `AT_STARTSTOP_MODULE` entry to
 call the handler's `save()` and `restore()` methods when the server reboots.
 
 """
+from builtins import object
 from twisted.internet.defer import inlineCallbacks
 from django.core.exceptions import ObjectDoesNotExist
 from evennia.scripts.scripts import ExtendedLoopingCall

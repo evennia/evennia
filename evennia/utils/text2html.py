@@ -9,6 +9,7 @@ snippet #577349 on http://code.activestate.com.
 (extensively modified by Griatch 2010)
 """
 from __future__ import absolute_import
+from builtins import object
 
 import re
 import cgi

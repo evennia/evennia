@@ -33,6 +33,7 @@ and initialize it:
    displayed in the editor.
 
 """
+from builtins import object
 
 import re
 from django.conf import settings

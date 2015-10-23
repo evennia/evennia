@@ -18,6 +18,7 @@ for updating health bars etc. See also GMCP which is another standard
 doing the same thing.
 
 """
+from builtins import object
 import re
 import json
 from evennia.utils.utils import to_str

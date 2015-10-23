@@ -8,6 +8,7 @@ by game/evennia.py).
 
 """
 from __future__ import print_function
+from builtins import object
 
 import time
 import sys

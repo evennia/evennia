@@ -9,6 +9,7 @@ Using standard ssh client,
 
 """
 from __future__ import print_function
+from builtins import object
 import os
 
 from twisted.cred.checkers import credentials
