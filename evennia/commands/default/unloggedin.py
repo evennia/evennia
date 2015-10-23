@@ -261,7 +261,7 @@ class CmdUnconnectedCreate(MuxCommand):
             session.msg("Sorry, there is already a player with the name '%s'." % playername)
             return
         # Reserve playernames found in GUEST_LIST
-        if settings.GUEST_LIST and playername.lower() in map(str.lower, settings.GUEST_LIST):
+        if settings.GUEST_LIST and playername.lower() in (guest.lower() for guest in settings.GUEST_LIST):
             string = "\n\r That name is reserved. Please choose another Playername."
             session.msg(string)
             return
