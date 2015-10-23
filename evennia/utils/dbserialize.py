@@ -31,6 +31,7 @@ from django.contrib.contenttypes.models import ContentType
 from evennia.server.models import ServerConfig
 from evennia.utils.utils import to_str, uses_database
 from evennia.utils import logger
+from builtins import int
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle")
 
@@ -121,7 +122,7 @@ class _SaverMutable(object):
         def process_tree(item, parent):
             "recursively populate the tree, storing parents"
             dtype = type(item)
-            if dtype in (basestring, int, long, float, bool, tuple):
+            if dtype in (basestring, int, float, bool, tuple):
                 return item
             elif dtype == list:
                 dat = _SaverList(parent=parent)
@@ -280,7 +281,7 @@ def to_pickle(data):
     def process_item(item):
         "Recursive processor and identification of data"
         dtype = type(item)
-        if dtype in (basestring, int, long, float, bool):
+        if dtype in (basestring, int, float, bool):
             return item
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
@@ -325,7 +326,7 @@ def from_pickle(data, db_obj=None):
     def process_item(item):
         "Recursive processor and identification of data"
         dtype = type(item)
-        if dtype in (basestring, int, long, float, bool):
+        if dtype in (basestring, int, float, bool):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
@@ -348,7 +349,7 @@ def from_pickle(data, db_obj=None):
     def process_tree(item, parent):
         "Recursive processor, building a parent-tree from iterable data"
         dtype = type(item)
-        if dtype in (basestring, int, long, float, bool):
+        if dtype in (basestring, int, float, bool):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple

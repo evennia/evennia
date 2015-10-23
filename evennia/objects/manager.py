@@ -9,6 +9,7 @@ from django.db.models.fields import exceptions
 from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
 from evennia.typeclasses.managers import returns_typeclass, returns_typeclass_list
 from evennia.utils.utils import to_unicode, is_iter, make_iter, string_partial_matching
+from builtins import int
 
 __all__ = ("ObjectManager",)
 _GA = object.__getattribute__
@@ -149,7 +150,7 @@ class ObjectDBManager(TypedObjectManager):
 
         ## This doesn't work if attribute_value is an object. Workaround below
 
-        if isinstance(attribute_value, (basestring, int, float, bool, long)):
+        if isinstance(attribute_value, (basestring, int, float, bool)):
             return self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name, db_attributes__db_value=attribute_value))
         else:
             # We have to loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.
