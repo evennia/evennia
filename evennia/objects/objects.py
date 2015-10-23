@@ -486,12 +486,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             messaged objects.
 
         """
-        contents = self.contents
-        if exclude:
-            exclude = make_iter(exclude)
-            contents = [obj for obj in contents if obj not in exclude]
-        for obj in contents:
+        def msg(obj, message, from_obj, **kwargs):
             obj.msg(message, from_obj=from_obj, **kwargs)
+        self.for_contents(msg, exclude=exclude, from_obj=from_obj, message=message, **kwargs)
 
     def move_to(self, destination, quiet=False,
                 emit_to_obj=None, use_destination=True, to_none=False, move_hooks=True):
@@ -1292,6 +1289,35 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             string += "\n{wYou see:{n " + ", ".join(users + things)
         return string
 
+    def look(self, arg_string=None):
+        """
+        This is called whenever this object looks at something.
+
+        Args:
+            arg_string (str, optional): The string of what is being looked at.
+        """
+        if arg_string:
+            # Use search to handle duplicate/nonexistant results.
+            looking_at_obj = self.search(arg_string, use_nicks=True)
+            if not looking_at_obj:
+                return
+        else:
+            looking_at_obj = self.location
+            if not looking_at_obj:
+                self.msg("You have no location to look at!")
+                return
+
+        if not hasattr(looking_at_obj, 'return_appearance'):
+            # this is likely due to us having a player instead
+            looking_at_obj = looking_at_obj.character
+        if not looking_at_obj.access(self, "view"):
+            self.msg("Could not find '%s'." % args)
+            return
+        # get object's appearance
+        self.msg(looking_at_obj.return_appearance(self))
+        # the object's at_desc() method.
+        looking_at_obj.at_desc(looker=self)
+
     def at_desc(self, looker=None):
         """
         This is called whenever someone looks at this object.
@@ -1382,7 +1408,7 @@ class DefaultCharacter(DefaultObject):
         We make sure to look around after a move.
 
         """
-        self.execute_cmd('look')
+        self.look()
 
     def at_pre_puppet(self, player, sessid=None):
         """
@@ -1414,9 +1440,10 @@ class DefaultCharacter(DefaultObject):
 
         """
         self.msg("\nYou become {c%s{n.\n" % self.name)
-        self.execute_cmd("look")
-        for obj in (obj for obj in self.location.contents if obj != self):
-            obj.msg("%s has entered the game." % self.get_display_name(obj))
+        self.look()
+        def message(obj, from_obj):
+            obj.msg("%s has entered the game." % self.get_display_name(obj), from_obj=from_obj)
+        self.location.for_contents(message, exclude=[self], from_obj=self)
 
     def at_post_unpuppet(self, player, sessid=None):
         """
@@ -1431,7 +1458,9 @@ class DefaultCharacter(DefaultObject):
                 just disconnected.
         """
         if self.location: # have to check, in case of multiple connections closing
-            self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
+            def message(obj, from_obj):
+                obj.msg("%s has left the game." % self.get_display_name(obj), from_obj=from_obj)
+            self.location.for_contents(message, exclude=[self], from_obj=self)
             self.db.prelogout_location = self.location
             self.location = None
 
