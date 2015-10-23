@@ -190,8 +190,7 @@ class ANSITextWrapper(TextWrapper):
         else:
             pat = self.wordsep_simple_re_uni
         chunks = pat.split(_to_ansi(text))
-        chunks = filter(None, chunks)  # remove empty chunks
-        return chunks
+        return [chunk for chunk in chunks if chunk]  # remove empty chunks
 
     def _wrap_chunks(self, chunks):
         """_wrap_chunks(chunks : [string]) -> [string]
