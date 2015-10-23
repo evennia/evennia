@@ -7,6 +7,7 @@ make sure to homogenize self.caller to always be the player object
 for easy handling.
 
 """
+from past.builtins import cmp
 from django.conf import settings
 from evennia.comms.models import ChannelDB, Msg
 #from evennia.comms import irc, imc2, rss
