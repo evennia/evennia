@@ -16,6 +16,7 @@ user.
 import re
 from evennia.utils import utils
 from evennia.utils.utils import to_str, to_unicode
+from future.utils import with_metaclass
 
 # ANSI definitions
 
@@ -555,7 +556,7 @@ class ANSIMeta(type):
         super(ANSIMeta, cls).__init__(*args, **kwargs)
 
 
-class ANSIString(unicode):
+class ANSIString(with_metaclass(ANSIMeta, unicode)):
     """
     String-like object that is aware of ANSI codes.
 
@@ -572,7 +573,6 @@ class ANSIString(unicode):
     for several of the methods that need not be defined directly here.
 
     """
-    __metaclass__ = ANSIMeta
 
     def __new__(cls, *args, **kwargs):
         """

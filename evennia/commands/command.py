@@ -8,6 +8,7 @@ All commands in Evennia inherit from the 'Command' class in this module.
 import re
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import is_iter, fill, lazy_property
+from future.utils import with_metaclass
 
 
 def _init_command(mcs, **kwargs):
@@ -87,7 +88,7 @@ class CommandMeta(type):
 #    parsing errors.
 
 
-class Command(object):
+class Command(with_metaclass(CommandMeta, object)):
     """
     Base command
 
@@ -127,8 +128,6 @@ class Command(object):
     system to create the help entry for the command, so it's a good idea to
     format it similar to this one)
     """
-    # Tie our metaclass, for some convenience cleanup
-    __metaclass__ = CommandMeta
 
     # the main way to call this command (e.g. 'look')
     key = "command"

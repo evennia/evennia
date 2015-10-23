@@ -20,6 +20,7 @@ from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
                              make_iter, to_str, to_unicode)
+from future.utils import with_metaclass
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
@@ -120,7 +121,7 @@ class SessidHandler(object):
 # Base class to inherit from.
 #
 
-class DefaultObject(ObjectDB):
+class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     """
     This is the root typeclass object, representing all entities that
     have an actual presence in-game. DefaultObjects generally have a
@@ -133,8 +134,6 @@ class DefaultObject(ObjectDB):
     without `obj.save()` having to be called explicitly.
 
     """
-    # typeclass setup
-    __metaclass__ = TypeclassBase
     objects = ObjectManager()
 
     # on-object properties
