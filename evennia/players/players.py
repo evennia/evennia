@@ -28,6 +28,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands.cmdsethandler import CmdSetHandler
 
 from django.utils.translation import ugettext as _
+from future.utils import with_metaclass
 
 __all__ = ("DefaultPlayer",)
 
@@ -38,7 +39,7 @@ _MULTISESSION_MODE = settings.MULTISESSION_MODE
 _CMDSET_PLAYER = settings.CMDSET_PLAYER
 _CONNECT_CHANNEL = None
 
-class DefaultPlayer(PlayerDB):
+class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
     """
     This is the base Typeclass for all Players. Players represent
     the person playing the game and tracks account info, password
@@ -106,8 +107,6 @@ class DefaultPlayer(PlayerDB):
      - at_server_shutdown()
 
      """
-
-    __metaclass__ = TypeclassBase
 
     objects = PlayerManager()
 

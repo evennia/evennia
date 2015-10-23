@@ -21,6 +21,7 @@ from evennia.utils import logger
 from evennia.utils.utils import dbref, get_evennia_pids, to_str
 
 from .manager import SharedMemoryManager
+from future.utils import with_metaclass
 
 AUTO_FLUSH_MIN_INTERVAL = 60.0 * 5 # at least 5 mins between cache flushes
 
@@ -200,13 +201,10 @@ class SharedMemoryModelBase(ModelBase):
         return super(SharedMemoryModelBase, cls).__new__(cls, name, bases, attrs)
 
 
-class SharedMemoryModel(Model):
+class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
     """
     Base class for idmapped objects. Inherit from `this`.
     """
-    # CL: setting abstract correctly to allow subclasses to inherit the default
-    # manager.
-    __metaclass__ = SharedMemoryModelBase
 
     objects = SharedMemoryManager()
 
@@ -415,12 +413,11 @@ class WeakSharedMemoryModelBase(SharedMemoryModelBase):
         cls._idmapper_recache_protection = False
 
 
-class WeakSharedMemoryModel(SharedMemoryModel):
+class WeakSharedMemoryModel(with_metaclass(WeakSharedMemoryModelBase, SharedMemoryModel)):
     """
     Uses a WeakValue dictionary for caching instead of a regular one
 
     """
-    __metaclass__ = WeakSharedMemoryModelBase
     class Meta:
         abstract = True
 

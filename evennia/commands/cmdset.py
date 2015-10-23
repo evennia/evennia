@@ -30,6 +30,7 @@ Set theory.
 from weakref import WeakKeyDictionary
 from django.utils.translation import ugettext as _
 from evennia.utils.utils import inherits_from, is_iter
+from future.utils import with_metaclass
 __all__ = ("CmdSet",)
 
 
@@ -56,7 +57,7 @@ class _CmdSetMeta(type):
         super(_CmdSetMeta, mcs).__init__(*args, **kwargs)
 
 
-class CmdSet(object):
+class CmdSet(with_metaclass(_CmdSetMeta, object)):
     """
     This class describes a unique cmdset that understands priorities.
     CmdSets can be merged and made to perform various set operations
@@ -138,7 +139,6 @@ class CmdSet(object):
 
 
     """
-    __metaclass__ = _CmdSetMeta
 
     key = "Unnamed CmdSet"
     mergetype = "Union"
