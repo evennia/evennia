@@ -439,8 +439,8 @@ class Evennia(object):
 
         if GUEST_ENABLED:
             for guest in PlayerDB.objects.all().filter(db_typeclass_path=settings.BASE_GUEST_TYPECLASS):
-                for character in filter(None, guest.db._playable_characters):
-                    character.delete()
+                for character in guest.db._playable_characters:
+                    if character: character.delete()
                 guest.delete()
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_cold_start()

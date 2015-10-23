@@ -863,8 +863,8 @@ class DefaultGuest(DefaultPlayer):
         """
         super(DefaultGuest, self).at_disconnect()
         characters = self.db._playable_characters
-        for character in filter(None, characters):
-            character.delete()
+        for character in characters:
+            if character: character.delete()
 
     def at_server_shutdown(self):
         """
@@ -873,8 +873,8 @@ class DefaultGuest(DefaultPlayer):
         """
         super(DefaultGuest, self).at_server_shutdown()
         characters = self.db._playable_characters
-        for character in filter(None, characters):
-            character.delete()
+        for character in characters:
+            if character: character.delete()
 
     def at_post_disconnect(self):
         """
