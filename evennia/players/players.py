@@ -244,10 +244,10 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         # validate/start persistent scripts on object
         obj.scripts.validate()
 
-        obj.at_post_puppet()
-
         # re-cache locks to make sure superuser bypass is updated
         obj.locks.cache_lock_bypass(obj)
+
+        obj.at_post_puppet()
 
     def unpuppet_object(self, sessid):
         """
