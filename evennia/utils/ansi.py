@@ -595,7 +595,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         char_indexes = kwargs.pop('char_indexes', None)
         clean_string = kwargs.pop('clean_string', None)
         # All True, or All False, not just one.
-        checks = map(lambda x: x is None, [code_indexes, char_indexes, clean_string])
+        checks = [x is None for x in [code_indexes, char_indexes, clean_string]]
         if not len(set(checks)) == 1:
             raise ValueError("You must specify code_indexes, char_indexes, "
                              "and clean_string together, or not at all.")
