@@ -19,7 +19,7 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
-                             make_iter, to_str, to_unicode)
+                                 make_iter, to_str, to_unicode)
 from future.utils import with_metaclass
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
