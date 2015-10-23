@@ -72,6 +72,52 @@ def _throttle(session, maxlim=None, timeout=None,
         return False
 
 
+def guest_player(session):
+    # check if guests are enabled.
+    if not settings.GUEST_ENABLED:
+        return False, None
+
+    # Check IP bans.
+    bans = ServerConfig.objects.conf("server_bans")
+    if bans and any(tup[2].match(session.address) for tup in bans if tup[2]):
+        # this is a banned IP!
+        string = "{rYou have been banned and cannot continue from here." \
+                 "\nIf you feel this ban is in error, please email an admin.{x"
+        session.msg(string)
+        session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
+        return True, None
+
+    try:
+        # Find an available guest name.
+        for playername in settings.GUEST_LIST:
+            if not PlayerDB.objects.filter(username__iexact=playername):
+                break
+            playername = None
+        if playername == None:
+            session.msg("All guest accounts are in use. Please try again later.")
+            return True, None
+
+        password = "%016x" % getrandbits(64)
+        home = ObjectDB.objects.get_id(settings.GUEST_HOME)
+        permissions = settings.PERMISSION_GUEST_DEFAULT
+        typeclass = settings.BASE_CHARACTER_TYPECLASS
+        ptypeclass = settings.BASE_GUEST_TYPECLASS
+        new_player = _create_player(session, playername, password,
+                                    permissions, ptypeclass)
+        if new_player:
+            _create_character(session, new_player, typeclass,
+                              home, permissions)
+
+    except Exception:
+        # We are in the middle between logged in and -not, so we have
+        # to handle tracebacks ourselves at this point. If we don't,
+        # we won't see any errors at all.
+        session.msg("An error occurred. Please e-mail an admin if the problem persists.")
+        logger.log_trace()
+    finally:
+        return True, new_player
+
+
 class CmdUnconnectedConnect(MuxCommand):
     """
     connect to the game
@@ -112,36 +158,11 @@ class CmdUnconnectedConnect(MuxCommand):
             # this was (hopefully) due to no quotes being found, or a guest login
             parts = parts[0].split(None, 1)
             # Guest login
-            if len(parts) == 1 and parts[0].lower() == "guest" and settings.GUEST_ENABLED:
-                try:
-                    # Find an available guest name.
-                    for playername in settings.GUEST_LIST:
-                        if not PlayerDB.objects.filter(username__iexact=playername):
-                            break
-                        playername = None
-                    if playername == None:
-                        session.msg("All guest accounts are in use. Please try again later.")
-                        return
-
-                    password = "%016x" % getrandbits(64)
-                    home = ObjectDB.objects.get_id(settings.GUEST_HOME)
-                    permissions = settings.PERMISSION_GUEST_DEFAULT
-                    typeclass = settings.BASE_CHARACTER_TYPECLASS
-                    ptypeclass = settings.BASE_GUEST_TYPECLASS
-                    new_player = _create_player(session, playername, password,
-                                                permissions, ptypeclass)
-                    if new_player:
-                        _create_character(session, new_player, typeclass,
-                                        home, permissions)
-                        session.sessionhandler.login(session, new_player)
-
-                except Exception:
-                    # We are in the middle between logged in and -not, so we have
-                    # to handle tracebacks ourselves at this point. If we don't,
-                    # we won't see any errors at all.
-                    session.msg("An error occurred. Please e-mail an admin if the problem persists.")
-                    logger.log_trace()
-                finally:
+            if len(parts) == 1 and parts[0].lower() == "guest":
+                enabled, new_player = guest_player(session)
+                if new_player:
+                    session.sessionhandler.login(session, new_player)
+                if enabled:
                     return
 
         if len(parts) != 2:
