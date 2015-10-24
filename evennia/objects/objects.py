@@ -452,6 +452,24 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             if sessions:
                 sessions[0].msg(text=text, session=sessions, **kwargs)
 
+    def for_contents(self, func, exclude=None, **kwargs):
+        """
+        Runs a function on every object contained within this one.
+
+        Args:
+            func (callable): Function to call.
+            exclude (list, optional): A list of object not to call the function on.
+
+        Kwargs:
+            Keyword arguments will be passed to the function for all objects.
+        """
+        contents = self.contents
+        if exclude:
+            exclude = make_iter(exclude)
+            contents = [obj for obj in contents if obj not in exclude]
+        for obj in contents:
+            func(obj, **kwargs)
+
     def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):
         """
         Emits a message to all objects inside this object.
