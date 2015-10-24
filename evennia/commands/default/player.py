@@ -63,96 +63,9 @@ class CmdOOCLook(MuxPlayerCommand):
     locks = "cmd:all()"
     help_category = "General"
 
-    def look_target(self):
-        "Hook method for when an argument is given."
-        player = self.player
-        key = self.args.lower()
-        chars = dict((utils.to_str(char.key.lower()), char)
-                       for char in player.db._playable_characters)
-        looktarget = chars.get(key)
-        if looktarget:
-            self.msg(looktarget.return_appearance(player))
-        else:
-            self.msg("No such character.")
-        return
-
-    def no_look_target(self):
-        "Hook method for default look without a specified target"
-        # caller is always a player at this point.
-        player = self.player
-        sessid = self.sessid
-        # get all our characters and sessions
-        characters = player.db._playable_characters
-
-        if characters is not None:
-            if None in characters:
-                # clean up list if character object was deleted in between
-                characters = [character for character in characters if character]
-                player.db._playable_characters = characters
-
-        sessions = player.get_all_sessions()
-        is_su = player.is_superuser
-
-        # text shown when looking in the ooc area
-        string = "Account {g%s{n (you are Out-of-Character)" % (player.key)
-
-        nsess = len(sessions)
-        string += nsess == 1 and "\n\n{wConnected session:{n" or "\n\n{wConnected sessions (%i):{n" % nsess
-        for isess, sess in enumerate(sessions):
-            csessid = sess.sessid
-            addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple) and str(sess.address[0]) or str(sess.address))
-            string += "\n %s %s" % (sessid == csessid and "{w%s{n" % (isess + 1) or (isess + 1), addr)
-        string += "\n\n {whelp{n - more commands"
-        string += "\n {wooc <Text>{n - talk on public channel"
-
-        charmax = MAX_NR_CHARACTERS if MULTISESSION_MODE > 1 else 1
-
-        if is_su or len(characters) < charmax:
-            if not characters:
-                string += "\n\n You don't have any characters yet. See {whelp @charcreate{n for creating one."
-            else:
-                string += "\n {w@charcreate <name> [=description]{n - create new character"
-
-        if characters:
-            string_s_ending = len(characters) > 1 and "s" or ""
-            string += "\n {w@ic <character>{n - enter the game ({w@ooc{n to get back here)"
-            if is_su:
-                string += "\n\nAvailable character%s (%i/unlimited):" % (string_s_ending, len(characters))
-            else:
-                string += "\n\nAvailable character%s%s:"  % (string_s_ending,
-                         charmax > 1 and " (%i/%i)" % (len(characters), charmax) or "")
-
-            for char in characters:
-                csessid = char.sessid.get()
-                if csessid:
-                    # character is already puppeted
-                    sessi = player.get_session(csessid)
-                    for sess in utils.make_iter(sessi):
-                        sid = sess in sessions and sessions.index(sess) + 1
-                        if sess and sid:
-                            string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
-                        else:
-                            string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
-                else:
-                    # character is "free to puppet"
-                    string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions.all()))
-        string = ("-" * 68) + "\n" + string + "\n" + ("-" * 68)
-        self.msg(string)
-
     def func(self):
         "implement the ooc look command"
-        if MULTISESSION_MODE < 2:
-            # only one character allowed
-            string = "You are out-of-character (OOC).\nUse {w@ic{n to get back into the game."
-            self.msg(string)
-            return
-        if utils.inherits_from(self.caller, "evennia.objects.objects.Object"):
-            # An object of some type is calling. Use default look instead.
-            super(CmdOOCLook, self).func()
-        elif self.args:
-            self.look_target()
-        else:
-            self.no_look_target()
+        self.player.look(self.args, sessid=self.sessid)
 
 
 class CmdCharCreate(MuxPlayerCommand):
@@ -297,7 +210,7 @@ class CmdOOC(MuxPlayerCommand):
         try:
             player.unpuppet_object(sessid)
             self.msg("\n{GYou go OOC.{n\n")
-            player.execute_cmd("look", sessid=sessid)
+            player.look(sessid=sessid)
         except RuntimeError as exc:
             self.msg("{rCould not unpuppet from {c%s{n: %s" % (old_char, exc))
 
