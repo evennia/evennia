@@ -21,8 +21,8 @@ from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (lazy_property, to_str,
-                             make_iter, to_unicode,
-                             variable_from_module)
+                                 make_iter, to_unicode,
+                                 variable_from_module)
 from evennia.typeclasses.attributes import NickHandler
 from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands.cmdsethandler import CmdSetHandler
@@ -35,6 +35,7 @@ _SESSIONS = None
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
+_MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 _CMDSET_PLAYER = settings.CMDSET_PLAYER
 _CONNECT_CHANNEL = None
 
@@ -700,7 +701,7 @@ class DefaultPlayer(PlayerDB):
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.
-            self.execute_cmd("look", sessid=sessid)
+            self.look(sessid=sessid)
 
     def at_failed_login(self, session):
         """
@@ -764,6 +765,79 @@ class DefaultPlayer(PlayerDB):
         (i.e. not for a restart).
         """
         pass
+
+    def look(self, arg_string=None, sessid=None):
+        if _MULTISESSION_MODE < 2:
+            # only one character allowed
+            string = "You are out-of-character (OOC).\nUse {w@ic{n to get back into the game."
+            self.msg(string)
+        elif arg_string:
+            key = arg_string.lower()
+            chars = dict((to_str(char.key.lower()), char)
+                         for char in self.db._playable_characters)
+            looktarget = chars.get(key)
+            if looktarget:
+                self.msg(looktarget.return_appearance(self))
+            else:
+                self.msg("No such character.")
+        else:
+            # get all our characters and sessions
+            characters = self.db._playable_characters
+
+            if characters is not None:
+                if None in characters:
+                    # clean up list if character object was deleted in between
+                    characters = [character for character in characters if character]
+                    self.db._playable_characters = characters
+
+            sessions = self.get_all_sessions()
+            is_su = self.is_superuser
+
+            # text shown when looking in the ooc area
+            string = "Account {g%s{n (you are Out-of-Character)" % (self.key)
+
+            nsess = len(sessions)
+            string += nsess == 1 and "\n\n{wConnected session:{n" or "\n\n{wConnected sessions (%i):{n" % nsess
+            for isess, sess in enumerate(sessions):
+                csessid = sess.sessid
+                addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple) and str(sess.address[0]) or str(sess.address))
+                string += "\n %s %s" % (sessid == csessid and "{w%s{n" % (isess + 1) or (isess + 1), addr)
+            string += "\n\n {whelp{n - more commands"
+            string += "\n {wooc <Text>{n - talk on public channel"
+
+            charmax = _MAX_NR_CHARACTERS if _MULTISESSION_MODE > 1 else 1
+
+            if is_su or len(characters) < charmax:
+                if not characters:
+                    string += "\n\n You don't have any characters yet. See {whelp @charcreate{n for creating one."
+                else:
+                    string += "\n {w@charcreate <name> [=description]{n - create new character"
+
+            if characters:
+                string_s_ending = len(characters) > 1 and "s" or ""
+                string += "\n {w@ic <character>{n - enter the game ({w@ooc{n to get back here)"
+                if is_su:
+                    string += "\n\nAvailable character%s (%i/unlimited):" % (string_s_ending, len(characters))
+                else:
+                    string += "\n\nAvailable character%s%s:"  % (string_s_ending,
+                             charmax > 1 and " (%i/%i)" % (len(characters), charmax) or "")
+
+                for char in characters:
+                    csessid = char.sessid.get()
+                    if csessid:
+                        # character is already puppeted
+                        sessi = self.get_session(csessid)
+                        for sess in utils.make_iter(sessi):
+                            sid = sess in sessions and sessions.index(sess) + 1
+                            if sess and sid:
+                                string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
+                            else:
+                                string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
+                    else:
+                        # character is "free to puppet"
+                        string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions.all()))
+            string = ("-" * 68) + "\n" + string + "\n" + ("-" * 68)
+            self.msg(string)
 
 
 class DefaultGuest(DefaultPlayer):
