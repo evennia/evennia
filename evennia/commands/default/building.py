@@ -1910,8 +1910,8 @@ class CmdExamine(ObjManipCommand):
 
 
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
-            stored_cmdsets = obj.cmdset.all()
-            stored_cmdsets.sort(key=lambda x: x.priority, reverse=True)
+            # all() returns a 'stack', so make a copy to sort.
+            stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
             string += "\n{wStored Cmdset(s){n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" % \
                                       (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
                                        for cmdset in stored_cmdsets if cmdset.key != "_EMPTY_CMDSET"))
