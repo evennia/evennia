@@ -199,7 +199,7 @@ def create_script(typeclass=None, key=None, obj=None, player=None, locks=None,
                               "report_to":report_to}
 
     # this will trigger the save signal which in turn calls the
-    # at_first_save hook on the tyepclass, where the _createdict
+    # at_first_save hook on the typeclass, where the _createdict
     # can be used.
     new_script.save()
     return new_script
