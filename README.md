@@ -17,19 +17,19 @@ To use `recommonmark` inside of Sphinx only takes 2 steps.
 First you install it:
 
 ```
-	pip install recommonmark 
+pip install recommonmark 
 ```
 
 Then add this to your Sphinx conf.py:
 
 ```
-	from recommonmark.parser import CommonMarkParser
+from recommonmark.parser import CommonMarkParser
 
-	source_parsers = {
-	    '.md': CommonMarkParser,
-	}
+source_parsers = {
+    '.md': CommonMarkParser,
+}
 
-	source_suffix = ['.rst', '.md']
+source_suffix = ['.rst', '.md']
 ```
 
 This allows you to write both `.md` and `.rst` files inside of the same project.
