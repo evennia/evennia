@@ -58,7 +58,7 @@ project = u'Recommonmark'
 copyright = u'2015, Lu Zero, Eric Holscher, and contributors'
 author = u'Lu Zero, Eric Holscher, and contributors'
 
-github_doc_root = 'https://github.com/rtfd/recommonmark/tree/master/doc/'
+github_doc_root = 'https://github.com/rtfd/recommonmark/tree/master/docs/'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
