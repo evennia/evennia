@@ -727,7 +727,7 @@ class DefaultObject(ObjectDB):
 
         if not self.at_object_delete():
             # this is an extra pre-check
-            # run before deletio field-related properties
+            # run before deletion field-related properties
             # is kicked into gear.
             self.delete_iter = 0
             return False
