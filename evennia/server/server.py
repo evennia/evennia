@@ -431,6 +431,11 @@ class Evennia(object):
         This is called only when the server starts "cold", i.e. after a
         shutdown or a reset.
         """
+        # We need to do this just in case the server was killed in a way where
+        # the normal cleanup operations did not have time to run.
+        from evennia.objects.models import ObjectDB
+        ObjectDB.objects.clear_all_sessids()
+
         if GUEST_ENABLED:
             for guest in PlayerDB.objects.all().filter(db_typeclass_path=settings.BASE_GUEST_TYPECLASS):
                 for character in filter(None, guest.db._playable_characters):
