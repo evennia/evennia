@@ -21,7 +21,7 @@ from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (lazy_property, to_str,
-                                 make_iter, to_unicode,
+                                 make_iter, to_unicode, is_iter,
                                  variable_from_module)
 from evennia.typeclasses.attributes import NickHandler
 from evennia.scripts.scripthandler import ScriptHandler
@@ -700,7 +700,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.
-            self.look(sessid=sessid)
+            self.msg(self.at_look(sessid=sessid))
 
     def at_failed_login(self, session):
         """
@@ -765,29 +765,28 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         """
         pass
 
-    def look(self, arg_string=None, sessid=None):
-        if _MULTISESSION_MODE < 2:
-            # only one character allowed
-            string = "You are out-of-character (OOC).\nUse {w@ic{n to get back into the game."
-            self.msg(string)
-        elif arg_string:
-            key = arg_string.lower()
-            chars = dict((to_str(char.key.lower()), char)
-                         for char in self.db._playable_characters)
-            looktarget = chars.get(key)
-            if looktarget:
-                self.msg(looktarget.return_appearance(self))
-            else:
-                self.msg("No such character.")
-        else:
-            # get all our characters and sessions
-            characters = self.db._playable_characters
+    def at_look(self, target=None, sessid=None):
+        """
+        Called when this object executes a look. It allows to customize
+        just what this means.
 
-            if characters is not None:
-                if None in characters:
-                    # clean up list if character object was deleted in between
-                    characters = [character for character in characters if character]
-                    self.db._playable_characters = characters
+        Args:
+            target (Object or list, optional): An object or a list
+                objects to inspect.
+            sessid (int, optional): Id of the session doing this look.
+
+        Returns:
+            look_string (str): A prepared look string, ready to send
+                off to any recipient (usually to ourselves)
+
+        """
+
+        if target and not is_iter(target):
+            # single target - just show it
+            return target.return_appearance()
+        else:
+            # list of targets - make list
+            characters = target
 
             sessions = self.get_all_sessions()
             is_su = self.is_superuser
@@ -826,7 +825,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                     if csessid:
                         # character is already puppeted
                         sessi = self.get_session(csessid)
-                        for sess in utils.make_iter(sessi):
+                        for sess in make_iter(sessi):
                             sid = sess in sessions and sessions.index(sess) + 1
                             if sess and sid:
                                 string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
@@ -836,7 +835,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                         # character is "free to puppet"
                         string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions.all()))
             string = ("-" * 68) + "\n" + string + "\n" + ("-" * 68)
-            self.msg(string)
+            return string
 
 
 class DefaultGuest(DefaultPlayer):

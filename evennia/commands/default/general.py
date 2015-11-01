@@ -58,7 +58,16 @@ class CmdLook(MuxCommand):
         """
         Handle the looking.
         """
-        self.caller.look(self.args)
+        if not self.args:
+            target = self.caller.location
+            if not target:
+                self.caller.msg("You have no location to look at!")
+                return
+        else:
+            target = self.caller.search(self.args)
+            if not target:
+                return
+        self.msg(self.caller.at_look(target))
 
 
 class CmdNick(MuxCommand):

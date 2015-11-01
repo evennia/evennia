@@ -1289,34 +1289,27 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             string += "\n{wYou see:{n " + ", ".join(users + things)
         return string
 
-    def look(self, arg_string=None):
+    def at_look(self, target):
         """
-        This is called whenever this object looks at something.
+        Called when this object performs a look. It allows to
+        customize just what this means. It will not itself
+        send any data.
 
         Args:
-            arg_string (str, optional): The string of what is being looked at.
-        """
-        if arg_string:
-            # Use search to handle duplicate/nonexistant results.
-            looking_at_obj = self.search(arg_string, use_nicks=True)
-            if not looking_at_obj:
-                return
-        else:
-            looking_at_obj = self.location
-            if not looking_at_obj:
-                self.msg("You have no location to look at!")
-                return
+            target (Object): The target being looked at. This is
+                commonly an object or the current location. It will
+                be checked for the "view" type access.
 
-        if not hasattr(looking_at_obj, 'return_appearance'):
-            # this is likely due to us having a player instead
-            looking_at_obj = looking_at_obj.character
-        if not looking_at_obj.access(self, "view"):
-            self.msg("Could not find '%s'." % args)
-            return
-        # get object's appearance
-        self.msg(looking_at_obj.return_appearance(self))
-        # the object's at_desc() method.
-        looking_at_obj.at_desc(looker=self)
+        Returns:
+            lookstring (str): A ready-processed look string
+                potentially ready to return to the looker.
+
+        """
+        if not target.access(self, "view"):
+            return "Could not find '%s'." % target
+        # the target's at_desc() method.
+        target.at_desc(looker=self)
+        return target.return_appearance(self)
 
     def at_desc(self, looker=None):
         """
@@ -1408,7 +1401,7 @@ class DefaultCharacter(DefaultObject):
         We make sure to look around after a move.
 
         """
-        self.look()
+        self.msg(self.at_look(self.location))
 
     def at_pre_puppet(self, player, sessid=None):
         """
@@ -1440,7 +1433,8 @@ class DefaultCharacter(DefaultObject):
 
         """
         self.msg("\nYou become {c%s{n.\n" % self.name)
-        self.look()
+        self.msg(self.at_look(self.location))
+
         def message(obj, from_obj):
             obj.msg("%s has entered the game." % self.get_display_name(obj), from_obj=from_obj)
         self.location.for_contents(message, exclude=[self], from_obj=self)

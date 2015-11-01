@@ -25,25 +25,52 @@ from evennia.server.sessionhandler import SESSIONS
 from evennia.commands.default.muxcommand import MuxPlayerCommand
 from evennia.utils import utils, create, search, prettytable
 
-MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
-MULTISESSION_MODE = settings.MULTISESSION_MODE
+_MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
+_MULTISESSION_MODE = settings.MULTISESSION_MODE
 
 # limit symbol import for API
 __all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit",
            "CmdCharCreate", "CmdOption", "CmdSessions", "CmdWho",
            "CmdColorTest", "CmdQuell")
 
-# force max nr chars to 1 if mode is 0 or 1
-BASE_PLAYER_TYPECLASS = settings.BASE_PLAYER_TYPECLASS
 
-PERMISSION_HIERARCHY = settings.PERMISSION_HIERARCHY
-PERMISSION_HIERARCHY_LOWER = [perm.lower() for perm in PERMISSION_HIERARCHY]
+class MuxPlayerLookCommand(MuxPlayerCommand):
+    """
+    Custom parent (only) parsing for OOC looking, sets a "playable"
+    property on the command based on the parsing.
+
+    """
+    def parse(self):
+        "Custom parsing"
+
+        super(MuxPlayerLookCommand, self).parse()
+
+        if _MULTISESSION_MODE < 2:
+            # only one character allowed - not used in this mode
+            self.playable = None
+            return
+
+        playable = self.player.db._playable_characters
+        if playable is not None:
+            # clean up list if character object was deleted in between
+            if None in playable:
+                playable = [character for character in playable if character]
+                self.player.db._playable_characters = playable
+        # store playable property
+        if self.args:
+            self.playable = dict((utils.to_str(char.key.lower()), char)
+                         for char in playable).get(self.args.lower(), None)
+        else:
+            self.playable = playable
+
 
 # Obs - these are all intended to be stored on the Player, and as such,
 # use self.player instead of self.caller, just to be sure. Also self.msg()
 # is used to make sure returns go to the right session
 
-class CmdOOCLook(MuxPlayerCommand):
+# note that this is inheriting from MuxPlayerLookCommand,
+# and has the .playable property.
+class CmdOOCLook(MuxPlayerLookCommand):
     """
     look while out-of-character
 
@@ -65,7 +92,14 @@ class CmdOOCLook(MuxPlayerCommand):
 
     def func(self):
         "implement the ooc look command"
-        self.player.look(self.args, sessid=self.sessid)
+
+        if _MULTISESSION_MODE < 2:
+            # only one character allowed
+            self.msg("You are out-of-character (OOC).\nUse {w@ic{n to get back into the game.")
+            return
+
+        # call on-player look helper method
+        self.msg(self.player.at_look(target=self.playable, sessid=self.sessid))
 
 
 class CmdCharCreate(MuxPlayerCommand):
@@ -93,7 +127,7 @@ class CmdCharCreate(MuxPlayerCommand):
         key = self.lhs
         desc = self.rhs
 
-        charmax = MAX_NR_CHARACTERS if MULTISESSION_MODE > 1 else 1
+        charmax = _MAX_NR_CHARACTERS if _MULTISESSION_MODE > 1 else 1
 
         if not player.is_superuser and \
             (player.db._playable_characters and
@@ -175,7 +209,9 @@ class CmdIC(MuxPlayerCommand):
             self.msg("{rYou cannot become {C%s{n: %s" % (new_character.name, exc))
 
 
-class CmdOOC(MuxPlayerCommand):
+# note that this is inheriting from MuxPlayerLookCommand,
+# and as such has the .playable property.
+class CmdOOC(MuxPlayerLookCommand):
     """
     stop puppeting and go ooc
 
@@ -210,7 +246,14 @@ class CmdOOC(MuxPlayerCommand):
         try:
             player.unpuppet_object(sessid)
             self.msg("\n{GYou go OOC.{n\n")
-            player.look(sessid=sessid)
+
+            if _MULTISESSION_MODE < 2:
+                # only one character allowed
+                self.msg("You are out-of-character (OOC).\nUse {w@ic{n to get back into the game.")
+                return
+
+            self.msg(player.at_look(target=self.playable, sessid=sessid))
+
         except RuntimeError as exc:
             self.msg("{rCould not unpuppet from {c%s{n: %s" % (old_char, exc))
 

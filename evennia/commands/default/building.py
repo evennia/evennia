@@ -2003,7 +2003,7 @@ class CmdExamine(ObjManipCommand):
                 obj = caller.location
                 if not obj.access(caller, 'examine'):
                 #If we don't have special info access, just look at the object instead.
-                    caller.look(obj.name)
+                    self.msg(caller.at_look(obj))
                     return
                 # using callback for printing result whenever function returns.
                 get_and_merge_cmdsets(obj, self.session, self.player, obj, "object").addCallback(get_cmdset_callback)
@@ -2033,7 +2033,7 @@ class CmdExamine(ObjManipCommand):
             if not obj.access(caller, 'examine'):
                 #If we don't have special info access, just look
                 # at the object instead.
-                caller.look(obj_name)
+                self.msg(caller.at_look(obj))
                 continue
 
             if obj_attrs:
