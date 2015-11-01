@@ -22,6 +22,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.db import models
 from evennia.typeclasses.models import TypedObject
+from evennia.typeclasses.tags import Tag, TagHandler
 from evennia.utils.idmapper.models import SharedMemoryModel
 from evennia.comms import managers
 from evennia.locks.lockhandler import LockHandler
@@ -107,6 +108,9 @@ class Msg(SharedMemoryModel):
     db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', null=True)
     db_hide_from_channels = models.ManyToManyField("ChannelDB", related_name='hide_from_channels_set', null=True)
 
+    db_tags = models.ManyToManyField(Tag, null=True,
+            help_text='tags on this message. Tags are simple string markers to identify, group and alias messages.')
+
     # Database manager
     objects = managers.MsgManager()
     _is_deleted = False
@@ -122,6 +126,10 @@ class Msg(SharedMemoryModel):
     @lazy_property
     def locks(self):
         return LockHandler(self)
+
+    @lazy_property
+    def tags(self):
+        return TagHandler(self)
 
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
