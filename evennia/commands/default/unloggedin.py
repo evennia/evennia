@@ -28,8 +28,7 @@ CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 # would also block dummyrunner, so it's not added as default.
 
 _LATEST_FAILED_LOGINS = defaultdict(list)
-def _throttle(session, maxlim=None, timeout=None,
-                   storage=_LATEST_FAILED_LOGINS):
+def _throttle(session, maxlim=None, timeout=None, storage=_LATEST_FAILED_LOGINS):
     """
     This will check the session's address against the
     _LATEST_LOGINS dictionary to check they haven't
@@ -72,7 +71,18 @@ def _throttle(session, maxlim=None, timeout=None,
         return False
 
 
-def guest_player(session):
+def create_guest_player(session):
+    """
+    Creates a guest player/character for this session, if one is available.
+
+    Args:
+        session (Session): the session which will use the guest player/character.
+
+    Returns:
+        GUEST_ENABLED (boolean), player (Player):
+            the boolean is whether guest accounts are enabled at all.
+            the Player which was created from an available guest name.
+    """
     # check if guests are enabled.
     if not settings.GUEST_ENABLED:
         return False, None
@@ -118,6 +128,56 @@ def guest_player(session):
         return True, new_player
 
 
+def create_normal_player(session, name, password):
+    """
+    Creates a player with the given name and password.
+
+    Args:
+        session (Session): the session which is requesting to create a player.
+        name (str): the name that the player wants to use for login.
+        password (str): the password desired by this player, for login.
+
+    Returns:
+        player (Player): the player which was created from the name and password.
+    """
+    # check for too many login errors too quick.
+    if _throttle(session, maxlim=5, timeout=5*60):
+        # timeout is 5 minutes.
+        session.msg("{RYou made too many connection attempts. Try again in a few minutes.{n")
+        return None
+
+    # Match account name and check password
+    player = PlayerDB.objects.get_player_from_name(name)
+    pswd = None
+    if player:
+        pswd = player.check_password(password)
+
+    if not (player and pswd):
+        # No playername or password match
+        session.msg("Incorrect login information given.")
+        # this just updates the throttle
+        _throttle(session)
+        # calls player hook for a failed login if possible.
+        if player:
+            player.at_failed_login(session)
+        return None
+
+
+    # Check IP and/or name bans
+    bans = ServerConfig.objects.conf("server_bans")
+    if bans and (any(tup[0]==player.name.lower() for tup in bans)
+                 or
+                 any(tup[2].match(session.address) for tup in bans if tup[2])):
+        # this is a banned IP or name!
+        string = "{rYou have been banned and cannot continue from here." \
+                 "\nIf you feel this ban is in error, please email an admin.{x"
+        session.msg(string)
+        session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
+        return None
+
+    return player
+
+
 class CmdUnconnectedConnect(MuxCommand):
     """
     connect to the game
@@ -159,7 +219,7 @@ class CmdUnconnectedConnect(MuxCommand):
             parts = parts[0].split(None, 1)
             # Guest login
             if len(parts) == 1 and parts[0].lower() == "guest":
-                enabled, new_player = guest_player(session)
+                enabled, new_player = create_guest_player(session)
                 if new_player:
                     session.sessionhandler.login(session, new_player)
                 if enabled:
@@ -168,47 +228,17 @@ class CmdUnconnectedConnect(MuxCommand):
         if len(parts) != 2:
             session.msg("\n\r Usage (without <>): connect <name> <password>")
             return
-        playername, password = parts
 
-        # Match account name and check password
-        player = PlayerDB.objects.get_player_from_name(playername)
-        pswd = None
+        name, password = parts
+        player = create_normal_player(session, name, password)
         if player:
-            pswd = player.check_password(password)
-
-        if not (player and pswd):
-            # No playername or password match
-            string = "Wrong login information given.\nIf you have spaces in your name or " \
-                     "password, don't forget to enclose it in quotes. Also capitalization matters." \
-                     "\nIf you are new you should first create a new account " \
-                     "using the 'create' command."
-            session.msg(string)
-            # this just updates the throttle
-            _throttle(session, storage=_LATEST_FAILED_LOGINS)
-            # calls player hook for a failed login if possible.
-            if player:
-                player.at_failed_login(session)
-            return
-
-        # Check IP and/or name bans
-        bans = ServerConfig.objects.conf("server_bans")
-        if bans and (any(tup[0]==player.name.lower() for tup in bans)
-                     or
-                     any(tup[2].match(session.address) for tup in bans if tup[2])):
-            # this is a banned IP or name!
-            string = "{rYou have been banned and cannot continue from here." \
-                     "\nIf you feel this ban is in error, please email an admin.{x"
-            session.msg(string)
-            session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
-            return
-
-        # actually do the login. This will call all other hooks:
-        #   session.at_login()
-        #   player.at_init()  # always called when object is loaded from disk
-        #   player.at_first_login()  # only once, for player-centric setup
-        #   player.at_pre_login()
-        #   player.at_post_login(sessid=sessid)
-        session.sessionhandler.login(session, player)
+            # actually do the login. This will call all other hooks:
+            #   session.at_login()
+            #   player.at_init()  # always called when object is loaded from disk
+            #   player.at_first_login()  # only once, for player-centric setup
+            #   player.at_pre_login()
+            #   player.at_post_login(sessid=sessid)
+            session.sessionhandler.login(session, player)
 
 
 class CmdUnconnectedCreate(MuxCommand):
