@@ -119,6 +119,10 @@ class Msg(SharedMemoryModel):
         "Define Django meta options"
         verbose_name = "Message"
 
+    @lazy_property
+    def locks(self):
+        return LockHandler(self)
+
     # Wrapper properties to easily set database fields. These are
     # @property decorators that allows to access these fields using
     # normal python operations (without having to remember to save()
