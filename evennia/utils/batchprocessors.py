@@ -173,10 +173,8 @@ import re
 import codecs
 import traceback
 import sys
-#from traceback import format_exc
 from django.conf import settings
 from evennia.utils import utils
-#from game import settings as settings_module
 
 ENCODINGS = settings.ENCODINGS
 CODE_INFO_HEADER = re.compile(r"\(.*?\)")

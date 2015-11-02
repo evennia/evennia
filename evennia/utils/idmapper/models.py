@@ -10,8 +10,6 @@ from __future__ import absolute_import
 from __future__ import division
 
 import os, threading, gc, time
-#from twisted.internet import reactor
-#from twisted.internet.threads import blockingCallFromThread
 from weakref import WeakValueDictionary
 from twisted.internet.reactor import callFromThread
 from django.core.exceptions import ObjectDoesNotExist, FieldError
