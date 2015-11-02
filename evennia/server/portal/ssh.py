@@ -300,7 +300,7 @@ class PassAvatarIdTerminalRealm(TerminalRealm):
         return user
 
 
-class TerminalSessionTransport_getPeer:
+class TerminalSessionTransport_getPeer(object):
     """
     Taken from twisted's TerminalSessionTransport which doesn't
     provide getPeer to the transport.  This one does.

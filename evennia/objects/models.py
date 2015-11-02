@@ -303,7 +303,7 @@ class ObjectDB(TypedObject):
                 logger.log_warn("db_location direct save triggered contents_cache.init() for all objects!")
                 [o.contents_cache.init() for o in self.__dbclass__.get_all_cached_instances()]
 
-    class Meta:
+    class Meta(object):
         "Define Django meta options"
         verbose_name = "Object"
         verbose_name_plural = "Objects"

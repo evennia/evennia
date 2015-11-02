@@ -96,7 +96,7 @@ class Attribute(SharedMemoryModel):
     def locks(self):
         return LockHandler(self)
 
-    class Meta:
+    class Meta(object):
         "Define Django meta options"
         verbose_name = "Evennia Attribute"
 

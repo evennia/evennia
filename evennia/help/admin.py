@@ -1,6 +1,8 @@
 """
 This defines how to edit help entries in Admin.
 """
+from builtins import object
+
 from django import forms
 from django.contrib import admin
 from evennia.help.models import HelpEntry
@@ -9,7 +11,7 @@ from evennia.help.models import HelpEntry
 
 class HelpEntryForm(forms.ModelForm):
     "Defines how to display the help entry"
-    class Meta:
+    class Meta(object):
         model = HelpEntry
         fields = '__all__'
 

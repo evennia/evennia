@@ -2,6 +2,7 @@
 # This sets up how models are displayed
 # in the web admin interface.
 #
+from builtins import object
 
 from django import forms
 from django.conf import settings
@@ -32,7 +33,7 @@ class ObjectCreateForm(forms.ModelForm):
     This form details the look of the fields.
 
     """
-    class Meta:
+    class Meta(object):
         model = ObjectDB
         fields = '__all__'
     db_key = forms.CharField(label="Name/Key",
@@ -56,7 +57,7 @@ class ObjectEditForm(ObjectCreateForm):
 
     """
 
-    class Meta:
+    class Meta(object):
         fields = '__all__'
     db_lock_storage = forms.CharField(label="Locks",
                                       required=False,

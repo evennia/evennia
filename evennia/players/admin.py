@@ -2,6 +2,7 @@
 # This sets up how models are displayed
 # in the web admin interface.
 #
+from builtins import object
 
 from django import forms
 from django.conf import settings
@@ -19,7 +20,7 @@ class PlayerDBChangeForm(UserChangeForm):
     Modify the playerdb class.
 
     """
-    class Meta:
+    class Meta(object):
         model = PlayerDB
         fields = '__all__'
 
@@ -54,7 +55,7 @@ class PlayerDBCreationForm(UserCreationForm):
     Create a new PlayerDB instance.
     """
 
-    class Meta:
+    class Meta(object):
         model = PlayerDB
         fields = '__all__'
 
@@ -86,7 +87,7 @@ class PlayerForm(forms.ModelForm):
     Defines how to display Players
 
     """
-    class Meta:
+    class Meta(object):
         model = PlayerDB
         fields = '__all__'
 

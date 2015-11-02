@@ -120,7 +120,7 @@ class Msg(SharedMemoryModel):
         SharedMemoryModel.__init__(self, *args, **kwargs)
         self.extra_senders = []
 
-    class Meta:
+    class Meta(object):
         "Define Django meta options"
         verbose_name = "Message"
 
@@ -543,7 +543,7 @@ class ChannelDB(TypedObject):
     __defaultclasspath__ = "evennia.comms.comms.DefaultChannel"
     __applabel__ = "comms"
 
-    class Meta:
+    class Meta(object):
         "Define Django meta options"
         verbose_name = "Channel"
         verbose_name_plural = "Channels"
