@@ -19,6 +19,8 @@ self.msg() and similar methods to reroute returns to the correct
 method. Otherwise all text will be returned to all connected sessions.
 
 """
+from builtins import range
+
 import time
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS

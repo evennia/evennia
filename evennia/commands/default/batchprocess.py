@@ -17,6 +17,8 @@ the Evennia API.  It is also a severe security risk and should
 therefore always be limited to superusers only.
 
 """
+from builtins import range
+
 from traceback import format_exc
 from django.conf import settings
 from evennia.utils.batchprocessors import BATCHCMD, BATCHCODE

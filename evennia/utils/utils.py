@@ -5,9 +5,8 @@ They provide some useful string and conversion methods that might
 be of use when designing your own game.
 
 """
-from __future__ import division
-from __future__ import print_function
-from builtins import object
+from __future__ import division, print_function
+from builtins import object, range
 
 import os
 import sys

@@ -22,6 +22,7 @@
 Blind reimplementation of WebSockets as a standalone wrapper for Twisted
 protocols.
 """
+from builtins import range
 
 __version__ = "0.7.1"
 
@@ -53,18 +54,18 @@ class WSException(Exception):
 # RFC6455 - RFC 6455. The official WebSocket protocol standard. The protocol
 #           number is 13, but otherwise it is identical to HyBi-07.
 
-HYBI00, HYBI07, HYBI10, RFC6455 = range(4)
+HYBI00, HYBI07, HYBI10, RFC6455 = list(range(4))
 
 # States of the state machine. Because there are no reliable byte counts for
 # any of this, we don't use StatefulProtocol; instead, we use custom state
 # enumerations. Yay!
 
-REQUEST, NEGOTIATING, CHALLENGE, FRAMES = range(4)
+REQUEST, NEGOTIATING, CHALLENGE, FRAMES = list(range(4))
 
 # Control frame specifiers. Some versions of WS have control signals sent
 # in-band. Adorable, right?
 
-NORMAL, CLOSE, PING, PONG = range(4)
+NORMAL, CLOSE, PING, PONG = list(range(4))
 
 opcode_types = {
     0x0: NORMAL,
