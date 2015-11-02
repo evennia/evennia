@@ -1,4 +1,6 @@
 from __future__ import absolute_import
+from builtins import range
+
 from django.test import TestCase
 
 from .models import SharedMemoryModel
@@ -29,7 +31,7 @@ class SharedMemorysTest(TestCase):
         category = Category.objects.create(name="Category %d" % (n,))
         regcategory = RegularCategory.objects.create(name="Category %d" % (n,))
 
-        for n in xrange(0, 10):
+        for n in range(0, 10):
             Article.objects.create(name="Article %d" % (n,), category=category, category2=regcategory)
             RegularArticle.objects.create(name="Article %d" % (n,), category=category, category2=regcategory)
 

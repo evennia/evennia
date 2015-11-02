@@ -134,7 +134,7 @@ evennia.utils.evmenu`.
 
 """
 from __future__ import print_function
-from builtins import object
+from builtins import object, range
 
 from textwrap import dedent
 from inspect import isfunction, getargspec
@@ -271,13 +271,13 @@ def evtable_options_formatter(optionlist):
     ncols = ncols + 1 if nlastcol > 0 else ncols
     if ncols > 1:
         # only extend if longer than one column
-        table.extend([" " for i in xrange(nrows - nlastcol)])
+        table.extend([" " for i in range(nrows - nlastcol)])
 
     # build the actual table grid
-    table = [table[icol * nrows : (icol * nrows) + nrows] for icol in xrange(0, ncols)]
+    table = [table[icol * nrows : (icol * nrows) + nrows] for icol in range(0, ncols)]
 
     # adjust the width of each column
-    for icol in xrange(len(table)):
+    for icol in range(len(table)):
         col_width = max(max(m_len(p) for p in part.split("\n")) for part in table[icol]) + colsep
         table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
 

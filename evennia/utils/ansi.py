@@ -13,7 +13,8 @@ it is run by Evennia just before returning data to/from the
 user.
 
 """
-from builtins import object
+from builtins import object, range
+
 import re
 from evennia.utils import utils
 from evennia.utils.utils import to_str, to_unicode
@@ -770,7 +771,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         # Check between the slice intervals for escape sequences.
         i = None
         for i in slice_indexes[1:]:
-            for index in xrange(last_mark, i):
+            for index in range(last_mark, i):
                 if index in self._code_indexes:
                     string += self._raw_string[index]
             last_mark = i
@@ -810,7 +811,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         result = ''
         # Get the character they're after, and replay all escape sequences
         # previous to it.
-        for index in xrange(0, item + 1):
+        for index in range(0, item + 1):
             if index in self._code_indexes:
                 result += self._raw_string[index]
         return ANSIString(result + clean + append_tail, decoded=True)
@@ -878,7 +879,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
             code_indexes.extend(range(match.start(), match.end()))
         if not code_indexes:
             # Plain string, no ANSI codes.
-            return code_indexes, range(0, len(self._raw_string))
+            return code_indexes, list(range(0, len(self._raw_string)))
         # all indexes not occupied by ansi codes are normal characters
         char_indexes = [i for i in range(len(self._raw_string)) if i not in code_indexes]
         return code_indexes, char_indexes
@@ -1007,7 +1008,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         if not isinstance(char, ANSIString):
             line = char * amount
             return ANSIString(
-                char * amount, code_indexes=[], char_indexes=range(0, len(line)),
+                char * amount, code_indexes=[], char_indexes=list(range(0, len(line))),
                 clean_string=char)
         try:
             start = char._code_indexes[0]
@@ -1020,7 +1021,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         code_indexes = [i for i in range(0, len(prefix))]
         length = len(prefix) + len(line)
         code_indexes.extend([i for i in range(length, length + len(postfix))])
-        char_indexes = self._shifter(xrange(0, len(line)), len(prefix))
+        char_indexes = self._shifter(range(0, len(line)), len(prefix))
         raw_string = prefix + line + postfix
         return ANSIString(
             raw_string, clean_string=line, char_indexes=char_indexes,

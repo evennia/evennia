@@ -40,7 +40,8 @@ example of usage.
 For a simple demonstration, add `CmdMenuTest` from this module to the default cmdset.
 
 """
-from builtins import object
+from builtins import object, range
+
 from types import MethodType
 from evennia import syscmdkeys
 

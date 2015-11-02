@@ -135,7 +135,7 @@ form will raise an error.
 
 """
 from __future__ import print_function
-from builtins import object
+from builtins import object, range
 
 import re
 import copy

@@ -4,6 +4,8 @@ import sys
 Building and world design commands
 
 """
+from builtins import range
+
 import re
 from django.conf import settings
 from django.db.models import Q

@@ -1,3 +1,5 @@
+from builtins import range
+
 import re
 
 try:

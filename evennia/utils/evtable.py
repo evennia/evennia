@@ -115,7 +115,8 @@ table string.
 
 """
 from __future__ import print_function
-from builtins import object
+from builtins import object, range
+
 #from textwrap import wrap
 from django.conf import settings
 from textwrap import TextWrapper
@@ -524,7 +525,7 @@ class EvCell(object):
                     adjusted_data[-1] = adjusted_data[-1][:-2] + ".."
             elif excess < 0:
                 # too few lines. Fill to height.
-                adjusted_data.extend(["" for i in xrange(excess)])
+                adjusted_data.extend(["" for i in range(excess)])
 
         return adjusted_data
 
@@ -600,11 +601,11 @@ class EvCell(object):
             return data
         # only care if we need to add new lines
         if valign == 't':
-            return data + [padline for i in xrange(excess)]
+            return data + [padline for i in range(excess)]
         elif valign == 'b':
-            return [padline for i in xrange(excess)] + data
+            return [padline for i in range(excess)] + data
         else: # center
-            narrowside = [padline  for i in xrange(excess // 2)]
+            narrowside = [padline  for i in range(excess // 2)]
             widerside = narrowside + [padline]
             if excess % 2:
                 # uneven padding
@@ -630,8 +631,8 @@ class EvCell(object):
         left = self.hpad_char * self.pad_left
         right = self.hpad_char * self.pad_right
         vfill = (self.width + self.pad_left + self.pad_right) * self.vpad_char
-        top = [vfill for i in xrange(self.pad_top)]
-        bottom = [vfill for i in xrange(self.pad_bottom)]
+        top = [vfill for i in range(self.pad_top)]
+        bottom = [vfill for i in range(self.pad_bottom)]
         return top + [left + line + right for line in data] + bottom
 
     def _border(self, data):
@@ -655,12 +656,12 @@ class EvCell(object):
         vfill = self.corner_top_left_char if left else ""
         vfill += cwidth * self.border_top_char
         vfill += self.corner_top_right_char if right else ""
-        top = [vfill for i in xrange(self.border_top)]
+        top = [vfill for i in range(self.border_top)]
 
         vfill = self.corner_bottom_left_char if left else ""
         vfill += cwidth * self.border_bottom_char
         vfill += self.corner_bottom_right_char if right else ""
-        bottom = [vfill for i in xrange(self.border_bottom)]
+        bottom = [vfill for i in range(self.border_bottom)]
 
         return top + [left + line + right for line in data] + bottom
 
@@ -1020,10 +1021,10 @@ class EvTable(object):
                 excess = len(header) - len(table)
                 if excess > 0:
                     # header bigger than table
-                    table.extend([] for i in xrange(excess))
+                    table.extend([] for i in range(excess))
                 elif excess < 0:
                     # too short header
-                    header.extend(_to_ansi(["" for i in xrange(abs(excess))]))
+                    header.extend(_to_ansi(["" for i in range(abs(excess))]))
                 for ix, heading in enumerate(header):
                     table[ix].insert(0, heading)
             else:
@@ -1217,7 +1218,7 @@ class EvTable(object):
             self.worktable[icol].reformat(**options)
             if nrow < nrowmax:
                 # add more rows to too-short columns
-                empty_rows = ["" for i in xrange(nrowmax-nrow)]
+                empty_rows = ["" for i in range(nrowmax-nrow)]
                 self.worktable[icol].add_rows(*empty_rows)
         self.ncols = ncols
         self.nrows = nrowmax
@@ -1247,14 +1248,14 @@ class EvTable(object):
                 excess = width - cwmin
                 if self.evenwidth:
                     # make each collumn of equal width
-                    for i in xrange(excess):
+                    for i in range(excess):
                         # flood-fill the minimum table starting with the smallest collumns
                         ci = cwidths_min.index(min(cwidths_min))
                         cwidths_min[ci] += 1
                     cwidths = cwidths_min
                 else:
                     # make each collumn expand more proportional to their data size
-                    for i in xrange(excess):
+                    for i in range(excess):
                         # fill wider collumns first
                         ci = cwidths.index(max(cwidths))
                         cwidths_min[ci] += 1
@@ -1270,14 +1271,14 @@ class EvTable(object):
                 raise #Exception ("Error in horizontal allign:\n %s" % msg)
 
         # equalize heights for each row (we must do this here, since it may have changed to fit new widths)
-        cheights = [max(cell.get_height() for cell in (col[iy] for col in self.worktable)) for iy in xrange(nrowmax)]
+        cheights = [max(cell.get_height() for cell in (col[iy] for col in self.worktable)) for iy in range(nrowmax)]
 
         if self.height:
             # if we are fixing the table height, it means cells must crop text instead of resizing.
             if nrowmax:
 
                 # get minimum possible cell heights for each collumn
-                cheights_min = [max(cell.get_min_height() for cell in (col[iy] for col in self.worktable)) for iy in xrange(nrowmax)]
+                cheights_min = [max(cell.get_min_height() for cell in (col[iy] for col in self.worktable)) for iy in range(nrowmax)]
                 chmin = sum(cheights_min)
 
                 if chmin > self.height:
@@ -1290,7 +1291,7 @@ class EvTable(object):
 
                 excess = self.height - chmin
                 even = self.height % 2 == 0
-                for i in xrange(excess):
+                for i in range(excess):
                     # expand the cells with the most rows first
                     if 0 <= i < nrowmax and nrowmax > 1:
                         # avoid adding to header first round (looks bad on very small tables)
@@ -1327,12 +1328,12 @@ class EvTable(object):
         This will also balance the table.
         """
         self._balance()
-        for iy in xrange(self.nrows):
+        for iy in range(self.nrows):
             cell_row = [col[iy] for col in self.worktable]
             # this produces a list of lists, each of equal length
             cell_data = [cell.get() for cell in cell_row]
             cell_height = min(len(lines) for lines in cell_data)
-            for iline in xrange(cell_height):
+            for iline in range(cell_height):
                 yield ANSIString("").join(_to_ansi(celldata[iline] for celldata in cell_data))
 
     def add_header(self, *args, **kwargs):
@@ -1383,12 +1384,12 @@ class EvTable(object):
         if excess > 0:
             # we need to add new rows to table
             for col in self.table:
-                empty_rows = ["" for i in xrange(excess)]
+                empty_rows = ["" for i in range(excess)]
                 col.add_rows(*empty_rows, **options)
             self.nrows += excess
         elif excess < 0:
             # we need to add new rows to new column
-            empty_rows = ["" for i in xrange(abs(excess))]
+            empty_rows = ["" for i in range(abs(excess))]
             column.add_rows(*empty_rows, **options)
             self.nrows -= excess
 
@@ -1440,12 +1441,12 @@ class EvTable(object):
 
         if excess > 0:
             # we need to add new empty columns to table
-            empty_rows = ["" for i in xrange(htable)]
-            self.table.extend([EvColumn(*empty_rows, **options) for i in xrange(excess)])
+            empty_rows = ["" for i in range(htable)]
+            self.table.extend([EvColumn(*empty_rows, **options) for i in range(excess)])
             self.ncols += excess
         elif excess < 0:
             # we need to add more cells to row
-            row.extend(["" for i in xrange(abs(excess))])
+            row.extend(["" for i in range(abs(excess))])
             self.ncols -= excess
 
         if ypos is None or ypos > htable - 1:

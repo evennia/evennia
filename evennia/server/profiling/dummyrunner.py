@@ -32,6 +32,7 @@ for instructions on how to define this module.
 """
 from __future__ import print_function
 from __future__ import division
+from builtins import range
 
 import sys
 import time

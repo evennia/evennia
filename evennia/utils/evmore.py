@@ -25,7 +25,7 @@ long enough to need to scroll and **kwargs will be passed on to the
 caller.msg() construct (text will be using the pager restrictor).
 
 """
-from builtins import object
+from builtins import object, range
 
 from django.conf import settings
 from evennia import Command, CmdSet

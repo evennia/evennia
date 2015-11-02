@@ -10,7 +10,8 @@ menu. Run the script with the -h flag to see usage information.
 
 """
 from __future__ import print_function
-from builtins import input
+from builtins import input, range
+
 import os
 import sys
 import signal
