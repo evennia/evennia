@@ -4,6 +4,7 @@ The bot then pipes what is being said between the IRC channel and one or
 more Evennia channels.
 """
 from __future__ import print_function
+from future.utils import viewkeys
 
 import re
 from twisted.application import internet
@@ -79,7 +80,7 @@ IRC_COLOR_MAP = dict([
     (r'{[w', IRC_COLOR + IRC_NORMAL + "," + IRC_GRAY),    # light grey background
     (r'{[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK)     # pure black background
     ])
-RE_IRC_COLOR = re.compile(r"|".join([re.escape(key) for key in IRC_COLOR_MAP.keys()]), re.DOTALL)
+RE_IRC_COLOR = re.compile(r"|".join([re.escape(key) for key in viewkeys(IRC_COLOR_MAP)]), re.DOTALL)
 RE_MXP = re.compile(r'\{lc(.*?)\{lt(.*?)\{le', re.DOTALL)
 RE_ANSI_ESCAPES = re.compile(r"(%s)" % "|".join(("{{", "%%", "\\\\")), re.DOTALL)
 

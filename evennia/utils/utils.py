@@ -7,6 +7,7 @@ be of use when designing your own game.
 """
 from __future__ import division, print_function
 from builtins import object, range
+from future.utils import viewkeys
 
 import os
 import sys
@@ -766,7 +767,7 @@ def clean_object_caches(obj):
         pass
 
     # on-object property cache
-    [_DA(obj, cname) for cname in obj.__dict__.keys()
+    [_DA(obj, cname) for cname in viewkeys(obj.__dict__)
                      if cname.startswith("_cached_db_")]
     try:
         hashid = _GA(obj, "hashid")
