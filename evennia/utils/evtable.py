@@ -117,7 +117,6 @@ table string.
 from __future__ import print_function
 from builtins import object, range
 
-#from textwrap import wrap
 from django.conf import settings
 from textwrap import TextWrapper
 from copy import deepcopy, copy
