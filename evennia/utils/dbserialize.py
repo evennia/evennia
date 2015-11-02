@@ -18,7 +18,7 @@ in-situ, e.g `obj.db.mynestedlist[3][5] = 3` would never be saved and
 be out of sync with the database.
 
 """
-from builtins import object
+from builtins import object, int
 
 from functools import update_wrapper
 from collections import defaultdict, MutableSequence, MutableSet, MutableMapping
@@ -31,7 +31,6 @@ from django.contrib.contenttypes.models import ContentType
 from evennia.server.models import ServerConfig
 from evennia.utils.utils import to_str, uses_database
 from evennia.utils import logger
-from builtins import int
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle")
 
