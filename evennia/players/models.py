@@ -15,6 +15,7 @@ persistently store attributes of its own. This is ideal for extra
 account info and OOC account configuration variables etc.
 
 """
+from builtins import object
 
 from django.conf import settings
 from django.db import models
@@ -100,7 +101,7 @@ class PlayerDB(TypedObject, AbstractUser):
     __defaultclasspath__ = "evennia.players.players.DefaultPlayer"
     __applabel__ = "players"
 
-    class Meta:
+    class Meta(object):
         verbose_name = 'Player'
 
     # alias to the objs property

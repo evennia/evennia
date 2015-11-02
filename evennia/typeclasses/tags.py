@@ -58,7 +58,7 @@ class Tag(models.Model):
     # this is None, alias or permission
     db_tagtype = models.CharField('tagtype', max_length=16, null=True, help_text="overall type of Tag", db_index=True)
 
-    class Meta:
+    class Meta(object):
         "Define Django meta options"
         verbose_name = "Tag"
         unique_together = (('db_key', 'db_category', 'db_tagtype'),)

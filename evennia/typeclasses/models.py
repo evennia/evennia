@@ -95,7 +95,7 @@ class TypeclassBase(SharedMemoryModelBase):
 
         # typeclass proxy setup
         if not "Meta" in attrs:
-            class Meta:
+            class Meta(object):
                 proxy = True
                 app_label = attrs.get("__applabel__", "typeclasses")
             attrs["Meta"] = Meta
@@ -285,7 +285,7 @@ class TypedObject(SharedMemoryModel):
         return NAttributeHandler(self)
 
 
-    class Meta:
+    class Meta(object):
         """
         Django setup info.
         """

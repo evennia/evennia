@@ -9,6 +9,8 @@ forms of help that do not concern commands, like information about the
 game world, policy info, rules and similar.
 
 """
+from builtins import object
+
 from django.db import models
 from evennia.utils.idmapper.models import SharedMemoryModel
 from evennia.help.manager import HelpEntryManager
@@ -77,7 +79,7 @@ class HelpEntry(SharedMemoryModel):
         return TagHandler(self)
 
 
-    class Meta:
+    class Meta(object):
         "Define Django meta options"
         verbose_name = "Help Entry"
         verbose_name_plural = "Help Entries"

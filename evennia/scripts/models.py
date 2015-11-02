@@ -24,6 +24,8 @@ Common examples of uses of Scripts:
 - Give the player/object a time-limited bonus/effect
 
 """
+from builtins import object
+
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
@@ -105,7 +107,7 @@ class ScriptDB(TypedObject):
     __defaultclasspath__ = "evennia.scripts.scripts.DefaultScript"
     __applabel__ = "scripts"
 
-    class Meta:
+    class Meta(object):
         "Define Django meta options"
         verbose_name = "Script"
 

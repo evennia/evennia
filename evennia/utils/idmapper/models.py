@@ -6,8 +6,8 @@ leave caching unexpectedly (no use of WeakRefs).
 
 Also adds `cache_size()` for monitoring the size of the cache.
 """
-from __future__ import absolute_import
-from __future__ import division
+from __future__ import absolute_import, division
+from builtins import object
 
 import os, threading, gc, time
 #from twisted.internet import reactor
@@ -209,7 +209,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
 
     objects = SharedMemoryManager()
 
-    class Meta:
+    class Meta(object):
         abstract = True
 
     @classmethod
@@ -419,7 +419,7 @@ class WeakSharedMemoryModel(with_metaclass(WeakSharedMemoryModelBase, SharedMemo
     Uses a WeakValue dictionary for caching instead of a regular one
 
     """
-    class Meta:
+    class Meta(object):
         abstract = True
 
 
