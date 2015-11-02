@@ -65,7 +65,7 @@ class ContentsHandler(object):
             objects (list): the Objects inside this location
 
         """
-        pks = self._pkcache.keys()
+        pks = list(self._pkcache)
         if exclude:
             pks = [pk for pk in pks if pk not in [excl.pk for excl in make_iter(exclude)]]
         try:

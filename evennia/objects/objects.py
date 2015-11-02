@@ -6,6 +6,7 @@ entities.
 
 """
 from builtins import object
+from future.utils import listvalues, with_metaclass
 
 import traceback
 from django.conf import settings
@@ -21,7 +22,6 @@ from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
                                  make_iter, to_str, to_unicode)
-from future.utils import with_metaclass
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
@@ -870,7 +870,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 self.tags.add(cdict["tags"])
             if cdict.get("attributes"):
                 # this should be a dict of attrname:value
-                keys, values = cdict["attributes"].keys(), cdict["attributes"].values()
+                keys, values = list(cdict["attributes"]), listvalues(cdict["attributes"])
                 self.attributes.batch_add(keys, values)
             if cdict.get("nattributes"):
                 # this should be a dict of nattrname:value

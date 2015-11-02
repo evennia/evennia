@@ -26,11 +26,11 @@ Set theory.
     to affect the low-priority cmdset.  Ex: A1,A3 + B1,B2,B4,B5 = B2,B4,B5
 
 """
+from future.utils import listvalues, with_metaclass
 
 from weakref import WeakKeyDictionary
 from django.utils.translation import ugettext as _
 from evennia.utils.utils import inherits_from, is_iter
-from future.utils import with_metaclass
 __all__ = ("CmdSet",)
 
 
@@ -579,7 +579,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
                     unique[cmd.key] = cmd
             else:
                 unique[cmd.key] = cmd
-        self.commands = unique.values()
+        self.commands = listvalues(unique)
 
     def get_all_cmd_keys_and_aliases(self, caller=None):
         """

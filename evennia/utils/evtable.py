@@ -116,6 +116,7 @@ table string.
 """
 from __future__ import print_function
 from builtins import object, range
+from future.utils import listitems
 
 from django.conf import settings
 from textwrap import TextWrapper
@@ -1371,7 +1372,7 @@ class EvTable(object):
 
         """
         # this will replace default options with new ones without changing default
-        options = dict(self.options.items() + kwargs.items())
+        options = dict(listitems(self.options) + listitems(kwargs))
 
         xpos = kwargs.get("xpos", None)
         column = EvColumn(*args, **options)
@@ -1430,7 +1431,7 @@ class EvTable(object):
         """
         # this will replace default options with new ones without changing default
         row = list(args)
-        options = dict(self.options.items() + kwargs.items())
+        options = dict(listitems(self.options) + listitems(kwargs))
 
         ypos = kwargs.get("ypos", None)
         wtable = self.ncols

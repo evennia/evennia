@@ -2,6 +2,7 @@
 IMC2 client module. Handles connecting to and communicating with an IMC2 server.
 """
 from builtins import object
+from future.utils import listitems
 
 from time import time
 from twisted.internet import task
@@ -45,7 +46,7 @@ class IMC2MudList(dict):
         """
         Returns a sorted list of connected Muds.
         """
-        muds = self.items()
+        muds = listitems(self)
         muds.sort()
         return [value for key, value in muds]
 
@@ -101,7 +102,7 @@ class IMC2ChanList(dict):
         Returns a sorted list of cached channels.
 
         """
-        channels = self.items()
+        channels = listitems(self)
         channels.sort()
         return [value for key, value in channels]
 

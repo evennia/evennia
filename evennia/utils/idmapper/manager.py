@@ -16,7 +16,7 @@ class SharedMemoryManager(Manager):
         """
         Data entity lookup.
         """
-        items = kwargs.keys()
+        items = list(kwargs)
         inst = None
         if len(items) == 1:
             # CL: support __exact

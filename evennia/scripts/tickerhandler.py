@@ -55,6 +55,8 @@ call the handler's `save()` and `restore()` methods when the server reboots.
 
 """
 from builtins import object
+from future.utils import listvalues
+
 from twisted.internet.defer import inlineCallbacks
 from django.core.exceptions import ObjectDoesNotExist
 from evennia.scripts.scripts import ExtendedLoopingCall
@@ -405,7 +407,7 @@ class TickerHandler(object):
             self.ticker_pool.remove(store_key, interval)
         else:
             # remove all objects with any intervals
-            intervals = self.ticker_pool.tickers.keys()
+            intervals = list(self.ticker_pool.tickers)
             should_save = False
             for interval in intervals:
                 isdb, store_key = self._store_key(obj, interval, idstring)
@@ -455,13 +457,13 @@ class TickerHandler(object):
         """
         if interval is None:
             # return dict of all, ordered by interval
-            return dict((interval, ticker.subscriptions.values())
+            return dict((interval, listvalues(ticker.subscriptions))
                          for interval, ticker in self.ticker_pool.tickers.items())
         else:
             # get individual interval
             ticker = self.ticker_pool.tickers.get(interval, None)
             if ticker:
-                return ticker.subscriptions.values()
+                return listvalues(ticker.subscriptions)
 
 
 # main tickerhandler

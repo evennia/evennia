@@ -244,7 +244,7 @@ class LanguageHandler(DefaultScript):
                             in range(word_length_variance)))
                 if wlen not in grammar:
                     # always create a translation, use random length
-                    structure = choice(grammar[choice(grammar.keys())])
+                    structure = choice(grammar[choice(list(grammar))])
                 else:
                     # use the corresponding length
                     structure = choice(grammar[wlen])
@@ -409,7 +409,7 @@ def available_languages():
             if not _LANGUAGE_HANDLER:
                 from evennia import create_script
                 _LANGUAGE_HANDLER = create_script(LanguageHandler)
-    return _LANGUAGE_HANDLER.attributes.get("language_storage", {}).keys()
+    return list(_LANGUAGE_HANDLER.attributes.get("language_storage", {}))
 
 
 

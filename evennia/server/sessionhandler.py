@@ -13,6 +13,7 @@ There are two similar but separate stores of sessions:
 
 """
 from builtins import object
+from future.utils import listvalues
 
 from time import time
 from django.conf import settings
@@ -103,7 +104,7 @@ class SessionHandler(object):
 
         """
         if include_unloggedin:
-            return self.sessions.values()
+            return listvalues(self.sessions)
         else:
             return [session for session in self.sessions.values() if session.logged_in]
 

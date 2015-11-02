@@ -8,6 +8,7 @@ Also adds `cache_size()` for monitoring the size of the cache.
 """
 from __future__ import absolute_import, division
 from builtins import object
+from future.utils import listitems, listvalues, with_metaclass
 
 import os, threading, gc, time
 from weakref import WeakValueDictionary
@@ -20,7 +21,6 @@ from evennia.utils import logger
 from evennia.utils.utils import dbref, get_evennia_pids, to_str
 
 from .manager import SharedMemoryManager
-from future.utils import with_metaclass
 
 AUTO_FLUSH_MIN_INTERVAL = 60.0 * 5 # at least 5 mins between cache flushes
 
@@ -189,7 +189,7 @@ class SharedMemoryModelBase(ModelBase):
         if cls.__name__ in ("ServerConfig", "TypeNick"):
             return
         # dynamically create the wrapper properties for all fields not already handled (manytomanyfields are always handlers)
-        for fieldname, field in ((fname, field) for fname, field in attrs.items()
+        for fieldname, field in ((fname, field) for fname, field in listitems(attrs)
                                   if fname.startswith("db_") and type(field).__name__ != "ManyToManyField"):
             foreignkey = type(field).__name__ == "ForeignKey"
             wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "", 1)
@@ -282,7 +282,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         Return the objects so far cached by idmapper for this class.
 
         """
-        return cls.__dbclass__.__instance_cache__.values()
+        return listvalues(cls.__dbclass__.__instance_cache__)
 
     @classmethod
     def _flush_cached_by_key(cls, key, force=True):
