@@ -55,6 +55,7 @@ protocol), but tells the Evennia OOB Protocol that you want to send a
 name.
 
 """
+from future.utils import viewkeys
 
 from django.conf import settings
 from evennia.utils.utils import to_str
@@ -353,7 +354,7 @@ def oob_list(session, mode, *args, **kwargs):
                                      # "RESET",
                                      "SEND")))
     elif mode == "REPORTABLE_VARIABLES":
-        session.msg(oob=("REPORTABLE_VARIABLES", tuple(key for key in OOB_REPORTABLE.keys())))
+        session.msg(oob=("REPORTABLE_VARIABLES", tuple(key for key in viewkeys(OOB_REPORTABLE))))
     elif mode == "REPORTED_VARIABLES":
         # we need to check so as to use the right return value depending on if it is
         # an Attribute (identified by tracking the db_value field) or a normal database field
@@ -362,7 +363,7 @@ def oob_list(session, mode, *args, **kwargs):
         reported = [rep[0].key if rep[1] == "db_value" else rep[1] for rep in reported]
         session.msg(oob=("REPORTED_VARIABLES", reported))
     elif mode == "SENDABLE_VARIABLES":
-        session.msg(oob=("SENDABLE_VARIABLES", tuple(key for key in OOB_REPORTABLE.keys())))
+        session.msg(oob=("SENDABLE_VARIABLES", tuple(key for key in viewkeys(OOB_REPORTABLE))))
     elif mode == "CONFIGURABLE_VARIABLES":
         # Not implemented (game specific)
         oob_error(session, "Not implemented (game specific)")
