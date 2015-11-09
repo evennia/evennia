@@ -19,12 +19,11 @@ therefore always be limited to superusers only.
 """
 from builtins import range
 
-from traceback import format_exc
 from django.conf import settings
 from evennia.utils.batchprocessors import BATCHCMD, BATCHCODE
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.default.muxcommand import MuxCommand
-from evennia.utils import utils
+from evennia.utils import logger, utils
 
 # limit symbols for API inclusion
 __all__ = ("CmdBatchCommands", "CmdBatchCode")
@@ -120,7 +119,7 @@ def batch_cmd_exec(caller):
     try:
         caller.execute_cmd(command)
     except Exception:
-        caller.msg(format_code(format_exc()))
+        logger.log_trace()
         return False
     return True
 
