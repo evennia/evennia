@@ -38,7 +38,6 @@ command line. The processing of a command works as follows:
 from collections import defaultdict
 from weakref import WeakValueDictionary
 from copy import copy
-from traceback import format_exc
 from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
 from evennia.comms.channelhandler import CHANNELHANDLER
@@ -81,22 +80,16 @@ _SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit
 
 # Output strings
 
-_ERROR_UNTRAPPED = "{traceback}\n" \
-                  "Above traceback is from an untrapped error. " \
-                  "Please file a bug report."
+_ERROR_UNTRAPPED = "An untrapped error occurred. Please file a bug report."
 
-_ERROR_CMDSETS = "{traceback}\n" \
-                "Above traceback is from a cmdset merger error. " \
-                "Please file a bug report."
+_ERROR_CMDSETS = "A cmdset merger error occurred. Please file a bug report."
 
 _ERROR_NOCMDSETS = "No command sets found! This is a sign of a critical bug." \
                   "\nThe error was logged. If disconnecting/reconnecting doesn't" \
                   "\nsolve the problem, try to contact the server admin through" \
                   "\nsome other means for assistance."
 
-_ERROR_CMDHANDLER = "{traceback}\n"\
-                   "Above traceback is from a Command handler bug. " \
-                   "Please file a bug report with the Evennia project."
+_ERROR_CMDHANDLER = "A command handler bug occurred. Please file a bug report with the Evennia project."
 
 _ERROR_RECURSION_LIMIT = "Command recursion limit ({recursion_limit}) " \
                          "reached for '{raw_string}' ({cmdclass})."
@@ -107,11 +100,11 @@ def _msg_err(receiver, string):
     Helper function for returning an error to the caller.
 
     Args:
-        receiver (Object): object to get the error message
-        string (str): string with a {traceback} format marker inside it.
+        receiver (Object): object to get the error message.
+        string (str): string which will be shown to the user.
 
     """
-    receiver.msg(string.format(traceback=format_exc(), _nomulti=True))
+    receiver.msg(string.format(_nomulti=True))
 
 
 # custom Exceptions
