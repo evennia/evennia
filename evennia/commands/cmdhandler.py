@@ -80,16 +80,28 @@ _SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit
 
 # Output strings
 
-_ERROR_UNTRAPPED = "An untrapped error occurred. Please file a bug report."
+_ERROR_UNTRAPPED = """
+An untrapped error occurred. Please file a bug report detailing the
+steps to reproduce. Server log time stamp is '{timestamp}'.
+"""
 
-_ERROR_CMDSETS = "A cmdset merger error occurred. Please file a bug report."
+_ERROR_CMDSETS = """
+A cmdset merger error occurred. Please file a bug report detailing the
+steps to reproduce. Server log time stamp is '{timestamp}'.
+"""
 
-_ERROR_NOCMDSETS = "No command sets found! This is a sign of a critical bug." \
-                  "\nThe error was logged. If disconnecting/reconnecting doesn't" \
-                  "\nsolve the problem, try to contact the server admin through" \
-                  "\nsome other means for assistance."
+_ERROR_NOCMDSETS = """
+No command sets found! This is a sign of a critical bug.  If
+disconnecting/reconnecting doesn't" solve the problem, try to contact
+the server admin through" some other means for assistance. Server log
+time stamp is '{timestamp}'.
+"""
 
-_ERROR_CMDHANDLER = "A command handler bug occurred. Please file a bug report with the Evennia project."
+_ERROR_CMDHANDLER = """
+A command handler bug occurred. Please file a bug report with the
+Evennia project. Include the relvant traceback from the server log at
+time stamp '{timestamp}'.
+"""
 
 _ERROR_RECURSION_LIMIT = "Command recursion limit ({recursion_limit}) " \
                          "reached for '{raw_string}' ({cmdclass})."
@@ -104,7 +116,7 @@ def _msg_err(receiver, string):
         string (str): string which will be shown to the user.
 
     """
-    receiver.msg(string.format(_nomulti=True))
+    receiver.msg(string.format(_nomulti=True, timestamp=logger.timeformat()).strip())
 
 
 # custom Exceptions
