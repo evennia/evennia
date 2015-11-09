@@ -230,3 +230,82 @@ class TestMLen(TestCase):
 
     def test_dict(self):
         self.assertEqual(utils.m_len({'hello': True, 'Goodbye': False}), 2)
+
+
+from .text2html import TextToHTMLparser
+
+class TestTextToHTMLparser(TestCase):
+    def setUp(self):
+        self.parser = TextToHTMLparser()
+
+    def tearDown(self):
+        del self.parser
+
+    def test_url_scheme_ftp(self):
+        self.assertEqual(self.parser.convert_urls('ftp.example.com'),
+            '<a href="ftp.example.com" target="_blank">ftp.example.com</a>')
+
+    def test_url_scheme_www(self):
+        self.assertEqual(self.parser.convert_urls('www.example.com'),
+            '<a href="www.example.com" target="_blank">www.example.com</a>')
+
+    def test_url_scheme_ftpproto(self):
+        self.assertEqual(self.parser.convert_urls('ftp://ftp.example.com'),
+            '<a href="ftp://ftp.example.com" target="_blank">ftp://ftp.example.com</a>')
+
+    def test_url_scheme_http(self):
+        self.assertEqual(self.parser.convert_urls('http://example.com'),
+            '<a href="http://example.com" target="_blank">http://example.com</a>')
+
+    def test_url_scheme_https(self):
+        self.assertEqual(self.parser.convert_urls('https://example.com'),
+            '<a href="https://example.com" target="_blank">https://example.com</a>')
+
+    def test_url_chars_slash(self):
+        self.assertEqual(self.parser.convert_urls('www.example.com/homedir'),
+            '<a href="www.example.com/homedir" target="_blank">www.example.com/homedir</a>')
+
+    def test_url_chars_colon(self):
+        self.assertEqual(self.parser.convert_urls('https://example.com:8000/login/'),
+            '<a href="https://example.com:8000/login/" target="_blank">https://example.com:8000/login/</a>')
+
+    def test_url_chars_querystring(self):
+        self.assertEqual(self.parser.convert_urls('https://example.com/submitform?field1=val1+val3&field2=val2'),
+            '<a href="https://example.com/submitform?field1=val1+val3&field2=val2" target="_blank">https://example.com/submitform?field1=val1+val3&field2=val2</a>')
+
+    def test_url_chars_anchor(self):
+        self.assertEqual(self.parser.convert_urls('http://www.example.com/menu#section_1'),
+            '<a href="http://www.example.com/menu#section_1" target="_blank">http://www.example.com/menu#section_1</a>')
+
+    def test_url_chars_exclam(self):
+        self.assertEqual(self.parser.convert_urls('https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve'),
+            '<a href="https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve" target="_blank">https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve</a>')
+
+    def test_url_edge_leadingw(self):
+        self.assertEqual(self.parser.convert_urls('wwww.example.com'),
+            'w<a href="www.example.com" target="_blank">www.example.com</a>')
+
+    def test_url_edge_following_period_eol(self):
+        self.assertEqual(self.parser.convert_urls('www.example.com.'),
+            '<a href="www.example.com" target="_blank">www.example.com</a>.')
+
+    def test_url_edge_following_period(self):
+        self.assertEqual(self.parser.convert_urls('see www.example.com. '),
+            'see <a href="www.example.com" target="_blank">www.example.com</a>. ')
+
+    def test_url_edge_brackets(self):
+        self.assertEqual(self.parser.convert_urls('[http://example.com/]'),
+            '[<a href="http://example.com/" target="_blank">http://example.com/</a>]')
+
+    def test_url_edge_multiline(self):
+        self.assertEqual(self.parser.convert_urls('  * http://example.com/info\n  * bullet'),
+            '  * <a href="http://example.com/info" target="_blank">http://example.com/info</a>\n  * bullet')
+
+    def test_url_edge_following_htmlentity(self):
+        self.assertEqual(self.parser.convert_urls('http://example.com/info&lt;span&gt;'),
+            '<a href="http://example.com/info" target="_blank">http://example.com/info</a>&lt;span&gt;')
+
+    def test_url_edge_surrounded_spans(self):
+        self.assertEqual(self.parser.convert_urls('</span>http://example.com/<span class="red">'),
+            '</span><a href="http://example.com/" target="_blank">http://example.com/</a><span class="red">')
+
