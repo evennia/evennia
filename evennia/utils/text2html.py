@@ -81,6 +81,7 @@ class TextToHTMLparser(object):
     re_uline = re.compile("(?:%s)(.*?)(?=%s)" % (ANSI_UNDERLINE.replace("[", r"\["), fgstop))
     re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space> [ \t]+)|(?P<lineend>\r\n|\r|\n)', re.S|re.M|re.I)
     re_link =  re.compile(r'\{lc(.*?)\{lt(.*?)\{le', re.DOTALL)
+    re_url = re.compile(r'((ftp|www|https|http)\W+[^"\',;$*^\\()[\]{}<>\s]+)')
 
     def re_color(self, text):
         """
@@ -181,10 +182,9 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        regexp = r"((ftp|www|http)(\W+\S+[^).,:;?\]\}(\<span\>) \r\n$\"\']+))"
         # -> added target to output prevent the web browser from attempting to
         # change pages (and losing our webclient session).
-        return re.sub(regexp, r'<a href="\1" target="_blank">\1</a>', text)
+        return re_url.sub(r'<a href="\1" target="_blank">\1</a>', text)
 
     def convert_links(self, text):
         """
