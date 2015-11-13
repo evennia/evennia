@@ -6,7 +6,6 @@ from __future__ import division
 
 from time import time
 from collections import deque
-from twisted.internet.task import LoopingCall
 from twisted.internet import reactor
 from django.conf import settings
 from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC
@@ -38,13 +37,13 @@ class PortalSessionHandler(SessionHandler):
 
     """
 
-    def __init__(self):
+    def __init__(self, args, **kwargs):
         """
         Init the handler
 
         """
+        super(PortalSessionHandler, self).__init__(*args, **kwargs)
         self.portal = None
-        self.sessions = {}
         self.latest_sessid = 0
         self.uptime = time()
         self.connection_time = 0
@@ -110,7 +109,7 @@ class PortalSessionHandler(SessionHandler):
             session = _CONNECTION_QUEUE.pop()
             sessdata = session.get_sync_data()
 
-            self.sessions[session.sessid] = session
+            self[session.sessid] = session
             session.server_connected = True
             self.portal.amp_protocol.send_AdminPortal2Server(session.sessid,
                                                              operation=PCONN,
@@ -205,12 +204,12 @@ class PortalSessionHandler(SessionHandler):
             reason (str, optional): Motivation for disconect.
 
         """
-        session = self.sessions.get(sessid, None)
+        session = self.get(sessid, None)
         if session:
             session.disconnect(reason)
-            if sessid in self.sessions:
+            if sessid in self:
                 # in case sess.disconnect doesn't delete it
-                del self.sessions[sessid]
+                del self[sessid]
             del session
 
     def server_disconnect_all(self, reason=""):
@@ -221,10 +220,10 @@ class PortalSessionHandler(SessionHandler):
             reason (str, optional): Motivation for disconnect.
 
         """
-        for session in self.sessions.values():
+        for session in self.values():
             session.disconnect(reason)
             del session
-        self.sessions = {}
+        self = {}
 
     def server_logged_in(self, sessid, data):
         """
@@ -252,11 +251,11 @@ class PortalSessionHandler(SessionHandler):
                 `{sessid:{property:value},...}` describing
                 the properties to sync on all sessions.
         """
-        to_save = [sessid for sessid in serversessions if sessid in self.sessions]
-        to_delete = [sessid for sessid in self.sessions if sessid not in to_save]
+        to_save = [sessid for sessid in serversessions if sessid in self]
+        to_delete = [sessid for sessid in self if sessid not in to_save]
         # save protocols
         for sessid in to_save:
-            self.sessions[sessid].load_sync_data(serversessions[sessid])
+            self[sessid].load_sync_data(serversessions[sessid])
         # disconnect out-of-sync missing protocols
         for sessid in to_delete:
             self.server_disconnect(sessid)
@@ -298,7 +297,7 @@ class PortalSessionHandler(SessionHandler):
             message (str):  Message to relay.
 
         """
-        for session in self.sessions.values():
+        for session in self.values():
             session.data_out(message)
 
     def oobstruct_parser(self, oobstruct):
@@ -427,7 +426,7 @@ class PortalSessionHandler(SessionHandler):
         #from evennia.server.profiling.timetrace import timetrace
         #text = timetrace(text, "portalsessionhandler.data_out")
 
-        session = self.sessions.get(sessid, None)
+        session = self.get(sessid, None)
         if session:
             # convert oob to the generic format
             if "oob" in kwargs:
