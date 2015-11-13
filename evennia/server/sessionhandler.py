@@ -79,18 +79,11 @@ def delayed_import():
 # SessionHandler base class
 #------------------------------------------------------------
 
-class SessionHandler(object):
+class SessionHandler(dict):
     """
     This handler holds a stack of sessions.
 
     """
-    def __init__(self):
-        """
-        Init the handler.
-
-        """
-        self.sessions = {}
-
     def get_sessions(self, include_unloggedin=False):
         """
         Returns the connected session objects.
@@ -104,22 +97,9 @@ class SessionHandler(object):
 
         """
         if include_unloggedin:
-            return listvalues(self.sessions)
+            return listvalues(self)
         else:
-            return [session for session in self.sessions.values() if session.logged_in]
-
-    def get_session(self, sessid):
-        """
-        Get session by sessid.
-
-        Args:
-            sessid (int): Session id.
-
-        Returns:
-            session (Session): A `Session` object, if found.
-
-        """
-        return self.sessions.get(sessid, None)
+            return [session for session in self.values() if session.logged_in]
 
     def get_all_sync_data(self):
         """
@@ -130,7 +110,7 @@ class SessionHandler(object):
             syncdata (dict): A dict of sync data.
 
         """
-        return dict((sessid, sess.get_sync_data()) for sessid, sess in self.sessions.items())
+        return dict((sessid, sess.get_sync_data()) for sessid, sess in self.items())
 
 
 #------------------------------------------------------------
@@ -152,12 +132,12 @@ class ServerSessionHandler(SessionHandler):
 
     # AMP communication methods
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """
         Init the handler.
 
         """
-        self.sessions = {}
+        super(ServerSessionHandler, self).__init__(*args, **kwargs)
         self.server = None
         self.server_data = {"servername": _SERVERNAME}
 
@@ -185,7 +165,7 @@ class ServerSessionHandler(SessionHandler):
         sess.at_sync()
         # validate all scripts
         _ScriptDB.objects.validate()
-        self.sessions[sess.sessid] = sess
+        self[sess.sessid] = sess
         sess.data_in(CMD_LOGINSTART)
 
     def portal_session_sync(self, portalsessiondata):
@@ -200,7 +180,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         sessid = portalsessiondata.get("sessid")
-        session = self.sessions.get(sessid)
+        session = self.get(sessid)
         if session:
             # since some of the session properties may have had
             # a chance to change already before the portal gets here
@@ -218,7 +198,7 @@ class ServerSessionHandler(SessionHandler):
             sessid (int): Session id.
 
         """
-        session = self.sessions.get(sessid, None)
+        session = self.get(sessid, None)
         if not session:
             return
         self.disconnect(session)
@@ -237,7 +217,7 @@ class ServerSessionHandler(SessionHandler):
         delayed_import()
         global _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
 
-        for sess in self.sessions.values():
+        for sess in self.values():
             # we delete the old session to make sure to catch eventual
             # lingering references.
             del sess
@@ -248,7 +228,7 @@ class ServerSessionHandler(SessionHandler):
             sess.load_sync_data(sessdict)
             if sess.uid:
                 sess.player = _PlayerDB.objects.get_player_from_uid(sess.uid)
-            self.sessions[sessid] = sess
+            self[sessid] = sess
             sess.at_sync()
 
         # after sync is complete we force-validate all scripts
@@ -354,7 +334,7 @@ class ServerSessionHandler(SessionHandler):
             reason (str, optional): A motivation for the disconnect.
 
         """
-        session = self.sessions.get(session.sessid)
+        session = self.get(session.sessid)
         if not session:
             return
 
@@ -367,7 +347,7 @@ class ServerSessionHandler(SessionHandler):
 
         session.at_disconnect()
         sessid = session.sessid
-        del self.sessions[sessid]
+        del self[sessid]
         # inform portal that session should be closed.
         self.server.amp_protocol.send_AdminServer2Portal(sessid,
                                                          operation=SDISCONN,
@@ -393,7 +373,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
 
-        for session in self.sessions:
+        for session in self:
             del session
         # tell portal to disconnect all sessions
         self.server.amp_protocol.send_AdminServer2Portal(0,
@@ -411,7 +391,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         uid = curr_session.uid
-        doublet_sessions = [sess for sess in self.sessions.values()
+        doublet_sessions = [sess for sess in self.values()
                             if sess.logged_in
                             and sess.uid == uid
                             and sess != curr_session]
@@ -426,7 +406,7 @@ class ServerSessionHandler(SessionHandler):
         """
         tcurr = time()
         reason = _("Idle timeout exceeded, disconnecting.")
-        for session in (session for session in self.sessions.values()
+        for session in (session for session in self.values()
                         if session.logged_in and _IDLE_TIMEOUT > 0
                         and (tcurr - session.cmd_last) > _IDLE_TIMEOUT):
             self.disconnect(session, reason=reason)
@@ -441,7 +421,7 @@ class ServerSessionHandler(SessionHandler):
             nplayer (int): Number of connected players
 
         """
-        return len(set(session.uid for session in self.sessions.values() if session.logged_in))
+        return len(set(session.uid for session in self.values() if session.logged_in))
 
     def all_connected_players(self):
         """
@@ -452,7 +432,7 @@ class ServerSessionHandler(SessionHandler):
                 amount of Sessions due to multi-playing).
 
         """
-        return list(set(session.player for session in self.sessions.values() if session.logged_in and session.player))
+        return list(set(session.player for session in self.values() if session.logged_in and session.player))
 
     def session_from_sessid(self, sessid):
         """
@@ -466,8 +446,8 @@ class ServerSessionHandler(SessionHandler):
 
         """
         if is_iter(sessid):
-            return [self.sessions.get(sid) for sid in sessid if sid in self.sessions]
-        return self.sessions.get(sessid)
+            return [self.get(sid) for sid in sessid if sid in self]
+        return self.get(sessid)
 
     def session_from_player(self, player, sessid):
         """
@@ -483,10 +463,10 @@ class ServerSessionHandler(SessionHandler):
 
         """
         if is_iter(sessid):
-            sessions = [self.sessions.get(sid) for sid in sessid]
+            sessions = [self.get(sid) for sid in sessid]
             s = [sess for sess in sessions if sess and sess.logged_in and player.uid == sess.uid]
             return s
-        session = self.sessions.get(sessid)
+        session = self.get(sessid)
         return session and session.logged_in and player.uid == session.uid and session or None
 
     def sessions_from_player(self, player):
@@ -501,7 +481,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         uid = player.uid
-        return [session for session in self.sessions.values() if session.logged_in and session.uid == uid]
+        return [session for session in self.values() if session.logged_in and session.uid == uid]
 
     def sessions_from_puppet(self, puppet):
         """
@@ -517,8 +497,8 @@ class ServerSessionHandler(SessionHandler):
         """
         sessid = puppet.sessid.get()
         if is_iter(sessid):
-            return [self.sessions.get(sid) for sid in sessid if sid in self.sessions]
-        return self.sessions.get(sessid)
+            return [self.get(sid) for sid in sessid if sid in self]
+        return self.get(sessid)
     sessions_from_character = sessions_from_puppet
 
     def announce_all(self, message):
@@ -529,7 +509,7 @@ class ServerSessionHandler(SessionHandler):
             message (str): Message to send.
 
         """
-        for sess in self.sessions.values():
+        for sess in self.values():
             self.data_out(sess, message)
 
     def data_out(self, session, text="", **kwargs):
@@ -600,7 +580,7 @@ class ServerSessionHandler(SessionHandler):
         """
         #from evennia.server.profiling.timetrace import timetrace
         #text = timetrace(text, "ServerSessionHandler.data_in")
-        session = self.sessions.get(sessid, None)
+        session = self.get(sessid, None)
         if session:
             text = text and to_unicode(strip_control_sequences(text), encoding=session.encoding)
             if "oob" in kwargs:
