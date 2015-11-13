@@ -19,7 +19,7 @@ import textwrap
 import random
 from importlib import import_module
 from inspect import ismodule, trace
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from twisted.internet import threads, defer, reactor
 from django.conf import settings
 from django.utils import timezone
@@ -1537,3 +1537,42 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
     if error and not quiet:
         caller.msg(error.strip())
     return matches
+
+
+class LimitedSizeOrderedDict(OrderedDict):
+    """
+    This dictionary subclass is both ordered and limited to a maximum
+    number of elements. Its main use is to hold a cache that can never
+    grow out of bounds.
+
+    """
+    def __init__(self, *args, **kwargs):
+        """
+        Limited-size ordered dict.
+
+        Kwargs:
+            size_limit (int): Use this to limit the number of elements
+                alloweds to be in this list. By default the overshooting elements
+                will be removed in FIFO order.
+            fifo (bool, optional): Defaults to `True`. Remove overshooting elements
+                in FIFO order. If `False`, remove in FILO order.
+
+        """
+        super(LimitedSizeOrderedDict, self).__init__()
+        self.size_limit = kwargs.get("size_limit", None)
+        self.filo = not kwargs.get("fifo", True) # FIFO inverse of FILO
+        self._check_size()
+
+    def _check_size(self):
+        filo = self.filo
+        if self.size_limit is not None:
+            while self.size_limit < len(self):
+                self.popitem(last=filo)
+
+    def __setitem__(self, key, value):
+        super(LimitedSizeOrderedDict, self).__setitem__(key, value)
+        self._check_size()
+
+    def update(self, *args, **kwargs):
+        super(LimitedSizeOrderedDict, self).update(*args, **kwargs)
+        self._check_size()

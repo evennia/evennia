@@ -16,6 +16,7 @@ from django.conf import settings
 from evennia.comms.models import ChannelDB
 from evennia.utils import logger
 from evennia.utils.inlinefunc import parse_inlinefunc
+from evennia.utils.nested_inlinefuncs import parse_inlinefunc as parse_nested_inlinefunc
 from evennia.utils.utils import make_iter, lazy_property
 from evennia.commands.cmdhandler import cmdhandler
 from evennia.commands.cmdsethandler import CmdSetHandler
@@ -389,6 +390,7 @@ class ServerSession(Session):
         text = text if text else ""
         if _INLINEFUNC_ENABLED and not "raw" in kwargs:
             text = parse_inlinefunc(text, strip="strip_inlinefunc" in kwargs, session=self)
+            text = parse_nested_inlinefunc(text, strip="strip_inlinefunc" in kwargs, session=self)
         if self.screenreader:
             global _ANSI
             if not _ANSI:
