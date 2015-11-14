@@ -489,9 +489,6 @@ class CmdService(MuxCommand):
             return
 
         # get all services
-        sessions = caller.sessions
-        if not sessions:
-            return
         service_collection = SESSIONS.server.services
 
         if not switches or switches[0] == "list":

@@ -14,7 +14,7 @@ from evennia.comms.models import ChannelDB, Msg
 from evennia.players.models import PlayerDB
 from evennia.players import bots
 from evennia.comms.channelhandler import CHANNELHANDLER
-from evennia.utils import create, utils, prettytable, evtable
+from evennia.utils import create, utils, evtable
 from evennia.utils.utils import make_iter
 from evennia.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
 
@@ -740,7 +740,7 @@ class CmdPage(MuxPlayerCommand):
                 rstrings.append("You are not allowed to page %s." % pobj)
                 continue
             pobj.msg("%s %s" % (header, message))
-            if hasattr(pobj, 'sessions') and not pobj.sessions:
+            if hasattr(pobj, 'sessions') and not pobj.sessions.count():
                 received.append("{C%s{n" % pobj.name)
                 rstrings.append("%s is offline. They will see your message if they list their pages later." % received[-1])
             else:

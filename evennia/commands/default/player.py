@@ -481,7 +481,7 @@ class CmdQuit(MuxPlayerCommand):
 
         if 'all' in self.switches:
             player.msg("{RQuitting{n all sessions. Hope to see you soon again.", session=self.session)
-            for session in player.sessions.all()
+            for session in player.sessions.all():
                 player.disconnect_session_from_player(session)
         else:
             nsess = len(player.sessions.all())

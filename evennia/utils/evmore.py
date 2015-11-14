@@ -109,7 +109,10 @@ class EvMore(object):
         self._npages = []
         self._npos = []
         # we use the first session here
-        session = caller.sessions[0]
+        sessions = caller.sessions.get()
+        if not sessions:
+            return
+        session = sessions[0]
         # set up individual pages for different sessions
         height = session.protocol_flags.get("SCREENHEIGHT", {0:_SCREEN_HEIGHT})[0] - 2
         self._pages = ["\n".join(lines[i:i+height]) for i in range(0, len(lines), height)]

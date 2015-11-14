@@ -620,7 +620,6 @@ class NickHandler(AttributeHandler):
                 their nick equivalents.
 
         """
-        raw_string
         obj_nicks, player_nicks = [], []
         for category in make_iter(categories):
             obj_nicks.extend([n for n in make_iter(self.get(category=category, return_obj=True)) if n])

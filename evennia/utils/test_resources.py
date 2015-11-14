@@ -59,4 +59,4 @@ class EvenniaTest(TestCase):
 
     def tearDown(self):
         flush_cache()
-        del SESSIONS.sessions[self.session.sessid]
+        del SESSIONS[self.session.sessid]

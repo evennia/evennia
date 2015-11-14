@@ -33,6 +33,10 @@ from twisted.internet.defer import Deferred
 from evennia.utils import logger
 from evennia.utils.utils import to_str, variable_from_module
 
+class DummySession(object):
+    sessid = 0
+DUMMYSESSION = DummySession()
+
 # communication bits
 
 PCONN = chr(1)        # portal session connect
@@ -358,7 +362,7 @@ class AMPProtocol(amp.AMP):
             # only the portal has the 'portal' property, so we know we are
             # on the portal side and can initialize the connection.
             sessdata = self.factory.portal.sessions.get_all_sync_data()
-            self.send_AdminPortal2Server(0,
+            self.send_AdminPortal2Server(DUMMYSESSION,
                                          PSYNC,
                                          sessiondata=sessdata)
             self.factory.portal.sessions.at_server_connection()
@@ -478,7 +482,6 @@ class AMPProtocol(amp.AMP):
         sessid, kwargs = loads(packed_data)
         operation = kwargs.pop("operation", "")
         server_sessionhandler = self.factory.server.sessions
-        session = server_sessionhandler[sessid]
 
         if operation == PCONN:  # portal_session_connect
             # create a new session and sync it
@@ -489,6 +492,7 @@ class AMPProtocol(amp.AMP):
 
         elif operation == PDISCONN:  # portal_session_disconnect
             # session closed from portal side
+            session = server_sessionhandler[sessid]
             self.factory.server.sessions.portal_disconnect(session)
 
         elif operation == PSYNC:  # portal_session_sync
@@ -534,14 +538,15 @@ class AMPProtocol(amp.AMP):
         operation = kwargs.pop("operation")
         portal_sessionhandler = self.factory.portal.sessions
 
-        session = portal_sessionhandler[sessid]
 
         if operation == SLOGIN:  # server_session_login
             # a session has authenticated; sync it.
+            session = portal_sessionhandler[sessid]
             portal_sessionhandler.server_logged_in(session, kwargs.get("sessiondata"))
 
         elif operation == SDISCONN:  # server_session_disconnect
             # the server is ordering to disconnect the session
+            session = portal_sessionhandler[sessid]
             portal_sessionhandler.server_disconnect(session, reason=kwargs.get("reason"))
 
         elif operation == SDISCONNALL:  # server_session_disconnect_all

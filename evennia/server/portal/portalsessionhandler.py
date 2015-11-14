@@ -37,7 +37,7 @@ class PortalSessionHandler(SessionHandler):
 
     """
 
-    def __init__(self, args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Init the handler
 
@@ -111,7 +111,7 @@ class PortalSessionHandler(SessionHandler):
 
             self[session.sessid] = session
             session.server_connected = True
-            self.portal.amp_protocol.send_AdminPortal2Server(session.sessid,
+            self.portal.amp_protocol.send_AdminPortal2Server(session,
                                                              operation=PCONN,
                                                              sessiondata=sessdata)
 
@@ -140,7 +140,7 @@ class PortalSessionHandler(SessionHandler):
                                                                                        "conn_time",
                                                                                        "protocol_flags",
                                                                                        "server_data",))
-                self.portal.amp_protocol.send_AdminPortal2Server(session.sessid,
+                self.portal.amp_protocol.send_AdminPortal2Server(session,
                                                                  operation=PCONNSYNC,
                                                                  sessiondata=sessdata)
 
@@ -159,8 +159,7 @@ class PortalSessionHandler(SessionHandler):
             # to forward this to the Server, so now we just remove it.
             _CONNECTION_QUEUE.remove(session)
             return
-        sessid = session.sessid
-        self.portal.amp_protocol.send_AdminPortal2Server(sessid,
+        self.portal.amp_protocol.send_AdminPortal2Server(session,
                                                          operation=PDISCONN)
 
     def server_connect(self, protocol_path="", config=dict()):
@@ -397,7 +396,7 @@ class PortalSessionHandler(SessionHandler):
                 return
             # relay data to Server
             self.command_counter += 1
-            self.portal.amp_protocol.send_MsgPortal2Server(session.sessid,
+            self.portal.amp_protocol.send_MsgPortal2Server(session,
                                                        text=text,
                                                        **kwargs)
         else:

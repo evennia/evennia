@@ -198,7 +198,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         currently connected to this object.
 
         """
-        return any(self.sessions)
+        return self.sessions.count()
 
     @property
     def is_superuser(self):

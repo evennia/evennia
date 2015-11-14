@@ -326,7 +326,7 @@ class ServerSessionHandler(SessionHandler):
             self.server.amp_protocol.send_AdminServer2Portal(session,
                                                          operation=SLOGIN,
                                                          sessiondata={"logged_in": True})
-        player.at_post_login(sessid=session.sessid)
+        player.at_post_login(session=session)
 
     def disconnect(self, session, reason=""):
         """

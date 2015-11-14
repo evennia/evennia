@@ -73,9 +73,9 @@ class PlayerSessionHandler(object):
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         if sessid:
-            return make_iter(_SESSIONS.session_from_player(self, sessid))
+            return make_iter(_SESSIONS.session_from_player(self.player, sessid))
         else:
-            return _SESSIONS.sessions_from_player(self)
+            return _SESSIONS.sessions_from_player(self.player)
 
     def all(self):
         """
@@ -258,7 +258,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         obj.at_pre_puppet(self, session=session)
 
         # do the connection
-        obj.session.add(session)
+        obj.sessions.add(session)
         obj.player = self
         session.puid = obj.id
         session.puppet = obj
@@ -508,7 +508,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         Returns the idle time of the least idle session in seconds. If
         no sessions are connected it returns nothing.
         """
-        idle = [session.cmd_last_visible for session in self.sessions]
+        idle = [session.cmd_last_visible for session in self.sessions.all()]
         if idle:
             return time.time() - float(max(idle))
 
@@ -518,7 +518,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         Returns the maximum connection time of all connected sessions
         in seconds. Returns nothing if there are no sessions.
         """
-        conn = [session.conn_time for session in self.sessions]
+        conn = [session.conn_time for session in self.sessions.all()]
         if conn:
             return time.time() - float(min(conn))
 
