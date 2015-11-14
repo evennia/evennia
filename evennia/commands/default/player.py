@@ -101,7 +101,7 @@ class CmdOOCLook(MuxPlayerLookCommand):
             return
 
         # call on-player look helper method
-        self.msg(self.player.at_look(target=self.playable, sessid=self.sessid))
+        self.msg(self.player.at_look(target=self.playable, session=self.session))
 
 
 class CmdCharCreate(MuxPlayerCommand):
@@ -188,7 +188,7 @@ class CmdIC(MuxPlayerCommand):
         Main puppet method
         """
         player = self.player
-        sessid = self.sessid
+        session = self.session
 
         new_character = None
         if not self.args:
@@ -205,7 +205,7 @@ class CmdIC(MuxPlayerCommand):
                 self.msg("That is not a valid character choice.")
                 return
         try:
-            player.puppet_object(sessid, new_character)
+            player.puppet_object(session, new_character)
             player.db._last_puppet = new_character
         except RuntimeError as exc:
             self.msg("{rYou cannot become {C%s{n: %s" % (new_character.name, exc))
@@ -234,9 +234,9 @@ class CmdOOC(MuxPlayerLookCommand):
         "Implement function"
 
         player = self.player
-        sessid = self.sessid
+        session = self.session
 
-        old_char = player.get_puppet(sessid)
+        old_char = player.get_puppet(session)
         if not old_char:
             string = "You are already OOC."
             self.msg(string)
@@ -246,7 +246,7 @@ class CmdOOC(MuxPlayerLookCommand):
 
         # disconnect
         try:
-            player.unpuppet_object(sessid)
+            player.unpuppet_object(session)
             self.msg("\n{GYou go OOC.{n\n")
 
             if _MULTISESSION_MODE < 2:
@@ -254,7 +254,7 @@ class CmdOOC(MuxPlayerLookCommand):
                 self.msg("You are out-of-character (OOC).\nUse {w@ic{n to get back into the game.")
                 return
 
-            self.msg(player.at_look(target=self.playable, sessid=sessid))
+            self.msg(player.at_look(target=self.playable, session=session))
 
         except RuntimeError as exc:
             self.msg("{rCould not unpuppet from {c%s{n: %s" % (old_char, exc))
@@ -480,19 +480,19 @@ class CmdQuit(MuxPlayerCommand):
         player = self.player
 
         if 'all' in self.switches:
-            player.msg("{RQuitting{n all sessions. Hope to see you soon again.", sessid=self.sessid)
-            for session in player.get_all_sessions():
-                player.disconnect_session_from_player(session.sessid)
+            player.msg("{RQuitting{n all sessions. Hope to see you soon again.", session=self.session)
+            for session in player.sessions.all()
+                player.disconnect_session_from_player(session)
         else:
-            nsess = len(player.get_all_sessions())
+            nsess = len(player.sessions.all())
             if nsess == 2:
-                player.msg("{RQuitting{n. One session is still connected.", sessid=self.sessid)
+                player.msg("{RQuitting{n. One session is still connected.", session=self.session)
             elif nsess > 2:
-                player.msg("{RQuitting{n. %i session are still connected." % (nsess-1), sessid=self.sessid)
+                player.msg("{RQuitting{n. %i session are still connected." % (nsess-1), session=self.session)
             else:
                 # we are quitting the last available session
-                player.msg("{RQuitting{n. Hope to see you again, soon.", sessid=self.sessid)
-            player.disconnect_session_from_player(self.sessid)
+                player.msg("{RQuitting{n. Hope to see you again, soon.", session=self.session)
+            player.disconnect_session_from_player(self.session)
 
 
 
@@ -601,8 +601,8 @@ class CmdQuell(MuxPlayerCommand):
 
     def _recache_locks(self, player):
         "Helper method to reset the lockhandler on an already puppeted object"
-        if self.sessid:
-            char = player.get_puppet(self.sessid)
+        if self.session:
+            char = session.puppet
             if char:
                 # we are already puppeting an object. We need to reset
                 # the lock caches (otherwise the superuser status change
@@ -625,7 +625,7 @@ class CmdQuell(MuxPlayerCommand):
                 self.msg("Already quelling Player%s permissions." % permstr)
                 return
             player.attributes.add('_quell', True)
-            puppet = player.get_puppet(self.sessid)
+            puppet = self.session.puppet
             if puppet:
                 cpermstr = " (%s)" % ", ".join(puppet.permissions.all())
                 cpermstr = "Quelling to current puppet's permissions%s." % cpermstr

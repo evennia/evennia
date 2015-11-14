@@ -125,7 +125,7 @@ def oob_repeat(session, oobfuncname, interval, *args, **kwargs):
     interval = 20 if not interval else (max(5, interval))
     obj = session.get_puppet_or_player()
     if obj and oobfuncname != "REPEAT":
-        OOB_HANDLER.add_repeater(obj, session.sessid, oobfuncname, interval, *args, **kwargs)
+        OOB_HANDLER.add_repeater(obj, session, oobfuncname, interval, *args, **kwargs)
 
 
 ##OOB{"UNREPEAT":10}
@@ -146,7 +146,7 @@ def oob_unrepeat(session, oobfuncname, interval):
     """
     obj = session.get_puppet_or_player()
     if obj:
-        OOB_HANDLER.remove_repeater(obj, session.sessid, oobfuncname, interval)
+        OOB_HANDLER.remove_repeater(obj, session, oobfuncname, interval)
 
 
 #
@@ -251,10 +251,10 @@ def oob_report(session, *args, **kwargs):
                 oob_error(session, "No Reportable property '%s'. Use LIST REPORTABLE_VARIABLES." % propname)
             # the field_monitors require an oob function as a callback when they report a change.
             elif propname.startswith("db_"):
-                OOB_HANDLER.add_field_monitor(obj, session.sessid, propname, "return_field_report")
+                OOB_HANDLER.add_field_monitor(obj, session, propname, "return_field_report")
                 ret.append(to_str(_GA(obj, propname), force_string=True))
             else:
-                OOB_HANDLER.add_attribute_monitor(obj, session.sessid, propname, "return_attribute_report")
+                OOB_HANDLER.add_attribute_monitor(obj, session, propname, "return_attribute_report")
                 ret.append(_GA(obj, "db_value"))
         session.msg(oob=("MSDP_ARRAY", ret))
     else:
@@ -313,9 +313,9 @@ def oob_unreport(session, *args, **kwargs):
             if not propname:
                 oob_error(session, "No Un-Reportable property '%s'. Use LIST REPORTABLE_VARIABLES." % propname)
             elif propname.startswith("db_"):
-                OOB_HANDLER.remove_field_monitor(obj, session.sessid, propname, "oob_return_field_report")
+                OOB_HANDLER.remove_field_monitor(obj, session, propname, "oob_return_field_report")
             else:  # assume attribute
-                OOB_HANDLER.remove_attribute_monitor(obj, session.sessid, propname, "oob_return_attribute_report")
+                OOB_HANDLER.remove_attribute_monitor(obj, session, propname, "oob_return_attribute_report")
     else:
         oob_error(session, "You must log in first.")
 
@@ -358,7 +358,7 @@ def oob_list(session, mode, *args, **kwargs):
         # we need to check so as to use the right return value depending on if it is
         # an Attribute (identified by tracking the db_value field) or a normal database field
         # reported is a list of tuples (obj, propname, args, kwargs)
-        reported = OOB_HANDLER.get_all_monitors(session.sessid)
+        reported = OOB_HANDLER.get_all_monitors(session)
         reported = [rep[0].key if rep[1] == "db_value" else rep[1] for rep in reported]
         session.msg(oob=("REPORTED_VARIABLES", reported))
     elif mode == "SENDABLE_VARIABLES":

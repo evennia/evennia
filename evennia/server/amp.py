@@ -18,7 +18,7 @@ Server - (AMP server) Handles all mud operations. The server holds its own list
 from __future__ import print_function
 
 # imports needed on both server and portal side
-import os, sys
+import os
 from time import time
 from collections import defaultdict
 from itertools import count
@@ -28,7 +28,7 @@ try:
 except ImportError:
     import pickle
 from twisted.protocols import amp
-from twisted.internet import protocol, reactor
+from twisted.internet import protocol
 from twisted.internet.defer import Deferred
 from evennia.utils import logger
 from evennia.utils.utils import to_str, variable_from_module
@@ -416,10 +416,10 @@ class AMPProtocol(amp.AMP):
 
         """
         sessid, kwargs = loads(packed_data)
-        self.factory.server.sessions.data_in(sessid, **kwargs)
+        self.factory.server.sessions.data_in(self.factory.server.sessions[sessid], **kwargs)
         return {}
 
-    def send_MsgPortal2Server(self, sessid, text="", **kwargs):
+    def send_MsgPortal2Server(self, session, text="", **kwargs):
         """
         Access method called by the Portal and executed on the Portal.
 
@@ -432,7 +432,7 @@ class AMPProtocol(amp.AMP):
             deferred (Deferred): Asynchronous return.
 
         """
-        return self.send_data(MsgPortal2Server, sessid, text=text, **kwargs)
+        return self.send_data(MsgPortal2Server, session.sessid, text=text, **kwargs)
 
     # Server -> Portal message
 
@@ -442,31 +442,26 @@ class AMPProtocol(amp.AMP):
         Receives message arriving to Portal from Server.
         This method is executed on the Portal.
 
-        Since AMP has a limit of 65355 bytes per message, it's
-        possible the data comes in multiple chunks; if so (nparts>1)
-        we buffer the data and wait for the remaining parts to arrive
-        before continuing.
-
         Args:
             packed_data (str): Pickled data (sessid, kwargs) coming over the wire.
         """
         sessid, kwargs = loads(packed_data)
-        self.factory.portal.sessions.data_out(sessid, **kwargs)
+        self.factory.portal.sessions.data_out(self.factory.portal.sessions[sessid], **kwargs)
         return {}
 
 
-    def send_MsgServer2Portal(self, sessid, text="", **kwargs):
+    def send_MsgServer2Portal(self, session, text="", **kwargs):
         """
         Access method - executed on the Server for sending data
             to Portal.
 
         Args:
-            sessid (int): Unique Session id.
+            session (Session): Unique Session.
             msg (str, optional): Message to send over the wire.
             kwargs (any, optiona): Extra data.
 
         """
-        return self.send_data(MsgServer2Portal, sessid, text=text, **kwargs)
+        return self.send_data(MsgServer2Portal, session.sessid, text=text, **kwargs)
 
     # Server administration from the Portal side
     @AdminPortal2Server.responder
@@ -483,7 +478,7 @@ class AMPProtocol(amp.AMP):
         sessid, kwargs = loads(packed_data)
         operation = kwargs.pop("operation", "")
         server_sessionhandler = self.factory.server.sessions
-
+        session = server_sessionhandler[sessid]
 
         if operation == PCONN:  # portal_session_connect
             # create a new session and sync it
@@ -494,7 +489,7 @@ class AMPProtocol(amp.AMP):
 
         elif operation == PDISCONN:  # portal_session_disconnect
             # session closed from portal side
-            self.factory.server.sessions.portal_disconnect(sessid)
+            self.factory.server.sessions.portal_disconnect(session)
 
         elif operation == PSYNC:  # portal_session_sync
             # force a resync of sessions when portal reconnects to
@@ -507,20 +502,20 @@ class AMPProtocol(amp.AMP):
             raise Exception("operation %(op)s not recognized." % {'op': operation})
         return {}
 
-    def send_AdminPortal2Server(self, sessid, operation="", **kwargs):
+    def send_AdminPortal2Server(self, session, operation="", **kwargs):
         """
         Send Admin instructions from the Portal to the Server.
         Executed
         on the Portal.
 
         Args:
-            sessid (int): Session id.
+            session (Session): Session.
             operation (char, optional): Identifier for the server operation, as defined by the
                 global variables in `evennia/server/amp.py`.
             data (str or dict, optional): Data used in the administrative operation.
 
         """
-        return self.send_data(AdminPortal2Server, sessid, operation=operation, **kwargs)
+        return self.send_data(AdminPortal2Server, session.sessid, operation=operation, **kwargs)
 
     # Portal administraton from the Server side
 
@@ -539,13 +534,15 @@ class AMPProtocol(amp.AMP):
         operation = kwargs.pop("operation")
         portal_sessionhandler = self.factory.portal.sessions
 
+        session = portal_sessionhandler[sessid]
+
         if operation == SLOGIN:  # server_session_login
             # a session has authenticated; sync it.
-            portal_sessionhandler.server_logged_in(sessid, kwargs.get("sessiondata"))
+            portal_sessionhandler.server_logged_in(session, kwargs.get("sessiondata"))
 
         elif operation == SDISCONN:  # server_session_disconnect
             # the server is ordering to disconnect the session
-            portal_sessionhandler.server_disconnect(sessid, reason=kwargs.get("reason"))
+            portal_sessionhandler.server_disconnect(session, reason=kwargs.get("reason"))
 
         elif operation == SDISCONNALL:  # server_session_disconnect_all
             # server orders all sessions to disconnect
@@ -569,20 +566,20 @@ class AMPProtocol(amp.AMP):
             raise Exception("operation %(op)s not recognized." % {'op': operation})
         return {}
 
-    def send_AdminServer2Portal(self, sessid, operation="", **kwargs):
+    def send_AdminServer2Portal(self, session, operation="", **kwargs):
         """
         Administrative access method called by the Server to send an
         instruction to the Portal.
 
         Args:
-            sessid (int): Session id.
+            session (Session): Session.
             operation (char, optional): Identifier for the server
                 operation, as defined by the global variables in
                 `evennia/server/amp.py`.
             data (str or dict, optional): Data going into the adminstrative.
 
         """
-        return self.send_data(AdminServer2Portal, sessid, operation=operation, **kwargs)
+        return self.send_data(AdminServer2Portal, session.sessid, operation=operation, **kwargs)
 
     # Extra functions
 

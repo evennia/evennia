@@ -33,6 +33,9 @@ _ServerConfig = None
 _ScriptDB = None
 _OOB_HANDLER = None
 
+class DummySession(object):
+    sessid = 0
+DUMMYSESSION = DummySession()
 
 # AMP signals
 PCONN = chr(1)        # portal session connect
@@ -54,6 +57,7 @@ _MULTISESSION_MODE = settings.MULTISESSION_MODE
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 _MAX_SERVER_COMMANDS_PER_SECOND = 100.0
 _MAX_SESSION_COMMANDS_PER_SECOND = 5.0
+
 
 def delayed_import():
     """
@@ -264,7 +268,7 @@ class ServerSessionHandler(SessionHandler):
             the Server.
 
         """
-        self.server.amp_protocol.send_AdminServer2Portal(0, operation=SCONN,
+        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SCONN,
                                 protocol_path=protocol_path, config=configdict)
 
     def portal_shutdown(self):
@@ -272,7 +276,7 @@ class ServerSessionHandler(SessionHandler):
         Called by server when shutting down the portal.
 
         """
-        self.server.amp_protocol.send_AdminServer2Portal(0,
+        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
                                                          operation=SSHUTD)
 
     def login(self, session, player, testmode=False):
@@ -319,7 +323,7 @@ class ServerSessionHandler(SessionHandler):
         session.logged_in = True
         # sync the portal to the session
         if not testmode:
-            self.server.amp_protocol.send_AdminServer2Portal(session.sessid,
+            self.server.amp_protocol.send_AdminServer2Portal(session,
                                                          operation=SLOGIN,
                                                          sessiondata={"logged_in": True})
         player.at_post_login(sessid=session.sessid)
@@ -349,7 +353,7 @@ class ServerSessionHandler(SessionHandler):
         sessid = session.sessid
         del self[sessid]
         # inform portal that session should be closed.
-        self.server.amp_protocol.send_AdminServer2Portal(sessid,
+        self.server.amp_protocol.send_AdminServer2Portal(session,
                                                          operation=SDISCONN,
                                                          reason=reason)
 
@@ -360,7 +364,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         sessdata = self.get_all_sync_data()
-        return self.server.amp_protocol.send_AdminServer2Portal(0,
+        return self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
                                                          operation=SSYNC,
                                                          sessiondata=sessdata)
 
@@ -376,7 +380,7 @@ class ServerSessionHandler(SessionHandler):
         for session in self:
             del session
         # tell portal to disconnect all sessions
-        self.server.amp_protocol.send_AdminServer2Portal(0,
+        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
                                                          operation=SDISCONNALL,
                                                          reason=reason)
 
@@ -462,12 +466,9 @@ class ServerSessionHandler(SessionHandler):
             sessions (Session or list): Session(s) found.
 
         """
-        if is_iter(sessid):
-            sessions = [self.get(sid) for sid in sessid]
-            s = [sess for sess in sessions if sess and sess.logged_in and player.uid == sess.uid]
-            return s
-        session = self.get(sessid)
-        return session and session.logged_in and player.uid == session.uid and session or None
+        sessions = [self[sid] for sid in make_iter(sessid)
+                    if sid in self and self[sid].logged_in and player.uid == self[sid].uid]
+        return sessions[0] if len(sessions) == 1 else sessions
 
     def sessions_from_player(self, player):
         """
@@ -495,10 +496,8 @@ class ServerSessionHandler(SessionHandler):
                 more than one Session (MULTISESSION_MODE > 1).
 
         """
-        sessid = puppet.sessid.get()
-        if is_iter(sessid):
-            return [self.get(sid) for sid in sessid if sid in self]
-        return self.get(sessid)
+        sessions = puppet.sessid.get()
+        return sessions[0] if len(sessions) == 1 else sessions
     sessions_from_character = sessions_from_puppet
 
     def announce_all(self, message):
@@ -527,17 +526,17 @@ class ServerSessionHandler(SessionHandler):
         text = text and to_str(to_unicode(text), encoding=session.encoding)
 
         # send across AMP
-        self.server.amp_protocol.send_MsgServer2Portal(sessid=session.sessid,
+        self.server.amp_protocol.send_MsgServer2Portal(session,
                                                        text=text,
                                                        **kwargs)
 
-    def data_in(self, sessid, text="", **kwargs):
+    def data_in(self, session, text="", **kwargs):
         """
         Data Portal -> Server.
         We also intercept OOB communication here.
 
         Args:
-            sessid (int): Session id.
+            sessions (Session): Session.
 
         Kwargs:
             text (str): Text from protocol.
@@ -546,7 +545,6 @@ class ServerSessionHandler(SessionHandler):
         """
         #from evennia.server.profiling.timetrace import timetrace
         #text = timetrace(text, "ServerSessionHandler.data_in")
-        session = self.get(sessid, None)
         if session:
             text = text and to_unicode(strip_control_sequences(text), encoding=session.encoding)
             if "oob" in kwargs:

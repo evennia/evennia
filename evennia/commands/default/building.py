@@ -1868,9 +1868,7 @@ class CmdExamine(ObjManipCommand):
         string = "\n{wName/key{n: {c%s{n (%s)" % (obj.name, obj.dbref)
         if hasattr(obj, "aliases") and obj.aliases.all():
             string += "\n{wAliases{n: %s" % (", ".join(utils.make_iter(str(obj.aliases))))
-        if hasattr(obj, "sessid") and obj.sessid.count():
-            string += "\n{wsession{n: %s" % obj.sessid.get()
-        elif hasattr(obj, "sessions") and obj.sessions:
+        if hasattr(obj, "sessions") and obj.sessions:
             string += "\n{wsession(s){n: %s" % (", ".join(str(sess.sessid)
                                                 for sess in obj.sessions))
         if hasattr(obj, "has_player") and obj.has_player:
@@ -1924,16 +1922,16 @@ class CmdExamine(ObjManipCommand):
             # if we merge on the object level.
             if hasattr(obj, "player") and obj.player:
                 all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in  obj.player.cmdset.all()])
-                if obj.sessid.count():
+                if obj.sessions.count():
                     # if there are more sessions than one on objects it's because of multisession mode 3.
                     # we only show the first session's cmdset here (it is -in principle- possible that
                     # different sessions have different cmdsets but for admins who want such madness
                     # it is better that they overload with their own CmdExamine to handle it).
-                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.player.get_session(obj.sessid.get()[0]).cmdset.all()])
+                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.player.sessions.all()[0].cmdset.all()])
             else:
                 try:
                     # we have to protect this since many objects don't have sessions.
-                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.get_session(obj.sessid.get()).cmdset.all()])
+                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.get_session(obj.sessions.get()).cmdset.all()])
                 except (TypeError, AttributeError):
                     pass
             all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
@@ -2043,7 +2041,7 @@ class CmdExamine(ObjManipCommand):
                     # we are only interested in specific attributes
                     caller.msg(self.format_attributes(obj, attrname, crop=False))
             else:
-                if hasattr(obj, "sessid") and obj.sessid.count():
+                if obj.sessions.count():
                     mergemode = "session"
                 elif self.player_mode:
                     mergemode = "player"

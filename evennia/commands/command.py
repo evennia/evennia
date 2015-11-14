@@ -148,7 +148,8 @@ class Command(with_metaclass(CommandMeta, object)):
 
     # auto-set (by Evennia on command instantiation) are:
     #   obj - which object this command is defined on
-    #   sessid - which session-id (if any) is responsible for triggering this command
+    #   session - which session is responsible for triggering this command. Only set
+    #             if triggered by a player.
 
     def __init__(self, **kwargs):
         """
@@ -297,22 +298,18 @@ class Command(with_metaclass(CommandMeta, object)):
         return self.lockhandler.check(srcobj, access_type, default=default)
 
     def msg(self, msg="", to_obj=None, from_obj=None,
-            sessid=None, all_sessions=False, **kwargs):
+            session=None, **kwargs):
         """
         This is a shortcut instad of calling msg() directly on an
         object - it will detect if caller is an Object or a Player and
-        also appends self.sessid automatically.
+        also appends self.session automatically.
 
         Args:
             msg (str, optional): Text string of message to send.
             to_obj (Object, optional): Target object of message. Defaults to self.caller.
             from_obj (Object, optional): Source of message. Defaults to to_obj.
-            sessid (int, optional): Supply data only to a unique
-                session id (normally not used - this is only potentially
-                useful if to_obj is a Player object different from
-                self.caller or self.caller.player).
-            all_sessions (bool): Default is to send only to the session
-               connected to the target object
+            session (Session, optional): Supply data only to a unique
+                session.
 
         Kwargs:
             kwargs (any): These are all passed on to the message mechanism. Common
@@ -321,26 +318,9 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         from_obj = from_obj or self.caller
         to_obj = to_obj or from_obj
-        if not sessid:
-            if hasattr(to_obj, "sessid"):
-                # this is the case when to_obj is e.g. a Character
-                toobj_sessions = to_obj.sessid.get()
-
-                # If to_obj has more than one session MULTISESSION_MODE=3
-                # we need to send to every session.
-                #(setting it to None, does it)
-                session_tosend = None
-                if len(toobj_sessions) == 1:
-                    session_tosend=toobj_sessions[0]
-                sessid = all_sessions and None or session_tosend
-            elif to_obj == self.caller:
-                # this is the case if to_obj is the calling Player
-                sessid = all_sessions and None or self.sessid
-            else:
-                # if to_obj is a different Player, all their sessions
-                # will be notified unless sessid was given specifically
-                sessid = None
-        to_obj.msg(msg, from_obj=from_obj, sessid=sessid, **kwargs)
+        if not session or to_obj == self.caller:
+            session = to_obj.sessions.get()
+        to_obj.msg(msg, from_obj=from_obj, session=session, **kwargs)
 
     # Common Command hooks
 

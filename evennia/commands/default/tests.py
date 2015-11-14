@@ -55,7 +55,6 @@ class CommandTest(EvenniaTest):
         cmdobj.cmdstring = cmdobj.key
         cmdobj.args = args
         cmdobj.cmdset = cmdset
-        cmdobj.sessid = 1
         cmdobj.session = SESSIONS.session_from_sessid(1)
         cmdobj.player = self.player
         cmdobj.raw_string = cmdobj.key + " " + args
@@ -174,7 +173,7 @@ class TestPlayer(CommandTest):
         self.call(player.CmdOOC(), "", "You go OOC.", caller=self.player)
 
     def test_ic(self):
-        self.player.unpuppet_object(self.session.sessid)
+        self.player.unpuppet_object(self.session)
         self.call(player.CmdIC(), "Char", "You become Char.", caller=self.player, receiver=self.char1)
 
     def test_password(self):

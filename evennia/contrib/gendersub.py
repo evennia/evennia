@@ -110,7 +110,7 @@ class GenderCharacter(DefaultCharacter):
         pronoun = _GENDER_PRONOUN_MAP[gender][typ.lower()]
         return pronoun.capitalize() if typ.isupper() else pronoun
 
-    def msg(self, text, from_obj=None, sessid=0, **kwargs):
+    def msg(self, text, from_obj=None, session=None, **kwargs):
         """
         Emits something to a session attached to the object.
         Overloads the default msg() implementation to include
@@ -120,8 +120,8 @@ class GenderCharacter(DefaultCharacter):
             text (str, optional): The message to send
             from_obj (obj, optional): object that is sending. If
                 given, at_msg_send will be called
-            sessid (int or list, optional): sessid or list of
-                sessids to relay to, if any. If set, will
+            session (Session or list, optional): session or list of
+                sessions to relay to, if any. If set, will
                 force send regardless of MULTISESSION_MODE.
         Notes:
             `at_msg_receive` will be called on this Object.
@@ -130,4 +130,4 @@ class GenderCharacter(DefaultCharacter):
         """
         # pre-process the text before continuing
         text = _RE_GENDER_PRONOUN.sub(self._get_pronoun, text)
-        super(GenderCharacter, self).msg(text, from_obj=from_obj, sessid=sessid, **kwargs)
+        super(GenderCharacter, self).msg(text, from_obj=from_obj, session=session, **kwargs)

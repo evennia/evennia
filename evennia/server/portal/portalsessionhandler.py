@@ -195,7 +195,7 @@ class PortalSessionHandler(SessionHandler):
         protocol = cls(self, **config)
         protocol.start()
 
-    def server_disconnect(self, sessid, reason=""):
+    def server_disconnect(self, session, reason=""):
         """
         Called by server to force a disconnect by sessid.
 
@@ -204,12 +204,11 @@ class PortalSessionHandler(SessionHandler):
             reason (str, optional): Motivation for disconect.
 
         """
-        session = self.get(sessid, None)
         if session:
             session.disconnect(reason)
-            if sessid in self:
+            if session.sessid in self:
                 # in case sess.disconnect doesn't delete it
-                del self[sessid]
+                del self[session.sessid]
             del session
 
     def server_disconnect_all(self, reason=""):
@@ -225,18 +224,17 @@ class PortalSessionHandler(SessionHandler):
             del session
         self = {}
 
-    def server_logged_in(self, sessid, data):
+    def server_logged_in(self, session, data):
         """
         The server tells us that the session has been authenticated.
         Update it. Called by the Server.
 
         Args:
-            sessid (int): Session id logging in.
+            session (Session): Session logging in.
             data (dict): The session sync data.
 
         """
-        sess = self.get_session(sessid)
-        sess.load_sync_data(data)
+        session.load_sync_data(data)
 
     def server_session_sync(self, serversessions):
         """
@@ -395,7 +393,7 @@ class PortalSessionHandler(SessionHandler):
                 if self.command_overflow:
                     reactor.callLater(1.0, self.data_in, None)
             if self.command_overflow:
-                self.data_out(session.sessid, text=_ERROR_COMMAND_OVERFLOW)
+                self.data_out(session, text=_ERROR_COMMAND_OVERFLOW)
                 return
             # relay data to Server
             self.command_counter += 1
@@ -409,14 +407,14 @@ class PortalSessionHandler(SessionHandler):
                 reactor.callLater(1.0, self.data_in, None)
 
 
-    def data_out(self, sessid, text=None, **kwargs):
+    def data_out(self, session, text=None, **kwargs):
         """
         Called by server for having the portal relay messages and data
         to the correct session protocol. We also convert oob input to
         a generic form here.
 
         Args:
-            sessid (int): Session id sending data.
+            session (Session): Session sending data.
 
         Kwargs:
             text (str): Text from protocol.
@@ -426,7 +424,6 @@ class PortalSessionHandler(SessionHandler):
         #from evennia.server.profiling.timetrace import timetrace
         #text = timetrace(text, "portalsessionhandler.data_out")
 
-        session = self.get(sessid, None)
         if session:
             # convert oob to the generic format
             if "oob" in kwargs:

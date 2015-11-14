@@ -188,6 +188,6 @@ class MuxPlayerCommand(MuxCommand):
             self.caller = self.caller.player
         elif utils.inherits_from(self.caller, "evennia.players.players.DefaultPlayer"):
             # caller was already a Player
-            self.character = self.caller.get_puppet(self.sessid)
+            self.character = self.caller.get_puppet(self.session)
         else:
             self.character = None

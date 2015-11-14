@@ -202,7 +202,7 @@ class ServerSession(Session):
             # done in the default @ic command but without any
             # hooks, echoes or access checks.
             obj = _ObjectDB.objects.get(id=self.puid)
-            obj.sessid.add(self.sessid)
+            obj.sessions.add(self)
             obj.player = self.player
             self.puid = obj.id
             self.puppet = obj
@@ -239,10 +239,9 @@ class ServerSession(Session):
 
         """
         if self.logged_in:
-            sessid = self.sessid
             player = self.player
             if self.puppet:
-                player.unpuppet_object(sessid)
+                player.unpuppet_object(self)
             uaccount = player
             uaccount.last_login = timezone.now()
             uaccount.save()
@@ -363,14 +362,14 @@ class ServerSession(Session):
                 return
             if self.player:
                 # nick replacement
-                puppet = self.player.get_puppet(self.sessid)
+                puppet = self.puppet
                 if puppet:
                     text = puppet.nicks.nickreplace(text,
                                   categories=("inputline", "channel"), include_player=True)
                 else:
                     text = self.player.nicks.nickreplace(text,
                                 categories=("inputline", "channels"), include_player=False)
-            cmdhandler(self, text, callertype="session", sessid=self.sessid)
+            cmdhandler(self, text, callertype="session", session=self)
             self.update_session_counters()
 
     execute_cmd = data_in  # alias

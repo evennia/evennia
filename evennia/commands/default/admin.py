@@ -92,7 +92,7 @@ class CmdBoot(MuxCommand):
 
         for session in boot_list:
             session.msg(feedback)
-            pobj.disconnect_session_from_player(session.sessid)
+            pobj.disconnect_session_from_player(session)
 
 
 # regex matching IP addresses with wildcards, eg. 233.122.4.*

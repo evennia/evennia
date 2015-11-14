@@ -430,8 +430,9 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         raw_string = self.nicks.nickreplace(raw_string,
                           categories=("inputline", "channel"), include_player=False)
         if not session and _MULTISESSION_MODE in (0, 1):
-            # for these modes we use the
-            session
+            # for these modes we use the first/only session
+            sessions = self.sessions.get()
+            session = sessions[0] if sessions else None
 
         return cmdhandler.cmdhandler(self, raw_string,
                                      callertype="player", session=session, **kwargs)
@@ -679,7 +680,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         the player loose.
 
         Args:
-            sessid (int, optional): Session logging in, if any.
+            session (Session, optional): Session logging in, if any.
 
         Notes:
             This is called *before* an eventual Character's
@@ -786,7 +787,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             # list of targets - make list
             characters = target
 
-            sessions = self.get_all_sessions()
+            sessions = self.sessions.all()
             is_su = self.is_superuser
 
             # text shown when looking in the ooc area
@@ -845,7 +846,7 @@ class DefaultGuest(DefaultPlayer):
         MULTISESSION_MODE we're in. They don't get a choice.
 
         Args:
-            sessid (int, optional): Id of Session connecting.
+            session (Session, optional): Session connecting.
 
         """
         self._send_to_connect_channel("{G%s connected{n" % self.key)

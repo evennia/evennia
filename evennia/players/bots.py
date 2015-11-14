@@ -90,7 +90,7 @@ class CmdBotListen(Command):
     key = "bot_data_in"
     def func(self):
         "Relay to typeclass"
-        self.obj.execute_cmd(self.args.strip(), sessid=self.sessid)
+        self.obj.execute_cmd(self.args.strip(), session=self.session)
 
 class BotCmdSet(CmdSet):
     """
@@ -135,19 +135,19 @@ class Bot(DefaultPlayer):
         """
         pass
 
-    def msg(self, text=None, from_obj=None, sessid=None, **kwargs):
+    def msg(self, text=None, from_obj=None, session=None, **kwargs):
         """
         Evennia -> outgoing protocol
 
         """
-        super(Bot, self).msg(text=text, from_obj=from_obj, sessid=sessid, **kwargs)
+        super(Bot, self).msg(text=text, from_obj=from_obj, session=session, **kwargs)
 
-    def execute_cmd(self, raw_string, sessid=None):
+    def execute_cmd(self, raw_string, session=None):
         """
         Incoming protocol -> Evennia
 
         """
-        super(Bot, self).msg(raw_string, sessid=sessid)
+        super(Bot, self).msg(raw_string, session=session)
 
     def at_server_shutdown(self):
         """
@@ -236,14 +236,14 @@ class IRCBot(Bot):
                 text = "bot_data_out %s" % text
                 super(IRCBot, self).msg(text=text)
 
-    def execute_cmd(self, text=None, sessid=None):
+    def execute_cmd(self, text=None, session=None):
         """
         Take incoming data and send it to connected channel. This is
         triggered by the CmdListen command in the BotCmdSet.
 
         Args:
             text (str, optional):  Command string.
-            sessid (int, optional): Session id responsible for this
+            session (Session, optional): Session responsible for this
                 command.
 
         """
@@ -296,7 +296,7 @@ class RSSBot(Bot):
                       "rate": self.db.rss_rate}
         _SESSIONS.start_bot_session("evennia.server.portal.rss.RSSBotFactory", configdict)
 
-    def execute_cmd(self, text=None, sessid=None):
+    def execute_cmd(self, text=None, session=None):
         """
         Echo RSS input to connected channel
 
@@ -386,13 +386,13 @@ class IMC2Bot(Bot):
                 text = "bot_data_out %s" % text
                 self.msg(text=text)
 
-    def execute_cmd(self, text=None, sessid=None):
+    def execute_cmd(self, text=None, session=None):
         """
         Relay incoming data to connected channel.
 
         Args:
             text (str, optional):  Command string.
-            sessid (int, optional): Session id responsible for this
+            session (Session, optional): Session responsible for this
                 command.
 
         """
