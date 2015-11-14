@@ -517,53 +517,19 @@ class ServerSessionHandler(SessionHandler):
         Sending data Server -> Portal
 
         Args:
-            session (Session): Session object
+            session (Session): Session to relay to.
             text (str, optional): text data to return
-            _nomulti (bool, optional): if given, only this
-                session will receive the rest of the data,
-                regardless of MULTISESSION_MODE. This is an
-                internal variable that will not be passed on.
-                This is ignored for MULTISESSION_MODE = 1,
-                since all messages are mirrored everywhere for
-                that.
-            _forced_nomulti (bool, optional): Like _nomulti,
-                but works even when MULTISESSION_MODE = 1.
-                Useful for connection handling messages.
 
         """
         #from evennia.server.profiling.timetrace import timetrace
         #text = timetrace(text, "ServerSessionHandler.data_out")
 
-        sessions = make_iter(session)
-        session = sessions[0]
         text = text and to_str(to_unicode(text), encoding=session.encoding)
-        multi = not kwargs.pop("_nomulti", None)
-        forced_nomulti = kwargs.pop("_forced_nomulti", None)
-        # Mode 1 mirrors to all.
-        if _MULTISESSION_MODE == 1:
-            multi = True
-        # ...Unless we're absolutely sure.
-        if forced_nomulti:
-            multi = False
 
-        if multi:
-            if _MULTISESSION_MODE == 1:
-                if session.player:
-                    sessions = self.sessions_from_player(session.player)
-            if _MULTISESSION_MODE == 2:
-                if session.player:
-                    sessions = self.sessions_from_player(session.player)
-            elif _MULTISESSION_MODE == 3:
-                if session.puppet:
-                    sessions = self.sessions_from_puppet(session.puppet)
-                elif session.player:
-                    sessions = self.sessions_from_player(session.player)
-
-        # send to all found sessions
-        for session in sessions:
-            self.server.amp_protocol.send_MsgServer2Portal(sessid=session.sessid,
-                                                           text=text,
-                                                           **kwargs)
+        # send across AMP
+        self.server.amp_protocol.send_MsgServer2Portal(sessid=session.sessid,
+                                                       text=text,
+                                                       **kwargs)
 
     def data_in(self, sessid, text="", **kwargs):
         """

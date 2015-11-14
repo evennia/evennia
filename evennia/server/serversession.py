@@ -396,9 +396,7 @@ class ServerSession(Session):
                 from evennia.utils import ansi as _ANSI
             text = _ANSI.parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
             text = _RE_SCREENREADER_REGEX.sub("", text)
-        session = kwargs.pop('session', None)
-        session = session or self
-        self.sessionhandler.data_out(session, text=text, **kwargs)
+        self.sessionhandler.data_out(self, text=text, **kwargs)
     # alias
     msg = data_out
 

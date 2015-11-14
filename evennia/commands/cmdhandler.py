@@ -138,8 +138,7 @@ class ErrorReported(Exception):
 # Helper function
 
 @inlineCallbacks
-def get_and_merge_cmdsets(caller, session, player, obj,
-                          callertype, sessid=None):
+def get_and_merge_cmdsets(caller, session, player, obj, callertype):
     """
     Gather all relevant cmdsets and merge them.
 
@@ -154,7 +153,6 @@ def get_and_merge_cmdsets(caller, session, player, obj,
         obj (Object or None): The Object associated with caller, if any.
         callertype (str): This identifies caller as either "player", "object" or "session"
             to avoid having to do this check internally.
-        sessid (int, optional): Session ID. This is not used at the moment.
 
     Returns:
         cmdset (Deferred): This deferred fires with the merged cmdset
@@ -335,7 +333,7 @@ def get_and_merge_cmdsets(caller, session, player, obj,
 
 
 @inlineCallbacks
-def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sessid=None, **kwargs):
+def cmdhandler(called_by, raw_string, _testing=False, callertype="session", session=None, **kwargs):
     """
     This is the main mechanism that handles any string sent to the engine.
 
@@ -355,7 +353,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             cmdset and the Objects and so on. Merge order is the same
             order, so that Object cmdsets are merged in last, giving them
             precendence for same-name and same-prio commands.
-        sessid (int, optional): Relevant if callertype is "player" - the session id will help
+        session (int, optional): Relevant if callertype is "player" - the session will help
             retrieve the correct cmdsets from puppeted objects.
 
     Kwargs:
@@ -398,7 +396,6 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             cmd.cmdstring = cmdname
             cmd.args = args
             cmd.cmdset = cmdset
-            cmd.sessid = session.sessid if session else sessid
             cmd.session = session
             cmd.player = player
             cmd.raw_string = unformatted_raw_string
@@ -460,17 +457,15 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
 
     raw_string = to_unicode(raw_string, force_string=True)
 
-    session, player, obj = None, None, None
+    session, player, obj = session, None, None
     if callertype == "session":
         session = called_by
         player = session.player
-        if player:
-            obj = yield player.get_puppet(session.sessid)
+        obj = session.puppet
     elif callertype == "player":
         player = called_by
-        if sessid:
-            session = player.get_session(sessid)
-            obj = yield player.get_puppet(sessid)
+        if session:
+            obj = yield session.puppet
     elif callertype == "object":
         obj = called_by
     else:
@@ -486,7 +481,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
         try:  # catch special-type commands
 
             cmdset = yield get_and_merge_cmdsets(caller, session, player, obj,
-                                                  callertype, sessid)
+                                                  callertype)
             if not cmdset:
                 # this is bad and shouldn't happen.
                 raise NoCmdSets
@@ -553,7 +548,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 if syscmd:
                     # replace system command with custom version
                     cmd = syscmd
-                cmd.sessid = session.sessid if session else None
+                cmd.session = session
                 sysarg = "%s:%s" % (cmdname, args)
                 raise ExecSystemCommand(cmd, sysarg)
 
