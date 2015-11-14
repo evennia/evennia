@@ -31,8 +31,6 @@ command line. The processing of a command works as follows:
 12. We have a unique cmdobject, primed for use. Call all hooks:
    `at_pre_cmd()`, `cmdobj.parse()`, `cmdobj.func()` and finally `at_post_cmd()`.
 13. Return deferred that will fire with the return from `cmdobj.func()` (unused by default).
-
-
 """
 
 from collections import defaultdict

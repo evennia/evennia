@@ -5,7 +5,7 @@ the same base model.
 
 This patch is implemented as per
 https://code.djangoproject.com/ticket/11560 and will hopefully be
-possibe to remove as it gets adde to django's main branch.
+possible to remove as it gets added to django's main branch.
 """
 
 # django patch imports

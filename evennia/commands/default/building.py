@@ -1,8 +1,5 @@
 """
-import sys
-
 Building and world design commands
-
 """
 from builtins import range
 
