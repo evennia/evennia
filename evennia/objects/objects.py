@@ -471,7 +471,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         # relay to session(s)
         sessions = make_iter(session) if session else self.sessions.all()
-        from evennia.utils.utils import calledby
         for session in sessions:
             session.msg(text=text, **kwargs)
 
