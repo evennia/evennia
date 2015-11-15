@@ -443,10 +443,11 @@ class ServerSessionHandler(SessionHandler):
         Get session based on sessid, or None if not found
 
         Args:
-            sessid (int or list): Session id(s)
+            sessid (int or list): Session id(s).
 
         Return:
-            sessions (Session or list): Session(s) found.
+            sessions (Session or list): Session(s) found. This
+                is a list if input was a list.
 
         """
         if is_iter(sessid):

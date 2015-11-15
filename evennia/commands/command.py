@@ -318,8 +318,11 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         from_obj = from_obj or self.caller
         to_obj = to_obj or from_obj
-        if not session or to_obj == self.caller:
-            session = to_obj.sessions.get()
+        if not session:
+            if to_obj == self.caller:
+                session = self.session
+            else:
+                session = to_obj.sessions.get()
         to_obj.msg(msg, from_obj=from_obj, session=session, **kwargs)
 
     # Common Command hooks

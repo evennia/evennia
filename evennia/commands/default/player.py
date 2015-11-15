@@ -276,7 +276,7 @@ class CmdSessions(MuxPlayerCommand):
     def func(self):
         "Implement function"
         player = self.player
-        sessions = player.get_all_sessions()
+        sessions = player.sessions.all()
 
         table = prettytable.PrettyTable(["{wsessid",
                                          "{wprotocol",
@@ -284,9 +284,8 @@ class CmdSessions(MuxPlayerCommand):
                                          "{wpuppet/character",
                                          "{wlocation"])
         for sess in sorted(sessions, key=lambda x: x.sessid):
-            sessid = sess.sessid
-            char = player.get_puppet(sessid)
-            table.add_row([str(sessid), str(sess.protocol_key),
+            char = player.get_puppet(sess)
+            table.add_row([str(sess.sessid), str(sess.protocol_key),
                            type(sess.address) == tuple and sess.address[0] or sess.address,
                            char and str(char) or "None",
                            char and str(char.location) or "N/A"])
@@ -602,7 +601,7 @@ class CmdQuell(MuxPlayerCommand):
     def _recache_locks(self, player):
         "Helper method to reset the lockhandler on an already puppeted object"
         if self.session:
-            char = session.puppet
+            char = self.session.puppet
             if char:
                 # we are already puppeting an object. We need to reset
                 # the lock caches (otherwise the superuser status change

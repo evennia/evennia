@@ -87,6 +87,16 @@ class PlayerSessionHandler(object):
         """
         return self.get()
 
+    def count(self):
+        """
+        Get amount of sessions connected.
+
+        Returns:
+            sesslen (int): Number of sessions handled.
+
+        """
+        return len(self.get())
+
 
 
 class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
@@ -290,7 +300,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                 obj.sessions.remove(session)
                 if not obj.sessions.count():
                     del obj.player
-                    obj.at_post_unpuppet(self, session=session)
+                obj.at_post_unpuppet(self, session=session)
             # Just to be sure we're always clear.
             session.puppet = None
             session.puid = None
@@ -357,7 +367,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
              mechanism (these are usually not used).
 
         """
-        for session in self.get_all_sessions():
+        for session in self.sessions.all():
             # unpuppeting all objects and disconnecting the user, if any
             # sessions remain (should usually be handled from the
             # deleting command)
@@ -786,7 +796,6 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         else:
             # list of targets - make list
             characters = target
-
             sessions = self.sessions.all()
             is_su = self.is_superuser
 
@@ -798,7 +807,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             for isess, sess in enumerate(sessions):
                 csessid = sess.sessid
                 addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple) and str(sess.address[0]) or str(sess.address))
-                string += "\n %s %s" % (session.sessid == csessid and "{w%s{n" % (isess + 1) or (isess + 1), addr)
+                string += "\n %s %s" % (session.sessid == csessid and "{w* %s{n" % (isess + 1) or "  %s" % (isess + 1), addr)
             string += "\n\n {whelp{n - more commands"
             string += "\n {wooc <Text>{n - talk on public channel"
 
@@ -821,13 +830,14 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
                 for char in characters:
                     csessions = char.sessions.all()
-                    for sess in csessions:
-                        # character is already puppeted
-                        sid = sess in sessions and sessions.index(sess) + 1
-                        if sess and sid:
-                            string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
-                        else:
-                            string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
+                    if csessions:
+                        for sess in csessions:
+                            # character is already puppeted
+                            sid = sess in sessions and sessions.index(sess) + 1
+                            if sess and sid:
+                                string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
+                            else:
+                                string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
                     else:
                         # character is "free to puppet"
                         string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions.all()))

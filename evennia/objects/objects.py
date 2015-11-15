@@ -48,7 +48,7 @@ class ObjectSessionHandler(object):
 
         """
         self.obj = obj
-        self._cache = set()
+        self._sessid_cache = set()
         self._recache()
 
     def _recache(self):
@@ -149,8 +149,9 @@ class ObjectSessionHandler(object):
 
         Returns:
             sesslen (int): Number of sessions handled.
+
         """
-        return len(self._cache)
+        return len(self._sessid_cache)
 
 
 
@@ -470,6 +471,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         # relay to session(s)
         sessions = make_iter(session) if session else self.sessions.all()
+        from evennia.utils.utils import calledby
         for session in sessions:
             session.msg(text=text, **kwargs)
 
@@ -478,8 +480,12 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Runs a function on every object contained within this one.
 
         Args:
-            func (callable): Function to call.
-            exclude (list, optional): A list of object not to call the function on.
+            func (callable): Function to call. This must have the
+                formal call sign func(obj, **kwargs), where obj is the
+                object currently being processed and `**kwargs` are
+                passed on from the call to `for_contents`.
+            exclude (list, optional): A list of object not to call the
+                function on.
 
         Kwargs:
             Keyword arguments will be passed to the function for all objects.
@@ -771,7 +777,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         # See if we need to kick the player off.
 
-        for session in self.sessions:
+        for session in self.sessions.all():
             session.msg(_("Your character %s has been destroyed.") % self.key)
             # no need to disconnect, Player just jumps to OOC mode.
         # sever the connection (important!)
@@ -1472,12 +1478,14 @@ class DefaultCharacter(DefaultObject):
             session (Session): Session controlling the connection that
                 just disconnected.
         """
-        if self.location: # have to check, in case of multiple connections closing
-            def message(obj, from_obj):
-                obj.msg("%s has left the game." % self.get_display_name(obj), from_obj=from_obj)
-            self.location.for_contents(message, exclude=[self], from_obj=self)
-            self.db.prelogout_location = self.location
-            self.location = None
+        if not self.sessions.count():
+            # only remove this char from grid if no sessions control it anymore.
+            if self.location:
+                def message(obj, from_obj):
+                    obj.msg("%s has left the game." % self.get_display_name(obj), from_obj=from_obj)
+                self.location.for_contents(message, exclude=[self], from_obj=self)
+                self.db.prelogout_location = self.location
+                self.location = None
 
 #
 # Base Room object

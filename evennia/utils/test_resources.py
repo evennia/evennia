@@ -50,11 +50,12 @@ class EvenniaTest(TestCase):
 
         # set up a fake session
 
-        session = ServerSession()
-        session.init_session("telnet", ("localhost", "testmode"), SESSIONS)
-        session.sessid = 1
-        SESSIONS.portal_connect(session.get_sync_data())
-        SESSIONS.login(SESSIONS.session_from_sessid(1), self.player, testmode=True)
+        dummysession = ServerSession()
+        dummysession.init_session("telnet", ("localhost", "testmode"), SESSIONS)
+        dummysession.sessid = 1
+        SESSIONS.portal_connect(dummysession.get_sync_data()) # note that this creates a new Session!
+        session = SESSIONS.session_from_sessid(1) # the real session
+        SESSIONS.login(session, self.player, testmode=True)
         self.session = session
 
     def tearDown(self):

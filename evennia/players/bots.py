@@ -155,7 +155,7 @@ class Bot(DefaultPlayer):
         a reset.
 
         """
-        for session in self.get_all_sessions():
+        for session in self.sessions.all():
             session.sessionhandler.disconnect(session)
 
 
