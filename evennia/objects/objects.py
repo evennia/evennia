@@ -8,7 +8,6 @@ entities.
 from builtins import object
 from future.utils import listvalues, with_metaclass
 
-import traceback
 from django.conf import settings
 
 from evennia.typeclasses.models import TypeclassBase
@@ -560,10 +559,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         def logerr(string=""):
             "Simple log helper method"
-            trc = traceback.format_exc()
-            errstring = "%s%s" % (trc, string)
             logger.log_trace()
-            self.msg(errstring)
+            self.msg(string)
 
         errtxt = _("Couldn't perform move ('%s'). Contact an admin.")
         if not emit_to_obj:
@@ -588,7 +585,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                     return
             except Exception:
                 logerr(errtxt % "at_before_move()")
-                #emit_to_obj.msg(errtxt % "at_before_move()")
                 return False
 
         # Save the old location
@@ -608,7 +604,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 source_location.at_object_leave(self, destination)
             except Exception:
                 logerr(errtxt % "at_object_leave()")
-                #emit_to_obj.msg(errtxt % "at_object_leave()")
                 return False
 
         if not quiet:
@@ -617,7 +612,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 self.announce_move_from(destination)
             except Exception:
                 logerr(errtxt % "at_announce_move()")
-                #emit_to_obj.msg(errtxt % "at_announce_move()" )
                 return False
 
         # Perform move
@@ -634,7 +628,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 self.announce_move_to(source_location)
             except Exception:
                 logerr(errtxt % "announce_move_to()")
-                #emit_to_obj.msg(errtxt % "announce_move_to()")
                 return  False
 
         if move_hooks:
@@ -644,7 +637,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 destination.at_object_receive(self, source_location)
             except Exception:
                 logerr(errtxt % "at_object_receive()")
-                #emit_to_obj.msg(errtxt % "at_object_receive()")
                 return False
 
         # Execute eventual extra commands on this object after moving it
@@ -654,7 +646,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 self.at_after_move(source_location)
             except Exception:
                 logerr(errtxt % "at_after_move")
-                #emit_to_obj.msg(errtxt % "at_after_move()")
                 return False
         return True
 

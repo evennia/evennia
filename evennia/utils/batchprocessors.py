@@ -145,7 +145,6 @@ Example batch.py file
 ```
 #HEADER
 
-import traceback
 from django.config import settings
 from evennia.utils import create
 from types import basetypes

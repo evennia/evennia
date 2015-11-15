@@ -27,7 +27,6 @@ login. You can change the screen used by editing
 """
 
 import re
-import traceback
 from django.conf import settings
 from evennia import managers
 from evennia import utils, logger, create_player

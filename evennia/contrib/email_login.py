@@ -30,7 +30,6 @@ the module given by settings.CONNECTION_SCREEN_MODULE.
 
 """
 import re
-import traceback
 from django.conf import settings
 from evennia.players.models import PlayerDB
 from evennia.objects.models import ObjectDB

@@ -16,7 +16,6 @@ import math
 import re
 import textwrap
 import random
-import traceback
 from importlib import import_module
 from inspect import ismodule, trace
 from collections import defaultdict
