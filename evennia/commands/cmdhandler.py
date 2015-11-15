@@ -353,7 +353,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             cmdset and the Objects and so on. Merge order is the same
             order, so that Object cmdsets are merged in last, giving them
             precendence for same-name and same-prio commands.
-        session (int, optional): Relevant if callertype is "player" - the session will help
+        session (Session, optional): Relevant if callertype is "player" - the session will help
             retrieve the correct cmdsets from puppeted objects.
 
     Kwargs:
