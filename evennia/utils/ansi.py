@@ -330,15 +330,66 @@ class ANSIParser(object):
         (r'{!W', ANSI_WHITE),  # light grey
         (r'{!X', ANSI_BLACK),  # pure black
 
+        ## alternative |-format
+
         # normal ANSI backgrounds
-        (r'{[R', ANSI_BACK_RED),
-        (r'{[G', ANSI_BACK_GREEN),
-        (r'{[Y', ANSI_BACK_YELLOW),
-        (r'{[B', ANSI_BACK_BLUE),
-        (r'{[M', ANSI_BACK_MAGENTA),
-        (r'{[C', ANSI_BACK_CYAN),
-        (r'{[W', ANSI_BACK_WHITE),    # light grey background
-        (r'{[X', ANSI_BACK_BLACK)     # pure black background
+        (r'|[R', ANSI_BACK_RED),
+        (r'|[G', ANSI_BACK_GREEN),
+        (r'|[Y', ANSI_BACK_YELLOW),
+        (r'|[B', ANSI_BACK_BLUE),
+        (r'|[M', ANSI_BACK_MAGENTA),
+        (r'|[C', ANSI_BACK_CYAN),
+        (r'|[W', ANSI_BACK_WHITE),    # light grey background
+        (r'|[X', ANSI_BACK_BLACK),     # pure black background
+
+        (r'|n', ANSI_NORMAL),          # reset
+        (r'|/', ANSI_RETURN),          # line break
+        (r'|-', ANSI_TAB),             # tab
+        (r'|_', ANSI_SPACE),           # space
+        (r'|*', ANSI_INVERSE),        # invert
+        (r'|^', ANSI_BLINK),          # blinking text (very annoying and not supported by all clients)
+        (r'|u', ANSI_UNDERLINE),       # underline
+
+        (r'|r', hilite + ANSI_RED),
+        (r'|g', hilite + ANSI_GREEN),
+        (r'|y', hilite + ANSI_YELLOW),
+        (r'|b', hilite + ANSI_BLUE),
+        (r'|m', hilite + ANSI_MAGENTA),
+        (r'|c', hilite + ANSI_CYAN),
+        (r'|w', hilite + ANSI_WHITE),  # pure white
+        (r'|x', hilite + ANSI_BLACK),  # dark grey
+
+        (r'|R', unhilite + ANSI_RED),
+        (r'|G', unhilite + ANSI_GREEN),
+        (r'|Y', unhilite + ANSI_YELLOW),
+        (r'|B', unhilite + ANSI_BLUE),
+        (r'|M', unhilite + ANSI_MAGENTA),
+        (r'|C', unhilite + ANSI_CYAN),
+        (r'|W', unhilite + ANSI_WHITE),  # light grey
+        (r'|X', unhilite + ANSI_BLACK),  # pure black
+
+        # hilight-able colors
+        (r'|h', hilite),
+        (r'|H', unhilite),
+
+        (r'|!R', ANSI_RED),
+        (r'|!G', ANSI_GREEN),
+        (r'|!Y', ANSI_YELLOW),
+        (r'|!B', ANSI_BLUE),
+        (r'|!M', ANSI_MAGENTA),
+        (r'|!C', ANSI_CYAN),
+        (r'|!W', ANSI_WHITE),  # light grey
+        (r'|!X', ANSI_BLACK),  # pure black
+
+        # normal ANSI backgrounds
+        (r'|[R', ANSI_BACK_RED),
+        (r'|[G', ANSI_BACK_GREEN),
+        (r'|[Y', ANSI_BACK_YELLOW),
+        (r'|[B', ANSI_BACK_BLUE),
+        (r'|[M', ANSI_BACK_MAGENTA),
+        (r'|[C', ANSI_BACK_CYAN),
+        (r'|[W', ANSI_BACK_WHITE),    # light grey background
+        (r'|[X', ANSI_BACK_BLACK)     # pure black background
         ]
 
     ansi_bright_bgs = [
@@ -353,19 +404,38 @@ class ANSIParser(object):
         (r'{[m', r'{[505'),
         (r'{[c', r'{[055'),
         (r'{[w', r'{[555'),     # white background
-        (r'{[x', r'{[222')]     # dark grey background
+        (r'{[x', r'{[222'),     # dark grey background
+
+        ## |-style variations
+
+        (r'|[r', r'{[500'),
+        (r'|[g', r'{[050'),
+        (r'|[y', r'{[550'),
+        (r'|[b', r'{[005'),
+        (r'|[m', r'{[505'),
+        (r'|[c', r'{[055'),
+        (r'|[w', r'{[555'),     # white background
+        (r'|[x', r'{[222')]     # dark grey background
 
     # xterm256 {123, %c134. These are replaced directly by
     # the sub_xterm256 method
 
     xterm256_map = [
-        (r'%[0-5]{3}', ""),  # %123 - foreground colour
-        (r'%\[[0-5]{3}', ""),  # %[123 - background colour
         (r'\{[0-5]{3}', ""),   # {123 - foreground colour
-        (r'\{\[[0-5]{3}', "")   # {[123 - background colour
+        (r'\{\[[0-5]{3}', ""),   # {[123 - background colour
+        ## -style
+        (r'\|[0-5]{3}', ""),  # |123 - foreground colour
+        (r'\|\[[0-5]{3}', ""),  # |[123 - background colour
+
+        (r'\{[0-5]{3}', ""),   # {123 - foreground colour
+        (r'\{\[[0-5]{3}', ""),   # {[123 - background colour
+        ## |-style
+        (r'\|[0-5]{3}', ""),  # |123 - foreground colour
+        (r'\|\[[0-5]{3}', ""),  # |[123 - background colour
         ]
 
-    mxp_re = r'\{lc(.*?)\{lt(.*?)\{le'
+    mxp_re = r'\{lc(.*?)\{lt(.*?)\{le|' \
+           + r'\|lc(.*?)\|lt(.*?)\|le'
 
     # prepare regex matching
     brightbg_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ansi_bright_bgs]), re.DOTALL)
