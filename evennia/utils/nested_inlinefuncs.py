@@ -6,20 +6,27 @@ This parser accepts nested inlinefunctions on the form
 ```
 $funcname{arg, arg, ...}
 ```
-where any arg can be another $funcname{} call.
+
+embedded in any text where any arg can be another $funcname{} call.
+This functionality is turned off by default - to activate,
+`settings.INLINEFUNC_ENABLED` must be set to `True`.
 
 Each token starts with "$funcname(" where there must be no space
 between the $funcname and (. It ends with a matched ending parentesis.
 ")".
 
-Inside the inlinefunc definition, one can use `\` to escape. Enclosing
-text in `"` or `'` will also escape them - use this to include the
-right parenthesis or commas in the argument, for example.
+Inside the inlinefunc definition, one can use `\` to escape. This is
+mainly needed for escaping commas in flowing text (which would
+otherwise be interpreted as an argument separator), or to escape `}`
+when not intended to close the function block. Enclosing text in
+matched `\"\"\"` (triple quotes) or `'''` (triple single-quotes) will
+also escape *everything* within without needing to escape individual
+characters.
 
-The inlinefuncs, defined as global-level functions in modules defined
-by `settings.INLINEFUNC_MODULES`. They are identified by their
-function name (and ignored if this name starts with `_`. They should
-be on the following form:
+The available inlinefuncs are defined as global-level functions in
+modules defined by `settings.INLINEFUNC_MODULES`. They are identified
+by their function name (and ignored if this name starts with `_`). They
+should be on the following form:
 
 ```python
 def funcname (*args, **kwargs):
@@ -27,22 +34,29 @@ def funcname (*args, **kwargs):
 ```
 
 Here, the arguments given to `$funcname(arg1,arg2)` will appear as the
-`*args` tuple. The `**kwargs` is used only by Evennia to make details
-about the caller available to the function. The kwarg passed to all
-functions is `session`, the Sessionobject for the object seeing the
-string. This may be `None` if the string is sent to a non-puppetable
-object.
+`*args` tuple. This will be populated by the arguments given to the
+inlinefunc in-game - the only part that will be available from
+in-game. `**kwargs` are not supported from in-game but are only used
+internally by Evennia to make details about the caller available to
+the function. The kwarg passed to all functions is `session`, the
+Sessionobject for the object seeing the string. This may be `None` if
+the string is sent to a non-puppetable object. The inlinefunc should
+never raise an exception.
 
 There are two reserved function names:
 - "nomatch": This is called if the user uses a functionname that is
     not registered. The nomatch function will get the name of the
     not-found function as its first argument followed by the normal
     arguments to the given function. If not defined the default effect is
-    to print `<UNKNOWN: funcname(args)>` to replace the unknown function.
+    to print `<UNKNOWN>` to replace the unknown function.
 - "stackfull": This is called when the maximum nested function stack is reached.
   When this happens, the original parsed string is returned and the result of
   the `stackfull` inlinefunc is appended to the end. By default this is an
   error message.
+
+Error handling:
+   Syntax errors, notably not completely closing all inlinefunc
+   blocks, will lead to the entire string remaining unparsed.
 
 """
 

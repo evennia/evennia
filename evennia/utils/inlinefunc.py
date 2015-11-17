@@ -1,6 +1,8 @@
 """
 Inlinefunc
 
+**Note: This module is deprecated. Use evennia.utils.nested_inlinefuncs instead.**
+
 This is a simple inline text language for use to custom-format text in
 Evennia. It is applied BEFORE ANSI/MUX parsing is applied.
 
