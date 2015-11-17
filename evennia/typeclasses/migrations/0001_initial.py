@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+from django.conf import settings
 import evennia.utils.picklefield
 
 
@@ -53,3 +54,8 @@ class Migration(migrations.Migration):
             index_together=set([('db_key', 'db_category', 'db_tagtype')]),
         ),
     ]
+    # if we are using Oracle, we need to remove the AlterIndexTogether operation
+    # since Oracle seems to create its own index already at AlterUniqueTogether, meaning
+    # there is a conflict (see issue #732).
+    if settings.DATABASES['default']['ENGINE'] == "django.db.backends.oracle":
+        del operations[3]
