@@ -45,7 +45,7 @@ should be returned. The inlinefunc should never cause a traceback.
 
 import re
 from django.conf import settings
-from evennia.utils import utils
+from evennia.utils import utils, logger
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
@@ -61,7 +61,7 @@ def pad(text, *args, **kwargs):
     fillchar = ' '
     for iarg, arg in enumerate(args):
         if iarg == 0:
-            width = int(arg) if arg.isdigit() else width
+            width = int(arg) if arg.strip().isdigit() else width
         elif iarg == 1:
             align = arg if arg in ('c', 'l', 'r') else align
         elif iarg == 2:
@@ -80,7 +80,7 @@ def crop(text, *args, **kwargs):
     suffix = "[...]"
     for iarg, arg in enumerate(args):
         if iarg == 0:
-            width = int(arg) if arg.isdigit() else width
+            width = int(arg) if arg.strip().isdigit() else width
         elif iarg == 1:
             suffix = arg
         else:
@@ -97,7 +97,7 @@ def wrap(text, *args, **kwargs):
     indent = 0
     for iarg, arg in enumerate(args):
         if iarg == 0:
-            width = int(arg) if arg.isdigit() else width
+            width = int(arg) if arg.strip().isdigit() else width
         elif iarg == 1:
             indent = int(arg) if arg.isdigit() else indent
     return utils.wrap(text, width=width, indent=indent)
@@ -242,6 +242,7 @@ def parse_inlinefunc(text, strip=False, session=None):
     for part in _FUNCSPLIT_REGEX.split("".join(stack)):
         starttag = _FUNCSTART_REGEX.match(part)
         if starttag:
+            logger.log_dep("The {func()-style inlinefunc is deprecated. Use the $func{} form instead.")
             startname = starttag.group(1)
             part = _execute_inline_single_function(startname, part, session)
         outstack.append(part)

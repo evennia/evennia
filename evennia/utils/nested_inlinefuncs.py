@@ -4,9 +4,9 @@ Inline functions (nested form).
 This parser accepts nested inlinefunctions on the form
 
 ```
-$funcname(arg, arg, ...)
+$funcname{arg, arg, ...}
 ```
-where any arg can be another $funcname() call.
+where any arg can be another $funcname{} call.
 
 Each token starts with "$funcname(" where there must be no space
 between the $funcname and (. It ends with a matched ending parentesis.
@@ -50,18 +50,56 @@ import re
 from django.conf import settings
 from evennia.utils import utils
 
+
+# example/testing inline functions
+
+def pad(*args, **kwargs):
+    """
+    Pad to width. pad(text, width, align, fillchar)
+
+    """
+    text, width, align, fillchar = "", 78, 'c', ' '
+    nargs = len(args)
+    if nargs > 0:
+        text = args[0]
+    if nargs > 1:
+        width = int(args[1]) if args[1].strip().isdigit() else 78
+    if nargs > 2:
+        align = args[2] if args[2] in ('c', 'l', 'r') else 'c'
+    if nargs > 3:
+        fillchar = args[3]
+    return utils.pad(text, width=width, align=align, fillchar=fillchar)
+
+
+def crop(text, *args, **kwargs):
+    """
+    Crop to width. crop(text, width=78, suffix='[...]')
+
+    """
+    text = width, suffix = "", 78, "[...]"
+    nargs = len(args)
+    if nargs > 0:
+        text = args[0]
+    if nargs > 1:
+        width = int(args[1]) if args[1].strip().isdigit() else 78
+    if nargs > 2:
+        suffix = args[2]
+    return utils.crop(text, width=width, suffix=suffix)
+
+
 # we specify a default nomatch function to use if no matching func was
 # found. This will be overloaded by any nomatch function defined in
 # the imported modules.
-_INLINE_FUNCS = {"nomatch": lambda *args, **kwargs: "<UKNOWN: %s>" % (args[0]),
+_INLINE_FUNCS = {"nomatch": lambda *args, **kwargs: "<UKNOWN>",
         "stackfull": lambda *args, **kwargs: "\n (not parsed: inlinefunc stack size exceeded.)"}
 
 
 # load custom inline func modules.
 for module in utils.make_iter(settings.INLINEFUNC_MODULES):
     _INLINE_FUNCS.update(utils.all_from_module(module))
-# remove
-_INLINE_FUNCS.pop("inline_func_parse", None)
+
+# remove the core function if we include examples in this module itself
+#_INLINE_FUNCS.pop("inline_func_parse", None)
 
 
 # The stack size is a security measure. Set to <=0 to disable.
@@ -74,7 +112,7 @@ except AttributeError:
 
 _RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\{") # unescaped $funcname( (start of function call)
 
-_RE_TOKEN = re.compile(r"""(?<!\\)''(?P<singlequote>.*?)(?<!\\)\''| # unescaped '' (escapes all inside them)
+_RE_TOKEN = re.compile(r"""(?<!\\)'''(?P<singlequote>.*?)(?<!\\)'''| # unescaped '' (escapes all inside them)
                         (?<!\\)\"\"\"(?P<triplequote>.*?)(?<!\\)\"\"\"|    # unescaped triple quote (escapes all inside them)
                         (?P<comma>(?<!\\)\,)|                      # unescaped , (argument lists) - this is thrown away
                         (?P<end>(?<!\\)\})|                        # unescaped ) (end of function call)
@@ -138,10 +176,11 @@ def parse_inlinefunc(string, strip=False, **kwargs):
         string (str): The incoming string to parse.
         strip (bool, optional): Whether to strip function calls rather than
             execute them.
-        kwargs (any, optional): This will be passed on to all found inlinefuncs as
-            part of their call signature. This is to be called by Evennia or the
-            coder and is used to make various game states available, such as
-            the session of the user triggering the parse, character etc.
+    Kwargs:
+        session (Session): This is sent to this function by Evennia when triggering
+            it. It is passed to the inlinefunc.
+        kwargs (any): All other kwargs are also passed on to the inlinefunc.
+
 
     """
     global _PARSING_CACHE
@@ -159,7 +198,6 @@ def parse_inlinefunc(string, strip=False, **kwargs):
         ncallable = 0
         for match in _RE_TOKEN.finditer(string):
             gdict = match.groupdict()
-            print "gdict:", gdict
             if gdict["singlequote"]:
                 stack.append(gdict["singlequote"])
             elif gdict["triplequote"]:
@@ -204,6 +242,10 @@ def parse_inlinefunc(string, strip=False, **kwargs):
                 # the rest
                 stack.append(gdict["rest"])
 
+        if ncallable > 0:
+            # this means not all inlinefuncs were complete
+            return string
+
         if _STACK_MAXSIZE > 0 and _STACK_MAXSIZE < len(stack):
             # if stack is larger than limit, throw away parsing
             return string + gdict["stackfull"](*args, **kwargs)
@@ -213,6 +255,7 @@ def parse_inlinefunc(string, strip=False, **kwargs):
 
     # run the stack recursively
     def _run_stack(item):
+        retval = item
         if isinstance(item, tuple):
             if strip:
                 return ""
@@ -227,11 +270,9 @@ def parse_inlinefunc(string, strip=False, **kwargs):
                         # all other args should merge into one string
                         args[-1] += _run_stack(arg)
                 # execute the inlinefunc at this point or strip it.
-                return "" if strip else utils.to_str(func(*args, **kwargs))
-        else:
-            return item
+                retval = "" if strip else func(*args, **kwargs)
+        return utils.to_str(retval, force_string=True)
 
     # execute the stack from the cache
-    print "_PARSING_CACHE[string]:", _PARSING_CACHE[string]
     return "".join(_run_stack(item) for item in _PARSING_CACHE[string])
 
