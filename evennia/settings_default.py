@@ -388,7 +388,9 @@ INLINEFUNC_ENABLED = False
 # Only functions defined globally (and not starting with '_') in
 # these modules will be considered valid inlinefuncs. The list
 # is loaded from left-to-right, same-named functions will overload
-INLINEFUNC_MODULES = ["evennia.utils.inlinefunc", "server.conf.inlinefunc"]
+INLINEFUNC_MODULES = ["evennia.utils.inlinefunc",
+                      "evennia.utils.nested_inlinefuncs",
+                      "server.conf.inlinefunc"]
 
 ######################################################################
 # Default Player setup and access

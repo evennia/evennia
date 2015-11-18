@@ -69,7 +69,7 @@ from evennia.utils import utils
 
 def pad(*args, **kwargs):
     """
-    Pad to width. pad(text, width, align, fillchar)
+    Pad to width. $pad{text, width, align, fillchar}
 
     """
     text, width, align, fillchar = "", 78, 'c', ' '
@@ -85,12 +85,12 @@ def pad(*args, **kwargs):
     return utils.pad(text, width=width, align=align, fillchar=fillchar)
 
 
-def crop(text, *args, **kwargs):
+def crop(*args, **kwargs):
     """
-    Crop to width. crop(text, width=78, suffix='[...]')
+    Crop to width. $crop{text, width=78, suffix='[...]'}
 
     """
-    text = width, suffix = "", 78, "[...]"
+    text, width, suffix = "", 78, "[...]"
     nargs = len(args)
     if nargs > 0:
         text = args[0]
@@ -99,6 +99,20 @@ def crop(text, *args, **kwargs):
     if nargs > 2:
         suffix = args[2]
     return utils.crop(text, width=width, suffix=suffix)
+
+
+def clr(*args, **kwargs):
+    """
+    Colorize text. $crop{clr, text}
+
+    """
+    clr, text = "|n", ""
+    nargs = len(args)
+    if nargs > 0:
+        clr = args[0]
+    if nargs > 1:
+        text = args[1]
+    return "|" + clr.lstrip("|") + text + "|n"
 
 
 # we specify a default nomatch function to use if no matching func was
