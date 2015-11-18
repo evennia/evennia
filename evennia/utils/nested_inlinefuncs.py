@@ -124,16 +124,16 @@ except AttributeError:
 
 # regex definitions
 
-_RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\{") # unescaped $funcname( (start of function call)
+_RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\{") # unescaped $funcname{ (start of function call)
 
-_RE_TOKEN = re.compile(r"""(?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'| # unescaped single-triples (escapes all inside them)
-                        (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"|    # unescaped triple quotes (escapes all inside them)
-                        (?P<comma>(?<!\\)\,)|                      # unescaped , (argument lists) - this is thrown away
-                        (?P<end>(?<!\\)\})|                        # unescaped ) (end of function call)
-                        (?P<start>(?<!\\)\$\w+\{)|                 # unescaped $funcname( (start of function call)
-                        (?P<escaped>\\'|\\"|\\\)|\\$\w+\{)|        # escaped tokens should appear in text
-                        (?P<rest>[\w\s.-\/#!%\^&\*;:=\-_`~()\[\]]+)                        # everything else should also be included
-                        """,
+_RE_TOKEN = re.compile(r"""
+                        (?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'| # unescaped single-triples (escapes all inside them)
+                        (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"| # unescaped triple quotes (escapes all inside them)
+                        (?P<comma>(?<!\\)\,)|                           # unescaped , (argument separator)
+                        (?P<end>(?<!\\)\})|                             # unescaped } (end of function call)
+                        (?P<start>(?<!\\)\$\w+\{)|                      # unescaped $funcname{ (start of function call)
+                        (?P<escaped>\\'|\\"|\\\)|\\$\w+\{)|             # escaped tokens should re-appear in text
+                        (?P<rest>[\w\s.-\/#!%\^&\*;:=\-_`~()\[\]]+)     # everything else should also be included""",
                         re.UNICODE + re.IGNORECASE + re.VERBOSE + re.DOTALL)
 
 
