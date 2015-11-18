@@ -330,17 +330,17 @@ class ANSIParser(object):
         (r'{!W', ANSI_WHITE),  # light grey
         (r'{!X', ANSI_BLACK),  # pure black
 
-        ## alternative |-format
-
         # normal ANSI backgrounds
-        (r'|[R', ANSI_BACK_RED),
-        (r'|[G', ANSI_BACK_GREEN),
-        (r'|[Y', ANSI_BACK_YELLOW),
-        (r'|[B', ANSI_BACK_BLUE),
-        (r'|[M', ANSI_BACK_MAGENTA),
-        (r'|[C', ANSI_BACK_CYAN),
-        (r'|[W', ANSI_BACK_WHITE),    # light grey background
-        (r'|[X', ANSI_BACK_BLACK),     # pure black background
+        (r'{[R', ANSI_BACK_RED),
+        (r'{[G', ANSI_BACK_GREEN),
+        (r'{[Y', ANSI_BACK_YELLOW),
+        (r'{[B', ANSI_BACK_BLUE),
+        (r'{[M', ANSI_BACK_MAGENTA),
+        (r'{[C', ANSI_BACK_CYAN),
+        (r'{[W', ANSI_BACK_WHITE),    # light grey background
+        (r'{[X', ANSI_BACK_BLACK),     # pure black background
+
+        ## alternative |-format
 
         (r'|n', ANSI_NORMAL),          # reset
         (r'|/', ANSI_RETURN),          # line break
