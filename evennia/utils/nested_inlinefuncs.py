@@ -101,20 +101,6 @@ def crop(*args, **kwargs):
     return utils.crop(text, width=width, suffix=suffix)
 
 
-def clr(*args, **kwargs):
-    """
-    Colorize text. $crop{clr, text}
-
-    """
-    clr, text = "|n", ""
-    nargs = len(args)
-    if nargs > 0:
-        clr = args[0]
-    if nargs > 1:
-        text = args[1]
-    return "|" + clr.lstrip("|") + text + "|n"
-
-
 # we specify a default nomatch function to use if no matching func was
 # found. This will be overloaded by any nomatch function defined in
 # the imported modules.
@@ -140,8 +126,8 @@ except AttributeError:
 
 _RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\{") # unescaped $funcname( (start of function call)
 
-_RE_TOKEN = re.compile(r"""(?<!\\)'''(?P<singlequote>.*?)(?<!\\)'''| # unescaped '' (escapes all inside them)
-                        (?<!\\)\"\"\"(?P<triplequote>.*?)(?<!\\)\"\"\"|    # unescaped triple quote (escapes all inside them)
+_RE_TOKEN = re.compile(r"""(?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'| # unescaped single-triples (escapes all inside them)
+                        (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"|    # unescaped triple quotes (escapes all inside them)
                         (?P<comma>(?<!\\)\,)|                      # unescaped , (argument lists) - this is thrown away
                         (?P<end>(?<!\\)\})|                        # unescaped ) (end of function call)
                         (?P<start>(?<!\\)\$\w+\{)|                 # unescaped $funcname( (start of function call)
@@ -228,8 +214,8 @@ def parse_inlinefunc(string, strip=False, **kwargs):
             gdict = match.groupdict()
             if gdict["singlequote"]:
                 stack.append(gdict["singlequote"])
-            elif gdict["triplequote"]:
-                stack.append(gdict["triplequote"])
+            elif gdict["doublequote"]:
+                stack.append(gdict["doublequote"])
             elif gdict["end"]:
                 if ncallable <= 0:
                     stack.append(")")
