@@ -55,8 +55,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Recommonmark'
-copyright = u'2015, Lu Zero, Eric Holscher, and contributors'
-author = u'Lu Zero, Eric Holscher, and contributors'
+copyright = u'2015, Luca Barbato, Eric Holscher, and contributors'
+author = u'Luca Barbato, Eric Holscher, and contributors'
 
 github_doc_root = 'https://github.com/rtfd/recommonmark/tree/master/docs/'
 
