@@ -326,15 +326,15 @@ class TestNestedInlineFuncs(TestCase):
 
     def test_single_func(self):
         self.assertEqual(nested_inlinefuncs.parse_inlinefunc(
-            "this is a test with $pad{centered, 20} text in it."),
+            "this is a test with $pad(centered, 20) text in it."),
             "this is a test with       centered       text in it.")
 
     def test_nested(self):
         self.assertEqual(nested_inlinefuncs.parse_inlinefunc(
-            "this $crop{is a test with $pad{padded, 20} text in $pad{pad2, 10} a crop, 80}"),
+            "this $crop(is a test with $pad(padded, 20) text in $pad(pad2, 10) a crop, 80)"),
             "this is a test with        padded        text in    pad2    a crop")
 
     def test_escaped(self):
         self.assertEqual(nested_inlinefuncs.parse_inlinefunc(
-            "this should be $pad{'''escaped,''' and \"\"\"instead,\"\"\" cropped $crop{with a long,5} text., 80}"),
+            "this should be $pad('''escaped,''' and \"\"\"instead,\"\"\" cropped $crop(with a long,5) text., 80)"),
             "this should be                    escaped, and instead, cropped with  text.                    ")

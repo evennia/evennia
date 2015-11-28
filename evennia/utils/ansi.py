@@ -62,7 +62,7 @@ ANSI_TAB = "\t"
 ANSI_SPACE = " "
 
 # Escapes
-ANSI_ESCAPES = ("{{", "\\\\")
+ANSI_ESCAPES = ("{{", "\\\\", "\|\|")
 
 from collections import OrderedDict
 _PARSE_CACHE = OrderedDict()
@@ -408,14 +408,14 @@ class ANSIParser(object):
 
         ## |-style variations
 
-        (r'|[r', r'{[500'),
-        (r'|[g', r'{[050'),
-        (r'|[y', r'{[550'),
-        (r'|[b', r'{[005'),
-        (r'|[m', r'{[505'),
-        (r'|[c', r'{[055'),
-        (r'|[w', r'{[555'),     # white background
-        (r'|[x', r'{[222')]     # dark grey background
+        (r'|[r', r'|[500'),
+        (r'|[g', r'|[050'),
+        (r'|[y', r'|[550'),
+        (r'|[b', r'|[005'),
+        (r'|[m', r'|[505'),
+        (r'|[c', r'|[055'),
+        (r'|[w', r'|[555'),     # white background
+        (r'|[x', r'|[222')]     # dark grey background
 
     # xterm256 {123, %c134. These are replaced directly by
     # the sub_xterm256 method

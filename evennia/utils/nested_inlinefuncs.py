@@ -4,7 +4,7 @@ Inline functions (nested form).
 This parser accepts nested inlinefunctions on the form
 
 ```
-$funcname{arg, arg, ...}
+$funcname(arg, arg, ...)
 ```
 
 embedded in any text where any arg can be another $funcname{} call.
@@ -69,7 +69,20 @@ from evennia.utils import utils
 
 def pad(*args, **kwargs):
     """
-    Pad to width. $pad{text, width, align, fillchar}
+    Inlinefunc. Pads text to given width.
+
+    Args:
+        text (str, optional): Text to pad.
+        width (str, optional): Will be converted to integer. Width
+            of padding.
+        align (str, optional): Alignment of padding; one of 'c', 'l' or 'r'.
+        fillchar (str, optional): Character used for padding. Defaults to a space.
+
+    Kwargs:
+        session (Session): Session performing the pad.
+
+    Example:
+        `$pad(text, width, align, fillchar)`
 
     """
     text, width, align, fillchar = "", 78, 'c', ' '
@@ -87,7 +100,19 @@ def pad(*args, **kwargs):
 
 def crop(*args, **kwargs):
     """
-    Crop to width. $crop{text, width=78, suffix='[...]'}
+    Inlinefunc. Crops ingoing text to given widths.
+
+    Args:
+        text (str, optional): Text to crop.
+        width (str, optional): Will be converted to an integer. Width of
+            crop in characters.
+        suffix (str, optional): End string to mark the fact that a part
+            of the string was cropped. Defaults to `[...]`.
+    Kwargs:
+        session (Session): Session performing the crop.
+
+    Example:
+        `$crop(text, width=78, suffix='[...]')`
 
     """
     text, width, suffix = "", 78, "[...]"
@@ -99,6 +124,37 @@ def crop(*args, **kwargs):
     if nargs > 2:
         suffix = args[2]
     return utils.crop(text, width=width, suffix=suffix)
+
+
+def clr(*args, **kwargs):
+    """
+    Inlinefunc. Colorizes nested text.
+
+    Args:
+        startclr (str, optional): An ANSI color abbreviation without the
+            prefix `|`, such as `r` (red foreground) or `[r` (red background).
+        text (str, optional): Text
+        endclr (str, optional): The color to use at the end of the string. Defaults
+            to `|n` (reset-color).
+    Kwargs:
+        session (Session): Session object triggering inlinefunc.
+
+    Example:
+        `$clr(startclr, text, endclr)`
+
+    """
+    text = ""
+    nargs = len(args)
+    if nargs > 0:
+        color = args[0].strip()
+    if nargs > 1:
+        text = args[1]
+        text = "|" + color + text
+    if nargs > 2:
+        text += "|" + args[2].strip()
+    else:
+        text += "|n"
+    return text
 
 
 # we specify a default nomatch function to use if no matching func was
@@ -124,16 +180,16 @@ except AttributeError:
 
 # regex definitions
 
-_RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\{") # unescaped $funcname{ (start of function call)
+_RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\(") # unescaped $funcname{ (start of function call)
 
 _RE_TOKEN = re.compile(r"""
                         (?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'| # unescaped single-triples (escapes all inside them)
-                        (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"| # unescaped triple quotes (escapes all inside them)
+                        (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"| # unescaped normal triple quotes (escapes all inside them)
                         (?P<comma>(?<!\\)\,)|                           # unescaped , (argument separator)
-                        (?P<end>(?<!\\)\})|                             # unescaped } (end of function call)
-                        (?P<start>(?<!\\)\$\w+\{)|                      # unescaped $funcname{ (start of function call)
-                        (?P<escaped>\\'|\\"|\\\)|\\$\w+\{)|             # escaped tokens should re-appear in text
-                        (?P<rest>[\w\s.-\/#!%\^&\*;:=\-_`~()\[\]]+)     # everything else should also be included""",
+                        (?P<end>(?<!\\)\))|                             # unescaped } (end of function call)
+                        (?P<start>(?<!\\)\$\w+\()|                      # unescaped $funcname{ (start of function call)
+                        (?P<escaped>\\'|\\"|\\\)|\\$\w+\()|             # escaped tokens should re-appear in text
+                        (?P<rest>[\w\s.-\/#!%\^&\*;:=\-_`~\(}{\[\]]+)     # everything else should also be included""",
                         re.UNICODE + re.IGNORECASE + re.VERBOSE + re.DOTALL)
 
 
@@ -268,7 +324,7 @@ def parse_inlinefunc(string, strip=False, **kwargs):
             _PARSING_CACHE[string] = stack
 
     # run the stack recursively
-    def _run_stack(item):
+    def _run_stack(item, depth=0):
         retval = item
         if isinstance(item, tuple):
             if strip:
@@ -282,8 +338,9 @@ def parse_inlinefunc(string, strip=False, **kwargs):
                         args.append("")
                     else:
                         # all other args should merge into one string
-                        args[-1] += _run_stack(arg)
+                        args[-1] += _run_stack(arg, depth=depth+1)
                 # execute the inlinefunc at this point or strip it.
+                kwargs["inlinefunc_stack_depth"] = depth
                 retval = "" if strip else func(*args, **kwargs)
         return utils.to_str(retval, force_string=True)
 

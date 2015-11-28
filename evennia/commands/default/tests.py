@@ -69,7 +69,7 @@ class CommandTest(EvenniaTest):
             cmdobj.at_post_cmd()
             # clean out prettytable sugar
             stored_msg = [args[0] for name, args, kwargs in receiver.msg.mock_calls]
-            returned_msg = "|".join(_RE.sub("", mess) for mess in stored_msg)
+            returned_msg = "||".join(_RE.sub("", mess) for mess in stored_msg)
             returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
             if msg is not None:
                 if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):

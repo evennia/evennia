@@ -538,20 +538,17 @@ class CmdColorTest(MuxPlayerCommand):
             ap = ansi.ANSI_PARSER
             # ansi colors
             # show all ansi color-related codes
-            col1 = ["%s%s{n" % (code, code.replace("{", "{{")) for code, _ in ap.ext_ansi_map[6:14]]
-            col2 = ["%s%s{n" % (code, code.replace("{", "{{")) for code, _ in ap.ext_ansi_map[14:22]]
-            col3 = ["%s%s{n" % (code.replace("\\",""), code.replace("{", "{{").replace("\\", "")) for code, _ in ap.ext_ansi_map[-8:]]
+            col1 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[6:14]]
+            col2 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[14:22]]
+            col3 = ["%s%s|n" % (code.replace("\\",""), code.replace("|", "||").replace("\\", "")) for code, _ in ap.ext_ansi_map[-8:]]
             col2.extend(["" for i in range(len(col1)-len(col2))])
-            #hi = "%ch"
-            #col2 = ["%s%s{n" % (code, code.replace("%", "%%")) for code, _ in ap.mux_ansi_map[6:]]
-            #col3 = ["%s%s{n" % (hi + code, (hi + code).replace("%", "%%")) for code, _ in ap.mux_ansi_map[3:-2]]
             table = utils.format_table([col1, col2, col3])
             string = "ANSI colors:"
             for row in table:
                 string += "\n " + " ".join(row)
             self.msg(string)
-            self.msg("{{X : black. {{/ : return, {{- : tab, {{_ : space, {{* : invert, {{u : underline")
-            self.msg("To combine background and foreground, add background marker last, e.g. {{r{{[b.")
+            self.msg("||X : black. ||/ : return, ||- : tab, ||_ : space, ||* : invert, ||u : underline")
+            self.msg("To combine background and foreground, add background marker last, e.g. ||r||[B.")
 
         elif self.args.startswith("x"):
             # show xterm256 table
@@ -560,11 +557,11 @@ class CmdColorTest(MuxPlayerCommand):
                 for ig in range(6):
                     for ib in range(6):
                         # foreground table
-                        table[ir].append("{%i%i%i%s{n" % (ir, ig, ib, "{{%i%i%i" % (ir, ig, ib)))
+                        table[ir].append("|%i%i%i%s|n" % (ir, ig, ib, "||%i%i%i" % (ir, ig, ib)))
                         # background table
-                        table[6+ir].append("{[%i%i%i{%i%i%i%s{n" % (ir, ig, ib,
+                        table[6+ir].append("|[%i%i%i|%i%i%i%s|n" % (ir, ig, ib,
                                                             5 - ir, 5 - ig, 5 - ib,
-                                                        "{{[%i%i%i" % (ir, ig, ib)))
+                                                        "||[%i%i%i" % (ir, ig, ib)))
             table = self.table_format(table)
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
             for row in table:
@@ -573,7 +570,7 @@ class CmdColorTest(MuxPlayerCommand):
             #self.msg("(e.g. %%123 and %%[123 also work)")
         else:
             # malformed input
-            self.msg("Usage: @color ansi|xterm256")
+            self.msg("Usage: @color ansi||xterm256")
 
 
 class CmdQuell(MuxPlayerCommand):
