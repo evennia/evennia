@@ -343,3 +343,14 @@ class TestNestedInlineFuncs(TestCase):
         self.assertEqual(nested_inlinefuncs.parse_inlinefunc(
             'this should be $pad("""escaped,""" and """instead,""" cropped $crop(with a long,5) text., 80)'),
             "this should be                    escaped, and instead, cropped with  text.                    ")
+
+from evennia.utils import evform
+
+class TestEvForm(TestCase):
+    def test_form(self):
+        self.assertEqual(unicode(evform._test()),
+            u'.------------------------------------------------.\n|                                                |\n|  Name: \x1b[1m\x1b[32mTom\x1b[1m\x1b[32m \x1b[1m\x1b[32mthe\x1b[1m\x1b[32m \x1b[0m       Player: \x1b[1m\x1b[33mGriatch\x1b[0m        \x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[0m  |\n|        \x1b[1m\x1b[32mBouncer\x1b[0m\x1b[0m                                 |\n|                                                |\n >----------------------------------------------<\n|                                                |\n| Desc:  A sturdy \x1b[0m      STR: 12 \x1b[0m    DEX: 10 \x1b[0m     |\n|        fellow\x1b[0m         INT: 5  \x1b[0m    STA: 18 \x1b[0m     |\n|                       LUC: 10     MAG: 3       |\n|                                                |\n >----------------------------------------------<\n|          |                                     |\n| HP|MV |M\x1b[0m | Skill       |Value     |Exp        \x1b[0m |\n| ~~+~~~+~ | ~~~~~~~~~~~~+~~~~~~~~~~+~~~~~~~~~~~ |\n| **|***\x1b[0m|*\x1b[0m | Shooting    |12        |550/1200   \x1b[0m\x1b[0m |\n|   |**\x1b[0m |*\x1b[0m | Herbalism   |14        |990/1400   \x1b[0m\x1b[0m |\n|   |   |*\x1b[0m | Smithing    |9         |205/900    \x1b[0m |\n|          |                                     |\n ------------------------------------------------\n')
+    def test_ansi_escape(self):
+        # note that in a msg() call, the result would be the  correct |-----,
+        # in a print, ansi only gets called once, so ||----- is the result
+        self.assertEqual(unicode(evform.EvForm(form={"FORM":"\n||-----"})), "||-----")

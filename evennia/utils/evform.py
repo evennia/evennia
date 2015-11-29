@@ -148,9 +148,17 @@ from evennia.utils.ansi import ANSIString
 # as an identifier). These should be listed in regex form.
 
 INVALID_FORMCHARS = r"\s\/\|\\\*\_\-\#\<\>\~\^\:\;\.\,"
+# if there is an ansi-escape (||) we have to replace this with ||| to make sure
+# to properly escape down the line
+_ANSI_ESCAPE = re.compile(r"\|\|")
+
 
 def _to_ansi(obj, regexable=False):
     "convert to ANSIString"
+    if isinstance(obj, basestring):
+        # since ansi will be parsed twice (here and in the normal ansi send), we have to
+        # escape the |-structure twice.
+        obj = _ANSI_ESCAPE.sub(r"||||", obj)
     if isinstance(obj, dict):
         return dict((key, _to_ansi(value, regexable=regexable)) for key, value in obj.items())
     elif hasattr(obj, "__iter__"):
@@ -443,5 +451,5 @@ def _test():
                      "B": tableB})
 
     # unicode is required since the example contains non-ascii characters
-    print(unicode(form))
+    #print(unicode(form))
     return form
