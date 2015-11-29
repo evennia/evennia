@@ -336,5 +336,10 @@ class TestNestedInlineFuncs(TestCase):
 
     def test_escaped(self):
         self.assertEqual(nested_inlinefuncs.parse_inlinefunc(
-            "this should be $pad('''escaped,''' and \"\"\"instead,\"\"\" cropped $crop(with a long,5) text., 80)"),
+            "this should be $pad('''escaped,''' and '''instead,''' cropped $crop(with a long,5) text., 80)"),
+            "this should be                    escaped, and instead, cropped with  text.                    ")
+
+    def test_escaped2(self):
+        self.assertEqual(nested_inlinefuncs.parse_inlinefunc(
+            'this should be $pad("""escaped,""" and """instead,""" cropped $crop(with a long,5) text., 80)'),
             "this should be                    escaped, and instead, cropped with  text.                    ")
