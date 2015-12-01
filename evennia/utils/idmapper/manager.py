@@ -12,7 +12,7 @@ class SharedMemoryManager(Manager):
     # We need a way to handle reverse lookups so that this model can
     # still use the singleton cache, but the active model isn't required
     # to be a SharedMemoryModel.
-    def get(self, **kwargs):
+    def get(self, *args, **kwargs):
         """
         Data entity lookup.
         """
@@ -26,5 +26,5 @@ class SharedMemoryManager(Manager):
             if key in ('pk', self.model._meta.pk.attname):
                 inst = self.model.get_cached_instance(kwargs[items[0]])
         if inst is None:
-            inst = super(SharedMemoryManager, self).get(**kwargs)
+            inst = super(SharedMemoryManager, self).get(*args, **kwargs)
         return inst

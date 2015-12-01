@@ -507,11 +507,14 @@ class TypeclassManager(TypedObjectManager):
 
     """
 
-    def get(self, **kwargs):
+    def get(self, *args, **kwargs):
         """
         Overload the standard get. This will limit itself to only
         return the current typeclass.
 
+        Args:
+            args (any): These are passed on as arguments to the default
+                django get method.
         Kwargs:
             kwargs (any): These are passed on as normal arguments
                 to the default django get method
