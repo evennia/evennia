@@ -356,7 +356,7 @@ class IntroRoom(TutorialRoom):
         Called when the room is first created.
         """
         super(IntroRoom, self).at_object_creation()
-        self.db_tutorial_info = "The first room of the tutorial. " \
+        self.db.tutorial_info = "The first room of the tutorial. " \
                                 "This assigns the health Attribute to "\
                                 "the player."
 
@@ -977,7 +977,7 @@ class OutroRoom(TutorialRoom):
         Called when the room is first created.
         """
         super(OutroRoom, self).at_object_creation()
-        self.db_tutorial_info = "The last room of the tutorial. " \
+        self.db.tutorial_info = "The last room of the tutorial. " \
                                 "This cleans up all temporary Attributes " \
                                 "the tutorial may have assigned to the "\
                                 "character."
