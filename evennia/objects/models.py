@@ -79,7 +79,7 @@ class ContentsHandler(object):
                 return [self._idcache[pk] for pk in pks]
             except KeyError:
                 # this means an actual failure of caching. Return real database match.
-                logger.logerr("contents cache failed for %s." % (self.obj.key))
+                logger.log_err("contents cache failed for %s." % (self.obj.key))
                 return list(ObjectDB.objects.filter(db_location=self.obj))
 
     def add(self, obj):
