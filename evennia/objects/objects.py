@@ -1418,7 +1418,8 @@ class DefaultCharacter(DefaultObject):
         We make sure to look around after a move.
 
         """
-        self.msg(self.at_look(self.location))
+        if self.location.access(self, "view"):
+            self.msg(self.at_look(self.location))
 
     def at_pre_puppet(self, player, session=None):
         """

@@ -52,7 +52,7 @@ class ContentsHandler(object):
 
         """
         self._pkcache.update(dict((obj.pk, None) for obj in
-                            ObjectDB.objects.filter(db_location=self.obj)))
+                            ObjectDB.objects.filter(db_location=self.obj) if obj.pk))
 
     def get(self, exclude=None):
         """
@@ -65,16 +65,22 @@ class ContentsHandler(object):
             objects (list): the Objects inside this location
 
         """
-        pks = list(self._pkcache)
         if exclude:
-            pks = [pk for pk in pks if pk not in [excl.pk for excl in make_iter(exclude)]]
+            pks = [pk for pk in self._pkcache if pk not in [excl.pk for excl in make_iter(exclude)]]
+        else:
+            pks = self._pkcache
         try:
             return [self._idcache[pk] for pk in pks]
         except KeyError:
             # this can happen if the idmapper cache was cleared for an object
             # in the contents cache. If so we need to re-initialize and try again.
             self.init()
-            return self.get(exclude=exclude)
+            try:
+                return [self._idcache[pk] for pk in pks]
+            except KeyError:
+                # this means an actual failure of caching. Return real database match.
+                logger.logerr("contents cache failed for %s." % (self.obj.key))
+                return list(ObjectDB.objects.filter(db_location=self.obj))
 
     def add(self, obj):
         """
@@ -102,7 +108,7 @@ class ContentsHandler(object):
 
         """
         self._pkcache = {}
-        self._init()
+        self.init()
 
 #------------------------------------------------------------
 #
