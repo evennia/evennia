@@ -354,7 +354,7 @@ start
 # Lock exit from view/traverse until we climbed that tree (which is
 # when tutorial_climbed_tree Tag gets assigned to us).
 #
-@lock north = view:tag(tutorial_climbed_tree, tutorial_world) ; traverse:tag(tutorial_climbed_tree, tutorial_world)
+@lock north = view:tag(tutorial_climbed_tree) ; traverse:tag(tutorial_climbed_tree)
 #
 @desc north =
  This is a hardly visible footpath leading off through the rain-beaten
@@ -364,7 +364,7 @@ start
 @set north/tutorial_info =
  This exit is locked with a lock string that looks like this:
 
-   view:tag(tutorial_climbed_tree, tutorial_world) ; traverse:tag(tutorial_climbed_tree, tutorial_world)
+   view:tag(tutorial_climbed_tree) ; traverse:tag(tutorial_climbed_tree)
 
  This checks if Character has a Tag tutorial_climbed_tree set before it
  allows itself to be displayed. This Tag is set by the tree object when
