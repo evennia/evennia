@@ -627,6 +627,12 @@ class BridgeRoom(WeatherRoom):
         self.db.fall_exit = "cliffledge"
         # add the cmdset on the room.
         self.cmdset.add_default(BridgeCmdSet)
+        # since the default Character's at_look() will access the room's
+        # return_description (this skips the cmdset) when
+        # first entering it, we need to explicitly turn off the room
+        # as a normal view target - once inside, our own look will
+        # handle all return messages.
+        self.locks.add("view:false()")
 
     def update_weather(self, *args, **kwargs):
         """
@@ -659,6 +665,7 @@ class BridgeRoom(WeatherRoom):
             else:
                 # if not from the east, then from the west!
                 character.db.tutorial_bridge_position = 0
+            character.execute_cmd("look")
 
     def at_object_leave(self, character, target_location):
         """
