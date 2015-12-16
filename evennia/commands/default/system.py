@@ -108,10 +108,8 @@ class CmdShutdown(MuxCommand):
 
     def func(self):
         "Define function"
-        try:
-            # Only allow shutdown if caller has session
-            self.caller.sessions[0]
-        except Exception:
+        # Only allow shutdown if caller has session
+        if not self.caller.sessions.get():
             return
         self.msg('Shutting down server ...')
         announcement = "\nServer is being SHUT DOWN!\n"
