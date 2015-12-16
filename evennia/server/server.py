@@ -349,7 +349,7 @@ class Evennia(object):
             ServerConfig.objects.conf("server_restart_mode", "reload")
             yield [o.at_server_reload() for o in ObjectDB.get_all_cached_instances()]
             yield [p.at_server_reload() for p in PlayerDB.get_all_cached_instances()]
-            yield [(s.pause(), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances()]
+            yield [(s.pause(manual_pause=False), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances() if s.is_active]
             yield self.sessions.all_sessions_portal_sync()
             self.at_server_reload_stop()
             # only save OOB state on reload, not on shutdown/reset
@@ -368,7 +368,7 @@ class Evennia(object):
                 yield [(p.unpuppet_all(), p.at_server_shutdown())
                                        for p in PlayerDB.get_all_cached_instances()]
                 yield ObjectDB.objects.clear_all_sessids()
-            yield [(s.pause(), s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]
+            yield [(s.pause(manual_pause=False), s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]
             ServerConfig.objects.conf("server_restart_mode", "reset")
             self.at_server_cold_stop()
 

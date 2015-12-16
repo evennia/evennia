@@ -96,7 +96,9 @@ class ExtendedLoopingCall(LoopingCall):
 
         """
         self.callcount += 1
-        self.start_delay = None
+        if self.start_delay:
+            self.start_delay = None
+            self.starttime = self.clock.seconds()
         super(ExtendedLoopingCall, self).__call__()
 
     def force_repeat(self):
@@ -130,6 +132,7 @@ class ExtendedLoopingCall(LoopingCall):
         if self.running:
             total_runtime = self.clock.seconds() - self.starttime
             interval = self.start_delay or self.interval
+            print "next_call_time:", interval, total_runtime, self.interval, interval - (total_runtime % self.interval)
             return interval - (total_runtime % self.interval)
         return None
 
@@ -168,6 +171,10 @@ class DefaultScript(ScriptBase):
         Start task runner.
 
         """
+
+        from evennia.utils.utils import calledby
+        print calledby(2)
+        print "_start_task:", self.db_interval, self.db._paused_time
 
         self.ndb._task = ExtendedLoopingCall(self._step_task)
 
@@ -308,8 +315,12 @@ class DefaultScript(ScriptBase):
                 return 0
 
         # try to restart a paused script
-        if self.unpause():
-            return 1
+        try:
+            if self.unpause(manual_unpause=False):
+                return 1
+        except RuntimeError:
+            # manually paused.
+            return 0
 
         # start the script from scratch
         self.is_active = True
@@ -349,12 +360,13 @@ class DefaultScript(ScriptBase):
             return 0
         return 1
 
-    def pause(self):
+    def pause(self, manual_pause=True):
         """
         This stops a running script and stores its active state.
         It WILL NOT call the `at_stop()` hook.
 
         """
+        self.db._manual_pause = manual_pause
         if not self.db._paused_time:
             # only allow pause if not already paused
             task = self.ndb._task
@@ -364,10 +376,26 @@ class DefaultScript(ScriptBase):
                 self._stop_task()
             self.is_active = False
 
-    def unpause(self):
+    def unpause(self, manual_unpause=True):
         """
         Restart a paused script. This WILL call the `at_start()` hook.
+
+        Args:
+            manual_unpause (bool, optional): This is False if unpause is
+                called by the server reload/reset mechanism.
+        Returns:
+            result (bool): True if unpause was triggered, False otherwise.
+
+        Raises:
+            RuntimeError: If trying to automatically resart this script
+                (usually after a reset/reload), but it was manually paused,
+                and so should not the auto-unpaused.
+
         """
+        if not manual_unpause and self.db._manual_pause:
+            # if this script was paused manually (by a direct call of pause),
+            # it cannot be automatically unpaused (e.g. by a @reload)
+            raise RuntimeError
         if self.db._paused_time:
             # only unpause if previously paused
             self.is_active = True

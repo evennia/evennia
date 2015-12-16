@@ -207,7 +207,7 @@ class ServerSession(Session):
             obj.player = self.player
             self.puid = obj.id
             self.puppet = obj
-            obj.scripts.validate()
+            #obj.scripts.validate()
             obj.locks.cache_lock_bypass(obj)
 
     def at_login(self, player):
