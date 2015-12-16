@@ -132,7 +132,6 @@ class ExtendedLoopingCall(LoopingCall):
         if self.running:
             total_runtime = self.clock.seconds() - self.starttime
             interval = self.start_delay or self.interval
-            print "next_call_time:", interval, total_runtime, self.interval, interval - (total_runtime % self.interval)
             return interval - (total_runtime % self.interval)
         return None
 
@@ -171,10 +170,6 @@ class DefaultScript(ScriptBase):
         Start task runner.
 
         """
-
-        from evennia.utils.utils import calledby
-        print calledby(2)
-        print "_start_task:", self.db_interval, self.db._paused_time
 
         self.ndb._task = ExtendedLoopingCall(self._step_task)
 
