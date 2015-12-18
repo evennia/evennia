@@ -4,7 +4,7 @@ the game engine.
 
 This module should be started with the 'twistd' executable since it
 sets up all the networking features.  (this is done automatically
-by game/evennia.py).
+by evennia/server/server_runner.py).
 
 """
 from __future__ import print_function
