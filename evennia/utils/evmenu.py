@@ -194,7 +194,7 @@ class CmdEvMenuNode(Command):
         Implement all menu commands.
         """
         caller = self.caller
-        menu = caller.ndb._menutree
+        menu = caller.ndb._menutree or self.session.ndb._menutree
 
         if not menu:
             err = "Menu object not found as %s.ndb._menutree!" % (caller)
@@ -319,7 +319,7 @@ class EvMenu(object):
         Initialize the menu tree and start the caller onto the first node.
 
         Args:
-            caller (str): The user of the menu.
+            caller (Object, Player or Session): The user of the menu.
             menudata (str, module or dict): The full or relative path to the module
                 holding the menu tree data. All global functions in this module
                 whose name doesn't start with '_ ' will be parsed as menu nodes.
