@@ -7,7 +7,7 @@ be of use when designing your own game.
 """
 from __future__ import division, print_function
 from builtins import object, range
-from future.utils import viewkeys
+from future.utils import viewkeys, raise_
 
 import os
 import sys
@@ -1129,7 +1129,7 @@ def class_from_module(path, defaultpaths=None):
                 # this means the error happened within the called module and
                 # we must not hide it.
                 exc = sys.exc_info()
-                raise exc[1], None, exc[2]
+                raise_(exc[1], None, exc[2])
             else:
                 # otherwise, try the next suggested path
                 continue
@@ -1140,7 +1140,7 @@ def class_from_module(path, defaultpaths=None):
             if len(trace()) > 2:
                 # AttributeError within the module, don't hide it
                 exc = sys.exc_info()
-                raise exc[1], None, exc[2]
+                raise_(exc[1], None, exc[2])
     if not cls:
         err = "Could not load typeclass '%s'" % path
         if defaultpaths:

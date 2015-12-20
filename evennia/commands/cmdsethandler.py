@@ -64,6 +64,7 @@ example, you can have a 'On a boat' set, onto which you then tack on
 the 'Fishing' set. Fishing from a boat? No problem!
 """
 from builtins import object
+from future.utils import raise_
 import sys
 from importlib import import_module
 from inspect import trace
@@ -137,7 +138,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
                     if len(trace()) > 2:
                         # error in module, make sure to not hide it.
                         exc = sys.exc_info()
-                        raise exc[1], None, exc[2]
+                        raise_(exc[1], None, exc[2])
                     else:
                         # try next suggested path
                         errstring += _("\n(Unsuccessfully tried '%s')." % python_path)
@@ -148,7 +149,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
                     if len(trace()) > 2:
                         # Attribute error within module, don't hide it
                         exc = sys.exc_info()
-                        raise exc[1], None, exc[2]
+                        raise_(exc[1], None, exc[2])
                     else:
                         errstring += _("\n(Unsuccessfully tried '%s')." % python_path)
                         continue
