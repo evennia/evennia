@@ -3,7 +3,7 @@ import itertools
 
 from docutils import parsers, nodes
 
-from CommonMark import Parser, HTMLRenderer
+from CommonMark import DocParser, HTMLRenderer
 from warnings import warn
 
 __all__ = ['CommonMarkParser']
@@ -80,7 +80,7 @@ class CommonMarkParser(parsers.Parser):
         self.current_node = document
         self.section_handler = _SectionHandler(document)
 
-        parser = Parser()
+        parser = DocParser()
 
         ast = parser.parse(inputstring + '\n')
 
