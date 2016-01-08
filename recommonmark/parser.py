@@ -108,7 +108,6 @@ class CommonMarkParser(parsers.Parser):
         name = nodes.fully_normalize_name(title_node.astext())
         new_section['names'].append(name)
         self.current_node.document.note_implicit_target(new_section, new_section)
-        new_section['ids'].append(nodes.make_id(name))
 
         self.section_handler.add_new_section(new_section, block.level)
         self.current_node = new_section
