@@ -112,17 +112,20 @@ class CmdNick(MuxCommand):
 
         caller = self.caller
         switches = self.switches
-        nicks = caller.nicks.get(return_obj=True)
+        nicksinputline = caller.nicks.get(category="inputline", return_obj=True)
+        nicksobjects = caller.nicks.get(category="object", return_obj=True)
+        nicksplayers = caller.nicks.get(category="player", return_obj=True)
 
         if 'list' in switches:
-            if not nicks:
+            if not nicksinputline and not nicksobjects and not nicksplayers:
                 string = "{wNo nicks defined.{n"
             else:
                 table = prettytable.PrettyTable(["{wNickType",
                                                  "{wNickname",
                                                  "{wTranslates-to"])
-                for nick in utils.make_iter(nicks):
-                    table.add_row([nick.db_category, nick.db_key, nick.db_strvalue])
+                for nicks in (nicksinputline, nicksobjects, nicksplayers):
+                    for nick in utils.make_iter(nicks):
+                        table.add_row([nick.db_category, nick.db_key, nick.db_strvalue])
                 string = "{wDefined Nicks:{n\n%s" % table
             caller.msg(string)
             return
