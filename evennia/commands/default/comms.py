@@ -280,11 +280,11 @@ class CmdChannels(MuxPlayerCommand):
             #comtable = prettytable.PrettyTable(["{wchannel", "{wmy aliases", "{wdescription"])
             for chan in subs:
                 clower = chan.key.lower()
-                nicks = caller.nicks.get(category="channel")
+                nicks = caller.nicks.get(category="channel", return_obj=True)
                 comtable.add_row(*["%s%s" % (chan.key, chan.aliases.all() and
                                   "(%s)" % ",".join(chan.aliases.all()) or ""),
-                                  "%s".join(nick for nick in make_iter(nicks)
-                                  if nick and nick.lower() == clower),
+                                  "%s" % ",".join(nick.db_key for nick in make_iter(nicks)
+                                  if nick and nick.strvalue.lower() == clower),
                                   chan.db.desc])
             caller.msg("\n{wChannel subscriptions{n (use {w@channels{n to list all, {waddcom{n/{wdelcom{n to sub/unsub):{n\n%s" % comtable)
         else:
@@ -293,13 +293,13 @@ class CmdChannels(MuxPlayerCommand):
             #comtable = prettytable.PrettyTable(["{wsub", "{wchannel", "{wmy aliases", "{wlocks", "{wdescription"])
             for chan in channels:
                 clower = chan.key.lower()
-                nicks = caller.nicks.get(category="channel")
+                nicks = caller.nicks.get(category="channel", return_obj=True)
                 nicks = nicks or []
                 comtable.add_row(*[chan in subs and "{gYes{n" or "{rNo{n",
                                   "%s%s" % (chan.key, chan.aliases.all() and
                                   "(%s)" % ",".join(chan.aliases.all()) or ""),
-                                  "%s".join(nick for nick in make_iter(nicks)
-                                  if nick.lower() == clower),
+                                  "%s" % ",".join(nick.db_key for nick in make_iter(nicks)
+                                  if nick.strvalue.lower() == clower),
                                   str(chan.locks),
                                   chan.db.desc])
             caller.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)
