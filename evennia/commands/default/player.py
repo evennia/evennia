@@ -416,8 +416,14 @@ class CmdOption(MuxPlayerCommand):
             # change encoding
             old_encoding = self.session.encoding
             new_encoding = self.rhs.strip() or "utf-8"
-            self.session.encoding = new_encoding
-            self.caller.msg("Encoding was changed from %s to %s." % (old_encoding, new_encoding))
+            try:
+                utils.to_str(utils.to_unicode("test-string"), encoding=new_encoding)
+            except LookupError:
+                string = "|rThe encoding '|w%s|r' is invalid. Keeping the previous encoding '|w%s|r'.|n" % (new_encoding, old_encoding)
+            else:
+                self.session.encoding = new_encoding
+                string = "Encoding was changed from '|w%s|n' to '|w%s|n'." % (old_encoding, new_encoding)
+            self.caller.msg(string)
             return
 
         if self.lhs == "screenreader":

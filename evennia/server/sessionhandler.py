@@ -524,7 +524,13 @@ class ServerSessionHandler(SessionHandler):
         #from evennia.server.profiling.timetrace import timetrace
         #text = timetrace(text, "ServerSessionHandler.data_out")
 
-        text = text and to_str(to_unicode(text), encoding=session.encoding)
+        try:
+            text = text and to_str(to_unicode(text), encoding=session.encoding)
+        except LookupError:
+            # wrong encoding set on the session. Set it to a safe one
+            session.encoding = "utf-8"
+            text = to_str(to_unicode(text), encoding=session.encoding)
+
 
         # send across AMP
         self.server.amp_protocol.send_MsgServer2Portal(session,

@@ -482,8 +482,13 @@ class CmdUnconnectedEncoding(MuxCommand):
             # change encoding
             old_encoding = self.session.encoding
             encoding = self.args
-            self.session.encoding = encoding
-            string = "Your custom text encoding was changed from '%s' to '%s'." % (old_encoding, encoding)
+            try:
+                utils.to_str(utils.to_unicode("test-string"), encoding=encoding)
+            except LookupError:
+                string = "|rThe encoding '|w%s|r' is invalid. Keeping the previous encoding '|w%s|r'.|n" % (encoding, old_encoding)
+            else:
+                self.session.encoding = encoding
+                string = "Your custom text encoding was changed from '|w%s|n' to '|w%s|n'." % (old_encoding, encoding)
         self.caller.msg(string.strip())
 
 class CmdUnconnectedScreenreader(MuxCommand):
