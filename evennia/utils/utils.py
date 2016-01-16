@@ -720,7 +720,7 @@ def delay(delay=2, callback=None, retval=None):
     Delay the return of a value.
 
     Args:
-      delay (int): The delay in seconds
+      delay (int or float): The delay in seconds
       callback (callable, optional): Will be called without arguments
         or with `retval` after delay seconds.
       retval (any, optional): Whis will be returned by this function
