@@ -38,6 +38,7 @@ class DummySession(object):
 DUMMYSESSION = DummySession()
 
 # communication bits
+# (chr(9) and chr(10) are \t and \n, so skipping them)
 
 PCONN = chr(1)        # portal session connect
 PDISCONN = chr(2)     # portal session disconnect
@@ -47,8 +48,8 @@ SDISCONN = chr(5)     # server session disconnect
 SDISCONNALL = chr(6)  # server session disconnect all
 SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server session sync
-SCONN = chr(9)        # server creating new connection (for irc/imc2 bots etc)
-PCONNSYNC = chr(10)   # portal post-syncing a session
+SCONN = chr(11)        # server creating new connection (for irc/imc2 bots etc)
+PCONNSYNC = chr(12)   # portal post-syncing a session
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
 
 BATCH_RATE = 250    # max commands/sec before switching to batch-sending
@@ -429,7 +430,7 @@ class AMPProtocol(amp.AMP):
 
         Args:
             sessid (int): Unique Session id.
-            msg (str): Message to send over the wire.
+            text (str): Message to send over the wire.
             kwargs (any, optional): Optional data.
 
         Returns:
@@ -493,7 +494,7 @@ class AMPProtocol(amp.AMP):
         elif operation == PDISCONN:  # portal_session_disconnect
             # session closed from portal side
             session = server_sessionhandler[sessid]
-            self.factory.server.sessions.portal_disconnect(session)
+            self.factory.server.sessions.disconnect(session)
 
         elif operation == PSYNC:  # portal_session_sync
             # force a resync of sessions when portal reconnects to

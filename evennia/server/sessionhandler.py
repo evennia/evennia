@@ -46,8 +46,8 @@ SDISCONN = chr(5)     # server session disconnect
 SDISCONNALL = chr(6)  # server session disconnect all
 SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server session sync
-SCONN = chr(9)        # server portal connection (for bots)
-PCONNSYNC = chr(10)   # portal post-syncing session
+SCONN = chr(11)        # server portal connection (for bots)
+PCONNSYNC = chr(12)   # portal post-syncing session
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -192,20 +192,6 @@ class ServerSessionHandler(SessionHandler):
             # ones which should only be changed from portal (like
             # protocol_flags etc)
             session.load_sync_data(portalsessiondata)
-
-    def portal_disconnect(self, sessid):
-        """
-        Called by Portal when portal reports a closing of a session
-        from the portal side.
-
-        Args:
-            sessid (int): Session id.
-
-        """
-        session = self.get(sessid, None)
-        if not session:
-            return
-        self.disconnect(session)
 
     def portal_sessions_sync(self, portalsessionsdata):
         """
