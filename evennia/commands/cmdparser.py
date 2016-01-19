@@ -122,10 +122,10 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         quality = [mat[4] for mat in matches]
         matches = matches[-quality.count(quality[-1]):]
 
-    if len(matches) > 1 and match_index != None and 0 <= match_index < len(matches):
+    if len(matches) > 1 and match_index != None and 0 < match_index <= len(matches):
         # We couldn't separate match by quality, but we have an
         # index argument to tell us which match to use.
-        matches = [matches[match_index]]
+        matches = [matches[match_index-1]]
 
     # no matter what we have at this point, we have to return it.
     return matches
