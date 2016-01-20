@@ -1159,21 +1159,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
-    def at_before_traverse(self, traversing_object):
-        """
-        Called just before an object uses this object to traverse to
-        another object (i.e. this object is a type of Exit)
-
-        Args:
-            traversing_object (Object): The object traversing us.
-
-        Notes:
-            The target destination should normally be available as
-            `self.destination`.
-
-        """
-        pass
-
     def at_traverse(self, traversing_object, target_location):
         """
         This hook is responsible for handling the actual traversal,

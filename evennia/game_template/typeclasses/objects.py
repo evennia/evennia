@@ -133,8 +133,10 @@ class Object(DefaultObject):
      at_object_receive(obj, source_location) - called when this object receives
                         another object
 
-     at_before_traverse(traversing_object)                 - (exit-objects only)
-                              called just before an object traverses this object
+     at_traverse(traversing_object, source_loc) - (exit-objects only)
+                              handles all moving across the exit, including
+                              calling the other exit hooks. Use super() to retain
+                              the default functionality.
      at_after_traverse(traversing_object, source_location) - (exit-objects only)
                               called just after a traversal has happened.
      at_failed_traverse(traversing_object)      - (exit-objects only) called if
