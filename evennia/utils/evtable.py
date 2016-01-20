@@ -441,14 +441,14 @@ class EvCell(object):
         if "width" in kwargs:
             width = kwargs.pop("width")
             self.width = width - self.pad_left - self.pad_right - self.border_left - self.border_right
-            if self.width <= 0:
+            if self.width <= 0 and self.raw_width > 0:
                 raise Exception("Cell width too small - no space for data.")
         else:
             self.width = self.raw_width
         if "height" in kwargs:
             height = kwargs.pop("height")
             self.height = height - self.pad_top - self.pad_bottom - self.border_top - self.border_bottom
-            if self.height <= 0:
+            if self.height <= 0 and self.raw_height > 0:
                 raise Exception("Cell height too small - no space for data.")
         else:
             self.height = self.raw_height
@@ -789,12 +789,12 @@ class EvCell(object):
         if "width" in kwargs:
             width = kwargs.pop("width")
             self.width = width - self.pad_left - self.pad_right - self.border_left - self.border_right + self.trim_horizontal
-            if self.width <= 0:
+            if self.width <= 0 and self.raw_width > 0:
                 raise Exception("Cell width too small, no room for data.")
         if "height" in kwargs:
             height = kwargs.pop("height")
             self.height = height - self.pad_top - self.pad_bottom - self.border_top - self.border_bottom + self.trim_vertical
-            if self.height <= 0:
+            if self.height <= 0 and self.raw_height > 0:
                 raise Exception("Cell height too small, no room for data.")
 
         # reformat (to new sizes, padding, header and borders)
