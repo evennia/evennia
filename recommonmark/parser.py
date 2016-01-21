@@ -134,19 +134,19 @@ class CommonMarkParser(parsers.Parser):
         q = nodes.block_quote()
         q.line = block.start_line
 
+        self.current_node.append(q)
+
         with self._temp_current_node(q):
             self.convert_blocks(block.children)
-
-        self.current_node.append(q)
 
     def list_item(self, block):
         node = nodes.list_item()
         node.line = block.start_line
 
+        self.current_node.append(node)
+
         with self._temp_current_node(node):
             self.convert_blocks(block.children)
-
-        self.current_node.append(node)
 
     def list_block(self, block):
         list_node = None
@@ -156,10 +156,10 @@ class CommonMarkParser(parsers.Parser):
             list_node = nodes.enumerated_list()
         list_node.line = block.start_line
 
+        self.current_node.append(list_node)
+
         with self._temp_current_node(list_node):
             self.convert_blocks(block.children)
-
-        self.current_node.append(list_node)
 
     def html_block(self, block):
         raw_node = nodes.raw('', block.string_content, format='html')
