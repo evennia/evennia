@@ -41,7 +41,7 @@ from django.db import models
 
 # django 1.5 introduces force_text instead of force_unicode
 from django.forms import CharField, Textarea
-from django.forms.util import flatatt
+from django.forms.utils import flatatt
 from django.utils.html import format_html
 
 from evennia.utils.dbserialize import from_pickle, to_pickle

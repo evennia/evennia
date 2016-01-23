@@ -9,12 +9,12 @@
     <meta name="generator" content="haran" />
 
     {% if sidebar %}
-    <link rel="stylesheet" type="text/css" href="{% static "evennia_general/css/prosimii-screen-alt.css" %}" media="screen" title="Prosimii (Sidebar)" />
+    <link rel="stylesheet" type="text/css" href="{% static "website/css/prosimii-screen-alt.css" %}" media="screen" title="Prosimii (Sidebar)" />
     {% else %}
-    <link rel="stylesheet" type="text/css" href="{% static "evennia_general/css/prosimii-screen.css" %}" media="screen" title="Prosimii" />
+    <link rel="stylesheet" type="text/css" href="{% static "website/css/prosimii-screen.css" %}" media="screen" title="Prosimii" />
     {% endif %}
-    <link rel="stylesheet alternative" type="text/css" href="{% static "evennia_general/css/prosimii-print.css" %}" media="screen" title="Print Preview" />
-    <link rel="stylesheet" type="text/css" href="{% static "evennia_general/css/prosimii-print.css" %}" media="print" />
+    <link rel="stylesheet alternative" type="text/css" href="{% static "website/css/prosimii-print.css" %}" media="screen" title="Print Preview" />
+    <link rel="stylesheet" type="text/css" href="{% static "website/css/prosimii-print.css" %}" media="print" />
 
     {% block header_ext %}
     {% endblock %}
@@ -35,7 +35,7 @@
       </div>
 
       <div class="midHeader">
-        <img src="{% static "evennia_general/images/evennia_logo.png" %}" align='left'/> <h1 class="headerTitle" lang="la">{{game_name}}</h1>
+        <img src="{% static "website/images/evennia_logo.png" %}" align='left'/> <h1 class="headerTitle" lang="la">{{game_name}}</h1>
         <div class="headerSubTitle" title="Slogan">
         <!-- Insert a slogan here if you want -->
         {{game_slogan}}			&nbsp;
@@ -66,7 +66,7 @@
         {% if webclient_enabled %}
          | <a href="{% url 'webclient:index' %}">Play Online</a>
         {% endif %}
-        
+
       </div>
     </div>
 
@@ -83,10 +83,10 @@
 
     <div id="footer">
       <span class="doNotPrint">
-        Template design by 
+        Template design by
         <a href="http://www.oswd.org/designs/search/designer/id/3013/"
-        title="Other designs by haran">haran</a>. 
-        Powered by  
+        title="Other designs by haran">haran</a>.
+        Powered by
         <a href="http://evennia.com">Evennia.</a>
         <br />
       </span>

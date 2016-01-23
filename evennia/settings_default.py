@@ -568,7 +568,7 @@ LOCALE_PATHS = [os.path.join(EVENNIA_DIR, "locale/")]
 SERVE_MEDIA = False
 # The master urlconf file that contains all of the sub-branches to the
 # applications. Change this to add your own URLs to the website.
-ROOT_URLCONF = 'web.urls' #src.web.urls?
+ROOT_URLCONF = 'web.urls'
 # Where users are redirected after logging in via contrib.auth.login.
 LOGIN_REDIRECT_URL = '/'
 # Where to redirect users when using the @login_required decorator.
@@ -585,22 +585,22 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(GAME_DIR, "web", "static")
 
-# Directories from which static files will be gathered.
+# Location of static data to overload the defaults from
+# evennia/web/webclient and evennia/web/website's static/ dirs.
 STATICFILES_DIRS = (
-    os.path.join(GAME_DIR, "web", "static_overrides"),
-    os.path.join(EVENNIA_DIR, "web", "static"),)
+    os.path.join(GAME_DIR, "web", "static_overrides"),)
 # Patterns of files in the static directories. Used here to make sure that
 # its readme file is preserved but unused.
 STATICFILES_IGNORE_PATTERNS = ('README.md',)
 # The name of the currently selected web template. This corresponds to the
-# directory names shown in the webtemplates directory.
-ACTIVE_TEMPLATE = 'prosimii'
+# directory names shown in the templates directory.
+ACTIVE_TEMPLATE = 'website'
 # We setup the location of the website template as well as the admin site.
 TEMPLATE_DIRS = (
     os.path.join(GAME_DIR, "web", "template_overrides", ACTIVE_TEMPLATE),
     os.path.join(GAME_DIR, "web", "template_overrides"),
-    os.path.join(EVENNIA_DIR, "web", "templates", ACTIVE_TEMPLATE),
-    os.path.join(EVENNIA_DIR, "web", "templates"),)
+    os.path.join(EVENNIA_DIR, "web", "website", "templates", ACTIVE_TEMPLATE),
+    os.path.join(EVENNIA_DIR, "web", "website", "templates"),)
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -634,12 +634,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # refer to app models and perform DB syncs.
 INSTALLED_APPS = (
     'django.contrib.auth',
-    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.flatpages',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
     'evennia.utils.idmapper',
     'evennia.server',
@@ -649,6 +649,7 @@ INSTALLED_APPS = (
     'evennia.comms',
     'evennia.help',
     'evennia.scripts',
+    'evennia.web.website',
     'evennia.web.webclient')
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
