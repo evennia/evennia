@@ -14,5 +14,5 @@ custom_patterns = [
     # url(r'/desired/url/', view, name='example'),
 ]
 
-# this is used by Django.
+# this is required by Django.
 urlpatterns = custom_patterns + urlpatterns
