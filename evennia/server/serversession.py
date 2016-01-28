@@ -28,7 +28,6 @@ _SA = object.__setattr__
 _ObjectDB = None
 _ANSI = None
 _INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
-_RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -169,6 +168,8 @@ class ServerSession(Session):
         self.player = None
         self.cmdset_storage_string = ""
         self.cmdset = CmdSetHandler(self, True)
+        self.datamap = {"text": self.recv_text,
+                        "_default": self.recv_text}
 
     def __cmdset_storage_get(self):
         return [path.strip() for path in self.cmdset_storage_string.split(',')]
@@ -336,21 +337,21 @@ class ServerSession(Session):
             # Player-visible idle time, not used in idle timeout calcs.
             self.cmd_last_visible = self.cmd_last
 
-    def data_in(self, text=None, **kwargs):
+    @staticmethod
+    def recv_text(session, *args, **kwargs):
         """
-        Send data User->Evennia. This will in effect execute a command
+        Recv command data User->Evennia. This will in effect execute a command
         string on the server.
 
-        Note that oob data is already sent separately to the
-        oobhandler at this point.
-
-        Kwargs:
-            text (str): A text to relay
-            kwargs (any): Other parameters from the protocol.
+        Args:
+            text (str): First arg is used as text-command input. Other
+                arguments are ignored.
 
         """
         #from evennia.server.profiling.timetrace import timetrace
         #text = timetrace(text, "ServerSession.data_in")
+
+        text = args[0] if args else None
 
         #explicitly check for None since text can be an empty string, which is
         #also valid
@@ -359,47 +360,47 @@ class ServerSession(Session):
             #text = to_unicode(escape_control_sequences(text), encoding=self.encoding)
             # handle the 'idle' command
             if text.strip() == _IDLE_COMMAND:
-                self.update_session_counters(idle=True)
+                session.update_session_counters(idle=True)
                 return
-            if self.player:
+            if session.player:
                 # nick replacement
-                puppet = self.puppet
+                puppet = session.puppet
                 if puppet:
                     text = puppet.nicks.nickreplace(text,
                                   categories=("inputline", "channel"), include_player=True)
                 else:
-                    text = self.player.nicks.nickreplace(text,
+                    text = session.player.nicks.nickreplace(text,
                                 categories=("inputline", "channels"), include_player=False)
-            cmdhandler(self, text, callertype="session", session=self)
-            self.update_session_counters()
-
-    execute_cmd = data_in  # alias
+            cmdhandler(session, text, callertype="session", session=session)
+            session.update_session_counters()
 
     def data_out(self, text=None, **kwargs):
         """
-        Send Evennia -> User
+        Sending data from Evennia->Player
 
         Kwargs:
-            text (str): A text to relay
-            kwargs (any): Other parameters to the protocol.
+            text (str or tuple)
+            any (str or tuple): Send-commands identified
+                by their keys. Or "options", carrying options
+                for the protocol(s).
 
         """
-        #from evennia.server.profiling.timetrace import timetrace
-        #text = timetrace(text, "ServerSession.data_out")
+        print "serversession.data_out:", text, kwargs
+        if text:
+            if hasattr(text, "__iter__"):
+                text, args = text[0], list(text[1:])
+            else:
+                text, args = text, []
+            options = kwargs.get("options", {})
+            raw = options.get("raw", False)
+            strip_inlinefunc = options.get("strip_inlinefunc", False)
+            if _INLINEFUNC_ENABLED and not raw:
+                text = parse_inlinefunc(text, strip=strip_inlinefunc, session=self)
+                text = parse_nested_inlinefunc(text, strip=strip_inlinefunc, session=self)
+            text = [text] + args
 
-        text = text if text else ""
-        if _INLINEFUNC_ENABLED and not "raw" in kwargs:
-            text = parse_inlinefunc(text, strip="strip_inlinefunc" in kwargs, session=self)
-            text = parse_nested_inlinefunc(text, strip="strip_inlinefunc" in kwargs, session=self)
-        if self.screenreader:
-            global _ANSI
-            if not _ANSI:
-                from evennia.utils import ansi as _ANSI
-            text = _ANSI.parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
-            text = _RE_SCREENREADER_REGEX.sub("", text)
         self.sessionhandler.data_out(self, text=text, **kwargs)
-    # alias
-    msg = data_out
+    msg = data_out # alias
 
     def __eq__(self, other):
         "Handle session comparisons"
@@ -426,6 +427,7 @@ class ServerSession(Session):
     def __unicode__(self):
         "Unicode representation"
         return u"%s" % str(self)
+
 
     # Dummy API hooks for use during non-loggedin operation
 

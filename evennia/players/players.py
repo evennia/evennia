@@ -137,7 +137,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
     * Helper methods
 
-     - msg(outgoing_string, from_obj=None, **kwargs)
+     - msg(text=None, from_obj=None, session=None, options=None, **kwargs)
      - execute_cmd(raw_string)
      - search(ostring, global_search=False, attribute_name=None,
                       use_nicks=False, location=None,
@@ -384,7 +384,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         super(PlayerDB, self).delete(*args, **kwargs)
     ## methods inherited from database model
 
-    def msg(self, text=None, from_obj=None, session=None, **kwargs):
+    def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
         """
         Evennia -> User
         This is the main route for sending data back to the user from the
@@ -398,12 +398,11 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                 Sessions to receive this send. If given, overrules the
                 default send behavior for the current
                 MULTISESSION_MODE.
-        Notes:
-            All other keywords are passed on to the protocol.
+            options (list): Protocol-specific options. Passed on to the protocol.
+        Kwargs:
+            any (dict): All other keywords are passed on to the protocol.
 
         """
-        text = to_str(text, force_string=True) if text else ""
-
         if from_obj:
             # call hook
             try:
@@ -414,7 +413,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         # session relay
         sessions = make_iter(session) if session else self.sessions.all()
         for session in sessions:
-            session.msg(text=text, **kwargs)
+            session.data_out(text=text, **kwargs)
 
     def execute_cmd(self, raw_string, session=None, **kwargs):
         """

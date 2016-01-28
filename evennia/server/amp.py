@@ -424,20 +424,19 @@ class AMPProtocol(amp.AMP):
         self.factory.server.sessions.data_in(self.factory.server.sessions[sessid], **kwargs)
         return {}
 
-    def send_MsgPortal2Server(self, session, text="", **kwargs):
+    def send_MsgPortal2Server(self, session, **kwargs):
         """
         Access method called by the Portal and executed on the Portal.
 
         Args:
             sessid (int): Unique Session id.
-            text (str): Message to send over the wire.
             kwargs (any, optional): Optional data.
 
         Returns:
             deferred (Deferred): Asynchronous return.
 
         """
-        return self.send_data(MsgPortal2Server, session.sessid, text=text, **kwargs)
+        return self.send_data(MsgPortal2Server, session.sessid, **kwargs)
 
     # Server -> Portal message
 
@@ -455,18 +454,17 @@ class AMPProtocol(amp.AMP):
         return {}
 
 
-    def send_MsgServer2Portal(self, session, text="", **kwargs):
+    def send_MsgServer2Portal(self, session, **kwargs):
         """
         Access method - executed on the Server for sending data
             to Portal.
 
         Args:
             session (Session): Unique Session.
-            msg (str, optional): Message to send over the wire.
             kwargs (any, optiona): Extra data.
 
         """
-        return self.send_data(MsgServer2Portal, session.sessid, text=text, **kwargs)
+        return self.send_data(MsgServer2Portal, session.sessid, **kwargs)
 
     # Server administration from the Portal side
     @AdminPortal2Server.responder
