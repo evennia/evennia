@@ -391,7 +391,8 @@ class ServerSession(Session):
                 text, args = text[0], list(text[1:])
             else:
                 text, args = text, []
-            options = kwargs.get("options", {})
+            print("kwargs", kwargs, kwargs.get("options", {}))
+            options = kwargs.get("options", None) or {}
             raw = options.get("raw", False)
             strip_inlinefunc = options.get("strip_inlinefunc", False)
             if _INLINEFUNC_ENABLED and not raw:
