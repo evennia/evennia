@@ -18,6 +18,7 @@ from future.utils import listvalues
 from time import time
 from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
+from evennia.utils.logger import log_trace
 from evennia.utils.utils import variable_from_module, is_iter, \
                             to_str, to_unicode, strip_control_sequences, make_iter
 
@@ -57,7 +58,7 @@ _MULTISESSION_MODE = settings.MULTISESSION_MODE
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 _MAX_SERVER_COMMANDS_PER_SECOND = 100.0
 _MAX_SESSION_COMMANDS_PER_SECOND = 5.0
-
+_MODEL_MAP = None
 
 def delayed_import():
     """
@@ -116,6 +117,47 @@ class SessionHandler(dict):
         """
         return dict((sessid, sess.get_sync_data()) for sessid, sess in self.items())
 
+    def clean_senddata(self, session, kwargs):
+        """
+        Clean up data for sending across the AMP wire.
+
+        Args:
+            session (Session): The relevant session instance.
+            kwargs (dict): Every keyword represents a send-instruction.
+
+        Returns:
+            kwargs (dict): A cleaned dictionary of cmdname:args pairs,
+                where the keys and args have all been converted to
+                send-safe entities (strings or numbers).
+
+        """
+        def _validate(data):
+            if isinstance(data, dict):
+                newdict = {}
+                for key, part in data.items():
+                    newdict[key] = _validate(part)
+                return newdict
+            elif hasattr(data, "__iter__"):
+                return [_validate(part) for part in data]
+            elif isinstance(data, basestring):
+                try:
+                    return data and to_str(to_unicode(data), encoding=session.encoding)
+                except LookupError:
+                    # wrong encoding set on the session. Set it to a safe one
+                    session.encoding = "utf-8"
+                    return to_str(to_unicode(data), encoding=session.encoding)
+            elif hasattr(data, "id") and hasattr(data, "db_date_created") and hasattr(data, '__dbclass__'):
+                # convert database-object to their string representation.
+                return _validate(unicode(data))
+            else:
+                return data
+        clean_kwargs = {"options":kwargs.pop("options", {})}
+        for key in kwargs:
+            args = _validate(kwargs[key])
+            clean_kwargs[_validate(key)] = (args,) if args is not None and \
+                                            not hasattr(args, "__iter__") else args
+        return clean_kwargs
+
 
 #------------------------------------------------------------
 # Server-SessionHandler class
@@ -170,7 +212,7 @@ class ServerSessionHandler(SessionHandler):
         # validate all scripts
         _ScriptDB.objects.validate()
         self[sess.sessid] = sess
-        sess.data_in(CMD_LOGINSTART)
+        sess.data_in(text=CMD_LOGINSTART)
 
     def portal_session_sync(self, portalsessiondata):
         """
@@ -498,7 +540,7 @@ class ServerSessionHandler(SessionHandler):
         for sess in self.values():
             self.data_out(sess, message)
 
-    def data_out(self, session, text="", **kwargs):
+    def data_out(self, session, **kwargs):
         """
         Sending data Server -> Portal
 
@@ -506,24 +548,18 @@ class ServerSessionHandler(SessionHandler):
             session (Session): Session to relay to.
             text (str, optional): text data to return
 
+        Notes:
+            The outdata will be scrubbed for sending across
+            the wire here.
         """
-        #from evennia.server.profiling.timetrace import timetrace
-        #text = timetrace(text, "ServerSessionHandler.data_out")
-
-        try:
-            text = text and to_str(to_unicode(text), encoding=session.encoding)
-        except LookupError:
-            # wrong encoding set on the session. Set it to a safe one
-            session.encoding = "utf-8"
-            text = to_str(to_unicode(text), encoding=session.encoding)
-
-
+        # clean output for sending
+        kwargs = self.clean_senddata(session, kwargs)
         # send across AMP
+        print "sessionhandler.data_out:", kwargs
         self.server.amp_protocol.send_MsgServer2Portal(session,
-                                                       text=text,
                                                        **kwargs)
 
-    def data_in(self, session, text="", **kwargs):
+    def data_in(self, session, **kwargs):
         """
         Data Portal -> Server.
         We also intercept OOB communication here.
@@ -532,25 +568,21 @@ class ServerSessionHandler(SessionHandler):
             sessions (Session): Session.
 
         Kwargs:
-            text (str): Text from protocol.
             kwargs (any): Other data from protocol.
 
         """
-        #from evennia.server.profiling.timetrace import timetrace
-        #text = timetrace(text, "ServerSessionHandler.data_in")
-        if session:
-            text = text and to_unicode(strip_control_sequences(text), encoding=session.encoding)
-            if "oob" in kwargs:
-                # incoming data is always on the form (cmdname, args, kwargs)
-                global _OOB_HANDLER
-                if not _OOB_HANDLER:
-                    from evennia.server.oobhandler import OOB_HANDLER as _OOB_HANDLER
-                funcname, args, kwargs = kwargs.pop("oob")
-                if funcname:
-                    _OOB_HANDLER.execute_cmd(session, funcname, *args, **kwargs)
 
-            # pass the rest off to the session
-            session.data_in(text=text, **kwargs)
+        # distribute incoming data to the correct receiving methods.
+        if session:
+            for cmdname, args in kwargs.items():
+                try:
+                    if cmdname in session.datamap:
+                        print "sessionhandler: data_in", cmdname, args
+                        session.datamap[cmdname](session, *args)
+                    else:
+                        session.datamap["_default"](session, *args)
+                except Exception:
+                    log_trace()
 
 SESSION_HANDLER = ServerSessionHandler()
 SESSIONS = SESSION_HANDLER # legacy

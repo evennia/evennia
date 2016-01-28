@@ -10,6 +10,7 @@ sessions etc.
 import re
 from twisted.internet.task import LoopingCall
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, GA, WILL, WONT, ECHO
+from django.conf import settings
 from evennia.server.session import Session
 from evennia.server.portal import ttype, mssp, telnet_oob, naws
 from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
@@ -21,6 +22,7 @@ NOP = chr(241)
 
 _RE_N = re.compile(r"\{n$")
 _RE_LEND = re.compile(r"\n$|\r$", re.MULTILINE)
+_RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
@@ -68,6 +70,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # set up a keep-alive
         self.keep_alive = LoopingCall(self._write, IAC + NOP)
         self.keep_alive.start(30, now=False)
+
+        self.datamap = {"text": self.send_text,
+                        "prompt": self.send_prompt,
+                        "_default": self.send_oob}
 
 
     def handshake_done(self, force=False):
@@ -242,98 +248,117 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.data_out(reason)
         self.connectionLost(reason)
 
-    def data_in(self, text=None, **kwargs):
+    def data_in(self, **kwargs):
         """
         Data User -> Evennia
 
         Kwargs:
-            text (str): Incoming text.
             kwargs (any): Options from the protocol.
 
         """
         #from evennia.server.profiling.timetrace import timetrace
         #text = timetrace(text, "telnet.data_in")
 
-        self.sessionhandler.data_in(self, text=text, **kwargs)
+        self.sessionhandler.data_in(self, **kwargs)
 
-    def data_out(self, text=None, **kwargs):
+    def data_out(self, **kwargs):
         """
-        Data Evennia -> User. A generic hook method for engine to call
-        in order to send data through the telnet connection.
+        Data Evennia -> User
 
         Kwargs:
-            text (str): Text to send.
-            oob (list): `[(cmdname,args,kwargs), ...]`, supply an
-                Out-of-Band instruction.
-            xterm256 (bool): Enforce xterm256 setting. If not given,
-                ttype result is used. If client does not suport xterm256,
-                the ansi fallback will be used
-            mxp (bool): Enforce mxp setting. If not given, enables if
-                we detected client support for it
-            ansi (bool): Enforce ansi setting. If not given, ttype
-                result is used.
-            nomarkup (bool): If True, strip all ansi markup (this is
-                the same as `xterm256=False, ansi=False`)
-            raw (bool):Pass string through without any ansi processing
-                (i.e. include Evennia ansi markers but do not convert them
-                into ansi tokens)
-            prompt (str): Supply a prompt text which gets sent without
-                a newline added to the end.
-            echo (str): Turn on/off line echo on the client, if the
-                client supports it (e.g. for password input). Remember
-                that you must manually activate it again later.
+            kwargs (any): Options to the protocol
+        """
+        self.sessionhandler.data_out(self, **kwargs)
 
-        Notes:
-            The telnet TTYPE negotiation flags, if any, are used if no kwargs
-            are given.
+
+    @staticmethod
+    def send_text(session, *args, **kwargs):
+        """
+        Send text data. This is an in-band telnet operation.
+
+        Args:
+            text (str): The first argument is always the text string to send. No other arguments
+                are considered.
+            *options (str): All other arguments are considered option flags.
+                Available flags are (if not set, TTYPE will be used, turning on if available):
+                    mxp: Enforce MXP link support.
+                    ansi: Enforce no ANSI colors.
+                    xterm256: Enforce xterm256 colors, regardless of TTYPE.
+                    noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
+                    nomarkup: Strip all ANSI markup. This is the same as noxterm256,noansi
+                    raw: Pass string through without any ansi processing
+                        (i.e. include Evennia ansi markers but do not
+                        convert them into ansi tokens)
+                    echo: Turn on/off line echo on the client. Turn
+                        off line echo for client, for example for password.
+                        Note that it must be actively turned back on again!
 
         """
-        ## profiling, debugging
-        #if text.startswith("TEST_MESSAGE"): 1/0
-        #from evennia.server.profiling.timetrace import timetrace
-        #text = timetrace(text, "telnet.data_out", final=True)
+        if args:
+            text = args[0]
+            if text is None:
+                return
 
-        try:
-            text = utils.to_str(text if text else "", encoding=self.encoding)
-        except Exception as e:
-            self.sendLine(str(e))
-            return
-        if "oob" in kwargs and "OOB" in self.protocol_flags:
-            # oob is a list of [(cmdname, arg, kwarg), ...]
-            for cmdname, args, okwargs in kwargs["oob"]:
-                self.oob.data_out(cmdname, *args, **okwargs)
+        # handle arguments
+        options = kwargs.get("options", {})
+        ttype = session.protocol_flags.get('TTYPE', {})
+        xterm256 = options.get("xterm256", ttype.get('256 COLORS', False) if ttype.get("init_done") else True)
+        useansi = options.get("ansi", ttype and ttype.get('ANSI', False) if ttype.get("init_done") else True)
+        raw = options.get("raw", False)
+        nomarkup = options.get("nomarkup", not (xterm256 or useansi))
+        echo = options.get("echo", None)
+        mxp = options.get("mxp", session.protocol_flags.get("MXP", False))
+        screenreader =  options.get("screenreader", session.screenreader)
 
-        # parse **kwargs, falling back to ttype if nothing is given explicitly
-        ttype = self.protocol_flags.get('TTYPE', {})
-        xterm256 = kwargs.get("xterm256", ttype.get('256 COLORS', False) if ttype.get("init_done") else True)
-        useansi = kwargs.get("ansi", ttype and ttype.get('ANSI', False) if ttype.get("init_done") else True)
-        raw = kwargs.get("raw", False)
-        nomarkup = kwargs.get("nomarkup", not (xterm256 or useansi))
-        prompt = kwargs.get("prompt")
-        echo = kwargs.get("echo", None)
-        mxp = kwargs.get("mxp", self.protocol_flags.get("MXP", False))
+        if screenreader:
+            # screenreader mode cleans up output
+            text = ansi.parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
+            text = _RE_SCREENREADER_REGEX.sub("", text)
 
-        if raw:
-            # no processing whatsoever
-            self.sendLine(text)
-        elif text:
-            # we need to make sure to kill the color at the end in order
-            # to match the webclient output.
-            linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256, mxp=mxp)
-            if mxp:
-                linetosend = mxp_parse(linetosend)
-            self.sendLine(linetosend)
-
-        if prompt:
-            # Send prompt separately
-            prompt = ansi.parse_ansi(_RE_N.sub("", prompt) + "{n", strip_ansi=nomarkup, xterm256=xterm256)
-            if mxp:
-                prompt = mxp_parse(prompt)
+        if options.get("send_prompt"):
+            # send a prompt instead.
+            if not raw:
+                # processing
+                prompt = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256)
+                if mxp:
+                    prompt = mxp_parse(prompt)
             prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
             prompt += IAC + GA
-            self.transport.write(mccp_compress(self, prompt))
-        if echo:
-            self.transport.write(mccp_compress(self, IAC+WONT+ECHO))
-        elif echo == False:
-            self.transport.write(mccp_compress(self, IAC+WILL+ECHO))
+            session.transport.write(mccp_compress(session, prompt))
+        else:
+            if raw:
+                # no processing
+                session.sendLine(text)
+                return
+            else:
+                # we need to make sure to kill the color at the end in order
+                # to match the webclient output.
+                linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256, mxp=mxp)
+                if mxp:
+                    linetosend = mxp_parse(linetosend)
+                session.sendLine(linetosend)
 
+            if echo is not None:
+                # turn on/off echo
+                if echo:
+                    session.transport.write(mccp_compress(session, IAC+WILL+ECHO))
+                else:
+                    session.transport.write(mccp_compress(session, IAC+WONT+ECHO))
+
+
+    @staticmethod
+    def send_prompt(session, *args, **kwargs):
+        """
+        Send a prompt - a text without a line end. See send_text for argument options.
+
+        """
+        kwargs["options"].update({"send_prompt": True})
+        session.send_text(*args, **kwargs)
+
+
+    @staticmethod
+    def send_oob(session, *args, **kwargs):
+        """
+        Send oob data
+        """
+        print "telnet.send_oob not implemented yet! ", args

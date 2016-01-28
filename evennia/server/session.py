@@ -85,6 +85,9 @@ class Session(object):
         self.protocol_flags = {}
         self.server_data = {}
 
+        # map of input data to session methods
+        self.datamap = {}
+
         # a back-reference to the relevant sessionhandler this
         # session is stored in.
         self.sessionhandler = sessionhandler
@@ -135,25 +138,23 @@ class Session(object):
         """
         pass
 
-    def data_out(self, text=None, **kwargs):
+    def data_out(self, **kwargs):
         """
         Generic hook for sending data out through the protocol. Server
         protocols can use this right away. Portal sessions
         should overload this to format/handle the outgoing data as needed.
 
         Kwargs:
-            text (str): Text data
             kwargs (any): Other data to the protocol.
 
         """
         pass
 
-    def data_in(self, text=None, **kwargs):
+    def data_in(self, **kwargs):
         """
         Hook for protocols to send incoming data to the engine.
 
         Kwargs:
-            text (str): Text data
             kwargs (any): Other data from the protocol.
 
         """
