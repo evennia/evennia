@@ -355,7 +355,7 @@ class DefaultScript(ScriptBase):
             logger.log_trace()
             return 0
         except ObjectDoesNotExist:
-            pass
+            return 0
         return 1
 
     def pause(self, manual_pause=True):
