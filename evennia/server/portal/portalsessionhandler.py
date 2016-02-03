@@ -294,9 +294,13 @@ class PortalSessionHandler(SessionHandler):
         Args:
             message (str):  Message to relay.
 
+        Notes:
+            This will create an on-the fly text-type
+            send command.
+
         """
         for session in self.values():
-            session.data_out(text=message)
+            session.data_out(text=(message,))
 
     def data_in(self, session, **kwargs):
         """
