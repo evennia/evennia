@@ -298,9 +298,9 @@ if WEBSERVER_ENABLED:
             webclientstr = ""
             if WEBCLIENT_ENABLED:
                 # create ajax client processes at /webclientdata
-                from evennia.server.portal.webclient import WebClient
+                from evennia.server.portal import webclient_ajax
 
-                webclient = WebClient()
+                webclient = webclient_ajax.WebClient()
                 webclient.sessionhandler = PORTAL_SESSIONS
                 web_root.putChild("webclientdata", webclient)
                 webclientstr = "\n   + client (ajax only)"
@@ -308,7 +308,7 @@ if WEBSERVER_ENABLED:
                 if WEBSOCKET_CLIENT_ENABLED and not websocket_started:
                     # start websocket client port for the webclient
                     # we only support one websocket client
-                    from evennia.server.portal import websocket_client
+                    from evennia.server.portal import webclient
                     from evennia.utils.txws import WebSocketFactory
 
                     interface = WEBSOCKET_CLIENT_INTERFACE
@@ -318,7 +318,7 @@ if WEBSERVER_ENABLED:
                         ifacestr = "-%s" % interface
                     pstring = "%s:%s" % (ifacestr, port)
                     factory = protocol.ServerFactory()
-                    factory.protocol = websocket_client.WebSocketClient
+                    factory.protocol = webclient.WebSocketClient
                     factory.sessionhandler = PORTAL_SESSIONS
                     websocket_service = internet.TCPServer(port, WebSocketFactory(factory), interface=interface)
                     websocket_service.setName('EvenniaWebSocket%s' % pstring)
