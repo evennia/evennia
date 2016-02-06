@@ -1,289 +1,201 @@
-/* 
- * Evennia webclient library. Load this into your <head> html page
- * template with 
- *
- * <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
- * <script webclient/js/evennia.js</script>
- *
- * In your template you can then put elements with specific ids that
- * evennia will look for.  Evennia will via this library relay text to
- * specific divs if given, or to the "text" div if not. 
- *
- */
-
-/* 
- * global vars 
- */
-var websocket;
-
 /*
- * Configuration variables
- * (set by the user)
- */
+Evenna webclient library
 
-var echo_to_textarea = true;
+This javascript library handles all communication between Evennia and
+whatever client front end is used.
 
-/*
- * Evennia OOB command map; this holds custom js functions
- * that the OOB handler supports. Each key is the name
- * of a js callback function. External development is
- * done by adding functions func(data) to this object,
- * where data is the data object sent from the server.
- */
 
-oob_commands = {
-    "text": function(data) {
-        // basic div redistributor making
-        // use of the default text relay.
-        // Use in combination with the
-        // divclass oob argument to send
-        // text to different DOM element classes.
-        var msg = data.text;
-        var divclass = data.divclass;
-        toClass(divclass, msg);
+* Evennia - library communication
+
+The library will try to communicate with Evennia using websockets
+(evennia/server/portal/webclient.py). However, if the web browser is
+old and does not support websockets, it will instead fall back to a
+long-polling (AJAX/COMET) type of connection
+(using evennia/server/portal/webclient_ajax.py)
+
+All messages are valid JSON array on single form: ["funcname", arg, arg,, ...] 
+This represents a JS function called as funcname(arg, arg, ...)
+
+* Front-end interface
+
+This library makes the "Evennia" object available. It has the following
+functions:
+
+
+   - Evennia.init(options)
+        This must be called by the frontend to intialize the library. The
+        argument is an js object with the following possible keys:
+            'connection': Either 'websocket' or 'comet'.
+            'cmdhandler': An optional custom command handler for
+                managing outgoing commands from the server. If not
+                supplied, the default will be used. It must have a msg() function.
+   - Evennia.msg(funcname, [args,...], callback)
+        Send a command to the server. You can also provide a function
+        to call with the return of the call (not all commands will return
+        anything, like 'text' type commands).
+
+
+
+
+Evennia websocket webclient (javascript component)
+
+The client is composed of two parts:
+ - /server/portal/websocket_client.py - the portal-side component
+ - this file - the javascript component handling dynamic content
+
+A
+
+
+messages sent to the client is one of two modes:
+  OOB("func1",args, "func2",args, ...)  - OOB command executions, this will
+                                        call unique javascript functions
+                                        func1(args), func2(args) etc.
+  text - any other text is considered a normal text output in the main output window.
+
+*/
+
+//
+// Custom OOB functions
+// functions defined here can be called by name by the server. For
+// example input OOB{"echo":(args),{kwargs}} will trigger a function named
+// echo(args, kwargs). The commands the server understands is set by
+// settings.OOB_PLUGIN_MODULES
+
+(function() {
+  var id = 0;
+  var map = {};
+
+  var Evennia = {
+    debug: true,
+    // called by the frontend to send a command to the backend
+    cmd: function (cmd, params, callback) {
+      var msg = params ? [cmd, [params], {}] : [cmd, [], {}];
+      params.id = id++;
+
+      log('cmd called with following args:', cmd, params, callback);
+
+      websocket.send('OOB' + JSON.stringify(msg));
+
+      if (typeof callback === 'function') {
+        map[id] = callback;
+      }
+    },
+
+    // called by the backend to emit an event to the global emitter
+    emit: function (event, data) {
+      if (data.id) {
+        map[data.id].apply(this, [event, data]);
+        delete map[data.id];
+      }
+      Evennia.emitter.emit(event, data);
+    },
+
+    // startup Evennia emitter and connection
+    init: function (opts) {
+      opts = opts || {};
+      Evennia.emitter = opts.emitter || new Emitter();
+      Evennia.websocket = new Connection();
     }
-};
+  };
 
-/*
- * Send text to given element class
- */
-toClass = function(divclass, data) {
-    // loop over all objects of divclass
-    //console.log("toClass: " + divclass + " " + data);
-    $("." + divclass).each(function() {
-        switch (divclass) {
-            case "textoutput": 
-                // update the bottom of the normal text area
-                // and scroll said area.
-                var oldtext = $.trim($(this).val());
-                $(this).val(oldtext + "\n" + data);
-                //$(this).scrollTop($(this)[0].scrollHeight);
-                break;
-            case "lookoutput":
-                // update the look text box
-                $(this).val(data);
-                break;
+  // wrapper for websocket setup
+  var Connection = function () {
+    var websocket = new WebSocket(wsurl);
+    websocket.onopen = function (event) {
+      Evennia.emit('socket:open', event);
+    };
+    websocket.onclose = function (event) {
+      log('WebSocket connection closed.')
+      Evennia.emit('socket:close', event);
+    };
+    websocket.onmessage = function (event) {
+      if (typeof event.data !== 'string' && event.data.length < 0) {
+        return;
+      }
+
+      // only acceptable mode is OOB
+      var mode = event.data.substr(0, 3);
+
+      if (mode === 'OOB') {
+        // parse the rest of the response
+        var res = JSON.parse(event.data.substr(3));
+        log(res);
+        var cmd = res[0];
+        var args = res[1];
+        Evennia.emit(cmd, args[0]);
+      }
+    };
+    websocket.onerror = function (event) {
+      log("Websocket error to ", wsurl, event);
+      Evennia.emit('socket:error', data);
+    };
+
+    return websocket;
+  }
+
+  // basic emitter, can be overridden in evennia init
+  var Emitter = function () {
+    var map = {};
+
+    // emit to listeners of given event
+    var emit = function (event, params) {
+      log('emit', event, params);
+      if (map[event] && map[event] === Array) {
+        map[event].forEach(function (val) {
+          val.apply(this, params);
+        });
+      }
+    };
+
+    // bind listener to event, only allow one instance of handler
+    var on = function (event, handler) {
+      if (!map[event]) {
+        map[event] = [];
+      }
+      if (map[event].indexOf(handler) >= 0) {
+        return;
+      }
+      map[event].push(handler);
+    };
+
+    // remove handler from event
+    var off = function (event, handler) {
+      if (map[event]) {
+        var listener = map[event].indexOf(handler);
+        if (listener >= 0) {
+          map[event].splice(listener, 1);
         }
-    });
+      }
+    };
+
+    return {
+      emit: emit,
+      on: on,
+      off: off
+    };
+  };
+
+  window.Evennia = Evennia;
+})();
+
+function log() {
+  if (Evennia.debug) {
+    console.log(arguments);
+  }
 }
 
-/*
- * Send data to Evennia. This data is always sent
- * as an JSON object. {key:arg, ...}
- *    key "cmd" - a text input command (in arg)
- *    other keys - interpreted as OOB command keys and their args
- *                 (can be an array)
- */
-dataSend = function(classname, data) {
-    // client -> Evennia. 
-    var outdata = {classname: data}; // for testing 
-    //websocket.send(JSON.stringify(data)) // send to Evennia
-}
+// Callback function - called when page has finished loading (kicks the client into gear)
+$(document).ready(function(){
+    // remove the "no javascript" warning, since we obviously have javascript
+    $('#noscript').remove();
 
-/*
- * Data coming from Evennia to client. This data 
- * is always on the form of a JSON object {key:arg}
- */
-dataRecv = function(event) {
-    // Evennia -> client
-    var data = JSON.parse(event.data);
-     
-    // send to be printed in element class
-    for (var cmdname in data) {
-        if (data.hasOwnProperty(cmdname) &&  cmdname in oob_commands) {
-            try {
-                oob_commands[cmdname](data);
-            }
-            catch(error) {
-                alert("Crash in function " + cmdname + "(data): " + error);
-            }
-        } 
-    }
-}
-
-/*
- * Input history objects
- */
-
-historyObj = function () {
-    // history object storage
-    return {"current": undefined, // save the current input
-            "hpos": 0,   // position in history
-            "store": []}   // history steore
-}
-addHistory = function(obj, lastentry) {
-    // Add text to the history
-    if (!obj.hasOwnProperty("input_history")) {
-        // create a new history object
-        obj.input_history = new historyObj();
-    }
-    if (lastentry && obj.input_history.store && obj.input_history.store[0] != lastentry) {
-        // don't store duplicates.
-        obj.input_history.store.unshift(lastentry);
-        obj.input_history.hpos = -1;
-        obj.input_history.current = undefined;
-    }
-}
-getHistory = function(obj, lastentry, step) {
-    // step +1 or -1 in history
-    if (!obj.hasOwnProperty("input_history")) {
-        // create a new history object
-        obj.input_history = new historyObj();
-    }
-    var history = obj.input_history;
-    var lhist = history.store.length;
-    var hpos = history.hpos + step;
-
-    if (typeof(obj.input_history.current) === "undefined") {
-        obj.input_history.current = lastentry;
-    }
-    if (hpos < 0) {
-        // get the current but remove the cached one so it
-        // can be replaced.
-        obj.input_history.hpos = -1; 
-        var current = obj.input_history.current;
-        obj.input_history.current = undefined;
-        return current;
-    }
-    hpos = Math.max(0, Math.min(hpos, lhist-1));
-    //console.log("lhist: " + lhist + " hpos: " + hpos + " current: " + obj.input_history.current);
-    obj.input_history.hpos = hpos;
-    return history.store[hpos];
-}
-
-
-/* 
- * Initialization
- */
-
-initialize = function() {
-    
-    // register events
-
-    // single line input
-    $(".input_singleline").on("submit", function(event) {
-        // input from the single-line input field
-        event.preventDefault(); // stop form from switching page
-        var field = $(this).find("input");
-        var msg = field.val();
-        addHistory(this, msg);
-        field.val("");
-        dataSend("inputfield", msg);
-        if (echo_to_textarea) {
-            // echo to textfield
-            toClass("textoutput", msg);
-            toClass("lookoutput", msg);
-            toClass("listoutput", msg);
-        }
-    });
-
-    $(".input_singleline :input").on("keyup", function(event) {
-        switch (event.keyCode) {
-            case 13: // Enter 
-                event.preventDefault();
-                $(this).trigger("submit"); 
-                break
-            case 38: // Up
-                event.preventDefault();
-                var lastentry = $(this).val();
-                var hist = getHistory(this.form, lastentry, 1);
-                if (hist) $(this).val(hist);
-                break
-            case 40: // Down
-                event.preventDefault();
-                var lastentry = $(this).val();
-                var hist = getHistory(this.form, lastentry, -1);
-                if (hist) $(this).val(hist);
-                break
-            default:
-        }
-    });
-
-    // textarea input 
-   
-
-    $(".input_multiline").on("submit", function(event) {
-        // input from the textarea input
-        event.preventDefault(); // stop form from switching page
-        var field = $(this).find("textarea");
-        var msg = field.val(); 
-        addHistory(this, msg);
-        field.val("");
-        dataSend("inputfield", msg);
-        if (echo_to_textarea) {
-            // echo to textfield
-            toClass("textarea", msg);
-            toClass("lookarea", msg);
-            toClass("listarea", msg);
-        }
-    });
-
-    $(".input_multiline :input").on("keyup", function(event) {
-        // Ctrl + <key> commands
-        if (event.ctrlKey) {
-            switch (event.keyCode) {
-                case 13: // Ctrl + Enter 
-                    event.preventDefault();
-                    $(this).trigger("submit"); 
-                    break
-                case 38: // Ctrl + Up
-                    event.preventDefault();
-                    var lastentry = $(this).val();
-                    var hist = getHistory(this.form, lastentry, 1);
-                    if (hist) $(this).val(hist);
-                    break
-                case 40: // Ctrl + Down
-                    event.preventDefault();
-                    var lastentry = $(this).val();
-                    var hist = getHistory(this.form, lastentry, -1);
-                    if (hist) $(this).val(hist);
-                    break
-                default:
-            }
-        }
-    });
-
-    //console.log("windowsize: " + $(window).height() + " footerheight: " + $('.footer').height())
-    //$(window).on("resize", function(event) {
-    //    $('.textoutput').css({height:($(window).height() - 120 + "px")});
-    //});
-
-    // resizing
-
-    // make sure textarea fills surrounding div
-    //$('.textoutput').css({height:($(window).height()-$('.footer').height())+'px'});
-    //$('.textoutput').css({height:($(window).height() - 120 + "px")});
-
-
-    // configurations
-    $(".echo").on("change", function(event) {
-        // configure echo on/off checkbox button
-        event.preventDefault();
-        echo_to_textarea = $(this).prop("checked");
-    });
-    
-    // initialize the websocket connection
-    //websocket = new WebSocket(wsurl);
-    //websocket.onopen = function(event) {};
-    //websocket.onclose = function(event) {};
-    //websocket.onerror = function(event) {};
-    //websocket.onmessage = dataOut;
-    
-}
-
-/* 
- * Kick system into gear first when 
- * the document has loaded fully.
- */
-
-$(document).ready(function() {
     // a small timeout to stop 'loading' indicator in Chrome
     setTimeout(function () {
-        initialize();
+      log('Evennia initialized...')
+      Evennia.init();
     }, 500);
     // set an idle timer to avoid proxy servers to time out on us (every 3 minutes)
     setInterval(function() {
-        dataSend("textinput", "idle");
+      log('Idle tick.');
     }, 60000*3);
 });
-
