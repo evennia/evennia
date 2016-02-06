@@ -373,8 +373,8 @@ class CmdOption(MuxPlayerCommand):
     Set an account option
 
     @option
-    @option encoding = [encoding]
-    @option screenreader = on|off
+    @option encoding [= encoding]
+    @option screenreader [= on|off]
 
     The text encoding is mostly an issue only if you want to use
     non-ASCII characters (i.e. letters/symbols not found in English).
@@ -411,6 +411,7 @@ class CmdOption(MuxPlayerCommand):
 
         if not self.rhs:
             self.caller.msg("Usage: @option [name = [value]]")
+            return
 
         if self.lhs == "encoding":
             # change encoding
