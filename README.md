@@ -67,7 +67,7 @@ It was originally created by [Luca Barbato][lu-zero],
 and is now maintained in the Read the Docs (rtfd) GitHub organization.
 
 [cm]: http://commonmark.org
-[pcm]: https://github.com/rolandshoemaker/CommonMark-py
+[pcm]: https://github.com/rtfd/CommonMark-py
 [rmd]: https://github.com/sgenoud/remarkdown
 [prs]: https://github.com/python-parsley/parsley
 [lu-zero]: https://github.com/lu-zero
