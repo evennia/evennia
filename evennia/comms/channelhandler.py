@@ -65,19 +65,19 @@ class ChannelCommand(command.Command):
         channelkey, msg = self.args
         caller = self.caller
         if not msg:
-            self.msg("Say what?")
+            self.msg(_("Say what?"))
             return
         channel = ChannelDB.objects.get_channel(channelkey)
 
         if not channel:
-            self.msg("Channel '%s' not found." % channelkey)
+            self.msg(_("Channel '%s' not found.") % channelkey)
             return
         if not channel.has_connection(caller):
-            string = "You are not connected to channel '%s'."
+            string = _("You are not connected to channel '%s'.")
             self.msg(string % channelkey)
             return
         if not channel.access(caller, 'send'):
-            string = "You are not permitted to send to channel '%s'."
+            string = _("You are not permitted to send to channel '%s'.")
             self.msg(string % channelkey)
             return
         channel.msg(msg, senders=self.caller, online=True)
@@ -142,9 +142,9 @@ class ChannelHandler(object):
 
         key = channel.key
         aliases = channel.aliases.all()
-        ustring = "%s <message>" % key.lower() + "".join(["\n           %s <message>" % alias.lower() for alias in aliases])
+        ustring = _("%s <message>") % key.lower() + "".join([_("\n           %s <message>") % alias.lower() for alias in aliases])
         desc = channel.db.desc
-        string = \
+        string = _(
         """
         Channel '%s'
 
@@ -152,7 +152,7 @@ class ChannelHandler(object):
            %s
 
         %s
-        """ % (key, ustring, desc)
+        """) % (key, ustring, desc)
         return string
 
     def add_channel(self, channel):
