@@ -9,6 +9,7 @@ from builtins import object
 from future.utils import listvalues, with_metaclass
 
 from django.conf import settings
+from django.utils.translation import ugettext as _
 
 from evennia.typeclasses.models import TypeclassBase
 from evennia.typeclasses.attributes import NickHandler
@@ -1097,8 +1098,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         loc_name = ""
         loc_name = self.location.name
         dest_name = destination.name
-        string = "%s is leaving %s, heading for %s."
-        self.location.msg_contents(string % (name, loc_name, dest_name), exclude=self)
+        string = _("{name} is leaving {loc_name}, heading for {dest_name}.").format(
+                name=name, loc_name=loc_name, dest_name=dest_name)
+        self.location.msg_contents(string, exclude=self)
 
     def announce_move_to(self, source_location):
         """
@@ -1114,7 +1116,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if not source_location and self.location.has_player:
             # This was created from nowhere and added to a player's
             # inventory; it's probably the result of a create command.
-            string = "You now have %s in your possession." % name
+            string = _("You now have %s in your possession.") % name
             self.location.msg(string)
             return
 
@@ -1122,8 +1124,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         loc_name = self.location.name
         if source_location:
             src_name = source_location.name
-        string = "%s arrives to %s from %s."
-        self.location.msg_contents(string % (name, loc_name, src_name), exclude=self)
+        string = _("{name} arrives to {loc_name} from {src_name}.").format(
+                name=name, loc_name=loc_name, src_name=src_name)
+        self.location.msg_contents(string, exclude=self)
 
     def at_after_move(self, source_location):
         """
@@ -1281,14 +1284,14 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             else:
                 things.append(key)
         # get description, build string
-        string = "{c%s{n\n" % self.get_display_name(looker)
+        string = _("{c%s{n\n" % self.get_display_name(looker))
         desc = self.db.desc
         if desc:
             string += "%s" % desc
         if exits:
-            string += "\n{wExits:{n " + ", ".join(exits)
+            string += _("\n{wExits:{n " + ", ".join(exits))
         if users or things:
-            string += "\n{wYou see:{n " + ", ".join(users + things)
+            string += _("\n{wYou see:{n " + ", ".join(users + things))
         return string
 
     def at_look(self, target):
@@ -1308,7 +1311,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         if not target.access(self, "view"):
-            return "Could not find '%s'." % target
+            return _("Could not find '%s'.") % target
         # the target's at_desc() method.
         target.at_desc(looker=self)
         return target.return_appearance(self)
@@ -1427,7 +1430,7 @@ class DefaultCharacter(DefaultObject):
             self.db.prelogout_location = self.location
             self.location.at_object_receive(self, self.location)
         else:
-            player.msg("{r%s has no location and no home is set.{n" % self, session=session)
+            player.msg(_("{r%s has no location and no home is set.{n") % self, session=session)
 
     def at_post_puppet(self):
         """
@@ -1435,11 +1438,11 @@ class DefaultCharacter(DefaultObject):
         Player<->Object links have been established.
 
         """
-        self.msg("\nYou become {c%s{n.\n" % self.name)
+        self.msg(_("\nYou become {c%s{n.\n") % self.name)
         self.msg(self.at_look(self.location))
 
         def message(obj, from_obj):
-            obj.msg("%s has entered the game." % self.get_display_name(obj), from_obj=from_obj)
+            obj.msg(_("%s has entered the game.") % self.get_display_name(obj), from_obj=from_obj)
         self.location.for_contents(message, exclude=[self], from_obj=self)
 
     def at_post_unpuppet(self, player, session=None):
@@ -1458,7 +1461,7 @@ class DefaultCharacter(DefaultObject):
             # only remove this char from grid if no sessions control it anymore.
             if self.location:
                 def message(obj, from_obj):
-                    obj.msg("%s has left the game." % self.get_display_name(obj), from_obj=from_obj)
+                    obj.msg(_("%s has left the game.") % self.get_display_name(obj), from_obj=from_obj)
                 self.location.for_contents(message, exclude=[self], from_obj=self)
                 self.db.prelogout_location = self.location
                 self.location = None
@@ -1525,9 +1528,9 @@ class ExitCommand(command.Command):
             A string with identifying information to disambiguate the command, conventionally with a preceding space.
         """
         if self.obj.destination:
-            return " (exit to %s)" % self.obj.destination.get_display_name(caller)
+            return _(" (exit to %s)") % self.obj.destination.get_display_name(caller)
         else:
-            return " (%s)" % self.obj.get_display_name(caller)
+            return _(" (%s)") % self.obj.get_display_name(caller)
 
 #
 # Base Exit object
@@ -1664,4 +1667,4 @@ class DefaultExit(DefaultObject):
             read for an error string instead.
 
         """
-        traversing_object.msg("You cannot go there.")
+        traversing_object.msg(_("You cannot go there."))
