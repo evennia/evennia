@@ -97,11 +97,11 @@ class CommonMarkParser(parsers.Parser):
 
     # Blocks
     def section(self, block):
-        new_section = nodes.section()
+        new_section = nodes.section(' '.join(block.strings))
         new_section.line = block.start_line
         new_section['level'] = block.level
 
-        title_node = nodes.title()
+        title_node = nodes.title(' '.join(block.strings))
         title_node.line = block.start_line
         append_inlines(title_node, block.inline_content)
         new_section.append(title_node)
@@ -113,11 +113,11 @@ class CommonMarkParser(parsers.Parser):
         self.current_node = new_section
 
     def verbatim(self, text):
-        verbatim_node = nodes.literal_block()
+        verbatim_node = nodes.literal_block(text)
         text = ''.join(flatten(text))
         if text.endswith('\n'):
             text = text[:-1]
-        verbatim_node.append(nodes.Text(text))
+        verbatim_node.append(nodes.Text(text, text))
         self.current_node.append(verbatim_node)
 
     def code(self, language, text):
@@ -125,13 +125,13 @@ class CommonMarkParser(parsers.Parser):
         self.current_node.append(node)
 
     def paragraph(self, block):
-        p = nodes.paragraph()
+        p = nodes.paragraph(' '.join(block.strings))
         p.line = block.start_line
         append_inlines(p, block.inline_content)
         self.current_node.append(p)
 
     def blockquote(self, block):
-        q = nodes.block_quote()
+        q = nodes.block_quote(' '.join(block.strings))
         q.line = block.start_line
 
         self.current_node.append(q)
@@ -140,7 +140,7 @@ class CommonMarkParser(parsers.Parser):
             self.convert_blocks(block.children)
 
     def list_item(self, block):
-        node = nodes.list_item()
+        node = nodes.list_item(' '.join(block.strings))
         node.line = block.start_line
 
         self.current_node.append(node)
@@ -154,7 +154,7 @@ class CommonMarkParser(parsers.Parser):
             list_node_cls = nodes.bullet_list
         else:
             list_node_cls = nodes.enumerated_list
-        list_node = list_node_cls()
+        list_node = list_node_cls(' '.join(block.strings))
         list_node.line = block.start_line
 
         self.current_node.append(list_node)
@@ -163,7 +163,8 @@ class CommonMarkParser(parsers.Parser):
             self.convert_blocks(block.children)
 
     def html_block(self, block):
-        raw_node = nodes.raw('', block.string_content, format='html')
+        raw_node = nodes.raw(' '.join(block.strings),
+                             block.string_content, format='html')
         raw_node.line = block.start_line
         self.current_node.append(raw_node)
 
