@@ -151,9 +151,10 @@ class CommonMarkParser(parsers.Parser):
     def list_block(self, block):
         list_node = None
         if (block.list_data['type'] == "Bullet"):
-            list_node = nodes.bullet_list()
+            list_node_cls = nodes.bullet_list
         else:
-            list_node = nodes.enumerated_list()
+            list_node_cls = nodes.enumerated_list
+        list_node = list_node_cls()
         list_node.line = block.start_line
 
         self.current_node.append(list_node)
@@ -262,7 +263,7 @@ def parse_inline(parent_node, inline):
     elif (inline.t == "Softbreak"):
         node = nodes.Text('\n')
     elif inline.t == "Emph":
-        node = emph(inline.c)
+        node = emph(inline.c)  # noqa
     elif inline.t == "Strong":
         node = strong(inline.c)
     elif inline.t == "Link":
@@ -283,5 +284,5 @@ def parse_inline(parent_node, inline):
 
 
 def append_inlines(parent_node, inlines):
-    for i in range(len(inlines)):
-        parse_inline(parent_node, inlines[i])
+    for line in inlines:
+        parse_inline(parent_node, line)
