@@ -4,56 +4,45 @@ Evenna webclient library
 This javascript library handles all communication between Evennia and
 whatever client front end is used.
 
-
-* Evennia - library communication
-
 The library will try to communicate with Evennia using websockets
 (evennia/server/portal/webclient.py). However, if the web browser is
 old and does not support websockets, it will instead fall back to a
-long-polling (AJAX/COMET) type of connection
-(using evennia/server/portal/webclient_ajax.py)
+long-polling (AJAX/COMET) type of connection (using
+evennia/server/portal/webclient_ajax.py)
 
-All messages are valid JSON array on single form: ["funcname", arg, arg,, ...] 
-This represents a JS function called as funcname(arg, arg, ...)
+All messages is a valid JSON array on single form: ["cmdname",
+kwargs], where kwargs is a JSON object that will be used as argument
+to call the cmdname function.
 
-* Front-end interface
-
-This library makes the "Evennia" object available. It has the following
-functions:
-
+This library makes the "Evennia" object available. It has the
+following official functions:
 
    - Evennia.init(options)
-        This must be called by the frontend to intialize the library. The
+        This can be called by the frontend to intialize the library. The
         argument is an js object with the following possible keys:
             'connection': This defaults to Evennia.WebsocketConnection but
                 can also be set to Evennia.CometConnection for backwards
-                compatibility with old browsers. Each connection must have
-                a 'msg(data)' method that should handle the conversion to 
-                JSON before sending across the wire.
-            'cmdhandler': An optional custom command handler for
-                managing outgoing commands from the server. If not
-                supplied, the default will be used. It must have an emit(data) function.
+                compatibility. See below.
+            'emitter': An optional custom command handler for distributing
+                data from the server to suitable listeners. If not given,
+                a default will be used. 
    - Evennia.msg(funcname, [args,...], callback)
         Send a command to the server. You can also provide a function
-        to call with the return of the call (not all commands will return
-        anything, like 'text' type commands).
+        to call with the return of the call (note that commands will 
+        not return anything unless specified to do so server-side).
 
-
-
-
-
-Evennia websocket webclient (javascript component)
-
-The client is composed of two parts:
- - /server/portal/websocket_client.py - the portal-side component
- - this file - the javascript component handling dynamic content
-
-messages sent to the client is one of two modes:
-  OOB("func1",args, "func2",args, ...)  - OOB command executions, this will
-                                        call unique javascript functions
-                                        func1(args), func2(args) etc.
-  text - any other text is considered a normal text output in the main output window.
-
+A "connection" object must have the method 
+    - msg(data) - this should relay data to the Server. This function should itself handle
+        the conversion to JSON before sending across the wire. 
+    - When receiving data from the Server (always [cmdname, kwargs]), this must be 
+        JSON-unpacked and the result redirected to Evennia.emit(data[0], data[1]).
+An "emitter" object must have a function 
+    - emit(cmdname, kwargs) - this will be called by the backend.
+    - The default emitter also has the following methods: 
+        - on(cmdname, listener) - this ties a listener to the backend. This function
+            should be called as listener(kwargs) when the backend calls emit.
+        - off(cmdname) - remove the listener for this cmdname.
+   
 */
 
 (function() {
@@ -72,15 +61,16 @@ messages sent to the client is one of two modes:
         //       emitter - custom emitter. If not given,
         //          will use a default emitter. Must have 
         //          an "emit" function.
-        //       connection - This defaults to a WebsocketConnection,
-        //          but could also be the CometConnection or another
-        //          custom protocol. Must have a 'send' method and
-        //            make use of Evennia.emit to return data to Client.
+        //       connection - This defaults to using either 
+        //          a WebsocketConnection or a CometConnection
+        //          depending on what the browser supports. If given
+        //          it must have a 'msg' method and make use of
+        //          Evennia.emit to return data to Client.
         //
         init: function(opts) { 
             opts = opts || {};
             this.emitter = opts.emitter || new DefaultEmitter();
-            this.connection = opts.connection || new WebsocketConnection();
+            this.connection = opts.connection || window.Websocket ? new WebsocketConnection() : new AjaxConnection();
             },
         
         // Client -> Evennia. 
@@ -278,7 +268,6 @@ function log(msg) {
 
 // Called when page has finished loading (kicks the client into gear)
 $(document).ready(function(){
-
     
     // a small timeout to stop 'loading' indicator in Chrome
     setTimeout(function () {
