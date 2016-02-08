@@ -43,9 +43,6 @@ The client is composed of two parts:
  - /server/portal/websocket_client.py - the portal-side component
  - this file - the javascript component handling dynamic content
 
-A
-
-
 messages sent to the client is one of two modes:
   OOB("func1",args, "func2",args, ...)  - OOB command executions, this will
                                         call unique javascript functions
@@ -54,117 +51,152 @@ messages sent to the client is one of two modes:
 
 */
 
-//
-// Custom OOB functions
-// functions defined here can be called by name by the server. For
-// example input OOB{"echo":(args),{kwargs}} will trigger a function named
-// echo(args, kwargs). The commands the server understands is set by
-// settings.OOB_PLUGIN_MODULES
-
 (function() {
-  var id = 0;
-  var map = {};
+  var cmdid = 0;
+  var cmdmap = {};
 
   var Evennia = {
     debug: true,
-    // called by the frontend to send a command to the backend
-    cmd: function (cmd, params, callback) {
-      var msg = params ? [cmd, [params], {}] : [cmd, [], {}];
-      params.id = id++;
-
-      log('cmd called with following args:', cmd, params, callback);
-
-      websocket.send('OOB' + JSON.stringify(msg));
+    // Client -> Evennia. 
+    // Called by the frontend to send a command to Evennia.
+    //
+    // Args:
+    //   cmdname (str): String identifier to call
+    //   kwargs (obj): Data argument for calling as cmdname(kwargs)
+    //   callback (func): If given, will be given an eventual return
+    //      value from the backend.
+    // 
+    send: function (cmdname, kwargs, callback) {
+      kwargs.cmdid = cmdid++;
+      var data = kwargs ? [cmdname, kwargs] : [cmdname, {}];
 
       if (typeof callback === 'function') {
-        map[id] = callback;
+        this.cmdmap[cmdid] = callback;
+      }
+      this.connection.send(JSON.stringify(kwargs));
+
+      log('cmd called with following args:', cmd, params, callback);
+    },
+
+    // Evennia -> Client.
+    // Called by the backend to emit an event to the global emitter
+    //
+    // Args:
+    //   event (event): Event received from Evennia
+    //   data (obj):  
+    //
+    emit: function (cmdname, data) {
+      if (data.cmdid) {
+        this.cmdmap[data.cmdid].apply(this, [data]);
+        delete this.cmdmap[cmddata.cmdid];
+      }
+      else {
+        this.emitter.emit(cmdname, data);
       }
     },
 
-    // called by the backend to emit an event to the global emitter
-    emit: function (event, data) {
-      if (data.id) {
-        map[data.id].apply(this, [event, data]);
-        delete map[data.id];
-      }
-      Evennia.emitter.emit(event, data);
-    },
-
-    // startup Evennia emitter and connection
-    init: function (opts) {
-      opts = opts || {};
-      Evennia.emitter = opts.emitter || new Emitter();
-      Evennia.websocket = new Connection();
+    // Initializer.
+    // startup Evennia emitter and connection.
+    //
+    // Args:
+    //   opts (obj): 
+    //       emitter - custom emitter. If not given,
+    //          will use a default emitter. Must have 
+    //          an "emit" function.
+    //       connection - This defaults to a WebsocketConnection,
+    //          but could also be the CometConnection or another
+    //          custom protocol. Must have a 'send' method and
+    //            make use of Evennia.emit to return data to Client.
+    //
+    init: function (kwargs) {
+      kwargs = kwargs || {};
+      this.emitter = kwargs.emitter || new DefaultEmitter();
+      this.connection = kwargs.connection || new WebsocketConnection();
     }
   };
 
-  // wrapper for websocket setup
-  var Connection = function () {
+  // Websocket Connector
+  //
+  var WebsocketConnection = function () {
     var websocket = new WebSocket(wsurl);
-    websocket.onopen = function (event) {
+    // Handle Websocket open event
+    this.websocket.onopen = function (event) {
+      log('Websocket connection openened.');
       Evennia.emit('socket:open', event);
     };
-    websocket.onclose = function (event) {
-      log('WebSocket connection closed.')
+    // Handle Websocket close event
+    this.websocket.onclose = function (event) {
+      log('WebSocket connection closed.');
       Evennia.emit('socket:close', event);
     };
-    websocket.onmessage = function (event) {
-      if (typeof event.data !== 'string' && event.data.length < 0) {
-        return;
-      }
-
-      // only acceptable mode is OOB
-      var mode = event.data.substr(0, 3);
-
-      if (mode === 'OOB') {
-        // parse the rest of the response
-        var res = JSON.parse(event.data.substr(3));
-        log(res);
-        var cmd = res[0];
-        var args = res[1];
-        Evennia.emit(cmd, args[0]);
-      }
-    };
-    websocket.onerror = function (event) {
+    // Handle websocket errors
+    this.websocket.onerror = function (event) {
       log("Websocket error to ", wsurl, event);
       Evennia.emit('socket:error', data);
     };
-
+    // Handle incoming websocket data
+    this.websocket.onmessage = function (event) {
+      var data = event.data
+      if (typeof data !== 'string' && data.length < 0) {
+        return;
+      }
+      // Parse the incoming data, send to emitter
+      // Incoming data is on the form [cmdname, kwargs]
+      data = JSON.parse(data);
+      Evennia.emit(data[0], data[1]]);
+    };
     return websocket;
   }
 
-  // basic emitter, can be overridden in evennia init
-  var Emitter = function () {
-    var map = {};
+  // AJAX/COMET Connector
+  //
+  CometConnection = function() {
+  
+  };
+    
+  // Basic emitter to distribute data being sent to the client from
+  // the Server. An alternative can be overridden in Evennia.init.
+  //
+  var DefaultEmitter = function () {
+    var cmdmap = {};
 
-    // emit to listeners of given event
-    var emit = function (event, params) {
-      log('emit', event, params);
-      if (map[event] && map[event] === Array) {
-        map[event].forEach(function (val) {
-          val.apply(this, params);
-        });
+    // Emit data to all listeners tied to a given cmdname
+    //
+    // Args:
+    //   cmdname (str): Name of command, used to find
+    //     all listeners to this call; each will be
+    //     called as function(kwargs).
+    //   kwargs (obj): Argument to the listener.
+    //
+    var emit = function (cmdname, kwargs) {
+      log('emit', cmdname, kwargs);
+
+      if (this.cmdmap[cmdname]) {
+        this.cmdmap[cmdname].apply(this, kwargs);
+        };
       }
     };
 
-    // bind listener to event, only allow one instance of handler
-    var on = function (event, handler) {
-      if (!map[event]) {
-        map[event] = [];
+    // Bind listener to event
+    //
+    // Args:
+    //   cmdname (str): Name of event to handle.
+    //   listener (function): Function taking one argument,
+    //     to listen to cmdname events. 
+    //
+    var on = function (cmdname, listener) {
+      if typeof(listener === 'function') {
+          this.cmdmap[cmdname] = listener;
       }
-      if (map[event].indexOf(handler) >= 0) {
-        return;
-      }
-      map[event].push(handler);
     };
 
-    // remove handler from event
-    var off = function (event, handler) {
-      if (map[event]) {
-        var listener = map[event].indexOf(handler);
-        if (listener >= 0) {
-          map[event].splice(listener, 1);
-        }
+    // remove handling of this cmdname
+    //
+    // Args:
+    //   cmdname (str): Name of event to handle
+    //
+    var off = function (cmdname) {
+      delete this.cmdmap[cmdname]
       }
     };
 
@@ -178,13 +210,17 @@ messages sent to the client is one of two modes:
   window.Evennia = Evennia;
 })();
 
-function log() {
+// helper logging function
+// Args:
+//   msg (str): Message to log to console.
+//
+function log(msg) {
   if (Evennia.debug) {
-    console.log(arguments);
+    console.log(msg);
   }
 }
 
-// Callback function - called when page has finished loading (kicks the client into gear)
+// Called when page has finished loading (kicks the client into gear)
 $(document).ready(function(){
     // remove the "no javascript" warning, since we obviously have javascript
     $('#noscript').remove();
