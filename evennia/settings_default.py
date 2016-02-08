@@ -594,13 +594,18 @@ STATICFILES_DIRS = (
 STATICFILES_IGNORE_PATTERNS = ('README.md',)
 # The name of the currently selected web template. This corresponds to the
 # directory names shown in the templates directory.
-ACTIVE_TEMPLATE = 'website'
+WEBSITE_TEMPLATE = 'website'
+WEBCLIENT_TEMPLATE = 'webclient'
 # We setup the location of the website template as well as the admin site.
 TEMPLATE_DIRS = (
-    os.path.join(GAME_DIR, "web", "template_overrides", ACTIVE_TEMPLATE),
+    os.path.join(GAME_DIR, "web", "template_overrides", WEBSITE_TEMPLATE),
+    os.path.join(GAME_DIR, "web", "template_overrides", WEBCLIENT_TEMPLATE),
     os.path.join(GAME_DIR, "web", "template_overrides"),
-    os.path.join(EVENNIA_DIR, "web", "website", "templates", ACTIVE_TEMPLATE),
-    os.path.join(EVENNIA_DIR, "web", "website", "templates"),)
+    os.path.join(EVENNIA_DIR, "web", "website", "templates", WEBSITE_TEMPLATE),
+    os.path.join(EVENNIA_DIR, "web", "website", "templates"),
+    os.path.join(EVENNIA_DIR, "web", "webclient", "templates", WEBCLIENT_TEMPLATE),
+    os.path.join(EVENNIA_DIR, "web", "webclient", "templates"),)
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
