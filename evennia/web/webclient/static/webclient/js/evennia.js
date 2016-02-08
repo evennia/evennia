@@ -49,7 +49,7 @@ An "emitter" object must have a function
     var cmdid = 0;
     var cmdmap = {};
 
-    var evennia = {
+    var Evennia = {
 
         debug: true,
 
@@ -70,8 +70,20 @@ An "emitter" object must have a function
         init: function(opts) { 
             opts = opts || {};
             this.emitter = opts.emitter || new DefaultEmitter();
-            this.connection = opts.connection || window.Websocket ? new WebsocketConnection() : new AjaxConnection();
-            },
+
+            if (opts.connection) {
+               this.connection = opts.connection;
+            }
+            else if (window.WebSocket) {
+                this.connection = new WebsocketConnection();
+                if (!this.connection) {
+                    this.connection = new AjaxCometConnection();
+                }
+            } else {
+                this.connection = new AjaxCometConnection();
+            }
+            // this.connection = opts.connection || window.WebSocket ? new WebsocketConnection() : new AjaxCometConnection();
+        },
         
         // Client -> Evennia. 
         // Called by the frontend to send a command to Evennia.
@@ -87,24 +99,27 @@ An "emitter" object must have a function
             var data = kwargs ? [cmdname, kwargs] : [cmdname, {}];
 
             if (typeof callback === 'function') {
-                this.cmdmap[cmdid] = callback;
+                cmdmap[cmdid] = callback;
             }
             this.connection.msg(data);
 
-            log('cmd called with following args:', cmd, params, callback);
+            log('cmd called with following args: ' + cmdname, ', ' + kwargs + ', ' + callback);
         },
 
         // Evennia -> Client.
-        // Called by the backend to emit an event to the global emitter
+        // Called by the backend to send the data to the
+        // emitter, which in turn distributes it to its
+        // listener(s).
         //
         // Args:
         //   event (event): Event received from Evennia
         //   data (obj):  
         //
         emit: function (cmdname, data) {
+            log('emit called with args: + ' + cmdname + ',' + data);
             if (data.cmdid) {
-                this.cmdmap[data.cmdid].apply(this, [data]);
-                delete this.cmdmap[cmddata.cmdid];
+                cmdmap[data.cmdid].apply(this, [data]);
+                delete cmdmap[cmddata.cmdid];
             }
             else {
                 this.emitter.emit(cmdname, data);
@@ -130,8 +145,8 @@ An "emitter" object must have a function
         var emit = function (cmdname, kwargs) {
             log('emit', cmdname, kwargs);
 
-            if (this.cmdmap[cmdname]) {
-                this.cmdmap[cmdname].apply(this, kwargs);
+            if (cmdmap[cmdname]) {
+                cmdmap[cmdname].apply(this, kwargs);
             };
         };
 
@@ -143,8 +158,8 @@ An "emitter" object must have a function
         //     to listen to cmdname events. 
         //
         var on = function (cmdname, listener) {
-            if typeof(listener === 'function') {
-                this.cmdmap[cmdname] = listener;
+            if (typeof(listener === 'function')) {
+                cmdmap[cmdname] = listener;
             };
         };
 
@@ -154,7 +169,7 @@ An "emitter" object must have a function
         //   cmdname (str): Name of event to handle
         //
         var off = function (cmdname) {
-            delete this.cmdmap[cmdname]
+            delete cmdmap[cmdname]
         };
         return {emit:emit, on:on, off:off}
     };
@@ -162,97 +177,97 @@ An "emitter" object must have a function
     // Websocket Connector
     //
     var WebsocketConnection = function () {
+        log("Trying websocket");
         var websocket = new WebSocket(wsurl);
         // Handle Websocket open event
-        this.websocket.onopen = function (event) {
-            log('Websocket connection openened.');
+        websocket.onopen = function (event) {
+            log('Websocket connection openened. ', event);
             Evennia.emit('socket:open', event);
         };
         // Handle Websocket close event
-        this.websocket.onclose = function (event) {
+        websocket.onclose = function (event) {
             log('WebSocket connection closed.');
             Evennia.emit('socket:close', event);
         };
         // Handle websocket errors
-        this.websocket.onerror = function (event) {
+        websocket.onerror = function (event) {
             log("Websocket error to ", wsurl, event);
-            Evennia.emit('socket:error', data);
+            Evennia.emit('socket:error', event.data);
         };
-        // Handle incoming websocket data
-        this.websocket.onmessage = function (event) {
-            var data = event.data
+        // Handle incoming websocket data [cmdname, kwargs]
+        websocket.onmessage = function (event) {
+            var data = event.data;
             if (typeof data !== 'string' && data.length < 0) {
                 return;
             }
             // Parse the incoming data, send to emitter
             // Incoming data is on the form [cmdname, kwargs]
             data = JSON.parse(data);
-            Evennia.emit(data[0], data[1]]);
+            log("incoming " + data);
+            Evennia.emit(data[0], data[1]);
         };
-        this.websocket.msg = function(data) {
-            this.websocket.send(JSON.stringify(data));
+        websocket.msg = function(data) {
+            websocket.send(JSON.stringify(data));
         };
 
         return websocket;
-    }
+    };
 
     // AJAX/COMET Connector
     //
-    CometConnection = function() {
+    AjaxCometConnection = function() {
+        log("Trying ajax ...");
         var client_hash = '0';
-    
-        var ajaxcomet = {
-            // Send Client -> Evennia. Called by Evennia.send.
-            var msg = function(data) {
-                $.ajax({type: "POST", url: "/webclientdata",
-                       async: true, cache: false, timeout: 30000,
-                       dataType: "json",
-                       data: {mode:'input', msg: data, 'suid': client_hash},
-                       success: function(data): {},
-                       error: function(req, stat, err): {
-                           log("COMET: Server returned error. " + err)
-                       }
-               });
-            };
-
-            // Receive Evennia -> Client. This will start an asynchronous
-            // Long-polling request. It will either timeout or receive data
-            // from the 'webclientdata' url. Either way a new polling request
-            // will immediately be started.
-            var poll = function() {
-                $.ajax({type: "POST", url: "/webclientdata",
-                        async: true, cache: false, timeout: 30000,
-                        dataType: "json",
-                        data = {mode: 'receive', 'suid': client_hash},
-                        success: function(data) {
-                           Evennia.emit(data[0], data[1])
-                        },
-                        error: function() {
-                            this.poll()  // timeout; immediately re-poll
-                        }
-                });
-            };
-            
-            // Initialization will happen when this Connection is created. 
-            // We need to store the client id so Evennia knows to separate
-            // the clients. 
+        // Send Client -> Evennia. Called by Evennia.send.
+        var msg = function(data) {
             $.ajax({type: "POST", url: "/webclientdata",
-                    async: true, cache: false, timeout: 50000,
-                    datatype: "json",
+                   async: true, cache: false, timeout: 30000,
+                   dataType: "json",
+                   data: {mode:'input', msg: data, 'suid': client_hash},
+                   success: function(data) {},
+                   error: function(req, stat, err) {
+                       log("COMET: Server returned error. " + err);
+                   }
+           });
+        };
+
+        // Receive Evennia -> Client. This will start an asynchronous
+        // Long-polling request. It will either timeout or receive data
+        // from the 'webclientdata' url. Either way a new polling request
+        // will immediately be started.
+        var poll = function() {
+            $.ajax({type: "POST", url: "/webclientdata",
+                    async: true, cache: false, timeout: 30000,
+                    dataType: "json",
+                    data: {mode: 'receive', 'suid': client_hash},
                     success: function(data) {
-                        this.client_hash = data.suid;
-                        this.poll();
+                       Evennia.emit(data[0], data[1])
                     },
-                    error: function(req, stat, err) {
-                        log("Connection error: " + err);
+                    error: function() {
+                        poll()  // timeout; immediately re-poll
                     }
             });
         };
+        
+        // Initialization will happen when this Connection is created. 
+        // We need to store the client id so Evennia knows to separate
+        // the clients. 
+        $.ajax({type: "POST", url: "/webclientdata",
+                async: true, cache: false, timeout: 50000,
+                datatype: "json",
+                success: function(data) {
+                    client_hash = data.suid;
+                    poll();
+                },
+                error: function(req, stat, err) {
+                    log("Connection error: " + err);
+                }
+        });
 
-        return ajaxcomet;
-        };
+        return {msg: msg, poll: poll};
+    };
 
-    window.Evennia = evennia;
+    window.Evennia = Evennia;
 
 })(); // end of auto-calling Evennia object defintion
 
