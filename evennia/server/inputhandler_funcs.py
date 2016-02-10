@@ -105,6 +105,9 @@ def text(session, *args, **kwargs):
     cmdhandler(session, text, callertype="session", session=session)
     session.update_session_counters()
 
+def echo(session, *args, **kwargs):
+    session.data_out(text=(args, kwargs))
+
 def default(session, cmdname, *args, **kwargs):
     """
     Default catch-function. This is like all other input functions except

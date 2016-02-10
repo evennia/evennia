@@ -25,24 +25,24 @@ following official functions:
                 compatibility. See below.
             'emitter': An optional custom command handler for distributing
                 data from the server to suitable listeners. If not given,
-                a default will be used. 
+                a default will be used.
    - Evennia.msg(funcname, [args,...], callback)
         Send a command to the server. You can also provide a function
-        to call with the return of the call (note that commands will 
+        to call with the return of the call (note that commands will
         not return anything unless specified to do so server-side).
 
-A "connection" object must have the method 
+A "connection" object must have the method
     - msg(data) - this should relay data to the Server. This function should itself handle
-        the conversion to JSON before sending across the wire. 
-    - When receiving data from the Server (always [cmdname, kwargs]), this must be 
+        the conversion to JSON before sending across the wire.
+    - When receiving data from the Server (always [cmdname, kwargs]), this must be
         JSON-unpacked and the result redirected to Evennia.emit(data[0], data[1]).
-An "emitter" object must have a function 
+An "emitter" object must have a function
     - emit(cmdname, kwargs) - this will be called by the backend.
-    - The default emitter also has the following methods: 
+    - The default emitter also has the following methods:
         - on(cmdname, listener) - this ties a listener to the backend. This function
             should be called as listener(kwargs) when the backend calls emit.
         - off(cmdname) - remove the listener for this cmdname.
-   
+
 */
 
 (function() {
@@ -57,17 +57,17 @@ An "emitter" object must have a function
         // startup Evennia emitter and connection.
         //
         // Args:
-        //   opts (obj): 
+        //   opts (obj):
         //       emitter - custom emitter. If not given,
-        //          will use a default emitter. Must have 
+        //          will use a default emitter. Must have
         //          an "emit" function.
-        //       connection - This defaults to using either 
+        //       connection - This defaults to using either
         //          a WebsocketConnection or a CometConnection
         //          depending on what the browser supports. If given
         //          it must have a 'msg' method and make use of
         //          Evennia.emit to return data to Client.
         //
-        init: function(opts) { 
+        init: function(opts) {
             opts = opts || {};
             this.emitter = opts.emitter || new DefaultEmitter();
 
@@ -84,8 +84,8 @@ An "emitter" object must have a function
             }
             // this.connection = opts.connection || window.WebSocket ? new WebsocketConnection() : new AjaxCometConnection();
         },
-        
-        // Client -> Evennia. 
+
+        // Client -> Evennia.
         // Called by the frontend to send a command to Evennia.
         //
         // Args:
@@ -93,17 +93,19 @@ An "emitter" object must have a function
         //   kwargs (obj): Data argument for calling as cmdname(kwargs)
         //   callback (func): If given, will be given an eventual return
         //      value from the backend.
-        // 
-        msg: function (cmdname, kwargs, callback) {
+        //
+        msg: function (cmdname, args, kwargs, callback) {
             kwargs.cmdid = cmdid++;
-            var data = kwargs ? [cmdname, kwargs] : [cmdname, {}];
+            var outargs = args ? args : [];
+            var outkwargs = kwargs ? kwargs : {};
+            var data = [cmdname, outargs, outkwargs];
 
             if (typeof callback === 'function') {
                 cmdmap[cmdid] = callback;
             }
             this.connection.msg(data);
 
-            log('cmd called with following args: ' + cmdname, ', ' + kwargs + ', ' + callback);
+            log('client msg sending: ' + cmdname + " " + args + " " + outargs + " " + outkwargs);
         },
 
         // Evennia -> Client.
@@ -113,7 +115,7 @@ An "emitter" object must have a function
         //
         // Args:
         //   event (event): Event received from Evennia
-        //   data (obj):  
+        //   data (obj):
         //
         emit: function (cmdname, data) {
             log('emit called with args: + ' + cmdname + ',' + data);
@@ -128,7 +130,7 @@ An "emitter" object must have a function
 
     }; // end of evennia object
 
-    
+
     // Basic emitter to distribute data being sent to the client from
     // the Server. An alternative can be overridden in Evennia.init.
     //
@@ -155,7 +157,7 @@ An "emitter" object must have a function
         // Args:
         //   cmdname (str): Name of event to handle.
         //   listener (function): Function taking one argument,
-        //     to listen to cmdname events. 
+        //     to listen to cmdname events.
         //
         var on = function (cmdname, listener) {
             if (typeof(listener === 'function')) {
@@ -248,10 +250,10 @@ An "emitter" object must have a function
                     }
             });
         };
-        
-        // Initialization will happen when this Connection is created. 
+
+        // Initialization will happen when this Connection is created.
         // We need to store the client id so Evennia knows to separate
-        // the clients. 
+        // the clients.
         $.ajax({type: "POST", url: "/webclientdata",
                 async: true, cache: false, timeout: 50000,
                 datatype: "json",
@@ -283,7 +285,7 @@ function log(msg) {
 
 // Called when page has finished loading (kicks the client into gear)
 $(document).ready(function(){
-    
+
     // a small timeout to stop 'loading' indicator in Chrome
     setTimeout(function () {
       log('Evennia initialized...')
