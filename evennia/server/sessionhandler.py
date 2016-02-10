@@ -19,13 +19,21 @@ from time import time
 from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.utils.logger import log_trace
-from evennia.utils.utils import variable_from_module, is_iter, \
-                            to_str, to_unicode, strip_control_sequences, make_iter
+from evennia.utils.utils import (variable_from_module, is_iter,
+                                 to_str, to_unicode,
+                                 make_iter,
+                                 callables_from_module)
 
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
+
+# input handlers
+
+_INPUT_HANDLER_FUNCS = {}
+for modname in make_iter(settings.INPUT_HANDLER_MODULES):
+    _INPUT_HANDLER_FUNCS.update(callables_from_module(modname))
 
 # delayed imports
 _PlayerDB = None
@@ -123,15 +131,24 @@ class SessionHandler(dict):
 
         Args:
             session (Session): The relevant session instance.
-            kwargs (dict): Every keyword represents a send-instruction.
+            kwargs (dict) Each keyword represents a
+                send-instruction, with the keyword itself being the name
+                of the instruction (like "text"). Suitable values for each
+                keyword are:
+                    - arg                ->  [[arg], {}]
+                    - [args]             ->  [[args], {}]
+                    - {kwargs}           ->  [[], {kwargs}]
+                    - [args, {kwargs}]   ->  [[arg], {kwargs}]
+                    - [[args], {kwargs}] ->  [[args], {kwargs}]
 
         Returns:
-            kwargs (dict): A cleaned dictionary of cmdname:args pairs,
-                where the keys and args have all been converted to
+            kwargs (dict): A cleaned dictionary of cmdname:[[args],{kwargs}] pairs,
+                where the keys, args and kwargs have all been converted to
                 send-safe entities (strings or numbers).
 
         """
         def _validate(data):
+            "Helper function to convert data to AMP-safe (picketable) values"
             if isinstance(data, dict):
                 newdict = {}
                 for key, part in data.items():
@@ -140,23 +157,36 @@ class SessionHandler(dict):
             elif hasattr(data, "__iter__"):
                 return [_validate(part) for part in data]
             elif isinstance(data, basestring):
+                # make sure strings are in a valid encoding
                 try:
                     return data and to_str(to_unicode(data), encoding=session.encoding)
                 except LookupError:
                     # wrong encoding set on the session. Set it to a safe one
                     session.encoding = "utf-8"
                     return to_str(to_unicode(data), encoding=session.encoding)
-            elif hasattr(data, "id") and hasattr(data, "db_date_created") and hasattr(data, '__dbclass__'):
+            elif hasattr(data, "id") and hasattr(data, "db_date_created") \
+                    and hasattr(data, '__dbclass__'):
                 # convert database-object to their string representation.
                 return _validate(unicode(data))
             else:
                 return data
-        clean_kwargs = {"options":kwargs.pop("options", {})}
-        for key in kwargs:
-            args = _validate(kwargs[key])
-            clean_kwargs[_validate(key)] = (args,) if args is not None and \
-                                            not hasattr(args, "__iter__") else args
-        return clean_kwargs
+
+        rkwargs = {}
+        for key, data in kwargs.iteritems():
+            if not data:
+                rkwargs[key] = [ [], {} ]
+            elif isinstance(data, dict):
+                rkwargs[key] = [ [], _validate(data) ]
+            elif hasattr(data, "__iter__"):
+                if isinstance(data[-1], dict):
+                    # last entry is a kwarg dict
+                    rkwargs[key] = [ _validate(data[:-1]), _validate(data[-1]) ]
+                else:
+                    rkwargs[key] = [ _validate(data), {} ]
+            else:
+                rkwargs[key] = [ [_validate(data)], {} ]
+
+        return rkwargs
 
 
 #------------------------------------------------------------
@@ -574,13 +604,13 @@ class ServerSessionHandler(SessionHandler):
 
         # distribute incoming data to the correct receiving methods.
         if session:
-            for cmdname, args in kwargs.items():
+            for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
                 try:
-                    if cmdname in session.datamap:
-                        print "sessionhandler: data_in", cmdname, args
-                        session.datamap[cmdname](session, *args)
+                    if cmdname in _INPUT_HANDLER_FUNCS:
+                        print "sessionhandler: data_in", cmdname, cmdargs, cmdkwargs
+                        _INPUT_HANDLER_FUNCS[cmdname](session, *cmdargs, **cmdkwargs)
                     else:
-                        session.datamap["_default"](session, *args)
+                        _INPUT_HANDLER_FUNCS["_default"](session, *cmdargs, **cmdkwargs)
                 except Exception:
                     log_trace()
 

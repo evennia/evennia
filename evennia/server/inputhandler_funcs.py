@@ -59,16 +59,57 @@ from future.utils import viewkeys
 
 from django.conf import settings
 from evennia.utils.utils import to_str
-from evennia.server.oobhandler import OOB_HANDLER
+from evennia.commands.cmdhandler import cmdhandler
+#from evennia.server.inputhandler import INPUT_HANDLER
 
+_IDLE_COMMAND = settings.IDLE_COMMAND
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _NA = lambda o: "N/A"
 
+def text(session, *args, **kwargs):
+    """
+    Main text input from the client. This will execute a command
+    string on the server.
+
+    Args:
+        text (str): First arg is used as text-command input. Other
+            arguments are ignored.
+
+    """
+    #from evennia.server.profiling.timetrace import timetrace
+    #text = timetrace(text, "ServerSession.data_in")
+
+    text = args[0] if args else None
+
+    #explicitly check for None since text can be an empty string, which is
+    #also valid
+    if text is None:
+        return
+    # this is treated as a command input
+    #text = to_unicode(escape_control_sequences(text), encoding=self.encoding)
+    # handle the 'idle' command
+    if text.strip() == _IDLE_COMMAND:
+        session.update_session_counters(idle=True)
+        return
+    if session.player:
+        # nick replacement
+        puppet = session.puppet
+        if puppet:
+            text = puppet.nicks.nickreplace(text,
+                          categories=("inputline", "channel"), include_player=True)
+        else:
+            text = session.player.nicks.nickreplace(text,
+                        categories=("inputline", "channels"), include_player=False)
+    cmdhandler(session, text, callertype="session", session=session)
+    session.update_session_counters()
+
+
+#------------------------------------------------------------------------------------
 
 #------------------------------------------------------------
 # All OOB commands must be on the form
-#      cmdname(oobhandler, session, *args, **kwargs)
+#      cmdname(session, *args, **kwargs)
 #------------------------------------------------------------
 
 #
@@ -126,7 +167,7 @@ def oob_repeat(session, oobfuncname, interval, *args, **kwargs):
     interval = 20 if not interval else (max(5, interval))
     obj = session.get_puppet_or_player()
     if obj and oobfuncname != "REPEAT":
-        OOB_HANDLER.add_repeater(obj, session, oobfuncname, interval, *args, **kwargs)
+        INPUT_HANDLER.add_repeater(obj, session, oobfuncname, interval, *args, **kwargs)
 
 
 ##OOB{"UNREPEAT":10}
@@ -147,7 +188,7 @@ def oob_unrepeat(session, oobfuncname, interval):
     """
     obj = session.get_puppet_or_player()
     if obj:
-        OOB_HANDLER.remove_repeater(obj, session, oobfuncname, interval)
+        INPUT_HANDLER.remove_repeater(obj, session, oobfuncname, interval)
 
 
 #
@@ -165,7 +206,7 @@ def oob_unrepeat(session, oobfuncname, interval):
 
 
 # mapping from MSDP standard names to Evennia variables
-OOB_SENDABLE = {
+_OOB_SENDABLE = {
         "CHARACTER_NAME": lambda o: o.key,
         "SERVER_ID": lambda o: settings.SERVERNAME,
         "ROOM_NAME": lambda o: o.db_location.key,
@@ -210,7 +251,7 @@ def oob_send(session, *args, **kwargs):
 
 
 # mapping standard MSDP keys to Evennia field names
-OOB_REPORTABLE = {
+_OOB_REPORTABLE = {
         "CHARACTER_NAME": "db_key",
         "ROOM_NAME": "db_location",
         "TEST" : "test"
@@ -252,10 +293,10 @@ def oob_report(session, *args, **kwargs):
                 oob_error(session, "No Reportable property '%s'. Use LIST REPORTABLE_VARIABLES." % propname)
             # the field_monitors require an oob function as a callback when they report a change.
             elif propname.startswith("db_"):
-                OOB_HANDLER.add_field_monitor(obj, session, propname, "return_field_report")
+                INPUT_HANDLER.add_field_monitor(obj, session, propname, "return_field_report")
                 ret.append(to_str(_GA(obj, propname), force_string=True))
             else:
-                OOB_HANDLER.add_attribute_monitor(obj, session, propname, "return_attribute_report")
+                INPUT_HANDLER.add_attribute_monitor(obj, session, propname, "return_attribute_report")
                 ret.append(_GA(obj, "db_value"))
         session.msg(oob=("MSDP_ARRAY", ret))
     else:
@@ -314,9 +355,9 @@ def oob_unreport(session, *args, **kwargs):
             if not propname:
                 oob_error(session, "No Un-Reportable property '%s'. Use LIST REPORTABLE_VARIABLES." % propname)
             elif propname.startswith("db_"):
-                OOB_HANDLER.remove_field_monitor(obj, session, propname, "oob_return_field_report")
+                INPUT_HANDLER.remove_field_monitor(obj, session, propname, "oob_return_field_report")
             else:  # assume attribute
-                OOB_HANDLER.remove_attribute_monitor(obj, session, propname, "oob_return_attribute_report")
+                INPUT_HANDLER.remove_attribute_monitor(obj, session, propname, "oob_return_attribute_report")
     else:
         oob_error(session, "You must log in first.")
 
@@ -359,7 +400,7 @@ def oob_list(session, mode, *args, **kwargs):
         # we need to check so as to use the right return value depending on if it is
         # an Attribute (identified by tracking the db_value field) or a normal database field
         # reported is a list of tuples (obj, propname, args, kwargs)
-        reported = OOB_HANDLER.get_all_monitors(session)
+        reported = INPUT_HANDLER.get_all_monitors(session)
         reported = [rep[0].key if rep[1] == "db_value" else rep[1] for rep in reported]
         session.msg(oob=("REPORTED_VARIABLES", reported))
     elif mode == "SENDABLE_VARIABLES":
@@ -381,17 +422,17 @@ def oob_list(session, mode, *args, **kwargs):
 # this maps the commands to the names available to use from
 # the oob call. The standard MSDP commands are capitalized
 # as per the protocol, Evennia's own commands are not.
-CMD_MAP = {"oob_error": oob_error, # will get error messages
-           "return_field_report": oob_return_field_report,
-           "return_attribute_report": oob_return_attribute_report,
-           # MSDP
-           "REPEAT": oob_repeat,
-           "UNREPEAT": oob_unrepeat,
-           "SEND": oob_send,
-           "ECHO": oob_echo,
-           "REPORT": oob_report,
-           "UNREPORT": oob_unreport,
-           "LIST": oob_list,
-           # GMCP
-           }
+#CMD_MAP = {"oob_error": oob_error, # will get error messages
+#           "return_field_report": oob_return_field_report,
+#           "return_attribute_report": oob_return_attribute_report,
+#           # MSDP
+#           "REPEAT": oob_repeat,
+#           "UNREPEAT": oob_unrepeat,
+#           "SEND": oob_send,
+#           "ECHO": oob_echo,
+#           "REPORT": oob_report,
+#           "UNREPORT": oob_unreport,
+#           "LIST": oob_list,
+#           # GMCP
+#           }
 

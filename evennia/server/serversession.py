@@ -18,11 +18,9 @@ from evennia.utils import logger
 from evennia.utils.inlinefunc import parse_inlinefunc
 from evennia.utils.nested_inlinefuncs import parse_inlinefunc as parse_nested_inlinefunc
 from evennia.utils.utils import make_iter, lazy_property
-from evennia.commands.cmdhandler import cmdhandler
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
 
-_IDLE_COMMAND = settings.IDLE_COMMAND
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _ObjectDB = None
@@ -31,7 +29,6 @@ _INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
 
 # i18n
 from django.utils.translation import ugettext as _
-
 
 # Handlers for Session.db/ndb operation
 
@@ -168,8 +165,6 @@ class ServerSession(Session):
         self.player = None
         self.cmdset_storage_string = ""
         self.cmdset = CmdSetHandler(self, True)
-        self.datamap = {"text": self.recv_text,
-                        "_default": self.recv_text}
 
     def __cmdset_storage_get(self):
         return [path.strip() for path in self.cmdset_storage_string.split(',')]
@@ -337,42 +332,6 @@ class ServerSession(Session):
             # Player-visible idle time, not used in idle timeout calcs.
             self.cmd_last_visible = self.cmd_last
 
-    @staticmethod
-    def recv_text(session, *args, **kwargs):
-        """
-        Recv command data User->Evennia. This will in effect execute a command
-        string on the server.
-
-        Args:
-            text (str): First arg is used as text-command input. Other
-                arguments are ignored.
-
-        """
-        #from evennia.server.profiling.timetrace import timetrace
-        #text = timetrace(text, "ServerSession.data_in")
-
-        text = args[0] if args else None
-
-        #explicitly check for None since text can be an empty string, which is
-        #also valid
-        if text is not None:
-            # this is treated as a command input
-            #text = to_unicode(escape_control_sequences(text), encoding=self.encoding)
-            # handle the 'idle' command
-            if text.strip() == _IDLE_COMMAND:
-                session.update_session_counters(idle=True)
-                return
-            if session.player:
-                # nick replacement
-                puppet = session.puppet
-                if puppet:
-                    text = puppet.nicks.nickreplace(text,
-                                  categories=("inputline", "channel"), include_player=True)
-                else:
-                    text = session.player.nicks.nickreplace(text,
-                                categories=("inputline", "channels"), include_player=False)
-            cmdhandler(session, text, callertype="session", session=session)
-            session.update_session_counters()
 
     def data_out(self, text=None, **kwargs):
         """
@@ -384,6 +343,11 @@ class ServerSession(Session):
                 by their keys. Or "options", carrying options
                 for the protocol(s).
 
+        Notes:
+            We need to handle inlinefunc-parsing at this point
+            since we must have access to the database and the
+            Server Session.
+
         """
         print "serversession.data_out:", text, kwargs
         if text:
@@ -392,7 +356,7 @@ class ServerSession(Session):
             else:
                 text, args = text, []
             print("kwargs", kwargs, kwargs.get("options", {}))
-            options = kwargs.get("options", None) or {}
+            options = kwargs.get("options", [None, {}])[1]
             raw = options.get("raw", False)
             strip_inlinefunc = options.get("strip_inlinefunc", False)
             if _INLINEFUNC_ENABLED and not raw:
