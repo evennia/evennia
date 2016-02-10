@@ -90,7 +90,7 @@ class WebSocketClient(Protocol, Session):
         Method called when data is coming in over the websocket
         connection. This is always a JSON object on the following
         form:
-            [cmdname, arg, arg2, ...]
+            [cmdname, [args], {kwargs}]
 
 
         """

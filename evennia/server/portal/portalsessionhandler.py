@@ -356,8 +356,10 @@ class PortalSessionHandler(SessionHandler):
             session (Session): Session sending data.
 
         Kwargs:
-            text (str): Text from protocol.
-            kwargs (any): Other data from protocol.
+            kwargs (any): Each key is a command instruction to the
+            protocol on the form key = [[args],{kwargs}]. This will
+            call a method send_<key> on the protocol. If no such
+            method exixts, it send the data to a method send_default.
 
         """
         #from evennia.server.profiling.timetrace import timetrace
@@ -365,13 +367,12 @@ class PortalSessionHandler(SessionHandler):
 
         # distribute outgoing data to the correct session methods.
         if session:
-            print ("portalsessionhandler.data_out:", session, kwargs, session.datamap)
-            for cmdname, args in kwargs.items():
+            print ("portalsessionhandler.data_out:", session, kwargs)
+            for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
                 try:
-                    if cmdname in session.datamap:
-                        session.datamap[cmdname](session, *args)
-                    else:
-                        session.datamap["_default"](session, *args)
+                    getattr(session, "send_%s" % cmdname)(session, *cmdargs, **cmdkwargs)
+                except AttributeError:
+                    session.send_default(session, *cmdargs, **cmdkwargs)
                 except Exception:
                     log_trace()
 
