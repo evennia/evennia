@@ -55,10 +55,6 @@ class WebSocketClient(Protocol, Session):
         self.transport.setTcpKeepAlive(1)
         self.sessionhandler.connect(self)
 
-        self.datamap = {"text": self.send_text,
-                        "prompt": self.send_prompt,
-                        "_default": self.data_oob}
-
     def disconnect(self, reason=None):
         """
         Generic hook for the engine to call in order to
@@ -95,8 +91,9 @@ class WebSocketClient(Protocol, Session):
 
         """
         cmdarray = json.loads(string)
+        print "dataReceived:", cmdarray
         if cmdarray:
-            self.data_in(**{cmdarray[0]:cmdarray[1:]})
+            self.data_in(**{cmdarray[0]:[cmdarray[1], cmdarray[2]]})
 
     def sendLine(self, line):
         """
@@ -129,8 +126,7 @@ class WebSocketClient(Protocol, Session):
         """
         self.sessionhandler.data_out(self, **kwargs)
 
-    @staticmethod
-    def send_text(session, *args, **kwargs):
+    def send_text(self, *args, **kwargs):
         """
         Send text data. This will pre-process the text for
         color-replacement, conversion to html etc.
@@ -165,25 +161,23 @@ class WebSocketClient(Protocol, Session):
 
         if raw:
             # no processing
-            data = json.dumps((text,) + args)
+            data = json.dumps([cmd, (text,) + args, kwargs])
         else:
             # send normally, with html processing
-            data = json.dumps((cmd, parse_html(text, strip_ansi=nomarkup)) +  args)
-        session.sendLine(data)
+            data = json.dumps([cmd, (parse_html(text, strip_ansi=nomarkup),) +  args, kwargs])
+        self.sendLine(data)
 
 
-    @staticmethod
-    def send_prompt(session, *args, **kwargs):
+    def send_prompt(self, *args, **kwargs):
         kwargs["options"].update({"send_prompt": True})
-        session.send_text(*args, **kwargs)
+        self.send_text(*args, **kwargs)
 
-    @staticmethod
-    def send_oob(session, *args, **kwargs):
+    def send_default(session, cmdname, *args, **kwargs):
         """
         Data Evennia -> User.
 
         Args:
-            cmd (str): The first argument will always be the oob cmd name.
+            cmdname (str): The first argument will always be the oob cmd name.
             *args (any): Remaining args will be arguments for `cmd`.
 
         Kwargs:
@@ -192,5 +186,4 @@ class WebSocketClient(Protocol, Session):
                 client instead.
 
         """
-        if args:
-            session.sendLine(json.dumps(args))
+        session.sendLine(json.dumps([cmdname, args, kwargs]))

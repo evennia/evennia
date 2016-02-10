@@ -1,6 +1,6 @@
 {% extends "webclient/base.html" %}
 
-{% block connecting %} 
+{% block connecting %}
 {% endblock %}
 
 {% block client %}
@@ -8,8 +8,18 @@
 <h1>Webclient!</h1>
 
 <form>
-    <input type="text" name="input">
-    <input type="button" value="Send" onClick="Evennia.msg">
+    <input id="maininput" type="text" name="input">
+    <input type="button" value="Send" onClick="sendInput()">
 </form>
+
+<script language="javascript" type="text/javascript">
+
+var sendInput = function() {
+    var inmsg = $("#maininput").val();
+    log("sendInput: " + inmsg);
+    Evennia.msg("text", [inmsg], {});
+};
+
+</script>
 
 {% endblock %}

@@ -334,7 +334,9 @@ class PortalSessionHandler(SessionHandler):
                 self.data_out(session, text=_ERROR_COMMAND_OVERFLOW)
                 return
             # scrub data
+            print ("portalsessionhandler before clean:", session, kwargs)
             kwargs = self.clean_senddata(session, kwargs)
+            print ("portalsessionhandler after clean:", session, kwargs)
 
             # relay data to Server
             self.command_counter += 1

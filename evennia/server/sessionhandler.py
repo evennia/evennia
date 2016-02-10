@@ -175,6 +175,7 @@ class SessionHandler(dict):
 
         rkwargs = {}
         for key, data in kwargs.iteritems():
+            print "sessionhandler.clean_senddata:", key, data
             if not data:
                 rkwargs[key] = [ [], {} ]
             elif isinstance(data, dict):
