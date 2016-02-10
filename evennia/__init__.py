@@ -60,7 +60,7 @@ create_help_entry = None
 # utilities
 settings = None
 lockfuncs = None
-oobhandler = None
+inputhandler = None
 logger = None
 gametime = None
 ansi = None
@@ -167,7 +167,7 @@ def _init():
 
     # handlers
     from .scripts.tickerhandler import TICKER_HANDLER
-    from .server.oobhandler import OOB_HANDLER
+    from .server.inputhandler import INPUT_HANDLER
     from .server.sessionhandler import SESSION_HANDLER
     from .comms.channelhandler import CHANNEL_HANDLER
 

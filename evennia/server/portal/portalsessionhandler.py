@@ -372,7 +372,7 @@ class PortalSessionHandler(SessionHandler):
                 try:
                     getattr(session, "send_%s" % cmdname)(session, *cmdargs, **cmdkwargs)
                 except AttributeError:
-                    session.send_default(session, *cmdargs, **cmdkwargs)
+                    session.send_default(session, cmdname, *cmdargs, **cmdkwargs)
                 except Exception:
                     log_trace()
 

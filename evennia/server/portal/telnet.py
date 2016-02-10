@@ -71,11 +71,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.keep_alive = LoopingCall(self._write, IAC + NOP)
         self.keep_alive.start(30, now=False)
 
-        self.datamap = {"text": self.send_text,
-                        "prompt": self.send_prompt,
-                        "_default": self.send_oob}
-
-
     def handshake_done(self, force=False):
         """
         This is called by all telnet extensions once they are finished.
@@ -270,9 +265,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         self.sessionhandler.data_out(self, **kwargs)
 
+    # send_* methods
 
-    @staticmethod
-    def send_text(session, *args, **kwargs):
+    def send_text(self, *args, **kwargs):
         """
         Send text data. This is an in-band telnet operation.
 
@@ -301,14 +296,14 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         # handle arguments
         options = kwargs.get("options", {})
-        ttype = session.protocol_flags.get('TTYPE', {})
+        ttype = self.protocol_flags.get('TTYPE', {})
         xterm256 = options.get("xterm256", ttype.get('256 COLORS', False) if ttype.get("init_done") else True)
         useansi = options.get("ansi", ttype and ttype.get('ANSI', False) if ttype.get("init_done") else True)
         raw = options.get("raw", False)
         nomarkup = options.get("nomarkup", not (xterm256 or useansi))
         echo = options.get("echo", None)
-        mxp = options.get("mxp", session.protocol_flags.get("MXP", False))
-        screenreader =  options.get("screenreader", session.screenreader)
+        mxp = options.get("mxp", self.protocol_flags.get("MXP", False))
+        screenreader =  options.get("screenreader", self.screenreader)
 
         if screenreader:
             # screenreader mode cleans up output
@@ -324,11 +319,17 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                     prompt = mxp_parse(prompt)
             prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
             prompt += IAC + GA
-            session.transport.write(mccp_compress(session, prompt))
+            self.transport.write(mccp_compress(self, prompt))
         else:
+            if echo is not None:
+                # turn on/off echo
+                if echo:
+                    self.transport.write(mccp_compress(self, IAC+WILL+ECHO))
+                else:
+                    self.transport.write(mccp_compress(self, IAC+WONT+ECHO))
             if raw:
                 # no processing
-                session.sendLine(text)
+                self.sendLine(text)
                 return
             else:
                 # we need to make sure to kill the color at the end in order
@@ -336,29 +337,19 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256, mxp=mxp)
                 if mxp:
                     linetosend = mxp_parse(linetosend)
-                session.sendLine(linetosend)
+                self.sendLine(linetosend)
 
-            if echo is not None:
-                # turn on/off echo
-                if echo:
-                    session.transport.write(mccp_compress(session, IAC+WILL+ECHO))
-                else:
-                    session.transport.write(mccp_compress(session, IAC+WONT+ECHO))
-
-
-    @staticmethod
-    def send_prompt(session, *args, **kwargs):
+    def send_prompt(self, *args, **kwargs):
         """
         Send a prompt - a text without a line end. See send_text for argument options.
 
         """
         kwargs["options"].update({"send_prompt": True})
-        session.send_text(*args, **kwargs)
+        self.send_text(*args, **kwargs)
 
 
-    @staticmethod
-    def send_oob(session, *args, **kwargs):
+    def send_default(self, cmdname, *args, **kwargs):
         """
-        Send oob data
+        Send other oob data
         """
-        print "telnet.send_oob not implemented yet! ", args
+        print "telnet.send_default not implemented yet! ", args
