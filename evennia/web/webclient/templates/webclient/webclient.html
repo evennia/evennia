@@ -17,7 +17,7 @@
 var sendInput = function() {
     var inmsg = $("#maininput").val();
     log("sendInput: " + inmsg);
-    Evennia.msg("text", [inmsg], {});
+    Evennia.msg("echo", [inmsg], {});
 };
 
 </script>
