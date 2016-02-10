@@ -15,8 +15,6 @@ from django.utils import timezone
 from django.conf import settings
 from evennia.comms.models import ChannelDB
 from evennia.utils import logger
-from evennia.utils.inlinefunc import parse_inlinefunc
-from evennia.utils.nested_inlinefuncs import parse_inlinefunc as parse_nested_inlinefunc
 from evennia.utils.utils import make_iter, lazy_property
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
@@ -25,7 +23,6 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _ObjectDB = None
 _ANSI = None
-_INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -333,7 +330,7 @@ class ServerSession(Session):
             self.cmd_last_visible = self.cmd_last
 
 
-    def data_out(self, text=None, **kwargs):
+    def data_out(self, **kwargs):
         """
         Sending data from Evennia->Player
 
@@ -343,28 +340,29 @@ class ServerSession(Session):
                 by their keys. Or "options", carrying options
                 for the protocol(s).
 
-        Notes:
-            We need to handle inlinefunc-parsing at this point
-            since we must have access to the database and the
-            Server Session.
+        """
+        print "serversession.data_out:", kwargs
+
+        self.sessionhandler.data_out(self, **kwargs)
+
+    def msg(self, text=None, **kwargs):
+        """
+        Wrapper to mimic msg() functionality elsewhere.
+
+        Args:
+            text (str): String input.
+
+        Kwargs:
+            any (str or tuple): Send-commands identified
+                by their keys. Or "options", carrying options
+                for the protocol(s).
 
         """
-        print "serversession.data_out:", text, kwargs
         if text:
-            if hasattr(text, "__iter__"):
-                text, args = text[0], list(text[1:])
-            else:
-                text, args = text, []
-            options = kwargs.get("options", None) or {}
-            raw = options.get("raw", False)
-            strip_inlinefunc = options.get("strip_inlinefunc", False)
-            if _INLINEFUNC_ENABLED and not raw:
-                text = parse_inlinefunc(text, strip=strip_inlinefunc, session=self)
-                text = parse_nested_inlinefunc(text, strip=strip_inlinefunc, session=self)
-            text = [text] + args
+            self.data_out(text=text, **kwargs)
+        else:
+            self.data_out(**kwargs)
 
-        self.sessionhandler.data_out(self, text=text, **kwargs)
-    msg = data_out # alias
 
     def __eq__(self, other):
         "Handle session comparisons"

@@ -300,7 +300,7 @@ class PortalSessionHandler(SessionHandler):
 
         """
         for session in self.values():
-            session.data_out(text=(message,))
+            self.data_out(session, text=message)
 
     def data_in(self, session, **kwargs):
         """
