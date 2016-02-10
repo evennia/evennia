@@ -977,7 +977,7 @@ def all_from_module(module):
         return {}
     # make sure to only return variables actually defined in this module (not imports)
     members = getmembers(mod, predicate=lambda obj: getmodule(obj) == mod)
-    return dict((key, val) for key, val in members.iteritems() if not key.startswith("_"))
+    return dict((key, val) for key, val in members if not key.startswith("_"))
     #return dict((key, val) for key, val in mod.__dict__.items()
     #                        if not (key.startswith("_") or ismodule(val)))
 
@@ -1002,7 +1002,7 @@ def callables_from_module(module):
         return {}
     # make sure to only return callables actually defined in this module (not imports)
     members = getmembers(mod, predicate=lambda obj: callable(obj) and getmodule(obj) == mod)
-    return dict((key, val) for key, val in members.iteritems() if not key.startswith("_"))
+    return dict((key, val) for key, val in members if not key.startswith("_"))
 
 
 def variable_from_module(module, variable=None, default=None):

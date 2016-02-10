@@ -29,11 +29,6 @@ try:
 except ImportError:
     import pickle
 
-# input handlers
-
-_INPUT_HANDLER_FUNCS = {}
-for modname in make_iter(settings.INPUT_HANDLER_MODULES):
-    _INPUT_HANDLER_FUNCS.update(callables_from_module(modname))
 
 # delayed imports
 _PlayerDB = None
@@ -67,6 +62,13 @@ _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 _MAX_SERVER_COMMANDS_PER_SECOND = 100.0
 _MAX_SESSION_COMMANDS_PER_SECOND = 5.0
 _MODEL_MAP = None
+
+# input handlers
+
+_INPUT_HANDLER_FUNCS = {}
+for modname in make_iter(settings.INPUT_HANDLER_MODULES):
+    print modname
+    _INPUT_HANDLER_FUNCS.update(callables_from_module(modname))
 
 def delayed_import():
     """
@@ -610,7 +612,7 @@ class ServerSessionHandler(SessionHandler):
                         print "sessionhandler: data_in", cmdname, cmdargs, cmdkwargs
                         _INPUT_HANDLER_FUNCS[cmdname](session, *cmdargs, **cmdkwargs)
                     else:
-                        _INPUT_HANDLER_FUNCS["_default"](session, *cmdargs, **cmdkwargs)
+                        _INPUT_HANDLER_FUNCS["default"](session, cmdname, *cmdargs, **cmdkwargs)
                 except Exception:
                     log_trace()
 

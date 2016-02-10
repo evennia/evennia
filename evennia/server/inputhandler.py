@@ -14,17 +14,16 @@ an object's properties or start a repeating action.
 from builtins import object
 
 from collections import defaultdict
-from django.conf import settings
 from evennia.server.models import ServerConfig
-from evennia.server.sessionhandler import SESSIONS
 from evennia.scripts.tickerhandler import TickerHandler
 from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 from evennia.utils import logger
-from evennia.utils.utils import make_iter, mod_import
 
 _SA = object.__setattr__
 _GA = object.__getattribute__
 _DA = object.__delattr__
+_SESSIONS = None
+
 
 # set at the bottom of this module
 _OOB_FUNCS = None
@@ -66,14 +65,18 @@ class OOBFieldMonitor(object):
             fieldname (str): The field to monitor
 
         """
+        global _SESSIONS
+        if not _SESSIONS:
+            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
+
         for sessid, oobtuples in self.subscribers.items():
             # oobtuples is a list [(oobfuncname, args, kwargs), ...],
             # a potential list of oob commands to call when this
             # field changes.
-            sessid = SESSIONS.get(sessid)
+            sessid = _SESSIONS.get(sessid)
             if sessid:
                 for (oobfuncname, args, kwargs) in oobtuples:
-                    OOB_HANDLER.execute_cmd(sessid, oobfuncname, fieldname, self.obj, *args, **kwargs)
+                    INPUT_HANDLER.execute_cmd(sessid, oobfuncname, fieldname, self.obj, *args, **kwargs)
 
     def add(self, session, oobfuncname, *args, **kwargs):
         """
@@ -123,7 +126,7 @@ class OOBAtRepeater(object):
 
     def __call__(self, *args, **kwargs):
         "Called at regular intervals. Calls the oob function"
-        OOB_HANDLER.execute_cmd(kwargs["_sessid"], kwargs["_oobfuncname"], *args, **kwargs)
+        INPUT_HANDLER.execute_cmd(kwargs["_sessid"], kwargs["_oobfuncname"], *args, **kwargs)
 
 
 # Main OOB Handler
@@ -456,30 +459,30 @@ class OOBHandler(TickerHandler):
 
 
 # access object
-OOB_HANDLER = OOBHandler()
+INPUT_HANDLER = OOBHandler()
 
-# load resources from plugin module. This must happen
-# AFTER the OOB_HANDLER has been initialized since the
-# commands will want to import it.
-_OOB_FUNCS = {}
-for modname in make_iter(settings.OOB_PLUGIN_MODULES):
-    _OOB_FUNCS.update(mod_import(modname).CMD_MAP)
-
-# get the command to receive eventual error strings
-_OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
-if not _OOB_ERROR:
-    # no custom error set; create default oob error message function
-    def oob_error(session, errmsg, *args, **kwargs):
-        """
-        Fallback error handler. This will be used if no custom
-        oob_error is defined and just echoes the error back to the
-        session.
-
-        Args:
-            errmsg (str): Error message to echo.
-            args, kwargs (any): Not used.
-
-        """
-        session.msg(oob=("err", ("ERROR ", errmsg)))
-    _OOB_ERROR = oob_error
-
+## load resources from plugin module. This must happen
+## AFTER the OOB_HANDLER has been initialized since the
+## commands will want to import it.
+#_OOB_FUNCS = {}
+#for modname in make_iter(settings.OOB_PLUGIN_MODULES):
+#    _OOB_FUNCS.update(mod_import(modname).CMD_MAP)
+#
+## get the command to receive eventual error strings
+#_OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
+#if not _OOB_ERROR:
+#    # no custom error set; create default oob error message function
+#    def oob_error(session, errmsg, *args, **kwargs):
+#        """
+#        Fallback error handler. This will be used if no custom
+#        oob_error is defined and just echoes the error back to the
+#        session.
+#
+#        Args:
+#            errmsg (str): Error message to echo.
+#            args, kwargs (any): Not used.
+#
+#        """
+#        session.msg(oob=("err", ("ERROR ", errmsg)))
+#    _OOB_ERROR = oob_error
+#

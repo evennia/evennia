@@ -58,9 +58,10 @@ name.
 from future.utils import viewkeys
 
 from django.conf import settings
-from evennia.utils.utils import to_str
+from evennia.server.inputhandler import INPUT_HANDLER
 from evennia.commands.cmdhandler import cmdhandler
-#from evennia.server.inputhandler import INPUT_HANDLER
+from evennia.utils.logger import log_err
+from evennia.utils.utils import to_str
 
 _IDLE_COMMAND = settings.IDLE_COMMAND
 _GA = object.__getattribute__
@@ -104,6 +105,16 @@ def text(session, *args, **kwargs):
     cmdhandler(session, text, callertype="session", session=session)
     session.update_session_counters()
 
+def default(session, cmdname, *args, **kwargs):
+    """
+    Default catch-function. This is like all other input functions except
+    it will get `cmdname` as the first argument.
+
+    """
+    err = "Input command not recognized:\n" \
+            " name: {cmdname}\n" \
+            " args, kwargs: {args}, {kwargs}"
+    log_err(err.format(cmdname=cmdname, args=args, kwargs=kwargs))
 
 #------------------------------------------------------------------------------------
 
