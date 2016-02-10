@@ -244,7 +244,7 @@ class ServerSessionHandler(SessionHandler):
         # validate all scripts
         _ScriptDB.objects.validate()
         self[sess.sessid] = sess
-        self.data_in(sess, text=(CMD_LOGINSTART,))
+        self.data_in(sess, text=[[CMD_LOGINSTART],{}])
 
     def portal_session_sync(self, portalsessiondata):
         """

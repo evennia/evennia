@@ -289,6 +289,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                         Note that it must be actively turned back on again!
 
         """
+        print "telnet.send_text", args,kwargs
         if args:
             text = args[0]
             if text is None:
