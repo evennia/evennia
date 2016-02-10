@@ -370,9 +370,9 @@ class PortalSessionHandler(SessionHandler):
             print ("portalsessionhandler.data_out:", session, kwargs)
             for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
                 try:
-                    getattr(session, "send_%s" % cmdname)(session, *cmdargs, **cmdkwargs)
+                    getattr(session, "send_%s" % cmdname)(*cmdargs, **cmdkwargs)
                 except AttributeError:
-                    session.send_default(session, cmdname, *cmdargs, **cmdkwargs)
+                    session.send_default(cmdname, *cmdargs, **cmdkwargs)
                 except Exception:
                     log_trace()
 
