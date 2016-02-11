@@ -1,30 +1,21 @@
 {% extends "webclient/base.html" %}
 
-{% block guilib_import %}
-{% endblock %}
+<!-- Django-template blocks available for overloading:
+    - connecting     - custom connect messages
+    - jquery_import  - for changing to a local jquery version
+    - guilib_import  - for using your own gui lib
+--> 
 
-{% block connecting %}
-{% endblock %}
 
 {% block client %}
 
-<h1>Webclient!</h1>
+<div id="client">
+    <div id="messagewindow"> mainarea  </div>
+    <div id="inputform"> 
+        <textarea name="inputfield" type="text"> </textarea>
+    </div>
+</div>
 
-<form>
-    <input id="maininput" type="text" name="input">
-    <input type="button" value="Send" onClick="sendInput()">
-</form>
-
-<script language="javascript" type="text/javascript">
-
-var sendInput = function() {
-    var inmsg = $("#maininput").val();
-    log("sendInput: " + inmsg);
-    Evennia.msg("echo", [inmsg], {});
-};
-
-</script>
 
 {% endblock %}
-
 

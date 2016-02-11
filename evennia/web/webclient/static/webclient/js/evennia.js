@@ -52,6 +52,7 @@ An "emitter" object must have a function
     var Evennia = {
 
         debug: true,
+        initialized: false,
 
         // Initialize.
         // startup Evennia emitter and connection.
@@ -68,13 +69,19 @@ An "emitter" object must have a function
         //          Evennia.emit to return data to Client.
         //
         init: function(opts) {
+            if (this.initialized) {
+                // make it safe to call multiple times.
+                return;
+            }
+            this.initialized = true; 
+
             opts = opts || {};
             this.emitter = opts.emitter || new DefaultEmitter();
 
             if (opts.connection) {
                this.connection = opts.connection;
             }
-            else if (window.WebSocket) {
+            else if (window.WebSocket && wsactive) {
                 this.connection = new WebsocketConnection();
                 if (!this.connection) {
                     this.connection = new AjaxCometConnection();
@@ -82,7 +89,7 @@ An "emitter" object must have a function
             } else {
                 this.connection = new AjaxCometConnection();
             }
-            // this.connection = opts.connection || window.WebSocket ? new WebsocketConnection() : new AjaxCometConnection();
+            log('Evennia initialized.')
         },
 
         // Client -> Evennia.
@@ -115,16 +122,17 @@ An "emitter" object must have a function
         //
         // Args:
         //   event (event): Event received from Evennia
-        //   data (obj):
+        //   args (array): Arguments to listener
+        //   kwargs (obj): keyword-args to listener
         //
-        emit: function (cmdname, data) {
-            log('emit called with args: + ' + cmdname + ',' + data);
-            if (data.cmdid) {
-                cmdmap[data.cmdid].apply(this, [data]);
-                delete cmdmap[cmddata.cmdid];
+        emit: function (cmdname, args, kwargs) {
+            log('emit called with args: ' + cmdname + ',' + args + ',' + kwargs);
+            if (kwargs.cmdid) {
+                cmdmap[kwargs.cmdid].apply(this, [args, kwargs]);
+                delete cmdmap[kwargs.cmdid];
             }
             else {
-                this.emitter.emit(cmdname, data);
+                this.emitter.emit(cmdname, args, kwargs);
             }
         },
 
@@ -135,7 +143,7 @@ An "emitter" object must have a function
     // the Server. An alternative can be overridden in Evennia.init.
     //
     var DefaultEmitter = function () {
-        var cmdmap = {};
+        var listeners = {};
         // Emit data to all listeners tied to a given cmdname
         //
         // Args:
@@ -144,11 +152,11 @@ An "emitter" object must have a function
         //     called as function(kwargs).
         //   kwargs (obj): Argument to the listener.
         //
-        var emit = function (cmdname, kwargs) {
-            log('emit', cmdname, kwargs);
+        var emit = function (cmdname, args, kwargs) {
+            log('emit', cmdname, args, kwargs);
 
-            if (cmdmap[cmdname]) {
-                cmdmap[cmdname].apply(this, kwargs);
+            if (listeners[cmdname]) {
+                listeners[cmdname].apply(this, [args, kwargs]);
             };
         };
 
@@ -161,7 +169,7 @@ An "emitter" object must have a function
         //
         var on = function (cmdname, listener) {
             if (typeof(listener === 'function')) {
-                cmdmap[cmdname] = listener;
+                listeners[cmdname] = listener;
             };
         };
 
@@ -171,7 +179,7 @@ An "emitter" object must have a function
         //   cmdname (str): Name of event to handle
         //
         var off = function (cmdname) {
-            delete cmdmap[cmdname]
+            delete listeners[cmdname]
         };
         return {emit:emit, on:on, off:off}
     };
@@ -184,17 +192,21 @@ An "emitter" object must have a function
         // Handle Websocket open event
         websocket.onopen = function (event) {
             log('Websocket connection openened. ', event);
-            Evennia.emit('socket:open', event);
+            Evennia.emit('socket:open', [], event);
         };
         // Handle Websocket close event
         websocket.onclose = function (event) {
             log('WebSocket connection closed.');
-            Evennia.emit('socket:close', event);
+            Evennia.emit('socket:close', [], event);
         };
         // Handle websocket errors
         websocket.onerror = function (event) {
             log("Websocket error to ", wsurl, event);
-            Evennia.emit('socket:error', event.data);
+            Evennia.emit('socket:error', [], event);
+            if (websocket.readyState === websocket.CLOSED) { 
+                log("Websocket failed. Falling back to Ajax...");
+                Evennia.connection = AjaxCometConnection();
+            }
         };
         // Handle incoming websocket data [cmdname, kwargs]
         websocket.onmessage = function (event) {
@@ -203,13 +215,14 @@ An "emitter" object must have a function
                 return;
             }
             // Parse the incoming data, send to emitter
-            // Incoming data is on the form [cmdname, kwargs]
+            // Incoming data is on the form [cmdname, args, kwargs]
             data = JSON.parse(data);
             log("incoming " + data);
-            Evennia.emit(data[0], data[1]);
+            Evennia.emit(data[0], data[1], data[2]);
         };
-        websocket.msg = function(data) {
-            websocket.send(JSON.stringify(data));
+        websocket.msg = function(cmdname, args, kwargs) {
+            // send 
+            websocket.send(JSON.stringify([cmdname, args, kwargs]));
         };
 
         return websocket;
@@ -221,11 +234,11 @@ An "emitter" object must have a function
         log("Trying ajax ...");
         var client_hash = '0';
         // Send Client -> Evennia. Called by Evennia.send.
-        var msg = function(data) {
+        var msg = function(cmdname, args, kwargs) {
             $.ajax({type: "POST", url: "/webclientdata",
                    async: true, cache: false, timeout: 30000,
                    dataType: "json",
-                   data: {mode:'input', msg: data, 'suid': client_hash},
+                   data: {mode:'input', msg: [cmdname, args, kwargs], 'suid': client_hash},
                    success: function(data) {},
                    error: function(req, stat, err) {
                        log("COMET: Server returned error. " + err);
@@ -243,7 +256,7 @@ An "emitter" object must have a function
                     dataType: "json",
                     data: {mode: 'receive', 'suid': client_hash},
                     success: function(data) {
-                       Evennia.emit(data[0], data[1])
+                       Evennia.emit(data[0], data[1], data[2])
                     },
                     error: function() {
                         poll()  // timeout; immediately re-poll
@@ -284,16 +297,10 @@ function log(msg) {
 }
 
 // Called when page has finished loading (kicks the client into gear)
-$(document).ready(function(){
-
-    // a small timeout to stop 'loading' indicator in Chrome
-    setTimeout(function () {
-      log('Evennia initialized...')
-      Evennia.init()
-
-    }, 500);
-    // set an idle timer to avoid proxy servers to time out on us (every 3 minutes)
-    setInterval(function() {
-      log('Idle tick.');
-    }, 60000*3);
+$(document).ready(function() {
+    setTimeout( function () {
+        Evennia.init() 
+        }, 
+        500
+    );
 });

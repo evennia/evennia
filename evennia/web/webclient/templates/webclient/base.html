@@ -14,60 +14,66 @@ JQuery available.
     <meta name="author" content="Evennia" />
     <meta name="generator" content="Evennia" />
 
-    <link rel='stylesheet' type="text/css" media="screen" href="{% static "webclient/css/webclient.css" %}">
+    <link rel='stylesheet' type="text/css" media="screen" href={% static "webclient/css/webclient.css" %}>
 
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript" charset="utf-8"></script>
-    <!--for offline testing, download the jquery library from jquery.com-->
-    <!--script src="/media/javascript/jquery-1.11.1.js" type="text/javascript" charset="utf-8"></script-->
+    <!-- Import JQuery and warn if there is a problem -->
+    {% block jquery_import %}
+        <script src="http://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+    {% endblock %}
 
     <script type="text/javascript" charset="utf-8">
-        if(!window.jQuery){document.write("<div class='err'>jQuery library not found or the online version could not be reached.</div>");}
+        if(!window.jQuery) {
+            document.write("<div class='err'>jQuery library not found or the online version could not be reached.</div>");
+        }
     </script>
 
-    <!-- Set up javascript url -->
+    <!-- Set up Websocket url and load the evennia.js library-->
     <script language="javascript" type="text/javascript">
+        {% if websocket_enabled %}
+            var wsactive = true;
+        {% else %}
+            var wsactive = false;
+        {% endif %} 
+
         {% if websocket_url %}
             var wsurl = "{{websocket_url}}:{{websocket_port}}";
         {% else %}
             var wsurl = "ws://" + this.location.hostname + ":{{websocket_port}}";
         {% endif %}
-        document.write("\<script src=\"{% static "webclient/js/evennia.js" %}\" type=\"text/javascript\" charset=\"utf-8\"\>\</script\>")
     </script>
+    <script src={% static "webclient/js/evennia.js" %} language="javascript" type="text/javascript" charset="utf-8"/></script>
+
+    <!-- Load gui library -->
+    {% block guilib_import %}
+        <script src={% static "webclient/js/webclient_gui.js" %} language="javascript" type="text/javascript" charset="utf-8"></script>
+    {% endblock %}
 
   </head>
   <body>
     
     <div id="connecting">
-        {% block Connecting %}
+        {% block connecting %}
         {% endblock %}
     </div>
 
-    <div id="noscript">
-        <h3>Javascript Error: The Evennia MUD client requires that you have Javascript activated.</h3>
-          <p>Turn off eventual script blockers and/or switch to a web
-          browser supporting javascript.</p>
-          <p>For admins: The error could also be due to not being able
-          to access the online jQuery javascript library. If you are
-          testing the client without an internet connection, you have
-          to previously download the jQuery library from
-          http://code.jquery.com (it's just one file) and then edit
-          webclient.html to point to the local copy.</p>
+    <div id="noscript" class="err">
+        <h3>Javascript Error: The Evennia MUD client requires that you
+            have Javascript activated.</h3> 
+            <p>Turn off eventual script blockers and/or switch to a
+            web browser supporting javascript. <p>
+            This error could also be due to not being able to access
+            the online jQuery javascript library.</p>
+        <!-- This is will only fire if javascript is actually active --> 
+        <script language="javascript" type="text/javascript">
+            $('#noscript').remove();
+        </script>
     </div>
 
-    <!-- This is will only fire if js is actually active --> 
-    <script language="javascript" type="text/javascript">
-        $('#noscript').remove();
-    </script>
-
+    <!-- main client -->
     <div id=clientwrapper>
         {% block client %}
         {% endblock %}
     </div>
-
-    <!-- import this after the client -->
-    {% block guilib_import %}
-    <script src="webclient/js/webclient_gui.js" language="javascript" type="test/javascript"> </script>
-    {% endblock %}
 
   </body>
 </html>
