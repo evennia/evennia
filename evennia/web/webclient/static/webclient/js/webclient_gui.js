@@ -27,17 +27,17 @@ var inputlog = function() {
 
     history[0] = ''; // the very latest input is empty for new entry.
 
-    function history_back() {
+    var back = function () {
         // step backwards in history stack
         history_pos = Math.min(++history_pos, history.length - 1);
         return history[history.length - 1 - history_pos];
-    }
-    function history_fwd() {
+    };
+    var fwd = function () {
         // step forwards in history stack
         history_pos = Math.max(--history_pos, 0);
         return history[history.length -1 - history_pos];
-    }
-    function history_add(input) {
+    };
+    var add = function (input) {
         // add a new entry to history, don't repeat latest
         if (input != history[history.length-1]) {
             if (history.length >= history_max) {
@@ -45,12 +45,12 @@ var inputlog = function() {
             }
             history[history.length-1] = input;
             history[history.length] = '';
-        }
-    }
-    return {back: history_back,
-            fwd: history_fwd,
-            add: history_add}
-};
+        };
+    };
+    return {back: back,
+            fwd: fwd,
+            add: add}
+}();
 
 $.fn.appendCaret = function() {
     /* jQuery extension that will forward the caret to the end of the input, and
@@ -100,10 +100,12 @@ $(document).keydown( function(event) {
     inputfield.focus();
 
     if (code === 13) { // Enter key sends text
-        outtext = inputfield.val()
-        inputlog.add(outtext)
+        outtext = inputfield.val();
+        inputlog.add(outtext);
+        inputfield.val("");
+        log("sending outtext", outtext);
         Evennia.msg("text", [outtext], {});
-        event.prevetDefault()
+        event.preventDefault()
     }
     else if (code === 38) { // Arrow up
         inputfield.val(inputlog.back()).appendCaret();
