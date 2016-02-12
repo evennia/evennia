@@ -143,7 +143,8 @@ class WebSocketClient(Protocol, Session):
 
         """
         if args:
-            text = args.pop(0)
+            args = list(args)
+            text = args[0]
             if text is None:
                 return
         options = kwargs.get("options", {})
@@ -156,16 +157,14 @@ class WebSocketClient(Protocol, Session):
             # screenreader mode cleans up output
             text = parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
             text = _RE_SCREENREADER_REGEX.sub("", text)
-
         cmd = "prompt" if prompt else "text"
-
         if raw:
-            # no processing
-            data = json.dumps([cmd, (text,) + args, kwargs])
+            args[0] = text
         else:
-            # send normally, with html processing
-            data = json.dumps([cmd, (parse_html(text, strip_ansi=nomarkup),) +  args, kwargs])
-        self.sendLine(data)
+            args[0] = parse_html(text, strip_ansi=nomarkup)
+
+        # send to client on required form [cmdname, args, kwargs]
+        self.sendLine(json.dumps([cmd, args, kwargs]))
 
 
     def send_prompt(self, *args, **kwargs):
@@ -186,4 +185,5 @@ class WebSocketClient(Protocol, Session):
                 client instead.
 
         """
+        print "send_default", cmdname, args, kwargs
         session.sendLine(json.dumps([cmdname, args, kwargs]))

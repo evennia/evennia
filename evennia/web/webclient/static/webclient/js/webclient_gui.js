@@ -7,12 +7,12 @@
  *
  * The job of this code is to create listeners to subscribe to evennia
  * messages, via Evennia.emitter.on(cmdname, listener) and to handle
- * input from the user and send it to 
+ * input from the user and send it to
  * Evennia.msg(cmdname, args, kwargs, [callback]).
  *
  */
 
-// 
+//
 // GUI Elements
 //
 
@@ -28,9 +28,9 @@ var inputlog = function() {
     history[0] = ''; // the very latest input is empty for new entry.
 
     function history_back() {
-        // step backwards in history stack 
+        // step backwards in history stack
         history_pos = Math.min(++history_pos, history.length - 1);
-        return history[history.length - 1 - history_pos]; 
+        return history[history.length - 1 - history_pos];
     }
     function history_fwd() {
         // step forwards in history stack
@@ -47,7 +47,7 @@ var inputlog = function() {
             history[history.length] = '';
         }
     }
-    return {back: history_back, 
+    return {back: history_back,
             fwd: history_fwd,
             add: history_add}
 };
@@ -91,7 +91,7 @@ $.fn.appendCaret = function() {
 };
 
 
-// GUI Event Handlers 
+// GUI Event Handlers
 
 $(document).keydown( function(event) {
     // catch all keyboard input, handle special chars
@@ -126,16 +126,17 @@ function set_window_size() {
 $(window).resize(set_window_size);
 
 
-// 
-// Listeners 
+//
+// Listeners
 //
 
 function doText(args, kwargs) {
     // append message to previous ones
+    log("doText:", args, kwargs);
     $("#messagewindow").append(
-            "<div class='msg out>" + args[0] + "</div>");
+            "<div class='msg out'>" + args[0] + "</div>");
     // scroll message window to bottom
-    $("#messagewindow").animate({scrollTop: $('#messageindow')[0].scrollHeight});
+    $("#messagewindow").animate({scrollTop: $('#messagewindow')[0].scrollHeight});
 }
 
 function doPrompt(args, kwargs) {
@@ -147,17 +148,18 @@ function doPrompt(args, kwargs) {
 
 $(document).ready(function() {
     // a small timeout to stop 'loading' indicator in Chrome
-    Evennia.init() 
+    Evennia.init()
     // register listeners
+    log("register listeners ...");
     Evennia.emitter.on("text", doText);
     Evennia.emitter.on("prompt", doPrompt);
-    set_window_size();    
-    
+    set_window_size();
+
     // set an idle timer to avoid proxy servers to time out on us (every 3 minutes)
     setInterval(function() {
         log('Idle tick.');
         Evennia.msg("text", ["idle"], {});
-    }, 
+    },
     60000*3
     );
 });

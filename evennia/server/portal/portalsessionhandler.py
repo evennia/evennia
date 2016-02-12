@@ -369,13 +369,21 @@ class PortalSessionHandler(SessionHandler):
 
         # distribute outgoing data to the correct session methods.
         if session:
-            print ("portalsessionhandler.data_out:", session, kwargs)
             for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
-                try:
-                    getattr(session, "send_%s" % cmdname)(*cmdargs, **cmdkwargs)
-                except AttributeError:
-                    session.send_default(cmdname, *cmdargs, **cmdkwargs)
-                except Exception:
-                    log_trace()
+                funcname = "send_%s" % cmdname
+                if hasattr(session, funcname):
+                    # better to use hassattr here over try..except
+                    # - avoids hiding AttributeErrors in the call.
+                    try:
+                        getattr(session, funcname)(*cmdargs, **cmdkwargs)
+                    except Exception:
+                        log_trace()
+                else:
+                    try:
+                        # note that send_default always takes cmdname
+                        # as arg too.
+                        session.send_default(cmdname, *cmdargs, **cmdkwargs)
+                    except Exception:
+                        log_trace()
 
 PORTAL_SESSIONS = PortalSessionHandler()
