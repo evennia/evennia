@@ -68,10 +68,10 @@ _MODEL_MAP = None
 
 # input handlers
 
-_INPUT_HANDLER_FUNCS = {}
-for modname in make_iter(settings.INPUT_HANDLER_MODULES):
+_INPUT_FUNCS = {}
+for modname in make_iter(settings.INPUT_FUNC_MODULES):
     print modname
-    _INPUT_HANDLER_FUNCS.update(callables_from_module(modname))
+    _INPUT_FUNCS.update(callables_from_module(modname))
 
 def delayed_import():
     """
@@ -629,11 +629,11 @@ class ServerSessionHandler(SessionHandler):
         if session:
             for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
                 try:
-                    if cmdname in _INPUT_HANDLER_FUNCS:
+                    if cmdname in _INPUT_FUNCS:
                         print "sessionhandler: data_in", cmdname, cmdargs, cmdkwargs
-                        _INPUT_HANDLER_FUNCS[cmdname](session, *cmdargs, **cmdkwargs)
+                        _INPUT_FUNCS[cmdname](session, *cmdargs, **cmdkwargs)
                     else:
-                        _INPUT_HANDLER_FUNCS["default"](session, cmdname, *cmdargs, **cmdkwargs)
+                        _INPUT_FUNCS["default"](session, cmdname, *cmdargs, **cmdkwargs)
                 except Exception:
                     log_trace()
 

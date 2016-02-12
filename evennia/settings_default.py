@@ -33,7 +33,7 @@ TELNET_INTERFACES = ['0.0.0.0']
 # special commands and data with enabled Telnet clients. This is used
 # to create custom client interfaces over a telnet connection. To make
 # full use of OOB, you need to prepare functions to handle the data
-# server-side (see INPUT_HANDLER_MODULES). TELNET_ENABLED is required for this
+# server-side (see INPUT_FUNC_MODULES). TELNET_ENABLED is required for this
 # to work.
 TELNET_OOB_ENABLED = False
 # Start the evennia django+twisted webserver so you can
@@ -279,7 +279,7 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs",)
 # Module holding handlers for managing incoming data from the client. These
 # will be loaded in order, meaning functions in later modules may overload
 # previous ones if having the same name.
-INPUT_HANDLER_MODULES = ["evennia.server.inputhandler_funcs", "server.conf.inputhandler_funcs"]
+INPUT_FUNC_MODULES = ["evennia.server.inputfuncs", "server.conf.inputfuncs"]
 # Module holding settings/actions for the dummyrunner program (see the
 # dummyrunner for more information)
 DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
