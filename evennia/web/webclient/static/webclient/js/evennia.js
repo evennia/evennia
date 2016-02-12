@@ -110,9 +110,9 @@ An "emitter" object must have a function
             if (typeof callback === 'function') {
                 cmdmap[cmdid] = callback;
             }
+            log('client msg sending: ', data);
             this.connection.msg(data);
 
-            log('client msg sending: ', cmdname, args, outargs, outkwargs);
         },
 
         // Evennia -> Client.
@@ -219,9 +219,9 @@ An "emitter" object must have a function
             log("incoming " + data);
             Evennia.emit(data[0], data[1], data[2]);
         };
-        websocket.msg = function(cmdname, args, kwargs) {
-            // send
-            websocket.send(JSON.stringify([cmdname, args, kwargs]));
+        websocket.msg = function(data) {
+            // send data across the wire. Make sure to json it.
+            websocket.send(JSON.stringify(data));
         };
 
         return websocket;
