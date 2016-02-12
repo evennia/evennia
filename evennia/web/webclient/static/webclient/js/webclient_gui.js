@@ -17,10 +17,8 @@
 //
 
 
-//
 // Manage history for input line
-//
-var inputlog = function() {
+var input_history = function() {
     var history_max = 21;
     var history = new Array();
     var history_pos = 0;
@@ -39,7 +37,7 @@ var inputlog = function() {
     };
     var add = function (input) {
         // add a new entry to history, don't repeat latest
-        if (input != history[history.length-1]) {
+        if (input && input != history[history.length-1]) {
             if (history.length >= history_max) {
                 history.shift(); // kill oldest entry
             }
@@ -52,112 +50,100 @@ var inputlog = function() {
             add: add}
 }();
 
-$.fn.appendCaret = function() {
-    /* jQuery extension that will forward the caret to the end of the input, and
-       won't harm other elements (although calling this on multiple inputs might
-       not have the expected consequences).
-
-       Thanks to
-       http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
-       for the good starting point.  */
-    return this.each(function() {
-        var range,
-            // Index at where to place the caret.
-            end,
-            self = this;
-
-        if (self.setSelectionRange) {
-            // other browsers
-            end = self.value.length;
-            self.focus();
-            // NOTE: Need to delay the caret movement until after the callstack.
-            setTimeout(function() {
-                self.setSelectionRange(end, end);
-            }, 0);
-        }
-        else if (self.createTextRange) {
-            // IE
-            end = self.value.length - 1;
-            range = self.createTextRange();
-            range.collapse(true);
-            range.moveEnd('character', end);
-            range.moveStart('character', end);
-            // NOTE: I haven't tested to see if IE has the same problem as
-            // W3C browsers seem to have in this context (needing to fire
-            // select after callstack).
-            range.select();
-        }
-    });
-};
-
-
+//
 // GUI Event Handlers
+//
 
-$(document).keydown( function(event) {
-    // catch all keyboard input, handle special chars
+// Grab text from inputline and send to Evennia
+function doSendText() {
+    inputfield = $("#inputfield");
+    outtext = inputfield.val();
+    input_history.add(outtext);
+    inputfield.val("");
+    log("sending outtext", outtext);
+    Evennia.msg("text", [outtext], {});
+}
+
+// catch all keyboard input, handle special chars
+function onKeydown (event) {
     var code = event.which;
     inputfield = $("#inputfield");
     inputfield.focus();
 
     if (code === 13) { // Enter key sends text
-        outtext = inputfield.val();
-        inputlog.add(outtext);
-        inputfield.val("");
-        log("sending outtext", outtext);
-        Evennia.msg("text", [outtext], {});
-        event.preventDefault()
+        doSendText();
+        event.preventDefault();
     }
     else if (code === 38) { // Arrow up
-        inputfield.val(inputlog.back()).appendCaret();
+        inputfield.val(input_history.back());
+        event.preventDefault();
     }
     else if (code === 40) { // Arrow down
-        inputfield.val(inputlog.fwd()).appendCaret();
+        inputfield.val(input_history.fwd());
+        event.preventDefault();
     }
+};
 
-});
-
-// client size setter
-
-function set_window_size() {
+// Handle resizing of client
+function doWindowResize() {
     var winh = $(document).height();
     var formh = $('#inputform').outerHeight(true);
     $("#messagewindow").css({'height': winh - formh - 1});
 }
 
-// Event - called when window resizes
-$(window).resize(set_window_size);
-
-
-//
-// Listeners
-//
-
-function doText(args, kwargs) {
-    // append message to previous ones
-    log("doText:", args, kwargs);
-    $("#messagewindow").append(
-            "<div class='msg out'>" + args[0] + "</div>");
-    // scroll message window to bottom
-    $("#messagewindow").animate({scrollTop: $('#messagewindow')[0].scrollHeight});
+// Handle text coming from the server
+function onText(args, kwargs) {
+    // append message to previous ones, then scroll so latest is at
+    // the bottom.
+    mwin = $("#messagewindow");
+    mwin.append("<div class='msg out'>" + args[0] + "</div>");
+    mwin.scrollTop(mwin[0].scrollHeight);
 }
 
-function doPrompt(args, kwargs) {
+// Handle prompt output from the server
+function onPrompt(args, kwargs) {
     // show prompt
     $('prompt').replaceWith(
            "<div id='prompt' class='msg out'>" + args[0] + "</div>");
 }
 
+// Handler unrecognized commands from server
+function onDefault(cmdname, args, kwargs) {
+    mwin = $("#messagewindow");
+    mwin.append(
+            "<div class='msg err'>"
+            + "Received unknown server command:<br>"
+            + cmdname + ", "
+            + JSON.stringify(args) + ", "
+            + JSON.stringify(kwargs) + "<p></div>");
+    mwin.scrollTop(mwin[0].scrollHeight);
+}
 
+
+//
+// Register Events
+//
+
+// Event when client window changes
+$(window).resize(doWindowResize);
+
+// Evenit when any key is pressed
+$(document).keydown(onKeydown);
+
+// Event when client finishes loading
 $(document).ready(function() {
-    // a small timeout to stop 'loading' indicator in Chrome
-    Evennia.init()
+    // This is safe to call, it will always only
+    // initialize once.
+    Evennia.init();
     // register listeners
     log("register listeners ...");
-    Evennia.emitter.on("text", doText);
-    Evennia.emitter.on("prompt", doPrompt);
-    set_window_size();
+    Evennia.emitter.on("text", onText);
+    Evennia.emitter.on("prompt", onPrompt);
+    Evennia.emitter.on("default", onDefault);
+    doWindowResize();
 
-    // set an idle timer to avoid proxy servers to time out on us (every 3 minutes)
+    // set an idle timer to send idle every 3 minutes,
+    // to avoid proxy servers timing out on us
     setInterval(function() {
         log('Idle tick.');
         Evennia.msg("text", ["idle"], {});
