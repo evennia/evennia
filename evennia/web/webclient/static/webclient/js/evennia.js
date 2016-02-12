@@ -143,7 +143,10 @@ An "emitter" object must have a function
     //
     var DefaultEmitter = function () {
         var listeners = {};
-        // Emit data to all listeners tied to a given cmdname
+        // Emit data to all listeners tied to a given cmdname.
+        // If the cmdname is not recognized, call a listener
+        // named 'default' with arguments [cmdname, args, kwargs].
+        // If no 'default' is found, ignore silently.
         //
         // Args:
         //   cmdname (str): Name of command, used to find
@@ -155,7 +158,10 @@ An "emitter" object must have a function
             log("DefaultEmitter.emit:", cmdname, args, kwargs);
             if (listeners[cmdname]) {
                 listeners[cmdname].apply(this, [args, kwargs]);
-            };
+            }
+            else if (listeners["default"]) {
+                listeners["default"].apply(this, [cmdname, args, kwargs]);
+            }
         };
 
         // Bind listener to event
@@ -291,7 +297,7 @@ An "emitter" object must have a function
 //
 function log() {
   if (Evennia.debug) {
-    console.log(arguments);
+    console.log(JSON.stringify(arguments));
   }
 }
 

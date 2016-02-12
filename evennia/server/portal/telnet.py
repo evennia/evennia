@@ -353,4 +353,5 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         Send other oob data
         """
-        print "telnet.send_default not implemented yet! ", args
+        if not cmdname == "options":
+            print "telnet.send_default not implemented yet! ", args

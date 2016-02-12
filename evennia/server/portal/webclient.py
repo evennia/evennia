@@ -185,5 +185,6 @@ class WebSocketClient(Protocol, Session):
                 client instead.
 
         """
-        print "send_default", cmdname, args, kwargs
-        session.sendLine(json.dumps([cmdname, args, kwargs]))
+        if not cmdname == "options":
+            print "send_default", cmdname, args, kwargs
+            session.sendLine(json.dumps([cmdname, args, kwargs]))
