@@ -297,7 +297,7 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         return self.lockhandler.check(srcobj, access_type, default=default)
 
-    def msg(self, msg="", to_obj=None, from_obj=None,
+    def msg(self, text=None, to_obj=None, from_obj=None,
             session=None, **kwargs):
         """
         This is a shortcut instad of calling msg() directly on an
@@ -305,15 +305,16 @@ class Command(with_metaclass(CommandMeta, object)):
         also appends self.session automatically.
 
         Args:
-            msg (str, optional): Text string of message to send.
+            text (str, optional): Text string of message to send.
             to_obj (Object, optional): Target object of message. Defaults to self.caller.
             from_obj (Object, optional): Source of message. Defaults to to_obj.
             session (Session, optional): Supply data only to a unique
                 session.
 
         Kwargs:
-            kwargs (any): These are all passed on to the message mechanism. Common
-                keywords are `oob` and `raw`.
+            options (dict): Options to the protocol.
+            any (any): All other keywords are interpreted as th
+                name of send-instructions.
 
         """
         from_obj = from_obj or self.caller
@@ -323,7 +324,7 @@ class Command(with_metaclass(CommandMeta, object)):
                 session = self.session
             else:
                 session = to_obj.sessions.get()
-        to_obj.msg(msg, from_obj=from_obj, session=session, **kwargs)
+        to_obj.msg(text=text, from_obj=from_obj, session=session, **kwargs)
 
     # Common Command hooks
 
