@@ -1512,7 +1512,7 @@ class CmdSetAttribute(ObjManipCommand):
                         continue
                     string += self.view_attr(obj, attr)
                 # we view it without parsing markup.
-                self.caller.msg(string.strip(), raw=True)
+                self.caller.msg(string.strip(), options={"raw":True})
                 return
             else:
                 # deleting the attribute(s)

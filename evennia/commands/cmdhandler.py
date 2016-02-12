@@ -114,7 +114,7 @@ def _msg_err(receiver, string):
         string (str): string which will be shown to the user.
 
     """
-    receiver.msg(string.format(_nomulti=True, timestamp=logger.timeformat()).strip())
+    receiver.msg(string.format(timestamp=logger.timeformat()).strip())
 
 
 # custom Exceptions
@@ -570,12 +570,12 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 returnValue(ret)
             elif sysarg:
                 # return system arg
-                error_to.msg(exc.sysarg, _nomulti=True)
+                error_to.msg(exc.sysarg)
 
         except NoCmdSets:
             # Critical error.
             logger.log_err("No cmdsets found: %s" % caller)
-            error_to.msg(_ERROR_NOCMDSETS, _nomulti=True)
+            error_to.msg(_ERROR_NOCMDSETS)
 
         except Exception:
             # We should not end up here. If we do, it's a programming bug.
