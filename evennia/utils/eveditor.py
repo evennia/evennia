@@ -347,9 +347,9 @@ class CmdEditorGroup(CmdEditorBase):
                 buf = linebuffer[lstart:lend]
                 editor.display_buffer(buf=buf,
                                       offset=lstart,
-                                      linenums=False, raw=True)
+                                      linenums=False, options={"raw":True})
             else:
-                editor.display_buffer(linenums=False, raw=True)
+                editor.display_buffer(linenums=False, {options={"raw":True})
         elif cmd == ":::":
             # Insert single colon alone on a line
             editor.update_buffer(editor.buffer + "\n:")
@@ -717,7 +717,7 @@ class EvEditor(object):
             self._undo_buffer = self._undo_buffer[:self._undo_pos + 1] + [self._buffer]
             self._undo_pos = len(self._undo_buffer) - 1
 
-    def display_buffer(self, buf=None, offset=0, linenums=True, raw=False):
+    def display_buffer(self, buf=None, offset=0, linenums=True, options={"raw":False}):
         """
         This displays the line editor buffer, or selected parts of it.
 
@@ -750,7 +750,7 @@ class EvEditor(object):
         else:
             main = "\n".join(lines)
         string = "%s\n%s\n%s" % (header, main, footer)
-        self._caller.msg(string, raw=raw)
+        self._caller.msg(string, options={"raw":raw})
 
     def display_help(self):
         """

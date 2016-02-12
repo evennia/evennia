@@ -176,9 +176,9 @@ class CmdPy(MuxCommand):
                           'inherits_from': utils.inherits_from}
 
         try:
-            self.msg(">>> %s" % pycode, raw=True, session=self.session)
+            self.msg(">>> %s" % pycode, session=self.session, options={"raw":True})
         except TypeError:
-            self.msg(">>> %s" % pycode, raw=True)
+            self.msg(">>> %s" % pycode, options={"raw":True})
 
         mode = "eval"
         try:
@@ -207,9 +207,9 @@ class CmdPy(MuxCommand):
             ret = "\n".join("<<< %s" % line for line in errlist if line)
 
         try:
-            self.msg(ret, session=self.session, raw=True)
+            self.msg(ret, session=self.session, options={"raw":True})
         except TypeError:
-            self.msg(ret, raw=True)
+            self.msg(ret, options={"raw":True})
 
 
 # helper function. Kept outside so it can be imported and run
