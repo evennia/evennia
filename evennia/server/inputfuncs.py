@@ -1,58 +1,5 @@
 """
-Out-of-band default plugin commands available for OOB handler.
-
-This module implements commands as defined by the MSDP standard
-(http://tintin.sourceforge.net/msdp/), but is independent of the
-actual transfer protocol (webclient, MSDP, GMCP etc). It also
-implements several OOB commands unique to Evennia (both some
-external and some for testing)
-
-The available OOB commands can be extended by changing
-
-    `settings.OOB_PLUGIN_MODULES`
-
-This module must contain a global dictionary CMD_MAP. This is a
-dictionary that maps the call available in the OOB call to a function
-in this module (this allows you to map multiple oob cmdnames to a
-single actual Python function, for example).
-
-For example, if the OOB strings received looks like this:
-
-    MDSP.LISTEN [desc, key]         # GMCP (wrapping to MSDP)
-    LISTEN ARRAY VAL desc VAL key   # MSDP
-
-and CMD_MAP = {"LISTEN", listen} then this would result in a call to a
-function "listen" in this module, with the arguments *("desc", "key").
-
-oob functions have the following call signature:
-
-    function(session, *args, **kwargs)
-
-where session is the active session and *args, **kwargs are extra
-arguments sent with the oob command.
-
-A function mapped to the key "oob_error" will retrieve error strings
-if it is defined. It will get the error message as its 1st argument.
-
-    oob_error(session, error, *args, **kwargs)
-
-This allows for customizing error handling.
-
-Data is usually returned to the user via a return OOB call:
-
-   session.msg(oob=(oobcmdname, (args,), {kwargs}))
-
-Oobcmdnames (like "MSDP.LISTEN" / "LISTEN" above) are case-sensitive.
-Note that args, kwargs must be iterable. Non-iterables will be
-interpreted as a new command name (you can send multiple oob commands
-with one msg() call)
-
-Evennia introduces two internal extensions to MSDP, and that is the
-MSDP_ARRAY and MSDP_TABLE commands. These are never sent across the
-wire to the client (so this is fully compliant with the MSDP
-protocol), but tells the Evennia OOB Protocol that you want to send a
-"bare" array or table to the client, without prepending any command
-name.
+Handlers for input commands
 
 """
 from future.utils import viewkeys

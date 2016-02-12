@@ -1,14 +1,17 @@
 """
-OOBHandler - Out Of Band Handler
+Monitors - handle input-commands from the client.
 
-The OOBHandler.execute_cmd is called by the sessionhandler when it
-detects an `oob` keyword in the outgoing data (usually called via
-`msg(oob=...)`
+The INPUT_HANDLER singleton from this module is meant as a resource
+for input functions to use.  The handler is never executed
+automatically unless called from an input function. The handler offers
+the following features:
 
-How this works is that the handler executes an oobfunction, which is
-defined in a user-supplied module. This function can then make use of
-the oobhandler's functionality to return data, register a monitor on
-an object's properties or start a repeating action.
+- Field-monitor - track a object's specific database field and perform
+    an action whenever that field *changes* for whatever reason.
+- Attribute-monitor track an object's specific Attribute and perform
+    an action whenever that Attribute *changes* for whatever reason.
+
+
 
 """
 from builtins import object
@@ -415,74 +418,5 @@ class OOBHandler(TickerHandler):
         return [(unpack_dbobj(key[0]), key[2], stored[0], stored[1])
                 for key, stored in self.oob_monitor_storage.items() if key[1] == sessid]
 
-
-    # access method - called from session.msg()
-
-    def execute_cmd(self, session, oobfuncname, *args, **kwargs):
-        """
-        Execute an oob command
-
-        Args:
-            session (Session or int):  Session or Session.sessid calling
-                the oob command
-            oobfuncname (str): The name of the oob command (case sensitive)
-
-        Notes:
-            If the oobfuncname is a valid oob function, `args` and
-            `kwargs` are passed into the oob command.
-
-        """
-        if not session:
-            errmsg = "OOB Error: execute_cmd(%s,%s,%s,%s) - no valid session" % \
-                                                    (session, oobfuncname, args, kwargs)
-            raise RuntimeError(errmsg)
-
-        try:
-            oobfunc = _OOB_FUNCS[oobfuncname]
-        except Exception:
-            errmsg = "'%s' is not a valid OOB command. Commands available:\n %s" % (oobfuncname, ", ".join(_OOB_FUNCS))
-            if _OOB_ERROR:
-                _OOB_ERROR(session, errmsg, *args, **kwargs)
-            errmsg = "OOB ERROR: %s" % errmsg
-            logger.log_trace(errmsg)
-            return
-
-        # we found an oob command. Execute it.
-        try:
-            oobfunc(session, *args, **kwargs)
-        except Exception as err:
-            errmsg = "Exception in %s(*%s, **%s):\n%s" % (oobfuncname, args, kwargs, err)
-            if _OOB_ERROR:
-                _OOB_ERROR(session, errmsg, *args, **kwargs)
-            errmsg = "OOB ERROR: %s" % errmsg
-            logger.log_trace(errmsg)
-
-
 # access object
 INPUT_HANDLER = OOBHandler()
-
-## load resources from plugin module. This must happen
-## AFTER the OOB_HANDLER has been initialized since the
-## commands will want to import it.
-#_OOB_FUNCS = {}
-#for modname in make_iter(settings.OOB_PLUGIN_MODULES):
-#    _OOB_FUNCS.update(mod_import(modname).CMD_MAP)
-#
-## get the command to receive eventual error strings
-#_OOB_ERROR = _OOB_FUNCS.get("oob_error", None)
-#if not _OOB_ERROR:
-#    # no custom error set; create default oob error message function
-#    def oob_error(session, errmsg, *args, **kwargs):
-#        """
-#        Fallback error handler. This will be used if no custom
-#        oob_error is defined and just echoes the error back to the
-#        session.
-#
-#        Args:
-#            errmsg (str): Error message to echo.
-#            args, kwargs (any): Not used.
-#
-#        """
-#        session.msg(oob=("err", ("ERROR ", errmsg)))
-#    _OOB_ERROR = oob_error
-#

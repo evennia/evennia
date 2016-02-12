@@ -349,7 +349,7 @@ class CmdEditorGroup(CmdEditorBase):
                                       offset=lstart,
                                       linenums=False, options={"raw":True})
             else:
-                editor.display_buffer(linenums=False, {options={"raw":True})
+                editor.display_buffer(linenums=False, options={"raw":True})
         elif cmd == ":::":
             # Insert single colon alone on a line
             editor.update_buffer(editor.buffer + "\n:")
