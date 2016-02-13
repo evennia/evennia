@@ -44,14 +44,6 @@ WARNING_POSTGRESQL_FIX = \
     """
 
 
-def create_config_values():
-    """
-    Creates the initial config values.
-
-    """
-    ServerConfig.objects.conf("site_name", settings.SERVERNAME)
-    ServerConfig.objects.conf("idle_timeout", settings.IDLE_TIMEOUT)
-
 def get_god_player():
     """
     Creates the god user and don't take no for an answer.
@@ -193,8 +185,7 @@ def handle_setup(last_step):
     last_step = last_step or 0
 
     # setting up the list of functions to run
-    setup_queue = [create_config_values,
-                   create_objects,
+    setup_queue = [create_objects,
                    create_channels,
                    at_initial_setup,
                    reset_server]
@@ -208,11 +199,11 @@ def handle_setup(last_step):
         try:
             setup_func()
         except Exception:
-            if last_step + num == 2:
+            if last_step + num == 1:
                 from evennia.objects.models import ObjectDB
                 for obj in ObjectDB.objects.all():
                     obj.delete()
-            elif last_step + num == 3:
+            elif last_step + num == 2:
                 from evennia.comms.models import ChannelDB
                 ChannelDB.objects.all().delete()
             raise
