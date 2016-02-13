@@ -61,6 +61,13 @@ msdp_regex_array = re.compile(r"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_
 msdp_regex_var = re.compile(r"%s" % MSDP_VAR)
 msdp_regex_val = re.compile(r"%s" % MSDP_VAL)
 
+# MSDP output templates
+
+# cmdname
+MSDP_STRING_A = "{msdp_var}{{cmdname}}{msdp_val}''".format(
+                    msdp_var=MSDP_VAR, msdp_val=MSDP_VAL)
+# cmdname arg
+
 
 # Msdp object handler
 
@@ -100,6 +107,7 @@ class TelnetOOB(object):
         """
         # no msdp, check GMCP
         self.protocol.handshake_done()
+        print "No MSDP."
 
     def do_msdp(self, option):
         """
@@ -124,6 +132,7 @@ class TelnetOOB(object):
 
         """
         self.protocol.handshake_done()
+        print "No GMCP."
 
     def do_gmcp(self, option):
         """
@@ -148,59 +157,61 @@ class TelnetOOB(object):
             cmdname (str): Name of send instruction.
             args, kwargs (any): Arguments to OOB command.
 
-        Examples:
-            cmdname string    ->  cmdname string
-            cmdname *args  -> cmdname MSDP_ARRAY
-            cmdname **kwargs -> cmdname MSDP_TABLE
-            MSDP_ARRAY *args -> MSDP_ARRAY
-            MSDP_TABLE **kwargs -> MSDP_TABLE
-
         Notes:
-            The output of this encoding will always be an
-            MSDP structure on the form
+            The output of this encoding will be
+            MSDP structures on these forms:
 
-            ```
-            MSDP_VAR cmdname
-                MSDP_VAL MSDP_ARRAY_OPEN
-                    MSDP_VAL MSDP_ARRAY_OPEN
-                        MSDP_VAL arg1
-                        MSDP_VAL arg2
-                        ...
-                    MSDP_ARRAY_CLOSE
-                    MSDP_VAL MSDP_TABLE_OPEN
-                        MSDP_VAR "key1" MSDP_VAL "val1"
-                        MSDP_VAR "key2" MSDP_VAL "val2"
-                        ...
-                    MSDP_TABLE_CLOSE
-                MSDP_ARRAY_CLOSE
-            ```
+            [cmdname, [], {}]          -> VAR cmdname VAL ""
+            [cmdname, [arg], {}]       -> VAR cmdname VAL arg
+            [cmdname, [args],{}]       -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
+            [cmdname, [], {kwargs}]    -> VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
+            [cmdname, [args], {kwargs}] -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
+                                           VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
 
-            That is, it's a sequence "cmdnmame [[args] {kwargs}]"
-
-            Further nesting is not supported, so if an argument consists
-            of an array (for example), that array will be json-converted
-            to a string.
+            Further nesting is not supported, so if an array argument
+            consists of an array (for example), that array will be
+            json-converted to a string.
 
         """
-        msdp_msg = "{msdp_var}{msdp_cmdname}" \
-                        "{msdp_val}{msdp_array_open}" \
-                            "{msdp_val}{msdp_array_open}" \
+        msdp_cmdname = "{msdp_var}{msdp_cmdname}{msdp_val}".format(
+                    msdp_var=MSDP_VAR, msdp_cmdname=cmdname, msdp_val=MSDP_VAL)
+
+        if not (args or kwargs):
+            return msdp_cmdname
+
+        msdp_args = ''
+        if args:
+            msdp_args = msdp_cmdname
+            if len(args) == 1:
+                msdp_args += args[0]
+            else:
+                msdp_args += "{msdp_array_open}" \
                                 "{msdp_args}" \
-                            "{msdp_array_close}" \
-                            "{msdp_val}{msdp_table_open}" \
+                            "{msdp_array_close}".format(
+                            msdp_var=MSDP_VAR,
+                            msdp_array_open=MSDP_ARRAY_OPEN,
+                            msdp_array_close=MSDP_ARRAY_CLOSE,
+                            msdp_args= "".join("%s%s" % (
+                                    MSDP_VAL, json.dumps(val))
+                                    for val in args))
+
+
+        msdp_kwargs = ""
+        if kwargs:
+            msdp_kwargs = msdp_cmdname
+            msdp_kwargs += "{msdp_table_open}" \
                                 "{msdp_kwargs}" \
-                            "{msdp_table_close}" \
-                        "{msdp_array_close}".format(
-                    msdp_var=MSDP_VAR, msdp_val=MSDP_VAL,
-                    msdp_array_open=MSDP_ARRAY_OPEN,
-                    msdp_array_close=MSDP_ARRAY_CLOSE,
-                    msdp_table_open=MSDP_TABLE_OPEN,
-                    msdp_table_close=MSDP_TABLE_CLOSE,
-                    msdp_cmdname = json.dumps(cmdname),
-                    msdp_args = "".join("%s%s" % (MSDP_VAL, json.dumps(val)) for val in args),
-                    msdp_kwargs = "".join("%s%s%s%s" % (MSDP_VAR, key, MSDP_VAL, json.dumps(val))
-                                                        for key, val in kwargs.iteritems()))
-        return msdp_msg
+                            "{msdp_table_close}".format(
+                        msdp_table_open=MSDP_TABLE_OPEN,
+                        msdp_table_close=MSDP_TABLE_CLOSE,
+                        msdp_kwargs = "".join("%s%s%s%s" % (
+                            MSDP_VAR, key, MSDP_VAL, json.dumps(val))
+                            for key, val in kwargs.iteritems()))
+
+        msdp_string = msdp_args + msdp_kwargs
+
+        print "msdp_string:", msdp_string
+        return msdp_string
 
     def encode_gmcp(self, cmdname, *args, **kwargs):
         """
@@ -216,11 +227,27 @@ class TelnetOOB(object):
             IRE games use, supposedly, and what clients appear
             to have adopted):
 
-            cmdname [[args], {kwargs}]
+            [cmdname, [], {}]          -> cmdname
+            [cmdname, [arg], {}]       -> cmdname arg
+            [cmdname, [args],{}]       -> cmdname [args]
+            [cmdname, [], {kwargs}]    -> cmdname {kwargs}
+            [cmdname, [args, {kwargs}] -> cmdname [[args],{kwargs}]
 
         """
-        print "GMCP out:", json.dumps([args, kwargs])
-        return json.dumps("%s %s" % (cmdname, json.dumps([args, kwargs])))
+        if not (args or kwargs):
+            gmcp_string = cmdname
+        elif args:
+            if len(args) == 1:
+                args = args[0]
+            if kwargs:
+                gmcp_string = "%s %s" % (cmdname, json.dumps([args, kwargs]))
+            else:
+                gmcp_string = "%s %s" % (cmdname, json.dumps(args))
+        else: # only kwargs
+            gmcp_string = "%s %s" % (cmdname, json.dumps(kwargs))
+
+        print "gmcp string", gmcp_string
+        return gmcp_string
 
     def decode_msdp(self, data):
         """
