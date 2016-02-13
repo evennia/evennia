@@ -241,7 +241,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         """
         if reason:
-            self.data_out(reason)
+            self.data_out(text=[[reason], {}])
         self.connectionLost(reason)
 
     def data_in(self, **kwargs):
@@ -355,5 +355,4 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         Send other oob data
         """
         if not cmdname == "options":
-            print "telnet.send_default:", cmdname, args, kwargs
             self.oob.data_out(cmdname, *args, **kwargs)

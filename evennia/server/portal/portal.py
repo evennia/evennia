@@ -86,7 +86,7 @@ def _portal_maintenance():
     reason = "Idle timeout exceeded, disconnecting."
     for session in [sess for sess in PORTAL_SESSIONS.values()
                     if (now - sess.cmd_last) > _IDLE_TIMEOUT]:
-        session.data_out(reason)
+        session.data_out(text=reason)
         PORTAL_SESSIONS.disconnect(session)
 
 if _IDLE_TIMEOUT > 0:

@@ -332,7 +332,7 @@ class ServerSession(Session):
 
     def data_out(self, **kwargs):
         """
-        Sending data from Evennia->Player
+        Sending data from Evennia->Client
 
         Kwargs:
             text (str or tuple)
@@ -345,7 +345,9 @@ class ServerSession(Session):
 
     def msg(self, text=None, **kwargs):
         """
-        Wrapper to mimic msg() functionality elsewhere.
+        Wrapper to mimic msg() functionality of Objects and Players
+        (server sessions don't use data_in since incoming data is
+        handled by inputfuncs).
 
         Args:
             text (str): String input.
