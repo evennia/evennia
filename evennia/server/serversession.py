@@ -341,8 +341,6 @@ class ServerSession(Session):
                 for the protocol(s).
 
         """
-        print "serversession.data_out:", kwargs
-
         self.sessionhandler.data_out(self, **kwargs)
 
     def msg(self, text=None, **kwargs):
