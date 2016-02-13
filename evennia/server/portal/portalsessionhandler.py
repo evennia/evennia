@@ -88,9 +88,9 @@ class PortalSessionHandler(SessionHandler):
             session.server_connected = False
             _CONNECTION_QUEUE.appendleft(session)
             if len(_CONNECTION_QUEUE) > 1:
-                session.data_out("%s DoS protection is active. You are queued to connect in %g seconds ..." % (
+                session.data_out(text=[["%s DoS protection is active. You are queued to connect in %g seconds ..." % (
                                  settings.SERVERNAME,
-                                 len(_CONNECTION_QUEUE)*_MIN_TIME_BETWEEN_CONNECTS))
+                                 len(_CONNECTION_QUEUE)*_MIN_TIME_BETWEEN_CONNECTS)],{}])
         now = time()
         if (now - self.connection_last < _MIN_TIME_BETWEEN_CONNECTS) or not self.portal.amp_protocol:
             if not session or not self.connection_task:
@@ -331,7 +331,7 @@ class PortalSessionHandler(SessionHandler):
                 if self.command_overflow:
                     reactor.callLater(1.0, self.data_in, None)
             if self.command_overflow:
-                self.data_out(session, text=_ERROR_COMMAND_OVERFLOW)
+                self.data_out(session, text=[[_ERROR_COMMAND_OVERFLOW],{}])
                 return
             # scrub data
             kwargs = self.clean_senddata(session, kwargs)
@@ -358,7 +358,7 @@ class PortalSessionHandler(SessionHandler):
             kwargs (any): Each key is a command instruction to the
             protocol on the form key = [[args],{kwargs}]. This will
             call a method send_<key> on the protocol. If no such
-            method exixts, it send the data to a method send_default.
+            method exixts, it sends the data to a method send_default.
 
         """
         #from evennia.server.profiling.timetrace import timetrace

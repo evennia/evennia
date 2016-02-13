@@ -65,7 +65,7 @@ class WebSocketClient(Protocol, Session):
 
         """
         if reason:
-            self.data_out(text=reason)
+            self.data_out(text=[[reason],{}])
         self.connectionLost(reason)
 
     def connectionLost(self, reason):

@@ -587,7 +587,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         for sess in self.values():
-            self.data_out(sess, message)
+            self.data_out(sess, text=message)
 
     def data_out(self, session, **kwargs):
         """
