@@ -300,7 +300,7 @@ class PortalSessionHandler(SessionHandler):
 
         """
         for session in self.values():
-            self.data_out(session, text=message)
+            self.data_out(session, text=[[message],{}])
 
     def data_in(self, session, **kwargs):
         """
@@ -334,9 +334,7 @@ class PortalSessionHandler(SessionHandler):
                 self.data_out(session, text=_ERROR_COMMAND_OVERFLOW)
                 return
             # scrub data
-            print ("portalsessionhandler before clean:", session, kwargs)
             kwargs = self.clean_senddata(session, kwargs)
-            print ("portalsessionhandler after clean:", session, kwargs)
 
             # relay data to Server
             self.command_counter += 1
@@ -370,7 +368,7 @@ class PortalSessionHandler(SessionHandler):
         # distribute outgoing data to the correct session methods.
         if session:
             for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
-                funcname = "send_%s" % cmdname
+                funcname = "send_%s" % cmdname.strip().lower()
                 if hasattr(session, funcname):
                     # better to use hassattr here over try..except
                     # - avoids hiding AttributeErrors in the call.

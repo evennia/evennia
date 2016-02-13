@@ -15,7 +15,8 @@ from evennia.server.session import Session
 from evennia.server.portal import ttype, mssp, telnet_oob, naws
 from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
-from evennia.utils import utils, ansi, logger
+from evennia.utils import ansi, logger
+from evennia.utils.utils import to_str
 
 IAC = chr(255)
 NOP = chr(241)
@@ -289,11 +290,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                         Note that it must be actively turned back on again!
 
         """
-        print "telnet.send_text", args,kwargs
-        if args:
-            text = args[0]
-            if text is None:
-                return
+        #print "telnet.send_text", args,kwargs
+        text = args[0] if args else ""
+        if text is None:
+            return
+        text = to_str(text, force_string=True)
 
         # handle arguments
         options = kwargs.get("options", {})
@@ -354,4 +355,5 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         Send other oob data
         """
         if not cmdname == "options":
-            print "telnet.send_default not implemented yet! ", args
+            print "telnet.send_default:", cmdname, args, kwargs
+            self.oob.data_out(cmdname, *args, **kwargs)

@@ -70,7 +70,6 @@ _MODEL_MAP = None
 
 _INPUT_FUNCS = {}
 for modname in make_iter(settings.INPUT_FUNC_MODULES):
-    print modname
     _INPUT_FUNCS.update(callables_from_module(modname))
 
 def delayed_import():
@@ -187,7 +186,6 @@ class SessionHandler(dict):
 
         rkwargs = {}
         for key, data in kwargs.iteritems():
-            print "sessionhandler.clean_senddata:", key, data
             key = _validate(key)
             if not data:
                 rkwargs[key] = [ [], {} ]
@@ -604,11 +602,9 @@ class ServerSessionHandler(SessionHandler):
             the wire here.
         """
         # clean output for sending
-        print "sessionhandler before clean_senddata:", kwargs
         kwargs = self.clean_senddata(session, kwargs)
 
         # send across AMP
-        print "sessionhandler after clean_senddata:", kwargs
         self.server.amp_protocol.send_MsgServer2Portal(session,
                                                        **kwargs)
 
@@ -628,12 +624,13 @@ class ServerSessionHandler(SessionHandler):
         # distribute incoming data to the correct receiving methods.
         if session:
             for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
+                cname = cmdname.strip().lower()
+                print "sessionhandler.data_in:", session, kwargs
                 try:
-                    if cmdname in _INPUT_FUNCS:
-                        print "sessionhandler: data_in", cmdname, cmdargs, cmdkwargs
-                        _INPUT_FUNCS[cmdname](session, *cmdargs, **cmdkwargs)
+                    if cname in _INPUT_FUNCS:
+                        _INPUT_FUNCS[cname](session, *cmdargs, **cmdkwargs)
                     else:
-                        _INPUT_FUNCS["default"](session, cmdname, *cmdargs, **cmdkwargs)
+                        _INPUT_FUNCS["default"](session, cname, *cmdargs, **cmdkwargs)
                 except Exception:
                     log_trace()
 

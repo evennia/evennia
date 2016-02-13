@@ -2,20 +2,27 @@
 
 Telnet OOB (Out of band communication)
 
-This implements the following telnet oob protocols: MSDP (Mud Server
-Data Protocol) GMCP (Generic Mud Communication Protocol)
+OOB protocols allow for asynchronous communication between Evennia and
+compliant telnet clients. The "text" type of send command will always
+be sent "in-band", appearing in the client's main text output. OOB
+commands, by contrast, can have many forms and it is up to the client
+how and if they are handled.  Examples of OOB instructions could be to
+instruct the client to play sounds or to update a graphical health
+bar.
 
-This implements the MSDP protocol as per
-http://tintin.sourceforge.net/msdp/ and the GMCP protocol as per
-http://www.ironrealms.com/rapture/manual/files/FeatGMCP-txt.html#Generic_MUD_Communication_Protocol%28GMCP%29
+> Note that in Evennia's Web client, all send commands are "OOB
+commands", (including the "text" one), there is no equivalence to
+MSDP/GMCP for the webclient since it doesn't need it.
+
+This implements the following telnet OOB communication protocols:
+- MSDP (Mud Server Data Protocol), as per
+    http://tintin.sourceforge.net/msdp/
+- GMCP (Generic Mud Communication Protocol) as per
+    http://www.ironrealms.com/rapture/manual/files/FeatGMCP-txt.html#Generic_MUD_Communication_Protocol%28GMCP%29
 
 Following the lead of KaVir's protocol snippet, we first check if
 client supports MSDP and if not, we fallback to GMCP with a MSDP
 header where applicable.
-
-OOB manages out-of-band communication between the client and server,
-for updating health bars etc. See also GMCP which is another standard
-doing the same thing.
 
 """
 from builtins import object
@@ -25,12 +32,12 @@ from evennia.utils.utils import to_str
 
 # MSDP-relevant telnet cmd/opt-codes
 MSDP = chr(69)
-MSDP_VAR = chr(1)
-MSDP_VAL = chr(2)
-MSDP_TABLE_OPEN = chr(3)
-MSDP_TABLE_CLOSE = chr(4)
-MSDP_ARRAY_OPEN = chr(5)
-MSDP_ARRAY_CLOSE = chr(6)
+MSDP_VAR = chr(1)  #^A
+MSDP_VAL = chr(2)  #^B
+MSDP_TABLE_OPEN = chr(3)  #^C
+MSDP_TABLE_CLOSE = chr(4) #^D
+MSDP_ARRAY_OPEN = chr(5)  #^E
+MSDP_ARRAY_CLOSE = chr(6) #^F
 
 # GMCP
 GMCP = chr(201)
@@ -44,15 +51,16 @@ force_str = lambda inp: to_str(inp, force_string=True)
 
 # pre-compiled regexes
 # returns 2-tuple
-msdp_regex_array = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL,
-                                                  MSDP_ARRAY_OPEN,
-                                                  MSDP_ARRAY_CLOSE))
-# returns 2-tuple (may be nested)
-msdp_regex_table = re.compile(r"%s(.*?)%s%s(.*?)%s" % (MSDP_VAR, MSDP_VAL,
+msdp_regex_table = re.compile(r"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL,
                                                   MSDP_TABLE_OPEN,
                                                   MSDP_TABLE_CLOSE))
-msdp_regex_var = re.compile(MSDP_VAR)
-msdp_regex_val = re.compile(MSDP_VAL)
+# returns 2-tuple
+msdp_regex_array = re.compile(r"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL,
+                                                  MSDP_ARRAY_OPEN,
+                                                  MSDP_ARRAY_CLOSE))
+msdp_regex_var = re.compile(r"%s" % MSDP_VAR)
+msdp_regex_val = re.compile(r"%s" % MSDP_VAL)
+
 
 # Msdp object handler
 
@@ -104,6 +112,7 @@ class TelnetOOB(object):
         self.MSDP = True
         self.protocol.protocol_flags['OOB'] = True
         self.protocol.handshake_done()
+        print "Activated MSDP"
 
     def no_gmcp(self, option):
         """
@@ -127,16 +136,16 @@ class TelnetOOB(object):
         self.GMCP = True
         self.protocol.protocol_flags['OOB'] = True
         self.protocol.handshake_done()
+        print "Activated GMCP"
 
     # encoders
 
     def encode_msdp(self, cmdname, *args, **kwargs):
         """
-        handle return data from cmdname by converting it to a proper
-        msdp structure. These are the combinations we support:
+        Encode into a valid MSDP command.
 
         Args:
-            cmdname (str): Name of OOB command.
+            cmdname (str): Name of send instruction.
             args, kwargs (any): Arguments to OOB command.
 
         Examples:
@@ -146,55 +155,72 @@ class TelnetOOB(object):
             MSDP_ARRAY *args -> MSDP_ARRAY
             MSDP_TABLE **kwargs -> MSDP_TABLE
 
+        Notes:
+            The output of this encoding will always be an
+            MSDP structure on the form
+
+            ```
+            MSDP_VAR cmdname
+                MSDP_VAL MSDP_ARRAY_OPEN
+                    MSDP_VAL MSDP_ARRAY_OPEN
+                        MSDP_VAL arg1
+                        MSDP_VAL arg2
+                        ...
+                    MSDP_ARRAY_CLOSE
+                    MSDP_VAL MSDP_TABLE_OPEN
+                        MSDP_VAR "key1" MSDP_VAL "val1"
+                        MSDP_VAR "key2" MSDP_VAL "val2"
+                        ...
+                    MSDP_TABLE_CLOSE
+                MSDP_ARRAY_CLOSE
+            ```
+
+            That is, it's a sequence "cmdnmame [[args] {kwargs}]"
+
+            Further nesting is not supported, so if an argument consists
+            of an array (for example), that array will be json-converted
+            to a string.
+
         """
-        msdp_string = ""
-        if args:
-            if cmdname == "MSDP_ARRAY":
-                msdp_string = "".join(["%s%s" % (MSDP_VAL, val) for val in args])
-            else:
-                msdp_string = "%s%s%s" % (MSDP_VAR, cmdname, "".join(
-                                            "%s%s" % (MSDP_VAL, val) for val in args))
-        elif kwargs:
-            if cmdname == "MSDP_TABLE":
-                msdp_string = "".join(["%s%s%s%s" % (MSDP_VAR, key, MSDP_VAL, val)
-                                        for key, val in kwargs.items()])
-            else:
-                msdp_string = "%s%s%s" % (MSDP_VAR. cmdname, "".join(
-                    ["%s%s%s%s" % (MSDP_VAR, key, MSDP_VAL, val) for key, val in kwargs.items()]))
-        return force_str(msdp_string)
+        msdp_msg = "{msdp_var}{msdp_cmdname}" \
+                        "{msdp_val}{msdp_array_open}" \
+                            "{msdp_val}{msdp_array_open}" \
+                                "{msdp_args}" \
+                            "{msdp_array_close}" \
+                            "{msdp_val}{msdp_table_open}" \
+                                "{msdp_kwargs}" \
+                            "{msdp_table_close}" \
+                        "{msdp_array_close}".format(
+                    msdp_var=MSDP_VAR, msdp_val=MSDP_VAL,
+                    msdp_array_open=MSDP_ARRAY_OPEN,
+                    msdp_array_close=MSDP_ARRAY_CLOSE,
+                    msdp_table_open=MSDP_TABLE_OPEN,
+                    msdp_table_close=MSDP_TABLE_CLOSE,
+                    msdp_cmdname = json.dumps(cmdname),
+                    msdp_args = "".join("%s%s" % (MSDP_VAL, json.dumps(val)) for val in args),
+                    msdp_kwargs = "".join("%s%s%s%s" % (MSDP_VAR, key, MSDP_VAL, json.dumps(val))
+                                                        for key, val in kwargs.iteritems()))
+        return msdp_msg
 
     def encode_gmcp(self, cmdname, *args, **kwargs):
         """
-        Encode GMCP messages.
+        Encode into GMCP messages.
 
         Args:
             cmdname (str): GMCP OOB command name.
             args, kwargs (any): Arguments to OOB command.
 
         Notes:
-            Gmcp messages are on one of the following outgoing forms:
+            GMCP messages will be outgoing on the following
+            form (the non-JSON cmdname at the start is what
+            IRE games use, supposedly, and what clients appear
+            to have adopted):
 
-            - cmdname string -> cmdname string
-            - cmdname *args -> cmdname [arg, arg, arg, ...]
-            - cmdname **kwargs -> cmdname {key:arg, key:arg, ...}
+            cmdname [[args], {kwargs}]
 
-            cmdname is generally recommended to be a string on the form
-            Module.Submodule.Function
         """
-        if cmdname in ("SEND", "REPORT", "UNREPORT", "LIST"):
-            # we wrap the standard MSDP commands in a MSDP.submodule
-            # here as far as GMCP is concerned.
-            cmdname = "MSDP.%s" % cmdname
-        elif cmdname in ("MSDP_ARRAY", "MSDP_TABLE"):
-            # no cmdname should accompany these, just the MSDP wrapper
-            cmdname = "MSDP"
-
-        gmcp_string = ""
-        if args:
-            gmcp_string = "%s %s" % (cmdname, json.dumps(args))
-        elif kwargs:
-            gmcp_string = "%s %s" % (cmdname, json.dumps(kwargs))
-        return force_str(gmcp_string).strip()
+        print "GMCP out:", json.dumps([args, kwargs])
+        return json.dumps("%s %s" % (cmdname, json.dumps([args, kwargs])))
 
     def decode_msdp(self, data):
         """
@@ -204,45 +230,79 @@ class TelnetOOB(object):
             data (str or list): MSDP data.
 
         Notes:
-            cmdname var  --> cmdname arg
-            cmdname array --> cmdname *args
-            cmdname table --> cmdname **kwargs
+            Clients should always send MSDP data on
+            one of the following forms:
+
+            cmdname             -> [cmdname, [], {}]
+            cmdname val         -> [cmdname, [val], {}]
+            cmdname array       -> [cmdname, [array], {}]
+            cmdname table       -> [cmdname, [], {table}]
+            cmdname array cmdname table -> [cmdname, [array], {table}]
+
+            Observe that all MSDP_VARS are used to identify cmdnames,
+            so if there are multiple arrays with the same cmdname
+            given, they will be merged into one argument array, same
+            for tables. Different MSDP_VARS (outside tables) will be
+            identified as separate cmdnames.
 
         """
+        if hasattr(data, "__iter__"):
+            data = "".join(data)
+
         tables = {}
         arrays = {}
         variables = {}
 
-        if hasattr(data, "__iter__"):
-            data = "".join(data)
-
-        # decode
+        # decode tables
         for key, table in msdp_regex_table.findall(data):
-            tables[key] = {}
-            for varval in msdp_regex_var.split(table):
-                parts = msdp_regex_val.split(varval)
-                tables[key].expand({parts[0]: tuple(parts[1:]) if len(parts) > 1 else ("",)})
-        for key, array in msdp_regex_array.findall(data):
-            arrays[key] = []
-            for val in msdp_regex_val.split(array):
-                arrays[key].append(val)
-            arrays[key] = tuple(arrays[key])
-        for varval in msdp_regex_var.split(msdp_regex_array.sub("", msdp_regex_table.sub("", data))):
-            # get remaining varvals after cleaning away tables/arrays
-            parts = msdp_regex_val.split(varval)
-            variables[parts[0]] = tuple(parts[1:]) if len(parts) > 1 else ("", )
+            tables[key] = {} if not key in tables else tables[key]
+            for varval in msdp_regex_var.split(table)[1:]:
+                var, val = msdp_regex_val.split(varval, 1)
+                tables[key][var] = val
 
-        # send to the sessionhandler
-        if data:
-            for varname, var in variables.items():
-                # a simple function + argument
-                self.protocol.data_in(oob=(varname, var, {}))
-            for arrayname, array in arrays.items():
-                # we assume the array are multiple arguments to the function
-                self.protocol.data_in(oob=(arrayname, array, {}))
-            for tablename, table in tables.items():
-                # we assume tables are keyword arguments to the function
-                self.protocol.data_in(oob=(tablename, (), table))
+        # decode arrays from all that was not a table
+        data_no_tables = msdp_regex_table.sub("", data)
+        for key, array in msdp_regex_array.findall(data_no_tables):
+            arrays[key] = [] if not key in arrays else arrays[key]
+            parts = msdp_regex_val.split(array)
+            if len(parts) == 2:
+                arrays[key].append(parts[1])
+            elif len(parts) > 1:
+                arrays[key].extend(parts[1:])
+
+        # decode remainders from all that were not tables or arrays
+        data_no_tables_or_arrays = msdp_regex_array.sub("", data_no_tables)
+        for varval in msdp_regex_var.split(data_no_tables_or_arrays):
+            # get remaining varvals after cleaning away tables/arrays. If mathcing
+            # an existing key in arrays, it will be added as an argument to that command,
+            # otherwise it will be treated as a command without argument.
+            parts = msdp_regex_val.split(varval)
+            if len(parts) == 2:
+                variables[parts[0]] = parts[1]
+            elif len(parts) > 1:
+                variables[parts[0]] = parts[1:]
+
+        cmds = {}
+        # merge matching table/array/variables together
+        for key, table in tables.iteritems():
+            args, kwargs = [], table
+            if key in arrays:
+                args.extend(arrays.pop(key))
+            if key in variables:
+                args.append(variables.pop(key))
+            cmds[key] = [args, kwargs]
+
+        for key, arr in arrays.iteritems():
+            args, kwargs = arr, {}
+            if key in variables:
+                args.append(variables.pop(key))
+            cmds[key] = [args, kwargs]
+
+        for key, var in variables.iteritems():
+            cmds[key] = [[var], {}]
+
+        self.protocol.data_in(**cmds)
+
 
     def decode_gmcp(self, data):
         """
@@ -252,39 +312,48 @@ class TelnetOOB(object):
             data (str or list): GMCP data.
 
         Notes:
-            cmdname string -> cmdname arg
-            cmdname [arg, arg,...] -> cmdname *args
-            cmdname {key:arg, key:arg, ...} -> cmdname **kwargs
+            Clients tend to send data on the form "cmdname <structure>".
+            We assume the structure is valid JSON.
+
+            The following is parsed into Evennia's formal structure:
+
+            cmdname                         -> [cmdname, [], {}]
+            cmdname string                  -> [cmdname, [string], {}]
+            cmdname [arg, arg,...]          -> [cmdname, [args], {}]
+            cmdname {key:arg, key:arg, ...} -> [cmdname, [], {kwargs}]
+            cmdname [[args], {kwargs}]      -> [cmdname, [args], {kwargs}]
 
         """
         if hasattr(data, "__iter__"):
             data = "".join(data)
 
+        print "decode_gmcp in:", data
         if data:
-            splits = data.split(None, 1)
-            cmdname = splits[0]
-            if len(splits) < 2:
-                self.protocol.data_in(oob=(cmdname, (), {}))
-            elif splits[1]:
-                try:
-                    struct = json.loads(splits[1])
-                except ValueError:
-                    struct = splits[1]
-                args, kwargs = (), {}
-                if hasattr(struct, "__iter__"):
-                    if isinstance(struct, dict):
-                        kwargs = struct
-                    else:
-                        args = tuple(struct)
+            try:
+                cmdname, structure = data.split(None, 1)
+            except ValueError:
+                self.protocol.data_in(**{data: [[],{}]})
+                return
+            try:
+                structure = json.loads(structure)
+            except ValueError:
+                pass
+            args, kwargs = [], {}
+            if hasattr(structure, "__iter__"):
+                if isinstance(structure, dict):
+                    kwargs = structure
                 else:
-                    args = (struct,)
-                self.protocol.data_in(oob=(cmdname, args, kwargs))
+                    args = list(structure)
+            else:
+                args = (structure,)
+            print "gmcp data in:", {cmdname: [args, kwargs]}
+            self.protocol.data_in(**{cmdname: [args, kwargs]})
 
     # access methods
 
     def data_out(self, cmdname, *args, **kwargs):
         """
-        Return a msdp-valid subnegotiation across the protocol.
+        Return a MSDP- or GMCP-valid subnegotiation across the protocol.
 
         Args:
             cmdname (str): OOB-command name.
@@ -293,7 +362,9 @@ class TelnetOOB(object):
         """
         if self.MSDP:
             encoded_oob = self.encode_msdp(cmdname, *args, **kwargs)
+            print "sending MSDP:", encoded_oob
             self.protocol._write(IAC + SB + MSDP + encoded_oob + IAC + SE)
         if self.GMCP:
             encoded_oob = self.encode_gmcp(cmdname, *args, **kwargs)
+            print "sending GMCP:", encoded_oob
             self.protocol._write(IAC + SB + GMCP + encoded_oob + IAC + SE)

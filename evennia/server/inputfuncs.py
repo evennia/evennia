@@ -53,7 +53,9 @@ def text(session, *args, **kwargs):
     session.update_session_counters()
 
 def echo(session, *args, **kwargs):
-    session.data_out(text=(args, kwargs))
+    print "Inputfunc echo:", session, args, kwargs
+    session.data_out(text="Echo returns: ")
+    session.data_out(echo=(args, kwargs))
 
 def default(session, cmdname, *args, **kwargs):
     """
@@ -61,10 +63,10 @@ def default(session, cmdname, *args, **kwargs):
     it will get `cmdname` as the first argument.
 
     """
-    err = "Input command not recognized:\n" \
-            " name: {cmdname}\n" \
+    err = "Session {sessid}: Input command not recognized:\n" \
+            " name: '{cmdname}'\n" \
             " args, kwargs: {args}, {kwargs}"
-    log_err(err.format(cmdname=cmdname, args=args, kwargs=kwargs))
+    log_err(err.format(sessid=session.sessid, cmdname=cmdname, args=args, kwargs=kwargs))
 
 #------------------------------------------------------------------------------------
 
