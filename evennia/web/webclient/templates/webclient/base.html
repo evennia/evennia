@@ -33,7 +33,7 @@ JQuery available.
             var wsactive = true;
         {% else %}
             var wsactive = false;
-        {% endif %} 
+        {% endif %}
 
         {% if websocket_url %}
             var wsurl = "{{websocket_url}}:{{websocket_port}}";
@@ -50,7 +50,7 @@ JQuery available.
 
   </head>
   <body>
-    
+
     <div id="connecting">
         {% block connecting %}
         {% endblock %}
@@ -58,12 +58,12 @@ JQuery available.
 
     <div id="noscript" class="err">
         <h3>Javascript Error: The Evennia MUD client requires that you
-            have Javascript activated.</h3> 
+            have Javascript activated.</h3>
             <p>Turn off eventual script blockers and/or switch to a
             web browser supporting javascript. <p>
             This error could also be due to not being able to access
             the online jQuery javascript library.</p>
-        <!-- This is will only fire if javascript is actually active --> 
+        <!-- This is will only fire if javascript is actually active -->
         <script language="javascript" type="text/javascript">
             $('#noscript').remove();
         </script>
