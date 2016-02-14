@@ -290,7 +290,7 @@ def to_pickle(data):
             return dict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype in (set, _SaverSet):
             return set(process_item(val) for val in item)
-        elif hasattr(item, '__item__'):
+        elif hasattr(item, '__iter__'):
             # we try to conserve the iterable class, if not convert to list
             try:
                 return item.__class__([process_item(val) for val in item])

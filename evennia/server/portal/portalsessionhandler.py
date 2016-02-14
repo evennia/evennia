@@ -321,9 +321,9 @@ class PortalSessionHandler(SessionHandler):
         #text = timetrace(text, "portalsessionhandler.data_in")
 
         if session:
+            now = time()
             if self.command_counter > _MAX_COMMAND_RATE:
                 # data throttle (anti DoS measure)
-                now = time()
                 dT = now - self.command_counter_reset
                 self.command_counter = 0
                 self.command_counter_reset = now
@@ -338,6 +338,7 @@ class PortalSessionHandler(SessionHandler):
 
             # relay data to Server
             self.command_counter += 1
+            session.cmd_last = now
             self.portal.amp_protocol.send_MsgPortal2Server(session,
                                                            **kwargs)
         else:

@@ -7,6 +7,7 @@ ability to run timers.
 
 from twisted.internet.defer import Deferred, maybeDeferred
 from twisted.internet.task import LoopingCall
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
 from evennia.typeclasses.models import TypeclassBase
 from evennia.scripts.models import ScriptDB
@@ -352,6 +353,8 @@ class DefaultScript(ScriptBase):
             self.delete()
         except AssertionError:
             logger.log_trace()
+            return 0
+        except ObjectDoesNotExist:
             return 0
         return 1
 
