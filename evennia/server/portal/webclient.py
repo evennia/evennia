@@ -72,7 +72,7 @@ class WebSocketClient(Protocol, Session):
         """
         This is executed when the connection is lost for whatever
         reason. it can also be called directly, from the disconnect
-        method
+        method.
 
         Args:
             reason (str): Motivation for the lost connection.
@@ -91,9 +91,8 @@ class WebSocketClient(Protocol, Session):
 
         """
         cmdarray = json.loads(string)
-        print "dataReceived:", cmdarray
         if cmdarray:
-            self.data_in(**{cmdarray[0], [cmdarray[1], cmdarray[2]]})
+            self.data_in(**{cmdarray[0]:[cmdarray[1], cmdarray[2]]})
 
     def sendLine(self, line):
         """
@@ -114,7 +113,16 @@ class WebSocketClient(Protocol, Session):
             text (str): Incoming text.
             kwargs (any): Options from protocol.
 
+        Notes:
+            The websocket client can send the
+            "websocket_close" command to report
+            that the client has been closed and
+            that the session should be disconnected.
+
         """
+        if "websocket_close" in kwargs:
+            self.disconnect()
+            return
         self.sessionhandler.data_in(self, **kwargs)
 
     def data_out(self, **kwargs):

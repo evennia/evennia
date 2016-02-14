@@ -231,7 +231,10 @@ An "emitter" object must have a function
             websocket.send(JSON.stringify(data));
         };
         websocket.close = function() {
-            // close connection.
+            // tell the server this connection is closing (usually
+            // tied to when the client window is closed). This
+            // Makes use of a websocket-protocol specific instruction.
+            websocket.send(JSON.stringify(["websocket_close", [], {}]));
         }
         return websocket;
     };

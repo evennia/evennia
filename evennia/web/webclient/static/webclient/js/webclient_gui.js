@@ -138,6 +138,9 @@ $(document).ready(function() {
     Evennia.emitter.on("text", onText);
     Evennia.emitter.on("prompt", onPrompt);
     Evennia.emitter.on("default", onDefault);
+    // Event when closing window (have to have Evennia initialized)
+    $(window).bind("beforeunload", Evennia.connection.close);
+
     doWindowResize();
 
     // set an idle timer to send idle every 3 minutes,
