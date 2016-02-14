@@ -106,12 +106,15 @@ function onPrompt(args, kwargs) {
            "<div id='prompt' class='msg out'>" + args[0] + "</div>");
 }
 
+// Handler silencing events we don't do anything with.
+function onSilence(cmdname, args, kwargs) {}
+
 // Handler unrecognized commands from server
 function onDefault(cmdname, args, kwargs) {
     mwin = $("#messagewindow");
     mwin.append(
             "<div class='msg err'>"
-            + "Unhandled event:<br>"
+            + "Error or Unhandled event:<br>"
             + cmdname + ", "
             + JSON.stringify(args) + ", "
             + JSON.stringify(kwargs) + "<p></div>");
@@ -138,14 +141,17 @@ $(document).ready(function() {
     Evennia.emitter.on("text", onText);
     Evennia.emitter.on("prompt", onPrompt);
     Evennia.emitter.on("default", onDefault);
+    // silence currently unused events
+    Evennia.emitter.on("connection_open", onSilence);
+    Evennia.emitter.on("connection_close", onSilence);
+
     // Event when closing window (have to have Evennia initialized)
     $(window).bind("beforeunload", Evennia.connection.close);
-
-    doWindowResize();
 
     // set an idle timer to send idle every 3 minutes,
     // to avoid proxy servers timing out on us
     setInterval(function() {
+        // Connect to server
         Evennia.msg("text", ["idle"], {});
     },
     60000*3
