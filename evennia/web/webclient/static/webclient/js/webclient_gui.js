@@ -60,7 +60,6 @@ function doSendText() {
     outtext = inputfield.val();
     input_history.add(outtext);
     inputfield.val("");
-    log("sending outtext", outtext);
     Evennia.msg("text", [outtext], {});
 }
 
@@ -112,7 +111,7 @@ function onDefault(cmdname, args, kwargs) {
     mwin = $("#messagewindow");
     mwin.append(
             "<div class='msg err'>"
-            + "Received unknown server command:<br>"
+            + "Unhandled event:<br>"
             + cmdname + ", "
             + JSON.stringify(args) + ", "
             + JSON.stringify(kwargs) + "<p></div>");
@@ -136,7 +135,6 @@ $(document).ready(function() {
     // initialize once.
     Evennia.init();
     // register listeners
-    log("register listeners ...");
     Evennia.emitter.on("text", onText);
     Evennia.emitter.on("prompt", onPrompt);
     Evennia.emitter.on("default", onDefault);
@@ -145,7 +143,6 @@ $(document).ready(function() {
     // set an idle timer to send idle every 3 minutes,
     // to avoid proxy servers timing out on us
     setInterval(function() {
-        log('Idle tick.');
         Evennia.msg("text", ["idle"], {});
     },
     60000*3
