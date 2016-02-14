@@ -68,7 +68,7 @@ class CommandTest(EvenniaTest):
             cmdobj.func()
             cmdobj.at_post_cmd()
             # clean out prettytable sugar
-            stored_msg = [args[0] for name, args, kwargs in receiver.msg.mock_calls]
+            stored_msg = [args[0] if args else kwargs.get("text",kwargs) for name, args, kwargs in receiver.msg.mock_calls]
             returned_msg = "||".join(_RE.sub("", mess) for mess in stored_msg)
             returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
             if msg is not None:

@@ -625,7 +625,6 @@ class ServerSessionHandler(SessionHandler):
         if session:
             for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
                 cname = cmdname.strip().lower()
-                print "sessionhandler.data_in:", session, kwargs
                 try:
                     if cname in _INPUT_FUNCS:
                         _INPUT_FUNCS[cname](session, *cmdargs, **cmdkwargs)
