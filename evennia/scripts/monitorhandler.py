@@ -419,4 +419,4 @@ class OOBHandler(TickerHandler):
                 for key, stored in self.oob_monitor_storage.items() if key[1] == sessid]
 
 # access object
-INPUT_HANDLER = OOBHandler()
+MONITOR_HANDLER = OOBHandler()

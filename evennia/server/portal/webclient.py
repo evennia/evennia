@@ -93,7 +93,7 @@ class WebSocketClient(Protocol, Session):
         cmdarray = json.loads(string)
         print "dataReceived:", cmdarray
         if cmdarray:
-            self.data_in(**{cmdarray[0]:[cmdarray[1], cmdarray[2]]})
+            self.data_in(**{cmdarray[0], [cmdarray[1], cmdarray[2]]})
 
     def sendLine(self, line):
         """
@@ -147,6 +147,8 @@ class WebSocketClient(Protocol, Session):
             text = args[0]
             if text is None:
                 return
+        text = to_str(text, force_string=True)
+
         options = kwargs.get("options", {})
         raw = options.get("raw", False)
         nomarkup = options.get("nomarkup", False)
@@ -186,5 +188,5 @@ class WebSocketClient(Protocol, Session):
 
         """
         if not cmdname == "options":
-            print "send_default", cmdname, args, kwargs
+            print "websocket.send_default", cmdname, args, kwargs
             session.sendLine(json.dumps([cmdname, args, kwargs]))
