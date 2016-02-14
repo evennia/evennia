@@ -88,6 +88,7 @@ function doWindowResize() {
     var winh = $(document).height();
     var formh = $('#inputform').outerHeight(true);
     $("#messagewindow").css({'height': winh - formh - 1});
+    $("#inputform").css({'bottom': JSON.stringify(-$("#inputform").height()-10)+"px"});
 }
 
 // Handle text coming from the server
@@ -96,7 +97,9 @@ function onText(args, kwargs) {
     // the bottom.
     mwin = $("#messagewindow");
     mwin.append("<div class='msg out'>" + args[0] + "</div>");
-    mwin.scrollTop(mwin[0].scrollHeight);
+    mwin.animate({
+        scrollTop: document.getElementById("messagewindow").scrollHeight
+    }, 0);
 }
 
 // Handle prompt output from the server
@@ -106,10 +109,10 @@ function onPrompt(args, kwargs) {
            "<div id='prompt' class='msg out'>" + args[0] + "</div>");
 }
 
-// Handler silencing events we don't do anything with.
+// Handle silencing events we don't do anything with.
 function onSilence(cmdname, args, kwargs) {}
 
-// Handler unrecognized commands from server
+// Handle unrecognized commands from server
 function onDefault(cmdname, args, kwargs) {
     mwin = $("#messagewindow");
     mwin.append(
@@ -127,7 +130,8 @@ function onDefault(cmdname, args, kwargs) {
 //
 
 // Event when client window changes
-$(window).resize(doWindowResize);
+$(window).bind("resize", doWindowResize);
+$("#inputfield").bind("resize", doWindowResize);
 
 // Evenit when any key is pressed
 $(document).keydown(onKeydown);
@@ -148,6 +152,7 @@ $(document).ready(function() {
     // Event when closing window (have to have Evennia initialized)
     $(window).bind("beforeunload", Evennia.connection.close);
 
+    doWindowResize();
     // set an idle timer to send idle every 3 minutes,
     // to avoid proxy servers timing out on us
     setInterval(function() {

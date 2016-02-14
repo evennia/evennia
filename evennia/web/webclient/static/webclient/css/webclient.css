@@ -10,13 +10,15 @@
 /* Overall element look */
 html, body { height: 100% }
 body {
-  margin: 0;
-  padding: 0;
-  background: #000;
-  color: #ccc;
-  font-size: .9em;
-  font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
-  line-height: 1.6em }
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: #ccc;
+    font-size: .9em;
+    font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
+    line-height: 1.6em;
+    overflow: hidden;
+}
 
 
 a:link, a:visited { color: #fff }
@@ -84,57 +86,70 @@ div {margin:0px;}
 .bgdimgray { background-color: #696969;}
 .bgblack { background-color: black;}
 
-/* Container surrounding entire chat */
+/* Container surrounding entire client */
 #wrapper {
-  position: relative;
-  height: 100% }
+    position: relative;
+    height: 100%
+}
 
 /* Main scrolling message area */
 #messagewindow {
-  height: 93%;
-  overflow: auto }
+    position: relative;
+    height: 90%;
+    overflow: auto;
+    padding: 1em;
+}
 
 /* Input area containing input field and button */
 #inputform {
-  position: absolute;
-  width: 100%;
-  padding: .8em 0;
-  bottom: 0 }
+    position: absolute;
+    width: 100%;
+    padding: .8em 0;
+    bottom: -50px;
+}
 
 #inputcontrol {
-  padding: 0 .8em;
-  overflow: auto }
+    padding: 0 .8em;
+    overflow: auto
+}
 
 /* Input field */
 #inputfield {
-  float: left;
-  width: 87%;}
+    float: left;
+    width: 93%;
+    height: 40px;
+    margin-right: .5em
+}
 
 #inputfield:focus {
-  outline: 0 }
+    outline: 0;
+}
 
 /* Input 'send' button */
 #inputsend {
-  float: left;
-  width: 8% }
-
-#inputfield { margin-right: .5em }
+    float: left;
+    width: 4%
+}
 
 #inputfield, #inputsend {
-  border: 1px solid #555;
-  background: #000;
-  color: #fff;
-  padding: .4em .45em;
-  font-size: 1.1em;
-  font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace }
+    height: 40px;
+    border: 1px solid #555;
+    background: #000;
+    color: #fff;
+    padding: .4em .45em;
+    font-size: 1.1em;
+    font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
+}
 
 /* prompt area above input field */
 #prompt {
-  margin-top: .8em;}
+    margin-top: .8em;
+}
 
 /* No javascript warning */
 #connecting {
-  padding: .5em .9em }
+    padding: .5em .9em
+}
 
 /*Example player count display */
 #playercount { margin-left: .8em }

@@ -9,11 +9,14 @@
 
 {% block client %}
 
-<div id="client">
+<div id="wrapper">
     <div id="messagewindow"></div>
     <div id="inputform">
-        <textarea id="inputfield" type="text"> </textarea>
-        <input id="send" type="button" onClick="doSendText()" value="&gt;"/>
+        <div id="prompt"></div>
+        <div id="inputcontrol">
+            <textarea id="inputfield" type="text"> </textarea>
+            <input id="inputsend" type="button" onClick="doSendText()" value="&gt;"/>
+        </div>
     </div>
 </div>
 
