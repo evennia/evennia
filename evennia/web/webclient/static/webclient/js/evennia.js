@@ -58,8 +58,7 @@ An "emitter" object must have a function
         debug: true,
         initialized: false,
 
-        // Initialize.
-        // startup Evennia emitter and connection.
+        // Initialize the Evennia object with emitter and connection.
         //
         // Args:
         //   opts (obj):
@@ -82,24 +81,21 @@ An "emitter" object must have a function
             opts = opts || {};
             this.emitter = opts.emitter || new DefaultEmitter();
 
-            if (opts.connection) {
+            if (opts.ckonnection) {
                this.connection = opts.connection;
             }
             else if (window.WebSocket && wsactive) {
                 this.connection = new WebsocketConnection();
-                if (!this.connection) {
-                    this.connection = new AjaxCometConnection();
-                }
             } else {
                 this.connection = new AjaxCometConnection();
             }
             log('Evennia initialized.')
         },
 
-        // Client -> Evennia.
-        // Called by the frontend to send a command to Evennia.
+        // client -> Evennia.
+        // called by the frontend to send a command to Evennia.
         //
-        // Args:
+        // args:
         //   cmdname (str): String identifier to call
         //   kwargs (obj): Data argument for calling as cmdname(kwargs)
         //   callback (func): If given, will be given an eventual return
@@ -191,7 +187,7 @@ An "emitter" object must have a function
         var off = function (cmdname) {
             delete listeners[cmdname]
         };
-        return {emit:emit, on:on, off:off}
+        return {emit:emit, on:on, off:off};
     };
 
     // Websocket Connector
@@ -201,15 +197,15 @@ An "emitter" object must have a function
         var websocket = new WebSocket(wsurl);
         // Handle Websocket open event
         websocket.onopen = function (event) {
-            Evennia.emit('connection.open', ["websocket"], event);
+            Evennia.emit('connection_open', ["websocket"], event);
         };
         // Handle Websocket close event
         websocket.onclose = function (event) {
-            Evennia.emit('connection.close', ["websocket"], event);
+            Evennia.emit('connection_close', ["websocket"], event);
         };
         // Handle websocket errors
         websocket.onerror = function (event) {
-            Evennia.emit('connection.error', ["websocket"], event);
+            Evennia.emit('connection_error', ["websocket"], event);
             if (websocket.readyState === websocket.CLOSED) {
                 log("Websocket failed. Falling back to Ajax...");
                 Evennia.connection = AjaxCometConnection();
@@ -254,12 +250,12 @@ An "emitter" object must have a function
 
                     success: function(data) {
                         data = JSON.parse(data);
-                        log ("connection.open", ["AJAX/COMET"], data);
+                        log ("connection_open", ["AJAX/COMET"], data);
                         client_hash = data.suid;
                         poll();
                     },
                     error: function(req, stat, err) {
-                        Evennia.emit("connection.error", ["AJAX/COMET init error"], err);
+                        Evennia.emit("connection_error", ["AJAX/COMET init error"], err);
                         log("AJAX/COMET: Connection error: " + err);
                     }
             });
@@ -274,7 +270,7 @@ An "emitter" object must have a function
                    data: {mode:'input', data: JSON.stringify(data), 'suid': client_hash},
                    success: function(req, stat, err) {},
                    error: function(req, stat, err) {
-                       Evennia.emit("connection.error", ["AJAX/COMET send error"], err);
+                       Evennia.emit("connection_error", ["AJAX/COMET send error"], err);
                        log("AJAX/COMET: Server returned error.",req,stat,err);
                    }
            });
@@ -315,11 +311,11 @@ An "emitter" object must have a function
 
                 success: function(data){
                     client_hash = '0';
-                    Evennia.emit("connection.close", ["AJAX/COMET"], {});
+                    Evennia.emit("connection_close", ["AJAX/COMET"], {});
                     log("AJAX/COMET connection closed cleanly.")
                 },
                 error: function(req, stat, err){
-                    Evennia.emit("connection.err", ["AJAX/COMET close error"], err);
+                    Evennia.emit("connection_err", ["AJAX/COMET close error"], err);
                     client_hash = '0';
                 }
             });
