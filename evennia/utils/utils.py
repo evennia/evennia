@@ -973,8 +973,9 @@ def all_from_module(module):
     mod = mod_import(module)
     if not mod:
         return {}
-    # make sure to only return variables actually defined in this module (not imports)
-    members = getmembers(mod, predicate=lambda obj: getmodule(obj) == mod)
+    # make sure to only return variables actually defined in this
+    # module if available (try to avoid not imports)
+    members = getmembers(mod, predicate=lambda obj: getmodule(obj) in (mod, None))
     return dict((key, val) for key, val in members if not key.startswith("_"))
     #return dict((key, val) for key, val in mod.__dict__.items()
     #                        if not (key.startswith("_") or ismodule(val)))
