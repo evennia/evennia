@@ -278,12 +278,13 @@ class WebClientSession(session.Session):
 
         """
         # string handling is similar to telnet
+
         if args:
             args = list(args)
             text = args[0]
             if text is None:
                 return
-        text = utils.to_str(text, force_string=True)
+            text = utils.to_str(text, force_string=True)
 
         options = kwargs.get("options", {})
         raw = options.get("raw", False)
