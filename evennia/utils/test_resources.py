@@ -1,9 +1,9 @@
 from django.conf import settings
 from django.test import TestCase
 from mock import Mock
-from evennia.objects import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
-from evennia.players import DefaultPlayer
-from evennia.scripts import DefaultScript
+from evennia.objects.objects import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
+from evennia.players.players import DefaultPlayer
+from evennia.scripts.scripts import DefaultScript
 from evennia.server.serversession import ServerSession
 from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import create

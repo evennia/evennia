@@ -116,18 +116,17 @@ def dbsafe_decode(value, compress_object=False):
         value = decompress(value)
     return loads(value)
 
-
-def _get_subfield_superclass():
-    # hardcore trick to support django < 1.3 - there was something wrong with
-    # inheritance and SubfieldBase before django 1.3
-    # see https://github.com/django/django/commit/222c73261650201f5ce99e8dd4b1ce0d30a69eb4
-    if django.VERSION < (1,3):
-        return models.Field
-    # mimic six.with_metaclass
-    meta = models.SubfieldBase
-    base = models.Field
-    return meta("NewBase", (base,), {})
-    #return six.with_metaclass(models.SubfieldBase, models.Field)
+#def _get_subfield_superclass():
+#    # hardcore trick to support django < 1.3 - there was something wrong with
+#    # inheritance and SubfieldBase before django 1.3
+#    # see https://github.com/django/django/commit/222c73261650201f5ce99e8dd4b1ce0d30a69eb4
+#    if django.VERSION < (1,3):
+#        return models.Field
+#    # mimic six.with_metaclass
+#    meta = models.SubfieldBase
+#    base = models.Field
+#    return meta("NewBase", (base,), {})
+#    #return six.with_metaclass(models.SubfieldBase, models.Field)
 
 
 class PickledWidget(Textarea):
@@ -169,7 +168,7 @@ class PickledFormField(CharField):
             raise ValidationError(self.error_messages['invalid'])
 
 
-class PickledObjectField(with_metaclass(models.SubfieldBase, _get_subfield_superclass())):
+class PickledObjectField(with_metaclass(models.SubfieldBase, models.Field)):
     """
     A field that will accept *any* python object and store it in the
     database. PickledObjectField will optionally compress its values if
@@ -203,6 +202,8 @@ class PickledObjectField(with_metaclass(models.SubfieldBase, _get_subfield_super
             return self.default
         # If the field doesn't have a default, then we punt to models.Field.
         return super(PickledObjectField, self).get_default()
+
+    #def from_db_value():pass
 
     def to_python(self, value):
         """
