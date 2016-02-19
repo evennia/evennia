@@ -382,8 +382,8 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         new = False
         if "update_fields" in kwargs and kwargs["update_fields"]:
             # get field objects from their names
-            update_fields = (self._meta.get_field_by_name(field)[0]
-                             for field in kwargs.get("update_fields"))
+            update_fields = (self._meta.get_field(fieldname)
+                             for fieldname in kwargs.get("update_fields"))
         else:
             # meta.fields are already field objects; get them all
             new =True
