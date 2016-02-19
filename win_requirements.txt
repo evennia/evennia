@@ -3,7 +3,7 @@
 # windows specific 
 pypiwin32
 # general 
-django >= 1.8, < 1.9
+django >= 1.8, < 1.10
 twisted >= 15.2.1
 mock >= 1.0.1
 pillow == 2.9.0
