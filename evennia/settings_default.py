@@ -597,19 +597,28 @@ STATICFILES_IGNORE_PATTERNS = ('README.md',)
 WEBSITE_TEMPLATE = 'website'
 WEBCLIENT_TEMPLATE = 'webclient'
 # We setup the location of the website template as well as the admin site.
-TEMPLATE_DIRS = (
-    os.path.join(GAME_DIR, "web", "template_overrides", WEBSITE_TEMPLATE),
-    os.path.join(GAME_DIR, "web", "template_overrides", WEBCLIENT_TEMPLATE),
-    os.path.join(GAME_DIR, "web", "template_overrides"),
-    os.path.join(EVENNIA_DIR, "web", "website", "templates", WEBSITE_TEMPLATE),
-    os.path.join(EVENNIA_DIR, "web", "website", "templates"),
-    os.path.join(EVENNIA_DIR, "web", "webclient", "templates", WEBCLIENT_TEMPLATE),
-    os.path.join(EVENNIA_DIR, "web", "webclient", "templates"),)
+TEMPLATES = [{
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(GAME_DIR, "web", "template_overrides", WEBSITE_TEMPLATE),
+            os.path.join(GAME_DIR, "web", "template_overrides", WEBCLIENT_TEMPLATE),
+            os.path.join(GAME_DIR, "web", "template_overrides"),
+            os.path.join(EVENNIA_DIR, "web", "website", "templates", WEBSITE_TEMPLATE),
+            os.path.join(EVENNIA_DIR, "web", "website", "templates"),
+            os.path.join(EVENNIA_DIR, "web", "webclient", "templates", WEBCLIENT_TEMPLATE),
+            os.path.join(EVENNIA_DIR, "web", "webclient", "templates")],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            "context_processors": [
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.media',
+                'django.template.context_processors.debug',
+                'evennia.web.utils.general_context.general_context']
+            }
+        }]
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',)
 # MiddleWare are semi-transparent extensions to Django's functionality.
 # see http://www.djangoproject.com/documentation/middleware/ for a more detailed
 # explanation.
@@ -621,15 +630,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',)
-# Context processors define context variables, generally for the template
-# system to use.
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.request',
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.media',
-    'django.core.context_processors.debug',
-    'evennia.web.utils.general_context.general_context',)
 
 ######################################################################
 # Evennia components
