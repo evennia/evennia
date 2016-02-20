@@ -5,7 +5,6 @@ Handlers for input commands
 from future.utils import viewkeys
 
 from django.conf import settings
-from evennia.server.inputhandler import INPUT_HANDLER
 from evennia.commands.cmdhandler import cmdhandler
 from evennia.utils.logger import log_err
 from evennia.utils.utils import to_str
