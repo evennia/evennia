@@ -31,6 +31,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     clients) gets a telnet protocol instance assigned to them.  All
     communication between game and player goes through here.
     """
+    def __init__(self, *args, **kwargs):
+        self.protocol_name = "telnet"
+        super(TelnetProtocol, self).__init__(*args, **kwargs)
+
     def connectionMade(self):
         """
         This is called when the connection is first established.
@@ -44,7 +48,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # this number is counted down for every handshake that completes.
         # when it reaches 0 the portal/server syncs their data
         self.handshakes = 7 # naws, ttype, mccp, mssp, msdp, gmcp, mxp
-        self.init_session("telnet", client_address, self.factory.sessionhandler)
+        self.init_session(self.protocol_name, client_address, self.factory.sessionhandler)
 
         # negotiate client size
         self.naws = naws.Naws(self)
