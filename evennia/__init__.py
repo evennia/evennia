@@ -167,7 +167,6 @@ def _init():
 
     # handlers
     from .scripts.tickerhandler import TICKER_HANDLER
-    from .server.inputhandler import INPUT_HANDLER
     from .server.sessionhandler import SESSION_HANDLER
     from .comms.channelhandler import CHANNEL_HANDLER
 
