@@ -40,6 +40,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.iaw_mode = False
         self.no_lb_mode = False
         client_address = self.transport.client
+        client_address = client_address[0] if client_address else None
         # this number is counted down for every handshake that completes.
         # when it reaches 0 the portal/server syncs their data
         self.handshakes = 7 # naws, ttype, mccp, mssp, msdp, gmcp, mxp
