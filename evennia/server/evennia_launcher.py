@@ -19,7 +19,6 @@ import shutil
 import importlib
 from argparse import ArgumentParser
 from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
-import twisted
 import django
 
 # Signal processing
@@ -421,24 +420,19 @@ def set_gamedir(path):
     is inside the directory tree.
 
     """
-
     global GAMEDIR
-    if os.path.exists(os.path.join(path, SETTINGS_PATH)):
-        # path at root of game dir
-        GAMEDIR = os.path.abspath(path)
-    elif os.path.exists(os.path.join(path, os.path.pardir, SETTINGS_PATH)):
-        # path given to somewhere one level down
-        GAMEDIR = os.path.dirname(path)
-    elif os.path.exists(os.path.join(path, os.path.pardir, os.path.pardir, SETTINGS_PATH)):
-        # path given to somwhere two levels down
-        GAMEDIR = os.path.dirname(os.path.dirname(path))
-    elif os.path.exists(os.path.join(path, os.path.pardir, os.path. pardir, os.path.pardir, SETTINGS_PATH)):
-        # path given to somewhere three levels down (custom directories)
-        GAMEDIR = os.path.dirname(os.path.dirname(os.path.dirname(path)))
-    else:
-        # we don't look further down than this ...
-        print(ERROR_NO_GAMEDIR)
-        sys.exit()
+
+    Ndepth = 10
+    settings_path = os.path.join("server", "conf", "settings.py")
+    for i in range(Ndepth):
+        gpath = os.getcwd()
+        if "server" in os.listdir(gpath):
+            if os.path.isfile(settings_path):
+                GAMEDIR = gpath
+                return
+        os.chdir(os.pardir)
+    print(ERROR_NO_GAMEDIR)
+    sys.exit()
 
 
 def create_secret_key():
@@ -471,7 +465,6 @@ def create_settings_file():
         "servername": "\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1].capitalize(),
         "secret_key": "\'%s\'" % create_secret_key()}
 
-    # modify the settings
     settings_string = settings_string.format(**setting_dict)
 
     with open(settings_path, 'w') as f:

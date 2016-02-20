@@ -103,13 +103,21 @@ WEBSOCKET_INTERFACES = ['0.0.0.0']
 EVENNIA_ADMIN = True
 # Path to the lib directory containing the bulk of the codebase's code.
 EVENNIA_DIR = os.path.dirname(os.path.abspath(__file__))
-# Path to the game directory (containing the database file if using sqlite).
+# Path to the game directory (containing the server/conf/settings.py file)
+# This is dynamically created- there is generally no need to change this!
 if sys.argv[1] == 'test' if len(sys.argv)>1 else False:
     # unittesting mode
     GAME_DIR = os.getcwd()
 else:
     # Fallback location (will be replaced by the actual game dir at runtime)
     GAME_DIR = os.path.join(EVENNIA_DIR, 'game_template')
+    for i in range(10):
+        gpath = os.getcwd()
+        if "server" in os.listdir(gpath):
+            if os.path.isfile(os.path.join("server", "conf", "settings.py")):
+                GAME_DIR = gpath
+                break
+        os.chdir(os.pardir)
 
 # Place to put log files
 LOG_DIR = os.path.join(GAME_DIR, 'server', 'logs')
