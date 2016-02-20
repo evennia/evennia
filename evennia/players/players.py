@@ -409,6 +409,14 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                 from_obj.at_msg_send(text=text, to_obj=self, **kwargs)
             except Exception:
                 pass
+        try:
+            if not self.at_msg_receive(text=text, **kwargs):
+                # abort message to this player
+                return
+        except Exception:
+            pass
+
+        kwargs["options"] = options
 
         # session relay
         sessions = make_iter(session) if session else self.sessions.all()

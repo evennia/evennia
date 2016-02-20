@@ -152,7 +152,7 @@ class SessionHandler(dict):
                 applied.
 
         """
-        options = kwargs.get("options", None) or {}
+        options = kwargs.pop("options", None) or {}
         raw = options.get("raw", False)
         strip_inlinefunc = options.get("strip_inlinefunc", False)
 
@@ -204,6 +204,7 @@ class SessionHandler(dict):
                     rkwargs[key] = [ _validate(data), {} ]
             else:
                 rkwargs[key] = [ [_validate(data)], {} ]
+            rkwargs[key][1]["options"] = options
 
         return rkwargs
 

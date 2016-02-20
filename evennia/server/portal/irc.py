@@ -204,19 +204,28 @@ class IRCBot(irc.IRCClient, Session):
         """
         self.sessionhandler.data_in(self, text=text, **kwargs)
 
-    def data_out(self, text=None, **kwargs):
+    def send_text(self, *args, **kwargs):
         """
-        Data from server-> IRC.
+        Send channel text to IRC
+
+        Args:
+            text (str): Outgoing text
 
         Kwargs:
-            text (str): Outgoing text.
-            kwargs (any): Other data to protocol.
+            bot_data_out (bool): If True, echo to channel.
 
         """
-        if text.startswith("bot_data_out"):
-            text = text.split(" ", 1)[1]
+        text = args[0] if args else ""
+        if text and kwargs['options'].get("bot_data_out", False):
             text = parse_irc_colors(text)
             self.say(self.channel, text)
+
+    def send_default(self, *args, **kwargs):
+        """
+        Ignore other types of sends.
+
+        """
+        pass
 
 
 class IRCBotFactory(protocol.ReconnectingClientFactory):
