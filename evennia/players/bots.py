@@ -135,12 +135,12 @@ class Bot(DefaultPlayer):
         """
         pass
 
-    def msg(self, text=None, from_obj=None, session=None, **kwargs):
+    def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
         """
         Evennia -> outgoing protocol
 
         """
-        super(Bot, self).msg(text=text, from_obj=from_obj, session=session, **kwargs)
+        super(Bot, self).msg(text=text, from_obj=from_obj, session=session, options=options, **kwargs)
 
     def execute_cmd(self, raw_string, session=None):
         """
@@ -229,14 +229,14 @@ class IRCBot(Bot):
                 - from_obj (str): dbid of an object sending this text.
 
         """
-        options = kwargs.get("options", {})
+        from_obj = kwargs.get("from_obj", None)
+        options = kwargs.get("options", None) or {}
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
         if "from_channel" in options and text and self.ndb.ev_channel.dbid == options["from_channel"]:
-            if "from_obj" not in options or options["from_obj"] != [self.id]:
-                text = "bot_data_out %s" % text
-                super(IRCBot, self).msg(text=text)
+            if not from_obj or from_obj != [self.id]:
+                super(IRCBot, self).msg(text=text, options={"bot_data_out": True})
 
     def execute_cmd(self, text=None, session=None):
         """
@@ -387,8 +387,7 @@ class IMC2Bot(Bot):
             self.ndb.ev_channel = self.db.ev_channel
         if "from_channel" in options and text and self.ndb.ev_channel.dbid == options["from_channel"]:
             if "from_obj" not in options or options["from_obj"] != [self.id]:
-                text = "bot_data_out %s" % text
-                self.msg(text=text)
+                self.msg(text=text, options={"bot_data_out": True})
 
     def execute_cmd(self, text=None, session=None):
         """
