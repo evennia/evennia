@@ -210,7 +210,7 @@ class SshProtocol(Manhole, session.Session):
 
         """
         if reason:
-            self.data_out(reason)
+            self.data_out(text=reason)
         self.connectionLost(reason)
 
     def data_out(self, **kwargs):
