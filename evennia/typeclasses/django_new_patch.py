@@ -16,7 +16,6 @@ from django.apps import apps
 from django.db.models.base import ModelBase, subclass_exception
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.options import Options
-from django.utils.deprecation import RemovedInDjango19Warning
 from django.core.exceptions import MultipleObjectsReturned, FieldError
 from django.apps.config import MODELS_MODULE_NAME
 from django.db.models.fields.related import OneToOneField
@@ -61,29 +60,15 @@ def patched_new(cls, name, bases, attrs):
             # For 'django.contrib.sites.models', this would be 'sites'.
             # For 'geo.models.places' this would be 'geo'.
 
-            msg = (
-                "Model class %s.%s doesn't declare an explicit app_label "
-                "and either isn't in an application in INSTALLED_APPS or "
-                "else was imported before its application was loaded. " %
-                (module, name))
             if abstract:
-                msg += "Its app_label will be set to None in Django 1.9."
+                kwargs = {"app_label": None}
             else:
-                msg += "This will no longer be supported in Django 1.9."
-            warnings.warn(msg, RemovedInDjango19Warning, stacklevel=2)
-
-            model_module = sys.modules[new_class.__module__]
-            package_components = model_module.__name__.split('.')
-            package_components.reverse()  # find the last occurrence of 'models'
-            try:
-                app_label_index = package_components.index(MODELS_MODULE_NAME) + 1
-            except ValueError:
-                app_label_index = 1
-            kwargs = {"app_label": package_components[app_label_index]}
-
-        else:
-            kwargs = {"app_label": app_config.label}
-
+                msg = (
+                    "Model class %s.%s doesn't declare an explicit app_label "
+                    "and either isn't in an application in INSTALLED_APPS or "
+                    "else was imported before its application was loaded. " %
+                    (module, name))
+                raise RuntimeError(msg)
     else:
         kwargs = {}
 

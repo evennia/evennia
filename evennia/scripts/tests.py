@@ -1,6 +1,5 @@
 # this is an optimized version only available in later Django versions
-from django.utils.unittest import TestCase
-
+from unittest import TestCase
 from evennia.scripts.models import ScriptDB, ObjectDoesNotExist
 from evennia.utils.create import create_script
 from evennia.scripts.scripts import DoNothing

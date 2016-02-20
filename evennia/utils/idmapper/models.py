@@ -16,7 +16,7 @@ from twisted.internet.reactor import callFromThread
 from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.db.models.signals import post_save
 from django.db.models.base import Model, ModelBase
-from django.db.models.signals import pre_delete, post_syncdb
+from django.db.models.signals import pre_delete, post_migrate
 from evennia.utils import logger
 from evennia.utils.utils import dbref, get_evennia_pids, to_str
 
@@ -382,8 +382,8 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         new = False
         if "update_fields" in kwargs and kwargs["update_fields"]:
             # get field objects from their names
-            update_fields = (self._meta.get_field_by_name(field)[0]
-                             for field in kwargs.get("update_fields"))
+            update_fields = (self._meta.get_field(fieldname)
+                             for fieldname in kwargs.get("update_fields"))
         else:
             # meta.fields are already field objects; get them all
             new =True
@@ -446,7 +446,7 @@ def flush_cache(**kwargs):
     # run the python garbage collector
     return gc.collect()
 #request_finished.connect(flush_cache)
-post_syncdb.connect(flush_cache)
+post_migrate.connect(flush_cache)
 
 
 def flush_cached_instance(sender, instance, **kwargs):
