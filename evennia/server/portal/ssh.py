@@ -11,11 +11,18 @@ Using standard ssh client,
 from __future__ import print_function
 from builtins import object
 import os
+import re
 
 from twisted.cred.checkers import credentials
 from twisted.cred.portal import Portal
-from twisted.conch.ssh.keys import Key
 from twisted.conch.interfaces import IConchUser
+
+try:
+    from twisted.conch.ssh.keys import Key
+except ImportError:
+    raise ImportError ("To use SSH, you need to install the crypto libraries:\n"
+                       "      pip install pycrypto pyasn1\n")
+
 from twisted.conch.ssh.userauth import SSHUserAuthServer
 from twisted.conch.ssh import common
 from twisted.conch.insults import insults
@@ -25,11 +32,15 @@ from twisted.internet import defer
 from twisted.conch import interfaces as iconch
 from twisted.python import components
 from django.conf import settings
+
 from evennia.server import session
 from evennia.players.models import PlayerDB
-from evennia.utils import ansi, utils
+from evennia.utils import ansi
+from evennia.utils.utils import to_str
 
-ENCODINGS = settings.ENCODINGS
+_RE_N = re.compile(r"\{n$")
+_RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
+_GAME_DIR = settings.GAME_DIR
 
 CTRL_C = '\x03'
 CTRL_D = '\x04'
@@ -75,6 +86,7 @@ class SshProtocol(Manhole, session.Session):
 
         # initialize the session
         client_address = self.getClientAddress()
+        client_address = client_address.host if client_address else None
         self.init_session("ssh", client_address, self.cfactory.sessionhandler)
 
         # since we might have authenticated already, we might set this here.
@@ -170,9 +182,9 @@ class SshProtocol(Manhole, session.Session):
             string (str): Input text.
 
         """
-        self.sessionhandler.data_in(self, string)
+        self.sessionhandler.data_in(self, text=string)
 
-    def lineSend(self, string):
+    def sendLine(self, string):
         """
         Communication Evennia -> User.  Any string sent should
         already have been properly formatted and processed before
@@ -201,28 +213,74 @@ class SshProtocol(Manhole, session.Session):
             self.data_out(reason)
         self.connectionLost(reason)
 
-    def data_out(self, text=None, **kwargs):
+    def data_out(self, **kwargs):
         """
-        Data Evennia -> User access hook. 'data' argument is a dict
-        parsed for string settings.
+        Data Evennia -> User
 
         Kwargs:
-            text (str): Text to send.
-            raw (bool): Leave all ansi markup and tokens unparsed
-            nomarkup (bool): Remove all ansi markup.
+            kwargs (any): Options to the protocol.
 
         """
-        try:
-            text = utils.to_str(text if text else "", encoding=self.encoding)
-        except Exception as e:
-            self.lineSend(str(e))
+        self.sessionhandler.data_out(self, **kwargs)
+
+    def send_text(self, *args, **kwargs):
+        """
+        Send text data. This is an in-band telnet operation.
+
+        Args:
+            text (str): The first argument is always the text string to send. No other arguments
+                are considered.
+        Kwargs:
+            options (dict): Send-option flags
+                   - mxp: Enforce MXP link support.
+                   - ansi: Enforce no ANSI colors.
+                   - xterm256: Enforce xterm256 colors, regardless of TTYPE.
+                   - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
+                   - nomarkup: Strip all ANSI markup. This is the same as noxterm256,noansi
+                   - raw: Pass string through without any ansi processing
+                        (i.e. include Evennia ansi markers but do not
+                        convert them into ansi tokens)
+                   - echo: Turn on/off line echo on the client. Turn
+                        off line echo for client, for example for password.
+                        Note that it must be actively turned back on again!
+
+        """
+        #print "telnet.send_text", args,kwargs
+        text = args[0] if args else ""
+        if text is None:
             return
-        raw = kwargs.get("raw", False)
-        nomarkup = kwargs.get("nomarkup", False)
+        text = to_str(text, force_string=True)
+
+        # handle arguments
+        options = kwargs.get("options", {})
+        ttype = self.protocol_flags.get('TTYPE', {})
+        xterm256 = options.get("xterm256", ttype.get('256 COLORS', False) if ttype.get("init_done") else True)
+        useansi = options.get("ansi", ttype and ttype.get('ANSI', False) if ttype.get("init_done") else True)
+        raw = options.get("raw", False)
+        nomarkup = options.get("nomarkup", not (xterm256 or useansi))
+        #echo = options.get("echo", None)
+        screenreader =  options.get("screenreader", self.screenreader)
+
+        if screenreader:
+            # screenreader mode cleans up output
+            text = ansi.parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
+            text = _RE_SCREENREADER_REGEX.sub("", text)
+
         if raw:
-            self.lineSend(text)
+            # no processing
+            self.sendLine(text)
+            return
         else:
-            self.lineSend(ansi.parse_ansi(text.strip("{r") + "{r", strip_ansi=nomarkup))
+            # we need to make sure to kill the color at the end in order
+            # to match the webclient output.
+            linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256, mxp=False)
+            self.sendLine(linetosend)
+
+    def send_prompt(self, *args, **kwargs):
+        self.send_text(*args, **kwargs)
+
+    def send_default(self, *args, **kwargs):
+        pass
 
 
 class ExtraInfoAuthServer(SSHUserAuthServer):
@@ -274,7 +332,7 @@ class PlayerDBPasswordChecker(object):
         password = up.password
         player = PlayerDB.objects.get_player_from_name(username)
         res = (None, self.factory)
-        if player and player.user.check_password(password):
+        if player and player.check_password(password):
             res = (player, self.factory)
         return defer.succeed(res)
 
@@ -304,7 +362,7 @@ class TerminalSessionTransport_getPeer(object):
     """
     Taken from twisted's TerminalSessionTransport which doesn't
     provide getPeer to the transport.  This one does.
-    j
+
     """
     def __init__(self, proto, chainedProtocol, avatar, width, height):
         self.proto = proto
@@ -322,7 +380,7 @@ class TerminalSessionTransport_getPeer(object):
             self.proto.loseConnection()
 
         def getPeer():
-            session.conn.transport.transport.getPeer()
+            return session.conn.transport.transport.getPeer()
 
         self.chainedProtocol.makeConnection(
             _Glue(getPeer=getPeer, write=self.proto.write,
@@ -364,8 +422,8 @@ def makeFactory(configdict):
     Creates the ssh server factory.
     """
 
-    pubkeyfile = "ssh-public.key"
-    privkeyfile = "ssh-private.key"
+    pubkeyfile = os.path.join(_GAME_DIR, "server", "ssh-public.key")
+    privkeyfile = os.path.join(_GAME_DIR, "server", "ssh-private.key")
 
     def chainProtocolFactory(username=None):
         return insults.ServerProtocol(
@@ -384,9 +442,12 @@ def makeFactory(configdict):
         publicKey, privateKey = getKeyPair(pubkeyfile, privkeyfile)
         factory.publicKeys = {'ssh-rsa': publicKey}
         factory.privateKeys = {'ssh-rsa': privateKey}
-    except Exception as e:
-        print(" getKeyPair error: %(e)s\n WARNING: Evennia could not auto-generate SSH keypair. Using conch default keys instead." % {'e': e})
-        print(" If this error persists, create game/%(pub)s and game/%(priv)s yourself using third-party tools." % {'pub': pubkeyfile, 'priv': privkeyfile})
+    except Exception as err:
+        print ( "getKeyPair error: {err}\n WARNING: Evennia could not " \
+                "auto-generate SSH keypair. Using conch default keys instead.\n" \
+                "If this error persists, create {pub} and " \
+                "{priv} yourself using third-party tools.".format(
+                    err=err, pub=pubkeyfile, priv=privkeyfile))
 
     factory.services = factory.services.copy()
     factory.services['ssh-userauth'] = ExtraInfoAuthServer
