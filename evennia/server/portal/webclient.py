@@ -50,6 +50,7 @@ class WebSocketClient(Protocol, Session):
 
         """
         client_address = self.transport.client
+        client_address = client_address[0] if client_address else None
         self.init_session("websocket", client_address, self.factory.sessionhandler)
         # watch for dead links
         self.transport.setTcpKeepAlive(1)

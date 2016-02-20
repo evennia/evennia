@@ -280,7 +280,7 @@ if SSH_ENABLED:
             ssh_service.setName('EvenniaSSH%s' % pstring)
             PORTAL.services.addService(ssh_service)
 
-            print("  ssl%s: %s" % (ifacestr, port))
+            print("  ssh%s: %s" % (ifacestr, port))
 
 
 if WEBSERVER_ENABLED:
