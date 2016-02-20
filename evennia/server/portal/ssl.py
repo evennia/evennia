@@ -11,7 +11,12 @@ try:
     import OpenSSL
     from twisted.internet import ssl as twisted_ssl
 except ImportError as err:
-    raise ImportError("SSL_ENABLED requires PyOpenSSL.")
+    errstr = """
+    {err}
+    SSL requires the PyOpenSSL library:
+        pip install pyopenssl
+    """
+    raise ImportError(errstr.format(err=err))
 
 from django.conf import settings
 from evennia.server.portal.telnet import TelnetProtocol
@@ -48,30 +53,6 @@ class SSLProtocol(TelnetProtocol):
     def __init__(self, *args, **kwargs):
         super(TelnetProtocol, self).__init__(*args, **kwargs)
         self.protocol_name = "ssl"
-
-    def connectionMade(self):
-        print ("SSL connectionMade")
-        #self.iaw_mode = False
-        #self.no_lb_mode = False
-        #client_address = self.transport.client
-        #client_address = client_address[0] if client_address else None
-        #self.init_session(self.protocol_name, client_address, self.factory.sessionhandler)
-        #self.sessionhandler.connect(self)
-
-        super(SSLProtocol, self).connectionMade()
-
-    def connectionLost(self, reason):
-        print ("SSL connectionLost")
-        super(SSLProtocol, self).connectionLost(reason)
-
-    def dataReceived(self, data):
-        print("SSL dataReceived:", data)
-        super(SSLProtocol, self).dataReceived(data)
-
-    def send_text(self, *args, **kwargs):
-        print("SSL send_text:", args, kwargs)
-        super(SSLProtocol, self).send_text(*args, **kwargs)
-
 
 def verify_SSL_key_and_cert(keyfile, certfile):
     """
