@@ -1605,3 +1605,22 @@ class LimitedSizeOrderedDict(OrderedDict):
     def update(self, *args, **kwargs):
         super(LimitedSizeOrderedDict, self).update(*args, **kwargs)
         self._check_size()
+
+def get_game_dir_path():
+    """
+    This is called by settings_default in order to determine the path
+    of the game directory.
+
+    Returns:
+        path (str): Full OS path to the game dir
+
+    """
+    # current working directory, assumed to be somewhere inside gamedir.
+    for i in range(10):
+        gpath = os.getcwd()
+        if "server" in os.listdir(gpath):
+            if os.path.isfile(os.path.join("server", "conf", "settings.py")):
+                return gpath
+        else:
+            os.chdir(os.pardir)
+    raise RuntimeError("server/conf/settings.py not found: Must start from inside game dir.")
