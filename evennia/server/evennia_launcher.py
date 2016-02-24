@@ -178,7 +178,7 @@ RECREATED_SETTINGS = \
 
     Note that if you were using an existing database, the password
     salt of this new settings file will be different from the old one.
-    This means that any existing players won't be able to log in to
+    This means that any existing players may not be able to log in to
     their accounts with their old passwords.
     """
 
