@@ -8,7 +8,7 @@ from builtins import range
 
 import re
 from evennia.locks.lockhandler import LockHandler
-from evennia.utils.utils import is_iter, fill, lazy_property
+from evennia.utils.utils import is_iter, fill, lazy_property, make_iter
 from future.utils import with_metaclass
 
 
@@ -245,26 +245,23 @@ class Command(with_metaclass(CommandMeta, object)):
 
     def set_aliases(self, new_aliases):
         """
-        Update aliases.
+        Replace aliases with new ones.
 
         Args:
-            new_aliases (list):
+            new_aliases (str or list): Either a ;-separated string
+                or a list of aliases. These aliases will replace the
+                existing ones, if any.
 
         Notes:
             This is necessary to use to make sure the optimization
             caches are properly updated as well.
 
         """
-        if not is_iter(new_aliases):
-            try:
-                self.aliases = [str(alias).strip().lower()
-                                for alias in self.aliases.split(',')]
-            except Exception:
-                self.aliases = []
-        self.aliases = list(set(alias for alias in self.aliases
-                            if alias and alias != self.key))
+        if isinstance(new_aliases, basestring):
+            new_aliases = new_aliases.split(';')
+        aliases = (str(alias).strip().lower() for alias in make_iter(new_aliases))
+        self.aliases = list(set(alias for alias in aliases if alias != self.key))
         self._optimize()
-
 
     def match(self, cmdname):
         """
