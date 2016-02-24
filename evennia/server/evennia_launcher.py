@@ -105,18 +105,36 @@ ERROR_INPUT = \
 
 ERROR_NO_GAMEDIR = \
     """
-    No Evennia settings file was found. You must run this command from
-    inside a valid game directory first created with --init.
+    ERROR: No Evennia settings file was found. Evennia looks for the
+    file in your game directory as server/conf/settings.py.
+
+    You must run this command from somewhere inside a valid game
+    directory first created with
+
+        evennia --init mygamename
+
+    If you are in a game directory but is missing a settings.py file,
+    it may be because you have git-cloned an existing game directory.
+    The settings.py file is not cloned by git (it's in .gitignore)
+    since it can contain sensitive and/or server-specific information.
+    You can create a new, empty settings file with
+
+        evennia --initsettings
+
+    If cloning the settings file is not a problem you could manually
+    copy over the old settings file or remove its entry in .gitignore
+
     """
 
 WARNING_MOVING_SUPERUSER = \
     """
-    Evennia expects a Player superuser with id=1. No such Player was
-    found. However, another superuser ('{other_key}', id={other_id})
-    was found in the database. If you just created this superuser and
-    still see this text it is probably due to the database being
-    flushed recently - in this case the database's internal
-    auto-counter might just start from some value higher than one.
+    WARNING: Evennia expects a Player superuser with id=1. No such
+    Player was found. However, another superuser ('{other_key}',
+    id={other_id}) was found in the database. If you just created this
+    superuser and still see this text it is probably due to the
+    database being flushed recently - in this case the database's
+    internal auto-counter might just start from some value higher than
+    one.
 
     We will fix this by assigning the id 1 to Player '{other_key}'.
     Please confirm this is acceptable before continuing.
@@ -133,7 +151,8 @@ WARNING_RUNSERVER = \
 
 ERROR_SETTINGS = \
     """
-    There was an error importing Evennia's config file {settingspath}.
+    ERROR: There was an error importing Evennia's config file
+    {settingspath}.
     There is usually one of three reasons for this:
         1) You are not running this command from your game directory.
            Change directory to your game directory and try again (or
@@ -146,9 +165,26 @@ ERROR_SETTINGS = \
            this resolves the issue.
     """.format(settingsfile=SETTINGFILE, settingspath=SETTINGS_PATH)
 
+ERROR_INITSETTINGS = \
+    """
+    ERROR: 'evennia --initsettings' must be called from the root of
+    your game directory, since it tries to (re)create the new
+    settings.py file in a subfolder server/conf/.
+    """
+
+RECREATED_SETTINGS = \
+    """
+    (Re)created an empty settings file in server/conf/settings.py.
+
+    Note that if you were using an existing database, the password
+    salt of this new settings file will be different from the old one.
+    This means that any existing players won't be able to log in to
+    their accounts with their old passwords.
+    """
+
 ERROR_DATABASE = \
     """
-    Your database does not seem to be set up correctly.
+    ERROR: Your database does not seem to be set up correctly.
     (error was '{traceback}')
 
     Standing in your game directory, run
@@ -443,19 +479,37 @@ def create_secret_key():
     import random
     import string
     secret_key = list((string.letters +
-        string.digits + string.punctuation).replace("\\", "").replace("'", '"'))
+        string.digits + string.punctuation).replace("\\", "")\
+                .replace("'", '"').replace("{","_").replace("}","-"))
     random.shuffle(secret_key)
     secret_key = "".join(secret_key[:40])
     return secret_key
 
 
-def create_settings_file():
+def create_settings_file(init=True):
     """
-    Uses the template settings file to build a working
-    settings file.
+    Uses the template settings file to build a working settings file.
+
+    Args:
+        init (bool): This is part of the normal evennia --init
+            operation.  If false, this function will copy a fresh
+            template file in (asking if it already exists).
 
     """
     settings_path = os.path.join(GAMEDIR, "server", "conf", "settings.py")
+
+    if not init:
+        # if not --init mode, settings file may already exist from before
+        if os.path.exists(settings_path):
+            inp = raw_input("server/conf/settings.py already exists. "
+                            "Sure you want to reset it? y/[N]> ")
+            if not inp.lower() == 'y':
+                print ("Aborted.")
+                sys.exit()
+
+        default_settings_path = os.path.join(EVENNIA_TEMPLATE, "server", "conf", "settings.py")
+        shutil.copy(default_settings_path, settings_path)
+
     with open(settings_path, 'r') as f:
         settings_string = f.read()
 
@@ -1133,6 +1187,10 @@ def main():
         help=("Start evennia with alternative settings file in "
               "gamedir/server/conf/."))
     parser.add_argument(
+        '--initsettings', action='store_true', dest="initsettings",
+        default=False,
+        help="Creates a new, empty settings file gamedir/server/conf/settings.py.")
+    parser.add_argument(
         "option", nargs='?', default="noop",
         help="Operational mode: 'start', 'stop', 'restart' or 'menu'.")
     parser.add_argument(
@@ -1177,6 +1235,17 @@ def main():
         SETTINGS_DOTPATH = "server.conf.%s" % sfile.rstrip(".py")
         print("Using settings file '%s' (%s)." % (
             SETTINGSFILE, SETTINGS_DOTPATH))
+
+    if args.initsettings:
+        # create new settings file
+        global GAMEDIR
+        GAMEDIR = os.getcwd()
+        try:
+            create_settings_file(init=False)
+            print(RECREATED_SETTINGS)
+        except IOError:
+            print(ERROR_INITSETTINGS)
+        sys.exit()
 
     if args.dummyrunner:
         # launch the dummy runner
