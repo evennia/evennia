@@ -298,3 +298,7 @@ def _init():
     syscmdkeys = SystemCmds()
     del SystemCmds
     del _EvContainer
+
+del object
+del absolute_import
+del print_function
