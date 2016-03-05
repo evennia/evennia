@@ -27,7 +27,7 @@ AUTO_FLUSH_MIN_INTERVAL = 60.0 * 5 # at least 5 mins between cache flushes
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
-
+_MONITOR_HANDLER = None
 
 # References to db-updated objects are stored here so the
 # main process can be informed to re-cache itself.
@@ -361,6 +361,9 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
             self._oob_at_<fieldname>_postsave())
 
         """
+        global _MONITOR_HANDLER
+        if not _MONITOR_HANDLER:
+            from evennia.scripts.monitorhandler import MONITOR_HANDLER as _MONITORHANDLER
 
         if _IS_SUBPROCESS:
             # we keep a store of objects modified in subprocesses so
@@ -390,15 +393,18 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
             update_fields = self._meta.fields
         for field in update_fields:
             fieldname = field.name
+            # trigger eventual monitors
+            _MONITORHANDLER.at_update(self, fieldname)
             # if a hook is defined it must be named exactly on this form
             hookname = "at_%s_postsave" % fieldname
             if hasattr(self, hookname) and callable(_GA(self, hookname)):
                 _GA(self, hookname)(new)
-            # if a trackerhandler is set on this object, update it with the
-            # fieldname and the new value
-            fieldtracker = "_oob_at_%s_postsave" % fieldname
-            if hasattr(self, fieldtracker):
-                _GA(self, fieldtracker)(fieldname)
+
+#            # if a trackerhandler is set on this object, update it with the
+#            # fieldname and the new value
+#            fieldtracker = "_oob_at_%s_postsave" % fieldname
+#            if hasattr(self, fieldtracker):
+#                _GA(self, fieldtracker)(fieldname)
 
 
 class WeakSharedMemoryModelBase(SharedMemoryModelBase):
