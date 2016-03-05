@@ -28,13 +28,28 @@ except ImportError:
     from pickle import dumps, loads
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
-from evennia.server.models import ServerConfig
 from evennia.utils.utils import to_str, uses_database
 from evennia.utils import logger
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle")
 
 PICKLE_PROTOCOL = 2
+
+def _get_mysql_db_version(self):
+    """
+    This is a helper method for specifically getting the version
+    string of a MySQL database.
+
+    Returns:
+        mysql_version (str): The currently used mysql database
+            version.
+
+    """
+    from django.db import connection
+    conn = connection.cursor()
+    conn.execute("SELECT VERSION()")
+    version = conn.fetchone()
+    return version and str(version[0]) or ""
 
 # initialization and helpers
 
@@ -43,7 +58,7 @@ _SA = object.__setattr__
 _FROM_MODEL_MAP = None
 _TO_MODEL_MAP = None
 _IS_PACKED_DBOBJ = lambda o: type(o) == tuple and len(o) == 4 and o[0] == '__packed_dbobj__'
-if uses_database("mysql") and ServerConfig.objects.get_mysql_db_version() < '5.6.4':
+if uses_database("mysql") and _get_mysql_db_version() < '5.6.4':
     # mysql <5.6.4 don't support millisecond precision
     _DATESTRING = "%Y:%m:%d-%H:%M:%S:000000"
 else:
@@ -416,4 +431,4 @@ def dbserialize(data):
 
 def dbunserialize(data, db_obj=None):
     "Un-serialize in one step. See from_pickle for help db_obj."
-    return do_unpickle(from_pickle(data, db_obj=db_obj))
+    return from_pickle(do_unpickle(data), db_obj=db_obj)

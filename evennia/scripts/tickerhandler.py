@@ -62,7 +62,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from evennia.scripts.scripts import ExtendedLoopingCall
 from evennia.server.models import ServerConfig
 from evennia.utils.logger import log_trace, log_err
-from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
+from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -349,7 +349,6 @@ class TickerHandler(object):
             self.ticker_storage = dbunserialize(ticker_storage)
             for store_key, (args, kwargs) in self.ticker_storage.items():
                 obj, interval, idstring = store_key
-                obj = unpack_dbobj(obj)
                 _, store_key = self._store_key(obj, interval, idstring)
                 self.ticker_pool.add(store_key, obj, interval, *args, **kwargs)
 
