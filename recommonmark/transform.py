@@ -244,8 +244,7 @@ class AutoStructify(transforms.Transform):
                     0, node=node, match_titles=False)
                 return node.children[:]
         else:
-            directive_re = '[ ]?[\w_-]+::.*'
-            match = re.search(directive_re, language)
+            match = re.search('[ ]?[\w_-]+::.*', language)
             if match:
                 parser = Parser()
                 new_doc = new_document(None, self.document.settings)
