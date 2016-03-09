@@ -123,9 +123,7 @@ E = m c^2
 
 ### Embed reStructuredText
 Recommonmark also allows embedding reStructuredText syntax in the codeblocks.
-This is enabled by ```eval_rst``` codeblock. The content of codeblock will be parsed as reStructuredText
-and insert into the document. This can be used to quickly introduce some of reStructuredText command that
-not yet available in markdown. For example,
+There are two styles for embedding reStructuredText. The first is enabled by ```eval_rst``` codeblock. The content of codeblock will be parsed as reStructuredText and insert into the document. This can be used to quickly introduce some of reStructuredText command that not yet available in markdown. For example,
 ```
 `` `eval_rst
 .. automodule:: recommonmark.parser.Parser
@@ -138,6 +136,78 @@ will be rendered as
     :show-inheritance:
 ```
 This example used to use sphinx autodoc to insert document of AutoStructify class definition into the document.
+
+The second style is a shorthand of the above style. It allows you to leave off the eval_rst .. portion and directly render directives. For example,
+
+```rst
+`` ` important:: Its a note! in markdown!
+`` `
+```
+will be rendered as
+
+``` important:: Its a note! in markdown!
+```
+
+#### An Advanced Example
+
+```rst
+
+`` ` sidebar:: Line numbers and highlights
+
+     emphasis-lines:
+       highlights the lines.
+     linenos:
+       shows the line numbers as well.
+     caption:
+       shown at the top of the code block.
+     name:
+       may be referenced with `:ref:` later.
+`` `
+
+`` ` code-block:: markdown
+     :linenos:
+     :emphasize-lines: 3,5
+     :caption: An example code-block with everything turned on.
+     :name: Full code-block example
+
+     # Comment line
+     import System
+     System.run_emphasis_line
+     # Long lines in code blocks create a auto horizontal scrollbar
+     System.exit!
+`` `
+```
+
+will be rendered as
+
+``` sidebar:: Line numbers and highlights
+
+    emphasis-lines:
+      highlights the lines.
+    linenos:
+      shows the line numbers as well.
+    caption:
+      shown at the top of the code block.
+    name:
+      may be referenced with `:ref:` later.
+```
+
+``` code-block:: markdown
+    :linenos:
+    :emphasize-lines: 3,5
+    :caption: An example code-block with everything turned on.
+    :name: Full code-block example
+
+    # Comment line
+    import System
+    System.run_emphasis_line
+    # Long lines in code blocks create a auto horizontal scrollbar
+    System.exit!
+```
+
+The `<div style="clear: right;"></div>` line clears the sidebar for the next title.
+
+<div style="clear: right;"></div>
 
 
 Inline Math
