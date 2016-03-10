@@ -24,13 +24,13 @@ def setup(app):
 All the features are by default enabled
 
 ***List of options***
-* enable_auto_toc_tree: whether enable [Auto Toc Tree](#auto-toc-tree) feature.
-* auto_toc_tree_section: when setted,  [Auto Toc Tree](#auto-toc-tree) will only be enabled on section that matches the title.
-* enable_auto_doc_ref: whether enable [Auto Doc Ref](#auto-doc-ref) feature.
-* enable_math: whether enable [Math Formula](#math-formula)
-* enable_inline_math: whether enable [Inline Math](#inline-math)
-* enable_eval_rst: whether [Embed reStructuredText](#embed-restructuredtext) is enabled.
-* url_resolver: a function that maps a existing relative position in the document to a http link
+* __enable_auto_toc_tree__: whether enable [Auto Toc Tree](#auto-toc-tree) feature.
+* __auto_toc_tree_section__: when enabled,  [Auto Toc Tree](#auto-toc-tree) will only be enabled on section that matches the title.
+* __enable_auto_doc_ref__: whether enable [Auto Doc Ref](#auto-doc-ref) feature.
+* __enable_math__: whether enable [Math Formula](#math-formula)
+* __enable_inline_math__: whether enable [Inline Math](#inline-math)
+* __enable_eval_rst__: whether [Embed reStructuredText](#embed-restructuredtext) is enabled.
+* __url_resolver__: a function that maps a existing relative position in the document to a http link
 
 Auto Toc Tree
 -------------

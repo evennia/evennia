@@ -34,6 +34,36 @@ source_suffix = ['.rst', '.md']
 
 This allows you to write both `.md` and `.rst` files inside of the same project.
 
+### AutoStructify
+
+To use the advanced markdown to rst transformations you must add `AutoStructify` to your Sphinx conf.py.
+
+```python
+# At top on conf.py (with other import statements)
+import recommonmark
+from recommonmark.transform import AutoStructify
+
+# At the bottom of conf.py
+def setup(app):
+    app.add_config_value('recommonmark_config', {
+            'url_resolver': lambda url: github_doc_root + url,
+            'auto_toc_tree_section': 'Contents',
+            }, True)
+    app.add_transform(AutoStructify)
+```
+
+See https://github.com/rtfd/recommonmark/blob/master/docs/conf.py for a full example.
+
+AutoStructify comes with the following options. See http://recommonmark.readthedocs.org/en/latest/auto_structify.html for more information about the specific features.
+
+* __enable_auto_toc_tree__: enable the Auto Toc Tree feature.
+* __auto_toc_tree_section__: when True, Auto Toc Tree will only be enabled on section that matches the title.
+* __enable_auto_doc_ref__: enable the Auto Doc Ref feature.
+* __enable_math__: enable the Math Formula feature.
+* __enable_inline_math__: enable the Inline Math feature.
+* __enable_eval_rst__: enable the evaluate embedded reStructuredText feature.
+* __url_resolver__: a function that maps a existing relative position in the document to a http link
+
 ## Development
 
 You can run the tests by running `tox` in the top-level of the project.
