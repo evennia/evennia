@@ -1,9 +1,12 @@
 """Implement some common transforms on parsed AST."""
 import os
 import sys
+import re
 from .states import DummyStateMachine
 from docutils import nodes, transforms
 from docutils.statemachine import StringList
+from docutils.parsers.rst import Parser
+from docutils.utils import new_document
 
 
 class AutoStructify(transforms.Transform):
@@ -241,9 +244,17 @@ class AutoStructify(transforms.Transform):
                     0, node=node, match_titles=False)
                 return node.children[:]
         else:
-            return self.state_machine.run_directive(
-                'code-block', arguments=[language],
-                content=content)
+            match = re.search('[ ]?[\w_-]+::.*', language)
+            if match:
+                parser = Parser()
+                new_doc = new_document(None, self.document.settings)
+                newsource = u'.. ' + match.group(0) + '\n' + node.rawsource
+                parser.parse(newsource, new_doc)
+                return new_doc.children[:]
+            else:
+                return self.state_machine.run_directive(
+                    'code-block', arguments=[language],
+                    content=content)
         return None
 
     def find_replace(self, node):
