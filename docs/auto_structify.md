@@ -25,7 +25,7 @@ All the features are by default enabled
 
 ***List of options***
 * enable_auto_toc_tree: whether enable [Auto Toc Tree](#auto-toc-tree) feature.
-* auto_toc_tree_section: when setted,  [Auto Toc Tree](#auto-toc-tree) will only be enabled on section that matches the title.
+* auto_toc_tree_section: when enabled,  [Auto Toc Tree](#auto-toc-tree) will only be enabled on section that matches the title.
 * enable_auto_doc_ref: whether enable [Auto Doc Ref](#auto-doc-ref) feature.
 * enable_math: whether enable [Math Formula](#math-formula)
 * enable_inline_math: whether enable [Inline Math](#inline-math)
