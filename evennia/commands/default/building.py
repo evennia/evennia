@@ -1126,9 +1126,11 @@ class CmdName(ObjManipCommand):
                     if not obj.access(caller, "edit"):
                         caller.mgs("You don't have right to edit this player %s." % obj)
                         return
+                    oldname = str(obj.username)
                     obj.username = newname
                     obj.save()
                     caller.msg("Player's name changed to '%s'." % newname)
+                    obj.at_rename(oldname, newname)
                     return
             # object search, also with *
             obj = caller.search(objname)
@@ -1148,7 +1150,9 @@ class CmdName(ObjManipCommand):
             return
         # change the name and set aliases:
         if newname:
+            oldname = str(obj.name)
             obj.name = newname
+            obj.at_rename(oldname, newname)
         astring = ""
         if aliases:
             [obj.aliases.add(alias) for alias in aliases]

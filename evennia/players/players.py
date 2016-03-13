@@ -845,6 +845,18 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             string = ("-" * 68) + "\n" + string + "\n" + ("-" * 68)
             return string
 
+    def at_rename(self, oldname, newname):
+        """
+        This Hook is called by @name on a successful rename.
+
+        Args:
+            oldname (str): The player's original name.
+            newname (str): The new name for the player.
+
+        Returns: Nothing.
+        """
+        pass
+
 
 class DefaultGuest(DefaultPlayer):
     """
