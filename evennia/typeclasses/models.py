@@ -698,6 +698,5 @@ class TypedObject(SharedMemoryModel):
             oldname (str): The instance's original name.
             newname (str): The new name for the instance.
 
-        Returns: Nothing.
         """
         pass
