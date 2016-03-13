@@ -313,6 +313,18 @@ class TypedObject(SharedMemoryModel):
         raise Exception("Cannot delete name")
     name = property(__name_get, __name_set, __name_del)
 
+    # key property (overrides's the idmapper's db_key for the at_rename hook)
+    @property
+    def key(self):
+        return self.db_key
+
+    @key.setter
+    def key(self, value):
+        oldname = str(self.db_key)
+        self.db_key = value
+        self.save(update_fields=["db_key"])
+        self.at_rename(oldname, value)
+
     #
     #
     # TypedObject main class methods and properties
@@ -677,3 +689,15 @@ class TypedObject(SharedMemoryModel):
         if self.location == looker:
             return " (carried)"
         return ""
+
+    def at_rename(self, oldname, newname):
+        """
+        This Hook is called by @name on a successful rename.
+
+        Args:
+            oldname (str): The instance's original name.
+            newname (str): The new name for the instance.
+
+        Returns: Nothing.
+        """
+        pass
