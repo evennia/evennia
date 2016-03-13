@@ -307,9 +307,7 @@ class TypedObject(SharedMemoryModel):
         return self.key
 
     def __name_set(self, value):
-        oldname = str(self.key)
         self.key = value
-        self.at_rename(oldname, value)
 
     def __name_del(self):
         raise Exception("Cannot delete name")
