@@ -5,6 +5,7 @@ These are the (default) starting points for all in-game visible
 entities.
 
 """
+import time
 from builtins import object
 from future.utils import listvalues, with_metaclass
 
@@ -1473,6 +1474,26 @@ class DefaultCharacter(DefaultObject):
                 self.location.for_contents(message, exclude=[self], from_obj=self)
                 self.db.prelogout_location = self.location
                 self.location = None
+
+    @property
+    def idle_time(self):
+        """
+        Returns the idle time of the least idle session in seconds. If
+        no sessions are connected it returns nothing.
+        """
+        idle = [session.cmd_last_visible for session in self.sessions]
+        if idle:
+            return time.time() - float(max(idle))
+
+    @property
+    def connection_time(self):
+        """
+        Returns the maximum connection time of all connected sessions
+        in seconds. Returns nothing if there are no sessions.
+        """
+        conn = [session.conn_time for session in self.sessions]
+        if conn:
+            return time.time() - float(min(conn))
 
 #
 # Base Room object
