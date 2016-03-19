@@ -406,11 +406,11 @@ class CmdOption(MuxPlayerCommand):
             sencodings = settings.ENCODINGS
             string += " Custom: %s\n Server: %s" % (pencoding, ", ".join(sencodings))
             string += "\n{wScreen Reader mode:{n %s" % self.session.screenreader
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         if not self.rhs:
-            self.caller.msg("Usage: @option [name = [value]]")
+            self.msg("Usage: @option [name = [value]]")
             return
 
         if self.lhs == "encoding":
@@ -424,13 +424,13 @@ class CmdOption(MuxPlayerCommand):
             else:
                 self.session.encoding = new_encoding
                 string = "Encoding was changed from '|w%s|n' to '|w%s|n'." % (old_encoding, new_encoding)
-            self.caller.msg(string)
+            self.msg(string)
             return
 
         if self.lhs == "screenreader":
             onoff = self.rhs.lower() == "on"
             self.session.screenreader = onoff
-            self.caller.msg("Screen reader mode was turned {w%s{n." % ("on" if onoff else "off"))
+            self.msg("Screen reader mode was turned {w%s{n." % ("on" if onoff else "off"))
 
 
 class CmdPassword(MuxPlayerCommand):
