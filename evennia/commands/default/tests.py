@@ -88,7 +88,7 @@ class CommandTest(EvenniaTest):
 
 class TestGeneral(CommandTest):
     def test_look(self):
-        self.call(general.CmdLook(), "here", "Room\nroom_desc")
+        self.call(general.CmdLook(), "here", "Room(#1)\nroom_desc")
 
     def test_home(self):
         self.call(general.CmdHome(), "", "You are already home")
@@ -210,7 +210,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdExamine(), "Obj", "Name/key: Obj")
 
     def test_set_obj_alias(self):
-        self.call(building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj' set to testobj1b.")
+        self.call(building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj(#4)' set to testobj1b.")
 
     def test_copy(self):
         self.call(building.CmdCopy(), "Obj = TestObj2;TestObj2b, TestObj3;TestObj3b", "Copied Obj to 'TestObj3' (aliases: ['TestObj3b']")
@@ -226,7 +226,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdName(), "Obj2=Obj3", "Object's name changed to 'Obj3'.")
 
     def test_desc(self):
-        self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2.")
+        self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#5).")
 
     def test_wipe(self):
         self.call(building.CmdDestroy(), "Obj", "Obj was destroyed.")
@@ -262,7 +262,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added")
 
     def test_teleport(self):
-        self.call(building.CmdTeleport(), "Room2", "Room2\n|Teleported to Room2.")
+        self.call(building.CmdTeleport(), "Room2", "Room2(#2)\n|Teleported to Room2.")
 
 
 class TestComms(CommandTest):
