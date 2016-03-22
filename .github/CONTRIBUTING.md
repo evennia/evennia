@@ -30,4 +30,4 @@ If you need further help, see the [Get and Give help][4] page and
 [4]: https://github.com/evennia/evennia/wiki/how%20to%20get%20and%20give%20help
 [5]: https://groups.google.com/forum/#!forum/evennia
 [6]: http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb
-[7]: https://help.github.com/articles/github-flavored-markdown/] 
+[7]: https://help.github.com/articles/basic-writing-and-formatting-syntax/
