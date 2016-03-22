@@ -261,7 +261,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             builders.
 
         """
-        if self.locks.check_lockstring(looker, "pperm(Builders)"):
+        if self.locks.check_lockstring(looker, "perm(Builders)"):
             return "{}(#{})".format(self.name, self.id)
         return self.name
 
