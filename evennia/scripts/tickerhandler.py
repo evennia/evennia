@@ -99,30 +99,36 @@ class Ticker(object):
         kwargs is used here to identify which hook method to call.
 
         """
+        to_remove = []
         for store_key, (args, kwargs) in self.subscriptions.iteritems():
+            print "calling:", store_key, args, kwargs
             callback = yield kwargs.pop("_callback", "at_tick")
+            obj = yield kwargs.pop("_obj", None)
             try:
                 if callable(callback):
                     # call directly
                     yield callback(*args, **kwargs)
                     return
-
                 # try object method
-                obj = yield kwargs.pop("_obj", None)
                 if not obj or not obj.pk:
                     # object was deleted between calls
-                    self.remove(store_key)
+                    log_err("Obj undefined. Removing ticker.")
+                    to_remove.append(store_key)
                     continue
                 else:
                     yield _GA(obj, callback)(*args, **kwargs)
             except ObjectDoesNotExist:
-                log_trace()
-                self.remove(store_key)
+                log_trace("Removing ticker.")
+                to_remove.append(store_key)
             except Exception:
                 log_trace()
             finally:
                 # make sure to re-store
                 kwargs["_callback"] = callback
+                kwargs["_obj"] = obj
+        # cleanup
+        for store_key in to_remove:
+            self.remove(store_key)
 
     def __init__(self, interval):
         """
@@ -167,6 +173,7 @@ class Ticker(object):
 
         """
         start_delay = kwargs.pop("_start_delay", None)
+        print "adding sub:", store_key, args, kwargs
         self.subscriptions[store_key] = (args, kwargs)
         self.validate(start_delay=start_delay)
 
@@ -235,6 +242,8 @@ class TickerPool(object):
         _, _, _, interval, _ = store_key
         if interval in self.tickers:
             self.tickers[interval].remove(store_key)
+            if not self.tickers[interval]:
+                del self.tickers[interval]
 
     def stop(self, interval=None):
         """
@@ -274,7 +283,7 @@ class TickerHandler(object):
         self.save_name = save_name
         self.ticker_pool = self.ticker_pool_class()
 
-    def _get_callback(callback):
+    def _get_callback(self, callback):
         """
         Analyze callback and determine its consituents
 
@@ -329,9 +338,9 @@ class TickerHandler(object):
                 `obj_or_path` is a python-path.
 
         """
-        outobj = pack_dbobj(obj) if obj and hasattr(obj, "db_key") else None
-        outpath = path if isinstance(basestring, path) else None
-        methodname = callfunc if callfunc and isinstance(basestring, callfunc) else None
+        outobj = obj if obj and hasattr(obj, "db_key") else None
+        outpath = path if path and isinstance(path, basestring) else None
+        methodname = callfunc if callfunc and isinstance(callfunc, basestring) else None
         return (outobj, methodname, outpath, interval, idstring)
 
     def save(self):
@@ -373,12 +382,12 @@ class TickerHandler(object):
                 try:
                     obj, methodname, path, interval, idstring = store_key
                     if obj and methodname:
-                        kwargs["_callable"] = methodname
+                        kwargs["_callback"] = methodname
                         kwargs["_obj"] = obj
                     elif path:
                         modname, varname = path.rsplit(".", 1)
                         callback = variable_from_module(modname, varname)
-                        kwargs["_callable"] = callback
+                        kwargs["_callback"] = callback
                         kwargs["_obj"] = None
                 except Exception as err:
                     # this suggests a malformed save or missing objects
@@ -418,7 +427,7 @@ class TickerHandler(object):
         self.ticker_storage[store_key] = (args, kwargs)
         self.save()
         kwargs["_obj"] = obj
-        kwargs["_callable"] = callfunc # either method-name or callable
+        kwargs["_callback"] = callfunc # either method-name or callable
         self.ticker_pool.add(store_key, *args, **kwargs)
 
     def remove(self, interval=60, callback=None, idstring=""):
@@ -435,6 +444,7 @@ class TickerHandler(object):
         """
         obj, path, callfunc = self._get_callback(callback)
         store_key = self._store_key(obj, path, interval, callfunc, idstring)
+        print "remove store_key:", store_key
         to_remove = self.ticker_storage.pop(store_key, None)
         if to_remove:
             self.ticker_pool.remove(store_key)
