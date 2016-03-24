@@ -755,3 +755,30 @@ class CmdServerLoad(MuxCommand):
 
         # return to caller
         self.caller.msg(string)
+
+class CmdTickers(MuxCommand):
+    """
+    View and manage running tickers
+
+    Usage:
+      @tickers
+
+    """
+    key = "@tickers"
+    help_category = "System"
+
+    def func(self):
+        from evennia import TICKER_HANDLER
+        all_subs = TICKER_HANDLER.all_display()
+        table = EvTable("interv(s)", "object", "path/methodname", "idstring")
+        for sub in all_subs:
+            table.add_row(sub[3],
+                          sub[1] or "[None]",
+                          sub[1] if sub[1] else sub[2],
+                          sub[4] or "[Unset]")
+        return self.caller.msg(table)
+
+
+
+
+
