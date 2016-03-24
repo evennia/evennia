@@ -56,14 +56,13 @@ call the handler's `save()` and `restore()` methods when the server reboots.
 """
 import inspect
 from builtins import object
-from future.utils import listvalues
 
 from twisted.internet.defer import inlineCallbacks
 from django.core.exceptions import ObjectDoesNotExist
 from evennia.scripts.scripts import ExtendedLoopingCall
 from evennia.server.models import ServerConfig
 from evennia.utils.logger import log_trace, log_err
-from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj
+from evennia.utils.dbserialize import dbserialize, dbunserialize
 from evennia.utils import variable_from_module
 
 _GA = object.__getattribute__
@@ -101,14 +100,13 @@ class Ticker(object):
         """
         to_remove = []
         for store_key, (args, kwargs) in self.subscriptions.iteritems():
-            print "calling:", store_key, args, kwargs
             callback = yield kwargs.pop("_callback", "at_tick")
             obj = yield kwargs.pop("_obj", None)
             try:
                 if callable(callback):
                     # call directly
                     yield callback(*args, **kwargs)
-                    return
+                    continue
                 # try object method
                 if not obj or not obj.pk:
                     # object was deleted between calls
@@ -173,7 +171,6 @@ class Ticker(object):
 
         """
         start_delay = kwargs.pop("_start_delay", None)
-        print "adding sub:", store_key, args, kwargs
         self.subscriptions[store_key] = (args, kwargs)
         self.validate(start_delay=start_delay)
 
@@ -422,6 +419,7 @@ class TickerHandler(object):
             when wanting to modify/remove the ticker later.
 
         """
+        interval = int(interval)
         obj, path, callfunc = self._get_callback(callback)
         store_key = self._store_key(obj, path, interval, callfunc, idstring)
         self.ticker_storage[store_key] = (args, kwargs)
@@ -444,7 +442,6 @@ class TickerHandler(object):
         """
         obj, path, callfunc = self._get_callback(callback)
         store_key = self._store_key(obj, path, interval, callfunc, idstring)
-        print "remove store_key:", store_key
         to_remove = self.ticker_storage.pop(store_key, None)
         if to_remove:
             self.ticker_pool.remove(store_key)
@@ -487,13 +484,13 @@ class TickerHandler(object):
         """
         if interval is None:
             # return dict of all, ordered by interval
-            return dict((interval, listvalues(ticker.subscriptions))
-                         for interval, ticker in self.ticker_pool.tickers.items())
+            return dict((interval, ticker.subscriptions)
+                         for interval, ticker in self.ticker_pool.tickers.iteritems())
         else:
             # get individual interval
             ticker = self.ticker_pool.tickers.get(interval, None)
             if ticker:
-                return listvalues(ticker.subscriptions)
+                return {interval: ticker.subscriptions}
 
 # main tickerhandler
 TICKER_HANDLER = TickerHandler()

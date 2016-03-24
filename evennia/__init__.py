@@ -71,7 +71,6 @@ contrib = None
 # Handlers
 SESSION_HANDLER = None
 TICKER_HANDLER = None
-OOB_HANDLER = None
 CHANNEL_HANDLER = None
 
 
@@ -118,7 +117,7 @@ def _init():
     global search_object, search_script, search_player, search_channel, search_help, search_tag
     global create_object, create_script, create_player, create_channel, create_message, create_help_entry
     global settings,lockfuncs, logger, utils, gametime, ansi, spawn, managers
-    global contrib, TICKER_HANDLER, OOB_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER
+    global contrib, TICKER_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER
 
     from .players.players import DefaultPlayer
     from .players.players import DefaultGuest
