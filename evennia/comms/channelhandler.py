@@ -28,6 +28,7 @@ from builtins import object
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdset, command
 
+from django.utils.translation import ugettext as _
 
 class ChannelCommand(command.Command):
     """

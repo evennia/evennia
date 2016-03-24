@@ -66,7 +66,7 @@ class ExtendedLoopingCall(LoopingCall):
         if interval < 0:
             raise ValueError("interval must be >= 0")
         self.running = True
-        d = self.deferred = Deferred()
+        deferred = self._deferred = Deferred()
         self.starttime = self.clock.seconds()
         self.interval = interval
         self._runAtStart = now
@@ -87,7 +87,7 @@ class ExtendedLoopingCall(LoopingCall):
             self.interval = real_interval
         else:
             self._scheduleFrom(self.starttime)
-        return d
+        return deferred
 
     def __call__(self):
         """

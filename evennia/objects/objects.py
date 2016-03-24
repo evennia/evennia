@@ -5,6 +5,7 @@ These are the (default) starting points for all in-game visible
 entities.
 
 """
+import time
 from builtins import object
 from future.utils import listvalues, with_metaclass
 
@@ -239,7 +240,31 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
     # main methods
 
-    ## methods inherited from the database object (overload them here)
+    def get_display_name(self, looker, **kwargs):
+        """
+        Displays the name of the object in a viewer-aware manner.
+
+        Args:
+            looker (TypedObject): The object or player that is looking
+                at/getting inforamtion for this object.
+
+        Returns:
+            name (str): A string containing the name of the object,
+                including the DBREF if this user is privileged to control
+                said object.
+
+        Notes:
+            This function could be extended to change how object names
+            appear to users in character, but be wary. This function
+            does not change an object's keys or aliases when
+            searching, and is expected to produce something useful for
+            builders.
+
+        """
+        if self.locks.check_lockstring(looker, "perm(Builders)"):
+            return "{}(#{})".format(self.name, self.id)
+        return self.name
+
 
     def search(self, searchdata,
                global_search=False,
@@ -1473,6 +1498,26 @@ class DefaultCharacter(DefaultObject):
                 self.location.for_contents(message, exclude=[self], from_obj=self)
                 self.db.prelogout_location = self.location
                 self.location = None
+
+    @property
+    def idle_time(self):
+        """
+        Returns the idle time of the least idle session in seconds. If
+        no sessions are connected it returns nothing.
+        """
+        idle = [session.cmd_last_visible for session in self.sessions.all()]
+        if idle:
+            return time.time() - float(max(idle))
+
+    @property
+    def connection_time(self):
+        """
+        Returns the maximum connection time of all connected sessions
+        in seconds. Returns nothing if there are no sessions.
+        """
+        conn = [session.conn_time for session in self.sessions.all()]
+        if conn:
+            return time.time() - float(min(conn))
 
 #
 # Base Room object
