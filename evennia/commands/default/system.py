@@ -777,12 +777,13 @@ class CmdTickers(MuxCommand):
         if not all_subs:
             self.caller.msg("No tickers are currently active.")
             return
-        table = EvTable("tick(s)", "object", "path/methodname", "idstring")
+        table = EvTable("tick(s)", "object", "path/methodname", "idstring", "db")
         for sub in all_subs:
             table.add_row(sub[3],
                           sub[1] or "[None]",
                           sub[1] if sub[1] else sub[2],
-                          sub[4] or "[Unset]")
+                          sub[4] or "[Unset]",
+                          "*" if sub[5] else "-")
         self.caller.msg("|wActive tickers|n:\n" + unicode(table))
 
 
