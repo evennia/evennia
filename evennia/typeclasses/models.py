@@ -549,9 +549,6 @@ class TypedObject(SharedMemoryModel):
 
         """
         global TICKER_HANDLER
-        if not TICKER_HANDLER:
-            from evennia.scripts.tickerhandler import TICKER_HANDLER
-        TICKER_HANDLER.remove(self) # removes objects' all ticker subscriptions
         self.permissions.clear()
         self.attributes.clear()
         self.aliases.clear()
