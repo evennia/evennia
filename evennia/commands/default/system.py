@@ -774,13 +774,16 @@ class CmdTickers(MuxCommand):
     def func(self):
         from evennia import TICKER_HANDLER
         all_subs = TICKER_HANDLER.all_display()
-        table = EvTable("interv(s)", "object", "path/methodname", "idstring")
+        if not all_subs:
+            self.caller.msg("No tickers are currently active.")
+            return
+        table = EvTable("tick(s)", "object", "path/methodname", "idstring")
         for sub in all_subs:
             table.add_row(sub[3],
                           sub[1] or "[None]",
                           sub[1] if sub[1] else sub[2],
                           sub[4] or "[Unset]")
-        return self.caller.msg(table)
+        self.caller.msg("|wActive tickers|n:\n" + unicode(table))
 
 
 
