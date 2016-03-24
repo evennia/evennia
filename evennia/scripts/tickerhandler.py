@@ -492,5 +492,18 @@ class TickerHandler(object):
             if ticker:
                 return {interval: ticker.subscriptions}
 
+    def all_display(self):
+        """
+        Get all tickers on an easily displayable form.
+
+        Returns:
+            tickers (dict): A list of all storekeys
+
+        """
+        store_keys = []
+        for ticker in self.ticker_pool.tickers.itervalues():
+            store_keys.extend([store_key for store_key in ticker.subscriptions])
+        return store_keys
+
 # main tickerhandler
 TICKER_HANDLER = TickerHandler()

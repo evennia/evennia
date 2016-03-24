@@ -2574,4 +2574,3 @@ class CmdSpawn(MuxCommand):
         for obj in spawn(prototype):
             self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
 
-
