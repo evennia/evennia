@@ -758,10 +758,14 @@ class CmdServerLoad(MuxCommand):
 
 class CmdTickers(MuxCommand):
     """
-    View and manage running tickers
+    View running tickers
 
     Usage:
       @tickers
+
+    Note: Tickers are created, stopped and manipulated in Python code
+    using the TickerHandler. This is merely a convenience function for
+    inspecting the current status.
 
     """
     key = "@tickers"
