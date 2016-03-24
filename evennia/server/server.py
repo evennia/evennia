@@ -280,7 +280,7 @@ class Evennia(object):
             MONITOR_HANDLER.restore()
 
         from evennia.scripts.tickerhandler import TICKER_HANDLER
-        TICKER_HANDLER.restore()
+        TICKER_HANDLER.restore(mode in ('True', 'reload'))
 
         # call correct server hook based on start file value
         if mode in ('True', 'reload'):
@@ -436,6 +436,11 @@ class Evennia(object):
         # the normal cleanup operations did not have time to run.
         from evennia.objects.models import ObjectDB
         ObjectDB.objects.clear_all_sessids()
+
+        # Remove non-persistent scripts
+        from evennia.scripts.models import ScriptDB
+        for script in ScriptDB.objects.filter(db_persistent=False):
+            script.stop()
 
         if GUEST_ENABLED:
             for guest in PlayerDB.objects.all().filter(db_typeclass_path=settings.BASE_GUEST_TYPECLASS):
