@@ -304,7 +304,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # handle arguments
         options = kwargs.get("options", {})
         flags = self.protocol_flags
-        xterm256 = options.get("xterm256", flags.get('256 COLORS', False) if flags["TTYPE"] else True)
+        xterm256 = options.get("xterm256", flags.get('XTERM256', False) if flags["TTYPE"] else True)
         useansi = options.get("ansi", flags.get('ANSI', False) if flags["TTYPE"] else True)
         raw = options.get("raw", False)
         nomarkup = options.get("nomarkup", not (xterm256 or useansi))
