@@ -510,6 +510,7 @@ class CmdUnconnectedScreenreader(MuxCommand):
         self.session.protocol_flags["SCREENREADER"] =  new_setting
         string = "Screenreader mode turned {w%s{n." % ("on" if new_setting else "off")
         self.caller.msg(string)
+        self.session.sessionhandler.session_portal_sync(self.session)
 
 
 def _create_player(session, playername, password, permissions, typeclass=None):

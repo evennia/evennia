@@ -433,6 +433,7 @@ class CmdOption(MuxPlayerCommand):
             onoff = self.rhs.lower() == "on"
             self.session.protocol_flags["SCREENREADER"] = onoff
             self.msg("Screen reader mode was turned {w%s{n." % ("on" if onoff else "off"))
+            sync = True
 
         if sync:
             self.session.sessionhandler.session_portal_sync(self.session)
