@@ -559,7 +559,8 @@ class AMPProtocol(amp.AMP):
         elif operation == SSYNC:  # server_session_sync
             # server wants to save session data to the portal,
             # maybe because it's about to shut down.
-            portal_sessionhandler.server_session_sync(kwargs.get("sessiondata"))
+            portal_sessionhandler.server_session_sync(kwargs.get("sessiondata"),
+                                                      kwargs.get("clean", True))
             # set a flag in case we are about to shut down soon
             self.factory.server_restart_mode = True
 

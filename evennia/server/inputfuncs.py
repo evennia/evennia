@@ -1,5 +1,19 @@
 """
-Handlers for input commands
+Functions for processing input commands.
+
+All global functions in this module whose name does not start with "_"
+is considered an inputfunc. Each function must have the following
+callsign:
+
+    inputfunc(session, *args, **kwargs)
+
+There is one special function, the "default" function, which is called
+on a no-match. It has this callsign:
+
+    default(session, cmdname, *args, **kwargs)
+
+Evennia knows which modules to use for inputfuncs by
+settings.INPUT_FUNC_MODULES.
 
 """
 from future.utils import viewkeys
@@ -9,10 +23,16 @@ from evennia.commands.cmdhandler import cmdhandler
 from evennia.utils.logger import log_err
 from evennia.utils.utils import to_str
 
+
 _IDLE_COMMAND = settings.IDLE_COMMAND
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _NA = lambda o: "N/A"
+
+_ERROR_INPUT = "Inputfunc {name}({session}): Wrong/unrecognized input: {inp}"
+
+
+# All global functions are inputfuncs available to process inputs
 
 def text(session, *args, **kwargs):
     """
@@ -51,10 +71,15 @@ def text(session, *args, **kwargs):
     cmdhandler(session, text, callertype="session", session=session)
     session.update_session_counters()
 
+
 def echo(session, *args, **kwargs):
+    """
+    Echo test function
+    """
     print "Inputfunc echo:", session, args, kwargs
     session.data_out(text="Echo returns: ")
     session.data_out(echo=(args, kwargs))
+
 
 def default(session, cmdname, *args, **kwargs):
     """
@@ -67,7 +92,88 @@ def default(session, cmdname, *args, **kwargs):
             " args, kwargs: {args}, {kwargs}"
     log_err(err.format(sessid=session.sessid, cmdname=cmdname, args=args, kwargs=kwargs))
 
+
+def client_settings(session, *args, **kwargs):
+    """
+    This allows the client an OOB way to inform us about its name and capabilities.
+    This will be integrated into the session settings
+
+    Kwargs:
+        client (str): A client identifier, like "mushclient".
+        version (str): A client version
+        ansi (bool): Supports ansi colors
+        xterm256 (bool): Supports xterm256 colors or not
+        mxp (bool): Supports MXP or not
+        utf-8 (bool): Supports UTF-8 or not
+        screenreader (bool): Screen-reader mode on/off
+        mccp (bool): MCCP compression on/off
+        screenheight (int): Screen height in lines
+        screenwidth (int): Screen width in characters
+
+    """
+    flags = session.protocol_flags
+    tflags = flags["TTYPE"]
+    for key, value in kwargs.iteritems():
+        key = key.lower()
+        if key == "client":
+            tflags["CLIENTNAME"] = to_str(value)
+        elif key == "version":
+            if "CLIENTNAME" in tflags:
+                tflags["CLIENTNAME"] = "%s %s" % (tflags["CLIENTNAME"], to_str(value))
+        elif key == "ansi":
+            tflags["ANSI"] = bool(value)
+        elif key == "xterm256":
+            tflags["256 COLORS"] = bool(value)
+        elif key == "mxp":
+            flags["MXP"] = bool(value)
+        elif key == "utf-8":
+            tflags["UTF-8"] = bool(value)
+        elif key == "screenreader":
+            flags["SCREENREADER"] = bool(value)
+        elif key == "mccp":
+            flags["MCCP"] = bool(value)
+        elif key == "screenheight":
+            flags["SCREENHEIGHT"] = int(value)
+        elif key == "screenwidth":
+            flags["SCREENWIDTH"] = int(value)
+        else:
+            err = _ERROR_INPUT.format(
+                    name="client_settings", session=session, inp=key)
+            session.msg(text=err)
+    flags["TTYPE"] = tflags
+    session.protocol_flags = flags
+    # we must update the portal as well
+    session.sessionhandler.session_portal_sync(session)
+
+
+def login(session, *args, **kwargs):
+    """
+    Peform a login. This only works if session is currently not logged
+    in. This will also automatically throttle too quick attempts.
+
+    Kwargs:
+        name (str): Player name
+        password (str): Plain-text password
+
+    """
+    if not session.logged_in and "name" in kwargs and "password" in kwargs:
+        from evennia.commands.default.unloggedin import create_normal_player
+        player = create_normal_player(session, kwargs["name"], kwargs["password"])
+        if player:
+            session.sessionhandler.login(session, player)
+
+
+# aliases for GMCP
+core_hello = client_settings           # Core.Hello
+core_supports_set = client_settings    # Core.Supports.Set
+char_login = login                     # Char.Login
+
+
 #------------------------------------------------------------------------------------
+
+
+
+
 
 #------------------------------------------------------------
 # All OOB commands must be on the form

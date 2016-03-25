@@ -446,6 +446,18 @@ class ServerSessionHandler(SessionHandler):
                                                          operation=SSYNC,
                                                          sessiondata=sessdata)
 
+    def session_portal_sync(self, session):
+        """
+        This is called by the server when it wants to sync a single session
+        with the Portal for whatever reason. Returns a deferred!
+
+        """
+        sessdata = {session.sessid: session.get_sync_data()}
+        return self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
+                                                                operation=SSYNC,
+                                                                sessiondata=sessdata,
+                                                                clean=False)
+
     def disconnect_all_sessions(self, reason="You have been disconnected."):
         """
         Cleanly disconnect all of the connected sessions.
