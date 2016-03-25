@@ -399,50 +399,80 @@ class CmdOption(MuxPlayerCommand):
         if self.session is None:
             return
 
+        flags = self.session.protocol_flags
+
+        # Display current options
         if not self.args:
             # list the option settings
-            flags = self.session.protocol_flags
-            keys = sorted(flags)
-            options = "\n".join(" {w%s{n: %s" % (key, flags[key]) for key in keys)
-            self.msg("{wClient settings:\n%s" % options)
-            #string = "{wEncoding{n:\n"
-            #pencoding = flags.get("ENCODING", "None")
-            #sencodings = settings.ENCODINGS
-            #string += " Custom: %s\n Server: %s" % (pencoding, ", ".join(sencodings))
-            #string += "\n{wScreen Reader mode:{n %s" % flags.get("SCREENREADER", False)
-            ## display all
-            #keys =
-            #string += "\n{wClient settings (read-only):\n%s" % options
-            #self.msg(string)
+            options = dict(flags)
+            if "SCREENWIDTH" in options:
+                if len(options["SCREENWIDTH"]) == 1:
+                    options["SCREENWIDTH"] = options["SCREENWIDTH"][0]
+                else:
+                    options["SCREENWIDTH"] = "  \n".join("%s : %s" % (screenid, size)
+                        for screenid, size in options["SCREENWIDTH"].iteritems())
+            if "SCREENHEIGHT" in options:
+                if len(options["SCREENHEIGHT"]) == 1:
+                    options["SCREENHEIGHT"] = options["SCREENHEIGHT"][0]
+                else:
+                    options["SCREENHEIGHT"] = "  \n".join("%s : %s" % (screenid, size)
+                        for screenid, size in options["SCREENHEIGHT"].iteritems())
+            options.pop("TTYPE", None)
+
+            options = "\n".join(" {w%s{n: %s" % (key, options[key]) for key in sorted(options))
+            self.msg("{wClient settings:{n\n%s{n" % options)
             return
 
         if not self.rhs:
             self.msg("Usage: @option [name = [value]]")
             return
 
-        sync = False
+        # Try to assign new values
 
-        if self.lhs == "encoding":
-            # change encoding
-            old_encoding = self.session.protocol_flags["ENCODING"]
-            new_encoding = self.rhs.strip() or "utf-8"
+        def validate_encoding(val):
+            # helper: change encoding
             try:
-                utils.to_str(utils.to_unicode("test-string"), encoding=new_encoding)
+                utils.to_str(utils.to_unicode("test-string"), encoding=val)
             except LookupError:
-                string = "|rThe encoding '|w%s|r' is invalid. Keeping the previous encoding '|w%s|r'.|n" % (new_encoding, old_encoding)
-            else:
-                self.session.protocol_flags["ENCODING"] = new_encoding
-                string = "Encoding was changed from '|w%s|n' to '|w%s|n'." % (old_encoding, new_encoding)
-            self.msg(string)
-            return
+                raise RuntimeError("The encoding '|w%s|n' is invalid. " % val)
+            return val
 
-        if self.lhs == "screenreader":
-            onoff = self.rhs.lower() == "on"
-            self.session.protocol_flags["SCREENREADER"] = onoff
-            self.msg("Screen reader mode was turned {w%s{n." % ("on" if onoff else "off"))
-            sync = True
+        def validate_size(val):
+            return {0: int(val)}
 
-        if sync:
+        def validate_bool(val):
+            return True if val.lower() in ("true", "on", "1") else False
+
+        def update(name, val, validator):
+            # helper: update property and report errors
+            try:
+                old_val = flags[name]
+                new_val = validator(val)
+                flags[name] = new_val
+                self.msg("Option |w%s|n was changed from '|w%s|n' to '|w%s|n'." % (name, old_val, new_val))
+                return True
+            except Exception, err:
+                self.msg("|rCould not set option |w%s|r:|n %s" % (name, err))
+                return False
+
+        validators = {"ANSI": validate_bool,
+                      "CLIENTNAME": utils.to_str,
+                      "ENCODING": validate_encoding,
+                      "MCCP": validate_bool,
+                      "MXP": validate_bool,
+                      "OOB": validate_bool,
+                      "SCREENHEIGHT": validate_size,
+                      "SCREENWIDTH": validate_size,
+                      "SCREENREADER": validate_bool,
+                      "TERM": utils.to_str,
+                      "UTF-8": validate_bool,
+                      "XTERM256": validate_bool}
+
+        name = self.lhs.upper()
+        val = self.rhs.strip()
+        if val and name in validators:
+            do_sync = update(name,  val, validators[name])
+        if do_sync:
             self.session.sessionhandler.session_portal_sync(self.session)
 
 
