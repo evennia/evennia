@@ -236,27 +236,29 @@ class PortalSessionHandler(SessionHandler):
         """
         session.load_sync_data(data)
 
-    def server_session_sync(self, serversessions):
+    def server_session_sync(self, serversessions, clean=True):
         """
         Server wants to save data to the portal, maybe because it's
         about to shut down. We don't overwrite any sessions here, just
-        update them in-place and remove any that are out of sync
-        (which should normally not be the case)
+        update them in-place.
 
         Args:
             serversessions (dict): This is a dictionary
 
                 `{sessid:{property:value},...}` describing
                 the properties to sync on all sessions.
+            clean (bool): If True, remove any Portal sessions that are
+                not included in serversessions.
         """
         to_save = [sessid for sessid in serversessions if sessid in self]
-        to_delete = [sessid for sessid in self if sessid not in to_save]
         # save protocols
         for sessid in to_save:
             self[sessid].load_sync_data(serversessions[sessid])
-        # disconnect out-of-sync missing protocols
-        for sessid in to_delete:
-            self.server_disconnect(sessid)
+        if clean:
+            # disconnect out-of-sync missing protocols
+            to_delete = [sessid for sessid in self if sessid not in to_save]
+            for sessid in to_delete:
+                self.server_disconnect(sessid)
 
     def count_loggedin(self, include_unloggedin=False):
         """
