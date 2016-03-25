@@ -92,12 +92,14 @@ def default(session, cmdname, *args, **kwargs):
     log_err(err.format(sessid=session.sessid, cmdname=cmdname, args=args, kwargs=kwargs))
 
 
-def client_settings(session, *args, **kwargs):
+def client_options(session, *args, **kwargs):
     """
     This allows the client an OOB way to inform us about its name and capabilities.
     This will be integrated into the session settings
 
     Kwargs:
+        get (bool): If this is true, return the settings as a dict
+            (ignore all other kwargs).
         client (str): A client identifier, like "mushclient".
         version (str): A client version
         ansi (bool): Supports ansi colors
@@ -111,6 +113,16 @@ def client_settings(session, *args, **kwargs):
 
     """
     flags = session.protocol_flags
+    if kwargs.get("get", False):
+        # return current settings
+        options = dict((key, flags[key]) for key in flags
+                if key in ("ANSI", "XTERM256", "MXP",
+                           "UTF-8", "SCREENREADER",
+                           "MCCP", "SCREENHEIGHT",
+                           "SCREENWIDTH"))
+        session.msg(client_options=options)
+        return
+
     for key, value in kwargs.iteritems():
         key = key.lower()
         if key == "client":
@@ -143,6 +155,13 @@ def client_settings(session, *args, **kwargs):
     session.sessionhandler.session_portal_sync(session)
 
 
+def get_client_options(session, *args, **kwargs):
+    """
+    Alias wrapper for getting options
+    """
+    client_options(session, get=True)
+
+
 def login(session, *args, **kwargs):
     """
     Peform a login. This only works if session is currently not logged
@@ -160,10 +179,27 @@ def login(session, *args, **kwargs):
             session.sessionhandler.login(session, player)
 
 
+def get_value(session, *args, **kwargs):
+    """
+    Return the value of a given attribute or db_property on the
+    session's current player or character.
+
+    Kwargs:
+
+    """
+
+def repeat(session, *args, **kwargs):
+    """
+    Call a named
+    """
+
+
+
 # aliases for GMCP
-core_hello = client_settings           # Core.Hello
-core_supports_set = client_settings    # Core.Supports.Set
-char_login = login                     # Char.Login
+core_hello = client_options             # Core.Hello
+core_supports_set = client_options      # Core.Supports.Set
+core_supports_get = get_client_options  # Core.Supports.Get
+char_login = login                      # Char.Login
 
 
 #------------------------------------------------------------------------------------
@@ -171,44 +207,6 @@ char_login = login                     # Char.Login
 
 
 
-
-#------------------------------------------------------------
-# All OOB commands must be on the form
-#      cmdname(session, *args, **kwargs)
-#------------------------------------------------------------
-
-#
-# General OOB commands
-#
-
-def oob_error(session, errmsg, *args, **kwargs):
-    """
-    Error handling method. Error messages are relayed here.
-
-    Args:
-        session (Session): The session to receive the error
-        errmsg (str): The failure message
-
-    A function with this name is special and is also called by the
-    oobhandler when an error occurs already at the execution stage
-    (such as the oob function not being recognized or having the wrong
-    args etc). Call this from other oob functions to centralize error
-    management.
-
-    """
-    session.msg(oob=("error", ("OOB ERROR: %s" % errmsg,)))
-
-def oob_echo(session, *args, **kwargs):
-    """
-    Test echo function. Echoes args, kwargs sent to it.
-
-    Args:
-        session (Session): The Session to receive the echo.
-        args (list of str): Echo text.
-        kwargs (dict of str, optional): Keyed echo text
-
-    """
-    session.msg(oob=("echo", args, kwargs))
 
 ##OOB{"repeat":10}
 def oob_repeat(session, oobfuncname, interval, *args, **kwargs):
