@@ -372,20 +372,12 @@ class CmdOption(MuxPlayerCommand):
     """
     Set an account option
 
-    @option
-    @option encoding [= encoding]
-    @option screenreader [= on|off]
+    Usage:
+      @option [name = value]
 
-    The text encoding is mostly an issue only if you want to use
-    non-ASCII characters (i.e. letters/symbols not found in English).
-    If you see that your characters look strange (or you get encoding
-    errors), you should use this command to set the server encoding to
-    be the same used in your client program. If given the empty string
-    (default), the custom encoding will be removed and only Evennia's
-    defaults will be used.
+    This command allows for viewing and setting client interface
+    settings.
 
-    The screenreader setting strips the text output for users using
-    screen readers. It strips based on settings.SCREENREADER_REGEX_STRIP.
 
     """
     key = "@option"
@@ -420,7 +412,7 @@ class CmdOption(MuxPlayerCommand):
             options.pop("TTYPE", None)
 
             options = "\n".join(" {w%s{n: %s" % (key, options[key]) for key in sorted(options))
-            self.msg("{wClient settings:{n\n%s{n" % options)
+            self.msg("{wClient settings (%s):{n\n%s{n" % (self.session.protocol_key, options))
             return
 
         if not self.rhs:
