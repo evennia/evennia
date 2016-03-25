@@ -54,7 +54,6 @@ def text(session, *args, **kwargs):
     if text is None:
         return
     # this is treated as a command input
-    #text = to_unicode(escape_control_sequences(text), encoding=self.encoding)
     # handle the 'idle' command
     if text.strip() == _IDLE_COMMAND:
         session.update_session_counters(idle=True)
@@ -122,7 +121,7 @@ def client_settings(session, *args, **kwargs):
         elif key == "ansi":
             flags["ANSI"] = bool(value)
         elif key == "xterm256":
-            flags["256 COLORS"] = bool(value)
+            flags["XTERM256"] = bool(value)
         elif key == "mxp":
             flags["MXP"] = bool(value)
         elif key == "utf-8":

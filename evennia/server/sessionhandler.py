@@ -168,11 +168,11 @@ class SessionHandler(dict):
             elif isinstance(data, basestring):
                 # make sure strings are in a valid encoding
                 try:
-                    data = data and to_str(to_unicode(data), encoding=session.encoding)
+                    data = data and to_str(to_unicode(data), encoding=session.protocol_flags["ENCODING"])
                 except LookupError:
                     # wrong encoding set on the session. Set it to a safe one
-                    session.encoding = "utf-8"
-                    data = to_str(to_unicode(data), encoding=session.encoding)
+                    session.protocol_flags["ENCODING"] = "utf-8"
+                    data = to_str(to_unicode(data), encoding=session.protocol_flags["ENCODING"])
                 if _INLINEFUNC_ENABLED and not raw:
                     data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session) # deprecated!
                     data = parse_nested_inlinefunc(data, strip=strip_inlinefunc, session=session)

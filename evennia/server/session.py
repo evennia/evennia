@@ -37,7 +37,7 @@ class Session(object):
 
     # names of attributes that should be affected by syncing.
     _attrs_to_sync = ('protocol_key', 'address', 'suid', 'sessid', 'uid',
-                      'uname', 'logged_in', 'puid', 'encoding',
+                      'uname', 'logged_in', 'puid',
                       'conn_time', 'cmd_last', 'cmd_last_visible', 'cmd_total',
                       'protocol_flags', 'server_data', "cmdset_storage_string")
 
@@ -79,9 +79,8 @@ class Session(object):
         self.cmd_last_visible = self.conn_time
         self.cmd_last = self.conn_time
         self.cmd_total = 0
-        self.encoding = "utf-8"
 
-        self.protocol_flags = {}
+        self.protocol_flags = {"ENCODING": "utf-8", "SCREENREADER":False}
         self.server_data = {}
 
         # map of input data to session methods

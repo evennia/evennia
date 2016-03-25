@@ -401,12 +401,19 @@ class CmdOption(MuxPlayerCommand):
 
         if not self.args:
             # list the option settings
-            string = "{wEncoding{n:\n"
-            pencoding = self.session.encoding or "None"
-            sencodings = settings.ENCODINGS
-            string += " Custom: %s\n Server: %s" % (pencoding, ", ".join(sencodings))
-            string += "\n{wScreen Reader mode:{n %s" % self.session.protocol_flags.get("SCREENREADER", False)
-            self.msg(string)
+            flags = self.session.protocol_flags
+            keys = sorted(flags)
+            options = "\n".join(" {w%s{n: %s" % (key, flags[key]) for key in keys)
+            self.msg("{wClient settings:\n%s" % options)
+            #string = "{wEncoding{n:\n"
+            #pencoding = flags.get("ENCODING", "None")
+            #sencodings = settings.ENCODINGS
+            #string += " Custom: %s\n Server: %s" % (pencoding, ", ".join(sencodings))
+            #string += "\n{wScreen Reader mode:{n %s" % flags.get("SCREENREADER", False)
+            ## display all
+            #keys =
+            #string += "\n{wClient settings (read-only):\n%s" % options
+            #self.msg(string)
             return
 
         if not self.rhs:
@@ -417,14 +424,14 @@ class CmdOption(MuxPlayerCommand):
 
         if self.lhs == "encoding":
             # change encoding
-            old_encoding = self.session.encoding
+            old_encoding = self.session.protocol_flags["ENCODING"]
             new_encoding = self.rhs.strip() or "utf-8"
             try:
                 utils.to_str(utils.to_unicode("test-string"), encoding=new_encoding)
             except LookupError:
                 string = "|rThe encoding '|w%s|r' is invalid. Keeping the previous encoding '|w%s|r'.|n" % (new_encoding, old_encoding)
             else:
-                self.session.encoding = new_encoding
+                self.session.protocol_flags["ENCODING"] = new_encoding
                 string = "Encoding was changed from '|w%s|n' to '|w%s|n'." % (old_encoding, new_encoding)
             self.msg(string)
             return

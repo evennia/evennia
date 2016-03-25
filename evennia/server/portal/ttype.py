@@ -19,10 +19,10 @@ SEND = chr(1)
 
 # terminal capabilities and their codes
 MTTS = [(128, 'PROXY'),
-        (64, 'SCREEN READER'),
-        (32, 'OSC COLOR PALETTE'),
-        (16, 'MOUSE TRACKING'),
-        (8, '256 COLORS'),
+        (64, 'SCREENREADER'),
+        (32, 'OSC_COLOR_PALETTE'),
+        (16, 'MOUSE_TRACKING'),
+        (8, 'XTERM256'),
         (4, 'UTF-8'),
         (2, 'VT100'),
         (1, 'ANSI')]
@@ -120,7 +120,7 @@ class Ttype(object):
 
             # all clients supporting TTYPE at all seem to support ANSI
             self.protocol.protocol_flags['ANSI'] = True
-            self.protocol.protocol_flags['256 COLORS'] = xterm256
+            self.protocol.protocol_flags['XTERM256'] = xterm256
             self.protocol.protocol_flags['CLIENTNAME'] = clientname
             self.protocol.requestNegotiation(TTYPE, SEND)
 
@@ -133,7 +133,7 @@ class Ttype(object):
                         not term.endswith("-color"))
             if xterm256:
                 self.protocol.protocol_flags['ANSI'] = True
-                self.protocol.protocol_flags['256 COLORS'] = xterm256
+                self.protocol.protocol_flags['XTERM256'] = xterm256
             self.protocol.protocol_flags['TERM'] = term
             # request next information
             self.protocol.requestNegotiation(TTYPE, SEND)
