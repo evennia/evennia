@@ -180,7 +180,7 @@ class TestPlayer(CommandTest):
         self.call(player.CmdPassword(), "testpassword = testpassword", "Password changed.", caller=self.player)
 
     def test_option(self):
-        self.call(player.CmdOption(), "", "Encoding:", caller=self.player)
+        self.call(player.CmdOption(), "", "Client settings", caller=self.player)
 
     def test_who(self):
         self.call(player.CmdWho(), "", "Players:", caller=self.player)
