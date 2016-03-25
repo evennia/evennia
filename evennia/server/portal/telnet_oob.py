@@ -339,16 +339,16 @@ class TelnetOOB(object):
             data (str or list): GMCP data.
 
         Notes:
-            Clients tend to send data on the form "cmdname <structure>".
+            Clients send data on the form "Module.Submodule.Cmdname <structure>".
             We assume the structure is valid JSON.
 
             The following is parsed into Evennia's formal structure:
 
-            cmdname                         -> [cmdname, [], {}]
-            cmdname string                  -> [cmdname, [string], {}]
-            cmdname [arg, arg,...]          -> [cmdname, [args], {}]
-            cmdname {key:arg, key:arg, ...} -> [cmdname, [], {kwargs}]
-            cmdname [[args], {kwargs}]      -> [cmdname, [args], {kwargs}]
+            Module.Name                         -> [Module_Name, [], {}]
+            Module.Name string                  -> [Module_Name, [string], {}]
+            Module.Name [arg, arg,...]          -> [Module_Name, [args], {}]
+            Module.Name {key:arg, key:arg, ...} -> [Module_Name, [], {kwargs}]
+            Module.Name [[args], {kwargs}]      -> [Module_Name, [args], {kwargs}]
 
         """
         if hasattr(data, "__iter__"):
@@ -361,6 +361,7 @@ class TelnetOOB(object):
             except ValueError:
                 self.protocol.data_in(**{data: [[],{}]})
                 return
+            cmdname = cmdname.replace(".", "_")
             try:
                 structure = json.loads(structure)
             except ValueError:

@@ -156,12 +156,13 @@ class WebSocketClient(Protocol, Session):
             text = args[0]
             if text is None:
                 return
+        flags = self.protocol_flags
         text = to_str(text, force_string=True)
 
         options = kwargs.get("options", {})
         raw = options.get("raw", False)
         nomarkup = options.get("nomarkup", False)
-        screenreader = options.get("screenreader", False)
+        screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
         prompt = options.get("send_prompt", False)
 
         if screenreader:

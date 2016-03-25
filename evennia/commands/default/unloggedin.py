@@ -506,8 +506,9 @@ class CmdUnconnectedScreenreader(MuxCommand):
 
     def func(self):
         "Flips screenreader setting."
-        self.session.screenreader = not self.session.screenreader
-        string = "Screenreader mode turned {w%s{n." % ("on" if self.session.screenreader else "off")
+        new_setting = not self.session.protocol_flags.get("SCREENREADER", False)
+        self.session.protocol_flags["SCREENREADER"] =  new_setting
+        string = "Screenreader mode turned {w%s{n." % ("on" if new_setting else "off")
         self.caller.msg(string)
 
 
