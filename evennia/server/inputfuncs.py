@@ -112,22 +112,21 @@ def client_settings(session, *args, **kwargs):
 
     """
     flags = session.protocol_flags
-    tflags = flags["TTYPE"]
     for key, value in kwargs.iteritems():
         key = key.lower()
         if key == "client":
-            tflags["CLIENTNAME"] = to_str(value)
+            flags["CLIENTNAME"] = to_str(value)
         elif key == "version":
-            if "CLIENTNAME" in tflags:
-                tflags["CLIENTNAME"] = "%s %s" % (tflags["CLIENTNAME"], to_str(value))
+            if "CLIENTNAME" in flags:
+                flags["CLIENTNAME"] = "%s %s" % (flags["CLIENTNAME"], to_str(value))
         elif key == "ansi":
-            tflags["ANSI"] = bool(value)
+            flags["ANSI"] = bool(value)
         elif key == "xterm256":
-            tflags["256 COLORS"] = bool(value)
+            flags["256 COLORS"] = bool(value)
         elif key == "mxp":
             flags["MXP"] = bool(value)
         elif key == "utf-8":
-            tflags["UTF-8"] = bool(value)
+            flags["UTF-8"] = bool(value)
         elif key == "screenreader":
             flags["SCREENREADER"] = bool(value)
         elif key == "mccp":
@@ -136,11 +135,10 @@ def client_settings(session, *args, **kwargs):
             flags["SCREENHEIGHT"] = int(value)
         elif key == "screenwidth":
             flags["SCREENWIDTH"] = int(value)
-        else:
+        elif not key == "options":
             err = _ERROR_INPUT.format(
                     name="client_settings", session=session, inp=key)
             session.msg(text=err)
-    flags["TTYPE"] = tflags
     session.protocol_flags = flags
     # we must update the portal as well
     session.sessionhandler.session_portal_sync(session)

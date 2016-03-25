@@ -234,7 +234,7 @@ class SshProtocol(Manhole, session.Session):
             options (dict): Send-option flags
                    - mxp: Enforce MXP link support.
                    - ansi: Enforce no ANSI colors.
-                   - xterm256: Enforce xterm256 colors, regardless of TTYPE.
+                   - xterm256: Enforce xterm256 colors, regardless of TTYPE setting.
                    - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
                    - nomarkup: Strip all ANSI markup. This is the same as noxterm256,noansi
                    - raw: Pass string through without any ansi processing
@@ -253,13 +253,13 @@ class SshProtocol(Manhole, session.Session):
 
         # handle arguments
         options = kwargs.get("options", {})
-        ttype = self.protocol_flags.get('TTYPE', {})
-        xterm256 = options.get("xterm256", ttype.get('256 COLORS', False) if ttype.get("init_done") else True)
-        useansi = options.get("ansi", ttype and ttype.get('ANSI', False) if ttype.get("init_done") else True)
+        flags = self.protocol_flags
+        xterm256 = options.get("xterm256", flags.get('256 COLORS', False) if flags["TTYPE"] else True)
+        useansi = options.get("ansi", flags.get('ANSI', False) if flags["TTYPE"] else True)
         raw = options.get("raw", False)
         nomarkup = options.get("nomarkup", not (xterm256 or useansi))
         #echo = options.get("echo", None)
-        screenreader =  options.get("screenreader", self.screenreader)
+        screenreader =  options.get("screenreader", flags.get("SCREENREADER", False))
 
         if screenreader:
             # screenreader mode cleans up output

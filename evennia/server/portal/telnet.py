@@ -303,15 +303,16 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         # handle arguments
         options = kwargs.get("options", {})
-        ttype = self.protocol_flags.get('TTYPE', {})
-        xterm256 = options.get("xterm256", ttype.get('256 COLORS', False) if ttype.get("init_done") else True)
-        useansi = options.get("ansi", ttype and ttype.get('ANSI', False) if ttype.get("init_done") else True)
+        flags = self.protocol_flags
+        xterm256 = options.get("xterm256", flags.get('256 COLORS', False) if flags["TTYPE"] else True)
+        useansi = options.get("ansi", flags.get('ANSI', False) if flags["TTYPE"] else True)
         raw = options.get("raw", False)
         nomarkup = options.get("nomarkup", not (xterm256 or useansi))
         echo = options.get("echo", None)
-        mxp = options.get("mxp", self.protocol_flags.get("MXP", False))
-        screenreader =  options.get("screenreader", self.screenreader)
+        mxp = options.get("mxp", flags.get("MXP", False))
+        screenreader =  options.get("screenreader", flags.get("SCREENREADER", False))
 
+        print "screenreader:", screenreader, options, flags
         if screenreader:
             # screenreader mode cleans up output
             text = ansi.parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
