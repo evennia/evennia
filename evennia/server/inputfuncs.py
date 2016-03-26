@@ -251,37 +251,50 @@ def unrepeat(session, *args, **kwargs):
     kwargs["stop"] = True
     repeat(session, *args, **kwargs)
 
-#
-#_monitorable = {
-#    "name": "db_key",
-#    "location": "db_location",
-#    "desc": "desc"
-#}
-#
-#def _on_monitor_change(**kwargs):
-#    kwargs["obj"]
-#    obj.msg(monitor={"name": fieldname})
-#
-#def monitor(session, *args, **kwargs):
-#    """
-#    Adds monitoring to a given property or Attribute.
-#
-#    Kwargs:
-#      name (str): The name of the property or Attribute
-#        to report. No db_* prefix is needed. Only names
-#        in the _monitorable dict earlier in this module
-#        are accepted.
-#      stop (bool): Stop monitoring the above name.
-#
-#    """
-#    from evennia.scripts.monitorhandler import MONITOR_HANDLER
-#    name = kwargs.get("name", None)
-#    if name and name in _monitorable and session.puppet:
-#        name = _monitorable[name]
-#        obj = session.puppet
-#        MONITOR_HANDLER.add
 
+_monitorable = {
+    "name": "db_key",
+    "location": "db_location",
+    "desc": "desc"
+}
 
+def _on_monitor_change(**kwargs):
+    fieldname = kwargs["fieldname"]
+    obj = kwargs["obj"]
+    name = kwargs["name"]
+    session = kwargs["session"]
+    session.msg(monitor={"name": name, "value": _GA(obj, fieldname)})
+
+def monitor(session, *args, **kwargs):
+    """
+    Adds monitoring to a given property or Attribute.
+
+    Kwargs:
+      name (str): The name of the property or Attribute
+        to report. No db_* prefix is needed. Only names
+        in the _monitorable dict earlier in this module
+        are accepted.
+      stop (bool): Stop monitoring the above name.
+
+    """
+    from evennia.scripts.monitorhandler import MONITOR_HANDLER
+    name = kwargs.get("name", None)
+    if name and name in _monitorable and session.puppet:
+        field_name = _monitorable[name]
+        obj = session.puppet
+        if kwargs.get("stop", False):
+            MONITOR_HANDLER.remove(obj, field_name, idstring=session.sessid)
+        else:
+            # the handler will add fieldname and obj to the kwargs automatically
+            MONITOR_HANDLER.add(obj, field_name, _on_monitor_change, idstring=session.sessid,
+                            persistent=False, name=name, session=session)
+
+def unmonitor(session, *args, **kwargs):
+    """
+    Wrapper for turning off monitoring
+    """
+    kwargs["stop"] = True
+    monitor(session, *args, **kwargs)
 
 
 # aliases for GMCP
@@ -290,14 +303,17 @@ core_supports_set = client_options      # Core.Supports.Set
 core_supports_get = get_client_options  # Core.Supports.Get
 char_login = login                      # Char.Login
 char_value_get = get_value              # Char.Value.Get
-char_repeat = repeat                    # Char.Repeat
-char_unrepeat = unrepeat                # Char.Unrepeat
+char_repeat_on = repeat                 # Char.Repeat.On
+char_repeat_off = unrepeat              # Char.Repeat.Off
+char_monitor_on = monitor               # Char.Monitor.On
+char_monitor_off = unmonitor            # Char.Monitor.Off
 
 # aliases for MSDP
 msdp_send = get_value                   # SEND
 msdp_repeat = repeat                    # REPEAT
 msdp_unrepeat = unrepeat                # UNREPEAT
-
+msdp_report = monitor                   # REPORT
+mspd_unreport = unmonitor               # UNREPORT
 
 #------------------------------------------------------------------------------------
 
