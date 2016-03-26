@@ -7,6 +7,8 @@ callsign:
 
     inputfunc(session, *args, **kwargs)
 
+Where "options" is always one of the kwargs, containing eventual
+protocol-options.
 There is one special function, the "default" function, which is called
 on a no-match. It has this callsign:
 
@@ -178,6 +180,11 @@ def login(session, *args, **kwargs):
         if player:
             session.sessionhandler.login(session, player)
 
+_gettable = {
+    "name": lambda obj: obj.key,
+    "location": lambda obj: obj.location.key if obj.location else "None",
+    "servername": lambda obj: settings.SERVERNAME
+}
 
 def get_value(session, *args, **kwargs):
     """
@@ -185,15 +192,95 @@ def get_value(session, *args, **kwargs):
     session's current player or character.
 
     Kwargs:
+      name (str): Name of info value to return. Only names
+        in the _gettable dictionary earlier in this module
+        are accepted.
 
     """
+    name = kwargs.get("name", "")
+    obj = session.puppet or session.player
+    if name in _gettable:
+        session.msg(get_value=_gettable[name](obj))
 
 
+def _testrepeat(**kwargs):
+    """
+    This is a test function for using with the repeat
+    inputfunc.
+
+    Kwargs:
+        session (Session): Session to return to.
+    """
+    import time
+    kwargs["session"].msg("Repeat called: %s" % time.time())
+
+
+_repeatable = {"test1": _testrepeat,  # example only
+               "test2": _testrepeat}  #      "
 
 def repeat(session, *args, **kwargs):
     """
-    Call a named
+    Call a named function repeatedly. Note that
+    this is meant as an example of limiting the number of
+    possible call functions.
+
+    Kwargs:
+        callback (str): The function to call. Only functions
+            from the _repeatable dictionary earlier in this
+            module are available.
+        interval (int): How often to call function (s).
+            Defaults to once every 60 seconds with a minimum
+                of 5 seconds.
+        stop (bool): Stop a previously assigned ticker with
+            the above settings.
+
     """
+    from evennia.scripts.tickerhandler import TICKER_HANDLER
+    name = kwargs.get("callback", "")
+    interval = max(5, int(kwargs.get("interval", 60)))
+
+    if name in _repeatable:
+        if kwargs.get("stop", False):
+            TICKER_HANDLER.remove(interval, _repeatable[name], idstring=session.sessid, persistent=False)
+        else:
+            TICKER_HANDLER.add(interval, _repeatable[name], idstring=session.sessid, persistent=False)
+
+
+def unrepeat(session, *args, **kwargs):
+    "Wrapper for OOB use"
+    kwargs["stop"] = True
+    repeat(session, *args, **kwargs)
+
+#
+#_monitorable = {
+#    "name": "db_key",
+#    "location": "db_location",
+#    "desc": "desc"
+#}
+#
+#def _on_monitor_change(**kwargs):
+#    kwargs["obj"]
+#    obj.msg(monitor={"name": fieldname})
+#
+#def monitor(session, *args, **kwargs):
+#    """
+#    Adds monitoring to a given property or Attribute.
+#
+#    Kwargs:
+#      name (str): The name of the property or Attribute
+#        to report. No db_* prefix is needed. Only names
+#        in the _monitorable dict earlier in this module
+#        are accepted.
+#      stop (bool): Stop monitoring the above name.
+#
+#    """
+#    from evennia.scripts.monitorhandler import MONITOR_HANDLER
+#    name = kwargs.get("name", None)
+#    if name and name in _monitorable and session.puppet:
+#        name = _monitorable[name]
+#        obj = session.puppet
+#        MONITOR_HANDLER.add
+
 
 
 
@@ -202,6 +289,14 @@ core_hello = client_options             # Core.Hello
 core_supports_set = client_options      # Core.Supports.Set
 core_supports_get = get_client_options  # Core.Supports.Get
 char_login = login                      # Char.Login
+char_value_get = get_value              # Char.Value.Get
+char_repeat = repeat                    # Char.Repeat
+char_unrepeat = unrepeat                # Char.Unrepeat
+
+# aliases for MSDP
+msdp_send = get_value                   # SEND
+msdp_repeat = repeat                    # REPEAT
+msdp_unrepeat = unrepeat                # UNREPEAT
 
 
 #------------------------------------------------------------------------------------
