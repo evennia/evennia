@@ -755,7 +755,8 @@ class CmdIRC2Chan(MuxCommand):
     link an evennia channel to an external IRC channel
 
     Usage:
-      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <[+]port> <#irchannel> <botname>
+      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>
+      @irc2chan/ssl        "
       @irc2chan/list
       @irc2chan/delete botname|#dbid
 
@@ -774,8 +775,7 @@ class CmdIRC2Chan(MuxCommand):
     vice versa. The bot will automatically connect at server start, so this
     comman need only be given once. The /disconnect switch will permanently
     delete the bot. To only temporarily deactivate it, use the  {w@services{n
-    command instead. To connect with SSL, add a plus sign (+) before the port
-    number.
+    command instead.
     """
 
     key = "@irc2chan"
@@ -821,7 +821,7 @@ class CmdIRC2Chan(MuxCommand):
             return
 
         if not self.args or not self.rhs:
-            string = "Usage: @irc2chan[/switches] <evennia_channel> = <ircnetwork> <[+]port> <#irchannel> <botname>"
+            string = "Usage: @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>"
             self.msg(string)
             return
 
@@ -831,15 +831,13 @@ class CmdIRC2Chan(MuxCommand):
             irc_network, irc_port, irc_channel, irc_botname = \
                        [part.strip() for part in self.rhs.split(None, 3)]
             irc_channel = "#%s" % irc_channel
-            if "+" in irc_port:
-                irc_ssl = True
-                irc_port = irc_port[1:]
         except Exception:
             string = "IRC bot definition '%s' is not valid." % self.rhs
             self.msg(string)
             return
 
         botname = "ircbot-%s" % irc_botname
+        irc_ssl = "ssl" in self.switches
 
         # create a new bot
         bot = PlayerDB.objects.filter(username__iexact=botname)

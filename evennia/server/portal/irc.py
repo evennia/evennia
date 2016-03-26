@@ -312,12 +312,11 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
         """
         if self.port:
             if ssl:
-                """
-                Requires PyOpenSSL
-
-                """
-                service = reactor.connectSSL(self.network, int(self.port), self, ssl.ClientContextFactory())
+                try:
+                    import OpenSSL
+                    service = reactor.connectSSL(self.network, int(self.port), self, ssl.ClientContextFactory())
+                except ImportError:
+                    self.caller.msg("To use SSL, the PyOpenSSL module must be installed.")
             else:
                 service = internet.TCPClient(self.network, int(self.port), self)
-
             self.sessionhandler.portal.services.addService(service)
