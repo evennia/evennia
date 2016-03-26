@@ -10,17 +10,18 @@ functionality:
     an action whenever that Attribute *changes* for whatever reason.
 
 """
+import inspect
 from builtins import object
 
 from collections import defaultdict
 from evennia.server.models import ServerConfig
 from evennia.utils.dbserialize import dbserialize, dbunserialize
 from evennia.utils import logger
+from evennia.utils import variable_from_module
 
 _SA = object.__setattr__
 _GA = object.__getattribute__
 _DA = object.__delattr__
-
 
 class MonitorHandler(object):
     """
@@ -32,7 +33,55 @@ class MonitorHandler(object):
         Initialize the handler.
         """
         self.savekey = "_monitorhandler_save"
-        self.monitors = defaultdict(lambda:defaultdict(dict))
+        self.monitors = defaultdict(lambda: defaultdict(dict))
+
+    def save(self):
+        """
+        Store our monitors to the database. This is called
+        by the server process.
+
+        Since dbserialize can't handle defaultdicts, we convert to an
+        intermediary save format ((obj,fieldname, idstring, callback, kwargs), ...)
+
+        """
+        savedata = []
+        if self.monitors:
+            for obj in self.monitors:
+                for fieldname in self.monitors[obj]:
+                    for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].iteritems():
+                        path = "%s.%s" % (callback.__module__, callback.func_name)
+                        savedata.append((obj, fieldname, idstring, path, persistent, kwargs))
+            savedata = dbserialize(savedata)
+            ServerConfig.objects.conf(key=self.savekey, value=savedata)
+
+    def restore(self, server_reload=True):
+        """
+        Restore our monitors after a reload. This is called
+        by the server process.
+
+        Args:
+            server_reload (bool, optional): If this is False, it means
+                the server went through a cold reboot and all
+                non-persistent tickers must be killed.
+
+        """
+        self.monitors = defaultdict(lambda: defaultdict(dict))
+        restored_monitors = ServerConfig.objects.conf(key=self.savekey)
+        if restored_monitors:
+            restored_monitors = dbunserialize(restored_monitors)
+            for (obj, fieldname, idstring, path, persistent, kwargs) in restored_monitors:
+                try:
+                    if not persistent and not server_reload:
+                        # this monitor will not be restarted
+                        continue
+                    modname, varname = path.rsplit(".", 1)
+                    callback = variable_from_module(modname, varname)
+                    if obj and hasattr(obj, fieldname):
+                        self.monitors[obj][fieldname][idstring] = (callback, persistent, kwargs)
+                except Exception:
+                    continue
+        # make sure to clean data from database
+        ServerConfig.objects.conf(key=self.savekey, delete=True)
 
     def at_update(self, obj, fieldname):
         """
@@ -40,18 +89,18 @@ class MonitorHandler(object):
         """
         to_delete = []
         if obj in self.monitors and fieldname in self.monitors[obj]:
-            for (callback, kwargs) in self.monitors[obj][fieldname].iteritems():
+            for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].iteritems():
                 kwargs.update({"obj": obj, "fieldname": fieldname})
                 try:
-                    callback( **kwargs)
+                    callback(**kwargs)
                 except Exception:
-                    to_delete.append((obj, fieldname, callback))
+                    to_delete.append((obj, fieldname, idstring))
                     logger.log_trace("Monitor callback was removed.")
-            # we need to do the cleanup after loop has finished
-            for (obj, fieldname, callback) in to_delete:
-                del self.monitors[obj][fieldname][callback]
+        # we cleanup non-found monitors (has to be done after loop)
+        for (obj, fieldname, idstring) in to_delete:
+            del self.monitors[obj][fieldname][idstring]
 
-    def add(self, obj, fieldname, callback, **kwargs):
+    def add(self, obj, fieldname, callback, idstring="", persistent=False, **kwargs):
         """
         Add monitoring to a given field or Attribute. A field must
         be specified with the full db_* name or it will be assumed
@@ -62,11 +111,11 @@ class MonitorHandler(object):
                 field or Attribute.
             fieldname (str): Name of field (db_*) or Attribute to monitor.
             callback (callable): A callable on the form `callable(**kwargs),
-            where kwargs holds keys fieldname and obj.
-            uid (hashable): A unique id to identify this particular monitor.
-                It is used together with obj to
-            persistent (bool): If this monitor should survive a server
-                reboot or not (it will always survive a reload).
+                where kwargs holds keys fieldname and obj.
+            idstring (str, optional): An id to separate this monitor from other monitors
+                of the same field and object.
+            persistent (bool, optional): If False, the monitor will survive
+                a server reload but not a cold restart. This is default.
 
         """
         if not fieldname.startswith("db_") or not hasattr(obj, fieldname):
@@ -78,51 +127,50 @@ class MonitorHandler(object):
 
         # we try to serialize this data to test it's valid. Otherwise we won't accept it.
         try:
-            dbserialize((obj, fieldname, callback, kwargs))
+            if not inspect.isfunction(callback):
+                raise TypeError("callback is not a function.")
+            dbserialize((obj, fieldname, callback, idstring, persistent, kwargs))
         except Exception:
-            err = "Invalid monitor definition (skipped since it could not be serialized):\n" \
-                  " (%s, %s, %s, %s)" % (obj, fieldname, callback, kwargs)
+            err = "Invalid monitor definition: \n" \
+                  " (%s, %s, %s, %s, %s, %s)" % (obj, fieldname, callback, idstring,
+                                                 persistent, kwargs)
             logger.log_trace(err)
         else:
-            self.monitors[obj][fieldname][callback] = kwargs
+            self.monitors[obj][fieldname][idstring] = (callback, persistent, kwargs)
 
 
-    def remove(self, obj, fieldname, callback):
+    def remove(self, obj, fieldname, idstring=""):
         """
         Remove a monitor.
         """
-        callback_dict = self.monitors[obj][fieldname]
-        if callback in callback_dict:
-            del callback_dict[callback]
+        if not fieldname.startswith("db_") or not hasattr(obj, fieldname):
+            obj = obj.attributes.get(fieldname, return_obj=True)
+            if not obj:
+                return
+            fieldname = "db_value"
 
-    def save(self):
+        idstring_dict = self.monitors[obj][fieldname]
+        if idstring in idstring_dict:
+            del self.monitors[obj][fieldname][idstring]
+
+    def clear(self):
         """
-        Store our monitors to the database. This is called
-        by the server process.
+        Delete all monitors.
+        """
+        self.monitors = defaultdict(lambda: defaultdict(dict))
 
-        Since dbserialize can't handle defaultdicts, we convert to an
-        intermediary save format ((obj,fieldname, callback, kwargs), ...)
+    def all(self):
+        """
+        List all monitors.
 
         """
-        savedata = []
+        output = []
         for obj in self.monitors:
             for fieldname in self.monitors[obj]:
-                for callback in self.monitors[obj][fieldname]:
-                    savedata.append((obj, fieldname, callback, self.monitors[obj][fieldname][callback]))
-        savedata = dbserialize(savedata)
-        ServerConfig.objects.conf(key=self.savekey,
-                                  value=savedata)
+                for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].iteritems():
+                    output.append((obj, fieldname, idstring, persistent, kwargs))
+        return output
 
-    def restore(self):
-        """
-        Restore our monitors after a reload. This is called
-        by the server process.
-        """
-        savedata = ServerConfig.objects.conf(key=self.savekey)
-        if savedata:
-            for (obj, fieldname, callback, kwargs) in dbunserialize(savedata):
-                self.monitors[obj][fieldname][callback] = kwargs
-            ServerConfig.objects.conf(key=self.savekey, delete=True)
 
 # access object
 MONITOR_HANDLER = MonitorHandler()
