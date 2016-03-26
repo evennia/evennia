@@ -311,9 +311,7 @@ class TickerHandler(object):
 
     def _store_key(self, obj, path, interval, callfunc, idstring="", persistent=True):
         """
-        Tries to create a store_key for the object.  Returns a tuple
-        (isdb, store_key) where isdb is a boolean True if obj was a
-        database object, False otherwise.
+        Tries to create a store_key for the object.
 
         Args:
             obj (Object or None): Subscribing object if any.
@@ -373,8 +371,8 @@ class TickerHandler(object):
         restart.
 
         Args:
-            server_reload (bool): If this is False, it means the server
-                went through a cold reboot and all
+            server_reload (bool, optional): If this is False, it means
+                the server went through a cold reboot and all
                 non-persistent tickers must be killed.
 
         """
