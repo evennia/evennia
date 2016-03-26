@@ -61,9 +61,8 @@ class MonitorHandler(object):
             obj (Typeclassed Entity): The entity on which to monitor a
                 field or Attribute.
             fieldname (str): Name of field (db_*) or Attribute to monitor.
-            callback (callable): A callable on the form `callable(obj,
-                fieldname, **kwargs), where kwargs holds keys fieldname
-                and obj.
+            callback (callable): A callable on the form `callable(**kwargs),
+            where kwargs holds keys fieldname and obj.
             uid (hashable): A unique id to identify this particular monitor.
                 It is used together with obj to
             persistent (bool): If this monitor should survive a server
