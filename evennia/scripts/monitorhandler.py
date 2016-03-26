@@ -90,9 +90,8 @@ class MonitorHandler(object):
         to_delete = []
         if obj in self.monitors and fieldname in self.monitors[obj]:
             for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].iteritems():
-                kwargs.update({"obj": obj, "fieldname": fieldname})
                 try:
-                    callback(**kwargs)
+                    callback(obj=obj, fieldname=fieldname, **kwargs)
                 except Exception:
                     to_delete.append((obj, fieldname, idstring))
                     logger.log_trace("Monitor callback was removed.")
