@@ -755,7 +755,7 @@ class CmdIRC2Chan(MuxCommand):
     link an evennia channel to an external IRC channel
 
     Usage:
-      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>
+      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <[+]port> <#irchannel> <botname>
       @irc2chan/list
       @irc2chan/delete botname|#dbid
 
@@ -774,7 +774,8 @@ class CmdIRC2Chan(MuxCommand):
     vice versa. The bot will automatically connect at server start, so this
     comman need only be given once. The /disconnect switch will permanently
     delete the bot. To only temporarily deactivate it, use the  {w@services{n
-    command instead.
+    command instead. To connect with SSL, add a plus sign (+) before the port
+    number.
     """
 
     key = "@irc2chan"
@@ -794,10 +795,10 @@ class CmdIRC2Chan(MuxCommand):
             ircbots = [bot for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
             if ircbots:
                 from evennia.utils.evtable import EvTable
-                table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", maxwidth=_DEFAULT_WIDTH)
+                table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", "{wSSL{n", maxwidth=_DEFAULT_WIDTH)
                 for ircbot in ircbots:
                     ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
-                    table.add_row(ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo)
+                    table.add_row(ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo, ircbot.db.irc_ssl)
                 self.caller.msg(table)
             else:
                 self.msg("No irc bots found.")
@@ -820,7 +821,7 @@ class CmdIRC2Chan(MuxCommand):
             return
 
         if not self.args or not self.rhs:
-            string = "Usage: @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>"
+            string = "Usage: @irc2chan[/switches] <evennia_channel> = <ircnetwork> <[+]port> <#irchannel> <botname>"
             self.msg(string)
             return
 
@@ -830,6 +831,9 @@ class CmdIRC2Chan(MuxCommand):
             irc_network, irc_port, irc_channel, irc_botname = \
                        [part.strip() for part in self.rhs.split(None, 3)]
             irc_channel = "#%s" % irc_channel
+            if "+" in irc_port:
+                irc_ssl = True
+                irc_port = irc_port[1:]
         except Exception:
             string = "IRC bot definition '%s' is not valid." % self.rhs
             self.msg(string)
@@ -848,7 +852,7 @@ class CmdIRC2Chan(MuxCommand):
         else:
             bot = create.create_player(botname, None, None, typeclass=bots.IRCBot)
         bot.start(ev_channel=channel, irc_botname=irc_botname, irc_channel=irc_channel,
-                  irc_network=irc_network, irc_port=irc_port)
+                  irc_network=irc_network, irc_port=irc_port, irc_ssl=irc_ssl)
         self.msg("Connection created. Starting IRC bot.")
 
 # RSS connection

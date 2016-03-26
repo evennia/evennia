@@ -168,7 +168,7 @@ class IRCBot(Bot):
     Bot for handling IRC connections.
 
     """
-    def start(self, ev_channel=None, irc_botname=None, irc_channel=None, irc_network=None, irc_port=None):
+    def start(self, ev_channel=None, irc_botname=None, irc_channel=None, irc_network=None, irc_port=None, irc_ssl=None):
         """
         Start by telling the portal to start a new session.
 
@@ -179,6 +179,7 @@ class IRCBot(Bot):
             irc_channel (str): Name of channel on the form `#channelname`.
             irc_network (str): URL of the IRC network, like `irc.freenode.net`.
             irc_port (str): Port number of the irc network, like `6667`.
+            irc_ssl (bool): Indicates whether to use SSL connection.
 
         """
         global _SESSIONS
@@ -206,6 +207,8 @@ class IRCBot(Bot):
             self.db.irc_network = irc_network
         if irc_port:
             self.db.irc_port = irc_port
+        if irc_ssl:
+            self.db.irc_ssl = irc_ssl
 
         # instruct the server and portal to create a new session with
         # the stored configuration
@@ -213,7 +216,8 @@ class IRCBot(Bot):
                       "botname": self.db.irc_botname,
                       "channel": self.db.irc_channel ,
                       "network": self.db.irc_network,
-                      "port": self.db.irc_port}
+                      "port": self.db.irc_port,
+                      "ssl": self.db.irc_ssl}
         _SESSIONS.start_bot_session("evennia.server.portal.irc.IRCBotFactory", configdict)
 
     def msg(self, text=None, **kwargs):
