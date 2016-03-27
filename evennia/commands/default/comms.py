@@ -756,15 +756,15 @@ class CmdIRC2Chan(MuxCommand):
 
     Usage:
       @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>
-      @irc2chan/list
       @irc2chan/delete botname|#dbid
 
     Switches:
       /delete     - this will delete the bot and remove the irc connection
-                    to the channel.
-      /remove     -        "
-      /disconnect -        "
+                    to the channel. Requires the botname or #dbid as input.
+      /remove     - alias to /delete
+      /disconnect - alias to /delete
       /list       - show all irc<->evennia mappings
+      /ssl        - use an SSL-encrypted connection
 
     Example:
       @irc2chan myircchan = irc.dalnet.net 6667 myevennia-channel evennia-bot
@@ -794,10 +794,10 @@ class CmdIRC2Chan(MuxCommand):
             ircbots = [bot for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
             if ircbots:
                 from evennia.utils.evtable import EvTable
-                table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", maxwidth=_DEFAULT_WIDTH)
+                table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", "{wSSL{n", maxwidth=_DEFAULT_WIDTH)
                 for ircbot in ircbots:
                     ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
-                    table.add_row(ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo)
+                    table.add_row(ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo, ircbot.db.irc_ssl)
                 self.caller.msg(table)
             else:
                 self.msg("No irc bots found.")
@@ -836,6 +836,7 @@ class CmdIRC2Chan(MuxCommand):
             return
 
         botname = "ircbot-%s" % irc_botname
+        irc_ssl = "ssl" in self.switches
 
         # create a new bot
         bot = PlayerDB.objects.filter(username__iexact=botname)
@@ -848,7 +849,7 @@ class CmdIRC2Chan(MuxCommand):
         else:
             bot = create.create_player(botname, None, None, typeclass=bots.IRCBot)
         bot.start(ev_channel=channel, irc_botname=irc_botname, irc_channel=irc_channel,
-                  irc_network=irc_network, irc_port=irc_port)
+                  irc_network=irc_network, irc_port=irc_port, irc_ssl=irc_ssl)
         self.msg("Connection created. Starting IRC bot.")
 
 # RSS connection

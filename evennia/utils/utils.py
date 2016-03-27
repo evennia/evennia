@@ -299,7 +299,9 @@ def time_format(seconds, style=0):
         """
         Full-detailed, long-winded format. We ignore seconds.
         """
-        days_str = hours_str = minutes_str = seconds_str = ''
+        days_str = hours_str = ''
+        minutes_str = '0 minutes'
+        
         if days > 0:
             if days == 1:
                 days_str = '%i day, ' % days
