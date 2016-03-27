@@ -756,16 +756,15 @@ class CmdIRC2Chan(MuxCommand):
 
     Usage:
       @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>
-      @irc2chan/ssl        "
-      @irc2chan/list
       @irc2chan/delete botname|#dbid
 
     Switches:
       /delete     - this will delete the bot and remove the irc connection
-                    to the channel.
-      /remove     -        "
-      /disconnect -        "
+                    to the channel. Requires the botname or #dbid as input.
+      /remove     - alias to /delete
+      /disconnect - alias to /delete
       /list       - show all irc<->evennia mappings
+      /ssl        - use an SSL-encrypted connection
 
     Example:
       @irc2chan myircchan = irc.dalnet.net 6667 myevennia-channel evennia-bot
