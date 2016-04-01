@@ -107,7 +107,7 @@ class ANSIParser(object):
         """
         return self.ansi_bright_bgs.get(ansimatch.group(), "")
 
-    def sub_xterm256(self, rgbmatch, convert=False):
+    def sub_xterm256(self, rgbmatch, use_xterm256=False):
         """
         This is a replacer method called by `re.sub` with the matched
         tag. It must return the correct ansi sequence.
@@ -117,7 +117,7 @@ class ANSIParser(object):
 
         Args:
             rgbmatch (re.matchobject): The match.
-            convert (bool, optional): Convert 256-colors to 16.
+            use_xterm256 (bool, optional): Don't convert 256-colors to 16.
 
         Returns:
             processed (str): The processed match string.
@@ -135,19 +135,20 @@ class ANSIParser(object):
         else:
             red, green, blue = int(rgbtag[0]), int(rgbtag[1]), int(rgbtag[2])
 
-        if convert:
+        if use_xterm256:
             colval = 16 + (red * 36) + (green * 6) + blue
             return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)
+            #return "\033[%s8;5;%sm" % (3 + int(background), colval)
         else:
             # xterm256 not supported, convert the rgb value to ansi instead
-            if red == green and red == blue and red < 2:
+            if red == green == blue and red < 3:
                 if background:
                     return ANSI_BACK_BLACK
                 elif red >= 1:
                     return ANSI_HILITE + ANSI_BLACK
                 else:
                     return ANSI_NORMAL + ANSI_BLACK
-            elif red == green and red == blue:
+            elif red == green == blue:
                 if background:
                     return ANSI_BACK_WHITE
                 elif red >= 4:

@@ -580,8 +580,8 @@ class CmdColorTest(MuxPlayerCommand):
             ap = ansi.ANSI_PARSER
             # ansi colors
             # show all ansi color-related codes
-            col1 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[6:14]]
-            col2 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[14:22]]
+            col1 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[48:56]]
+            col2 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[56:64]]
             col3 = ["%s%s|n" % (code.replace("\\",""), code.replace("|", "||").replace("\\", "")) for code, _ in ap.ext_ansi_map[-8:]]
             col2.extend(["" for i in range(len(col1)-len(col2))])
             table = utils.format_table([col1, col2, col3])
@@ -601,8 +601,8 @@ class CmdColorTest(MuxPlayerCommand):
                         # foreground table
                         table[ir].append("|%i%i%i%s|n" % (ir, ig, ib, "||%i%i%i" % (ir, ig, ib)))
                         # background table
-                        table[6+ir].append("|[%i%i%i|%i%i%i%s|n" % (ir, ig, ib,
-                                                            5 - ir, 5 - ig, 5 - ib,
+                        table[6+ir].append("|%i%i%i|[%i%i%i%s|n" % (5 - ir, 5 - ig, 5 - ib,
+                                                            ir, ig, ib,
                                                         "||[%i%i%i" % (ir, ig, ib)))
             table = self.table_format(table)
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
