@@ -389,7 +389,7 @@ north
 #
 @detail inn;sign =
  You think you might have heard of this name before,
- but at the moment you can recall where from.
+ but at the moment you can't recall where from.
 #
 @detail snake;letters;writing =
  The snake is cartoonish with big googly eyes. It looks somewhat
