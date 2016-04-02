@@ -159,9 +159,19 @@ def client_options(session, *args, **kwargs):
 
 def get_client_options(session, *args, **kwargs):
     """
-    Alias wrapper for getting options
+    Alias wrapper for getting options.
     """
     client_options(session, get=True)
+
+
+def get_inputfuncs(session, *args, **kwargs):
+    """
+    Get the keys of all available inputfuncs. Note that we don't get
+    it from this module alone since multiple modules could be added.
+    So we get it from the sessionhandler.
+    """
+    inputfuncsdict = dict((key, func.__doc__) for key, func in session.sessionhandler.get_inputfuncs().iterkeys())
+    session.msg(get_inputfuncs=inputfuncsdict)
 
 
 def login(session, *args, **kwargs):
@@ -212,11 +222,12 @@ def _testrepeat(**kwargs):
         session (Session): Session to return to.
     """
     import time
-    kwargs["session"].msg("Repeat called: %s" % time.time())
+    kwargs["session"].msg(repeat="Repeat called: %s" % time.time())
 
 
 _repeatable = {"test1": _testrepeat,  # example only
                "test2": _testrepeat}  #      "
+
 
 def repeat(session, *args, **kwargs):
     """
@@ -258,12 +269,14 @@ _monitorable = {
     "desc": "desc"
 }
 
+
 def _on_monitor_change(**kwargs):
     fieldname = kwargs["fieldname"]
     obj = kwargs["obj"]
     name = kwargs["name"]
     session = kwargs["session"]
     session.msg(monitor={"name": name, "value": _GA(obj, fieldname)})
+
 
 def monitor(session, *args, **kwargs):
     """
@@ -289,6 +302,7 @@ def monitor(session, *args, **kwargs):
             MONITOR_HANDLER.add(obj, field_name, _on_monitor_change, idstring=session.sessid,
                             persistent=False, name=name, session=session)
 
+
 def unmonitor(session, *args, **kwargs):
     """
     Wrapper for turning off monitoring
@@ -298,21 +312,20 @@ def unmonitor(session, *args, **kwargs):
 
 
 # aliases for GMCP
-core_hello = client_options             # Core.Hello
-core_supports_set = client_options      # Core.Supports.Set
-core_supports_get = get_client_options  # Core.Supports.Get
-char_login = login                      # Char.Login
-char_value_get = get_value              # Char.Value.Get
-char_repeat_on = repeat                 # Char.Repeat.On
-char_repeat_off = unrepeat              # Char.Repeat.Off
-char_monitor_on = monitor               # Char.Monitor.On
-char_monitor_off = unmonitor            # Char.Monitor.Off
+gmcp_core_hello = client_options             # Core.Hello
+gmcp_core_supports_set = client_options      # Core.Supports.Set
+gmcp_core_supports_get = get_client_options  # Core.Supports.Get
+gmcp_core_commands_get = get_inputfuncs      # Core.Commands.Get
+gmcp_char_login = login                      # Char.Login
+gmcp_char_value_get = get_value              # Char.Value.Get
+gmcp_char_repeat_on = repeat                 # Char.Repeat.On
+gmcp_char_repeat_off = unrepeat              # Char.Repeat.Off
+gmcp_char_monitor_on = monitor               # Char.Monitor.On
+gmcp_char_monitor_off = unmonitor            # Char.Monitor.Off
 
 # aliases for MSDP
-msdp_send = get_value                   # SEND
-msdp_repeat = repeat                    # REPEAT
-msdp_unrepeat = unrepeat                # UNREPEAT
-msdp_report = monitor                   # REPORT
-mspd_unreport = unmonitor               # UNREPORT
-
-
+SEND = get_value                   # SEND
+REPEAT = repeat                    # REPEAT
+UNREPEAT = unrepeat                # UNREPEAT
+MONITOR = monitor                  # REPORT
+LIST = get_inputfuncs              # LIST
