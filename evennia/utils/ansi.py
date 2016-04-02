@@ -138,7 +138,6 @@ class ANSIParser(object):
         if use_xterm256:
             colval = 16 + (red * 36) + (green * 6) + blue
             return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)
-            #return "\033[%s8;5;%sm" % (3 + int(background), colval)
         else:
             # xterm256 not supported, convert the rgb value to ansi instead
             if red == green == blue and red < 3:
@@ -436,7 +435,7 @@ class ANSIParser(object):
         ]
 
     mxp_re = r'\{lc(.*?)\{lt(.*?)\{le|' \
-           + r'\|lc(.*?)\|lt(.*?)\|le'
+             r'\|lc(.*?)\|lt(.*?)\|le'
 
     # prepare regex matching
     brightbg_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ansi_bright_bgs]), re.DOTALL)
