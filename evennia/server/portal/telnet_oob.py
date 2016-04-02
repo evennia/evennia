@@ -61,6 +61,19 @@ msdp_regex_array = re.compile(r"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_
 msdp_regex_var = re.compile(r"%s" % MSDP_VAR)
 msdp_regex_val = re.compile(r"%s" % MSDP_VAL)
 
+EVENNIA_TO_MSDP = {"client_options": "OPTIONS",
+                   "get_inputfuncs": "LIST",
+                   "get_value": "SEND",
+                   "repeat": "REPEAT",
+                   "monitor": "REPORT"}
+
+EVENNIA_TO_GMCP = {"client_options": "Core.Supports.Get",
+                   "get_inputfuncs": "Core.Commands.Get",
+                   "get_value": "Char.Value.Get",
+                   "repeat": "Char.Repeat.Update",
+                   "monitor": "Char.Monitor.Update"}
+
+
 # MSDP output templates
 
 # cmdname
@@ -374,6 +387,14 @@ class TelnetOOB(object):
                     args = list(structure)
             else:
                 args = (structure,)
+            if cmdname.startswith("Custom.Cmd."):
+                # if Custom.Cmd.Cmdname, then use Cmdname
+                cmdname = cmdname[11:]
+            else:
+                # not a custom command - convert the input name to a
+                # Python form such that Core.Supports.Get ->
+                # gmcp_core_supports_get
+                cmdname = "gmcp_%s" % "_".join(part.lower() for part in cmdname.split("."))
             print "gmcp data in:", {cmdname: [args, kwargs]}
             self.protocol.data_in(**{cmdname: [args, kwargs]})
 
@@ -389,10 +410,21 @@ class TelnetOOB(object):
 
         """
         if self.MSDP:
-            encoded_oob = self.encode_msdp(cmdname, *args, **kwargs)
+            if cmdname in EVENNIA_TO_MSDP:
+                msdp_cmdname = EVENNIA_TO_MSDP[cmdname]
+            else:
+                msdp_cmdname = "CUSTOM"
+                kwargs["cmdname"] = cmdname
+            encoded_oob = self.encode_msdp(msdp_cmdname, *args, **kwargs)
             print "sending MSDP:", encoded_oob
             self.protocol._write(IAC + SB + MSDP + encoded_oob + IAC + SE)
+
         if self.GMCP:
-            encoded_oob = self.encode_gmcp(cmdname, *args, **kwargs)
+            if cmdname in EVENNIA_TO_GMCP:
+                gmcp_cmdname = EVENNIA_TO_GMCP[cmdname]
+            else:
+                gmcp_cmdname = "Custom.Cmd"
+                kwargs["cmdname"] = cmdname
+            encoded_oob = self.encode_gmcp(gmcp_cmdname, *args, **kwargs)
             print "sending GMCP:", encoded_oob
             self.protocol._write(IAC + SB + GMCP + encoded_oob + IAC + SE)

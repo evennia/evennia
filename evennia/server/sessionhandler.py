@@ -621,6 +621,15 @@ class ServerSessionHandler(SessionHandler):
         self.server.amp_protocol.send_MsgServer2Portal(session,
                                                        **kwargs)
 
+    def get_inputfuncs(self):
+        """
+        Get all registered inputfuncs (access function)
+
+        Returns:
+            inputfuncs (dict): A dict of {key:inputfunc,...}
+        """
+        return _INPUT_FUNCS
+
     def data_in(self, session, **kwargs):
         """
         Data Portal -> Server.
