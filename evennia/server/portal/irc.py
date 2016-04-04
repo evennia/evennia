@@ -311,7 +311,7 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
 
         """
         if self.port:
-            if ssl:
+            if self.ssl:
                 try:
                     from twisted.internet import ssl
                     service = reactor.connectSSL(self.network, int(self.port), self, ssl.ClientContextFactory())
