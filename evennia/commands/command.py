@@ -200,7 +200,8 @@ class Command(with_metaclass(CommandMeta, object)):
         __eq__.
         """
         try:
-            return not cmd.key in self._matcheset
+            return self._matchset.isdisjoint(cmd._matchset)
+            #return not cmd.key in self._matcheset
         except AttributeError:
             return not cmd in self._matchset
 
