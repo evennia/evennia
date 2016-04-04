@@ -29,6 +29,7 @@ class EvenniaGameDirClient(object):
         self.report_host = 'http://evennia-game-directory.appspot.com'
         self.report_path = '/api/v1/game/check_in'
         self.report_url = self.report_host + self.report_path
+        self.logged_first_connect = False
 
         self._on_bad_request = on_bad_request
         # Oh, the humanity. Silence the factory start/stop messages.
@@ -43,8 +44,10 @@ class EvenniaGameDirClient(object):
         """
         status_code, response_body = yield self._form_and_send_request()
         if status_code == 200:
-            logger.log_infomsg(
-                "Successfully sent game details to Evennia Game Directory.")
+            if not self.logged_first_connect:
+                logger.log_infomsg(
+                    "Successfully sent game details to Evennia Game Directory.")
+                self.logged_first_connect = True
             return
         # At this point, either EGD is having issues or the payload we sent
         # is improperly formed (probably due to mis-configuration).
@@ -64,7 +67,7 @@ class EvenniaGameDirClient(object):
             'User-Agent': ['Evennia Game Directory Client'],
             'Content-Type': ['application/x-www-form-urlencoded'],
         }
-        gd_config = settings.GAMEDIR_CLIENT
+        gd_config = settings.GAME_DIRECTORY_LISTING
         values = {
             'game_name': settings.SERVERNAME,
             'game_status': gd_config['game_status'],

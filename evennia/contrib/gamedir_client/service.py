@@ -4,6 +4,8 @@ from twisted.internet.task import LoopingCall
 from evennia.contrib.gamedir_client.client import EvenniaGameDirClient
 from evennia.utils import logger
 
+# How often to sync to the server
+_CLIENT_UPDATE_RATE = 60 * 30
 
 class EvenniaGameDirService(Service):
     """
@@ -20,7 +22,7 @@ class EvenniaGameDirService(Service):
     def startService(self):
         super(EvenniaGameDirService, self).startService()
         # TODO: Check to make sure that the client is configured.
-        self.loop.start(10)
+        self.loop.start(_CLIENT_UPDATE_RATE)
 
     def stopService(self):
         if self.running == 0:
