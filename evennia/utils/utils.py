@@ -1204,9 +1204,9 @@ def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
         maxnum (int): Maximum number of suggestions to return.
 
     Returns:
-        suggestions (list): Suggestions from `vocabulary` that fall
-            under the `cutoff` setting. Could be empty if there are no
-            matches.
+        suggestions (list): Suggestions from `vocabulary` with a 
+            similarity-rating that higher than or equal to `cutoff`.
+            Could be empty if there are no matches.
 
     """
     return [tup[1] for tup in sorted([(string_similarity(string, sugg), sugg)
