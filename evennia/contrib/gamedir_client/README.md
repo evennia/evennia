@@ -116,15 +116,21 @@ or backwards-incompatible change.
 
 ### telnet_hostname
 
-Required: **Yes**
+Required: **Must specify this and telnet_port OR web_client_url**
 
 The hostname that players can telnet into to play your game.
 
 ### telnet_port
 
-Required: **Yes**
+Required: **Must specify this and telnet_hostname OR web_client_url**
 
 The port that the players can telnet into to play your game.
+
+### web_client_url
+
+Required: **Must specify this OR telnet_hostname + telnet_port**
+
+Full URL to your game's web-based client.
 
 ## What information is being reported?
 

@@ -76,6 +76,7 @@ class EvenniaGameDirClient(object):
             'evennia_version': get_evennia_version(),
             'telnet_hostname': gd_config['telnet_hostname'],
             'telnet_port': gd_config['telnet_port'],
+            'web_client_url': gd_config.get('web_client_url') or '',
             'connected_player_count': SESSIONS.player_count(),
             'total_player_count': PlayerDB.objects.num_total_players() or 0,
         }
