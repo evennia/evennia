@@ -9,7 +9,7 @@ from future.utils import viewkeys
 import re
 from twisted.application import internet
 from twisted.words.protocols import irc
-from twisted.internet import protocol, reactor, ssl
+from twisted.internet import protocol, reactor
 from evennia.server.session import Session
 from evennia.utils import logger, utils
 
@@ -320,9 +320,9 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
 
         """
         if self.port:
-            if ssl:
+            if self.ssl:
                 try:
-                    import OpenSSL
+                    from twisted.internet import ssl
                     service = reactor.connectSSL(self.network, int(self.port), self, ssl.ClientContextFactory())
                 except ImportError:
                     self.caller.msg("To use SSL, the PyOpenSSL module must be installed.")

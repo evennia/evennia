@@ -509,7 +509,14 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
 
         """
         cmd = self._instantiate(cmd)
-        self.commands = [oldcmd for oldcmd in self.commands if oldcmd != cmd]
+        if cmd.key.startswith("__"):
+            try:
+                ic = self.system_commands.index(cmd)
+                del self.system_commands[ic]
+            except ValueError:
+                pass
+        else:
+            self.commands = [oldcmd for oldcmd in self.commands if oldcmd != cmd]
 
     def get(self, cmd):
         """

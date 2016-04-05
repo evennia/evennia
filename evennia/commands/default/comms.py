@@ -441,7 +441,7 @@ class CmdCemit(MuxPlayerCommand):
             return
         message = self.rhs
         if "sendername" in self.switches:
-            message = "%s: %s" % (self.key, message)
+            message = "%s: %s" % (self.caller.key, message)
         channel.msg(message)
         if not "quiet" in self.switches:
             string = "Sent to channel %s: %s" % (channel.key, message)
