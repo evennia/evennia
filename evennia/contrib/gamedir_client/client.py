@@ -1,5 +1,7 @@
 import urllib
+import platform
 
+import django
 from django.conf import settings
 from twisted.internet import defer
 from twisted.internet import protocol
@@ -69,16 +71,26 @@ class EvenniaGameDirClient(object):
         }
         gd_config = settings.GAME_DIRECTORY_LISTING
         values = {
+            # Game listing stuff
             'game_name': settings.SERVERNAME,
             'game_status': gd_config['game_status'],
             'game_website': gd_config.get('game_website') or '',
             'listing_contact': gd_config['listing_contact'],
-            'evennia_version': get_evennia_version(),
-            'telnet_hostname': gd_config['telnet_hostname'],
-            'telnet_port': gd_config['telnet_port'],
+
+            # How to play
+            'telnet_hostname': gd_config.get('telnet_hostname') or '',
+            'telnet_port': gd_config.get('telnet_port') or '',
             'web_client_url': gd_config.get('web_client_url') or '',
+
+            # Game stats
             'connected_player_count': SESSIONS.player_count(),
             'total_player_count': PlayerDB.objects.num_total_players() or 0,
+
+            # System info
+            'evennia_version': get_evennia_version(),
+            'python_version': platform.python_version(),
+            'django_version': django.get_version(),
+            'server_platform': platform.platform(),
         }
         data = urllib.urlencode(values)
 
