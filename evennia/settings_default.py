@@ -23,6 +23,9 @@ import sys
 
 # This is the name of your game. Make it catchy!
 SERVERNAME = "Evennia"
+# Lockdown mode will cut off the game from any external connections
+# and only allow connections from localhost. Requires a cold reboot.
+LOCKDOWN_MODE = False
 # Activate telnet service
 TELNET_ENABLED = True
 # A list of ports the Evennia telnet server listens on Can be one or many.
@@ -204,6 +207,11 @@ MAX_CONNECTION_RATE = 2
 MAX_COMMAND_RATE = 80
 # The warning to echo back to users if they send commands too fast
 COMMAND_RATE_WARNING ="You entered commands too fast. Wait a moment and try again."
+# If this is true, errors and tracebacks from the engine will be
+# echoed as text in-game as well as to the log. This can speed up
+# debugging. Showing full tracebacks to regular users could be a
+# security problem - this should *not* be active in a production game!
+IN_GAME_ERRORS = False
 
 ######################################################################
 # Evennia Database config
