@@ -71,7 +71,7 @@ class EvenniaGameDirClient(object):
         values = {
             'game_name': settings.SERVERNAME,
             'game_status': gd_config['game_status'],
-            'game_website': gd_config.get('game_website'),
+            'game_website': gd_config.get('game_website') or '',
             'listing_contact': gd_config['listing_contact'],
             'evennia_version': get_evennia_version(),
             'telnet_hostname': gd_config['telnet_hostname'],
