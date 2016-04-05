@@ -30,6 +30,7 @@ from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
 from evennia.server.webserver import EvenniaReverseProxyResource
 
 PORTAL_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)]
+LOCKDOWN_MODE = settings.LOCKDOWN_MODE
 
 if os.name == 'nt':
     # For Windows we need to handle pid files manually.
@@ -51,11 +52,11 @@ SSH_PORTS = settings.SSH_PORTS
 WEBSERVER_PORTS = settings.WEBSERVER_PORTS
 WEBSOCKET_CLIENT_PORT = settings.WEBSOCKET_CLIENT_PORT
 
-TELNET_INTERFACES = settings.TELNET_INTERFACES
-SSL_INTERFACES = settings.SSL_INTERFACES
-SSH_INTERFACES = settings.SSH_INTERFACES
-WEBSERVER_INTERFACES = settings.WEBSERVER_INTERFACES
-WEBSOCKET_CLIENT_INTERFACE = settings.WEBSOCKET_CLIENT_INTERFACE
+TELNET_INTERFACES = ['127.0.0.1'] if LOCKDOWN_MODE else settings.TELNET_INTERFACES
+SSL_INTERFACES = ['127.0.0.1'] if LOCKDOWN_MODE else settings.SSL_INTERFACES
+SSH_INTERFACES = ['127.0.0.1'] if LOCKDOWN_MODE else settings.SSH_INTERFACES
+WEBSERVER_INTERFACES = ['127.0.0.1'] if LOCKDOWN_MODE else settings.WEBSERVER_INTERFACES
+WEBSOCKET_CLIENT_INTERFACE = '127.0.0.1' if LOCKDOWN_MODE else settings.WEBSOCKET_CLIENT_INTERFACE
 WEBSOCKET_CLIENT_URL = settings.WEBSOCKET_CLIENT_URL
 
 TELNET_ENABLED = settings.TELNET_ENABLED and TELNET_PORTS and TELNET_INTERFACES
@@ -193,6 +194,8 @@ PORTAL = Portal(application)
 
 print('-' * 50)
 print(' %(servername)s Portal (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION})
+if LOCKDOWN_MODE:
+    print('  LOCKDOWN_MODE active: Only local connections.')
 
 if AMP_ENABLED:
 
@@ -303,7 +306,7 @@ if WEBSERVER_ENABLED:
                 webclient = webclient_ajax.WebClient()
                 webclient.sessionhandler = PORTAL_SESSIONS
                 web_root.putChild("webclientdata", webclient)
-                webclientstr = "\n   + client (ajax only)"
+                webclientstr = "\n   + webclient (ajax only)"
 
                 if WEBSOCKET_CLIENT_ENABLED and not websocket_started:
                     # start websocket client port for the webclient
@@ -324,7 +327,7 @@ if WEBSERVER_ENABLED:
                     websocket_service.setName('EvenniaWebSocket%s' % pstring)
                     PORTAL.services.addService(websocket_service)
                     websocket_started = True
-                    webclientstr = webclientstr[:-11] + "(%s:%s)" % (WEBSOCKET_CLIENT_URL, port)
+                    webclientstr = "\n   + webclient%s" % pstring
 
             web_root = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
             proxy_service = internet.TCPServer(proxyport,
