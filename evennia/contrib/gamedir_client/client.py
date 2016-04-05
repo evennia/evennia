@@ -70,6 +70,8 @@ class EvenniaGameDirClient(object):
             'Content-Type': ['application/x-www-form-urlencoded'],
         }
         gd_config = settings.GAME_DIRECTORY_LISTING
+        # We are using `or` statements below with dict.get() to avoid sending
+        # stringified 'None' values to the server.
         values = {
             # Game listing stuff
             'game_name': settings.SERVERNAME,
