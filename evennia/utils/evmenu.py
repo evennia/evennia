@@ -201,7 +201,7 @@ class CmdEvMenuNode(Command):
             caller.msg(err)
             raise EvMenuError(err)
 
-        menu.parse_input(self.raw_string)
+        menu._input_parser(menu, self.raw_string, caller)
 
 
 class EvMenuCmdSet(CmdSet):
@@ -223,15 +223,25 @@ class EvMenuCmdSet(CmdSet):
         self.add(CmdEvMenuNode())
 
 
-def dedent_strip_nodetext_formatter(nodetext, has_options):
+# These are default node formatters
+def dedent_strip_nodetext_formatter(nodetext, has_options, caller=None):
+    """
+    Simple dedent formatter that also strips text
+    """
     return dedent(nodetext).strip()
 
 
-def dedent_nodetext_formatter(nodetext, has_options):
+def dedent_nodetext_formatter(nodetext, has_options, caller=None):
+    """
+    Just dedent text.
+    """
     return dedent(nodetext)
 
 
-def evtable_options_formatter(optionlist):
+def evtable_options_formatter(optionlist, caller=None):
+    """
+    Formats the option list display.
+    """
     if not optionlist:
         return ""
 
@@ -285,7 +295,10 @@ def evtable_options_formatter(optionlist):
     return unicode(EvTable(table=table, border="none"))
 
 
-def underline_node_formatter(nodetext, optionstext):
+def underline_node_formatter(nodetext, optionstext, caller=None):
+    """
+    Draws a node with underlines '_____' around it.
+    """
     nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
     options_width_max = max(m_len(line) for line in optionstext.split("\n"))
     total_width = max(options_width_max, nodetext_width_max)
@@ -294,9 +307,46 @@ def underline_node_formatter(nodetext, optionstext):
     return separator1 + nodetext + separator2 + optionstext
 
 
-def null_node_formatter(nodetext, optionstext):
+def null_node_formatter(nodetext, optionstext, caller=None):
+    """
+    A minimalistic node formatter, no lines or frames.
+    """
     return nodetext + "\n\n" + optionstext
 
+
+def evtable_parse_input(menuobject, raw_string, caller):
+    """
+    Processes the user' node inputs.
+
+    Args:
+        menuobject (EvMenu): The EvMenu instance
+        raw_string (str): The incoming raw_string from the menu
+            command.
+    """
+
+    cmd = raw_string.strip().lower()
+    allow_quit = menuobject.allow_quit
+
+    if cmd in menuobject.options:
+        # this will take precedence over the default commands
+        # below
+        goto, callback = menuobject.options[cmd]
+        menuobject.callback_goto(callback, goto, raw_string)
+    elif cmd in ("look", "l"):
+        menuobject.display_nodetext()
+    elif cmd in ("help", "h"):
+        menuobject.display_helptext()
+    elif allow_quit and cmd in ("quit", "q", "exit"):
+        menuobject.close_menu()
+    elif menuobject.default:
+        goto, callback = menuobject.default
+        menuobject.callback_goto(callback, goto, raw_string)
+    else:
+        caller.msg(_HELP_NO_OPTION_MATCH)
+
+    if not (menuobject.options or menuobject.default):
+        # no options - we are at the end of the menu.
+        menuobject.close_menu()
 
 #------------------------------------------------------------
 #
@@ -313,8 +363,10 @@ class EvMenu(object):
     def __init__(self, caller, menudata, startnode="start",
                  cmdset_mergetype="Replace", cmdset_priority=1,
                  allow_quit=True, cmd_on_quit="look",
-                 nodetext_formatter=None, options_formatter=None,
-                 node_formatter=None):
+                 nodetext_formatter=dedent_strip_nodetext_formatter,
+                 options_formatter=evtable_options_formatter,
+                 node_formatter=underline_node_formatter,
+                 input_parser=evtable_parse_input):
         """
         Initialize the menu tree and start the caller onto the first node.
 
@@ -352,12 +404,13 @@ class EvMenu(object):
                 EvMenu object. This is called after cleanup is complete.
                 Set to None to not call any command.
             nodetext_formatter (callable, optional): This callable should be on
-                the form `function(nodetext, has_options)`, where `nodetext` is the
+                the form `function(nodetext, has_options, caller=None)`, where `nodetext` is the
                 node text string and `has_options` a boolean specifying if there
                 are options associated with this node. It must return a formatted
-                string.
+                string. `caller` is optionally a reference to the user of the menu.
+                `caller` is optionally a reference to the user of the menu.
             options_formatter (callable, optional): This callable should be on
-                the form `function(optionlist)`, where ` optionlist is a list
+                the form `function(optionlist, caller=None)`, where ` optionlist is a list
                 of option dictionaries, like
                 [{"key":..., "desc",..., "goto": ..., "exec",...}, ...]
                 Each dictionary describes each possible option. Note that this
@@ -366,13 +419,22 @@ class EvMenu(object):
                 be formatted into an options list and returned as a string,
                 including the required separator to use between the node text
                 and the options. If not given the default EvMenu style will be used.
+                `caller` is optionally a reference to the user of the menu.
             node_formatter (callable, optional): This callable should be on the
-                form `func(nodetext, optionstext)` where the arguments are strings
+                form `func(nodetext, optionstext, caller=None)` where the arguments are strings
                 representing the node text and options respectively (possibly prepared
                 by `nodetext_formatter`/`options_formatter` or by the default styles).
                 It should return a string representing the final look of the node. This
                 can e.g. be used to create line separators that take into account the
-                dynamic width of the parts.
+                dynamic width of the parts. `caller` is optionally a reference to the
+                user of the menu.
+            input_parser (callable, optional): This callable is responsible for parsing the
+                options dict from a node and has the form `func(menuobject, raw_string, caller)`,
+                where menuobject is the active `EvMenu` instance, `input_string` is the
+                incoming text from the caller and `caller` is the user of the menu.
+                It should use the helper method of the menuobject to goto new nodes, show
+                help texts etc. See the default `evtable_parse_input` function for help
+                with parsing.
 
         Raises:
             EvMenuError: If the start/end node is not found in menu tree.
@@ -382,20 +444,10 @@ class EvMenu(object):
         self._startnode = startnode
         self._menutree = self._parse_menudata(menudata)
 
-        if nodetext_formatter is not None:
-            self._nodetext_formatter = nodetext_formatter
-        else:
-            self._nodetext_formatter = dedent_strip_nodetext_formatter
-
-        if options_formatter is not None:
-            self._options_formatter = options_formatter
-        else:
-            self._options_formatter = evtable_options_formatter
-
-        if node_formatter is not None:
-            self._node_formatter = node_formatter
-        else:
-            self._node_formatter = underline_node_formatter
+        self._nodetext_formatter = nodetext_formatter
+        self._options_formatter = options_formatter
+        self._node_formatter = node_formatter
+        self._input_parser = input_parser
 
         if startnode not in self._menutree:
             raise EvMenuError("Start node '%s' not in menu tree!" % startnode)
@@ -470,13 +522,13 @@ class EvMenu(object):
         """
 
         # handle the node text
-        nodetext = self._nodetext_formatter(nodetext, len(optionlist))
+        nodetext = self._nodetext_formatter(nodetext, len(optionlist), self._caller)
 
         # handle the options
-        optionstext = self._options_formatter(optionlist)
+        optionstext = self._options_formatter(optionlist, self._caller)
 
         # format the entire node
-        return self._node_formatter(nodetext, optionstext)
+        return self._node_formatter(nodetext, optionstext, self._caller)
 
 
     def _execute_node(self, nodename, raw_string):
@@ -516,55 +568,19 @@ class EvMenu(object):
         return nodetext, options
 
 
-    def _display_nodetext(self):
+    def display_nodetext(self):
         self._caller.msg(self.nodetext)
 
 
-    def _display_helptext(self):
+    def display_helptext(self):
         self._caller.msg(self.helptext)
 
 
-    def _callback_goto(self, callback, goto, raw_string):
+    def callback_goto(self, callback, goto, raw_string):
         if callback:
             self.callback(callback, raw_string)
         if goto:
             self.goto(goto, raw_string)
-
-
-    def parse_input(self, raw_string):
-        """
-        Processes the user' node inputs.
-
-        Args:
-            raw_string (str): The incoming raw_string from the menu
-                command.
-        """
-
-        caller = self._caller
-        cmd = raw_string.strip().lower()
-        allow_quit = self.allow_quit
-
-        if cmd in self.options:
-            # this will take precedence over the default commands
-            # below
-            goto, callback = self.options[cmd]
-            self._callback_goto(callback, goto, raw_string)
-        elif cmd in ("look", "l"):
-            self._display_nodetext()
-        elif cmd in ("help", "h"):
-            self._display_helptext()
-        elif allow_quit and cmd in ("quit", "q", "exit"):
-            self.close_menu()
-        elif self.default:
-            goto, callback = self.default
-            self._callback_goto(callback, goto, raw_string)
-        else:
-            caller.msg(_HELP_NO_OPTION_MATCH)
-
-        if not (self.options or self.default):
-            # no options - we are at the end of the menu.
-            self.close_menu()
-
 
     def callback(self, nodename, raw_string):
         """
@@ -660,7 +676,7 @@ class EvMenu(object):
         else:
             self.helptext = _HELP_NO_OPTIONS if self.allow_quit else _HELP_NO_OPTIONS_NO_QUIT
 
-        self._display_nodetext()
+        self.display_nodetext()
 
     def close_menu(self):
         """
