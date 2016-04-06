@@ -140,7 +140,7 @@ def _msg_err(receiver, stringtuple):
     string = "{traceback}\n{errmsg}\n(Traceback was logged {timestamp})."
     timestamp = logger.timeformat()
     tracestring = format_exc()
-    #logger.log_trace()
+    logger.log_trace()
     if _IN_GAME_ERRORS:
         receiver.msg(string.format(traceback=tracestring,
                                    errmsg=stringtuple[0].strip(),
