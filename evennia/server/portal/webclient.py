@@ -32,7 +32,6 @@ import json
 from twisted.internet.protocol import Protocol
 from django.conf import settings
 from evennia.server.session import Session
-from evennia.utils.logger import log_trace
 from evennia.utils.utils import to_str
 from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
@@ -124,6 +123,7 @@ class WebSocketClient(Protocol, Session):
         if "websocket_close" in kwargs:
             self.disconnect()
             return
+        print "websocket in:", kwargs
         self.sessionhandler.data_in(self, **kwargs)
 
     def data_out(self, **kwargs):
