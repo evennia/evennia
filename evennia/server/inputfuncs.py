@@ -277,7 +277,10 @@ def repeat(session, *args, **kwargs):
         if kwargs.get("stop", False):
             TICKER_HANDLER.remove(interval, _repeatable[name], idstring=session.sessid, persistent=False)
         else:
-            TICKER_HANDLER.add(interval, _repeatable[name], idstring=session.sessid, persistent=False)
+            TICKER_HANDLER.add(interval, _repeatable[name], idstring=session.sessid, persistent=False, session=session)
+    else:
+        session.msg("Allowed repeating functions are: %s" % (", ".join(_repeatable)))
+
 
 
 def unrepeat(session, *args, **kwargs):
@@ -337,7 +340,7 @@ def unmonitor(session, *args, **kwargs):
 # aliases for GMCP
 gmcp_core_hello = client_options             # Core.Hello
 gmcp_core_supports_set = client_options      # Core.Supports.Set
-gmcp_core_supports_get = get_client_options  # Core.Supports.Get
+gmcp_core_supports_get = get_client_options  # Evennia.Core.Supports.Get
 gmcp_core_commands_get = get_inputfuncs      # Core.Commands.Get
 gmcp_char_login = login                      # Char.Login
 gmcp_char_value_get = get_value              # Char.Value.Get
