@@ -206,6 +206,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
     def _write(self, data):
         "hook overloading the one used in plain telnet"
+        print "Activated GMCP"
         data = data.replace('\n', '\r\n').replace('\r\r\n', '\r\n')
         #data = data.replace('\n', '\r\n')
         super(TelnetProtocol, self)._write(mccp_compress(self, data))
@@ -312,7 +313,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         mxp = options.get("mxp", flags.get("MXP", False))
         screenreader =  options.get("screenreader", flags.get("SCREENREADER", False))
 
-        print "screenreader:", screenreader, options, flags
         if screenreader:
             # screenreader mode cleans up output
             text = ansi.parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)

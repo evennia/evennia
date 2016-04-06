@@ -61,26 +61,11 @@ msdp_regex_array = re.compile(r"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_
 msdp_regex_var = re.compile(r"%s" % MSDP_VAR)
 msdp_regex_val = re.compile(r"%s" % MSDP_VAL)
 
-EVENNIA_TO_MSDP = {"client_options": "OPTIONS",
-                   "get_inputfuncs": "LIST",
-                   "get_value": "SEND",
-                   "repeat": "REPEAT",
-                   "monitor": "REPORT"}
-
 EVENNIA_TO_GMCP = {"client_options": "Core.Supports.Get",
                    "get_inputfuncs": "Core.Commands.Get",
                    "get_value": "Char.Value.Get",
                    "repeat": "Char.Repeat.Update",
                    "monitor": "Char.Monitor.Update"}
-
-
-# MSDP output templates
-
-# cmdname
-MSDP_STRING_A = "{msdp_var}{{cmdname}}{msdp_val}''".format(
-                    msdp_var=MSDP_VAR, msdp_val=MSDP_VAL)
-# cmdname arg
-
 
 # Msdp object handler
 
@@ -192,6 +177,8 @@ class TelnetOOB(object):
         if not (args or kwargs):
             return msdp_cmdname
 
+        print "encode_msdp in:", cmdname, args, kwargs
+
         msdp_args = ''
         if args:
             msdp_args = msdp_cmdname
@@ -273,7 +260,7 @@ class TelnetOOB(object):
             Clients should always send MSDP data on
             one of the following forms:
 
-            cmdname             -> [cmdname, [], {}]
+            cmdname ''          -> [cmdname, [], {}]
             cmdname val         -> [cmdname, [val], {}]
             cmdname array       -> [cmdname, [array], {}]
             cmdname table       -> [cmdname, [], {table}]
@@ -289,6 +276,8 @@ class TelnetOOB(object):
         if hasattr(data, "__iter__"):
             data = "".join(data)
 
+        print "decode_msdp in:", data
+
         tables = {}
         arrays = {}
         variables = {}
@@ -298,7 +287,8 @@ class TelnetOOB(object):
             tables[key] = {} if not key in tables else tables[key]
             for varval in msdp_regex_var.split(table)[1:]:
                 var, val = msdp_regex_val.split(varval, 1)
-                tables[key][var] = val
+                if var:
+                    tables[key][var] = val
 
         # decode arrays from all that was not a table
         data_no_tables = msdp_regex_table.sub("", data)
@@ -341,6 +331,7 @@ class TelnetOOB(object):
         for key, var in variables.iteritems():
             cmds[key] = [[var], {}]
 
+        print "msdp data in:", cmds
         self.protocol.data_in(**cmds)
 
 
@@ -382,7 +373,7 @@ class TelnetOOB(object):
             args, kwargs = [], {}
             if hasattr(structure, "__iter__"):
                 if isinstance(structure, dict):
-                    kwargs = structure
+                    kwargs = {key: value for key, value in structure.iteritems() if key }
                 else:
                     args = list(structure)
             else:
@@ -409,12 +400,10 @@ class TelnetOOB(object):
             args, kwargs (any): Arguments to OOB command.
 
         """
+        kwargs.pop("options", None)
+
         if self.MSDP:
-            if cmdname in EVENNIA_TO_MSDP:
-                msdp_cmdname = EVENNIA_TO_MSDP[cmdname]
-            else:
-                msdp_cmdname = "CUSTOM"
-                kwargs["cmdname"] = cmdname
+            msdp_cmdname = cmdname
             encoded_oob = self.encode_msdp(msdp_cmdname, *args, **kwargs)
             print "sending MSDP:", encoded_oob
             self.protocol._write(IAC + SB + MSDP + encoded_oob + IAC + SE)

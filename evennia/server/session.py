@@ -80,7 +80,9 @@ class Session(object):
         self.cmd_last = self.conn_time
         self.cmd_total = 0
 
-        self.protocol_flags = {"ENCODING": "utf-8", "SCREENREADER":False}
+        self.protocol_flags = {"ENCODING": "utf-8",
+                               "SCREENREADER":False,
+                               "INPUTDEBUG": False}
         self.server_data = {}
 
         # map of input data to session methods

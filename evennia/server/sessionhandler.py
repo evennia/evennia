@@ -645,14 +645,18 @@ class ServerSessionHandler(SessionHandler):
 
         # distribute incoming data to the correct receiving methods.
         if session:
+            input_debug = session.protocol_flags.get("INPUTDEBUG", False)
             for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
                 cname = cmdname.strip().lower()
                 try:
+                    cmdkwargs.pop("options", None)
                     if cname in _INPUT_FUNCS:
                         _INPUT_FUNCS[cname](session, *cmdargs, **cmdkwargs)
                     else:
                         _INPUT_FUNCS["default"](session, cname, *cmdargs, **cmdkwargs)
-                except Exception:
+                except Exception, err:
+                    if input_debug:
+                        session.msg(err)
                     log_trace()
 
 SESSION_HANDLER = ServerSessionHandler()
