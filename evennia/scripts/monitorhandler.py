@@ -118,7 +118,7 @@ class MonitorHandler(object):
 
         """
         if not fieldname.startswith("db_") or not hasattr(obj, fieldname):
-            # an Attribute - we track it's db_value field
+            # an Attribute - we track its db_value field
             obj = obj.attributes.get(fieldname, return_obj=True)
             if not obj:
                 return
