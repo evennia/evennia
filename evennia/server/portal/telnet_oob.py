@@ -363,8 +363,7 @@ class TelnetOOB(object):
             try:
                 cmdname, structure = data.split(None, 1)
             except ValueError:
-                self.protocol.data_in(**{data: [[],{}]})
-                return
+                cmdname, structure = data, ""
             cmdname = cmdname.replace(".", "_")
             try:
                 structure = json.loads(structure)
