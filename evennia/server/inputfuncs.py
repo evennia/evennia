@@ -335,23 +335,3 @@ def unmonitor(session, *args, **kwargs):
     """
     kwargs["stop"] = True
     monitor(session, *args, **kwargs)
-
-
-# aliases for GMCP
-gmcp_core_hello = client_options             # Core.Hello
-gmcp_core_supports_set = client_options      # Core.Supports.Set
-gmcp_core_supports_get = get_client_options  # Evennia.Core.Supports.Get
-gmcp_core_commands_get = get_inputfuncs      # Core.Commands.Get
-gmcp_char_login = login                      # Char.Login
-gmcp_char_value_get = get_value              # Char.Value.Get
-gmcp_char_repeat_on = repeat                 # Char.Repeat.On
-gmcp_char_repeat_off = unrepeat              # Char.Repeat.Off
-gmcp_char_monitor_on = monitor               # Char.Monitor.On
-gmcp_char_monitor_off = unmonitor            # Char.Monitor.Off
-
-# aliases for MSDP
-#SEND = get_value                   # SEND
-#REPEAT = repeat                    # REPEAT
-#UNREPEAT = unrepeat                # UNREPEAT
-#MONITOR = monitor                  # REPORT
-#LIST = get_inputfuncs              # LIST

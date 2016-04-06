@@ -348,11 +348,11 @@ class TelnetOOB(object):
 
             The following is parsed into Evennia's formal structure:
 
-            Module.Name                         -> [Module_Name, [], {}]
-            Module.Name string                  -> [Module_Name, [string], {}]
-            Module.Name [arg, arg,...]          -> [Module_Name, [args], {}]
-            Module.Name {key:arg, key:arg, ...} -> [Module_Name, [], {kwargs}]
-            Module.Name [[args], {kwargs}]      -> [Module_Name, [args], {kwargs}]
+            Core.Name                         -> [name, [], {}]
+            Core.Name string                  -> [name, [string], {}]
+            Core.Name [arg, arg,...]          -> [name, [args], {}]
+            Core.Name {key:arg, key:arg, ...} -> [name, [], {kwargs}]
+            Core.Name [[args], {kwargs}]      -> [name, [args], {kwargs}]
 
         """
         if hasattr(data, "__iter__"):
@@ -377,16 +377,10 @@ class TelnetOOB(object):
                     args = list(structure)
             else:
                 args = (structure,)
-            if cmdname.startswith("Custom.Cmd."):
-                # if Custom.Cmd.Cmdname, then use Cmdname
-                cmdname = cmdname[11:]
-            else:
-                # not a custom command - convert the input name to a
-                # Python form such that Core.Supports.Get ->
-                # gmcp_core_supports_get
-                cmdname = "gmcp_%s" % "_".join(part.lower() for part in cmdname.split("."))
-            print "gmcp data in:", {cmdname: [args, kwargs]}
-            self.protocol.data_in(**{cmdname: [args, kwargs]})
+            if cmdname.lower().startswith("core_"):
+                # if Core.cmdname, then use cmdname
+                cmdname = cmdname[5:]
+            self.protocol.data_in(**{cmdname.lower(): [args, kwargs]})
 
     # access methods
 
