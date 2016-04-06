@@ -57,10 +57,20 @@ var input_history = function() {
 // Grab text from inputline and send to Evennia
 function doSendText() {
     inputfield = $("#inputfield");
-    outtext = inputfield.val();
-    input_history.add(outtext);
-    inputfield.val("");
-    Evennia.msg("text", [outtext], {});
+    var outtext = inputfield.val();
+    if (outtext.length > 7 && outtext.substr(0, 7) == "##send ") {
+        // send a specific oob instruction
+        outtext = outtext.slice(7);
+        var arr = outtext.split(' ');
+        var cmdname = arr.shift();
+        var kwargs = arr.join(' ');
+        log(cmdname, kwargs);
+        Evennia.msg(cmdname, [], JSON.parse(kwargs));
+    } else {
+        input_history.add(outtext);
+        inputfield.val("");
+        Evennia.msg("text", [outtext], {});
+    }
 }
 
 // catch all keyboard input, handle special chars

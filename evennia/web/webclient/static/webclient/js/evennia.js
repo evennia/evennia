@@ -14,8 +14,8 @@ All messages is a valid JSON array on single form:
 
     ["cmdname", args, kwargs],
 
-where kwargs is a JSON object that will be used as argument to call
-the cmdname function.
+where args is an JSON array and kwargs is a JSON object that will be
+used as argument to call the cmdname function.
 
 This library makes the "Evennia" object available. It has the
 following official functions:
