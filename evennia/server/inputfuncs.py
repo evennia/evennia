@@ -191,7 +191,8 @@ def get_inputfuncs(session, *args, **kwargs):
     it from this module alone since multiple modules could be added.
     So we get it from the sessionhandler.
     """
-    inputfuncsdict = dict((key, func.__doc__) for key, func in session.sessionhandler.get_inputfuncs().iterkeys())
+    inputfuncsdict = dict((key, func.__doc__) for key, func
+                          in session.sessionhandler.get_inputfuncs().iteritems())
     session.msg(get_inputfuncs=inputfuncsdict)
 
 
