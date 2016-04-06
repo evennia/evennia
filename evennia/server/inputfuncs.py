@@ -23,7 +23,7 @@ from future.utils import viewkeys
 from django.conf import settings
 from evennia.commands.cmdhandler import cmdhandler
 from evennia.utils.logger import log_err
-from evennia.utils.utils import to_str
+from evennia.utils.utils import to_str, to_unicode
 
 
 _IDLE_COMMAND = settings.IDLE_COMMAND
@@ -32,7 +32,6 @@ _SA = object.__setattr__
 _NA = lambda o: "N/A"
 
 _ERROR_INPUT = "Inputfunc {name}({session}): Wrong/unrecognized input: {inp}"
-
 
 # All global functions are inputfuncs available to process inputs
 
@@ -123,11 +122,25 @@ def client_options(session, *args, **kwargs):
         # return current settings
         options = dict((key, flags[key]) for key in flags
                 if key.upper() in ("ANSI", "XTERM256", "MXP",
-                           "UTF-8", "SCREENREADER",
+                           "UTF-8", "SCREENREADER", "ENCODING",
                            "MCCP", "SCREENHEIGHT",
                            "SCREENWIDTH", "INPUTDEBUG"))
         session.msg(client_options=options)
         return
+
+    def validate_encoding(val):
+        # helper: change encoding
+        try:
+            to_str(to_unicode("test-string"), encoding=val)
+        except LookupError:
+            raise RuntimeError("The encoding '|w%s|n' is invalid. " % val)
+        return val
+
+    def validate_size(val):
+        return {0: int(val)}
+
+    def validate_bool(val):
+        return True if val.lower() in ("true", "on", "1") else False
 
     for key, value in kwargs.iteritems():
         key = key.lower()
@@ -136,24 +149,26 @@ def client_options(session, *args, **kwargs):
         elif key == "version":
             if "CLIENTNAME" in flags:
                 flags["CLIENTNAME"] = "%s %s" % (flags["CLIENTNAME"], to_str(value))
+        elif key == "ENCODING":
+            flags["ENCODING"] = validate_encoding(value)
         elif key == "ansi":
-            flags["ANSI"] = bool(value)
+            flags["ANSI"] = validate_bool(value)
         elif key == "xterm256":
-            flags["XTERM256"] = bool(value)
+            flags["XTERM256"] = validate_bool(value)
         elif key == "mxp":
-            flags["MXP"] = bool(value)
+            flags["MXP"] = validate_bool(value)
         elif key == "utf-8":
-            flags["UTF-8"] = bool(value)
+            flags["UTF-8"] = validate_bool(value)
         elif key == "screenreader":
-            flags["SCREENREADER"] = bool(value)
+            flags["SCREENREADER"] = validate_bool(value)
         elif key == "mccp":
-            flags["MCCP"] = bool(value)
+            flags["MCCP"] = validate_bool(value)
         elif key == "screenheight":
-            flags["SCREENHEIGHT"] = int(value)
+            flags["SCREENHEIGHT"] = validate_size(value)
         elif key == "screenwidth":
-            flags["SCREENWIDTH"] = int(value)
+            flags["SCREENWIDTH"] = validate_size(value)
         elif key == "inputdebug":
-            flags["INPUTDEBUG"] = bool(value)
+            flags["INPUTDEBUG"] = validate_bool(value)
         elif not key == "options":
             err = _ERROR_INPUT.format(
                     name="client_settings", session=session, inp=key)
