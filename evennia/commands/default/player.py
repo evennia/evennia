@@ -458,7 +458,8 @@ class CmdOption(MuxPlayerCommand):
                       "SCREENREADER": validate_bool,
                       "TERM": utils.to_str,
                       "UTF-8": validate_bool,
-                      "XTERM256": validate_bool}
+                      "XTERM256": validate_bool,
+                      "INPUTDEBUG": validate_bool}
 
         name = self.lhs.upper()
         val = self.rhs.strip()

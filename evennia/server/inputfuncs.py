@@ -77,9 +77,7 @@ def echo(session, *args, **kwargs):
     """
     Echo test function
     """
-    print "Inputfunc echo:", session, args, kwargs
-    session.data_out(text="Echo returns: ")
-    session.data_out(echo=(args, kwargs))
+    session.data_out(text="Echo returns: %s" % args)
 
 
 def default(session, cmdname, *args, **kwargs):
@@ -90,8 +88,13 @@ def default(session, cmdname, *args, **kwargs):
     """
     err = "Session {sessid}: Input command not recognized:\n" \
             " name: '{cmdname}'\n" \
-            " args, kwargs: {args}, {kwargs}"
-    log_err(err.format(sessid=session.sessid, cmdname=cmdname, args=args, kwargs=kwargs))
+            " args, kwargs: {args}, {kwargs}".format(sessid=session.sessid,
+                                                     cmdname=cmdname,
+                                                     args=args,
+                                                     kwargs=kwargs)
+    if session.protocol_flags.get("INPUTDEBUG", False):
+        session.msg(err)
+    log_err(err)
 
 
 def client_options(session, *args, **kwargs):
@@ -112,16 +115,17 @@ def client_options(session, *args, **kwargs):
         mccp (bool): MCCP compression on/off
         screenheight (int): Screen height in lines
         screenwidth (int): Screen width in characters
+        inputdebug (bool): Debug input functions
 
     """
     flags = session.protocol_flags
-    if kwargs.get("get", False):
+    if not kwargs or kwargs.get("get", False):
         # return current settings
         options = dict((key, flags[key]) for key in flags
-                if key in ("ANSI", "XTERM256", "MXP",
+                if key.upper() in ("ANSI", "XTERM256", "MXP",
                            "UTF-8", "SCREENREADER",
                            "MCCP", "SCREENHEIGHT",
-                           "SCREENWIDTH"))
+                           "SCREENWIDTH", "INPUTDEBUG"))
         session.msg(client_options=options)
         return
 
@@ -148,6 +152,8 @@ def client_options(session, *args, **kwargs):
             flags["SCREENHEIGHT"] = int(value)
         elif key == "screenwidth":
             flags["SCREENWIDTH"] = int(value)
+        elif key == "inputdebug":
+            flags["INPUTDEBUG"] = bool(value)
         elif not key == "options":
             err = _ERROR_INPUT.format(
                     name="client_settings", session=session, inp=key)
@@ -192,6 +198,7 @@ def login(session, *args, **kwargs):
 
 _gettable = {
     "name": lambda obj: obj.key,
+    "key": lambda obj: obj.key,
     "location": lambda obj: obj.location.key if obj.location else "None",
     "servername": lambda obj: settings.SERVERNAME
 }
@@ -324,8 +331,8 @@ gmcp_char_monitor_on = monitor               # Char.Monitor.On
 gmcp_char_monitor_off = unmonitor            # Char.Monitor.Off
 
 # aliases for MSDP
-SEND = get_value                   # SEND
-REPEAT = repeat                    # REPEAT
-UNREPEAT = unrepeat                # UNREPEAT
-MONITOR = monitor                  # REPORT
-LIST = get_inputfuncs              # LIST
+#SEND = get_value                   # SEND
+#REPEAT = repeat                    # REPEAT
+#UNREPEAT = unrepeat                # UNREPEAT
+#MONITOR = monitor                  # REPORT
+#LIST = get_inputfuncs              # LIST
