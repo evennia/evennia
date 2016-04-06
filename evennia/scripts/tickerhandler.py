@@ -443,7 +443,7 @@ class TickerHandler(object):
         kwargs["_callback"] = callfunc # either method-name or callable
         self.ticker_pool.add(store_key, *args, **kwargs)
 
-    def remove(self, interval=60, callback=None, idstring=""):
+    def remove(self, interval=60, callback=None, idstring="", persistent=True):
         """
         Remove object from ticker or only remove it from tickers with
         a given interval.
@@ -456,7 +456,7 @@ class TickerHandler(object):
 
         """
         obj, path, callfunc = self._get_callback(callback)
-        store_key = self._store_key(obj, path, interval, callfunc, idstring)
+        store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
         to_remove = self.ticker_storage.pop(store_key, None)
         if to_remove:
             self.ticker_pool.remove(store_key)
