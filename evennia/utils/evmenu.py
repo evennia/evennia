@@ -322,8 +322,9 @@ def evtable_parse_input(menuobject, raw_string, caller):
         menuobject (EvMenu): The EvMenu instance
         raw_string (str): The incoming raw_string from the menu
             command.
+        caller (Object, Player or Session): The entity using
+            the menu.
     """
-
     cmd = raw_string.strip().lower()
     allow_quit = menuobject.allow_quit
 
@@ -440,7 +441,6 @@ class EvMenu(object):
             EvMenuError: If the start/end node is not found in menu tree.
 
         """
-        self._caller = caller
         self._startnode = startnode
         self._menutree = self._parse_menudata(menudata)
 
@@ -452,7 +452,9 @@ class EvMenu(object):
         if startnode not in self._menutree:
             raise EvMenuError("Start node '%s' not in menu tree!" % startnode)
 
-        # variables made available to the command
+        # public variables made available to the command
+
+        self.caller = caller
         self.allow_quit = allow_quit
         if isinstance(cmd_on_quit, str):
             self.cmd_on_quit = lambda caller, menu: caller.execute_cmd(cmd_on_quit)
