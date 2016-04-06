@@ -31,7 +31,8 @@ from django.contrib.contenttypes.models import ContentType
 from evennia.utils.utils import to_str, uses_database
 from evennia.utils import logger
 
-__all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle")
+__all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle",
+            "dbserialize", "dbunserialize")
 
 PICKLE_PROTOCOL = 2
 
@@ -57,7 +58,9 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _FROM_MODEL_MAP = None
 _TO_MODEL_MAP = None
+_SESSION_HANDLER = None
 _IS_PACKED_DBOBJ = lambda o: type(o) == tuple and len(o) == 4 and o[0] == '__packed_dbobj__'
+_IS_PACKED_SESSION = lambda o: type(o) == tuple and len(o) == 3 and o[0] == '__packed_session__'
 if uses_database("mysql") and _get_mysql_db_version() < '5.6.4':
     # mysql <5.6.4 don't support millisecond precision
     _DATESTRING = "%Y:%m:%d-%H:%M:%S:000000"
@@ -86,13 +89,15 @@ def _TO_DATESTRING(obj):
 
 def _init_globals():
     "Lazy importing to avoid circular import issues"
-    global _FROM_MODEL_MAP, _TO_MODEL_MAP
+    global _FROM_MODEL_MAP, _TO_MODEL_MAP, _SESSION_HANDLER
     if not _FROM_MODEL_MAP:
         _FROM_MODEL_MAP = defaultdict(str)
         _FROM_MODEL_MAP.update(dict((c.model, c.natural_key()) for c in ContentType.objects.all()))
     if not _TO_MODEL_MAP:
         _TO_MODEL_MAP = defaultdict(str)
         _TO_MODEL_MAP.update(dict((c.natural_key(), c.model_class()) for c in ContentType.objects.all()))
+    if not _SESSION_HANDLER:
+        from evennia.server.sessionhandler import SESSION_HANDLER as _SESSION_HANDLER
 
 #
 # SaverList, SaverDict, SaverSet - Attribute-specific helper classes and functions
@@ -273,6 +278,50 @@ def unpack_dbobj(item):
     # databases may 're-use' the id)
     return _TO_DATESTRING(obj) == item[2] and obj or None
 
+
+def pack_session(item):
+    """
+    Handle the safe serializion of Sessions objects (these contain
+    hidden references to database objects (players, puppets) so they
+    can't be safely serialized).
+
+    Args:
+        item (packed_session): The fact that item is a packed Session
+            should be checked before this call.
+
+    Returns:
+        unpacked (any): Either the original input or converts the
+            internal store back to a Session. If the Session no longer
+            exists, None is returned.
+
+    """
+    _init_globals()
+    return item.conn_time and item.sessid and ('__packed_session__',
+                                              _GA(item, "sessid"),
+                                              _GA(item, "conn_time"))
+
+def unpack_session(item):
+    """
+    Check and convert internal representations back to Sessions.
+
+    Args:
+        item (packed_session): The fact that item is a packed session
+            should be checked before this call.
+
+    Returns:
+        unpacked (any): Either the original input or converts the
+            internal store back to a Session. If Session no longer
+            exists, None will be returned.
+    """
+    _init_globals()
+    session = _SESSION_HANDLER.get(item[1])
+    if session and session.conn_time == item[2]:
+        # we require connection times to be identical for the Session
+        # to be accepted as the same as the one stored (sessids gets
+        # reused all the time).
+        return session
+    return None
+
 #
 # Access methods
 #
@@ -311,6 +360,8 @@ def to_pickle(data):
                 return item.__class__([process_item(val) for val in item])
             except (AttributeError, TypeError):
                 return [process_item(val) for val in item]
+        elif hasattr(item, "sessid") and hasattr(item, "conn_time") and item.sessid in _SESSION_HANDLER:
+            return pack_session(item)
         return pack_dbobj(item)
     return process_item(data)
 
@@ -345,6 +396,8 @@ def from_pickle(data, db_obj=None):
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
             return unpack_dbobj(item)
+        elif _IS_PACKED_SESSION(item):
+            return unpack_session(item)
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
         elif dtype == dict:
