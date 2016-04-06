@@ -463,8 +463,11 @@ class CmdOption(MuxPlayerCommand):
 
         name = self.lhs.upper()
         val = self.rhs.strip()
+        do_sync = False
         if val and name in validators:
             do_sync = update(name,  val, validators[name])
+        else:
+            self.session.msg("|rNo option named '|w%s|r'." % name)
         if do_sync:
             self.session.sessionhandler.session_portal_sync(self.session)
 
