@@ -275,7 +275,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             senders (Object or list, optional): Senders of message to send.
 
         """
-        self.msg(message, senders=senders, header=header, persistent=False)
+        self.msg(message, senders=senders, header=header, keep_log=False)
 
 
     # hooks
