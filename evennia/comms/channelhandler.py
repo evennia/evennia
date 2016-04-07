@@ -32,15 +32,13 @@ from django.utils.translation import ugettext as _
 
 class ChannelCommand(command.Command):
     """
-    Channel
+    {channelkey} channel
 
     Usage:
-       <channel name or alias>  <message>
+       {lower_channelkey}  <message>
+       {lower_channelkey} history <num>[-<num>]
 
-    This is a channel. If you have subscribed to it, you can send to
-    it by entering its name or alias, followed by the text you want to
-    send.
-
+    {channeldesc}
     """
     # this flag is what identifies this cmd as a channel cmd
     # and branches off to the system send-to-channel command
@@ -179,6 +177,11 @@ class ChannelHandler(object):
                              obj=channel,
                              arg_regex=r"\s.*?",
                              is_channel=True)
+        # format the help entry
+        key = channel.key
+        cmd.__doc__ = cmd.__doc__.format(channelkey=key,
+                                         lower_channelkey=key.strip().lower(),
+                                         channeldesc=channel.db.desc.strip())
         self.cached_channel_cmds.append(cmd)
         self.cached_cmdsets = {}
 
