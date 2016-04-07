@@ -208,7 +208,7 @@ def log_file(msg, filename="game.log"):
         deferToThread(callback, filehandle, msg).addErrback(errback)
 
 
-def tail_log_file(filename, offset, nlines):
+def tail_log_file(filename, offset, nlines, callback=None):
     """
     Return the tail of the log file.
 
@@ -219,16 +219,19 @@ def tail_log_file(filename, offset, nlines):
             reading from. 0 means to start at the latest entry.
         nlines (int): How many lines to return, counting backwards
             from the offset. If file is shorter, will get all lines.
+        callback (callable, optional): A function to manage the result of the
+            asynchronous file access. This will get a list of lines. If unset,
+            the tail will happen synchronously.
 
     Returns:
-        lines (list): The nline entries from the end of the file, or
+        lines (deferred or list): This will be a deferred if `callable` is given,
+            otherwise it will be a list with The nline entries from the end of the file, or
             all if the file is shorter than nlines.
 
     """
-    lines_found = []
-    filehandle = _open_log_file(filename)
-    if filehandle:
-        # step backwards in chunks and stop only when we have enough lines
+    def seek_file(filehandle, offset, nlines, callback):
+        "step backwards in chunks and stop only when we have enough lines"
+        lines_found = []
         buffer_size = 4098
         block_count = -1
         while len(lines_found) < (offset + nlines):
@@ -242,8 +245,23 @@ def tail_log_file(filename, offset, nlines):
                 break
             lines_found = filehandle.readlines()
             block_count -= 1
-    # return the right number of lines
-    return lines_found[-nlines-offset:-offset if offset else None]
+        # return the right number of lines
+        lines_found = lines_found[-nlines-offset:-offset if offset else None]
+        if callback:
+            callback(lines_found)
+        else:
+            return lines_found
+
+    def errback(failure):
+        "Catching errors to normal log"
+        log_trace()
+
+    filehandle = _open_log_file(filename)
+    if filehandle:
+        if callback:
+            deferToThread(seek_file, filehandle, offset, nlines, callback).addErrback(errback)
+        else:
+            return seek_file(filehandle, offset, nlines, callback)
 
 
 

@@ -100,8 +100,9 @@ class ChannelCommand(command.Command):
         if self.history_start is not None:
             # Try to view history
             log_file = channel.attributes.get("log_file", default="channel_%s.log" % channel.key)
-            self.msg("".join(line.split("[-]", 1)[1] if "[-]" in line else line
-                        for line in tail_log_file(log_file, self.history_start, 20)))
+            send_msg = lambda lines: self.msg("".join(line.split("[-]", 1)[1]
+                                                    if "[-]" in line else line for line in lines))
+            tail_log_file(log_file, self.history_start, 20, callback=send_msg)
         else:
             channel.msg(msg, senders=self.caller, online=True)
 
