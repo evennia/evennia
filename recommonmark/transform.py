@@ -67,6 +67,9 @@ class AutoStructify(transforms.Transform):
         suffix = abspath.rsplit('.', 1)
         if len(suffix) == 2 and suffix[1] in AutoStructify.suffix_set and (
                 os.path.exists(abspath) and abspath.startswith(self.root_dir)):
+            # replace the path separator if running on non-UNIX environment
+            if os.path.sep != '/':
+                relpath = relpath.replace(os.path.sep, '/')
             docpath = '/' + relpath.rsplit('.', 1)[0]
             # rewrite suffix to html, this is suboptimal
             uri = docpath + '.html'
