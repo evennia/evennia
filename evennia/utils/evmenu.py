@@ -469,13 +469,13 @@ class EvMenu(object):
 
 
         # store ourself on the object
-        self._caller.ndb._menutree = self
+        self.caller.ndb._menutree = self
 
         # set up the menu command on the caller
         menu_cmdset = EvMenuCmdSet()
         menu_cmdset.mergetype = str(cmdset_mergetype).lower().capitalize() or "Replace"
         menu_cmdset.priority = int(cmdset_priority)
-        self._caller.cmdset.add(menu_cmdset)
+        self.caller.cmdset.add(menu_cmdset)
         # start the menu
         self.goto(self._startnode, "")
 
@@ -524,13 +524,13 @@ class EvMenu(object):
         """
 
         # handle the node text
-        nodetext = self._nodetext_formatter(nodetext, len(optionlist), self._caller)
+        nodetext = self._nodetext_formatter(nodetext, len(optionlist), self.caller)
 
         # handle the options
-        optionstext = self._options_formatter(optionlist, self._caller)
+        optionstext = self._options_formatter(optionlist, self.caller)
 
         # format the entire node
-        return self._node_formatter(nodetext, optionstext, self._caller)
+        return self._node_formatter(nodetext, optionstext, self.caller)
 
 
     def _execute_node(self, nodename, raw_string):
@@ -551,31 +551,31 @@ class EvMenu(object):
         try:
             node = self._menutree[nodename]
         except KeyError:
-            self._caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename))
+            self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename))
             raise EvMenuError
         try:
             # the node should return data as (text, options)
             if len(getargspec(node).args) > 1:
                 # a node accepting raw_string
-                nodetext, options = node(self._caller, raw_string)
+                nodetext, options = node(self.caller, raw_string)
             else:
                 # a normal node, only accepting caller
-                nodetext, options = node(self._caller)
+                nodetext, options = node(self.caller)
         except KeyError:
-            self._caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename))
+            self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename))
             raise EvMenuError
         except Exception:
-            self._caller.msg(_ERR_GENERAL.format(nodename=nodename))
+            self.caller.msg(_ERR_GENERAL.format(nodename=nodename))
             raise
         return nodetext, options
 
 
     def display_nodetext(self):
-        self._caller.msg(self.nodetext)
+        self.caller.msg(self.nodetext)
 
 
     def display_helptext(self):
-        self._caller.msg(self.helptext)
+        self.caller.msg(self.helptext)
 
 
     def callback_goto(self, callback, goto, raw_string):
@@ -601,12 +601,12 @@ class EvMenu(object):
             try:
                 if len(getargspec(nodename).args) > 1:
                     # callable accepting raw_string
-                    nodename(self._caller, raw_string)
+                    nodename(self.caller, raw_string)
                 else:
                     # normal callable, only the caller as arg
-                    nodename(self._caller)
+                    nodename(self.caller)
             except Exception:
-                self._caller.msg(_ERR_GENERAL.format(nodename=nodename))
+                self.caller.msg(_ERR_GENERAL.format(nodename=nodename))
                 raise
         else:
             # nodename is a string; lookup as node
@@ -684,10 +684,10 @@ class EvMenu(object):
         """
         Shutdown menu; occurs when reaching the end node.
         """
-        self._caller.cmdset.remove(EvMenuCmdSet)
-        del self._caller.ndb._menutree
+        self.caller.cmdset.remove(EvMenuCmdSet)
+        del self.caller.ndb._menutree
         if self.cmd_on_quit is not None:
-            self.cmd_on_quit(self._caller, self)
+            self.cmd_on_quit(self.caller, self)
 
 
 # -------------------------------------------------------------------------------------------------
