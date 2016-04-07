@@ -4,7 +4,7 @@ Base typeclass for in-game Channels.
 """
 
 from evennia.typeclasses.models import TypeclassBase
-from evennia.comms.models import Msg, TempMsg, ChannelDB
+from evennia.comms.models import TempMsg, ChannelDB
 from evennia.comms.managers import ChannelManager
 from evennia.utils import logger
 from evennia.utils.utils import make_iter
