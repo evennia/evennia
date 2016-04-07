@@ -259,7 +259,7 @@ def tail_log_file(filename, offset, nlines, callback=None):
     filehandle = _open_log_file(filename)
     if filehandle:
         if callback:
-            deferToThread(seek_file, filehandle, offset, nlines, callback).addErrback(errback)
+            return deferToThread(seek_file, filehandle, offset, nlines, callback).addErrback(errback)
         else:
             return seek_file(filehandle, offset, nlines, callback)
 
