@@ -169,6 +169,10 @@ def client_options(session, *args, **kwargs):
             flags["SCREENWIDTH"] = validate_size(value)
         elif key == "inputdebug":
             flags["INPUTDEBUG"] = validate_bool(value)
+        elif key in ('Char 1', 'Char.Skills 1', 'Char.Items 1',
+                'Room 1', 'IRE.Rift 1', 'IRE.Composer 1'):
+            # ignore mudlet's default send (aimed at IRE games)
+            pass
         elif not key == "options":
             err = _ERROR_INPUT.format(
                     name="client_settings", session=session, inp=key)
@@ -176,6 +180,10 @@ def client_options(session, *args, **kwargs):
     session.protocol_flags = flags
     # we must update the portal as well
     session.sessionhandler.session_portal_sync(session)
+
+# GMCP alias
+hello = client_options
+supports_set = client_options
 
 
 def get_client_options(session, *args, **kwargs):
