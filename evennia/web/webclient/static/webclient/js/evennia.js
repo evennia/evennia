@@ -50,6 +50,7 @@ An "emitter" object must have a function
 */
 
 (function() {
+    "use strict"
     var cmdid = 0;
     var cmdmap = {};
 
@@ -237,7 +238,7 @@ An "emitter" object must have a function
 
     // AJAX/COMET Connector
     //
-    AjaxCometConnection = function() {
+    var AjaxCometConnection = function() {
         log("Trying ajax ...");
         var client_hash = '0';
 

@@ -12,6 +12,9 @@
  *
  */
 
+(function () {
+"use strict"
+
 //
 // GUI Elements
 //
@@ -25,12 +28,12 @@ var input_history = function() {
 
     history[0] = ''; // the very latest input is empty for new entry.
 
-    var back = function (scratchInput) {
+    var back = function () {
         // step backwards in history stack
         history_pos = Math.min(++history_pos, history.length - 1);
         return history[history.length - 1 - history_pos];
     };
-    var fwd = function (scratchInput) {
+    var fwd = function () {
         // step forwards in history stack
         history_pos = Math.max(--history_pos, 0);
         return history[history.length - 1 - history_pos];
@@ -74,7 +77,6 @@ var input_history = function() {
 // Grab text from inputline and send to Evennia
 function doSendText() {
     inputfield = $("#inputfield");
-    isInputDirty = false;
     var outtext = inputfield.val();
     if (outtext.length > 7 && outtext.substr(0, 7) == "##send ") {
         // send a specific oob instruction
@@ -178,7 +180,7 @@ function doWindowResize() {
 function onText(args, kwargs) {
     // append message to previous ones, then scroll so latest is at
     // the bottom.
-    mwin = $("#messagewindow");
+    var mwin = $("#messagewindow");
     mwin.append("<div class='msg out'>" + args[0] + "</div>");
     mwin.animate({
         scrollTop: document.getElementById("messagewindow").scrollHeight
@@ -249,3 +251,4 @@ $(document).ready(function() {
     );
 });
 
+})();
