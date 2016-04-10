@@ -76,7 +76,7 @@ var input_history = function() {
 
 // Grab text from inputline and send to Evennia
 function doSendText() {
-    inputfield = $("#inputfield");
+    var inputfield = $("#inputfield");
     var outtext = inputfield.val();
     if (outtext.length > 7 && outtext.substr(0, 7) == "##send ") {
         // send a specific oob instruction
@@ -97,7 +97,7 @@ function doSendText() {
 function onKeydown (event) {
     var code = event.which;
     var history_entry = null;
-    inputfield = $("#inputfield");
+    var inputfield = $("#inputfield");
     inputfield.focus();
 
     if (code === 13) { // Enter key sends text
@@ -136,7 +136,7 @@ var resizeInputField = function () {
     
     // Check to see if we should change the height of the input area
     return function () {
-        inputfield = $("#inputfield");
+        var inputfield = $("#inputfield");
         var scrollh = inputfield.prop("scrollHeight");
         var clienth = inputfield.prop("clientHeight");
         var newh = 0;
