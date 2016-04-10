@@ -56,14 +56,18 @@ JQuery available.
         {% endblock %}
     </div>
 
-    <noscript class="err">
+    <div id="noscript" class="err">
         <h3>Javascript Error: The Evennia MUD client requires that you
             have Javascript activated.</h3>
             <p>Turn off eventual script blockers and/or switch to a
             web browser supporting javascript. <p>
             This error could also be due to not being able to access
             the online jQuery javascript library.</p>
-    </noscript>
+        <!-- This is will only fire if javascript is actually active -->
+        <script language="javascript" type="text/javascript">
+            $('#noscript').remove();
+        </script>
+    </div>
 
     <!-- main client -->
     <div id=clientwrapper>
