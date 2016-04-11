@@ -156,10 +156,12 @@ class WebSocketClient(Protocol, Session):
             text = args[0]
             if text is None:
                 return
+        else:
+            return
         flags = self.protocol_flags
         text = to_str(text, force_string=True)
 
-        options = kwargs.get("options", {})
+        options = kwargs.pop("options", {})
         raw = options.get("raw", False)
         nomarkup = options.get("nomarkup", False)
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
@@ -174,6 +176,7 @@ class WebSocketClient(Protocol, Session):
             args[0] = text
         else:
             args[0] = parse_html(text, strip_ansi=nomarkup)
+        print "send_text:", cmd, args, kwargs
 
         # send to client on required form [cmdname, args, kwargs]
         self.sendLine(json.dumps([cmd, args, kwargs]))
