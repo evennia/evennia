@@ -136,13 +136,21 @@ class CmdCharCreate(MuxPlayerCommand):
                 len(player.db._playable_characters) >= charmax):
             self.msg("You may only create a maximum of %i characters." % charmax)
             return
-        # create the character
         from evennia.objects.models import ObjectDB
+        typeclass = settings.BASE_CHARACTER_TYPECLASS
 
+        if ObjectDB.objects.filter(db_typeclass_path=typeclass, db_key__iexact=key):
+            # check if this Character already exists. Note that we are only
+            # searching the base character typeclass here, not any child
+            # classes.
+            self.msg("{rA character named '{w%s{r' already exists.{n" % key)
+            return
+
+        # create the character
         start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
         default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-        typeclass = settings.BASE_CHARACTER_TYPECLASS
         permissions = settings.PERMISSION_PLAYER_DEFAULT
+
 
         new_character = create.create_object(typeclass, key=key,
                                              location=start_location,
