@@ -97,6 +97,8 @@ div {margin:0px;}
     position: absolute;
     overflow: auto;
     padding: 1em;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
     top: 0;
     left: 0;
@@ -123,6 +125,8 @@ div {margin:0px;}
 /* Input field */
 #inputfield, #inputsend, #inputsizer {
     display: block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
     height: 50px;
     background: #000;
@@ -132,20 +136,20 @@ div {margin:0px;}
     font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
 }
 
-#inputsizer {
-    margin-left: -9999px;
-    line-height: normal;
-}
-
-#inputfield {
+#inputfield, #inputsizer {
     float: left;
     width: 95%;
     border: 0;
     resize: none;
+    line-height: normal;
 }
 
 #inputfield:focus {
     outline: 0;
+}
+
+#inputsizer {
+    margin-left: -9999px;
 }
 
 /* Input 'send' button */
