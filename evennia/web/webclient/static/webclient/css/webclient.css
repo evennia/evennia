@@ -124,7 +124,7 @@ div {margin:0px;}
 #inputfield, #inputsend, #inputsizer {
     display: block;
     box-sizing: border-box;
-    min-height: 50px;
+    height: 50px;
     background: #000;
     color: #fff;
     padding: 0 .45em;
