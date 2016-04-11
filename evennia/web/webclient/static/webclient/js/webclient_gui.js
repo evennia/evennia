@@ -55,14 +55,14 @@ var input_history = function() {
         history_pos = 0;
         return history[history.length -1];
     }
-    
+
     var scratch = function (input) {
         // Put the input into the last history entry (which is normally empty)
         // without making the array larger as with add.
         // Allows for in-progress editing to be saved.
         history[history.length-1] = input;
     }
-    
+
     return {back: back,
             fwd: fwd,
             add: add,
@@ -103,8 +103,8 @@ function onKeydown (event) {
     if (code === 13) { // Enter key sends text
         doSendText();
         event.preventDefault();
-    } 
-    else if (inputfield[0].selectionStart == inputfield.val().length) { 
+    }
+    else if (inputfield[0].selectionStart == inputfield.val().length) {
         // Only process up/down arrow if cursor is at the end of the line.
         if (code === 38) { // Arrow up
             history_entry = input_history.back();
@@ -112,8 +112,8 @@ function onKeydown (event) {
         else if (code === 40) { // Arrow down
             history_entry = input_history.fwd();
         }
-    } 
-    
+    }
+
     if (history_entry !== null) {
         // Doing a history navigation; replace the text in the input.
         inputfield.val(history_entry);
@@ -133,7 +133,7 @@ var resizeInputField = function () {
     var min_height = 50;
     var max_height = 300;
     var prev_text_len = 0;
-    
+
     // Check to see if we should change the height of the input area
     return function () {
         var inputfield = $("#inputfield");
@@ -141,21 +141,21 @@ var resizeInputField = function () {
         var clienth = inputfield.prop("clientHeight");
         var newh = 0;
         var curr_text_len = inputfield.val().length;
-        
+
         if (scrollh > clienth && scrollh <= max_height) {
             // Need to make it bigger
             newh = scrollh;
-        } 
+        }
         else if (curr_text_len < prev_text_len) {
             // There is less text in the field; try to make it smaller
-            // To avoid repaints, we draw the text in an offscreen element and 
+            // To avoid repaints, we draw the text in an offscreen element and
             // determine its dimensions.
             var sizer = $('#inputsizer')
                 .css("width", inputfield.prop("clientWidth"))
                 .text(inputfield.val());
             newh = sizer.prop("scrollHeight");
         }
-        
+
         if (newh != 0) {
             newh = Math.min(newh, max_height);
             if (clienth != newh) {
@@ -173,7 +173,7 @@ function doWindowResize() {
     var message_scrollh = $("#messagewindow").prop("scrollHeight");
     $("#messagewindow")
         .css({"bottom": formh}) // leave space for the input form
-        .scrollTop(message_scrollh); // keep the output window scrolled to the bottom    
+        .scrollTop(message_scrollh); // keep the output window scrolled to the bottom
 }
 
 // Handle text coming from the server
@@ -190,11 +190,11 @@ function onText(args, kwargs) {
 // Handle prompt output from the server
 function onPrompt(args, kwargs) {
     // show prompt
-    $('prompt').replaceWith(
-           "<div id='prompt' class='msg out'>" + args[0] + "</div>");
+    $('#prompt').replaceWith(
+           "<div id='prompt'>" + args[0] + "</div>");
 }
 
-// Handle silencing events we don't do anything with.
+// Silences events we don't do anything with.
 function onSilence(cmdname, args, kwargs) {}
 
 // Handle unrecognized commands from server
@@ -224,6 +224,9 @@ $(document).keydown(onKeydown)
     .bind("paste", resizeInputField)
     .bind("cut", resizeInputField);
 
+// Pressing the send button
+$("#inputsend").bind("click", doSendText);
+
 // Event when client finishes loading
 $(document).ready(function() {
     // This is safe to call, it will always only
@@ -237,6 +240,8 @@ $(document).ready(function() {
     Evennia.emitter.on("connection_open", onSilence);
     Evennia.emitter.on("connection_close", onSilence);
 
+    // Handle pressing the send button
+    $("#inputsend").bind("click", doSendText);
     // Event when closing window (have to have Evennia initialized)
     $(window).bind("beforeunload", Evennia.connection.close);
 
