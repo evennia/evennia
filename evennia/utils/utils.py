@@ -1554,7 +1554,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         for num, result in enumerate(matches):
             error += "\n %i%s%s%s" % (
                 num + 1, _MULTIMATCH_SEPARATOR,
-                result.get_display_name(caller) if hasattr(result, "get_display_name") else result.key,
+                result.get_display_name(caller) if hasattr(result, "get_display_name") else query,
                 result.get_extra_info(caller))
         matches = None
     else:
