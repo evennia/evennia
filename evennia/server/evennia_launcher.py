@@ -502,10 +502,12 @@ def create_settings_file(init=True):
         # if not --init mode, settings file may already exist from before
         if os.path.exists(settings_path):
             inp = raw_input("server/conf/settings.py already exists. "
-                            "Sure you want to reset it? y/[N]> ")
+                            "Do you want to reset it? y/[N]> ")
             if not inp.lower() == 'y':
                 print ("Aborted.")
                 sys.exit()
+            else:
+                print ("Reset the settings file.")
 
         default_settings_path = os.path.join(EVENNIA_TEMPLATE, "server", "conf", "settings.py")
         shutil.copy(default_settings_path, settings_path)
@@ -1189,7 +1191,7 @@ def main():
     parser.add_argument(
         '--initsettings', action='store_true', dest="initsettings",
         default=False,
-        help="Creates a new, empty settings file gamedir/server/conf/settings.py.")
+        help="Creates a new, empty settings file as gamedir/server/conf/settings.py.")
     parser.add_argument(
         "option", nargs='?', default="noop",
         help="Operational mode: 'start', 'stop', 'restart' or 'menu'.")
