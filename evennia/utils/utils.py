@@ -301,7 +301,7 @@ def time_format(seconds, style=0):
         """
         days_str = hours_str = ''
         minutes_str = '0 minutes'
-        
+
         if days > 0:
             if days == 1:
                 days_str = '%i day, ' % days
@@ -1231,7 +1231,7 @@ def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
         maxnum (int): Maximum number of suggestions to return.
 
     Returns:
-        suggestions (list): Suggestions from `vocabulary` with a 
+        suggestions (list): Suggestions from `vocabulary` with a
             similarity-rating that higher than or equal to `cutoff`.
             Could be empty if there are no matches.
 
@@ -1549,15 +1549,13 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         error = kwargs.get("nofound_string") or _("Could not find '%s'." % query)
         matches = None
     elif len(matches) > 1:
-        error = kwargs.get("multimatch_string", None)
-        if not error:
-            error = _("More than one match for '%s'" \
-                     " (please narrow target):" % query)
-            for num, result in enumerate(matches):
-                error += "\n %i%s%s%s" % (
-                    num + 1, _MULTIMATCH_SEPARATOR,
-                    result.get_display_name(caller) if hasattr(result, "get_display_name") else result.key,
-                    result.get_extra_info(caller))
+        error = kwargs.get("multimatch_string",
+                _("More than one match for '%s' (please narrow target):" % query))
+        for num, result in enumerate(matches):
+            error += "\n %i%s%s%s" % (
+                num + 1, _MULTIMATCH_SEPARATOR,
+                result.get_display_name(caller) if hasattr(result, "get_display_name") else query,
+                result.get_extra_info(caller))
         matches = None
     else:
         # exactly one match

@@ -800,7 +800,9 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
         if target and not is_iter(target):
             # single target - just show it
-            return target.return_appearance()
+            return target.return_appearance(self)
+        elif not target:
+            return "|rNo such character.|n"
         else:
             # list of targets - make list to disconnect from db
             characters = list(target)
