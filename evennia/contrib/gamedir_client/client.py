@@ -77,6 +77,7 @@ class EvenniaGameDirClient(object):
             'game_name': settings.SERVERNAME,
             'game_status': gd_config['game_status'],
             'game_website': gd_config.get('game_website') or '',
+            'short_description': gd_config.get('short_description') or '',
             'long_description': gd_config.get('long_description') or '',
             'listing_contact': gd_config['listing_contact'],
 

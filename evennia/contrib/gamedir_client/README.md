@@ -107,6 +107,13 @@ Required: No
 
 The URL to your game's website, if you have one.
 
+### short_description
+
+Required: Yes
+
+A short (max of 255 characters) description of your game that will appear
+on the main game index page.
+
 ### long_description
 
 Required: No
