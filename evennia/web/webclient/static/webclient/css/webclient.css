@@ -165,6 +165,7 @@ div {margin:0px;}
 /* prompt area above input field */
 #prompt {
     margin-top: 10px;
+    padding: 0 .45em;
 }
 
 /* No javascript warning */

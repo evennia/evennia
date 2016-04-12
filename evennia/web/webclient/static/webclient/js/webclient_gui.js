@@ -190,8 +190,11 @@ function onText(args, kwargs) {
 // Handle prompt output from the server
 function onPrompt(args, kwargs) {
     // show prompt
-    $('prompt').replaceWith(
-           "<div id='prompt' class='msg out'>" + args[0] + "</div>");
+    
+    $('#prompt')
+        .addClass("msg out")
+        .html(args[0]);
+    doWindowResize();
 }
 
 // Handle silencing events we don't do anything with.
