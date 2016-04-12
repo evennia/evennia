@@ -169,5 +169,14 @@ the wild.
 
 ## Troubleshooting
 
-If you don't see your game appear on the listing, check your server logs. You
-should see some error messages.
+### My game doesn't appear on the listing!
+
+If you don't see your game appear on the listing after reloading your server, 
+check the server logs. You should see some error messages describing what
+went wrong.
+
+### I changed my game name and now there are two entries
+
+This is a side-effect of our current, naive implementation in our listing
+system. Your old entry will disappear within two hours. Alternatively,
+speak up on IRC and someone might be able to manually purge the old entry.
