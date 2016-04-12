@@ -107,6 +107,14 @@ Required: No
 
 The URL to your game's website, if you have one.
 
+### long_description
+
+Required: No
+
+A longer, full-length description or overview of the game. 
+[Markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
+and some of the very basic HTML tags are accepted here.
+
 ### listing_contact
 
 Required: **Yes**
