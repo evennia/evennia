@@ -2011,6 +2011,7 @@ class CmdExamine(ObjManipCommand):
         # we have given a specific target object
         for objdef in self.lhs_objattr:
 
+            obj = None
             obj_name = objdef['name']
             obj_attrs = objdef['attrs']
 

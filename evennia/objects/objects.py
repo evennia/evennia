@@ -1344,7 +1344,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         if not target.access(self, "view"):
-            return "Could not find '%s'." % target
+            try:
+                return "Could not view '%s'." % target.get_display_name(self)
+            except AttributeError:
+                return "Could not view '%s'." % target.key
         # the target's at_desc() method.
         target.at_desc(looker=self)
         return target.return_appearance(self)
