@@ -709,10 +709,18 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         if _MULTISESSION_MODE == 0:
             # in this mode we should have only one character available. We
             # try to auto-connect to our last conneted object, if any
-            self.puppet_object(session, self.db._last_puppet)
+            try:
+                self.puppet_object(session, self.db._last_puppet)
+            except RuntimeError:
+                self.msg("The Character does not exist.")
+                return
         elif _MULTISESSION_MODE == 1:
             # in this mode all sessions connect to the same puppet.
-            self.puppet_object(session, self.db._last_puppet)
+            try:
+                self.puppet_object(session, self.db._last_puppet)
+            except RuntimeError:
+                self.msg("The Character does not exist.")
+                return
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.
