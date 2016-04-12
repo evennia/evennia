@@ -414,7 +414,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if isinstance(searchdata, basestring):
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("me", "self",):
-                return self.player
+                return [self.player] if quiet else self.player
 
         results = self.player.__class__.objects.player_search(searchdata)
 
