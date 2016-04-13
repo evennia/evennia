@@ -81,9 +81,22 @@ Next, configure your game listing by opening up `server/conf/settings.py` and
 
     GAME_DIRECTORY_LISTING = {
         'game_status': 'pre-alpha',
+        # Optional, comment out or remove if N/A
+        'game_website': 'http://my-game.com',
+        'short_description': 'This is my game. It is fun. You should play it.',
+        # Optional but highly recommended. Markdown is supported.
+        'long_description': (
+            "Hello, there. You silly person.\n\n"
+            "This is the start of a new paragraph. Markdown is cool. Isn't this "
+            "[neat](http://evennia.com)? My game is best game. Woohoo!\n\n"
+            "Time to wrap this up. One final paragraph for the road."
+        ),
         'listing_contact': 'me@my-game.com',
+        # At minimum, specify this or the web_client_url options. Both is fine, too.
         'telnet_hostname': 'my-game.com',
         'telnet_port': 1234,
+        # At minimum, specify this or the telnet_* options. Both is fine, too.
+        'web_client_url': 'http://my-game.com/webclient',
     }
 
 The following section in this README.md will go over all possible values.
@@ -106,6 +119,21 @@ Describes the current state of your game.
 Required: No
 
 The URL to your game's website, if you have one.
+
+### short_description
+
+Required: Yes
+
+A short (max of 255 characters) description of your game that will appear
+on the main game index page.
+
+### long_description
+
+Required: No
+
+A longer, full-length description or overview of the game. 
+[Markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
+and some of the very basic HTML tags are accepted here.
 
 ### listing_contact
 
@@ -141,5 +169,14 @@ the wild.
 
 ## Troubleshooting
 
-If you don't see your game appear on the listing, check your server logs. You
-should see some error messages.
+### My game doesn't appear on the listing!
+
+If you don't see your game appear on the listing after reloading your server, 
+check the server logs. You should see some error messages describing what
+went wrong.
+
+### I changed my game name and now there are two entries
+
+This is a side-effect of our current, naive implementation in our listing
+system. Your old entry will disappear within two hours. Alternatively,
+speak up on IRC and someone might be able to manually purge the old entry.

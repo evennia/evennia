@@ -414,7 +414,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if isinstance(searchdata, basestring):
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("me", "self",):
-                return self.player
+                return [self.player] if quiet else self.player
 
         results = self.player.__class__.objects.player_search(searchdata)
 
@@ -1344,7 +1344,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         if not target.access(self, "view"):
-            return "Could not find '%s'." % target
+            try:
+                return "Could not view '%s'." % target.get_display_name(self)
+            except AttributeError:
+                return "Could not view '%s'." % target.key
         # the target's at_desc() method.
         target.at_desc(looker=self)
         return target.return_appearance(self)
