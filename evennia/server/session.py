@@ -123,7 +123,7 @@ class Session(object):
         on uid etc).
 
         """
-        pass
+        self.protocol_flags.update(self.player.attributs.get("_saved_protocol_flags"), {})
 
     # access hooks
 
