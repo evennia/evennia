@@ -446,7 +446,7 @@ class CmdOption(MuxPlayerCommand):
                     row.append("%s%s" % (saved, changed))
                 table.add_row(*row)
 
-            self.msg("|wClient settings (%s):|n\n%s|n" % (self.session.protocol_key, table))
+            self.msg("{wClient settings (%s):|n\n%s|n" % (self.session.protocol_key, table))
 
             return
 
