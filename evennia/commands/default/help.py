@@ -214,6 +214,7 @@ class CmdSetHelp(MuxCommand):
             old_entry = None
             category = lhslist[1] if nlist > 1 else "General"
             lockstring = ",".join(lhslist[2:]) if nlist > 2 else "view:all()"
+        category = category.lower()
 
         if 'append' in switches or "merge" in switches:
             # merge/append operations
