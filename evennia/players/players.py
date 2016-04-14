@@ -567,6 +567,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         lockstring = "attrread:perm(Admins);attredit:perm(Admins);" \
                      "attrcreate:perm(Admins)"
         self.attributes.add("_playable_characters", [], lockstring=lockstring)
+        self.attributes.add("_saved_protocol_flags", {}, lockstring=lockstring)
 
     def at_init(self):
         """
@@ -705,6 +706,11 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             auto-puppeting based on `MULTISESSION_MODE`.
 
         """
+        # if we have saved protocol flags on ourselves, load them here.
+        protocol_flags = self.attributes.get("_saved_protocol_flags", None)
+        if session and protocol_flags:
+            session.update_flags(**protocol_flags)
+
         self._send_to_connect_channel("{G%s connected{n" % self.key)
         if _MULTISESSION_MODE == 0:
             # in this mode we should have only one character available. We

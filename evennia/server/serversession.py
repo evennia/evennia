@@ -329,6 +329,24 @@ class ServerSession(Session):
             # Player-visible idle time, not used in idle timeout calcs.
             self.cmd_last_visible = self.cmd_last
 
+    def update_flags(self, **kwargs):
+        """
+        Update the protocol_flags and sync them with Portal.
+
+        Kwargs:
+            key, value - A key:value pair to set in the
+                protocol_flags dictionary.
+
+        Notes:
+            Since protocols can vary, no checking is done
+            as to the existene of the flag or not. The input
+            data should have been validated before this call.
+
+        """
+        if kwargs:
+            self.protocol_flags.update(kwargs)
+            self.sessionhandler.session_portal_sync(self)
+
 
     def data_out(self, **kwargs):
         """
