@@ -14,7 +14,7 @@ To start the menu, just import the EvMenu class from this module,
     EvMenu(caller, menu_module_path,
          startnode="node1",
          cmdset_mergetype="Replace", cmdset_priority=1,
-         allow_quit=True, cmd_on_quit="look")
+         auto_quit=True, cmd_on_exit="look")
 ```
 
 Where `caller` is the Object to use the menu on - it will get a new
@@ -195,6 +195,17 @@ class CmdEvMenuNode(Command):
         """
         caller = self.caller
         menu = caller.ndb._menutree or self.session.ndb._menutree
+        if not menu:
+            # check if there is a saved menu available
+            saved_options = caller.attributes.get("_menutree_saved")
+            if saved_options:
+                startnode = caller.attributes.get("_menutree_saved_startnode")
+                if startnode:
+                    saved_options[1]["startnode"] = startnode
+                # this will create a completely new menu call
+                EvMenu(caller, *saved_options[0], **saved_options[1])
+
+                return
 
         if not menu:
             err = "Menu object not found as %s.ndb._menutree!" % (caller)
@@ -326,18 +337,17 @@ def evtable_parse_input(menuobject, raw_string, caller):
             the menu.
     """
     cmd = raw_string.strip().lower()
-    allow_quit = menuobject.allow_quit
 
     if cmd in menuobject.options:
         # this will take precedence over the default commands
         # below
         goto, callback = menuobject.options[cmd]
         menuobject.callback_goto(callback, goto, raw_string)
-    elif cmd in ("look", "l"):
+    elif menuobject.auto_look and cmd in ("look", "l"):
         menuobject.display_nodetext()
-    elif cmd in ("help", "h"):
+    elif menuobject.auto_help and cmd in ("help", "h"):
         menuobject.display_helptext()
-    elif allow_quit and cmd in ("quit", "q", "exit"):
+    elif menuobject.auto_quit and cmd in ("quit", "q", "exit"):
         menuobject.close_menu()
     elif menuobject.default:
         goto, callback = menuobject.default
@@ -363,7 +373,8 @@ class EvMenu(object):
     """
     def __init__(self, caller, menudata, startnode="start",
                  cmdset_mergetype="Replace", cmdset_priority=1,
-                 allow_quit=True, cmd_on_quit="look",
+                 auto_quit=True, auto_look=True, auto_help=True,
+                 cmd_on_exit="look", persistent=False,
                  nodetext_formatter=dedent_strip_nodetext_formatter,
                  options_formatter=evtable_options_formatter,
                  node_formatter=underline_node_formatter,
@@ -394,16 +405,28 @@ class EvMenu(object):
             cmdset_priority (int, optional): The merge priority for the
                 menu command set. The default (1) is usually enough for most
                 types of menus.
-            allow_quit (bool, optional): Allow user to use quit or
-                exit to leave the menu at any point. Recommended during
+            auto_quit (bool, optional): Allow user to use "q", "quit" or
+                "exit" to leave the menu at any point. Recommended during
                 development!
-            cmd_on_quit (callable, str or None, optional): When exiting the menu
+            auto_look (bool, optional): Automatically make "looK" or "l" to
+                re-show the last node. Turning this off means you have to handle
+                re-showing nodes yourself, but may be useful if you need to
+                use "l" for some other purpose.
+            auto_help (bool, optional): Automatically make "help" or "h" show
+                the current help entry for the node. If turned off, eventual
+                help must be handled manually, but it may be useful if you
+                need 'h' for some other purpose, for example.
+            cmd_on_exit (callable, str or None, optional): When exiting the menu
                 (either by reaching a node with no options or by using the
                 in-built quit command (activated with `allow_quit`), this
                 callback function or command string will be executed.
                 The callback function takes two parameters, the caller then the
                 EvMenu object. This is called after cleanup is complete.
                 Set to None to not call any command.
+            persistent (bool, optional): Make the Menu persistent (i.e. it will
+                survive a reload. This will make the Menu cmdset persistent. Use
+                with caution - if your menu is buggy you may end up in a state
+                you can't get out of!
             nodetext_formatter (callable, optional): This callable should be on
                 the form `function(nodetext, has_options, caller=None)`, where `nodetext` is the
                 node text string and `has_options` a boolean specifying if there
@@ -448,6 +471,7 @@ class EvMenu(object):
         self._options_formatter = options_formatter
         self._node_formatter = node_formatter
         self._input_parser = input_parser
+        self._persistent = persistent
 
         if startnode not in self._menutree:
             raise EvMenuError("Start node '%s' not in menu tree!" % startnode)
@@ -455,18 +479,19 @@ class EvMenu(object):
         # public variables made available to the command
 
         self.caller = caller
-        self.allow_quit = allow_quit
-        if isinstance(cmd_on_quit, str):
-            self.cmd_on_quit = lambda caller, menu: caller.execute_cmd(cmd_on_quit)
-        elif callable(cmd_on_quit):
-            self.cmd_on_quit = cmd_on_quit
+        self.auto_quit = auto_quit
+        self.auto_look = auto_look
+        self.auto_help = auto_help
+        if isinstance(cmd_on_exit, str):
+            self.cmd_on_exit = lambda caller, menu: caller.execute_cmd(cmd_on_exit)
+        elif callable(cmd_on_exit):
+            self.cmd_on_exit = cmd_on_exit
         else:
-            self.cmd_on_quit = None
+            self.cmd_on_exit = None
         self.default = None
         self.nodetext = None
         self.helptext = None
         self.options = None
-
 
         # store ourself on the object
         self.caller.ndb._menutree = self
@@ -475,7 +500,19 @@ class EvMenu(object):
         menu_cmdset = EvMenuCmdSet()
         menu_cmdset.mergetype = str(cmdset_mergetype).lower().capitalize() or "Replace"
         menu_cmdset.priority = int(cmdset_priority)
-        self.caller.cmdset.add(menu_cmdset)
+        self.caller.cmdset.add(menu_cmdset, permanent=persistent)
+        if persistent:
+            caller.attributes.add("_menutree_saved",
+                    ((menudata, ),
+                     {"startnode": startnode,
+                      "cmdset_mergetype": cmdset_mergetype,
+                      "cmdset_priority": cmdset_priority,
+                      "auto_quit": auto_quit, "auto_look": auto_look, "auto_help": auto_help,
+                      "cmd_on_exit": cmd_on_exit, "persistent": persistent,
+                      "nodetext_formatter": nodetext_formatter, "options_formatter": options_formatter,
+                      "node_formatter": node_formatter, "input_parser": input_parser}))
+            caller.attributes.add("_menutree_saved_startnode", startnode)
+
         # start the menu
         self.goto(self._startnode, "")
 
@@ -633,6 +670,9 @@ class EvMenu(object):
         except EvMenuError:
             return
 
+        if self._persistent:
+            self.caller.attributes.add("_menutree_saved_startnode", nodename)
+
         # validation of the node return values
         helptext = ""
         if hasattr(nodetext, "__iter__"):
@@ -674,20 +714,23 @@ class EvMenu(object):
         if helptext:
             self.helptext = helptext
         elif options:
-            self.helptext = _HELP_FULL if self.allow_quit else _HELP_NO_QUIT
+            self.helptext = _HELP_FULL if self.auto_quit else _HELP_NO_QUIT
         else:
-            self.helptext = _HELP_NO_OPTIONS if self.allow_quit else _HELP_NO_OPTIONS_NO_QUIT
+            self.helptext = _HELP_NO_OPTIONS if self.auto_quit else _HELP_NO_OPTIONS_NO_QUIT
 
         self.display_nodetext()
 
     def close_menu(self):
         """
-        Shutdown menu; occurs when reaching the end node.
+        Shutdown menu; occurs when reaching the end node or using the quit command.
         """
         self.caller.cmdset.remove(EvMenuCmdSet)
         del self.caller.ndb._menutree
-        if self.cmd_on_quit is not None:
-            self.cmd_on_quit(self.caller, self)
+        if self._persistent:
+            self.caller.attributes.remove("_menutree_saved")
+            self.caller.attributes.remove("_menutree_saved_startnode")
+        if self.cmd_on_exit is not None:
+            self.cmd_on_exit(self.caller, self)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -894,4 +937,4 @@ class CmdTestMenu(Command):
             self.caller.msg("Usage: testmenu menumodule")
             return
         # start menu
-        EvMenu(self.caller, self.args.strip(), startnode="test_start_node", cmdset_mergetype="Replace")
+        EvMenu(self.caller, self.args.strip(), startnode="test_start_node", persistent=True, cmdset_mergetype="Replace")
