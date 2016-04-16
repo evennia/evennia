@@ -206,7 +206,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
     def _write(self, data):
         "hook overloading the one used in plain telnet"
-        print "Activated GMCP"
         data = data.replace('\n', '\r\n').replace('\r\r\n', '\r\n')
         #data = data.replace('\n', '\r\n')
         super(TelnetProtocol, self)._write(mccp_compress(self, data))
@@ -246,8 +245,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             reason (str): Reason for disconnecting.
 
         """
-        if reason:
-            self.data_out(text=[[reason], {}])
+        self.data_out(connection_close=((reason or "",), {}))
         self.connectionLost(reason)
 
     def data_in(self, **kwargs):

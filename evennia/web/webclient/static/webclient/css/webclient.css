@@ -29,11 +29,6 @@ a:hover, a:active { color: #ccc }
 strong {font-weight:normal;}
 
 div {margin:0px;}
-/* Base style for new messages in the main message area */
-/*.msg {
-  white-space: pre-wrap; }
-  padding: .5em .9em;} */
-  /*border-bottom: 1px dotted #222 } /*optional line between messages */
 
 /* Utility messages (green) */
 .sys { color: #0f0 }
@@ -45,7 +40,7 @@ div {margin:0px;}
 .out { color: #aaa }
 
 /* Error messages (red) */
-.err { color: #f00 }
+.err { color: #f00; }
 
 /* Prompt base (white) */
 .prompt {color: #fff }
