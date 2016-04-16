@@ -26,7 +26,7 @@ from twisted.web import server, resource
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
 from django.conf import settings
-from evennia.utils import utils, logger
+from evennia.utils import utils
 from evennia.utils.text2html import parse_html
 from evennia.server import session
 
@@ -245,15 +245,14 @@ class WebClientSession(session.Session):
     This represents a session running in a webclient.
     """
 
-    def disconnect(self, reason=None):
+    def disconnect(self, reason="Server disconnected."):
         """
         Disconnect from server.
 
         Args:
             reason (str): Motivation for the disconnect.
         """
-        if reason:
-            self.client.lineSend(self.suid, ["text", [reason], {}])
+        self.client.lineSend(self.suid, ["connection_close", [reason], {}])
         self.client.client_disconnect(self.suid)
 
     def data_out(self, **kwargs):

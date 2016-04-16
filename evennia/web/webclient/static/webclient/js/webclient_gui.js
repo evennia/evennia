@@ -179,9 +179,10 @@ function doWindowResize() {
 // Handle text coming from the server
 function onText(args, kwargs) {
     // append message to previous ones, then scroll so latest is at
-    // the bottom.
+    // the bottom. Send 'cls' kwarg to modify the output class.
     var mwin = $("#messagewindow");
-    mwin.append("<div class='msg out'>" + args[0] + "</div>");
+    var cls = kwargs == null ? 'out' : kwargs['cls'];
+    mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
     mwin.animate({
         scrollTop: document.getElementById("messagewindow").scrollHeight
     }, 0);
@@ -191,7 +192,7 @@ function onText(args, kwargs) {
 function onPrompt(args, kwargs) {
     // show prompt
     $('#prompt')
-        .addClass("msg out")
+        .addClass("out")
         .html(args[0]);
     doWindowResize();
 }
@@ -199,9 +200,22 @@ function onPrompt(args, kwargs) {
 // Silences events we don't do anything with.
 function onSilence(cmdname, args, kwargs) {}
 
+// Handle the server connection closing
+function onConnectionClose(conn_name, evt) {
+    onText(["The connection was closed or lost."], {'cls': 'err'});
+}
+
+// Handle a connection error
+function onConnectionError(conn_name, evt) {
+    if (conn_name[0].lastIndexOf("AJAX/COMET", 0) === 0) {
+        // only display anything if the error is in AJAX/COMET
+        onText(["The connection was closed or lost."], {'cls': 'err'});
+    }
+}
+
 // Handle unrecognized commands from server
 function onDefault(cmdname, args, kwargs) {
-    mwin = $("#messagewindow");
+    var mwin = $("#messagewindow");
     mwin.append(
             "<div class='msg err'>"
             + "Error or Unhandled event:<br>"
@@ -240,7 +254,8 @@ $(document).ready(function() {
     Evennia.emitter.on("default", onDefault);
     // silence currently unused events
     Evennia.emitter.on("connection_open", onSilence);
-    Evennia.emitter.on("connection_close", onSilence);
+    Evennia.emitter.on("connection_close", onConnectionClose);
+    Evennia.emitter.on("connection_error", onConnectionError);
 
     // Handle pressing the send button
     $("#inputsend").bind("click", doSendText);
