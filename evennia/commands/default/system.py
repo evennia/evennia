@@ -662,10 +662,12 @@ class CmdServerLoad(MuxCommand):
 
         if "flushmem" in self.switches:
             # flush the cache
+            prev, _ = _IDMAPPER.cache_size()
             nflushed = _IDMAPPER.flush_cache()
-            string = "Flushed object idmapper cache. Python garbage " \
-                     "collector recovered memory from %i objects."
-            self.caller(string % nflushed)
+            now, _ = _IDMAPPER.cache_size()
+            string = "The Idmapper cache freed |w{idmapper}|n database objects.\n" \
+                     "The Python garbage collector freed |w{gc}|n Python instances total."
+            self.caller.msg(string.format(idmapper=(prev-now), gc=nflushed))
             return
 
         # display active processes
@@ -739,19 +741,15 @@ class CmdServerLoad(MuxCommand):
 
         string = "{wServer CPU and Memory load:{n\n%s" % loadtable
 
-        if not is_pypy:
-            # Cache size measurements are not available on PyPy
-            # because it lacks sys.getsizeof
+        # object cache count (note that sys.getsiseof is not called so this works for pypy too.
+        total_num, cachedict = _IDMAPPER.cache_size()
+        sorted_cache = sorted([(key, num) for key, num in cachedict.items() if num > 0],
+                                key=lambda tup: tup[1], reverse=True)
+        memtable = EvTable("entity name", "number", "idmapper %", align="l")
+        for tup in sorted_cache:
+            memtable.add_row(tup[0], "%i" % tup[1], "%.2f" % (float(tup[1]) / total_num * 100))
 
-            # object cache size
-            total_num, cachedict = _IDMAPPER.cache_size()
-            sorted_cache = sorted([(key, num) for key, num in cachedict.items() if num > 0],
-                                    key=lambda tup: tup[1], reverse=True)
-            memtable = EvTable("entity name", "number", "idmapper %", align="l")
-            for tup in sorted_cache:
-                memtable.add_row(tup[0], "%i" % tup[1], "%.2f" % (float(tup[1]) / total_num * 100))
-
-            string += "\n{w Entity idmapper cache:{n %i items\n%s" % (total_num, memtable)
+        string += "\n{w Entity idmapper cache:{n %i items\n%s" % (total_num, memtable)
 
         # return to caller
         self.caller.msg(string)
