@@ -54,6 +54,96 @@ div {margin:0px;}
 
 /* Style specific classes corresponding to formatted, narative text. */
 
+
+/* Container surrounding entire client */
+#wrapper {
+    position: relative;
+    height: 100%
+}
+
+/* Main scrolling message area */
+#messagewindow {
+    position: absolute;
+    overflow: auto;
+    padding: 1em;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 70px;
+}
+
+/* Input area containing input field and button */
+#inputform {
+    position: absolute;
+    width: 100%;
+    padding: 0;
+    bottom: 0;
+    margin: 0;
+    padding-bottom: 10px;
+    border-top: 1px solid #555;
+}
+
+#inputcontrol {
+    width: 100%;
+    padding: 0;
+}
+
+/* Input field */
+#inputfield, #inputsend, #inputsizer {
+    display: block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 50px;
+    background: #000;
+    color: #fff;
+    padding: 0 .45em;
+    font-size: 1.1em;
+    font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
+}
+
+#inputfield, #inputsizer {
+    float: left;
+    width: 95%;
+    border: 0;
+    resize: none;
+    line-height: normal;
+}
+
+#inputfield:focus {
+    outline: 0;
+}
+
+#inputsizer {
+    margin-left: -9999px;
+}
+
+/* Input 'send' button */
+#inputsend {
+    float: right;
+    width: 3%;
+    max-width: 25px;
+    margin-right: 10px;
+    border: 0;
+    background: #555;
+}
+
+/* prompt area above input field */
+#prompt {
+    margin-top: 10px;
+    padding: 0 .45em;
+}
+
+/* No javascript warning */
+#connecting {
+    position: absolute;
+    width: 100%;
+    padding: .5em .9em
+}
+
 /* XTERM256 colors */
 
 .color-000 { color: #000000; }
@@ -613,106 +703,3 @@ div {margin:0px;}
 .bgcolor-253 { background-color: #dadada; }
 .bgcolor-254 { background-color: #e4e4e4; }
 .bgcolor-255 { background-color: #eeeeee; }
-
-
-/* Container surrounding entire client */
-#wrapper {
-    position: relative;
-    height: 100%
-}
-
-/* Main scrolling message area */
-#messagewindow {
-    position: absolute;
-    overflow: auto;
-    padding: 1em;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 70px;
-}
-
-/* Input area containing input field and button */
-#inputform {
-    position: absolute;
-    width: 100%;
-    padding: 0;
-    bottom: 0;
-    margin: 0;
-    padding-bottom: 10px;
-    border-top: 1px solid #555;
-}
-
-#inputcontrol {
-    width: 100%;
-    padding: 0;
-}
-
-/* Input field */
-#inputfield, #inputsend, #inputsizer {
-    display: block;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    height: 50px;
-    background: #000;
-    color: #fff;
-    padding: 0 .45em;
-    font-size: 1.1em;
-    font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
-}
-
-#inputfield, #inputsizer {
-    float: left;
-    width: 95%;
-    border: 0;
-    resize: none;
-    line-height: normal;
-}
-
-#inputfield:focus {
-    outline: 0;
-}
-
-#inputsizer {
-    margin-left: -9999px;
-}
-
-/* Input 'send' button */
-#inputsend {
-    float: right;
-    width: 3%;
-    max-width: 25px;
-    margin-right: 10px;
-    border: 0;
-    background: #555;
-}
-
-/* prompt area above input field */
-#prompt {
-    margin-top: 10px;
-    padding: 0 .45em;
-}
-
-/* No javascript warning */
-#connecting {
-    position: absolute;
-    width: 100%;
-    padding: .5em .9em
-}
-
-/*Example player count display */
-#playercount { margin-left: .8em }
-
-/* Testing */
-/*#inputform {
-  outline: 1px dotted blue }
-
-#messagewindow {
-  outline: 1px dotted red }
-
-#wrapper {
-  outline: 1px dotted green }*/
