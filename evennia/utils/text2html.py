@@ -15,6 +15,10 @@ import re
 import cgi
 from .ansi import *
 
+# All xterm256 RGB equivalents
+
+XTERM256_FG = "\033[38;5;%sm"
+XTERM256_BG = "\033[48;5;%sm"
 
 class TextToHTMLparser(object):
     """
@@ -28,41 +32,50 @@ class TextToHTMLparser(object):
     normal = ANSI_NORMAL
     underline = ANSI_UNDERLINE
     colorcodes = [
-            ('red', hilite + ANSI_RED),
-            ('maroon', unhilite + ANSI_RED),
-            ('lime', hilite + ANSI_GREEN),
-            ('green', unhilite + ANSI_GREEN),
-            ('yellow', hilite + ANSI_YELLOW),
-            ('olive', unhilite + ANSI_YELLOW),
-            ('blue', hilite + ANSI_BLUE),
-            ('navy', unhilite + ANSI_BLUE),
-            ('magenta', hilite + ANSI_MAGENTA),
-            ('purple', unhilite + ANSI_MAGENTA),
-            ('cyan', hilite + ANSI_CYAN),
-            ('teal', unhilite + ANSI_CYAN),
-            ('white', hilite + ANSI_WHITE),  # pure white
-            ('gray', unhilite + ANSI_WHITE),  # light grey
-            ('dimgray', hilite + ANSI_BLACK),  # dark grey
-            ('black', unhilite + ANSI_BLACK),  # pure black
-    ]
+            ('color-000', unhilite + ANSI_BLACK), # pure black
+            ('color-001', unhilite + ANSI_RED),
+            ('color-002', unhilite + ANSI_GREEN),
+            ('color-003', unhilite + ANSI_YELLOW),
+            ('color-004', unhilite + ANSI_BLUE),
+            ('color-005', unhilite + ANSI_MAGENTA),
+            ('color-006', unhilite + ANSI_CYAN),
+            ('color-007', unhilite + ANSI_WHITE), # light grey
+            ('color-008', hilite + ANSI_BLACK), # dark grey
+            ('color-009', hilite + ANSI_RED),
+            ('color-010', hilite + ANSI_GREEN),
+            ('color-011', hilite + ANSI_YELLOW),
+            ('color-012', hilite + ANSI_BLUE),
+            ('color-013', hilite + ANSI_MAGENTA),
+            ('color-014', hilite + ANSI_CYAN),
+            ('color-015', hilite + ANSI_WHITE)  # pure white
+        ] + [("color-%03i" % (i+16), XTERM256_FG % ("%03i" % (i+16))) for i in xrange(240)]
+
     colorback = [
-            ('bgred', hilite + ANSI_BACK_RED),
-            ('bgmaroon', ANSI_BACK_RED),
-            ('bglime', hilite + ANSI_BACK_GREEN),
-            ('bggreen', ANSI_BACK_GREEN),
-            ('bgyellow', hilite + ANSI_BACK_YELLOW),
-            ('bgolive', ANSI_BACK_YELLOW),
-            ('bgblue', hilite + ANSI_BACK_BLUE),
-            ('bgnavy', ANSI_BACK_BLUE),
-            ('bgmagenta', hilite + ANSI_BACK_MAGENTA),
-            ('bgpurple', ANSI_BACK_MAGENTA),
-            ('bgcyan', hilite + ANSI_BACK_CYAN),
-            ('bgteal', ANSI_BACK_CYAN),
-            ('bgwhite', hilite + ANSI_BACK_WHITE),
-            ('bggray', ANSI_BACK_WHITE),
-            ('bgdimgray', hilite + ANSI_BACK_BLACK),
-            ('bgblack', ANSI_BACK_BLACK),
-    ]
+            ('bgcolor-000', ANSI_BACK_BLACK), # pure black
+            ('bgcolor-001', ANSI_BACK_RED),
+            ('bgcolor-002', ANSI_BACK_GREEN),
+            ('bgcolor-003', ANSI_BACK_YELLOW),
+            ('bgcolor-004', ANSI_BACK_BLUE),
+            ('bgcolor-005', ANSI_BACK_MAGENTA),
+            ('bgcolor-006', ANSI_BACK_CYAN),
+            ('bgcolor-007', ANSI_BACK_WHITE), # light grey
+            ('bgcolor-000', unhilite + ANSI_BLACK), # pure black
+            ('bgcolor-001', unhilite + ANSI_RED),
+            ('bgcolor-002', unhilite + ANSI_GREEN),
+            ('bgcolor-003', unhilite + ANSI_YELLOW),
+            ('bgcolor-004', unhilite + ANSI_BLUE),
+            ('bgcolor-005', unhilite + ANSI_MAGENTA),
+            ('bgcolor-006', unhilite + ANSI_CYAN),
+            ('bgcolor-007', unhilite + ANSI_WHITE), # light grey
+            ('bgcolor-008', hilite + ANSI_BLACK), # dark grey
+            ('bgcolor-009', hilite + ANSI_RED),
+            ('bgcolor-010', hilite + ANSI_GREEN),
+            ('bgcolor-011', hilite + ANSI_YELLOW),
+            ('bgcolor-012', hilite + ANSI_BLUE),
+            ('bgcolor-013', hilite + ANSI_MAGENTA),
+            ('bgcolor-014', hilite + ANSI_CYAN),
+            ('bgcolor-015', hilite + ANSI_WHITE),  # pure white
+    ] + [("bgcolor-%03i" % (i+16), XTERM256_BG % ("%03i" % (i+16))) for i in range(240)]
 
     # make sure to escape [
     colorcodes = [(c, code.replace("[", r"\[")) for c, code in colorcodes]
@@ -99,7 +112,8 @@ class TextToHTMLparser(object):
             text = regex.sub(r'''<span class="%s">\1</span>''' % colorname, text)
         for bgname, regex in self.re_bgs:
             text = regex.sub(r'''<span class="%s">\1</span>''' % bgname, text)
-        return self.re_normal.sub("", text)
+        text = self.re_normal.sub("", text)
+        return text
 
     def re_bold(self, text):
         """
@@ -238,7 +252,7 @@ class TextToHTMLparser(object):
             text (str): Parsed text.
         """
         # parse everything to ansi first
-        text = parse_ansi(text, strip_ansi=strip_ansi, xterm256=False, mxp=True)
+        text = parse_ansi(text, strip_ansi=strip_ansi, xterm256=True, mxp=True)
         # convert all ansi to html
         result = re.sub(self.re_string, self.do_sub, text)
         result = self.re_color(result)

@@ -16,22 +16,21 @@ http://localhost:8000/webclient.)
                  handle these requests and act as a gateway
                  to sessions connected over the webclient.
 """
-import time
 import json
 
+from time import time
 from hashlib import md5
-
 from twisted.web import server, resource
-
+from twisted.internet.task import LoopingCall
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
 from django.conf import settings
-from evennia.utils import utils, logger
+from evennia.utils import utils
 from evennia.utils.text2html import parse_html
 from evennia.server import session
 
-SERVERNAME = settings.SERVERNAME
-ENCODINGS = settings.ENCODINGS
+_SERVERNAME = settings.SERVERNAME
+_KEEPALIVE = 30 # how often to check keepalive
 
 # defining a simple json encoder for returning
 # django data to the client. Might need to
@@ -66,11 +65,8 @@ class WebClient(resource.Resource):
         self.requests = {}
         self.databuffer = {}
 
-    #def getChild(self, path, request):
-    #    """
-    #    This is the place to put dynamic content.
-    #    """
-    #    return self
+        self.last_alive = {}
+        self.keep_alive = None
 
     def _responseFailed(self, failure, suid, request):
         "callback if a request is lost/timed out"
@@ -78,6 +74,33 @@ class WebClient(resource.Resource):
             del self.requests[suid]
         except KeyError:
             pass
+
+    def _keepalive(self):
+        """
+        Callback for checking the connection is still alive.
+        """
+        now = time()
+        to_remove = []
+        keep_alives = ((suid, remove) for suid, (t, remove)
+                        in self.last_alive.iteritems() if now - t > _KEEPALIVE)
+        for suid, remove in keep_alives:
+            if remove:
+                # keepalive timeout. Line is dead.
+                to_remove.append(suid)
+            else:
+                # normal timeout - send keepalive
+                self.last_alive[suid] = (now, True)
+                self.lineSend(suid, ["ajax_keepalive", [], {}])
+        # remove timed-out sessions
+        for suid in to_remove:
+            sess = self.sessionhandler.session_from_suid(suid)
+            if sess:
+                sess[0].disconnect()
+            self.last_alive.pop(suid, None)
+            if not self.last_alive:
+                # no more ajax clients. Stop the keepalive
+                self.keep_alive.stop()
+                self.keep_alive = None
 
     def lineSend(self, suid, data):
         """
@@ -127,10 +150,10 @@ class WebClient(resource.Resource):
         suid = request.args.get('suid', ['0'])[0]
 
         remote_addr = request.getClientIP()
-        host_string = "%s (%s:%s)" % (SERVERNAME, request.getRequestHostname(), request.getHost().port)
+        host_string = "%s (%s:%s)" % (_SERVERNAME, request.getRequestHostname(), request.getHost().port)
         if suid == '0':
             # creating a unique id hash string
-            suid = md5(str(time.time())).hexdigest()
+            suid = md5(str(time())).hexdigest()
             self.databuffer[suid] = []
 
             sess = WebClientSession()
@@ -138,7 +161,26 @@ class WebClient(resource.Resource):
             sess.init_session("webclient", remote_addr, self.sessionhandler)
             sess.suid = suid
             sess.sessionhandler.connect(sess)
+
+            self.last_alive[suid] = (time(), False)
+            if not self.keep_alive:
+                # the keepalive is not running; start it.
+                self.keep_alive = LoopingCall(self._keepalive)
+                self.keep_alive.start(_KEEPALIVE, now=False)
+
         return jsonify({'msg': host_string, 'suid': suid})
+
+    def mode_keepalive(self, request):
+        """
+        This is called by render_POST when the
+        client is replying to the keepalive.
+        """
+        suid = request.args.get('suid', ['0'])[0]
+        if suid == '0':
+            return '""'
+        print "keepalive succeeded"
+        self.last_alive[suid] = (time(), False)
+        return '""'
 
     def mode_input(self, request):
         """
@@ -152,6 +194,8 @@ class WebClient(resource.Resource):
         suid = request.args.get('suid', ['0'])[0]
         if suid == '0':
             return '""'
+
+        self.last_alive[suid] = (time(), False)
         sess = self.sessionhandler.session_from_suid(suid)
         if sess:
             sess = sess[0]
@@ -173,6 +217,7 @@ class WebClient(resource.Resource):
         suid = request.args.get('suid', ['0'])[0]
         if suid == '0':
             return '""'
+        self.last_alive[suid] = (time(), False)
 
         dataentries = self.databuffer.get(suid, [])
         if dataentries:
@@ -230,8 +275,11 @@ class WebClient(resource.Resource):
         elif dmode == 'close':
             # the client is closing
             return self.mode_close(request)
+        elif dmode == 'keepalive':
+            # A reply to our keepalive request - all is well
+            return self.mode_keepalive(request)
         else:
-            # this should not happen if client sends valid data.
+            # This should not happen if client sends valid data.
             return '""'
 
 
@@ -245,16 +293,20 @@ class WebClientSession(session.Session):
     This represents a session running in a webclient.
     """
 
-    def disconnect(self, reason=None):
+    def __init__(self, *args, **kwargs):
+        self.protocol_name = "ajax/comet"
+        super(WebClientSession, self).__init__(*args, **kwargs)
+
+    def disconnect(self, reason="Server disconnected."):
         """
         Disconnect from server.
 
         Args:
             reason (str): Motivation for the disconnect.
         """
-        if reason:
-            self.client.lineSend(self.suid, ["text", [reason], {}])
+        self.client.lineSend(self.suid, ["connection_close", [reason], {}])
         self.client.client_disconnect(self.suid)
+        self.sessionhandler.disconnect(self)
 
     def data_out(self, **kwargs):
         """

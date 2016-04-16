@@ -64,8 +64,7 @@ class WebSocketClient(Protocol, Session):
             reason (str): Motivation for the disconnection.
 
         """
-        if reason:
-            self.data_out(text=[[reason],{}])
+        self.data_out(connection_close=((reason or "",), {}))
         self.connectionLost(reason)
 
     def connectionLost(self, reason):
@@ -123,7 +122,6 @@ class WebSocketClient(Protocol, Session):
         if "websocket_close" in kwargs:
             self.disconnect()
             return
-        print "websocket in:", kwargs
         self.sessionhandler.data_in(self, **kwargs)
 
     def data_out(self, **kwargs):

@@ -195,20 +195,30 @@ An "emitter" object must have a function
     //
     var WebsocketConnection = function () {
         log("Trying websocket ...");
+        var open = false;
         var websocket = new WebSocket(wsurl);
         // Handle Websocket open event
         websocket.onopen = function (event) {
+            open = true;
             Evennia.emit('connection_open', ["websocket"], event);
         };
         // Handle Websocket close event
         websocket.onclose = function (event) {
-            Evennia.emit('connection_close', ["websocket"], event);
+            if (open) {
+                // only emit if websocket was ever open at all
+                Evennia.emit('connection_close', ["websocket"], event);
+            }
+            open = false;
         };
         // Handle websocket errors
         websocket.onerror = function (event) {
-            Evennia.emit('connection_error', ["websocket"], event);
             if (websocket.readyState === websocket.CLOSED) {
                 log("Websocket failed. Falling back to Ajax...");
+                if (open) {
+                    // only emit if websocket was ever open at all.
+                    Evennia.emit('connection_error', ["websocket"], event);
+                }
+                open = false;
                 Evennia.connection = AjaxCometConnection();
             }
         };
@@ -232,6 +242,7 @@ An "emitter" object must have a function
             // tied to when the client window is closed). This
             // Makes use of a websocket-protocol specific instruction.
             websocket.send(JSON.stringify(["websocket_close", [], {}]));
+            open = false;
         }
         return websocket;
     };
@@ -263,12 +274,12 @@ An "emitter" object must have a function
         };
 
         // Send Client -> Evennia. Called by Evennia.msg
-        var msg = function(data) {
-            log("AJAX.msg:", data);
+        var msg = function(data, inmode) {
             $.ajax({type: "POST", url: "/webclientdata",
                    async: true, cache: false, timeout: 30000,
                    dataType: "json",
-                   data: {mode:'input', data: JSON.stringify(data), 'suid': client_hash},
+                   data: {mode: inmode == null ? 'input' : inmode,
+                          data: JSON.stringify(data), 'suid': client_hash},
                    success: function(req, stat, err) {},
                    error: function(req, stat, err) {
                        Evennia.emit("connection_error", ["AJAX/COMET send error"], err);
@@ -287,8 +298,14 @@ An "emitter" object must have a function
                     dataType: "json",
                     data: {mode: 'receive', 'suid': client_hash},
                     success: function(data) {
-                        Evennia.emit(data[0], data[1], data[2]);
-                        log("AJAX/COMET: Evennia->client", data);
+                        // log("ajax data received:", data);
+                        if (data[0] === "ajax_keepalive") {
+                            // special ajax keepalive check - return immediately
+                            msg("", "keepalive");
+                        } else {
+                            // not a keepalive
+                            Evennia.emit(data[0], data[1], data[2]);
+                        }
                         poll(); // immiately start a new request
                     },
                     error: function(req, stat, err) {
