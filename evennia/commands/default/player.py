@@ -25,7 +25,7 @@ import time
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
 from evennia.commands.default.muxcommand import MuxPlayerCommand
-from evennia.utils import utils, create, search, prettytable
+from evennia.utils import utils, create, search, prettytable, evtable
 
 _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -381,10 +381,15 @@ class CmdOption(MuxPlayerCommand):
     Set an account option
 
     Usage:
-      @option [name = value]
+      @option[/save] [name = value]
+
+    Switch:
+      save - Save the current option settings for future logins.
+      clear - Clear the saved options.
 
     This command allows for viewing and setting client interface
-    settings.
+    settings. Note that saved options may not be able to be used if
+    later connecting with a client with different capabilities.
 
 
     """
@@ -404,7 +409,19 @@ class CmdOption(MuxPlayerCommand):
         # Display current options
         if not self.args:
             # list the option settings
-            options = dict(flags)
+
+            if "save" in self.switches:
+                # save all options
+                self.player.db._saved_protocol_flags = flags
+                self.msg("{gSaved all options. Use @option/clear to remove.{n")
+            if "clear" in self.switches:
+                # clear all saves
+                self.player.db._saved_protocol_flags = {}
+                self.msg("{gCleared all saved options.")
+
+            options = dict(flags) # make a copy of the flag dict
+            saved_options = dict(self.player.attributes.get("_saved_protocol_flags", default={}))
+
             if "SCREENWIDTH" in options:
                 if len(options["SCREENWIDTH"]) == 1:
                     options["SCREENWIDTH"] = options["SCREENWIDTH"][0]
@@ -419,8 +436,18 @@ class CmdOption(MuxPlayerCommand):
                         for screenid, size in options["SCREENHEIGHT"].iteritems())
             options.pop("TTYPE", None)
 
-            options = "\n".join(" {w%s{n: %s" % (key, options[key]) for key in sorted(options))
-            self.msg("{wClient settings (%s):{n\n%s{n" % (self.session.protocol_key, options))
+            header = ("Name", "Value", "Saved") if saved_options else ("Name", "Value")
+            table = evtable.EvTable(*header)
+            for key in sorted(options):
+                row = [key, options[key]]
+                if saved_options:
+                    saved = " |YYes|n" if key in saved_options else ""
+                    changed = "|y*|n" if key in saved_options and flags[key] != saved_options[key] else ""
+                    row.append("%s%s" % (saved, changed))
+                table.add_row(*row)
+
+            self.msg("{wClient settings (%s):|n\n%s|n" % (self.session.protocol_key, table))
+
             return
 
         if not self.rhs:
@@ -450,7 +477,7 @@ class CmdOption(MuxPlayerCommand):
                 new_val = validator(val)
                 flags[name] = new_val
                 self.msg("Option |w%s|n was changed from '|w%s|n' to '|w%s|n'." % (name, old_val, new_val))
-                return True
+                return {name: new_val}
             except Exception, err:
                 self.msg("|rCould not set option |w%s|r:|n %s" % (name, err))
                 return False
@@ -471,14 +498,28 @@ class CmdOption(MuxPlayerCommand):
 
         name = self.lhs.upper()
         val = self.rhs.strip()
-        do_sync = False
+        optiondict = False
         if val and name in validators:
-            do_sync = update(name,  val, validators[name])
+            optiondict = update(name,  val, validators[name])
         else:
             self.session.msg("|rNo option named '|w%s|r'." % name)
-        if do_sync:
-            self.session.sessionhandler.session_portal_sync(self.session)
+        if optiondict:
+            # a valid setting
+            if "save" in self.switches:
+                # save this option only
+                saved_options = self.player.attributes.get("_saved_protocol_flags", default={})
+                saved_options.update(optiondict)
+                self.player.attributes.add("_saved_protocol_flags", saved_options)
+                for key in optiondict:
+                    self.msg("{gSaved option %s.{n" % key)
+            if "clear" in self.switches:
+                # clear this save
+                for key in optiondict:
+                    self.player.attributes.get("_saved_protocol_flags", {}).pop(key, None)
+                    self.msg("{gCleared saved %s." % key)
 
+
+            self.session.update_flags(**optiondict)
 
 class CmdPassword(MuxPlayerCommand):
     """
