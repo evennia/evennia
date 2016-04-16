@@ -750,7 +750,7 @@ class EvEditor(object):
         else:
             main = "\n".join(lines)
         string = "%s\n%s\n%s" % (header, main, footer)
-        self._caller.msg(string, options={"raw":raw})
+        self._caller.msg(string, options=options)
 
     def display_help(self):
         """
