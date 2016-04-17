@@ -512,6 +512,22 @@ class CmdCreate(ObjManipCommand):
             caller.msg(string)
 
 
+def _desc_load(caller):
+    return caller.db.evmenu_target.db.desc or ""
+
+def _desc_save(caller, buf):
+    """
+    Save line buffer to the desc prop. This should
+    return True if successful and also report its status to the user.
+    """
+    caller.db.evmenu_target.db.desc = buf
+    caller.msg("Saved.")
+    return True
+
+def _desc_quit(caller):
+    caller.attributes.remove("evmenu_target")
+    caller.msg("Exited editor.")
+
 class CmdDesc(MuxCommand):
     """
     describe an object
@@ -543,19 +559,24 @@ class CmdDesc(MuxCommand):
             return
 
         def load(caller):
-            return obj.db.desc or ""
+            return caller.db.evmenu_target.db.desc or ""
 
         def save(caller, buf):
             """
             Save line buffer to the desc prop. This should
             return True if successful and also report its status to the user.
             """
-            obj.db.desc = buf
+            caller.db.evmenu_target.db.desc = buf
             caller.msg("Saved.")
             return True
 
+        def quit(caller):
+            caller.attributes.remove("evmenu_target")
+            caller.msg("Exited editor.")
+
+        self.caller.db.evmenu_target = obj
         # launch the editor
-        EvEditor(self.caller, loadfunc=load, savefunc=save, key="desc")
+        EvEditor(self.caller, loadfunc=_desc_load, savefunc=_desc_save, quitfunc=_desc_quit, key="desc", persistent=True)
         return
 
     def func(self):
