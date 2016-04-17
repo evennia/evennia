@@ -197,14 +197,14 @@ class CmdPy(MuxCommand):
             else:
                 ret = eval(pycode_compiled, {}, available_vars)
             if mode == "eval":
-                ret = "<<< %s%s" % (str(ret), duration)
+                ret = "%s%s" % (str(ret), duration)
             else:
-                ret = "<<< Done (use self.msg() if you want to catch output)%s" % duration
+                ret = " Done (use self.msg() if you want to catch output)%s" % duration
         except Exception:
             errlist = traceback.format_exc().split('\n')
             if len(errlist) > 4:
                 errlist = errlist[4:]
-            ret = "\n".join("<<< %s" % line for line in errlist if line)
+            ret = "\n".join("%s" % line for line in errlist if line)
 
         try:
             self.msg(ret, session=self.session, options={"raw":True})
