@@ -312,7 +312,7 @@ class EvMenu(object):
     """
     def __init__(self, caller, menudata, startnode="start",
                  cmdset_mergetype="Replace", cmdset_priority=1,
-                 allow_quit=True, cmd_on_quit="look",
+                 allow_quit=True, cmd_on_quit="look", allow_look=True,
                  nodetext_formatter=None, options_formatter=None,
                  node_formatter=None):
         """
@@ -351,6 +351,9 @@ class EvMenu(object):
                 The callback function takes two parameters, the caller then the
                 EvMenu object. This is called after cleanup is complete.
                 Set to None to not call any command.
+            allow_look (bool, optional): Allow user to use 'look' for redisplaying 
+                the menu. Default is True. Set to False for retasking permutations 
+                of the 'look' command.
             nodetext_formatter (callable, optional): This callable should be on
                 the form `function(nodetext, has_options)`, where `nodetext` is the
                 node text string and `has_options` a boolean specifying if there
@@ -402,6 +405,7 @@ class EvMenu(object):
 
         # variables made available to the command
         self.allow_quit = allow_quit
+        self.allow_look = allow_look
         if isinstance(cmd_on_quit, str):
             self.cmd_on_quit = lambda caller, menu: caller.execute_cmd(cmd_on_quit)
         elif callable(cmd_on_quit):
@@ -543,13 +547,14 @@ class EvMenu(object):
         caller = self._caller
         cmd = raw_string.strip().lower()
         allow_quit = self.allow_quit
+        allow_look = self.allow_look
 
         if cmd in self.options:
             # this will take precedence over the default commands
             # below
             goto, callback = self.options[cmd]
             self._callback_goto(callback, goto, raw_string)
-        elif cmd in ("look", "l"):
+        elif allow_look and cmd in ("look", "l"):
             self._display_nodetext()
         elif cmd in ("help", "h"):
             self._display_helptext()
