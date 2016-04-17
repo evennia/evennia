@@ -140,6 +140,7 @@ from textwrap import dedent
 from inspect import isfunction, getargspec
 from django.conf import settings
 from evennia import Command, CmdSet
+from evennia.utils import logger
 from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import ANSIString, strip_ansi
 from evennia.utils.utils import mod_import, make_iter, pad, m_len
@@ -165,6 +166,20 @@ _HELP_NO_QUIT = _("Commands: <menu option>, help")
 _HELP_NO_OPTIONS = _("Commands: help, quit")
 _HELP_NO_OPTIONS_NO_QUIT = _("Commands: help")
 _HELP_NO_OPTION_MATCH = _("Choose an option or try 'help'.")
+
+_ERROR_PERSISTENT_SAVING = \
+"""
+{error}
+
+|rThe menu state could not be saved for persistent mode. Switching
+to non-persistent mode (which means the menu session won't survive
+an eventual server reload).|n
+"""
+
+_TRACE_PERSISTENT_SAVING = \
+"EvMenu persistent-mode error. Commonly, this is because one or " \
+"more of the EvEditor callbacks could not be pickled, for example " \
+"because it's a class method or is defined inside another function."
 
 
 class EvMenuError(RuntimeError):
@@ -496,22 +511,29 @@ class EvMenu(object):
         # store ourself on the object
         self.caller.ndb._menutree = self
 
+        if persistent:
+            # save the menu to the database
+            try:
+                caller.attributes.add("_menutree_saved",
+                        ((menudata, ),
+                         {"startnode": startnode,
+                          "cmdset_mergetype": cmdset_mergetype,
+                          "cmdset_priority": cmdset_priority,
+                          "auto_quit": auto_quit, "auto_look": auto_look, "auto_help": auto_help,
+                          "cmd_on_exit": cmd_on_exit, "persistent": persistent,
+                          "nodetext_formatter": nodetext_formatter, "options_formatter": options_formatter,
+                          "node_formatter": node_formatter, "input_parser": input_parser}))
+                caller.attributes.add("_menutree_saved_startnode", startnode)
+            except Exception as err:
+                caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
+                logger.log_trace(_TRACE_PERSISTENT_SAVING)
+                persistent = False
+
         # set up the menu command on the caller
         menu_cmdset = EvMenuCmdSet()
         menu_cmdset.mergetype = str(cmdset_mergetype).lower().capitalize() or "Replace"
         menu_cmdset.priority = int(cmdset_priority)
         self.caller.cmdset.add(menu_cmdset, permanent=persistent)
-        if persistent:
-            caller.attributes.add("_menutree_saved",
-                    ((menudata, ),
-                     {"startnode": startnode,
-                      "cmdset_mergetype": cmdset_mergetype,
-                      "cmdset_priority": cmdset_priority,
-                      "auto_quit": auto_quit, "auto_look": auto_look, "auto_help": auto_help,
-                      "cmd_on_exit": cmd_on_exit, "persistent": persistent,
-                      "nodetext_formatter": nodetext_formatter, "options_formatter": options_formatter,
-                      "node_formatter": node_formatter, "input_parser": input_parser}))
-            caller.attributes.add("_menutree_saved_startnode", startnode)
 
         # start the menu
         self.goto(self._startnode, "")
