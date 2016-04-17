@@ -76,6 +76,15 @@ var input_history = function() {
 
 // Grab text from inputline and send to Evennia
 function doSendText() {
+    if (!Evennia.isConnected()) {
+        var reconnect = confirm("Not currently connected. Reconnect?");
+        if (reconnect) {
+            onText(["Attempting to reconnnect..."], {cls: "sys"});
+            Evennia.connect();
+        }
+        // Don't try to send anything until the connection is back.
+        return;
+    }
     var inputfield = $("#inputfield");
     var outtext = inputfield.val();
     if (outtext.length > 7 && outtext.substr(0, 7) == "##send ") {
@@ -128,6 +137,13 @@ function onKeydown (event) {
         }, 0);
     }
 };
+
+function onKeyPress (event) {
+    // Prevent carriage returns inside the input area.
+    if (event.which === 13) {
+        event.preventDefault();
+    }
+}
 
 var resizeInputField = function () {
     var min_height = 50;
@@ -205,14 +221,6 @@ function onConnectionClose(conn_name, evt) {
     onText(["The connection was closed or lost."], {'cls': 'err'});
 }
 
-// Handle a connection error
-function onConnectionError(conn_name, evt) {
-    if (conn_name[0].lastIndexOf("AJAX/COMET", 0) === 0) {
-        // only display anything if the error is in AJAX/COMET
-        onText(["The connection was closed or lost."], {'cls': 'err'});
-    }
-}
-
 // Handle unrecognized commands from server
 function onDefault(cmdname, args, kwargs) {
     var mwin = $("#messagewindow");
@@ -230,21 +238,22 @@ function onDefault(cmdname, args, kwargs) {
 // Register Events
 //
 
-// Event when client window changes
-$(window).bind("resize", doWindowResize);
-$("#inputfield").bind("resize", doWindowResize);
-
-// Event when any key is pressed
-$(document).keydown(onKeydown)
-    .bind("keyup", resizeInputField)
-    .bind("paste", resizeInputField)
-    .bind("cut", resizeInputField);
-
-// Pressing the send button
-$("#inputsend").bind("click", doSendText);
-
 // Event when client finishes loading
 $(document).ready(function() {
+    // Event when client window changes
+    $(window).bind("resize", doWindowResize);
+    $("#inputfield").bind("resize", doWindowResize)
+        .keypress(onKeyPress)
+        .bind("paste", resizeInputField)
+        .bind("cut", resizeInputField);
+
+    // Event when any key is pressed
+    $(document).keydown(onKeydown)
+        .keyup(resizeInputField);
+
+    // Pressing the send button
+    $("#inputsend").bind("click", doSendText);
+
     // This is safe to call, it will always only
     // initialize once.
     Evennia.init();
@@ -252,10 +261,10 @@ $(document).ready(function() {
     Evennia.emitter.on("text", onText);
     Evennia.emitter.on("prompt", onPrompt);
     Evennia.emitter.on("default", onDefault);
+    Evennia.emitter.on("connection_close", onConnectionClose);
     // silence currently unused events
     Evennia.emitter.on("connection_open", onSilence);
-    Evennia.emitter.on("connection_close", onConnectionClose);
-    Evennia.emitter.on("connection_error", onConnectionError);
+    Evennia.emitter.on("connection_error", onSilence);
 
     // Handle pressing the send button
     $("#inputsend").bind("click", doSendText);
