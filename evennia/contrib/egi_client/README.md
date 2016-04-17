@@ -1,20 +1,20 @@
-# Evennia Game Directory Client
+# Evennia Game Index Client
 
 Greg Taylor 2016
 
-This contrib features a client for the [Evennia Game Directory]
-(http://evennia-game-directory.appspot.com/), a listing of games built on
-Evennia. By listing your game on the directory, you make it easy for other
+This contrib features a client for the [Evennia Game Index]
+(http://evennia-game-index.appspot.com/), a listing of games built on
+Evennia. By listing your game on the index, you make it easy for other
 people in the community to discover your creation.
 
 *Note: Since this is still an early experiment, there is no notion of
 ownership for a game listing. As a consequence, we rely on the good behavior
-of our users in the early goings. If the directory is a success, we'll work
+of our users in the early goings. If the index is a success, we'll work
 on remedying this.*
 
 ## Listing your Game
 
-To list your game, you'll need to enable the Evennia Game Directory client.
+To list your game, you'll need to enable the Evennia Game Index client.
 Start by `cd`'ing to your game directory. From there, open up
 `server/conf/server_services_plugins.py`. It might look something like this
 if you don't have any other optional add-ons enabled:
@@ -43,7 +43,7 @@ if you don't have any other optional add-ons enabled:
         pass
 
 
-To enable the client, import `EvenniaGameDirService` and fire it up after the
+To enable the client, import `EvenniaGameIndexService` and fire it up after the
 Evennia server has finished starting:
 
     """
@@ -60,7 +60,7 @@ Evennia server has finished starting:
     services are started last in the Server startup process.
     """
 
-    from evennia.contrib.gamedir_client import EvenniaGameDirService
+    from evennia.contrib.egi_client import EvenniaGameIndexService
 
     def start_plugin_services(server):
         """
@@ -68,8 +68,8 @@ Evennia server has finished starting:
 
         server - a reference to the main server application.
         """
-        gamedir_service = EvenniaGameDirService()
-        server.services.addService(gamedir_service)
+        egi_service = EvenniaGameIndexService()
+        server.services.addService(egi_service)
 
 
 Next, configure your game listing by opening up `server/conf/settings.py` and
@@ -79,7 +79,7 @@ Next, configure your game listing by opening up `server/conf/settings.py` and
     # Contrib config
     ######################################################################
 
-    GAME_DIRECTORY_LISTING = {
+    GAME_INDEX_LISTING = {
         'game_status': 'pre-alpha',
         # Optional, comment out or remove if N/A
         'game_website': 'http://my-game.com',
@@ -105,7 +105,7 @@ At this point, you should be all set! Simply restart your game and check the
 server logs for errors. Your listing and some game state will be sent every
 half hour.
 
-## Possible GAMEDIR_DIRECTORY_LISTING settings
+## Possible GAME_INDEX_LISTING settings
 
 ### game_status
 
