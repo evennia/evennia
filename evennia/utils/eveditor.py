@@ -36,7 +36,7 @@ and initialize it:
 from builtins import object
 
 import re
-import inspect
+
 from django.conf import settings
 from evennia import Command, CmdSet
 from evennia.utils import is_iter, fill, dedent, logger
@@ -134,6 +134,11 @@ _ERROR_PERSISTENT_SAVING = \
 to non-persistent mode (which means the editor session won't survive
 an eventual server reload - so save often!)|n
 """
+
+_TRACE_PERSISTENT_SAVING = \
+"EvEditor persistent-mode error. Commonly, this is because one or " \
+"more of the EvEditor callbacks could not be pickled, for example " \
+"because it's a class method or is defined inside another function."
 
 
 _MSG_NO_UNDO = "Nothing to undo."
@@ -662,9 +667,7 @@ class EvEditor(object):
                 caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
             except Exception, err:
                 caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
-                logger.log_trace("EvEditor persistent-mode error. Commonly, this is because one or "\
-                        "more of the EvEditor callbacks could not be pickled, for example because it's "\
-                        "a class method or is defined inside another function.")
+                logger.log_trace(_TRACE_PERSISTENT_SAVING)
                 persistent = False
 
         # Create the commands we need
