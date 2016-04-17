@@ -233,8 +233,10 @@ An "emitter" object must have a function
             };
             // Handle Websocket close event
             websocket.onclose = function (event) {
-                // only emit if websocket was ever open at all
-                Evennia.emit('connection_close', ["websocket"], event);
+                if (ever_open) {
+                    // only emit if websocket was ever open at all
+                    Evennia.emit('connection_close', ["websocket"], event);
+                }
                 open = false;
             };
             // Handle websocket errors
