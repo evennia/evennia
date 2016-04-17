@@ -221,14 +221,6 @@ function onConnectionClose(conn_name, evt) {
     onText(["The connection was closed or lost."], {'cls': 'err'});
 }
 
-// Handle a connection error
-function onConnectionError(conn_name, evt) {
-    if (conn_name[0].lastIndexOf("AJAX/COMET", 0) === 0) {
-        // only display anything if the error is in AJAX/COMET
-        //onText(["The connection was closed or lost."], {'cls': 'err'});
-    }
-}
-
 // Handle unrecognized commands from server
 function onDefault(cmdname, args, kwargs) {
     var mwin = $("#messagewindow");
@@ -269,10 +261,10 @@ $(document).ready(function() {
     Evennia.emitter.on("text", onText);
     Evennia.emitter.on("prompt", onPrompt);
     Evennia.emitter.on("default", onDefault);
+    Evennia.emitter.on("connection_close", onConnectionClose);
     // silence currently unused events
     Evennia.emitter.on("connection_open", onSilence);
-    Evennia.emitter.on("connection_close", onConnectionClose);
-    Evennia.emitter.on("connection_error", onConnectionError);
+    Evennia.emitter.on("connection_error", onSilence);
 
     // Handle pressing the send button
     $("#inputsend").bind("click", doSendText);
