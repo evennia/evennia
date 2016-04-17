@@ -5,7 +5,8 @@ This implements a full menu system for Evennia. It is considerably
 more flexible than the older contrib/menusystem.py and also uses
 menu plugin modules.
 
-To start the menu, just import the EvMenu class from this module,
+To start the menu, just import the EvMenu class from this module.
+Example usage:
 
 ```python
 
@@ -14,7 +15,7 @@ To start the menu, just import the EvMenu class from this module,
     EvMenu(caller, menu_module_path,
          startnode="node1",
          cmdset_mergetype="Replace", cmdset_priority=1,
-         auto_quit=True, cmd_on_exit="look")
+         auto_quit=True, cmd_on_exit="look", persistent=True)
 ```
 
 Where `caller` is the Object to use the menu on - it will get a new
@@ -23,6 +24,13 @@ to a python module containing function defintions.  By adjusting the
 keyword options of the Menu() initialization call you can start the
 menu at different places in the menu definition file, adjust if the
 menu command should overload the normal commands or not, etc.
+
+The `perstent` keyword will make the menu survive a server reboot.
+It is `False` by default. Note that if using persistent mode, every
+node and callback in the menu must be possible to be *pickled*, this
+excludes e.g. callables that are class methods or functions defined
+dynamically or as part of another function. In non-persistent mode
+no such restrictions exist.
 
 The menu is defined in a module (this can be the same module as the
 command definition too) with function defintions:
@@ -389,11 +397,12 @@ class EvMenu(object):
     def __init__(self, caller, menudata, startnode="start",
                  cmdset_mergetype="Replace", cmdset_priority=1,
                  auto_quit=True, auto_look=True, auto_help=True,
-                 cmd_on_exit="look", persistent=False,
+                 cmd_on_exit="look",
                  nodetext_formatter=dedent_strip_nodetext_formatter,
                  options_formatter=evtable_options_formatter,
                  node_formatter=underline_node_formatter,
-                 input_parser=evtable_parse_input):
+                 input_parser=evtable_parse_input,
+                 persistent=False):
         """
         Initialize the menu tree and start the caller onto the first node.
 
@@ -438,10 +447,6 @@ class EvMenu(object):
                 The callback function takes two parameters, the caller then the
                 EvMenu object. This is called after cleanup is complete.
                 Set to None to not call any command.
-            persistent (bool, optional): Make the Menu persistent (i.e. it will
-                survive a reload. This will make the Menu cmdset persistent. Use
-                with caution - if your menu is buggy you may end up in a state
-                you can't get out of!
             nodetext_formatter (callable, optional): This callable should be on
                 the form `function(nodetext, has_options, caller=None)`, where `nodetext` is the
                 node text string and `has_options` a boolean specifying if there
@@ -474,9 +479,22 @@ class EvMenu(object):
                 It should use the helper method of the menuobject to goto new nodes, show
                 help texts etc. See the default `evtable_parse_input` function for help
                 with parsing.
+            persistent (bool, optional): Make the Menu persistent (i.e. it will
+                survive a reload. This will make the Menu cmdset persistent. Use
+                with caution - if your menu is buggy you may end up in a state
+                you can't get out of! Also note that persistent mode requires
+                that all formatters, menu nodes and callables are possible to
+                *pickle*.
 
         Raises:
             EvMenuError: If the start/end node is not found in menu tree.
+
+        Notes:
+            In persistent mode, all nodes, formatters and callbacks in
+            the menu must be possible to be *pickled*, this excludes
+            e.g. callables that are class methods or functions defined
+            dynamically or as part of another function. In
+            non-persistent mode no such restrictions exist.
 
         """
         self._startnode = startnode
@@ -520,9 +538,10 @@ class EvMenu(object):
                           "cmdset_mergetype": cmdset_mergetype,
                           "cmdset_priority": cmdset_priority,
                           "auto_quit": auto_quit, "auto_look": auto_look, "auto_help": auto_help,
-                          "cmd_on_exit": cmd_on_exit, "persistent": persistent,
+                          "cmd_on_exit": cmd_on_exit,
                           "nodetext_formatter": nodetext_formatter, "options_formatter": options_formatter,
-                          "node_formatter": node_formatter, "input_parser": input_parser}))
+                          "node_formatter": node_formatter, "input_parser": input_parser,
+                          "persistent": persistent,}))
                 caller.attributes.add("_menutree_saved_startnode", startnode)
             except Exception as err:
                 caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err))

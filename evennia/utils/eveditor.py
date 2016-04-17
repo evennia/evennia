@@ -18,7 +18,7 @@ and initialize it:
 
     from evennia.utils.eveditor import EvEditor
 
-    EvEditor(caller, loadfunc=None, savefunc=None, quitfunc=None, key="")
+    EvEditor(caller, loadfunc=None, savefunc=None, quitfunc=None, key="", persistent=True)
 
  - caller is the user of the editor, the one to see all feedback.
  - loadfunc(caller) is called when the editor is first launched; the
@@ -31,6 +31,11 @@ and initialize it:
    no automatic quit messages will be given.
  - key is an optional identifier for the editing session, to be
    displayed in the editor.
+-  persistent means the editor state will be saved to the database making it
+   survive a server reload. Note that using this mode, the load- save-
+   and quit-funcs must all be possible to pickle - notable unusable
+   callables are class methods and functions defined inside other
+   functions. With persistent=False, no such restriction exists.
 
 """
 from builtins import object
@@ -619,8 +624,16 @@ class EvEditor(object):
             key (str, optional): An optional key for naming this
                 session and make it unique from other editing sessions.
             persistent (bool, optional): Make the editor survive a reboot. Note
-                that if this is set, all callables must be functions (not methods)
-                since they have to able to pickle.
+                that if this is set, all callables must be possible to pickle
+
+        Notes:
+            In persistent mode, all the input callables (savefunc etc)
+            must be possible to be *pickled*, this excludes e.g.
+            callables that are class methods or functions defined
+            dynamically or as part of another function. In
+            non-persistent mode no such restrictions exist.
+
+
 
         """
         self._key = key
