@@ -92,6 +92,24 @@ An "emitter" object must have a function
             }
             log('Evennia initialized.')
         },
+        
+        // Connect to the Evennia server.
+        // Re-establishes the connection after it is lost.
+        //
+        connect: function() {
+            if (this.connection.isOpen()) {
+                // Already connected.
+                return;
+            }
+            this.connection.connect();
+            log('Evenna reconnecting.')
+        },
+        
+        // Returns true if the connection is open.
+        // 
+        isConnected: function () {
+          return this.connection.isOpen();  
+        },
 
         // client -> Evennia.
         // called by the frontend to send a command to Evennia.
@@ -196,55 +214,78 @@ An "emitter" object must have a function
     var WebsocketConnection = function () {
         log("Trying websocket ...");
         var open = false;
-        var websocket = new WebSocket(wsurl);
-        // Handle Websocket open event
-        websocket.onopen = function (event) {
-            open = true;
-            Evennia.emit('connection_open', ["websocket"], event);
-        };
-        // Handle Websocket close event
-        websocket.onclose = function (event) {
-            if (open) {
-                // only emit if websocket was ever open at all
-                Evennia.emit('connection_close', ["websocket"], event);
-            }
-            open = false;
-        };
-        // Handle websocket errors
-        websocket.onerror = function (event) {
-            if (websocket.readyState === websocket.CLOSED) {
-                log("Websocket failed. Falling back to Ajax...");
-                if (open) {
-                    // only emit if websocket was ever open at all.
-                    Evennia.emit('connection_error', ["websocket"], event);
-                }
-                open = false;
-                Evennia.connection = AjaxCometConnection();
-            }
-        };
-        // Handle incoming websocket data [cmdname, args, kwargs]
-        websocket.onmessage = function (event) {
-            var data = event.data;
-            if (typeof data !== 'string' && data.length < 0) {
+        var ever_open = false;
+        var websocket = null;
+        var wsurl = window.wsurl;
+        
+        var connect = function() {
+            if (websocket && websocket.readyState != websocket.CLOSED) {
+                // No-op if a connection is already open.
                 return;
             }
-            // Parse the incoming data, send to emitter
-            // Incoming data is on the form [cmdname, args, kwargs]
-            data = JSON.parse(data);
-            Evennia.emit(data[0], data[1], data[2]);
-        };
-        websocket.msg = function(data) {
+            websocket = new WebSocket(wsurl);
+            
+            // Handle Websocket open event
+            websocket.onopen = function (event) {
+                open = true;
+                ever_open = true;
+                Evennia.emit('connection_open', ["websocket"], event);
+            };
+            // Handle Websocket close event
+            websocket.onclose = function (event) {
+                // only emit if websocket was ever open at all
+                Evennia.emit('connection_close', ["websocket"], event);
+                open = false;
+            };
+            // Handle websocket errors
+            websocket.onerror = function (event) {
+                if (websocket.readyState === websocket.CLOSED) {
+                    if (ever_open) {
+                        // only emit if websocket was ever open at all.
+                        log("Websocket failed.")
+                        Evennia.emit('connection_error', ["websocket"], event);
+                    }
+                    else {
+                        // only fall back to AJAX if we never got an open socket.
+                        log("Websocket failed. Falling back to Ajax...");
+                        Evennia.connection = AjaxCometConnection();
+                    }
+                    open = false;
+                }
+            };
+            // Handle incoming websocket data [cmdname, args, kwargs]
+            websocket.onmessage = function (event) {
+                var data = event.data;
+                if (typeof data !== 'string' && data.length < 0) {
+                    return;
+                }
+                // Parse the incoming data, send to emitter
+                // Incoming data is on the form [cmdname, args, kwargs]
+                data = JSON.parse(data);
+                Evennia.emit(data[0], data[1], data[2]);
+            };
+        }
+        
+        var msg = function(data) {
             // send data across the wire. Make sure to json it.
             websocket.send(JSON.stringify(data));
         };
-        websocket.close = function() {
+        
+        var close = function() {
             // tell the server this connection is closing (usually
             // tied to when the client window is closed). This
             // Makes use of a websocket-protocol specific instruction.
             websocket.send(JSON.stringify(["websocket_close", [], {}]));
             open = false;
         }
-        return websocket;
+        
+        var isOpen = function() {
+            return open;
+        }
+        
+        connect();
+        
+        return {connect: connect, msg: msg, close: close, isOpen: isOpen};
     };
 
     // AJAX/COMET Connector
@@ -252,6 +293,8 @@ An "emitter" object must have a function
     var AjaxCometConnection = function() {
         log("Trying ajax ...");
         var client_hash = '0';
+        var stop_polling = false;
+        var is_closing = false;        
 
         // initialize connection and get hash
         var init = function() {
@@ -264,11 +307,15 @@ An "emitter" object must have a function
                         data = JSON.parse(data);
                         log ("connection_open", ["AJAX/COMET"], data);
                         client_hash = data.suid;
+                        stop_polling = false;
                         poll();
                     },
                     error: function(req, stat, err) {
                         Evennia.emit("connection_error", ["AJAX/COMET init error"], err);
+                        // Also emit a close event so that the COMET API mirrors the websocket API.
+                        Evennia.emit("connection_close", ["AJAX/COMET init close"], err);
                         log("AJAX/COMET: Connection error: " + err);
+                        stop_polling = true;
                     }
             });
         };
@@ -280,10 +327,13 @@ An "emitter" object must have a function
                    dataType: "json",
                    data: {mode: inmode == null ? 'input' : inmode,
                           data: JSON.stringify(data), 'suid': client_hash},
-                   success: function(req, stat, err) {},
+                   success: function(req, stat, err) {
+                       stop_polling = false;
+                   },
                    error: function(req, stat, err) {
                        Evennia.emit("connection_error", ["AJAX/COMET send error"], err);
                        log("AJAX/COMET: Server returned error.",req,stat,err);
+                       stop_polling = true;
                    }
            });
         };
@@ -294,7 +344,7 @@ An "emitter" object must have a function
         // will immediately be started.
         var poll = function() {
             $.ajax({type: "POST", url: "/webclientdata",
-                    async: true, cache: false, timeout: 30000,
+                    async: true, cache: false, timeout: 60000,
                     dataType: "json",
                     data: {mode: 'receive', 'suid': client_hash},
                     success: function(data) {
@@ -306,43 +356,77 @@ An "emitter" object must have a function
                             // not a keepalive
                             Evennia.emit(data[0], data[1], data[2]);
                         }
+                        stop_polling = false;
                         poll(); // immiately start a new request
                     },
                     error: function(req, stat, err) {
-                        poll()  // timeout; immediately re-poll
-                                // don't trigger an emit event here,
-                                // this is normal for ajax/comet
+                        if (stat !== "timeout") {
+                            // Any other error besides a timeout is abnormal
+                            Evennia.emit("connection_error", ["AJAX/COMET receive error"], err);
+                            log("AJAX/COMET: Server returned error on receive.",req,stat,err);
+                            stop_polling = true;
+                        } 
+                        else {
+                            // We'd expect to see a keepalive message rather than
+                            // a timeout. Ping the server to see if it's still there.
+                            msg("idle");
+                        }
+                        
+                        if (stop_polling) {
+                            // An error of some kind occurred.
+                            // Close the connection, if possible.
+                            close();
+                        }
+                        else {
+                            poll(); // timeout; immediately re-poll
+                                    // don't trigger an emit event here,
+                                    // this is normal for ajax/comet
+                        }
                     }
             });
         };
-
-        // Kill the connection and do house cleaning on the server.
+        
+        // Kill the connection and do house cleaning on the server.        
         var close = function webclient_close(){
+            if (is_closing || client_hash === '0') {
+                // Already closed or trying to close.
+                return;
+            }
+            stop_polling = true;
+            is_closing = true;
             $.ajax({
                 type: "POST",
                 url: "/webclientdata",
-                async: false,
+                async: true,
                 cache: false,
                 timeout: 50000,
                 dataType: "json",
                 data: {mode: 'close', 'suid': client_hash},
 
                 success: function(data){
+                    is_closing = false;
                     client_hash = '0';
                     Evennia.emit("connection_close", ["AJAX/COMET"], {});
                     log("AJAX/COMET connection closed cleanly.")
                 },
                 error: function(req, stat, err){
-                    Evennia.emit("connection_err", ["AJAX/COMET close error"], err);
+                    is_closing = false;
+                    Evennia.emit("connection_error", ["AJAX/COMET close error"], err);
+                    // Also emit a close event so that the COMET API mirrors the websocket API.
+                    Evennia.emit("connection_close", ["AJAX/COMET close unclean"], err);
                     client_hash = '0';
                 }
             });
         };
+        
+        var isOpen = function () {
+            return !(is_closing || client_hash === '0');
+        }
 
         // init
         init();
 
-        return {msg: msg, poll: poll, close: close};
+        return {connect: init, msg: msg, close: close, isOpen: isOpen};
     };
 
     window.Evennia = Evennia;
