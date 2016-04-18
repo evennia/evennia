@@ -383,6 +383,11 @@ class Mob(tut_objects.TutorialObject):
         Someone landed a hit on us. Check our status
         and start attacking if not already doing so.
         """
+        if self.db.health is None:
+            # health not set - this can't be damaged.
+            attacker.msg(self.db.weapon_ineffective_msg)
+            return
+
         if not self.ndb.is_immortal:
             if not weapon.db.magic:
                 # not a magic weapon - divide away magic resistance

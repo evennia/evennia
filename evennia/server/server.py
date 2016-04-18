@@ -276,11 +276,11 @@ class Evennia(object):
         with open(SERVER_RESTART, 'r') as f:
             mode = f.read()
         if mode in ('True', 'reload'):
-            from evennia.server.oobhandler import OOB_HANDLER
-            OOB_HANDLER.restore()
+            from evennia.scripts.monitorhandler import MONITOR_HANDLER
+            MONITOR_HANDLER.restore()
 
         from evennia.scripts.tickerhandler import TICKER_HANDLER
-        TICKER_HANDLER.restore()
+        TICKER_HANDLER.restore(mode in ('True', 'reload'))
 
         # call correct server hook based on start file value
         if mode in ('True', 'reload'):
@@ -352,9 +352,9 @@ class Evennia(object):
             yield [(s.pause(manual_pause=False), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances() if s.is_active]
             yield self.sessions.all_sessions_portal_sync()
             self.at_server_reload_stop()
-            # only save OOB state on reload, not on shutdown/reset
-            from evennia.server.oobhandler import OOB_HANDLER
-            OOB_HANDLER.save()
+            # only save monitor state on reload, not on shutdown/reset
+            from evennia.scripts.monitorhandler import MONITOR_HANDLER
+            MONITOR_HANDLER.save()
         else:
             if mode == 'reset':
                 # like shutdown but don't unset the is_connected flag and don't disconnect sessions
@@ -436,6 +436,11 @@ class Evennia(object):
         # the normal cleanup operations did not have time to run.
         from evennia.objects.models import ObjectDB
         ObjectDB.objects.clear_all_sessids()
+
+        # Remove non-persistent scripts
+        from evennia.scripts.models import ScriptDB
+        for script in ScriptDB.objects.filter(db_persistent=False):
+            script.stop()
 
         if GUEST_ENABLED:
             for guest in PlayerDB.objects.all().filter(db_typeclass_path=settings.BASE_GUEST_TYPECLASS):

@@ -25,7 +25,7 @@ import time
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
 from evennia.commands.default.muxcommand import MuxPlayerCommand
-from evennia.utils import utils, create, search, prettytable
+from evennia.utils import utils, create, search, prettytable, evtable
 
 _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -136,13 +136,21 @@ class CmdCharCreate(MuxPlayerCommand):
                 len(player.db._playable_characters) >= charmax):
             self.msg("You may only create a maximum of %i characters." % charmax)
             return
-        # create the character
         from evennia.objects.models import ObjectDB
+        typeclass = settings.BASE_CHARACTER_TYPECLASS
 
+        if ObjectDB.objects.filter(db_typeclass_path=typeclass, db_key__iexact=key):
+            # check if this Character already exists. Note that we are only
+            # searching the base character typeclass here, not any child
+            # classes.
+            self.msg("{rA character named '{w%s{r' already exists.{n" % key)
+            return
+
+        # create the character
         start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
         default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-        typeclass = settings.BASE_CHARACTER_TYPECLASS
         permissions = settings.PERMISSION_PLAYER_DEFAULT
+
 
         new_character = create.create_object(typeclass, key=key,
                                              location=start_location,
@@ -372,20 +380,17 @@ class CmdOption(MuxPlayerCommand):
     """
     Set an account option
 
-    @option
-    @option encoding [= encoding]
-    @option screenreader [= on|off]
+    Usage:
+      @option[/save] [name = value]
 
-    The text encoding is mostly an issue only if you want to use
-    non-ASCII characters (i.e. letters/symbols not found in English).
-    If you see that your characters look strange (or you get encoding
-    errors), you should use this command to set the server encoding to
-    be the same used in your client program. If given the empty string
-    (default), the custom encoding will be removed and only Evennia's
-    defaults will be used.
+    Switch:
+      save - Save the current option settings for future logins.
+      clear - Clear the saved options.
 
-    The screenreader setting strips the text output for users using
-    screen readers. It strips based on settings.SCREENREADER_REGEX_STRIP.
+    This command allows for viewing and setting client interface
+    settings. Note that saved options may not be able to be used if
+    later connecting with a client with different capabilities.
+
 
     """
     key = "@option"
@@ -399,39 +404,122 @@ class CmdOption(MuxPlayerCommand):
         if self.session is None:
             return
 
+        flags = self.session.protocol_flags
+
+        # Display current options
         if not self.args:
             # list the option settings
-            string = "{wEncoding{n:\n"
-            pencoding = self.session.encoding or "None"
-            sencodings = settings.ENCODINGS
-            string += " Custom: %s\n Server: %s" % (pencoding, ", ".join(sencodings))
-            string += "\n{wScreen Reader mode:{n %s" % self.session.screenreader
-            self.msg(string)
+
+            if "save" in self.switches:
+                # save all options
+                self.player.db._saved_protocol_flags = flags
+                self.msg("{gSaved all options. Use @option/clear to remove.{n")
+            if "clear" in self.switches:
+                # clear all saves
+                self.player.db._saved_protocol_flags = {}
+                self.msg("{gCleared all saved options.")
+
+            options = dict(flags) # make a copy of the flag dict
+            saved_options = dict(self.player.attributes.get("_saved_protocol_flags", default={}))
+
+            if "SCREENWIDTH" in options:
+                if len(options["SCREENWIDTH"]) == 1:
+                    options["SCREENWIDTH"] = options["SCREENWIDTH"][0]
+                else:
+                    options["SCREENWIDTH"] = "  \n".join("%s : %s" % (screenid, size)
+                        for screenid, size in options["SCREENWIDTH"].iteritems())
+            if "SCREENHEIGHT" in options:
+                if len(options["SCREENHEIGHT"]) == 1:
+                    options["SCREENHEIGHT"] = options["SCREENHEIGHT"][0]
+                else:
+                    options["SCREENHEIGHT"] = "  \n".join("%s : %s" % (screenid, size)
+                        for screenid, size in options["SCREENHEIGHT"].iteritems())
+            options.pop("TTYPE", None)
+
+            header = ("Name", "Value", "Saved") if saved_options else ("Name", "Value")
+            table = evtable.EvTable(*header)
+            for key in sorted(options):
+                row = [key, options[key]]
+                if saved_options:
+                    saved = " |YYes|n" if key in saved_options else ""
+                    changed = "|y*|n" if key in saved_options and flags[key] != saved_options[key] else ""
+                    row.append("%s%s" % (saved, changed))
+                table.add_row(*row)
+
+            self.msg("{wClient settings (%s):|n\n%s|n" % (self.session.protocol_key, table))
+
             return
 
         if not self.rhs:
             self.msg("Usage: @option [name = [value]]")
             return
 
-        if self.lhs == "encoding":
-            # change encoding
-            old_encoding = self.session.encoding
-            new_encoding = self.rhs.strip() or "utf-8"
+        # Try to assign new values
+
+        def validate_encoding(val):
+            # helper: change encoding
             try:
-                utils.to_str(utils.to_unicode("test-string"), encoding=new_encoding)
+                utils.to_str(utils.to_unicode("test-string"), encoding=val)
             except LookupError:
-                string = "|rThe encoding '|w%s|r' is invalid. Keeping the previous encoding '|w%s|r'.|n" % (new_encoding, old_encoding)
-            else:
-                self.session.encoding = new_encoding
-                string = "Encoding was changed from '|w%s|n' to '|w%s|n'." % (old_encoding, new_encoding)
-            self.msg(string)
-            return
+                raise RuntimeError("The encoding '|w%s|n' is invalid. " % val)
+            return val
 
-        if self.lhs == "screenreader":
-            onoff = self.rhs.lower() == "on"
-            self.session.screenreader = onoff
-            self.msg("Screen reader mode was turned {w%s{n." % ("on" if onoff else "off"))
+        def validate_size(val):
+            return {0: int(val)}
 
+        def validate_bool(val):
+            return True if val.lower() in ("true", "on", "1") else False
+
+        def update(name, val, validator):
+            # helper: update property and report errors
+            try:
+                old_val = flags[name]
+                new_val = validator(val)
+                flags[name] = new_val
+                self.msg("Option |w%s|n was changed from '|w%s|n' to '|w%s|n'." % (name, old_val, new_val))
+                return {name: new_val}
+            except Exception, err:
+                self.msg("|rCould not set option |w%s|r:|n %s" % (name, err))
+                return False
+
+        validators = {"ANSI": validate_bool,
+                      "CLIENTNAME": utils.to_str,
+                      "ENCODING": validate_encoding,
+                      "MCCP": validate_bool,
+                      "MXP": validate_bool,
+                      "OOB": validate_bool,
+                      "SCREENHEIGHT": validate_size,
+                      "SCREENWIDTH": validate_size,
+                      "SCREENREADER": validate_bool,
+                      "TERM": utils.to_str,
+                      "UTF-8": validate_bool,
+                      "XTERM256": validate_bool,
+                      "INPUTDEBUG": validate_bool}
+
+        name = self.lhs.upper()
+        val = self.rhs.strip()
+        optiondict = False
+        if val and name in validators:
+            optiondict = update(name,  val, validators[name])
+        else:
+            self.session.msg("|rNo option named '|w%s|r'." % name)
+        if optiondict:
+            # a valid setting
+            if "save" in self.switches:
+                # save this option only
+                saved_options = self.player.attributes.get("_saved_protocol_flags", default={})
+                saved_options.update(optiondict)
+                self.player.attributes.add("_saved_protocol_flags", saved_options)
+                for key in optiondict:
+                    self.msg("{gSaved option %s.{n" % key)
+            if "clear" in self.switches:
+                # clear this save
+                for key in optiondict:
+                    self.player.attributes.get("_saved_protocol_flags", {}).pop(key, None)
+                    self.msg("{gCleared saved %s." % key)
+
+
+            self.session.update_flags(**optiondict)
 
 class CmdPassword(MuxPlayerCommand):
     """
@@ -545,8 +633,8 @@ class CmdColorTest(MuxPlayerCommand):
             ap = ansi.ANSI_PARSER
             # ansi colors
             # show all ansi color-related codes
-            col1 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[6:14]]
-            col2 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[14:22]]
+            col1 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[48:56]]
+            col2 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[56:64]]
             col3 = ["%s%s|n" % (code.replace("\\",""), code.replace("|", "||").replace("\\", "")) for code, _ in ap.ext_ansi_map[-8:]]
             col2.extend(["" for i in range(len(col1)-len(col2))])
             table = utils.format_table([col1, col2, col3])
@@ -566,8 +654,8 @@ class CmdColorTest(MuxPlayerCommand):
                         # foreground table
                         table[ir].append("|%i%i%i%s|n" % (ir, ig, ib, "||%i%i%i" % (ir, ig, ib)))
                         # background table
-                        table[6+ir].append("|[%i%i%i|%i%i%i%s|n" % (ir, ig, ib,
-                                                            5 - ir, 5 - ig, 5 - ib,
+                        table[6+ir].append("|%i%i%i|[%i%i%i%s|n" % (5 - ir, 5 - ig, 5 - ib,
+                                                            ir, ig, ib,
                                                         "||[%i%i%i" % (ir, ig, ib)))
             table = self.table_format(table)
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"

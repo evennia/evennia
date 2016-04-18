@@ -136,6 +136,7 @@ class ExtendedLoopingCall(LoopingCall):
             return interval - (total_runtime % self.interval)
         return None
 
+
 class ScriptBase(with_metaclass(TypeclassBase, ScriptDB)):
     """
     Base class for scripts. Don't inherit from this, inherit from the

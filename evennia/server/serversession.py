@@ -15,24 +15,17 @@ from django.utils import timezone
 from django.conf import settings
 from evennia.comms.models import ChannelDB
 from evennia.utils import logger
-from evennia.utils.inlinefunc import parse_inlinefunc
-from evennia.utils.nested_inlinefuncs import parse_inlinefunc as parse_nested_inlinefunc
 from evennia.utils.utils import make_iter, lazy_property
-from evennia.commands.cmdhandler import cmdhandler
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
 
-_IDLE_COMMAND = settings.IDLE_COMMAND
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _ObjectDB = None
 _ANSI = None
-_INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
-_RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 
 # i18n
 from django.utils.translation import ugettext as _
-
 
 # Handlers for Session.db/ndb operation
 
@@ -336,70 +329,58 @@ class ServerSession(Session):
             # Player-visible idle time, not used in idle timeout calcs.
             self.cmd_last_visible = self.cmd_last
 
-    def data_in(self, text=None, **kwargs):
+    def update_flags(self, **kwargs):
         """
-        Send data User->Evennia. This will in effect execute a command
-        string on the server.
-
-        Note that oob data is already sent separately to the
-        oobhandler at this point.
+        Update the protocol_flags and sync them with Portal.
 
         Kwargs:
-            text (str): A text to relay
-            kwargs (any): Other parameters from the protocol.
+            key, value - A key:value pair to set in the
+                protocol_flags dictionary.
+
+        Notes:
+            Since protocols can vary, no checking is done
+            as to the existene of the flag or not. The input
+            data should have been validated before this call.
 
         """
-        #from evennia.server.profiling.timetrace import timetrace
-        #text = timetrace(text, "ServerSession.data_in")
+        if kwargs:
+            self.protocol_flags.update(kwargs)
+            self.sessionhandler.session_portal_sync(self)
 
-        #explicitly check for None since text can be an empty string, which is
-        #also valid
-        if text is not None:
-            # this is treated as a command input
-            #text = to_unicode(escape_control_sequences(text), encoding=self.encoding)
-            # handle the 'idle' command
-            if text.strip() == _IDLE_COMMAND:
-                self.update_session_counters(idle=True)
-                return
-            if self.player:
-                # nick replacement
-                puppet = self.puppet
-                if puppet:
-                    text = puppet.nicks.nickreplace(text,
-                                  categories=("inputline", "channel"), include_player=True)
-                else:
-                    text = self.player.nicks.nickreplace(text,
-                                categories=("inputline", "channels"), include_player=False)
-            cmdhandler(self, text, callertype="session", session=self)
-            self.update_session_counters()
 
-    execute_cmd = data_in  # alias
-
-    def data_out(self, text=None, **kwargs):
+    def data_out(self, **kwargs):
         """
-        Send Evennia -> User
+        Sending data from Evennia->Client
 
         Kwargs:
-            text (str): A text to relay
-            kwargs (any): Other parameters to the protocol.
+            text (str or tuple)
+            any (str or tuple): Send-commands identified
+                by their keys. Or "options", carrying options
+                for the protocol(s).
 
         """
-        #from evennia.server.profiling.timetrace import timetrace
-        #text = timetrace(text, "ServerSession.data_out")
+        self.sessionhandler.data_out(self, **kwargs)
 
-        text = text if text else ""
-        if _INLINEFUNC_ENABLED and not "raw" in kwargs:
-            text = parse_inlinefunc(text, strip="strip_inlinefunc" in kwargs, session=self)
-            text = parse_nested_inlinefunc(text, strip="strip_inlinefunc" in kwargs, session=self)
-        if self.screenreader:
-            global _ANSI
-            if not _ANSI:
-                from evennia.utils import ansi as _ANSI
-            text = _ANSI.parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
-            text = _RE_SCREENREADER_REGEX.sub("", text)
-        self.sessionhandler.data_out(self, text=text, **kwargs)
-    # alias
-    msg = data_out
+    def msg(self, text=None, **kwargs):
+        """
+        Wrapper to mimic msg() functionality of Objects and Players
+        (server sessions don't use data_in since incoming data is
+        handled by inputfuncs).
+
+        Args:
+            text (str): String input.
+
+        Kwargs:
+            any (str or tuple): Send-commands identified
+                by their keys. Or "options", carrying options
+                for the protocol(s).
+
+        """
+        if text:
+            self.data_out(text=text, **kwargs)
+        else:
+            self.data_out(**kwargs)
+
 
     def __eq__(self, other):
         "Handle session comparisons"
@@ -426,6 +407,7 @@ class ServerSession(Session):
     def __unicode__(self):
         "Unicode representation"
         return u"%s" % str(self)
+
 
     # Dummy API hooks for use during non-loggedin operation
 

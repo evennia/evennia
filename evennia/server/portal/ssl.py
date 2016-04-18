@@ -1,19 +1,48 @@
 """
 This is a simple context factory for auto-creating
 SSL keys and certificates.
+
 """
 from __future__ import print_function
 
 import os
 import sys
-from twisted.internet import ssl as twisted_ssl
 try:
     import OpenSSL
-except ImportError:
-    print("  SSL_ENABLED requires PyOpenSSL.")
-    sys.exit(5)
+    from twisted.internet import ssl as twisted_ssl
+except ImportError as err:
+    errstr = """
+    {err}
+    SSL requires the PyOpenSSL library:
+        pip install pyopenssl
+    """
+    raise ImportError(errstr.format(err=err))
 
+from django.conf import settings
 from evennia.server.portal.telnet import TelnetProtocol
+
+_GAME_DIR = settings.GAME_DIR
+
+# messages
+
+NO_AUTOGEN = """
+
+{err}
+Evennia could not auto-generate the SSL private key. If this error
+persists, create {keyfile} yourself using third-party tools.
+"""
+
+NO_AUTOCERT = """
+
+{err}
+Evennia's SSL context factory could not automatically, create an SSL
+certificate {certfile}.
+
+A private key {keyfile} was already created. Please create {certfile}
+manually using the commands valid  for your operating system, for
+example (linux, using the openssl program):
+    {exestring}
+"""
 
 
 class SSLProtocol(TelnetProtocol):
@@ -21,8 +50,9 @@ class SSLProtocol(TelnetProtocol):
     Communication is the same as telnet, except data transfer
     is done with encryption.
     """
-    pass
-
+    def __init__(self, *args, **kwargs):
+        super(TelnetProtocol, self).__init__(*args, **kwargs)
+        self.protocol_name = "ssl"
 
 def verify_SSL_key_and_cert(keyfile, certfile):
     """
@@ -45,9 +75,8 @@ def verify_SSL_key_and_cert(keyfile, certfile):
             rsaKey = Key(RSA.generate(KEY_LENGTH))
             keyString = rsaKey.toString(type="OPENSSH")
             file(keyfile, 'w+b').write(keyString)
-        except Exception as e:
-            print("rsaKey error: %(e)s\n WARNING: Evennia could not auto-generate SSL private key." % {'e': e})
-            print("If this error persists, create game/%(keyfile)s yourself using third-party tools." % {'keyfile': keyfile})
+        except Exception as err:
+            print(NO_AUTOGEN.format(err=err, keyfile=keyfile))
             sys.exit(5)
 
         # try to create the certificate
@@ -56,29 +85,24 @@ def verify_SSL_key_and_cert(keyfile, certfile):
         #openssl req -new -x509 -key ssl.key -out ssl.cert -days 7300
         exestring = "openssl req -new -x509 -key %s -out %s -days %s" % (keyfile, certfile, CERT_EXPIRE)
         try:
-            #, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             subprocess.call(exestring)
-        except OSError as e:
-            string = "\n".join([
-                 "  %s\n" % e,
-                 "  Evennia's SSL context factory could not automatically",
-                 "  create an SSL certificate game/%(cert)s." % {'cert': certfile},
-                 "  A private key 'ssl.key' was already created. Please",
-                 "  create %(cert)s manually using the commands valid" % {'cert': certfile},
-                 "  for your operating system.",
-                 "  Example (linux, using the openssl program): ",
-                 "    %s" % exestring])
-            print(string)
-            sys.exit(5)
+        except OSError as err:
+            raise OSError(NO_AUTOCERT.format(err=err, certfile=certfile, keyfile=keyfile, exestring=exestring))
         print("done.")
 
 
 def getSSLContext():
     """
-    Returns an SSL context (key and certificate). This function
-    verifies that key/cert exists before obtaining the context, and if
-    not, creates them.
+    This is called by the portal when creating the SSL context
+    server-side.
+
+    Returns:
+        ssl_context (tuple): A key and certificate that is either
+            existing previously or or created on the fly.
+
     """
-    keyfile, certfile = "ssl.key", "ssl.cert"
+    keyfile = os.path.join(_GAME_DIR, "server", "ssl.key")
+    certfile = os.path.join(_GAME_DIR, "server", "ssl.cert")
+
     verify_SSL_key_and_cert(keyfile, certfile)
     return twisted_ssl.DefaultOpenSSLContextFactory(keyfile, certfile)

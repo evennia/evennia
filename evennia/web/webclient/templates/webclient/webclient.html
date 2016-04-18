@@ -1,0 +1,25 @@
+{% extends "webclient/base.html" %}
+
+<!-- Django-template blocks available for overloading:
+    - connecting     - custom connect messages
+    - jquery_import  - for changing to a local jquery version
+    - guilib_import  - for using your own gui lib
+-->
+
+
+{% block client %}
+
+<div id="wrapper">
+    <div id="messagewindow"></div>
+    <div id="inputform">
+        <div id="prompt"></div>
+        <div id="inputcontrol">
+            <textarea id="inputfield" type="text"></textarea>
+            <input id="inputsend" type="button" value="&gt;"/>
+        </div>
+    </div>
+    <div id="inputsizer"></div>
+</div>
+
+{% endblock %}
+

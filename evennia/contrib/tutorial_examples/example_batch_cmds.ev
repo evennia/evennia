@@ -2,9 +2,9 @@
 # This is an example batch build file for Evennia.
 #
 # It allows batch processing of normal Evennia commands.
-# Test it by loading it with the @batchprocess command
+# Test it by loading it with @batchcommand:
 #
-#   @batchprocess[/interactive] examples.batch_example
+#   @batchcommand[/interactive] examples.batch_example
 #
 # A # as the first symbol on a line begins a comment and
 # marks the end of a previous command definition (important!).

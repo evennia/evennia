@@ -18,7 +18,7 @@ and initialize it:
 
     from evennia.utils.eveditor import EvEditor
 
-    EvEditor(caller, loadfunc=None, savefunc=None, quitfunc=None, key="")
+    EvEditor(caller, loadfunc=None, savefunc=None, quitfunc=None, key="", persistent=True)
 
  - caller is the user of the editor, the one to see all feedback.
  - loadfunc(caller) is called when the editor is first launched; the
@@ -31,14 +31,20 @@ and initialize it:
    no automatic quit messages will be given.
  - key is an optional identifier for the editing session, to be
    displayed in the editor.
+-  persistent means the editor state will be saved to the database making it
+   survive a server reload. Note that using this mode, the load- save-
+   and quit-funcs must all be possible to pickle - notable unusable
+   callables are class methods and functions defined inside other
+   functions. With persistent=False, no such restriction exists.
 
 """
 from builtins import object
 
 import re
+
 from django.conf import settings
 from evennia import Command, CmdSet
-from evennia.utils import is_iter, fill, dedent
+from evennia.utils import is_iter, fill, dedent, logger
 from evennia.commands import cmdhandler
 
 # we use cmdhandler instead of evennia.syscmdkeys to
@@ -59,9 +65,9 @@ _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _HELP_TEXT = \
 """
  <txt>  - any non-command is appended to the end of the buffer.
- :  <l> - view buffer or only line <l>
- :: <l> - view buffer without line numbers or other parsing
- :::    - print a ':' as the only character on the line...
+ :  <l> - view buffer or only line(s) <l>
+ :: <l> - raw-view buffer or only line(s) <l>
+ :::    - escape - enter ':' as the only character on the line.
  :h     - this help.
 
  :w     - save the buffer (don't quit)
@@ -73,13 +79,13 @@ _HELP_TEXT = \
  :uu    - (redo) step forward in undo history
  :UU    - reset all changes back to initial state
 
- :dd <l>     - delete line <n>
+ :dd <l>     - delete last line or line(s) <l>
  :dw <l> <w> - delete word or regex <w> in entire buffer or on line <l>
- :DD         - clear buffer
+ :DD         - clear entire buffer
 
- :y  <l>        - yank (copy) line <l> to the copy buffer
- :x  <l>        - cut line <l> and store it in the copy buffer
- :p  <l>        - put (paste) previously copied line directly after <l>
+ :y  <l>        - yank (copy) line(s) <l> to the copy buffer
+ :x  <l>        - cut line(s) <l> and store it in the copy buffer
+ :p  <l>        - put (paste) previously copied line(s) directly after <l>
  :i  <l> <txt>  - insert new text <txt> at line <l>. Old line will move down
  :r  <l> <txt>  - replace line <l> with text <txt>
  :I  <l> <txt>  - insert text at the beginning of line <l>
@@ -94,26 +100,26 @@ _HELP_TEXT = \
  :echo - turn echoing of the input on/off (helpful for some clients)
 
     Legend:
-    <l> - line numbers, or range lstart:lend, e.g. '3:7'.
-    <w> - one word or several enclosed in quotes.
-    <txt> - longer string, usually not needed to be enclosed in quotes.
+    <l>   - line number, like '5' or range, like '3:7'.
+    <w>   - a single word, or multiple words with quotes around them.
+    <txt> - longer string, usually not needing quotes.
 """
 
 _ERROR_LOADFUNC = \
 """
 {error}
 
-{rBuffer load function error. Could not load initial data.{n
+|rBuffer load function error. Could not load initial data.|n
 """
 
 _ERROR_SAVEFUNC = \
 """
 {error}
 
-{rSave function returned an error. Buffer not saved.{n
+|rSave function returned an error. Buffer not saved.|n
 """
 
-_ERROR_NO_SAVEFUNC = "{rNo save function defined. Buffer cannot be saved.{n"
+_ERROR_NO_SAVEFUNC = "|rNo save function defined. Buffer cannot be saved.|n"
 
 _MSG_SAVE_NO_CHANGE = "No changes need saving"
 _DEFAULT_NO_QUITFUNC = "Exited editor."
@@ -122,11 +128,26 @@ _ERROR_QUITFUNC = \
 """
 {error}
 
-{rQuit function gave an error. Skipping.{n
+|rQuit function gave an error. Skipping.|n
 """
 
-_MSG_NO_UNDO = "Nothing to undo"
-_MSG_NO_REDO = "Nothing to redo"
+_ERROR_PERSISTENT_SAVING = \
+"""
+{error}
+
+|rThe editor state could not be saved for persistent mode. Switching
+to non-persistent mode (which means the editor session won't survive
+an eventual server reload - so save often!)|n
+"""
+
+_TRACE_PERSISTENT_SAVING = \
+"EvEditor persistent-mode error. Commonly, this is because one or " \
+"more of the EvEditor callbacks could not be pickled, for example " \
+"because it's a class method or is defined inside another function."
+
+
+_MSG_NO_UNDO = "Nothing to undo."
+_MSG_NO_REDO = "Nothing to redo."
 _MSG_UNDO = "Undid one step."
 _MSG_REDO = "Redid one step."
 
@@ -155,11 +176,11 @@ class CmdSaveYesNo(Command):
         self.caller.cmdset.remove(SaveYesNoCmdSet)
         if self.raw_string.strip().lower() in ("no", "n"):
             # answered no
-            self.caller.msg(self.caller.ndb._lineeditor.quit())
+            self.caller.msg(self.caller.ndb._eveditor.quit())
         else:
             # answered yes (default)
-            self.caller.ndb._lineeditor.save_buffer()
-            self.caller.ndb._lineeditor.quit()
+            self.caller.ndb._eveditor.save_buffer()
+            self.caller.ndb._eveditor.quit()
 
 
 class SaveYesNoCmdSet(CmdSet):
@@ -204,8 +225,15 @@ class CmdEditorBase(Command):
         """
 
         linebuffer = []
-        if self.editor:
-            linebuffer = self.editor.get_buffer().split("\n")
+        editor = self.caller.ndb._eveditor
+        if not editor:
+            # this will completely replace the editor
+            _load_editor(self.caller)
+            editor = self.caller.ndb._eveditor
+        self.editor = editor
+
+        linebuffer = self.editor.get_buffer().split("\n")
+
         nlines = len(linebuffer)
 
         # The regular expression will split the line by whitespaces,
@@ -285,6 +313,27 @@ class CmdEditorBase(Command):
         self.arg2 = arg2
 
 
+def _load_editor(caller):
+    """
+    Load persistent editor from storage.
+    """
+    saved_options = caller.attributes.get("_eveditor_saved")
+    saved_buffer, saved_undo = caller.attributes.get("_eveditor_buffer_temp", (None, None))
+    if saved_options:
+        eveditor = EvEditor(caller, **saved_options[0])
+        if saved_buffer:
+            # we have to re-save the buffer data so we can handle subsequent restarts
+            caller.attributes.add("_eveditor_buffer_temp", (saved_buffer, saved_undo))
+            setattr(eveditor, "_buffer", saved_buffer)
+            setattr(eveditor, "_undo_buffer", saved_undo)
+            setattr(eveditor, "_undo_pos", len(saved_undo) - 1)
+        for key, value in saved_options[1].iteritems():
+            setattr(eveditor, key, value)
+    else:
+        # something went wrong. Cleanup.
+        caller.cmdset.remove(EvEditorCmdSet)
+
+
 class CmdLineInput(CmdEditorBase):
     """
     No command match - Inputs line of text into buffer.
@@ -296,7 +345,9 @@ class CmdLineInput(CmdEditorBase):
         """
         Adds the line without any formatting changes.
         """
-        editor = self.editor
+        caller = self.caller
+        editor = caller.ndb._eveditor
+
         buf = editor.get_buffer()
 
         # add a line of text to buffer
@@ -328,7 +379,8 @@ class CmdEditorGroup(CmdEditorBase):
         efficient presentation.
         """
         caller = self.caller
-        editor = self.editor
+        editor = caller.ndb._eveditor
+
         linebuffer = self.linebuffer
         lstart, lend = self.lstart, self.lend
         cmd = self.cmdstring
@@ -347,9 +399,9 @@ class CmdEditorGroup(CmdEditorBase):
                 buf = linebuffer[lstart:lend]
                 editor.display_buffer(buf=buf,
                                       offset=lstart,
-                                      linenums=False, raw=True)
+                                      linenums=False, options={"raw":True})
             else:
-                editor.display_buffer(linenums=False, raw=True)
+                editor.display_buffer(linenums=False, options={"raw":True})
         elif cmd == ":::":
             # Insert single colon alone on a line
             editor.update_buffer(editor.buffer + "\n:")
@@ -532,6 +584,9 @@ class EvEditorCmdSet(CmdSet):
     "CmdSet for the editor commands"
     key = "editorcmdset"
     mergetype = "Replace"
+    def at_cmdset_creation(self):
+        self.add(CmdLineInput())
+        self.add(CmdEditorGroup())
 
 #------------------------------------------------------------
 #
@@ -548,7 +603,7 @@ class EvEditor(object):
     """
 
     def __init__(self, caller, loadfunc=None, savefunc=None,
-                 quitfunc=None, key=""):
+                 quitfunc=None, key="", persistent=False):
         """
         Args:
             caller (Object): Who is using the editor.
@@ -568,13 +623,25 @@ class EvEditor(object):
                 supply to `quitfunc`.
             key (str, optional): An optional key for naming this
                 session and make it unique from other editing sessions.
+            persistent (bool, optional): Make the editor survive a reboot. Note
+                that if this is set, all callables must be possible to pickle
+
+        Notes:
+            In persistent mode, all the input callables (savefunc etc)
+            must be possible to be *pickled*, this excludes e.g.
+            callables that are class methods or functions defined
+            dynamically or as part of another function. In
+            non-persistent mode no such restrictions exist.
+
+
 
         """
         self._key = key
         self._caller = caller
-        self._caller.ndb._lineeditor = self
+        self._caller.ndb._eveditor = self
         self._buffer = ""
         self._unsaved = False
+        self._persistent = persistent
 
         if loadfunc:
             self._loadfunc = loadfunc
@@ -590,19 +657,6 @@ class EvEditor(object):
         else:
             self._quitfunc = lambda caller: caller.msg(_DEFAULT_NO_QUITFUNC)
 
-        # Create the commands we need
-        cmd1 = CmdLineInput()
-        cmd1.editor = self
-        cmd1.obj = self
-        cmd2 = CmdEditorGroup()
-        cmd2.obj = self
-        cmd2.editor = self
-        # Populate cmdset and add it to caller
-        editor_cmdset = EvEditorCmdSet()
-        editor_cmdset.add(cmd1)
-        editor_cmdset.add(cmd2)
-        self._caller.cmdset.add(editor_cmdset)
-
         # store the original version
         self._pristine_buffer = self._buffer
         self._sep = "-"
@@ -614,6 +668,23 @@ class EvEditor(object):
 
         # copy buffer
         self._copy_buffer = []
+
+        if persistent:
+            # save in tuple {kwargs, other options}
+            try:
+                caller.attributes.add("_eveditor_saved",(
+                        {"loadfunc":loadfunc, "savefunc": savefunc,
+                         "quitfunc": quitfunc, "key": key, "persistent": persistent},
+                        {"_pristine_buffer": self._pristine_buffer,
+                         "_sep": self._sep}))
+                caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
+            except Exception, err:
+                caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
+                logger.log_trace(_TRACE_PERSISTENT_SAVING)
+                persistent = False
+
+        # Create the commands we need
+        caller.cmdset.add(EvEditorCmdSet, permanent=persistent)
 
         # echo inserted text back to caller
         self._echo_mode = True
@@ -628,6 +699,8 @@ class EvEditor(object):
         try:
             self._buffer = self._loadfunc(self._caller)
         except Exception as e:
+            from evennia.utils import logger
+            logger.log_trace()
             self._caller.msg(_ERROR_LOADFUNC.format(error=e))
 
     def get_buffer(self):
@@ -654,6 +727,8 @@ class EvEditor(object):
             self._buffer = buf
             self.update_undo()
             self._unsaved = True
+            if self._persistent:
+                self._caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
 
     def quit(self):
         """
@@ -664,13 +739,14 @@ class EvEditor(object):
             self._quitfunc(self._caller)
         except Exception as e:
             self._caller.msg(_ERROR_QUITFUNC.format(error=e))
-        del self._caller.ndb._lineeditor
+        self._caller.nattributes.remove("_eveditor")
+        self._caller.attributes.remove("_eveditor_buffer_temp")
+        self._caller.attributes.remove("_eveditor_saved")
         self._caller.cmdset.remove(EvEditorCmdSet)
 
     def save_buffer(self):
         """
-        Saves the content of the buffer. The 'quitting' argument is a bool
-        indicating whether or not the editor intends to exit after saving.
+        Saves the content of the buffer.
 
         """
         if self._unsaved:
@@ -717,7 +793,7 @@ class EvEditor(object):
             self._undo_buffer = self._undo_buffer[:self._undo_pos + 1] + [self._buffer]
             self._undo_pos = len(self._undo_buffer) - 1
 
-    def display_buffer(self, buf=None, offset=0, linenums=True, raw=False):
+    def display_buffer(self, buf=None, offset=0, linenums=True, options={"raw":False}):
         """
         This displays the line editor buffer, or selected parts of it.
 
@@ -742,15 +818,15 @@ class EvEditor(object):
         nchars = len(buf)
 
         sep = self._sep
-        header = "{n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH-25-len(self._key))
-        footer = "{n" + sep * 10 + "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) \
+        header = "|n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH-25-len(self._key))
+        footer = "|n" + sep * 10 + "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) \
                     + sep * 12 + "(:h for help)" + sep * 23
         if linenums:
             main = "\n".join("{b%02i|{n %s" % (iline + 1 + offset, line) for iline, line in enumerate(lines))
         else:
             main = "\n".join(lines)
         string = "%s\n%s\n%s" % (header, main, footer)
-        self._caller.msg(string, raw=raw)
+        self._caller.msg(string, options=options)
 
     def display_help(self):
         """

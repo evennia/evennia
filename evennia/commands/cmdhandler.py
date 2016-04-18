@@ -35,6 +35,7 @@ command line. The processing of a command works as follows:
 
 from collections import defaultdict
 from weakref import WeakValueDictionary
+from traceback import format_exc
 from copy import copy
 from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
@@ -43,6 +44,8 @@ from evennia.utils import logger, utils
 from evennia.utils.utils import string_suggestions, to_unicode
 
 from django.utils.translation import ugettext as _
+
+_IN_GAME_ERRORS = settings.IN_GAME_ERRORS
 
 __all__ = ("cmdhandler",)
 _GA = object.__getattribute__
@@ -76,46 +79,76 @@ CMD_LOGINSTART = "__unloggedin_look_command"
 # Function for handling multiple command matches.
 _SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
-# Output strings
+# Output strings. The first is the IN_GAME_ERRORS return, the second
+# is the normal "production message to echo to the player.
 
-_ERROR_UNTRAPPED = """
-An untrapped error occurred. Please file a bug report detailing the
-steps to reproduce. Server log time stamp is '{timestamp}'.
+_ERROR_UNTRAPPED = (
 """
-
-_ERROR_CMDSETS = """
-A cmdset merger error occurred. Please file a bug report detailing the
-steps to reproduce. Server log time stamp is '{timestamp}'.
+An untrapped error occurred.
+""",
 """
+An untrapped error occurred. Please file a bug report detailing the steps to reproduce.
+""")
 
-_ERROR_NOCMDSETS = """
+_ERROR_CMDSETS = (
+"""
+A cmdset merger-error occurred. This is often due to a syntax
+error in one of the cmdsets to merge.
+""",
+"""
+A cmdset merger-error occurred. Please file a bug report detailing the
+steps to reproduce.
+""")
+
+_ERROR_NOCMDSETS = (
+"""
+No command sets found! This is a critical bug that can have
+multiple causes.
+""",
+"""
 No command sets found! This is a sign of a critical bug.  If
 disconnecting/reconnecting doesn't" solve the problem, try to contact
-the server admin through" some other means for assistance. Server log
-time stamp is '{timestamp}'.
-"""
+the server admin through" some other means for assistance.
+""")
 
-_ERROR_CMDHANDLER = """
-A command handler bug occurred. Please file a bug report with the
-Evennia project. Include the relvant traceback from the server log at
-time stamp '{timestamp}'.
+_ERROR_CMDHANDLER = (
 """
+A command handler bug occurred. If this is not due to a local change,
+please file a bug report with the Evennia project, including the
+traceback and steps to reproduce.
+""",
+"""
+A command handler bug occurred. Please notify staff - they should
+likely file a bug report with the Evennia project.
+""")
 
 _ERROR_RECURSION_LIMIT = "Command recursion limit ({recursion_limit}) " \
                          "reached for '{raw_string}' ({cmdclass})."
 
 
-def _msg_err(receiver, string):
+def _msg_err(receiver, stringtuple):
     """
     Helper function for returning an error to the caller.
 
     Args:
         receiver (Object): object to get the error message.
-        string (str): string which will be shown to the user.
+        stringtuple (tuple): tuple with two strings - one for the
+        _IN_GAME_ERRORS mode (with the traceback) and one with the
+        production string (with a timestamp) to be shown to the user.
 
     """
-    receiver.msg(string.format(_nomulti=True, timestamp=logger.timeformat()).strip())
-
+    string = "{traceback}\n{errmsg}\n(Traceback was logged {timestamp})."
+    timestamp = logger.timeformat()
+    tracestring = format_exc()
+    logger.log_trace()
+    if _IN_GAME_ERRORS:
+        receiver.msg(string.format(traceback=tracestring,
+                                   errmsg=stringtuple[0].strip(),
+                                   timestamp=timestamp).strip())
+    else:
+        receiver.msg(string.format(traceback=tracestring.splitlines()[-1],
+                                   errmsg=stringtuple[1].strip(),
+                                   timestamp=timestamp).strip())
 
 # custom Exceptions
 
@@ -177,7 +210,6 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                     channel_cmdset = yield CHANNELHANDLER.get_cmdset(player)
                 returnValue(channel_cmdset)
             except Exception:
-                logger.log_trace()
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported
 
@@ -221,7 +253,6 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                         cset.duplicates = True if cset.duplicates is None else cset.duplicates
                 returnValue(local_obj_cmdsets)
             except Exception:
-                logger.log_trace()
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported
 
@@ -235,7 +266,6 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
             try:
                 yield obj.at_cmdset_get()
             except Exception:
-                logger.log_trace()
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported
             try:
@@ -323,7 +353,6 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
     except ErrorReported:
         raise
     except Exception:
-        logger.log_trace()
         _msg_err(caller, _ERROR_CMDSETS)
         raise ErrorReported
 
@@ -449,7 +478,6 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             returnValue(ret)
 
         except Exception:
-            logger.log_trace()
             _msg_err(caller, _ERROR_UNTRAPPED)
             raise ErrorReported
 
@@ -570,19 +598,17 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 returnValue(ret)
             elif sysarg:
                 # return system arg
-                error_to.msg(exc.sysarg, _nomulti=True)
+                error_to.msg(exc.sysarg)
 
         except NoCmdSets:
             # Critical error.
             logger.log_err("No cmdsets found: %s" % caller)
-            error_to.msg(_ERROR_NOCMDSETS, _nomulti=True)
+            error_to.msg(_ERROR_NOCMDSETS)
 
         except Exception:
             # We should not end up here. If we do, it's a programming bug.
-            logger.log_trace()
             _msg_err(error_to, _ERROR_UNTRAPPED)
 
     except Exception:
         # This catches exceptions in cmdhandler exceptions themselves
-        logger.log_trace()
         _msg_err(error_to, _ERROR_CMDHANDLER)

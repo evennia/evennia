@@ -176,9 +176,9 @@ class CmdPy(MuxCommand):
                           'inherits_from': utils.inherits_from}
 
         try:
-            self.msg(">>> %s" % pycode, raw=True, session=self.session)
+            self.msg(">>> %s" % pycode, session=self.session, options={"raw":True})
         except TypeError:
-            self.msg(">>> %s" % pycode, raw=True)
+            self.msg(">>> %s" % pycode, options={"raw":True})
 
         mode = "eval"
         try:
@@ -207,9 +207,9 @@ class CmdPy(MuxCommand):
             ret = "\n".join("%s" % line for line in errlist if line)
 
         try:
-            self.msg(ret, session=self.session, raw=True)
+            self.msg(ret, session=self.session, options={"raw":True})
         except TypeError:
-            self.msg(ret, raw=True)
+            self.msg(ret, options={"raw":True})
 
 
 # helper function. Kept outside so it can be imported and run
@@ -662,10 +662,12 @@ class CmdServerLoad(MuxCommand):
 
         if "flushmem" in self.switches:
             # flush the cache
+            prev, _ = _IDMAPPER.cache_size()
             nflushed = _IDMAPPER.flush_cache()
-            string = "Flushed object idmapper cache. Python garbage " \
-                     "collector recovered memory from %i objects."
-            self.caller(string % nflushed)
+            now, _ = _IDMAPPER.cache_size()
+            string = "The Idmapper cache freed |w{idmapper}|n database objects.\n" \
+                     "The Python garbage collector freed |w{gc}|n Python instances total."
+            self.caller.msg(string.format(idmapper=(prev-now), gc=nflushed))
             return
 
         # display active processes
@@ -739,19 +741,50 @@ class CmdServerLoad(MuxCommand):
 
         string = "{wServer CPU and Memory load:{n\n%s" % loadtable
 
-        if not is_pypy:
-            # Cache size measurements are not available on PyPy
-            # because it lacks sys.getsizeof
+        # object cache count (note that sys.getsiseof is not called so this works for pypy too.
+        total_num, cachedict = _IDMAPPER.cache_size()
+        sorted_cache = sorted([(key, num) for key, num in cachedict.items() if num > 0],
+                                key=lambda tup: tup[1], reverse=True)
+        memtable = EvTable("entity name", "number", "idmapper %", align="l")
+        for tup in sorted_cache:
+            memtable.add_row(tup[0], "%i" % tup[1], "%.2f" % (float(tup[1]) / total_num * 100))
 
-            # object cache size
-            total_num, cachedict = _IDMAPPER.cache_size()
-            sorted_cache = sorted([(key, num) for key, num in cachedict.items() if num > 0],
-                                    key=lambda tup: tup[1], reverse=True)
-            memtable = EvTable("entity name", "number", "idmapper %", align="l")
-            for tup in sorted_cache:
-                memtable.add_row(tup[0], "%i" % tup[1], "%.2f" % (float(tup[1]) / total_num * 100))
-
-            string += "\n{w Entity idmapper cache:{n %i items\n%s" % (total_num, memtable)
+        string += "\n{w Entity idmapper cache:{n %i items\n%s" % (total_num, memtable)
 
         # return to caller
         self.caller.msg(string)
+
+class CmdTickers(MuxCommand):
+    """
+    View running tickers
+
+    Usage:
+      @tickers
+
+    Note: Tickers are created, stopped and manipulated in Python code
+    using the TickerHandler. This is merely a convenience function for
+    inspecting the current status.
+
+    """
+    key = "@tickers"
+    help_category = "System"
+
+    def func(self):
+        from evennia import TICKER_HANDLER
+        all_subs = TICKER_HANDLER.all_display()
+        if not all_subs:
+            self.caller.msg("No tickers are currently active.")
+            return
+        table = EvTable("tick(s)", "object", "path/methodname", "idstring", "db")
+        for sub in all_subs:
+            table.add_row(sub[3],
+                          sub[1] or "[None]",
+                          sub[1] if sub[1] else sub[2],
+                          sub[4] or "[Unset]",
+                          "*" if sub[5] else "-")
+        self.caller.msg("|wActive tickers|n:\n" + unicode(table))
+
+
+
+
+

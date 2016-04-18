@@ -137,7 +137,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
     * Helper methods
 
-     - msg(outgoing_string, from_obj=None, **kwargs)
+     - msg(text=None, from_obj=None, session=None, options=None, **kwargs)
      - execute_cmd(raw_string)
      - search(ostring, global_search=False, attribute_name=None,
                       use_nicks=False, location=None,
@@ -384,7 +384,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         super(PlayerDB, self).delete(*args, **kwargs)
     ## methods inherited from database model
 
-    def msg(self, text=None, from_obj=None, session=None, **kwargs):
+    def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
         """
         Evennia -> User
         This is the main route for sending data back to the user from the
@@ -398,23 +398,30 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                 Sessions to receive this send. If given, overrules the
                 default send behavior for the current
                 MULTISESSION_MODE.
-        Notes:
-            All other keywords are passed on to the protocol.
+            options (list): Protocol-specific options. Passed on to the protocol.
+        Kwargs:
+            any (dict): All other keywords are passed on to the protocol.
 
         """
-        text = to_str(text, force_string=True) if text else ""
-
         if from_obj:
             # call hook
             try:
                 from_obj.at_msg_send(text=text, to_obj=self, **kwargs)
             except Exception:
                 pass
+        try:
+            if not self.at_msg_receive(text=text, **kwargs):
+                # abort message to this player
+                return
+        except Exception:
+            pass
+
+        kwargs["options"] = options
 
         # session relay
         sessions = make_iter(session) if session else self.sessions.all()
         for session in sessions:
-            session.msg(text=text, **kwargs)
+            session.data_out(text=text, **kwargs)
 
     def execute_cmd(self, raw_string, session=None, **kwargs):
         """
@@ -560,6 +567,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         lockstring = "attrread:perm(Admins);attredit:perm(Admins);" \
                      "attrcreate:perm(Admins)"
         self.attributes.add("_playable_characters", [], lockstring=lockstring)
+        self.attributes.add("_saved_protocol_flags", {}, lockstring=lockstring)
 
     def at_init(self):
         """
@@ -698,14 +706,27 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             auto-puppeting based on `MULTISESSION_MODE`.
 
         """
+        # if we have saved protocol flags on ourselves, load them here.
+        protocol_flags = self.attributes.get("_saved_protocol_flags", None)
+        if session and protocol_flags:
+            session.update_flags(**protocol_flags)
+
         self._send_to_connect_channel("{G%s connected{n" % self.key)
         if _MULTISESSION_MODE == 0:
             # in this mode we should have only one character available. We
             # try to auto-connect to our last conneted object, if any
-            self.puppet_object(session, self.db._last_puppet)
+            try:
+                self.puppet_object(session, self.db._last_puppet)
+            except RuntimeError:
+                self.msg("The Character does not exist.")
+                return
         elif _MULTISESSION_MODE == 1:
             # in this mode all sessions connect to the same puppet.
-            self.puppet_object(session, self.db._last_puppet)
+            try:
+                self.puppet_object(session, self.db._last_puppet)
+            except RuntimeError:
+                self.msg("The Character does not exist.")
+                return
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.
@@ -793,7 +814,9 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
         if target and not is_iter(target):
             # single target - just show it
-            return target.return_appearance()
+            return target.return_appearance(self)
+        elif not target:
+            return "|rNo such character.|n"
         else:
             # list of targets - make list to disconnect from db
             characters = list(target)

@@ -152,7 +152,32 @@ log_depmsg = log_dep
 
 # Arbitrary file logger
 
-LOG_FILE_HANDLES = {} # holds open log handles
+_LOG_FILE_HANDLES = {} # holds open log handles
+
+def _open_log_file(filename):
+    """
+    Helper to open the log file (always in the log dir) and cache its
+    handle.  Will create a new file in the log dir if one didn't
+    exist.
+    """
+    global _LOG_FILE_HANDLES, _LOGDIR
+    if not _LOGDIR:
+        from django.conf import settings
+        _LOGDIR = settings.LOG_DIR
+
+    filename = os.path.join(_LOGDIR, filename)
+    if filename in _LOG_FILE_HANDLES:
+        # cache the handle
+        return _LOG_FILE_HANDLES[filename]
+    else:
+        try:
+            filehandle = open(filename, "a+") # append mode + reading
+            _LOG_FILE_HANDLES[filename] = filehandle
+            return filehandle
+        except IOError:
+            log_trace()
+    return None
+
 
 def log_file(msg, filename="game.log"):
     """
@@ -164,17 +189,9 @@ def log_file(msg, filename="game.log"):
             on new lines following datetime info.
 
     """
-    global LOG_FILE_HANDLES, _LOGDIR, _TIMEZONE
-
-    if not _LOGDIR:
-        from django.conf import settings
-        _LOGDIR = settings.LOG_DIR
-    if not _TIMEZONE:
-        from django.utils import timezone as _TIMEZONE
-
     def callback(filehandle, msg):
         "Writing to file and flushing result"
-        msg = "\n%s [-] %s" % (_TIMEZONE.now(), msg.strip())
+        msg = "\n%s [-] %s" % (timeformat(), msg.strip())
         filehandle.write(msg)
         # since we don't close the handle, we need to flush
         # manually or log file won't be written to until the
@@ -186,15 +203,65 @@ def log_file(msg, filename="game.log"):
         log_trace()
 
     # save to server/logs/ directory
-    filename = os.path.join(_LOGDIR, filename)
+    filehandle = _open_log_file(filename)
+    if filehandle:
+        deferToThread(callback, filehandle, msg).addErrback(errback)
 
-    if filename in LOG_FILE_HANDLES:
-        filehandle = LOG_FILE_HANDLES[filename]
-    else:
-        try:
-            filehandle = open(filename, "a")
-            LOG_FILE_HANDLES[filename] = filehandle
-        except IOError:
-            log_trace()
-            return
-    deferToThread(callback, filehandle, msg).addErrback(errback)
+
+def tail_log_file(filename, offset, nlines, callback=None):
+    """
+    Return the tail of the log file.
+
+    Args:
+        filename (str): The name of the log file, presumed to be in
+            the Evennia log dir.
+        offset (int): The line offset *from the end of the file* to start
+            reading from. 0 means to start at the latest entry.
+        nlines (int): How many lines to return, counting backwards
+            from the offset. If file is shorter, will get all lines.
+        callback (callable, optional): A function to manage the result of the
+            asynchronous file access. This will get a list of lines. If unset,
+            the tail will happen synchronously.
+
+    Returns:
+        lines (deferred or list): This will be a deferred if `callable` is given,
+            otherwise it will be a list with The nline entries from the end of the file, or
+            all if the file is shorter than nlines.
+
+    """
+    def seek_file(filehandle, offset, nlines, callback):
+        "step backwards in chunks and stop only when we have enough lines"
+        lines_found = []
+        buffer_size = 4098
+        block_count = -1
+        while len(lines_found) < (offset + nlines):
+            try:
+                # scan backwards in file, starting from the end
+                filehandle.seek(block_count * buffer_size, os.SEEK_END)
+            except IOError:
+                # file too small for this seek, take what we've got
+                filehandle.seek(0)
+                lines_found = filehandle.readlines()
+                break
+            lines_found = filehandle.readlines()
+            block_count -= 1
+        # return the right number of lines
+        lines_found = lines_found[-nlines-offset:-offset if offset else None]
+        if callback:
+            callback(lines_found)
+        else:
+            return lines_found
+
+    def errback(failure):
+        "Catching errors to normal log"
+        log_trace()
+
+    filehandle = _open_log_file(filename)
+    if filehandle:
+        if callback:
+            return deferToThread(seek_file, filehandle, offset, nlines, callback).addErrback(errback)
+        else:
+            return seek_file(filehandle, offset, nlines, callback)
+
+
+

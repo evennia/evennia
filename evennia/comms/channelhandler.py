@@ -27,19 +27,28 @@ from builtins import object
 
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdset, command
+from evennia.utils.logger import tail_log_file
 
 from django.utils.translation import ugettext as _
 
 class ChannelCommand(command.Command):
     """
-    Channel
+    {channelkey} channel
+
+    {channeldesc}
 
     Usage:
-       <channel name or alias>  <message>
+       {lower_channelkey}  <message>
+       {lower_channelkey}/history [start]
 
-    This is a channel. If you have subscribed to it, you can send to
-    it by entering its name or alias, followed by the text you want to
-    send.
+    Switch:
+        history: View the 20 last messages, optionally
+            beginning <start> messages from the end.
+
+    Example:
+        {lower_channelkey} Hello World!
+        {lower_channelkey}/history
+        {lower_channelkey}/history 30
 
     """
     # this flag is what identifies this cmd as a channel cmd
@@ -56,6 +65,13 @@ class ChannelCommand(command.Command):
         """
         # cmdhandler sends channame:msg here.
         channelname, msg = self.args.split(":", 1)
+        self.history_start = None
+        if msg.startswith("/history"):
+            arg = msg[8:]
+            try:
+                self.history_start = int(arg) if arg else 0
+            except ValueError:
+                pass
         self.args = (channelname.strip(), msg.strip())
 
     def func(self):
@@ -81,7 +97,14 @@ class ChannelCommand(command.Command):
             string = _("You are not permitted to send to channel '%s'.")
             self.msg(string % channelkey)
             return
-        channel.msg(msg, senders=self.caller, online=True)
+        if self.history_start is not None:
+            # Try to view history
+            log_file = channel.attributes.get("log_file", default="channel_%s.log" % channel.key)
+            send_msg = lambda lines: self.msg("".join(line.split("[-]", 1)[1]
+                                                    if "[-]" in line else line for line in lines))
+            tail_log_file(log_file, self.history_start, 20, callback=send_msg)
+        else:
+            channel.msg(msg, senders=self.caller, online=True)
 
     def get_extra_info(self, caller, **kwargs):
         """
@@ -177,8 +200,13 @@ class ChannelHandler(object):
                              locks="cmd:all();%s" % channel.locks,
                              help_category="Channel names",
                              obj=channel,
-                             arg_regex=r"\s.*?",
+                             arg_regex=r"\s.*?|/history.*?",
                              is_channel=True)
+        # format the help entry
+        key = channel.key
+        cmd.__doc__ = cmd.__doc__.format(channelkey=key,
+                                         lower_channelkey=key.strip().lower(),
+                                         channeldesc=channel.db.desc.strip())
         self.cached_channel_cmds.append(cmd)
         self.cached_cmdsets = {}
 

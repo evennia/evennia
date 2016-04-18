@@ -425,7 +425,7 @@ class EvForm(object):
         return unicode(ANSIString("\n").join([line for line in self.form]))
 
 def _test():
-    "test evform"
+    "test evform. This is used by the unittest system."
     form = EvForm("evennia.utils.evform_test")
 
     # add data to each tagged form cell
@@ -449,7 +449,6 @@ def _test():
     # add the tables to the proper ids in the form
     form.map(tables={"A": tableA,
                      "B": tableB})
-
     # unicode is required since the example contains non-ascii characters
     #print(unicode(form))
     return form

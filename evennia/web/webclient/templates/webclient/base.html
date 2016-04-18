@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!--
+Extend the main webclient template with this file to get communication
+with evennia set up automatically and get the Evennia JS lib and
+JQuery available.
+-->
+
+{% load staticfiles %}
+<html dir="ltr" lang="en">
+  <head>
+    <meta http-equiv="content-type", content="application/xhtml+xml; charset=UTF-8" />
+    <meta name="author" content="Evennia" />
+    <meta name="generator" content="Evennia" />
+
+    <link rel='stylesheet' type="text/css" media="screen" href={% static "webclient/css/webclient.css" %}>
+
+    <!-- Import JQuery and warn if there is a problem -->
+    {% block jquery_import %}
+        <script src="http://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+    {% endblock %}
+
+    <script type="text/javascript" charset="utf-8">
+        if(!window.jQuery) {
+            document.write("<div class='err'>jQuery library not found or the online version could not be reached.</div>");
+        }
+    </script>
+
+    <!-- Set up Websocket url and load the evennia.js library-->
+    <script language="javascript" type="text/javascript">
+        {% if websocket_enabled %}
+            var wsactive = true;
+        {% else %}
+            var wsactive = false;
+        {% endif %}
+
+        {% if websocket_url %}
+            var wsurl = "{{websocket_url}}:{{websocket_port}}";
+        {% else %}
+            var wsurl = "ws://" + this.location.hostname + ":{{websocket_port}}";
+        {% endif %}
+    </script>
+    <script src={% static "webclient/js/evennia.js" %} language="javascript" type="text/javascript" charset="utf-8"/></script>
+
+    <!-- Load gui library -->
+    {% block guilib_import %}
+        <script src={% static "webclient/js/webclient_gui.js" %} language="javascript" type="text/javascript" charset="utf-8"></script>
+    {% endblock %}
+
+  </head>
+  <body>
+
+    <div id="connecting">
+        {% block connecting %}
+        {% endblock %}
+    </div>
+
+    <div id="noscript" class="err">
+        <h3>Javascript Error: The Evennia MUD client requires that you
+            have Javascript activated.</h3>
+            <p>Turn off eventual script blockers and/or switch to a
+            web browser supporting javascript. <p>
+            This error could also be due to not being able to access
+            the online jQuery javascript library.</p>
+        <!-- This is will only fire if javascript is actually active -->
+        <script language="javascript" type="text/javascript">
+            $('#noscript').remove();
+        </script>
+    </div>
+
+    <!-- main client -->
+    <div id=clientwrapper>
+        {% block client %}
+        {% endblock %}
+    </div>
+
+  </body>
+</html>

@@ -9,6 +9,7 @@ from collections import deque
 from twisted.internet import reactor
 from django.conf import settings
 from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC
+from evennia.utils.logger import log_trace
 
 # module import
 _MOD_IMPORT = None
@@ -87,9 +88,9 @@ class PortalSessionHandler(SessionHandler):
             session.server_connected = False
             _CONNECTION_QUEUE.appendleft(session)
             if len(_CONNECTION_QUEUE) > 1:
-                session.data_out("%s DoS protection is active. You are queued to connect in %g seconds ..." % (
+                session.data_out(text=[["%s DoS protection is active. You are queued to connect in %g seconds ..." % (
                                  settings.SERVERNAME,
-                                 len(_CONNECTION_QUEUE)*_MIN_TIME_BETWEEN_CONNECTS))
+                                 len(_CONNECTION_QUEUE)*_MIN_TIME_BETWEEN_CONNECTS)],{}])
         now = time()
         if (now - self.connection_last < _MIN_TIME_BETWEEN_CONNECTS) or not self.portal.amp_protocol:
             if not session or not self.connection_task:
@@ -235,27 +236,29 @@ class PortalSessionHandler(SessionHandler):
         """
         session.load_sync_data(data)
 
-    def server_session_sync(self, serversessions):
+    def server_session_sync(self, serversessions, clean=True):
         """
         Server wants to save data to the portal, maybe because it's
         about to shut down. We don't overwrite any sessions here, just
-        update them in-place and remove any that are out of sync
-        (which should normally not be the case)
+        update them in-place.
 
         Args:
             serversessions (dict): This is a dictionary
 
                 `{sessid:{property:value},...}` describing
                 the properties to sync on all sessions.
+            clean (bool): If True, remove any Portal sessions that are
+                not included in serversessions.
         """
         to_save = [sessid for sessid in serversessions if sessid in self]
-        to_delete = [sessid for sessid in self if sessid not in to_save]
         # save protocols
         for sessid in to_save:
             self[sessid].load_sync_data(serversessions[sessid])
-        # disconnect out-of-sync missing protocols
-        for sessid in to_delete:
-            self.server_disconnect(sessid)
+        if clean:
+            # disconnect out-of-sync missing protocols
+            to_delete = [sessid for sessid in self if sessid not in to_save]
+            for sessid in to_delete:
+                self.server_disconnect(sessid)
 
     def count_loggedin(self, include_unloggedin=False):
         """
@@ -293,76 +296,15 @@ class PortalSessionHandler(SessionHandler):
         Args:
             message (str):  Message to relay.
 
+        Notes:
+            This will create an on-the fly text-type
+            send command.
+
         """
         for session in self.values():
-            session.data_out(message)
+            self.data_out(session, text=[[message],{}])
 
-    def oobstruct_parser(self, oobstruct):
-        """
-         Helper method for each session to use to parse oob structures
-         (The 'oob' kwarg of the msg() method).
-
-         Args:
-            oobstruct (str or iterable): A structure representing
-                an oob command on one of the following forms:
-                    - "cmdname"
-                    - "cmdname", "cmdname"
-                    - ("cmdname", arg)
-                    - ("cmdname",(args))
-                    - ("cmdname",{kwargs}
-                    - ("cmdname", (args), {kwargs})
-                    - (("cmdname", (args,), {kwargs}), ("cmdname", (args,), {kwargs}))
-            and any combination of argument-less commands or commands with only
-            args, only kwargs or both.
-
-        Returns:
-            structure (tuple): A generic OOB structure on the form
-                `((cmdname, (args,), {kwargs}), ...)`, where the two last
-                args and kwargs may be empty
-
-        """
-        def _parse(oobstruct):
-            slen = len(oobstruct)
-            if not oobstruct:
-                return tuple(None, (), {})
-            elif not hasattr(oobstruct, "__iter__"):
-                # a singular command name, without arguments or kwargs
-                return (oobstruct, (), {})
-            # regardless of number of args/kwargs, the first element must be
-            # the function name. We will not catch this error if not, but
-            # allow it to propagate.
-            if slen == 1:
-                return (oobstruct[0], (), {})
-            elif slen == 2:
-                if isinstance(oobstruct[1], dict):
-                    # (cmdname, {kwargs})
-                    return (oobstruct[0], (), dict(oobstruct[1]))
-                elif isinstance(oobstruct[1], (tuple, list)):
-                    # (cmdname, (args,))
-                    return (oobstruct[0], tuple(oobstruct[1]), {})
-                else:
-                    # (cmdname, arg)
-                    return (oobstruct[0], (oobstruct[1],), {})
-            else:
-                # (cmdname, (args,), {kwargs})
-                return (oobstruct[0], tuple(oobstruct[1]), dict(oobstruct[2]))
-
-        if hasattr(oobstruct, "__iter__"):
-            # differentiate between (cmdname, cmdname),
-            # (cmdname, (args), {kwargs}) and ((cmdname,(args),{kwargs}),
-            # (cmdname,(args),{kwargs}), ...)
-
-            if oobstruct and isinstance(oobstruct[0], basestring):
-                return (list(_parse(oobstruct)),)
-            else:
-                out = []
-                for oobpart in oobstruct:
-                    out.append(_parse(oobpart))
-                return (list(out),)
-        return (_parse(oobstruct),)
-
-
-    def data_in(self, session, text="", **kwargs):
+    def data_in(self, session, **kwargs):
         """
         Called by portal sessions for relaying data coming
         in from the protocol to the server.
@@ -371,7 +313,6 @@ class PortalSessionHandler(SessionHandler):
             session (PortalSession): Session receiving data.
 
         Kwargs:
-            text (str): Text from protocol.
             kwargs (any): Other data from protocol.
 
         Notes:
@@ -392,42 +333,57 @@ class PortalSessionHandler(SessionHandler):
                 if self.command_overflow:
                     reactor.callLater(1.0, self.data_in, None)
             if self.command_overflow:
-                self.data_out(session, text=_ERROR_COMMAND_OVERFLOW)
+                self.data_out(session, text=[[_ERROR_COMMAND_OVERFLOW],{}])
                 return
+            # scrub data
+            kwargs = self.clean_senddata(session, kwargs)
+
             # relay data to Server
             self.command_counter += 1
             session.cmd_last = now
             self.portal.amp_protocol.send_MsgPortal2Server(session,
-                                                       text=text,
-                                                       **kwargs)
+                                                           **kwargs)
         else:
            # called by the callLater callback
             if self.command_overflow:
                 self.command_overflow = False
                 reactor.callLater(1.0, self.data_in, None)
 
-
-    def data_out(self, session, text=None, **kwargs):
+    def data_out(self, session, **kwargs):
         """
         Called by server for having the portal relay messages and data
-        to the correct session protocol. We also convert oob input to
-        a generic form here.
+        to the correct session protocol.
 
         Args:
             session (Session): Session sending data.
 
         Kwargs:
-            text (str): Text from protocol.
-            kwargs (any): Other data from protocol.
+            kwargs (any): Each key is a command instruction to the
+            protocol on the form key = [[args],{kwargs}]. This will
+            call a method send_<key> on the protocol. If no such
+            method exixts, it sends the data to a method send_default.
 
         """
         #from evennia.server.profiling.timetrace import timetrace
         #text = timetrace(text, "portalsessionhandler.data_out")
 
+        # distribute outgoing data to the correct session methods.
         if session:
-            # convert oob to the generic format
-            if "oob" in kwargs:
-                kwargs["oob"] = self.oobstruct_parser(kwargs["oob"])
-            session.data_out(text=text, **kwargs)
+            for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
+                funcname = "send_%s" % cmdname.strip().lower()
+                if hasattr(session, funcname):
+                    # better to use hassattr here over try..except
+                    # - avoids hiding AttributeErrors in the call.
+                    try:
+                        getattr(session, funcname)(*cmdargs, **cmdkwargs)
+                    except Exception:
+                        log_trace()
+                else:
+                    try:
+                        # note that send_default always takes cmdname
+                        # as arg too.
+                        session.send_default(cmdname, *cmdargs, **cmdkwargs)
+                    except Exception:
+                        log_trace()
 
 PORTAL_SESSIONS = PortalSessionHandler()

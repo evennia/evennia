@@ -459,17 +459,19 @@ class CmdUnconnectedEncoding(MuxCommand):
         if self.session is None:
             return
 
+        sync = False
         if 'clear' in self.switches:
             # remove customization
-            old_encoding = self.session.encoding
+            old_encoding = self.session.protocol_flags.get("ENCODING", None)
             if old_encoding:
                 string = "Your custom text encoding ('%s') was cleared." % old_encoding
             else:
                 string = "No custom encoding was set."
-            self.session.encoding = "utf-8"
+            self.session.protocol_flags["ENCODING"] = "utf-8"
+            sync = True
         elif not self.args:
             # just list the encodings supported
-            pencoding = self.session.encoding
+            pencoding = self.session.protocol_flags.get("ENCODING", None)
             string = ""
             if pencoding:
                 string += "Default encoding: {g%s{n (change with {w@encoding <encoding>{n)" % pencoding
@@ -480,15 +482,18 @@ class CmdUnconnectedEncoding(MuxCommand):
                 string = "No encodings found."
         else:
             # change encoding
-            old_encoding = self.session.encoding
+            old_encoding = self.session.protocol_flags.get("ENCODING", None)
             encoding = self.args
             try:
                 utils.to_str(utils.to_unicode("test-string"), encoding=encoding)
             except LookupError:
                 string = "|rThe encoding '|w%s|r' is invalid. Keeping the previous encoding '|w%s|r'.|n" % (encoding, old_encoding)
             else:
-                self.session.encoding = encoding
+                self.session.protocol_flags["ENCODING"] = encoding
                 string = "Your custom text encoding was changed from '|w%s|n' to '|w%s|n'." % (old_encoding, encoding)
+                sync = True
+        if sync:
+            self.session.sessionhandler.session_portal_sync(self.session)
         self.caller.msg(string.strip())
 
 class CmdUnconnectedScreenreader(MuxCommand):
@@ -506,9 +511,11 @@ class CmdUnconnectedScreenreader(MuxCommand):
 
     def func(self):
         "Flips screenreader setting."
-        self.session.screenreader = not self.session.screenreader
-        string = "Screenreader mode turned {w%s{n." % ("on" if self.session.screenreader else "off")
+        new_setting = not self.session.protocol_flags.get("SCREENREADER", False)
+        self.session.protocol_flags["SCREENREADER"] =  new_setting
+        string = "Screenreader mode turned {w%s{n." % ("on" if new_setting else "off")
         self.caller.msg(string)
+        self.session.sessionhandler.session_portal_sync(self.session)
 
 
 def _create_player(session, playername, password, permissions, typeclass=None):

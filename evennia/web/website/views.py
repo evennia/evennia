@@ -53,7 +53,7 @@ def page_index(request):
         "num_others": nothers or "no"
     }
 
-    return render(request, 'evennia_general/index.html', pagevars)
+    return render(request, 'index.html', pagevars)
 
 
 def to_be_implemented(request):
@@ -66,7 +66,7 @@ def to_be_implemented(request):
         "page_title": "To Be Implemented...",
     }
 
-    return render(request, 'evennia_general/tbi.html', pagevars)
+    return render(request, 'tbi.html', pagevars)
 
 
 @staff_member_required
@@ -75,7 +75,7 @@ def evennia_admin(request):
     Helpful Evennia-specific admin page.
     """
     return render(
-        request, 'evennia_general/evennia_admin.html', {
+        request, 'evennia_admin.html', {
             'playerdb': PlayerDB})
 
 

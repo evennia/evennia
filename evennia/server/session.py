@@ -37,7 +37,7 @@ class Session(object):
 
     # names of attributes that should be affected by syncing.
     _attrs_to_sync = ('protocol_key', 'address', 'suid', 'sessid', 'uid',
-                      'uname', 'logged_in', 'puid', 'encoding', 'screenreader',
+                      'uname', 'logged_in', 'puid',
                       'conn_time', 'cmd_last', 'cmd_last_visible', 'cmd_total',
                       'protocol_flags', 'server_data', "cmdset_storage_string")
 
@@ -79,11 +79,14 @@ class Session(object):
         self.cmd_last_visible = self.conn_time
         self.cmd_last = self.conn_time
         self.cmd_total = 0
-        self.encoding = "utf-8"
-        self.screenreader = False
 
-        self.protocol_flags = {}
+        self.protocol_flags = {"ENCODING": "utf-8",
+                               "SCREENREADER":False,
+                               "INPUTDEBUG": False}
         self.server_data = {}
+
+        # map of input data to session methods
+        self.datamap = {}
 
         # a back-reference to the relevant sessionhandler this
         # session is stored in.
@@ -120,7 +123,7 @@ class Session(object):
         on uid etc).
 
         """
-        pass
+        self.protocol_flags.update(self.player.attributs.get("_saved_protocol_flags"), {})
 
     # access hooks
 
@@ -135,25 +138,23 @@ class Session(object):
         """
         pass
 
-    def data_out(self, text=None, **kwargs):
+    def data_out(self, **kwargs):
         """
         Generic hook for sending data out through the protocol. Server
         protocols can use this right away. Portal sessions
         should overload this to format/handle the outgoing data as needed.
 
         Kwargs:
-            text (str): Text data
             kwargs (any): Other data to the protocol.
 
         """
         pass
 
-    def data_in(self, text=None, **kwargs):
+    def data_in(self, **kwargs):
         """
         Hook for protocols to send incoming data to the engine.
 
         Kwargs:
-            text (str): Text data
             kwargs (any): Other data from the protocol.
 
         """

@@ -4,7 +4,7 @@ Base typeclass for in-game Channels.
 """
 
 from evennia.typeclasses.models import TypeclassBase
-from evennia.comms.models import Msg, TempMsg, ChannelDB
+from evennia.comms.models import TempMsg, ChannelDB
 from evennia.comms.managers import ChannelManager
 from evennia.utils import logger
 from evennia.utils.utils import make_iter
@@ -27,7 +27,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
         """
         self.at_channel_creation()
-
+        self.attributes.add("log_file", "channel_%s.log" % self.key)
         if hasattr(self, "_createdict"):
             # this is only set if the channel was created
             # with the utils.create.create_channel function.
@@ -37,8 +37,6 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
                     self.db_key = "#i" % self.dbid
             elif cdict["key"] and self.key != cdict["key"]:
                 self.key = cdict["key"]
-            if cdict.get("keep_log"):
-                self.db_keep_log = cdict["keep_log"]
             if cdict.get("aliases"):
                 self.aliases.add(cdict["aliases"])
             if cdict.get("locks"):
@@ -183,14 +181,18 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         msg.message = body
         return msg
 
-    def distribute_message(self, msg, online=False):
+    def distribute_message(self, msgobj, online=False):
         """
         Method for grabbing all listeners that a message should be
         sent to on this channel, and sending them a message.
 
-        msg (str): Message to distribute.
-        online (bool): Only send to receivers who are actually online
-            (not currently used):
+        Args:
+            msgobj (Msg or TempMsg): Message to distribute.
+            online (bool): Only send to receivers who are actually online
+                (not currently used):
+
+        Notes:
+            This is also where logging happens, if enabled.
 
         """
         # get all players connected to this channel and send to them
@@ -198,12 +200,16 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             try:
                 # note our addition of the from_channel keyword here. This could be checked
                 # by a custom player.msg() to treat channel-receives differently.
-                entity.msg(msg.message, from_obj=msg.senders, from_channel=self.id)
+                entity.msg(msgobj.message, from_obj=msgobj.senders, options={"from_channel":self.id})
             except AttributeError as e:
                 logger.log_trace("%s\nCannot send msg to '%s'." % (e, entity))
 
+        if msgobj.keep_log:
+            # log to file
+            logger.log_file(msgobj.message, self.attributes.get("log_file") or "channel_%s.log" % self.key)
+
     def msg(self, msgobj, header=None, senders=None, sender_strings=None,
-            persistent=False, online=False, emit=False, external=False):
+            keep_log=None, online=False, emit=False, external=False):
         """
         Send the given message to all players connected to channel. Note that
         no permission-checking is done here; it is assumed to have been
@@ -222,9 +228,11 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             sender_strings (list, optional): Name strings of senders. Used for external
                 connections where the sender is not a player or object.
                 When this is defined, external will be assumed.
-            persistent (bool, optional): Ignored if msgobj is a Msg or TempMsg.
-                If True, a Msg will be created, using header and senders
-                keywords. If False, other keywords will be ignored.
+            keep_log (bool or None, optional): This allows to temporarily change the logging status of
+                this channel message. If `None`, the Channel's `keep_log` Attribute will
+                be used. If `True` or `False`, that logging status will be used for this
+                message only (note that for unlogged channels, a `True` value here will
+                create a new log file only for this message).
             online (bool, optional) - If this is set true, only messages people who are
                 online. Otherwise, messages all players connected. This can
                 make things faster, but may not trigger listeners on players
@@ -239,25 +247,14 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
                 successful, `False` otherwise.
 
         """
-        if senders:
-            senders = make_iter(senders)
-        else:
-            senders = []
+        senders = make_iter(senders) if senders else []
         if isinstance(msgobj, basestring):
-            # given msgobj is a string
-            msg = msgobj
-            if persistent and self.db.keep_log:
-                msgobj = Msg()
-                msgobj.save()
-            else:
-                # Use TempMsg, so this message is not stored.
-                msgobj = TempMsg()
-            msgobj.header = header
-            msgobj.message = msg
-            msgobj.channels = [self]  # add this channel
+            # given msgobj is a string - convert to msgobject (always TempMsg)
+            msgobj = TempMsg(senders=senders, header=header, message=msgobj, channels=[self])
+        # we store the logging setting for use in distribute_message()
+        msgobj.keep_log = keep_log if keep_log is not None else self.db.keep_log
 
-        if not msgobj.senders:
-            msgobj.senders = senders
+        # start the sending
         msgobj = self.pre_send_message(msgobj)
         if not msgobj:
             return False
@@ -278,7 +275,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             senders (Object or list, optional): Senders of message to send.
 
         """
-        self.msg(message, senders=senders, header=header, persistent=False)
+        self.msg(message, senders=senders, header=header, keep_log=False)
 
 
     # hooks

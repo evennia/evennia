@@ -132,7 +132,7 @@ def you(text, *args, **kwargs):
 # load functions from module (including this one, if using default settings)
 _INLINE_FUNCS = {}
 for module in utils.make_iter(settings.INLINEFUNC_MODULES):
-    _INLINE_FUNCS.update(utils.all_from_module(module))
+    _INLINE_FUNCS.update(utils.callables_from_module(module))
 _INLINE_FUNCS.pop("inline_func_parse", None)
 
 

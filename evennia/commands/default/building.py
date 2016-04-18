@@ -512,6 +512,22 @@ class CmdCreate(ObjManipCommand):
             caller.msg(string)
 
 
+def _desc_load(caller):
+    return caller.db.evmenu_target.db.desc or ""
+
+def _desc_save(caller, buf):
+    """
+    Save line buffer to the desc prop. This should
+    return True if successful and also report its status to the user.
+    """
+    caller.db.evmenu_target.db.desc = buf
+    caller.msg("Saved.")
+    return True
+
+def _desc_quit(caller):
+    caller.attributes.remove("evmenu_target")
+    caller.msg("Exited editor.")
+
 class CmdDesc(MuxCommand):
     """
     describe an object
@@ -543,19 +559,24 @@ class CmdDesc(MuxCommand):
             return
 
         def load(caller):
-            return obj.db.desc or ""
+            return caller.db.evmenu_target.db.desc or ""
 
         def save(caller, buf):
             """
             Save line buffer to the desc prop. This should
             return True if successful and also report its status to the user.
             """
-            obj.db.desc = buf
+            caller.db.evmenu_target.db.desc = buf
             caller.msg("Saved.")
             return True
 
+        def quit(caller):
+            caller.attributes.remove("evmenu_target")
+            caller.msg("Exited editor.")
+
+        self.caller.db.evmenu_target = obj
         # launch the editor
-        EvEditor(self.caller, loadfunc=load, savefunc=save, key="desc")
+        EvEditor(self.caller, loadfunc=_desc_load, savefunc=_desc_save, quitfunc=_desc_quit, key="desc", persistent=True)
         return
 
     def func(self):
@@ -1512,7 +1533,7 @@ class CmdSetAttribute(ObjManipCommand):
                         continue
                     string += self.view_attr(obj, attr)
                 # we view it without parsing markup.
-                self.caller.msg(string.strip(), raw=True)
+                self.caller.msg(string.strip(), options={"raw":True})
                 return
             else:
                 # deleting the attribute(s)
@@ -2011,6 +2032,7 @@ class CmdExamine(ObjManipCommand):
         # we have given a specific target object
         for objdef in self.lhs_objattr:
 
+            obj = None
             obj_name = objdef['name']
             obj_attrs = objdef['attrs']
 
@@ -2573,5 +2595,4 @@ class CmdSpawn(MuxCommand):
 
         for obj in spawn(prototype):
             self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
-
 
