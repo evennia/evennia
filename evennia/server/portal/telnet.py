@@ -328,11 +328,18 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.transport.write(mccp_compress(self, prompt))
         else:
             if echo is not None:
-                # turn on/off echo
+                # turn on/off echo. Note that this is a bit turned around since we use
+                # echo as if we are "turning off the client's echo" when telnet really
+                # handles it the other way around.
                 if echo:
-                    self.transport.write(mccp_compress(self, IAC+WILL+ECHO))
-                else:
+                    # by telling the client that WE WON'T echo, the client knows
+                    # that IT should echo. This is the expected behavior from
+                    # our perspective.
                     self.transport.write(mccp_compress(self, IAC+WONT+ECHO))
+                else:
+                    # by telling the client that WE WILL echo, the client can
+                    # safely turn OFF its OWN echo.
+                    self.transport.write(mccp_compress(self, IAC+WILL+ECHO))
             if raw:
                 # no processing
                 self.sendLine(text)
