@@ -328,11 +328,5 @@ class CmdUnloggedinLook(Command):
 
     def func(self):
         "Execute the menu"
-        menu = EvMenu(self.caller, {
-                "start": start,
-                "username": username,
-                "password": password,
-                "create_username": create_username,
-                "create_password": create_password,
-        },
+        menu = EvMenu(self.caller, "evennia.contrib.evmenu_login",
                 startnode="start", auto_quit=False, node_formatter=_formatter)
