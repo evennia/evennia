@@ -48,10 +48,12 @@ from evennia import ObjectDB
 from evennia.server.models import ServerConfig
 from evennia import syscmdkeys
 from evennia.utils.evmenu import EvMenu
+from evennia.utils.utils import random_string_from_module
 
 ## Constants
 RE_VALID_USERNAME = re.compile(r"^[a-z]{3,}$", re.I)
 LEN_PASSWD = 6
+CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 
 ## Menu notes (top-level functions)
 
@@ -65,9 +67,8 @@ def start(caller):
     or not) to create a new player.
 
     """
-    text = dedent("""
-        Enter your username or |yNEW|n to create one.
-    """.strip("\n"))
+    text = random_string_from_module(CONNECTION_SCREEN_MODULE)
+    text += "\n\nEnter your username or |yNEW|n to create one."
     options = (
         {
             "key": "new",
