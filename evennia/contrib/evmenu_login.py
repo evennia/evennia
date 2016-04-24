@@ -195,6 +195,7 @@ def password(caller, string_input):
         # We are OK, log us in.
         text = ""
         options = {}
+        caller.msg("", options={"echo": True})
         caller.sessionhandler.login(caller, player)
 
     return text, options
@@ -336,6 +337,7 @@ def create_password(caller, string_input):
         else:
             text = ""
             caller.msg("|gWelcome, your new account has been created!|n")
+            caller.msg("", options={"echo": True})
             caller.sessionhandler.login(caller, new_player)
 
     return text, options
@@ -381,4 +383,5 @@ class CmdUnloggedinLook(Command):
     def func(self):
         "Execute the menu"
         EvMenu(self.caller, "evennia.contrib.evmenu_login",
-               startnode="start", auto_look=False, auto_quit=False, node_formatter=_formatter)
+               startnode="start", auto_look=False, auto_quit=False,
+               cmd_on_exit=None, node_formatter=_formatter)
