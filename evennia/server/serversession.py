@@ -381,6 +381,26 @@ class ServerSession(Session):
         else:
             self.data_out(**kwargs)
 
+    def execute_cmd(self, raw_string, **kwargs):
+        """
+        Do something as this object. This method is normally never
+        called directly, instead incoming command instructions are
+        sent to the appropriate inputfunc already at the sessionhandler
+        level. This method allows Python code to inject commands into
+        this stream, and will lead to the text inputfunc be called.
+
+        Args:
+            raw_string (string): Raw command input
+        Kwargs:
+            Other keyword arguments will be added to the found command
+            object instace as variables before it executes.  This is
+            unused by default Evennia but may be used to set flags and
+            change operating paramaters for commands at run-time.
+
+        """
+        # inject instruction into input stream
+        kwargs["text"] = ((raw_string,), {})
+        self.sessionhandler.data_in(self, **kwargs)
 
     def __eq__(self, other):
         "Handle session comparisons"

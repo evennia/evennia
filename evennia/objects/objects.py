@@ -424,11 +424,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
     def execute_cmd(self, raw_string, session=None, **kwargs):
         """
-        Do something as this object. This method is a copy of the
-        `execute_cmd` method on the session. This is never called
-        normally, it's only used when wanting specifically to let an
-        object be the caller of a command. It makes use of nicks of
-        eventual connected players as well.
+        Do something as this object. This is never called normally,
+        it's only used when wanting specifically to let an object be
+        the caller of a command. It makes use of nicks of eventual
+        connected players as well.
 
         Args:
             raw_string (string): Raw command input

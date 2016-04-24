@@ -68,7 +68,8 @@ def text(session, *args, **kwargs):
         else:
             text = session.player.nicks.nickreplace(text,
                         categories=("inputline", "channels"), include_player=False)
-    cmdhandler(session, text, callertype="session", session=session)
+    kwargs.pop("options", None)
+    cmdhandler(session, text, callertype="session", session=session, **kwargs)
     session.update_session_counters()
 
 
