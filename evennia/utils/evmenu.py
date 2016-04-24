@@ -721,7 +721,7 @@ class EvMenu(object):
                 nodetext, helptext = nodetext[:2]
             else:
                 nodetext = nodetext[0]
-        nodetext = str(nodetext) or ""
+        nodetext = "" if nodetext is None else str(nodetext)
         options = [options] if isinstance(options, dict) else options
 
         # this will be displayed in the given order
