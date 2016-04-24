@@ -376,7 +376,7 @@ class ServerSession(Session):
                 for the protocol(s).
 
         """
-        if text:
+        if text is not None:
             self.data_out(text=text, **kwargs)
         else:
             self.data_out(**kwargs)
@@ -407,6 +407,7 @@ class ServerSession(Session):
     def __unicode__(self):
         "Unicode representation"
         return u"%s" % str(self)
+
 
 
     # Dummy API hooks for use during non-loggedin operation

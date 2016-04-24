@@ -245,7 +245,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             reason (str): Reason for disconnecting.
 
         """
-        self.data_out(connection_close=((reason or "",), {}))
+        self.data_out(text=((reason or "",), {}))
         self.connectionLost(reason)
 
     def data_in(self, **kwargs):
@@ -294,7 +294,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                         Note that it must be actively turned back on again!
 
         """
-        #print "telnet.send_text", args,kwargs
         text = args[0] if args else ""
         if text is None:
             return

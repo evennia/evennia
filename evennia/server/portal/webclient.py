@@ -64,7 +64,7 @@ class WebSocketClient(Protocol, Session):
             reason (str): Motivation for the disconnection.
 
         """
-        self.data_out(connection_close=((reason or "",), {}))
+        self.data_out(text=((reason or "",), {}))
         self.connectionLost(reason)
 
     def connectionLost(self, reason):

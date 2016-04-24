@@ -205,7 +205,6 @@ class SessionHandler(dict):
             else:
                 rkwargs[key] = [ [_validate(data)], {} ]
             rkwargs[key][1]["options"] = options
-
         return rkwargs
 
 
