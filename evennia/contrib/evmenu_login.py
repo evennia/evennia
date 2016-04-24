@@ -68,47 +68,48 @@ def start(caller):
 
     """
     text = random_string_from_module(CONNECTION_SCREEN_MODULE)
-    text += "\n\nEnter your username or |yNEW|n to create one."
+    text += "\n\nEnter your username or |yNEW|n to create a new account."
     options = (
+        {   "key": "",
+            "goto": "start",
+        },
         {
             "key": "new",
-            "desc": "Create a new character.",
             "goto": "create_account",
+        },
+        {   "key": "quit",
+            "goto": "quit"
         },
         {
             "key": "_default",
-            "desc": "Login to a valid username.",
             "goto": "username",
         },
     )
     return text, options
 
-def username(caller, input):
+def username(caller, string_input):
     """Check that the username leads to an existing player.
 
     Check that the specified username exists.  If the username doesn't
-    exist, display an error message and ask the user to either
-    enter 'b' to go back, or to try again.
-    If it does exist, move to the next node (enter password).
+    exist, display an error message and ask the user to try again.  If
+    entering an empty string, return to start node.  If user exists,
+    move to the next node (enter password).
 
     """
-    input = input.strip()
-    player = managers.players.get_player_from_name(input)
+    string_input = string_input.strip()
+    player = managers.players.get_player_from_name(string_input)
     if player is None:
         text = dedent("""
-            |rThe username {} doesn't exist yet.  Have you created it?|n
-                Type |yb|n to go back to the previous menu.
-                Or try another name.
-        """.strip("\n")).format(input)
+            |rThe username '{}' doesn't exist. Have you created it?|n
+            Try another name or leave empty to go back.
+        """.strip("\n")).format(string_input)
         options = (
             {
-                "key": "b",
-                "desc": "Back to the previous menu.",
+                "key": "",
                 "goto": "start",
             },
             {
                 "key": "_default",
-                "desc": "Try again.",
                 "goto": "username",
             },
         )
@@ -116,19 +117,22 @@ def username(caller, input):
         caller.ndb._menutree.player = player
         text = "Enter the password for the {} account.".format(player.name)
         # Disables echo for the password
-        caller.msg(echo=False)
-        caller.msg(echo=False)
+        caller.msg("", options={"echo": False})
         options = (
             {
+                "key": "",
+                "exec": lambda caller: caller.msg("", options={"echo": True}),
+                "goto": "start",
+            },
+            {
                 "key": "_default",
-                "desc": "Enter your account's password.",
                 "goto": "password",
             },
         )
 
     return text, options
 
-def password(caller, input):
+def password(caller, string_input):
     """Ask the user to enter the password to this player.
 
     This is assuming the user exists (see 'create_username' and
@@ -139,79 +143,59 @@ def password(caller, input):
 
     """
     menutree = caller.ndb._menutree
-    caller.msg(echo=True)
-    input = input.strip()
-    options = (
-        {
-            "key": "_default",
-            "desc": "Enter your password.",
-            "goto": "password",
-        },
-    )
+    string_input = string_input.strip()
 
-    # Check the password and login if correct
-    if not hasattr(menutree, "player"):
-        text = dedent("""
-            |rSomething went wrong!  The player was not remembered
-            from last step!|n
-            Press RETURN to continue.
-        """.strip("\n"))
-        # Redirects to the first node
-        options = (
-            {
-                "key": "_default",
-                "desc": "Press RETURN to continue.",
-                "goto": "start",
-            },
-        )
-    else:
-        player = menutree.player
-        bans = ServerConfig.objects.conf("server_bans")
-        banned = bans and (any(tup[0] == player.name.lower() for tup in bans) \
-                or any(tup[2].match(caller.address) for tup in bans if tup[2]))
-        if not player.check_password(input):
-            caller.msg(echo=False)
+    # Check the password and login is correct; also check for bans
+
+    player = menutree.player
+    password_attempts = menutree.password_attempts \
+                            if hasattr(menutree, "password_attempts") else 0
+    bans = ServerConfig.objects.conf("server_bans")
+    banned = bans and (any(tup[0] == player.name.lower() for tup in bans) \
+            or any(tup[2].match(caller.address) for tup in bans if tup[2]))
+
+    if not player.check_password(string_input):
+        # Didn't enter a correct password
+        password_attempts += 1
+        if password_attempts > 2:
+            # Too many tries
+            caller.sessionhandler.disconnect(
+                    caller, "|rToo many failed attempts. Disconnecting.|n")
+            text = ""
+            options = {}
+        else:
+            menutree.password_attempts = password_attempts
             text = dedent("""
                 |rIncorrect password.|n
-                    Type |yb|n to go back to the login screen.
-                    Or enter your password again.
+                Try again or leave empty to go back.
             """.strip("\n"))
             # Loops on the same node
             options = (
                 {
-                    "key": "b",
-                    "desc": "Go back to the login screen.",
+                    "key": "",
+                    "exec": lambda caller: caller.msg("", options={"echo": True}),
                     "goto": "start",
                 },
                 {
                     "key": "_default",
-                    "desc": "Enter your password again.",
                     "goto": "password",
                 },
             )
-        elif banned:
-            # This is a banned IP or name!
-            string = dedent("""
-                |rYou have been banned and cannot continue from here.
-                If you feel this ban is in error, please email an admin.|x
-            """.strip("\n"))
-            caller.msg(string)
-            caller.sessionhandler.disconnect(
-                    caller, "Good bye! Disconnecting...")
-            # This is not necessary, since the player is disconnected,
-            # but it seems to raise an error if simply returning None, None
-            text = ""
-            options = (
-                {
-                    "key": "_default",
-                    "desc": "Go back to the login screen.",
-                    "goto": "start",
-                },
-            )
-        else:
-            # We are OK, log us in.
-            text = ""
-            caller.sessionhandler.login(caller, player)
+    elif banned:
+        # This is a banned IP or name!
+        string = dedent("""
+            |rYou have been banned and cannot continue from here.
+            If you feel this ban is in error, please email an admin.|n
+            Disconnecting.
+        """.strip("\n"))
+        caller.sessionhandler.disconnect(caller, string)
+        text = ""
+        options = {}
+    else:
+        # We are OK, log us in.
+        text = ""
+        options = {}
+        caller.sessionhandler.login(caller, player)
 
     return text, options
 
@@ -222,91 +206,77 @@ def create_account(caller):
     The input is redirected to 'create_username'.
 
     """
-    text = "Enter your new account's name."
+    text = "Enter your new account name."
     options = (
         {
             "key": "_default",
-            "desc": "Enter your new username.",
             "goto": "create_username",
         },
     )
     return text, options
 
-def create_username(caller, input):
+def create_username(caller, string_input):
     """Prompt to enter a valid username (one that doesnt exist).
 
-    'input' contains the new username.  If it exists, prompt
+    'string_input' contains the new username.  If it exists, prompt
     the username to retry or go back to the login screen.
 
     """
     menutree = caller.ndb._menutree
-    input = input.strip()
-    player = managers.players.get_player_from_name(input)
-    options = (
-        {
-            "key": "_default",
-            "desc": "Enter your new account's password.",
-            "goto": "create_password",
-        },
-    )
+    string_input = string_input.strip()
+    player = managers.players.get_player_from_name(string_input)
 
     # If a player with that name exists, a new one will not be created
     if player:
         text = dedent("""
             |rThe account {} already exists.|n
-                Type |yb|n to go back to the login screen.
-                Or enter another username to create.
-        """.strip("\n")).format(input)
+            Enter another username or leave blank to go back.
+        """.strip("\n")).format(string_input)
         # Loops on the same node
         options = (
             {
-                "key": "b",
-                "desc": "Go back to the login screen.",
+                "key": "",
                 "goto": "start",
             },
             {
                 "key": "_default",
-                "desc": "Enter another username.",
                 "goto": "create_username",
             },
         )
-    elif not RE_VALID_USERNAME.search(input):
+    elif not RE_VALID_USERNAME.search(string_input):
         text = dedent("""
             |rThis username isn't valid.|n
             Only letters are accepted, without special characters.
             The username must be at least 3 characters long.
-                Type |yb|n to go back to the login screen.
-                Or enter another username to be created.
+            Enter another username or leave blank to go back.
         """.strip("\n"))
         options = (
             {
-                "key": "b",
-                "desc": "Go back to the login screen.",
+                "key": "",
                 "goto": "start",
             },
             {
                 "key": "_default",
-                "desc": "Enter another username.",
                 "goto": "create_username",
             },
         )
     else:
-        menutree.playername = input
+        # a valid username - continue getting the password
+        menutree.playername = string_input
         # Disables echo for entering password
-        caller.msg(echo=False)
+        caller.msg("", options={"echo": False})
         # Redirects to the creation of a password
         text = "Enter this account's new password."
         options = (
             {
                 "key": "_default",
-                "desc": "Enter this account's new password.",
                 "goto": "create_password",
             },
         )
 
     return text, options
 
-def create_password(caller, input):
+def create_password(caller, string_input):
     """Ask the user to create a password.
 
     This node is at the end of the menu for account creation.  If
@@ -318,77 +288,61 @@ def create_password(caller, input):
     text = ""
     options = (
         {
-            "key": "b",
-            "desc": "Go back to the login screen.",
+            "key": "",
+            "exec": lambda caller: caller.msg("", options={"echo": True}),
             "goto": "start",
         },
         {
             "key": "_default",
-            "desc": "Enter your password.",
             "goto": "create_password",
         },
     )
 
-    caller.msg(echo=True)
-    password = input.strip()
+    password = string_input.strip()
+    playername = menutree.playername
 
-    if not hasattr(menutree, 'playername'):
+    if len(password) < LEN_PASSWD:
+        # The password is too short
         text = dedent("""
-            |rSomething went wrong!  Playername not remembered
-            from previous step!|n
-            Press RETURN to go back to the login screen.
-        """.strip("\n"))
-        # Redirects to the starting node
-        options = (
-            {
-                "key": "_default",
-                "desc": "Go back to the login screen.",
-                "goto": "start",
-            },
-        )
+            |rYour password must be at least {} characters long.|n
+            Enter another password or leave it empty to go back.
+        """.strip("\n")).format(LEN_PASSWD)
     else:
-        playername = menutree.playername
-        if len(password) < LEN_PASSWD:
-            caller.msg(echo=False)
-            # The password is too short
-            text = dedent("""
-                |rYour password must be at least {} characters long.|n
-                    Type |yb|n to return to the login screen.
-                    Or enter another password.
-            """.strip("\n")).format(LEN_PASSWD)
+        # Everything's OK.  Create the new player account and
+        # possibly the character, depending on the multisession mode
+        from evennia.commands.default import unloggedin
+        # We make use of the helper functions from the default set here.
+        try:
+            permissions = settings.PERMISSION_PLAYER_DEFAULT
+            typeclass = settings.BASE_CHARACTER_TYPECLASS
+            new_player = unloggedin._create_player(caller, playername,
+                    password, permissions)
+            if new_player:
+                if settings.MULTISESSION_MODE < 2:
+                    default_home = ObjectDB.objects.get_id(
+                            settings.DEFAULT_HOME)
+                    unloggedin._create_character(caller, new_player,
+                            typeclass, default_home, permissions)
+        except Exception:
+            # We are in the middle between logged in and -not, so we have
+            # to handle tracebacks ourselves at this point. If we don't, we
+            # won't see any errors at all.
+            caller.msg(dedent("""
+                |rAn error occurred.|n  Please e-mail an admin if
+                the problem persists. Try another password or leave
+                it empty to go back to the login screen.
+            """.strip("\n")))
+            logger.log_trace()
         else:
-            # Everything's OK.  Create the new player account and
-            # possibly the character, depending on the multisession mode
-            from evennia.commands.default import unloggedin
-            # We make use of the helper functions from the default set here.
-            try:
-                permissions = settings.PERMISSION_PLAYER_DEFAULT
-                typeclass = settings.BASE_CHARACTER_TYPECLASS
-                new_player = unloggedin._create_player(caller, playername,
-                        password, permissions)
-                if new_player:
-                    if settings.MULTISESSION_MODE < 2:
-                        default_home = ObjectDB.objects.get_id(
-                                settings.DEFAULT_HOME)
-                        unloggedin._create_character(caller, new_player,
-                                typeclass, default_home, permissions)
-            except Exception:
-                # We are in the middle between logged in and -not, so we have
-                # to handle tracebacks ourselves at this point. If we don't, we
-                # won't see any errors at all.
-                caller.msg(dedent("""
-                    |rAn error occurred.|n  Please e-mail an admin if
-                    the problem persists.
-                        Type |yb|n to go back to the login screen.
-                        Or enter another password.
-                """.strip("\n")))
-                logger.log_trace()
-            else:
-                text = ""
-                caller.msg("Welcome, you're new account has been created!")
-                caller.sessionhandler.login(caller, new_player)
+            text = ""
+            caller.msg("|gWelcome, your new account has been created!|n")
+            caller.sessionhandler.login(caller, new_player)
 
     return text, options
+
+def quit(caller):
+    caller.sessionhandler.disconnect(caller, "Goodbye! Logging off.")
+    return "", {}
 
 ## Other functions
 
@@ -426,5 +380,5 @@ class CmdUnloggedinLook(Command):
 
     def func(self):
         "Execute the menu"
-        menu = EvMenu(self.caller, "evennia.contrib.evmenu_login",
-                startnode="start", auto_quit=False, node_formatter=_formatter)
+        EvMenu(self.caller, "evennia.contrib.evmenu_login",
+               startnode="start", auto_look=False, auto_quit=False, node_formatter=_formatter)
