@@ -181,13 +181,17 @@ class Mob(tut_objects.TutorialObject):
         """
         idstring = "tutorial_mob" # this doesn't change
         last_interval = self.db.last_ticker_interval
-        if last_interval:
+        last_hook_key = self.db.last_hook_key
+        if last_interval and last_hook_key:
              # we have a previous subscription, kill this first.
-            TICKER_HANDLER.remove(self, last_interval, idstring)
+            TICKER_HANDLER.remove(interval=last_interval,
+                    callback=getattr(self, last_hook_key), idstring=idstring)
         self.db.last_ticker_interval = interval
+        self.db.last_hook_key = hook_key
         if not stop:
             # set the new ticker
-            TICKER_HANDLER.add(self, interval, idstring, hook_key)
+            TICKER_HANDLER.add(interval=interval,
+                    callback=getattr(self, hook_key), idstring=idstring)
 
     def _find_target(self, location):
         """

@@ -310,7 +310,7 @@ class WeatherRoom(TutorialRoom):
         # "update_weather" on this object. The interval is randomized
         # so as to not have all weather rooms update at the same time.
         interval = random.randint(50, 70)
-        TICKER_HANDLER.add(self, interval, idstring="tutorial", hook_key="update_weather")
+        TICKER_HANDLER.add(interval=interval, callback=self.update_weather, idstring="tutorial")
         # this is parsed by the 'tutorial' command on TutorialRooms.
         self.db.tutorial_info = \
             "This room has a Script running that has it echo a weather-related message at irregular intervals."

@@ -435,6 +435,10 @@ class TickerHandler(object):
             when wanting to modify/remove the ticker later.
 
         """
+        if isinstance(callback, int):
+            raise RuntimeError("TICKER_HANDLER.add has changed: "
+            "the interval is now the first argument, callback the second.")
+
         obj, path, callfunc = self._get_callback(callback)
         store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
         self.ticker_storage[store_key] = (args, kwargs)
@@ -455,6 +459,10 @@ class TickerHandler(object):
             idstring (str, optional): Identifier id of ticker to remove.
 
         """
+        if isinstance(callback, int):
+            raise RuntimeError("TICKER_HANDLER.remove has changed: "
+            "the interval is now the first argument, callback the second.")
+
         obj, path, callfunc = self._get_callback(callback)
         store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
         to_remove = self.ticker_storage.pop(store_key, None)
