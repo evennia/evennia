@@ -1549,12 +1549,14 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         error = kwargs.get("nofound_string") or _("Could not find '%s'." % query)
         matches = None
     elif len(matches) > 1:
-        error = kwargs.get("multimatch_string",
-                _("More than one match for '%s' (please narrow target):" % query))
+        error = kwargs.get("multimatch_string") or \
+                _("More than one match for '%s' (please narrow target):" % query)
         for num, result in enumerate(matches):
-            error += "\n %i%s%s%s" % (
+            aliases = result.aliases.all()
+            error += "\n %i%s%s%s%s" % (
                 num + 1, _MULTIMATCH_SEPARATOR,
                 result.get_display_name(caller) if hasattr(result, "get_display_name") else query,
+                " [%s]" % ";".join(aliases) if aliases else "",
                 result.get_extra_info(caller))
         matches = None
     else:
