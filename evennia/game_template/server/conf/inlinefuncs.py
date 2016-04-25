@@ -11,17 +11,17 @@ evennia.utils.inlinefunc.
 
 In text, usage is straightforward:
 
-{funcname([arg1,arg2,...]) text {/funcname
+$funcname([arg1,[arg2,...]])
 
 Example 1 (using the "pad" inlinefunc):
-    "This is {pad(50,c,-) a center-padded text{/pad of width 50."
+    say This is $pad("a center-padded text", 50,c,-) of width 50.
     ->
-    "This is -------------- a center-padded text--------------- of width 50."
+    John says, "This is -------------- a center-padded text--------------- of width 50."
 
-Example 2 (using "pad" and "time" inlinefuncs):
-    "The time is {pad(30){time(){/time{/padright now."
+Example 2 (using nested "pad" and "time" inlinefuncs):
+    say The time is $pad($time(), 30)right now.
     ->
-    "The time is         Oct 25, 11:09         right now."
+    John says, "The time is         Oct 25, 11:09         right now."
 
 To add more inline functions, add them to this module, using
 the following call signature:

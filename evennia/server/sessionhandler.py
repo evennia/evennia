@@ -23,8 +23,7 @@ from evennia.utils.utils import (variable_from_module, is_iter,
                                  to_str, to_unicode,
                                  make_iter,
                                  callables_from_module)
-from evennia.utils.inlinefunc import parse_inlinefunc
-from evennia.utils.nested_inlinefuncs import parse_inlinefunc as parse_nested_inlinefunc
+from evennia.utils.inlinefuncs import parse_inlinefunc
 
 try:
     import cPickle as pickle
@@ -174,8 +173,7 @@ class SessionHandler(dict):
                     session.protocol_flags["ENCODING"] = "utf-8"
                     data = to_str(to_unicode(data), encoding=session.protocol_flags["ENCODING"])
                 if _INLINEFUNC_ENABLED and not raw:
-                    data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session) # deprecated!
-                    data = parse_nested_inlinefunc(data, strip=strip_inlinefunc, session=session)
+                    data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session)
                 return data
             elif hasattr(data, "id") and hasattr(data, "db_date_created") \
                     and hasattr(data, '__dbclass__'):
