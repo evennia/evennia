@@ -8,7 +8,7 @@ of recommonmark syntax, to introduce more structure into the final generated doc
 Configuring AutoStructify
 -------------------------
 The behavior of AutoStructify can be configured via a dict in document setting.
-In sphinx, you can configure it by ```conf.py```. The following snippet
+In sphinx, you can configure it by `conf.py`. The following snippet
 is what is actually used to generate this document, see full code at [conf.py](conf.py).
 
 ```python
@@ -34,7 +34,7 @@ All the features are by default enabled
 
 Auto Toc Tree
 -------------
-One of important command in tools like sphinx is ```toctree```. This is a command to generate table of contents and
+One of important command in tools like sphinx is `toctree`. This is a command to generate table of contents and
 tell sphinx about the structure of the documents. In markdown, usually we manually list of contents by a bullet list
 of url reference to the other documents.
 
@@ -52,7 +52,7 @@ will be translated to the AST of following reStructuredText code
    doc1
    doc2
 ```
-You can also find the usage of this feature in ```index.md``` of this document.
+You can also find the usage of this feature in `index.md` of this document.
 
 Auto Doc Ref
 ------------
@@ -75,74 +75,86 @@ the relative path may not work in generated document site. URL resolver is intro
 
 Basically, you can define a function that maps an relative path of document to the http path that you wish to link to.
 For example, the setting  mentioned in the beginning of this document used a resolver that maps the files to github.
-So ```[parser code](../recommonmark/parser.py)``` will be translated into [parser code](../recommonmark/parser.py)
+So `[parser code](../recommonmark/parser.py)` will be translated into [parser code](../recommonmark/parser.py)
 
 Note that the reference to the internal document will not be passed to url resolver, and will be linked to the internal document pages correctly, see [Auto Doc Ref](#auto-doc-ref).
 
 
 Codeblock Extensions
 --------------------
-In markdown, you can write codeblocks fenced by three ``` `` ` ```. The following is an example of codeblock.
-Note that we add one additional space in the fence to avoid actually interpreting them. In practice you should remove the space before last ``` ` ```.
-```
-`` ` language
+In markdown, you can write codeblocks fenced by (at least) three backticks
+(```` ``` ````).  The following is an example of codeblock.
+
+````
+``` language
 some code block
-`` `
 ```
+````
 
 Codeblock extensions are mechanism that specialize certain codeblocks to different render behaviors.
 The extension will be trigger by the language argument to the codeblck
 
 ### Syntax Highlight
 You can highlight syntax of codeblocks by specifying the language you need. For example,
-```
-`` `python
+
+````
+```python
 def function():
     return True
-`` `
 ```
+````
+
 will be rendered as
+
 ```python
 def function():
     return True
 ```
 
 ### Math Formula
-You can normally write latex math formula with ```math``` codeblock. See also [Inline Math](#inline-math).
+You can normally write latex math formula with `math` codeblock. See also [Inline Math](#inline-math).
 
 Example
-```
-`` `math
+
+````
+```math
 E = m c^2
-`` `
 ```
+````
+
 will be rendered as
+
 ```math
 E = m c^2
 ```
 
 ### Embed reStructuredText
 Recommonmark also allows embedding reStructuredText syntax in the codeblocks.
-There are two styles for embedding reStructuredText. The first is enabled by ```eval_rst``` codeblock. The content of codeblock will be parsed as reStructuredText and insert into the document. This can be used to quickly introduce some of reStructuredText command that not yet available in markdown. For example,
-```
-`` `eval_rst
-.. automodule:: recommonmark.parser.Parser
+There are two styles for embedding reStructuredText. The first is enabled by `eval_rst` codeblock. The content of codeblock will be parsed as reStructuredText and insert into the document. This can be used to quickly introduce some of reStructuredText command that not yet available in markdown. For example,
 
-`` `
-```
-will be rendered as
+````
 ```eval_rst
 .. autoclass:: recommonmark.transform.AutoStructify
     :show-inheritance:
 ```
+````
+
+will be rendered as
+
+```eval_rst
+.. autoclass:: recommonmark.transform.AutoStructify
+    :show-inheritance:
+```
+
 This example used to use sphinx autodoc to insert document of AutoStructify class definition into the document.
 
 The second style is a shorthand of the above style. It allows you to leave off the eval_rst .. portion and directly render directives. For example,
 
-```rst
-`` ` important:: Its a note! in markdown!
-`` `
+````rst
+``` important:: Its a note! in markdown!
 ```
+````
+
 will be rendered as
 
 ``` important:: Its a note! in markdown!
@@ -150,9 +162,8 @@ will be rendered as
 
 #### An Advanced Example
 
-```rst
-
-`` ` sidebar:: Line numbers and highlights
+````rst
+``` sidebar:: Line numbers and highlights
 
      emphasis-lines:
        highlights the lines.
@@ -162,9 +173,9 @@ will be rendered as
        shown at the top of the code block.
      name:
        may be referenced with `:ref:` later.
-`` `
+```
 
-`` ` code-block:: markdown
+``` code-block:: markdown
      :linenos:
      :emphasize-lines: 3,5
      :caption: An example code-block with everything turned on.
@@ -175,8 +186,8 @@ will be rendered as
      System.run_emphasis_line
      # Long lines in code blocks create a auto horizontal scrollbar
      System.exit!
-`` `
 ```
+````
 
 will be rendered as
 
@@ -212,16 +223,15 @@ The `<div style="clear: right;"></div>` line clears the sidebar for the next tit
 
 Inline Math
 -----------
-Besides the [Math Formula](#math-formula), you can also write latex math in inline codeblock text. You can do so by inserting ```$```
+Besides the [Math Formula](#math-formula), you can also write latex math in inline codeblock text. You can do so by inserting `$`
 in the beginning and end of inline codeblock.
 
 Example
 
 ```
-This formula ``$ y=\sum_{i=1}^n g(x_i) $``
+This formula `$ y=\sum_{i=1}^n g(x_i) $`
 ```
 
 will be rendered as:
 
-This formula ``$ y=\sum_{i=1}^n g(x_i) $``
-
+This formula `$ y=\sum_{i=1}^n g(x_i) $`
