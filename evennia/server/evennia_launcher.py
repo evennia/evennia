@@ -805,6 +805,11 @@ def error_check_python_modules():
     imp(settings.BASE_ROOM_TYPECLASS)
     imp(settings.BASE_EXIT_TYPECLASS)
     imp(settings.BASE_SCRIPT_TYPECLASS)
+    # changed game dir settings file names
+    if os.path.isfile(os.path.join("server", "conf", "inlinefunc.py")):
+        raise DeprecationWarning("Name change: mygame/server/conf/inlinefunc.py should "
+              "be renamed to mygame/server/conf/inlinefuncs.py (note the S at the end)")
+
 
 
 def init_game_directory(path, check_db=True):

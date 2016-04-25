@@ -396,17 +396,16 @@ TIME_MONTH_PER_YEAR = 12
 ######################################################################
 # Inlinefunc
 ######################################################################
-# Evennia supports inline function preprocessing. This allows
-# users to supply {func() ... {/func in text, performing dynamic
-# text formatting and manipulation on the fly. If disabled, such
-# inline functions will not be parsed.
+# Evennia supports inline function preprocessing. This allows users
+# to supply inline calls on the form $func(arg, arg, ...) to do
+# session-aware text formatting and manipulation on the fly. If
+# disabled, such inline functions will not be parsed.
 INLINEFUNC_ENABLED = False
 # Only functions defined globally (and not starting with '_') in
 # these modules will be considered valid inlinefuncs. The list
 # is loaded from left-to-right, same-named functions will overload
-INLINEFUNC_MODULES = ["evennia.utils.inlinefunc",
-                      "evennia.utils.nested_inlinefuncs",
-                      "server.conf.inlinefunc"]
+INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs",
+                      "server.conf.inlinefuncs"]
 
 ######################################################################
 # Default Player setup and access
