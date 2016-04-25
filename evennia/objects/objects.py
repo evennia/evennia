@@ -21,7 +21,7 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
-                                 make_iter, to_str, to_unicode)
+                                 make_iter, to_unicode)
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
@@ -592,10 +592,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
              7. `self.at_after_move(source_location)`
 
         """
-        def logerr(string=""):
+        def logerr(string="", err=None):
             "Simple log helper method"
             logger.log_trace()
-            self.msg(string)
+            self.msg("%s%s" % (string, "" if err is None else " (%s)" % err))
 
         errtxt = _("Couldn't perform move ('%s'). Contact an admin.")
         if not emit_to_obj:
@@ -618,8 +618,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             try:
                 if not self.at_before_move(destination):
                     return
-            except Exception:
-                logerr(errtxt % "at_before_move()")
+            except Exception as err:
+                logerr(errtxt % "at_before_move()", err)
                 return False
 
         # Save the old location
@@ -637,32 +637,31 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if move_hooks:
             try:
                 source_location.at_object_leave(self, destination)
-            except Exception:
-                logerr(errtxt % "at_object_leave()")
+            except Exception as err:
+                logerr(errtxt % "at_object_leave()", err)
                 return False
 
         if not quiet:
             #tell the old room we are leaving
             try:
                 self.announce_move_from(destination)
-            except Exception:
-                logerr(errtxt % "at_announce_move()")
+            except Exception as err:
+                logerr(errtxt % "at_announce_move()", err)
                 return False
 
         # Perform move
         try:
             self.location = destination
-        except Exception:
-            emit_to_obj.msg(errtxt % "location change")
-            logger.log_trace()
+        except Exception as err:
+            logerr(errtxt % "location change", err)
             return False
 
         if not quiet:
             # Tell the new room we are there.
             try:
                 self.announce_move_to(source_location)
-            except Exception:
-                logerr(errtxt % "announce_move_to()")
+            except Exception as err:
+                logerr(errtxt % "announce_move_to()", err)
                 return  False
 
         if move_hooks:
@@ -670,8 +669,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # (the object has already arrived at this point)
             try:
                 destination.at_object_receive(self, source_location)
-            except Exception:
-                logerr(errtxt % "at_object_receive()")
+            except Exception as err:
+                logerr(errtxt % "at_object_receive()", err)
                 return False
 
         # Execute eventual extra commands on this object after moving it
@@ -679,8 +678,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if move_hooks:
             try:
                 self.at_after_move(source_location)
-            except Exception:
-                logerr(errtxt % "at_after_move")
+            except Exception as err:
+                logerr(errtxt % "at_after_move", err)
                 return False
         return True
 
