@@ -93,8 +93,8 @@ class TextToHTMLparser(object):
     re_hilite = re.compile("(?:%s)(.*)(?=%s)" % (hilite.replace("[", r"\["), fgstop))
     re_uline = re.compile("(?:%s)(.*?)(?=%s)" % (ANSI_UNDERLINE.replace("[", r"\["), fgstop))
     re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space> [ \t]+)|(?P<lineend>\r\n|\r|\n)', re.S|re.M|re.I)
-    re_link =  re.compile(r'\{lc(.*?)\{lt(.*?)\{le', re.DOTALL)
     re_url = re.compile(r'((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)')
+    re_mxplink =  re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
 
     def re_color(self, text):
         """
@@ -211,9 +211,7 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        html = "<a href='#' onclick='websocket.send(\"CMD\\1\"); return false;'>\\2</a>"
-        repl = self.re_link.sub(html, text)
-        return repl
+        return self.re_mxplink.sub(r"""<a id='mxplink' href='#' onclick='Evennia.msg("text",["\1"],{}); return false;'>\2</a>""", text)
 
     def do_sub(self, match):
         """
