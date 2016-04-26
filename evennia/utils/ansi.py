@@ -434,8 +434,7 @@ class ANSIParser(object):
         (r'\|\[[0-5]{3}', ""),  # |[123 - background colour
         ]
 
-    mxp_re = r'\{lc(.*?)\{lt(.*?)\{le|' \
-             r'\|lc(.*?)\|lt(.*?)\|le'
+    mxp_re = r'\|lc(.*?)\|lt(.*?)\|le'
 
     # prepare regex matching
     brightbg_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ansi_bright_bgs]), re.DOTALL)

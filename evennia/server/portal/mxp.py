@@ -16,8 +16,7 @@ http://www.gammon.com.au/mushclient/addingservermxp.htm
 from builtins import object
 import re
 
-LINKS_SUB =  re.compile(r'\{lc(.*?)\{lt(.*?)\{le', re.DOTALL)
-LINKS_SUB2 = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
+LINKS_SUB = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
 
 MXP = "\x5B"
 MXP_TEMPSECURE = "\x1B[4z"
@@ -43,7 +42,6 @@ def mxp_parse(text):
                .replace(">", "&gt;")
 
     text = LINKS_SUB.sub(MXP_SEND, text)
-    text = LINKS_SUB2.sub(MXP_SEND, text)
     return text
 
 class Mxp(object):
