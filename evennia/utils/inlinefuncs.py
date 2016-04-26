@@ -166,7 +166,16 @@ _INLINE_FUNCS = {"nomatch": lambda *args, **kwargs: "<UKNOWN>",
 
 # load custom inline func modules.
 for module in utils.make_iter(settings.INLINEFUNC_MODULES):
-    _INLINE_FUNCS.update(utils.callables_from_module(module))
+    try:
+        _INLINE_FUNCS.update(utils.callables_from_module(module))
+    except ImportError as err:
+        if module == "server.conf.inlinefuncs":
+            # a temporary warning since the default module changed name
+            raise ImportError("Error: %s\nPossible reason: mygame/server/conf/inlinefunc.py should "
+                  "be renamed to mygame/server/conf/inlinefuncs.py (note the S at the end)." % err)
+        else:
+            raise
+
 
 # remove the core function if we include examples in this module itself
 #_INLINE_FUNCS.pop("inline_func_parse", None)
