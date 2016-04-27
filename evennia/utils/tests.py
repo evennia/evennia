@@ -217,13 +217,14 @@ class TestMLen(TestCase):
         self.assertEqual(utils.m_len('Test_string'), 11)
 
     def test_mxp_string(self):
-        self.assertEqual(utils.m_len('{lclook{ltat{le'), 2)
+        self.assertEqual(utils.m_len('|lclook|ltat|le'), 2)
 
     def test_mxp_ansi_string(self):
-        self.assertEqual(utils.m_len(ANSIString('{lcl{gook{ltat{le{n')), 2)
+        self.assertEqual(utils.m_len(ANSIString('|lcl|gook|ltat|le{n')), 2)
 
     def test_non_mxp_ansi_string(self):
         self.assertEqual(utils.m_len(ANSIString('{gHello{n')), 5)
+        self.assertEqual(utils.m_len(ANSIString('|gHello|n')), 5)
 
     def test_list(self):
         self.assertEqual(utils.m_len([None, None]), 2)
