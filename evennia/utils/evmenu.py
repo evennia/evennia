@@ -296,10 +296,10 @@ def evtable_options_formatter(optionlist, caller=None):
         raw_key = strip_ansi(key)
         if raw_key != key:
             # already decorations in key definition
-            table.append(ANSIString(" {lc%s{lt%s{le: %s" % (raw_key, key, desc)))
+            table.append(ANSIString(" |lc%s|lt%s|le: %s" % (raw_key, key, desc)))
         else:
             # add a default white color to key
-            table.append(ANSIString(" {lc%s{lt{w%s{n{le: %s" % (raw_key, raw_key, desc)))
+            table.append(ANSIString(" |lc%s|lt|w%s|n|le: %s" % (raw_key, raw_key, desc)))
 
     ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
     nlastcol = nlist % ncols # number of elements left in last row
@@ -922,7 +922,7 @@ def test_view_node(caller):
     text = """
     Your name is {g%s{n!
 
-    click {lclook{lthere{le to trigger a look command under MXP.
+    click |lclook|lthere|le to trigger a look command under MXP.
     This node's option has no explicit key (nor the "_default" key
     set), and so gets assigned a number automatically. You can infact
     -always- use numbers (1...N) to refer to listed options also if you
