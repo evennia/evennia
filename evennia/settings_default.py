@@ -149,7 +149,9 @@ LANGUAGE_CODE = 'en-us'
 IDLE_TIMEOUT = 3600
 # The idle command can be sent to keep your session active without actually
 # having to spam normal commands regularly. It gives no feedback, only updates
-# the idle timer.
+# the idle timer. Note that "idle" will *always* work, even if a different
+# command-name is given here; this is because the webclient needs a default
+# to send to avoid proxy timeouts.
 IDLE_COMMAND = "idle"
 # The set of encodings tried. A Player object may set an attribute "encoding" on
 # itself to match the client used. If not set, or wrong encoding is
