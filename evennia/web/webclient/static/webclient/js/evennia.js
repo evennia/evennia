@@ -92,7 +92,7 @@ An "emitter" object must have a function
             }
             log('Evennia initialized.')
         },
-        
+
         // Connect to the Evennia server.
         // Re-establishes the connection after it is lost.
         //
@@ -104,11 +104,11 @@ An "emitter" object must have a function
             this.connection.connect();
             log('Evenna reconnecting.')
         },
-        
+
         // Returns true if the connection is open.
-        // 
+        //
         isConnected: function () {
-          return this.connection.isOpen();  
+          return this.connection.isOpen();
         },
 
         // client -> Evennia.
@@ -217,14 +217,14 @@ An "emitter" object must have a function
         var ever_open = false;
         var websocket = null;
         var wsurl = window.wsurl;
-        
+
         var connect = function() {
             if (websocket && websocket.readyState != websocket.CLOSED) {
                 // No-op if a connection is already open.
                 return;
             }
             websocket = new WebSocket(wsurl);
-            
+
             // Handle Websocket open event
             websocket.onopen = function (event) {
                 open = true;
@@ -267,12 +267,12 @@ An "emitter" object must have a function
                 Evennia.emit(data[0], data[1], data[2]);
             };
         }
-        
+
         var msg = function(data) {
             // send data across the wire. Make sure to json it.
             websocket.send(JSON.stringify(data));
         };
-        
+
         var close = function() {
             // tell the server this connection is closing (usually
             // tied to when the client window is closed). This
@@ -280,13 +280,13 @@ An "emitter" object must have a function
             websocket.send(JSON.stringify(["websocket_close", [], {}]));
             open = false;
         }
-        
+
         var isOpen = function() {
             return open;
         }
-        
+
         connect();
-        
+
         return {connect: connect, msg: msg, close: close, isOpen: isOpen};
     };
 
@@ -296,7 +296,7 @@ An "emitter" object must have a function
         log("Trying ajax ...");
         var client_hash = '0';
         var stop_polling = false;
-        var is_closing = false;        
+        var is_closing = false;
 
         // initialize connection and get hash
         var init = function() {
@@ -367,13 +367,13 @@ An "emitter" object must have a function
                             Evennia.emit("connection_error", ["AJAX/COMET receive error"], err);
                             log("AJAX/COMET: Server returned error on receive.",req,stat,err);
                             stop_polling = true;
-                        } 
+                        }
                         else {
                             // We'd expect to see a keepalive message rather than
                             // a timeout. Ping the server to see if it's still there.
                             msg("idle");
                         }
-                        
+
                         if (stop_polling) {
                             // An error of some kind occurred.
                             // Close the connection, if possible.
@@ -387,8 +387,8 @@ An "emitter" object must have a function
                     }
             });
         };
-        
-        // Kill the connection and do house cleaning on the server.        
+
+        // Kill the connection and do house cleaning on the server.
         var close = function webclient_close(){
             if (is_closing || client_hash === '0') {
                 // Already closed or trying to close.
@@ -420,7 +420,7 @@ An "emitter" object must have a function
                 }
             });
         };
-        
+
         var isOpen = function () {
             return !(is_closing || client_hash === '0');
         }

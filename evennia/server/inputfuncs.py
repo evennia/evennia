@@ -26,7 +26,9 @@ from evennia.utils.logger import log_err
 from evennia.utils.utils import to_str, to_unicode
 
 
+# always let "idle" work since we use this in the webclient
 _IDLE_COMMAND = settings.IDLE_COMMAND
+_IDLE_COMMAND = (_IDLE_COMMAND, ) if _IDLE_COMMAND == "idle" else (_IDLE_COMMAND, "idle")
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _NA = lambda o: "N/A"
@@ -56,7 +58,7 @@ def text(session, *args, **kwargs):
         return
     # this is treated as a command input
     # handle the 'idle' command
-    if text.strip() == _IDLE_COMMAND:
+    if text.strip() in _IDLE_COMMAND:
         session.update_session_counters(idle=True)
         return
     if session.player:
