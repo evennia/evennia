@@ -36,7 +36,7 @@ __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle",
 
 PICKLE_PROTOCOL = 2
 
-def _get_mysql_db_version(self):
+def _get_mysql_db_version():
     """
     This is a helper method for specifically getting the version
     string of a MySQL database.
