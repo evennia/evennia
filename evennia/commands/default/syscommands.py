@@ -27,14 +27,16 @@ from evennia.commands.cmdhandler import CMD_NOINPUT
 from evennia.commands.cmdhandler import CMD_NOMATCH
 from evennia.commands.cmdhandler import CMD_MULTIMATCH
 from evennia.commands.cmdhandler import CMD_CHANNEL
+from evennia.utils import utils
 
-from evennia.commands.default.muxcommand import MuxCommand
+from django.conf import settings
+COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # Command called when there is no input at line
 # (i.e. an lone return key)
 
 
-class SystemNoInput(MuxCommand):
+class SystemNoInput(COMMAND_DEFAULT_CLASS):
     """
     This is called when there is no input given
     """
@@ -50,7 +52,7 @@ class SystemNoInput(MuxCommand):
 # Command called when there was no match to the
 # command name
 #
-class SystemNoMatch(MuxCommand):
+class SystemNoMatch(COMMAND_DEFAULT_CLASS):
     """
     No command was found matching the given input.
     """
@@ -67,7 +69,7 @@ class SystemNoMatch(MuxCommand):
 #
 # Command called when there were mulitple matches to the command.
 #
-class SystemMultimatch(MuxCommand):
+class SystemMultimatch(COMMAND_DEFAULT_CLASS):
     """
     Multiple command matches.
 
@@ -132,7 +134,7 @@ class SystemMultimatch(MuxCommand):
 # channel named 'ooc' and the user wrote
 #  > ooc Hello!
 
-class SystemSendToChannel(MuxCommand):
+class SystemSendToChannel(COMMAND_DEFAULT_CLASS):
     """
     This is a special command that the cmdhandler calls
     when it detects that the command given matches

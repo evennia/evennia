@@ -3,8 +3,8 @@ General Character commands usually availabe to all characters
 """
 from django.conf import settings
 from evennia.utils import utils, prettytable
-from evennia.commands.default.muxcommand import MuxCommand
 
+COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # limit symbol import for API
 __all__ = ("CmdHome", "CmdLook", "CmdNick",
@@ -12,7 +12,7 @@ __all__ = ("CmdHome", "CmdLook", "CmdNick",
            "CmdSay", "CmdPose", "CmdAccess")
 
 
-class CmdHome(MuxCommand):
+class CmdHome(COMMAND_DEFAULT_CLASS):
     """
     move to your character's home location
 
@@ -38,7 +38,7 @@ class CmdHome(MuxCommand):
             caller.move_to(home)
             caller.msg("There's no place like home ...")
 
-class CmdLook(MuxCommand):
+class CmdLook(COMMAND_DEFAULT_CLASS):
     """
     look at location or object
 
@@ -70,7 +70,7 @@ class CmdLook(MuxCommand):
         self.msg(self.caller.at_look(target))
 
 
-class CmdNick(MuxCommand):
+class CmdNick(COMMAND_DEFAULT_CLASS):
     """
     define a personal alias/nick
 
@@ -170,7 +170,7 @@ class CmdNick(MuxCommand):
         caller.msg(string)
 
 
-class CmdInventory(MuxCommand):
+class CmdInventory(COMMAND_DEFAULT_CLASS):
     """
     view inventory
 
@@ -200,7 +200,7 @@ class CmdInventory(MuxCommand):
         self.caller.msg(string)
 
 
-class CmdGet(MuxCommand):
+class CmdGet(COMMAND_DEFAULT_CLASS):
     """
     pick up something
 
@@ -246,7 +246,7 @@ class CmdGet(MuxCommand):
         obj.at_get(caller)
 
 
-class CmdDrop(MuxCommand):
+class CmdDrop(COMMAND_DEFAULT_CLASS):
     """
     drop something
 
@@ -286,7 +286,7 @@ class CmdDrop(MuxCommand):
         obj.at_drop(caller)
 
 
-class CmdGive(MuxCommand):
+class CmdGive(COMMAND_DEFAULT_CLASS):
     """
     give away something to someone
 
@@ -325,7 +325,7 @@ class CmdGive(MuxCommand):
         target.msg("%s gives you %s." % (caller.key, to_give.key))
 
 
-class CmdDesc(MuxCommand):
+class CmdDesc(COMMAND_DEFAULT_CLASS):
     """
     describe yourself
 
@@ -350,7 +350,7 @@ class CmdDesc(MuxCommand):
         self.caller.db.desc = self.args.strip()
         self.caller.msg("You set your description.")
 
-class CmdSay(MuxCommand):
+class CmdSay(COMMAND_DEFAULT_CLASS):
     """
     speak as your character
 
@@ -388,7 +388,7 @@ class CmdSay(MuxCommand):
                                      exclude=caller)
 
 
-class CmdPose(MuxCommand):
+class CmdPose(COMMAND_DEFAULT_CLASS):
     """
     strike a pose
 
@@ -431,7 +431,7 @@ class CmdPose(MuxCommand):
             self.caller.location.msg_contents(msg)
 
 
-class CmdAccess(MuxCommand):
+class CmdAccess(COMMAND_DEFAULT_CLASS):
     """
     show your current game access
 

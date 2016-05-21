@@ -9,7 +9,6 @@ from evennia.commands.default import general, help, admin, system
 from evennia.commands.default import building
 from evennia.commands.default import batchprocess
 
-
 class CharacterCmdSet(CmdSet):
     """
     Implements the default command set.

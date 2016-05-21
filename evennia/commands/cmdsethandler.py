@@ -225,6 +225,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
         err_cmdset.errmessage = errstring
         return err_cmdset
 
+
 # classes
 
 

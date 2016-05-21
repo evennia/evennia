@@ -22,8 +22,10 @@ from builtins import range
 from django.conf import settings
 from evennia.utils.batchprocessors import BATCHCMD, BATCHCODE
 from evennia.commands.cmdset import CmdSet
-from evennia.commands.default.muxcommand import MuxCommand
 from evennia.utils import logger, utils
+
+COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
+#from evennia.commands.default.muxcommand import COMMAND_DEFAULT_CLASS
 
 # limit symbols for API inclusion
 __all__ = ("CmdBatchCommands", "CmdBatchCode")
@@ -205,7 +207,7 @@ def purge_processor(caller):
 #------------------------------------------------------------
 
 
-class CmdBatchCommands(MuxCommand):
+class CmdBatchCommands(COMMAND_DEFAULT_CLASS):
     """
     build from batch-command file
 
@@ -308,7 +310,7 @@ class CmdBatchCommands(MuxCommand):
                 purge_processor(caller)
 
 
-class CmdBatchCode(MuxCommand):
+class CmdBatchCode(COMMAND_DEFAULT_CLASS):
     """
     build from batch-code file
 
@@ -419,7 +421,7 @@ class CmdBatchCode(MuxCommand):
 # (these are the same for both processors)
 #------------------------------------------------------------
 
-class CmdStateAbort(MuxCommand):
+class CmdStateAbort(COMMAND_DEFAULT_CLASS):
     """
     @abort
 
@@ -437,7 +439,7 @@ class CmdStateAbort(MuxCommand):
         self.caller.msg("Exited processor and reset out active cmdset back to the default one.")
 
 
-class CmdStateLL(MuxCommand):
+class CmdStateLL(COMMAND_DEFAULT_CLASS):
     """
     ll
 
@@ -451,7 +453,7 @@ class CmdStateLL(MuxCommand):
     def func(self):
         show_curr(self.caller, showall=True)
 
-class CmdStatePP(MuxCommand):
+class CmdStatePP(COMMAND_DEFAULT_CLASS):
     """
     pp
 
@@ -472,7 +474,7 @@ class CmdStatePP(MuxCommand):
             batch_cmd_exec(caller)
 
 
-class CmdStateRR(MuxCommand):
+class CmdStateRR(COMMAND_DEFAULT_CLASS):
     """
     rr
 
@@ -494,7 +496,7 @@ class CmdStateRR(MuxCommand):
         show_curr(caller)
 
 
-class CmdStateRRR(MuxCommand):
+class CmdStateRRR(COMMAND_DEFAULT_CLASS):
     """
     rrr
 
@@ -516,7 +518,7 @@ class CmdStateRRR(MuxCommand):
         show_curr(caller)
 
 
-class CmdStateNN(MuxCommand):
+class CmdStateNN(COMMAND_DEFAULT_CLASS):
     """
     nn
 
@@ -537,7 +539,7 @@ class CmdStateNN(MuxCommand):
         show_curr(caller)
 
 
-class CmdStateNL(MuxCommand):
+class CmdStateNL(COMMAND_DEFAULT_CLASS):
     """
     nl
 
@@ -559,7 +561,7 @@ class CmdStateNL(MuxCommand):
         show_curr(caller, showall=True)
 
 
-class CmdStateBB(MuxCommand):
+class CmdStateBB(COMMAND_DEFAULT_CLASS):
     """
     bb
 
@@ -581,7 +583,7 @@ class CmdStateBB(MuxCommand):
         show_curr(caller)
 
 
-class CmdStateBL(MuxCommand):
+class CmdStateBL(COMMAND_DEFAULT_CLASS):
     """
     bl
 
@@ -603,7 +605,7 @@ class CmdStateBL(MuxCommand):
         show_curr(caller, showall=True)
 
 
-class CmdStateSS(MuxCommand):
+class CmdStateSS(COMMAND_DEFAULT_CLASS):
     """
     ss [steps]
 
@@ -632,7 +634,7 @@ class CmdStateSS(MuxCommand):
             show_curr(caller)
 
 
-class CmdStateSL(MuxCommand):
+class CmdStateSL(COMMAND_DEFAULT_CLASS):
     """
     sl [steps]
 
@@ -661,7 +663,7 @@ class CmdStateSL(MuxCommand):
             show_curr(caller)
 
 
-class CmdStateCC(MuxCommand):
+class CmdStateCC(COMMAND_DEFAULT_CLASS):
     """
     cc
 
@@ -693,7 +695,7 @@ class CmdStateCC(MuxCommand):
         caller.msg(format_code("Finished processing batch file."))
 
 
-class CmdStateJJ(MuxCommand):
+class CmdStateJJ(COMMAND_DEFAULT_CLASS):
     """
     jj <command number>
 
@@ -717,7 +719,7 @@ class CmdStateJJ(MuxCommand):
         show_curr(caller)
 
 
-class CmdStateJL(MuxCommand):
+class CmdStateJL(COMMAND_DEFAULT_CLASS):
     """
     jl <command number>
 
@@ -741,7 +743,7 @@ class CmdStateJL(MuxCommand):
         show_curr(caller, showall=True)
 
 
-class CmdStateQQ(MuxCommand):
+class CmdStateQQ(COMMAND_DEFAULT_CLASS):
     """
     qq
 
@@ -756,7 +758,7 @@ class CmdStateQQ(MuxCommand):
         self.caller.msg("Aborted interactive batch mode.")
 
 
-class CmdStateHH(MuxCommand):
+class CmdStateHH(COMMAND_DEFAULT_CLASS):
     "Help command"
 
     key = "hh"

@@ -18,10 +18,11 @@ from evennia.server.sessionhandler import SESSIONS
 from evennia.scripts.models import ScriptDB
 from evennia.objects.models import ObjectDB
 from evennia.players.models import PlayerDB
-from evennia.utils import logger, utils, gametime, create, is_pypy, prettytable
+from evennia.utils import logger, utils, gametime, create, prettytable
 from evennia.utils.evtable import EvTable
-from evennia.utils.utils import crop
-from evennia.commands.default.muxcommand import MuxCommand
+from evennia.utils.utils import crop, class_from_module
+
+COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # delayed imports
 _RESOURCE = None
@@ -33,7 +34,7 @@ __all__ = ("CmdReload", "CmdReset", "CmdShutdown", "CmdPy",
            "CmdTime", "CmdServerLoad")
 
 
-class CmdReload(MuxCommand):
+class CmdReload(COMMAND_DEFAULT_CLASS):
     """
     reload the server
 
@@ -59,7 +60,7 @@ class CmdReload(MuxCommand):
         SESSIONS.server.shutdown(mode='reload')
 
 
-class CmdReset(MuxCommand):
+class CmdReset(COMMAND_DEFAULT_CLASS):
     """
     reset and reboot the server
 
@@ -92,7 +93,7 @@ class CmdReset(MuxCommand):
         SESSIONS.server.shutdown(mode='reset')
 
 
-class CmdShutdown(MuxCommand):
+class CmdShutdown(COMMAND_DEFAULT_CLASS):
 
     """
     stop the server completely
@@ -121,7 +122,7 @@ class CmdShutdown(MuxCommand):
         SESSIONS.portal_shutdown()
 
 
-class CmdPy(MuxCommand):
+class CmdPy(COMMAND_DEFAULT_CLASS):
     """
     execute a snippet of python code
 
@@ -248,7 +249,7 @@ def format_script_list(scripts):
     return "%s" % table
 
 
-class CmdScripts(MuxCommand):
+class CmdScripts(COMMAND_DEFAULT_CLASS):
     """
     list and manage all running scripts
 
@@ -344,7 +345,7 @@ class CmdScripts(MuxCommand):
         caller.msg(string)
 
 
-class CmdObjects(MuxCommand):
+class CmdObjects(COMMAND_DEFAULT_CLASS):
     """
     statistics on objects in the database
 
@@ -408,7 +409,7 @@ class CmdObjects(MuxCommand):
         caller.msg(string)
 
 
-class CmdPlayers(MuxCommand):
+class CmdPlayers(COMMAND_DEFAULT_CLASS):
     """
     list all registered players
 
@@ -451,7 +452,7 @@ class CmdPlayers(MuxCommand):
         caller.msg(string)
 
 
-class CmdService(MuxCommand):
+class CmdService(COMMAND_DEFAULT_CLASS):
     """
     manage system services
 
@@ -545,7 +546,7 @@ class CmdService(MuxCommand):
             service.startService()
 
 
-class CmdAbout(MuxCommand):
+class CmdAbout(COMMAND_DEFAULT_CLASS):
     """
     show Evennia info
 
@@ -586,7 +587,7 @@ class CmdAbout(MuxCommand):
         self.caller.msg(string)
 
 
-class CmdTime(MuxCommand):
+class CmdTime(COMMAND_DEFAULT_CLASS):
     """
     show server time statistics
 
@@ -612,7 +613,7 @@ class CmdTime(MuxCommand):
         self.caller.msg(str(table))
 
 
-class CmdServerLoad(MuxCommand):
+class CmdServerLoad(COMMAND_DEFAULT_CLASS):
     """
     show server load and memory statistics
 
@@ -754,7 +755,7 @@ class CmdServerLoad(MuxCommand):
         # return to caller
         self.caller.msg(string)
 
-class CmdTickers(MuxCommand):
+class CmdTickers(COMMAND_DEFAULT_CLASS):
     """
     View running tickers
 

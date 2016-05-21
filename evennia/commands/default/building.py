@@ -8,13 +8,14 @@ from django.conf import settings
 from django.db.models import Q
 from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
-from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.utils import create, utils, search
-from evennia.utils.utils import inherits_from
+from evennia.utils.utils import inherits_from, class_from_module
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.spawner import spawn
 from evennia.utils.ansi import raw
+
+COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # limit symbol import for API
 __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
@@ -40,7 +41,7 @@ _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 _PROTOTYPE_PARENTS = None
 
-class ObjManipCommand(MuxCommand):
+class ObjManipCommand(COMMAND_DEFAULT_CLASS):
     """
     This is a parent class for some of the defining objmanip commands
     since they tend to have some more variables to define new objects.
@@ -97,7 +98,7 @@ class ObjManipCommand(MuxCommand):
         self.rhs_objattr = obj_attrs[1]
 
 
-class CmdSetObjAlias(MuxCommand):
+class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
     """
     adding permanent aliases for object
 
@@ -528,7 +529,7 @@ def _desc_quit(caller):
     caller.attributes.remove("evmenu_target")
     caller.msg("Exited editor.")
 
-class CmdDesc(MuxCommand):
+class CmdDesc(COMMAND_DEFAULT_CLASS):
     """
     describe an object
 
@@ -607,7 +608,7 @@ class CmdDesc(MuxCommand):
         caller.msg("The description was set on %s." % obj.get_display_name(caller))
 
 
-class CmdDestroy(MuxCommand):
+class CmdDestroy(COMMAND_DEFAULT_CLASS):
     """
     permanently delete objects
 
@@ -823,7 +824,7 @@ class CmdDig(ObjManipCommand):
         if new_room and ('teleport' in self.switches or "tel" in self.switches):
             caller.move_to(new_room)
 
-class CmdTunnel(MuxCommand):
+class CmdTunnel(COMMAND_DEFAULT_CLASS):
     """
     create new rooms in cardinal directions only
 
@@ -903,7 +904,7 @@ class CmdTunnel(MuxCommand):
         self.caller.execute_cmd(digstring)
 
 
-class CmdLink(MuxCommand):
+class CmdLink(COMMAND_DEFAULT_CLASS):
     """
     link existing rooms together with exits
 
@@ -1077,7 +1078,7 @@ class CmdSetHome(CmdLink):
         self.caller.msg(string)
 
 
-class CmdListCmdSets(MuxCommand):
+class CmdListCmdSets(COMMAND_DEFAULT_CLASS):
     """
     list command sets defined on an object
 
@@ -1552,7 +1553,7 @@ class CmdSetAttribute(ObjManipCommand):
         caller.msg(string.strip('\n'))
 
 
-class CmdTypeclass(MuxCommand):
+class CmdTypeclass(COMMAND_DEFAULT_CLASS):
     """
     set or change an object's typeclass
 
@@ -2070,7 +2071,7 @@ class CmdExamine(ObjManipCommand):
                 get_and_merge_cmdsets(obj, self.session, self.player, obj, mergemode).addCallback(get_cmdset_callback)
 
 
-class CmdFind(MuxCommand):
+class CmdFind(COMMAND_DEFAULT_CLASS):
     """
     search the database for objects
 
@@ -2196,7 +2197,7 @@ class CmdFind(MuxCommand):
         caller.msg(string.strip())
 
 
-class CmdTeleport(MuxCommand):
+class CmdTeleport(COMMAND_DEFAULT_CLASS):
     """
     teleport object to another location
 
@@ -2297,7 +2298,7 @@ class CmdTeleport(MuxCommand):
                                                      destination))
 
 
-class CmdScript(MuxCommand):
+class CmdScript(COMMAND_DEFAULT_CLASS):
     """
     attach a script to an object
 
@@ -2397,7 +2398,7 @@ class CmdScript(MuxCommand):
         caller.msg(string.strip())
 
 
-class CmdTag(MuxCommand):
+class CmdTag(COMMAND_DEFAULT_CLASS):
     """
     handles the tags of an object
 
@@ -2510,7 +2511,7 @@ class CmdTag(MuxCommand):
 # Reload the server and the prototypes should be available.
 #
 
-class CmdSpawn(MuxCommand):
+class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
     spawn objects from prototype
 

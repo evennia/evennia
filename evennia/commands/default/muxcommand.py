@@ -127,6 +127,21 @@ class MuxCommand(Command):
         self.rhs = rhs
         self.rhslist = rhslist
 
+        # if the class has the player_caller property set on itself, we make
+        # sure that self.caller is always the player if possible. We also create
+        # a special property "character" for the puppeted object, if any. This
+        # is convenient for commands defined on the Player only.
+        if hasattr(self, "player_caller") and self.player_caller:
+            if utils.inherits_from(self.caller, "evennia.objects.objects.DefaultObject"):
+                # caller is an Object/Character
+                self.character = self.caller
+                self.caller = self.caller.player
+            elif utils.inherits_from(self.caller, "evennia.players.players.DefaultPlayer"):
+                # caller was already a Player
+                self.character = self.caller.get_puppet(self.session)
+            else:
+                self.character = None
+
     def func(self):
         """
         This is the hook function that actually does all the work. It is called

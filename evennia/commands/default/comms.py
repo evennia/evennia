@@ -15,8 +15,9 @@ from evennia.players.models import PlayerDB
 from evennia.players import bots
 from evennia.comms.channelhandler import CHANNELHANDLER
 from evennia.utils import create, utils, evtable
-from evennia.utils.utils import make_iter
-from evennia.commands.default.muxcommand import MuxCommand, MuxPlayerCommand
+from evennia.utils.utils import make_iter, class_from_module
+
+COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # limit symbol import for API
 __all__ = ("CmdAddCom", "CmdDelCom", "CmdAllCom",
@@ -50,7 +51,7 @@ def find_channel(caller, channelname, silent=False, noaliases=False):
     return channels[0]
 
 
-class CmdAddCom(MuxPlayerCommand):
+class CmdAddCom(COMMAND_DEFAULT_CLASS):
     """
     add a channel alias and/or subscribe to a channel
 
@@ -67,6 +68,9 @@ class CmdAddCom(MuxPlayerCommand):
     aliases = ["aliaschan", "chanalias"]
     help_category = "Comms"
     locks = "cmd:not pperm(channel_banned)"
+
+    # this is used by the COMMAND_DEFAULT_CLASS parent
+    player_caller = True
 
     def func(self):
         "Implement the command"
@@ -119,7 +123,7 @@ class CmdAddCom(MuxPlayerCommand):
             self.msg(string)
 
 
-class CmdDelCom(MuxPlayerCommand):
+class CmdDelCom(COMMAND_DEFAULT_CLASS):
     """
     remove a channel alias and/or unsubscribe from channel
 
@@ -135,6 +139,9 @@ class CmdDelCom(MuxPlayerCommand):
     aliases = ["delaliaschan", "delchanalias"]
     help_category = "Comms"
     locks = "cmd:not perm(channel_banned)"
+
+    # this is used by the COMMAND_DEFAULT_CLASS parent
+    player_caller = True
 
     def func(self):
         "Implementing the command. "
@@ -176,7 +183,7 @@ class CmdDelCom(MuxPlayerCommand):
                     self.msg("You had no such alias defined for this channel.")
 
 
-class CmdAllCom(MuxPlayerCommand):
+class CmdAllCom(COMMAND_DEFAULT_CLASS):
     """
     perform admin operations on all channels
 
@@ -193,6 +200,9 @@ class CmdAllCom(MuxPlayerCommand):
     key = "allcom"
     locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
+
+    # this is used by the COMMAND_DEFAULT_CLASS parent
+    player_caller = True
 
     def func(self):
         "Runs the function"
@@ -242,7 +252,7 @@ class CmdAllCom(MuxPlayerCommand):
             self.msg("Usage: allcom on | off | who | clear")
 
 
-class CmdChannels(MuxPlayerCommand):
+class CmdChannels(COMMAND_DEFAULT_CLASS):
     """
     list all channels available to you
 
@@ -259,6 +269,9 @@ class CmdChannels(MuxPlayerCommand):
     aliases = ["@clist", "channels", "comlist", "chanlist", "channellist", "all channels"]
     help_category = "Comms"
     locks = "cmd: not pperm(channel_banned)"
+
+    # this is used by the COMMAND_DEFAULT_CLASS parent
+    player_caller = True
 
     def func(self):
         "Implement function"
@@ -305,7 +318,7 @@ class CmdChannels(MuxPlayerCommand):
             caller.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)
 
 
-class CmdCdestroy(MuxPlayerCommand):
+class CmdCdestroy(COMMAND_DEFAULT_CLASS):
     """
     destroy a channel you created
 
@@ -318,6 +331,9 @@ class CmdCdestroy(MuxPlayerCommand):
     key = "@cdestroy"
     help_category = "Comms"
     locks = "cmd: not pperm(channel_banned)"
+
+    # this is used by the COMMAND_DEFAULT_CLASS parent
+    player_caller = True
 
     def func(self):
         "Destroy objects cleanly."
@@ -342,7 +358,7 @@ class CmdCdestroy(MuxPlayerCommand):
         self.msg("Channel '%s' was destroyed." % channel_key)
 
 
-class CmdCBoot(MuxPlayerCommand):
+class CmdCBoot(COMMAND_DEFAULT_CLASS):
     """
     kick a player from a channel you control
 
@@ -359,6 +375,9 @@ class CmdCBoot(MuxPlayerCommand):
     key = "@cboot"
     locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
+
+    # this is used by the COMMAND_DEFAULT_CLASS parent
+    player_caller = True
 
     def func(self):
         "implement the function"
@@ -403,7 +422,7 @@ class CmdCBoot(MuxPlayerCommand):
         CHANNELHANDLER.update()
 
 
-class CmdCemit(MuxPlayerCommand):
+class CmdCemit(COMMAND_DEFAULT_CLASS):
     """
     send an admin message to a channel you control
 
@@ -424,6 +443,9 @@ class CmdCemit(MuxPlayerCommand):
     aliases = ["@cmsg"]
     locks = "cmd: not pperm(channel_banned) and pperm(Players)"
     help_category = "Comms"
+
+    # this is used by the COMMAND_DEFAULT_CLASS parent
+    player_caller = True
 
     def func(self):
         "Implement function"
@@ -448,7 +470,7 @@ class CmdCemit(MuxPlayerCommand):
             self.msg(string)
 
 
-class CmdCWho(MuxPlayerCommand):
+class CmdCWho(COMMAND_DEFAULT_CLASS):
     """
     show who is listening to a channel
 
@@ -460,6 +482,9 @@ class CmdCWho(MuxPlayerCommand):
     key = "@cwho"
     locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
+
+    # this is used by the COMMAND_DEFAULT_CLASS parent
+    player_caller = True
 
     def func(self):
         "implement function"
@@ -486,7 +511,7 @@ class CmdCWho(MuxPlayerCommand):
         self.msg(string.strip())
 
 
-class CmdChannelCreate(MuxPlayerCommand):
+class CmdChannelCreate(COMMAND_DEFAULT_CLASS):
     """
     create a new channel
 
@@ -500,6 +525,9 @@ class CmdChannelCreate(MuxPlayerCommand):
     aliases = "channelcreate"
     locks = "cmd:not pperm(channel_banned) and pperm(Players)"
     help_category = "Comms"
+
+    # this is used by the COMMAND_DEFAULT_CLASS parent
+    player_caller = True
 
     def func(self):
         "Implement the command"
@@ -535,7 +563,7 @@ class CmdChannelCreate(MuxPlayerCommand):
         self.msg("Created channel %s and connected to it." % new_chan.key)
 
 
-class CmdClock(MuxPlayerCommand):
+class CmdClock(COMMAND_DEFAULT_CLASS):
     """
     change channel locks of a channel you control
 
@@ -550,6 +578,9 @@ class CmdClock(MuxPlayerCommand):
     locks = "cmd:not pperm(channel_banned)"
     aliases = ["@clock"]
     help_category = "Comms"
+
+    # this is used by the COMMAND_DEFAULT_CLASS parent
+    player_caller = True
 
     def func(self):
         "run the function"
@@ -581,7 +612,7 @@ class CmdClock(MuxPlayerCommand):
         self.msg(string)
 
 
-class CmdCdesc(MuxPlayerCommand):
+class CmdCdesc(COMMAND_DEFAULT_CLASS):
     """
     describe a channel you control
 
@@ -595,6 +626,9 @@ class CmdCdesc(MuxPlayerCommand):
     key = "@cdesc"
     locks = "cmd:not pperm(channel_banned)"
     help_category = "Comms"
+
+    # this is used by the COMMAND_DEFAULT_CLASS parent
+    player_caller = True
 
     def func(self):
         "Implement command"
@@ -619,7 +653,7 @@ class CmdCdesc(MuxPlayerCommand):
                                                                self.rhs))
 
 
-class CmdPage(MuxPlayerCommand):
+class CmdPage(COMMAND_DEFAULT_CLASS):
     """
     send a private message to another player
 
@@ -641,10 +675,13 @@ class CmdPage(MuxPlayerCommand):
     locks = "cmd:not pperm(page_banned)"
     help_category = "Comms"
 
+    # this is used by the COMMAND_DEFAULT_CLASS parent
+    player_caller = True
+
     def func(self):
         "Implement function using the Msg methods"
 
-        # this is a MuxPlayerCommand, which means caller will be a Player.
+        # Since player_caller is set above, this will be a Player.
         caller = self.caller
 
         # get the messages we've sent (not to channels)
@@ -750,7 +787,7 @@ class CmdPage(MuxPlayerCommand):
         self.msg("You paged %s with: '%s'." % (", ".join(received), message))
 
 
-class CmdIRC2Chan(MuxCommand):
+class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     """
     link an evennia channel to an external IRC channel
 
@@ -853,7 +890,7 @@ class CmdIRC2Chan(MuxCommand):
         self.msg("Connection created. Starting IRC bot.")
 
 # RSS connection
-class CmdRSS2Chan(MuxCommand):
+class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
     """
     link an evennia channel to an external RSS feed
 
@@ -949,7 +986,7 @@ class CmdRSS2Chan(MuxCommand):
         self.msg("RSS reporter created. Fetching RSS.")
 
 
-#class CmdIMC2Chan(MuxCommand):
+#class CmdIMC2Chan(COMMAND_DEFAULT_CLASS):
 #    """
 #    link an evennia channel to an external IMC2 channel
 #
@@ -1027,7 +1064,7 @@ class CmdRSS2Chan(MuxCommand):
 #        self.msg("Created connection channel %s <-> IMC channel %s." % (channel.key, imc2_channel))
 #
 #
-#class CmdIMCInfo(MuxCommand):
+#class CmdIMCInfo(COMMAND_DEFAULT_CLASS):
 #    """
 #    get various IMC2 information
 #
@@ -1127,7 +1164,7 @@ class CmdRSS2Chan(MuxCommand):
 #
 #
 ## unclear if this is working ...
-#class CmdIMCTell(MuxCommand):
+#class CmdIMCTell(COMMAND_DEFAULT_CLASS):
 #    """
 #    send a page to a remote IMC player
 #

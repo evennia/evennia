@@ -9,8 +9,9 @@ import re
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
 from evennia.server.models import ServerConfig
-from evennia.utils import prettytable, search
-from evennia.commands.default.muxcommand import MuxCommand
+from evennia.utils import prettytable, search, class_from_module
+
+COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
@@ -19,7 +20,7 @@ __all__ = ("CmdBoot", "CmdBan", "CmdUnban", "CmdDelPlayer",
            "CmdEmit", "CmdNewPassword", "CmdPerm", "CmdWall")
 
 
-class CmdBoot(MuxCommand):
+class CmdBoot(COMMAND_DEFAULT_CLASS):
     """
     kick a player from the server.
 
@@ -116,7 +117,7 @@ def list_bans(banlist):
     return string
 
 
-class CmdBan(MuxCommand):
+class CmdBan(COMMAND_DEFAULT_CLASS):
     """
     ban a player from the server
 
@@ -204,7 +205,7 @@ class CmdBan(MuxCommand):
         self.caller.msg("%s-Ban {w%s{n was added." % (typ, ban))
 
 
-class CmdUnban(MuxCommand):
+class CmdUnban(COMMAND_DEFAULT_CLASS):
     """
     remove a ban from a player
 
@@ -249,7 +250,7 @@ class CmdUnban(MuxCommand):
                                     (num, " ".join([s for s in ban[:2]])))
 
 
-class CmdDelPlayer(MuxCommand):
+class CmdDelPlayer(COMMAND_DEFAULT_CLASS):
     """
     delete a player from the server
 
@@ -319,7 +320,7 @@ class CmdDelPlayer(MuxCommand):
         self.msg("Player %s was successfully deleted." % uname)
 
 
-class CmdEmit(MuxCommand):
+class CmdEmit(COMMAND_DEFAULT_CLASS):
     """
     admin command for emitting message to multiple objects
 
@@ -398,7 +399,7 @@ class CmdEmit(MuxCommand):
                 caller.msg("You are not allowed to emit to %s." % objname)
 
 
-class CmdNewPassword(MuxCommand):
+class CmdNewPassword(COMMAND_DEFAULT_CLASS):
     """
     change the password of a player
 
@@ -433,7 +434,7 @@ class CmdNewPassword(MuxCommand):
                                                                   self.rhs))
 
 
-class CmdPerm(MuxCommand):
+class CmdPerm(COMMAND_DEFAULT_CLASS):
     """
     set the permissions of a player/object
 
@@ -534,7 +535,8 @@ class CmdPerm(MuxCommand):
         if tstring:
             obj.msg(tstring.strip())
 
-class CmdWall(MuxCommand):
+
+class CmdWall(COMMAND_DEFAULT_CLASS):
     """
     make an announcement to all
 

@@ -12,8 +12,9 @@ from evennia.server.models import ServerConfig
 from evennia.comms.models import ChannelDB
 
 from evennia.utils import create, logger, utils, ansi
-from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.cmdhandler import CMD_LOGINSTART
+
+COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # limit symbol import for API
 __all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
@@ -178,7 +179,7 @@ def create_normal_player(session, name, password):
     return player
 
 
-class CmdUnconnectedConnect(MuxCommand):
+class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
     """
     connect to the game
 
@@ -241,7 +242,7 @@ class CmdUnconnectedConnect(MuxCommand):
             session.sessionhandler.login(session, player)
 
 
-class CmdUnconnectedCreate(MuxCommand):
+class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
     """
     create a new player account
 
@@ -340,7 +341,7 @@ class CmdUnconnectedCreate(MuxCommand):
             logger.log_trace()
 
 
-class CmdUnconnectedQuit(MuxCommand):
+class CmdUnconnectedQuit(COMMAND_DEFAULT_CLASS):
     """
     quit when in unlogged-in state
 
@@ -361,7 +362,7 @@ class CmdUnconnectedQuit(MuxCommand):
         session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
 
 
-class CmdUnconnectedLook(MuxCommand):
+class CmdUnconnectedLook(COMMAND_DEFAULT_CLASS):
     """
     look when in unlogged-in state
 
@@ -385,7 +386,7 @@ class CmdUnconnectedLook(MuxCommand):
         self.caller.msg(connection_screen)
 
 
-class CmdUnconnectedHelp(MuxCommand):
+class CmdUnconnectedHelp(COMMAND_DEFAULT_CLASS):
     """
     get help when in unconnected-in state
 
@@ -424,7 +425,7 @@ You can use the {wlook{n command if you want to see the connect screen again.
         self.caller.msg(string)
 
 
-class CmdUnconnectedEncoding(MuxCommand):
+class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
     """
     set which text encoding to use in unconnected-in state
 
@@ -496,7 +497,7 @@ class CmdUnconnectedEncoding(MuxCommand):
             self.session.sessionhandler.session_portal_sync(self.session)
         self.caller.msg(string.strip())
 
-class CmdUnconnectedScreenreader(MuxCommand):
+class CmdUnconnectedScreenreader(COMMAND_DEFAULT_CLASS):
     """
     Activate screenreader mode.
 

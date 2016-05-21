@@ -5,14 +5,13 @@ and self.caller is thus always a Player, not an Object/Character.
 These commands go in the PlayerCmdset and are accessible also
 when puppeting a Character (although with lower priority)
 
-These commands use the MuxCommandOOC parent that makes sure
-to setup caller correctly. They use self.player to make sure
-to always use the player object rather than self.caller (which
-change depending on the level you are calling from)
-The property self.character can be used to
-access the character when these commands are triggered with
-a connected character (such as the case of the @ooc command), it
-is None if we are OOC.
+These commands use the player_caller property which tells the command
+parent (MuxCommand, usually) to setup caller correctly. They use
+self.player to make sure to always use the player object rather than
+self.caller (which change depending on the level you are calling from)
+The property self.character can be used to access the character when
+these commands are triggered with a connected character (such as the
+case of the @ooc command), it is None if we are OOC.
 
 Note that under MULTISESSION_MODE > 2, Player- commands should use
 self.msg() and similar methods to reroute returns to the correct
@@ -24,8 +23,9 @@ from builtins import range
 import time
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
-from evennia.commands.default.muxcommand import MuxPlayerCommand
 from evennia.utils import utils, create, search, prettytable, evtable
+
+COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -36,12 +36,13 @@ __all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit",
            "CmdColorTest", "CmdQuell")
 
 
-class MuxPlayerLookCommand(MuxPlayerCommand):
+class MuxPlayerLookCommand(COMMAND_DEFAULT_CLASS):
     """
     Custom parent (only) parsing for OOC looking, sets a "playable"
     property on the command based on the parsing.
 
     """
+
     def parse(self):
         "Custom parsing"
 
@@ -92,6 +93,9 @@ class CmdOOCLook(MuxPlayerLookCommand):
     locks = "cmd:all()"
     help_category = "General"
 
+    # this is used by the parent
+    player_caller = True
+
     def func(self):
         "implement the ooc look command"
 
@@ -104,7 +108,7 @@ class CmdOOCLook(MuxPlayerLookCommand):
         self.msg(self.player.at_look(target=self.playable, session=self.session))
 
 
-class CmdCharCreate(MuxPlayerCommand):
+class CmdCharCreate(COMMAND_DEFAULT_CLASS):
     """
     create a new character
 
@@ -119,6 +123,9 @@ class CmdCharCreate(MuxPlayerCommand):
     key = "@charcreate"
     locks = "cmd:pperm(Players)"
     help_category = "General"
+
+    # this is used by the parent
+    player_caller = True
 
     def func(self):
         "create the new character"
@@ -167,7 +174,7 @@ class CmdCharCreate(MuxPlayerCommand):
         self.msg("Created new character %s. Use {w@ic %s{n to enter the game as this character." % (new_character.key, new_character.key))
 
 
-class CmdIC(MuxPlayerCommand):
+class CmdIC(COMMAND_DEFAULT_CLASS):
     """
     control an object you have permission to puppet
 
@@ -190,6 +197,9 @@ class CmdIC(MuxPlayerCommand):
     locks = "cmd:all()"
     aliases = "@puppet"
     help_category = "General"
+
+    # this is used by the parent
+    player_caller = True
 
     def func(self):
         """
@@ -238,6 +248,9 @@ class CmdOOC(MuxPlayerLookCommand):
     aliases = "@unpuppet"
     help_category = "General"
 
+    # this is used by the parent
+    player_caller = True
+
     def func(self):
         "Implement function"
 
@@ -267,7 +280,7 @@ class CmdOOC(MuxPlayerLookCommand):
         except RuntimeError as exc:
             self.msg("{rCould not unpuppet from {c%s{n: %s" % (old_char, exc))
 
-class CmdSessions(MuxPlayerCommand):
+class CmdSessions(COMMAND_DEFAULT_CLASS):
     """
     check your connected session(s)
 
@@ -280,6 +293,9 @@ class CmdSessions(MuxPlayerCommand):
     key = "@sessions"
     locks = "cmd:all()"
     help_category = "General"
+
+    # this is used by the parent
+    player_caller = True
 
     def func(self):
         "Implement function"
@@ -301,7 +317,7 @@ class CmdSessions(MuxPlayerCommand):
         self.msg(string)
 
 
-class CmdWho(MuxPlayerCommand):
+class CmdWho(COMMAND_DEFAULT_CLASS):
     """
     list who is currently online
 
@@ -316,6 +332,9 @@ class CmdWho(MuxPlayerCommand):
     key = "who"
     aliases = "doing"
     locks = "cmd:all()"
+
+    # this is used by the parent
+    player_caller = True
 
     def func(self):
         """
@@ -376,7 +395,7 @@ class CmdWho(MuxPlayerCommand):
         self.msg(string)
 
 
-class CmdOption(MuxPlayerCommand):
+class CmdOption(COMMAND_DEFAULT_CLASS):
     """
     Set an account option
 
@@ -396,6 +415,9 @@ class CmdOption(MuxPlayerCommand):
     key = "@option"
     aliases = "@options"
     locks = "cmd:all()"
+
+    # this is used by the parent
+    player_caller = True
 
     def func(self):
         """
@@ -521,7 +543,7 @@ class CmdOption(MuxPlayerCommand):
 
             self.session.update_flags(**optiondict)
 
-class CmdPassword(MuxPlayerCommand):
+class CmdPassword(COMMAND_DEFAULT_CLASS):
     """
     change your password
 
@@ -532,6 +554,9 @@ class CmdPassword(MuxPlayerCommand):
     """
     key = "@password"
     locks = "cmd:pperm(Players)"
+
+    # this is used by the parent
+    player_caller = True
 
     def func(self):
         "hook function."
@@ -552,7 +577,7 @@ class CmdPassword(MuxPlayerCommand):
             self.msg("Password changed.")
 
 
-class CmdQuit(MuxPlayerCommand):
+class CmdQuit(COMMAND_DEFAULT_CLASS):
     """
     quit the game
 
@@ -568,6 +593,9 @@ class CmdQuit(MuxPlayerCommand):
     key = "@quit"
     aliases = "quit"
     locks = "cmd:all()"
+
+    # this is used by the parent
+    player_caller = True
 
     def func(self):
         "hook function"
@@ -590,7 +618,7 @@ class CmdQuit(MuxPlayerCommand):
 
 
 
-class CmdColorTest(MuxPlayerCommand):
+class CmdColorTest(COMMAND_DEFAULT_CLASS):
     """
     testing which colors your client support
 
@@ -607,6 +635,9 @@ class CmdColorTest(MuxPlayerCommand):
     aliases = "color"
     locks = "cmd:all()"
     help_category = "General"
+
+    # this is used by the parent
+    player_caller = True
 
     def table_format(self, table):
        """
@@ -668,7 +699,7 @@ class CmdColorTest(MuxPlayerCommand):
             self.msg("Usage: @color ansi||xterm256")
 
 
-class CmdQuell(MuxPlayerCommand):
+class CmdQuell(COMMAND_DEFAULT_CLASS):
     """
     use character's permissions instead of player's
 
@@ -689,6 +720,9 @@ class CmdQuell(MuxPlayerCommand):
     aliases = ["@unquell"]
     locks = "cmd:pperm(Players)"
     help_category = "General"
+
+    # this is used by the parent
+    player_caller = True
 
     def _recache_locks(self, player):
         "Helper method to reset the lockhandler on an already puppeted object"

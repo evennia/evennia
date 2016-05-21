@@ -265,6 +265,7 @@ def _init():
             add_cmds(help)
             add_cmds(system)
             add_cmds(unloggedin)
+
     default_cmds = DefaultCmds()
     del DefaultCmds
 
