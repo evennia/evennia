@@ -233,6 +233,12 @@ function onDefault(cmdname, args, kwargs) {
     mwin.scrollTop(mwin[0].scrollHeight);
 }
 
+// Ask if user really wants to exit session when closing
+// the tab or reloading the page. Note: the message is not shown
+// in Firefox, there it's a standard error.
+function onBeforeUnload() {
+    return "You are about to leave the game. Please confirm.";
+}
 
 //
 // Register Events
@@ -269,7 +275,8 @@ $(document).ready(function() {
     // Handle pressing the send button
     $("#inputsend").bind("click", doSendText);
     // Event when closing window (have to have Evennia initialized)
-    $(window).bind("beforeunload", Evennia.connection.close);
+    $(window).bind("beforeunload", onBeforeUnload);
+    $(window).bind("unload", Evennia.connection.close);
 
     doWindowResize();
     // set an idle timer to send idle every 3 minutes,
