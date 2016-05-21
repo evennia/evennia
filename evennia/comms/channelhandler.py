@@ -25,11 +25,14 @@ does this for you.
 """
 from builtins import object
 
+from django.conf import settings
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdset, command
 from evennia.utils.logger import tail_log_file
-
+from evennia.utils.utils import class_from_module
 from django.utils.translation import ugettext as _
+
+_CHANNEL_COMMAND_CLASS = None
 
 class ChannelCommand(command.Command):
     """
@@ -194,8 +197,13 @@ class ChannelHandler(object):
             the Channel itself.
 
         """
+        global _CHANNEL_COMMAND_CLASS
+        if not _CHANNEL_COMMAND_CLASS:
+            _CHANNEL_COMMAND_CLASS = class_from_module(settings.CHANNEL_COMMAND_CLASS)
+
         # map the channel to a searchable command
-        cmd = ChannelCommand(key=channel.key.strip().lower(),
+        cmd = _CHANNEL_COMMAND_CLASS(
+                             key=channel.key.strip().lower(),
                              aliases=channel.aliases.all(),
                              locks="cmd:all();%s" % channel.locks,
                              help_category="Channel names",

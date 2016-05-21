@@ -324,6 +324,11 @@ CMDSET_PATHS = ["commands", "evennia", "contribs"]
 # Parent class for all default commands. Changing this class will
 # modify all default commands, so do so carefully.
 COMMAND_DEFAULT_CLASS = "evennia.commands.default.muxcommand.MuxCommand"
+# The Channel Handler will create a command to represent each channel,
+# creating it with the key of the channel, its aliases, locks etc. The
+# default class logs channel messages to a file and allows for /history.
+# This setting allows to override the command class used with your own.
+CHANNEL_COMMAND_CLASS = "evennia.comms.channelhandler.ChannelCommand"
 
 ######################################################################
 # Typeclasses and other paths
