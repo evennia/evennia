@@ -45,8 +45,8 @@ class ChannelCommand(command.Command):
        {lower_channelkey}/history [start]
 
     Switch:
-        history: View the 20 last messages, optionally
-            beginning <start> messages from the end.
+        history: View 20 previous messages, either from the end or
+            from <start> number of messages from the end.
 
     Example:
         {lower_channelkey} Hello World!
@@ -54,6 +54,9 @@ class ChannelCommand(command.Command):
         {lower_channelkey}/history 30
 
     """
+    # ^note that channeldesc and lower_channelkey will be filled
+    # automatically by ChannelHandler
+
     # this flag is what identifies this cmd as a channel cmd
     # and branches off to the system send-to-channel command
     # (which is customizable by admin)
@@ -154,33 +157,6 @@ class ChannelHandler(object):
 
         """
         self.cached_channel_cmds = []
-
-    def _format_help(self, channel):
-        """
-        Builds an automatic doc string for the channel.
-
-        Args:
-            channel (Channel): Source of help info.
-
-        Returns:
-            doc (str): The docstring for the channel.
-
-        """
-
-        key = channel.key
-        aliases = channel.aliases.all()
-        ustring = _("%s <message>") % key.lower() + "".join([_("\n           %s <message>") % alias.lower() for alias in aliases])
-        desc = channel.db.desc
-        string = _(
-        """
-        Channel '%s'
-
-        Usage (not including your personal aliases):
-           %s
-
-        %s
-        """) % (key, ustring, desc)
-        return string
 
     def add_channel(self, channel):
         """
