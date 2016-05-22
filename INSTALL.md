@@ -113,7 +113,7 @@ Enter your new game directory and run
 
 ```
 evennia migrate
-evennia -i start
+evennia start
 ```
 
 Follow the instructions to create your superuser account. A lot of
