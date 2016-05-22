@@ -181,7 +181,6 @@ class WebClient(resource.Resource):
         suid = request.args.get('suid', ['0'])[0]
         if suid == '0':
             return '""'
-        print "keepalive succeeded"
         self.last_alive[suid] = (time(), False)
         return '""'
 

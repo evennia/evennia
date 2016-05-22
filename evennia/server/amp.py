@@ -170,7 +170,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
 
         """
         if hasattr(self, "server_restart_mode"):
-            self.maxDelay = 1
+            self.maxDelay = 2
         else:
             # Don't translate this; avoid loading django on portal side.
             self.maxDelay = 10
@@ -187,8 +187,9 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
             reason (str): Eventual text describing why connection failed.
 
         """
+        print ("portal retrying connection"), self.maxDelay
         if hasattr(self, "server_restart_mode"):
-            self.maxDelay = 1
+            self.maxDelay = 2
         else:
             self.maxDelay = 10
         self.portal.sessions.announce_all(" ...")
