@@ -17,7 +17,6 @@ from .ansi import *
 
 import time
 
-t0 = time.time()
 # All xterm256 RGB equivalents
 
 XTERM256_FG = "\033[38;5;%sm"
@@ -282,5 +281,3 @@ def parse_html(string, strip_ansi=False, parser=HTML_PARSER):
     Parses a string, replace ANSI markup with html
     """
     return parser.parse(string, strip_ansi=strip_ansi)
-
-print "t0-t1=", time.time() - t0
