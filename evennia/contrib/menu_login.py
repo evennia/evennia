@@ -382,6 +382,6 @@ class CmdUnloggedinLook(Command):
 
     def func(self):
         "Execute the menu"
-        EvMenu(self.caller, "evennia.contrib.evmenu_login",
+        EvMenu(self.caller, "evennia.contrib.menu_login",
                startnode="start", auto_look=False, auto_quit=False,
                cmd_on_exit=None, node_formatter=_formatter)
