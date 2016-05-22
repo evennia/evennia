@@ -15,12 +15,14 @@ import re
 import cgi
 from .ansi import *
 
+import time
+
+t0 = time.time()
 # All xterm256 RGB equivalents
 
 XTERM256_FG = "\033[38;5;%sm"
 XTERM256_BG = "\033[48;5;%sm"
 
-_RE_XTERM256 = re.compile("(\033\[(?:38|48);5;[0-9]{3}m)")
 
 class TextToHTMLparser(object):
     """
@@ -53,48 +55,37 @@ class TextToHTMLparser(object):
         ] + [("color-%03i" % (i+16), XTERM256_FG % ("%03i" % (i+16))) for i in xrange(240)]
 
     colorback = [
-            ('bgcolor-000', ANSI_BACK_BLACK), # pure black
-            ('bgcolor-001', ANSI_BACK_RED),
-            ('bgcolor-002', ANSI_BACK_GREEN),
-            ('bgcolor-003', ANSI_BACK_YELLOW),
-            ('bgcolor-004', ANSI_BACK_BLUE),
-            ('bgcolor-005', ANSI_BACK_MAGENTA),
-            ('bgcolor-006', ANSI_BACK_CYAN),
-            ('bgcolor-007', ANSI_BACK_WHITE), # light grey
-            ('bgcolor-000', unhilite + ANSI_BLACK), # pure black
-            ('bgcolor-001', unhilite + ANSI_RED),
-            ('bgcolor-002', unhilite + ANSI_GREEN),
-            ('bgcolor-003', unhilite + ANSI_YELLOW),
-            ('bgcolor-004', unhilite + ANSI_BLUE),
-            ('bgcolor-005', unhilite + ANSI_MAGENTA),
-            ('bgcolor-006', unhilite + ANSI_CYAN),
-            ('bgcolor-007', unhilite + ANSI_WHITE), # light grey
-            ('bgcolor-008', hilite + ANSI_BLACK), # dark grey
-            ('bgcolor-009', hilite + ANSI_RED),
-            ('bgcolor-010', hilite + ANSI_GREEN),
-            ('bgcolor-011', hilite + ANSI_YELLOW),
-            ('bgcolor-012', hilite + ANSI_BLUE),
-            ('bgcolor-013', hilite + ANSI_MAGENTA),
-            ('bgcolor-014', hilite + ANSI_CYAN),
-            ('bgcolor-015', hilite + ANSI_WHITE),  # pure white
+            ('bgcolor-000', unhilite + ANSI_BACK_BLACK), # pure black
+            ('bgcolor-001', unhilite + ANSI_BACK_RED),
+            ('bgcolor-002', unhilite + ANSI_BACK_GREEN),
+            ('bgcolor-003', unhilite + ANSI_BACK_YELLOW),
+            ('bgcolor-004', unhilite + ANSI_BACK_BLUE),
+            ('bgcolor-005', unhilite + ANSI_BACK_MAGENTA),
+            ('bgcolor-006', unhilite + ANSI_BACK_CYAN),
+            ('bgcolor-007', unhilite + ANSI_BACK_WHITE), # light grey
+            ('bgcolor-008', hilite + ANSI_BACK_BLACK), # dark grey
+            ('bgcolor-009', hilite + ANSI_BACK_RED),
+            ('bgcolor-010', hilite + ANSI_BACK_GREEN),
+            ('bgcolor-011', hilite + ANSI_BACK_YELLOW),
+            ('bgcolor-012', hilite + ANSI_BACK_BLUE),
+            ('bgcolor-013', hilite + ANSI_BACK_MAGENTA),
+            ('bgcolor-014', hilite + ANSI_BACK_CYAN),
+            ('bgcolor-015', hilite + ANSI_BACK_WHITE),  # pure white
     ] + [("bgcolor-%03i" % (i+16), XTERM256_BG % ("%03i" % (i+16))) for i in range(240)]
 
     # make sure to escape [
-    colorcodes = [(c, code.replace("[", r"\[")) for c, code in colorcodes]
-    colorback = [(c, code.replace("[", r"\[")) for c, code in colorback]
+    #colorcodes = [(c, code.replace("[", r"\[")) for c, code in colorcodes]
+    #colorback = [(c, code.replace("[", r"\[")) for c, code in colorback]
+    fg_colormap = dict((code, clr) for clr, code in colorcodes)
+    bg_colormap = dict((code, clr) for clr, code in colorback)
+
     # create stop markers
-    fgstop = [("", c.replace("[", r"\[")) for c in (normal, hilite, underline)]
-    bgstop = [("", c.replace("[", r"\[")) for c in (normal,)]
-    fgstop = "|".join(co[1] for co in colorcodes + fgstop + [("", "$")])
-    bgstop = "|".join(co[1] for co in colorback + bgstop + [("", "$")])
+    fgstop =  "(?:\033\[1m|\033\[22m)*\033\[3.*?m|\033\[0m|$"
+    bgstop =  "(?:\033\[1m|\033\[22m)*\033\[4.*?m|\033\[0m|$"
 
-    # pre-compile regexes
-    #re_fgs = "|".join(["%s.*?(?=%s)" % (code, fgstop) for cname, code in colorcodes])
-    #re_bgs = "|".join(["%s.*?(?=%s)" % (code, bgstop) for cname, code in colorback])
-    #re_clrs = re_fgs + "|" + re_bgs
-
-    re_fgs = [(cname, re.compile("(?:%s)(.*?)(?=%s)" % (code, fgstop))) for cname, code in colorcodes]
-    re_bgs = [(cname, re.compile("(?:%s)(.*?)(?=%s)" % (code, bgstop))) for cname, code in colorback]
+    # extract color markers, tagging the start marker and the text marked
+    re_fgs = re.compile("((?:\033\[1m|\033\[22m)*\033\[3.*?m)(.*?)(?=" + fgstop + ")")
+    re_bgs = re.compile("((?:\033\[1m|\033\[22m)*\033\[4.*?m)(.*?)(?=" + bgstop + ")")
 
     re_normal = re.compile(normal.replace("[", r"\["))
     re_hilite = re.compile("(?:%s)(.*)(?=%s)" % (hilite.replace("[", r"\["), fgstop))
@@ -103,9 +94,13 @@ class TextToHTMLparser(object):
     re_url = re.compile(r'((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)')
     re_mxplink =  re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
 
-    def _sub_clr(self, colormatch):
-        colormatch.group()
-        return
+    def _sub_fg(self, colormatch):
+        code, text = colormatch.groups()
+        return r'''<span class="%s">%s</span>''' % (self.fg_colormap.get(code, code), text)
+
+    def _sub_bg(self, colormatch):
+        code, text = colormatch.groups()
+        return r'''<span class="%s">%s</span>''' % (self.bg_colormap.get(code, code), text)
 
     def re_color(self, text):
         """
@@ -119,10 +114,8 @@ class TextToHTMLparser(object):
             text (str): Re-colored text.
 
         """
-        for colorname, regex in self.re_fgs:
-            text = regex.sub(r'''<span class="%s">\1</span>''' % colorname, text)
-        for bgname, regex in self.re_bgs:
-            text = regex.sub(r'''<span class="%s">\1</span>''' % bgname, text)
+        text = self.re_fgs.sub(self._sub_fg, text)
+        text = self.re_bgs.sub(self._sub_bg, text)
         text = self.re_normal.sub("", text)
         return text
 
@@ -289,3 +282,5 @@ def parse_html(string, strip_ansi=False, parser=HTML_PARSER):
     Parses a string, replace ANSI markup with html
     """
     return parser.parse(string, strip_ansi=strip_ansi)
+
+print "t0-t1=", time.time() - t0
