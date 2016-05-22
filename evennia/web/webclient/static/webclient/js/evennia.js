@@ -324,6 +324,7 @@ An "emitter" object must have a function
 
         // Send Client -> Evennia. Called by Evennia.msg
         var msg = function(data, inmode) {
+            log("ajax.msg:", data, JSON.stringify(data));
             $.ajax({type: "POST", url: "/webclientdata",
                    async: true, cache: false, timeout: 30000,
                    dataType: "json",
@@ -371,7 +372,7 @@ An "emitter" object must have a function
                         else {
                             // We'd expect to see a keepalive message rather than
                             // a timeout. Ping the server to see if it's still there.
-                            msg("idle");
+                            msg("idle", "input");
                         }
 
                         if (stop_polling) {
