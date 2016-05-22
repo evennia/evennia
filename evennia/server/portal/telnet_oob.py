@@ -394,7 +394,6 @@ class TelnetOOB(object):
         if self.MSDP:
             msdp_cmdname = cmdname
             encoded_oob = self.encode_msdp(msdp_cmdname, *args, **kwargs)
-            #print "sending MSDP:", encoded_oob
             self.protocol._write(IAC + SB + MSDP + encoded_oob + IAC + SE)
 
         if self.GMCP:
@@ -404,5 +403,4 @@ class TelnetOOB(object):
                 gmcp_cmdname = "Custom.Cmd"
                 kwargs["cmdname"] = cmdname
             encoded_oob = self.encode_gmcp(gmcp_cmdname, *args, **kwargs)
-            #print "sending GMCP:", encoded_oob
             self.protocol._write(IAC + SB + GMCP + encoded_oob + IAC + SE)
