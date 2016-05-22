@@ -35,8 +35,8 @@ class CmdHome(COMMAND_DEFAULT_CLASS):
         elif home == caller.location:
             caller.msg("You are already home!")
         else:
-            caller.move_to(home)
             caller.msg("There's no place like home ...")
+            caller.move_to(home)
 
 class CmdLook(COMMAND_DEFAULT_CLASS):
     """
