@@ -161,7 +161,7 @@ class WebClient(resource.Resource):
 
             sess = WebClientSession()
             sess.client = self
-            sess.init_session("webclient", remote_addr, self.sessionhandler)
+            sess.init_session("ajax/comet", remote_addr, self.sessionhandler)
             sess.suid = suid
             sess.sessionhandler.connect(sess)
 
