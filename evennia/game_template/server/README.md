@@ -28,8 +28,8 @@ When running you will find four new files appear in this directory:
 This subdirectory holds the configuration modules for the server. With
 them you can change how Evennia operates and also plug in your own
 functionality to replace the default. You usually need to restart the
-server to apply changes done here. The most importand file is the file
-`settings.py´ which is the main configuration file of Evennia. 
+server to apply changes done here. The most important file is the file
+`settings.py` which is the main configuration file of Evennia. 
 
 ## server/logs/
 

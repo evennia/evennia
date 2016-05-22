@@ -1,1 +1,2 @@
-This directory is where file uploads from Django apps are placed by default.
+This directory is where file uploads from Django apps are placed by
+default.
