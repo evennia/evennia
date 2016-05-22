@@ -16,7 +16,7 @@ if you use this system.
 
 In order to install, to your settings file, add/edit the line:
 
-CMDSET_UNLOGGEDIN = "contrib.evmenu_login.UnloggedinCmdSet"
+CMDSET_UNLOGGEDIN = "contrib.menu_login.UnloggedinCmdSet"
 
 When you'll reload the server, new sessions will connect to the
 new login system, where they will be able to:
