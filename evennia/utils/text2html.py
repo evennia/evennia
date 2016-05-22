@@ -20,6 +20,8 @@ from .ansi import *
 XTERM256_FG = "\033[38;5;%sm"
 XTERM256_BG = "\033[48;5;%sm"
 
+_RE_XTERM256 = re.compile("(\033\[(?:38|48);5;[0-9]{3}m)")
+
 class TextToHTMLparser(object):
     """
     This class describes a parser for converting from ANSI to html.
@@ -87,14 +89,23 @@ class TextToHTMLparser(object):
     bgstop = "|".join(co[1] for co in colorback + bgstop + [("", "$")])
 
     # pre-compile regexes
+    #re_fgs = "|".join(["%s.*?(?=%s)" % (code, fgstop) for cname, code in colorcodes])
+    #re_bgs = "|".join(["%s.*?(?=%s)" % (code, bgstop) for cname, code in colorback])
+    #re_clrs = re_fgs + "|" + re_bgs
+
     re_fgs = [(cname, re.compile("(?:%s)(.*?)(?=%s)" % (code, fgstop))) for cname, code in colorcodes]
     re_bgs = [(cname, re.compile("(?:%s)(.*?)(?=%s)" % (code, bgstop))) for cname, code in colorback]
+
     re_normal = re.compile(normal.replace("[", r"\["))
     re_hilite = re.compile("(?:%s)(.*)(?=%s)" % (hilite.replace("[", r"\["), fgstop))
     re_uline = re.compile("(?:%s)(.*?)(?=%s)" % (ANSI_UNDERLINE.replace("[", r"\["), fgstop))
     re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space> [ \t]+)|(?P<lineend>\r\n|\r|\n)', re.S|re.M|re.I)
     re_url = re.compile(r'((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)')
     re_mxplink =  re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
+
+    def _sub_clr(self, colormatch):
+        colormatch.group()
+        return
 
     def re_color(self, text):
         """

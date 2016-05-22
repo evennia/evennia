@@ -156,6 +156,7 @@ class WebSocketClient(Protocol, Session):
                 return
         else:
             return
+
         flags = self.protocol_flags
         text = to_str(text, force_string=True)
 
@@ -199,5 +200,5 @@ class WebSocketClient(Protocol, Session):
 
         """
         if not cmdname == "options":
-            print "websocket.send_default", cmdname, args, kwargs
+            #print "websocket.send_default", cmdname, args, kwargs
             session.sendLine(json.dumps([cmdname, args, kwargs]))

@@ -17,6 +17,7 @@ http://localhost:8000/webclient.)
                  to sessions connected over the webclient.
 """
 import json
+import re
 
 from time import time
 from hashlib import md5
@@ -25,10 +26,12 @@ from twisted.internet.task import LoopingCall
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
 from django.conf import settings
+from evennia.utils.ansi import parse_ansi
 from evennia.utils import utils
 from evennia.utils.text2html import parse_html
 from evennia.server import session
 
+_RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 _SERVERNAME = settings.SERVERNAME
 _KEEPALIVE = 30 # how often to check keepalive
 
@@ -319,35 +322,53 @@ class WebClientSession(session.Session):
 
     def send_text(self, *args, **kwargs):
         """
-        Send text data.
+        Send text data. This will pre-process the text for
+        color-replacement, conversion to html etc.
 
         Args:
-            text (str): The first argument is always the text string to send. No other arguments
-                are considered.
+            text (str): Text to send.
+
         Kwargs:
-            raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
-            nomarkup (bool): Clean out all ansi/html markers and tokens.
+            options (dict): Options-dict with the following keys understood:
+                - raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
+                - nomarkup (bool): Clean out all ansi/html markers and tokens.
+                - screenreader (bool): Use Screenreader mode.
+                - send_prompt (bool): Send a prompt with parsed html
 
         """
-        # string handling is similar to telnet
-
         if args:
             args = list(args)
             text = args[0]
             if text is None:
                 return
-            text = utils.to_str(text, force_string=True)
+        else:
+            return
 
-        options = kwargs.get("options", {})
+        flags = self.protocol_flags
+        text = utils.to_str(text, force_string=True)
+
+        options = kwargs.pop("options", {})
         raw = options.get("raw", False)
         nomarkup = options.get("nomarkup", False)
+        screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
+        prompt = options.get("send_prompt", False)
 
+        if screenreader:
+            # screenreader mode cleans up output
+            text = parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
+            text = _RE_SCREENREADER_REGEX.sub("", text)
+        cmd = "prompt" if prompt else "text"
         if raw:
             args[0] = text
         else:
             args[0] = parse_html(text, strip_ansi=nomarkup)
 
-        self.client.lineSend(self.suid, ["text", args, kwargs])
+        # send to client on required form [cmdname, args, kwargs]
+        self.client.lineSend(self.suid, [cmd, args, kwargs])
+
+    def send_prompt(self, *args, **kwargs):
+        kwargs["options"].update({"send_prompt": True})
+        self.send_text(*args, **kwargs)
 
     def send_default(self, cmdname, *args, **kwargs):
         """
@@ -364,5 +385,5 @@ class WebClientSession(session.Session):
 
         """
         if not cmdname == "options":
-            print "ajax.send_default", cmdname, args, kwargs
+            #print "ajax.send_default", cmdname, args, kwargs
             self.client.lineSend(self.suid, [cmdname, args, kwargs])
