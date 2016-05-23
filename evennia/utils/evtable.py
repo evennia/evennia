@@ -646,8 +646,8 @@ class EvCell(object):
 
         """
 
-        left = self.border_left_char * self.border_left
-        right = self.border_right_char * self.border_right
+        left = self.border_left_char * self.border_left + ANSIString('|n')
+        right = ANSIString('|n') + self.border_right_char * self.border_right
 
         cwidth = self.width + self.pad_left + self.pad_right + \
                  max(0,self.border_left-1) + max(0, self.border_right-1)

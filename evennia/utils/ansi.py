@@ -76,7 +76,7 @@ class ANSIParser(object):
 
     We also allow to escape colour codes
     by prepending with a \ for xterm256,
-    an extra { for Merc-style codes
+    an extra | for Merc-style codes
     """
 
     def sub_ansi(self, ansimatch):

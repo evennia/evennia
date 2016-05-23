@@ -429,8 +429,8 @@ def _test():
     form = EvForm("evennia.utils.evform_test")
 
     # add data to each tagged form cell
-    form.map(cells={1: "{gTom the Bouncer{n",
-                    2: "{yGriatch{n",
+    form.map(cells={1: "|gTom the Bouncer",
+                    2: "|yGriatch",
                     3: "A sturdy fellow",
                     4: 12,
                     5: 10,
@@ -450,5 +450,4 @@ def _test():
     form.map(tables={"A": tableA,
                      "B": tableB})
     # unicode is required since the example contains non-ascii characters
-    #print(unicode(form))
-    return form
+    return unicode(form)
