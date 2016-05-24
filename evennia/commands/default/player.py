@@ -510,6 +510,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                       "MCCP": validate_bool,
                       "MXP": validate_bool,
                       "OOB": validate_bool,
+                      "NOPKEEPALIVE": validate_bool,
                       "SCREENHEIGHT": validate_size,
                       "SCREENWIDTH": validate_size,
                       "SCREENREADER": validate_bool,

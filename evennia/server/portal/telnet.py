@@ -9,7 +9,7 @@ sessions etc.
 
 import re
 from twisted.internet.task import LoopingCall
-from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, LINEMODE, GA, WILL, WONT, ECHO
+from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO
 from django.conf import settings
 from evennia.server.session import Session
 from evennia.server.portal import ttype, mssp, telnet_oob, naws
@@ -17,9 +17,6 @@ from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
 from evennia.utils import ansi, logger
 from evennia.utils.utils import to_str
-
-IAC = chr(255)
-NOP = chr(241)
 
 _RE_N = re.compile(r"\{n$")
 _RE_LEND = re.compile(r"\n$|\r$", re.MULTILINE)
@@ -63,8 +60,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.oob = telnet_oob.TelnetOOB(self)
         # mxp support
         self.mxp = Mxp(self)
-        # keepalive watches for dead links
-        self.transport.setTcpKeepAlive(1)
         # add this new connection to sessionhandler so
         # the Server becomes aware of it.
         self.sessionhandler.connect(self)
@@ -73,9 +68,31 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         from evennia.utils.utils import delay
         delay(2, callback=self.handshake_done, retval=True)
 
-        # set up a keep-alive
-        self.keep_alive = LoopingCall(self._write, IAC + NOP)
-        self.keep_alive.start(30, now=False)
+        # TCP/IP keepalive watches for dead links
+        self.transport.setTcpKeepAlive(1)
+        # The TCP/IP keepalive is not enough for some networks;
+        # we have to complement it with a NOP keep-alive.
+        self.protocol_flags["NOPKEEPALIVE"] = True
+        self.nop_keep_alive = None
+        self.toggle_nop_keepalive()
+
+    def _send_nop_keepalive(self):
+        "Send NOP keepalive unless flag is set"
+        if self.protocol_flags.get("NOPKEEPALIVE"):
+            self._write(IAC + NOP)
+
+    def toggle_nop_keepalive(self):
+        """
+        Allow to toggle the NOP keepalive for those sad clients that
+        can't even handle a NOP instruction. This is turned off by the
+        protocol_flag NOPKEEPALIVE (settable e.g. by the default
+        `@option` command).
+        """
+        if self.nop_keep_alive and self.nop_keep_alive.running:
+            self.nop_keep_alive.stop()
+        else:
+            self.nop_keep_alive = LoopingCall(self._send_nop_keepalive)
+            self.nop_keep_alive.start(30, now=False)
 
     def handshake_done(self, force=False):
         """
