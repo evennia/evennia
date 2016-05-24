@@ -161,8 +161,8 @@ class WebSocketClient(Protocol, Session):
         text = to_str(text, force_string=True)
 
         options = kwargs.pop("options", {})
-        raw = options.get("raw", False)
-        nomarkup = options.get("nomarkup", False)
+        raw = options.get("raw", flags.get("RAW", False))
+        nomarkup = options.get("nomarkup", flags.get("NOMARKUP", False))
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
         prompt = options.get("send_prompt", False)
 

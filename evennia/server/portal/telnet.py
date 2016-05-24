@@ -321,8 +321,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         flags = self.protocol_flags
         xterm256 = options.get("xterm256", flags.get('XTERM256', False) if flags["TTYPE"] else True)
         useansi = options.get("ansi", flags.get('ANSI', False) if flags["TTYPE"] else True)
-        raw = options.get("raw", False)
-        nomarkup = options.get("nomarkup", not (xterm256 or useansi))
+        raw = options.get("raw", flags.get("RAW", False))
+        nomarkup = options.get("nomarkup", flags.get("NOMARKUP", not (xterm256 or useansi)))
         echo = options.get("echo", None)
         mxp = options.get("mxp", flags.get("MXP", False))
         screenreader =  options.get("screenreader", flags.get("SCREENREADER", False))

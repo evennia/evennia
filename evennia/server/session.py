@@ -82,7 +82,9 @@ class Session(object):
 
         self.protocol_flags = {"ENCODING": "utf-8",
                                "SCREENREADER":False,
-                               "INPUTDEBUG": False}
+                               "INPUTDEBUG": False,
+                               "RAW": False,
+                               "NOMARKUP": False}
         self.server_data = {}
 
         # map of input data to session methods
