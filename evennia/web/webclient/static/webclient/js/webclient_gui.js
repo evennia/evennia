@@ -88,13 +88,14 @@ function doSendText() {
     var inputfield = $("#inputfield");
     var outtext = inputfield.val();
     if (outtext.length > 7 && outtext.substr(0, 7) == "##send ") {
-        // send a specific oob instruction
+        // send a specific oob instruction ["cmdname",[args],{kwargs}]
         outtext = outtext.slice(7);
-        var arr = outtext.split(' ');
-        var cmdname = arr.shift();
-        var kwargs = arr.join(' ');
-        log(cmdname, kwargs);
-        Evennia.msg(cmdname, [], JSON.parse(kwargs));
+        var cmdarr = JSON.parse(outtext);
+        var cmdname = cmdarr[0];
+        var args = cmdarr[1];
+        var kwargs = cmdarr[2];
+        log(cmdname, args, kwargs);
+        Evennia.msg(cmdname, args, kwargs);
     } else {
         input_history.add(outtext);
         inputfield.val("");
