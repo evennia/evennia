@@ -434,15 +434,15 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
 
             if "save" in self.switches:
                 # save all options
-                self.player.db._saved_protocol_flags = flags
+                self.caller.db._saved_protocol_flags = flags
                 self.msg("{gSaved all options. Use @option/clear to remove.{n")
             if "clear" in self.switches:
                 # clear all saves
-                self.player.db._saved_protocol_flags = {}
+                self.caller.db._saved_protocol_flags = {}
                 self.msg("{gCleared all saved options.")
 
             options = dict(flags) # make a copy of the flag dict
-            saved_options = dict(self.player.attributes.get("_saved_protocol_flags", default={}))
+            saved_options = dict(self.caller.attributes.get("_saved_protocol_flags", default={}))
 
             if "SCREENWIDTH" in options:
                 if len(options["SCREENWIDTH"]) == 1:
