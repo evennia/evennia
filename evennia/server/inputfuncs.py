@@ -118,6 +118,8 @@ def client_options(session, *args, **kwargs):
         screenheight (int): Screen height in lines
         screenwidth (int): Screen width in characters
         inputdebug (bool): Debug input functions
+        nomarkup (bool): Strip markup
+        raw (bool): Turn off parsing
 
     """
     flags = session.protocol_flags
@@ -127,7 +129,8 @@ def client_options(session, *args, **kwargs):
                 if key.upper() in ("ANSI", "XTERM256", "MXP",
                            "UTF-8", "SCREENREADER", "ENCODING",
                            "MCCP", "SCREENHEIGHT",
-                           "SCREENWIDTH", "INPUTDEBUG"))
+                           "SCREENWIDTH", "INPUTDEBUG",
+                           "RAW", "NOMARKUP"))
         session.msg(client_options=options)
         return
 
@@ -143,7 +146,9 @@ def client_options(session, *args, **kwargs):
         return {0: int(val)}
 
     def validate_bool(val):
-        return True if val.lower() in ("true", "on", "1") else False
+        if isinstance(val, basestring):
+            return True if val.lower() in ("true", "on", "1") else False
+        return bool(val)
 
     for key, value in kwargs.iteritems():
         key = key.lower()
@@ -172,11 +177,15 @@ def client_options(session, *args, **kwargs):
             flags["SCREENWIDTH"] = validate_size(value)
         elif key == "inputdebug":
             flags["INPUTDEBUG"] = validate_bool(value)
+        elif key == "nomarkup":
+            flags["NOMARKUP"] = validate_bool(value)
+        elif key == "raw":
+            flags["RAW"] = validate_bool(value)
         elif key in ('Char 1', 'Char.Skills 1', 'Char.Items 1',
                 'Room 1', 'IRE.Rift 1', 'IRE.Composer 1'):
             # ignore mudlet's default send (aimed at IRE games)
             pass
-        elif not key == "options":
+        elif not key in ("options", "cmdid"):
             err = _ERROR_INPUT.format(
                     name="client_settings", session=session, inp=key)
             session.msg(text=err)
