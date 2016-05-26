@@ -98,7 +98,9 @@ class Ticker(object):
         kwargs is used here to identify which hook method to call.
 
         """
-        to_remove = []
+        self._to_add = []
+        self._to_remove = []
+        self._is_ticking = True
         for store_key, (args, kwargs) in self.subscriptions.iteritems():
             callback = yield kwargs.pop("_callback", "at_tick")
             obj = yield kwargs.pop("_obj", None)
@@ -110,22 +112,28 @@ class Ticker(object):
                 # try object method
                 if not obj or not obj.pk:
                     # object was deleted between calls
-                    to_remove.append(store_key)
+                    self._to_remove.append(store_key)
                     continue
                 else:
                     yield _GA(obj, callback)(*args, **kwargs)
             except ObjectDoesNotExist:
                 log_trace("Removing ticker.")
-                to_remove.append(store_key)
+                self._to_remove.append(store_key)
             except Exception:
                 log_trace()
             finally:
                 # make sure to re-store
                 kwargs["_callback"] = callback
                 kwargs["_obj"] = obj
-        # cleanup
-        for store_key in to_remove:
+        # cleanup - we do this here to avoid changing the subscription dict while it loops
+        self._is_ticking = False
+        for store_key in self._to_remove:
             self.remove(store_key)
+        for store_key, (args, kwargs) in self._to_add:
+            self.add(store_key, *args, **kwargs)
+        self._to_remove = []
+        self._to_add = []
+
 
     def __init__(self, interval):
         """
@@ -137,6 +145,9 @@ class Ticker(object):
         """
         self.interval = interval
         self.subscriptions = {}
+        self._is_ticking = False
+        self._to_remove = []
+        self._to_add = []
         # set up a twisted asynchronous repeat call
         self.task = ExtendedLoopingCall(self._callback)
 
@@ -169,9 +180,14 @@ class Ticker(object):
                 `interval`.
 
         """
-        start_delay = kwargs.pop("_start_delay", None)
-        self.subscriptions[store_key] = (args, kwargs)
-        self.validate(start_delay=start_delay)
+        if self._is_ticking:
+            # protects the subscription dict from
+            # updating while it is looping
+            self._to_start.append((store_key, (args, kwargs)))
+        else:
+            start_delay = kwargs.pop("_start_delay", None)
+            self.subscriptions[store_key] = (args, kwargs)
+            self.validate(start_delay=start_delay)
 
     def remove(self, store_key):
         """
@@ -181,8 +197,13 @@ class Ticker(object):
             store_key (str): Unique store key.
 
         """
-        self.subscriptions.pop(store_key, False)
-        self.validate()
+        if self._is_ticking:
+            # this protects the subscription dict from
+            # updating while it is looping
+            self._to_remove.append(store_key)
+        else:
+            self.subscriptions.pop(store_key, False)
+            self.validate()
 
     def stop(self):
         """
