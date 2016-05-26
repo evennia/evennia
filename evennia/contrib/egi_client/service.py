@@ -35,11 +35,12 @@ class EvenniaGameIndexService(Service):
             _FIRST_UPDATE_DELAY, self.loop.start, _CLIENT_UPDATE_RATE)
 
     def stopService(self):
-        if not self.running:
+        if self.running == 0:
             # @reload errors if we've stopped this service.
             return
         super(EvenniaGameIndexService, self).stopService()
-        self.loop.stop()
+        if self.loop.running:
+            self.loop.stop()
 
     def _die_on_bad_request(self):
         """
