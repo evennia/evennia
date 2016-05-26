@@ -172,7 +172,8 @@ class SessionHandler(dict):
                     # wrong encoding set on the session. Set it to a safe one
                     session.protocol_flags["ENCODING"] = "utf-8"
                     data = to_str(to_unicode(data), encoding=session.protocol_flags["ENCODING"])
-                if _INLINEFUNC_ENABLED and not raw:
+                if _INLINEFUNC_ENABLED and not raw and isinstance(self, ServerSessionHandler):
+                    # only parse inlinefuncs on the outgoing path (sessionhandler->)
                     data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session)
                 return data
             elif hasattr(data, "id") and hasattr(data, "db_date_created") \
