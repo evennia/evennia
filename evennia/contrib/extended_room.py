@@ -287,7 +287,10 @@ class CmdExtendedLook(default_cmds.CmdLook):
         caller = self.caller
         args = self.args
         if args:
-            looking_at_obj = caller.search(args, use_nicks=True, quiet=True)
+            looking_at_obj = caller.search(args,
+                                           candidates=caller.location.contents + caller.contents,
+                                           use_nicks=True,
+                                           quiet=True)
             if not looking_at_obj:
                 # no object found. Check if there is a matching
                 # detail at location.
@@ -299,7 +302,7 @@ class CmdExtendedLook(default_cmds.CmdLook):
                         caller.msg(detail)
                         return
                 # no detail found. Trigger delayed error messages
-                _AT_SEARCH_RESULT(caller, args, looking_at_obj, False)
+                _AT_SEARCH_RESULT(looking_at_obj, caller, args, quiet=False)
                 return
             else:
                 # we need to extract the match manually.
