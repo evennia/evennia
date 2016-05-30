@@ -369,6 +369,10 @@ class ServerSessionHandler(SessionHandler):
 
         """
 
+        if session.logged_in:
+            # don't log in a session that is already logged in.
+            return
+
         # we have to check this first before uid has been assigned
         # this session.
 
@@ -588,6 +592,17 @@ class ServerSessionHandler(SessionHandler):
         sessions = puppet.sessid.get()
         return sessions[0] if len(sessions) == 1 else sessions
     sessions_from_character = sessions_from_puppet
+
+    def sessions_from_browserid(self, browserid):
+        """
+        Given a browserid, return all sessions having this id.
+
+        Args
+            browserid (str): The browserid hash
+
+        """
+        return [session for session in self.values()
+                if session.browserid and session.browserid == browserid]
 
     def announce_all(self, message):
         """

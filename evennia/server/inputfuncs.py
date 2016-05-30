@@ -20,10 +20,15 @@ settings.INPUT_FUNC_MODULES.
 """
 from future.utils import viewkeys
 
+import importlib
 from django.conf import settings
 from evennia.commands.cmdhandler import cmdhandler
+from evennia.players.models import PlayerDB
 from evennia.utils.logger import log_err
 from evennia.utils.utils import to_str, to_unicode
+
+# django browser sessions
+BrowserSessionStore = importlib.import_module(settings.SESSION_ENGINE).SessionStore
 
 
 # always let "idle" work since we use this in the webclient
@@ -34,6 +39,7 @@ _SA = object.__setattr__
 _NA = lambda o: "N/A"
 
 _ERROR_INPUT = "Inputfunc {name}({session}): Wrong/unrecognized input: {inp}"
+
 
 # All global functions are inputfuncs available to process inputs
 
@@ -97,6 +103,35 @@ def default(session, cmdname, *args, **kwargs):
     if session.protocol_flags.get("INPUTDEBUG", False):
         session.msg(err)
     log_err(err)
+
+
+def browser_sessid(session, *args, **kwargs):
+    """
+    This is a utility function for the webclient (only) to communicate its
+    current browser session hash. This is important in order to link
+    the browser session to the evennia session. Only the very first
+    storage request will be accepted, the following ones will be ignored.
+
+    Args:
+        browserid (str): Browser session hash
+
+    """
+    if not session.browserid:
+        print "stored browserid:", session, args[0]
+        session.browserid = args[0]
+        if not session.logged_in:
+            # automatic log in if the django browser session already authenticated.
+            browsersession = BrowserSessionStore(session_key=args[0])
+            uid = browsersession.get("logged_in", None)
+            if uid:
+                try:
+                    player =  PlayerDB.objects.get(pk=uid)
+                except Exception:
+                    return
+                session.sessionhandler.login(session, player)
+
+
+
 
 
 def client_options(session, *args, **kwargs):

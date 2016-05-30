@@ -14,6 +14,8 @@ from evennia import SESSION_HANDLER
 from evennia.objects.models import ObjectDB
 from evennia.players.models import PlayerDB
 
+from django.contrib.auth import login
+
 _BASE_CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 
 
@@ -21,6 +23,33 @@ def page_index(request):
     """
     Main root page.
     """
+
+    # handle webclient-website shared login
+
+    browser_session = request.session
+    browserid = request.session.session_key
+    player = request.user
+    # check if user has authenticated to website
+    if player.is_authenticated():
+        # Try to login all the player's webclient sessions - only
+        # unloggedin ones will actually be logged in.
+        print "website: player auth, trying to connect sessions"
+        for session in SESSION_HANDLER.sessions_from_browserid(browserid):
+            print "session to connect:", session
+            if session.protocol_key in ("websocket", "ajax/comet"):
+                SESSION_HANDLER.login(session, player)
+                session.browserid = browser_session.session_key
+        browser_session["logged_in"] = player.id
+    elif browser_session.get("logged_in"):
+        # The webclient has previously registered a login to this browser_session
+        print "website: browser_session logged in, trying to login"
+        player = PlayerDB.objects.get(id=browser_session.get("logged_in"))
+        login(request, player)
+    else:
+        browser_session["logged_in"] = None
+
+    print ("website session:", request.session.session_key, request.user, request.user.is_authenticated())
+
     # Some misc. configurable stuff.
     # TODO: Move this to either SQL or settings.py based configuration.
     fpage_player_limit = 4

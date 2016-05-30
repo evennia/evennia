@@ -35,6 +35,12 @@ JQuery available.
             var wsactive = false;
         {% endif %}
 
+        {% if browser_sessid %}
+           var browser_sessid = "{{browser_sessid}}";
+        {% else %}
+           var browser_sessid = false;
+        {% endif %}
+
         {% if websocket_url %}
             var wsurl = "{{websocket_url}}:{{websocket_port}}";
         {% else %}

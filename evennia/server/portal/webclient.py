@@ -38,6 +38,7 @@ from evennia.utils.text2html import parse_html
 
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 
+
 class WebSocketClient(Protocol, Session):
     """
     Implements the server-side of the Websocket connection.

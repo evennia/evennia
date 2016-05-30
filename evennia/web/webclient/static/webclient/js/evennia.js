@@ -230,6 +230,7 @@ An "emitter" object must have a function
                 open = true;
                 ever_open = true;
                 Evennia.emit('connection_open', ["websocket"], event);
+                Evennia.msg('browser_sessid', [browser_sessid], {});
             };
             // Handle Websocket close event
             websocket.onclose = function (event) {
@@ -308,6 +309,7 @@ An "emitter" object must have a function
                     success: function(data) {
                         data = JSON.parse(data);
                         log ("connection_open", ["AJAX/COMET"], data);
+                        Evennia.msg("browser_sessid", [browser_sessid], {});
                         client_hash = data.suid;
                         stop_polling = false;
                         poll();

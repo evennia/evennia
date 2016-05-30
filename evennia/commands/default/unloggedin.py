@@ -6,6 +6,7 @@ import time
 from collections import defaultdict
 from random import getrandbits
 from django.conf import settings
+from django.contrib.auth import authenticate
 from evennia.players.models import PlayerDB
 from evennia.objects.models import ObjectDB
 from evennia.server.models import ServerConfig
@@ -148,17 +149,15 @@ def create_normal_player(session, name, password):
         return None
 
     # Match account name and check password
-    player = PlayerDB.objects.get_player_from_name(name)
-    pswd = None
-    if player:
-        pswd = player.check_password(password)
+    player = authenticate(username=name, password=password)
 
-    if not (player and pswd):
+    if not player:
         # No playername or password match
         session.msg("Incorrect login information given.")
         # this just updates the throttle
         _throttle(session)
         # calls player hook for a failed login if possible.
+        player = PlayerDB.objects.get_player_from_name(name)
         if player:
             player.at_failed_login(session)
         return None

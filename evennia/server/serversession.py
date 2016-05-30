@@ -10,6 +10,7 @@ from builtins import object
 
 import re
 import weakref
+import importlib
 from time import time
 from django.utils import timezone
 from django.conf import settings
@@ -18,6 +19,8 @@ from evennia.utils import logger
 from evennia.utils.utils import make_iter, lazy_property
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
+
+BrowserSessionStore = importlib.import_module(settings.SESSION_ENGINE).SessionStore
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -160,6 +163,7 @@ class ServerSession(Session):
         "Initiate to avoid AttributeErrors down the line"
         self.puppet = None
         self.player = None
+        self.browserid = None
         self.cmdset_storage_string = ""
         self.cmdset = CmdSetHandler(self, True)
 
@@ -219,6 +223,13 @@ class ServerSession(Session):
         self.puid = None
         self.puppet = None
         self.cmdset_storage = settings.CMDSET_SESSION
+
+        if self.browserid:
+            # this is only set by a webclient inputcommand.
+            bsession = BrowserSessionStore(session_key=self.browserid)
+            bsession["logged_in"] = player.id  # this also saves the bsession
+            bsession.save()
+            print ("serversession.login:", bsession.session_key)
 
         # Update account's last login time.
         self.player.last_login = timezone.now()
