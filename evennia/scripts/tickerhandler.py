@@ -14,26 +14,30 @@ Example:
 ```python
     from evennia.scripts.tickerhandler import TICKER_HANDLER
 
-    # tick myobj every 15 seconds
-    TICKER_HANDLER.add(myobj, 15)
+    # call tick myobj.at_tick(*args, **kwargs) every 15 seconds
+    TICKER_HANDLER.add(15, myobj.at_tick, *args, **kwargs)
 ```
 
-The handler will by default try to call a hook `at_tick()`
-on the subscribing object. The hook's name can be changed
-if the `hook_key` keyword is given to the `add()` method (only
-one such alternate name per interval though). The
-handler will transparently set up and add new timers behind
-the scenes to tick at given intervals, using a TickerPool.
+You supply the interval to tick and a callable to call regularly 
+with any extra args/kwargs. The handler will transparently set 
+up and add new timers behind the scenes to tick at given intervals, 
+using a TickerPool - all callables with the same interval will share
+the interval ticker. 
 
 To remove:
 
 ```python
-    TICKER_HANDLER.remove(myobj, 15)
+    TICKER_HANDLER.remove(15, myobj.at_tick)
 ```
 
-The interval must be given since a single object can be subscribed
-to many different tickers at the same time.
-
+Both interval and callable must be given since a single object can be subscribed
+to many different tickers at the same time. You can also supply `idstring`
+as an identifying string if you ever want to tick the callable at the same interval
+but with different arguments (args/kwargs are not used for identifying the ticker). There
+is also `persistent=False` if you don't want to make a ticker that don't survive a reload.
+If either or both `idstring` or `persistent` has been changed from their defaults, they
+must be supplied to the `TICKER_HANDLER.remove` call to properly identify the ticker
+to remove. 
 
 The TickerHandler's functionality can be overloaded by modifying the
 Ticker class and then changing TickerPool and TickerHandler to use the
