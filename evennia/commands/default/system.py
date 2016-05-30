@@ -769,6 +769,7 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
     """
     key = "@tickers"
     help_category = "System"
+    locks = "cmd:perm(tickers) or perm(Builders)"
 
     def func(self):
         from evennia import TICKER_HANDLER
@@ -776,10 +777,10 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
         if not all_subs:
             self.caller.msg("No tickers are currently active.")
             return
-        table = EvTable("tick(s)", "object", "path/methodname", "idstring", "db")
+        table = EvTable("interval (s)", "object", "path/methodname", "idstring", "db")
         for sub in all_subs:
             table.add_row(sub[3],
-                          sub[1] or "[None]",
+                          "%s%s" % (sub[0] or "[None]", sub[0] and " (#%s)" % (sub[0].id if hasattr(sub[0], "id") else "") or ""),
                           sub[1] if sub[1] else sub[2],
                           sub[4] or "[Unset]",
                           "*" if sub[5] else "-")
