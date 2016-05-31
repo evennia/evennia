@@ -30,6 +30,7 @@ from evennia.utils import utils
 from evennia.utils.text2html import parse_html
 from evennia.server import session
 
+_CLIENT_SESSIONS = utils.mod_import(settings.SESSION_ENGINE).SessionStore
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 _SERVERNAME = settings.SERVERNAME
 _KEEPALIVE = 30 # how often to check keepalive
@@ -149,7 +150,7 @@ class WebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = request.args.get('csessid')
+        csessid = request.args.get('csessid')[0]
 
         remote_addr = request.getClientIP()
         host_string = "%s (%s:%s)" % (_SERVERNAME, request.getRequestHostname(), request.getHost().port)
@@ -157,7 +158,15 @@ class WebClient(resource.Resource):
         sess = WebClientSession()
         sess.client = self
         sess.init_session("ajax/comet", remote_addr, self.sessionhandler)
+
         sess.csessid = csessid
+        csession = _CLIENT_SESSIONS(session_key=sess.csessid)
+        uid = csession and csession.get("logged_in", False)
+        if uid:
+            # the client session is already logged in
+            sess.uid = uid
+            sess.logged_in = True
+
         sess.sessionhandler.connect(sess)
 
         self.last_alive[csessid] = (time(), False)

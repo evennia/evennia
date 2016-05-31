@@ -53,20 +53,27 @@ class WebSocketClient(Protocol, Session):
         self.transport.validationMade = self.validationMade
         client_address = self.transport.client
         client_address = client_address[0] if client_address else None
-        print ("connectionMade: webclient address", client_address, self.transport.client, self.transport.client.__dict__, self.transport.__dict__)
-
         self.init_session("websocket", client_address, self.factory.sessionhandler)
-        # watch for dead links
-        self.transport.setTcpKeepAlive(1)
-        self.sessionhandler.connect(self)
 
     def validationMade(self):
         """
         This is called from the (modified) txws websocket library when
         the ws handshake and validation has completed fully.
+
         """
-        #print "validationMade:", self.transport.location.split("?", 1)[1]
-        pass
+
+        self.csessid = self.transport.location.split("?", 1)[1]
+        csession = _CLIENT_SESSIONS(session_key=self.csessid)
+        uid = csession and csession.get("logged_in", False)
+        if uid:
+            # the client session is already logged in.
+            self.uid = uid
+            self.logged_in = True
+
+        # watch for dead links
+        self.transport.setTcpKeepAlive(1)
+        # actually do the connection
+        self.sessionhandler.connect(self)
 
     def disconnect(self, reason=None):
         """
@@ -138,19 +145,6 @@ class WebSocketClient(Protocol, Session):
             this point.
 
         """
-
-        if "csessid" in kwargs and self.csessid is None:
-            # only allow to change csessid on the very first connect
-            # - this is a safety measure to avoid a clself.transport.client.__dict__, ient to manually
-            # change its csessid later.
-            self.csessid = kwargs.pop("csessid")
-            csession = _CLIENT_SESSIONS(session_key=self.csessid)
-            uid = csession and csession.get("logged_in", False)
-            if uid:
-                # the browser session is already logged in.
-                self.uid = uid
-                self.logged_in = True
-            return
 
         if "websocket_close" in kwargs:
             self.disconnect()

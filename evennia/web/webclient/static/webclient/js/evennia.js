@@ -82,7 +82,7 @@ An "emitter" object must have a function
             opts = opts || {};
             this.emitter = opts.emitter || new DefaultEmitter();
 
-            if (opts.ckonnection) {
+            if (opts.connection) {
                this.connection = opts.connection;
             }
             else if (window.WebSocket && wsactive) {
@@ -224,6 +224,7 @@ An "emitter" object must have a function
                 // No-op if a connection is already open.
                 return;
             }
+            // Important - we pass csessid tacked on the url
             websocket = new WebSocket(wsurl + '?' + csessid);
 
             // Handle Websocket open event
@@ -231,7 +232,6 @@ An "emitter" object must have a function
                 open = true;
                 ever_open = true;
                 Evennia.emit('connection_open', ["websocket"], event);
-                Evennia.msg('csessid', [csessid], {});
             };
             // Handle Websocket close event
             websocket.onclose = function (event) {

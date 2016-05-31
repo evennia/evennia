@@ -252,14 +252,24 @@ class ServerSessionHandler(SessionHandler):
         sess = _ServerSession()
         sess.sessionhandler = self
         sess.load_sync_data(portalsessiondata)
-        if sess.logged_in and sess.uid:
-            # this can happen in the case of auto-authenticating
-            # protocols like SSH
-            sess.player = _PlayerDB.objects.get_player_from_uid(sess.uid)
         sess.at_sync()
         # validate all scripts
         _ScriptDB.objects.validate()
         self[sess.sessid] = sess
+
+        if sess.logged_in and sess.uid:
+            # Session is already logged in. This can happen in the
+            # case of auto-authenticating protocols like SSH or
+            # webclient's session sharing
+            player = _PlayerDB.objects.get_player_from_uid(sess.uid)
+            if player:
+                self.login(sess, player, force=True)
+                return
+            else:
+                sess.logged_in = False
+                sess.uid = None
+
+        # show the first login command
         self.data_in(sess, text=[[CMD_LOGINSTART],{}])
 
     def portal_session_sync(self, portalsessiondata):
@@ -355,7 +365,7 @@ class ServerSessionHandler(SessionHandler):
         self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
                                                          operation=SSHUTD)
 
-    def login(self, session, player, testmode=False):
+    def login(self, session, player, force=False, testmode=False):
         """
         Log in the previously unloggedin session and the player we by
         now should know is connected to it. After this point we assume
@@ -364,12 +374,14 @@ class ServerSessionHandler(SessionHandler):
         Args:
             session (Session): The Session to authenticate.
             player (Player): The Player identified as associated with this Session.
+            force (bool): Login also if the session thinks it's already logged in
+                (this can happen for auto-authenticating protocols)
             testmode (bool, optional): This is used by unittesting for
                 faking login without any AMP being actually active.
 
         """
 
-        if session.logged_in:
+        if session.logged_in and not force:
             # don't log in a session that is already logged in.
             return
 

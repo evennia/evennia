@@ -13,43 +13,38 @@ from django.shortcuts import render
 from evennia import SESSION_HANDLER
 from evennia.objects.models import ObjectDB
 from evennia.players.models import PlayerDB
+from evennia.utils import logger
 
 from django.contrib.auth import login
 
 _BASE_CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 
 
-def page_index(request):
+def _shared_login(request):
     """
-    Main root page.
+    Handle the shared login between website and webclient.
+
     """
-
-    # handle webclient-website shared login
-
     csession = request.session
-    csessid = request.session.session_key
     player = request.user
-    # check if user has authenticated to website
-    if player.is_authenticated():
-        # Try to login all the player's webclient sessions - only
-        # unloggedin ones will actually be logged in.
-        print "website: player auth, trying to connect sessions"
-        for session in SESSION_HANDLER.sessions_from_csessid(csessid):
-            print "session to connect:", session
-            if session.protocol_key in ("websocket", "ajax/comet"):
-                SESSION_HANDLER.login(session, player)
-                session.csessid = csession.session_key
-        csession["logged_in"] = player.id
-    elif csession.get("logged_in"):
+    sesslogin = csession.get("logged_in", None)
+
+    if csession.session_key is None:
+        # this is necessary to build the sessid key
+        csession.save()
+    elif player.is_authenticated():
+        if not sesslogin:
+            csession["logged_in"] = player.id
+    elif sesslogin:
         # The webclient has previously registered a login to this csession
-        print "website: csession logged in, trying to login"
-        player = PlayerDB.objects.get(id=csession.get("logged_in"))
-        login(request, player)
-    else:
-        csession["logged_in"] = None
+        player = PlayerDB.objects.get(id=sesslogin)
+        try:
+            login(request, player)
+        except AttributeError:
+            logger.log_trace()
 
-    print ("website session:", request.session.session_key, request.user, request.user.is_authenticated())
 
+def _gamestats():
     # Some misc. configurable stuff.
     # TODO: Move this to either SQL or settings.py based configuration.
     fpage_player_limit = 4
@@ -81,6 +76,19 @@ def page_index(request):
         "num_characters": nchars or "no",
         "num_others": nothers or "no"
     }
+    return pagevars
+
+
+def page_index(request):
+    """
+    Main root page.
+    """
+
+    # handle webclient-website shared login
+    _shared_login(request)
+
+    # get game db stats
+    pagevars = _gamestats()
 
     return render(request, 'index.html', pagevars)
 

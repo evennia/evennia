@@ -227,10 +227,10 @@ class ServerSession(Session):
             # An existing client sessid is registered, thus a matching
             # Client Session must also exist. Update it so the website
             # can also see we are logged in.
-            csession = ClientSessionStore(session_key=self.browserid)
-            csession["logged_in"] = player.id
-            csession.save()
-            print ("serversession.login:", csession.session_key)
+            csession = ClientSessionStore(session_key=self.csessid)
+            if not csession.get("logged_in"):
+                csession["logged_in"] = player.id
+                csession.save()
 
         # Update account's last login time.
         self.player.last_login = timezone.now()
