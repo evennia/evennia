@@ -48,12 +48,21 @@ class WebSocketClient(Protocol, Session):
         This is called when the connection is first established.
 
         """
+        self.transport.validationMade = self.validationMade
         client_address = self.transport.client
         client_address = client_address[0] if client_address else None
         self.init_session("websocket", client_address, self.factory.sessionhandler)
         # watch for dead links
         self.transport.setTcpKeepAlive(1)
         self.sessionhandler.connect(self)
+
+    def validationMade(self):
+        """
+        This is called from the (modified) txws websocket library when
+        the ws handshake and validation has completed fully.
+        """
+        #print "validationMade:", self.transport.location.split("?", 1)[1]
+        pass
 
     def disconnect(self, reason=None):
         """
@@ -80,6 +89,7 @@ class WebSocketClient(Protocol, Session):
         self.sessionhandler.disconnect(self)
         self.transport.close()
 
+
     def dataReceived(self, string):
         """
         Method called when data is coming in over the websocket
@@ -101,7 +111,6 @@ class WebSocketClient(Protocol, Session):
             line (str): Text to send.
 
         """
-
         return self.transport.write(line)
 
     def data_in(self, **kwargs):
@@ -175,7 +184,6 @@ class WebSocketClient(Protocol, Session):
             args[0] = text
         else:
             args[0] = parse_html(text, strip_ansi=nomarkup)
-        print "send_text:", cmd, args, kwargs
 
         # send to client on required form [cmdname, args, kwargs]
         self.sendLine(json.dumps([cmd, args, kwargs]))
@@ -200,5 +208,4 @@ class WebSocketClient(Protocol, Session):
 
         """
         if not cmdname == "options":
-            #print "websocket.send_default", cmdname, args, kwargs
             session.sendLine(json.dumps([cmdname, args, kwargs]))

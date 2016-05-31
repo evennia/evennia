@@ -537,6 +537,7 @@ class WebSocketProtocol(ProtocolWrapper):
                 log.msg("Can't support protocol version %s!" % version)
                 return False
 
+        self.validationMade() # custom Evennia addition
         return True
 
     def dataReceived(self, data):
