@@ -375,7 +375,7 @@ An "emitter" object must have a function
                         else {
                             // We'd expect to see a keepalive message rather than
                             // a timeout. Ping the server to see if it's still there.
-                            msg("idle", "input");
+                            msg(["text", ["idle"], {}], "input");
                         }
 
                         if (stop_polling) {

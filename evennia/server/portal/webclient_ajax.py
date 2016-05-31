@@ -96,9 +96,9 @@ class WebClient(resource.Resource):
                 self.lineSend(csessid, ["ajax_keepalive", [], {}])
         # remove timed-out sessions
         for csessid in to_remove:
-            sess = self.sessionhandler.sessions_from_csessid(csessid)
-            if sess:
-                sess[0].disconnect()
+            sessions = self.sessionhandler.sessions_from_csessid(csessid)
+            for sess in sessions:
+                sess.disconnect()
             self.last_alive.pop(csessid, None)
             if not self.last_alive:
                 # no more ajax clients. Stop the keepalive
@@ -198,7 +198,7 @@ class WebClient(resource.Resource):
         csessid = request.args.get('csessid')[0]
 
         self.last_alive[csessid] = (time(), False)
-        sess = self.sessionhandler.session_from_csessid(csessid)
+        sess = self.sessionhandler.sessions_from_csessid(csessid)
         if sess:
             sess = sess[0]
             cmdarray = json.loads(request.args.get('data')[0])
@@ -239,7 +239,7 @@ class WebClient(resource.Resource):
         """
         csessid = request.args.get('csessid')[0]
         try:
-            sess = self.sessionhandler.session_from_csessid(csessid)[0]
+            sess = self.sessionhandler.sessions_from_csessid(csessid)[0]
             sess.sessionhandler.disconnect(sess)
         except IndexError:
             self.client_disconnect(csessid)

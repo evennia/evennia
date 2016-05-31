@@ -274,7 +274,7 @@ class PortalSessionHandler(SessionHandler):
         """
         return len(self.get_sessions(include_unloggedin=include_unloggedin))
 
-    def session_from_csessid(self, csessid):
+    def sessions_from_csessid(self, csessid):
         """
         Given a session id, retrieve the session (this is primarily
         intended to be called by web clients)
