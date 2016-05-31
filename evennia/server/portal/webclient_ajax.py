@@ -20,7 +20,6 @@ import json
 import re
 
 from time import time
-from hashlib import md5
 from twisted.web import server, resource
 from twisted.internet.task import LoopingCall
 from django.utils.functional import Promise
@@ -71,10 +70,10 @@ class WebClient(resource.Resource):
         self.last_alive = {}
         self.keep_alive = None
 
-    def _responseFailed(self, failure, suid, request):
+    def _responseFailed(self, failure, csessid, request):
         "callback if a request is lost/timed out"
         try:
-            del self.requests[suid]
+            del self.requests[csessid]
         except KeyError:
             pass
 
@@ -84,62 +83,62 @@ class WebClient(resource.Resource):
         """
         now = time()
         to_remove = []
-        keep_alives = ((suid, remove) for suid, (t, remove)
+        keep_alives = ((csessid, remove) for csessid, (t, remove)
                         in self.last_alive.iteritems() if now - t > _KEEPALIVE)
-        for suid, remove in keep_alives:
+        for csessid, remove in keep_alives:
             if remove:
                 # keepalive timeout. Line is dead.
-                to_remove.append(suid)
+                to_remove.append(csessid)
             else:
                 # normal timeout - send keepalive
-                self.last_alive[suid] = (now, True)
-                self.lineSend(suid, ["ajax_keepalive", [], {}])
+                self.last_alive[csessid] = (now, True)
+                self.lineSend(csessid, ["ajax_keepalive", [], {}])
         # remove timed-out sessions
-        for suid in to_remove:
-            sess = self.sessionhandler.session_from_suid(suid)
+        for csessid in to_remove:
+            sess = self.sessionhandler.sessions_from_csessid(csessid)
             if sess:
                 sess[0].disconnect()
-            self.last_alive.pop(suid, None)
+            self.last_alive.pop(csessid, None)
             if not self.last_alive:
                 # no more ajax clients. Stop the keepalive
                 self.keep_alive.stop()
                 self.keep_alive = None
 
-    def lineSend(self, suid, data):
+    def lineSend(self, csessid, data):
         """
         This adds the data to the buffer and/or sends it to the client
         as soon as possible.
 
         Args:
-            suid (int): Session id.
+            csessid (int): Session id.
             data (list): A send structure [cmdname, [args], {kwargs}].
 
         """
-        request = self.requests.get(suid)
+        request = self.requests.get(csessid)
         if request:
             # we have a request waiting. Return immediately.
             request.write(jsonify(data))
             request.finish()
-            del self.requests[suid]
+            del self.requests[csessid]
         else:
             # no waiting request. Store data in buffer
-            dataentries = self.databuffer.get(suid, [])
+            dataentries = self.databuffer.get(csessid, [])
             dataentries.append(jsonify(data))
-            self.databuffer[suid] = dataentries
+            self.databuffer[csessid] = dataentries
 
-    def client_disconnect(self, suid):
+    def client_disconnect(self, csessid):
         """
-        Disconnect session with given suid.
+        Disconnect session with given csessid.
 
         Args:
-            suid (int): Session id.
+            csessid (int): Session id.
 
         """
-        if suid in self.requests:
-            self.requests[suid].finish()
-            del self.requests[suid]
-        if suid in self.databuffer:
-            del self.databuffer[suid]
+        if csessid in self.requests:
+            self.requests[csessid].finish()
+            del self.requests[csessid]
+        if csessid in self.databuffer:
+            del self.databuffer[csessid]
 
     def mode_init(self, request):
         """
@@ -150,38 +149,32 @@ class WebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        suid = request.args.get('suid', ['0'])[0]
+        csessid = request.args.get('csessid')
 
         remote_addr = request.getClientIP()
         host_string = "%s (%s:%s)" % (_SERVERNAME, request.getRequestHostname(), request.getHost().port)
-        if suid == '0':
-            # creating a unique id hash string
-            suid = md5(str(time())).hexdigest()
-            self.databuffer[suid] = []
 
-            sess = WebClientSession()
-            sess.client = self
-            sess.init_session("ajax/comet", remote_addr, self.sessionhandler)
-            sess.suid = suid
-            sess.sessionhandler.connect(sess)
+        sess = WebClientSession()
+        sess.client = self
+        sess.init_session("ajax/comet", remote_addr, self.sessionhandler)
+        sess.csessid = csessid
+        sess.sessionhandler.connect(sess)
 
-            self.last_alive[suid] = (time(), False)
-            if not self.keep_alive:
-                # the keepalive is not running; start it.
-                self.keep_alive = LoopingCall(self._keepalive)
-                self.keep_alive.start(_KEEPALIVE, now=False)
+        self.last_alive[csessid] = (time(), False)
+        if not self.keep_alive:
+            # the keepalive is not running; start it.
+            self.keep_alive = LoopingCall(self._keepalive)
+            self.keep_alive.start(_KEEPALIVE, now=False)
 
-        return jsonify({'msg': host_string, 'suid': suid})
+        return jsonify({'msg': host_string, 'csessid': csessid})
 
     def mode_keepalive(self, request):
         """
         This is called by render_POST when the
         client is replying to the keepalive.
         """
-        suid = request.args.get('suid', ['0'])[0]
-        if suid == '0':
-            return '""'
-        self.last_alive[suid] = (time(), False)
+        csessid = request.args.get('csessid')[0]
+        self.last_alive[csessid] = (time(), False)
         return '""'
 
     def mode_input(self, request):
@@ -193,12 +186,10 @@ class WebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        suid = request.args.get('suid', ['0'])[0]
-        if suid == '0':
-            return '""'
+        csessid = request.args.get('csessid')[0]
 
-        self.last_alive[suid] = (time(), False)
-        sess = self.sessionhandler.session_from_suid(suid)
+        self.last_alive[csessid] = (time(), False)
+        sess = self.sessionhandler.session_from_csessid(csessid)
         if sess:
             sess = sess[0]
             cmdarray = json.loads(request.args.get('data')[0])
@@ -216,18 +207,16 @@ class WebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        suid = request.args.get('suid', ['0'])[0]
-        if suid == '0':
-            return '""'
-        self.last_alive[suid] = (time(), False)
+        csessid = request.args.get('csessid')[0]
+        self.last_alive[csessid] = (time(), False)
 
-        dataentries = self.databuffer.get(suid, [])
+        dataentries = self.databuffer.get(csessid, [])
         if dataentries:
             return dataentries.pop(0)
-        request.notifyFinish().addErrback(self._responseFailed, suid, request)
-        if suid in self.requests:
-            self.requests[suid].finish()  # Clear any stale request.
-        self.requests[suid] = request
+        request.notifyFinish().addErrback(self._responseFailed, csessid, request)
+        if csessid in self.requests:
+            self.requests[csessid].finish()  # Clear any stale request.
+        self.requests[csessid] = request
         return server.NOT_DONE_YET
 
     def mode_close(self, request):
@@ -239,16 +228,13 @@ class WebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        suid = request.args.get('suid', ['0'])[0]
-        if suid == '0':
-            self.client_disconnect(suid)
-        else:
-            try:
-                sess = self.sessionhandler.session_from_suid(suid)[0]
-                sess.sessionhandler.disconnect(sess)
-            except IndexError:
-                self.client_disconnect(suid)
-                pass
+        csessid = request.args.get('csessid')[0]
+        try:
+            sess = self.sessionhandler.session_from_csessid(csessid)[0]
+            sess.sessionhandler.disconnect(sess)
+        except IndexError:
+            self.client_disconnect(csessid)
+            pass
         return '""'
 
     def render_POST(self, request):
@@ -306,8 +292,8 @@ class WebClientSession(session.Session):
         Args:
             reason (str): Motivation for the disconnect.
         """
-        self.client.lineSend(self.suid, ["connection_close", [reason], {}])
-        self.client.client_disconnect(self.suid)
+        self.client.lineSend(self.csessid, ["connection_close", [reason], {}])
+        self.client.client_disconnect(self.csessid)
         self.sessionhandler.disconnect(self)
 
     def data_out(self, **kwargs):
@@ -363,7 +349,7 @@ class WebClientSession(session.Session):
             args[0] = parse_html(text, strip_ansi=nomarkup)
 
         # send to client on required form [cmdname, args, kwargs]
-        self.client.lineSend(self.suid, [cmd, args, kwargs])
+        self.client.lineSend(self.csessid, [cmd, args, kwargs])
 
     def send_prompt(self, *args, **kwargs):
         kwargs["options"].update({"send_prompt": True})
@@ -385,4 +371,4 @@ class WebClientSession(session.Session):
         """
         if not cmdname == "options":
             #print "ajax.send_default", cmdname, args, kwargs
-            self.client.lineSend(self.suid, [cmdname, args, kwargs])
+            self.client.lineSend(self.csessid, [cmdname, args, kwargs])

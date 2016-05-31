@@ -593,16 +593,17 @@ class ServerSessionHandler(SessionHandler):
         return sessions[0] if len(sessions) == 1 else sessions
     sessions_from_character = sessions_from_puppet
 
-    def sessions_from_browserid(self, browserid):
+    def sessions_from_csessid(self, csessid):
         """
-        Given a browserid, return all sessions having this id.
+        Given a cliend identification hash (for session types that offer them) return all sessions with
+        a matching hash.
 
         Args
-            browserid (str): The browserid hash
+            csessid (str): The session hash
 
         """
         return [session for session in self.values()
-                if session.browserid and session.browserid == browserid]
+                if session.csessid and session.csessid == csessid]
 
     def announce_all(self, message):
         """

@@ -36,7 +36,7 @@ class Session(object):
     """
 
     # names of attributes that should be affected by syncing.
-    _attrs_to_sync = ('protocol_key', 'address', 'suid', 'sessid', 'uid',
+    _attrs_to_sync = ('protocol_key', 'address', 'suid', 'sessid', 'uid', 'csessid',
                       'uname', 'logged_in', 'puid',
                       'conn_time', 'cmd_last', 'cmd_last_visible', 'cmd_total',
                       'protocol_flags', 'server_data', "cmdset_storage_string")
@@ -64,6 +64,8 @@ class Session(object):
 
         # unique id for this session
         self.sessid = 0  # no sessid yet
+        # client session id, if given by the client
+        self.csessid = None
         # database id for the user connected to this session
         self.uid = None
         # user name, for easier tracking of sessions

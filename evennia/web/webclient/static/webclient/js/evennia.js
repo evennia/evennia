@@ -217,20 +217,21 @@ An "emitter" object must have a function
         var ever_open = false;
         var websocket = null;
         var wsurl = window.wsurl;
+        var csessid = window.csessid;
 
         var connect = function() {
             if (websocket && websocket.readyState != websocket.CLOSED) {
                 // No-op if a connection is already open.
                 return;
             }
-            websocket = new WebSocket(wsurl);
+            websocket = new WebSocket(wsurl + '?' + csessid);
 
             // Handle Websocket open event
             websocket.onopen = function (event) {
                 open = true;
                 ever_open = true;
                 Evennia.emit('connection_open', ["websocket"], event);
-                Evennia.msg('browser_sessid', [browser_sessid], {});
+                Evennia.msg('csessid', [csessid], {});
             };
             // Handle Websocket close event
             websocket.onclose = function (event) {
@@ -295,22 +296,22 @@ An "emitter" object must have a function
     //
     var AjaxCometConnection = function() {
         log("Trying ajax ...");
-        var client_hash = '0';
+        var open = false;
         var stop_polling = false;
         var is_closing = false;
+        var csessid = window.csessid;
 
-        // initialize connection and get hash
+        // initialize connection, send csessid
         var init = function() {
             $.ajax({type: "POST", url: "/webclientdata",
                     async: true, cache: false, timeout: 50000,
                     datatype: "json",
-                    data: {mode: "init", suid: client_hash},
+                    data: {mode: "init", csessid: csessid},
 
                     success: function(data) {
+                        open = true;
                         data = JSON.parse(data);
                         log ("connection_open", ["AJAX/COMET"], data);
-                        Evennia.msg("browser_sessid", [browser_sessid], {});
-                        client_hash = data.suid;
                         stop_polling = false;
                         poll();
                     },
@@ -331,7 +332,7 @@ An "emitter" object must have a function
                    async: true, cache: false, timeout: 30000,
                    dataType: "json",
                    data: {mode: inmode == null ? 'input' : inmode,
-                          data: JSON.stringify(data), 'suid': client_hash},
+                          data: JSON.stringify(data), 'csessid': csessid},
                    success: function(req, stat, err) {
                        stop_polling = false;
                    },
@@ -351,7 +352,7 @@ An "emitter" object must have a function
             $.ajax({type: "POST", url: "/webclientdata",
                     async: true, cache: false, timeout: 60000,
                     dataType: "json",
-                    data: {mode: 'receive', 'suid': client_hash},
+                    data: {mode: 'receive', 'csessid': csessid},
                     success: function(data) {
                         // log("ajax data received:", data);
                         if (data[0] === "ajax_keepalive") {
@@ -393,7 +394,7 @@ An "emitter" object must have a function
 
         // Kill the connection and do house cleaning on the server.
         var close = function webclient_close(){
-            if (is_closing || client_hash === '0') {
+            if (is_closing || !(open)) {
                 // Already closed or trying to close.
                 return;
             }
@@ -406,11 +407,11 @@ An "emitter" object must have a function
                 cache: false,
                 timeout: 50000,
                 dataType: "json",
-                data: {mode: 'close', 'suid': client_hash},
+                data: {mode: 'close', 'csessid': csessid},
 
                 success: function(data){
                     is_closing = false;
-                    client_hash = '0';
+                    open = false;
                     Evennia.emit("connection_close", ["AJAX/COMET"], {});
                     log("AJAX/COMET connection closed cleanly.")
                 },
@@ -419,13 +420,13 @@ An "emitter" object must have a function
                     Evennia.emit("connection_error", ["AJAX/COMET close error"], err);
                     // Also emit a close event so that the COMET API mirrors the websocket API.
                     Evennia.emit("connection_close", ["AJAX/COMET close unclean"], err);
-                    client_hash = '0';
+                    open = false;
                 }
             });
         };
 
         var isOpen = function () {
-            return !(is_closing || client_hash === '0');
+            return !(is_closing || !(open));
         }
 
         // init

@@ -32,11 +32,12 @@ import json
 from twisted.internet.protocol import Protocol
 from django.conf import settings
 from evennia.server.session import Session
-from evennia.utils.utils import to_str
+from evennia.utils.utils import to_str, mod_import
 from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
 
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
+_CLIENT_SESSIONS = mod_import(settings.SESSION_ENGINE).SessionStore
 
 
 class WebSocketClient(Protocol, Session):
@@ -52,6 +53,8 @@ class WebSocketClient(Protocol, Session):
         self.transport.validationMade = self.validationMade
         client_address = self.transport.client
         client_address = client_address[0] if client_address else None
+        print ("connectionMade: webclient address", client_address, self.transport.client, self.transport.client.__dict__, self.transport.__dict__)
+
         self.init_session("websocket", client_address, self.factory.sessionhandler)
         # watch for dead links
         self.transport.setTcpKeepAlive(1)
@@ -123,15 +126,36 @@ class WebSocketClient(Protocol, Session):
             kwargs (any): Options from protocol.
 
         Notes:
-            The websocket client can send the
-            "websocket_close" command to report
-            that the client has been closed and
-            that the session should be disconnected.
+            At initilization, the client will send the special
+            'csessid' command to identify its browser session hash
+            with the Evennia side.
+
+            The websocket client will also pass 'websocket_close' command
+            to report that the client has been closed and that the
+            session should be disconnected.
+
+            Both those commands are parsed and extracted already at
+            this point.
 
         """
+
+        if "csessid" in kwargs and self.csessid is None:
+            # only allow to change csessid on the very first connect
+            # - this is a safety measure to avoid a clself.transport.client.__dict__, ient to manually
+            # change its csessid later.
+            self.csessid = kwargs.pop("csessid")
+            csession = _CLIENT_SESSIONS(session_key=self.csessid)
+            uid = csession and csession.get("logged_in", False)
+            if uid:
+                # the browser session is already logged in.
+                self.uid = uid
+                self.logged_in = True
+            return
+
         if "websocket_close" in kwargs:
             self.disconnect()
             return
+
         self.sessionhandler.data_in(self, **kwargs)
 
     def data_out(self, **kwargs):

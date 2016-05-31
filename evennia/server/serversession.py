@@ -20,7 +20,7 @@ from evennia.utils.utils import make_iter, lazy_property
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
 
-BrowserSessionStore = importlib.import_module(settings.SESSION_ENGINE).SessionStore
+ClientSessionStore = importlib.import_module(settings.SESSION_ENGINE).SessionStore
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -163,7 +163,6 @@ class ServerSession(Session):
         "Initiate to avoid AttributeErrors down the line"
         self.puppet = None
         self.player = None
-        self.browserid = None
         self.cmdset_storage_string = ""
         self.cmdset = CmdSetHandler(self, True)
 
@@ -224,12 +223,14 @@ class ServerSession(Session):
         self.puppet = None
         self.cmdset_storage = settings.CMDSET_SESSION
 
-        if self.browserid:
-            # this is only set by a webclient inputcommand.
-            bsession = BrowserSessionStore(session_key=self.browserid)
-            bsession["logged_in"] = player.id  # this also saves the bsession
-            bsession.save()
-            print ("serversession.login:", bsession.session_key)
+        if self.csessid:
+            # An existing client sessid is registered, thus a matching
+            # Client Session must also exist. Update it so the website
+            # can also see we are logged in.
+            csession = ClientSessionStore(session_key=self.browserid)
+            csession["logged_in"] = player.id
+            csession.save()
+            print ("serversession.login:", csession.session_key)
 
         # Update account's last login time.
         self.player.last_login = timezone.now()

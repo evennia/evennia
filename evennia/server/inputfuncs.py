@@ -27,7 +27,6 @@ from evennia.players.models import PlayerDB
 from evennia.utils.logger import log_err
 from evennia.utils.utils import to_str, to_unicode
 
-# django browser sessions
 BrowserSessionStore = importlib.import_module(settings.SESSION_ENGINE).SessionStore
 
 

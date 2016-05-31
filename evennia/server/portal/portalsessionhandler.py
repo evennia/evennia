@@ -137,7 +137,7 @@ class PortalSessionHandler(SessionHandler):
                 sessdata = dict((key, val) for key, val in sessdata.items() if key in ("protocol_key",
                                                                                        "address",
                                                                                        "sessid",
-                                                                                       "suid",
+                                                                                       "csessid",
                                                                                        "conn_time",
                                                                                        "protocol_flags",
                                                                                        "server_data",))
@@ -274,20 +274,20 @@ class PortalSessionHandler(SessionHandler):
         """
         return len(self.get_sessions(include_unloggedin=include_unloggedin))
 
-    def session_from_suid(self, suid):
+    def session_from_csessid(self, csessid):
         """
         Given a session id, retrieve the session (this is primarily
         intended to be called by web clients)
 
         Args:
-            suid (int): Session id.
+            csessid (int): Session id.
 
         Returns:
             session (list): The matching session, if found.
 
         """
         return [sess for sess in self.get_sessions(include_unloggedin=True)
-                if hasattr(sess, 'suid') and sess.suid == suid]
+                if hasattr(sess, 'csessid') and sess.csessid == csessid]
 
     def announce_all(self, message):
         """

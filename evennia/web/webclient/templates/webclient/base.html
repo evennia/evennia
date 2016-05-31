@@ -36,9 +36,9 @@ JQuery available.
         {% endif %}
 
         {% if browser_sessid %}
-           var browser_sessid = "{{browser_sessid}}";
+           var csessid = "{{browser_sessid}}";
         {% else %}
-           var browser_sessid = false;
+           var csessid = false;
         {% endif %}
 
         {% if websocket_url %}
