@@ -279,7 +279,7 @@ def parse_language(speaker, emote):
 
 def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
     """
-    Read a textraw emote and parse it into an intermediary
+    Read a raw emote and parse it into an intermediary
     format for distributing to all observers.
 
     Args:
@@ -1055,6 +1055,34 @@ class ContribRPObject(DefaultObject):
                 self.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=searchdata,reflist="\n    ".join(reflist)))
                 return
 
+            # patch to handle objects without sdesc (when merging this contrib with a generic
+            # set of objects). Such objects are identified by key anyway and should thus not
+            # be any problem to use the
+            candidates_no_sdesc = [candidate for candidate in candidates if not hasattr(candidate, "sdesc")]
+            if candidates_no_sdesc:
+                # We have some candidates lacking sdesc - since those will fallback to the key
+                # field anyway, we'll allow this search to escalate to the parent
+                kwargs["candidates"] = candidates_no_sdesc
+                match = super(ContribRPObject, self).search(searchdata, **kwargs)
+                if match:
+                    # a unique match - return
+                    return match
+                else:
+                    # no unique match - remove the candidates we
+                    # already checked above and (maybe) check the rest below
+                    kwargs["candidates"] = [candidate for candidate in candidates
+                                            if candidate not in candidates_no_sdesc]
+
+            # No matches. At this point we can't pass this on to the
+            # normal search mechanism just like that, since that will lead to a
+            # security hole in the sdesc lookup: The normal search
+            # mechanism will search by key+alias, so that means if we
+            # were to guess a Character's key (or #dbref), their
+            # object would be returned regardless of their sdesc. So
+            # we limit the access to the parent search to builders.
+            # A side effect of this is that all objects searchable
+            # with this mechanism must be possible to search by sdesc.
+
             if not self.locks.check_lockstring(self, "perm(Builders)"):
                 # we block lookup unless we have access to continue
                 if "nofound_string" in kwargs:
@@ -1062,6 +1090,7 @@ class ContribRPObject(DefaultObject):
                 else:
                     self.msg("There is no '%s' here." % searchdata)
                 return
+
         # fall back to normal search
         return super(ContribRPObject, self).search(searchdata, **kwargs)
 
