@@ -501,7 +501,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         except Exception:
             logger.log_trace()
 
-        text = None if text is None else str(text)
         kwargs["options"] = options
 
         # relay to session(s)
