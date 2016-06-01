@@ -462,12 +462,12 @@ def dbref(dbref, reqhash=True):
         return dbref if isinstance(dbref, int) else None
 
 
-def dbid_to_obj(inp, objclass, raise_errors=True):
+def dbref_to_obj(inp, objclass, raise_errors=True):
     """
-    Convert a #dbid to a valid object.
+    Convert a #dbref to a valid object.
 
     Args:
-        inp (str or int): A valid dbref.
+        inp (str or int): A valid #dbref.
         objclass (class): A valid django model to filter against.
         raise_errors (bool, optional): Whether to raise errors
             or return `None` on errors.
@@ -486,18 +486,21 @@ def dbid_to_obj(inp, objclass, raise_errors=True):
         # we only convert #dbrefs
         return inp
     try:
-        if int(inp) < 0:
+        if dbid < 0:
             return None
     except ValueError:
         return None
 
     # if we get to this point, inp is an integer dbref; get the matching object
     try:
-        return objclass.objects.get(id=inp)
+        return objclass.objects.get(id=dbid)
     except Exception:
         if raise_errors:
             raise
         return inp
+
+# legacy alias
+dbid_to_obj = dbref_to_obj
 
 
 def to_unicode(obj, encoding='utf-8', force_string=False):
