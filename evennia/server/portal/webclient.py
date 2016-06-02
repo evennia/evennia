@@ -62,13 +62,19 @@ class WebSocketClient(Protocol, Session):
 
         """
 
-        self.csessid = self.transport.location.split("?", 1)[1]
-        csession = _CLIENT_SESSIONS(session_key=self.csessid)
-        uid = csession and csession.get("logged_in", False)
-        if uid:
-            # the client session is already logged in.
-            self.uid = uid
-            self.logged_in = True
+        try:
+            self.csessid = self.transport.location.split("?", 1)[1]
+        except IndexError:
+            # this may happen for custom webclients not caring for the
+            # browser session.
+            self.csessid = None
+        if self.csessid:
+            csession = _CLIENT_SESSIONS(session_key=self.csessid)
+            uid = csession and csession.get("logged_in", False)
+            if uid:
+                # the client session is already logged in.
+                self.uid = uid
+                self.logged_in = True
 
         # watch for dead links
         self.transport.setTcpKeepAlive(1)
