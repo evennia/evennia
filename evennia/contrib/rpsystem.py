@@ -218,6 +218,27 @@ def ordered_permutation_regex(sentence):
     regex = r"|".join(sorted(set(solution), key=lambda o:len(o), reverse=True))
     return regex
 
+def regex_tuple_from_key_alias(obj):
+    """
+    This will build a regex tuple for any object, not just from those
+    with sdesc/recog handlers. It's used as a legacy mechanism for
+    being able to mix this contrib with objects not using sdescs, but
+    note that creating the ordered permutation regex dynamically for
+    every object will add computational overhead.
+
+    Args:
+        obj (Object): This object's key and eventual aliases will
+            be used to build the tuple.
+
+    Returns:
+        regex_tuple (tuple): A tuple
+            (ordered_permutation_regex, obj, key/alias)
+
+    """
+    return (re.compile(r"/%s|%s" % (obj.key, "|".join("/%s" % obj for obj in obj.aliases.all())), _RE_FLAGS),
+            obj,
+            obj.key)
+
 
 def parse_language(speaker, emote):
     """
@@ -316,10 +337,13 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
     # Load all candidate regex tuples [(regex, obj, sdesc/recog),...]
     candidate_regexes = \
             [(_RE_SELF_REF, sender, sender.sdesc.get())] + \
-                        [sender.recog.get_regex_tuple(obj)
-            for obj in candidates if hasattr(obj, "recog")] + \
-                        [obj.sdesc.get_regex_tuple()
-            for obj in candidates if hasattr(obj, "sdesc")]
+            [sender.recog.get_regex_tuple(obj) for obj in candidates] + \
+            [obj.sdesc.get_regex_tuple()
+                    for obj in candidates if hasattr(obj, "sdesc")] + \
+            [regex_tuple_from_key_alias(obj)   # handle objects without sdescs
+                    for obj in candidates if not (hasattr(obj, "recog") and
+                                                  hasattr(obj, "sdesc"))]
+
     # filter out non-found data
     candidate_regexes = [tup for tup in candidate_regexes if tup]
 
@@ -495,6 +519,12 @@ class SdescHandler(object):
     need to use this since we do a lot preparations on
     sdescs when updating them, in order for them to be
     efficient to search for and query.
+
+    The handler stores data in the following Attributes
+
+        _sdesc   - a string
+        _regex  - an empty dictionary
+
     """
     def __init__(self, obj):
         """
@@ -580,6 +610,13 @@ class RecogHandler(object):
     This handler manages the recognition mapping
     of an Object.
 
+    The handler stores data in Attributes as dictionaries of
+    the following names:
+
+        _recog_ref2recog
+        _recog_obj2recog
+        _recog_obj2regex
+
     """
     def __init__(self, obj):
         """
@@ -642,10 +679,10 @@ class RecogHandler(object):
 
         # mapping #dbref:obj
         key = "#%i" % obj.id
-        self.obj.db._recog_ref2recog[key] = recog
-        self.obj.db._recog_obj2recog[obj] = recog
+        self.obj.attributes.get("_recog_ref2recog", default={})[key] = recog
+        self.obj.attributes.get("_recog_obj2recog", default={})[obj] = recog
         regex = ordered_permutation_regex(cleaned_recog)
-        self.obj.db._recog_obj2regex[obj] = regex
+        self.obj.attributes.get("_recog_obj2regex", default={})[obj] = regex
         # local caching
         self.ref2recog[key] = recog
         self.obj2recog[obj] = recog
@@ -879,6 +916,7 @@ class CmdRecog(RPCommand): # assign personal alias to object in room
 
     Usage:
       recog sdesc as alias
+      forget alias
 
     Example:
         recog tall man as Griatch
@@ -896,8 +934,11 @@ class CmdRecog(RPCommand): # assign personal alias to object in room
         if "as" in self.args:
             self.sdesc, self.alias = [part.strip() for part in self.args.split(" as ", 2)]
         elif self.args:
-            self.sdesc = self.args.strip()
-            self.alias = ""
+            # try to split by space instead
+            try:
+                self.sdesc, self.alias = [part.strip() for part in self.args.split(None, 1)]
+            except ValueError:
+                self.args = ""
 
     def func(self):
         "Assign the recog"
@@ -934,6 +975,7 @@ class CmdRecog(RPCommand): # assign personal alias to object in room
                 sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
                 alias = caller.recog.add(obj, alias)
                 caller.msg("%s will now remember {w%s{n as {w%s{n." % (caller.key, sdesc, alias))
+
 
 class CmdMask(RPCommand):
     """
@@ -1014,7 +1056,6 @@ class ContribRPObject(DefaultObject):
         self.db.pose = ""
         self.db.pose_default = "is here."
 
-
     def search(self, searchdata, **kwargs):
         """
         This version of search will pre-parse searchdata for eventual
@@ -1041,7 +1082,7 @@ class ContribRPObject(DefaultObject):
                 return [self] if "quiet" in kwargs else self
 
             # sdesc/recog matching
-            candidates = self.location.contents
+            candidates = self.location.contents + self.contents
             matches = parse_sdescs_and_recogs(self, candidates,
                         _PREFIX + searchdata, search_mode=True)
             nmatches = len(matches)
@@ -1054,24 +1095,6 @@ class ContribRPObject(DefaultObject):
                         for inum, obj in enumerate(matches)]
                 self.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=searchdata,reflist="\n    ".join(reflist)))
                 return
-
-            # patch to handle objects without sdesc (when merging this contrib with a generic
-            # set of objects). Such objects are identified by key anyway and should thus not
-            # be any problem to use the
-            candidates_no_sdesc = [candidate for candidate in candidates if not hasattr(candidate, "sdesc")]
-            if candidates_no_sdesc:
-                # We have some candidates lacking sdesc - since those will fallback to the key
-                # field anyway, we'll allow this search to escalate to the parent
-                kwargs["candidates"] = candidates_no_sdesc
-                match = super(ContribRPObject, self).search(searchdata, **kwargs)
-                if match:
-                    # a unique match - return
-                    return match
-                else:
-                    # no unique match - remove the candidates we
-                    # already checked above and (maybe) check the rest below
-                    kwargs["candidates"] = [candidate for candidate in candidates
-                                            if candidate not in candidates_no_sdesc]
 
             # No matches. At this point we can't pass this on to the
             # normal search mechanism just like that, since that will lead to a
