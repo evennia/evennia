@@ -190,7 +190,7 @@ class ChannelHandler(object):
         key = channel.key
         cmd.__doc__ = cmd.__doc__.format(channelkey=key,
                                          lower_channelkey=key.strip().lower(),
-                                         channeldesc=channel.db.desc.strip())
+                                         channeldesc=channel.attributes.get("desc", default="").strip())
         self.cached_channel_cmds.append(cmd)
         self.cached_cmdsets = {}
 

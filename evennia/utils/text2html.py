@@ -15,7 +15,6 @@ import re
 import cgi
 from .ansi import *
 
-import time
 
 # All xterm256 RGB equivalents
 
