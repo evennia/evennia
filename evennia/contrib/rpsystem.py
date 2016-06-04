@@ -235,7 +235,7 @@ def regex_tuple_from_key_alias(obj):
             (ordered_permutation_regex, obj, key/alias)
 
     """
-    return (re.compile(r"/%s|%s" % (obj.key, "|".join("/%s" % obj for obj in obj.aliases.all())), _RE_FLAGS),
+    return (re.compile(ordered_permutation_regex(" ".join([obj.key] + obj.aliases.all())), _RE_FLAGS),
             obj,
             obj.key)
 
