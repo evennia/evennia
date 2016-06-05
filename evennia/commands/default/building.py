@@ -2404,10 +2404,10 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
 
     Usage:
       @tag[/del] <obj> [= <tag>[:<category>]]
-      @tag/search <tag>
+      @tag/search <tag>[:<category]
 
     Switches:
-      search - return all objects
+      search - return all objects with a given Tag
       del - remove the given tag. If no tag is specified,
             clear all tags on object.
 
@@ -2421,8 +2421,10 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@tag"
+    aliases = ["@tags"]
     locks = "cmd:perm(tag) or perm(Builders)"
     help_category = "Building"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         "Implement the @tag functionality"
@@ -2463,14 +2465,26 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
                 category = None
                 if ":" in tag:
                     tag, category = [part.strip() for part in tag.split(":", 1)]
-                obj.tags.remove(tag, category=category)
-                string = "Removed tag '%s'%s from %s (if it existed)" % (tag,
-                                                    " (category: %s)" % category if category else "",
-                                                    obj)
+                if obj.tags.get(tag, category=category):
+                    obj.tags.remove(tag, category=category)
+                    string = "Removed tag '%s'%s from %s." % (
+                                            tag,
+                                            " (category: %s)" % category if category else "",
+                                            obj)
+                else:
+                    string = "No tag '%s'%s to delete on %s." % (
+                                            tag,
+                                            " (category: %s)" % category if category else "",
+                                            obj)
             else:
                 # no tag specified, clear all tags
-                obj.tags.clear()
-                string = "Cleared all tags from from %s." % obj
+                old_tags = ["%s%s" % (tag, " (category: %s" % category if category else "")
+                            for tag, category in obj.tags.all(return_key_and_category=True)]
+                if old_tags:
+                    obj.tags.clear()
+                    string = "Cleared all tags from %s: %s" % (obj, ", ".join(old_tags))
+                else:
+                    string = "No Tags to clear on %s." % obj
             self.caller.msg(string)
             return
         # no search/deletion
