@@ -19,7 +19,7 @@ from evennia.utils import ansi, logger
 from evennia.utils.utils import to_str
 
 _RE_N = re.compile(r"\{n$")
-_RE_LEND = re.compile(r"\n$|\r$", re.MULTILINE)
+_RE_LEND = re.compile(r"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
@@ -38,6 +38,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         """
         # initialize the session
+        self.line_buffer = []
         self.iaw_mode = False
         self.no_lb_mode = False
         client_address = self.transport.client
@@ -206,16 +207,19 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 logger.log_trace(out)
                 return
 
-        if self.no_lb_mode and _RE_LEND.match(data):
-            # we are in no_lb_mode and we get a single line break
-            # - this line break should have come with the previous
-            # command - it was already added so we drop it here
-            self.no_lb_mode = False
-            return
-        elif not _RE_LEND.search(data):
-            # no line break at the end of the command, note this.
+        if self.no_lb_mode and _RE_LEND.search(data):
+            # we are in no_lb_mode and receive a line break;
+            # this means we should empty the buffer and send
+            # the command.
+            data = "".join(self.line_buffer) + data
             data = data.rstrip("\r\n") + "\n"
+            self.line_buffer = []
+            self.no_lb_mode = False
+        elif not _RE_LEND.search(data):
+            # no line break at the end of the command, buffer instead.
+            self.line_buffer.append(data)
             self.no_lb_mode = True
+            return
 
         # if we get to this point the command should end with a linebreak.
         # We make sure to add it, to fix some clients messing this up.
