@@ -48,7 +48,7 @@ class ObjectSessionHandler(object):
 
         """
         self.obj = obj
-        self._sessid_cache = set()
+        self._sessid_cache = []
         self._recache()
 
     def _recache(self):
@@ -1030,6 +1030,12 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Called just after puppeting has been completed and all
         Player<->Object links have been established.
 
+        Note:
+            You can use `self.player` and `self.sessions.get()` to get
+            player and sessions at this point; the last entry in the
+            list from `self.sessions.get()` is the latest Session
+            puppeting this Object.
+
         """
         self.player.db._last_puppet = self
 
@@ -1037,6 +1043,12 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         Called just before beginning to un-connect a puppeting from
         this Player.
+
+        Note:
+            You can use `self.player` and `self.sessions.get()` to get
+            player and sessions at this point; the last entry in the
+            list from `self.sessions.get()` is the latest Session
+            puppeting this Object.
 
         """
         pass
@@ -1470,6 +1482,12 @@ class DefaultCharacter(DefaultObject):
         """
         Called just after puppeting has been completed and all
         Player<->Object links have been established.
+
+        Note:
+            You can use `self.player` and `self.sessions.get()` to get
+            player and sessions at this point; the last entry in the
+            list from `self.sessions.get()` is the latest Session
+            puppeting this Object.
 
         """
         self.msg("\nYou become {c%s{n.\n" % self.name)
