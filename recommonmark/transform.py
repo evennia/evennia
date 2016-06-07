@@ -26,6 +26,7 @@ class AutoStructify(transforms.Transform):
         'enable_eval_rst': True,
         'enable_math': True,
         'enable_inline_math': True,
+        'commonmark_suffixes': ['.md'],
         'url_resolver': lambda x: x,
     }
 
@@ -313,10 +314,7 @@ class AutoStructify(transforms.Transform):
 
     def apply(self):
         """Apply the transformation by configuration."""
-        # only transform markdowns
         source = self.document['source']
-        if not source.endswith('.md'):
-            return
 
         self.reporter = self.document.reporter
         self.reporter.info('AutoStructify: %s' % source)
@@ -328,6 +326,11 @@ class AutoStructify(transforms.Transform):
         except:
             self.reporter.warning('recommonmark_config not setted,'
                                   ' proceed default setting')
+        
+        # only transform markdowns
+        if not source.endswith(tuple(config['commonmark_suffixes'])):
+            return
+
         self.url_resolver = config['url_resolver']
         assert callable(self.url_resolver)
 
