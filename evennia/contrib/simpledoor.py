@@ -16,7 +16,7 @@ Installation:
 To try it out, `@dig` a new room and then use the (overloaded) `@open`
 commmand to open a new doorway to it like this:
 
-    @open doorway:contrib.door.SimpleDoor = otherroom
+    @open doorway:contrib.simpledoor.SimpleDoor = otherroom
 
 You can then use `open doorway' and `close doorway` to change the open
 state. If you are not superuser (`@quell` yourself) you'll find you
