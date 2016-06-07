@@ -114,7 +114,7 @@ class CommonMarkParser(parsers.Parser):
         self.current_node = new_section
 
     def verbatim(self, text):
-        verbatim_node = nodes.literal_block(text)
+        verbatim_node = nodes.literal_block()
         text = ''.join(flatten(text))
         if text.endswith('\n'):
             text = text[:-1]
