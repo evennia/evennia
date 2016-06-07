@@ -326,7 +326,7 @@ class AutoStructify(transforms.Transform):
         except:
             self.reporter.warning('recommonmark_config not setted,'
                                   ' proceed default setting')
-        
+
         # only transform markdowns
         if not source.endswith(tuple(config['commonmark_suffixes'])):
             return
