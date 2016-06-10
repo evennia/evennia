@@ -139,5 +139,6 @@ class CmdStop(Command):
         if currently_moving:
             currently_moving.cancel()
             self.caller.msg("You stop moving.")
+            self.caller.location.msg_contents("%s stops." % self.get_display_name())
         else:
             self.caller.msg("You are not moving.")
