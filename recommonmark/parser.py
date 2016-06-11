@@ -237,7 +237,6 @@ def reference(block):
         ref_node['refuri'] = block.destination
     else:
         ref_node['refname'] = label
-        # self.document.note_refname(ref_node)
 
     if block.title:
         ref_node['title'] = block.title
