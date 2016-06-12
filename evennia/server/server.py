@@ -50,7 +50,12 @@ SERVER_STARTSTOP_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)
 
 # modules containing plugin services
 SERVER_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.SERVER_SERVICES_PLUGIN_MODULES)]
-WEB_PLUGINS_MODULE = mod_import(settings.WEB_PLUGINS_MODULE)
+try:
+    WEB_PLUGINS_MODULE = mod_import(settings.WEB_PLUGINS_MODULE)
+except ImportError:
+    WEB_PLUGINS_MODULE = None
+    print ("WARNING: settings.WEB_PLUGINS_MODULE not found - "
+           "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf.")
 
 #------------------------------------------------------------
 # Evennia Server settings
