@@ -48,8 +48,9 @@ SERVER_RESTART = os.path.join(settings.GAME_DIR, "server", 'server.restart')
 # module containing hook methods called during start_stop
 SERVER_STARTSTOP_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)
 
-# module containing plugin services
+# modules containing plugin services
 SERVER_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.SERVER_SERVICES_PLUGIN_MODULES)]
+WEB_PLUGINS_MODULE = mod_import(settings.WEB_PLUGINS_MODULE)
 
 #------------------------------------------------------------
 # Evennia Server settings
@@ -511,6 +512,11 @@ if WEBSERVER_ENABLED:
     web_root.putChild("media", static.File(settings.MEDIA_ROOT))
     # point our static resources to url /static
     web_root.putChild("static", static.File(settings.STATIC_ROOT))
+
+    if WEB_PLUGINS_MODULE:
+        # custom overloads
+        web_root = WEB_PLUGINS_MODULE.at_webserver_root_creation(web_root)
+
     web_site = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
 
     for proxyport, serverport in WEBSERVER_PORTS:

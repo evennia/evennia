@@ -104,6 +104,7 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
 # Website server resource
 #
 
+
 class DjangoWebRoot(resource.Resource):
     """
     This creates a web root (/) that Django

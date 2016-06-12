@@ -291,6 +291,8 @@ PORTAL_SERVICES_PLUGIN_MODULES = ["server.conf.portal_services_plugins"]
 # Module holding MSSP meta data. This is used by MUD-crawlers to determine
 # what type of game you are running, how many players you have etc.
 MSSP_META_MODULE = "server.conf.mssp"
+# Module for web plugins.
+WEB_PLUGINS_MODULE = "server.conf.web_plugins"
 # Tuple of modules implementing lock functions. All callable functions
 # inside these modules will be available as lock functions.
 LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs",)
