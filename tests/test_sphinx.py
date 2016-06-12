@@ -46,3 +46,12 @@ class IndentedCodeTests(SphinxIntegrationTests):
             '_build/text/index.html',
             '<div class="highlight">'
         )
+
+class CustomExtensionTests(SphinxIntegrationTests):
+
+    def test_integration(self):
+        self._run_test(
+            'sphinx_custom_md',
+            '_build/text/index.html',
+            '</table>'
+        )
