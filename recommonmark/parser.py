@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 import itertools
+import sphinx
 
 from docutils import parsers, nodes
 
@@ -228,13 +229,13 @@ def inline_entity(inline):
 
 
 def reference(block):
-    ref_node = nodes.reference()
 
     label = make_refname(block.label)
 
-    ref_node['name'] = label
+    has_explicit_title = True if block.title else False
+    ref_node = sphinx.addnodes.pending_xref(label, reftype='any', refexplicit=has_explicit_title)
     if block.destination is not None:
-        ref_node['refuri'] = block.destination
+        ref_node['reftarget'] = block.destination
     else:
         ref_node['refname'] = label
 

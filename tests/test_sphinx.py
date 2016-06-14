@@ -55,3 +55,12 @@ class CustomExtensionTests(SphinxIntegrationTests):
             '_build/text/index.html',
             '</table>'
         )
+
+class XrefTests(SphinxIntegrationTests):
+
+    def test_integration(self):
+        self._run_test(
+            'sphinx_xref',
+            '_build/text/index.html',
+            'href="link.md"'
+        )
