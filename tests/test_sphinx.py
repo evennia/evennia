@@ -9,7 +9,7 @@ from sphinx.application import Sphinx
 
 class SphinxIntegrationTests(unittest.TestCase):
 
-    def _run_test(self, test_dir, test_file, test_string):
+    def _run_test(self, test_dir, test_file, test_strings):
         os.chdir('tests/{0}'.format(test_dir))
         try:
             app = Sphinx(
@@ -23,7 +23,8 @@ class SphinxIntegrationTests(unittest.TestCase):
             app.build(force_all=True)
             with io.open(test_file, encoding='utf-8') as fin:
                 text = fin.read().strip()
-                self.assertIn(test_string, text)
+                for test_string in test_strings:
+                    self.assertIn(test_string, text)
         finally:
             shutil.rmtree('_build')
             os.chdir('../..')
@@ -34,7 +35,7 @@ class CodeBlockTests(SphinxIntegrationTests):
         self._run_test(
             'sphinx_code_block',
             '_build/text/index.html',
-            '<div class="highlight">'
+            ['<div class="highlight">']
         )
 
 
@@ -44,7 +45,7 @@ class IndentedCodeTests(SphinxIntegrationTests):
         self._run_test(
             'sphinx_indented_code',
             '_build/text/index.html',
-            '<div class="highlight">'
+            ['<div class="highlight">']
         )
 
 class CustomExtensionTests(SphinxIntegrationTests):
@@ -53,7 +54,7 @@ class CustomExtensionTests(SphinxIntegrationTests):
         self._run_test(
             'sphinx_custom_md',
             '_build/text/index.html',
-            '</table>'
+            ['</table>']
         )
 
 class XrefTests(SphinxIntegrationTests):
@@ -62,5 +63,5 @@ class XrefTests(SphinxIntegrationTests):
         self._run_test(
             'sphinx_xref',
             '_build/text/index.html',
-            'href="link.md"'
+            ['href="link.html"', 'href="http://www.google.com"']
         )
