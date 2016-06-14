@@ -968,6 +968,10 @@ class TeleportRoom(TutorialRoom):
             character.msg(self.db.failure_teleport_msg)
         # teleport quietly to the new place
         character.move_to(results[0], quiet=True, move_hooks=False)
+        # we have to call this manually since we turn off move_hooks
+        # - this is necessary to make the target dark room aware of an
+        # already carried light.
+        results[0].at_object_receive(character, self)
 
 
 #------------------------------------------------------------
