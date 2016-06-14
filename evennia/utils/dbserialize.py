@@ -83,7 +83,11 @@ def _TO_DATESTRING(obj):
         return _GA(obj, "db_date_created").strftime(_DATESTRING)
     except AttributeError:
         # this can happen if object is not yet saved - no datestring is then set
-        obj.save()
+        try:
+            obj.save()
+        except AttributeError:
+            # we have received a None object, for example due to an erroneous save.
+            return None
         return _GA(obj, "db_date_created").strftime(_DATESTRING)
 
 

@@ -18,11 +18,11 @@ Example:
     TICKER_HANDLER.add(15, myobj.at_tick, *args, **kwargs)
 ```
 
-You supply the interval to tick and a callable to call regularly 
-with any extra args/kwargs. The handler will transparently set 
-up and add new timers behind the scenes to tick at given intervals, 
+You supply the interval to tick and a callable to call regularly
+with any extra args/kwargs. The handler will transparently set
+up and add new timers behind the scenes to tick at given intervals,
 using a TickerPool - all callables with the same interval will share
-the interval ticker. 
+the interval ticker.
 
 To remove:
 
@@ -37,7 +37,7 @@ but with different arguments (args/kwargs are not used for identifying the ticke
 is also `persistent=False` if you don't want to make a ticker that don't survive a reload.
 If either or both `idstring` or `persistent` has been changed from their defaults, they
 must be supplied to the `TICKER_HANDLER.remove` call to properly identify the ticker
-to remove. 
+to remove.
 
 The TickerHandler's functionality can be overloaded by modifying the
 Ticker class and then changing TickerPool and TickerHandler to use the
@@ -66,7 +66,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from evennia.scripts.scripts import ExtendedLoopingCall
 from evennia.server.models import ServerConfig
 from evennia.utils.logger import log_trace, log_err
-from evennia.utils.dbserialize import dbserialize, dbunserialize
+from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
 from evennia.utils import variable_from_module
 
 _GA = object.__getattribute__
@@ -339,7 +339,8 @@ class TickerHandler(object):
         Tries to create a store_key for the object.
 
         Args:
-            obj (Object or None): Subscribing object if any.
+            obj (Object, tuple or None): Subscribing object if any. If a tuple, this is
+                a packed_obj tuple from dbserialize.
             path (str or None): Python-path to callable, if any.
             interval (int): Ticker interval.
             callfunc (callable or str): This is either the callable function or
@@ -361,7 +362,7 @@ class TickerHandler(object):
         """
         interval = int(interval)
         persistent = bool(persistent)
-        outobj = obj if obj and hasattr(obj, "db_key") else None
+        outobj = pack_dbobj(obj)
         outpath = path if path and isinstance(path, basestring) else None
         methodname = callfunc if callfunc and isinstance(callfunc, basestring) else None
         return (outobj, methodname, outpath, interval, idstring, persistent)
@@ -375,16 +376,21 @@ class TickerHandler(object):
 
         """
         if self.ticker_storage:
+            # get the current times so the tickers can be restarted with a delay later
             start_delays = dict((interval, ticker.task.next_call_time())
                                  for interval, ticker in self.ticker_pool.tickers.items())
+
+            # remove any subscriptions that lost its object in the interim
+            to_save = {store_key: (args, kwargs) for store_key, (args, kwargs) in self.ticker_storage.items()
+                        if inspect.ismethod(store_key[1]) and (not "_obj" in kwargs or kwargs["_obj"].pk)}
+
             # update the timers for the tickers
-            #for (obj, interval, idstring), (args, kwargs) in self.ticker_storage.items():
-            for store_key, (args, kwargs) in self.ticker_storage.items():
+            for store_key, (args, kwargs) in to_save.items():
                 interval = store_key[1]
                 # this is a mutable, so it's updated in-place in ticker_storage
                 kwargs["_start_delay"] = start_delays.get(interval, None)
-            ServerConfig.objects.conf(key=self.save_name,
-                                    value=dbserialize(self.ticker_storage))
+                kwargs.pop("_obj", None)
+            ServerConfig.objects.conf(key=self.save_name, value=dbserialize(to_save))
         else:
             # make sure we have nothing lingering in the database
             ServerConfig.objects.conf(key=self.save_name, delete=True)
@@ -410,12 +416,21 @@ class TickerHandler(object):
             ticker_storage = {}
             for store_key, (args, kwargs) in restored_tickers.iteritems():
                 try:
-                    obj, methodname, path, interval, idstring, persistent = store_key
+                    obj, callfunc, path, interval, idstring, persistent = store_key
                     if not persistent and not server_reload:
                         # this ticker will not be restarted
                         continue
-                    if obj and methodname:
-                        kwargs["_callback"] = methodname
+                    if inspect.ismethod(callfunc) and not obj:
+                        continue
+                    if obj:
+                        try:
+                            obj = unpack_dbobj(obj)
+                        except IndexError:
+                            # this happens with an old save, where obj was
+                            # saved as itself; we must re-do the store_key.
+                            store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
+                    if obj and callfunc:
+                        kwargs["_callback"] = callfunc
                         kwargs["_obj"] = obj
                     elif path:
                         modname, varname = path.rsplit(".", 1)
@@ -550,7 +565,8 @@ class TickerHandler(object):
         """
         store_keys = []
         for ticker in self.ticker_pool.tickers.itervalues():
-            store_keys.extend([store_key for store_key in ticker.subscriptions])
+            for (objtup, callfunc, path, interval, idstring, persistent), (args, kwargs) in ticker.subscriptions.iteritems():
+                store_keys.append((kwargs.get("_obj", None), callfunc, path, interval, idstring, persistent))
         return store_keys
 
 # main tickerhandler
