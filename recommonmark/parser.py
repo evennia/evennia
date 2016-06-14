@@ -227,18 +227,24 @@ def inline_entity(inline):
     entity_node = nodes.paragraph('', val, format='html')
     return entity_node
 
+
 def make_refnode(label, target, has_explicit_title):
     if target and target.startswith(('http://', 'https://')):
         ref_node = nodes.reference()
         ref_node['name'] = label
         ref_node['refuri'] = target
         return ref_node
-    xref_node = sphinx.addnodes.pending_xref(label, reftype='any', refexplicit=has_explicit_title, refwarn=True)
-    if target: 
+    xref_node = sphinx.addnodes.pending_xref(
+        label,
+        reftype='any',
+        refexplicit=has_explicit_title,
+        refwarn=True)
+    if target:
         xref_node['reftarget'] = target
-    else: 
+    else:
         xref_node['refname'] = label
     return xref_node
+
 
 def reference(block):
 
