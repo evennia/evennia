@@ -16,7 +16,7 @@ from django.utils import timezone
 from django.conf import settings
 from evennia.comms.models import ChannelDB
 from evennia.utils import logger
-from evennia.utils.utils import make_iter, lazy_property
+from evennia.utils.utils import make_iter, lazy_property, to_str
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
 
@@ -392,7 +392,7 @@ class ServerSession(Session):
         # that auto-adds the session, we'd get a kwarg collision.
         kwargs.pop("session", None)
         if text is not None:
-            self.data_out(text=text, **kwargs)
+            self.data_out(text=to_str(text, force_string=True), **kwargs)
         else:
             self.data_out(**kwargs)
 
