@@ -154,7 +154,10 @@ class CmdTutorialLook(default_cmds.CmdLook):
             # ourself. This also means the search function will always
             # return a list (with 0, 1 or more elements) rather than
             # result/None.
-            looking_at_obj = caller.search(args, use_nicks=True, quiet=True)
+            looking_at_obj = caller.search(args,
+                                           # note: excludes room/room aliases
+                                           candidates=caller.location.contents + caller.contents,
+                                           use_nicks=True, quiet=True)
             if len(looking_at_obj) != 1:
                 # no target found or more than one target found (multimatch)
                 # look for a detail that may match
