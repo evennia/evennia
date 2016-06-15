@@ -1523,13 +1523,15 @@ def m_len(target):
 def at_search_result(matches, caller, query="", quiet=False, **kwargs):
     """
     This is a generic hook for handling all processing of a search
-    result, including error reporting.
+    result, including error reporting. This is also called by the cmdhandler
+    to manage errors in command lookup.
 
     Args:
-        matches (list): This is a list of 0, 1 or more typeclass instances,
-            the matched result of the search. If 0, a nomatch error should
-            be echoed, and if >1, multimatch errors should be given. Only
-            if a single match should the result pass through.
+        matches (list): This is a list of 0, 1 or more typeclass
+            instances or Command instances, the matched result of the
+            search. If 0, a nomatch error should be echoed, and if >1,
+            multimatch errors should be given. Only if a single match
+            should the result pass through.
         caller (Object): The object performing the search and/or which should
         receive error messages.
     query (str, optional): The search query used to produce `matches`.
@@ -1555,8 +1557,8 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         error = kwargs.get("multimatch_string") or \
                 _("More than one match for '%s' (please narrow target):" % query)
         for num, result in enumerate(matches):
-            print ("matches:", result, result.aliases)
-            aliases = result.aliases.all()
+            # we need to consider Commands, where .aliases is a list
+            aliases = result.aliases.all() if hasattr(result.aliases, "all") else result.aliases
             error += "\n %i%s%s%s%s" % (
                 num + 1, _MULTIMATCH_SEPARATOR,
                 result.get_display_name(caller) if hasattr(result, "get_display_name") else query,
