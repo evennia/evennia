@@ -1555,6 +1555,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         error = kwargs.get("multimatch_string") or \
                 _("More than one match for '%s' (please narrow target):" % query)
         for num, result in enumerate(matches):
+            print ("matches:", result, result.aliases)
             aliases = result.aliases.all()
             error += "\n %i%s%s%s%s" % (
                 num + 1, _MULTIMATCH_SEPARATOR,

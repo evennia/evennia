@@ -534,6 +534,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                     syscmd.matches = matches
                 else:
                     # fall back to default error handling
+                    print "matches:", matches
                     sysarg = yield _SEARCH_AT_RESULT([match[2] for match in matches], caller, query=match[0])
                 raise ExecSystemCommand(syscmd, sysarg)
 
