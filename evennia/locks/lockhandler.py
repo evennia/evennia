@@ -361,6 +361,16 @@ class LockHandler(object):
             return self.locks.get(access_type, ["", "", ""])[2]
         return str(self)
 
+    def all(self):
+        """
+        Return all lockstrings.
+
+        Returns:
+            lockstring (str): The full lockstring
+
+        """
+        return self.get()
+
     def remove(self, access_type):
         """
         Remove a particular lock from the handler
