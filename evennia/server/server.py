@@ -13,7 +13,7 @@ import time
 import sys
 import os
 
-from twisted.web import server, static
+from twisted.web import static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
 from twisted.internet.task import LoopingCall
@@ -506,7 +506,7 @@ if WEBSERVER_ENABLED:
     # Start a django-compatible webserver.
 
     from twisted.python import threadpool
-    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer
+    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, NonLoggingSite
 
     # start a thread pool and define the root url (/) as a wsgi resource
     # recognized by Django
@@ -522,7 +522,7 @@ if WEBSERVER_ENABLED:
         # custom overloads
         web_root = WEB_PLUGINS_MODULE.at_webserver_root_creation(web_root)
 
-    web_site = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
+    web_site = NonLoggingSite(web_root, logPath=settings.HTTP_LOG_FILE)
 
     for proxyport, serverport in WEBSERVER_PORTS:
         # create the webserver (we only need the port for this)

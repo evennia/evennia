@@ -13,7 +13,7 @@ a great example/aid on how to do this.)
 """
 import urlparse
 from urllib import quote as urlquote
-from twisted.web import resource, http
+from twisted.web import resource, http, server
 from twisted.internet import reactor
 from twisted.application import internet
 from twisted.web.proxy import ReverseProxyResource
@@ -23,8 +23,8 @@ from twisted.web.wsgi import WSGIResource
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 
-UPSTREAM_IPS = settings.UPSTREAM_IPS
-
+_UPSTREAM_IPS = settings.UPSTREAM_IPS
+_DEBUG = settings.DEBUG
 
 #
 # X-Forwarded-For Handler
@@ -45,7 +45,7 @@ class HTTPChannelWithXForwardedFor(http.HTTPChannel):
         req = self.requests[-1]
         client_ip, port = self.transport.client
         proxy_chain = req.getHeader('X-FORWARDED-FOR')
-        if proxy_chain and client_ip in UPSTREAM_IPS:
+        if proxy_chain and client_ip in _UPSTREAM_IPS:
             forwarded = proxy_chain.split(', ', 1)[CLIENT]
             self.transport.client = (forwarded, port)
 
@@ -136,6 +136,18 @@ class DjangoWebRoot(resource.Resource):
         request.postpath.insert(0, path0)
         return self.wsgi_resource
 
+#
+# Site with deactivateable logging
+#
+
+class NonLoggingSite(server.Site):
+    """
+    This class will only log http requests if settings.DEBUG is True.
+    """
+    def log(self, request):
+        "Conditional logging"
+        if _DEBUG:
+            server.Site.log(self, request)
 
 #
 # Threaded Webserver
