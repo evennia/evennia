@@ -416,7 +416,6 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         except Exception:
             pass
 
-        text = text if text is None else to_str(text, force_string=True)
         kwargs["options"] = options
 
         # session relay

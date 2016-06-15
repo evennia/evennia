@@ -21,7 +21,7 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
-                                 make_iter, to_unicode, to_str)
+                                 make_iter, to_unicode)
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
@@ -501,7 +501,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         except Exception:
             logger.log_trace()
 
-        text = text if text is None else to_str(text, force_string=True)
         kwargs["options"] = options
 
         # relay to session(s)
