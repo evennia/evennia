@@ -114,7 +114,7 @@ class CommonMarkParser(parsers.Parser):
         self.current_node = new_section
 
     def verbatim(self, text):
-        verbatim_node = nodes.literal_block(text)
+        verbatim_node = nodes.literal_block()
         text = ''.join(flatten(text))
         if text.endswith('\n'):
             text = text[:-1]
@@ -237,7 +237,6 @@ def reference(block):
         ref_node['refuri'] = block.destination
     else:
         ref_node['refname'] = label
-        # self.document.note_refname(ref_node)
 
     if block.title:
         ref_node['title'] = block.title
