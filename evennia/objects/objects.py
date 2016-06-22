@@ -301,9 +301,11 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             typeclass (str or Typeclass, or list of either): Limit search only
                 to `Objects` with this typeclass. May be a list of typeclasses
                 for a broader search.
-            location (Object): Specify a location to search, if different from the
-                self's given `location` plus its contents. This can also
-                be a list of locations.
+            location (Object or list): Specify a location or multiple locations 
+                to search. Note that this is used to query the *contents* of a 
+                location and will not match for the location itself -
+                if you want that, don't set this or use `candidates` to specify 
+                exactly which objects should be searched.
             attribute_name (str): Define which property to search. If set, no
                 key+alias search will be performed. This can be used
                 to search database fields (db_ will be automatically
