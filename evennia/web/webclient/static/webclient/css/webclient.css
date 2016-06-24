@@ -21,8 +21,9 @@ body {
 }
 
 
-a:link, a:visited { color: #fff }
-a:hover, a:active { color: #ccc }
+a:link, a:visited { color: inherit }
+a:hover, a:active { color: inherit;
+                    font-weight: bold;}
 
 /* Set this to e.g. bolder if wanting to have ansi-highlights bolden
  * stand-alone text.*/
