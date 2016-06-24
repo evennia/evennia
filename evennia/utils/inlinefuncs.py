@@ -195,10 +195,10 @@ _RE_TOKEN = re.compile(r"""
                         (?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'| # unescaped single-triples (escapes all inside them)
                         (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"| # unescaped normal triple quotes (escapes all inside them)
                         (?P<comma>(?<!\\)\,)|                           # unescaped , (argument separator)
-                        (?P<end>(?<!\\)\))|                             # unescaped } (end of function call)
-                        (?P<start>(?<!\\)\$\w+\()|                      # unescaped $funcname{ (start of function call)
+                        (?P<end>(?<!\\)\))|                             # unescaped ) (end of function call)
+                        (?P<start>(?<!\\)\$\w+\()|                      # unescaped $funcname( (start of function call)
                         (?P<escaped>\\'|\\"|\\\)|\\$\w+\()|             # escaped tokens should re-appear in text
-                        (?P<rest>[\w\s.-\/#!%\^&\*;:=\-_`~\(}{\[\]]+|\"{1}|\'{1})     # everything else should also be included""",
+                        (?P<rest>[\w\s.-\/#!%\^&\*;:=\-_`~\|\(}{\[\]]+|\"{1}|\'{1}) # everything else should also be included""",
                         re.UNICODE + re.IGNORECASE + re.VERBOSE + re.DOTALL)
 
 
