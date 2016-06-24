@@ -21,13 +21,13 @@ body {
 }
 
 
-a:link, a:visited { color: inherit }
+a:link, a:visited { color: inherit; }
 a:hover, a:active { color: inherit;
                     font-weight: bold;}
 
 /* Set this to e.g. bolder if wanting to have ansi-highlights bolden
  * stand-alone text.*/
-strong {font-weight:normal;}
+strong {font-weight: bold;}
 
 div {margin:0px;}
 
@@ -47,6 +47,29 @@ div {margin:0px;}
 .prompt {color: #fff }
 
 .underline { text-decoration: underline; }
+
+/* Inverse - this will make a dotted outline. is there a more
+ * ANSI-similar way? */
+.inverse {
+    outline-style: dotted;
+    outline-color: invert;
+}
+
+/* Create blinking text */
+.blink {
+    animation: blink-animation 1s steps(5, start) infinite;
+    -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
 
 /* Style specific classes corresponding to formatted, narative text. */
 
