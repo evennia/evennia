@@ -278,6 +278,11 @@ def unpack_dbobj(item):
         obj = item[3] and _TO_MODEL_MAP[item[1]].objects.get(id=item[3])
     except ObjectDoesNotExist:
         return None
+    except TypeError:
+        if hasattr(item, "pk"):
+            # this happens if item is already an obj
+            return item
+        return None
     # even if we got back a match, check the sanity of the date (some
     # databases may 're-use' the id)
     return _TO_DATESTRING(obj) == item[2] and obj or None

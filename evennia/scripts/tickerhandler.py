@@ -352,20 +352,21 @@ class TickerHandler(object):
                 shutdown or not.
 
         Returns:
-            isdb_and_store_key (tuple): A tuple `(obj, path, interval,
-                methodname, idstring)` that uniquely identifies the
-                ticker. `path` is `None` and `methodname` is the name of
-                the method if `obj_or_path` is a database object.
-                Vice-versa, `obj` and `methodname` are `None` if
-                `obj_or_path` is a python-path.
+            store_key (tuple): A tuple `(packed_obj, methodname, outpath, interval,
+                idstring, persistent)` that uniquely identifies the
+                ticker. Here, `packed_obj` is the unique string representation of the
+                object or `None`. The `methodname` is the string name of the method on
+                `packed_obj` to call, or `None` if `packed_obj` is unset. `path` is
+                the Python-path to a non-method callable, or `None`. Finally, `interval`
+                `idstring` and `persistent` are integers, strings and bools respectively.
 
         """
         interval = int(interval)
         persistent = bool(persistent)
-        outobj = pack_dbobj(obj)
-        outpath = path if path and isinstance(path, basestring) else None
+        packed_obj = pack_dbobj(obj)
         methodname = callfunc if callfunc and isinstance(callfunc, basestring) else None
-        return (outobj, methodname, outpath, interval, idstring, persistent)
+        outpath = path if path and isinstance(path, basestring) else None
+        return (packed_obj, methodname, outpath, interval, idstring, persistent)
 
     def save(self):
         """
@@ -382,14 +383,15 @@ class TickerHandler(object):
 
             # remove any subscriptions that lost its object in the interim
             to_save = {store_key: (args, kwargs) for store_key, (args, kwargs) in self.ticker_storage.items()
-                        if inspect.ismethod(store_key[1]) and (not "_obj" in kwargs or kwargs["_obj"].pk)}
+                        if ((store_key[1] and ("_obj" in kwargs and kwargs["_obj"].pk) and
+                             hasattr(kwargs["_obj"], store_key[1])) or    # a valid method with existing obj
+                           store_key[2])}  # a path given
 
             # update the timers for the tickers
             for store_key, (args, kwargs) in to_save.items():
                 interval = store_key[1]
                 # this is a mutable, so it's updated in-place in ticker_storage
                 kwargs["_start_delay"] = start_delays.get(interval, None)
-                kwargs.pop("_obj", None)
             ServerConfig.objects.conf(key=self.save_name, value=dbserialize(to_save))
         else:
             # make sure we have nothing lingering in the database
@@ -413,22 +415,22 @@ class TickerHandler(object):
             # the dbunserialize will convert all serialized dbobjs to real objects
 
             restored_tickers = dbunserialize(restored_tickers)
-            ticker_storage = {}
+            self.ticker_storage = {}
             for store_key, (args, kwargs) in restored_tickers.iteritems():
                 try:
+                    # at this point obj is the actual object (or None) due to how
+                    # the dbunserialize works
                     obj, callfunc, path, interval, idstring, persistent = store_key
                     if not persistent and not server_reload:
                         # this ticker will not be restarted
                         continue
-                    if inspect.ismethod(callfunc) and not obj:
+                    if isinstance(callfunc, basestring) and not obj:
+                        # methods must have an existing object
                         continue
-                    if obj:
-                        try:
-                            obj = unpack_dbobj(obj)
-                        except IndexError:
-                            # this happens with an old save, where obj was
-                            # saved as itself; we must re-do the store_key.
-                            store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
+                    # we must rebuild the store_key here since obj must not be
+                    # stored as the object itself for the store_key to be hashable.
+                    store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
+
                     if obj and callfunc:
                         kwargs["_callback"] = callfunc
                         kwargs["_obj"] = obj
@@ -437,12 +439,16 @@ class TickerHandler(object):
                         callback = variable_from_module(modname, varname)
                         kwargs["_callback"] = callback
                         kwargs["_obj"] = None
-                    ticker_storage[store_key] = (args, kwargs)
-                except Exception as err:
+                    else:
+                        # Neither object nor path - discard this ticker
+                        log_err("Tickerhandler: Removing malformed ticker: %s" % str(store_key))
+                        continue
+                except Exception:
                     # this suggests a malformed save or missing objects
-                    log_err("%s\nTickerhandler: Removing malformed ticker: %s" % (err, str(store_key)))
+                    log_trace("Tickerhandler: Removing malformed ticker: %s" % str(store_key))
                     continue
-                self.ticker_storage = ticker_storage
+                # if we get here we should create a new ticker
+                self.ticker_storage[store_key] = (args, kwargs)
                 self.ticker_pool.add(store_key, *args, **kwargs)
 
     def add(self, interval=60, callback=None, idstring="", persistent=True, *args, **kwargs):
@@ -481,11 +487,11 @@ class TickerHandler(object):
 
         obj, path, callfunc = self._get_callback(callback)
         store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
-        self.ticker_storage[store_key] = (args, kwargs)
-        self.save()
         kwargs["_obj"] = obj
         kwargs["_callback"] = callfunc # either method-name or callable
+        self.ticker_storage[store_key] = (args, kwargs)
         self.ticker_pool.add(store_key, *args, **kwargs)
+        self.save()
 
     def remove(self, interval=60, callback=None, idstring="", persistent=True):
         """
