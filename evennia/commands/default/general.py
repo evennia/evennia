@@ -2,7 +2,8 @@
 General Character commands usually availabe to all characters
 """
 from django.conf import settings
-from evennia.utils import utils, prettytable
+from evennia.utils import utils, evtable
+from evennia.typeclasses.attributes import NickTemplateInvalid
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -75,33 +76,39 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
     define a personal alias/nick
 
     Usage:
-      nick[/switches] <nickname> [= [<string>]]
-      alias             ''
+      nick[/switches] <string> [= [replacement_string]]
+      nick[/switches] <template> = <replacement_template>
+      nick/delete <string> or number
+      nick/test <test string>
 
     Switches:
-      object   - alias an object
-      player   - alias a player
-      clearall - clear all your aliases
-      list     - show all defined aliases (also "nicks" works)
+      inputline - replace on the inputline (default)
+      object    - replace on object-lookup
+      player    - replace on player-lookup
+      delete    - remove nick by number of by index given by /list
+      clearall  - clear all nicks
+      list      - show all defined aliases (also "nicks" works)
+      test      - test input to see what it matches with
 
     Examples:
       nick hi = say Hello, I'm Sarah!
       nick/object tom = the tall man
-      nick hi              (shows the nick substitution)
-      nick hi =            (removes nick 'hi')
+      nick build $1 $2 = @create/drop $1;$2     - (template)
+      nick tell $1 $2=@page $1=$2               - (template)
 
-    A 'nick' is a personal shortcut you create for your own use. When
-    you enter the nick, the alternative string will be sent instead.
-    The switches control in which situations the substitution will
-    happen. The default is that it will happen when you enter a
-    command. The 'object' and 'player' nick-types kick in only when
-    you use commands that requires an object or player as a target -
-    you can then use the nick to refer to them.
+    A 'nick' is a personal string replacement. Use $1, $2, ... to catch arguments.
+    Put the last $-marker without an ending space to catch all remaining text. You
+    can also use unix-glob matching:
 
-    Note that no objects are actually renamed or changed by this
-    command - the nick is only available to you. If you want to
-    permanently add keywords to an object for everyone to use, you
-    need build privileges and to use the @alias command.
+        * - matches everything
+        ? - matches a single character
+        [seq] - matches all chars in sequence
+        [!seq] - matches everything not in sequence
+
+    Note that no objects are actually renamed or changed by this command - your nicks
+    are only available to you. If you want to permanently add keywords to an object
+    for everyone to use, you need build privileges and the @alias command.
+
     """
     key = "nick"
     aliases = ["nickname", "nicks", "@nick", "alias"]
@@ -112,61 +119,79 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
         switches = self.switches
-        nicksinputline = caller.nicks.get(category="inputline", return_obj=True)
-        nicksobjects = caller.nicks.get(category="object", return_obj=True)
-        nicksplayers = caller.nicks.get(category="player", return_obj=True)
+        nicktypes = [switch for switch in switches if switch in ("object", "player", "inputline")] or ["inputline"]
+
+        nicklist = utils.make_iter(caller.nicks.get(return_obj=True) or [])
 
         if 'list' in switches:
-            if not nicksinputline and not nicksobjects and not nicksplayers:
+
+            if not nicklist:
                 string = "{wNo nicks defined.{n"
             else:
-                table = prettytable.PrettyTable(["{wNickType",
-                                                 "{wNickname",
-                                                 "{wTranslates-to"])
-                for nicks in (nicksinputline, nicksobjects, nicksplayers):
-                    for nick in utils.make_iter(nicks):
-                        table.add_row([nick.db_category, nick.db_key, nick.db_strvalue])
+                table = evtable.EvTable("#", "Type", "Nick match", "Replacement")
+                for inum, nickobj in enumerate(nicklist):
+                    _, _, nickvalue, replacement = nickobj.value
+                    table.add_row(str(inum + 1), nickobj.db_category, nickvalue, replacement)
                 string = "{wDefined Nicks:{n\n%s" % table
             caller.msg(string)
             return
+
         if 'clearall' in switches:
             caller.nicks.clear()
-            caller.msg("Cleared all aliases.")
+            caller.msg("Cleared all nicks.")
             return
+
         if not self.args or not self.lhs:
             caller.msg("Usage: nick[/switches] nickname = [realname]")
             return
-        nick = self.lhs
-        real = self.rhs
 
-        if real == nick:
+        nickstring = self.lhs
+        replstring = self.rhs
+
+        if replstring == nickstring:
             caller.msg("No point in setting nick same as the string to replace...")
             return
 
         # check so we have a suitable nick type
-        if not any(True for switch in switches if switch in ("object", "player", "inputline")):
-            switches = ["inputline"]
         string = ""
-        for switch in switches:
-            oldnick = caller.nicks.get(key=nick, category=switch)
-            if not real:
-                if "=" in self.args:
-                    if oldnick:
-                            # clear the alias
-                            string += "\nNick cleared: '{w%s{n' (-> '{w%s{n')." % (nick, oldnick)
-                            caller.nicks.remove(nick, category=switch)
-                    else:
-                        string += "\nNo nick '%s' found, so it could not be removed." % nick
+        for nicktype in nicktypes:
+            oldnick = caller.nicks.get(key=nickstring, category=nicktype, return_obj=True)
+            oldnick = oldnick if oldnick.key is not None else None
+            if "delete" in switches or "del" in switches:
+                if oldnick:
+                    _, _, nickstring, replstring = oldnick.value
                 else:
-                    string += "\nNick: '{w%s{n'{n -> '{w%s{n'." % (nick, oldnick)
+                    # no old nick, see if a number was given
+                    if self.args.isdigit():
+                        # we are given a index in nicklist
+                        delindex = int(self.args)
+                        if 0 < delindex <= len(nicklist):
+                            oldnick = nicklist[delindex-1]
+                            _, _, nickstring, replstring = oldnick.value
+                        else:
+                            caller.msg("Not a valid nick index.")
+                            return
+                    else:
+                        caller.msg("Nick not found.")
+                        return
+                # clear the nick
+                string += "\nNick removed: '|w%s|n' -> |w%s|n." % (nickstring, replstring)
+                caller.nicks.remove(nickstring, category=nicktype)
 
-            else:
+            elif replstring:
                 # creating new nick
                 if oldnick:
-                    string += "\nNick '{w%s{n' reset from '{w%s{n' to '{w%s{n'." % (nick, oldnick, real)
+                    string += "\nNick '{w%s{n' updated to map to '{w%s{n'." % (nickstring, replstring)
                 else:
-                    string += "\nNick set: '{w%s{n' -> '{w%s{n'." % (nick, real)
-                caller.nicks.add(nick, real, category=switch)
+                    string += "\nNick '{w%s{n' mapped to '{w%s{n'." % (nickstring, replstring)
+                try:
+                    caller.nicks.add(nickstring, replstring, category=nicktype)
+                except NickTemplateInvalid:
+                    caller.msg("You must use the same $-markers both in the nick and in the replacement.")
+                    return
+            else:
+                # just looking at the nick
+                string += "\nNick: '{w%s{n'{n -> '{w%s{n'." % (nickstring, oldnick.key)
         caller.msg(string)
 
 

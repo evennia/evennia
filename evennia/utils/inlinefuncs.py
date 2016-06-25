@@ -356,3 +356,99 @@ def parse_inlinefunc(string, strip=False, **kwargs):
     # execute the stack from the cache
     return "".join(_run_stack(item) for item in _PARSING_CACHE[string])
 
+# Nick templating
+#
+
+"""
+This supports the use of replacement templates in nicks:
+
+This happens in two steps:
+
+1) The user supplies a template that is converted to a regex according
+   to the unix-like templating language.
+2) This regex is tested against nicks depending on which nick replacement
+   strategy is considered (most commonly inputline).
+3) If there is a template match and there are templating markers,
+   these are replaced with the arguments actually given.
+
+@desc $1 $2 $3
+
+This will be converted to the following regex:
+
+\@desc (?P<1>\w+) (?P<2>\w+) $(?P<3>\w+)
+
+Supported template markers (through fnmatch)
+   *       matches anything (non-greedy)     -> .*?
+   ?       matches any single character      ->
+   [seq]   matches any entry in sequence
+   [!seq]  matches entries not in sequence
+Custom arg markers
+   $N      argument position (1-99)
+
+"""
+import fnmatch
+_RE_NICK_ARG = re.compile(r"\\(\$)([1-9][0-9]?)")
+_RE_NICK_TEMPLATE_ARG = re.compile(r"(\$)([1-9][0-9]?)")
+_RE_NICK_SPACE = re.compile(r"\\ ")
+
+
+class NickTemplateInvalid(ValueError):
+    pass
+
+
+def initialize_nick_templates(in_template, out_template):
+    """
+    Initialize the nick templates for matching and remapping a string.
+
+    Args:
+        in_template (str): The template to be used for nick recognition.
+        out_template (str): The template to be used to replace the string
+            matched by the in_template.
+
+    Returns:
+        regex  (regex): Regex to match against strings
+        template (str): Template with markers {arg1}, {arg2}, etc for
+            replacement using the standard .format method.
+
+    Raises:
+        NickTemplateInvalid: If the in/out template does not have a matching
+            number of $args.
+
+    """
+    # create the regex for in_template
+    regex_string = fnmatch.translate(in_template)
+    n_inargs = len(_RE_NICK_ARG.findall(regex_string))
+    regex_string = _RE_NICK_SPACE.sub("\s+", regex_string)
+    regex_string = _RE_NICK_ARG.sub(lambda m: "(?P<arg%s>.+?)" % m.group(2), regex_string)
+
+    # create the out_template
+    template_string = _RE_NICK_TEMPLATE_ARG.sub(lambda m: "{arg%s}" % m.group(2), out_template)
+
+    # validate the tempaltes - they should at least have the same number of args
+    n_outargs = len(_RE_NICK_TEMPLATE_ARG.findall(out_template))
+    if n_inargs != n_outargs:
+        print n_inargs, n_outargs
+        raise NickTemplateInvalid
+
+    return re.compile(regex_string), template_string
+
+
+def parse_nick_template(string, template_regex, outtemplate):
+    """
+    Parse a text using a template and map it to another template
+
+    Args:
+        string (str): The input string to processj
+        template_regex (regex): A template regex created with
+            initialize_nick_template.
+        outtemplate (str): The template to which to map the matches
+            produced by the template_regex. This should have $1, $2,
+            etc to match the regex.
+
+    """
+    match = template_regex.match(string)
+    if match:
+        return outtemplate.format(**match.groupdict())
+    return string
+
+

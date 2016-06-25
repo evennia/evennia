@@ -279,6 +279,7 @@ class AttributeHandler(object):
         class RetDefault(object):
             "Holds default values"
             def __init__(self):
+                self.key = None
                 self.value = default
                 self.strvalue = str(default) if default is not None else None
 
@@ -532,6 +533,103 @@ class AttributeHandler(object):
             return attrs
 
 
+# Nick templating
+#
+
+"""
+This supports the use of replacement templates in nicks:
+
+This happens in two steps:
+
+1) The user supplies a template that is converted to a regex according
+   to the unix-like templating language.
+2) This regex is tested against nicks depending on which nick replacement
+   strategy is considered (most commonly inputline).
+3) If there is a template match and there are templating markers,
+   these are replaced with the arguments actually given.
+
+@desc $1 $2 $3
+
+This will be converted to the following regex:
+
+\@desc (?P<1>\w+) (?P<2>\w+) $(?P<3>\w+)
+
+Supported template markers (through fnmatch)
+   *       matches anything (non-greedy)     -> .*?
+   ?       matches any single character      ->
+   [seq]   matches any entry in sequence
+   [!seq]  matches entries not in sequence
+Custom arg markers
+   $N      argument position (1-99)
+
+"""
+import fnmatch
+_RE_NICK_ARG = re.compile(r"\\(\$)([1-9][0-9]?)")
+_RE_NICK_TEMPLATE_ARG = re.compile(r"(\$)([1-9][0-9]?)")
+_RE_NICK_SPACE = re.compile(r"\\ ")
+
+
+class NickTemplateInvalid(ValueError):
+    pass
+
+
+def initialize_nick_templates(in_template, out_template):
+    """
+    Initialize the nick templates for matching and remapping a string.
+
+    Args:
+        in_template (str): The template to be used for nick recognition.
+        out_template (str): The template to be used to replace the string
+            matched by the in_template.
+
+    Returns:
+        regex  (regex): Regex to match against strings
+        template (str): Template with markers {arg1}, {arg2}, etc for
+            replacement using the standard .format method.
+
+    Raises:
+        NickTemplateInvalid: If the in/out template does not have a matching
+            number of $args.
+
+    """
+
+
+    # create the regex for in_template
+    regex_string = fnmatch.translate(in_template)
+
+    # validate the templates
+    regex_args = [match.group(2) for match in _RE_NICK_ARG.finditer(regex_string)]
+    temp_args = [match.group(2) for match in _RE_NICK_TEMPLATE_ARG.finditer(out_template)]
+    if set(regex_args) != set(temp_args):
+        # We don't have the same $-tags in input/output.
+        raise NickTemplateInvalid
+
+    regex_string = _RE_NICK_SPACE.sub("\s+", regex_string)
+    regex_string = _RE_NICK_ARG.sub(lambda m: "(?P<arg%s>.+?)" % m.group(2), regex_string)
+    template_string = _RE_NICK_TEMPLATE_ARG.sub(lambda m: "{arg%s}" % m.group(2), out_template)
+
+    return regex_string, template_string
+
+
+def parse_nick_template(string, template_regex, outtemplate):
+    """
+    Parse a text using a template and map it to another template
+
+    Args:
+        string (str): The input string to processj
+        template_regex (regex): A template regex created with
+            initialize_nick_template.
+        outtemplate (str): The template to which to map the matches
+            produced by the template_regex. This should have $1, $2,
+            etc to match the regex.
+
+    """
+    match = template_regex.match(string)
+    if match:
+        return True, outtemplate.format(**match.groupdict())
+    return False, string
+
+
 class NickHandler(AttributeHandler):
     """
     Handles the addition and removal of Nicks. Nicks are special
@@ -540,6 +638,10 @@ class NickHandler(AttributeHandler):
 
     """
     _attrtype = "nick"
+
+    def __init__(self, *args, **kwargs):
+        super(NickHandler, self).__init__(*args, **kwargs)
+        self._regex_cache = {}
 
     def has(self, key, category="inputline"):
         """
@@ -570,22 +672,23 @@ class NickHandler(AttributeHandler):
             kwargs (any, optional): These are passed on to `AttributeHandler.get`.
 
         """
-        return super(NickHandler, self).get(key=key, category=category, strattr=True, **kwargs)
+        return super(NickHandler, self).get(key=key, category=category, **kwargs)
 
     def add(self, key, replacement, category="inputline", **kwargs):
         """
         Add a new nick.
 
         Args:
-            key (str): A key for the nick to match for.
-            replacement (str): The string to replace `key` with (the "nickname").
+            key (str): A key (or template) for the nick to match for.
+            replacement (str): The string (or template) to replace `key` with (the "nickname").
             category (str, optional): the category within which to
                 retrieve the nick. The "inputline" means replacing data
                 sent by the user.
             kwargs (any, optional): These are passed on to `AttributeHandler.get`.
 
         """
-        super(NickHandler, self).add(key, replacement, category=category, strattr=True, **kwargs)
+        nick_regex, nick_template = initialize_nick_templates(key, replacement)
+        super(NickHandler, self).add(key, (nick_regex, nick_template, key, replacement), category=category, **kwargs)
 
     def remove(self, key, category="inputline", **kwargs):
         """
@@ -620,17 +723,27 @@ class NickHandler(AttributeHandler):
                 their nick equivalents.
 
         """
-        obj_nicks, player_nicks = [], []
+        nicks = {}
         for category in make_iter(categories):
-            obj_nicks.extend([n for n in make_iter(self.get(category=category, return_obj=True)) if n])
+            nicks.update({nick.key: nick
+              for nick in make_iter(self.get(category=category, return_obj=True)) if nick and nick.key})
         if include_player and self.obj.has_player:
             for category in make_iter(categories):
-                player_nicks.extend([n for n in make_iter(self.obj.player.nicks.get(category=category, return_obj=True)) if n])
-        for nick in obj_nicks + player_nicks:
-            # make a case-insensitive match here
-            match = re.match(re.escape(nick.db_key), raw_string, re.IGNORECASE)
-            if match:
-                raw_string = raw_string.replace(match.group(), nick.db_strvalue, 1)
+                nicks.update({nick.key: nick
+                    for nick in make_iter(self.obj.player.nicks.get(category=category, return_obj=True))
+                        if nick and nick.key})
+        for key, nick in nicks.iteritems():
+            print "iterting over nicks:", key
+            nick_regex, template, _, _ = nick.value
+            regex = self._regex_cache.get(nick_regex)
+            if not regex:
+                regex = re.compile(nick_regex, re.I + re.DOTALL)
+                self._regex_cache[nick_regex] = regex
+
+            print "before parse_nick_template:", nick.value
+            is_match, raw_string = parse_nick_template(raw_string, regex, template)
+            print "is_match:", is_match, raw_string
+            if is_match:
                 break
         return raw_string
 
