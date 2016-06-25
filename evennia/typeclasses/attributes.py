@@ -596,6 +596,8 @@ def initialize_nick_templates(in_template, out_template):
 
     # create the regex for in_template
     regex_string = fnmatch.translate(in_template)
+    # we must account for a possible line break coming over the wire
+    regex_string = regex_string[:-7] + r"(?:[\n\r]*?)\Z(?ms)"
 
     # validate the templates
     regex_args = [match.group(2) for match in _RE_NICK_ARG.finditer(regex_string)]
@@ -733,16 +735,13 @@ class NickHandler(AttributeHandler):
                     for nick in make_iter(self.obj.player.nicks.get(category=category, return_obj=True))
                         if nick and nick.key})
         for key, nick in nicks.iteritems():
-            print "iterting over nicks:", key
             nick_regex, template, _, _ = nick.value
             regex = self._regex_cache.get(nick_regex)
             if not regex:
-                regex = re.compile(nick_regex, re.I + re.DOTALL)
+                regex = re.compile(nick_regex, re.I + re.DOTALL + re.U)
                 self._regex_cache[nick_regex] = regex
 
-            print "before parse_nick_template:", nick.value
-            is_match, raw_string = parse_nick_template(raw_string, regex, template)
-            print "is_match:", is_match, raw_string
+            is_match, raw_string = parse_nick_template(raw_string.strip(), regex, template)
             if is_match:
                 break
         return raw_string
