@@ -660,7 +660,7 @@ class NickHandler(AttributeHandler):
         """
         return super(NickHandler, self).has(key, category=category)
 
-    def get(self, key=None, category="inputline", **kwargs):
+    def get(self, key=None, category="inputline", return_tuple=False, **kwargs):
         """
         Get the replacement value matching the given key and category
 
@@ -671,10 +671,17 @@ class NickHandler(AttributeHandler):
             category (str, optional): the category within which to
                 retrieve the nick. The "inputline" means replacing data
                 sent by the user.
+            return_tuple (bool, optional): return the full nick tuple rather
+                than just the replacement. For non-template nicks this is just
+                a string.
             kwargs (any, optional): These are passed on to `AttributeHandler.get`.
 
         """
-        return super(NickHandler, self).get(key=key, category=category, **kwargs)
+        if return_tuple or "return_obj" in kwargs:
+            return super(NickHandler, self).get(key=key, category=category, **kwargs)
+        else:
+            retval = super(NickHandler, self).get(key=key, category=category, **kwargs)
+            return retval[3] if isinstance(retval, tuple) else [tup[3] for tup in make_iter(retval)]
 
     def add(self, key, replacement, category="inputline", **kwargs):
         """

@@ -163,7 +163,7 @@ class CmdDelCom(COMMAND_DEFAULT_CLASS):
             chkey = channel.key.lower()
             # find all nicks linked to this channel and delete them
             for nick in [nick for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
-                         if nick and nick.strvalue.lower() == chkey]:
+                         if nick and nick.value[3].lower() == chkey]:
                 nick.delete()
             disconnect = channel.disconnect(player)
             if disconnect:
@@ -297,7 +297,7 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                 comtable.add_row(*["%s%s" % (chan.key, chan.aliases.all() and
                                   "(%s)" % ",".join(chan.aliases.all()) or ""),
                                   "%s" % ",".join(nick.db_key for nick in make_iter(nicks)
-                                  if nick and nick.strvalue.lower() == clower),
+                                  if nick and nick.value[3].lower() == clower),
                                   chan.db.desc])
             caller.msg("\n{wChannel subscriptions{n (use {w@channels{n to list all, {waddcom{n/{wdelcom{n to sub/unsub):{n\n%s" % comtable)
         else:
@@ -312,7 +312,7 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                                   "%s%s" % (chan.key, chan.aliases.all() and
                                   "(%s)" % ",".join(chan.aliases.all()) or ""),
                                   "%s" % ",".join(nick.db_key for nick in make_iter(nicks)
-                                  if nick.strvalue.lower() == clower),
+                                  if nick.value[3].lower() == clower),
                                   str(chan.locks),
                                   chan.db.desc])
             caller.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)
