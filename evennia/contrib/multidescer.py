@@ -42,33 +42,6 @@ class DescValidateError(ValueError):
     "Used for tracebacks from desc systems"
     pass
 
-def _get_desc(caller, key, raise_error=False):
-    """
-    Retrieve description from storage
-
-    Args:
-        caller (Object): The caller with the description
-        key (str): The desc-key to search for
-        raise_error (bool, optional): Raise an exception
-            when not finding the description.
-
-    Returns:
-        desc (str): The matching description or `None` if
-            `raise_error` is false
-
-    Raises:
-        DescValidateError: If desc is not found and raise_error=True.
-
-    """
-    if not caller.db.multidesc:
-        _update_store(caller)
-    key = key.lower()
-    for mkey, desc in caller.db.multidesc:
-        if mkey == key:
-            return desc
-    if raise_error:
-        raise DescValidateError("Description key '%s' not found." % key)
-    return None
 
 def _update_store(caller, key=None, desc=None, delete=False, swapkey=None):
     """
