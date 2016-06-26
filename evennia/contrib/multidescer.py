@@ -136,10 +136,9 @@ class CmdMultiDesc(default_cmds.MuxCommand):
 
     Notes:
         When combining multiple descs with +desc/set <key> + <key2> + ...,
-        you can add custom text between the '+' signs. Any text
-        not a '+' or identified a as a desc key will be added to the
-        final string. Use e.g. ansi line break ||/ to add a new
-        paragraph. Whitespace around keys (only) will be stripped.
+        any keys not matching an actual description will be inserted
+        as plain text. Use e.g. ansi line break ||/ to add a new
+        paragraph and + + or ansi space ||_ to add extra whitespace.
 
     """
     key = "+desc"
