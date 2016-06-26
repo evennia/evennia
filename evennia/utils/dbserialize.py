@@ -131,6 +131,10 @@ class _SaverMutable(object):
         self._db_obj = kwargs.pop("db_obj", None)
         self._data = None
 
+    def __nonzero__(self):
+        "Make sure to evaluate as False if empty"
+        return bool(self._data)
+
     def _save_tree(self):
         "recursively traverse back up the tree, save when we reach the root"
         if self._parent:
