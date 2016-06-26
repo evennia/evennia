@@ -415,7 +415,7 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
         # find all player's nicks linked to this channel and delete them
         for nick in [nick for nick in
                      player.character.nicks.get(category="channel") or []
-                     if nick.db_real.lower() == channel.key]:
+                     if nick.value[3].lower() == channel.key]:
             nick.delete()
         # disconnect player
         channel.disconnect(player)
