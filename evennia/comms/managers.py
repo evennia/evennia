@@ -393,7 +393,6 @@ class ChannelDBManager(TypedObjectManager):
                 case sensitive) match.
 
         """
-        print("channel_search", ostring)
         channels = []
         if not ostring: return channels
         try:
