@@ -63,7 +63,7 @@ def text(session, *args, **kwargs):
         return
     # this is treated as a command input
     # handle the 'idle' command
-    if text.strip() == _IDLE_COMMAND:
+    if text.strip() in _IDLE_COMMAND:
         session.update_session_counters(idle=True)
         return
     if session.player:
