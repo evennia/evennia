@@ -111,7 +111,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
     """
     key = "nick"
-    aliases = ["nickname", "nicks", "@nick", "alias"]
+    aliases = ["nickname", "nicks", "@nick", "@nicks", "alias"]
     locks = "cmd:all()"
 
     def func(self):
@@ -123,7 +123,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         nicklist = utils.make_iter(caller.nicks.get(return_obj=True) or [])
 
-        if 'list' in switches:
+        if 'list' in switches or self.cmdstring in ("nicks", "@nicks"):
 
             if not nicklist:
                 string = "{wNo nicks defined.{n"
@@ -147,41 +147,45 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         nickstring = self.lhs
         replstring = self.rhs
+        old_nickstring = None
+        old_replstring = None
 
         if replstring == nickstring:
             caller.msg("No point in setting nick same as the string to replace...")
             return
 
         # check so we have a suitable nick type
+        errstring = ""
         string = ""
         for nicktype in nicktypes:
             oldnick = caller.nicks.get(key=nickstring, category=nicktype, return_obj=True)
             oldnick = oldnick if oldnick.key is not None else None
-            if "delete" in switches or "del" in switches:
-                if oldnick:
-                    _, _, nickstring, replstring = oldnick.value
-                else:
-                    # no old nick, see if a number was given
-                    if self.args.isdigit():
-                        # we are given a index in nicklist
-                        delindex = int(self.args)
-                        if 0 < delindex <= len(nicklist):
-                            oldnick = nicklist[delindex-1]
-                            _, _, nickstring, replstring = oldnick.value
-                        else:
-                            caller.msg("Not a valid nick index.")
-                            return
+            if oldnick:
+                _, _, old_nickstring, old_replstring = oldnick.value
+            else:
+                # no old nick, see if a number was given
+                if self.args.isdigit():
+                    # we are given a index in nicklist
+                    delindex = int(self.args)
+                    if 0 < delindex <= len(nicklist):
+                        oldnick = nicklist[delindex-1]
+                        _, _, old_nickstring, old_replstring = oldnick.value
                     else:
-                        caller.msg("Nick not found.")
-                        return
+                        errstring += "Not a valid nick index."
+                else:
+                    errstring += "Nick not found."
+
+            if "delete" in switches or "del" in switches:
                 # clear the nick
-                string += "\nNick removed: '|w%s|n' -> |w%s|n." % (nickstring, replstring)
+                errstring = ""
+                string += "\nNick removed: '|w%s|n' -> |w%s|n." % (old_nickstring, old_replstring)
                 caller.nicks.remove(nickstring, category=nicktype)
 
             elif replstring:
                 # creating new nick
+                errstring = ""
                 if oldnick:
-                    string += "\nNick '{w%s{n' updated to map to '{w%s{n'." % (nickstring, replstring)
+                    string += "\nNick '{w%s{n' updated to map to '{w%s{n'." % (old_nickstring, replstring)
                 else:
                     string += "\nNick '{w%s{n' mapped to '{w%s{n'." % (nickstring, replstring)
                 try:
@@ -189,9 +193,11 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 except NickTemplateInvalid:
                     caller.msg("You must use the same $-markers both in the nick and in the replacement.")
                     return
-            else:
+            elif old_nickstring and old_replstring:
                 # just looking at the nick
-                string += "\nNick: '{w%s{n'{n -> '{w%s{n'." % (nickstring, oldnick.key)
+                string += "\nNick '{w%s{n' maps to '{w%s{n'." % (old_nickstring, old_replstring)
+                errstring = ""
+        string = errstring if errstring else string
         caller.msg(string)
 
 
