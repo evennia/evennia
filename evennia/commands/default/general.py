@@ -222,11 +222,9 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
         if not items:
             string = "You are not carrying anything."
         else:
-            table = prettytable.PrettyTable(["name", "desc"])
-            table.header = False
-            table.border = False
+            table = evtable.EvTable(border="header")
             for item in items:
-                table.add_row(["{C%s{n" % item.name, item.db.desc and item.db.desc or ""])
+                table.add_row("{C%s{n" % item.name, item.db.desc or "")
             string = "{wYou are carrying:\n%s" % table
         self.caller.msg(string)
 
