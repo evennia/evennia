@@ -242,19 +242,19 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                     # we may take over another of our sessions
                     # output messages to the affected sessions
                     if _MULTISESSION_MODE in (1, 3):
-                        txt1 = "Sharing {c%s{n with another of your sessions."
-                        txt2 = "{c%s{n{G is now shared from another of your sessions.{n"
+                        txt1 = "Sharing |c%s|n with another of your sessions."
+                        txt2 = "|c%s|n|G is now shared from another of your sessions.|n"
                         self.msg(txt1 % obj.name, session=session)
                         self.msg(txt2 % obj.name, session=obj.sessions.all())
                     else:
-                        txt1 = "Taking over {c%s{n from another of your sessions."
-                        txt2 = "{c%s{n{R is now acted from another of your sessions.{n"
+                        txt1 = "Taking over |c%s|n from another of your sessions."
+                        txt2 = "|c%s|n|R is now acted from another of your sessions.|n"
                         self.msg(txt1 % obj.name, session=session)
                         self.msg(txt2 % obj.name, session=obj.sessions.all())
                         self.unpuppet_object(obj.sessions.get())
             elif obj.player.is_connected:
                 # controlled by another player
-                self.msg("{R{c%s{R is already puppeted by another Player.")
+                self.msg("|c%s|R is already puppeted by another Player." % obj.key)
                 return
 
         # do the puppeting
@@ -711,7 +711,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         if session and protocol_flags:
             session.update_flags(**protocol_flags)
 
-        self._send_to_connect_channel("{G%s connected{n" % self.key)
+        self._send_to_connect_channel("|G%s connected|n" % self.key)
         if _MULTISESSION_MODE == 0:
             # in this mode we should have only one character available. We
             # try to auto-connect to our last conneted object, if any
@@ -754,7 +754,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
         """
         reason = reason and "(%s)" % reason or ""
-        self._send_to_connect_channel("{R%s disconnected %s{n" % (self.key, reason))
+        self._send_to_connect_channel("|R%s disconnected %s|n" % (self.key, reason))
 
     def at_post_disconnect(self):
         """
@@ -824,28 +824,28 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             is_su = self.is_superuser
 
             # text shown when looking in the ooc area
-            string = "Account {g%s{n (you are Out-of-Character)" % (self.key)
+            string = "Account |g%s|n (you are Out-of-Character)" % (self.key)
 
             nsess = len(sessions)
-            string += nsess == 1 and "\n\n{wConnected session:{n" or "\n\n{wConnected sessions (%i):{n" % nsess
+            string += nsess == 1 and "\n\n|wConnected session:|n" or "\n\n|wConnected sessions (%i):|n" % nsess
             for isess, sess in enumerate(sessions):
                 csessid = sess.sessid
                 addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple) and str(sess.address[0]) or str(sess.address))
-                string += "\n %s %s" % (session.sessid == csessid and "{w* %s{n" % (isess + 1) or "  %s" % (isess + 1), addr)
-            string += "\n\n {whelp{n - more commands"
-            string += "\n {wooc <Text>{n - talk on public channel"
+                string += "\n %s %s" % (session.sessid == csessid and "|w* %s|n" % (isess + 1) or "  %s" % (isess + 1), addr)
+            string += "\n\n |whelp|n - more commands"
+            string += "\n |wooc <Text>|n - talk on public channel"
 
             charmax = _MAX_NR_CHARACTERS if _MULTISESSION_MODE > 1 else 1
 
             if is_su or len(characters) < charmax:
                 if not characters:
-                    string += "\n\n You don't have any characters yet. See {whelp @charcreate{n for creating one."
+                    string += "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
                 else:
-                    string += "\n {w@charcreate <name> [=description]{n - create new character"
+                    string += "\n |w@charcreate <name> [=description]|n - create new character"
 
             if characters:
                 string_s_ending = len(characters) > 1 and "s" or ""
-                string += "\n {w@ic <character>{n - enter the game ({w@ooc{n to get back here)"
+                string += "\n |w@ic <character>|n - enter the game (|w@ooc|n to get back here)"
                 if is_su:
                     string += "\n\nAvailable character%s (%i/unlimited):" % (string_s_ending, len(characters))
                 else:
@@ -859,9 +859,9 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                             # character is already puppeted
                             sid = sess in sessions and sessions.index(sess) + 1
                             if sess and sid:
-                                string += "\n - {G%s{n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
+                                string += "\n - |G%s|n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
                             else:
-                                string += "\n - {R%s{n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
+                                string += "\n - |R%s|n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
                     else:
                         # character is "free to puppet"
                         string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions.all()))
@@ -883,7 +883,7 @@ class DefaultGuest(DefaultPlayer):
             session (Session, optional): Session connecting.
 
         """
-        self._send_to_connect_channel("{G%s connected{n" % self.key)
+        self._send_to_connect_channel("|G%s connected|n" % self.key)
         self.puppet_object(session, self.db._last_puppet)
 
     def at_disconnect(self):
