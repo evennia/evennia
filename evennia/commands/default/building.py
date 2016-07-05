@@ -361,7 +361,7 @@ class CmdCpAttr(ObjManipCommand):
                 return
 
         if (len(from_obj_attrs) != len(set(from_obj_attrs))) and clear:
-            self.caller.msg("{RCannot have duplicate source names when moving!")
+            self.caller.msg("|RCannot have duplicate source names when moving!")
             return
 
         string = ""
@@ -549,13 +549,13 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
 
     def edit_handler(self):
         if self.rhs:
-            self.msg("{rYou may specify a value, or use the edit switch, "
-                     "but not both.{n")
+            self.msg("|rYou may specify a value, or use the edit switch, "
+                     "but not both.|n")
             return
         if self.args:
             obj = self.caller.search(self.args)
         else:
-            obj = self.caller.location or self.msg("{rYou can't describe oblivion.{n")
+            obj = self.caller.location or self.msg("|rYou can't describe oblivion.|n")
         if not obj:
             return
 
@@ -599,7 +599,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
                 return
             desc = self.rhs
         else:
-            obj = caller.location or self.msg("{rYou can't describe oblivion.{n")
+            obj = caller.location or self.msg("|rYou can't describe oblivion.|n")
             if not obj:
                 return
             desc = self.args
@@ -653,7 +653,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
             if obj.player and not 'override' in self.switches:
                 return "\nObject %s is controlled by an active player. Use /override to delete anyway." % objname
             if obj.dbid == int(settings.DEFAULT_HOME.lstrip("#")):
-                return "\nYou are trying to delete {c%s{n, which is set as DEFAULT_HOME. " \
+                return "\nYou are trying to delete |c%s|n, which is set as DEFAULT_HOME. " \
                         "Re-point settings.DEFAULT_HOME to another " \
                         "object before continuing." % objname
 
@@ -840,9 +840,9 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
       @tunnel n = house;mike's place;green building
 
     This is a simple way to build using pre-defined directions:
-     {wn,ne,e,se,s,sw,w,nw{n (north, northeast etc)
-     {wu,d{n (up and down)
-     {wi,o{n (in and out)
+     |wn,ne,e,se,s,sw,w,nw|n (north, northeast etc)
+     |wu,d|n (up and down)
+     |wi,o|n (in and out)
     The full names (north, in, southwest, etc) will always be put as
     main name for the exit, using the abbreviation as an alias (so an
     exit will always be able to be used with both "north" as well as
@@ -1372,7 +1372,7 @@ def _convert_from_string(cmd, strobj):
         except (SyntaxError, ValueError):
             # treat as string
             strobj = utils.to_str(strobj)
-            string = "{RNote: name \"{r%s{R\" was converted to a string. " \
+            string = "|RNote: name \"|r%s|R\" was converted to a string. " \
                      "Make sure this is acceptable." % strobj
             cmd.caller.msg(string)
             return strobj
@@ -1403,8 +1403,8 @@ class CmdSetAttribute(ObjManipCommand):
     numbers. You can however also set Python primities such as lists,
     dictionaries and tuples on objects (this might be important for
     the functionality of certain custom objects).  This is indicated
-    by you starting your value with one of {c'{n, {c"{n, {c({n, {c[{n
-    or {c{ {n.
+    by you starting your value with one of |c'|n, |c"|n, |c(|n, |c[|n
+    or |c{ |n.
     Note that you should leave a space after starting a dictionary ('{ ')
     so as to not confuse the dictionary start with a colour code like \{g.
     Remember that if you use Python primitives like this, you must
@@ -1467,11 +1467,11 @@ class CmdSetAttribute(ObjManipCommand):
             return "\nCreated attribute %s/%s = %s" % (obj.name, attr, repr(value))
         except SyntaxError:
             # this means literal_eval tried to parse a faulty string
-            return ("\n{RCritical Python syntax error in your value. Only "
+            return ("\n|RCritical Python syntax error in your value. Only "
                     "primitive Python structures are allowed.\nYou also "
                     "need to use correct Python syntax. Remember especially "
                     "to put quotes around all strings inside lists and "
-                    "dicts.{n")
+                    "dicts.|n")
 
     def edit_handler(self, obj, attr):
         "Activate the line editor"
@@ -1480,8 +1480,8 @@ class CmdSetAttribute(ObjManipCommand):
             old_value = obj.attributes.get(attr)
             if old_value is not None and not isinstance(old_value, basestring):
                 typ = type(old_value).__name__
-                self.caller.msg("{RWARNING! Saving this buffer will overwrite the "\
-                                "current attribute (of type %s) with a string!{n" % typ)
+                self.caller.msg("|RWARNING! Saving this buffer will overwrite the "\
+                                "current attribute (of type %s) with a string!|n" % typ)
                 return str(old_value)
             return old_value
         def save(caller, buf):
@@ -1779,9 +1779,9 @@ class CmdLock(ObjManipCommand):
             # we have a = separator, so we are assigning a new lock
             if self.switches:
                 swi = ", ".join(self.switches)
-                caller.msg("Switch(es) {w%s{n can not be used with a "\
+                caller.msg("Switch(es) |w%s|n can not be used with a "\
                            "lock assignment. Use e.g. " \
-                           "{w@lock/del objname/locktype{n instead." % swi)
+                           "|w@lock/del objname/locktype|n instead." % swi)
                 return
 
             objname, lockdef = self.lhs, self.rhs
@@ -1868,11 +1868,11 @@ class CmdExamine(ObjManipCommand):
                 ndb_attr = None
         string = ""
         if db_attr and db_attr[0]:
-            string += "\n{wPersistent attributes{n:"
+            string += "\n|wPersistent attributes|n:"
             for attr, value in db_attr:
                 string += self.list_attribute(crop, attr, value)
         if ndb_attr and ndb_attr[0]:
-            string += "\n{wNon-Persistent attributes{n:"
+            string += "\n|wNon-Persistent attributes|n:"
             for attr, value in ndb_attr:
                 string += self.list_attribute(crop, attr, value)
         return string
@@ -1884,30 +1884,30 @@ class CmdExamine(ObjManipCommand):
         returns a string.
         """
 
-        string = "\n{wName/key{n: {c%s{n (%s)" % (obj.name, obj.dbref)
+        string = "\n|wName/key|n: |c%s|n (%s)" % (obj.name, obj.dbref)
         if hasattr(obj, "aliases") and obj.aliases.all():
-            string += "\n{wAliases{n: %s" % (", ".join(utils.make_iter(str(obj.aliases))))
+            string += "\n|wAliases|n: %s" % (", ".join(utils.make_iter(str(obj.aliases))))
         if hasattr(obj, "sessions") and obj.sessions:
-            string += "\n{wsession(s){n: %s" % (", ".join(str(sess.sessid)
+            string += "\n|wsession(s)|n: %s" % (", ".join(str(sess.sessid)
                                                 for sess in obj.sessions.all()))
         if hasattr(obj, "has_player") and obj.has_player:
-            string += "\n{wPlayer{n: {c%s{n" % obj.player.name
+            string += "\n|wPlayer|n: |c%s|n" % obj.player.name
             perms = obj.player.permissions.all()
             if obj.player.is_superuser:
                 perms = ["<Superuser>"]
             elif not perms:
                 perms = ["<None>"]
-            string += "\n{wPlayer Perms{n: %s" % (", ".join(perms))
+            string += "\n|wPlayer Perms|n: %s" % (", ".join(perms))
             if obj.player.attributes.has("_quell"):
-                string += " {r(quelled){n"
-        string += "\n{wTypeclass{n: %s (%s)" % (obj.typename,
+                string += " |r(quelled)|n"
+        string += "\n|wTypeclass|n: %s (%s)" % (obj.typename,
                                                 obj.typeclass_path)
         if hasattr(obj, "location"):
-            string += "\n{wLocation{n: %s" % obj.location
+            string += "\n|wLocation|n: %s" % obj.location
             if obj.location:
                 string += " (#%s)" % obj.location.id
         if hasattr(obj, "destination") and obj.destination:
-            string += "\n{wDestination{n: %s" % obj.destination
+            string += "\n|wDestination|n: %s" % obj.destination
             if obj.destination:
                 string += " (#%s)" % obj.destination.id
         perms = obj.permissions.all()
@@ -1918,20 +1918,20 @@ class CmdExamine(ObjManipCommand):
         if obj.is_superuser:
             perms_string += " [Superuser]"
 
-        string += "\n{wPermissions{n: %s" % perms_string
+        string += "\n|wPermissions|n: %s" % perms_string
 
         locks = str(obj.locks)
         if locks:
             locks_string = utils.fill("; ".join([lock for lock in locks.split(';')]), indent=6)
         else:
             locks_string = " Default"
-        string += "\n{wLocks{n:%s" % locks_string
+        string += "\n|wLocks|n:%s" % locks_string
 
 
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
             # all() returns a 'stack', so make a copy to sort.
             stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
-            string += "\n{wStored Cmdset(s){n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" % \
+            string += "\n|wStored Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" % \
                                       (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
                                        for cmdset in stored_cmdsets if cmdset.key != "_EMPTY_CMDSET"))
 
@@ -1955,7 +1955,7 @@ class CmdExamine(ObjManipCommand):
                     pass
             all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
             all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
-            string += "\n{wMerged Cmdset(s){n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" % \
+            string += "\n|wMerged Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" % \
                                       (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
                                        for cmdset in all_cmdsets))
 
@@ -1965,17 +1965,17 @@ class CmdExamine(ObjManipCommand):
                                     if cmd.access(obj, "cmd")])
 
             cmdsetstr = utils.fill(", ".join(avail_cmdset), indent=2)
-            string += "\n{wCommands available to %s (result of Merged CmdSets){n:\n %s" % (obj.key, cmdsetstr)
+            string += "\n|wCommands available to %s (result of Merged CmdSets)|n:\n %s" % (obj.key, cmdsetstr)
 
         if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
-            string += "\n{wScripts{n:\n %s" % obj.scripts
+            string += "\n|wScripts|n:\n %s" % obj.scripts
         # add the attributes
         string += self.format_attributes(obj)
 
         # display Tags
         tags_string = utils.fill(", ".join(tag for tag in obj.tags.all()), indent=5)
         if tags_string:
-            string += "\n{wTags{n: %s" % tags_string
+            string += "\n|wTags|n: %s" % tags_string
 
         # add the contents
         exits = []
@@ -1990,11 +1990,11 @@ class CmdExamine(ObjManipCommand):
                 else:
                     things.append(content)
             if exits:
-                string += "\n{wExits{n: %s" % ", ".join(["%s(%s)" % (exit.name, exit.dbref) for exit in exits])
+                string += "\n|wExits|n: %s" % ", ".join(["%s(%s)" % (exit.name, exit.dbref) for exit in exits])
             if pobjs:
-                string += "\n{wCharacters{n: %s" % ", ".join(["{c%s{n(%s)" % (pobj.name, pobj.dbref) for pobj in pobjs])
+                string += "\n|wCharacters|n: %s" % ", ".join(["|c%s|n(%s)" % (pobj.name, pobj.dbref) for pobj in pobjs])
             if things:
-                string += "\n{wContents{n: %s" % ", ".join(["%s(%s)" % (cont.name, cont.dbref) for cont in obj.contents
+                string += "\n|wContents|n: %s" % ", ".join(["%s(%s)" % (cont.name, cont.dbref) for cont in obj.contents
                                                             if cont not in exits and cont not in pobjs])
         separator = "-" * _DEFAULT_WIDTH
         #output info
@@ -2133,12 +2133,12 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             if is_dbref:
                 # a dbref search
                 result = caller.search(searchstring, global_search=True, quiet=True)
-                string = "{wExact dbref match{n(#%i-#%i%s):" % (low, high, restrictions)
+                string = "|wExact dbref match|n(#%i-#%i%s):" % (low, high, restrictions)
             else:
                 # a player search
                 searchstring = searchstring.lstrip("*")
                 result = caller.search_player(searchstring, quiet=True)
-                string = "{wMatch{n(#%i-#%i%s):" % (low, high, restrictions)
+                string = "|wMatch|n(#%i-#%i%s):" % (low, high, restrictions)
 
             if "room" in switches:
                 result = result if inherits_from(result, ROOM_TYPECLASS) else None
@@ -2148,12 +2148,12 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 result = result if inherits_from(result, CHAR_TYPECLASS) else None
 
             if not result:
-                string += "\n   {RNo match found.{n"
+                string += "\n   |RNo match found.|n"
             elif not low <= int(result[0].id) <= high:
-                string += "\n   {RNo match found for '%s' in #dbref interval.{n" % (searchstring)
+                string += "\n   |RNo match found for '%s' in #dbref interval.|n" % (searchstring)
             else:
                 result=result[0]
-                string += "\n{g   %s - %s{n" % (result.get_display_name(caller), result.path)
+                string += "\n|g   %s - %s|n" % (result.get_display_name(caller), result.path)
         else:
             # Not a player/dbref search but a wider search; build a queryset.
             # Searchs for key and aliases
@@ -2183,15 +2183,15 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             # still results after type filtering?
             if nresults:
                 if nresults > 1:
-                    string = "{w%i Matches{n(#%i-#%i%s):" % (nresults, low, high, restrictions)
+                    string = "|w%i Matches|n(#%i-#%i%s):" % (nresults, low, high, restrictions)
                     for res in results:
-                        string += "\n   {g%s - %s{n" % (res.get_display_name(caller), res.path)
+                        string += "\n   |g%s - %s|n" % (res.get_display_name(caller), res.path)
                 else:
-                    string = "{wOne Match{n(#%i-#%i%s):" % (low, high, restrictions)
-                    string += "\n   {g%s - %s{n" % (results[0].get_display_name(caller), results[0].path)
+                    string = "|wOne Match|n(#%i-#%i%s):" % (low, high, restrictions)
+                    string += "\n   |g%s - %s|n" % (results[0].get_display_name(caller), results[0].path)
             else:
-                string = "{wMatch{n(#%i-#%i%s):" % (low, high, restrictions)
-                string += "\n   {RNo matches found for '%s'{n" % searchstring
+                string = "|wMatch|n(#%i-#%i%s):" % (low, high, restrictions)
+                string += "\n   |RNo matches found for '%s'|n" % searchstring
 
         # send result
         caller.msg(string.strip())
@@ -2280,6 +2280,9 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
         if obj_to_teleport == destination:
             caller.msg("You can't teleport an object inside of itself!")
             return
+        if obj_to_teleport == destination.location:
+            caller.msg("You can'nt teleport an object inside something it holds!")
+            return
         if obj_to_teleport.location and obj_to_teleport.location == destination:
             caller.msg("%s is already at %s." % (obj_to_teleport, destination))
             return
@@ -2334,7 +2337,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
             return
 
         if not self.lhs:
-            caller.msg("To create a global script you need {w@scripts/add <typeclass>{n.")
+            caller.msg("To create a global script you need |w@scripts/add <typeclass>|n.")
             return
 
         obj = caller.search(self.lhs)
@@ -2370,7 +2373,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
                         self.rhs, obj.get_display_name(caller)
                     )
                 else:
-                    string = "Script {w%s{n successfully added and started on %s." % (
+                    string = "Script |w%s|n successfully added and started on %s." % (
                         self.rhs, obj.get_display_name(caller)
                     )
 
@@ -2441,11 +2444,11 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
             objs = search.search_tag(tag, category=category)
             nobjs = len(objs)
             if nobjs > 0:
-                catstr = " (category: '{w%s{n')" % category if category else \
+                catstr = " (category: '|w%s|n')" % category if category else \
                                 ("" if nobjs == 1 else " (may have different tag categories)")
                 matchstr = ", ".join(o.get_display_name(self.caller) for o in objs)
 
-                string = "Found {w%i{n object%s with tag '{w%s{n'%s:\n %s" % (nobjs,
+                string = "Found |w%i|n object%s with tag '|w%s|n'%s:\n %s" % (nobjs,
                                                        "s" if nobjs > 1 else "",
                                                        tag,
                                                        catstr, matchstr)
@@ -2543,17 +2546,17 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       @spawn {"key":"goblin", "typeclass":"monster.Monster", "location":"#2"}
 
     Dictionary keys:
-      {wprototype  {n - name of parent prototype to use. Can be a list for
+      |wprototype  |n - name of parent prototype to use. Can be a list for
                         multiple inheritance (inherits left to right)
-      {wkey        {n - string, the main object identifier
-      {wtypeclass  {n - string, if not set, will use settings.BASE_OBJECT_TYPECLASS
-      {wlocation   {n - this should be a valid object or #dbref
-      {whome       {n - valid object or #dbref
-      {wdestination{n - only valid for exits (object or dbref)
-      {wpermissions{n - string or list of permission strings
-      {wlocks      {n - a lock-string
-      {waliases    {n - string or list of strings
-      {wndb_{n<name>  - value of a nattribute (ndb_ is stripped)
+      |wkey        |n - string, the main object identifier
+      |wtypeclass  |n - string, if not set, will use settings.BASE_OBJECT_TYPECLASS
+      |wlocation   |n - this should be a valid object or #dbref
+      |whome       |n - valid object or #dbref
+      |wdestination|n - only valid for exits (object or dbref)
+      |wpermissions|n - string or list of permission strings
+      |wlocks      |n - a lock-string
+      |waliases    |n - string or list of strings
+      |wndb_|n<name>  - value of a nattribute (ndb_ is stripped)
       any other keywords are interpreted as Attributes and their values.
 
     The available prototypes are defined globally in modules set in
@@ -2585,11 +2588,11 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             prototype = _convert_from_string(self, self.args)
         except SyntaxError:
             # this means literal_eval tried to parse a faulty string
-            string = "{RCritical Python syntax error in argument. "
+            string = "|RCritical Python syntax error in argument. "
             string += "Only primitive Python structures are allowed. "
             string += "\nYou also need to use correct Python syntax. "
             string += "Remember especially to put quotes around all "
-            string += "strings inside lists and dicts.{n"
+            string += "strings inside lists and dicts.|n"
             self.caller.msg(string)
             return
 
