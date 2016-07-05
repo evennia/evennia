@@ -2281,7 +2281,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             caller.msg("You can't teleport an object inside of itself!")
             return
         if obj_to_teleport == destination.location:
-            caller.msg("You can'nt teleport an object inside something it holds!")
+            caller.msg("You can't teleport an object inside something it holds!")
             return
         if obj_to_teleport.location and obj_to_teleport.location == destination:
             caller.msg("%s is already at %s." % (obj_to_teleport, destination))
