@@ -180,13 +180,13 @@ def create_script(typeclass=None, key=None, obj=None, player=None, locks=None,
 
     # validate input
     kwarg = {}
-    if key: kwarg["db_key"] = key
+    kwarg["db_key"] = key if key else typeclass.key if typeclass.key else None
     if player: kwarg["db_player"] = dbid_to_obj(player, _ScriptDB)
     if obj: kwarg["db_obj"] = dbid_to_obj(obj, _ScriptDB)
-    if interval: kwarg["db_interval"] = interval
-    if start_delay: kwarg["db_start_delay"] = start_delay
-    if repeats: kwarg["db_repeats"] = repeats
-    if persistent: kwarg["db_persistent"] = persistent
+    kwarg["db_interval"] = interval if interval else typeclass.interval if typeclass.interval else None
+    kwarg["db_start_delay"] = start_delay if start_delay else typeclass.start_delay if typeclass.start_delay else None
+    kwarg["db_repeats"] = repeats if repeats else typeclass.repeats if typeclass.repeats else None
+    kwarg["db_persistent"] = persistent if persistent else typeclass.persistent if typeclass.persistent else None
 
     # create new instance
     new_script = typeclass(**kwarg)
