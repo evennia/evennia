@@ -17,6 +17,7 @@ import sys
 import signal
 import shutil
 import importlib
+from distutils.version import LooseVersion
 from argparse import ArgumentParser
 from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
 import django
@@ -412,14 +413,14 @@ def check_main_evennia_dependencies():
 
     # Python
     pversion = ".".join(str(num) for num in sys.version_info if type(num) == int)
-    if pversion < PYTHON_MIN:
+    if LooseVersion(pversion) < LooseVersion(PYTHON_MIN):
         print(ERROR_PYTHON_VERSION.format(pversion=pversion, python_min=PYTHON_MIN))
         error = True
     # Twisted
     try:
         import twisted
         tversion = twisted.version.short()
-        if tversion < TWISTED_MIN:
+        if LooseVersion(tversion) < LooseVersion(TWISTED_MIN):
             print(ERROR_TWISTED_VERSION.format(
                 tversion=tversion, twisted_min=TWISTED_MIN))
             error = True
@@ -431,14 +432,14 @@ def check_main_evennia_dependencies():
         dversion = ".".join(str(num) for num in django.VERSION if type(num) == int)
         # only the main version (1.5, not 1.5.4.0)
         dversion_main = ".".join(dversion.split(".")[:2])
-        if dversion < DJANGO_MIN:
+        if LooseVersion(dversion) < LooseVersion(DJANGO_MIN):
             print(ERROR_DJANGO_MIN.format(
                 dversion=dversion_main, django_min=DJANGO_MIN))
             error = True
-        elif DJANGO_MIN <= dversion < DJANGO_REC:
+        elif LooseVersion(DJANGO_MIN) <= LooseVersion(dversion) < LooseVersion(DJANGO_REC):
             print(NOTE_DJANGO_MIN.format(
                 dversion=dversion_main, django_rec=DJANGO_REC))
-        elif DJANGO_REC < dversion_main:
+        elif LooseVersion(DJANGO_REC) < LooseVersion(dversion_main):
             print(NOTE_DJANGO_NEW.format(
                 dversion=dversion_main, django_rec=DJANGO_REC))
     except ImportError:
