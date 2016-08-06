@@ -26,7 +26,7 @@ from evennia.server.sessionhandler import SESSIONS
 
 # set up signal here since we are not starting the server
 
-_RE = re.compile(r"^\+|-+\+|\+-+|--*|\|", re.MULTILINE)
+_RE = re.compile(r"^\+|-+\+|\+-+|--*|\|(?:\s|$)", re.MULTILINE)
 
 
 # ------------------------------------------------------------
@@ -134,7 +134,7 @@ class TestSystem(CommandTest):
         self.call(system.CmdPy(), "1+2", ">>> 1+2|3")
 
     def test_scripts(self):
-        self.call(system.CmdScripts(), "", "dbref ")
+        self.call(system.CmdScripts(), "", "| dbref |")
 
     def test_objects(self):
         self.call(system.CmdObjects(), "", "Object subtype totals")
