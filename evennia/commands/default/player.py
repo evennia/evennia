@@ -216,12 +216,15 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
                 return
         if not new_character:
             # search for a matching character
-            new_character = search.object_search(self.args)
-            if new_character:
-                new_character = new_character[0]
-            else:
+            new_character = [char for char in search.object_search(self.args) if char.access(player, "puppet")]
+            if not new_character:
                 self.msg("That is not a valid character choice.")
                 return
+            if len(new_character) > 1:
+                self.msg("Multiple characters with the same name:\n %s" % ", ".join(new_character))
+                return
+            else:
+                new_character = new_character[0]
         try:
             player.puppet_object(session, new_character)
             player.db._last_puppet = new_character
