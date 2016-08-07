@@ -9,7 +9,7 @@ sessions etc.
 
 import re
 from twisted.internet.task import LoopingCall
-from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO
+from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO, NULL
 from django.conf import settings
 from evennia.server.session import Session
 from evennia.server.portal import ttype, mssp, telnet_oob, naws
@@ -21,6 +21,7 @@ from evennia.utils.utils import to_str
 _RE_N = re.compile(r"\{n$")
 _RE_LEND = re.compile(r"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
+_IDLE_COMMAND = settings.IDLE_COMMAND + "\n"
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
@@ -207,6 +208,13 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 logger.log_trace(out)
                 return
 
+        if data and data.strip() == NULL:
+            # This is an ancient type of keepalive still used by some
+            # legacy clients. There should never be a reason to send
+            # a lone NULL character so this seems ok to support for
+            # backwards compatibility.
+            data = _IDLE_COMMAND
+
         if self.no_lb_mode and _RE_LEND.search(data):
             # we are in no_lb_mode and receive a line break;
             # this means we should empty the buffer and send
@@ -222,7 +230,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             return
 
         # if we get to this point the command should end with a linebreak.
-        # We make sure to add it, to fix some clients messing this up.
         StatefulTelnetProtocol.dataReceived(self, data)
 
     def _write(self, data):
