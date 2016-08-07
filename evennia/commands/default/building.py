@@ -1463,8 +1463,9 @@ class CmdSetAttribute(ObjManipCommand):
 
     def set_attr(self, obj, attr, value):
         try:
+            verb = "Modified" if obj.attributes.has(attr) else "Created"
             obj.attributes.add(attr, value)
-            return "\nCreated attribute %s/%s = %s" % (obj.name, attr, repr(value))
+            return "\n%s attribute %s/%s = %s" % (verb, obj.name, attr, repr(value))
         except SyntaxError:
             # this means literal_eval tried to parse a faulty string
             return ("\n|RCritical Python syntax error in your value. Only "
