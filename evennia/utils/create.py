@@ -133,7 +133,7 @@ object = create_object
 
 def create_script(typeclass=None, key=None, obj=None, player=None, locks=None,
                   interval=None, start_delay=None, repeats=None,
-                  persistent=None, autostart=True, report_to=None):
+                  persistent=None, autostart=True, report_to=None, desc=None):
     """
     Create a new script. All scripts are a combination of a database
     object that communicates with the database, and an typeclass that
@@ -162,6 +162,7 @@ def create_script(typeclass=None, key=None, obj=None, player=None, locks=None,
         autostart (bool): If this Script will start immediately when
             created or if the `start` method must be called explicitly.
         report_to (Object): The object to return error messages to.
+        desc (str): Optional description of script
 
 
     See evennia.scripts.manager for methods to manipulate existing
@@ -187,6 +188,7 @@ def create_script(typeclass=None, key=None, obj=None, player=None, locks=None,
     if start_delay: kwarg["db_start_delay"] = start_delay
     if repeats: kwarg["db_repeats"] = repeats
     if persistent: kwarg["db_persistent"] = persistent
+    if desc: kwarg["db_desc"] = desc
 
     # create new instance
     new_script = typeclass(**kwarg)
