@@ -301,10 +301,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             typeclass (str or Typeclass, or list of either): Limit search only
                 to `Objects` with this typeclass. May be a list of typeclasses
                 for a broader search.
-            location (Object or list): Specify a location or multiple locations 
-                to search. Note that this is used to query the *contents* of a 
+            location (Object or list): Specify a location or multiple locations
+                to search. Note that this is used to query the *contents* of a
                 location and will not match for the location itself -
-                if you want that, don't set this or use `candidates` to specify 
+                if you want that, don't set this or use `candidates` to specify
                 exactly which objects should be searched.
             attribute_name (str): Define which property to search. If set, no
                 key+alias search will be performed. This can be used
@@ -626,17 +626,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         # Save the old location
         source_location = self.location
-        if not source_location:
-            # there was some error in placing this room.
-            # we have to set one or we won't be able to continue
-            if self.home:
-                source_location = self.home
-            else:
-                default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-                source_location = default_home
 
         # Call hook on source location
-        if move_hooks:
+        if move_hooks and source_location:
             try:
                 source_location.at_object_leave(self, destination)
             except Exception as err:
