@@ -228,10 +228,10 @@ INFO_WINDOWS_BATFILE = \
 
 CMDLINE_HELP = \
     """
-    Starts or operates the Evennia MU* server. Also allows for
+    Starts or operates the Evennia MU* server.  Allows for
     initializing a new game directory and manages the game's database.
-    You can also pass most standard django-admin arguments and
-    options.
+    Most standard django-admin arguments and options can also be
+    passed.
     """
 
 
@@ -1183,32 +1183,31 @@ def main():
     parser.add_argument(
         '--dummyrunner', nargs=1, action='store', dest='dummyrunner',
         metavar="N",
-        help="Tests a running server by connecting N dummy players to it.")
+        help="Test a running server by connecting N dummy players to it.")
     parser.add_argument(
         '--settings', nargs=1, action='store', dest='altsettings',
         default=None, metavar="filename.py",
-        help=("Start evennia with alternative settings file in "
-              "gamedir/server/conf/."))
+        help=("Start evennia with alternative settings file from "
+              "gamedir/server/conf/. (default is settings.py)"))
     parser.add_argument(
         '--initsettings', action='store_true', dest="initsettings",
         default=False,
-        help="Creates a new, empty settings file as gamedir/server/conf/settings.py.")
+        help="Create a new, empty settings file as gamedir/server/conf/settings.py.")
     parser.add_argument(
-        "option", nargs='?', default="noop",
-        help="Operational mode: 'start', 'stop', 'restart' or 'menu'.")
+        "operation", nargs='?', default="noop",
+        help="Operation to perform: 'start', 'stop', 'reload' or 'menu'.")
     parser.add_argument(
         "service", metavar="component", nargs='?', default="all",
-        help=("Server component to operate on: "
-              "'server', 'portal' or 'all' (default)."))
+        help=("Which component to operate on: "
+              "'server', 'portal' or 'all' (default if not set)."))
     parser.epilog = (
-        "Example django-admin commands: "
-        "'migrate', 'flush', 'shell' and 'dbshell'. "
-        "See the django documentation for more django-admin commands.")
+            "Common usage: evennia start|stop|reload. Django-admin database commands:"
+        "evennia migration|flush|shell|dbshell (see the django documentation for more django-admin commands.)")
 
     args, unknown_args = parser.parse_known_args()
 
     # handle arguments
-    option, service = args.option, args.service
+    option, service = args.operation, args.service
 
     # make sure we have everything
     check_main_evennia_dependencies()
