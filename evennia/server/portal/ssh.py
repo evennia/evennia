@@ -21,7 +21,9 @@ try:
     from twisted.conch.ssh.keys import Key
 except ImportError:
     raise ImportError ("To use SSH, you need to install the crypto libraries:\n"
-                       "      pip install pycrypto pyasn1\n")
+                       "      pip install cryptography\n"
+                       "(on older Twisted versions you may instead have to try "
+                       "pip install pycrypto pyasn1)\n")
 
 from twisted.conch.ssh.userauth import SSHUserAuthServer
 from twisted.conch.ssh import common
