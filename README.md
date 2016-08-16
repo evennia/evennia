@@ -33,7 +33,7 @@ To learn how to get your hands on the code base, the [Getting started][gettingst
 [gettingstarted]: http://github.com/evennia/evennia/wiki/Getting-Started
 [wiki]: https://github.com/evennia/evennia/wiki
 [screenshot]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/evennia_screenshot3.png
-[logo]: https://github.com/evennia/evennia/blob/master/evennia/web/static/evennia_general/images/evennia_logo.png
+[logo]: https://github.com/evennia/evennia/blob/master/evennia/web/website/static/website/images/evennia_logo.png
 [travisimg]: https://travis-ci.org/evennia/evennia.svg?branch=master
 [travislink]: https://travis-ci.org/evennia/evennia
 [introduction]: https://github.com/evennia/evennia/wiki/Evennia-Introduction
