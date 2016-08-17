@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 """
 General helper functions that don't fit neatly under any given category.
 
@@ -503,6 +504,56 @@ def dbref_to_obj(inp, objclass, raise_errors=True):
 dbid_to_obj = dbref_to_obj
 
 
+# some direct translations for the latinify
+_UNICODE_MAP = {"EM DASH": "-", "FIGURE DASH": "-", "EN DASH": "-", "HORIZONTAL BAR": "-",
+                "HORIZONTAL ELLIPSIS": "...", "RIGHT SINGLE QUOTATION MARK": "'"}
+
+def latinify(unicode_string, default='?', pure_ascii=False):
+    """
+    Convert a unicode string to "safe" ascii/latin-1 characters.
+    This is used as a last resort when normal decoding does not work.
+
+    Arguments:
+        unicode_string (unicode): A string to convert to an ascii
+            or latin-1 string.
+        default (str, optional): Characters resisting mapping will be replaced
+            with this character or string.
+    Notes:
+        This is inspired by the gist by Ricardo Murri:
+            https://gist.github.com/riccardomurri/3c3ccec30f037be174d3
+
+    """
+
+    from unicodedata import name
+
+    converted = []
+    for unich in iter(unicode_string):
+        try:
+            ch = unich.decode('ascii')
+        except UnicodeDecodeError:
+            # deduce a latin letter equivalent from the Unicode data
+            # point name; e.g., since `name(u'á') == 'LATIN SMALL
+            # LETTER A WITH ACUTE'` translate `á` to `a`.  However, in
+            # some cases the unicode name is still "LATIN LETTER"
+            # although no direct equivalent in the Latin alphabeth
+            # exists (e.g., Þ, "LATIN CAPITAL LETTER THORN") -- we can
+            # avoid these cases by checking that the letter name is
+            # composed of one letter only.
+            # We also supply some direct-translations for some particular
+            # common cases.
+            what = name(unich)
+            if what in _UNICODE_MAP:
+                ch = _UNICODE_MAP[what]
+            else:
+                what = what.split()
+                if what[0] == 'LATIN' and what[2] == 'LETTER' and len(what[3]) == 1:
+                    ch = what[3].lower() if what[1] == 'SMALL' else what[3].upper()
+                else:
+                    ch = default
+        converted.append(chr(ord(ch)))
+    return ''.join(converted)
+
+
 def to_unicode(obj, encoding='utf-8', force_string=False):
     """
     This decodes a suitable object to the unicode format.
@@ -570,7 +621,6 @@ def to_str(obj, encoding='utf-8', force_string=False):
         conversion of objects to strings.
 
     """
-
     if force_string and not isinstance(obj, basestring):
         # some sort of other object. Try to
         # convert it to a string representation.
@@ -590,7 +640,12 @@ def to_str(obj, encoding='utf-8', force_string=False):
                     return obj
                 except UnicodeEncodeError:
                     pass
-        raise Exception("Error: Unicode could not encode unicode string '%s'(%s) to a bytestring. " % (obj, encoding))
+
+        # if we get to this point we have not found any way to convert this string. Try to parse it manually,
+        try:
+            return latinify(obj, '?')
+        except Exception, err:
+            raise Exception("%s, Error: Unicode could not encode unicode string '%s'(%s) to a bytestring. " % (err, obj, encoding))
     return obj
 
 
