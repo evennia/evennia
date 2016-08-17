@@ -636,7 +636,7 @@ def to_str(obj, encoding='utf-8', force_string=False):
         except UnicodeEncodeError:
             for alt_encoding in ENCODINGS:
                 try:
-                    obj = obj.encode(encoding)
+                    obj = obj.encode(alt_encoding)
                     return obj
                 except UnicodeEncodeError:
                     pass
