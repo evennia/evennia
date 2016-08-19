@@ -1176,27 +1176,36 @@ class ContribRPObject(DefaultObject):
                     candidates.append(self)
 
         # the sdesc-related substitution
-        if use_dbref is None:
-            use_dbref = self.locks.check_lockstring(self, "perm(Builders)")
+        is_builder = self.locks.check_lockstring(self, "perm(Builders)")
+        use_dbref = is_builder if use_dbref is None else use_dbref
+        search_obj = lambda string: ObjectDB.objects.object_search(string,
+                                                 attribute_name=attribute_name,
+                                                 typeclass=typeclass,
+                                                 candidates=candidates,
+                                                 exact=exact,
+                                                 use_dbref=use_dbref)
 
         if candidates:
             candidates = parse_sdescs_and_recogs(self, candidates,
                         _PREFIX + searchdata, search_mode=True)
             results = []
             for candidate in candidates:
-                results.extend(ObjectDB.objects.object_search(candidate.key,
-                                                         attribute_name=attribute_name,
-                                                         typeclass=typeclass,
-                                                         candidates=candidates,
-                                                         exact=exact,
-                                                         use_dbref=use_dbref))
+                # we search by candidate keys here; this allows full error
+                # management and use of all kwargs - we will use searchdata
+                # in eventual error reporting later (not their keys). Doing
+                # it like this e.g. allows for use of the typeclass kwarg
+                # limiter.
+                results.extend(search_obj(candidate.key))
+
+            if not results and is_builder:
+                # builders get a chance to search only by key+alias
+                results = search_obj(searchdata)
         else:
-            results = ObjectDB.objects.object_search(searchdata,
-                                                     attribute_name=attribute_name,
-                                                     typeclass=typeclass,
-                                                     candidates=candidates,
-                                                     exact=exact,
-                                                     use_dbref=use_dbref)
+            # global searches / #drefs end up here. Global searches are
+            # only done in code, so is controlled, #dbrefs are turned off
+            # for non-Builders.
+            results = search_obj(searchdata)
+
         if quiet:
             return results
         return  _AT_SEARCH_RESULT(results, self, query=searchdata,
