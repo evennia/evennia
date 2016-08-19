@@ -1641,7 +1641,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             old_typeclass_path = obj.typeclass_path
 
             # we let this raise exception if needed
-            obj.swap_typeclass(new_typeclass, clean_attributes=reset)
+            obj.swap_typeclass(new_typeclass, clean_attributes=reset, clean_cmdsets=reset)
 
             if is_same:
                 string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.path)

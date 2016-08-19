@@ -407,7 +407,7 @@ class TypedObject(SharedMemoryModel):
             return any(hasattr(cls, "path") and cls.path in typeclass for cls in self.__class__.mro())
 
     def swap_typeclass(self, new_typeclass, clean_attributes=False,
-                       run_start_hooks=True, no_default=True):
+                       run_start_hooks=True, no_default=True, clean_cmdsets=False):
         """
         This performs an in-situ swap of the typeclass. This means
         that in-game, this object will suddenly be something else.
@@ -437,6 +437,7 @@ class TypedObject(SharedMemoryModel):
                 allow for swapping to a default typeclass in case the
                 given one fails for some reason. Instead the old one will
                 be preserved.
+            clean_cmdsets (bool, optional): Delete all cmdsets on the object.
         Returns:
             result (bool): True/False depending on if the swap worked
                 or not.
@@ -470,6 +471,10 @@ class TypedObject(SharedMemoryModel):
             else:
                 self.attributes.clear()
                 self.nattributes.clear()
+        if clean_cmdsets:
+            # purge all cmdsets
+            self.cmdset.clear()
+            self.cmdset.remove_default()
 
         if run_start_hooks:
             # fake this call to mimic the first save
