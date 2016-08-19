@@ -276,10 +276,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                exact=False,
                candidates=None,
                nofound_string=None,
-               multimatch_string=None):
+               multimatch_string=None,
+               use_dbref=True):
         """
-        Returns the typeclass of an `Object` matching a search
-        string/condition
+        Returns an Object matching a search string/condition
 
         Perform a standard object search in the database, handling
         multiple results and lack thereof gracefully. By default, only
@@ -328,6 +328,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 caller's contents (inventory).
             nofound_string (str):  optional custom string for not-found error message.
             multimatch_string (str): optional custom string for multimatch error header.
+            use_dbref (bool, optional): if False, treat a given #dbref strings as a
+                normal string rather than database ids.
 
         Returns:
             match (Object, None or list): will return an Object/None if `quiet=False`,
@@ -383,7 +385,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                                                  attribute_name=attribute_name,
                                                  typeclass=typeclass,
                                                  candidates=candidates,
-                                                 exact=exact)
+                                                 exact=exact,
+                                                 use_dbref=use_dbref)
         if quiet:
             return results
         return  _AT_SEARCH_RESULT(results, self, query=searchdata,
