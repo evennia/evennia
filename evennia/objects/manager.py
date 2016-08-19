@@ -288,7 +288,8 @@ class ObjectDBManager(TypedObjectManager):
                       attribute_name=None,
                       typeclass=None,
                       candidates=None,
-                      exact=True):
+                      exact=True,
+                      use_dbref=True):
         """
         Search as an object globally or in a list of candidates and
         return results. The result is always an Object. Always returns
@@ -321,6 +322,8 @@ class ObjectDBManager(TypedObjectManager):
                 used together with the `candidates` keyword to limit the
                 number of possibilities. This value has no meaning if
                 searching for attributes/properties.
+            use_dbref (bool): If False, bypass direct lookup of a string
+                on the form #dbref and treat it like any string.
 
         Returns:
             matches (list): Matching objects
@@ -361,8 +364,8 @@ class ObjectDBManager(TypedObjectManager):
                 candidates = [cand for cand in candidates
                                 if _GA(cand, "db_typeclass_path") in typeclass]
 
-        dbref = not attribute_name and exact and self.dbref(searchdata)
-        if dbref is not None:
+        dbref = not attribute_name and exact and use_dbref and self.dbref(searchdata)
+        if dbref:
             # Easiest case - dbref matching (always exact)
             dbref_match = self.dbref_search(dbref)
             if dbref_match:
