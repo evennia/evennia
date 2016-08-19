@@ -615,7 +615,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         # this is not even an Exit until it has a proper destination, and we won't assign
         # that until it is actually open. Until then we store the destination here. This
         # should be given a reasonable value at creation!
-        self.db.destination = 2
+        self.db.destination = "#2"
 
         # we lock this Exit so that one can only execute commands on it
         # if its location is lit and only traverse it once the Attribute
