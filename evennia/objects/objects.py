@@ -361,7 +361,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # only allow exact matching if searching the entire database
             # or unique #dbrefs
             exact = True
-        elif not candidates:
+        elif candidates is None:
             # no custom candidates given - get them automatically
             if location:
                 # location(s) were given

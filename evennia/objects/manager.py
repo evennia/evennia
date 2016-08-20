@@ -357,7 +357,10 @@ class ObjectDBManager(TypedObjectManager):
                     typeclasses[i] = u"%s" % typeclass
             typeclass = typeclasses
 
-        if candidates:
+        if candidates is not None:
+            if not candidates:
+                # candidates is the empty list. This should mean no matches can ever be acquired.
+                return []
             # Convenience check to make sure candidates are really dbobjs
             candidates = [cand for cand in make_iter(candidates) if cand]
             if typeclass:
