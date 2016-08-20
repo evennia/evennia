@@ -232,8 +232,8 @@ class EvForm(object):
         table_coords = {}
 
         # Locate the identifier tags and the horizontal end coords for all forms
-        re_cellchar =  re.compile(r"%s+([^%s%s])%s+" % (cellchar, INVALID_FORMCHARS, cellchar, cellchar))
-        re_tablechar = re.compile(r"%s+([^%s%s|])%s+" % (tablechar, INVALID_FORMCHARS, tablechar, tablechar))
+        re_cellchar =  re.compile(r"%s+([^%s%s]+)%s+" % (cellchar, INVALID_FORMCHARS, cellchar, cellchar))
+        re_tablechar = re.compile(r"%s+([^%s%s|+])%s+" % (tablechar, INVALID_FORMCHARS, tablechar, tablechar))
         for iy, line in enumerate(_to_ansi(form, regexable=True)):
             # find cells
             ix0 = 0
@@ -429,7 +429,7 @@ def _test():
     form = EvForm("evennia.utils.evform_test")
 
     # add data to each tagged form cell
-    form.map(cells={1: "|gTom the Bouncer",
+    form.map(cells={"AA": "|gTom the Bouncer",
                     2: "|yGriatch",
                     3: "A sturdy fellow",
                     4: 12,

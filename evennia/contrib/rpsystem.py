@@ -1145,7 +1145,6 @@ class ContribRPObject(DefaultObject):
             if searchdata.lower() in ("me", "self",):
                 return [self] if quiet else self
 
-
         if use_nicks:
             # do nick-replacement on search
             searchdata = self.nicks.nickreplace(searchdata, categories=("object", "player"), include_player=True)

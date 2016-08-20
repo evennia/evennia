@@ -9,7 +9,7 @@ TABLECHAR = "c"
 FORM = """
 .------------------------------------------------.
 |                                                |
-|  Name: xxxxx1xxxxx    Player: xxxxxxx2xxxxxxx  |
+|  Name: xxxxxAAxxxx    Player: xxxxxxx2xxxxxxx  |
 |        xxxxxxxxxxx                             |
 |                                                |
  >----------------------------------------------<
