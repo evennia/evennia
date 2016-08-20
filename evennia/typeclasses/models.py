@@ -243,7 +243,7 @@ class TypedObject(SharedMemoryModel):
                         log_trace()
                         self.__class__ = self._meta.proxy_for_model or self.__class__
             finally:
-                self.db_typclass_path = typeclass_path
+                self.db_typeclass_path = typeclass_path
         elif self.db_typeclass_path:
             try:
                 self.__class__ = class_from_module(self.db_typeclass_path)
@@ -257,7 +257,14 @@ class TypedObject(SharedMemoryModel):
         else:
             self.db_typeclass_path = "%s.%s" % (self.__module__, self.__class__.__name__)
         # important to put this at the end since _meta is based on the set __class__
-        self.__dbclass__ = self._meta.proxy_for_model or self.__class__
+        try:
+            self.__dbclass__ = self._meta.proxy_for_model or self.__class__
+        except AttributeError:
+            err_class = repr(self.__class__)
+            self.__class__ = class_from_module("evennia.objects.objects.DefaultObject")
+            self.__dbclass__ = class_from_module("evennia.objects.models.ObjectDB")
+            self.db_typeclass_path = "evennia.objects.objects.DefaultObject"
+            log_trace("Critical: Class %s of %s is not a valid typeclass!\nTemporarily falling back to %s." % (err_class, self, self.__class__))
 
     # initialize all handlers in a lazy fashion
     @lazy_property
