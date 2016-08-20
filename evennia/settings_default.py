@@ -93,14 +93,6 @@ SSL_ENABLED = False
 SSL_PORTS = [4001]
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 SSL_INTERFACES = ['0.0.0.0']
-# Activate custom websocket support. This is unrelated to the websocket client!
-# This is intended to be used by optional third-party connections/applications
-# or clients.
-WEBSOCKET_ENABLED = False
-# Ports to use for Websockets
-WEBSOCKET_PORTS = [8021]
-# Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
-WEBSOCKET_INTERFACES = ['0.0.0.0']
 # This determine's whether Evennia's custom admin page is used, or if the
 # standard Django admin is used.
 EVENNIA_ADMIN = True
