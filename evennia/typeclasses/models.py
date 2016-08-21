@@ -525,10 +525,10 @@ class TypedObject(SharedMemoryModel):
 
         """
         if hasattr(self, "player"):
-            if self.player and self.player.is_superuser:
+            if self.player and self.player.is_superuser and not self.player.attributes.get("_quell"):
                 return True
         else:
-            if self.is_superuser:
+            if self.is_superuser and not self.attributes.get("_quell"):
                 return True
 
         if not permstring:

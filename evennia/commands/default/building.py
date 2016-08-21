@@ -2597,6 +2597,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             self.caller.msg(string)
             return
 
+
         if isinstance(prototype, basestring):
             # A prototype key
             keystr = prototype
@@ -2605,7 +2606,13 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 string = "No prototype named '%s'." % keystr
                 self.caller.msg(string + _show_prototypes(prototypes))
                 return
-        elif not isinstance(prototype, dict):
+        elif isinstance(prototype, dict):
+            # we got the prototype on the command line. We must make sure to not allow
+            # the 'exec' key unless we are immortals or higher.
+            if "exec" in prototype and not self.caller.check_permstring("Immortals"):
+                self.caller.msg("Spawn aborted: You don't have access to use the 'exec' prototype key.")
+                return
+        else:
             self.caller.msg("The prototype must be a prototype key or a Python dictionary.")
             return
 
