@@ -17,6 +17,7 @@ the Evennia API.  It is also a severe security risk and should
 therefore always be limited to superusers only.
 
 """
+import re
 from builtins import range
 
 from django.conf import settings
@@ -24,8 +25,11 @@ from evennia.utils.batchprocessors import BATCHCMD, BATCHCODE
 from evennia.commands.cmdset import CmdSet
 from evennia.utils import logger, utils
 
-COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
-#from evennia.commands.default.muxcommand import COMMAND_DEFAULT_CLASS
+
+_RE_COMMENT = re.compile(r"^#.*?$", re.MULTILINE + re.DOTALL)
+_RE_CODE_START = re.compile(r"^# batchcode code:", re.MULTILINE)
+_COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
+#from evennia.commands.default.muxcommand import _COMMAND_DEFAULT_CLASS
 
 # limit symbols for API inclusion
 __all__ = ("CmdBatchCommands", "CmdBatchCode")
@@ -88,7 +92,10 @@ def format_header(caller, entry):
     Formats a header
     """
     width = _HEADER_WIDTH - 10
-    entry = entry.strip()
+    # strip all comments for the header
+    entry = _RE_CODE_START.split(entry, 1)[1]
+    entry = _RE_COMMENT.sub("", entry).strip()
+
     header = utils.crop(entry, width=width)
     ptr = caller.ndb.batch_stackptr + 1
     stacklen = len(caller.ndb.batch_stack)
@@ -207,7 +214,7 @@ def purge_processor(caller):
 #------------------------------------------------------------
 
 
-class CmdBatchCommands(COMMAND_DEFAULT_CLASS):
+class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
     """
     build from batch-command file
 
@@ -310,7 +317,7 @@ class CmdBatchCommands(COMMAND_DEFAULT_CLASS):
                 purge_processor(caller)
 
 
-class CmdBatchCode(COMMAND_DEFAULT_CLASS):
+class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
     """
     build from batch-code file
 
@@ -348,7 +355,7 @@ class CmdBatchCode(COMMAND_DEFAULT_CLASS):
 
         #parse indata file
         try:
-            codes = BATCHCODE.parse_file(python_path, debug=debug)
+            codes = BATCHCODE.parse_file(python_path)
         except UnicodeDecodeError as err:
             caller.msg(_UTF8_ERROR % (python_path, err))
             return
@@ -421,7 +428,7 @@ class CmdBatchCode(COMMAND_DEFAULT_CLASS):
 # (these are the same for both processors)
 #------------------------------------------------------------
 
-class CmdStateAbort(COMMAND_DEFAULT_CLASS):
+class CmdStateAbort(_COMMAND_DEFAULT_CLASS):
     """
     @abort
 
@@ -439,7 +446,7 @@ class CmdStateAbort(COMMAND_DEFAULT_CLASS):
         self.caller.msg("Exited processor and reset out active cmdset back to the default one.")
 
 
-class CmdStateLL(COMMAND_DEFAULT_CLASS):
+class CmdStateLL(_COMMAND_DEFAULT_CLASS):
     """
     ll
 
@@ -453,7 +460,7 @@ class CmdStateLL(COMMAND_DEFAULT_CLASS):
     def func(self):
         show_curr(self.caller, showall=True)
 
-class CmdStatePP(COMMAND_DEFAULT_CLASS):
+class CmdStatePP(_COMMAND_DEFAULT_CLASS):
     """
     pp
 
@@ -474,7 +481,7 @@ class CmdStatePP(COMMAND_DEFAULT_CLASS):
             batch_cmd_exec(caller)
 
 
-class CmdStateRR(COMMAND_DEFAULT_CLASS):
+class CmdStateRR(_COMMAND_DEFAULT_CLASS):
     """
     rr
 
@@ -496,7 +503,7 @@ class CmdStateRR(COMMAND_DEFAULT_CLASS):
         show_curr(caller)
 
 
-class CmdStateRRR(COMMAND_DEFAULT_CLASS):
+class CmdStateRRR(_COMMAND_DEFAULT_CLASS):
     """
     rrr
 
@@ -518,7 +525,7 @@ class CmdStateRRR(COMMAND_DEFAULT_CLASS):
         show_curr(caller)
 
 
-class CmdStateNN(COMMAND_DEFAULT_CLASS):
+class CmdStateNN(_COMMAND_DEFAULT_CLASS):
     """
     nn
 
@@ -539,7 +546,7 @@ class CmdStateNN(COMMAND_DEFAULT_CLASS):
         show_curr(caller)
 
 
-class CmdStateNL(COMMAND_DEFAULT_CLASS):
+class CmdStateNL(_COMMAND_DEFAULT_CLASS):
     """
     nl
 
@@ -561,7 +568,7 @@ class CmdStateNL(COMMAND_DEFAULT_CLASS):
         show_curr(caller, showall=True)
 
 
-class CmdStateBB(COMMAND_DEFAULT_CLASS):
+class CmdStateBB(_COMMAND_DEFAULT_CLASS):
     """
     bb
 
@@ -583,7 +590,7 @@ class CmdStateBB(COMMAND_DEFAULT_CLASS):
         show_curr(caller)
 
 
-class CmdStateBL(COMMAND_DEFAULT_CLASS):
+class CmdStateBL(_COMMAND_DEFAULT_CLASS):
     """
     bl
 
@@ -605,7 +612,7 @@ class CmdStateBL(COMMAND_DEFAULT_CLASS):
         show_curr(caller, showall=True)
 
 
-class CmdStateSS(COMMAND_DEFAULT_CLASS):
+class CmdStateSS(_COMMAND_DEFAULT_CLASS):
     """
     ss [steps]
 
@@ -634,7 +641,7 @@ class CmdStateSS(COMMAND_DEFAULT_CLASS):
             show_curr(caller)
 
 
-class CmdStateSL(COMMAND_DEFAULT_CLASS):
+class CmdStateSL(_COMMAND_DEFAULT_CLASS):
     """
     sl [steps]
 
@@ -663,7 +670,7 @@ class CmdStateSL(COMMAND_DEFAULT_CLASS):
             show_curr(caller)
 
 
-class CmdStateCC(COMMAND_DEFAULT_CLASS):
+class CmdStateCC(_COMMAND_DEFAULT_CLASS):
     """
     cc
 
@@ -695,7 +702,7 @@ class CmdStateCC(COMMAND_DEFAULT_CLASS):
         caller.msg(format_code("Finished processing batch file."))
 
 
-class CmdStateJJ(COMMAND_DEFAULT_CLASS):
+class CmdStateJJ(_COMMAND_DEFAULT_CLASS):
     """
     jj <command number>
 
@@ -719,7 +726,7 @@ class CmdStateJJ(COMMAND_DEFAULT_CLASS):
         show_curr(caller)
 
 
-class CmdStateJL(COMMAND_DEFAULT_CLASS):
+class CmdStateJL(_COMMAND_DEFAULT_CLASS):
     """
     jl <command number>
 
@@ -743,7 +750,7 @@ class CmdStateJL(COMMAND_DEFAULT_CLASS):
         show_curr(caller, showall=True)
 
 
-class CmdStateQQ(COMMAND_DEFAULT_CLASS):
+class CmdStateQQ(_COMMAND_DEFAULT_CLASS):
     """
     qq
 
@@ -758,7 +765,7 @@ class CmdStateQQ(COMMAND_DEFAULT_CLASS):
         self.caller.msg("Aborted interactive batch mode.")
 
 
-class CmdStateHH(COMMAND_DEFAULT_CLASS):
+class CmdStateHH(_COMMAND_DEFAULT_CLASS):
     "Help command"
 
     key = "hh"

@@ -51,7 +51,7 @@ from evennia import DefaultObject
 limbo = search_object('Limbo')[0]
 
 
-#CODE (create red button)
+#CODE
 
 # This is the first code block. Within each block, Python
 # code works as normal. Note how we make use if imports and
@@ -66,7 +66,7 @@ red_button = create_object(red_button.RedButton, key="Red button",
 # we take a look at what we created
 caller.msg("A %s was created." % red_button.key)
 
-#CODE (create table and chair) table, chair
+#CODE
 
 # this code block has 'table' and 'chair' set as deletable
 # objects. This means that when the batchcode processor runs in
@@ -80,5 +80,10 @@ caller.msg("A %s was created." % red_button.key)
 table = create_object(DefaultObject, key="Table", location=limbo)
 chair = create_object(DefaultObject, key="Chair", location=limbo)
 
-string = "A %s and %s were created. If debug was active, they were deleted again."
+string = "A %s and %s were created."
+if DEBUG:
+    string += " Since debug was active, they were deleted again."
+    table.delete()
+    chair.delete()
+
 caller.msg(string % (table, chair))
