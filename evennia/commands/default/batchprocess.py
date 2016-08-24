@@ -246,8 +246,8 @@ class CmdBatchCommands(COMMAND_DEFAULT_CLASS):
             caller.msg(_UTF8_ERROR % (python_path, err))
             return
         except IOError as err:
-            string = "'%s' not found.\nYou have to supply the python path "
-            string += "of the file relative to \none of your batch-file directories (%s)."
+            string = "'%s' not found.\nYou have to supply the python path\n" \
+                     "using one of the defined batch-file directories\n (%s)."
             caller.msg(string % (python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
         if not commands:
@@ -353,8 +353,8 @@ class CmdBatchCode(COMMAND_DEFAULT_CLASS):
             caller.msg(_UTF8_ERROR % (python_path, err))
             return
         except IOError:
-            string = "'%s' not found.\nYou have to supply the python path "
-            string += "of the file relative to \nyour batch-file directories (%s)."
+            string = "'%s' not found.\nYou have to supply the python path\n" \
+                     "from one of the defined batch-file directories\n (%s)."
             caller.msg(string % (python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
         if not codes:

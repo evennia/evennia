@@ -18,6 +18,7 @@ import math
 import re
 import textwrap
 import random
+from os.path import join as osjoin
 from importlib import import_module
 from inspect import ismodule, trace, getmembers, getmodule
 from collections import defaultdict, OrderedDict
@@ -28,6 +29,8 @@ from django.utils.translation import ugettext as _
 from evennia.utils import logger
 
 _MULTIMATCH_SEPARATOR = settings.SEARCH_MULTIMATCH_SEPARATOR
+_EVENNIA_DIR = settings.EVENNIA_DIR
+_GAME_DIR = settings.GAME_DIR
 
 try:
     import cPickle as pickle
@@ -409,31 +412,52 @@ def get_evennia_version():
     return evennia.__version__
 
 
-def pypath_to_realpath(python_path, file_ending='.py'):
+def pypath_to_realpath(python_path, file_ending='.py', pypath_prefixes=None):
     """
     Converts a dotted Python path to an absolute path under the
     Evennia library directory or under the current game directory.
 
     Args:
-        python_path (str): a dot-python path
-        file_ending (str): a file ending, including the period.
+        python_path (str): A dot-python path
+        file_ending (str): A file ending, including the period.
+        pypath_prefixes (list): A list of paths to test for existence. These
+            should be on python.path form. EVENNIA_DIR and GAME_DIR are automatically
+            checked, they need not be added to this list.
 
     Returns:
-        abspaths (list of str): The two absolute paths created by prepending
-            `EVENNIA_DIR` and `GAME_DIR` respectively. These are checked for
-            existence before being returned, so this may be an empty list.
+        abspaths (list): All existing, absolute paths created by
+            converting `python_path` to an absolute paths and/or
+            prepending `python_path` by `settings.EVENNIA_DIR`,
+            `settings.GAME_DIR` and by`pypath_prefixes` respectively.
+
+    Notes:
+        This will also try a few combinations of paths to allow cases
+        where pypath is given including the "evennia." or "mygame."
+        prefixes.
 
     """
-    pathsplit = python_path.strip().split('.')
-    paths = [os.path.join(settings.EVENNIA_DIR, *pathsplit),
-             os.path.join(settings.GAME_DIR, *pathsplit)]
-    if file_ending:
-        # attach file ending to the paths if not already set (a common mistake)
-        file_ending = ".%s" % file_ending if not file_ending.startswith(".") else file_ending
-        paths = ["%s%s" % (p, file_ending) if not p.endswith(file_ending) else p
-                 for p in paths]
-    # check so the paths actually exists before returning
-    return [p for p in paths if os.path.isfile(p)]
+    path = python_path.strip().split('.')
+    plong = osjoin(*path) + file_ending
+    pshort = osjoin(*path[1:]) + file_ending if len(path) > 1 else plong # in case we had evennia. or mygame.
+    prefixlong = [osjoin(*ppath.strip().split('.'))
+            for ppath in make_iter(pypath_prefixes)] \
+                if pypath_prefixes else []
+    prefixshort = [osjoin(*ppath.strip().split('.')[1:])
+            for ppath in make_iter(pypath_prefixes) if len(ppath.strip().split('.')) > 1] \
+                if pypath_prefixes else []
+    paths = [plong] + \
+            [osjoin(_EVENNIA_DIR, prefix, plong) for prefix in prefixlong] + \
+            [osjoin(_GAME_DIR, prefix, plong) for prefix in prefixlong] + \
+            [osjoin(_EVENNIA_DIR, prefix, plong) for prefix in prefixshort] + \
+            [osjoin(_GAME_DIR, prefix, plong) for prefix in prefixshort] + \
+            [osjoin(_EVENNIA_DIR, plong), osjoin(_GAME_DIR, plong)] + \
+            [osjoin(_EVENNIA_DIR, prefix, pshort) for prefix in prefixshort] + \
+            [osjoin(_GAME_DIR, prefix, pshort) for prefix in prefixshort] + \
+            [osjoin(_EVENNIA_DIR, prefix, pshort) for prefix in prefixlong] + \
+            [osjoin(_GAME_DIR, prefix, pshort) for prefix in prefixlong] + \
+            [osjoin(_EVENNIA_DIR, pshort), osjoin(_GAME_DIR, pshort)]
+    # filter out non-existing paths
+    return list(set(p for p in paths if os.path.isfile(p)))
 
 
 def dbref(dbref, reqhash=True):
@@ -441,7 +465,7 @@ def dbref(dbref, reqhash=True):
     Converts/checks if input is a valid dbref.
 
     Args:
-        dbref (int or str): A datbase ref on the form N or #N.
+        dbref (int or str): A database ref on the form N or #N.
         reqhash (bool, optional): Require the #N form to accept
             input as a valid dbref.
 

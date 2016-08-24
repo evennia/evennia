@@ -209,13 +209,9 @@ def read_batchfile(pythonpath, file_ending='.py'):
 
     """
 
-    # open the file
-    abspaths = []
-    for basepath in settings.BASE_BATCHPROCESS_PATHS:
-        # note that pypath_to_realpath has already checked the file for existence
-        if basepath.startswith("evennia"):
-            basepath = basepath.split("evennia", 1)[-1]
-        abspaths.extend(utils.pypath_to_realpath("%s.%s" % (basepath, pythonpath), file_ending))
+    # find all possible absolute paths
+    abspaths = utils.pypath_to_realpath(pythonpath,
+                            file_ending, settings.BASE_BATCHPROCESS_PATHS)
     if not abspaths:
         raise IOError
     text = None
