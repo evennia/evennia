@@ -93,9 +93,10 @@ def format_header(caller, entry):
     """
     width = _HEADER_WIDTH - 10
     # strip all comments for the header
-    entry = _RE_CODE_START.split(entry, 1)[1]
-    entry = _RE_COMMENT.sub("", entry).strip()
-
+    if caller.ndb.batch_batchmode != "batch_commands":
+        # only do cleanup for  batchcode
+        entry = _RE_CODE_START.split(entry, 1)[1]
+        entry = _RE_COMMENT.sub("", entry).strip()
     header = utils.crop(entry, width=width)
     ptr = caller.ndb.batch_stackptr + 1
     stacklen = len(caller.ndb.batch_stack)
