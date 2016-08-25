@@ -49,12 +49,12 @@ class AttributeInline(admin.TabularInline):
     def value(self, instance):
         if not instance.id:
             return "Not yet set or saved."
-        return instance.attribute.db_value
+        return instance.attribute.value
 
     def strvalue(self, instance):
         if not instance.id:
             return "Not yet set or saved."
-        return instance.attribute.db_strvalue
+        return instance.attribute.strvalue
 
 
 class AttributeAdmin(ModelAdmin):
