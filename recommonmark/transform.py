@@ -228,6 +228,7 @@ class AutoStructify(transforms.Transform):
             The converted toc tree node, None if conversion is not possible.
         """
         assert isinstance(node, nodes.literal_block)
+        original_node = node
         if 'language' not in node:
             return None
         self.state_machine.reset(self.document,
@@ -244,7 +245,7 @@ class AutoStructify(transforms.Transform):
                 # allow embed non section level rst
                 node = nodes.section()
                 self.state_machine.state.nested_parse(
-                    StringList(content, source=node.rawsource),
+                    StringList(content, source=original_node.source),
                     0, node=node, match_titles=False)
                 return node.children[:]
         else:
