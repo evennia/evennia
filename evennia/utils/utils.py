@@ -85,8 +85,7 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
     Args:
         text (str): The text to wrap.
         width (int, optional): The number of characters to wrap to.
-        indent (int): How much to indent new lines (the first line
-            will not be indented)
+        indent (int): How much to indent each line (with whitespace).
 
     Returns:
         text (str): Properly wrapped text.
@@ -96,7 +95,7 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
         return ""
     text = to_unicode(text)
     indent = " " * indent
-    return to_str(textwrap.fill(text, width, subsequent_indent=indent))
+    return to_str(textwrap.fill(text, width, initial_indent=indent, subsequent_indent=indent))
 # alias - fill
 fill = wrap
 
