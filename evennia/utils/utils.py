@@ -44,7 +44,6 @@ _DA = object.__delattr__
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
-
 def is_iter(iterable):
     """
     Checks if an object behaves iterably.
@@ -173,6 +172,89 @@ def dedent(text):
     if not text:
         return ""
     return textwrap.dedent(text)
+
+
+def justify(text, width=_DEFAULT_WIDTH, align="f", indent=0):
+    """
+    Fully justify a text so that it fits inside `width`. When using
+    full justification (default) this will be done by padding between
+    words with extra whitespace where necessary. Paragraphs will
+    be retained.
+
+    Args:
+        text (str): Text to justify.
+        width (int, optional): The length of each line, in characters.
+        align (str, optional): The alignment, 'l', 'c', 'r' or 'f'
+            for left, center, right or full justification respectively.
+        indent (int, optional): Number of characters indentation of
+            entire justified text block.
+
+    Returns:
+        justified (str): The justified and indented block of text.
+
+    """
+
+    def _process_line(line):
+        """
+        helper function that distributes extra spaces between words. The number
+        of gaps is nwords - 1 but must be at least 1 for single-word lines. We
+        distribute odd spaces randomly to one of the gaps.
+        """
+        line_rest = width - (wlen + ngaps)
+        gap = " " # minimum gap between words
+        if line_rest > 0:
+            if align == 'l':
+                line[-1] += " " * line_rest
+            elif align == 'r':
+                line[0] = " " * line_rest + line[0]
+            elif align == 'c':
+                pad = " " * (line_rest // 2)
+                line[0] = pad + line[0]
+                line[-1] = line[-1] + pad + " " * (line_rest % 2)
+            else: # align 'f'
+                gap += " " * (line_rest // max(1, ngaps))
+                rest_gap = line_rest % max(1, ngaps)
+                for i in range(rest_gap):
+                    line[i] += " "
+        return gap.join(line)
+
+    # split into paragraphs and words
+    paragraphs = re.split("\n\s*?\n", text, re.MULTILINE)
+    words = []
+    for ip, paragraph in enumerate(paragraphs):
+        if ip > 0:
+            words.append(("\n\n", 0))
+        words.extend((word, len(word)) for word in paragraph.split())
+    ngaps, wlen, line = 0, 0, []
+
+    lines = []
+    while words:
+        if not line:
+            # start a new line
+            word = words.pop(0)
+            wlen = word[1]
+            line.append(word[0])
+        elif (words[0][1] + wlen + ngaps) >= width:
+            # next word would exceed word length of line + smallest gaps
+            lines.append(_process_line(line))
+            ngaps, wlen, line = 0, 0, []
+        else:
+            # put a new word on the line
+            word = words.pop(0)
+            line.append(word[0])
+            if word[1] == 0:
+                # a new paragraph, process immediately
+                lines.append(_process_line(line))
+                ngaps, wlen, line = 0, 0, []
+            else:
+                wlen += word[1]
+                ngaps += 1
+
+
+    if line: # catch any line left behind
+        lines.append(_process_line(line))
+    indentstring = " " * indent
+    return "\n".join([indentstring + line for line in lines])
 
 
 def list_to_string(inlist, endsep="and", addquote=False):
