@@ -52,7 +52,7 @@ class TextToHTMLparser(object):
             ('color-013', hilite + ANSI_MAGENTA),
             ('color-014', hilite + ANSI_CYAN),
             ('color-015', hilite + ANSI_WHITE)  # pure white
-        ] + [("color-%03i" % (i+16), XTERM256_FG % ("%03i" % (i+16))) for i in xrange(240)]
+        ] + [("color-%03i" % (i+16), XTERM256_FG % ("%i" % (i+16))) for i in xrange(240)]
 
     colorback = [
             ('bgcolor-000', unhilite + ANSI_BACK_BLACK), # pure black
@@ -71,7 +71,7 @@ class TextToHTMLparser(object):
             ('bgcolor-013', hilite + ANSI_BACK_MAGENTA),
             ('bgcolor-014', hilite + ANSI_BACK_CYAN),
             ('bgcolor-015', hilite + ANSI_BACK_WHITE),  # pure white
-    ] + [("bgcolor-%03i" % (i+16), XTERM256_BG % ("%03i" % (i+16))) for i in range(240)]
+    ] + [("bgcolor-%03i" % (i+16), XTERM256_BG % ("%i" % (i+16))) for i in range(240)]
 
     # make sure to escape [
     #colorcodes = [(c, code.replace("[", r"\[")) for c, code in colorcodes]
