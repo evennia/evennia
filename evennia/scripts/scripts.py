@@ -395,6 +395,11 @@ class DefaultScript(ScriptBase):
             # if this script was paused manually (by a direct call of pause),
             # it cannot be automatically unpaused (e.g. by a @reload)
             raise RuntimeError
+
+        # Ensure that the script is fully unpaused, so that future calls
+        # to unpause do not raise a RuntimeError
+        self.db._manual_pause = False
+
         if self.db._paused_time:
             # only unpause if previously paused
             self.is_active = True
