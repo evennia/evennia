@@ -116,7 +116,8 @@ class Ttype(object):
                                            "MUDLET",        # > beta 15 (sep 2009)
                                            "MUSHCLIENT",    # > 4.02 (apr 2007)
                                            "PUTTY",         # > 0.58 (apr 2005)
-                                           "BEIP"))         # > 2.00.206 (late 2009) (BeipMu)
+                                           "BEIP",          # > 2.00.206 (late 2009) (BeipMu)
+                                           "POTATO"))       # > 2.00 (maybe earlier)
 
             # all clients supporting TTYPE at all seem to support ANSI
             self.protocol.protocol_flags['ANSI'] = True
