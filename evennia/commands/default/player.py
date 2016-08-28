@@ -673,14 +673,16 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
             col1 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[48:56]]
             col2 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[56:64]]
             col3 = ["%s%s|n" % (code.replace("\\",""), code.replace("|", "||").replace("\\", "")) for code, _ in ap.ext_ansi_map[-8:]]
+            col4 = ["%s%s|n" % (code.replace("\\",""), code.replace("|", "||").replace("\\", "")) for code, _ in ap.ansi_bright_bgs[-8:]]
             col2.extend(["" for i in range(len(col1)-len(col2))])
-            table = utils.format_table([col1, col2, col3])
+            table = utils.format_table([col1, col2, col4, col3])
             string = "ANSI colors:"
             for row in table:
                 string += "\n " + " ".join(row)
             self.msg(string)
-            self.msg("||X : black. ||/ : return, ||- : tab, ||_ : space, ||* : invert, ||u : underline")
-            self.msg("To combine background and foreground, add background marker last, e.g. ||r||[B.")
+            self.msg("||X : black. ||/ : return, ||- : tab, ||_ : space, ||* : invert, ||u : underline\n"
+                     "To combine background and foreground, add background marker last, e.g. ||r||[B.\n"
+                     "Note: bright backgrounds like ||[r requires your client handling Xterm256 colors.")
 
         elif self.args.startswith("x"):
             # show xterm256 table

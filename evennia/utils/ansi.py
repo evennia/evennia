@@ -105,7 +105,7 @@ class ANSIParser(object):
             processed (str): The processed match string.
 
         """
-        return self.ansi_bright_bgs.get(ansimatch.group(), "")
+        return self.ansi_bright_bgs_map.get(ansimatch.group(), "")
 
     def sub_xterm256(self, rgbmatch, use_xterm256=False):
         """
@@ -440,14 +440,14 @@ class ANSIParser(object):
     mxp_re = r'\|lc(.*?)\|lt(.*?)\|le'
 
     # prepare regex matching
-    brightbg_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ansi_bright_bgs]), re.DOTALL)
+    brightbg_sub = re.compile(r"|".join([r"(?<!\|)%s" % re.escape(tup[0]) for tup in ansi_bright_bgs]), re.DOTALL)
     xterm256_sub = re.compile(r"|".join([tup[0] for tup in xterm256_map]), re.DOTALL)
     ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ext_ansi_map]), re.DOTALL)
     mxp_sub = re.compile(mxp_re, re.DOTALL)
 
     # used by regex replacer to correctly map ansi sequences
     ansi_map = dict(ext_ansi_map)
-    ansi_bright_bgs = dict(ansi_bright_bgs)
+    ansi_bright_bgs_map = dict(ansi_bright_bgs)
 
     # prepare matching ansi codes overall
     ansi_re = r"\033\[[0-9;]+m"

@@ -55,14 +55,14 @@ class TextToHTMLparser(object):
         ] + [("color-%03i" % (i+16), XTERM256_FG % ("%i" % (i+16))) for i in xrange(240)]
 
     colorback = [
-            ('bgcolor-000', unhilite + ANSI_BACK_BLACK), # pure black
-            ('bgcolor-001', unhilite + ANSI_BACK_RED),
-            ('bgcolor-002', unhilite + ANSI_BACK_GREEN),
-            ('bgcolor-003', unhilite + ANSI_BACK_YELLOW),
-            ('bgcolor-004', unhilite + ANSI_BACK_BLUE),
-            ('bgcolor-005', unhilite + ANSI_BACK_MAGENTA),
-            ('bgcolor-006', unhilite + ANSI_BACK_CYAN),
-            ('bgcolor-007', unhilite + ANSI_BACK_WHITE), # light grey
+            ('bgcolor-000', ANSI_BACK_BLACK), # pure black
+            ('bgcolor-001', ANSI_BACK_RED),
+            ('bgcolor-002', ANSI_BACK_GREEN),
+            ('bgcolor-003', ANSI_BACK_YELLOW),
+            ('bgcolor-004', ANSI_BACK_BLUE),
+            ('bgcolor-005', ANSI_BACK_MAGENTA),
+            ('bgcolor-006', ANSI_BACK_CYAN),
+            ('bgcolor-007', ANSI_BACK_WHITE), # light grey
             ('bgcolor-008', hilite + ANSI_BACK_BLACK), # dark grey
             ('bgcolor-009', hilite + ANSI_BACK_RED),
             ('bgcolor-010', hilite + ANSI_BACK_GREEN),
