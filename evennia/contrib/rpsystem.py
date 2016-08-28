@@ -788,6 +788,43 @@ class CmdEmote(RPCommand):  # replaces the main emote
             send_emote(self.caller, targets, emote, anonymous_add='first')
 
 
+class CmdSay(RPCommand): # replaces standard say
+    """
+    speak as your character
+
+    Usage:
+      say <message>
+
+    Talk to those in your current location.
+    """
+
+    key = "say"
+    aliases = ['"', "'"]
+    locks = "cmd:all()"
+
+    def func(self):
+        "Run the say command"
+
+        caller = self.caller
+
+        if not self.args:
+            caller.msg("Say what?")
+            return
+
+        speech = self.args
+
+        # calling the speech hook on the location
+        speech = caller.location.at_say(caller, speech)
+
+        # Feedback for the object doing the talking.
+        emit_string = '{name} says, "{speech}|n"'
+        for target in caller.location.contents:
+            if target == self:
+                target.msg(emit_string.format(name=self.key, speech=speech))
+            else:
+                target.msg(emit_string.format(name=self.get_display_name(target), speech=speech))
+
+
 class CmdSdesc(RPCommand): # set/look at own sdesc
     """
     Assign yourself a short description (sdesc).
@@ -1032,6 +1069,7 @@ class RPSystemCmdSet(CmdSet):
     """
     def at_cmdset_creation(self):
         self.add(CmdEmote())
+        self.add(CmdSay())
         self.add(CmdSdesc())
         self.add(CmdPose())
         self.add(CmdRecog())
