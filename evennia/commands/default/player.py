@@ -174,6 +174,57 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         self.msg("Created new character %s. Use {w@ic %s{n to enter the game as this character." % (new_character.key, new_character.key))
 
 
+class CmdCharDelete(COMMAND_DEFAULT_CLASS):
+    """
+    delete a character - this cannot be undone!
+
+    Usage:
+        @chardelete <charname>
+
+    Permanently deletes one of your characters.
+    """
+    key = "@chardelete"
+    locks = "cmd:pperm(Players)"
+    help_category = "General"
+
+    def func(self):
+        "delete the character"
+        player = self.player
+
+        if not self.args:
+            self.msg("Usage: @chardelete <charactername>")
+            return
+
+        # use the playable_characters list to search
+        match = [char for char in utils.make_iter(player.db._playable_characters) if char.key.lower() == self.args.lower()]
+        if not match:
+            self.msg("You have no such character to delete.")
+            return
+        elif len(match) > 1:
+            self.msg("Aborting - there are two characters with the same name. Ask an admin to delete the right one.")
+            return
+        else: # one match
+            from evennia.utils.evmenu import get_input
+
+            def _callback(caller, prompt, result):
+                if result.lower() == "yes":
+                    # only take action
+                    delobj = caller.ndb._char_to_delete
+                    key = delobj.key
+                    caller.db._playable_characters = [char for char
+                                                        in caller.db._playable_characters if char != delobj]
+                    delobj.delete()
+                    caller.msg("Character '%s' was permanently deleted." % key)
+                else:
+                    caller.msg("Deletion was aborted.")
+                del caller.ndb._char_to_delete
+
+            match = match[0]
+            player.ndb._char_to_delete = match
+            prompt = "|rThis will permanently destroy '%s'. This cannot be undone.|n Continue yes/[no]?"
+            get_input(player, prompt % match.key, _callback)
+
+
 class CmdIC(COMMAND_DEFAULT_CLASS):
     """
     control an object you have permission to puppet

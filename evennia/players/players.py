@@ -843,6 +843,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                     string += "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
                 else:
                     string += "\n |w@charcreate <name> [=description]|n - create new character"
+                    string += "\n |w@chardelete <name>|n - delete a character (cannot be undone!)"
 
             if characters:
                 string_s_ending = len(characters) > 1 and "s" or ""

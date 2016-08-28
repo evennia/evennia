@@ -792,7 +792,7 @@ class CmdGetInput(Command):
         caller = self.caller
         callback = caller.ndb._getinputcallback
         prompt = caller.ndb._getinputprompt
-        result = self.raw_string
+        result = self.raw_string.strip() # we strip the ending line break caused by sending
 
         ok = not callback(caller, prompt, result)
         if ok:
@@ -841,6 +841,13 @@ def get_input(caller, prompt, callback):
 
     Raises:
         RuntimeError: If the given callback is not callable.
+
+    Notes:
+        The result value sent to the callback is raw and not
+        processed in any way. This means that you will get
+        the ending line return character from most types of
+        client inputs. So make sure to strip that before
+        doing a comparison.
 
     """
     if not callable(callback):
