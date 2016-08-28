@@ -819,10 +819,10 @@ class CmdSay(RPCommand): # replaces standard say
         # Feedback for the object doing the talking.
         emit_string = '{name} says, "{speech}|n"'
         for target in caller.location.contents:
-            if target == self:
-                target.msg(emit_string.format(name=self.key, speech=speech))
+            if target == caller:
+                target.msg(emit_string.format(name=caller.key, speech=speech))
             else:
-                target.msg(emit_string.format(name=self.get_display_name(target), speech=speech))
+                target.msg(emit_string.format(name=caller.get_display_name(target), speech=speech))
 
 
 class CmdSdesc(RPCommand): # set/look at own sdesc
