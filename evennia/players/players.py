@@ -730,6 +730,9 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.
+            # we make sure to clean up the _playable_characers list in case
+            # any was deleted in the interim.
+            self.db._playable_characters = [char for char in self.db._playable_characters if char]
             self.msg(self.at_look(target=self.db._playable_characters,
                                   session=session))
 
@@ -817,7 +820,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             return target.return_appearance(self)
         else:
             # list of targets - make list to disconnect from db
-            characters = list(target) if target else []
+            characters = list(tar for tar in target if tar) if target else []
             sessions = self.sessions.all()
             is_su = self.is_superuser
 
