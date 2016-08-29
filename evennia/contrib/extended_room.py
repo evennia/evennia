@@ -456,6 +456,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 obj.db.desc = text # a compatibility fallback
                 if obj.attributes.has("general_desc"):
                     obj.db.general_desc = text
+                    self.reset_times(obj)
                     caller.msg("General description was set on %s." % obj.key)
                 else:
                     # this is not an ExtendedRoom.
