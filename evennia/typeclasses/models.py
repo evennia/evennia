@@ -414,7 +414,7 @@ class TypedObject(SharedMemoryModel):
             return any(hasattr(cls, "path") and cls.path in typeclass for cls in self.__class__.mro())
 
     def swap_typeclass(self, new_typeclass, clean_attributes=False,
-                       run_start_hooks=True, no_default=True, clean_cmdsets=False):
+                       run_start_hooks="all", no_default=True, clean_cmdsets=False):
         """
         This performs an in-situ swap of the typeclass. This means
         that in-game, this object will suddenly be something else.
@@ -438,16 +438,16 @@ class TypedObject(SharedMemoryModel):
                 sure nothing in the new typeclass clashes with the old
                 one. If you supply a list, only those named attributes
                 will be cleared.
-            run_start_hooks (bool, optional): Trigger the start hooks
-                of the object, as if it was created for the first time.
+            run_start_hooks (str or None, optional): This is either None,
+                to not run any hooks, "all" to run all hooks defined by
+                at_first_start, or a string giving the name of the hook
+                to run (for example 'at_object_creation'). This will
+                always be called without arguments.
             no_default (bool, optiona): If set, the swapper will not
                 allow for swapping to a default typeclass in case the
                 given one fails for some reason. Instead the old one will
                 be preserved.
             clean_cmdsets (bool, optional): Delete all cmdsets on the object.
-        Returns:
-            result (bool): True/False depending on if the swap worked
-                or not.
 
         """
 
@@ -483,9 +483,12 @@ class TypedObject(SharedMemoryModel):
             self.cmdset.clear()
             self.cmdset.remove_default()
 
-        if run_start_hooks:
+        if run_start_hooks == 'all':
             # fake this call to mimic the first save
             self.at_first_save()
+        elif run_start_hooks:
+            # a custom hook-name to call.
+            getattr(self, run_start_hooks)()
 
     #
     # Lock / permission methods

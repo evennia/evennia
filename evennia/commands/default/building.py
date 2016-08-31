@@ -1563,11 +1563,14 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
       @type                     ''
       @parent                   ''
       @swap - this is a shorthand for using /force/reset flags.
+      @update - this is a shorthand for using the /force/reload flag.
 
     Switch:
-      show - display the current typeclass of object
-      reset - clean out *all* the attributes on the object -
-              basically making this a new clean object.
+      show - display the current typeclass of object (default)
+      update - *only* re-run at_object_creation on this object
+              meaning locks or other properties set later may remain.
+      reset - clean out *all* the attributes and properties on the
+              object - basically making this a new clean object.
       force - change to the typeclass also if the object
               already has a typeclass of the same name.
     Example:
@@ -1580,7 +1583,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
     of the new typeclass will be run on the object. If you have
     clashing properties on the old class, use /reset. By default you
     are protected from changing to a typeclass of the same name as the
-    one you already have, use /force to override this protection.
+    one you already have - use /force to override this protection.
 
     The given typeclass must be identified by its location using
     python dot-notation pointing to the correct module and class. If
@@ -1592,7 +1595,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@typeclass"
-    aliases = ["@type", "@parent", "@swap"]
+    aliases = ["@type", "@parent", "@swap", "@update"]
     locks = "cmd:perm(typeclass) or perm(Builders)"
     help_category = "Building"
 
@@ -1624,6 +1627,9 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
         if self.cmdstring == "@swap":
             self.switches.append("force")
             self.switches.append("reset")
+        elif self.cmdstring == "@update":
+            self.switches.append("force")
+            self.switches.append("update")
 
         if not obj.access(caller, 'edit'):
             caller.msg("You are not allowed to do that.")
@@ -1637,11 +1643,14 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
         if is_same and not 'force' in self.switches:
             string = "%s already has the typeclass '%s'. Use /force to override." % (obj.name, new_typeclass)
         else:
+            update = "update" in self.switches
             reset = "reset" in self.switches
+            hooks = "at_object_creation" if update else "all"
             old_typeclass_path = obj.typeclass_path
 
             # we let this raise exception if needed
-            obj.swap_typeclass(new_typeclass, clean_attributes=reset, clean_cmdsets=reset)
+            obj.swap_typeclass(new_typeclass, clean_attributes=reset,
+                    clean_cmdsets=reset, run_start_hooks=hooks)
 
             if is_same:
                 string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.path)
@@ -1649,7 +1658,10 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 string = "%s changed typeclass from %s to %s.\n" % (obj.name,
                                                          old_typeclass_path,
                                                          obj.typeclass_path)
-            string += "Creation hooks were run."
+            if update:
+                string += "Only the at_object_creation hook was run (update mode)."
+            else:
+                string += "All object creation hooks were run."
             if reset:
                 string += " All old attributes where deleted before the swap."
             else:
