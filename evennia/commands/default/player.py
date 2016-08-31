@@ -272,7 +272,7 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
                 self.msg("That is not a valid character choice.")
                 return
             if len(new_character) > 1:
-                self.msg("Multiple characters with the same name:\n %s" % ", ".join(new_character))
+                self.msg("Multiple targets with the same name:\n %s" % ", ".join("%s(#%s)" % (obj.key, obj.id) for obj in new_character))
                 return
             else:
                 new_character = new_character[0]
