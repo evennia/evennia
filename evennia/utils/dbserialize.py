@@ -204,6 +204,15 @@ class _SaverList(_SaverMutable, MutableSequence):
     def insert(self, index, value):
         self._data.insert(index, self._convert_mutables(value))
 
+    def __eq__(self, other):
+        try:
+            return list(self._data) == list(other)
+        except TypeError:
+            return False
+
+    def index(self, value, *args):
+        return self._data.index(value, *args)
+
 
 class _SaverDict(_SaverMutable, MutableMapping):
     """
