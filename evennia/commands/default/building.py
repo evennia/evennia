@@ -1819,6 +1819,7 @@ class CmdExamine(ObjManipCommand):
 
     Switch:
       player - examine a Player (same as adding *)
+      object - examine an Object (useful when OOC)
 
     The examine command shows detailed game info about an
     object and optionally a specific attribute on it.
@@ -2038,14 +2039,14 @@ class CmdExamine(ObjManipCommand):
             obj_name = objdef['name']
             obj_attrs = objdef['attrs']
 
-            self.player_mode = utils.inherits_from(caller, "evennia.players.players.Player") or \
-                           "player" in self.switches or obj_name.startswith('*')
+            self.player_mode = utils.inherits_from(caller, "evennia.players.players.DefaultPlayer") or \
+                               "player" in self.switches or obj_name.startswith('*')
             if self.player_mode:
                 try:
                     obj = caller.search_player(obj_name.lstrip('*'))
                 except AttributeError:
                     # this means we are calling examine from a player object
-                    obj = caller.search(obj_name.lstrip('*'))
+                    obj = caller.search(obj_name.lstrip('*'), search_object = 'object' in self.switches)
             else:
                 obj = caller.search(obj_name)
             if not obj:
