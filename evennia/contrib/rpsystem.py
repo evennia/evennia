@@ -379,7 +379,6 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
         bestmatches = [(obj, text) for score, obj, text in matches if maxscore == score != -1]
         nmatches = len(bestmatches)
 
-
         if not nmatches:
             # no matches
             obj = None
@@ -418,8 +417,8 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
             refname = marker_match.group()
             reflist = ["%s%s%s (%s%s)" % (inum+1, _NUM_SEP,
                     _RE_PREFIX.sub("", refname), text,
-                    " (%s)" % sender.key if sender == obj else "")
-                    for inum, (obj, text) in enumerate(bestmatches) if score == maxscore]
+                    " (%s)" % sender.key if sender == ob else "")
+                    for inum, (ob, text) in enumerate(obj)]
             errors.append(_EMOTE_MULTIMATCH_ERROR.format(
                           ref=marker_match.group(), reflist="\n    ".join(reflist)))
     if search_mode:
