@@ -563,8 +563,8 @@ class SdescHandler(object):
             sdesc (str): The actually set sdesc.
 
         Raises:
-            SdescError: If the sdesc can not be set or is longer than
-            `max_length`.
+            SdescError: If the sdesc is empty, can not be set or is
+            longer than `max_length`.
 
         """
         # strip emote components from sdesc
@@ -574,10 +574,13 @@ class SdescHandler(object):
                 _RE_LANGUAGE.sub(r"",
                 _RE_OBJ_REF_START.sub(r"", sdesc)))))
 
+        if not sdesc:
+            raise SdescError("Short desc cannot be empty.")
+
         # make an sdesc clean of ANSI codes
         cleaned_sdesc = ansi.strip_ansi(sdesc)
         if len(cleaned_sdesc) > max_length:
-            raise SdescError("Too long sdesc")
+            raise SdescError("Short desc can max be %i chars long (was %i chars)." % (max_length, len(cleaned_sdesc)))
 
         # store to attributes
         sdesc_regex = ordered_permutation_regex(cleaned_sdesc)
@@ -591,10 +594,11 @@ class SdescHandler(object):
 
     def get(self):
         """
-        Simple getter.
+        Simple getter. The sdesc should never be allowed to
+        be empty, but it is we must fall back to the key.
 
         """
-        return self.sdesc
+        return self.sdesc or self.obj.key
 
     def get_regex_tuple(self):
         """
@@ -847,7 +851,11 @@ class CmdSdesc(RPCommand): # set/look at own sdesc
         else:
             # strip non-alfanum chars from end of sdesc
             sdesc = _RE_CHAREND.sub("", self.args)
-            sdesc = caller.sdesc.add(sdesc)
+            try:
+                sdesc = caller.sdesc.add(sdesc)
+            except SdescError, err:
+                caller.msg(err)
+                return
             caller.msg("%s's sdesc was set to '%s'." % (caller.key, sdesc))
 
 
