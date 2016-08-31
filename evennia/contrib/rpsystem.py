@@ -574,11 +574,12 @@ class SdescHandler(object):
                 _RE_LANGUAGE.sub(r"",
                 _RE_OBJ_REF_START.sub(r"", sdesc)))))
 
-        if not sdesc:
-            raise SdescError("Short desc cannot be empty.")
-
         # make an sdesc clean of ANSI codes
         cleaned_sdesc = ansi.strip_ansi(sdesc)
+
+        if not cleaned_sdesc:
+            raise SdescError("Short desc cannot be empty.")
+
         if len(cleaned_sdesc) > max_length:
             raise SdescError("Short desc can max be %i chars long (was %i chars)." % (max_length, len(cleaned_sdesc)))
 
@@ -680,8 +681,12 @@ class RecogHandler(object):
 
         # make an recog clean of ANSI codes
         cleaned_recog = ansi.strip_ansi(recog)
+
+        if not cleaned_recog:
+            raise SdescError("Recog string cannot be empty.")
+
         if len(cleaned_recog) > max_length:
-            raise RecogError("Too long recog")
+            raise RecogError("Recog string cannot be longer than %i chars (was %i chars)" % (max_length, len(cleaned_recog)))
 
         # mapping #dbref:obj
         key = "#%i" % obj.id
@@ -1020,7 +1025,11 @@ class CmdRecog(RPCommand): # assign personal alias to object in room
                 caller.msg("%s will know only '%s'." % (caller.key, obj.recog.get(obj)))
             else:
                 sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
-                alias = caller.recog.add(obj, alias)
+                try:
+                    alias = caller.recog.add(obj, alias)
+                except RecogError, err:
+                    caller.msg(err)
+                    return
                 caller.msg("%s will now remember {w%s{n as {w%s{n." % (caller.key, sdesc, alias))
 
 
