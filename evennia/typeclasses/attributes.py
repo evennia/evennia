@@ -144,6 +144,7 @@ class Attribute(SharedMemoryModel):
         see self.__value_get.
         """
         self.db_value = to_pickle(new_value)
+        #print "value_set, self.db_value:", repr(self.db_value)
         self.save(update_fields=["db_value"])
 
     #@value.deleter

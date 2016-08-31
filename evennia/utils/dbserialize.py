@@ -22,6 +22,7 @@ from builtins import object, int
 
 from functools import update_wrapper
 from collections import defaultdict, MutableSequence, MutableSet, MutableMapping
+from collections import OrderedDict, deque
 try:
     from cPickle import dumps, loads
 except ImportError:
@@ -127,8 +128,8 @@ class _SaverMutable(object):
     """
     def __init__(self, *args, **kwargs):
         "store all properties for tracking the tree"
-        self._parent = kwargs.pop("parent", None)
-        self._db_obj = kwargs.pop("db_obj", None)
+        self._parent = kwargs.pop("_parent", None)
+        self._db_obj = kwargs.pop("_db_obj", None)
         self._data = None
 
     def __nonzero__(self):
@@ -145,22 +146,22 @@ class _SaverMutable(object):
             logger.log_err("_SaverMutable %s has no root Attribute to save to." % self)
 
     def _convert_mutables(self, data):
-        "converts mutables to Saver* variants and assigns .parent property"
+        "converts mutables to Saver* variants and assigns ._parent property"
         def process_tree(item, parent):
             "recursively populate the tree, storing parents"
             dtype = type(item)
             if dtype in (basestring, int, float, bool, tuple):
                 return item
             elif dtype == list:
-                dat = _SaverList(parent=parent)
+                dat = _SaverList(_parent=parent)
                 dat._data.extend(process_tree(val, dat) for val in item)
                 return dat
             elif dtype == dict:
-                dat = _SaverDict(parent=parent)
+                dat = _SaverDict(_parent=parent)
                 dat._data.update((key, process_tree(val, dat)) for key, val in item.items())
                 return dat
             elif dtype == set:
-                dat = _SaverSet(parent=parent)
+                dat = _SaverSet(_parent=parent)
                 dat._data.update(process_tree(val, dat) for val in item)
                 return dat
             return item
@@ -178,6 +179,9 @@ class _SaverMutable(object):
     def __getitem__(self, key):
         return self._data.__getitem__(key)
 
+    def __eq__(self, other):
+        return self._data == other
+
     @_save
     def __setitem__(self, key, value):
         self._data.__setitem__(key, self._convert_mutables(value))
@@ -193,7 +197,7 @@ class _SaverList(_SaverMutable, MutableSequence):
     """
     def __init__(self, *args, **kwargs):
         super(_SaverList, self).__init__(*args, **kwargs)
-        self._data = list(*args)
+        self._data = list()
 
     @_save
     def __add__(self, otherlist):
@@ -214,13 +218,14 @@ class _SaverList(_SaverMutable, MutableSequence):
         return self._data.index(value, *args)
 
 
+
 class _SaverDict(_SaverMutable, MutableMapping):
     """
     A dict that stores changes to an Attribute when updated
     """
     def __init__(self, *args, **kwargs):
         super(_SaverDict, self).__init__(*args, **kwargs)
-        self._data = dict(*args)
+        self._data = dict()
 
     def has_key(self, key):
         return key in self._data
@@ -232,7 +237,7 @@ class _SaverSet(_SaverMutable, MutableSet):
     """
     def __init__(self, *args, **kwargs):
         super(_SaverSet, self).__init__(*args, **kwargs)
-        self._data = set(*args)
+        self._data = set()
 
     def __contains__(self, value):
         return self._data.__contains__(value)
@@ -244,6 +249,64 @@ class _SaverSet(_SaverMutable, MutableSet):
     @_save
     def discard(self, value):
         self._data.discard(value)
+
+
+class _SaverOrderedDict(_SaverMutable, MutableMapping):
+    """
+    An ordereddict that can be saved and operated on.
+    """
+    def __init__(self, *args, **kwargs):
+        super(_SaverOrderedDict, self).__init__(*args, **kwargs)
+        self._data = OrderedDict()
+
+    def has_key(self, key):
+        return key in self._data
+
+
+class _SaverDeque(_SaverMutable):
+    """
+    A deque that can be saved and operated on.
+    """
+    def __init__(self, *args, **kwargs):
+        super(_SaverDeque, self).__init__(*args, **kwargs)
+        self._data = deque()
+
+    @_save
+    def appendleft(self, *args, **kwargs):
+        self._data.appendleft(*args, **kwargs)
+
+    @_save
+    def clear(self):
+        self._data.clear()
+
+    @_save
+    def extendleft(self, *args, **kwargs):
+        self._data.extendleft(*args, **kwargs)
+
+    # maxlen property
+    def _getmaxlen(self):
+        return self._data.maxlen
+    def _setmaxlen(self, value):
+        self._data.maxlen = value
+    def _delmaxlen(self):
+        del self._data.maxlen
+    maxlen = property(_getmaxlen, _setmaxlen, _delmaxlen)
+
+    @_save
+    def pop(self, *args, **kwargs):
+        return self._data.pop(*args, **kwargs)
+
+    @_save
+    def popleft(self, *args, **kwargs):
+        return self._data.popleft(*args, **kwargs)
+
+    @_save
+    def reverse(self):
+        self._data.reverse()
+
+    @_save
+    def rotate(self):
+        self._data.rotate()
 
 #
 # serialization helpers
@@ -376,6 +439,11 @@ def to_pickle(data):
             return dict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype in (set, _SaverSet):
             return set(process_item(val) for val in item)
+        elif dtype in (OrderedDict, _SaverOrderedDict):
+            return OrderedDict((process_item(key), process_item(val)) for key, val in item.items())
+        elif dtype in (deque, _SaverDeque):
+            return deque(process_item(val) for val in item)
+
         elif hasattr(item, '__iter__'):
             # we try to conserve the iterable class, if not convert to list
             try:
@@ -426,6 +494,10 @@ def from_pickle(data, db_obj=None):
             return dict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype == set:
             return set(process_item(val) for val in item)
+        elif dtype == OrderedDict:
+            return OrderedDict((process_item(key), process_item(val)) for key, val in item.items())
+        elif dtype == deque:
+            return deque(process_item(val) for val in item)
         elif hasattr(item, '__iter__'):
             try:
                 # we try to conserve the iterable class if
@@ -446,17 +518,26 @@ def from_pickle(data, db_obj=None):
         elif dtype == tuple:
             return tuple(process_tree(val, item) for val in item)
         elif dtype == list:
-            dat = _SaverList(parent=parent)
+            dat = _SaverList(_parent=parent)
             dat._data.extend(process_tree(val, dat) for val in item)
             return dat
         elif dtype == dict:
-            dat = _SaverDict(parent=parent)
-            dat._data.update(dict((process_item(key), process_tree(val, dat))
-                                   for key, val in item.items()))
+            dat = _SaverDict(_parent=parent)
+            dat._data.update((process_item(key), process_tree(val, dat))
+                                   for key, val in item.items())
             return dat
         elif dtype == set:
-            dat = _SaverSet(parent=parent)
+            dat = _SaverSet(_parent=parent)
             dat._data.update(set(process_tree(val, dat) for val in item))
+            return dat
+        elif dtype == OrderedDict:
+            dat = _SaverOrderedDict(_parent=parent)
+            dat._data.update((process_item(key), process_tree(val, dat))
+                                for key, val in item.items())
+            return dat
+        elif dtype == deque:
+            dat = _SaverDeque(_parent=parent)
+            dat._data.extend(process_item(val) for val in item)
             return dat
         elif hasattr(item, '__iter__'):
             try:
@@ -464,7 +545,7 @@ def from_pickle(data, db_obj=None):
                 # accepts an iterator
                 return item.__class__(process_tree(val, parent) for val in item)
             except (AttributeError, TypeError):
-                dat = _SaverList(parent=parent)
+                dat = _SaverList(_parent=parent)
                 dat._data.extend(process_tree(val, dat) for val in item)
                 return dat
         return item
@@ -474,17 +555,26 @@ def from_pickle(data, db_obj=None):
         # is only relevant if the "root" is an iterable of the right type.
         dtype = type(data)
         if dtype == list:
-            dat = _SaverList(db_obj=db_obj)
-            dat._data.extend(process_tree(val, parent=dat) for val in data)
+            dat = _SaverList(_db_obj=db_obj)
+            dat._data.extend(process_tree(val, dat) for val in data)
             return dat
         elif dtype == dict:
-            dat = _SaverDict(db_obj=db_obj)
-            dat._data.update((process_item(key), process_tree(val, parent=dat))
+            dat = _SaverDict(_db_obj=db_obj)
+            dat._data.update((process_item(key), process_tree(val, dat))
                               for key, val in data.items())
             return dat
         elif dtype == set:
-            dat = _SaverSet(db_obj=db_obj)
-            dat._data.update(process_tree(val, parent=dat) for val in data)
+            dat = _SaverSet(_db_obj=db_obj)
+            dat._data.update(process_tree(val, dat) for val in data)
+            return dat
+        elif dtype == OrderedDict:
+            dat = _SaverOrderedDict(_db_obj=db_obj)
+            dat._data.update((process_item(key), process_tree(val, dat))
+                              for key, val in data.items())
+            return dat
+        elif dtype == deque:
+            dat = _SaverDeque(_db_obj=db_obj)
+            dat._data.extend(process_item(val) for val in data)
             return dat
     return process_item(data)
 
