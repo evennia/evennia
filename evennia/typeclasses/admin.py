@@ -64,7 +64,7 @@ class AttributeAdmin(ModelAdmin):
     """
     search_fields = ('db_key', 'db_strvalue', 'db_value')
     list_display = ('db_key', 'db_strvalue', 'db_value')
-    permitted_types = ('str', 'int', 'float', 'NoneType', 'bool')
+    permitted_types = ('str', 'unicode', 'int', 'float', 'NoneType', 'bool')
 
     fields = ('db_key', 'db_value', 'db_strvalue', 'db_category',
               'db_lock_storage', 'db_model', 'db_attrtype')
