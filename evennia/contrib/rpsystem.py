@@ -478,11 +478,18 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
     # broadcast emote to everyone
     for receiver in receivers:
         # we make a temporary copy that we can modify
+        # add color to sdesc strings
+        try:
+            process_sdesc = receiver.process_sdesc
+        except AttributeError:
+            process_sdesc = _dummy_process
+
         try:
             recog_get = receiver.recog.get
             mapping = dict((ref, recog_get(obj)) for ref, obj in obj_mapping.items())
         except AttributeError:
-            mapping = dict((ref, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
+            mapping = dict((ref, process_sdesc(obj.sdesc.get(), obj)
+                            if hasattr(obj, "sdesc") else process_sdesc(obj.key, obj))
                             for ref, obj in obj_mapping.items())
         # handle the language mapping, which always produce different keys ##nn
         try:
@@ -496,12 +503,6 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
         rkey = "#%i" % receiver.id
         if rkey in mapping:
             mapping[rkey] = receiver.key
-
-        # add color to sdesc strings
-        try:
-            process_sdesc = receiver.process_sdesc
-        except AttributeError:
-            process_sdesc = _dummy_process
 
         mapping  = dict((key, process_sdesc(val, receiver))
                          for key, val in mapping.iteritems())
@@ -1059,7 +1060,7 @@ class CmdMask(RPCommand):
                 caller.msg("You are already wearing a mask.")
                 return
             sdesc = _RE_CHAREND.sub("", self.args)
-            sdesc = "%s {H[masked]{n" % sdesc
+            sdesc = "%s |H[masked]|n" % sdesc
             if len(sdesc) > 60:
                 caller.msg("Your masked sdesc is too long.")
                 return
@@ -1404,14 +1405,14 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         Args:
             sdesc (str): The sdesc to display.
             obj (Object): The object to which the adjoining sdesc
-                belongs (can be yourself).
+                belongs (can be yourself). This is not used by default.
 
         Returns:
             sdesc (str): The processed sdesc ready
                 for display.
 
         """
-        return "{b%s{n" % sdesc
+        return "|b%s|n" % sdesc
 
     def process_language(self, text, speaker, language, **kwargs):
         """
