@@ -682,7 +682,9 @@ class NickHandler(AttributeHandler):
             return super(NickHandler, self).get(key=key, category=category, **kwargs)
         else:
             retval = super(NickHandler, self).get(key=key, category=category, **kwargs)
-            return retval[3] if isinstance(retval, tuple) else [tup[3] for tup in make_iter(retval)]
+            if retval:
+                return retval[3] if isinstance(retval, tuple) else [tup[3] for tup in make_iter(retval)]
+            return None
 
     def add(self, key, replacement, category="inputline", **kwargs):
         """
