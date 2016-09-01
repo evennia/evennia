@@ -194,7 +194,7 @@ class Ticker(object):
         if self._is_ticking:
             # protects the subscription dict from
             # updating while it is looping
-            self._to_start.append((store_key, (args, kwargs)))
+            self._to_add.append((store_key, (args, kwargs)))
         else:
             start_delay = kwargs.pop("_start_delay", None)
             self.subscriptions[store_key] = (args, kwargs)
