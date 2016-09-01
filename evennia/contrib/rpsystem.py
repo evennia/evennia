@@ -102,11 +102,11 @@ _NUM_SEP = "-"
 # Texts
 
 _EMOTE_NOMATCH_ERROR = \
-"""{{RNo match for {{r{ref}{{R.{{n"""
+"""|RNo match for |r{ref}|R.|n"""
 
 _EMOTE_MULTIMATCH_ERROR = \
-"""{{RMultiple possibilities for {ref}:
-    {{r{reflist}{{n"""
+"""|RMultiple possibilities for {ref}:
+    |r{reflist}|n"""
 
 _RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.UNICODE
 
@@ -1031,7 +1031,7 @@ class CmdRecog(RPCommand): # assign personal alias to object in room
                 except RecogError, err:
                     caller.msg(err)
                     return
-                caller.msg("%s will now remember {w%s{n as {w%s{n." % (caller.key, sdesc, alias))
+                caller.msg("%s will now remember |w%s|n as |w%s|n." % (caller.key, sdesc, alias))
 
 
 class CmdMask(RPCommand):
@@ -1322,12 +1322,12 @@ class ContribRPObject(DefaultObject):
             else:
                 things.append(key)
         # get description, build string
-        string = "{c%s{n\n" % self.get_display_name(looker, pose=True)
+        string = "|c%s|n\n" % self.get_display_name(looker, pose=True)
         desc = self.db.desc
         if desc:
             string += "%s" % desc
         if exits:
-            string += "\n{wExits:{n " + ", ".join(exits)
+            string += "\n|wExits:|n " + ", ".join(exits)
         if users or things:
             string += "\n " + "\n ".join(users + things)
         return string
@@ -1385,7 +1385,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
                 recog = None
             sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
         pose = " %s" % self.db.pose or "" if kwargs.get("pose", False) else ""
-        return "{c%s{n%s%s" % (sdesc, idstr, pose)
+        return "|c%s|n%s%s" % (sdesc, idstr, pose)
 
     def at_object_creation(self):
         """
@@ -1460,7 +1460,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             the evennia.contrib.rplanguage module.
 
         """
-        return "%s{w%s{n" % ("{W(%s)" % language if language else "", text)
+        return "%s|w%s|n" % ("|W(%s)" % language if language else "", text)
 
         #from evennia.contrib import rplanguage
-        #return "{w%s{n" % rplanguage.obfuscate_language(text, level=1.0)
+        #return "|w%s|n" % rplanguage.obfuscate_language(text, level=1.0)
