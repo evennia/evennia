@@ -478,15 +478,19 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
     # broadcast emote to everyone
     for receiver in receivers:
         # we make a temporary copy that we can modify
-        # add color to sdesc strings
         try:
             process_sdesc = receiver.process_sdesc
         except AttributeError:
             process_sdesc = _dummy_process
 
         try:
+            process_recog = receiver.process_recog
+        except AttributeError:
+            process_recog = _dummy_process
+
+        try:
             recog_get = receiver.recog.get
-            mapping = dict((ref, recog_get(obj)) for ref, obj in obj_mapping.items())
+            mapping = dict((ref, process_recog(recog_get(obj), obj)) for ref, obj in obj_mapping.items())
         except AttributeError:
             mapping = dict((ref, process_sdesc(obj.sdesc.get(), obj)
                             if hasattr(obj, "sdesc") else process_sdesc(obj.key, obj))
@@ -502,10 +506,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
         # make sure receiver always sees their real name
         rkey = "#%i" % receiver.id
         if rkey in mapping:
-            mapping[rkey] = receiver.key
-
-        mapping  = dict((key, process_sdesc(val, receiver))
-                         for key, val in mapping.iteritems())
+            mapping[rkey] = process_sdesc(receiver.key, receiver)
 
         # do the template replacement
         receiver.msg(emote.format(**mapping))
@@ -829,7 +830,7 @@ class CmdSay(RPCommand): # replaces standard say
         emit_string = '{name} says, "{speech}|n"'
         for target in caller.location.contents:
             if target == caller:
-                target.msg(emit_string.format(name=caller.key, speech=speech))
+                target.msg(emit_string.format(name=caller.get_display_name(caller), speech=speech))
             else:
                 target.msg(emit_string.format(name=caller.get_display_name(target), speech=speech))
 
@@ -1287,11 +1288,14 @@ class ContribRPObject(DefaultObject):
 
         """
         idstr = "(#%s)" % self.id if self.access(looker, access_type='control') else ""
-        try:
-            recog = looker.recog.get(self)
-        except AttributeError:
-            recog = None
-        sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
+        if looker == self:
+            sdesc = self.key
+        else:
+            try:
+                recog = looker.recog.get(self)
+            except AttributeError:
+                recog = None
+            sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
         pose = " %s" % ((self.db.pose or "") if kwargs.get("pose", False) else "")
         return "%s%s%s" % (sdesc, idstr, pose)
 
@@ -1372,11 +1376,14 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
 
         """
         idstr = "(#%s)" % self.id if self.access(looker, access_type='control') else ""
-        try:
-            recog = looker.recog.get(self)
-        except AttributeError:
-            recog = None
-        sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
+        if looker == self:
+            sdesc = self.key
+        else:
+            try:
+                recog = looker.recog.get(self)
+            except AttributeError:
+                recog = None
+            sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
         pose = " %s" % self.db.pose or "" if kwargs.get("pose", False) else ""
         return "{c%s{n%s%s" % (sdesc, idstr, pose)
 
@@ -1405,7 +1412,9 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         Args:
             sdesc (str): The sdesc to display.
             obj (Object): The object to which the adjoining sdesc
-                belongs (can be yourself). This is not used by default.
+                belongs. If this object is equal to yourself, then
+                you are viewing yourself (and sdesc is your key).
+                This is not used by default.
 
         Returns:
             sdesc (str): The processed sdesc ready
@@ -1413,6 +1422,22 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
 
         """
         return "|b%s|n" % sdesc
+
+    def process_recog(self, recog, obj, **kwargs):
+        """
+        Allows to customize how a recog string is displayed.
+
+        Args:
+            recog (str): The recog string. It has already been
+                translated from the original sdesc at this point.
+            obj (Object): The object the recog:ed string belongs to.
+                This is not used by default.
+
+        Returns:
+            recog (str): The modified recog string.
+
+        """
+        return self.process_sdesc(recog, obj)
 
     def process_language(self, text, speaker, language, **kwargs):
         """
