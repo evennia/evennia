@@ -880,16 +880,17 @@ def uses_database(name="sqlite3"):
     return engine == "django.db.backends.%s" % name
 
 
-def delay(delay=2, callback=None, retval=None):
+def delay(delay, callback, *args, **kwargs):
     """
     Delay the return of a value.
 
     Args:
       delay (int or float): The delay in seconds
-      callback (callable, optional): Will be called without arguments
-        or with `retval` after delay seconds.
-      retval (any, optional): Whis will be returned by this function
-        after a delay, or as input to callback.
+      callback (callable): Will be called with optional
+        arguments after `delay` seconds.
+      args (any, optional): Will be used as arguments to callback
+    Kwargs:
+        any (any): Will be used to call the callback.
 
     Returns:
         deferred (deferred): Will fire fire with callback after
@@ -899,11 +900,7 @@ def delay(delay=2, callback=None, retval=None):
             specified here.
 
     """
-    callb = callback or defer.Deferred().callback
-    if retval is not None:
-        return reactor.callLater(delay, callb, retval)
-    else:
-        return reactor.callLater(delay, callb)
+    return reactor.callLater(delay, callback, *args, **kwargs)
 
 
 _TYPECLASSMODELS = None
