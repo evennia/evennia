@@ -917,8 +917,7 @@ def init_game_directory(path, check_db=True):
 
             with open(batpath, 'w') as bat_file:
                 # build a custom bat file for windows
-                bat_file.write("@\"%s\" \"%s\" %%*" % (
-                    sys.executable, twistd_path))
+                bat_file.write("@\"%s\" %%*" % twistd_path)
 
             print(INFO_WINDOWS_BATFILE.format(twistd_path=twistd_path))
 
