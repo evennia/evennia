@@ -909,9 +909,11 @@ def init_game_directory(path, check_db=True):
 
             # note that we hope the twistd package won't change here, since we
             # try to get to the executable by relative path.
+            # Update: In 2016, it seems Twisted 16 has changed the name of
+            # of its executable from 'twistd.py' to 'twistd.exe'.
             twistd_path = os.path.abspath(
                 os.path.join(twistd_dir, os.pardir, os.pardir, os.pardir,
-                             os.pardir, 'scripts', 'twistd.py'))
+                             os.pardir, 'scripts', 'twistd.exe'))
 
             with open(batpath, 'w') as bat_file:
                 # build a custom bat file for windows
