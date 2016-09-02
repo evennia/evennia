@@ -137,12 +137,12 @@ class TestRPSystem(EvenniaTest):
         receiver1.msg = lambda text, **kwargs: setattr(self, "out1", text)
         receiver2.msg = lambda text, **kwargs: setattr(self, "out2", text)
         rpsystem.send_emote(speaker, receivers, emote)
-        self.assertEqual(self.out0, 'With a flair, {bSender{n looks at {bThe first receiver of emotes.{n ' \
-                'and {bAnother nice colliding sdesc-guy for tests{n. She says {b{w"This is a test."{n{n')
-        self.assertEqual(self.out1, 'With a flair, {bA nice sender of emotes{n looks at {bReceiver1{n and ' \
-                '{bAnother nice colliding sdesc-guy for tests{n. She says {b{w"This is a test."{n{n')
-        self.assertEqual(self.out2, 'With a flair, {bA nice sender of emotes{n looks at {bThe first ' \
-                'receiver of emotes.{n and {bReceiver2{n. She says {b{w"This is a test."{n{n')
+        self.assertEqual(self.out0, 'With a flair, |bSender|n looks at |bThe first receiver of emotes.|n ' \
+                'and |bAnother nice colliding sdesc-guy for tests|n. She says |w"This is a test."|n')
+        self.assertEqual(self.out1, 'With a flair, |bA nice sender of emotes|n looks at |bReceiver1|n and ' \
+                '|bAnother nice colliding sdesc-guy for tests|n. She says |w"This is a test."|n')
+        self.assertEqual(self.out2, 'With a flair, |bA nice sender of emotes|n looks at |bThe first ' \
+                'receiver of emotes.|n and |bReceiver2|n. She says |w"This is a test."|n')
 
     def test_rpsearch(self):
         self.speaker.sdesc.add(sdesc0)

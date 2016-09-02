@@ -305,8 +305,8 @@ class _SaverDeque(_SaverMutable):
         self._data.reverse()
 
     @_save
-    def rotate(self):
-        self._data.rotate()
+    def rotate(self, *args):
+        self._data.rotate(*args)
 
 #
 # serialization helpers
