@@ -295,6 +295,8 @@ class AttributeHandler(object):
             attr_obj (Attribute): The newly saved attribute
 
         """
+        if not key: # don't allow an empty key in cache
+            return
         cachekey = "%s-%s" % (key, category)
         catkey = "-%s" % category
         self._cache[cachekey] = attr_obj
@@ -311,21 +313,25 @@ class AttributeHandler(object):
             category (str or None): A cleaned category name
 
         """
-        cachekey = "%s-%s" % (key, category)
         catkey = "-%s" % category
-        self._cache.pop(cachekey, None)
+        if key:
+            cachekey = "%s-%s" % (key, category)
+            self._cache.pop(cachekey, None)
+        else:
+            [self._cache.pop(key, None) for key in self._cache if key.endswith(catkey)]
         # mark that the category cache is no longer up-to-date
         self._catcache.pop(catkey, None)
         self._cache_complete = False
 
-    def has(self, key, category=None):
+    def has(self, key=None, category=None):
         """
         Checks if the given Attribute (or list of Attributes) exists on
         the object.
 
         Args:
             key (str or iterable): The Attribute key or keys to check for.
-            category (str): Limit the check to Attributes with this
+                If `None`, search by category.
+            category (str or None): Limit the check to Attributes with this
                 category (note, that `None` is the default category).
 
         Returns:
@@ -334,8 +340,9 @@ class AttributeHandler(object):
                 the return is a list of booleans.
 
         """
-        ret = [self._getcache(k, category) for k in make_iter(key)] \
-                    if key else [self._getcache(None, category)]
+        ret = []
+        for keystr in make_iter(key):
+            ret.extend(bool(attr) for attr in self._getcache(keystr, category))
         return ret[0] if len(ret) == 1 else ret
 
         #if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
@@ -459,6 +466,7 @@ class AttributeHandler(object):
                                       self._attrcreate, default=default_access):
             # check create access
             return
+
         if not key:
             return
 
@@ -537,7 +545,7 @@ class AttributeHandler(object):
         keys, values = make_iter(key), make_iter(value)
 
         if len(keys) != len(values):
-            raise RuntimeError("AttributeHandler.add(): key and value of different length: %s vs %s" % key, value)
+            raise RuntimeError("AttributeHandler.add(): key and value lists of different length: %s vs %s" % key, value)
         category = category.strip().lower() if category is not None else None
         new_attrobjs = []
         for ikey, keystr in enumerate(keys):
@@ -546,9 +554,10 @@ class AttributeHandler(object):
 
             #cachekey = "%s-%s" % (keystr, category)
             #attr_obj = self._cache.get(cachekey)
-            attr_obj = self._getcache(keystr, category)
+            attr_objs = self._getcache(keystr, category)
 
-            if attr_obj:
+            if attr_objs:
+                attr_obj = attr_objs[0]
                 # update an existing attribute object
                 if strattr:
                     # store as a simple string (will not notify OOB handlers)
@@ -602,15 +611,15 @@ class AttributeHandler(object):
         #key = [k.strip().lower() for k in make_iter(key) if k]
         #category = category.strip().lower() if category is not None else None
         for keystr in make_iter(key):
-            attr_obj = self._getcache(keystr, category)
-            if attr_obj:
+            attr_objs = self._getcache(keystr, category)
+            for attr_obj in attr_objs:
                 if not (accessing_obj and not attr_obj.access(accessing_obj,
                         self._attredit, default=default_access)):
                     attr_obj.delete()
                     self._delcache(key, category)
-            elif not attr_obj and raise_exception:
+            if not attr_objs and raise_exception:
                 raise AttributeError
-        self._recache()
+        #self._recache()
 
     def clear(self, category=None, accessing_obj=None, default_access=True):
         """
