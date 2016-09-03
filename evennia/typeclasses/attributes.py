@@ -208,9 +208,12 @@ class AttributeHandler(object):
         self._objid = obj.id
         self._model = to_str(obj.__dbclass__.__name__.lower())
         self._cache = {}
-        self._catcache = defaultdict(list)
+        # store category names fully cached
+        self._catcache = {}
+        # full cache was run on all attributes
+        self._cache_complete = False
 
-    def _recache(self):
+    def _fullcache(self):
         "Cache all attributes of this object"
         query = {"%s__id" % self._model : self._objid,
                  "attribute__db_attrtype" : self._attrtype}
@@ -218,40 +221,102 @@ class AttributeHandler(object):
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
                                        attr.db_category.lower() if attr.db_category else None),
                             attr) for attr in attrs)
+        self._cache_complete = True
 
-    def _get(self, key=None, category=None):
-        "Retrieve from cache or do a db query and then cache"
-        key, category = key.lower() if key else None, category.lower() if category else None
+    def _getcache(self, key=None, category=None):
+        """
+        Retrieve from cache or database (always caches)
+
+        Args:
+            key (str, optional): Attribute key to query for
+            category (str, optional): Attribiute category
+
+        Returns:
+            args (list): Returns a list of zero or more matches
+                found from cache or database.
+        Notes:
+            When given a category only, a search for all objects
+            of that cateogory is done and a the category *name* is is
+            stored. This tells the system on subsequent calls that the
+            list of cached attributes of this category is up-to-date
+            and that the cache can be queried for category matches
+            without missing any.
+            The TYPECLASS_AGGRESSIVE_CACHE=False setting will turn off
+            caching, causing each attribute access to trigger a
+            database lookup.
+
+        """
+        key = key.strip().lower() if key else None
+        category = category.strip().lower() if category else None
         if key:
             cachekey = "%s-%s" % (key, category)
-            attr = self._cache.get(cachekey, None)
+            attr = _TYPECLASS_AGGRESSIVE_CACHE and self._cache.get(cachekey, None)
             if attr:
-                return attr  # return cached entity
-            query = {"%s__id" % self._model : self._objid,
-                     "attribute__db_attrtype" : self._attrtype,
-                     "attribute__db_key__iexact" : key.lower(),
-                     "attribute__db_category__iexact" : category.lower() if category else None}
-            conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
-            if conn:
-                attr = conn[0].attribute
-                self._cache[cachekey] = attr
-                self._catcache[category].append(attr)
-                return attr
-        elif category:
-            # only category given
-            attrs = self._catcache.get(category, None)
-            if attrs:
-                return attrs # return cached attrs
-            query = {"%s__id" % self._model : self._objid,
-                     "attribute__db_attrtype" : self._attrtype,
-                     "attribute__db_category__iexact" : category.lower() if category else None}
-            attrs = [conn.attribute for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
-            for attr in attrs:
-                cachekey = "%s-%s" % (attr.db_key, category)
-                self._cache[cachekey] = attr
-                self._catcache[category].append(attr)
+                return [attr]  # return cached entity
+            else:
+                query = {"%s__id" % self._model : self._objid,
+                         "attribute__db_attrtype" : self._attrtype,
+                         "attribute__db_key__iexact" : key.lower(),
+                         "attribute__db_category__iexact" : category.lower() if category else None}
+                conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
+                if conn:
+                    attr = conn[0].attribute
+                    self._cache[cachekey] = attr
+                    return [attr]
+        else:
+            # only category given (even if it's None) - we can't
+            # assume the cache to be complete unless we have queried
+            # for this category before
+            catkey = "-%s" % category
+            if _TYPECLASS_AGGRESSIVE_CACHE and catkey in self._catcache:
+                return [attr for key, attr in self._cache if key.endswith(catkey)]
+            else:
+                # we have to query to make this category up-date in the cache
+                query = {"%s__id" % self._model : self._objid,
+                         "attribute__db_attrtype" : self._attrtype,
+                         "attribute__db_category__iexact" : category.lower() if category else None}
+                attrs = [conn.attribute for conn in getattr(self.obj,
+                            self._m2m_fieldname).through.objects.filter(**query)]
+                for attr in attrs:
+                    cachekey = "%s-%s" % (attr.db_key, category)
+                    self._cache[cachekey] = attr
+                # mark category cache as up-to-date
+                self._catcache[catkey] = True
+                return attrs
+        return []
 
+    def _setcache(self, key, category, attr_obj):
+        """
+        Update cache.
 
+        Args:
+            key (str): A cleaned key string
+            category (str or None): A cleaned category name
+            attr_obj (Attribute): The newly saved attribute
+
+        """
+        cachekey = "%s-%s" % (key, category)
+        catkey = "-%s" % category
+        self._cache[cachekey] = attr_obj
+        # mark that the category cache is no longer up-to-date
+        self._catcache.pop(catkey, None)
+        self._cache_complete = False
+
+    def _delcache(self, key, category):
+        """
+        Remove attribute from cache
+
+        Args:
+            key (str): A cleaned key string
+            category (str or None): A cleaned category name
+
+        """
+        cachekey = "%s-%s" % (key, category)
+        catkey = "-%s" % category
+        self._cache.pop(cachekey, None)
+        # mark that the category cache is no longer up-to-date
+        self._catcache.pop(catkey, None)
+        self._cache_complete = False
 
     def has(self, key, category=None):
         """
@@ -269,13 +334,17 @@ class AttributeHandler(object):
                 the return is a list of booleans.
 
         """
-        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
-            self._recache()
-        key = [k.strip().lower() for k in make_iter(key) if k]
-        category = category.strip().lower() if category is not None else None
-        searchkeys = ["%s-%s" % (k, category) for k in make_iter(key)]
-        ret = [self._cache.get(skey) for skey in searchkeys if skey in self._cache]
+        ret = [self._getcache(k, category) for k in make_iter(key)] \
+                    if key else [self._getcache(None, category)]
         return ret[0] if len(ret) == 1 else ret
+
+        #if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
+        #    self._recache()
+        #key = [k.strip().lower() for k in make_iter(key) if k]
+        #category = category.strip().lower() if category is not None else None
+        #searchkeys = ["%s-%s" % (k, category) for k in make_iter(key)]
+        #ret = [self._cache.get(skey) for skey in searchkeys if skey in self._cache]
+        #return ret[0] if len(ret) == 1 else ret
 
     def get(self, key=None, default=None, category=None, return_obj=False,
             strattr=False, raise_exception=False, accessing_obj=None,
@@ -320,25 +389,37 @@ class AttributeHandler(object):
                 self.value = default
                 self.strvalue = str(default) if default is not None else None
 
-        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
-            self._recache()
         ret = []
-        key = [k.strip().lower() for k in make_iter(key) if k]
-        category = category.strip().lower() if category is not None else None
-        if not key:
-            # return all with matching category (or no category)
-            catkey = "-%s" % category if category is not None else None
-            ret = [attr for key, attr in self._cache.items() if key and key.endswith(catkey)]
-        else:
-            for searchkey in ("%s-%s" % (k, category) for k in key):
-                attr_obj = self._cache.get(searchkey)
-                if attr_obj:
-                    ret.append(attr_obj)
-                else:
-                    if raise_exception:
-                        raise AttributeError
-                    else:
-                        ret.append(RetDefault())
+        for keystr in make_iter(key):
+            # it's okay to send a None key
+            attr_objs = self._getcache(keystr, category)
+            if attr_objs:
+                ret.extend(attr_objs)
+            elif raise_exception:
+                raise AttributeError
+            else:
+                ret.append(RetDefault())
+
+#        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
+#            self._recache()
+#        ret = []
+#        key = [k.strip().lower() for k in make_iter(key) if k]
+#        category = category.strip().lower() if category is not None else None
+#        if not key:
+#            # return all with matching category (or no category)
+#            catkey = "-%s" % category if category is not None else None
+#            ret = [attr for key, attr in self._cache.items() if key and key.endswith(catkey)]
+#        else:
+#            for searchkey in ("%s-%s" % (k, category) for k in key):
+#                attr_obj = self._cache.get(searchkey)
+#                if attr_obj:
+#                    ret.append(attr_obj)
+#                else:
+#                    if raise_exception:
+#                        raise AttributeError
+#                    else:
+#                        ret.append(RetDefault())
+
         if accessing_obj:
             # check 'attrread' locks
             ret = [attr for attr in ret if attr.access(accessing_obj, self._attrread, default=default_access)]
@@ -378,18 +459,22 @@ class AttributeHandler(object):
                                       self._attrcreate, default=default_access):
             # check create access
             return
-        if self._cache is None:
-            self._recache()
         if not key:
             return
 
+#
+#        if self._cache is None:
+#            self._recache()
+#        if not key:
+#            return
+
         category = category.strip().lower() if category is not None else None
         keystr = key.strip().lower()
-        cachekey = "%s-%s" % (keystr, category)
-        attr_obj = self._cache.get(cachekey)
+        attr_obj = self._getcache(key, category)
 
         if attr_obj:
             # update an existing attribute object
+            attr_obj = attr_obj[0]
             if strattr:
                 # store as a simple string (will not notify OOB handlers)
                 attr_obj.db_strvalue = value
@@ -406,7 +491,8 @@ class AttributeHandler(object):
             new_attr = Attribute(**kwargs)
             new_attr.save()
             getattr(self.obj, self._m2m_fieldname).add(new_attr)
-            self._cache[cachekey] = new_attr
+            # update cache
+            self._setcache(keystr, category, new_attr)
 
 
     def batch_add(self, key, value, category=None, lockstring="",
@@ -441,12 +527,14 @@ class AttributeHandler(object):
                                       self._attrcreate, default=default_access):
             # check create access
             return
-        if self._cache is None:
-            self._recache()
-        if not key:
-            return
 
-        keys, values= make_iter(key), make_iter(value)
+
+        #if self._cache is None:
+        #    self._recache()
+        #if not key:
+        #    return
+
+        keys, values = make_iter(key), make_iter(value)
 
         if len(keys) != len(values):
             raise RuntimeError("AttributeHandler.add(): key and value of different length: %s vs %s" % key, value)
@@ -455,8 +543,10 @@ class AttributeHandler(object):
         for ikey, keystr in enumerate(keys):
             keystr = keystr.strip().lower()
             new_value = values[ikey]
-            cachekey = "%s-%s" % (keystr, category)
-            attr_obj = self._cache.get(cachekey)
+
+            #cachekey = "%s-%s" % (keystr, category)
+            #attr_obj = self._cache.get(cachekey)
+            attr_obj = self._getcache(keystr, category)
 
             if attr_obj:
                 # update an existing attribute object
@@ -476,10 +566,10 @@ class AttributeHandler(object):
                 new_attr = Attribute(**kwargs)
                 new_attr.save()
                 new_attrobjs.append(new_attr)
+                self._setcache(keystr, category, new_attr)
         if new_attrobjs:
             # Add new objects to m2m field all at once
             getattr(self.obj, self._m2m_fieldname).add(*new_attrobjs)
-            self._recache()
 
 
     def remove(self, key, raise_exception=False, category=None,
@@ -506,16 +596,18 @@ class AttributeHandler(object):
                 was found matching `key`.
 
         """
-        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
-            self._recache()
-        key = [k.strip().lower() for k in make_iter(key) if k]
-        category = category.strip().lower() if category is not None else None
-        for searchstr in ("%s-%s" % (k, category) for k in key):
-            attr_obj = self._cache.get(searchstr)
+        #if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
+        #    self._recache()
+
+        #key = [k.strip().lower() for k in make_iter(key) if k]
+        #category = category.strip().lower() if category is not None else None
+        for keystr in make_iter(key):
+            attr_obj = self._getcache(keystr, category)
             if attr_obj:
                 if not (accessing_obj and not attr_obj.access(accessing_obj,
                         self._attredit, default=default_access)):
                     attr_obj.delete()
+                    self._delcache(key, category)
             elif not attr_obj and raise_exception:
                 raise AttributeError
         self._recache()
@@ -534,14 +626,15 @@ class AttributeHandler(object):
                 type `attredit` on the Attribute in question.
 
         """
-        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
-            self._recache()
+        #if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
+        #    self._recache()
         if accessing_obj:
             [attr.delete() for attr in self._cache.values()
              if attr.access(accessing_obj, self._attredit, default=default_access)]
         else:
             [attr.delete() for attr in self._cache.values()]
-        self._recache()
+        self._cache = {}
+        self._catcache = {}
 
     def all(self, accessing_obj=None, default_access=True):
         """
@@ -560,12 +653,12 @@ class AttributeHandler(object):
                 their values!) in the handler.
 
         """
-        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
-            self._recache()
+        if not self._cache_complete:
+            self._fullcache()
         attrs = sorted(self._cache.values(), key=lambda o: o.id)
         if accessing_obj:
             return [attr for attr in attrs
-                    if attr.access(accessing_obj, self._attredit, default=default_access)]
+                if attr.access(accessing_obj, self._attredit, default=default_access)]
         else:
             return attrs
 
