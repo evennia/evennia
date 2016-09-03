@@ -11,6 +11,7 @@ which is a non-db version of Attributes.
 from builtins import object
 import re
 import weakref
+from collections import defaultdict
 
 from django.db import models
 from django.conf import settings
@@ -206,7 +207,8 @@ class AttributeHandler(object):
         self.obj = obj
         self._objid = obj.id
         self._model = to_str(obj.__dbclass__.__name__.lower())
-        self._cache = None
+        self._cache = {}
+        self._catcache = defaultdict(list)
 
     def _recache(self):
         "Cache all attributes of this object"
@@ -216,6 +218,40 @@ class AttributeHandler(object):
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
                                        attr.db_category.lower() if attr.db_category else None),
                             attr) for attr in attrs)
+
+    def _get(self, key=None, category=None):
+        "Retrieve from cache or do a db query and then cache"
+        key, category = key.lower() if key else None, category.lower() if category else None
+        if key:
+            cachekey = "%s-%s" % (key, category)
+            attr = self._cache.get(cachekey, None)
+            if attr:
+                return attr  # return cached entity
+            query = {"%s__id" % self._model : self._objid,
+                     "attribute__db_attrtype" : self._attrtype,
+                     "attribute__db_key__iexact" : key.lower(),
+                     "attribute__db_category__iexact" : category.lower() if category else None}
+            conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
+            if conn:
+                attr = conn[0].attribute
+                self._cache[cachekey] = attr
+                self._catcache[category].append(attr)
+                return attr
+        elif category:
+            # only category given
+            attrs = self._catcache.get(category, None)
+            if attrs:
+                return attrs # return cached attrs
+            query = {"%s__id" % self._model : self._objid,
+                     "attribute__db_attrtype" : self._attrtype,
+                     "attribute__db_category__iexact" : category.lower() if category else None}
+            attrs = [conn.attribute for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
+            for attr in attrs:
+                cachekey = "%s-%s" % (attr.db_key, category)
+                self._cache[cachekey] = attr
+                self._catcache[category].append(attr)
+
+
 
     def has(self, key, category=None):
         """
