@@ -345,14 +345,6 @@ class AttributeHandler(object):
             ret.extend(bool(attr) for attr in self._getcache(keystr, category))
         return ret[0] if len(ret) == 1 else ret
 
-        #if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
-        #    self._recache()
-        #key = [k.strip().lower() for k in make_iter(key) if k]
-        #category = category.strip().lower() if category is not None else None
-        #searchkeys = ["%s-%s" % (k, category) for k in make_iter(key)]
-        #ret = [self._cache.get(skey) for skey in searchkeys if skey in self._cache]
-        #return ret[0] if len(ret) == 1 else ret
-
     def get(self, key=None, default=None, category=None, return_obj=False,
             strattr=False, raise_exception=False, accessing_obj=None,
             default_access=True):
@@ -380,8 +372,10 @@ class AttributeHandler(object):
                 looked-after Attribute.
 
         Returns:
-            result (any, Attribute or list): A list of varying type depending
-                on the arguments given.
+            result (any, Attribute or list): This will be the value of the found
+                Attribute unless `return_obj` is True, at which point it will be
+                the attribute object or None. If multiple keys are given, this
+                will be a list of values or attribute objects/None.
 
         Raises:
             AttributeError: If `raise_exception` is set and no matching Attribute
@@ -404,28 +398,10 @@ class AttributeHandler(object):
                 ret.extend(attr_objs)
             elif raise_exception:
                 raise AttributeError
+            elif return_obj:
+                ret.append(None)
             else:
                 ret.append(RetDefault())
-
-#        if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
-#            self._recache()
-#        ret = []
-#        key = [k.strip().lower() for k in make_iter(key) if k]
-#        category = category.strip().lower() if category is not None else None
-#        if not key:
-#            # return all with matching category (or no category)
-#            catkey = "-%s" % category if category is not None else None
-#            ret = [attr for key, attr in self._cache.items() if key and key.endswith(catkey)]
-#        else:
-#            for searchkey in ("%s-%s" % (k, category) for k in key):
-#                attr_obj = self._cache.get(searchkey)
-#                if attr_obj:
-#                    ret.append(attr_obj)
-#                else:
-#                    if raise_exception:
-#                        raise AttributeError
-#                    else:
-#                        ret.append(RetDefault())
 
         if accessing_obj:
             # check 'attrread' locks
@@ -469,12 +445,6 @@ class AttributeHandler(object):
 
         if not key:
             return
-
-#
-#        if self._cache is None:
-#            self._recache()
-#        if not key:
-#            return
 
         category = category.strip().lower() if category is not None else None
         keystr = key.strip().lower()
@@ -536,12 +506,6 @@ class AttributeHandler(object):
             # check create access
             return
 
-
-        #if self._cache is None:
-        #    self._recache()
-        #if not key:
-        #    return
-
         keys, values = make_iter(key), make_iter(value)
 
         if len(keys) != len(values):
@@ -552,8 +516,6 @@ class AttributeHandler(object):
             keystr = keystr.strip().lower()
             new_value = values[ikey]
 
-            #cachekey = "%s-%s" % (keystr, category)
-            #attr_obj = self._cache.get(cachekey)
             attr_objs = self._getcache(keystr, category)
 
             if attr_objs:
@@ -605,11 +567,6 @@ class AttributeHandler(object):
                 was found matching `key`.
 
         """
-        #if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
-        #    self._recache()
-
-        #key = [k.strip().lower() for k in make_iter(key) if k]
-        #category = category.strip().lower() if category is not None else None
         for keystr in make_iter(key):
             attr_objs = self._getcache(keystr, category)
             for attr_obj in attr_objs:
@@ -619,7 +576,6 @@ class AttributeHandler(object):
                     self._delcache(key, category)
             if not attr_objs and raise_exception:
                 raise AttributeError
-        #self._recache()
 
     def clear(self, category=None, accessing_obj=None, default_access=True):
         """
@@ -635,8 +591,6 @@ class AttributeHandler(object):
                 type `attredit` on the Attribute in question.
 
         """
-        #if self._cache is None or not _TYPECLASS_AGGRESSIVE_CACHE:
-        #    self._recache()
         if accessing_obj:
             [attr.delete() for attr in self._cache.values()
              if attr.access(accessing_obj, self._attredit, default=default_access)]
