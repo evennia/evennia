@@ -216,10 +216,9 @@ class CmdEvMenuNode(Command):
         """
         Implement all menu commands.
         """
-        caller = self.caller
-        menu = caller.ndb._menutree or self.session.ndb._menutree
-        if not menu:
-            # check if there is a saved menu available
+        def _restore(caller):
+            # check if there is a saved menu available.
+            # this will re-start a completely new evmenu call.
             saved_options = caller.attributes.get("_menutree_saved")
             if saved_options:
                 startnode = caller.attributes.get("_menutree_saved_startnode")
@@ -227,14 +226,28 @@ class CmdEvMenuNode(Command):
                     saved_options[1]["startnode"] = startnode
                 # this will create a completely new menu call
                 EvMenu(caller, *saved_options[0], **saved_options[1])
+                return True
 
-                return
-
+        caller = self.caller
+        menu = caller.ndb._menutree
         if not menu:
-            err = "Menu object not found as %s.ndb._menutree!" % (caller)
-            caller.msg(err)
-            raise EvMenuError(err)
+            if _restore(caller):
+                return
+            orig_caller = caller
+            caller = caller.player
+            menu = caller.ndb._menutree
+            if not menu:
+                if _restore(caller):
+                    return
+                caller = self.session
+                menu = caller.ndb._menutree
+                if not menu:
+                    # can't restore from a session
+                    err = "Menu object not found as %s.ndb._menutree!" % (orig_caller)
+                    orig_caller.msg(err)
+                    raise EvMenuError(err)
 
+        # we have a menu, use it.
         menu._input_parser(menu, self.raw_string, caller)
 
 
@@ -791,6 +804,13 @@ class CmdGetInput(Command):
         "This is called when user enters anything."
         caller = self.caller
         callback = caller.ndb._getinputcallback
+        if not callback:
+            # this can be happen if called from a player-command when IC
+            caller = self.player
+            callback = caller.ndb._getinputcallback
+            if not callback:
+                raise RuntimeError("No input callback found.")
+
         prompt = caller.ndb._getinputprompt
         result = self.raw_string.strip() # we strip the ending line break caused by sending
 
