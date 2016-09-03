@@ -58,6 +58,12 @@ class CmdMore(Command):
         Implement the command
         """
         more = self.caller.ndb._more
+        if not more and hasattr(self.caller, "player"):
+            more = self.caller.player.ndb._more
+        if not more:
+            self.caller.msg("Error in loading the pager. Contact an admin.")
+            return
+
         cmd = self.cmdstring
 
         if cmd in ("abort", "a"):
@@ -188,6 +194,6 @@ def msg(caller, text="", **kwargs):
     More-supported version of msg, mimicking the
     normal msg method.
     """
-    always_more = kwargs.pop("always_more", False)
-    EvMore(caller, text, always_more, **kwargs)
+    always_page = kwargs.pop("always_page", False)
+    EvMore(caller, text, always_page, **kwargs)
 
