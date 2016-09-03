@@ -598,6 +598,7 @@ class AttributeHandler(object):
             [attr.delete() for attr in self._cache.values()]
         self._cache = {}
         self._catcache = {}
+        self._cache_complete = False
 
     def all(self, accessing_obj=None, default_access=True):
         """
