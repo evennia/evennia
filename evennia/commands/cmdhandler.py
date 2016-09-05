@@ -472,7 +472,6 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 caller.ndb.last_cmd = yield copy(cmd)
             else:
                 caller.ndb.last_cmd = None
-            _COMMAND_NESTING[called_by] -= 1
 
             # return result to the deferred
             returnValue(ret)
@@ -480,6 +479,9 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
         except Exception:
             _msg_err(caller, _ERROR_UNTRAPPED)
             raise ErrorReported
+        finally:
+            _COMMAND_NESTING[called_by] -= 1
+
 
     raw_string = to_unicode(raw_string, force_string=True)
 

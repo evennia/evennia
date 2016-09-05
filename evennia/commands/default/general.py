@@ -159,7 +159,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         string = ""
         for nicktype in nicktypes:
             oldnick = caller.nicks.get(key=nickstring, category=nicktype, return_obj=True)
-            oldnick = oldnick if oldnick.key is not None else None
+            oldnick = oldnick.key if oldnick is not None else None
             if oldnick:
                 _, _, old_nickstring, old_replstring = oldnick.value
             else:

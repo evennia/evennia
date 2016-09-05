@@ -533,6 +533,7 @@ bridge
 # feature of the BridgeRoom.
 #
 @dig/teleport Protruding ledge;cliffledge;ledge;tut#06
+ : tutorial_world.rooms.WeatherRoom
 #
 @set here/tutorial_info =
  This room is stored as an attribute on the 'Bridge' room and used as

@@ -381,6 +381,9 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
             if not location:
                 caller.msg("No location to detail!")
                 return
+            if not location.db.details:
+                caller.msg("|rThis location does not support details.|n")
+                return
             if self.switches and self.switches[0] in 'del':
                 # removing a detail.
                 if self.lhs in location.db.details:
