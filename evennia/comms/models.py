@@ -316,7 +316,22 @@ class Msg(SharedMemoryModel):
         receivers = ",".join(["[%s]" % obj.key for obj in self.channels] + [obj.key for obj in self.receivers])
         return "%s->%s: %s" % (senders, receivers, crop(self.message, width=40))
 
+    def access(self, accessing_obj, access_type='read', default=False):
+        """
+        Checks lock access.
 
+        Args:
+            accessing_obj (Object or Player): The object trying to gain access.
+            access_type (str, optional): The type of lock access to check.
+            default (bool): Fallback to use if `access_type` lock is not defined.
+
+        Returns:
+            result (bool): If access was granted or not.
+
+        """
+        return self.locks.check(accessing_obj,
+                                access_type=access_type, default=default)
+    
 #------------------------------------------------------------
 #
 # TempMsg
