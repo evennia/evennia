@@ -59,7 +59,7 @@ class Msg(SharedMemoryModel):
     - db_receivers_channels: Receiving channels
     - db_header: Header text
     - db_message: The actual message text
-    - db_date_sent: time message was sent
+    - db_date_created: time message was created / sent
     - db_hide_from_sender: bool if message should be hidden from sender
     - db_hide_from_receivers: list of receiver objects to hide message from
     - db_hide_from_channels: list of channels objects to hide message from
@@ -99,7 +99,7 @@ class Msg(SharedMemoryModel):
     # the message body itself
     db_message = models.TextField('messsage')
     # send date
-    db_date_sent = models.DateTimeField('date sent', editable=False, auto_now_add=True, db_index=True)
+    db_date_created = models.DateTimeField('date sent', editable=False, auto_now_add=True, db_index=True)
     # lock storage
     db_lock_storage = models.TextField('locks', blank=True,
                                        help_text='access locks on this message.')
@@ -122,7 +122,7 @@ class Msg(SharedMemoryModel):
 
     class Meta(object):
         "Define Django meta options"
-        verbose_name = "Message"
+        verbose_name = "Msg"
 
     @lazy_property
     def locks(self):
