@@ -353,7 +353,7 @@ class TempMsg(object):
         self.message = message
         self.lock_storage = lockstring
         self.hide_from = hide_from and make_iter(hide_from) or []
-        self.date_sent = timezone.now()
+        self.date_created = timezone.now()
 
     @lazy_property
     def locks(self):
