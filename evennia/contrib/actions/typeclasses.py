@@ -94,14 +94,8 @@ class ActionExit(DefaultExit):
     movement speed at all). 
     """
     exit_command = ActionExitCommand
-
-    @property
-    def distance(self):
+    
+    def at_object_creation(self):
         if not self.db.distance:
-            return 1.0
-        else:
-            return self.db.distance
+            self.db.distance = 1.0
 
-    @distance.setter
-    def distance(self, value):
-        self.db.distance = value

@@ -3,24 +3,9 @@ from evennia.contrib.actions.actions import Action
 from evennia.contrib.actions.handlers import CharacterActionHandler, RoomActionHandler
 from evennia.contrib.actions.scripts import ActionSystemScript
 from evennia.contrib.actions.typeclasses import ActionCharacter, ActionRoom, ActionExit
-from evennia.contrib.actions.commands import (CmdAlarm, CmdActSettings, CmdActions,
-    CmdStop, CmdDone, CmdQueue)
+from evennia.contrib.actions.commands import ActionCmdSet 
 from evennia.contrib.actions.debug import ActionDebugCmdSet
 from evennia.contrib.actions.setup import setup
-
-class ActionCmdSet(CmdSet):
-    """CmdSet for action-related commands."""
-    key = "equip_cmdset"
-    priority = 1
-
-    def at_cmdset_creation(self):
-        self.add(CmdAlarm())
-        self.add(CmdActSettings())
-        self.add(CmdActions())
-        self.add(CmdStop())
-        self.add(CmdDone())
-        self.add(CmdQueue())
-
 
 __all__ = [Action, ActionCharacter, ActionRoom, ActionExit, ActionCmdSet, 
     ActionDebugCmdSet, setup]

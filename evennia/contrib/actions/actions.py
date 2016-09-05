@@ -1,8 +1,11 @@
 """
+This module contains the Action class, along with the default actions Turn,
+MoveIn and MoveOut. All actions used by the action system must be subclassed
+from the Action class.
 
 Note: always include a call to super when overloading the base functions
-    at_creation, at_completion and at_cancel. See the function MoveOut
-    for an example.
+    at_creation, at_completion, at_failure and at_cancel. See the function
+    MoveOut for an example.
 """
 
 from copy import deepcopy
@@ -113,6 +116,7 @@ base_action = {'key': "",
                'cancellable': True,
                'invokes_tb': False,
                'non_turn': False,
+               'passive': False,
                'onset': None,
                'duration': None,
                'endtime': None,
@@ -339,19 +343,25 @@ class MoveIn(Action):
         exit = [x for x in room.contents if x.db_destination == prev_room]
         if exit:
             # There is at least one exit
-            exit = exit[0]
+            exit = max(exit, lambda x: x.db.distance)
+            distance = exit.db.distance
         else:
             # No exits back to the previous room were found, default to using
             # the distance of the exit from the previous room to the current one
             exit = [x for x in prev_room.contents if x.db_destination == room]
-            exit = exit[0]
+            if exit:
+                exit = max(exit, lambda x: x.db.distance)
+                distance = exit.db.distance
+            else:
+                # Exceptional situation where the entrance from the previous
+                # room to this one has disappeared just as, or perhaps because,
+                # the character has passed through it
+                distance = 1
 
         if owner.actions.movespeed:
-            duration = exit.distance / owner.actions.movespeed(owner)
+            duration = distance / owner.actions.movespeed(owner)
         else:
-            duration = exit.distance
-
-        print("MoveIn action loaded")
+            duration = distance
 
         super(MoveIn, self).__init__(
             key="movein",
@@ -393,9 +403,9 @@ class MoveOut(Action):
 
     	# determine the required duration for the movement
         if owner.actions.movespeed:
-            duration = target.distance / owner.actions.movespeed(owner)
+            duration = target.db.distance / owner.actions.movespeed(owner)
         else:
-            duration = target.distance
+            duration = target.db.distance
 
         super(MoveOut, self).__init__(
             key="moveout",

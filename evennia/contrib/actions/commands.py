@@ -8,7 +8,22 @@ from evennia.commands.command import Command
 from evennia.utils import evmore
 from evennia.contrib.actions.actions import MoveOut
 
-class CmdAlarm(Command):
+
+class ActionCmdSet(CmdSet):
+    """CmdSet for action-related commands."""
+    key = "equip_cmdset"
+    priority = 1
+
+    def at_cmdset_creation(self):
+        self.add(CmdAlarm())
+        self.add(CmdActSettings())
+        self.add(CmdActions())
+        self.add(CmdStop())
+        self.add(CmdDone())
+        self.add(CmdQueue())
+
+
+_lass CmdAlarm(Command):
     """
     raise, lower or check the status of the character's alarm
 

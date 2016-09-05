@@ -233,7 +233,6 @@ def triage(action):
                     action['owner'].actions.list.remove(x)
 
             # The action has begun, message everyone who can view it.
-            print("msg_defaults: ", action['msg_defaults'])
             if action['msg_defaults']:
                 s = " has begun {0}.".format(action['desc'])
             else:
