@@ -6,7 +6,7 @@ The action system operates in two modes, able to shift seamlessly from one to th
 
 When turn-based mode starts, each character is assigned a turn action with a duration of zero, which simply means that the turn action is completed as soon as it starts. Because each character gets a turn (during which they may start new actions) whenever one of their actions has been completed, this guarantees that everyone gets a turn at the start of turn-based mode. Each player character's turn lasts a minute and can be ended prematurely using the "done" command, while each NPC's turn lasts five seconds. It is perfectly possible for the same character to have multiple turns in a row if they perform a series of very quick actions in succession.
 
-To switch to turn-based mode, PCs and NPCs may turn on their alarm setting. If at least one character in the room turns their alarm on, the room shifts to turn-based mode. Once all of the PCs and NPCs have turned their alarms off, the room shifts back to real-time mode. Any actions that have come closer in time to their completion during turn-based or real-time mode will retain their progress when switching to the opposite mode. Note that some actions can be set to trigger turn-based mode, and to do so, they will raise the alarms of both the person carrying them out and the target of the action (if any).
+To switch to turn-based mode, PCs and NPCs may turn on their "turnbased" setting. If at least one character in the room sets their turnbased status to on, the room shifts to turn-based mode. Once all of the PCs and NPCs have set their turnbased status to off, the room shifts back to real-time mode. Any actions that have come closer in time to their completion during turn-based or real-time mode will retain their progress when switching to the opposite mode. Note that some actions can be set to trigger turn-based mode, and to do so, they will activate turn-based mode for both the person carrying them out and the target of the action (if any).
 
 Movement between rooms is based on two actions, MoveOut and MoveIn. Thus, to move between two rooms A and B, characters must first move out of room A towards the exit to room B, and then into room B from the exit back to room A (if any such exit exists). It takes time to both enter a room and to leave it, as determined by the character's movement speed and the "distance" attribute of the rooms' exits. Moving out of a room cancels any actions the character is performing on targets within the room, as well as any actions being performed on the character by other characters within the room.
 
@@ -128,7 +128,7 @@ The ActionCharacter's ```actions.done()``` method may be called to have the char
 
 The ```actions.stop(ongoing=True, queued=False)``` method stops all of the character's ongoing and/or queued actions, based on the parameters given to it. The "stop" command automatically implements this method (see below).
 
-Finally, the "actions.unpuppet" command stops all of the character's cancellable actions and turns off their alarm (you should make sure that non-cancellable actions never have their "invokes_tb" item set to True, because this would prevent the alarm from being turned off and lock the room in turn-based mode). You should probably call this in your character's . 
+Finally, the "actions.unpuppet" command stops all of the character's cancellable actions and turns their turn-based status off (you should make sure that non-cancellable actions never have their "invokes_tb" item set to True, because this would prevent the character from leaving turn-based mode and would lock the room in turn-based mode). You should probably call this in your character's at_pre_unpuppet method. 
 
 ActionRoom objects have the method ```actions.display(viewed_object, message, target=None, data="", default=False)```, which will show everyone in the room a processed version of the message string in the arguments list according to the room's view function (if you have set it) or in a default way if no view function exists. The target should be an object, while the data should be a string or an object. If default is set to True, and the viewed object is invisible to a given viewer, the name of the viewed object will be replaced (with "Someone" if the object is a character or "Something" otherwise) in the version of the message given to that viewer. If default is setto False, and the viewed object is invisible to the viewer, the message will not be shown to the viewer at all. Thus, the display method can be used to implement some features of stealth. 
 
@@ -267,21 +267,34 @@ To create an action and initialize it, simply create an object of your subclass 
 
 There are two command sets in the evennia.contrib.actions module, ActionCmdSet and ActionDebugCmdSet. The commands in ActionCmdSet are meant for all characters and include the following:
 
-alarm - can be used to toggle your alarm on and off. Whenever someone's alarm is active in the room, the room is in turn-based mode.
+turnbased - can be used to toggle your character's turn-based status on and off. Whenever anyone's turn-based status is set to "on" in the room, the room is in turn-based mode.
+
 actsettings - change various settings pertaining to your character's use of the action system.
+
 actions - shows a list of all the actions that your character can see within the room.
+
 stop - stops either the actions in your character's action queue, your character's ongoing actions, or both.
+
 done - ends your character's turn
+
 queue - shows a list of all the actions in your character's action queue
 
 The commands in the ActionDebugCmdSet are meant for wizards, immortals and the superuser, and include the following:
+
 @@actslow - performs an action with no bodyparts over 30 seconds
+
 @@actfast - performs an action with no bodyparts over 10 seconds
+
 @@actlarm - performs an action with the 'left arm' bodypart over 20 seconds
+
 @@actlarm - performs an action with the 'right arm' bodypart over 20 seconds
+
 @@actfriend - performs an action towards the target, does not invoke turn-based mode
+
 @@actfoe - performs an action towards the target, invokes turn-based mode
+
 @@actsetup - calls evennia.contrib.actions.setup(). If you specify the argument "over", the override flag will be on.
+
 @@debugmsg - enables / disables debug messages pertaining to the action system
 
 
@@ -298,5 +311,3 @@ Other limitations that are unlikely to be resolved include the following:
 * There should be at most one exit pointing to a given room B in any room A if B also has an exit to A. If two exits in A point to the same room B, which has an exit to A, then when moving into A after having left B, the distance used to calculate the movement speed will be the smallest of the distances of all exits from A to B. Confused? Just remember that when two rooms have more than one exit to each other, and the distances of these exits are different, the action system will pick the smallest of these distances, which may be the wrong one.
 * Actions must have at least one body part to ensure that an infinite number of instances of a given action cannot be created at the same time. Also, certain messages make use of the body part(s) involved in the action.
 * Actions cannot take place between multiple rooms. For instance, you cannot shoot an arrow from one room to another using the actions system. This is because time does not flow at the same pace in the two rooms unless they are both in real-time mode. Imagine a situation wherein you are trying to shoot an arrow two rooms away, and the room between you and your target is in turn-based mode! The arrow could be stuck in that room for a minute or more while someone's turn were taking place.
-
-

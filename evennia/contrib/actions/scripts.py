@@ -185,7 +185,7 @@ class ActionSystemScript(DefaultScript):
 
 
                     # in case an action (e.g. a movement action) removed or
-                    # activated an alarm in the course of being processed 
+                    # activated turn-based mode in the course of being processed 
                     # (~not~ in the course of being added), check if the room
                     # should still be in TB mode
                     if handler.check_for_tb():

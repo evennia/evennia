@@ -16,7 +16,7 @@ class ActionCmdSet(CmdSet):
     priority = 1
 
     def at_cmdset_creation(self):
-        self.add(CmdAlarm())
+        self.add(CmdTurnbased())
         self.add(CmdActSettings())
         self.add(CmdActions())
         self.add(CmdStop())
@@ -24,47 +24,51 @@ class ActionCmdSet(CmdSet):
         self.add(CmdQueue())
 
 
-class CmdAlarm(Command):
+class CmdTurnbased(Command):
     """
-    raise, lower or check the status of the character's alarm
+    activate, deactivate or check whether the character is in turn-based mode.
 
     Usage:
-      alarm [<on/off/status>]
+      turnbased [<on/off/status>]
+      turns [<on/off/status>]
+      tb [<on/off/status>]
 
-    If at least one character in a given room has their alarm active, that room
-    will be in turn-based mode.
+    When typed without arguments, the command activates turn-based mode.
+
+    If at least one character in a given room has activated turn-based mode, 
+    that room will be in turn-based mode.
     """
-    key = "alarm"
-    #aliases = [""]
+    key = "turnbased"
+    aliases = ["tb", "turns"]
     locks = "cmd:all()"
     #arg_regex = r"$"
 
     def func(self):
         if self.args.find("on") != -1 or not self.args:
-            if not self.caller.actions.alarm:
-                self.caller.actions.alarm = True
+            if not self.caller.actions.turnbased:
+                self.caller.actions.turnbased = True
 
             else:
-                self.caller.msg("{0} is already alarmed.".format(
+                self.caller.msg("{0} is already in turn-based mode.".format(
                     self.caller.key.capitalize()))
 
         elif self.args.find("off") != -1:
-            if self.caller.actions.alarm:
-                self.caller.actions.alarm = False
+            if self.caller.actions.turnbased:
+                self.caller.actions.turnbased = False
 
             else:
-                self.caller.msg("{0} was not alarmed to begin with.".format(
-                    self.caller.key.capitalize()))
+                self.caller.msg("{0} was not in turn-based mode ".format(
+                    self.caller.key.capitalize()) + "to begin with.")
 
         elif self.args.find("stat") != -1:
-            status = "on" if self.caller.actions.alarm else "off"
-            self.caller.msg("{0}'s alarm is {1}.".format(
+            status = "" if self.caller.actions.turnbased else "not "
+            self.caller.msg("{0} is {1}in turn-based mode.".format(
                 self.caller.key.capitalize(), status))
 
         else:
-            self.caller.msg("Invalid argument for the \"alarm\" command. " + 
-                "Please specify \"on\", \"off\", \"status\" or no argument " +
-                "at all.")
+            self.caller.msg("Invalid argument for the \"turnbased\" " + 
+                "command. Please specify \"on\", \"off\", \"status\" or no " +
+                "argument at all.")
 
 class CmdActSettings(Command):
     """

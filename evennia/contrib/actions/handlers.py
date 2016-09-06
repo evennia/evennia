@@ -46,8 +46,8 @@ class CharacterActionHandler(object):
         if not self.owner.db.actions.has_key('new') or override:
             self.new = "ignore"
 
-        if not self.owner.db.actions.has_key('alarm') or override:
-            self.alarm = False
+        if not self.owner.db.actions.has_key('turnbased') or override:
+            self.turnbased = False
 
         if not self.owner.db.actions.has_key('movespeed') or override:
             self.movespeed = None
@@ -63,64 +63,66 @@ class CharacterActionHandler(object):
 
 
     @property
-    def alarm(self):
+    def turnbased(self):
         """
-        True or False; states whether the character's alarm state is on or off.
-        Whenever any character in the room has their alarm set to True, the
+        True or False; whether the character's turn-based state is on or off.
+        Whenever any character in the room has this property set to True, the
         room should be in turn-based mode. When all of the characters in the
-        room have their alarm set to false, the room should be in real-time
+        room have this property set to false, the room should be in real-time
         mode.
         """
-        return self.owner.db.actions['alarm']
+        return self.owner.db.actions['turnbased']
 
 
-    @alarm.setter
-    def alarm(self, value):
+    @turnbased.setter
+    def turnbased(self, value):
         """
-        If an alarm becomes set, attempt to enter TB mode. If an alarm becomes
-        unset, attempt to leave TB mode.
+        If turn-based mode becomes set, attempt to enter TB mode. If turn-based
+        mode becomes unset, attempt to leave TB mode.
         """
         room = self.owner.location 
 
-        if not self.owner.db.actions.has_key("alarm"): 
+        if not self.owner.db.actions.has_key("turnbased"): 
             # This should only happen when the object is being created
-            self.owner.db.actions['alarm'] = value
+            self.owner.db.actions['turnbased'] = value
 
-        elif value == True and not self.alarm:
+        elif value == True and not self.turnbased:
             # Send a message to all characters in the room.
             # If the character is invisibile, they will still give a room echo
-            # when raising their alarm, but will show up as "Someone".
-            room.actions.display(self.owner, " has become alarmed.", default=True)
+            # when activating turn-based mode, but will show up as "Someone".
+            room.actions.display(self.owner, " has turned on their " +
+                "turn-based status.", default=True)
 
-            # Activate the character's alarm status
-            self.owner.db.actions['alarm'] = True
+            # Bring the character into turn-based mode
+            self.owner.db.actions['turnbased'] = True
 
             self.owner.location.actions.try_tb()
 
-        elif value == False and self.alarm:
+        elif value == False and self.turnbased:
             # check if the character is the target or the performer of
-            # any alarming actions. The character's alarm cannot be turned off
-            # in these cases.
+            # any actions that invoke turn-based mode. The character cannot
+            # leave turn-based mode in these cases.
             actions = self.owner.location.actions.list
             l1 = [action for action in actions if action['owner'] == self.owner
                   and action['invokes_tb']]
             l2 = [action for action in actions if action['target'] and
                   action['target'] == self.owner and action['invokes_tb']]
             if l1 or l2:
-                self.owner.msg("Cannot turn off the alarmed status for " +
-                    "{0} due to ongoing alarming actions.".format(
-                    self.owner.key))
+                self.owner.msg("Cannot deactivate the turn-based status of " +
+                    "{0} due to ongoing actions that invoke ".format(
+                    self.owner.key) + " turn-based mode.")
             else:
-                # The character's alarm can be deactivated.
+                # The character can leave turn-based mode.
 
                 # Send a message to all characters in the room.
                 # If the character is invisibile, they will still give a room
-                # echo when raising their alarm, but will show up as "Someone".
-                room.actions.display(self.owner, " has stopped being alarmed.", 
-                    default=True)
+                # echo when deactivating turn-based mode, but will show up as 
+                # "Someone".
+                room.actions.display(self.owner, " has turned off their " +
+                    "turn-based status.", default=True)
 
-                # Deactivate the character's alarm status            
-                self.owner.db.actions['alarm'] = False
+                # Bring the character out of turn-based mode
+                self.owner.db.actions['turnbased'] = False
             
                 self.owner.location.actions.try_rt()
 
@@ -348,7 +350,7 @@ class CharacterActionHandler(object):
         enter real-time mode.
         """
         self.stop(ongoing=True, queued=True)
-        self.alarm = False
+        self.turnbased = False
 
 
 class RoomActionHandler(object):
@@ -550,12 +552,12 @@ class RoomActionHandler(object):
             if action['invokes_tb']:
 
                 # if the action is meant to switch to turn-based mode,
-                # set an alarm on its owner as well as its target (if any
-                # exists) and attempt to switch to turn-based mode.
-                action['owner'].actions.alarm = True
+                # activate turn-based mode for its owner as well as its target
+                # (if any exists) and attempt to switch to turn-based mode.
+                action['owner'].actions.turnbased = True
                 if (action['target'] and 
                     isinstance(action['target'], DefaultCharacter)):
-                    action['target'].actions.alarm = True
+                    action['target'].actions.turnbased = True
 
             elif index == 0:
 
@@ -713,11 +715,11 @@ class RoomActionHandler(object):
         """
         check whether the room should be in turn-based mode
         """
-        # check for alarms
+        # check for characters in turn-based mode
         chars = [x for x in self.owner.contents 
                  if isinstance(x, DefaultCharacter)]         
         for char in chars:
-            if char.actions.alarm:
+            if char.actions.turnbased:
                 return True
         return False
 
