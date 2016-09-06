@@ -1,4 +1,4 @@
-from evennia import ObjectDB, DefaultCharacter, DefaultRoom, CmdSet
+from evennia import ObjectDB, DefaultCharacter, DefaultRoom
 from evennia.contrib.actions.actions import Action
 from evennia.contrib.actions.handlers import CharacterActionHandler, RoomActionHandler
 from evennia.contrib.actions.scripts import ActionSystemScript

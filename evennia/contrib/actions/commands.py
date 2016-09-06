@@ -4,6 +4,7 @@ and typically allow for the tweaking of the character's settings as pertain
 to that system.
 """
 
+from evennia import CmdSet
 from evennia.commands.command import Command
 from evennia.utils import evmore
 from evennia.contrib.actions.actions import MoveOut
@@ -23,7 +24,7 @@ class ActionCmdSet(CmdSet):
         self.add(CmdQueue())
 
 
-_lass CmdAlarm(Command):
+class CmdAlarm(Command):
     """
     raise, lower or check the status of the character's alarm
 

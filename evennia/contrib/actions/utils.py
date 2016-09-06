@@ -343,21 +343,34 @@ def format_action_desc(room, viewer, s, target, data=""):
     if room.actions.view:
         name_target = room.actions.view(target, viewer)
         if name_target == False:
-            name_target = "something"
+            if isinstance(target, DefaultCharacter):
+                name_target = "someone"
+            else:
+                name_target = "something"
     else:
         if target:
             name_target = target.key
         else:
             name_target = ""     
 
-    if s.find("$t") == 0:
-        name_target = name_target.capitalize()
-    
     s = s.replace("$t", name_target)
 
-    if not isinstance(data, str) and not isinstance(data, unicode):
-        data = ""
-    s = s.replace("$d", data)
+    if isinstance(data, DefaultObject):
+        if room.actions.view:
+            name_data = room.actions.view(data, viewer)
+            if name_data == False:
+                if isinstance(data, DefaultCharacter):
+                    name_data = "someone"
+                else:
+                    name_data = "something"
+        else:
+            name_data = data.key
+
+    elif isinstance(data, str) or isinstance(data, unicode):
+        name_data = data
+    else:
+        name_data = ""
+    s = s.replace("$d", name_data)
 
     return s
 
