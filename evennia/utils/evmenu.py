@@ -234,18 +234,19 @@ class CmdEvMenuNode(Command):
             if _restore(caller):
                 return
             orig_caller = caller
-            caller = caller.player
-            menu = caller.ndb._menutree
-            if not menu:
-                if _restore(caller):
-                    return
-                caller = self.session
+            if hasattr(caller, 'player'):
+                caller = caller.player
                 menu = caller.ndb._menutree
                 if not menu:
-                    # can't restore from a session
-                    err = "Menu object not found as %s.ndb._menutree!" % (orig_caller)
-                    orig_caller.msg(err)
-                    raise EvMenuError(err)
+                    if _restore(caller):
+                        return
+            caller = self.session
+            menu = caller.ndb._menutree
+            if not menu:
+                # can't restore from a session
+                err = "Menu object not found as %s.ndb._menutree!" % (orig_caller)
+                orig_caller.msg(err)
+                raise EvMenuError(err)
 
         # we have a menu, use it.
         menu._input_parser(menu, self.raw_string, caller)
