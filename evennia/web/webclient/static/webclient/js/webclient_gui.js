@@ -249,17 +249,41 @@ function onBeforeUnload() {
 
 var unread = 0;
 var originalTitle = document.title;
+var focused = true;
 
-function onVisibilityChange() {
+/*function onVisibilityChange() {
   if(!document.hidden) {
     document.title = originalTitle;
   }
+}*/
+
+function onBlur(e) {
+  focused = false;
 }
 
-function onNewLine(originator, text) {
-  if(document.hidden) {
+function onFocus(e) {
+  focused = true;
+  document.title = originalTitle;
+}
+
+function onNewLine(text, originator) {
+  if(!focused) {
     unread++;
     document.title = "(" + unread + ") " + originalTitle;
+    Notification.requestPermission().then(function(result) {
+      if(result === "granted") {
+        var title = originalTitle === "" ? "Evennia" : originalTitle;
+        var options = { 
+          body: text.replace(/(<([^>]+)>)/ig,"")
+        }
+        var n = new Notification(title, options);
+        n.onclick = function(e) {
+          e.preventDefault();
+          window.focus();
+          this.close();
+        }
+      }
+    })
   }
 }
 
@@ -269,10 +293,16 @@ function onNewLine(originator, text) {
 
 // Event when client finishes loading
 $(document).ready(function() {
+
+    Notification.requestPermission();
+
     // Event when client window changes
     $(window).bind("resize", doWindowResize);
 
-    $(document).on("visibilitychange", onVisibilityChange);
+    $(window).blur(onBlur);
+    $(window).focus(onFocus);
+
+    //$(document).on("visibilitychange", onVisibilityChange);
 
     $("#inputfield").bind("resize", doWindowResize)
         .keypress(onKeyPress)
