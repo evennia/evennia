@@ -16,6 +16,8 @@ JQuery available.
 
     <link rel='stylesheet' type="text/css" media="screen" href={% static "webclient/css/webclient.css" %}>
 
+    <link rel="icon" type="image/x-icon" href="/static/website/images/favicon.ico" />
+
     <!-- Import JQuery and warn if there is a problem -->
     {% block jquery_import %}
         <script src="http://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript" charset="utf-8"></script>
@@ -53,6 +55,8 @@ JQuery available.
     {% block guilib_import %}
         <script src={% static "webclient/js/webclient_gui.js" %} language="javascript" type="text/javascript" charset="utf-8"></script>
     {% endblock %}
+
+    <script src="https://cdn.rawgit.com/ejci/favico.js/master/favico-0.3.10.min.js" language="javascript" type="text/javascript" charset="utf-8"></script>
 
   </head>
   <body>

@@ -246,6 +246,7 @@ function onBeforeUnload() {
 var unread = 0;
 var originalTitle = document.title;
 var focused = true;
+var favico;
 
 /*function onVisibilityChange() {
   if(!document.hidden) {
@@ -260,16 +261,19 @@ function onBlur(e) {
 function onFocus(e) {
   focused = true;
   document.title = originalTitle;
+  unread = 0;
+  favico.badge(0);
 }
 
 function onNewLine(text, originator) {
   if(!focused) {
     unread++;
+    favico.badge(unread);
     document.title = "(" + unread + ") " + originalTitle;
     Notification.requestPermission().then(function(result) {
       if(result === "granted") {
         var title = originalTitle === "" ? "Evennia" : originalTitle;
-        var options = { 
+        var options = {
           body: text.replace(/(<([^>]+)>)/ig,"")
         }
         var n = new Notification(title, options);
@@ -291,6 +295,10 @@ function onNewLine(text, originator) {
 $(document).ready(function() {
 
     Notification.requestPermission();
+
+    favico = new Favico({
+      animation: 'none'
+    });
 
     // Event when client window changes
     $(window).bind("resize", doWindowResize);
