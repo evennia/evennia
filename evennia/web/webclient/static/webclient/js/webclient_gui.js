@@ -278,7 +278,8 @@ function onNewLine(text, originator) {
       if(result === "granted") {
         var title = originalTitle === "" ? "Evennia" : originalTitle;
         var options = {
-          body: text.replace(/(<([^>]+)>)/ig,"")
+          body: text.replace(/(<([^>]+)>)/ig,""),
+          icon: "/static/website/images/evennia_logo.png"
         }
         var n = new Notification(title, options);
         n.onclick = function(e) {
