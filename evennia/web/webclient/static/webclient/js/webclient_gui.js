@@ -207,6 +207,8 @@ function onText(args, kwargs) {
     mwin.animate({
         scrollTop: document.getElementById("messagewindow").scrollHeight
     }, 0);
+
+    onNewLine(args[0], null);
 }
 
 // Handle prompt output from the server
@@ -245,6 +247,22 @@ function onBeforeUnload() {
     return "You are about to leave the game. Please confirm.";
 }
 
+var unread = 0;
+var originalTitle = document.title;
+
+function onVisibilityChange() {
+  if(!document.hidden) {
+    document.title = originalTitle;
+  }
+}
+
+function onNewLine(originator, text) {
+  if(document.hidden) {
+    unread++;
+    document.title = "(" + unread + ") " + originalTitle;
+  }
+}
+
 //
 // Register Events
 //
@@ -253,6 +271,9 @@ function onBeforeUnload() {
 $(document).ready(function() {
     // Event when client window changes
     $(window).bind("resize", doWindowResize);
+
+    $(document).on("visibilitychange", onVisibilityChange);
+
     $("#inputfield").bind("resize", doWindowResize)
         .keypress(onKeyPress)
         .bind("paste", resizeInputField)
