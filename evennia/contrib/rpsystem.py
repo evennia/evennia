@@ -126,6 +126,8 @@ _NUM_SEP = "-"
 _RE_OBJ_REF_START = re.compile(r"%s(?:([0-9]+)%s)*(\w+)" %
                     (_PREFIX, _NUM_SEP), _RE_FLAGS)
 
+_RE_LEFT_BRACKETS = re.compile(r"\{+", _RE_FLAGS)
+_RE_RIGHT_BRACKETS = re.compile(r"\}+", _RE_FLAGS)
 # Reference markers are used internally when distributing the emote to
 # all that can see it. They are never seen by players and are on the form {#dbref}.
 _RE_REF = re.compile(r"\{+\#([0-9]+)\}+")
@@ -352,6 +354,9 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
     # escape mapping syntax on the form {#id} if it exists already in emote,
     # if so it is replaced with just "id".
     string = _RE_REF.sub(r"\1", string)
+    # escape loose { } brackets since this will clash with formatting
+    string = _RE_LEFT_BRACKETS.sub("{{", string)
+    string = _RE_RIGHT_BRACKETS.sub("}}", string)
 
     # we now loop over all references and analyze them
     mapping = {}
