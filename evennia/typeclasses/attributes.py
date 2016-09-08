@@ -262,7 +262,7 @@ class AttributeHandler(object):
                 if conn:
                     attr = conn[0].attribute
                     self._cache[cachekey] = attr
-                    return [attr]
+                    return [attr] if attr.pk else []
         else:
             # only category given (even if it's None) - we can't
             # assume the cache to be complete unless we have queried
@@ -278,8 +278,9 @@ class AttributeHandler(object):
                 attrs = [conn.attribute for conn in getattr(self.obj,
                             self._m2m_fieldname).through.objects.filter(**query)]
                 for attr in attrs:
-                    cachekey = "%s-%s" % (attr.db_key, category)
-                    self._cache[cachekey] = attr
+                    if attr.pk:
+                        cachekey = "%s-%s" % (attr.db_key, category)
+                        self._cache[cachekey] = attr
                 # mark category cache as up-to-date
                 self._catcache[catkey] = True
                 return attrs
@@ -318,7 +319,8 @@ class AttributeHandler(object):
             cachekey = "%s-%s" % (key, category)
             self._cache.pop(cachekey, None)
         else:
-            [self._cache.pop(key, None) for key in self._cache if key.endswith(catkey)]
+            self._cache = {key: attrobj for key, attrobj in
+                        self._cache.items() if not key.endswith(catkey)}
         # mark that the category cache is no longer up-to-date
         self._catcache.pop(catkey, None)
         self._cache_complete = False
@@ -572,8 +574,13 @@ class AttributeHandler(object):
             for attr_obj in attr_objs:
                 if not (accessing_obj and not attr_obj.access(accessing_obj,
                         self._attredit, default=default_access)):
-                    attr_obj.delete()
-                    self._delcache(key, category)
+                    try:
+                        attr_obj.delete()
+                    except AssertionError:
+                        # this happens if the attr was already deleted
+                        pass
+                    finally:
+                        self._delcache(key, category)
             if not attr_objs and raise_exception:
                 raise AttributeError
 
