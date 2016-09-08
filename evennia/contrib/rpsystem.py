@@ -1296,7 +1296,7 @@ class ContribRPObject(DefaultObject):
             except AttributeError:
                 recog = None
             sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
-        pose = " %s" % ((self.db.pose or "") if kwargs.get("pose", False) else "")
+        pose = " %s" % (self.db.pose or "") if kwargs.get("pose", False) else ""
         return "%s%s%s" % (sdesc, idstr, pose)
 
     def return_appearance(self, looker):

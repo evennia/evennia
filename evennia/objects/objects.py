@@ -1136,12 +1136,12 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         if not self.location:
             return
-        name = self.name
-        loc_name = ""
-        loc_name = self.location.name
-        dest_name = destination.name
         string = "%s is leaving %s, heading for %s."
-        self.location.msg_contents(string % (name, loc_name, dest_name), exclude=self)
+        location = self.location
+        for obj in self.location.contents:
+            obj.msg(string % (self.get_display_name(obj),
+                              location.get_display_name(obj) if location else "nowhere",
+                              destination.get_display_name(obj)))
 
     def announce_move_to(self, source_location):
         """
@@ -1153,20 +1153,19 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
 
-        name = self.name
         if not source_location and self.location.has_player:
             # This was created from nowhere and added to a player's
             # inventory; it's probably the result of a create command.
-            string = "You now have %s in your possession." % name
+            string = "You now have %s in your possession." % self.get_display_name(self.location)
             self.location.msg(string)
             return
 
-        src_name = "nowhere"
-        loc_name = self.location.name
-        if source_location:
-            src_name = source_location.name
         string = "%s arrives to %s from %s."
-        self.location.msg_contents(string % (name, loc_name, src_name), exclude=self)
+        location = self.location
+        for obj in self.location.contents:
+            obj.msg(string % (self.get_display_name(obj),
+                              location.get_display_name(obj) if location else "nowhere",
+                              source_location.get_display_name(obj)))
 
     def at_after_move(self, source_location):
         """
