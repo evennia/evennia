@@ -989,14 +989,14 @@ class CmdRecog(RPCommand): # assign personal alias to object in room
 
     def parse(self):
         "Parse for the sdesc as alias structure"
-        if "as" in self.args:
+        if " as " in self.args:
             self.sdesc, self.alias = [part.strip() for part in self.args.split(" as ", 2)]
         elif self.args:
             # try to split by space instead
             try:
                 self.sdesc, self.alias = [part.strip() for part in self.args.split(None, 1)]
             except ValueError:
-                self.args = ""
+                self.sdesc, self.alias = self.args.strip(), ""
 
     def func(self):
         "Assign the recog"
@@ -1028,7 +1028,7 @@ class CmdRecog(RPCommand): # assign personal alias to object in room
             if self.cmdstring == "forget":
                 # remove existing recog
                 caller.recog.remove(obj)
-                caller.msg("%s will know only '%s'." % (caller.key, obj.recog.get(obj)))
+                caller.msg("%s will now know only '%s'." % (caller.key, obj.recog.get(obj)))
             else:
                 sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
                 try:
