@@ -1139,9 +1139,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         string = "%s is leaving %s, heading for %s."
         location = self.location
         for obj in self.location.contents:
-            obj.msg(string % (self.get_display_name(obj),
-                              location.get_display_name(obj) if location else "nowhere",
-                              destination.get_display_name(obj)))
+            if obj != self:
+                obj.msg(string % (self.get_display_name(obj),
+                                  location.get_display_name(obj) if location else "nowhere",
+                                  destination.get_display_name(obj)))
 
     def announce_move_to(self, source_location):
         """
@@ -1163,9 +1164,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         string = "%s arrives to %s from %s."
         location = self.location
         for obj in self.location.contents:
-            obj.msg(string % (self.get_display_name(obj),
-                              location.get_display_name(obj) if location else "nowhere",
-                              source_location.get_display_name(obj)))
+            if obj != self:
+                obj.msg(string % (self.get_display_name(obj),
+                                  location.get_display_name(obj) if location else "nowhere",
+                                  source_location.get_display_name(obj)))
 
     def at_after_move(self, source_location):
         """
