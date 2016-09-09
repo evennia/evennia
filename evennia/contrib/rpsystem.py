@@ -796,8 +796,7 @@ class CmdEmote(RPCommand):  # replaces the main emote
             self.caller.msg("What do you want to do?")
         else:
             # we also include ourselves here.
-            emote = self.args.replace('{', '{{')  # Escape open curly brace in later formatting.
-            emote = emote.replace('}', '}}')  # Also escape close curly brace.
+            emote = self.args
             targets = self.caller.location.contents
             if not emote.endswith((".", "?", "!")):  # If emote is not punctuated,
                 emote = "%s." % emote  # add a full-stop for good measure.
