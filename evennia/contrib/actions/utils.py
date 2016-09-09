@@ -1,10 +1,48 @@
+"""
+A set of utility functions used extensively in the action system.
+
+Note the filler functions bps_legs, view_bobo and view_false,
+which may be employed to debug the action system in lieu of
+game-specific functions that can be plugged into a character's
+actions.bodypart_movement_map property and a room's actions.view
+property.
+"""
 from evennia import DefaultRoom, DefaultCharacter, DefaultObject, ObjectDB
 from evennia import search_channel
 
+_ACTION_CHARACTER = None
+_ACTION_ROOM = None
 
+def setup(override=False):
+    """
+    loads the action system on all rooms and characters
+
+    only to be used in case of accidents, as all rooms and characters already
+    have the handlers as properties and set them up when initialized
+    """
+    global _ACTION_CHARACTER
+    global _ACTION_ROOM
+    if not _ACTION_CHARACTER:
+        from evennia.contrib.actions.typeclasses import (ActionCharacter 
+            as _ACTION_CHARACTER)
+    if not _ACTION_ROOM:
+        from evennia.contrib.actions.typeclasses import (ActionRoom
+            as _ACTION_ROOM)
+
+    for obj in ObjectDB.objects.all():
+        if isinstance(obj, _ACTION_CHARACTER):
+            # add the actions list to the character
+            obj.actions.setup(override=override)
+
+        elif isinstance(obj, _ACTION_ROOM):
+            # add the actions list to the room
+            obj.actions.setup(override=override)
 
 
 def same(action, other):
+    """
+    Checks whether two actions are identical in nature. Currently unused.
+    """
     if (action['key'] == other['key'] and 
         action['owner'] == other['owner'] and
         action['target'] == other['target'] and 
@@ -95,6 +133,11 @@ def validate(action):
 
 
 def handle_invalid(action, validate_result):
+    """
+    Alert the MudInfo channel that an invalid action has been detected
+    and remove this action from its room's action list or character's
+    action queue.
+    """
     if action['room']:
         room = action['room'].key + "({0})".format(action['room'].dbref)
     else:
@@ -111,13 +154,32 @@ def handle_invalid(action, validate_result):
 
 
 def share_bps(action, other):
-    # Note: "action" and "other" must be action dictionaries, not Action objects
-    # The function assumes that no bodypart is repeated in either list.
+    """
+    Check whether two actions share bodyparts.
+
+    Note: "action" and "other" must be action dictionaries, not Action objects
+    The function assumes that no bodypart is repeated in either list.
+    """
     l = []
     if (action['owner'] == other['owner'] 
         and action['bodyparts'] and other['bodyparts']):
-        action_bodyparts = list_bodyparts(action['bodyparts'])
-        other_bodyparts = list_bodyparts(other['bodyparts'])
+        if isinstance(action['bodyparts'], list):
+            action_bodyparts = action['bodyparts']
+        elif (isinstance(action['bodyparts'], str) or 
+            isinstance(action['bodyparts'], unicode)):
+            action_bodyparts = [action['bodyparts']]
+        else:
+            raise TypeError("action['bodyparts'] must be list, string or " +
+                "unicode, not " + str(type(action['bodyparts'])))
+
+         if isinstance(other['bodyparts'], list):
+            other_bodyparts = other['bodyparts']
+        elif (isinstance(other['bodyparts'], str) or 
+            isinstance(other['bodyparts'], unicode)):
+            other_bodyparts = [other['bodyparts']]
+        else:
+            raise TypeError("other['bodyparts'] must be list, string or " +
+                "unicode, not " + str(type(other['bodyparts'])))
 
         for x in action_bodyparts:
             for y in other_bodyparts:
@@ -130,6 +192,8 @@ def string_action_descs(action_list):
     """
     Transforms a list of actions into a string of their descriptions, 
     partitioned by commas and the word "and".
+
+    Notably used in the "queue" command in commands.py.
     """
     if not action_list:
         print("ERROR in world.actions.utils.py, string_action_descs")
@@ -155,12 +219,12 @@ def string_action_descs(action_list):
 
     return s
 
+
 def string_descs(l):
     """
     Transforms a list of strings into a string containing them,
     partitioned by commas and the word "and".
     """
-
     if not l:
         return "" # This should never happen
 
@@ -199,8 +263,8 @@ def triage(action):
     """
     Check for and handle the situation wherein other actions that are underway
     or enqueued by the same character share bodyparts with a given action.
-
-    [WIP]
+    Different results will arise if the character's 'new' setting is set to
+    'override', 'queue' and 'ignore'.
     """
     underway = is_same_bps_underway(action)
     new = action['owner'].actions.new
@@ -238,8 +302,9 @@ def triage(action):
             else:
                 s = action['begin_msg']
 
-            action['room'].actions.display(action['owner'], s,
-                target=action['target'], data=action['data']) 
+            if s:
+                action['room'].actions.display(action['owner'], s,
+                    target=action['target'], data=action['data']) 
  
                 # process the action in the room's action list
             return action['room'].actions
@@ -286,8 +351,9 @@ def triage(action):
         else:
             s = action['begin_msg']
 
-        action['room'].actions.display(action['owner'], s, 
-            target=action['target'], data=action['data'])
+        if s:
+            action['room'].actions.display(action['owner'], s, 
+                target=action['target'], data=action['data'])
  
         # process the action in the room's actions list
         return action['room'].actions
@@ -311,26 +377,6 @@ def process_queue(char):
             s = " is now {0}.".format(enqueued['desc'])
             enqueued['room'].actions.display(enqueued['owner'], s, 
                 target=enqueued['target'], data=enqueued['data']) 
-
-
-def list_bodyparts(bodyparts_str):
-    """
-    Converts a string of bodyparts to a list of bodyparts.
-    Used in unpacking the bodyparts from an action's dictionary.
-    """
-    return bodyparts_str.split(",")
-
-
-def join_bodyparts(bodyparts_list):
-    """
-    Converts a list of bodyparts to a string of bodyparts.
-    Used in packing the bodyparts into an action's dictionary.
-    Necessary because .db attributes that are lists of dictionaries of lists
-    (such as the actions list) would raise errors when being indexed or removed.
-    Thus, the actions list must be a list of dictionaries of strings and other
-    non-list variables instead.
-    """
-    return ",".join(bodyparts_list)
 
 
 def format_action_desc(room, viewer, s, target, data=""):
@@ -377,11 +423,30 @@ def format_action_desc(room, viewer, s, target, data=""):
 
 #debug functions
 def bps_legs(movetype):
+    """
+    Assign the character's actions.movebps property to this to ensure that all
+    movement types return "legs" as their movement bodypart.
+    Useful for testing movement actions.
+    """
     return "legs"
 
+
 def view_bobo(x,y):
+    """
+    Assign the room's actions.view property to this to ensure that whenever
+    a character or object is viewed by a character, the viewed thing's
+    description will be 'bobo'. Useful for testing the room's actions.display
+    method.
+    """
     return "bobo"
 
+
 def view_false(x,y):
+    """
+    Assign the room's actions.view property to this to ensure that whenever
+    a character or object is viewed by a character, the viewed thing will
+    be treated as hidden. Useful for testing the room's actions.display
+    method.
+    """
     return False
 

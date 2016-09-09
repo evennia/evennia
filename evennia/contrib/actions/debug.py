@@ -7,7 +7,8 @@ from evennia import CmdSet
 from evennia.commands.command import Command
 
 from evennia.contrib.actions.actions import Action
-from evennia.contrib.actions.setup import setup
+from evennia.contrib.actions.utils import setup
+
 
 class ActionDebugCmdSet(CmdSet):
     """CmdSet for debugging commands."""
@@ -37,6 +38,7 @@ class CmdDebugActSlow(Command):
 
     def func(self):
         DebugActionSlow(self.caller, self.caller.location)
+
 
 class DebugActionSlow(Action):
     def __init__(self, owner, room):
@@ -71,6 +73,7 @@ class CmdDebugActFast(Command):
     def func(self):
         DebugActionFast(self.caller, self.caller.location)
 
+
 class DebugActionFast(Action):
     def __init__(self, owner, room):
         duration = 10
@@ -101,6 +104,7 @@ class CmdDebugActLeftArm(Command):
 
     def func(self):
         DebugActionLeftArm(self.caller, self.caller.location)
+
 
 class DebugActionLeftArm(Action):
     def __init__(self, owner, room):
@@ -231,16 +235,6 @@ class DebugActionFoe(Action):
             non_turn=False,
             duration=duration,
             )
-
-
-#class CmdDebugActAnyArm(Command):
-#    """
-#    Triggers a single action that uses either the left or the right arm,
-#    based on the argument given. If no argument is given, attempts to choose
-#    the right arm first, then the left arm if the right arm is unavailable,
-#    then the right arm again if both arms are unavailable, attempting to
-#    override the right arm's previous action. 
-#    """
 
 
 class CmdDebugActSetup(Command):

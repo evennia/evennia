@@ -1,6 +1,18 @@
+"""
+Contains the typeclasses ActionCharacter, ActionRoom and ActionExit, which all
+characters, rooms and exits in a given game should subclass if they are to be
+part of the action system. If any room or exit does not subclass from these,
+serious bugs will appear whenever ActionCharacters are in these rooms or
+attempt to use these exits. If any character does not subclass from these,
+it will at the very least be unable to cross ActionExits, so be sure to
+subclass all of the character, room and exit classes in your game from these
+if you intend to make use of the action system.
+"""
+
 from evennia import DefaultCharacter, DefaultRoom, DefaultExit
 from evennia.utils import lazy_property
-from evennia.contrib.actions.handlers import CharacterActionHandler, RoomActionHandler
+from evennia.contrib.actions.handlers import (CharacterActionHandler, 
+    RoomActionHandler)
 from evennia.contrib.actions.commands import ActionExitCommand
 
 
@@ -26,13 +38,12 @@ class ActionCharacter(DefaultCharacter):
     To assign a function that sets the bodyparts for the character's movement
     action based on the movement type, your class must provide this line:
 
-    self.actions.movebps = <your function here>
+    self.actions.bodypart_movement_map = <your function here>
 
     This function has one argument: the movement type being performed (string). 
     If the function is not set or is set to None, the character will move 
     without using any bodyparts.
     """
-
     def at_object_creation(self):
         super(ActionCharacter, self).at_object_creation()
         self.actions.setup()
@@ -46,11 +57,7 @@ class ActionCharacter(DefaultCharacter):
         """
         CharacterActionHandler that manages the character's actions queue.
         """
-
         return CharacterActionHandler(self)
-
-
-
 
 
 class ActionRoom(DefaultRoom):
@@ -76,12 +83,10 @@ class ActionRoom(DefaultRoom):
         super(ActionRoom, self).at_object_creation()
         self.actions.setup()
 
-
     @lazy_property
     def actions(self):
         """RoomActionHandler that manages the actions in the room."""
         return RoomActionHandler(self)
-
 
 
 class ActionExit(DefaultExit):

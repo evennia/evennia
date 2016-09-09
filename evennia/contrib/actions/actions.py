@@ -30,9 +30,9 @@ owner (Character) - the character that is performing the action
 
 room (Room) - the room where the action is taking place
 
-bodyparts (string) - a list of the bodyparts employed for performing the action,
-                     formatted a string of comma-separated names, e.g.
-                     "left arm,right arm,torso"
+bodyparts (list/string) - a list of strings that represent the bodyparts
+                          employed in performing the action, or a single
+                          string if only one bodypart is employed
 
 target (Object) - the target of the action, if any
 
@@ -73,6 +73,8 @@ msg_defaults (boolean) - whether to show the default messages for beginning,
 begin_msg (string) - The message that will be displayed when the action is  
                      initiated if msg_defaults is set to True. The message
                      can contain the same formatting as the action's desc.
+                     If set to the empty string, no message will be shown at
+                     all.
 
 onset (float) - the time at which the action began
 
@@ -169,7 +171,6 @@ class Action(object):
         if validate(action) == "Valid":
             self.at_creation(action)
 
-
     def at_creation(self, action):
         """
         Runs when the action is created, just after __init__().
@@ -189,7 +190,6 @@ class Action(object):
         if handler:
             handler.add(action)
 
-
     def at_attempt(self, action):
         """
         Runs when the action's duration has passed and it is about to be
@@ -198,7 +198,6 @@ class Action(object):
         fails and at_failure is run.
         """
         return True
-
 
     def at_completion(self, action):
         """
@@ -213,7 +212,6 @@ class Action(object):
         # remove the action and replace it with an enqueued action if necessary
         self.cleanup(action)
 
-
     def at_failure(self, action):
         """        
         Runs when the action has failed.
@@ -226,7 +224,6 @@ class Action(object):
 
         # remove the action and replace it with an enqueued action if necessary
         self.cleanup(action)
-
 
     def at_cancel(self, action):
         """
@@ -266,7 +263,6 @@ class Action(object):
         else:
             return False
 
-
     def cleanup(self, action):
         """
         Called after the action is either completed or cancelled,
@@ -291,7 +287,7 @@ class Turn(Action):
     Dummy action that simply generates turn order in the event that a new
     turn-based situation arises or a character skips their turn.
     """
-    def __init__(self, owner, room, place_at_end=False):
+    def __init__(self, owner, room, place_at_end=False, hide=False):
         if place_at_end and room.actions.list:
             # Place the turn action at the end of the actions list
             # the duration of the turn action will equal the endtime of the 
@@ -300,6 +296,7 @@ class Turn(Action):
         else:
             # Place the turn action at the start of the actions list
             duration = 0
+
 
         super(Turn, self).__init__(
             key="turn",
@@ -315,6 +312,8 @@ class Turn(Action):
             non_turn=True, # should be non-turn because it is sometimes given
                            # out to all characters in the room that have no
                            # actions
+            msg_defaults=not hide,
+            begin_msg="",
             duration=duration,
             )
 
@@ -328,11 +327,21 @@ class Turn(Action):
 
             super(Turn, self).at_creation(action)
 
+    def at_completion(self, action):
+        """
+        Ensures that the turn completion message shows even if begin_msg is set
+        to False.
+        """
+        action['msg_defaults']=True
+        super(Turn, self).at_completion(action) 
+
 
 class MoveIn(Action):
     def __init__(self, owner, room, prev_room):
-        if owner.actions.movebps and owner.actions.movetype:
-            bodyparts = owner.actions.movebps(owner.actions.movetype)
+        if (owner.actions.bodypart_movement_map and 
+            owner.actions.movetype):
+            bodyparts = owner.actions.bodypart_movement_map(
+                owner.actions.movetype)
         else:
             bodyparts = ""
 
@@ -340,23 +349,23 @@ class MoveIn(Action):
         # This assumes there is exactly one exit from the current room
         # to the previous one.
 
-        exit = [x for x in room.contents if x.db_destination == prev_room]
+        exit = [x for x in room.exits if x.db_destination == prev_room]
         if exit:
             # There is at least one exit
-            exit = max(exit, lambda x: x.db.distance)
+            exit = max(exit, key=lambda x: x.db.distance)
             distance = exit.db.distance
         else:
             # No exits back to the previous room were found, default to using
             # the distance of the exit from the previous room to the current one
-            exit = [x for x in prev_room.contents if x.db_destination == room]
+            exit = [x for x in prev_room.exits if x.db_destination == room]
             if exit:
-                exit = max(exit, lambda x: x.db.distance)
+                exit = max(exit, key=lambda x: x.db.distance)
                 distance = exit.db.distance
             else:
                 # Exceptional situation where the entrance from the previous
                 # room to this one has disappeared just as, or perhaps because,
                 # the character has passed through it
-                distance = 1
+                distance = 1.0
 
         if owner.actions.movespeed:
             duration = distance / owner.actions.movespeed(owner)
@@ -379,6 +388,27 @@ class MoveIn(Action):
             duration=duration,
             )
 
+    def at_completion(self, action):
+        """
+        Continues to move the character towards their next destination if the
+        destination's key matches the key of any exit in the room
+        """
+        super(MoveIn, self).at_completion(action)
+        actions = action['owner'].actions.list
+        moves = [x for x in actions if x['key'] == 'moveout']
+        exits = action['owner'].location.exits
+        while moves:
+            for dest in exits:
+                if str(dest.key) == str(moves[0]['target'].key):
+                    moves[0]['room'] = action['owner'].location
+                    moves[0]['target'] = dest
+                    action['owner'].actions.pop(moves[0])
+                    return
+            action['owner'].actions.list.remove(moves[0])
+            action['owner'].msg("Unable to continue heading " + 
+                moves[0]['target'].key + "; movement action stopped.")
+            moves.remove(moves[0])
+
 
 class MoveOut(Action):
     """
@@ -396,8 +426,10 @@ class MoveOut(Action):
 
         # Determine which bodyparts fit the character's current movement type
         # and apply them to the action.
-        if owner.actions.movebps and owner.actions.movetype:
-            bodyparts = owner.actions.movebps(owner.actions.movetype)
+        if (owner.actions.bodypart_movement_map and 
+            owner.actions.movetype):
+            bodyparts = owner.actions.bodypart_movement_map(
+                owner.actions.movetype)
         else:
             bodyparts = ""
 
@@ -432,14 +464,12 @@ class MoveOut(Action):
         else:
             return False
 
-
     def at_completion(self, action):
         """
         Moves the character to the next room, transfers the character's actions
         there and cleans up the previous room to account for the character's
         departure
         """
-
         prev_room = action['room']
         next_room = action['target'].db_destination
 
@@ -453,7 +483,6 @@ class MoveOut(Action):
         if action['room'].actions.turnof == action['owner']:
             action['room'].actions.turnof = None
 
-
         # transfer the character's actions from the previous room to the
         # current one, ensuring that their durations are adjusted accordingly
         for temp_action in prev_room.actions.list:
@@ -464,7 +493,7 @@ class MoveOut(Action):
                 if prev_room.actions.mode == "RT":
                     k_time = time()
                 else:
-                    k_time = prev_room.actions.time        
+                    k_time = prev_room.actions.time 
  
                 if (temp_action['target'] and 
                     temp_action['target'] != action['owner']):
@@ -485,7 +514,6 @@ class MoveOut(Action):
                     temp_action['room'] = next_room
                     next_room.actions.add(temp_action)
 
-
             elif temp_action['target'] == action['owner']:
                 # cancel all ongoing actions by other characters that target
                 # the moving character
@@ -499,13 +527,12 @@ class MoveOut(Action):
 
         MoveIn(action['owner'], next_room, prev_room)
 
-        # if the character has their alarm on, attempt to enter TB mode in the
-        # next room and leave TB mode in the previous room
-        if action['owner'].actions.alarm:
+        # if the character has activated their turn-based status, attempt to 
+        # enter TB mode in the next room and leave TB mode in the previous room
+        if action['owner'].actions.turnbased:
             prev_room.actions.try_rt()
             next_room.actions.try_tb()
 
- 
     def at_failure(self, action):
         """
         Sends a message to the failing character and possibly the room, 
@@ -517,10 +544,4 @@ class MoveOut(Action):
         else:
             # No shorthand error message. Call hook.
             action['target'].at_failed_traverse(action['object'])
-
-
-
-
-
-
 

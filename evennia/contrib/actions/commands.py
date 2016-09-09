@@ -8,7 +8,7 @@ from evennia import CmdSet
 from evennia.commands.command import Command
 from evennia.utils import evmore
 from evennia.contrib.actions.actions import MoveOut
-
+from evennia.contrib.actions.utils import format_action_desc
 
 class ActionCmdSet(CmdSet):
     """CmdSet for action-related commands."""
@@ -69,6 +69,7 @@ class CmdTurnbased(Command):
             self.caller.msg("Invalid argument for the \"turnbased\" " + 
                 "command. Please specify \"on\", \"off\", \"status\" or no " +
                 "argument at all.")
+
 
 class CmdActSettings(Command):
     """
@@ -167,18 +168,20 @@ class CmdActions(Command):
         s = "Ongoing actions in {0}:\n".format(room.key)
         if room.actions.list:
             for action in room.actions.list:
+                desc = format_action_desc(room, action['owner'], 
+                    action['desc'], action['target'], data=action['data'])
+
                 if room.actions.view:
-                    name = room.actions.view(
-                        action['owner'], self.caller)
+                    name = room.actions.view(action['owner'], self.caller)
                 else:
                     name = action['owner'].key.capitalize()
                 if not name == False:
-                    s += "* {0} is {1}\n".format(
-                        name, action['desc'])
+                    s += "* {0} is {1}.\n".format(name, desc)
         else:
             s += "None"
 
         evmore.msg(self.caller, s)
+
 
 class CmdStop(Command):
     """
@@ -212,6 +215,7 @@ class CmdStop(Command):
             self.caller.msg("Invalid argument. Either type \"stop\" "+
                 "on its own or with the \"ongoing\" or \"queue\" argument.")
 
+
 class CmdDone(Command):
     """
     ends the character's turn during turn-based situations
@@ -244,7 +248,9 @@ class CmdQueue(Command):
         s = "You currently have the following actions enqueued: \n"
         if self.caller.actions.list:
             for action in self.caller.actions.list:
-                s += " * " + action['desc'] + "\n"
+                desc = format_action_desc(action['room'], self.caller, 
+                    action['desc'], action['target'], data=action['data'])
+                s += " * " + desc + "\n"
         else:
             s += "None\n"
         evmore.msg(self.caller, s)

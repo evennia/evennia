@@ -1,13 +1,44 @@
+"""
+This module contains the ActionSystemScript, which runs when a given room
+switches to turn-based or real-time mode as well as each time at least one
+action in the room is due to be processed in either of these modes. This is
+the script that handles most of the work involving actions that are already
+ongoing within the room.
+"""
+
 from math import ceil
 from time import time
 from evennia import DefaultScript, DefaultCharacter
 from evennia.utils import logger
 from evennia.contrib.actions.actions import Turn
-from evennia.contrib.actions.utils import process_queue, validate, handle_invalid
+from evennia.contrib.actions.utils import (process_queue, validate, 
+    handle_invalid)
 
 
 class ActionSystemScript(DefaultScript):
+    """
+    This script has two modes, RT and TB.
+
+    The RT mode processes all actions whose endtime is less than the current
+    CPU time, pops any relevant actions enqueued by these processed actions'
+    owners, and finally sets the script to run again when the next action
+    is due to complete.
+
+    The TB mode of this function gives a turn action to all characters in
+    the room that do not currently have an action, tells the player whose
+    turn has just ended that their turn has ended, processes the earliest
+    action in the room's actions list and gives that action's owner the
+    turn, providing them with either 60 seconds to act (if the owner is
+    a PC) or 5 seconds (if the owner is an NPC).
+
+    In either the RT or TB mode, if no actions are present in the room's
+    actions list, the function pauses the script.
+    """
     def at_script_creation(self):
+        """
+        Describes the ActionSystemScript and makes it persistent. Its interval
+        and start_delay values are overruled by later invocations of the script.
+        """
         self.key = "ActionSystemScript"
         self.desc = "Processes the real-time action system in the current room."
         self.interval = 1  # seconds
@@ -17,22 +48,7 @@ class ActionSystemScript(DefaultScript):
 
     def at_repeat(self):
         """
-        This script has two modes, RT and TB.
-
-        The RT mode processes all actions whose endtime is less than the current
-        CPU time, pops any relevant actions enqueued by these processed actions'
-        owners, and finally sets the script to run again when the next action
-        is due to complete.
-
-        The TB mode of this function gives a turn action to all characters in
-        the room that do not currently have an action, tells the player whose
-        turn has just ended that their turn has ended, processes the earliest
-        action in the room's actions list and gives that action's owner the
-        turn, providing them with either 60 seconds to act (if the owner is
-        a PC) or 5 seconds (if the owner is an NPC).
-
-        In either the RT or TB mode, if no actions are present in the room's
-        actions list, the function pauses the script.
+        Processes actions as described in the class docstring.
         """
         room = self.obj
         handler = room.actions
@@ -56,10 +72,15 @@ class ActionSystemScript(DefaultScript):
                     # process the action
                     validate_result = validate(action)
                     if validate_result == "Valid":
-                        if action['at_attempt'](action):
+                         if hasattr(action['owner'], "pre_perform_action"):
+                            action['owner'].pre_perform_action(action)
+                        result = action['at_attempt'](action)
+                        if result:
                             action['at_completion'](action)
                         else:
-                           action['at_failure'](action)
+                            action['at_failure'](action)
+                        if hasattr(action['owner'], "post_perform_action"):
+                            action['owner'].post_perform_action(action, result)
                     else:
                         handle_invalid(action, validate_result)
 
@@ -156,17 +177,19 @@ class ActionSystemScript(DefaultScript):
                             handler.time = action['endtime']
                             validate_result = validate(action)
                         else:
-                            # no more actions on the list, shut down the script
-                            handler.pause_script()
-
-                    validate_result = validate(action)
+                            break
+`
                     if validate_result == "Valid":
-                        if action['at_attempt'](action):
+                        if hasattr(action['owner'], "pre_perform_action"):
+                            action['owner'].pre_perform_action(action)
+                        result = action['at_attempt'](action)
+                        if result:
                             action['at_completion'](action)
                         else:
                             action['at_failure'](action)
+                        if hasattr(action['owner'], "post_perform_action"):
+                            action['owner'].post_perform_action(action, result)
                     else:
-                        handle_invalid(action, validate_result)
                         handler.try_rt()
                         return
 
@@ -181,6 +204,7 @@ class ActionSystemScript(DefaultScript):
 
                     # [WIP] If the character that performed the action is an
                     # NPC, run its AI to determine its next action
+
 
 
 

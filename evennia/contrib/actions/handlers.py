@@ -7,12 +7,11 @@ attr, as set inside the typeclasses.characters and typeclasses.rooms files.
 
 The brunt of the work in the actions system is done by the ActionSystemScript
 attached to each room, referenced via the RoomActionHandler's "script" property.
+
+Because world.actions.typeclasses.ActionCharacter uses CharacterActionHandler,
+world.actions.handlers.py cannot import world.actions.typeclasses.py as it
+would be a circular import. Thus, we use DefaultCharacter instead.
 """
-
-
-# Because world.actions.typeclasses.ActionCharacter uses CharacterActionHandler,
-# world.actions.handlers.py cannot import world.actions.typeclasses.py as it
-# would be a circular import. Thus, we use DefaultCharacter instead.
 
 from time import time
 from evennia import DefaultCharacter 
@@ -25,7 +24,10 @@ from evennia.contrib.actions.utils import (process_queue, format_action_desc,
 
 class CharacterActionHandler(object):
     """
-    
+    Stores the character's actions queue, turn-based status, active or inactive
+    status, current movement type and action system-related settings, as well as
+    the methods used to calculate movement speed and assign body parts for 
+    movement actions.
     """
 
     def __init__(self, owner):
@@ -34,8 +36,18 @@ class CharacterActionHandler(object):
         """
         self.owner = owner
 
-
     def setup(self, override=False):
+        """
+        Invoked by evennia.contrib.actions.setup(), as well as by the 
+        character's at_object_creation() method. It sets up the database
+        attribute of the ActionCharacter, a dictionary storing all
+        properties of the character that are related to the action system.
+
+        This method is separate from __init__(), which loads whenever the
+        server reloads, both in order to avoid trying to re-setup a
+        character that is already set up and in order to provide the 
+        option of overriding the previous setup. 
+        """
         if not self.owner.attributes.has("actions") or override:
             self.owner.db.actions = {}
 
@@ -55,12 +67,12 @@ class CharacterActionHandler(object):
         if not self.owner.db.actions.has_key('movetype') or override:
             self.movetype = None
 
-        if not self.owner.db.actions.has_key('movebps') or override:
-            self.movebps = None
+        if (not self.owner.db.actions.has_key('bodypart_movement_map') or
+            override):
+            self.bodypart_movement_map = None
 
         if not self.owner.db.actions.has_key('active') or override:
             self.active = True
-
 
     @property
     def turnbased(self):
@@ -72,7 +84,6 @@ class CharacterActionHandler(object):
         mode.
         """
         return self.owner.db.actions['turnbased']
-
 
     @turnbased.setter
     def turnbased(self, value):
@@ -126,7 +137,6 @@ class CharacterActionHandler(object):
             
                 self.owner.location.actions.try_rt()
 
-
     @property
     def list(self):
         """
@@ -135,11 +145,9 @@ class CharacterActionHandler(object):
         """
         return self.owner.db.actions['list']
 
-
     @list.setter
     def list(self, value):
         self.owner.db.actions['list'] = value
-
 
     @property
     def new(self):
@@ -155,7 +163,6 @@ class CharacterActionHandler(object):
         """
         return self.owner.db.actions['new']
 
-
     @new.setter
     def new(self, value):
         if value == "override" or value == "queue" or value == "ignore":
@@ -166,7 +173,6 @@ class CharacterActionHandler(object):
                 " actions new setting must be either \"override\", \"queue\"" +
                 " or \"ignore\".") 
 
-
     @property
     def movespeed(self):
         """        
@@ -175,21 +181,18 @@ class CharacterActionHandler(object):
         """
         return self.owner.db.actions['movespeed']
 
-
     @movespeed.setter
     def movespeed(self, value):
         self.owner.db.actions['movespeed'] = value
-
 
     @property
     def movetype(self):
         """
         A string that describes the character's current movement mode.
-        It is used in automatic invocations of the movebps function
+        It is used in automatic invocations of the bodypart_movement_map function
         by MoveOut actions (described in actions.py)
         """
         return self.owner.db.actions['movetype']
-
 
     @movetype.setter
     def movetype(self, value):
@@ -199,8 +202,10 @@ class CharacterActionHandler(object):
         # character's present MoveOut action and is impossible if
         # the character is performing a MoveIn action.
 
-        if owner.actions.movebps and owner.actions.movetype:
-            bodyparts = owner.actions.movebps(owner.actions.movetype)
+        if (self.owner.actions.bodypart_movement_map and
+            self.owner.actions.movetype):
+            bodyparts = owner.actions.bodypart_movement_map(
+                self.owner.actions.movetype)
         else:
             self.owner.db.actions['movetype'] = value
             return
@@ -227,19 +232,17 @@ class CharacterActionHandler(object):
         self.owner.db.actions['movetype'] = value
 
     @property
-    def movebps(self):
+    def bodypart_movement_map(self):
         """
         A function that determines which bodyparts are to be used for a given
         movement mode. The function takes one argument, the movement mode
         itself (a string). 
         """
-        return self.owner.db.actions['movebps']
+        return self.owner.db.actions['bodypart_movement_map']
 
-
-    @movebps.setter
-    def movebps(self, value):
-        self.owner.db.actions['movebps'] = value
-
+    @bodypart_movement_map.setter
+    def bodypart_movement_map(self, value):
+        self.owner.db.actions['bodypart_movement_map'] = value
     
     @property
     def active(self):
@@ -249,7 +252,6 @@ class CharacterActionHandler(object):
         incapacitating condition.
         """
         return self.owner.db.actions['active']   
-
 
     @active.setter
     def active(self, value):
@@ -272,14 +274,11 @@ class CharacterActionHandler(object):
             self.stop(ongoing=True, queued=False)
             self.owner.db.actions['active'] = False
 
-
     def add(self, action):
         """
         add the action to the bottom of the owner's actions queue
         """
-        self.owner.msg("|madding {0} to action queue|n".format(action['key']))
         self.list.append(action)
-
 
     def pop(self, action):
         """
@@ -290,19 +289,23 @@ class CharacterActionHandler(object):
         Note: In turn-based mode, popping must only occur while the popped
         action's owner is referenced by the actions_turnof variable
         """
-        self.remove(action)
-        action = dict(action)
-        self.owner.location.actions.add(action)
-
+        if action['target'] in self.owner.location.contents:
+            self.remove(action)
+            action = dict(action)
+            self.owner.location.actions.add(action)
+        else:
+            desc = "will not be {0}: target not in room.".format(
+                action['desc'])
+            desc = format_action_desc(self.owner, action['desc'], 
+                action['target'], data=action['data'])
+            self.owner.msg(desc)
 
     def remove(self, action):
         """
         remove the action from the owner's actions queue
         """
-        self.owner.msg("|mremoving {0} from action queue|n".format(action['key']))
         self.list.remove(action)
  
-
     def done(self):
         """
         During turn-based mode, concludes the turn for the owner
@@ -342,9 +345,9 @@ class CharacterActionHandler(object):
                 if action['owner'] == self.owner:
                     action['at_cancel'](action)
 
-
     def unpuppet(self):
         """
+        Meant to be called in the character's at_pre_unpuppet method.
         Cancels all of the character's queued and ongoing actions, then
         removes the character's alert, which causes the room to attempt to
         enter real-time mode.
@@ -356,17 +359,28 @@ class CharacterActionHandler(object):
 class RoomActionHandler(object):
     """
     Lists the ongoing action in the room, keeps track of turn-related
-    information and provides methods for 
+    information and provides methods for displaying objects and handling
+    invalid actions.
     """
-
     def __init__(self, owner):
         """
         sets owner (Room), the room to which this handler is attached
         """
         self.owner = owner
 
-
     def setup(self, override=False):
+        """
+        Invoked by evennia.contrib.actions.setup(), as well as by the room's
+        at_object_creation() method. It sets up the database attribute of the
+        ActionRoom, a dictionary storing all properties of the room that are
+        related to the action system, as well as loading the room's
+        ActionSystemScript.
+
+        This method is separate from __init__(), which loads whenever the
+        server reloads, both in order to avoid trying to re-setup a room
+        that is already set up and in order to provide the option of
+        overriding the previous setup. 
+        """
         if not self.owner.db.actions or override:
             self.owner.db.actions = {}
 
@@ -404,11 +418,9 @@ class RoomActionHandler(object):
         """
         return self.owner.db.actions['list']
 
-
     @list.setter
     def list(self, value):
         self.owner.db.actions['list'] = value
-
 
     @property
     def mode(self):
@@ -417,7 +429,6 @@ class RoomActionHandler(object):
         or turn-based mode.
         """
         return self.owner.db.actions['mode']
-
 
     @mode.setter
     def mode(self, value):
@@ -428,7 +439,6 @@ class RoomActionHandler(object):
                 " to actions mode in room {0};".fomat(self.owner) + 
                 " actions mode must be either \"RT\" or \"TB\". " )
 
-
     @property
     def turnof(self):
         """
@@ -436,11 +446,9 @@ class RoomActionHandler(object):
         """
         return self.owner.db.actions['turnof']
 
-
     @turnof.setter
     def turnof(self, value):
         self.owner.db.actions['turnof'] = value
-
 
     @property
     def time(self):
@@ -452,11 +460,9 @@ class RoomActionHandler(object):
         """
         return self.owner.db.actions['time']
 
-
     @time.setter
     def time(self, value):
         self.owner.db.actions['time'] = value
-
 
     @property
     def acted(self):
@@ -467,11 +473,9 @@ class RoomActionHandler(object):
         """
         return self.owner.db.actions['acted']
 
-
     @acted.setter
     def acted(self, value):
         self.owner.db.actions['acted'] = value
-
 
     @property
     def view(self):
@@ -488,11 +492,9 @@ class RoomActionHandler(object):
         """
         return self.owner.db.actions['view']
 
-
     @view.setter
     def view(self, value):
         self.owner.db.actions['view'] = value
-
 
     @property
     def script(self):
@@ -501,11 +503,9 @@ class RoomActionHandler(object):
         """
         return self.owner.db.actions['script']
     
-
     @script.setter
     def script(self, value):
         self.owner.db.actions['script'] = value
-
 
     def add(self, action):
         """
@@ -572,13 +572,11 @@ class RoomActionHandler(object):
 
         return True
 
-
     def remove(self, action):
         """
         remove the action from the room's action list
         """
         self.list.remove(action)
-
 
     def display(self, viewed, msg, target=None, data="", default=False):
         """
@@ -612,7 +610,6 @@ class RoomActionHandler(object):
                 # if name_viewed == False and not default, 
                 # the message is not shown
 
-
     def handle_invalid(action, validate_result):
         """
         Handles an invalid action. By default, it notifies the MudInfo channel
@@ -623,7 +620,6 @@ class RoomActionHandler(object):
         way.
         """
         handle_invalid(action, validate_result)
-
 
     def try_rt(self):
         """
@@ -663,7 +659,6 @@ class RoomActionHandler(object):
 
         return True
 
-
     def try_tb(self):
         """
         attempt to switch to turn-based mode
@@ -697,7 +692,7 @@ class RoomActionHandler(object):
                  if isinstance(x, DefaultCharacter)]
         for char in chars:
             char.msg("You have been given a turn action. ")
-            Turn(char, self.owner, place_at_end=False)
+            Turn(char, self.owner, place_at_end=False, hide=True)
 
         # [WIP] Give each character a custom message based on their preferred
         # level of verbosity
@@ -709,7 +704,6 @@ class RoomActionHandler(object):
         self.run_script()
 
         return True
-
         
     def check_for_tb(self):
         """
@@ -723,13 +717,11 @@ class RoomActionHandler(object):
                 return True
         return False
 
-
     def pause_script(self):
         """
         Pause the room's action script
         """
         self.script.pause()
-
 
     def schedule_script(self, interval):
         """
@@ -738,7 +730,6 @@ class RoomActionHandler(object):
         if not self.script.is_active:
             self.script.unpause()
         self.script.restart(interval=interval, repeats=0, start_delay=True)
-
 
     def run_script(self):
         """
