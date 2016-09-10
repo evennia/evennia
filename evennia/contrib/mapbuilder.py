@@ -216,7 +216,7 @@ def build_forest(x, y, **kwargs):
     return room
 
 
-def build_verticle_exit(x, y, **kwargs):
+def build_vertical_exit(x, y, **kwargs):
     """Creates two exits to and from the two rooms north and south."""
     # If on the first iteration - Do nothing.
     if kwargs["iteration"] == 0:
@@ -257,7 +257,7 @@ def build_horizontal_exit(x, y, **kwargs):
 
 # Include your trigger characters and build functions in a legend dict.
 EXAMPLE2_LEGEND = {("♣", "♠"): build_forest,
-                   ("|"): build_verticle_exit,
+                   ("|"): build_vertical_exit,
                    ("-"): build_horizontal_exit}
 
 # ---------- END OF EXAMPLES ---------- #
