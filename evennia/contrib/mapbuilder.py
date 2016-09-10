@@ -178,7 +178,7 @@ EXAMPLE1_LEGEND = {("♣", "♠"): build_forest,
                    ("▲"): build_temple}
     
 # ---------- EXAMPLE 2 ---------- #
-# @mapbuilder evennia.contrib.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
+# @mapbuilder/two evennia.contrib.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
 
 # -*- coding: utf-8 -*-
 
