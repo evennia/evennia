@@ -72,7 +72,7 @@ class ActionSystemScript(DefaultScript):
                     # process the action
                     validate_result = validate(action)
                     if validate_result == "Valid":
-                         if hasattr(action['owner'], "pre_perform_action"):
+                        if hasattr(action['owner'], "pre_perform_action"):
                             action['owner'].pre_perform_action(action)
                         result = action['at_attempt'](action)
                         if result:
@@ -178,7 +178,7 @@ class ActionSystemScript(DefaultScript):
                             validate_result = validate(action)
                         else:
                             break
-`
+
                     if validate_result == "Valid":
                         if hasattr(action['owner'], "pre_perform_action"):
                             action['owner'].pre_perform_action(action)

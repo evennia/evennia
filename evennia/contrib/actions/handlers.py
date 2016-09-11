@@ -202,7 +202,9 @@ class CharacterActionHandler(object):
         # character's present MoveOut action and is impossible if
         # the character is performing a MoveIn action.
 
-        if (self.owner.actions.bodypart_movement_map and
+        if (self.owner.db.actions.has_key('bodypart_movement_map') and
+            self.owner.db.actions.has_key('movetype') and
+            self.owner.actions.bodypart_movement_map and
             self.owner.actions.movetype):
             bodyparts = owner.actions.bodypart_movement_map(
                 self.owner.actions.movetype)

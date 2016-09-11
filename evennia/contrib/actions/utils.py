@@ -172,7 +172,7 @@ def share_bps(action, other):
             raise TypeError("action['bodyparts'] must be list, string or " +
                 "unicode, not " + str(type(action['bodyparts'])))
 
-         if isinstance(other['bodyparts'], list):
+        if isinstance(other['bodyparts'], list):
             other_bodyparts = other['bodyparts']
         elif (isinstance(other['bodyparts'], str) or 
             isinstance(other['bodyparts'], unicode)):
