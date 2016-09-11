@@ -249,13 +249,26 @@ CONN_MAX_AGE = 3600 * 7
 COMMAND_PARSER = "evennia.commands.cmdparser.cmdparser"
 # On a multi-match when search objects or commands, the user has the
 # ability to search again with an index marker that differentiates
-# the results. If multiple "box" objects are found, they can by
-# default use 1-box, 2-box etc to refine the search. Below you
-# can change the index separator character used.
-SEARCH_MULTIMATCH_SEPARATOR = '-'
+# the results. If multiple "box" objects
+# are found, they can by default be separated as 1-box, 2-box. Below you
+# can change the regular expression used. The regex must have one
+# have two capturing groups (?P<prefix>...) and (?P<name>...) - the default
+# parser expects this. It should
+# also involve a number starting from 1. When changing this you must also
+# update SEARCH_MULTIMATCH_TEMPLATE to properly describe the syntax.
+SEARCH_MULTIMATCH_REGEX = r"(?P<number>[0-9]+)-(?P<name>.*)"
+# To display multimatch errors we must display each multimatch in a way that
+# instructs users to separate their multimatches in a way SEARCH_MULTIMATCH_REGEX
+# above understands; for example by making sure they must write 1-box, 2-box etc.
+# The template must contain {number} - a number to separate multi-matches, starting
+# from 1; {name} - the name of the multimatched entity; {aliases} - eventual
+# aliases for the entity; {info} - extra info like #dbrefs for staff. Don't
+# forget a line break if you want one match per line.
+SEARCH_MULTIMATCH_TEMPLATE = " {number}-{name}{aliases}{info}\n"
 # The handler that outputs errors when using any API-level search
 # (not manager methods). This function should correctly report errors
-# both for command- and object-searches.
+# both for command- and object-searches. This allows full control
+# over the error output (it uses SEARCH_MULTIMATCH_TEMPLATE by default).
 SEARCH_AT_RESULT = "evennia.utils.utils.at_search_result"
 # The module holding text strings for the connection screen.
 # This module should contain one or more variables
