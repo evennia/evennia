@@ -95,7 +95,6 @@ from evennia.utils import utils
 # Add the necessary imports for your instructions here.
 from evennia import create_object
 from typeclasses import rooms, exits
-from evennia.utils import utils
 from random import randint
 import random
 
@@ -131,13 +130,13 @@ def example1_build_mountains(x, y, **kwargs):
 
     # Create the room.
     room = create_object(rooms.Room, key="mountains" + str(x) + str(y))
-    
+
     # Generate a description by randomly selecting an entry from a list.
     room_desc = ["Mountains as far as the eye can see",
                  "Your path is surrounded by sheer cliffs",
                  "Haven't you seen that rock before?"]
     room.db.desc = random.choice(room_desc)
-    
+
     # Create a random number of objects to populate the room.
     for i in xrange(randint(0, 3)):
         rock = create_object(key="Rock", location=room)
@@ -172,12 +171,12 @@ def example1_build_temple(x, y, **kwargs):
 
     # This is generally mandatory.
     return room
-    
+
 # Include your trigger characters and build functions in a legend dict.
 EXAMPLE1_LEGEND = {("♣", "♠"): example1_build_forest,
                    ("∩", "n"): example1_build_mountains,
                    ("▲"): example1_build_temple}
-    
+
 # ---------- EXAMPLE 2 ---------- #
 # @mapbuilder/two evennia.contrib.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
 
@@ -322,7 +321,7 @@ class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
 
     def func(self):
         """Starts the processor."""
-        
+
         caller = self.caller
         args = self.args.split()
 
@@ -337,11 +336,11 @@ class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
         legend = None
 
         # OBTAIN MAP FROM MODULE
-        
+
         # Breaks down path_to_map into [PATH, VARIABLE]
         path_to_map = args[0]
         path_to_map = path_to_map.rsplit('.', 1)
-        
+
         try:
             # Retrieves map variable from module or raises error.
             game_map = utils.variable_from_module(path_to_map[0],
@@ -351,22 +350,22 @@ class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
                                  "Path to map variable failed.\n"
                                  "Usage: @mapbuilder <path.to.module."
                                  "VARNAME> <path.to.module.MAP_LEGEND>")
-            
+
         except Exception as exc:
             # Or relays error message if fails.
             caller.msg(exc)
             return
-        
+
         # OBTAIN MAP_LEGEND FROM MODULE
-        
+
         # Breaks down path_to_legend into [PATH, VARIABLE]
         path_to_legend = args[1]
         path_to_legend = path_to_legend.rsplit('.', 1)
-        
+
         # If no path given default to path_to_map's path
         if len(path_to_legend) == 1:
             path_to_legend.insert(0, path_to_map[0])
-        
+
         try:
             # Retrieves legend variable from module or raises error if fails.
             legend = utils.variable_from_module(path_to_legend[0],
@@ -376,7 +375,7 @@ class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
                                  "Path to legend variable failed.\n"
                                  "Usage: @mapbuilder <path.to.module."
                                  "VARNAME> <path.to.module.MAP_LEGEND>")
-            
+
         except Exception as exc:
             # Or relays error message if fails.
             caller.msg(exc)
@@ -396,7 +395,7 @@ class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
         # Pass map and legend to the build function.
         build_map(caller, game_map, legend, iterations, build_exits)
 
-                
+
 def build_map(caller, game_map, legend, iterations=1, build_exits=True):
     """
     Receives the fetched map and legend vars provided by the player. The map
@@ -405,18 +404,18 @@ def build_map(caller, game_map, legend, iterations=1, build_exits=True):
     finding a match. The map is iterated over according to the `iterations`
     value and exits are optionally generated between adjacent rooms according
     to the `build_exits` value.
-    
+
     """
-    
+
     # Split map string to list of rows and create reference list.
     caller.msg("Creating Map...")
     caller.msg(game_map)
     game_map = _map_to_list(game_map)
-    
+
     # Create a reference dictionary which be passed to build functions and
     # will store obj returned by build functions so objs can be referenced.
     room_dict = {}
-    
+
     caller.msg("Creating Landmass...")
     for iteration in xrange(iterations):
         for y in xrange(len(game_map)):
