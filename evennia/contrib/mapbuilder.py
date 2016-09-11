@@ -74,7 +74,8 @@ Switches:
 
 Example:
     @mapbuilder world.gamemap.MAP world.maplegend.MAP_LEGEND
-    @mapbuilder evennia.contrib.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
+    @mapbuilder evennia.contrib.mapbuilder.EXAMPLE1_MAP EXAMPLE1_LEGEND
+    @mapbuilder/two evennia.contrib.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
             (Legend path defaults to map path)
 
 Below are two examples showcasing the use of automatic exit generation and
@@ -110,7 +111,7 @@ EXAMPLE1_MAP = """\
 """
 
 
-def build_forest(x, y, **kwargs):
+def example1_build_forest(x, y, **kwargs):
     """A basic example of build instructions. Make sure to include **kwargs
     in the arguments and return an instance of the room for exit generation."""
 
@@ -119,13 +120,13 @@ def build_forest(x, y, **kwargs):
     room.db.desc = "Basic forest room."
 
     # Send a message to the player
-    kwargs["caller"].msg("Forest Room Created.")
+    kwargs["caller"].msg(room.key + " " + room.dbref)
 
     # This is generally mandatory.
     return room
 
 
-def build_mountains(x, y, **kwargs):
+def example1_build_mountains(x, y, **kwargs):
     """A room that is a little more advanced"""
 
     # Create the room.
@@ -143,13 +144,13 @@ def build_mountains(x, y, **kwargs):
         rock.db.desc = "An ordinary rock."
 
     # Send a message to the player
-    kwargs["caller"].msg("Mountain Room Created.")
+    kwargs["caller"].msg(room.key + " " + room.dbref)
 
     # This is generally mandatory.
     return room
 
 
-def build_temple(x, y, **kwargs):
+def example1_build_temple(x, y, **kwargs):
     """A unique room that does not need to be as general"""
 
     # Create the room.
@@ -167,15 +168,15 @@ def build_temple(x, y, **kwargs):
                     "This is a rare spot of mirth on this dread moor.")
 
     # Send a message to the player
-    kwargs["caller"].msg("Temple Room Created.")
+    kwargs["caller"].msg(room.key + " " + room.dbref)
 
     # This is generally mandatory.
     return room
     
 # Include your trigger characters and build functions in a legend dict.
-EXAMPLE1_LEGEND = {("♣", "♠"): build_forest,
-                   ("∩", "n"): build_mountains,
-                   ("▲"): build_temple}
+EXAMPLE1_LEGEND = {("♣", "♠"): example1_build_forest,
+                   ("∩", "n"): example1_build_mountains,
+                   ("▲"): example1_build_temple}
     
 # ---------- EXAMPLE 2 ---------- #
 # @mapbuilder/two evennia.contrib.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
@@ -204,7 +205,7 @@ EXAMPLE2_MAP = """\
 """
 
 
-def build_forest(x, y, **kwargs):
+def example2_build_forest(x, y, **kwargs):
     """A basic room"""
     # If on anything other than the first iteration - Do nothing.
     if kwargs["iteration"] > 0:
@@ -213,18 +214,16 @@ def build_forest(x, y, **kwargs):
     room = create_object(rooms.Room, key="forest" + str(x) + str(y))
     room.db.desc = "Basic forest room."
 
+    kwargs["caller"].msg(room.key + " " + room.dbref)
+
     return room
 
 
-def build_vertical_exit(x, y, **kwargs):
+def example2_build_verticle_exit(x, y, **kwargs):
     """Creates two exits to and from the two rooms north and south."""
     # If on the first iteration - Do nothing.
     if kwargs["iteration"] == 0:
         return
-
-    for key, value in kwargs["room_dict"].iteritems():
-        kwargs["caller"].msg(str(key))
-        kwargs["caller"].msg(str(value))
 
     north_room = kwargs["room_dict"][(x, y-1)]
     south_room = kwargs["room_dict"][(x, y+1)]
@@ -237,8 +236,11 @@ def build_vertical_exit(x, y, **kwargs):
                           aliases=["n"], location=south_room,
                           destination=north_room)
 
+    kwargs["caller"].msg("Connected: " + north_room.key +
+                         " & " + south_room.key)
 
-def build_horizontal_exit(x, y, **kwargs):
+
+def example2_build_horizontal_exit(x, y, **kwargs):
     """Creates two exits to and from the two rooms east and west."""
     # If on the first iteration - Do nothing.
     if kwargs["iteration"] == 0:
@@ -255,10 +257,13 @@ def build_horizontal_exit(x, y, **kwargs):
                          aliases=["w"], location=east_room,
                          destination=west_room)
 
+    kwargs["caller"].msg("Connected: " + west_room.key +
+                         " & " + east_room.key)
+
 # Include your trigger characters and build functions in a legend dict.
-EXAMPLE2_LEGEND = {("♣", "♠"): build_forest,
-                   ("|"): build_vertical_exit,
-                   ("-"): build_horizontal_exit}
+EXAMPLE2_LEGEND = {("♣", "♠"): example2_build_forest,
+                   ("|"): example2_build_verticle_exit,
+                   ("-"): example2_build_horizontal_exit}
 
 # ---------- END OF EXAMPLES ---------- #
 
@@ -294,8 +299,10 @@ class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
       two - execute build instructions twice without automatic exit creation
 
     Example:
-        @mapbuilder evennia.contrib.mapbuilder.EXAMPLE_MAP MAP_LEGEND
         @mapbuilder world.gamemap.MAP world.maplegend.MAP_LEGEND
+        @mapbuilder evennia.contrib.mapbuilder.EXAMPLE1_MAP EXAMPLE1_LEGEND
+        @mapbuilder/two evennia.contrib.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND
+                (Legend path defaults to map path)
 
     This is a command which takes two inputs:
     A string of ASCII characters representing a map and a dictionary of
@@ -348,6 +355,7 @@ class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
         except Exception as exc:
             # Or relays error message if fails.
             caller.msg(exc)
+            return
         
         # OBTAIN MAP_LEGEND FROM MODULE
         
@@ -372,6 +380,7 @@ class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
         except Exception as exc:
             # Or relays error message if fails.
             caller.msg(exc)
+            return
 
         # Set up build_map arguments from switches
         iterations = 1
