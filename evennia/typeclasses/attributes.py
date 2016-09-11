@@ -799,6 +799,9 @@ class NickHandler(AttributeHandler):
             kwargs (any, optional): These are passed on to `AttributeHandler.get`.
 
         """
+        if category == "channel":
+            key += " $1"
+            replacement += " $1"
         nick_regex, nick_template = initialize_nick_templates(key, replacement)
         super(NickHandler, self).add(key, (nick_regex, nick_template, key, replacement), category=category, **kwargs)
 
