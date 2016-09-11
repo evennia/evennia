@@ -800,9 +800,9 @@ class NickHandler(AttributeHandler):
 
         """
         if category == "channel":
-            key += " $1"
-            replacement += " $1"
-        nick_regex, nick_template = initialize_nick_templates(key, replacement)
+            nick_regex, nick_template = initialize_nick_templates(key + " $1", replacement + " $1")
+        else:
+            nick_regex, nick_template = initialize_nick_templates(key, replacement)
         super(NickHandler, self).add(key, (nick_regex, nick_template, key, replacement), category=category, **kwargs)
 
     def remove(self, key, category="inputline", **kwargs):
