@@ -188,7 +188,6 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
             reason (str): Eventual text describing why connection failed.
 
         """
-        print ("portal retrying connection"), self.maxDelay
         if hasattr(self, "server_restart_mode"):
             self.maxDelay = 2
         else:
@@ -371,6 +370,19 @@ class AMPProtocol(amp.AMP):
             self.factory.portal.sessions.at_server_connection()
             if hasattr(self.factory, "server_restart_mode"):
                 del self.factory.server_restart_mode
+
+    def connectionLost(self, reason):
+        """
+        We swallow connection errors here. The reason is that during a
+        normal reload/shutdown there will almost always be cases where
+        either the portal or server shuts down before a message has
+        returned its (empty) return, triggering a connectionLost error
+        that is irrelevant. If a true connection error happens, the
+        portal will continuously try to reconnect, showing the problem
+        that way.
+        """
+        pass
+
 
     # Error handling
 

@@ -188,7 +188,7 @@ class PortalSessionHandler(SessionHandler):
             # sessions while we are looping over them.
             sessionhandler._disconnect_all = True
             for session in sessionhandler.values():
-                session.disconnect(session)
+                session.disconnect()
             del sessionhandler._disconnect_all
 
         # inform Server; wait until finished sending before we continue
