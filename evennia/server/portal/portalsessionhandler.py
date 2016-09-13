@@ -160,6 +160,13 @@ class PortalSessionHandler(SessionHandler):
             # to forward this to the Server, so now we just remove it.
             _CONNECTION_QUEUE.remove(session)
             return
+
+        if session.sessid in self:
+            # if this was called directly from the protocol, the
+            # connection is already dead and we just need to cleanup
+            del self[session.sessid]
+
+        # Tell the Server to disconnect its version of the Session as well.
         self.portal.amp_protocol.send_AdminPortal2Server(session,
                                                          operation=PDISCONN)
 

@@ -493,7 +493,7 @@ class AMPProtocol(amp.AMP):
         elif operation == PDISCONN:  # portal_session_disconnect
             # session closed from portal side
             session = server_sessionhandler[sessid]
-            self.factory.server.sessions.disconnect(session)
+            server_sessionhandler.portal_disconnect(session)
 
         elif operation == PSYNC:  # portal_session_sync
             # force a resync of sessions when portal reconnects to
