@@ -8,7 +8,8 @@ from time import time
 from collections import deque
 from twisted.internet import reactor
 from django.conf import settings
-from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC
+from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, \
+                                          PCONNSYNC, PDISCONNALL
 from evennia.utils.logger import log_trace
 
 # module import
@@ -22,6 +23,10 @@ _MIN_TIME_BETWEEN_CONNECTS = 1.0 / float(settings.MAX_CONNECTION_RATE)
 _ERROR_COMMAND_OVERFLOW = settings.COMMAND_RATE_WARNING
 
 _CONNECTION_QUEUE = deque()
+
+class DummySession(object):
+    sessid = 0
+DUMMYSESSION = DummySession()
 
 #------------------------------------------------------------
 # Portal-SessionHandler class
@@ -152,6 +157,10 @@ class PortalSessionHandler(SessionHandler):
 
         Args:
             session (PortalSession): Session to disconnect.
+            delete (bool, optional): Delete the session from
+                the handler. Only time to not do this is when
+                this is called from a loop, such as from
+                self.disconnect_all().
 
         """
         global _CONNECTION_QUEUE
@@ -161,7 +170,7 @@ class PortalSessionHandler(SessionHandler):
             _CONNECTION_QUEUE.remove(session)
             return
 
-        if session.sessid in self:
+        if session.sessid in self and not hasattr(self, "_disconnect_all"):
             # if this was called directly from the protocol, the
             # connection is already dead and we just need to cleanup
             del self[session.sessid]
@@ -169,6 +178,23 @@ class PortalSessionHandler(SessionHandler):
         # Tell the Server to disconnect its version of the Session as well.
         self.portal.amp_protocol.send_AdminPortal2Server(session,
                                                          operation=PDISCONN)
+
+    def disconnect_all(self):
+        """
+        Disconnect all sessions, informing the Server.
+        """
+        def _callback(result, sessionhandler):
+            # we set a watchdog to stop self.disconnect from deleting
+            # sessions while we are looping over them.
+            sessionhandler._disconnect_all = True
+            for session in sessionhandler.values():
+                session.disconnect(session)
+            del sessionhandler._disconnect_all
+
+        # inform Server; wait until finished sending before we continue
+        # removing all the sessions.
+        self.portal.amp_protocol.send_AdminPortal2Server(DUMMYSESSION,
+                                operation=PDISCONNALL).addCallback(_callback, self)
 
     def server_connect(self, protocol_path="", config=dict()):
         """

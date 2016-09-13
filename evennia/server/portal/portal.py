@@ -168,8 +168,7 @@ class Portal(object):
             # we get here due to us calling reactor.stop below. No need
             # to do the shutdown procedure again.
             return
-        for session in self.sessions.itervalues():
-            session.disconnect()
+        self.sessions.disconnect_all()
         self.set_restart_mode(restart)
         if os.name == 'nt' and os.path.exists(PORTAL_PIDFILE):
             # for Windows we need to remove pid files manually

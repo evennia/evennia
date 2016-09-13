@@ -54,6 +54,7 @@ SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server session sync
 SCONN = chr(11)        # server portal connection (for bots)
 PCONNSYNC = chr(12)   # portal post-syncing session
+PDISCONNALL = chr(13) # portal session discnnect all
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -342,6 +343,19 @@ class ServerSessionHandler(SessionHandler):
         # Portal already knows.
         self.disconnect(session, reason="", sync_portal=False)
 
+    def portal_disconnect_all(self):
+        """
+        Called from Portal when Portal is closing down. All
+        Sessions should die. The Portal should not be informed.
+
+        """
+        # set a watchdog to avoid self.disconnect from deleting
+        # the session while we are looping over them
+        self._disconnect_all = True
+        for session in self.values:
+            session.disconnect()
+        del self._disconnect_all
+
     # server-side access methods
 
     def start_bot_session(self, protocol_path, configdict):
@@ -459,7 +473,8 @@ class ServerSessionHandler(SessionHandler):
 
         session.at_disconnect()
         sessid = session.sessid
-        del self[sessid]
+        if sessid in self and not hasattr(self, "_disconnect_all"):
+            del self[sessid]
         if sync_portal:
             # inform portal that session should be closed.
             self.server.amp_protocol.send_AdminServer2Portal(session,

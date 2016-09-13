@@ -50,6 +50,7 @@ SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server session sync
 SCONN = chr(11)        # server creating new connection (for irc/imc2 bots etc)
 PCONNSYNC = chr(12)   # portal post-syncing a session
+PDISCONNALL = chr(13) # portal session disconnect all
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
 
 BATCH_RATE = 250    # max commands/sec before switching to batch-sending
@@ -494,6 +495,10 @@ class AMPProtocol(amp.AMP):
             # session closed from portal side
             session = server_sessionhandler[sessid]
             server_sessionhandler.portal_disconnect(session)
+
+        elif operation == PDISCONNALL: # portal_disconnect_all
+            # portal orders all sessions to close
+            server_sessionhandler.portal_disconnect_all()
 
         elif operation == PSYNC:  # portal_session_sync
             # force a resync of sessions when portal reconnects to
