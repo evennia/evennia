@@ -305,6 +305,8 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs",)
 # will be loaded in order, meaning functions in later modules may overload
 # previous ones if having the same name.
 INPUT_FUNC_MODULES = ["evennia.server.inputfuncs", "server.conf.inputfuncs"]
+# Modules that contain prototypes for use with the spawner mechanism.
+PROTOTYPE_MODULES = ["world.prototypes"]
 # Module holding settings/actions for the dummyrunner program (see the
 # dummyrunner for more information)
 DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
