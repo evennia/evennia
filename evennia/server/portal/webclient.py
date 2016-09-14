@@ -93,7 +93,6 @@ class WebSocketClient(Protocol, Session):
         self.sessionhandler.disconnect(self)
         self.transport.close()
 
-
     def dataReceived(self, string):
         """
         Method called when data is coming in over the websocket
@@ -128,7 +127,7 @@ class WebSocketClient(Protocol, Session):
         Notes:
             At initilization, the client will send the special
             'csessid' command to identify its browser session hash
-            with the Evennia side.
+           witherthe Evennia side.
 
             The websocket client will also pass 'websocket_close' command
             to report that the client has been closed and that the

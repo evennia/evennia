@@ -320,7 +320,7 @@ class PortalSessionHandler(SessionHandler):
 
         """
         return [sess for sess in self.get_sessions(include_unloggedin=True)
-                if hasattr(sess, 'csessid') and sess.csessid == csessid]
+                if hasattr(sess, 'csessid') and sess.csessid and sess.csessid == csessid]
 
     def announce_all(self, message):
         """

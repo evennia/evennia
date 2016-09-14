@@ -28,7 +28,7 @@ class CaseInsensitiveModelBackend(ModelBackend):
           return autologin
       else:
           # In this case .backend will be assigned automatically
-          # somewhere along the # way.
+          # somewhere along the way.
           Player = get_user_model()
           try:
             player = Player.objects.get(username__iexact=username)
