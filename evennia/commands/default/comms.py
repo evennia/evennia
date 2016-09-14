@@ -163,7 +163,7 @@ class CmdDelCom(COMMAND_DEFAULT_CLASS):
             chkey = channel.key.lower()
             # find all nicks linked to this channel and delete them
             for nick in [nick for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
-                         if nick and nick.value[3].lower() == chkey]:
+                         if nick and nick.pk and nick.value[3].lower() == chkey]:
                 nick.delete()
             disconnect = channel.disconnect(player)
             if disconnect:
