@@ -127,7 +127,7 @@ class WebSocketClient(Protocol, Session):
         Notes:
             At initilization, the client will send the special
             'csessid' command to identify its browser session hash
-           witherthe Evennia side.
+            with the Evennia side.
 
             The websocket client will also pass 'websocket_close' command
             to report that the client has been closed and that the
