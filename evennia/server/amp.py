@@ -435,7 +435,9 @@ class AMPProtocol(amp.AMP):
 
         """
         sessid, kwargs = loads(packed_data)
-        self.factory.server.sessions.data_in(self.factory.server.sessions[sessid], **kwargs)
+        session = self.factory.server.sessions.get(sessid, None)
+        if session:
+            self.factory.server.sessions.data_in(session, **kwargs)
         return {}
 
     def send_MsgPortal2Server(self, session, **kwargs):
@@ -464,7 +466,9 @@ class AMPProtocol(amp.AMP):
             packed_data (str): Pickled data (sessid, kwargs) coming over the wire.
         """
         sessid, kwargs = loads(packed_data)
-        self.factory.portal.sessions.data_out(self.factory.portal.sessions[sessid], **kwargs)
+        session = self.factory.portal.sessions.get(sessid, None)
+        if session:
+            self.factory.portal.sessions.data_out(session, **kwargs)
         return {}
 
 
