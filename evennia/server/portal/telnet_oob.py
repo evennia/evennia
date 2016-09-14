@@ -401,6 +401,5 @@ class TelnetOOB(object):
                 gmcp_cmdname = EVENNIA_TO_GMCP[cmdname]
             else:
                 gmcp_cmdname = "Custom.Cmd"
-                kwargs["cmdname"] = cmdname
             encoded_oob = self.encode_gmcp(gmcp_cmdname, *args, **kwargs)
             self.protocol._write(IAC + SB + GMCP + encoded_oob + IAC + SE)
