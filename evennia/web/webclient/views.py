@@ -6,7 +6,7 @@ page and serve it eventual static content.
 """
 from __future__ import print_function
 from django.shortcuts import render
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 
 from evennia.players.models import PlayerDB
 from evennia.utils import logger
@@ -33,6 +33,8 @@ def _shared_login(request):
         # The webclient has previously registered a login to this browser_session
         player = PlayerDB.objects.get(id=sesslogin)
         try:
+            # calls our custom authenticate in web/utils/backends.py
+            player = authenticate(autologin=player)
             login(request, player)
         except AttributeError:
             logger.log_trace()
