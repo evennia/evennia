@@ -264,6 +264,7 @@ class ServerSessionHandler(SessionHandler):
             # webclient's session sharing
             player = _PlayerDB.objects.get_player_from_uid(sess.uid)
             if player:
+                # this will set player.is_connected too
                 self.login(sess, player, force=True)
                 return
             else:
@@ -412,11 +413,7 @@ class ServerSessionHandler(SessionHandler):
             # don't log in a session that is already logged in.
             return
 
-        # we have to check this first before uid has been assigned
-        # this session.
-
-        if not self.sessions_from_player(player):
-            player.is_connected = True
+        player.is_connected = True
 
         # sets up and assigns all properties on the session
         session.at_login(player)
