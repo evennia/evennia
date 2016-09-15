@@ -11,8 +11,7 @@ import re
 from django.conf import settings
 from evennia.utils.logger import log_trace
 
-_MULTIMATCH_SEPARATOR = settings.SEARCH_MULTIMATCH_SEPARATOR
-_MULTIMATCH_REGEX = re.compile(r"([0-9]+)%s(.*)" % _MULTIMATCH_SEPARATOR, re.I + re.U)
+_MULTIMATCH_REGEX = re.compile(settings.SEARCH_MULTIMATCH_REGEX, re.I + re.U)
 
 def cmdparser(raw_string, cmdset, caller, match_index=None):
     """
@@ -92,8 +91,9 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         num_ref_match = _MULTIMATCH_REGEX.match(raw_string)
         if num_ref_match:
             # the user might be trying to identify the command
-            # with a #num-command style syntax.
-            mindex, new_raw_string = num_ref_match.groups()
+            # with a #num-command style syntax. We expect the regex to
+            # contain the groups "number" and "name".
+            mindex, new_raw_string = num_ref_match.group("number"), num_ref_match.group("name")
             return cmdparser(new_raw_string, cmdset,
                                  caller, match_index=int(mindex))
 

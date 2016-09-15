@@ -791,6 +791,12 @@ def error_check_python_modules():
         raise DeprecationWarning(deprstring % "PLAYER_TYPECLASS_PATHS")
     if hasattr(settings, "CHANNEL_TYPECLASS_PATHS"):
         raise DeprecationWarning(deprstring % "CHANNEL_TYPECLASS_PATHS")
+    if hasattr(settings, "SEARCH_MULTIMATCH_SEPARATOR"):
+        raise DeprecationWarning(
+        "settings.SEARCH_MULTIMATCH_SEPARATOR was replaced by "
+        "SEARCH_MULTIMATCH_REGEX and SEARCH_MULTIMATCH_TEMPLATE. "
+        "Update your settings file (see evennia/settings_default.py "
+        "for more info).")
 
     from evennia.commands import cmdsethandler
     if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None):

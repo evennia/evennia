@@ -7,6 +7,7 @@ templates on the fly.
 """
 from django.contrib.admin.sites import site
 from django.conf import settings
+from django.contrib.auth import authenticate
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 
@@ -39,6 +40,8 @@ def _shared_login(request):
         # The webclient has previously registered a login to this csession
         player = PlayerDB.objects.get(id=sesslogin)
         try:
+            # calls our custom authenticate, in web/utils/backend.py
+            authenticate(autologin=player)
             login(request, player)
         except AttributeError:
             logger.log_trace()

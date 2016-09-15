@@ -26,10 +26,6 @@ as argument.
 
 """
 
-# import the contents of the default inputhandler_func module
-#from evennia.server.inputfuncs import *
-
-
 # def oob_echo(session, *args, **kwargs):
 #     """
 #     Example echo function. Echoes args, kwargs sent to it.
