@@ -8,7 +8,7 @@ from django.contrib.auth.models import UserManager
 #from functools import update_wrapper
 from evennia.typeclasses.managers import (returns_typeclass_list, returns_typeclass,
                                       TypedObjectManager, TypeclassManager)
-#from evennia.utils import logger
+from evennia.utils.utils import make_iter
 __all__ = ("PlayerManager",)
 
 
@@ -149,7 +149,7 @@ class PlayerDBManager(TypedObjectManager, UserManager):
             return None
 
     @returns_typeclass_list
-    def player_search(self, ostring, exact=True):
+    def player_search(self, ostring, exact=True, typeclass=None):
         """
         Searches for a particular player by name or
         database id.
@@ -160,6 +160,8 @@ class PlayerDBManager(TypedObjectManager, UserManager):
                 `True`, requires exact (non-case-sensitive) match,
                 otherwise also match also keys containing the `ostring`
                 (non-case-sensitive fuzzy match).
+            typeclass (str or Typeclass, optional): Limit the search only to
+                players of this typeclass.
 
         """
         dbref = self.dbref(ostring)
@@ -168,10 +170,18 @@ class PlayerDBManager(TypedObjectManager, UserManager):
             matches = self.filter(id=dbref)
             if matches:
                 return matches
+        query = {"username__iexact" if exact else "username__icontains": ostring}
+        if typeclass:
+            # we accept both strings and actual typeclasses
+            if callable(typeclass):
+                typeclass = u"%s.%s" % (typeclass.__module__, typeclass.__name__)
+            else:
+                typeclass = u"%s" % typeclass
+            query["db_typeclass_path"] = typeclass
         if exact:
-            return self.filter(username__iexact=ostring)
+            return self.filter(**query)
         else:
-            return self.filter(username__icontains=ostring)
+            return self.filter(**query)
 
 
 class PlayerManager(PlayerDBManager, TypeclassManager):

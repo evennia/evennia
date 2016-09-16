@@ -17,8 +17,7 @@ _GA = object.__getattribute__
 # delayed import
 _ATTR = None
 
-_MULTIMATCH_REGEX = re.compile(r"([0-9]+)%s(.*)" %
-        settings.SEARCH_MULTIMATCH_SEPARATOR, re.I + re.U)
+_MULTIMATCH_REGEX = re.compile(settings.SEARCH_MULTIMATCH_REGEX, re.I + re.U)
 
 # Try to use a custom way to parse id-tagged multimatches.
 
@@ -389,7 +388,7 @@ class ObjectDBManager(TypedObjectManager):
             match_number = None
             if match:
                 # strips the number
-                match_number, searchdata = match.groups()
+                match_number, searchdata = match.group("number"), match.group("name")
                 match_number = int(match_number) - 1
                 match_number = match_number if match_number >= 0 else None
             if match_number is not None or not exact:

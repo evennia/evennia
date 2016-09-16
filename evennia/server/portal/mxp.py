@@ -82,5 +82,5 @@ class Mxp(object):
 
         """
         self.protocol.protocol_flags["MXP"] = True
-        self.protocol.handshake_done()
         self.protocol.requestNegotiation(MXP, '')
+        self.protocol.handshake_done()

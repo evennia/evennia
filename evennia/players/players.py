@@ -456,7 +456,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                                      callertype="player", session=session, **kwargs)
 
     def search(self, searchdata, return_puppet=False, search_object=False,
-               nofound_string=None, multimatch_string=None, **kwargs):
+               typeclass=None, nofound_string=None, multimatch_string=None, **kwargs):
         """
         This is similar to `DefaultObject.search` but defaults to searching
         for Players only.
@@ -470,6 +470,10 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             search_object (bool, optional): Search for Objects instead of
                 Players. This is used by e.g. the @examine command when
                 wanting to examine Objects while OOC.
+            typeclass (Player typeclass, optional): Limit the search
+                only to this particular typeclass. This can be used to
+                limit to specific player typeclasses or to limit the search
+                to a particular Object typeclass if `search_object` is True.
             nofound_string (str, optional): A one-time error message
                 to echo if `searchdata` leads to no matches. If not given,
                 will fall back to the default handler.
@@ -491,9 +495,9 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             if searchdata.lower() in ("me", "*me", "self", "*self",):
                 return self
         if search_object:
-            matches = ObjectDB.objects.object_search(searchdata)
+            matches = ObjectDB.objects.object_search(searchdata, typeclass=typeclass)
         else:
-            matches = self.__class__.objects.player_search(searchdata)
+            matches = PlayerDB.objects.player_search(searchdata, typeclass=typeclass)
         matches = _AT_SEARCH_RESULT(matches, self, query=searchdata,
                                     nofound_string=nofound_string,
                                     multimatch_string=multimatch_string)

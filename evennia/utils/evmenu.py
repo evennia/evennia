@@ -234,10 +234,10 @@ class CmdEvMenuNode(Command):
             if _restore(caller):
                 return
             orig_caller = caller
-            caller = caller.player
-            menu = caller.ndb._menutree
+            caller = caller.player if hasattr(caller, "player") else None
+            menu = caller.ndb._menutree if caller else None
             if not menu:
-                if _restore(caller):
+                if caller and _restore(caller):
                     return
                 caller = self.session
                 menu = caller.ndb._menutree

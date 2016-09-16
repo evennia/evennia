@@ -126,6 +126,8 @@ _NUM_SEP = "-"
 _RE_OBJ_REF_START = re.compile(r"%s(?:([0-9]+)%s)*(\w+)" %
                     (_PREFIX, _NUM_SEP), _RE_FLAGS)
 
+_RE_LEFT_BRACKETS = re.compile(r"\{+", _RE_FLAGS)
+_RE_RIGHT_BRACKETS = re.compile(r"\}+", _RE_FLAGS)
 # Reference markers are used internally when distributing the emote to
 # all that can see it. They are never seen by players and are on the form {#dbref}.
 _RE_REF = re.compile(r"\{+\#([0-9]+)\}+")
@@ -352,6 +354,9 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
     # escape mapping syntax on the form {#id} if it exists already in emote,
     # if so it is replaced with just "id".
     string = _RE_REF.sub(r"\1", string)
+    # escape loose { } brackets since this will clash with formatting
+    string = _RE_LEFT_BRACKETS.sub("{{", string)
+    string = _RE_RIGHT_BRACKETS.sub("}}", string)
 
     # we now loop over all references and analyze them
     mapping = {}
@@ -793,8 +798,8 @@ class CmdEmote(RPCommand):  # replaces the main emote
             # we also include ourselves here.
             emote = self.args
             targets = self.caller.location.contents
-            if not emote.endswith((".", "!")):
-                emote = "%s." % emote
+            if not emote.endswith((".", "?", "!")):  # If emote is not punctuated,
+                emote = "%s." % emote  # add a full-stop for good measure.
             send_emote(self.caller, targets, emote, anonymous_add='first')
 
 
@@ -984,14 +989,14 @@ class CmdRecog(RPCommand): # assign personal alias to object in room
 
     def parse(self):
         "Parse for the sdesc as alias structure"
-        if "as" in self.args:
+        if " as " in self.args:
             self.sdesc, self.alias = [part.strip() for part in self.args.split(" as ", 2)]
         elif self.args:
             # try to split by space instead
             try:
                 self.sdesc, self.alias = [part.strip() for part in self.args.split(None, 1)]
             except ValueError:
-                self.args = ""
+                self.sdesc, self.alias = self.args.strip(), ""
 
     def func(self):
         "Assign the recog"
@@ -1023,7 +1028,7 @@ class CmdRecog(RPCommand): # assign personal alias to object in room
             if self.cmdstring == "forget":
                 # remove existing recog
                 caller.recog.remove(obj)
-                caller.msg("%s will know only '%s'." % (caller.key, obj.recog.get(obj)))
+                caller.msg("%s will now know only '%s'." % (caller.key, obj.recog.get(obj)))
             else:
                 sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
                 try:
@@ -1296,7 +1301,7 @@ class ContribRPObject(DefaultObject):
             except AttributeError:
                 recog = None
             sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
-        pose = " %s" % ((self.db.pose or "") if kwargs.get("pose", False) else "")
+        pose = " %s" % (self.db.pose or "") if kwargs.get("pose", False) else ""
         return "%s%s%s" % (sdesc, idstr, pose)
 
     def return_appearance(self, looker):

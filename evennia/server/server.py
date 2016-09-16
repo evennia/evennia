@@ -506,7 +506,7 @@ if WEBSERVER_ENABLED:
     # Start a django-compatible webserver.
 
     from twisted.python import threadpool
-    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, NonLoggingSite
+    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, Website
 
     # start a thread pool and define the root url (/) as a wsgi resource
     # recognized by Django
@@ -522,7 +522,7 @@ if WEBSERVER_ENABLED:
         # custom overloads
         web_root = WEB_PLUGINS_MODULE.at_webserver_root_creation(web_root)
 
-    web_site = NonLoggingSite(web_root, logPath=settings.HTTP_LOG_FILE)
+    web_site = Website(web_root, logPath=settings.HTTP_LOG_FILE)
 
     for proxyport, serverport in WEBSERVER_PORTS:
         # create the webserver (we only need the port for this)

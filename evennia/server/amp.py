@@ -50,6 +50,7 @@ SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server session sync
 SCONN = chr(11)        # server creating new connection (for irc/imc2 bots etc)
 PCONNSYNC = chr(12)   # portal post-syncing a session
+PDISCONNALL = chr(13) # portal session disconnect all
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
 
 BATCH_RATE = 250    # max commands/sec before switching to batch-sending
@@ -187,7 +188,6 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
             reason (str): Eventual text describing why connection failed.
 
         """
-        print ("portal retrying connection"), self.maxDelay
         if hasattr(self, "server_restart_mode"):
             self.maxDelay = 2
         else:
@@ -371,6 +371,19 @@ class AMPProtocol(amp.AMP):
             if hasattr(self.factory, "server_restart_mode"):
                 del self.factory.server_restart_mode
 
+    def connectionLost(self, reason):
+        """
+        We swallow connection errors here. The reason is that during a
+        normal reload/shutdown there will almost always be cases where
+        either the portal or server shuts down before a message has
+        returned its (empty) return, triggering a connectionLost error
+        that is irrelevant. If a true connection error happens, the
+        portal will continuously try to reconnect, showing the problem
+        that way.
+        """
+        pass
+
+
     # Error handling
 
     def errback(self, e, info):
@@ -422,7 +435,9 @@ class AMPProtocol(amp.AMP):
 
         """
         sessid, kwargs = loads(packed_data)
-        self.factory.server.sessions.data_in(self.factory.server.sessions[sessid], **kwargs)
+        session = self.factory.server.sessions.get(sessid, None)
+        if session:
+            self.factory.server.sessions.data_in(session, **kwargs)
         return {}
 
     def send_MsgPortal2Server(self, session, **kwargs):
@@ -451,7 +466,9 @@ class AMPProtocol(amp.AMP):
             packed_data (str): Pickled data (sessid, kwargs) coming over the wire.
         """
         sessid, kwargs = loads(packed_data)
-        self.factory.portal.sessions.data_out(self.factory.portal.sessions[sessid], **kwargs)
+        session = self.factory.portal.sessions.get(sessid, None)
+        if session:
+            self.factory.portal.sessions.data_out(session, **kwargs)
         return {}
 
 
@@ -493,7 +510,11 @@ class AMPProtocol(amp.AMP):
         elif operation == PDISCONN:  # portal_session_disconnect
             # session closed from portal side
             session = server_sessionhandler[sessid]
-            self.factory.server.sessions.disconnect(session)
+            server_sessionhandler.portal_disconnect(session)
+
+        elif operation == PDISCONNALL: # portal_disconnect_all
+            # portal orders all sessions to close
+            server_sessionhandler.portal_disconnect_all()
 
         elif operation == PSYNC:  # portal_session_sync
             # force a resync of sessions when portal reconnects to

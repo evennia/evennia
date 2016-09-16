@@ -5,26 +5,13 @@ This implements a webclient with WebSockets (http://en.wikipedia.org/wiki/WebSoc
 by use of the txws implementation (https://github.com/MostAwesomeDude/txWS). It is
 used together with evennia/web/media/javascript/evennia_websocket_webclient.js.
 
-Thanks to Ricard Pillosu whose Evennia plugin inspired this module.
+All data coming into the webclient is in the form of valid JSON on the form
 
-Communication over the websocket interface is done with normal text
-communication. A special case is OOB-style communication; to do this
-the client must send data on the following form:
+`["inputfunc_name", [args], {kwarg}]`
 
-    OOB{"func1":[args], "func2":[args], ...}
-
-where the dict is JSON encoded. The initial OOB-prefix is used to
-identify this type of communication, all other data is considered
-plain text (command input).
-
-Example of call from a javascript client:
-
-    var websocket = new WebSocket("ws://localhost:8021");
-    var msg1 = "WebSocket Test";
-    websocket.send(msg1);
-    var msg2 = JSON.stringify({ testfunc: [[1, 2, 3], { kwarg: "val" }] });
-    websocket.send("OOB" + msg2);
-    websocket.close();
+which represents an "inputfunc" to be called on the Evennia side with *args, **kwargs.
+The most common inputfunc is "text", which takes just the text input
+from the command line and interprets it as an Evennia Command: `["text", ["look"], {}]`
 
 """
 import re
@@ -105,7 +92,6 @@ class WebSocketClient(Protocol, Session):
         """
         self.sessionhandler.disconnect(self)
         self.transport.close()
-
 
     def dataReceived(self, string):
         """
