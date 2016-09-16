@@ -1,0 +1,87 @@
+## Behavior tree-based AI
+
+
+
+
+
+#### Trees
+
+
+
+
+
+#### Basic node types
+
+
+
+
+
+#### Composite nodes
+
+
+
+
+
+#### Decorators
+
+
+
+
+
+#### Blackboards
+
+
+
+
+
+
+Some nodes, such as parallel nodes, store their operational parameters,
+such as how many successes must be returned by the node's children in order
+for the node itself to succeed, in their blackboards as well as on the node
+objects themselves. Although you can assign these parameters manually on
+the blackboard, it is highly recommended that you do not, as any changes
+to the tree that the blackboard maps onto will require the blackboard to
+be reset, thus overriding your manual assignments. Instead, only use the
+blackboard to make changes to the parameters that would arise automatically
+in the course of iterating through the behavior tree. For instance, one
+node might modify another node's parameters when it is ticked. In all other
+cases, you should modify the parameters on the node objects directly.
+
+
+
+### Working with behavior trees in-game
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Coding behavior trees
+
+If you want to create a new behavior tree or behavior blackboard via code
+rather than in-game, be sure to give this object a name 
+(```<object>.name = name```), assign it a tree if it is a blackboard
+(```<object>.tree = <tree>```), also assign it an agent if it is a blackboard
+(```<object>.agent = <agent>```), and finally run the object's setup()
+method, which assigns default values to all database-stored properties and,
+if the object is a behavior tree, generates a root node.
+
+
+
+
+
+
+
+
+
+
