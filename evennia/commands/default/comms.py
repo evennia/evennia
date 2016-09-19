@@ -14,6 +14,7 @@ from evennia.comms.models import ChannelDB, Msg
 from evennia.players.models import PlayerDB
 from evennia.players import bots
 from evennia.comms.channelhandler import CHANNELHANDLER
+from evennia.locks.lockhandler import LockException
 from evennia.utils import create, utils, evtable
 from evennia.utils.utils import make_iter, class_from_module
 
@@ -605,7 +606,11 @@ class CmdClock(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
         # Try to add the lock
-        channel.locks.add(self.rhs)
+        try:
+            channel.locks.add(self.rhs)
+        except LockException, err:
+            self.msg(err)
+            return
         string = "Lock(s) applied. "
         string += "Current locks on %s:" % channel.key
         string = "%s\n %s" % (string, channel.locks)
