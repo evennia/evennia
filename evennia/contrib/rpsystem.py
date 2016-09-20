@@ -1342,48 +1342,7 @@ class ContribRPRoom(ContribRPObject):
     """
     Dummy inheritance for rooms.
     """
-    def msg_contents(self, message, exclude=None, from_obj=None, mapping=None, **kwargs):
-        """
-        Emits a message to all objects inside this object.
-
-        Args:
-            message (str): Message to send.
-            exclude (list, optional): A list of objects not to send to.
-            from_obj (Object, optional): An object designated as the
-                "sender" of the message. See `DefaultObject.msg()` for
-                more info.
-            mapping (dict, optional): A dictionary of token-object
-                pairs allowng display name substitution. See Notes
-
-        Kwargs:
-            Keyword arguments will be passed on to `obj.msg()` for all
-            messaged objects.
-
-        Notes:
-            The `mapping` argument is required if `message` contains
-            {}-style format syntax. The keys of `mapping` should match
-            named format tokens, and its values will have their
-            `get_display_name()` function called for  each object in
-            the room before substitution.
-
-        Example:
-            Say char is a Character object and npc is an NPC object.
-
-            char.location.msg_contents(
-                "{attacker} attacks {defender}",
-                mapping=dict(attacker=char, defender=npc),
-                exclude=(char, npc))
-        """
-        contents = self.contents
-        if exclude:
-            exclude = make_iter(exclude)
-            contents = [obj for obj in contents if obj not in exclude]
-        for obj in contents:
-            if mapping:
-                substitutions = {t: sub.get_display_name(obj) for t, sub in mapping.items()}
-                obj.msg(message.format(**substitutions), from_obj=from_obj, **kwargs)
-            else:
-                obj.msg(message, from_obj=from_obj, **kwargs)
+    pass
 
 
 class ContribRPCharacter(DefaultCharacter, ContribRPObject):
