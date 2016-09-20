@@ -545,9 +545,11 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             from_obj (Object, optional): An object designated as the
                 "sender" of the message. See `DefaultObject.msg()` for
                 more info.
-            mapping (dict, optional): A dictionary of token-object
-                pairs allowng display name substitution. See Notes
-
+            mapping (dict, optional): A mapping of formatting keys
+                `{"key":<object>, "key2":<object2>,...}. The keys
+                must match `{key}` markers in `message` and will be
+                replaced by the return of `<object>.get_display_name(looker)`
+                for every looker that is messaged.
         Kwargs:
             Keyword arguments will be passed on to `obj.msg()` for all
             messaged objects.
@@ -560,7 +562,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             the room before substitution.
 
         Example:
-            Say char is a Character object and npc is an NPC object.
+            Say char is a Character object and npc is an NPC object:
 
             char.location.msg_contents(
                 "{attacker} attacks {defender}",
