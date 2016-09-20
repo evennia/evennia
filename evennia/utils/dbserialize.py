@@ -272,6 +272,10 @@ class _SaverDeque(_SaverMutable):
         self._data = deque()
 
     @_save
+    def append(self, *args, **kwargs):
+        self._data.append(*args, **kwargs)
+
+    @_save
     def appendleft(self, *args, **kwargs):
         self._data.appendleft(*args, **kwargs)
 
