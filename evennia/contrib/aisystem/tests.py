@@ -1,16 +1,22 @@
 """
-Tests for the aisystem package.
+Tests for the various nodes, handlers and typeclasses in the aisystem package.
 
 In order to run these tests, you must add the aisystem package as an app
 to your game's server/conf/settings.py file. See the README.md file for
 information on how to do that.
 """
-from unittest import TestCase
-#from django.test import TestCase
 
-from evennia.contrib.aisystem.models import BehaviorTreeDB, BehaviorBlackboardDB
-from evennia.contrib.aisystem.nodes import (RootNode, CompositeNode, 
-    DecoratorNode, LeafNode)
+from unittest import TestCase
+from django.conf import settings
+from evennia import create_object, create_script, DefaultRoom
+from evennia.utils.dbserialize import _SaverList, _SaverDict
+from evennia.contrib.aisystem.typeclasses import (BehaviorTree, AIObject, 
+    AIScript)
+from evennia.contrib.aisystem.nodes import (SUCCESS, FAILURE, RUNNING, ERROR,
+    RootNode, CompositeNode, DecoratorNode, LeafNode, Condition, Command,
+    Transition, Selector, Sequence, MemSelector, MemSequence, ProbSelector, 
+    ProbSequence, Parallel, Verifier, Inverter, Succeeder, Failer, Repeater, 
+    Limiter, Allocator)
 
 """
 Tests:
@@ -29,18 +35,15 @@ Tests:
 """
 
 class TestTransition(TestCase):
+    """
+    Tests the add, shift, swap and interpose methods of the behavior tree class, as
+    well as all methods associated with them.
+    """
+
     def setUp(self):
-        self.tree1 = BehaviorTreeDB()
-        self.tree1.name = "tree1"
-        self.tree1.setup()
-
-        self.tree2 = BehaviorTreeDB()
-        self.tree2.name = "tree2"
-        self.tree2.setup()
-
-        self.tree3 = BehaviorTreeDB()
-        self.tree3.name = "tree3"
-        self.tree3.setup()
+        self.tree1 = create_script(BehaviorTree, key="tree1")
+        self.tree2 = create_script(BehaviorTree, key="tree2")
+        self.tree3 = create_script(BehaviorTree, key="tree3")
 
     def tearDown(self):
         pass
@@ -48,6 +51,23 @@ class TestTransition(TestCase):
     def test_root_exists(self):
         assert(isinstance(self.tree1.root, RootNode))
         assert(isinstance(self.tree2.root, RootNode))
+
+    def test_node_str(self):
+        """
+        Test that the __str__ method of a given node returns the node's name.
+        """
+        leaf = LeafNode("leaf", self.tree1, self.tree1.root)
+        s = str(leaf)
+        assert(s == "leaf")
+
+    def test_node_unicode(self):
+        """
+        Test that the __unicode__ method of a given node returns the node's
+        name in unicode format.
+        """
+        leaf = LeafNode("leaf", self.tree1, self.tree1.root)
+        s = unicode(leaf)
+        assert(s == u"leaf")
 
     def test_add_and_remove_node(self):
         """
@@ -62,37 +82,37 @@ class TestTransition(TestCase):
         """
         leafnode = LeafNode("Leaf node", self.tree1, self.tree1.root)
         # check that the node is added to the tree's nodes registry
-        assert(leafnode.hash in self.tree1.db_nodes.keys())
-        assert(self.tree1.db_nodes[leafnode.hash] == leafnode)
+        assert(leafnode.hash in self.tree1.nodes.keys())
+        assert(self.tree1.nodes[leafnode.hash] == leafnode)
         # check that the parent-child relationship is established
         assert(isinstance(self.tree1.root.children, LeafNode))
         assert(self.tree1.root.children.parent == self.tree1.root)
         # check that there are only two nodes registered in the tree
-        assert(len(self.tree1.db_nodes.keys()) == 2)
+        assert(len(self.tree1.nodes.keys()) == 2)
 
         err = self.tree1.remove(self.tree1.root.children)
         assert(not err)
 
         # check that the node is removed from the tree's nodes registry
-        assert(leafnode.hash not in self.tree1.db_nodes.keys())
+        assert(leafnode.hash not in self.tree1.nodes.keys())
         # check that the parent-child relationship is erased
         assert(self.tree1.root.children == None)
         assert(leafnode.parent == None)
         # check that there is only one node registered in the tree
-        assert(len(self.tree1.db_nodes.keys()) == 1)
+        assert(len(self.tree1.nodes.keys()) == 1)
 
         # test the add method of BehaviorTreeDB, copying in a new leaf node
         err = self.tree1.add(leafnode, self.tree1.root)
         assert(not err)
 
         # check that the copied node is in the tree's nodes registry
-        assert(leafnode.hash in self.tree1.db_nodes.keys())
-        assert(isinstance(self.tree1.db_nodes[leafnode.hash], LeafNode))
+        assert(leafnode.hash in self.tree1.nodes.keys())
+        assert(isinstance(self.tree1.nodes[leafnode.hash], LeafNode))
         # check that the parent-child relationship is established
         assert(isinstance(self.tree1.root.children, LeafNode))
         assert(self.tree1.root.children.parent == self.tree1.root)
         # check that there are only two nodes registered in the tree
-        assert(len(self.tree1.db_nodes.keys()) == 2)
+        assert(len(self.tree1.nodes.keys()) == 2)
 
     def test_add_and_remove_from_composite(self):
         """
@@ -131,7 +151,7 @@ class TestTransition(TestCase):
         # check that leaf1 has moved to the end-position
         assert(composite.children[-1] == leaf1)
         # check that there are still only 7 nodes in the registry
-        assert(len(self.tree1.db_nodes.keys()) == 7)
+        assert(len(self.tree1.nodes.keys()) == 7)
 
     def test_recursive_add_hash(self):
         """
@@ -157,18 +177,18 @@ class TestTransition(TestCase):
         assert(not err)
 
         # check that there are now 8 nodes in the registry
-        assert(len(self.tree1.db_nodes.keys()) == 8)
+        assert(len(self.tree1.nodes.keys()) == 8)
 
         # check that the original nodes have retained their entries in the
         # registry
-        assert(self.tree1.db_nodes.has_key(composite1.hash))
-        assert(self.tree1.db_nodes.has_key(composite2.hash))
-        assert(self.tree1.db_nodes.has_key(leaf1.hash))
-        assert(self.tree1.db_nodes.has_key(leaf2.hash))
-        assert(self.tree1.db_nodes[composite1.hash] == composite1)
-        assert(self.tree1.db_nodes[composite2.hash] == composite2)
-        assert(self.tree1.db_nodes[leaf1.hash] == leaf1)
-        assert(self.tree1.db_nodes[leaf2.hash] == leaf2)
+        assert(self.tree1.nodes.has_key(composite1.hash))
+        assert(self.tree1.nodes.has_key(composite2.hash))
+        assert(self.tree1.nodes.has_key(leaf1.hash))
+        assert(self.tree1.nodes.has_key(leaf2.hash))
+        assert(self.tree1.nodes[composite1.hash] == composite1)
+        assert(self.tree1.nodes[composite2.hash] == composite2)
+        assert(self.tree1.nodes[leaf1.hash] == leaf1)
+        assert(self.tree1.nodes[leaf2.hash] == leaf2)
 
         # check that the new nodes have entries in the registry
         composite3 = [x for x in composite1.children if x != composite2][0]        
@@ -176,12 +196,12 @@ class TestTransition(TestCase):
         leaf3 = composite3.children[0]
         leaf4 = composite3.children[1]
 
-        assert(self.tree1.db_nodes.has_key(composite3.hash))
-        assert(self.tree1.db_nodes.has_key(leaf3.hash))
-        assert(self.tree1.db_nodes.has_key(leaf4.hash))
-        assert(self.tree1.db_nodes[composite3.hash] == composite3)
-        assert(self.tree1.db_nodes[leaf3.hash] == leaf3)
-        assert(self.tree1.db_nodes[leaf4.hash] == leaf4)
+        assert(self.tree1.nodes.has_key(composite3.hash))
+        assert(self.tree1.nodes.has_key(leaf3.hash))
+        assert(self.tree1.nodes.has_key(leaf4.hash))
+        assert(self.tree1.nodes[composite3.hash] == composite3)
+        assert(self.tree1.nodes[leaf3.hash] == leaf3)
+        assert(self.tree1.nodes[leaf4.hash] == leaf4)
 
         # copy a subtree from another tree
         tree2_composite1 = CompositeNode("tree2 composite1", self.tree2, 
@@ -195,52 +215,52 @@ class TestTransition(TestCase):
         # check if tree1 already has the hashes of some of the nodes in tree2
         # if so, new hashes will be created in tree1 upon copying the subtree
         # from tree2, and they should therefore not be checked for
-        tree2_composite1_hash_in_tree1 = self.tree1.db_nodes.has_key(
+        tree2_composite1_hash_in_tree1 = self.tree1.nodes.has_key(
             tree2_composite1.hash)
-        tree2_composite2_hash_in_tree1 = self.tree1.db_nodes.has_key(
+        tree2_composite2_hash_in_tree1 = self.tree1.nodes.has_key(
             tree2_composite2.hash)
-        tree2_leaf1_hash_in_tree1 = self.tree1.db_nodes.has_key(
+        tree2_leaf1_hash_in_tree1 = self.tree1.nodes.has_key(
             tree2_leaf1.hash)
-        tree2_leaf2_hash_in_tree1 = self.tree1.db_nodes.has_key(
+        tree2_leaf2_hash_in_tree1 = self.tree1.nodes.has_key(
             tree2_leaf2.hash)
-        tree2_leaf3_hash_in_tree1 = self.tree1.db_nodes.has_key(
+        tree2_leaf3_hash_in_tree1 = self.tree1.nodes.has_key(
             tree2_leaf3.hash) 
 
         err = self.tree1.add(tree2_composite1, composite1)
         assert(not err)
 
         # check that there are now 13 nodes in tree1's registry 
-        assert(len(self.tree1.db_nodes.keys()) == 13)
+        assert(len(self.tree1.nodes.keys()) == 13)
         
         # check that the new nodes have entries in the registry
-        tree2_composite1_clone = [x for x in self.tree1.db_nodes.values() if
+        tree2_composite1_clone = [x for x in self.tree1.nodes.values() if
                                   x.name == tree2_composite1.name]
         assert(tree2_composite1_clone)
-        assert(tree2_composite1_hash_in_tree1 or self.tree1.db_nodes.has_key(
+        assert(tree2_composite1_hash_in_tree1 or self.tree1.nodes.has_key(
             tree2_composite1_clone[0].hash))
 
-        tree2_composite2_clone = [x for x in self.tree1.db_nodes.values() if
+        tree2_composite2_clone = [x for x in self.tree1.nodes.values() if
                                   x.name == tree2_composite2.name]
         assert(tree2_composite2_clone)
-        assert(tree2_composite2_hash_in_tree1 or self.tree1.db_nodes.has_key(
+        assert(tree2_composite2_hash_in_tree1 or self.tree1.nodes.has_key(
             tree2_composite2_clone[0].hash))
 
-        tree2_leaf1_clone = [x for x in self.tree1.db_nodes.values() if
+        tree2_leaf1_clone = [x for x in self.tree1.nodes.values() if
                              x.name == tree2_leaf1.name]
         assert(tree2_leaf1_clone)
-        assert(tree2_leaf1_hash_in_tree1 or self.tree1.db_nodes.has_key(
+        assert(tree2_leaf1_hash_in_tree1 or self.tree1.nodes.has_key(
             tree2_leaf1_clone[0].hash))
 
-        tree2_leaf2_clone = [x for x in self.tree1.db_nodes.values() if
+        tree2_leaf2_clone = [x for x in self.tree1.nodes.values() if
                              x.name == tree2_leaf2.name]
         assert(tree2_leaf2_clone)
-        assert(tree2_leaf2_hash_in_tree1 or self.tree1.db_nodes.has_key(
+        assert(tree2_leaf2_hash_in_tree1 or self.tree1.nodes.has_key(
             tree2_leaf2_clone[0].hash))
 
-        tree2_leaf3_clone = [x for x in self.tree1.db_nodes.values() if
+        tree2_leaf3_clone = [x for x in self.tree1.nodes.values() if
                              x.name == tree2_leaf3.name]    
         assert(tree2_leaf3_clone)
-        assert(tree2_leaf3_hash_in_tree1 or self.tree1.db_nodes.has_key(
+        assert(tree2_leaf3_hash_in_tree1 or self.tree1.nodes.has_key(
             tree2_leaf3_clone[0].hash))
 
     def test_recursive_remove_hash(self):
@@ -256,13 +276,13 @@ class TestTransition(TestCase):
         leaf3 = LeafNode("leaf3", self.tree1, composite2)
 
         # check that there are now 6 nodes in the registry
-        assert(len(self.tree1.db_nodes.keys()) == 6)
+        assert(len(self.tree1.nodes.keys()) == 6)
 
         err = self.tree1.remove(composite1)
         assert(not err)        
 
         # check that there is now only 1 node in the registry
-        assert(len(self.tree1.db_nodes.keys()) == 1)
+        assert(len(self.tree1.nodes.keys()) == 1)
 
     def test_copy_from_same_tree(self):
         """
@@ -273,19 +293,19 @@ class TestTransition(TestCase):
         composite2 = CompositeNode("composite2", self.tree1, composite1)
         leafnode = LeafNode("leaf node", self.tree1, composite1)
         old_hashval = leafnode.hash
-        hashes = self.tree1.db_nodes.keys()
+        hashes = self.tree1.nodes.keys()
 
         err = self.tree1.add(leafnode, composite2)
         assert(not err)
 
         # get the copied leaf node
-        new_hashval = [x for x in self.tree1.db_nodes.keys() if not x in hashes]
+        new_hashval = [x for x in self.tree1.nodes.keys() if not x in hashes]
         assert(new_hashval) # copied leaf node is in tree1's registry
         new_hashval = new_hashval[0]
-        newnode = self.tree1.db_nodes[new_hashval] 
+        newnode = self.tree1.nodes[new_hashval] 
 
         # check that there are now five nodes in the tree, including the root node
-        assert(len(self.tree1.db_nodes.keys()) == 5)
+        assert(len(self.tree1.nodes.keys()) == 5)
 
         # check that the original leaf node's original parent-child relationship
         # remains intact
@@ -300,8 +320,8 @@ class TestTransition(TestCase):
         # check that the original leaf node's hash remains unchanged in both
         # the node itself and the registry 
         assert(old_hashval == leafnode.hash)
-        assert(self.tree1.db_nodes.has_key(old_hashval))
-        assert(self.tree1.db_nodes[old_hashval] == leafnode)
+        assert(self.tree1.nodes.has_key(old_hashval))
+        assert(self.tree1.nodes[old_hashval] == leafnode)
         
     def test_move_from_same_tree(self):
         """
@@ -318,7 +338,7 @@ class TestTransition(TestCase):
 
         # check that there are still only four nodes in the tree, 
         # including the root node
-        assert(len(self.tree1.db_nodes.keys()) == 4)
+        assert(len(self.tree1.nodes.keys()) == 4)
 
         # check that the leaf node's original parent-child relationship has
         # been terminated
@@ -333,8 +353,8 @@ class TestTransition(TestCase):
         # check that the leaf node's hash remains unchanged in both
         # the node itself and the registry 
         assert(hashval == leafnode.hash)
-        assert(self.tree1.db_nodes.has_key(hashval))
-        assert(self.tree1.db_nodes[hashval] == leafnode)
+        assert(self.tree1.nodes.has_key(hashval))
+        assert(self.tree1.nodes[hashval] == leafnode)
 
     def test_copy_from_other_tree(self):
         """
@@ -343,21 +363,21 @@ class TestTransition(TestCase):
         """
         leafnode = LeafNode("leaf node", self.tree1, self.tree1.root)
         old_hashval = leafnode.hash
-        hashes = self.tree2.db_nodes.keys()
+        hashes = self.tree2.nodes.keys()
 
         self.tree2.add(leafnode, self.tree2.root, source_tree=self.tree1)
 
         # get the copied leaf node
-        new_hashval = [x for x in self.tree2.db_nodes.keys() if not x in hashes]
+        new_hashval = [x for x in self.tree2.nodes.keys() if not x in hashes]
         assert(new_hashval) # copied leaf node is in tree2's registry
         new_hashval = new_hashval[0]
-        newnode = self.tree2.db_nodes[new_hashval]
+        newnode = self.tree2.nodes[new_hashval]
 
         # check that there are still two nodes in tree1, including the root node
-        assert(len(self.tree1.db_nodes.keys()) == 2)
+        assert(len(self.tree1.nodes.keys()) == 2)
 
         # check that there are now two nodes in tree2, including the root node
-        assert(len(self.tree2.db_nodes.keys()) == 2)
+        assert(len(self.tree2.nodes.keys()) == 2)
 
         # check that the original leaf node's original parent-child relationship
         # remains intact
@@ -372,8 +392,8 @@ class TestTransition(TestCase):
         # check that the original leaf node's hash remains unchanged in both
         # the node itself and the registry 
         assert(old_hashval == leafnode.hash)
-        assert(self.tree1.db_nodes.has_key(old_hashval))
-        assert(self.tree1.db_nodes[old_hashval] == leafnode)
+        assert(self.tree1.nodes.has_key(old_hashval))
+        assert(self.tree1.nodes[old_hashval] == leafnode)
 
     def test_move_from_other_tree(self):
         """
@@ -388,10 +408,10 @@ class TestTransition(TestCase):
         assert(not err)
 
         # check that there is now only one node in tree1, i.e. the root node
-        assert(len(self.tree1.db_nodes.keys()) == 1)
+        assert(len(self.tree1.nodes.keys()) == 1)
 
         # check that there are now two nodes in tree2, including the root node
-        assert(len(self.tree2.db_nodes.keys()) == 2)
+        assert(len(self.tree2.nodes.keys()) == 2)
 
         # check that the original leaf node's original parent-child relationship
         # has been terminated
@@ -407,12 +427,12 @@ class TestTransition(TestCase):
         assert(hashval == leafnode.hash)
 
         # check that the leaf node's hash has been removed from tree1's registry
-        assert(not self.tree1.db_nodes.has_key(hashval))
+        assert(not self.tree1.nodes.has_key(hashval))
 
         # check that the original leaf node's hash remains unchanged in both
         # the node itself and the registry 
-        assert(self.tree2.db_nodes.has_key(hashval))
-        assert(self.tree2.db_nodes[hashval] == leafnode)
+        assert(self.tree2.nodes.has_key(hashval))
+        assert(self.tree2.nodes[hashval] == leafnode)
 
     def test_add_error_not_node(self):
         """
@@ -430,12 +450,12 @@ class TestTransition(TestCase):
          
         # check that tree1 and tree2 have 2 and 1 nodes in their registries
         # respectively
-        assert(len(self.tree1.db_nodes.keys()) == 2)
-        assert(len(self.tree2.db_nodes.keys()) == 1)
+        assert(len(self.tree1.nodes.keys()) == 2)
+        assert(len(self.tree2.nodes.keys()) == 1)
 
         # check that leafnode is still in the registry of tree1
-        assert(self.tree1.db_nodes.has_key(leafnode.hash))
-        assert(self.tree1.db_nodes[leafnode.hash] == leafnode)
+        assert(self.tree1.nodes.has_key(leafnode.hash))
+        assert(self.tree1.nodes[leafnode.hash] == leafnode)
 
     def test_add_error_root_node(self):
         """
@@ -452,10 +472,10 @@ class TestTransition(TestCase):
         assert(isinstance(err, str) or isinstance(err, unicode))
         
         # check that no root node was created or moved
-        assert(len(self.tree1.db_nodes.keys()) == 1)
-        assert(len(self.tree2.db_nodes.keys()) == 1)
-        assert(self.tree1.db_nodes.has_key(self.tree1.root.hash))
-        assert(self.tree1.db_nodes[self.tree1.root.hash] == self.tree1.root)
+        assert(len(self.tree1.nodes.keys()) == 1)
+        assert(len(self.tree2.nodes.keys()) == 1)
+        assert(self.tree1.nodes.has_key(self.tree1.root.hash))
+        assert(self.tree1.nodes[self.tree1.root.hash] == self.tree1.root)
 
     def test_add_error_wrong_tree(self):
         """
@@ -474,10 +494,10 @@ class TestTransition(TestCase):
         assert(isinstance(err, str) or isinstance(err, unicode))
 
         # check that no node was created or moved
-        assert(len(self.tree1.db_nodes.keys()) == 2)
-        assert(len(self.tree2.db_nodes.keys()) == 1)
-        assert(self.tree1.db_nodes.has_key(leafnode.hash))
-        assert(self.tree1.db_nodes[leafnode.hash] == leafnode) 
+        assert(len(self.tree1.nodes.keys()) == 2)
+        assert(len(self.tree2.nodes.keys()) == 1)
+        assert(self.tree1.nodes.has_key(leafnode.hash))
+        assert(self.tree1.nodes[leafnode.hash] == leafnode) 
 
     def test_add_error_leaf_or_non_composite_w_child(self):
         """
@@ -504,15 +524,15 @@ class TestTransition(TestCase):
 
         # check that there are still only 5 nodes in the registry,
         # including the root node
-        assert(len(self.tree1.db_nodes.keys()) == 5)
+        assert(len(self.tree1.nodes.keys()) == 5)
 
         # check that leaf1 has not been moved
         assert(leaf1.parent == composite)
         assert(leaf1 in composite.children)
 
         # check that leaf1 remains in the registry
-        assert(self.tree1.db_nodes.has_key(leaf1.hash))
-        assert(self.tree1.db_nodes[leaf1.hash] == leaf1)
+        assert(self.tree1.nodes.has_key(leaf1.hash))
+        assert(self.tree1.nodes[leaf1.hash] == leaf1)
 
     def test_shift_same_node(self):
         """
@@ -608,11 +628,11 @@ class TestTransition(TestCase):
 
         # check that there are still only two nodes in the registry,
         # including the root node
-        assert(len(self.tree1.db_nodes.keys()) == 2)
+        assert(len(self.tree1.nodes.keys()) == 2)
 
         # check that the leaf node is present in the registry
-        assert(self.tree1.db_nodes.has_key(leafnode.hash))
-        assert(self.tree1.db_nodes[leafnode.hash] == leafnode)
+        assert(self.tree1.nodes.has_key(leafnode.hash))
+        assert(self.tree1.nodes[leafnode.hash] == leafnode)
 
     def test_swap_same_parent(self):
         """
@@ -638,8 +658,8 @@ class TestTransition(TestCase):
         assert(composite1.children[2] == leaf1)
 
         # check that the swapped nodes are still in the registry 
-        assert(self.tree1.db_nodes[leaf1.hash] == leaf1)
-        assert(self.tree1.db_nodes[leaf3.hash] == leaf3)
+        assert(self.tree1.nodes[leaf1.hash] == leaf1)
+        assert(self.tree1.nodes[leaf3.hash] == leaf3)
 
     def test_swap_same_tree(self):
         """
@@ -671,8 +691,8 @@ class TestTransition(TestCase):
         assert(leaf1.parent == composite3)
 
         # check that the swapped nodes are still in the registry
-        assert(self.tree1.db_nodes[leaf1.hash] == leaf1)
-        assert(self.tree1.db_nodes[leaf2.hash] == leaf2)
+        assert(self.tree1.nodes[leaf1.hash] == leaf1)
+        assert(self.tree1.nodes[leaf2.hash] == leaf2)
 
     def test_swap_other_tree(self):
         """
@@ -699,14 +719,14 @@ class TestTransition(TestCase):
 
         # check that each tree's registry has only two nodes, including
         # the root node
-        assert(len(self.tree1.db_nodes.keys()) == 2)
-        assert(len(self.tree2.db_nodes.keys()) == 2)
+        assert(len(self.tree1.nodes.keys()) == 2)
+        assert(len(self.tree2.nodes.keys()) == 2)
 
         # check that the nodes are present in their trees' registries
-        assert(self.tree1.db_nodes.has_key(leaf2.hash))
-        assert(self.tree2.db_nodes.has_key(leaf1.hash))
-        assert(self.tree1.db_nodes[leaf2.hash] == leaf2)
-        assert(self.tree2.db_nodes[leaf1.hash] == leaf1)
+        assert(self.tree1.nodes.has_key(leaf2.hash))
+        assert(self.tree2.nodes.has_key(leaf1.hash))
+        assert(self.tree1.nodes[leaf2.hash] == leaf2)
+        assert(self.tree2.nodes[leaf1.hash] == leaf1)
 
         # swap the nodes again
         err = self.tree2.swap(leaf2, leaf1, source_tree=self.tree1)
@@ -718,10 +738,10 @@ class TestTransition(TestCase):
         assert(leaf2.parent == self.tree2.root)
 
         # check that the nodes are present in their trees' registries
-        assert(self.tree1.db_nodes.has_key(leaf1.hash))
-        assert(self.tree2.db_nodes.has_key(leaf2.hash))
-        assert(self.tree1.db_nodes[leaf1.hash] == leaf1)
-        assert(self.tree2.db_nodes[leaf2.hash] == leaf2)
+        assert(self.tree1.nodes.has_key(leaf1.hash))
+        assert(self.tree2.nodes.has_key(leaf2.hash))
+        assert(self.tree1.nodes[leaf1.hash] == leaf1)
+        assert(self.tree2.nodes[leaf2.hash] == leaf2)
 
     def test_swap_error_not_node(self):
         """
@@ -739,12 +759,12 @@ class TestTransition(TestCase):
          
         # check that tree1 and tree2 have 2 and 1 nodes in their registries
         # respectively
-        assert(len(self.tree1.db_nodes.keys()) == 2)
-        assert(len(self.tree2.db_nodes.keys()) == 1)
+        assert(len(self.tree1.nodes.keys()) == 2)
+        assert(len(self.tree2.nodes.keys()) == 1)
 
         # check that leafnode is still in the registry of tree1
-        assert(self.tree1.db_nodes.has_key(leafnode.hash))
-        assert(self.tree1.db_nodes[leafnode.hash] == leafnode)
+        assert(self.tree1.nodes.has_key(leafnode.hash))
+        assert(self.tree1.nodes[leafnode.hash] == leafnode)
 
     def test_swap_error_root_node(self):
         """
@@ -767,10 +787,10 @@ class TestTransition(TestCase):
         assert(root2 == self.tree2.root)
 
         # check that the leaf nodes have not been moved
-        assert(self.tree1.db_nodes.has_key(leaf1.hash))
-        assert(self.tree1.db_nodes[leaf1.hash] == leaf1)
-        assert(self.tree2.db_nodes.has_key(leaf2.hash))
-        assert(self.tree2.db_nodes[leaf2.hash] == leaf2)
+        assert(self.tree1.nodes.has_key(leaf1.hash))
+        assert(self.tree1.nodes[leaf1.hash] == leaf1)
+        assert(self.tree2.nodes.has_key(leaf2.hash))
+        assert(self.tree2.nodes[leaf2.hash] == leaf2)
 
     def test_interpose_same_tree(self):
         """
@@ -781,27 +801,27 @@ class TestTransition(TestCase):
         decorator1 = DecoratorNode("decorator1", self.tree1, composite)
         decorator2 = DecoratorNode("decorator2", self.tree1, composite)
         old_hashval = decorator1.hash
-        hashes = self.tree1.db_nodes.keys()
+        hashes = self.tree1.nodes.keys()
 
         err = self.tree1.interpose(decorator1, decorator2)
         assert(not err)
 
-        new_hashval = [x for x in self.tree1.db_nodes.keys() if
+        new_hashval = [x for x in self.tree1.nodes.keys() if
                        x not in hashes]
         assert(new_hashval) # copied decorator node is in tree1's registry
         new_hashval = new_hashval[0]
-        decorator3 = self.tree1.db_nodes[new_hashval]
+        decorator3 = self.tree1.nodes[new_hashval]
 
         # check that there are now 5 nodes in the registry
-        assert(len(self.tree1.db_nodes.keys()) == 5)
+        assert(len(self.tree1.nodes.keys()) == 5)
 
         # check that decorator1 has not been moved
         assert(decorator1 in composite.children)
         assert(decorator1.parent == composite)
 
         # check that decorator1 is still in the registry
-        assert(self.tree1.db_nodes.has_key(old_hashval))
-        assert(self.tree1.db_nodes[old_hashval] == decorator1)
+        assert(self.tree1.nodes.has_key(old_hashval))
+        assert(self.tree1.nodes[old_hashval] == decorator1)
 
         # check that the new parent-child relationships for decorator3 have
         # been established
@@ -814,7 +834,7 @@ class TestTransition(TestCase):
         assert(not err)
 
         # check that there are still 5 nodes in the registry
-        assert(len(self.tree1.db_nodes.keys()) == 5)
+        assert(len(self.tree1.nodes.keys()) == 5)
         
         # check that the new parent-child relationships for decorator1 have
         # been established
@@ -828,8 +848,8 @@ class TestTransition(TestCase):
         assert(decorator1 not in composite.children)
 
         # check that decorator1 is still in the registry
-        assert(self.tree1.db_nodes.has_key(old_hashval))
-        assert(self.tree1.db_nodes[old_hashval] == decorator1)
+        assert(self.tree1.nodes.has_key(old_hashval))
+        assert(self.tree1.nodes[old_hashval] == decorator1)
 
     def test_interpose_composite_node(self):
         """
@@ -845,21 +865,21 @@ class TestTransition(TestCase):
         leaf3 = LeafNode("leaf3", self.tree1, composite2)
         leaf4 = LeafNode("leaf4", self.tree1, composite2)
         leaf5 = LeafNode("leaf5", self.tree1, composite2)
-        hashes = self.tree1.db_nodes.keys()
+        hashes = self.tree1.nodes.keys()
 
         err = self.tree1.interpose(composite2, leaf1, position=1)
         assert(not err)
 
         # check that there are now 12 nodes in the tree's registry
-        assert(len(self.tree1.db_nodes.keys()) == 12)
+        assert(len(self.tree1.nodes.keys()) == 12)
 
         # get the new composite node
-        new_hashval = [x for x in self.tree1.db_nodes.keys() if
-                       self.tree1.db_nodes[x].name == "composite2" 
+        new_hashval = [x for x in self.tree1.nodes.keys() if
+                       self.tree1.nodes[x].name == "composite2" 
                        and x not in hashes]
         assert(new_hashval) # copied composite node is in tree1's registry
         new_hashval = new_hashval[0]
-        composite3 = self.tree1.db_nodes[new_hashval]
+        composite3 = self.tree1.nodes[new_hashval]
 
         # check that leaf1 is in the appropriate position in composite3's
         # list of children
@@ -870,7 +890,7 @@ class TestTransition(TestCase):
             copying=False)
 
         # check that there are still 12 nodes in the tree's registry
-        assert(len(self.tree1.db_nodes.keys()) == 12)
+        assert(len(self.tree1.nodes.keys()) == 12)
 
         # check that leaf2 is in the appropriate position in composite3's
         # list of children
@@ -885,22 +905,22 @@ class TestTransition(TestCase):
         decorator1 = DecoratorNode("decorator1", self.tree1, self.tree1.root)
         decorator2 = DecoratorNode("decorator2", self.tree2, self.tree2.root)
         old_hashval = decorator1.hash
-        hashes = self.tree2.db_nodes.keys()
+        hashes = self.tree2.nodes.keys()
 
         err = self.tree2.interpose(decorator1, decorator2,
             source_tree=self.tree1)
         assert(not err)
 
         # check that there are now 3 nodes in tree2 and 2 nodes in tree1
-        assert(len(self.tree1.db_nodes.keys()) == 2)
-        assert(len(self.tree2.db_nodes.keys()) == 3)
+        assert(len(self.tree1.nodes.keys()) == 2)
+        assert(len(self.tree2.nodes.keys()) == 3)
 
         # get the new decorator
-        new_hashval = [x for x in self.tree2.db_nodes.keys() if
+        new_hashval = [x for x in self.tree2.nodes.keys() if
                        x not in hashes]
         assert(new_hashval)
         new_hashval = new_hashval[0]
-        decorator3 = self.tree2.db_nodes[new_hashval]
+        decorator3 = self.tree2.nodes[new_hashval]
 
         # check that the parent-child relationships of decorator3 have been
         # established
@@ -914,12 +934,12 @@ class TestTransition(TestCase):
         assert(not err)
 
         # check that there are now 4 nodes in tree2 and 1 node in tree1
-        assert(len(self.tree1.db_nodes.keys()) == 1)
-        assert(len(self.tree2.db_nodes.keys()) == 4)
+        assert(len(self.tree1.nodes.keys()) == 1)
+        assert(len(self.tree2.nodes.keys()) == 4)
 
         # check that decorator1 has been added to the registry of tree2
-        assert(self.tree2.db_nodes.has_key(decorator1.hash))
-        assert(self.tree2.db_nodes[decorator1.hash] == decorator1)
+        assert(self.tree2.nodes.has_key(decorator1.hash))
+        assert(self.tree2.nodes[decorator1.hash] == decorator1)
        
         # check that the parent-child relationships of decorator1 have been
         # established
@@ -945,12 +965,12 @@ class TestTransition(TestCase):
         assert(isinstance(err, str) or isinstance(err, unicode)) 
          
         # check that tree1 and tree2 each have 2 nodes in their registries
-        assert(len(self.tree1.db_nodes.keys()) == 2)
-        assert(len(self.tree2.db_nodes.keys()) == 2)
+        assert(len(self.tree1.nodes.keys()) == 2)
+        assert(len(self.tree2.nodes.keys()) == 2)
 
         # check that leafnode is still in the registry of tree1
-        assert(self.tree1.db_nodes.has_key(leafnode.hash))
-        assert(self.tree1.db_nodes[leafnode.hash] == leafnode)
+        assert(self.tree1.nodes.has_key(leafnode.hash))
+        assert(self.tree1.nodes[leafnode.hash] == leafnode)
 
     def test_interpose_error_same_node(self):
         """
@@ -967,11 +987,11 @@ class TestTransition(TestCase):
         assert(isinstance(err, str) or isinstance(err, unicode))
 
         # check that there are still 2 nodes in the registry
-        assert(len(self.tree1.db_nodes.keys()) == 2) 
+        assert(len(self.tree1.nodes.keys()) == 2) 
         
         # check that the decorator node has not been moved
-        assert(self.tree1.db_nodes.has_key(hashval))
-        assert(self.tree1.db_nodes[hashval] == decorator)
+        assert(self.tree1.nodes.has_key(hashval))
+        assert(self.tree1.nodes[hashval] == decorator)
 
     def test_interpose_error_root_node(self):
         """
@@ -988,7 +1008,7 @@ class TestTransition(TestCase):
         assert(isinstance(err, str) or isinstance(err, unicode))
 
         # check that there are still only two nodes in the registry
-        assert(len(self.tree1.db_nodes.keys()) == 2)
+        assert(len(self.tree1.nodes.keys()) == 2)
 
         # check that the parent-child relationships of the two nodes in the
         # registry have not changed
@@ -997,19 +1017,943 @@ class TestTransition(TestCase):
         assert(decorator.children == None)
         assert(decorator.parent == self.tree1.root)
 
+
+class AdderSuccessLeaf(LeafNode):
+    """
+    Leaf node that increments a counter and returns Success whenever it ticks
+    """
+    def update(self, bb):
+        bb['nodes'][self.hash]['count'] += 1
+        return SUCCESS
+
+    def on_blackboard_setup(self, bb, override=False):
+        super(AdderSuccessLeaf, self).on_blackboard_setup(bb, 
+            override=override)
+        if not bb['nodes'][self.hash].has_key('count') or override:
+            bb['nodes'][self.hash]['count'] = 0
+
+
+class AdderFailureLeaf(LeafNode):
+    """
+    Leaf node that increments a counter and returns Failure whenever it ticks
+    """
+    def update(self, bb):
+        bb['nodes'][self.hash]['count'] += 1
+        return FAILURE
+
+    def on_blackboard_setup(self, bb, override=False):
+        super(AdderFailureLeaf, self).on_blackboard_setup(bb,
+            override=override)
+        if not bb['nodes'][self.hash].has_key('count') or override:
+            bb['nodes'][self.hash]['count'] = 0
+
+
+class SuccessLeaf(LeafNode):
+    """
+    Leaf node that always returns Success
+    """
+    def update(self, bb):
+        return SUCCESS
+
+
+class FailureLeaf(LeafNode):
+    """
+    Leaf node that always returns Failure
+    """
+    def update(self, bb):
+        return FAILURE
+
+
+class RunningLeaf(LeafNode):
+    """
+    Leaf node that always returns Running
+    """
+    def update(self, bb):
+        return RUNNING
+
+
+class RunToggleLeaf(LeafNode):
+    def update(self, bb):
+        if bb['nodes'][self.hash]['running']:
+            return SUCCESS
+        else:
+            return RUNNING
+
+
+class ErrorLeaf(LeafNode):
+    """
+    Leaf node that always returns Error
+    """
+    def update(self, bb):
+        return ERROR
+
+
+class ConditionTrue(Condition):
+    def condition(self, bb):
+        return True
+
+
+class ConditionFalse(Condition):
+    def condition(self, bb):
+        return False
+
+
+class VerifierTrue(Verifier):
+    def condition(self, bb):
+        return True
+
+
+class VerifierFalse(Verifier):
+    def condition(self, bb):
+        return False
+
+
 class TestFunctionality(TestCase):
-    pass
+    """
+    Tests the functionality of behavior trees with various node classes,
+    as well as that of their blackboards.
+    """
+    def setUp(self):
+        self.room = create_object(DefaultRoom, key="room", nohome=True)
+        self.room.db.desc = "room_desc"
+        settings.DEFAULT_HOME = "#%i" % self.room.id
+
+        self.tree = create_script(BehaviorTree, key="tree")
+        self.target_tree = create_script(BehaviorTree, key="target tree")
+        self.agent = create_object(AIObject, key="agent")
+        self.script = create_script(AIScript, key="script")
+
+    def tearDown(self):
+        self.agent.delete()
+        self.script.delete()
+        self.tree.delete()
+        self.target_tree.delete()
+        self.room.delete()
+
+    def test_blackboard_setup_spectree(self):
+        """
+        Test the setup process of the agent and script blackboards when a
+        behavior tree is specified as an argument to the setup method
+        """
+        leafnode = LeafNode("leaf", self.tree, self.tree.root)
+
+        self.agent.ai.setup(tree=self.tree)
+        self.script.ai.setup(tree=self.tree)
+ 
+        # check that the agent blackboard's setup was completed successfully
+        assert(isinstance(self.agent.ai.agent, AIObject))
+        assert(isinstance(self.agent.ai.running_now, _SaverList))
+        assert(isinstance(self.agent.ai.running_pre, _SaverList))
+        assert(isinstance(self.agent.ai.nodes, _SaverDict))
+        assert(isinstance(self.agent.ai.globals, _SaverDict))
+
+        # check that the script blackboard's setup was completed successfully
+        assert(isinstance(self.script.ai.agent, AIScript))
+        assert(isinstance(self.script.ai.running_now, _SaverList))
+        assert(isinstance(self.script.ai.running_pre, _SaverList))
+        assert(isinstance(self.script.ai.nodes, _SaverDict))
+        assert(isinstance(self.script.ai.globals, _SaverDict))
+
+    def test_blackboard_setup_objtree(self):
+        """
+        Test the setup process of the agent and script blackboards when a
+        behavior tree is specified as an attribute of the object or script
+        being assigned a blackboard.
+        """
+        leafnode = LeafNode("leaf", self.tree, self.tree.root)
+
+        # test setup when a default tree exists
+        self.agent.aitree = self.tree
+        self.script.aitree = self.tree
+
+        self.agent.ai.setup()
+        self.script.ai.setup()
+ 
+        # check that the agent blackboard's setup was completed successfully
+        assert(isinstance(self.agent.ai.agent, AIObject))
+        assert(isinstance(self.agent.ai.running_now, _SaverList))
+        assert(isinstance(self.agent.ai.running_pre, _SaverList))
+        assert(isinstance(self.agent.ai.nodes, _SaverDict))
+        assert(isinstance(self.agent.ai.globals, _SaverDict))
+
+        # check that the script blackboard's setup was completed successfully
+        assert(isinstance(self.script.ai.agent, AIScript))
+        assert(isinstance(self.script.ai.running_now, _SaverList))
+        assert(isinstance(self.script.ai.running_pre, _SaverList))
+        assert(isinstance(self.script.ai.nodes, _SaverDict))
+        assert(isinstance(self.script.ai.globals, _SaverDict))
+
+    def test_blackboard_setup_notree(self):
+        """
+        Test the setup process of the agent and script blackboards when no 
+        behavior tree is specified.
+        """
+        leafnode = LeafNode("leaf", self.tree, self.tree.root)
+
+        self.agent.ai.setup()
+        self.script.ai.setup()
+ 
+        # check that the agent blackboard's setup was aborted
+        assert(not self.agent.attributes.has("ai"))
+
+        # check that the script blackboard's setup was aborted
+        assert(not self.agent.attributes.has("ai"))
+
+    def test_single_leaf(self):
+        """
+        Test the the ticking of a root-and-leaf tree. 
+        """
+        adder_leaf = AdderSuccessLeaf("adder", self.tree, self.tree.root)
+        self.agent.ai.setup(tree=self.tree)
+        self.agent.ai.tick()
+        self.agent.ai.tick()
+        status = self.agent.ai.tick()
+       
+        assert(status == SUCCESS)
+        assert(self.agent.ai.nodes[adder_leaf.hash]['count'] == 3)
+
+    def test_aiscript_leaf(self):
+        """
+        Test the ticking of a root-and-leaf tree associated with an AIScript's
+        blackboard.
+        """
+        adder_leaf = AdderSuccessLeaf("adder", self.tree, self.tree.root)
+        self.script.ai.setup(tree=self.tree)
+        self.script.ai.tick()
+        self.script.ai.tick()
+        status = self.script.ai.tick()
+
+        assert(status == SUCCESS)
+        assert(self.script.ai.nodes[adder_leaf.hash]['count'] == 3)
+
+    def test_condition_leaf(self):
+        """
+        Test the ticking of a condition leaf node. 
+        """
+        # check that the node returns Success if the condition is True
+        condition = ConditionTrue("condition", self.tree, self.tree.root)
+        self.agent.ai.setup(tree=self.tree)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        # check that the node returns Failure if the condition is False
+        self.tree.remove(condition)
+        condition = ConditionFalse("condition", self.tree, self.tree.root)
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+    #def test_command_leaf(self):
+
+    def test_transition_leaf(self):
+        """
+        Test whether a transition leaf successfully transitions to 
+        """
 
 
+    def test_selector(self):
+        """
+        Test the iteration over a selector with three child nodes, whose first
+        node returns Failure, whose third node returns Failure and whose second
+        node returns, alternatively, Success, Failure, Running and Error.
+        """
+        selector = Selector("selector", self.tree, self.tree.root)
+        failure1 = FailureLeaf("failure1", self.tree, selector) 
+        failurex = FailureLeaf("failurex", self.tree, selector)
+        failure3 = FailureLeaf("failure3", self.tree, selector)
 
-#class TestNavigation(CommandTest):
+        # check that the node returns Failure if all its children return
+        # Failure
+        self.agent.ai.setup(tree=self.tree)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+        
+        self.tree.remove(failurex)
+        successx = SuccessLeaf("successx", self.tree, selector, position=1)
+
+        # check that the node returns Success if one of its children returns
+        # Success
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS) 
+
+        self.tree.remove(successx)
+        runningx = RunningLeaf("runningx", self.tree, selector, position=1)
+
+        # check that the node returns Running if one of its children returns
+        # Running
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == RUNNING)
+
+        self.tree.remove(runningx)
+        errorx = ErrorLeaf("errorx", self.tree, selector, position=1)
+
+        # check that the node returns Error if one of its children returns
+        # Error
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
+
+    def test_sequence(self):
+        """
+        Test the iteration over a sequence with three child nodes, whose first
+        node returns Success, whose third node returns Success and whose second
+        node returns, alternatively, Success, Failure, Running and Error.
+        """
+        sequence = Sequence("sequence", self.tree, self.tree.root)
+        success1 = SuccessLeaf("success1", self.tree, sequence) 
+        successx = SuccessLeaf("successx", self.tree, sequence)
+        success3 = SuccessLeaf("success3", self.tree, sequence)
+
+        # check that the node returns Success if all of its children return
+        # Success
+        self.agent.ai.setup(tree=self.tree)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+        
+        self.tree.remove(successx)
+        failurex = FailureLeaf("failurex", self.tree, sequence, position=1)
+
+        # check that the node returns Failure if one of its children returns
+        # Failure
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE) 
+
+        self.tree.remove(failurex)
+        runningx = RunningLeaf("runningx", self.tree, sequence, position=1)
+
+        # check that the node returns Running if one of its children returns
+        # Running
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == RUNNING)
+
+        self.tree.remove(runningx)
+        errorx = ErrorLeaf("errorx", self.tree, sequence, position=1)
+
+        # check that the node returns Error if one of its children returns
+        # Error
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
+
+    def test_memselector(self):
+        """
+        Test the iteration over a MemSelector with three child nodes, whose first
+        node returns Success, whose third node returns Success and whose second
+        node returns, alternatively, Success, Failure, Running and Error.
+
+        Also test that the first child node does not get called again when the
+        second node always returns Running and is ticked twice.
+        """
+        memselector = MemSelector("memselector", self.tree, self.tree.root)
+        failure1 = FailureLeaf("failure1", self.tree, memselector)
+        failurex = FailureLeaf("failurex", self.tree, memselector)
+        failure3 = FailureLeaf("failure3", self.tree, memselector)
+
+        # check that the node returns Failure if all of its children return
+        # Failure
+        self.agent.ai.setup(tree=self.tree)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        self.tree.remove(failurex)
+        successx = SuccessLeaf("successx", self.tree, memselector, position=1)
+
+        # check that the node returns Success if one of its children returns
+        # Success
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        self.tree.remove(successx)
+        errorx = ErrorLeaf("errorx", self.tree, memselector, position=1)
+        
+        # check that the node returns Error if one of its children returns
+        # Error
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
+
+        self.tree.remove(errorx)
+        runtogglex = RunToggleLeaf("runtogglex", self.tree, memselector, 
+            position=1)
+        self.tree.remove(failure1)
+        adder1 = AdderFailureLeaf("adder1", self.tree, memselector, position=0)
+
+        # check that the node resumes iterating from its running child
+        # when ticked again, rather than from the beginning
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == RUNNING)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+        assert(self.agent.ai.nodes[adder1.hash]['count'] == 1)
+
+    def test_memsequence(self):
+        """
+        Test the iteration over a MemSequence with three child nodes, whose first
+        node returns Success, whose third node returns Success and whose second
+        node returns, alternatively, Success, Failure, Running and Error.
+
+        Also test that the first child node does not get called again when the
+        second node always returns Running and is ticked twice.
+        """
+        memsequence = MemSequence("memsequence", self.tree, self.tree.root)
+        success1 = SuccessLeaf("success1", self.tree, memsequence)
+        successx = SuccessLeaf("successx", self.tree, memsequence)
+        success3 = SuccessLeaf("success3", self.tree, memsequence)
+
+        # check that the node returns Success if all of its children return
+        # Success
+        self.agent.ai.setup(tree=self.tree)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        self.tree.remove(successx)
+        failurex = FailureLeaf("failurex", self.tree, memsequence, position=1)
+
+        # check that the node returns Failure if one of its children returns
+        # Failure
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        self.tree.remove(failurex)
+        errorx = ErrorLeaf("errorx", self.tree, memsequence, position=1)
+       
+        # check that the node returns Error if one of its children returns
+        # Error
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
 
 
+        self.tree.remove(errorx)
+        runtogglex = RunToggleLeaf("runtogglex", self.tree, memsequence, 
+            position=1)
+        self.tree.remove(success1)
+        adder1 = AdderSuccessLeaf("adder1", self.tree, memsequence, position=0)
+
+        # check that the node resumes iterating from its running child
+        # when ticked again, rather than from the beginning
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == RUNNING)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+        assert(self.agent.ai.nodes[adder1.hash]['count'] == 1)
+
+    def test_probselector(self):
+        """
+        Test that the probability selector always picks a given child when
+        all other children have weights of zero
+
+        Also test that the probability selector goes through all children,
+        without repeating any of them, when each of them returns Failure. 
+        """
+        probselector = ProbSelector("probselector", self.tree, self.tree.root)
+        adderfailure1 = AdderFailureLeaf("adderfailure1", self.tree, 
+            probselector)
+        addersuccessx = AdderSuccessLeaf("addersuccessx", self.tree, 
+            probselector)
+        adderfailure3 = AdderFailureLeaf("adderfailure3", self.tree,
+            probselector)
+
+        adderfailure1.weight = 0.0
+        addersuccessx.weight = 1.0
+        adderfailure3.weight = 0.0
+
+        self.agent.ai.setup(tree=self.tree)
+        # check that the weight of nodes corresponds with what was assigned
+        near_zero = 0.00001
+        assert(abs(self.agent.ai.nodes[adderfailure1.hash]['weight'])
+            <= near_zero)
+        assert(abs(self.agent.ai.nodes[addersuccessx.hash]['weight'] - 1.0)
+            <= near_zero)
+        assert(abs(self.agent.ai.nodes[adderfailure3.hash]['weight']) 
+            <= near_zero)
+
+        self.agent.ai.tick()
+
+        # check that only the second node has been ticked
+        assert(self.agent.ai.nodes[adderfailure1.hash]['count'] == 0)
+        assert(self.agent.ai.nodes[addersuccessx.hash]['count'] == 1)
+        assert(self.agent.ai.nodes[adderfailure3.hash]['count'] == 0)
+
+        # check that the node goes through different children each time
+        # during a given iteration
+        self.tree.remove(addersuccessx)
+        adderfailurex = AdderFailureLeaf("adderfailurex", self.tree, 
+            probselector, position=1)
+
+        # set all three weights to 1.0 and reset the tree
+        adderfailure1.weight = 1.0
+        adderfailurex.weight = 1.0
+        adderfailure3.weight = 1.0
+
+        self.agent.ai.setup(self.tree, override=True)
+        # check that the weight of nodes corresponds with what was assigned
+        near_zero = 0.00001
+        assert(abs(self.agent.ai.nodes[adderfailure1.hash]['weight'] - 1.0)
+            <= near_zero)
+        assert(abs(self.agent.ai.nodes[adderfailurex.hash]['weight'] - 1.0)
+            <= near_zero)
+        assert(abs(self.agent.ai.nodes[adderfailure3.hash]['weight'] - 1.0)
+            <= near_zero)
+
+        self.agent.ai.tick()
+        self.agent.ai.tick()      
+        self.agent.ai.tick()
+
+        # check that all the nodes have been ticked once
+        assert(self.agent.ai.nodes[adderfailure1.hash]['count'] == 1)
+        assert(self.agent.ai.nodes[adderfailurex.hash]['count'] == 1)
+        assert(self.agent.ai.nodes[adderfailure3.hash]['count'] == 1)
+
+        # check that a running node will be called repeatedly
+        adderfailure1.weight = 0.0
+        adderfailure3.weight = 0.0
+ 
+        self.tree.remove(adderfailurex)
+        runningx = RunningLeaf("runningx", self.tree, probselector, 
+            position=1)
+        runningx.weight = 1.0
+        self.agent.ai.setup(override=True)
+
+        self.agent.ai.tick()
+        self.agent.ai.tick()
+        status = self.agent.ai.tick()
+
+        assert(status == RUNNING)
+        assert(self.agent.ai.nodes[adderfailure1.hash]['count'] == 0)
+        assert(self.agent.ai.nodes[adderfailure3.hash]['count'] == 0)
+
+        # check that ticking an error node returns the correct status
+        self.tree.remove(runningx)        
+        errorx = ErrorLeaf("errorx", self.tree, probselector, position=1)
+
+        adderfailure1.weight = 0.0
+        errorx.weight = 1.0
+        adderfailure3.weight = 0.0
+        self.agent.ai.setup(override=True)
+
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
+
+    def test_probsequence(self):
+        """
+        Test that the probability sequence always picks a given child when
+        all other children have weights of zero
+
+        Also test that the probability sequence goes through all children,
+        without repeating any of them, when each of them returns Failure. 
+        """
+        probsequence = ProbSequence("probsequence", self.tree, self.tree.root)
+        addersuccess1 = AdderSuccessLeaf("addersuccess1", self.tree, 
+            probsequence)
+        adderfailurex = AdderFailureLeaf("adderfailurex", self.tree, 
+            probsequence)
+        addersuccess3 = AdderSuccessLeaf("addersuccess3", self.tree,
+            probsequence)
+
+        addersuccess1.weight = 0.0
+        adderfailurex.weight = 1.0
+        addersuccess3.weight = 0.0
+
+        self.agent.ai.setup(tree=self.tree)
+        # check that the weight of nodes corresponds with what was assigned
+        near_zero = 0.00001
+        assert(abs(self.agent.ai.nodes[addersuccess1.hash]['weight'])
+            <= near_zero)
+        assert(abs(self.agent.ai.nodes[adderfailurex.hash]['weight'] - 1.0)
+            <= near_zero)
+        assert(abs(self.agent.ai.nodes[addersuccess3.hash]['weight']) 
+            <= near_zero)
+
+        self.agent.ai.tick()
+
+        # check that only the second node has been ticked
+        assert(self.agent.ai.nodes[addersuccess1.hash]['count'] == 0)
+        assert(self.agent.ai.nodes[adderfailurex.hash]['count'] == 1)
+        assert(self.agent.ai.nodes[addersuccess3.hash]['count'] == 0)
+
+        self.tree.remove(adderfailurex)
+        addersuccessx = AdderSuccessLeaf("addersuccessx", self.tree,
+            probsequence, position=1)
+
+        # set all three weights to 1.0 and reset the tree
+        addersuccess1.weight = 1.0
+        addersuccessx.weight = 1.0 # redundancy here
+        addersuccess3.weight = 1.0
+
+        self.agent.ai.setup(self.tree, override=True)
+        # check that the weight of nodes corresponds with what was assigned
+        near_zero = 0.00001
+        assert(abs(self.agent.ai.nodes[addersuccess1.hash]['weight'] - 1.0)
+            <= near_zero)
+        assert(abs(self.agent.ai.nodes[addersuccessx.hash]['weight'] - 1.0)
+            <= near_zero)
+        assert(abs(self.agent.ai.nodes[addersuccess3.hash]['weight'] - 1.0)
+            <= near_zero)
+
+        self.agent.ai.tick()
+        self.agent.ai.tick()      
+        self.agent.ai.tick()
+
+        # check that all the nodes have been ticked once
+        assert(self.agent.ai.nodes[addersuccess1.hash]['count'] == 1)
+        assert(self.agent.ai.nodes[addersuccessx.hash]['count'] == 1)
+        assert(self.agent.ai.nodes[addersuccess3.hash]['count'] == 1)
+
+        # check that a running node will be called repeatedly
+        addersuccess1.weight = 0.0
+        addersuccess3.weight = 0.0
+ 
+        self.tree.remove(addersuccessx)
+        runningx = RunningLeaf("runningx", self.tree, probsequence, 
+            position=1)
+        runningx.weight = 1.0
+        self.agent.ai.setup(override=True)
+
+        self.agent.ai.tick()
+        self.agent.ai.tick()
+        status = self.agent.ai.tick()
+
+        assert(status == RUNNING)
+        assert(self.agent.ai.nodes[addersuccess1.hash]['count'] == 0)
+        assert(self.agent.ai.nodes[addersuccess3.hash]['count'] == 0)
+
+        # check that ticking an error node returns the correct status
+        self.tree.remove(runningx)        
+        errorx = ErrorLeaf("errorx", self.tree, probsequence, position=1)
+
+        addersuccess1.weight = 0.0
+        errorx.weight = 1.0
+        addersuccess3.weight = 0.0
+        self.agent.ai.setup(override=True)
+
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
+
+    def test_parallel(self):
+        """
+        Test the various possible return policies of a parallel node
+        """
+        parallel = Parallel("parallel", self.tree, self.tree.root, 
+            primary_child=None, req_successes=2, req_failures=2, 
+            default_success=True)
+        success1 = SuccessLeaf('success1', self.tree, parallel)
+        successx = SuccessLeaf('successx', self.tree, parallel)
+        failure3 = FailureLeaf('failure3', self.tree, parallel)
+
+        self.agent.ai.setup(tree=self.tree)
+
+        # check that the parallel node returns Success when the requisite
+        # number of successes is reached
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        # check that the failure of the primary child causes the parallel node
+        # to return Failure
+        parallel.req_successes = 3
+        parallel.primary_child = 2
+
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        # check that the parallel node returns Success when the requisite
+        # number of successes is reached
+        self.tree.remove(successx)
+        failurex = FailureLeaf('failurex', self.tree, parallel, position=1)
+        parallel.req_successes = 2
+        parallel.primary_child = None
+
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        # check that the success of the primary child causes the parallel node
+        # to return Success
+        parallel.primary_child = 0
+
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        # check that the node returns Success when it completes iterating
+        # through its child nodes, default_success is set to True and no other
+        # return policies apply
+        parallel.primary_child = None
+        parallel.req_successes = None
+        parallel.req_failures = None
+        
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        # check that the node returns Failure when it completes iterating
+        # through its child nodes, default_success is set to False and no other
+        # return policies apply
+        parallel.default_success = False
+    
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        # check that the node returns Running when one of its children returns
+        # Running and none of the other return conditions have been met
+        self.tree.remove(failurex)
+        runningx = RunningLeaf('runningx', self.tree, parallel, position=1)
+        parallel.primary_child = None
+
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == RUNNING)
+
+        # check that the node returns Error when one of its children returns
+        # Error
+        self.tree.remove(runningx)
+        errorx = ErrorLeaf('errorx', self.tree, parallel, position=1)
+
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
+
+    def test_verifier_true(self):
+        """
+        Tests the functionality of a verifier node that always returns True
+        """
+        verifier = VerifierTrue("verifier true", self.tree, self.tree.root)
+        successx = SuccessLeaf("successx", self.tree, verifier)
+
+        #print(self.tree.root.hash, verifier.hash, successx.hash)
+        #print(self.tree.root.children, verifier.children, successx.children)
+
+        # check that this verifier returns Success when its child returns
+        # Success
+        self.agent.ai.setup(tree=self.tree)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        # check that this verifier returns Failure when its child returns
+        # Failure
+        self.tree.remove(successx)
+        failurex = FailureLeaf("failurex", self.tree, verifier) 
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        # check that this verifier returns Running when its child returns
+        # Running
+        self.tree.remove(failurex)
+        runningx = RunningLeaf("runningx", self.tree, verifier)
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == RUNNING)
+
+        # check that this verifier returns Error when its child returns
+        # Error
+        self.tree.remove(runningx)
+        errorx = ErrorLeaf("errorx", self.tree, verifier)
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
+
+    def test_verifier_false(self):
+        """
+        Tests the functionality of a verifier node that always returns False
+        """
+        verifier = VerifierFalse("verifier false", self.tree, self.tree.root)
+        successx = SuccessLeaf("successx", self.tree, verifier)
+
+        # check that this verifier returns Failure even when its child returns
+        # Success
+        self.agent.ai.setup(tree=self.tree)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        # check that this verifier coincidentally returns Failure when its child
+        # returns Failure
+        self.tree.remove(successx)
+        failurex = FailureLeaf("failurex", self.tree, verifier) 
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        # check that this verifier returns Failure when its child should return
+        # Running
+        self.tree.remove(failurex)
+        runningx = RunningLeaf("runningx", self.tree, verifier)
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        # check that this verifier returns Failure when its child should return
+        # Error
+        self.tree.remove(runningx)
+        errorx = ErrorLeaf("errorx", self.tree, verifier)
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+    def test_inverter(self):
+        """
+        Tests the functionality of an inverter node
+        """
+        inverter = Inverter("inverter", self.tree, self.tree.root)
+        successx = SuccessLeaf("successx", self.tree, inverter)
+
+        # check that the inverter returns Failure when its child returns
+        # Success
+        self.agent.ai.setup(tree=self.tree)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        # check that the inverter returns Success when its child returns
+        # Failure
+        self.tree.remove(successx)
+        failurex = FailureLeaf("failurex", self.tree, inverter) 
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        # check that the inverter returns Running when its child returns
+        # Running
+        self.tree.remove(failurex)
+        runningx = RunningLeaf("runningx", self.tree, inverter)
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == RUNNING)
+
+        # check that the inverter returns Error when its child returns
+        # Error
+        self.tree.remove(runningx)
+        errorx = ErrorLeaf("errorx", self.tree, inverter)
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
+
+    def test_succeeder(self):
+        """
+        Tests the functionality of a succeeder node
+        """
+        succeeder = Succeeder("succeeder", self.tree, self.tree.root)
+        successx = SuccessLeaf("successx", self.tree, succeeder)
+
+        # check that the inverter returns Failure when its child returns
+        # Success
+        self.agent.ai.setup(tree=self.tree)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        # check that the inverter returns Success even when its child returns
+        # Failure
+        self.tree.remove(successx)
+        failurex = FailureLeaf("failurex", self.tree, succeeder) 
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        # check that the inverter returns Running when its child returns
+        # Running
+        self.tree.remove(failurex)
+        runningx = RunningLeaf("runningx", self.tree, succeeder)
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == RUNNING)
+
+        # check that the inverter returns Error when its child returns
+        # Error
+        self.tree.remove(runningx)
+        errorx = ErrorLeaf("errorx", self.tree, succeeder)
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
+
+    def test_failer(self):
+        """
+        Tests the functionality of a failer node
+        """
+        failer = Failer("failer", self.tree, self.tree.root)
+        successx = SuccessLeaf("successx", self.tree, failer)
+
+        # check that the inverter returns Failure when its child returns
+        # Success
+        self.agent.ai.setup(tree=self.tree)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        # check that the inverter returns Success even when its child returns
+        # Failure
+        self.tree.remove(successx)
+        failurex = FailureLeaf("failurex", self.tree, failer) 
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        # check that the inverter returns Running when its child returns
+        # Running
+        self.tree.remove(failurex)
+        runningx = RunningLeaf("runningx", self.tree, failer)
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == RUNNING)
+
+        # check that the inverter returns Error when its child returns
+        # Error
+        self.tree.remove(runningx)
+        errorx = ErrorLeaf("errorx", self.tree, failer)
+        self.agent.ai.setup(override=True)
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
+
+    def test_repeater(self):
+        """
+        Test the functionality of a repeater node, checking that it
+        runs a given node several times before returning its status.
+        """
+        repeater = Repeater("repeater", self.tree, self.tree.root)
+        adderfailure = AdderFailureLeaf("adderfailure", self.tree, repeater)
+        repeater.repeats = 3        
+
+        self.agent.ai.setup(tree=self.tree)
+        
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+        assert(self.agent.ai.nodes[adderfailure.hash]['count'] == 3)
 
 
+    def test_limiter(self):
+        """
+        Test the functionality of a limiter node, checking that it
+        only runs a given node a limited number of times before
+        finally returning failure without running it.
+        """
+        limiter = Limiter("limiter", self.tree, self.tree.root)
+        addersuccess = AdderSuccessLeaf("addersuccess", self.tree, limiter)
+        limiter.repeats = 2
 
+        self.agent.ai.setup(tree=self.tree)
 
-#class TestModification(CommandTest):
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+        assert(self.agent.ai.nodes[addersuccess.hash]['count'] == 1)
+
+        self.agent.ai.tick()
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+        assert(self.agent.ai.nodes[addersuccess.hash]['count'] == 2)
+
+    def test_allocator(self):
+        pass
+
+    def test_tickerhandler(self):
+        pass
+
 
 
 

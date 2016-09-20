@@ -79,9 +79,20 @@ if the object is a behavior tree, generates a root node.
 
 
 
+### Limitations
 
+No tree, node or blackboard may be named 'this', as the name 'this' is a keyword
+in some commands signifying the currently browsed tree or blackboard. Also, the
+names of trees, nodes and blackboards must not contain single quotes, as these
+are also used by various commands.
 
+The names of your trees, blackboards AI agents and AI scripts should ideally
+not be numbers, as you will otherwise have to refer to them via their database
+ids in the aisystem commands.
 
+The data properties of any nodes you create should not have a __call__ method.
+If they do, they will not be displayed appropriately by the @ailook command, 
+which attempts to avoid displaying the node's methods.
 
 
 

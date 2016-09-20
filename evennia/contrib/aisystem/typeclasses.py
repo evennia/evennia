@@ -1,125 +1,83 @@
 """
-Database models for behavior trees and behavior blackboards
+Typeclasses for behavior trees, AI objects and free-floating AI scripts.
 
 A behavior tree model stores all the node types and their relationships
-within the tree in db_root. Accessing db_root is equivalent to accessing
-the root node. db_root does not contain any data pertaining to a given
-instance of the tree, so that the same tree can be used by multiple agents,
+within the tree in its root node. The root node does not contain any data
+pertaining to a given instance of the tree, but merely the structure of
+the tree itself, so that the same tree can be used by multiple agents,
 each agent storing the tree-related data in its own blackboard.
 
-A behavior blackboard model is associated with a single agent and stores
-all information related to the state of that agent's behavior tree. This
-information includes which nodes are currently running, which nodes were
-running during the previous tick, as well as all global and node-specific
-user-specified data.
-
-The following names for node-specific blackboard data are reserved, so use
-them only for their intended purpose:
-
-weight (float) - the probabilistic weight of a given node. When the node is the
-                 direct child of a probabilistic composite node, its weight
-                 affects the probability that it will be ticked before the
-                 composite node's other child nodes. Note that probabilistic
-                 composite nodes treat weight-less nodes as if their weight
-                 is 1.
-
-child_weights (dict of floats) - a dict of the weights of all child nodes.
-                                 The keys are the child nodes' indices in the
-                                 parent node's list of children. When used by
-                                 a probabilistic node, this dict allows a
-                                 random number to determine which of the nodes
-                                 will be selected next.
-
-avail_weights (dict of floats) - a dict of the weights of all child nodes that
-                                 are available for ticking. The keys are the
-                                 nodes' indices in the parent node's list of
-                                 children.
-
-states (list of ints) - a list of the states returned by all children of the
-                        node; can include values of None for children that have
-                        not yet returned a state. Used by parallel nodes.
-
-primary_child (int) - for parallel nodes, one child of the node whose
-                      completion immediately triggers the parallel node's own
-                      completion, the parallel node's return status being the
-                      same as that of the primary child.
-
-req_successes (int) - used by parallel nodes; represents the number of child
-                      nodes that must return success for the parallel node
-                      itself to immediately return success.
-
-req_failures (int) - used by parallel nodes; represents the number of child
-                     nodes that must return success for the parallel node
-                     itself to immediately return success.
-
-default_success (bool) - used by parallel nodes to decide whether to return
-                         success when all child nodes have completed but
-                         no other condition has been met for returning a status
-
-running (bool) - whether or not the node is currently running or was running
-                 during its last tick.
-
-running_child (int) - the currently running child of a MemSequence or 
-                      MemSelector node.
-
+An AI object contains a handler that can be used to access all information
+related to the state of that agent's behavior tree. This information
+includes which nodes are currently running, which nodes were running during
+the previous tick, as well as all global and node-specific user-specified data.
 """
 
-
-from __future__ import unicode_literals
+#[WIP] ALL METHODS THAT CHANGE A NODE'S TREE SHOULD CHANGE SELF.TREE AS WELL!!!
+#[WIP] SAVE THE TREES AFTER EVERY CHANGE BY RE-ATTACHING THEIR ROOTS!
+#[WIP] TAKE NODES OUT OF ALL WATCH LISTS WHEN REMOVING THEM OR THEIR (IN)DIRECT
+#      PARENTS!
 
 import copy
-from django.db import models
-from evennia.utils.idmapper.models import SharedMemoryModel
-from evennia.contrib.aisystem.nodes import (Node, RootNode, CompositeNode, 
-    LeafNode)
+from evennia import DefaultObject, DefaultScript, DefaultPlayer
+from evennia.utils import lazy_property
+from evennia.contrib.aisystem.handlers import AIHandler, AIWizardHandler
+from evennia.contrib.aisystem.nodes import (recurse, recurse_multitree, Node, 
+    RootNode, CompositeNode, LeafNode, DecoratorNode, Condition, Command,
+    Selector, Sequence, MemSelector, MemSequence, ProbSelector, ProbSequence,
+    Parallel, Verifier, Inverter, Succeeder, Failer, Repeater, Limiter,
+    Allocator)
 
 
-class BehaviorTreeDB(SharedMemoryModel):
+class BehaviorTree(DefaultScript):
     """
     The BehaviorTree provides the following properties:
 
-     - key - main name
-     - name - alias for 'key'
-     - db_date_created - time stamp of object creation
-     - root - TextField that stores the entirety of the tree. It is called
-        root because referencing it from within the game actually references
-        the root node.
-     - db_nodes - a dictionary of all the tree's node objects, using the hash
+     - root - stores the entirety of the tree. This property is called root
+        because referencing it from within the game actually references the
+        root node.
+     - nodes - a dictionary of all the tree's node objects, using the hash
         values of the nodes as keys. Used internally for creating, moving and
         deleting nodes as well as for populating the 'nodes' dictionary of each
-        blackboard associated with the tree.
+        AI handler associated with the tree.
     """
-    db_key = models.CharField('key', max_length=80, db_index=True)
-    db_date_created = models.DateTimeField('date created', editable=False,
-        auto_now_add=True, db_index=False)
-    db_root = models.TextField('root', null=True, blank=True)
-    db_nodes = models.TextField('node dict', default='', null=True,
-        blank=True)
+    @property
+    def root(self):
+        return self.db.root
 
-    class Meta(object):
-        verbose_name = 'behavior tree'
-        app_label = 'aisystem'
+    @root.setter
+    def root(self, value):
+        self.db.root = value
 
-    def __unicode__(self):
-        return u"%s(behavior tree #%s)" % (self.name, self.id)
+    @root.deleter
+    def root(self):
+        del self.db.root
 
     @property
-    def name(self):
-        """
-        Alternative name for db_key
-        """
-        return self.db_key
+    def nodes(self):
+        return self.db.nodes
 
-    @name.setter
-    def name(self, value):
-        self.db_key = value
+    @nodes.setter
+    def nodes(self, value):
+        self.db.nodes = value
+
+    @nodes.deleter
+    def nodes(self):
+        del self.db.nodes
+
+    def at_script_creation(self):
+        super(BehaviorTree, self).at_script_creation()
+        self.setup()
+        self.desc = "Behavior tree"
+        self.persistent = True
 
     def setup(self):
         """
         Called when the tree is created. Gives the tree a root node.
         """
-        self.db_nodes = {}
-        self.db_root = RootNode("Root node", self, None)
+        self.pause()
+        self.db.nodes = {}
+        self.db.root = RootNode("root", self, None)
 
     def rename(self, node, name):
         """
@@ -132,33 +90,22 @@ class BehaviorTreeDB(SharedMemoryModel):
         Add the node and its subtree to this tree, setting the hashes
         for all of the subtree's nodes
         """
-        if not self.db_nodes.has_key(node.hash):
-            self.db_nodes[node.hash] = node
-        elif (self.db_nodes.has_key(node.hash) and 
-            self.db_nodes[node.hash] != node):
-            node.hash = node.rehash(self)
-            self.db_nodes[node.hash] = node
-
-        if isinstance(node, CompositeNode):
-            for child in node.children:
-                self.recursive_add_hash(child)
-        elif node.children:
-            self.recursive_add_hash(node.children)
+        if not self.db.nodes.has_key(node.hash):
+            self.db.nodes[node.hash] = node
+        elif (self.db.nodes.has_key(node.hash) and 
+            self.db.nodes[node.hash] != node):
+            node.rehash(self)
+            self.db.nodes[node.hash] = node
+        recurse(node, self.recursive_add_hash)
 
     def recursive_remove_hash(self, node):
         """
         Remove the node and its subtree from this tree
         """
-        if (self.db_nodes.has_key(node.hash) and
-            self.db_nodes[node.hash] == node):
-            self.db_nodes.pop(node.hash)
-
-        if isinstance(node, CompositeNode):
-            for child in node.children:
-                self.recursive_remove_hash(child)
-        elif node.children:
-            self.recursive_remove_hash(node.children)                
-   
+        if (self.db.nodes.has_key(node.hash) and
+            self.db.nodes[node.hash] == node):
+            self.db.nodes.pop(node.hash)
+        recurse(node, self.recursive_remove_hash)
 
     def check_node_in_tree(self, node, source_tree=None, msg="operation"):
         """
@@ -167,16 +114,16 @@ class BehaviorTreeDB(SharedMemoryModel):
 
         Returns an error string on failure, returns None on success.
         """
-        if not source_tree and not (self.db_nodes.has_key(node.hash) and 
-            self.db_nodes[node.hash] == node):
-            return ("the node '{0}'(\"{1}\") ".format(node.hash, node.name) + 
-                "is not in the target tree, yet no source tree " +
-                "was provided. The node {0} cannot proceed.".format(msg))
-        elif source_tree and not (source_tree.db_nodes.has_key(node.hash) and
-            source_tree.db_nodes[node.hash] == node):
-            return ("the node '{0}'(\"{1}\") ".format(node.hash, node.name) + 
-                "could not be found in its purported source tree. " +
-                "The node {0} cannot proceed.".format(msg))
+        if not source_tree and not (self.db.nodes.has_key(node.hash) and 
+            self.db.nodes[node.hash] == node):
+            return ("the node '{0}'(\"{1}\") ".format(node.hash[0:3], 
+                node.name) +  "is not in the target tree, yet no source " +
+                "tree was provided. The node {0} cannot proceed.".format(msg))
+        elif source_tree and not (source_tree.db.nodes.has_key(node.hash) and
+            source_tree.db.nodes[node.hash] == node):
+            return ("the node '{0}'(\"{1}\") ".format(node.hash[0:3], 
+                node.name) +  "could not be found in its purported source " +
+                "tree. The node {0} cannot proceed.".format(msg))
         return None 
 
     def add(self, node, target, position=None, copying=True, 
@@ -215,7 +162,7 @@ class BehaviorTreeDB(SharedMemoryModel):
 
         source_tree - the tree to which the node originally belongs. If set to
         (tree)        None, the node is assumed to belong to the target tree.
-                      No operations on any tree's db_nodes property will occur
+                      No operations on any tree's db.nodes property will occur
                       when the source tree is set to None or the target tree.
 
         Returns an error string on failure, returns None on success.
@@ -228,8 +175,9 @@ class BehaviorTreeDB(SharedMemoryModel):
                 "node; expected a node.")
 
         if isinstance(node, RootNode):
-            return ("node '{0}(\"{1}\") is a ".format(node.hash, node.name) +
-                "root node. It may not be added as the child of any node.")
+            return ("node '{0}(\"{1}\") ".format(node.hash[0:3], node.name) +
+                "is a root node. It may not be added as the child of any " +
+                "node.")
 
         # check that the node is in the source tree, if one exists
         if source_tree:
@@ -248,7 +196,7 @@ class BehaviorTreeDB(SharedMemoryModel):
 
         parent = node.parent
         if not target:
-            target = self.db_root
+            target = self.root
 
         if isinstance(target, CompositeNode):
             # if target is a composite node, add the node to the target
@@ -258,17 +206,17 @@ class BehaviorTreeDB(SharedMemoryModel):
                 target.children.append(node)
         elif isinstance(target, LeafNode):
             # prohibit adding to a leaf node
-            return ("target node '{0}'(\"{1}\") ".format(target.hash, 
+            return ("target node '{0}'(\"{1}\") ".format(target.hash[0:3], 
                 target.name) + "is a leaf node, cannot add node " +
-                "'{0}'(\"{1}\") to it as leaf ".format(node.hash, node.name) +
-                "nodes are prohibited from having child nodes.")
+                "'{0}'(\"{1}\") to it as leaf ".format(node.hash[0:3], 
+                node.name) + "nodes are prohibited from having child nodes.")
         elif not target.children:
             # if target is not a leaf node and has no children, add the node
             # to the target
             target.children = node
         else:
             # prohibit adding to a non-composite target node that has a child
-            return ("target node '{0}'(\"{1}\") is a ".format(target.hash,
+            return ("target node '{0}'(\"{1}\") is a ".format(target.hash[0:3],
                 target.name) + " non-composite node with a child, cannot " +
                 "add another node to it.")
  
@@ -307,8 +255,9 @@ class BehaviorTreeDB(SharedMemoryModel):
                 "expected a node.")
 
         if isinstance(node, RootNode):
-            return ("node '{0}(\"{1}\") is a ".format(node.hash, node.name) +
-                "root node. It may not be shifted as it has no parent.")
+            return ("node '{0}(\"{1}\") is a ".format(node.hash[0:3], 
+                node.name) + "root node. It may not be shifted as it has "
+                "no parent.")
 
         if isinstance(node.parent, CompositeNode):
             index = node.parent.children.index(node)
@@ -319,9 +268,9 @@ class BehaviorTreeDB(SharedMemoryModel):
                 node.parent.children.append(node)
             node.parent.children.remove(None)
         else:
-            return ("Parent node '{0}'(\"{1}\") ".format(node.parent.hash, 
+            return ("Parent node '{0}'(\"{1}\") ".format(node.parent.hash[0:3],
                 node.parent.name) + "is not a composite node, cannot shift " + 
-                "node '{0}'(\"{1}\").".format(node.hash, node.name))
+                "node '{0}'(\"{1}\").".format(node.hash[0:3], node.name))
 
     def swap(self, node, target, source_tree=None):
         """
@@ -352,11 +301,11 @@ class BehaviorTreeDB(SharedMemoryModel):
         node_parent = node.parent
 
         if not node_parent:
-            return ("Node '{0}'(\"{1}\") has ".format(node.hash, node.name) +
-                "no parent; the swapping cannot proceed.")
+            return ("Node '{0}'(\"{1}\") has ".format(node.hash[0:3], 
+                node.name) + "no parent; the swapping cannot proceed.")
  
         if not target_parent:
-             return ("Target node '{0}'(\"{1}\") has ".format(target.hash,
+             return ("Target node '{0}'(\"{1}\") has ".format(target.hash[0:3],
                 target.name) + "no parent; the swapping cannot proceed.")
 
         # remove the target from its parent,
@@ -417,12 +366,12 @@ class BehaviorTreeDB(SharedMemoryModel):
                 "node; expected a node.")
 
         if node == target:
-            return ("node '{0}'(\"{1}\") is ".format(node.hash, node.name) + 
-                "also the target of interposing; cannot interpose a node " +
-                "onto itself.")
+            return ("node '{0}'(\"{1}\") is ".format(node.hash[0:3], 
+                node.name) +  "also the target of interposing; cannot " +
+                "interpose a node onto itself.")
 
         if isinstance(node, RootNode):
-            return ("Node '{0}'(\"{1}\") ".format(node.hash, node.name) +
+            return ("Node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
                 "is a root node, cannot interpose it over any other node.")
 
         # check that the node is in the source tree or the target tree
@@ -444,7 +393,7 @@ class BehaviorTreeDB(SharedMemoryModel):
 
         if not target_parent:
             return ("Target node '{0}'(\"{1}\") has no ".format(
-                target.hash, target.name) + "parent, " +
+                target.hash[0:3], target.name) + "parent, " +
                 "cannot interpose over it.")
 
         # add the node to the target's parent's list of children
@@ -498,7 +447,7 @@ class BehaviorTreeDB(SharedMemoryModel):
                 "expected a node.")
 
         if isinstance(node, RootNode):
-            return ("Node '{0}'(\"{1}\") ".format(node.hash, node.name) +
+            return ("Node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
                 "is a root node and so cannot be removed from its tree.")
 
         self.recursive_remove_hash(node)
@@ -513,78 +462,108 @@ class BehaviorTreeDB(SharedMemoryModel):
 
         return None # No error occurred        
 
+    def validate_tree(self):
+        def validate(node):
+            if isinstance(node, DecoratorNode) and not node.children:
+                raise Exception("node '{0}'(\"{1}\")".format(node.hash[0:3],
+                    node.name) + "is a decorator node but has no " +
+                    "children. Please supply it with a child node or " +
+                    "replace it in order for the tree to be valid.")
+            elif isinstance(node, RootNode) and not node.children:
+                raise Exception("node '{0}'(\"{1}\")".format(node.hash[0:3],
+                    node.name) + "is a root node but has no children. " +
+                    "Please supply it with a child node in order for " +
+                    "the tree to be valid.")
+            recurse_multitree(node, validate)
 
-class BehaviorBlackboardDB(SharedMemoryModel):
+        return validate(self.root)
+
+class AIObject(DefaultObject):
     """
-    The BehaviorBlackboard provides the following properties:
+    An object that contains an AI handler. Subclass your own objects from this.
 
-     - key - main name
-     - name - alias for 'key'
-     - db_date_created - time stamp of object creation
-     - tree - the behavior tree  
-     - running_now - a list of all the nodes that are running in the
-        current tick. 
-     - running_pre - a list of all the nodes that were running in the
-        previous tick.
-     - nodes - a dictionary of node-specific data. The dictionary's keys are
-        the hash values of the nodes, and its values are in turn dictionaries.
-     - global - a dictionary of global data.
+    In order to initialize this object with a given tree, your class must
+    provide this line:
+
+    self.aitree = <reference to the desired BehaviorTree>
+
+    For example, if the behavior tree has been specified in-game:
+
+    self.aitree = ScriptDB.objects.get(db_key=<your script's name here>)
+
+    Alternatively, you may assign a behavior tree to your individual objects
+    in-game using the @assign command. Note that when calling ai.setup(), 
+    unless you provide it a specific tree via ai.setup(tree=<your tree>), it
+    will first attempt to select self.aitree as the tree, then whatever
+    tree was already assigned to it, if self.aitree does not exist.
     """
+    @lazy_property
+    def ai(self):
+        return AIHandler(self)
 
-    db_key = models.CharField('key', max_length=80, db_index=True)
-    db_date_created = models.DateTimeField('date created', editable=False,
-        auto_now_add=True, db_index=False)
-    db_tree = models.ForeignKey(BehaviorTreeDB, verbose_name='tree', null=True)
-    db_agent = models.ForeignKey('objects.ObjectDB', verbose_name='agent', 
-        null=True)
-    db_running_now = models.TextField('active', default='[]', null=True, 
-        blank=True)
-    db_running_pre = models.TextField('active pre', default='[]', null=True, 
-        blank=True)
-    db_nodes = models.TextField('node data', default='', null=True, 
-        blank=True)
-    db_global = models.TextField('global data', default='', null=True, 
-        blank=True)
-
-    class Meta(object):
-        verbose_name = 'behavior blackboard'
-        app_label = 'aisystem'
-
-    def __unicode__(self):
-        return u"%s(behavior blackboard #%s)" % (self.name, selfbid)
-
-    @property
-    def name(self):
-        """
-        Alternative name for db_key
-        """
-        return self.db_key
-
-    @name.setter
-    def name(self, value):
-        self.db_key = value
-
-    def tick(self):
-        """
-        Prepare the behavior tree for the new tick, then go through the tree
-        starting from the root node.
-        """
-        # close all nodes that were running two ticks ago but were not running
-        # in the past tick
-        for node in self.db_running_pre.keys:
-            if node not in self.db_running_now:
-                node.close()
-
-        # swap the list of currently running nodes with the list of previously
-        # running nodes, clear the list of currently running nodes
-        self.db_running_pre = self.db_running_now 
-        self.db_running_now = []
-
-        # tick the root node
-        return self.db_tree.db_root.tick(self)
-
-    def setup(self):
-        pass        
+    def at_object_creation(self):
+        super(AIObject, self).at_object_creation()
+        self.ai.setup()
 
 
+class AIScript(DefaultScript):
+    """
+    A script that contains an AI handler. Subclass your own scripts from this.
+
+    In order to initialize this script with a given tree, your class must
+    provide this line:
+
+    self.aitree = <reference to the desired BehaviorTree>
+
+    For example, if the behavior tree has been specified in-game:
+
+    self.aitree = ScriptDB.objects.get(db_key=<your script's name here>)
+
+    Alternatively, you may assign a behavior tree to your individual scripts
+    in-game using the @assign command. Note that when calling ai.setup(), 
+    unless you provide it a specific tree via ai.setup(tree=<your tree>), it
+    will first attempt to select self.aitree as the tree, then whatever
+    tree was already assigned to it, if self.aitree does not exist.
+    """
+    @lazy_property
+    def ai(self):
+        return AIHandler(self)
+
+    def at_script_creation(self):
+        super(AIScript, self).at_script_creation()
+        self.ai.setup()
+        self.desc = "Behavior tree AI script"
+        self.persistent = True
+
+class AIPlayer(DefaultPlayer):
+    """
+    A player that features an AI Wizard handler. The handler is used by wizards
+    when browsing and editing AI trees in-game. Subclass your own player class
+    to this.
+
+    When subclassing from AI player to include your own dictionary of nodes
+    (say, 'new_nodes') for your subclass (say 'MySubclass'), do:
+    
+    nodes = super(MySubclass, self).nodes.update(new_nodes)
+
+    This will ensure that your new nodes will be added on to the extant
+    dictionary of nodes.    
+    """
+    nodes = {'Node': Node, 'RootNode': RootNode, 'LeafNode': LeafNode,
+        'CompositeNode': CompositeNode, 'DecoratorNode': DecoratorNode,
+        'Condition': Condition, 'Command': Command, 'Selector': Selector,
+        'Sequence': Sequence, 'MemSelector': MemSelector, 
+        'MemSequence': MemSequence, 'ProbSelector': ProbSelector,
+        'ProbSequence': ProbSequence, 'Parallel': Parallel, 
+        'Verifier': Verifier, 'Inverter': Inverter, 'Succeeder': Succeeder,
+        'Failer': Failer, 'Repeater': Repeater, 'Limiter': Limiter,
+        'Allocator': Allocator}
+
+    @ lazy_property
+    def aiwizard(self):
+        return AIWizardHandler(self)
+
+    def at_player_creation(self):
+        super(AIPlayer, self).at_player_creation()
+        self.aiwizard.setup()
 
