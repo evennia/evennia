@@ -381,7 +381,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
             if not location:
                 caller.msg("No location to detail!")
                 return
-            if not location.db.details:
+            if location.db.details is None:
                 caller.msg("|rThis location does not support details.|n")
                 return
             if self.switches and self.switches[0] in 'del':
@@ -393,9 +393,9 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 return
             if not self.args:
                 # No args given. Return all details on location
-                string = "{wDetails on %s{n:\n" % location
-                string += "\n".join(" {w%s{n: %s" % (key, utils.crop(text)) for key, text in location.db.details.items())
-                caller.msg(string)
+                string = "|wDetails on %s|n:" % location
+                details = "\n".join(" |w%s|n: %s" % (key, utils.crop(text)) for key, text in location.db.details.items())
+                caller.msg("%s\n%s" % (string, details) if details else "%s None." % string)
                 return
             if not self.rhs:
                 # no '=' used - list content of given detail
