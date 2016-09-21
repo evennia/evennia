@@ -77,21 +77,21 @@ class Msg(SharedMemoryModel):
     # an IRC channel; normally there is only one, but if co-modification of
     # a message is allowed, there may be more than one "author"
     db_sender_players = models.ManyToManyField("players.PlayerDB", related_name='sender_player_set',
-                                               null=True, verbose_name='sender(player)', db_index=True)
+                                               null=True, blank=True, verbose_name='sender(player)', db_index=True)
     db_sender_objects = models.ManyToManyField("objects.ObjectDB", related_name='sender_object_set',
-                                               null=True, verbose_name='sender(object)', db_index=True)
-    db_sender_external = models.CharField('external sender', max_length=255, null=True, db_index=True,
+                                               null=True, blank=True, verbose_name='sender(object)', db_index=True)
+    db_sender_external = models.CharField('external sender', max_length=255, null=True, blank=True, db_index=True,
           help_text="identifier for external sender, for example a sender over an "
                     "IRC connection (i.e. someone who doesn't have an exixtence in-game).")
     # The destination objects of this message. Stored as a
     # comma-separated string of object dbrefs. Can be defined along
     # with channels below.
     db_receivers_players = models.ManyToManyField('players.PlayerDB', related_name='receiver_player_set',
-                                                  null=True, help_text="player receivers")
+                                                  null=True, blank=True, help_text="player receivers")
     db_receivers_objects = models.ManyToManyField('objects.ObjectDB', related_name='receiver_object_set',
-                                                  null=True, help_text="object receivers")
+                                                  null=True, blank=True, help_text="object receivers")
     db_receivers_channels = models.ManyToManyField("ChannelDB", related_name='channel_set',
-                                                   null=True, help_text="channel recievers")
+                                                   null=True, blank=True, help_text="channel recievers")
 
     # header could be used for meta-info about the message if your system needs
     # it, or as a separate store for the mail subject line maybe.
@@ -105,11 +105,11 @@ class Msg(SharedMemoryModel):
                                        help_text='access locks on this message.')
 
     # these can be used to filter/hide a given message from supplied objects/players/channels
-    db_hide_from_players = models.ManyToManyField("players.PlayerDB", related_name='hide_from_players_set', null=True)
-    db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', null=True)
-    db_hide_from_channels = models.ManyToManyField("ChannelDB", related_name='hide_from_channels_set', null=True)
+    db_hide_from_players = models.ManyToManyField("players.PlayerDB", related_name='hide_from_players_set', null=True, blank=True)
+    db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', null=True, blank=True)
+    db_hide_from_channels = models.ManyToManyField("ChannelDB", related_name='hide_from_channels_set', null=True, blank=True)
 
-    db_tags = models.ManyToManyField(Tag, null=True,
+    db_tags = models.ManyToManyField(Tag, null=True, blank=True, 
             help_text='tags on this message. Tags are simple string markers to identify, group and alias messages.')
 
     # Database manager
