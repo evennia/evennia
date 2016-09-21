@@ -1186,13 +1186,13 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             self.location.msg(string)
             return
 
-        string = "%s arrives to %s from %s."
+        string = "%s arrives to %s%s."
         location = self.location
         for obj in self.location.contents:
             if obj != self:
                 obj.msg(string % (self.get_display_name(obj),
                                   location.get_display_name(obj) if location else "nowhere",
-                                  source_location.get_display_name(obj)))
+                                  " from %s" % source_location.get_display_name(obj) if source_location else ""))
 
     def at_after_move(self, source_location):
         """
