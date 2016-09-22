@@ -81,10 +81,20 @@ if the object is a behavior tree, generates a root node.
 
 ### Limitations
 
-No tree, node or blackboard may be named 'this', as the name 'this' is a keyword
-in some commands signifying the currently browsed tree or blackboard. Also, the
-names of trees, nodes and blackboards must not contain single quotes, as these
-are also used by various commands.
+The theoretical upper limit for the number of nodes in a tree is 238,328.
+There is a risk of nodes failing to be generated as you approach that limit. 
+You should probably split your tree up into multiple trees connected by 
+Transition nodes well before this starts to happen, however.
+
+In theory, in extremely rare cases, a node might fail to generate a hash due to
+too many failed attempts at creating a hash that does not match the hashes of
+any nodes that already exist in the tree. Should you be informed that this
+has happened, simply create the node again.
+
+No tree, node or blackboard may be named 'this', as the name 'this' is a 
+keyword in some commands signifying the currently browsed tree or blackboard.
+Also, the names of trees, nodes and blackboards must not contain single quotes
+or equals signs, as these are also used by various commands.
 
 The names of your trees, blackboards AI agents and AI scripts should ideally
 not be numbers, as you will otherwise have to refer to them via their database

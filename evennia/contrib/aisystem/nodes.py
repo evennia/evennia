@@ -1,6 +1,5 @@
 """
-Contains all the default node types in the aisystem, as well as the
-recurse and recurse_multitree methods.
+Contains all the default node types in the aisystem.
 
 Nodes do not store references to their tree because objects serialized
 in the text field of a django model cannot contain references to django
@@ -46,7 +45,6 @@ class Node(object):
         self.name = name
         self.parent = parent
         self.children = None
-        self.tree = tree.id
         if isinstance(parent, CompositeNode):
             if position != None:
                 parent.children.insert(position, self)
@@ -80,7 +78,7 @@ class Node(object):
                 raise Exception("Too many attempts at creating a hash " +
                     + "for node \"{1}\". Aborting.".format(self.name))
                 return None
-        hashval += '_' + str(self.tree)
+        hashval += '_' + str(tree)
         self.hash = hashval
 
     def tick(self, bb):
@@ -593,7 +591,7 @@ class Transition(LeafNode):
 
     def update(self, bb):
         if self.target_tree:
-            return self.target_tree.root.tick(bb)
+            return self.target_tree.nodes[self.target_tree.root].tick(bb)
         else:
             bb['globals']['errors'][self.hash] = ("The node does not " +
                 "have a target tree.")
@@ -738,30 +736,14 @@ class Allocator(DecoratorNode):
         return self.children.tick(bb)
 
 
-def recurse(node, func):
-    """
-    Performing a function on the child nodes of a given node, but does not 
-    step into the target tree of a Transition node. For this process to be
-    recursive, the method that calls recurse should be the very function
-    performed by recurse.
-    """
-    if isinstance(node, CompositeNode):
-        for child in node.children:
-            func(child)
-    elif node.children:
-        func(node.children) 
+all_original_nodes = {'Node': Node, 'RootNode': RootNode, 'LeafNode': LeafNode,
+    'CompositeNode': CompositeNode, 'DecoratorNode': DecoratorNode,
+    'Condition': Condition, 'Command': Command, 'Transition': Transition,
+    'Selector': Selector, 'Sequence': Sequence, 'MemSelector': MemSelector, 
+    'MemSequence': MemSequence, 'ProbSelector': ProbSelector,
+    'ProbSequence': ProbSequence, 'Parallel': Parallel, 
+    'Verifier': Verifier, 'Inverter': Inverter, 'Succeeder': Succeeder,
+    'Failer': Failer, 'Repeater': Repeater, 'Limiter': Limiter,
+    'Allocator': Allocator}
 
-
-def recurse_multitree(node, func):
-    """
-    Same as recurse, but continues recursion through Transition nodes into
-    child trees.
-    """
-    if isinstance(node, CompositeNode):
-        for child in node.children:
-            func(child)
-    elif isinstance(node, Transition):
-        func(node.target_tree.root)
-    elif node.children:
-        func(node.children) 
 

@@ -49,14 +49,19 @@ class TestTransition(TestCase):
         pass
 
     def test_root_exists(self):
-        assert(isinstance(self.tree1.root, RootNode))
-        assert(isinstance(self.tree2.root, RootNode))
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
+
+        assert(isinstance(root1, RootNode))
+        assert(isinstance(root2, RootNode))
 
     def test_node_str(self):
         """
         Test that the __str__ method of a given node returns the node's name.
         """
-        leaf = LeafNode("leaf", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        leaf = LeafNode("leaf", self.tree1, root1)
         s = str(leaf)
         assert(s == "leaf")
 
@@ -65,7 +70,9 @@ class TestTransition(TestCase):
         Test that the __unicode__ method of a given node returns the node's
         name in unicode format.
         """
-        leaf = LeafNode("leaf", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        leaf = LeafNode("leaf", self.tree1, root1)
         s = unicode(leaf)
         assert(s == u"leaf")
 
@@ -80,37 +87,39 @@ class TestTransition(TestCase):
         from its parent's children and its  via the tree's remove() method.
         Also check that re-adding it 
         """
-        leafnode = LeafNode("Leaf node", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        leafnode = LeafNode("Leaf node", self.tree1, root1)
         # check that the node is added to the tree's nodes registry
         assert(leafnode.hash in self.tree1.nodes.keys())
         assert(self.tree1.nodes[leafnode.hash] == leafnode)
         # check that the parent-child relationship is established
-        assert(isinstance(self.tree1.root.children, LeafNode))
-        assert(self.tree1.root.children.parent == self.tree1.root)
+        assert(isinstance(root1.children, LeafNode))
+        assert(root1.children.parent == root1)
         # check that there are only two nodes registered in the tree
         assert(len(self.tree1.nodes.keys()) == 2)
 
-        err = self.tree1.remove(self.tree1.root.children)
+        err = self.tree1.remove(root1.children)
         assert(not err)
 
         # check that the node is removed from the tree's nodes registry
         assert(leafnode.hash not in self.tree1.nodes.keys())
         # check that the parent-child relationship is erased
-        assert(self.tree1.root.children == None)
+        assert(root1.children == None)
         assert(leafnode.parent == None)
         # check that there is only one node registered in the tree
         assert(len(self.tree1.nodes.keys()) == 1)
 
         # test the add method of BehaviorTreeDB, copying in a new leaf node
-        err = self.tree1.add(leafnode, self.tree1.root)
+        err = self.tree1.add(leafnode, root1)
         assert(not err)
 
         # check that the copied node is in the tree's nodes registry
         assert(leafnode.hash in self.tree1.nodes.keys())
         assert(isinstance(self.tree1.nodes[leafnode.hash], LeafNode))
         # check that the parent-child relationship is established
-        assert(isinstance(self.tree1.root.children, LeafNode))
-        assert(self.tree1.root.children.parent == self.tree1.root)
+        assert(isinstance(root1.children, LeafNode))
+        assert(root1.children.parent == root1)
         # check that there are only two nodes registered in the tree
         assert(len(self.tree1.nodes.keys()) == 2)
 
@@ -122,8 +131,10 @@ class TestTransition(TestCase):
         and moving one of its children to another position in its children
         list.
         """
+        root1 = self.tree1.nodes[self.tree1.root]
+
         composite = CompositeNode("composite node", self.tree1, 
-            self.tree1.root)
+            root1)
         leaf1 = LeafNode("leaf 1", self.tree1, composite)
         leaf2 = LeafNode("leaf 2", self.tree1, composite)
         leaf3 = LeafNode("leaf 3", self.tree1, composite)
@@ -168,7 +179,10 @@ class TestTransition(TestCase):
         In the latter case, the same hashes as those in tree2 are unlikely
         to exist in tree1, so new hashes are not usually created.
         """
-        composite1 = CompositeNode("composite1", self.tree1, self.tree1.root)    
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
+
+        composite1 = CompositeNode("composite1", self.tree1, root1)    
         composite2 = CompositeNode("composite2", self.tree1, composite1)
         leaf1 = LeafNode("leaf1", self.tree1, composite2)
         leaf2 = LeafNode("leaf2", self.tree1, composite2)
@@ -205,7 +219,7 @@ class TestTransition(TestCase):
 
         # copy a subtree from another tree
         tree2_composite1 = CompositeNode("tree2 composite1", self.tree2, 
-            self.tree2.root)
+            root2)
         tree2_composite2 = CompositeNode("tree2 composite2", self.tree2,
             tree2_composite1)
         tree2_leaf1 = LeafNode("tree2 leaf1", self.tree2, tree2_composite1)
@@ -269,7 +283,9 @@ class TestTransition(TestCase):
         a composite node with a leaf node and a second composite node as its
         children; the second composite node has two leaf nodes as its children.
         """
-        composite1 = CompositeNode("composite1", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        composite1 = CompositeNode("composite1", self.tree1, root1)
         leaf1 = LeafNode("leaf1", self.tree1, composite1)
         composite2 = CompositeNode("composite2", self.tree1, composite1)
         leaf2 = LeafNode("leaf2", self.tree1, composite2)
@@ -289,7 +305,10 @@ class TestTransition(TestCase):
         Test the operation of copying a leaf node from one composite node of
         the same tree to another
         """
-        composite1 = CompositeNode("composite1", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
+
+        composite1 = CompositeNode("composite1", self.tree1, root1)
         composite2 = CompositeNode("composite2", self.tree1, composite1)
         leafnode = LeafNode("leaf node", self.tree1, composite1)
         old_hashval = leafnode.hash
@@ -304,7 +323,8 @@ class TestTransition(TestCase):
         new_hashval = new_hashval[0]
         newnode = self.tree1.nodes[new_hashval] 
 
-        # check that there are now five nodes in the tree, including the root node
+        # check that there are now five nodes in the tree, including the root
+        # node
         assert(len(self.tree1.nodes.keys()) == 5)
 
         # check that the original leaf node's original parent-child relationship
@@ -312,8 +332,8 @@ class TestTransition(TestCase):
         assert(leafnode in composite1.children)
         assert(leafnode.parent == composite1)
 
-        # check that the copied leaf node's new parent-child relationship has been
-        # established
+        # check that the copied leaf node's new parent-child relationship has
+        # been established
         assert(newnode in composite2.children)
         assert(newnode.parent == composite2)
 
@@ -328,7 +348,9 @@ class TestTransition(TestCase):
         Test the operation of moving a leaf node from one composite node
         of the same tree to another
         """
-        composite1 = CompositeNode("composite1", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        composite1 = CompositeNode("composite1", self.tree1, root1)
         composite2 = CompositeNode("composite2", self.tree1, composite1)
         leafnode = LeafNode("leaf node", self.tree1, composite1)
         hashval = leafnode.hash
@@ -361,11 +383,14 @@ class TestTransition(TestCase):
         Test the operation of copying a leaf node from one tree's root node to
         another tree's root node
         """
-        leafnode = LeafNode("leaf node", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
+
+        leafnode = LeafNode("leaf node", self.tree1, root1)
         old_hashval = leafnode.hash
         hashes = self.tree2.nodes.keys()
 
-        self.tree2.add(leafnode, self.tree2.root, source_tree=self.tree1)
+        self.tree2.add(leafnode, root2, source_tree=self.tree1)
 
         # get the copied leaf node
         new_hashval = [x for x in self.tree2.nodes.keys() if not x in hashes]
@@ -381,13 +406,13 @@ class TestTransition(TestCase):
 
         # check that the original leaf node's original parent-child relationship
         # remains intact
-        assert(leafnode == self.tree1.root.children)
-        assert(leafnode.parent == self.tree1.root)
+        assert(leafnode == root1.children)
+        assert(leafnode.parent == root1)
 
         # check that the copied leaf node's new parent-child relationship has been
         # established
-        assert(newnode == self.tree2.root.children)
-        assert(newnode.parent == self.tree2.root)
+        assert(newnode == root2.children)
+        assert(newnode.parent == root2)
 
         # check that the original leaf node's hash remains unchanged in both
         # the node itself and the registry 
@@ -400,10 +425,13 @@ class TestTransition(TestCase):
         Test the operation of moving a leaf node from one tree's root node to
         another tree's root node
         """
-        leafnode = LeafNode("leaf node", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
+
+        leafnode = LeafNode("leaf node", self.tree1, root1)
         hashval = leafnode.hash
 
-        err = self.tree2.add(leafnode, self.tree2.root, copying=False, 
+        err = self.tree2.add(leafnode, root2, copying=False, 
             source_tree=self.tree1)
         assert(not err)
 
@@ -415,13 +443,13 @@ class TestTransition(TestCase):
 
         # check that the original leaf node's original parent-child relationship
         # has been terminated
-        assert(leafnode != self.tree1.root.children)
-        assert(leafnode.parent != self.tree1.root)
+        assert(leafnode != root1.children)
+        assert(leafnode.parent != root1)
 
         # check that the leaf node's new parent-child relationship has been
         # established
-        assert(leafnode == self.tree2.root.children)
-        assert(leafnode.parent == self.tree2.root)
+        assert(leafnode == root2.children)
+        assert(leafnode.parent == root2)
 
         # check that the leaf node's hash remains unchanged
         assert(hashval == leafnode.hash)
@@ -440,9 +468,12 @@ class TestTransition(TestCase):
         to copy or move a node to something that is not a node, returns an error
         message and does not perform any copying or moving operation
         """
-        leafnode = LeafNode("leaf node", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
 
-        err = self.tree1.add(self.tree1, self.tree2.root)
+        leafnode = LeafNode("leaf node", self.tree1, root1)
+
+        err = self.tree1.add(self.tree1, root2)
         assert(isinstance(err, str) or isinstance(err, unicode))
         
         err = self.tree1.add(leafnode, self.tree2)
@@ -463,19 +494,22 @@ class TestTransition(TestCase):
         returns an error string and does not copy or move of the root node being
         added
         """
-        err = self.tree1.add(self.tree2.root, self.tree1.root, 
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
+
+        err = self.tree1.add(root2, root1, 
             source_tree=self.tree2)
         assert(isinstance(err, str) or isinstance(err, unicode))
 
-        err = self.tree1.add(self.tree2.root, self.tree1.root, copying=False,
+        err = self.tree1.add(root2, root1, copying=False,
             source_tree=self.tree1)
         assert(isinstance(err, str) or isinstance(err, unicode))
         
         # check that no root node was created or moved
         assert(len(self.tree1.nodes.keys()) == 1)
         assert(len(self.tree2.nodes.keys()) == 1)
-        assert(self.tree1.nodes.has_key(self.tree1.root.hash))
-        assert(self.tree1.nodes[self.tree1.root.hash] == self.tree1.root)
+        assert(self.tree1.nodes.has_key(root1.hash))
+        assert(self.tree1.nodes[root1.hash] == root1)
 
     def test_add_error_wrong_tree(self):
         """
@@ -483,13 +517,16 @@ class TestTransition(TestCase):
         when source_tree is designated as tree3, will return an error
         and fail to perform the copy or move operation
         """
-        leafnode = LeafNode("leaf node", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
+
+        leafnode = LeafNode("leaf node", self.tree1, root1)
         
-        err = self.tree2.add(leafnode, self.tree2.root, copying=True,
+        err = self.tree2.add(leafnode, root2, copying=True,
             source_tree=self.tree3)
         assert(isinstance(err, str) or isinstance(err, unicode))
 
-        err = self.tree2.add(leafnode, self.tree2.root, copying=False,
+        err = self.tree2.add(leafnode, root2, copying=False,
             source_tree=self.tree3)
         assert(isinstance(err, str) or isinstance(err, unicode))
 
@@ -505,7 +542,9 @@ class TestTransition(TestCase):
         non-composite node will return an error  string and fail to perform
         the copy or move operation
         """
-        composite = CompositeNode("composite", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        composite = CompositeNode("composite", self.tree1, root1)
         leaf1 = LeafNode("leaf1", self.tree1, composite) 
         decorator = DecoratorNode("decorator", self.tree1, composite)
         leaf2 = LeafNode("leaf2", self.tree1, decorator)
@@ -539,7 +578,9 @@ class TestTransition(TestCase):
         Test the operation of shifting a leaf node to its own position in the
         children list of its parent composite node.
         """
-        composite = CompositeNode("composite", self.tree1, self.tree1.root) 
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        composite = CompositeNode("composite", self.tree1, root1) 
         leaf1 = LeafNode("leaf1", self.tree1, composite)
         leaf2 = LeafNode("leaf2", self.tree1, composite)
 
@@ -560,7 +601,9 @@ class TestTransition(TestCase):
         position of its parent composite node's children list, as well as from
         the first to the last position of that children list.
         """
-        composite = CompositeNode("composite", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        composite = CompositeNode("composite", self.tree1, root1)
         leaf1 = LeafNode("leaf1", self.tree1, composite)
         leaf2 = LeafNode("leaf2", self.tree1, composite)
         leaf3 = LeafNode("leaf3", self.tree1, composite)
@@ -599,13 +642,15 @@ class TestTransition(TestCase):
         Confirm that the attempt to shift the child of a non-composite node
         returns an error string 
         """
-        decorator = DecoratorNode("decorator", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        decorator = DecoratorNode("decorator", self.tree1, root1)
         leafnode = LeafNode("leaf node", self.tree1, decorator)
 
         err = self.tree1.shift(leafnode)
         assert(isinstance(err, str) or isinstance(err, unicode))
 
-        err = self.tree1.shift(self.tree1.root)
+        err = self.tree1.shift(root1)
         assert(isinstance(err, str) or isinstance(err, unicode))
 
     def test_shift_error_not_node(self):
@@ -622,7 +667,9 @@ class TestTransition(TestCase):
         Test the operation of swapping a node with itself, to ensure
         it is valid
         """
-        leafnode = LeafNode("leaf node", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        leafnode = LeafNode("leaf node", self.tree1, root1)
         
         self.tree1.swap(leafnode, leafnode)
 
@@ -639,7 +686,9 @@ class TestTransition(TestCase):
         Test the operation of swapping two leaf nodes that have the same 
         composite node as their parent.
         """
-        composite1 = CompositeNode("composite1", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        composite1 = CompositeNode("composite1", self.tree1, root1)
         leaf1 = LeafNode("leaf1", self.tree1, composite1)
         leaf2 = LeafNode("leaf2", self.tree1, composite1)
         leaf3 = LeafNode("leaf3", self.tree1, composite1)
@@ -669,7 +718,9 @@ class TestTransition(TestCase):
         This tests swapping between two nodes of the same tree and swapping
         between nodes whose parents are composite nodes.
         """
-        composite1 = CompositeNode("composite1", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        composite1 = CompositeNode("composite1", self.tree1, root1)
         composite2 = CompositeNode("composite2", self.tree1, composite1)
         composite3 = CompositeNode("composite3", self.tree1, composite1)
         leaf1 = LeafNode("leaf1", self.tree1, composite2)
@@ -702,20 +753,23 @@ class TestTransition(TestCase):
         This tests both swapping between two trees and swapping when the parents
         are both non-composite nodes.
         """
-        leaf1 = LeafNode("leaf1", self.tree1, self.tree1.root)
-        leaf2 = LeafNode("leaf2", self.tree2, self.tree2.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
 
-        assert(self.tree1.root.children == leaf1)
-        assert(self.tree2.root.children == leaf2)        
+        leaf1 = LeafNode("leaf1", self.tree1, root1)
+        leaf2 = LeafNode("leaf2", self.tree2, root2)
+
+        assert(root1.children == leaf1)
+        assert(root2.children == leaf2)        
 
         err = self.tree1.swap(leaf2, leaf1, source_tree=self.tree2)
         assert(not err)
 
         # check that the nodes have been swapped
-        assert(self.tree1.root.children == leaf2)
-        assert(self.tree2.root.children == leaf1)
-        assert(leaf2.parent == self.tree1.root)        
-        assert(leaf1.parent == self.tree2.root)
+        assert(root1.children == leaf2)
+        assert(root2.children == leaf1)
+        assert(leaf2.parent == root1)        
+        assert(leaf1.parent == root2)
 
         # check that each tree's registry has only two nodes, including
         # the root node
@@ -732,10 +786,10 @@ class TestTransition(TestCase):
         err = self.tree2.swap(leaf2, leaf1, source_tree=self.tree1)
         
         # check that the nodes have been swapped
-        assert(self.tree1.root.children == leaf1)
-        assert(self.tree2.root.children == leaf2)
-        assert(leaf1.parent == self.tree1.root)
-        assert(leaf2.parent == self.tree2.root)
+        assert(root1.children == leaf1)
+        assert(root2.children == leaf2)
+        assert(leaf1.parent == root1)
+        assert(leaf2.parent == root2)
 
         # check that the nodes are present in their trees' registries
         assert(self.tree1.nodes.has_key(leaf1.hash))
@@ -749,9 +803,12 @@ class TestTransition(TestCase):
         to swap a node with something that is not a node, returns an error
         message and does not perform any swapping operation
         """
-        leafnode = LeafNode("leaf node", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
 
-        err = self.tree1.swap(self.tree1, self.tree2.root)
+        leafnode = LeafNode("leaf node", self.tree1, root1)
+
+        err = self.tree1.swap(self.tree1, root2)
         assert(isinstance(err, str) or isinstance(err, unicode))
         
         err = self.tree1.swap(leafnode, self.tree2)
@@ -772,8 +829,9 @@ class TestTransition(TestCase):
         or a node with a root node, returns an error string and does
         not perform the swap
         """
-        root1 = self.tree1.root
-        root2 = self.tree2.root
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
+
         leaf1 = LeafNode("leaf1", self.tree1, root1)
         leaf2 = LeafNode("leaf2", self.tree2, root2)    
 
@@ -783,8 +841,8 @@ class TestTransition(TestCase):
         assert(isinstance(err, str) or isinstance(err, unicode))       
 
         # check that the swap has not been performed
-        assert(root1 == self.tree1.root)
-        assert(root2 == self.tree2.root)
+        assert(root1 == root1)
+        assert(root2 == root2)
 
         # check that the leaf nodes have not been moved
         assert(self.tree1.nodes.has_key(leaf1.hash))
@@ -797,7 +855,9 @@ class TestTransition(TestCase):
         Test the operation of copy-interposing and move-interposing a node
         to a different, non-composite node in the same tree.
         """
-        composite = CompositeNode("composite", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        composite = CompositeNode("composite", self.tree1, root1)
         decorator1 = DecoratorNode("decorator1", self.tree1, composite)
         decorator2 = DecoratorNode("decorator2", self.tree1, composite)
         old_hashval = decorator1.hash
@@ -858,7 +918,9 @@ class TestTransition(TestCase):
         target node in a specific position in the composite node's list of
         children.
         """
-        composite1 = CompositeNode("composite1", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        composite1 = CompositeNode("composite1", self.tree1, root1)
         composite2 = CompositeNode("composite2", self.tree1, composite1)
         leaf1 = LeafNode("leaf1", self.tree1, composite1)
         leaf2 = LeafNode("leaf2", self.tree1, composite1)
@@ -902,8 +964,11 @@ class TestTransition(TestCase):
         Test the operation of copy-interposing and move-interposing a
         node from one tree to another.
         """
-        decorator1 = DecoratorNode("decorator1", self.tree1, self.tree1.root)
-        decorator2 = DecoratorNode("decorator2", self.tree2, self.tree2.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
+
+        decorator1 = DecoratorNode("decorator1", self.tree1, root1)
+        decorator2 = DecoratorNode("decorator2", self.tree2, root2)
         old_hashval = decorator1.hash
         hashes = self.tree2.nodes.keys()
 
@@ -924,8 +989,8 @@ class TestTransition(TestCase):
 
         # check that the parent-child relationships of decorator3 have been
         # established
-        assert(self.tree2.root.children == decorator3)
-        assert(decorator3.parent == self.tree2.root)
+        assert(root2.children == decorator3)
+        assert(decorator3.parent == root2)
         assert(decorator3.children == decorator2)
         assert(decorator2.parent == decorator3)
 
@@ -955,8 +1020,11 @@ class TestTransition(TestCase):
         something that is not a node, returns an error message and does not
         perform any copying or moving operation
         """
-        leafnode = LeafNode("leaf node", self.tree1, self.tree1.root)
-        decorator = DecoratorNode("decorator", self.tree2, self.tree2.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
+
+        leafnode = LeafNode("leaf node", self.tree1, root1)
+        decorator = DecoratorNode("decorator", self.tree2, root2)
 
         err = self.tree1.interpose(self.tree1, decorator)
         assert(isinstance(err, str) or isinstance(err, unicode))
@@ -977,7 +1045,9 @@ class TestTransition(TestCase):
         Confirm that the attempt to interpose a node onto itself returns
         an error string and does not perform the interposition operation.
         """
-        decorator = DecoratorNode("decorator", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+
+        decorator = DecoratorNode("decorator", self.tree1, root1)
         hashval = decorator.hash        
 
         err = self.tree1.interpose(decorator, decorator, copying=False)
@@ -999,12 +1069,15 @@ class TestTransition(TestCase):
         node, or a node onto a root node, returns an error string and
         does not perform the interposition.
         """
-        decorator = DecoratorNode("decorator1", self.tree1, self.tree1.root)
+        root1 = self.tree1.nodes[self.tree1.root]
+        root2 = self.tree2.nodes[self.tree2.root]
 
-        err = self.tree1.interpose(self.tree1.root, decorator)
+        decorator = DecoratorNode("decorator1", self.tree1, root1)
+
+        err = self.tree1.interpose(root1, decorator)
         assert(isinstance(err, str) or isinstance(err, unicode))
        
-        err = self.tree1.interpose(decorator, self.tree2.root)
+        err = self.tree1.interpose(decorator, root2)
         assert(isinstance(err, str) or isinstance(err, unicode))
 
         # check that there are still only two nodes in the registry
@@ -1012,10 +1085,10 @@ class TestTransition(TestCase):
 
         # check that the parent-child relationships of the two nodes in the
         # registry have not changed
-        assert(self.tree1.root.children == decorator)
-        assert(self.tree1.root.parent == None)
+        assert(root1.children == decorator)
+        assert(root1.parent == None)
         assert(decorator.children == None)
-        assert(decorator.parent == self.tree1.root)
+        assert(decorator.parent == root1)
 
 
 class AdderSuccessLeaf(LeafNode):
@@ -1135,7 +1208,9 @@ class TestFunctionality(TestCase):
         Test the setup process of the agent and script blackboards when a
         behavior tree is specified as an argument to the setup method
         """
-        leafnode = LeafNode("leaf", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        leafnode = LeafNode("leaf", self.tree, root)
 
         self.agent.ai.setup(tree=self.tree)
         self.script.ai.setup(tree=self.tree)
@@ -1160,7 +1235,9 @@ class TestFunctionality(TestCase):
         behavior tree is specified as an attribute of the object or script
         being assigned a blackboard.
         """
-        leafnode = LeafNode("leaf", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        leafnode = LeafNode("leaf", self.tree, root)
 
         # test setup when a default tree exists
         self.agent.aitree = self.tree
@@ -1188,7 +1265,9 @@ class TestFunctionality(TestCase):
         Test the setup process of the agent and script blackboards when no 
         behavior tree is specified.
         """
-        leafnode = LeafNode("leaf", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        leafnode = LeafNode("leaf", self.tree, root)
 
         self.agent.ai.setup()
         self.script.ai.setup()
@@ -1203,7 +1282,9 @@ class TestFunctionality(TestCase):
         """
         Test the the ticking of a root-and-leaf tree. 
         """
-        adder_leaf = AdderSuccessLeaf("adder", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        adder_leaf = AdderSuccessLeaf("adder", self.tree, root)
         self.agent.ai.setup(tree=self.tree)
         self.agent.ai.tick()
         self.agent.ai.tick()
@@ -1217,7 +1298,9 @@ class TestFunctionality(TestCase):
         Test the ticking of a root-and-leaf tree associated with an AIScript's
         blackboard.
         """
-        adder_leaf = AdderSuccessLeaf("adder", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        adder_leaf = AdderSuccessLeaf("adder", self.tree, root)
         self.script.ai.setup(tree=self.tree)
         self.script.ai.tick()
         self.script.ai.tick()
@@ -1230,15 +1313,17 @@ class TestFunctionality(TestCase):
         """
         Test the ticking of a condition leaf node. 
         """
+        root = self.tree.nodes[self.tree.root]
+
         # check that the node returns Success if the condition is True
-        condition = ConditionTrue("condition", self.tree, self.tree.root)
+        condition = ConditionTrue("condition", self.tree, root)
         self.agent.ai.setup(tree=self.tree)
         status = self.agent.ai.tick()
         assert(status == SUCCESS)
 
         # check that the node returns Failure if the condition is False
         self.tree.remove(condition)
-        condition = ConditionFalse("condition", self.tree, self.tree.root)
+        condition = ConditionFalse("condition", self.tree, root)
         self.agent.ai.setup(override=True)
         status = self.agent.ai.tick()
         assert(status == FAILURE)
@@ -1249,7 +1334,7 @@ class TestFunctionality(TestCase):
         """
         Test whether a transition leaf successfully transitions to 
         """
-
+        print("transition leaf test missing")
 
     def test_selector(self):
         """
@@ -1257,7 +1342,9 @@ class TestFunctionality(TestCase):
         node returns Failure, whose third node returns Failure and whose second
         node returns, alternatively, Success, Failure, Running and Error.
         """
-        selector = Selector("selector", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        selector = Selector("selector", self.tree, root)
         failure1 = FailureLeaf("failure1", self.tree, selector) 
         failurex = FailureLeaf("failurex", self.tree, selector)
         failure3 = FailureLeaf("failure3", self.tree, selector)
@@ -1301,7 +1388,9 @@ class TestFunctionality(TestCase):
         node returns Success, whose third node returns Success and whose second
         node returns, alternatively, Success, Failure, Running and Error.
         """
-        sequence = Sequence("sequence", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        sequence = Sequence("sequence", self.tree, root)
         success1 = SuccessLeaf("success1", self.tree, sequence) 
         successx = SuccessLeaf("successx", self.tree, sequence)
         success3 = SuccessLeaf("success3", self.tree, sequence)
@@ -1348,7 +1437,9 @@ class TestFunctionality(TestCase):
         Also test that the first child node does not get called again when the
         second node always returns Running and is ticked twice.
         """
-        memselector = MemSelector("memselector", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        memselector = MemSelector("memselector", self.tree, root)
         failure1 = FailureLeaf("failure1", self.tree, memselector)
         failurex = FailureLeaf("failurex", self.tree, memselector)
         failure3 = FailureLeaf("failure3", self.tree, memselector)
@@ -1401,7 +1492,9 @@ class TestFunctionality(TestCase):
         Also test that the first child node does not get called again when the
         second node always returns Running and is ticked twice.
         """
-        memsequence = MemSequence("memsequence", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        memsequence = MemSequence("memsequence", self.tree, root)
         success1 = SuccessLeaf("success1", self.tree, memsequence)
         successx = SuccessLeaf("successx", self.tree, memsequence)
         success3 = SuccessLeaf("success3", self.tree, memsequence)
@@ -1454,7 +1547,9 @@ class TestFunctionality(TestCase):
         Also test that the probability selector goes through all children,
         without repeating any of them, when each of them returns Failure. 
         """
-        probselector = ProbSelector("probselector", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        probselector = ProbSelector("probselector", self.tree, root)
         adderfailure1 = AdderFailureLeaf("adderfailure1", self.tree, 
             probselector)
         addersuccessx = AdderSuccessLeaf("addersuccessx", self.tree, 
@@ -1551,7 +1646,9 @@ class TestFunctionality(TestCase):
         Also test that the probability sequence goes through all children,
         without repeating any of them, when each of them returns Failure. 
         """
-        probsequence = ProbSequence("probsequence", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        probsequence = ProbSequence("probsequence", self.tree, root)
         addersuccess1 = AdderSuccessLeaf("addersuccess1", self.tree, 
             probsequence)
         adderfailurex = AdderFailureLeaf("adderfailurex", self.tree, 
@@ -1642,7 +1739,9 @@ class TestFunctionality(TestCase):
         """
         Test the various possible return policies of a parallel node
         """
-        parallel = Parallel("parallel", self.tree, self.tree.root, 
+        root = self.tree.nodes[self.tree.root]
+
+        parallel = Parallel("parallel", self.tree, root, 
             primary_child=None, req_successes=2, req_failures=2, 
             default_success=True)
         success1 = SuccessLeaf('success1', self.tree, parallel)
@@ -1727,11 +1826,13 @@ class TestFunctionality(TestCase):
         """
         Tests the functionality of a verifier node that always returns True
         """
-        verifier = VerifierTrue("verifier true", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        verifier = VerifierTrue("verifier true", self.tree, root)
         successx = SuccessLeaf("successx", self.tree, verifier)
 
-        #print(self.tree.root.hash, verifier.hash, successx.hash)
-        #print(self.tree.root.children, verifier.children, successx.children)
+        #print(root.hash, verifier.hash, successx.hash)
+        #print(root.children, verifier.children, successx.children)
 
         # check that this verifier returns Success when its child returns
         # Success
@@ -1767,7 +1868,9 @@ class TestFunctionality(TestCase):
         """
         Tests the functionality of a verifier node that always returns False
         """
-        verifier = VerifierFalse("verifier false", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        verifier = VerifierFalse("verifier false", self.tree, root)
         successx = SuccessLeaf("successx", self.tree, verifier)
 
         # check that this verifier returns Failure even when its child returns
@@ -1804,7 +1907,9 @@ class TestFunctionality(TestCase):
         """
         Tests the functionality of an inverter node
         """
-        inverter = Inverter("inverter", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        inverter = Inverter("inverter", self.tree, root)
         successx = SuccessLeaf("successx", self.tree, inverter)
 
         # check that the inverter returns Failure when its child returns
@@ -1841,7 +1946,9 @@ class TestFunctionality(TestCase):
         """
         Tests the functionality of a succeeder node
         """
-        succeeder = Succeeder("succeeder", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        succeeder = Succeeder("succeeder", self.tree, root)
         successx = SuccessLeaf("successx", self.tree, succeeder)
 
         # check that the inverter returns Failure when its child returns
@@ -1878,7 +1985,9 @@ class TestFunctionality(TestCase):
         """
         Tests the functionality of a failer node
         """
-        failer = Failer("failer", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        failer = Failer("failer", self.tree, root)
         successx = SuccessLeaf("successx", self.tree, failer)
 
         # check that the inverter returns Failure when its child returns
@@ -1916,7 +2025,9 @@ class TestFunctionality(TestCase):
         Test the functionality of a repeater node, checking that it
         runs a given node several times before returning its status.
         """
-        repeater = Repeater("repeater", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        repeater = Repeater("repeater", self.tree, root)
         adderfailure = AdderFailureLeaf("adderfailure", self.tree, repeater)
         repeater.repeats = 3        
 
@@ -1933,7 +2044,9 @@ class TestFunctionality(TestCase):
         only runs a given node a limited number of times before
         finally returning failure without running it.
         """
-        limiter = Limiter("limiter", self.tree, self.tree.root)
+        root = self.tree.nodes[self.tree.root]
+
+        limiter = Limiter("limiter", self.tree, root)
         addersuccess = AdderSuccessLeaf("addersuccess", self.tree, limiter)
         limiter.repeats = 2
 

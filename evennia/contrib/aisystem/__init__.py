@@ -1,7 +1,7 @@
 from evennia.contrib.aisystem.commands import AICmdSet
 from evennia.contrib.aisystem.typeclasses import (BehaviorTree, AIObject, 
     AIScript, AIPlayer)
-from evennia.contrib.aisystem.handlers import setup
+from evennia.contrib.aisystem.utils import setup
 from evennia.contrib.aisystem.nodes import (SUCCESS, FAILURE, RUNNING, ERROR,
     RootNode, CompositeNode, DecoratorNode, LeafNode, Condition, Command,
     Selector, Sequence, MemSelector, MemSequence, ProbSelector, ProbSequence,

@@ -73,12 +73,10 @@ errors (dict) - a dictionary with the hashes of nodes as keys and the error
                 blackboard as values.
 """
 
-from evennia import ScriptDB, ObjectDB, PlayerDB
-from evennia.contrib.aisystem.nodes import recurse_multitree
+from evennia import ObjectDB, ScriptDB
+from evennia.contrib.aisystem.utils import recurse_multitree
 
-_AI_OBJECT = None
-_AI_SCRIPT = None
-_AI_PLAYER = None
+_BEHAVIOR_TREE = None #delayed import
 
 
 class AIHandler(object):
@@ -202,17 +200,46 @@ class AIHandler(object):
         self.owner.db.ai['running_now'] = []
 
         # tick the root node
-        return self.owner.db.ai['tree'].root.tick(self.owner.db.ai)
+        tree = self.owner.db.ai['tree']
+        return tree.nodes[tree.root].tick(self.owner.db.ai)
 
     def setup(self, tree=None, override=False):
         """
         Sets up the attributes associated with the AI handler. If override
         is set to True, replaces all these attributes with the defaults.
+
+        If setup succeeds, it returns "none". Otherwise, it returns an error
+        string.
         """
+        global _BEHAVIOR_TREE
+
+        if not _BEHAVIOR_TREE:
+            from evennia.contrib.aisystem.typeclasses import (BehaviorTree
+                as _BEHAVIOR_TREE)
+
+        if isinstance(self.owner, ObjectDB):
+            obj_type_name = "object" 
+        elif isinstance(self.owner, ScriptDB):
+            obj_type_name = "script"
+        else:
+            raise TypeError("Unknown type for AI agent {0} ".self.owner.name +
+                "(id {0}).".format(self.owner.id))
+
         if not tree:
             if hasattr(self.owner,'aitree') and self.owner.aitree:
                 # first use the object's class tree as the desired tree
-                tree = self.owner.aitree
+
+                # check if the tree is a BehaviorTree
+                if isinstance(self.owner.aitree, _BEHAVIOR_TREE):
+                    tree = self.owner.aitree
+
+                elif (isinstance(self.owner.aitree, str) or
+                    isinstance(self.owner.aitree, unicode)):
+                    tree = tree_from_name(None, self.owner.aitree)
+                    if not tree:
+                        return ("No tree with the name or hash of " +
+                            "{0} has been found ".format(self.owner.aitree) +
+                            "in the database.")
 
             elif (self.owner.attributes.has("ai") and
                 self.owner.db.ai.has_key('tree')):
@@ -221,10 +248,17 @@ class AIHandler(object):
                 # instead
                 tree = self.owner.db.ai['tree']
             else:
-                return
+                return ("No tree found in either the blackboard or the " +
+                    "class of {0} {1} (id {2}). ".format(obj_type_name, 
+                    self.owner.name, self.owner.id) + "Please assign the ." +
+                    "agent a tree via the @aiassign command before trying " +
+                    "to set it up.")
 
         # confirm that the tree is valid
-        tree.validate_tree()
+        try:
+            tree.validate_tree()
+        except Exception as e:
+            return e
 
         if not self.owner.attributes.has('ai') or override:
             self.owner.db.ai = {}
@@ -258,9 +292,13 @@ class AIHandler(object):
             node.on_blackboard_setup(self.owner.db.ai, override=override)
             recurse_multitree(node, recursive_setup_node_call)
 
+        root = self.owner.db.ai['tree'].nodes[self.owner.db.ai['tree'].root]
+
         if self.owner.db.ai['nodes'] == {}:
-            recursive_setup_node_dict(self.owner.db.ai['tree'].root)
-        recursive_setup_node_call(self.owner.db.ai['tree'].root)
+            recursive_setup_node_dict(root)
+        recursive_setup_node_call(root)
+
+        return None
 
 
 class AIWizardHandler(object):
@@ -289,16 +327,16 @@ class AIWizardHandler(object):
         del self.owner.db.aiwizard['node']
 
     @property
-    def blackboard(self):
-        return self.owner.db.aiwizard['blackboard']
+    def agent(self):
+        return self.owner.db.aiwizard['agent']
 
-    @blackboard.setter
-    def blackboard(self, value):
-        self.owner.db.aiwizard['blackboard'] = value
+    @agent.setter
+    def agent(self, value):
+        self.owner.db.aiwizard['agent'] = value
 
-    @blackboard.deleter
-    def blackboard(self):
-        del self.owner.db.aiwizard['blackboard']
+    @agent.deleter
+    def agent(self):
+        del self.owner.db.aiwizard['agent']
 
     @property
     def watching(self):
@@ -333,43 +371,9 @@ class AIWizardHandler(object):
         if not self.owner.db.aiwizard.has_key('node') or override:
             self.owner.db.aiwizard['node'] = ''
 
-        if not self.owner.db.aiwizard.has_key('blackboard') or override:
-            self.owner.db.aiwizard['blackboard'] = None
+        if not self.owner.db.aiwizard.has_key('agent') or override:
+            self.owner.db.aiwizard['agent'] = None
 
         if not self.owner.db.aiwizard.has_key('watching') or override:
             self.owner.db.aiwizard['watching'] = []
 
-
-def setup(override=False):
-    """
-    Sets up all AIHandlers and AIWizardHandlers in the game.
-    """
-    global _AI_OBJECT
-    global _AI_SCRIPT
-    global _AI_PLAYER
-    if not _AI_OBJECT:
-        from evennia.contrib.aisystem.typeclasses import (AIObject
-            as _AI_OBJECT)
-    if not _AI_SCRIPT:
-        from evennia.contrib.aisystem.typeclasses import (AIScript
-            as _AI_SCRIPT)
-    if not _AI_PLAYER:
-        from evennia.contrib.aisystem.typeclasses import (AIPlayer
-            as _AI_PLAYER)
-
-    aiobjects = [x for x in ObjectDB.objects.all()
-        if isinstance(x, _AI_OBJECT)]
-    for aiobject in aiobjects:
-        aiobject.ai.setup(override=override)
-
-    aiscripts = [x for x in ScriptDB.objects.all() 
-        if isinstance(x, _AI_SCRIPT)]
-    for aiscript in aiscripts:
-        aiscript.ai.setup(override=override)
-
-    aiplayers = [x for x in PlayerDB.objects.all()
-        if isinstance(x, _AI_PLAYER)]
-    for aiplayer in aiplayers:
-        aiplayer.aiwizard.setup(override=override)
-
- 

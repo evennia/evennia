@@ -13,29 +13,22 @@ includes which nodes are currently running, which nodes were running during
 the previous tick, as well as all global and node-specific user-specified data.
 """
 
-#[WIP] ALL METHODS THAT CHANGE A NODE'S TREE SHOULD CHANGE SELF.TREE AS WELL!!!
-#[WIP] SAVE THE TREES AFTER EVERY CHANGE BY RE-ATTACHING THEIR ROOTS!
-#[WIP] TAKE NODES OUT OF ALL WATCH LISTS WHEN REMOVING THEM OR THEIR (IN)DIRECT
-#      PARENTS!
+#[CHECK] WHEN MOVING OR COPYING NODES TO ANOTHER TREE, CHANGE THEIR HASHES TO
+#        REFLECT THE FACT THAT THEY ARE ON THE NEW TREE!
 
 import copy
 from evennia import DefaultObject, DefaultScript, DefaultPlayer
 from evennia.utils import lazy_property
 from evennia.contrib.aisystem.handlers import AIHandler, AIWizardHandler
-from evennia.contrib.aisystem.nodes import (recurse, recurse_multitree, Node, 
-    RootNode, CompositeNode, LeafNode, DecoratorNode, Condition, Command,
-    Selector, Sequence, MemSelector, MemSequence, ProbSelector, ProbSequence,
-    Parallel, Verifier, Inverter, Succeeder, Failer, Repeater, Limiter,
-    Allocator)
-
+from evennia.contrib.aisystem.nodes import (Node, RootNode, CompositeNode, 
+    LeafNode, DecoratorNode, all_original_nodes)
+from evennia.contrib.aisystem.utils import recurse, recurse_multitree 
 
 class BehaviorTree(DefaultScript):
     """
     The BehaviorTree provides the following properties:
 
-     - root - stores the entirety of the tree. This property is called root
-        because referencing it from within the game actually references the
-        root node.
+     - root - stores the hash of the tree's root node
      - nodes - a dictionary of all the tree's node objects, using the hash
         values of the nodes as keys. Used internally for creating, moving and
         deleting nodes as well as for populating the 'nodes' dictionary of each
@@ -67,17 +60,11 @@ class BehaviorTree(DefaultScript):
 
     def at_script_creation(self):
         super(BehaviorTree, self).at_script_creation()
-        self.setup()
         self.desc = "Behavior tree"
         self.persistent = True
-
-    def setup(self):
-        """
-        Called when the tree is created. Gives the tree a root node.
-        """
         self.pause()
         self.db.nodes = {}
-        self.db.root = RootNode("root", self, None)
+        self.db.root = RootNode("root", self, None).hash
 
     def rename(self, node, name):
         """
@@ -90,12 +77,22 @@ class BehaviorTree(DefaultScript):
         Add the node and its subtree to this tree, setting the hashes
         for all of the subtree's nodes
         """
+        # change the node's hash if the second part of that hash does not match
+        # the tree's id (this always happens when transferring from another
+        # tree)
+        if node.hash[4:] != str(self.id):
+            node.rehash(self)
+
+        # assign the node to the tree's nodes list if it is not already there,
+        # change its hash if a node with the same hash is already there
+        # (this always happens when copying from the same tree)
         if not self.db.nodes.has_key(node.hash):
             self.db.nodes[node.hash] = node
         elif (self.db.nodes.has_key(node.hash) and 
             self.db.nodes[node.hash] != node):
             node.rehash(self)
             self.db.nodes[node.hash] = node
+
         recurse(node, self.recursive_add_hash)
 
     def recursive_remove_hash(self, node):
@@ -105,6 +102,7 @@ class BehaviorTree(DefaultScript):
         if (self.db.nodes.has_key(node.hash) and
             self.db.nodes[node.hash] == node):
             self.db.nodes.pop(node.hash)
+
         recurse(node, self.recursive_remove_hash)
 
     def check_node_in_tree(self, node, source_tree=None, msg="operation"):
@@ -196,7 +194,7 @@ class BehaviorTree(DefaultScript):
 
         parent = node.parent
         if not target:
-            target = self.root
+            target = self.nodes[self.root]
 
         if isinstance(target, CompositeNode):
             # if target is a composite node, add the node to the target
@@ -241,6 +239,11 @@ class BehaviorTree(DefaultScript):
         if source_tree or copying:
             self.recursive_add_hash(node)
 
+        # save the tree(s)
+        self.db.nodes = self.db.nodes
+        if source_tree:
+            source_tree.db.nodes = source_tree.db.nodes
+
         return None # No error occurred
 
     def shift(self, node, position=None):
@@ -271,6 +274,11 @@ class BehaviorTree(DefaultScript):
             return ("Parent node '{0}'(\"{1}\") ".format(node.parent.hash[0:3],
                 node.parent.name) + "is not a composite node, cannot shift " + 
                 "node '{0}'(\"{1}\").".format(node.hash[0:3], node.name))
+
+        # save the tree
+        self.db.nodes = self.db.nodes
+
+        return None # No error occurred
 
     def swap(self, node, target, source_tree=None):
         """
@@ -341,6 +349,11 @@ class BehaviorTree(DefaultScript):
 
         target.parent = node_parent
         node_parent.on_add_child(target)
+
+        # save the tree(s)
+        self.db.nodes = self.db.nodes
+        if source_tree:
+            source_tree.db.nodes = source_tree.db.nodes
 
         return None # No error occurred
 
@@ -436,6 +449,11 @@ class BehaviorTree(DefaultScript):
         if source_tree or copying:
             self.recursive_add_hash(node)
 
+        # save the tree(s)
+        self.db.nodes = self.db.nodes
+        if source_tree:
+            source_tree.db.nodes = source_tree.db.nodes
+
         return None # No error occurred
 
     def remove(self, node):
@@ -460,6 +478,9 @@ class BehaviorTree(DefaultScript):
         node.parent = None
         parent.on_remove_child(node)
 
+        # save the tree(s)
+        self.db.nodes = self.db.nodes
+
         return None # No error occurred        
 
     def validate_tree(self):
@@ -476,7 +497,7 @@ class BehaviorTree(DefaultScript):
                     "the tree to be valid.")
             recurse_multitree(node, validate)
 
-        return validate(self.root)
+        return validate(self.nodes[self.root])
 
 class AIObject(DefaultObject):
     """
@@ -549,16 +570,7 @@ class AIPlayer(DefaultPlayer):
     This will ensure that your new nodes will be added on to the extant
     dictionary of nodes.    
     """
-    nodes = {'Node': Node, 'RootNode': RootNode, 'LeafNode': LeafNode,
-        'CompositeNode': CompositeNode, 'DecoratorNode': DecoratorNode,
-        'Condition': Condition, 'Command': Command, 'Selector': Selector,
-        'Sequence': Sequence, 'MemSelector': MemSelector, 
-        'MemSequence': MemSequence, 'ProbSelector': ProbSelector,
-        'ProbSequence': ProbSequence, 'Parallel': Parallel, 
-        'Verifier': Verifier, 'Inverter': Inverter, 'Succeeder': Succeeder,
-        'Failer': Failer, 'Repeater': Repeater, 'Limiter': Limiter,
-        'Allocator': Allocator}
-
+    nodes = all_original_nodes 
     @ lazy_property
     def aiwizard(self):
         return AIWizardHandler(self)
