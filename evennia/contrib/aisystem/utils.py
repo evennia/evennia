@@ -13,7 +13,7 @@ _AI_PLAYER = None
 
 def recurse(node, func):
     """
-    Performing a function on the child nodes of a given node, but does not 
+    Performing a function on the child nodes of a given node, but does not
     step into the target tree of a Transition node. For this process to be
     recursive, the method that calls recurse should be the very function
     performed by recurse.
@@ -22,18 +22,22 @@ def recurse(node, func):
         for child in node.children:
             func(child)
     elif node.children:
-        func(node.children) 
+        func(node.children)
 
 
-def recurse_bb(node, func, bb):
+def recurse_bb_multitree(node, func, bb):
     """
-    Same as recurse, but performed over a blackboard.
+    Same as recurse, but performed over a blackboard. Continues recursion
+    through Transition nodes into child trees.
     """
     if isinstance(node, CompositeNode):
         for child in node.children:
             func(child, bb)
+    elif isinstance(node, Transition):
+        target_tree = bb['nodes'][node.hash]['target_tree']
+        func(target_tree.nodes[target_tree.root], bb)
     elif node.children:
-        func(node.children, bb) 
+        func(node.children, bb)
 
 
 def recurse_multitree(node, func):
@@ -45,23 +49,44 @@ def recurse_multitree(node, func):
         for child in node.children:
             func(child)
     elif isinstance(node, Transition):
-        func(node.target_tree.nodes[node.target_tree.root])
+
+        if (isinstance(node.target_tree, str)
+                or isinstance(node.target_tree, unicode)):
+            target_tree = tree_from_name(None, node.target_tree)
+        else:
+            target_tree = node.target_tree
+        func(target_tree.nodes[target_tree.root])
     elif node.children:
-        func(node.children) 
+        func(node.children)
 
 
-def recursive_clear_watchlists(node):
+def clear_watchlist(node, bb):
     """
-    Removes the node from all watchlists. Useful when about to delete a node
-    and its children.
+    Removes the node instance from all watchlists.
+
+    Don't forget to save the bb from its agent after this!
+    This function doesn't do it automatically in case recursive_clear_watchlists
+    is used.
     """
     watchers = bb['nodes'][node.hash]['watchers']
+    watch_tuple = (node.hash, bb['agent'])
     for watcher in watchers:
-        watcher.aiwizard.watching.remove(node.hash)
+        watcher.aiwizard.watching.remove(watch_tuple)
         watcher.db.aiwizard = watcher.db.aiwizard # save the aiwizard data
     bb['nodes'][node.hash]['watchers'] = []
-    # don't forget to save the bb from its agent after this!
-    recurse(node, recursive_clear_watchlists, bb)
+
+
+def recursive_clear_watchlists(node, bb):
+    """
+    Removes the node instance and its children from all watchlists, recursing
+    through the node's children. Useful when about to delete a node and its 
+    children.
+
+    Don't forget to save the bb from its agent after this!
+    This function doesn't do it automatically to avoid redundant saves.
+    """
+    clear_watchlist(node, bb)
+    recurse_bb_multitree(node, recursive_clear_watchlists, bb)
 
 
 def setup(override=False):
@@ -72,27 +97,27 @@ def setup(override=False):
     global _AI_SCRIPT
     global _AI_PLAYER
     if not _AI_OBJECT:
-        from evennia.contrib.aisystem.typeclasses import (AIObject
-            as _AI_OBJECT)
+        from evennia.contrib.aisystem.typeclasses import (
+            AIObject as _AI_OBJECT)
     if not _AI_SCRIPT:
-        from evennia.contrib.aisystem.typeclasses import (AIScript
-            as _AI_SCRIPT)
+        from evennia.contrib.aisystem.typeclasses import (
+            AIScript as _AI_SCRIPT)
     if not _AI_PLAYER:
-        from evennia.contrib.aisystem.typeclasses import (AIPlayer
-            as _AI_PLAYER)
+        from evennia.contrib.aisystem.typeclasses import (
+            AIPlayer as _AI_PLAYER)
 
-    aiobjects = [x for x in ObjectDB.objects.all()
-        if isinstance(x, _AI_OBJECT)]
+    aiobjects = [
+        x for x in ObjectDB.objects.all() if isinstance(x, _AI_OBJECT)]
     for aiobject in aiobjects:
         aiobject.ai.setup(override=override)
 
-    aiscripts = [x for x in ScriptDB.objects.all() 
-        if isinstance(x, _AI_SCRIPT)]
+    aiscripts = [
+        x for x in ScriptDB.objects.all() if isinstance(x, _AI_SCRIPT)]
     for aiscript in aiscripts:
         aiscript.ai.setup(override=override)
 
-    aiplayers = [x for x in PlayerDB.objects.all()
-        if isinstance(x, _AI_PLAYER)]
+    aiplayers = [
+        x for x in PlayerDB.objects.all() if isinstance(x, _AI_PLAYER)]
     for aiplayer in aiplayers:
         aiplayer.aiwizard.setup(override=override)
 
@@ -106,11 +131,12 @@ def is_aiplayer(caller):
     """
     global _AI_PLAYER
     if not _AI_PLAYER:
-        from evennia.contrib.aisystem.typeclasses import (AIPlayer
-            as _AI_PLAYER)
+        from evennia.contrib.aisystem.typeclasses import (
+            AIPlayer as _AI_PLAYER)
 
     if not isinstance(caller.player, _AI_PLAYER):
-        caller.msg("{0} does not have the ".format(caller.player.name) +
+        caller.msg(
+            "{0} does not have the ".format(caller.player.name) +
             "AIPlayer typeclass. The command cannot proceed. Please set " +
             "the player's typeclass to AIPlayer in the code, possibly by " +
             "subclassing your game's Player typeclass from AIPlayer.")
@@ -124,11 +150,13 @@ def is_browsing(player, msg):
     If not, sends an error message to that player and returns False.
     """
     if not player.aiwizard.tree:
-        player.msg("You are not currently browsing any tree " +
+        player.msg(
+            "You are not currently browsing any tree " +
             "and so cannot {0}.".format(msg))
         return False
     if not player.aiwizard.node:
-        player.msg("You are not currently browsing any node " +
+        player.msg(
+            "You are not currently browsing any node " +
             "and so cannot {0}.".format(msg))
         return False
     return True
@@ -140,7 +168,8 @@ def is_browsing_blackboard(player, msg):
     If not, sends an error message to that player and returns False.
     """
     if not player.aiwizard.agent:
-        player.msg("You are not currently browsing any blackboard " +
+        player.msg(
+            "You are not currently browsing any blackboard " +
             "and so cannot {0}.".format(msg))
         return False
     return True
@@ -152,7 +181,8 @@ def is_node_in_bb(caller, node, bb, msg):
     If not, sends an error message to the given player and returns False
     """
     if not bb['nodes'].has_key(node.hash):
-        caller.msg("Node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
+        caller.msg(
+            "Node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
             "was not found in the specified blackboard. You cannot " +
             "{0}.".format(msg))
         return False
@@ -166,24 +196,21 @@ def is_agent_set_up(caller, agent, obj_type_name):
     False.
     """
     if not (agent.attributes.has("ai") and agent.db.ai):
-        caller.msg("The {0} '{1}' (id {2}) ".format(obj_type_name, agent.name,
-            agent.id) + "does not have an AI blackboard. Please set up " +
-            "the agent's blackboard by running @aisetup on that agent " +
-            "or globally.")
+        caller.msg(
+            "The {0} '{1}' (id {2}) ".format(
+                obj_type_name, agent.name, agent.id) +
+            "does not have an AI blackboard. Please set up the agent's " +
+            "blackboard by running @aisetup on that agent or globally.")
         return False
 
     if not agent.ai.tree:
-        caller.msg("The {0} '{1}' (id {2}) ".format(obj_type_name, agent.name,
-            agent.id) + "does not have an associated Behavior Tree. Please " +
+        caller.msg(
+            "The {0} '{1}' (id {2}) ".format(
+                obj_type_name, agent.name, agent.id) +
+            "does not have an associated Behavior Tree. Please " +
             "assign it a tree via the @aiassign command.")
         return False
     return True
-
-
-def is_agent_correct_type(agent, obj_type_name):
-    """
-    Checks 
-    """
 
 
 def get_all_agents_with_tree(tree):
@@ -193,24 +220,26 @@ def get_all_agents_with_tree(tree):
     global _AI_OBJECT
     global _AI_SCRIPT
     if not _AI_OBJECT:
-        from evennia.contrib.aisystem.typeclasses import (AIObject
-            as _AI_OBJECT)
+        from evennia.contrib.aisystem.typeclasses import (
+            AIObject as _AI_OBJECT)
     if not _AI_SCRIPT:
-        from evennia.contrib.aisystem.typeclasses import (AIScript
-            as _AI_SCRIPT)
+        from evennia.contrib.aisystem.typeclasses import (
+            AIScript as _AI_SCRIPT)
 
-    objects = [x for x in ObjectDB.objects.all() 
-        if isinstance(x, _AI_OBJECT) and x.db.ai 
+    objects = [
+        x for x in ObjectDB.objects.all()
+        if isinstance(x, _AI_OBJECT) and x.db.ai
         and x.db.ai.has_key("tree") and x.db.ai['tree'] == tree]
-    scripts = [x for x in ScriptDB.objects.all()
-        if isinstance(x, _AI_SCRIPT) and x.db.ai 
+    scripts = [
+        x for x in ScriptDB.objects.all()
+        if isinstance(x, _AI_SCRIPT) and x.db.ai
         and x.db.ai.has_key("tree") and x.db.ai['tree'] == tree]
     return objects + scripts
 
 
 def player_from_name(caller, name):
     """
-    If there is a single player in the database that has the given id or name, 
+    If there is a single player in the database that has the given id or name,
     returns that player, else returns None
     """
     if name == 'this':
@@ -220,7 +249,8 @@ def player_from_name(caller, name):
     elif all([x in string.digits for x in name]):
         player = PlayerDB.objects.get_id(name)
         if not player:
-            caller.msg("No player with the specified database id of " +
+            caller.msg(
+                "No player with the specified database id of " +
                 "{0} has been found. Please check the list ".format(name) +
                 "of available players using the @players command.")
             return None
@@ -230,14 +260,16 @@ def player_from_name(caller, name):
         try:
             player = PlayerDB.objects.get(db_key=name)
         except ObjectDoesNotExist:
-            caller.msg("No player with the name {0} has been ".format(name) +
+            caller.msg(
+                "No player with the name {0} has been ".format(name) +
                 "found in the database. Please check the list of available " +
                 "players using the @ailist command.")
-            return None 
+            return None
         except MultipleObjectsReturned:
-            caller.msg("Multiple players with the name {0} ".format(name) +
+            caller.msg(
+                "Multiple players with the name {0} ".format(name) +
                 "have been found in the database. Please use the " +
-                "target player's id instead.") 
+                "target player's id instead.")
             return None
 
     return player
@@ -245,7 +277,7 @@ def player_from_name(caller, name):
 
 def tree_from_name(caller, name):
     """
-    If there is a single tree in the database that has the given id or name, 
+    If there is a single tree in the database that has the given id or name,
     returns that tree, else returns None
 
     Caller can be None to accommodate running this function when an AIObject
@@ -254,10 +286,11 @@ def tree_from_name(caller, name):
     if name == 'this':
         # check that a tree is currently being browsed
         if caller and caller.player.aiwizard.tree:
-            tree = self.caller.player.aiwizard.tree
+            tree = caller.player.aiwizard.tree
         else:
-            if caller: 
-                self.caller.msg("You are not currently browsing any tree, " +
+            if caller:
+                caller.msg(
+                    "You are not currently browsing any tree, " +
                     "and so you cannot specify a tree via the 'this' " +
                     "keyword. To move the browsing cursor to a given tree, " +
                     "use the @aigo command.")
@@ -268,7 +301,8 @@ def tree_from_name(caller, name):
         tree = ScriptDB.objects.get_id(name)
         if not tree:
             if caller:
-                caller.msg("No tree with the specified database id of " +
+                caller.msg(
+                    "No tree with the specified database id of " +
                     "{0} has been found. Please check the list ".format(name) +
                     "of available trees using the @ailist command.")
             return None
@@ -279,13 +313,15 @@ def tree_from_name(caller, name):
             tree = ScriptDB.objects.get(db_key=name)
         except ObjectDoesNotExist:
             if caller:
-                caller.msg("No tree with the name {0} has been ".format(name) +
+                caller.msg(
+                    "No tree with the name {0} has been ".format(name) +
                     "found in the database. Please check the list of " +
                     "available trees using the @ailist command.")
-            return None 
+            return None
         except MultipleObjectsReturned:
             if caller:
-                caller.msg("Multiple scripts with the name {0} ".format(name) +
+                caller.msg(
+                    "Multiple scripts with the name {0} ".format(name) +
                     "have been found in the database. Please use the target " +
                     "tree's id instead.")
             return None
@@ -295,12 +331,12 @@ def tree_from_name(caller, name):
 
 def node_from_name(caller, tree, name):
     """
-    If there is a single node in the tree's nodes registry that has the given 
+    If there is a single node in the tree's nodes registry that has the given
     hash or name, returns that node, else returns None
     """
     nodes = [x for x in tree.nodes.values() if x.name == name]
 
-    # first check if the name is a hash in the tree's registry 
+    # first check if the name is a hash in the tree's registry
     hashval = name + "_" + str(tree.id)
     if hashval in tree.nodes.keys():
         node = tree.nodes[hashval]
@@ -313,36 +349,39 @@ def node_from_name(caller, tree, name):
 
     elif len(nodes) == 0:
         # no node was found with the given hash or name
-        caller.msg("No node was found with either the name or hash of " +
+        caller.msg(
+            "No node was found with either the name or hash of " +
             "{0}.".format(name))
         return None
 
     else:
         # multiple nodes were found with the given name.
-        s = ("Multiple nodes were found with the name {0}, ".format(name) +
+        s = (
+            "Multiple nodes were found with the name {0}, ".format(name) +
             "with the hashes:\n")
         for node in nodes:
             s += node.hash[0:3] + "\n"
-        s += ("Please re-input your command, specifying one of these hashes " +
+        s += (
+            "Please re-input your command, specifying one of these hashes " +
             "instead of the desired node's name. To inspect these nodes, " +
             "use the @ailook command, or browse them using the @aigo command.")
-        evmore.msg(self.caller, s)
+        evmore.msg(caller, s)
         return None
 
 
 def agent_from_name(caller, obj_type, name):
     """
-    If there is a single AI object or AI script in the database that has the 
+    If there is a single AI object or AI script in the database that has the
     given name or id, returns that object or script, else returns None
     """
     global _AI_OBJECT
     global _AI_SCRIPT
     if not _AI_OBJECT:
-        from evennia.contrib.aisystem.typeclasses import (AIObject
-            as _AI_OBJECT)
+        from evennia.contrib.aisystem.typeclasses import (
+            AIObject as _AI_OBJECT)
     if not _AI_SCRIPT:
-        from evennia.contrib.aisystem.typeclasses import (AIScript
-            as _AI_SCRIPT)
+        from evennia.contrib.aisystem.typeclasses import (
+            AIScript as _AI_SCRIPT)
 
     # check if the name is a database id
     if obj_type == _AI_OBJECT:
@@ -360,16 +399,18 @@ def agent_from_name(caller, obj_type, name):
         if agent:
             return agent
         else:
-            caller.msg("No blackboard with the id {0} has been ".format(name) +
+            caller.msg(
+                "No blackboard with the id {0} has been ".format(name) +
                 "found in the database.")
             return None
 
     if name == 'this':
         # check that a tree is currently being browsed
-        if self.caller.player.aiwizard.agent:
-            agent = self.caller.player.aiwizard.agent
+        if caller.player.aiwizard.agent:
+            agent = caller.player.aiwizard.agent
         else:
-            self.caller.msg("You are not currently browsing any blackboard, " +
+            caller.msg(
+                "You are not currently browsing any blackboard, " +
                 "and so you cannot specify a blackboard via the 'this' " +
                 "keyword. To move the browsing cursor to a given " +
                 "blackboard, use the @aibb command.")
@@ -378,14 +419,16 @@ def agent_from_name(caller, obj_type, name):
     # check if the name belongs to any object of the appropriate type
     # in the database
     try:
-        agent = obj_model.objects.get(db_key = name)
+        agent = obj_model.objects.get(db_key=name)
     except ObjectDoesNotExist:
-        caller.msg("No {0} with the name {1} has been ".format(obj_type_name, 
-            name) + "found in the database.")
+        caller.msg(
+            "No {0} with the name {1} has been ".format(obj_type_name, name) +
+            "found in the database.")
         return None
 
     except MultipleObjectsReturned:
-        caller.msg("Multiple {0}s with the name ".format(obj_type_name) +
+        caller.msg(
+            "Multiple {0}s with the name ".format(obj_type_name) +
             "{0} have been found in the database. Please use ".format(name) +
             " the target tree's id instead.")
         return None
@@ -405,26 +448,25 @@ def display_node_in_tree(caller, tree, node):
     """
     # get the node's parent
     if node.parent:
-        parent = "|w{0}|n '{1}'(\"{2}\")".format(type(node.parent).__name__,
-            node.parent.hash[0:3], node.parent.name)
+        parent = "|C{0}|n '{1}'(\"|w{2}|n\")".format(
+            type(node.parent).__name__, node.parent.hash[0:3], node.parent.name)
     else:
         parent = "None"
-    
+
     # get the node's children
-    if isinstance(node, CompositeNode):
-        children = [x.name for x in node.children]
+    if isinstance(node, CompositeNode) and node.children:
+        children = node.children
     elif node.children:
-        children = "|w{0}|n '{1}'(\"{2}\")".format(
-            type(node.children).__name__, node.children.hash[0:3], 
+        children = "|C{0}|n '{1}'(\"|w{2}|n\")".format(
+            type(node.children).__name__, node.children.hash[0:3],
             node.children.name)
     else:
         children = "None"
 
     # get the node's siblings, if any
     if (node.parent and isinstance(node.parent, CompositeNode) and
-        len(node.parent.children) > 1):
-        siblings = [x.name for x in node.parent.children
-            if x != node]
+            len(node.parent.children) > 1):
+        siblings = node.parent.children
     else:
         siblings = None
 
@@ -440,24 +482,30 @@ def display_node_in_tree(caller, tree, node):
         if not hasattr(attr, '__call__'):
             nonfuncs[attr_name] = attr
 
-    s = "\n|y{0}|n '{1}'(\"{2}\")\n".format(type(node).__name__,
-        node.hash[0:3], node.name)
-    s += "|x" + "-" * (len(s) - 5) + "|n\n"
-    s += "|yTree:|n {0} (id {1})\n".format(tree.name, tree.id)
-    s += "|yParent:|n {0}\n".format(parent)
+    s = "\n|g{0}|n '{1}'(\"|w{2}|n\")\n".format(
+        type(node).__name__, node.hash[0:3], node.name)
+    s += "|x" + "-" * (len(s) - 10) + "|n\n"
+    s += "|gTree:|n {0} (id {1})\n".format(tree.name, tree.id)
+    s += "|gParent:|n {0}\n".format(parent)
     if isinstance(children, str):
-        s += "|yChild:|n {0}\n".format(children)
+        s += "|gChild:|n {0}\n".format(children)
     else:
-        s += "|yChildren:|n\n"
-        for child in children:
-            s += s_indent + "|w{0}|n '{1}'(\"{2}\")".format(
-                type(child).__name__, child.hash[0:3], child.name)
+        s += "|gChildren:|n\n"
+        for k_child in range(len(children)):
+            child = children[k_child]
+            s += s_indent + "{0}. |C{1}|n '{2}'(\"|w{3}|n\")".format(
+                k_child, type(child).__name__, child.hash[0:3], child.name)
     if siblings:
-        s += "|ySiblings:|n\n"
-        for sibling in siblings:
-            s += s_indent + "|w{0}|n '{1}'(\"{2}\")".format(
-                type(sibling).__name__, sibling.hash[0:3], sibling.name)
-    s += "|yAttributes:|n\n"
+        s += "|gSiblings:|n\n"
+        for k_sibling in range(len(siblings)):
+            sibling = siblings[k_sibling]
+            if sibling == node.name:
+                s == s_indent + "|wThis node|n"
+            else:
+                s += s_indent + "{0}. |C{1}|n '{2}'(\"|w{3}|n\")".format(
+                    k_sibling, type(sibling).__name__, sibling.hash[0:3],
+                    sibling.name)
+    s += "|gAttributes:|n\n"
     for attr_name, attr in nonfuncs.iteritems():
         if attr_name not in ['tree', 'hash', 'children', 'parent']:
             s += parse_attr(attr_name, attr, 1)
@@ -475,26 +523,26 @@ def display_node_in_bb(caller, tree, node, bb):
     global _AI_OBJECT
     global _AI_SCRIPT
     if not _AI_OBJECT:
-        from evennia.contrib.aisystem.typeclasses import (AIObject
-            as _AI_OBJECT)
+        from evennia.contrib.aisystem.typeclasses import (
+            AIObject as _AI_OBJECT)
     if not _AI_SCRIPT:
-        from evennia.contrib.aisystem.typeclasses import (AIScript
-            as _AI_SCRIPT)
+        from evennia.contrib.aisystem.typeclasses import (
+            AIScript as _AI_SCRIPT)
 
     data = bb['nodes'][node.hash]
 
     # get the node's parent
     if node.parent:
-        parent = "|w{0}|n '{1}'(\"{2}\")".format(type(node.parent).__name__,
-            node.parent.hash[0:3], node.parent.name) 
+        parent = "|C{0}|n '{1}'(\"|w{2}|n\")".format(
+            type(node.parent).__name__, node.parent.hash[0:3], node.parent.name)
     else:
         parent = None
 
     # get the node's children
-    if isinstance(node, CompositeNode):
-        children = [x.name for x in node.children]
+    if isinstance(node, CompositeNode) and node.children:
+        children = node.children
     elif node.children:
-        children = "|w{0}|n '{1}'(\"{2}\")".format(
+        children = "|C{0}|n '{1}'(\"|w{2}|n\")".format(
             type(node.children).__name__, node.children.hash[0:3],
             node.children.name)
     else:
@@ -502,12 +550,11 @@ def display_node_in_bb(caller, tree, node, bb):
 
     # get the node's siblings, if any
     if (node.parent and isinstance(node.parent, CompositeNode) and
-        len(node.parent.children) > 1):
-        siblings = [x.name for x in node.parent.children
-            if x != node]
+            len(node.parent.children) > 1):
+        siblings = node.parent.children
     else:
         siblings = None
-   
+
     if isinstance(bb['agent'], _AI_OBJECT):
         owner_type = "AI agent"
         owner_name = bb['agent'].name
@@ -518,9 +565,9 @@ def display_node_in_bb(caller, tree, node, bb):
         owner_type = type(bb['agent'])
         owner_name = str(bb['agent'])
 
-    s = "|gNode instance|n of '{0}'(\"{1}\")\n".format(node.hash[0:3], 
-        node.name)
-    s += "-" * len(s)
+    s = "\n|g{0} |Ginstance|n of '{1}'(\"|w{2}|n\")\n".format(
+        type(node).__name__, node.hash[0:3], node.name)
+    s += "|x" + "-" * (len(s) - 12) + "|n\n"
     s += "|gTree:|n {0} (id {1})\n".format(tree.name, tree.id)
     s += "|g{0}:|n {1}\n".format(owner_type, owner_name)
     s += "|gParent:|n {0}\n".format(parent)
@@ -528,15 +575,22 @@ def display_node_in_bb(caller, tree, node, bb):
         s += "|gChild:|n {0}\n".format(children)
     else:
         s += "|gChildren:|n\n"
-        for child in children:
-            s += s_indent + "|w{0}|n '{1}'(\"{2}\")".format(
-                type(child).__name__, child.hash[0:3], child.name)
+        for k_child in range(len(children)):
+            child = children[k_child]
+            s += s_indent + "{0}. |C{1}|n '{2}'(\"|w{3}|n\")".format(
+                k_child, type(child).__name__, child.hash[0:3], child.name)
     if siblings:
         s += "|gSiblings:|n\n"
-        for sibling in siblings:
-            s += s_indent + "|w{0}|n '{1}'(\"{2}\")".format(
-                type(sibling).__name__, sibling.hash[0:3], sibling.name)
-    s += "\n|gData:|n\n"
+        for k_sibling in range(len(siblings)):
+            sibling = siblings[k_sibling]
+            if sibling == node.name:
+                s == s_indent + "|wThis node|n"
+            else:
+                s += s_indent + "{0}. |C{1}|n '{2}'(\"|w{3}|n\")".format(
+                    k_sibling, type(sibling).__name__, sibling.hash[0:3],
+                    sibling.name)
+
+    s += "|gData:|n\n"
     for key, val in data.iteritems():
         s += parse_attr(key, val, 1)
 
@@ -550,11 +604,11 @@ def display_bb_globals(caller, bb):
     global _AI_OBJECT
     global _AI_SCRIPT
     if not _AI_OBJECT:
-        from evennia.contrib.aisystem.typeclasses import (AIObject
-            as _AI_OBJECT)
+        from evennia.contrib.aisystem.typeclasses import (
+            AIObject as _AI_OBJECT)
     if not _AI_SCRIPT:
-        from evennia.contrib.aisystem.typeclasses import (AIScript
-            as _AI_SCRIPT)
+        from evennia.contrib.aisystem.typeclasses import (
+            AIScript as _AI_SCRIPT)
 
     if isinstance(bb['agent'], _AI_OBJECT):
         owner_type = "AI agent"
@@ -569,7 +623,7 @@ def display_bb_globals(caller, bb):
     s = "Blackboard globals for |g{0}|n {1}:\n".format(owner_type, owner_name)
     for key, val in bb['globals'].iteritems():
         s += parse_attr(key, val, 1)
-        
+
     evmore.msg(caller, s)
 
 
@@ -584,7 +638,7 @@ def parse_attr(attr_name, attr, indent):
     """
     s = ""
     k_indent = s_indent * indent # current level of indentation
-    if (isinstance(attr, list) or isinstance(attr, _SaverList)):
+    if isinstance(attr, list) or isinstance(attr, _SaverList):
         if attr_name:
             s += k_indent + "|GList|n {0}:\n".format(attr_name)
         else:
@@ -616,5 +670,3 @@ def parse_attr(attr_name, attr, indent):
             return k_indent + "{0}: {1}\n".format(attr_name, attr)
         else:
             return k_indent + str(attr) + "\n"
-
-

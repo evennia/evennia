@@ -14,25 +14,10 @@ from evennia.contrib.aisystem.typeclasses import (BehaviorTree, AIObject,
     AIScript)
 from evennia.contrib.aisystem.nodes import (SUCCESS, FAILURE, RUNNING, ERROR,
     RootNode, CompositeNode, DecoratorNode, LeafNode, Condition, Command,
-    Transition, Selector, Sequence, MemSelector, MemSequence, ProbSelector, 
-    ProbSequence, Parallel, Verifier, Inverter, Succeeder, Failer, Repeater, 
-    Limiter, Allocator)
+    Transition, EchoLeaf, Selector, Sequence, MemSelector, MemSequence,
+    ProbSelector,ProbSequence, Parallel, Verifier, Inverter, Succeeder, Failer,
+    Repeater, Limiter, Allocator, EchoDecorator)
 
-"""
-Tests:
-* add single, newly generated node to tree
-* add newly generated subtree to tree
-* move single node within the same tree
-* move subtree within the same tree
-
-* move single node from tree1 to tree2
-* move subtree from tree1 to tree2
-* copy single node from tree1 to tree2
-* copy subtree from tree1 to tree2
-
-* add node to leaf node (must return a string)
-* add node to a non-composite node that already has a child (must return a string)
-"""
 
 class TestTransition(TestCase):
     """
@@ -451,16 +436,8 @@ class TestTransition(TestCase):
         assert(leafnode == root2.children)
         assert(leafnode.parent == root2)
 
-        # check that the leaf node's hash remains unchanged
-        assert(hashval == leafnode.hash)
-
         # check that the leaf node's hash has been removed from tree1's registry
         assert(not self.tree1.nodes.has_key(hashval))
-
-        # check that the original leaf node's hash remains unchanged in both
-        # the node itself and the registry 
-        assert(self.tree2.nodes.has_key(hashval))
-        assert(self.tree2.nodes[hashval] == leafnode)
 
     def test_add_error_not_node(self):
         """
@@ -1193,7 +1170,8 @@ class TestFunctionality(TestCase):
 
         self.tree = create_script(BehaviorTree, key="tree")
         self.target_tree = create_script(BehaviorTree, key="target tree")
-        self.agent = create_object(AIObject, key="agent")
+        self.agent = create_object(
+            AIObject, key="agent", location=self.room, home=self.room)
         self.script = create_script(AIScript, key="script")
 
     def tearDown(self):
@@ -1332,9 +1310,44 @@ class TestFunctionality(TestCase):
 
     def test_transition_leaf(self):
         """
-        Test whether a transition leaf successfully transitions to 
+        Test whether a transition leaf successfully transitions to another tree
         """
-        print("transition leaf test missing")
+        root = self.tree.nodes[self.tree.root]
+        target_root = self.target_tree.nodes[self.target_tree.root]
+
+        transition = Transition("transition", self.tree, root)
+        transition.target_tree = self.target_tree
+        adder = AdderSuccessLeaf("adder", self.target_tree, target_root)
+
+        self.agent.ai.setup(tree=self.tree)
+        
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+        assert(self.agent.ai.nodes[adder.hash]['count'] == 1)
+
+        # check that the target tree can be a string
+        transition.target_tree = str(self.target_tree.id)
+        self.agent.ai.setup(tree=self.tree, override=True)
+
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+        assert(self.agent.ai.nodes[adder.hash]['count'] == 1)
+
+    def test_echo_leaf(self):
+        """
+        Test that an echo leaf returns Success when it has a message to send
+        and Failure otherwise
+        """
+        root = self.tree.nodes[self.tree.root]
+        echoleaf = EchoLeaf("echoleaf", self.tree, root)
+        self.agent.ai.setup(tree=self.tree)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        echoleaf.msg = "test"
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
 
     def test_selector(self):
         """
@@ -1523,13 +1536,11 @@ class TestFunctionality(TestCase):
         status = self.agent.ai.tick()
         assert(status == ERROR)
 
-
         self.tree.remove(errorx)
         runtogglex = RunToggleLeaf("runtogglex", self.tree, memsequence, 
             position=1)
         self.tree.remove(success1)
         adder1 = AdderSuccessLeaf("adder1", self.tree, memsequence, position=0)
-
         # check that the node resumes iterating from its running child
         # when ticked again, rather than from the beginning
         self.agent.ai.setup(tree=self.tree, override=True)
@@ -1843,7 +1854,7 @@ class TestFunctionality(TestCase):
         # check that this verifier returns Failure when its child returns
         # Failure
         self.tree.remove(successx)
-        failurex = FailureLeaf("failurex", self.tree, verifier) 
+        failurex = FailureLeaf("failurex", self.tree, verifier)
         self.agent.ai.setup(override=True)
         status = self.agent.ai.tick()
         assert(status == FAILURE)
@@ -2037,7 +2048,6 @@ class TestFunctionality(TestCase):
         assert(status == SUCCESS)
         assert(self.agent.ai.nodes[adderfailure.hash]['count'] == 3)
 
-
     def test_limiter(self):
         """
         Test the functionality of a limiter node, checking that it
@@ -2062,14 +2072,80 @@ class TestFunctionality(TestCase):
         assert(self.agent.ai.nodes[addersuccess.hash]['count'] == 2)
 
     def test_allocator(self):
-        pass
+        """
+        Test the functionality of the allocator node
+        """
+        root = self.tree.nodes[self.tree.root]
+        allocator = Allocator("allocator", self.tree, root)
+        allocator.resources.append("test_resource")
+        successx = SuccessLeaf("sucessx", self.tree, allocator)
+        self.agent.ai.setup(tree=self.tree)
+
+        # check that the allocator returns its child's status when its
+        # resource is taken
+        self.agent.ai.globals['resources']['test_resource'] = True
+        status = self.agent.ai.tick()
+        assert(status == RUNNING)
+
+        # check that the allocator returns its child node's status
+        # when the resource is freed
+        del self.agent.ai.globals['resources']['test_resource']
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        self.tree.remove(successx)
+        failurex = FailureLeaf("failurex", self.tree, allocator)
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        self.tree.remove(failurex)
+        runningx = RunningLeaf("runningx", self.tree, allocator)
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == RUNNING)
+
+        self.tree.remove(runningx)
+        errorx = ErrorLeaf("errorx", self.tree, allocator)
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
+
+    def test_echo_decorator(self):
+        """
+        Test that an echo decorator returns the child node's status when there
+        is a message to be echoed and returns Failure otherwise.
+        """
+        root = self.tree.nodes[self.tree.root]
+        echodec = EchoDecorator("echodec", self.tree, root)
+        successx = SuccessLeaf("successx", self.tree, echodec)
+        self.agent.ai.setup(tree=self.tree)
+
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        echodec.msg = "test"
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == SUCCESS)
+
+        self.tree.remove(successx)
+        failurex = FailureLeaf("failurex", self.tree, echodec)
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == FAILURE)
+
+        self.tree.remove(failurex)
+        runningx = RunningLeaf("runningx", self.tree, echodec)
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == RUNNING)
+
+        self.tree.remove(runningx)
+        errorx = ErrorLeaf("errorx", self.tree, echodec)
+        self.agent.ai.setup(tree=self.tree, override=True)
+        status = self.agent.ai.tick()
+        assert(status == ERROR)
 
     def test_tickerhandler(self):
         pass
-
-
-
-
-
-
-

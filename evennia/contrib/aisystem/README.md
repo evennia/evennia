@@ -48,6 +48,27 @@ node might modify another node's parameters when it is ticked. In all other
 cases, you should modify the parameters on the node objects directly.
 
 
+### Setting up the ai system
+
+
+* subclass players that will build the AI system from AIPlayer, 
+objects / characters that will incorporate AI from AIObject and
+scripts that will store AI trees from AIScript
+
+* player builder data
+
+
+You do not need to set up any trees you create, as all their attributes
+are assigned automatically on creation, but the option exists in case future
+expansions add new features that require setting up.
+
+
+
+
+
+
+
+
 
 ### Working with behavior trees in-game
 
@@ -65,16 +86,20 @@ cases, you should modify the parameters on the node objects directly.
 
 
 
+### Adding your own node types
 
-### Coding behavior trees
 
-If you want to create a new behavior tree or behavior blackboard via code
-rather than in-game, be sure to give this object a name 
-(```<object>.name = name```), assign it a tree if it is a blackboard
-(```<object>.tree = <tree>```), also assign it an agent if it is a blackboard
-(```<object>.agent = <agent>```), and finally run the object's setup()
-method, which assigns default values to all database-stored properties and,
-if the object is a behavior tree, generates a root node.
+
+```on_add_child()```
+```on_remove_child()```
+
+
+
+
+```bb['globals']['errors'][node.hash] = error_string```
+
+
+
 
 
 

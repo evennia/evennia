@@ -13,16 +13,14 @@ includes which nodes are currently running, which nodes were running during
 the previous tick, as well as all global and node-specific user-specified data.
 """
 
-#[CHECK] WHEN MOVING OR COPYING NODES TO ANOTHER TREE, CHANGE THEIR HASHES TO
-#        REFLECT THE FACT THAT THEY ARE ON THE NEW TREE!
-
 import copy
 from evennia import DefaultObject, DefaultScript, DefaultPlayer
 from evennia.utils import lazy_property
 from evennia.contrib.aisystem.handlers import AIHandler, AIWizardHandler
-from evennia.contrib.aisystem.nodes import (Node, RootNode, CompositeNode, 
-    LeafNode, DecoratorNode, all_original_nodes)
-from evennia.contrib.aisystem.utils import recurse, recurse_multitree 
+from evennia.contrib.aisystem.nodes import (
+    Node, RootNode, CompositeNode, LeafNode, DecoratorNode, all_original_nodes)
+from evennia.contrib.aisystem.utils import (
+    recurse, recurse_multitree)
 
 class BehaviorTree(DefaultScript):
     """
@@ -66,12 +64,6 @@ class BehaviorTree(DefaultScript):
         self.db.nodes = {}
         self.db.root = RootNode("root", self, None).hash
 
-    def rename(self, node, name):
-        """
-        Changes a node's name.
-        """
-        node.name = name
-
     def recursive_add_hash(self, node):
         """
         Add the node and its subtree to this tree, setting the hashes
@@ -81,6 +73,8 @@ class BehaviorTree(DefaultScript):
         # the tree's id (this always happens when transferring from another
         # tree)
         if node.hash[4:] != str(self.id):
+            if node.hash in self.nodes:
+                del self.nodes[node.hash]
             node.rehash(self)
 
         # assign the node to the tree's nodes list if it is not already there,
@@ -88,8 +82,8 @@ class BehaviorTree(DefaultScript):
         # (this always happens when copying from the same tree)
         if not self.db.nodes.has_key(node.hash):
             self.db.nodes[node.hash] = node
-        elif (self.db.nodes.has_key(node.hash) and 
-            self.db.nodes[node.hash] != node):
+        elif (self.db.nodes.has_key(node.hash) and
+              self.db.nodes[node.hash] != node):
             node.rehash(self)
             self.db.nodes[node.hash] = node
 
@@ -100,7 +94,7 @@ class BehaviorTree(DefaultScript):
         Remove the node and its subtree from this tree
         """
         if (self.db.nodes.has_key(node.hash) and
-            self.db.nodes[node.hash] == node):
+                self.db.nodes[node.hash] == node):
             self.db.nodes.pop(node.hash)
 
         recurse(node, self.recursive_remove_hash)
@@ -112,19 +106,23 @@ class BehaviorTree(DefaultScript):
 
         Returns an error string on failure, returns None on success.
         """
-        if not source_tree and not (self.db.nodes.has_key(node.hash) and 
-            self.db.nodes[node.hash] == node):
-            return ("the node '{0}'(\"{1}\") ".format(node.hash[0:3], 
-                node.name) +  "is not in the target tree, yet no source " +
+        if not source_tree and not (
+                self.db.nodes.has_key(node.hash) and
+                self.db.nodes[node.hash] == node):
+            return (
+                "the node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
+                "is not in the target tree, yet no source " +
                 "tree was provided. The node {0} cannot proceed.".format(msg))
-        elif source_tree and not (source_tree.db.nodes.has_key(node.hash) and
-            source_tree.db.nodes[node.hash] == node):
-            return ("the node '{0}'(\"{1}\") ".format(node.hash[0:3], 
-                node.name) +  "could not be found in its purported source " +
+        elif source_tree and not (
+                source_tree.db.nodes.has_key(node.hash) and
+                source_tree.db.nodes[node.hash] == node):
+            return (
+                "the node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
+                "could not be found in its purported source " +
                 "tree. The node {0} cannot proceed.".format(msg))
-        return None 
+        return None
 
-    def add(self, node, target, position=None, copying=True, 
+    def add(self, node, target, position=None, copying=True,
             source_tree=None):
         """
         Attempts to add a node to the tree, attaching it to the parent node
@@ -145,7 +143,7 @@ class BehaviorTree(DefaultScript):
         position - if the target node is a composite node, the position that
         (int)      the added node will have in the target node's list of
                    children
-        
+
         copying - whether the node and its subtree is being copied. If true,
         (bool)    an entirely new node and subtree will be grafted onto the
                   target. If false, the node and its subtree will be removed
@@ -166,21 +164,24 @@ class BehaviorTree(DefaultScript):
         Returns an error string on failure, returns None on success.
         """
         if not isinstance(node, Node):
-            return ("{0} is a {1}, not a node; ".format(node, type(node)) +
+            return (
+                "{0} is a {1}, not a node; ".format(node, type(node)) +
                 "expected a node.")
         if not isinstance(target, Node):
-            return ("target {0} is a {1}, not a ".format(node, type(node)) +
+            return (
+                "target {0} is a {1}, not a ".format(node, type(node)) +
                 "node; expected a node.")
 
         if isinstance(node, RootNode):
-            return ("node '{0}(\"{1}\") ".format(node.hash[0:3], node.name) +
+            return (
+                "node '{0}(\"{1}\") ".format(node.hash[0:3], node.name) +
                 "is a root node. It may not be added as the child of any " +
                 "node.")
 
         # check that the node is in the source tree, if one exists
         if source_tree:
-            errstr = self.check_node_in_tree(node, source_tree=source_tree, 
-                msg="addition")
+            errstr = self.check_node_in_tree(
+                node, source_tree=source_tree, msg="addition")
             if errstr:
                 return errstr
 
@@ -200,24 +201,28 @@ class BehaviorTree(DefaultScript):
             # if target is a composite node, add the node to the target
             if position != None:
                 target.children.insert(position, node)
-            else:    
+            else:
                 target.children.append(node)
         elif isinstance(target, LeafNode):
             # prohibit adding to a leaf node
-            return ("target node '{0}'(\"{1}\") ".format(target.hash[0:3], 
-                target.name) + "is a leaf node, cannot add node " +
-                "'{0}'(\"{1}\") to it as leaf ".format(node.hash[0:3], 
-                node.name) + "nodes are prohibited from having child nodes.")
+            return (
+                "target node '{0}'(\"{1}\") ".format(
+                    target.hash[0:3], target.name) +
+                "is a leaf node, cannot add node " +
+                "'{0}'(\"{1}\") to it ".format(node.hash[0:3], node.name) +
+                "as leaf nodes are prohibited from having child nodes.")
         elif not target.children:
             # if target is not a leaf node and has no children, add the node
             # to the target
             target.children = node
         else:
             # prohibit adding to a non-composite target node that has a child
-            return ("target node '{0}'(\"{1}\") is a ".format(target.hash[0:3],
-                target.name) + " non-composite node with a child, cannot " +
+            return (
+                "target node '{0}'(\"{1}\") is a ".format(
+                    target.hash[0:3], target.name) +
+                "non-composite node with a child, cannot " +
                 "add another node to it.")
- 
+
         node.parent = target
         target.on_add_child(node)
 
@@ -228,7 +233,7 @@ class BehaviorTree(DefaultScript):
             else:
                 parent.children = None
             parent.on_remove_child(old_node)
-            
+
             # remove the target from its source tree, if different from the
             # target tree
             if source_tree:
@@ -254,25 +259,27 @@ class BehaviorTree(DefaultScript):
         See the add() method for a description of the arguments.
         """
         if not isinstance(node, Node):
-            return ("{0} is a {1}, not a node; ".format(node, type(node)) +
+            return (
+                "{0} is a {1}, not a node; ".format(node, type(node)) +
                 "expected a node.")
 
         if isinstance(node, RootNode):
-            return ("node '{0}(\"{1}\") is a ".format(node.hash[0:3], 
-                node.name) + "root node. It may not be shifted as it has "
-                "no parent.")
+            return (
+                "node '{0}(\"{1}\") is a ".format(node.hash[0:3], node.name) +
+                "root node. It may not be shifted as it has no parent.")
 
         if isinstance(node.parent, CompositeNode):
             index = node.parent.children.index(node)
-            node.parent.children[index] = None
+            del node.parent.children[index]
             if position != None:
                 node.parent.children.insert(position, node)
             else:
                 node.parent.children.append(node)
-            node.parent.children.remove(None)
         else:
-            return ("Parent node '{0}'(\"{1}\") ".format(node.parent.hash[0:3],
-                node.parent.name) + "is not a composite node, cannot shift " + 
+            return (
+                "Parent node '{0}'(\"{1}\") ".format(
+                    node.parent.hash[0:3], node.parent.name) +
+                "is not a composite node, cannot shift " +
                 "node '{0}'(\"{1}\").".format(node.hash[0:3], node.name))
 
         # save the tree
@@ -289,15 +296,17 @@ class BehaviorTree(DefaultScript):
         See the add() method for a description of the arguments.
         """
         if not isinstance(node, Node):
-            return ("{0} is a {1}, not a node; ".format(node, type(node)) +
+            return (
+                "{0} is a {1}, not a node; ".format(node, type(node)) +
                 "expected a node.")
         if not isinstance(target, Node):
-            return ("target {0} is a {1}, not a ".format(node, type(node)) +
+            return (
+                "target {0} is a {1}, not a ".format(node, type(node)) +
                 "node; expected a node.")
 
         # check that the node is in the source tree or the target tree
-        errstr = self.check_node_in_tree(node, source_tree=source_tree,
-            msg="swapping")
+        errstr = self.check_node_in_tree(
+            node, source_tree=source_tree, msg="swapping")
         if errstr:
             return errstr
 
@@ -309,18 +318,29 @@ class BehaviorTree(DefaultScript):
         node_parent = node.parent
 
         if not node_parent:
-            return ("Node '{0}'(\"{1}\") has ".format(node.hash[0:3], 
-                node.name) + "no parent; the swapping cannot proceed.")
- 
+            return (
+                "Node '{0}'(\"{1}\") has ".format(node.hash[0:3], node.name) +
+                "no parent; the swapping cannot proceed.")
+
         if not target_parent:
-             return ("Target node '{0}'(\"{1}\") has ".format(target.hash[0:3],
-                target.name) + "no parent; the swapping cannot proceed.")
+            return (
+                "Target node '{0}'(\"{1}\") has ".format(
+                    target.hash[0:3], target.name) +
+                "no parent; the swapping cannot proceed.")
+
+        # Get the indices of the node and target node.
+        # Do this before making any modifications to the trees.
+        # This is especially important for avoiding bugs when swapping nodes
+        # that have the same parent.
+        if isinstance(target_parent, CompositeNode):
+            target_index = target_parent.children.index(target)
+        if isinstance(node_parent, CompositeNode):
+            node_index = node_parent.children.index(node)
 
         # remove the target from its parent,
         # add the node to the target's parent
         if isinstance(target_parent, CompositeNode):
-            target_index = target_parent.children.index(target)
-            target_parent.children.remove(target)
+            del target_parent.children[target_index]
             target_parent.children.insert(target_index, node)
         else:
             target_parent.children = node
@@ -329,8 +349,7 @@ class BehaviorTree(DefaultScript):
         # remove the node from its parent,
         # add the target to the node's parent
         if isinstance(node_parent, CompositeNode):
-            node_index = node_parent.children.index(node)
-            node_parent.children.remove(node)
+            del node_parent.children[node_index]
             node_parent.children.insert(node_index, target)
         else:
             node_parent.children = target
@@ -357,8 +376,8 @@ class BehaviorTree(DefaultScript):
 
         return None # No error occurred
 
-    def interpose(self, node, target, position=None, copying=True, 
-        source_tree=None):
+    def interpose(
+            self, node, target, position=None, copying=True, source_tree=None):
         """
         Places a node between the target and its parent. If the target's
         parent is a composite node, the node will be placed at the same
@@ -372,24 +391,29 @@ class BehaviorTree(DefaultScript):
         See the add() method for a description of the arguments.
         """
         if not isinstance(node, Node):
-            return ("{0} is a {1}, not a node; ".format(node, type(node)) +
+            return (
+                "{0} is a {1}, not a node; ".format(node, type(node)) +
                 "expected a node.")
         if not isinstance(target, Node):
-            return ("target {0} is a {1}, not a ".format(node, type(node)) +
+            return (
+                "target {0} is a {1}, not a ".format(node, type(node)) +
                 "node; expected a node.")
 
         if node == target:
-            return ("node '{0}'(\"{1}\") is ".format(node.hash[0:3], 
-                node.name) +  "also the target of interposing; cannot " +
+            return (
+                "node '{0}'(\"{1}\") is ".format(
+                    node.hash[0:3], node.name) +
+                "also the target of interposing; cannot " +
                 "interpose a node onto itself.")
 
         if isinstance(node, RootNode):
-            return ("Node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
+            return (
+                "Node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
                 "is a root node, cannot interpose it over any other node.")
 
         # check that the node is in the source tree or the target tree
-        errstr = self.check_node_in_tree(node, source_tree=source_tree,
-            msg="interposition")
+        errstr = self.check_node_in_tree(
+            node, source_tree=source_tree, msg="interposition")
         if errstr:
             return errstr
 
@@ -405,9 +429,10 @@ class BehaviorTree(DefaultScript):
         target_parent = target.parent
 
         if not target_parent:
-            return ("Target node '{0}'(\"{1}\") has no ".format(
-                target.hash[0:3], target.name) + "parent, " +
-                "cannot interpose over it.")
+            return (
+                "Target node '{0}'(\"{1}\") has no ".format(
+                    target.hash[0:3], target.name) +
+                "parent, cannot interpose over it.")
 
         # add the node to the target's parent's list of children
         # and remove the target from that list
@@ -427,15 +452,15 @@ class BehaviorTree(DefaultScript):
         if not copying:
             if isinstance(node_parent, CompositeNode):
                 node_parent.children.remove(old_node)
-                node_parent.on_remove_child(old_node)       
+                node_parent.on_remove_child(old_node)
             elif node_parent:
                 node_parent.children = None
                 node_parent.on_remove_child(old_node)
 
         if source_tree and not copying:
             source_tree.recursive_remove_hash(old_node)
-            
-        # add the target to the node's list of children 
+
+        # add the target to the node's list of children
         if isinstance(node, CompositeNode):
             if position != None:
                 node.children.insert(position, target)
@@ -461,11 +486,13 @@ class BehaviorTree(DefaultScript):
         removes a node and its children from the tree
         """
         if not isinstance(node, Node):
-            return ("{0} is a {1}, not a node; ".format(node, type(node)) +
+            return (
+                "{0} is a {1}, not a node; ".format(node, type(node)) +
                 "expected a node.")
 
         if isinstance(node, RootNode):
-            return ("Node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
+            return (
+                "Node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
                 "is a root node and so cannot be removed from its tree.")
 
         self.recursive_remove_hash(node)
@@ -481,20 +508,21 @@ class BehaviorTree(DefaultScript):
         # save the tree(s)
         self.db.nodes = self.db.nodes
 
-        return None # No error occurred        
+        return None # No error occurred
 
     def validate_tree(self):
         def validate(node):
             if isinstance(node, DecoratorNode) and not node.children:
-                raise Exception("node '{0}'(\"{1}\")".format(node.hash[0:3],
-                    node.name) + "is a decorator node but has no " +
-                    "children. Please supply it with a child node or " +
-                    "replace it in order for the tree to be valid.")
+                raise Exception(
+                    "node '{0}'(\"{1}\")".format(node.hash[0:3], node.name) +
+                    "is a decorator node but has no children. Please supply " +
+                    "it with a child node or replace it in order for the " +
+                    "tree to be valid.")
             elif isinstance(node, RootNode) and not node.children:
-                raise Exception("node '{0}'(\"{1}\")".format(node.hash[0:3],
-                    node.name) + "is a root node but has no children. " +
-                    "Please supply it with a child node in order for " +
-                    "the tree to be valid.")
+                raise Exception(
+                    "node '{0}'(\"{1}\")".format(node.hash[0:3], node.name) +
+                    "is a root node but has no children. Please supply it " +
+                    "with a child node in order for the tree to be valid.")
             recurse_multitree(node, validate)
 
         return validate(self.nodes[self.root])
@@ -513,11 +541,13 @@ class AIObject(DefaultObject):
     self.aitree = ScriptDB.objects.get(db_key=<your script's name here>)
 
     Alternatively, you may assign a behavior tree to your individual objects
-    in-game using the @assign command. Note that when calling ai.setup(), 
+    in-game using the @assign command. Note that when calling ai.setup(),
     unless you provide it a specific tree via ai.setup(tree=<your tree>), it
     will first attempt to select self.aitree as the tree, then whatever
     tree was already assigned to it, if self.aitree does not exist.
     """
+    aitree = None
+
     @lazy_property
     def ai(self):
         return AIHandler(self)
@@ -541,11 +571,13 @@ class AIScript(DefaultScript):
     self.aitree = ScriptDB.objects.get(db_key=<your script's name here>)
 
     Alternatively, you may assign a behavior tree to your individual scripts
-    in-game using the @assign command. Note that when calling ai.setup(), 
+    in-game using the @assign command. Note that when calling ai.setup(),
     unless you provide it a specific tree via ai.setup(tree=<your tree>), it
     will first attempt to select self.aitree as the tree, then whatever
     tree was already assigned to it, if self.aitree does not exist.
     """
+    aitree = None
+
     @lazy_property
     def ai(self):
         return AIHandler(self)
@@ -564,13 +596,13 @@ class AIPlayer(DefaultPlayer):
 
     When subclassing from AI player to include your own dictionary of nodes
     (say, 'new_nodes') for your subclass (say 'MySubclass'), do:
-    
+
     nodes = super(MySubclass, self).nodes.update(new_nodes)
 
     This will ensure that your new nodes will be added on to the extant
-    dictionary of nodes.    
+    dictionary of nodes.
     """
-    nodes = all_original_nodes 
+    ainodes = all_original_nodes
     @ lazy_property
     def aiwizard(self):
         return AIWizardHandler(self)
@@ -578,4 +610,3 @@ class AIPlayer(DefaultPlayer):
     def at_player_creation(self):
         super(AIPlayer, self).at_player_creation()
         self.aiwizard.setup()
-

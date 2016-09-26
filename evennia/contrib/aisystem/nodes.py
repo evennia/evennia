@@ -13,17 +13,21 @@ import string
 import random
 import copy
 
+_TREE_FROM_NAME = None # delayed import
+
 # status messages returned by update() functions
 FAILURE = 0
 SUCCESS = 1
 RUNNING = 2
 ERROR = 3
 
+status_strings = ["FAILURE", "SUCCESS", "RUNNING", "ERROR"]
+
 
 class Node(object):
     """
     Base class for all node types. You should not subclass from this directly,
-    but instead subclass from one of its subclasses like LeafNode, 
+    but instead subclass from one of its subclasses like LeafNode,
     CompositeNode and DecoratorNode.
     """
     weight = 1.0
@@ -33,13 +37,23 @@ class Node(object):
         Creates a hash for the node and assigns it to the tree's
         nodes list
         """
-        if (parent and not isinstance(parent, CompositeNode) 
-            and parent.children):
-            raise Exception("attempted to add a node to a non-composite " +
-                "parent that already has a child node.")
+        if parent:
+            msg_err = "{0} '{1}'(\"{2}\")".format(
+            type(parent).__name__, parent.hash[0:3], parent.name)
 
+        if (parent and not isinstance(parent, CompositeNode)
+                and parent.children):
+            raise Exception(
+                "{0} is a non-composite parent ".format(msg_err) +
+                "that already has a child node. Cannot add another child " +
+                "node to it.")
+        if isinstance(parent, LeafNode):
+            raise Exception(
+                "{0} is a leaf node. ".format(msg_err) +
+                "Cannot add a child node to a leaf node.")
         if not parent and not isinstance(self, RootNode):
-            raise Exception("cannot create a node without a parent " +
+            raise Exception(
+                "Cannot create a node without a parent " +
                 "unless that node is a root node.")
 
         self.name = name
@@ -71,14 +85,16 @@ class Node(object):
         hash_chars = string.letters + string.digits
         n_attempts = 0
         while not hashval or hashval in pre_vals:
-            hashval = (random.choice(hash_chars) + random.choice(hash_chars) +
+            hashval = (
+                random.choice(hash_chars) + random.choice(hash_chars) +
                 random.choice(hash_chars))
             n_attempts += 1
             if n_attempts == 10000:
-                raise Exception("Too many attempts at creating a hash " +
-                    + "for node \"{1}\". Aborting.".format(self.name))
+                raise Exception(
+                    "Too many attempts at creating a hash " +
+                    "for node \"{1}\". Aborting.".format(self.name))
                 return None
-        hashval += '_' + str(tree)
+        hashval += '_' + str(tree.id)
         self.hash = hashval
 
     def tick(self, bb):
@@ -92,24 +108,33 @@ class Node(object):
         if not bb['nodes'][self.hash]['running']:
             self.open(bb)
         status = self.update(bb)
-        
+
         if status == RUNNING:
+            #print("running:", bb['nodes'][self.hash]['running'],
+            #    "running_now:", bb['running_now'])
             if not bb['nodes'][self.hash]['running']:
                 bb['nodes'][self.hash]['running'] = True
-                bb['running_now'].append(self)
+            bb['running_now'].append(self)
         else:
             self.close(bb)
-       
+
+        for player in bb['nodes'][self.hash]['watchers']:
+            player.msg(
+                "|mAI watchlist|n: {0} '{1}'(\"{2}\") ".format(
+                    type(self).__name__, self.hash, self.name) +
+                "ticked with return status |c{0}|n.".format(
+                    status_strings[status]))
+
         return status
 
     def open(self, bb):
         """
-        Prepares the node for its update. 
+        Prepares the node for its update.
         Meant to be overridden by some node classes.
 
         bb is the blackboard associated with the current instance of the tree.
         """
-        pass 
+        pass
 
     def update(self, bb):
         """
@@ -122,7 +147,7 @@ class Node(object):
         bb is the blackboard associated with the current instance of the tree.
         """
         if self.children:
-            self.children.tick
+            self.children.tick(bb)
 
     def close(self, bb):
         """
@@ -132,6 +157,7 @@ class Node(object):
         bb is the blackboard associated with the current instance of the tree.
         """
         bb['nodes'][self.hash]['running'] = False
+        pass
 
     def on_add_child(self, node):
         """
@@ -150,7 +176,7 @@ class Node(object):
         or the removal of the node to the parent's list of children.
         """
         pass
-        
+
     def on_blackboard_setup(self, bb, override=False):
         """
         Called whenever a blackboard's setup() function runs. Most commonly
@@ -165,7 +191,7 @@ class RootNode(Node):
     The node that sits at the top of the node hierarchy and is always the
     first to be ticked. Root nodes should not be created manually by the
     coder; instead, they are automatically generated with the creation of
-    the tree. 
+    the tree.
     """
     def update(self, bb):
         return self.children.tick(bb)
@@ -176,9 +202,16 @@ class CompositeNode(Node):
     A node with multiple children.
     """
     def __init__(self, name, tree, parent, position=None):
-        super(CompositeNode, self).__init__(name, tree, parent, 
-            position=position)
+        super(CompositeNode, self).__init__(
+            name, tree, parent, position=position)
         self.children = []
+
+    def update(self, bb):
+        for child in children:
+            status = child.tick(bb)
+            if status == RUNNING or status == ERROR:
+                return status
+        return SUCCESS
 
 
 class Selector(CompositeNode):
@@ -231,7 +264,7 @@ def build_child_weights(node, bb):
         if not bb['nodes'][node.children[i].hash].has_key('weight'):
             bb['nodes'][node.children[i].hash]['weight'] = (
                 node.children[i].weight)
-        weights[str(i)] = bb['nodes'][node.children[i].hash]['weight']            
+        weights[str(i)] = bb['nodes'][node.children[i].hash]['weight']
     bb['nodes'][node.hash]['child_weights'] = weights
 
 
@@ -269,7 +302,7 @@ class ProbSelector(CompositeNode):
     each child will be picked. If no 'weight' exists for a given child, its
     'weight' is assumed to be 1. A child that has already been selected once
     will not be selected again until the ProbSelector has closed.
-    
+
     The class otherwise behaves like a Selector.
     """
     def open(self, bb):
@@ -306,7 +339,7 @@ class ProbSelector(CompositeNode):
             index = prob_select_child(self, bb)
             status = self.children[int(index)].tick(bb)
             bb['nodes'][self.hash]['avail_weights'].pop(index)
-            
+
             if status == RUNNING:
                 bb['nodes'][self.hash]['running_child'] = int(index)
 
@@ -328,7 +361,7 @@ class ProbSequence(CompositeNode):
     each child will be picked. If no 'weight' exists for a given child, its
     'weight' is assumed to be 1. A child that has already been selected once
     will not be selected again until the ProbSelector has closed.
-    
+
     The class otherwise behaves like a Sequence.
     """
     def open(self, bb):
@@ -365,9 +398,9 @@ class ProbSequence(CompositeNode):
             index = prob_select_child(self, bb)
             status = self.children[int(index)].tick(bb)
             bb['nodes'][self.hash]['avail_weights'].pop(index)
-            
+
             if status == RUNNING:
-                bb['nodes'][self.hash]['running_child'] = int(index) 
+                bb['nodes'][self.hash]['running_child'] = int(index)
 
             if status != SUCCESS and bb['nodes'][self.hash]['avail_weights']:
                 return status
@@ -384,7 +417,8 @@ class ProbSequence(CompositeNode):
 class MemSelector(CompositeNode):
     """
     A selector that keeps track of which child it has last called,
-    so that while the sequence is running, it will call the
+    so that whenever the selector ticks, it starts iterating from the currently
+    running node rather than from the first node in its list of children.
     """
     def update(self, bb):
         k_child = bb['nodes'][self.hash]['running_child']
@@ -407,6 +441,11 @@ class MemSelector(CompositeNode):
 
 
 class MemSequence(CompositeNode):
+    """
+    A sequence that keeps track of which child it has last called,
+    so that whenever the sequence ticks, it starts iterating from the currently
+    running node rather than from the first node in its list of children.
+    """
     def update(self, bb):
         k_child = bb['nodes'][self.hash]['running_child']
         for i in range(k_child, len(self.children)):
@@ -438,7 +477,7 @@ class Parallel(CompositeNode):
     returns Running.
 
     Besides those it inherits, the parallel node has the following parameters:
-    
+
     primary_child - a child whose success or failure causes the node to return
         (int)       success or failure. Can be set to None.
 
@@ -454,21 +493,21 @@ class Parallel(CompositeNode):
         (bool)        all child nodes have completed. Overriden by the
                       primary_child parameter.
     """
-    def __init__(self, name, tree, parent, position=None, primary_child=None,
-        req_successes=None, req_failures=None, default_success=True):
-            """
-            Initialize a default policy for when to return success or
-            failure based on various criteria
+    def __init__(
+            self, name, tree, parent, position=None, primary_child=None,
+            req_successes=None, req_failures=None, default_success=True):
+        """
+        Initialize a default policy for when to return success or
+        failure based on various criteria
 
-            For an explanation of these criteria, see the relevant entries
-            in the docstring of models.py
-            """
-            super(Parallel, self).__init__(name, tree, parent, 
-                position=position)
-            self.primary_child = primary_child
-            self.req_successes = req_successes
-            self.req_failures = req_failures
-            self.default_success = default_success
+        For an explanation of these criteria, see the relevant entries
+        in the docstring of models.py
+        """
+        super(Parallel, self).__init__(name, tree, parent, position=position)
+        self.primary_child = primary_child
+        self.req_successes = req_successes
+        self.req_failures = req_failures
+        self.default_success = default_success
 
     def open(self, bb):
         super(Parallel, self).open(bb)
@@ -493,20 +532,20 @@ class Parallel(CompositeNode):
             if state == None or state == RUNNING:
                 status = self.children[i].tick(bb)
                 bb['nodes'][self.hash]['states'][i] = status
-                
+
                 if status == SUCCESS:
                     if primary_child == i:
                         return SUCCESS
-                    successes += 1                    
+                    successes += 1
                     if req_successes != None and successes >= req_successes:
                         return SUCCESS
-                
+
                 elif status == FAILURE:
                     if primary_child == i:
                         return FAILURE
                     failures += 1
                     if req_failures != None and failures >= req_failures:
-                        return FAILURE 
+                        return FAILURE
 
                 elif status == ERROR:
                     return ERROR
@@ -562,16 +601,17 @@ class Condition(LeafNode):
 
 class Command(LeafNode):
     """
+    Works for characters only, not scripts and not objects that have no CmdSets.
+
     Has the agent execute a single command. Always returns Success. Should
-    not be relied on for anything other than room echoes, emotes, debug
-    messages and so on.
+    not be relied on for anything other than debugging.
 
     You must set its command property manually in either the blackboard
     or the node itself. If you set it on the node, remember to run the
     blackboard's setup() method to reset it.
     """
-    command = None
-    
+    command = ""
+
     def update(self, bb):
         bb.agent.execute_cmd(bb['nodes'][self.hash]['command'])
         return SUCCESS
@@ -580,6 +620,7 @@ class Command(LeafNode):
         super(Command, self).on_blackboard_setup(bb, override=override)
         if not bb['nodes'][self.hash].has_key('command') or override:
             bb['nodes'][self.hash]['command'] = self.command
+
 
 class Transition(LeafNode):
     """
@@ -590,17 +631,49 @@ class Transition(LeafNode):
     target_tree = None
 
     def update(self, bb):
-        if self.target_tree:
-            return self.target_tree.nodes[self.target_tree.root].tick(bb)
+        target_tree = bb['nodes'][self.hash]['target_tree']
+        if target_tree:
+            return target_tree.nodes[target_tree.root].tick(bb)
         else:
-            bb['globals']['errors'][self.hash] = ("The node does not " +
-                "have a target tree.")
+            bb['globals']['errors'][self.hash] = (
+                "The node does not have a target tree.")
             return ERROR
 
     def on_blackboard_setup(self, bb, override=False):
-        super(Command, self).on_blackboard_setup(bb, override=override)
+        super(Transition, self).on_blackboard_setup(bb, override=override)
+
+        global _TREE_FROM_NAME
+        if not _TREE_FROM_NAME:
+            from evennia.contrib.aisystem.utils import (
+                tree_from_name as _TREE_FROM_NAME)
+
         if not bb['nodes'][self.hash].has_key('target_tree') or override:
-            bb['nodes'][self.hash]['target_tree'] = self.target_tree
+            if (isinstance(self.target_tree, str)
+                    or isinstance(self.target_tree, unicode)):
+                target_tree = _TREE_FROM_NAME(None, self.target_tree)
+            else:
+                target_tree = self.target_tree
+            bb['nodes'][self.hash]['target_tree'] = target_tree
+
+
+class EchoLeaf(LeafNode):
+    """
+    Works for objects only, not scripts.
+
+    If the node's msg property is not empty, sends a room echo using the msg
+    property's string and returns SUCCESS, else returns FAILURE.
+    """
+    msg = ""
+    def update(self, bb):
+        if bb['nodes'][self.hash]['msg']:
+            bb['agent'].location.msg_contents(bb['nodes'][self.hash]['msg'])
+            return SUCCESS
+        return FAILURE
+
+    def on_blackboard_setup(self, bb, override=False):
+        super(EchoLeaf, self).on_blackboard_setup(bb, override=override)
+        if not bb['nodes'][self.hash].has_key('msg') or override:
+            bb['nodes'][self.hash]['msg'] = self.msg
 
 
 class DecoratorNode(Node):
@@ -652,7 +725,7 @@ class Succeeder(DecoratorNode):
     """
     def update(self, bb):
         status = self.children.tick(bb)
-        if status == SUCCESS or status == FAILURE: 
+        if status == SUCCESS or status == FAILURE:
             return SUCCESS
         return status
 
@@ -664,7 +737,7 @@ class Failer(DecoratorNode):
     """
     def update(self, bb):
         status = self.children.tick(bb)
-        if status == SUCCESS or status == FAILURE: 
+        if status == SUCCESS or status == FAILURE:
             return SUCCESS
         return status
 
@@ -679,7 +752,7 @@ class Repeater(DecoratorNode):
     repeats = 0
 
     def update(self, bb):
-        for k_repeat in range(bb['nodes'][self.hash]['ticks'], self.repeats): 
+        for k_repeat in range(bb['nodes'][self.hash]['ticks'], self.repeats):
             status = self.children.tick(bb)
             bb['nodes'][self.hash]['ticks'] += 1
             if status == RUNNING or status == ERROR:
@@ -710,7 +783,7 @@ class Limiter(DecoratorNode):
     def on_blackboard_setup(self, bb, override=False):
         super(Limiter, self).on_blackboard_setup(bb, override=override)
         if not bb['nodes'][self.hash].has_key('ticks') or override:
-            bb['nodes'][self.hash]['ticks'] = self.repeats 
+            bb['nodes'][self.hash]['ticks'] = self.repeats
 
 
 class Allocator(DecoratorNode):
@@ -729,21 +802,45 @@ class Allocator(DecoratorNode):
     resources = []
 
     def update(self, bb):
-        for resource in resources:
+        for resource in bb['nodes'][self.hash]['resources']:
             if (bb['globals']['resources'].has_key(resource) and
-                bb['globals']['resources'][resource]):
+                    bb['globals']['resources'][resource]):
                 return RUNNING
         return self.children.tick(bb)
 
+    def on_blackboard_setup(self, bb, override=False):
+        super(Allocator, self).on_blackboard_setup(bb, override=override)
+        if not bb['nodes'][self.hash].has_key('resources') or override:
+            bb['nodes'][self.hash]['resources'] = self.resources
 
-all_original_nodes = {'Node': Node, 'RootNode': RootNode, 'LeafNode': LeafNode,
+
+class EchoDecorator(DecoratorNode):
+    """
+    Works for objects only, not scripts.
+
+    If the node's msg property is not empty, sends a room echo using the msg
+    property's string and returns the child node's status, else returns FAILURE.
+    """
+    msg = ""
+    def update(self, bb):
+        if bb['nodes'][self.hash]['msg']:
+            bb['agent'].location.msg_contents(bb['nodes'][self.hash]['msg'])
+            return self.children.tick(bb)
+        return FAILURE
+
+    def on_blackboard_setup(self, bb, override=False):
+        super(EchoDecorator, self).on_blackboard_setup(bb, override=override)
+        if not bb['nodes'][self.hash].has_key('msg') or override:
+            bb['nodes'][self.hash]['msg'] = self.msg
+
+
+all_original_nodes = {
+    'Node': Node, 'RootNode': RootNode, 'LeafNode': LeafNode,
     'CompositeNode': CompositeNode, 'DecoratorNode': DecoratorNode,
     'Condition': Condition, 'Command': Command, 'Transition': Transition,
-    'Selector': Selector, 'Sequence': Sequence, 'MemSelector': MemSelector, 
-    'MemSequence': MemSequence, 'ProbSelector': ProbSelector,
-    'ProbSequence': ProbSequence, 'Parallel': Parallel, 
-    'Verifier': Verifier, 'Inverter': Inverter, 'Succeeder': Succeeder,
-    'Failer': Failer, 'Repeater': Repeater, 'Limiter': Limiter,
-    'Allocator': Allocator}
-
-
+    'EchoLeaf': EchoLeaf, 'Selector': Selector, 'Sequence': Sequence,
+    'MemSelector': MemSelector, 'MemSequence': MemSequence, 
+    'ProbSelector': ProbSelector, 'ProbSequence': ProbSequence, 
+    'Parallel': Parallel, 'Verifier': Verifier, 'Inverter': Inverter, 
+    'Succeeder': Succeeder, 'Failer': Failer, 'Repeater': Repeater,
+    'Limiter': Limiter, 'Allocator': Allocator, 'EchoDecorator': EchoDecorator}

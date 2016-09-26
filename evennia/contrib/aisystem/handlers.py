@@ -1,5 +1,5 @@
 """
-A handler for the AI system. The handler contains a reference to an AI tree, 
+A handler for the AI system. The handler contains a reference to an AI tree,
 a list of nodes that are currently running, a list of nodes that were running
 during the previous iteration of the tree, as well as a "blackboard" of
 node-specific and global data.
@@ -50,16 +50,15 @@ default_success (bool) - used by parallel nodes to decide whether to return
 running (bool) - whether or not the node is currently running or was running
                  during its last tick.
 
-running_child (int) - the currently running child of a MemSequence or 
+running_child (int) - the currently running child of a MemSequence or
                       MemSelector node.
 
 ticks (int) - for repeater nodes, this is the number of repeats that have
               already been performed since the repeater started running. For
               limiter nodes, this is the number of repeats left before the
-              limiter shuts down. 
+              limiter shuts down.
 
-watchers (list) - a list of all the players that are currently watching the
-                  node
+watchers (list) - a list of all the players that are currently watching the node
 
 The following names for global blackboard data are reserved, so use them only
 for their intended purpose:
@@ -74,19 +73,20 @@ errors (dict) - a dictionary with the hashes of nodes as keys and the error
 """
 
 from evennia import ObjectDB, ScriptDB
-from evennia.contrib.aisystem.utils import recurse_multitree
+from evennia.contrib.aisystem.utils import (
+    recurse_multitree, clear_watchlist, tree_from_name)
 
 _BEHAVIOR_TREE = None #delayed import
 
 
 class AIHandler(object):
     """
-    Stores a dictionary called 'ai' that contains the following fields:
-    
+    Stores a dictionary called 'ai' that contains the following entries:
+
     tree (BehaviorTree) - the behavior tree whose structure the AI handler uses
 
     agent (object etc.) - the agent that the tree operates on; only one of the
-                          leaf nodes that come with the AI system (the Command 
+                          leaf nodes that come with the AI system (the Command
                           node) assumes this is an object, so you can safely
                           use any type here if you don't plan on employing that
                           node.
@@ -105,6 +105,18 @@ class AIHandler(object):
     object or script to which the handler is attached.
     """
     @property
+    def data(self):
+        return self.owner.db.ai
+
+    @data.setter
+    def data(self, value):
+        self.owner.db.ai = value
+
+    @data.deleter
+    def data(self):
+        del self.owner.db.ai
+
+    @property
     def tree(self):
         return self.owner.db.ai['tree']
 
@@ -119,7 +131,7 @@ class AIHandler(object):
     @property
     def agent(self):
         return self.owner.db.ai['agent']
-    
+
     @agent.setter
     def agent(self, value):
         self.owner.db.ai['agent'] = value
@@ -194,6 +206,12 @@ class AIHandler(object):
             if node not in self.owner.db.ai['running_now']:
                 node.close(self.owner.db.ai)
 
+        ## clear the running flag on all nodes that have it to allow them to
+        ## be added to the running list again when they are next ticked, if
+        ## they return RUNNING at that point
+        #for node in self.owner.db.ai['running_now']:
+        #    self.owner.db.ai['nodes'][node.hash]['running'] = False
+
         # swap the list of currently running nodes with the list of previously
         # running nodes, clear the list of currently running nodes
         self.owner.db.ai['running_pre'] = self.owner.db.ai['running_now']
@@ -201,7 +219,8 @@ class AIHandler(object):
 
         # tick the root node
         tree = self.owner.db.ai['tree']
-        return tree.nodes[tree.root].tick(self.owner.db.ai)
+        status = tree.nodes[tree.root].tick(self.owner.db.ai)
+        return status
 
     def setup(self, tree=None, override=False):
         """
@@ -214,59 +233,113 @@ class AIHandler(object):
         global _BEHAVIOR_TREE
 
         if not _BEHAVIOR_TREE:
-            from evennia.contrib.aisystem.typeclasses import (BehaviorTree
-                as _BEHAVIOR_TREE)
+            from evennia.contrib.aisystem.typeclasses import (
+                BehaviorTree as _BEHAVIOR_TREE)
 
         if isinstance(self.owner, ObjectDB):
-            obj_type_name = "object" 
+            obj_type_name = "object"
         elif isinstance(self.owner, ScriptDB):
             obj_type_name = "script"
         else:
-            raise TypeError("Unknown type for AI agent {0} ".self.owner.name +
-                "(id {0}).".format(self.owner.id))
+            raise TypeError(
+                "Unknown type for AI agent {0} ".format(self.owner.name) +
+                "(id {0}).\n".format(self.owner.id))
 
         if not tree:
-            if hasattr(self.owner,'aitree') and self.owner.aitree:
-                # first use the object's class tree as the desired tree
+            if (self.owner.attributes.has("ai") and
+                  self.owner.db.ai.has_key('tree') and
+                  self.owner.db.ai['tree']):
+                # first see if the object has already been assigned a tree
+                tree = self.owner.db.ai['tree']
+
+            elif hasattr(self.owner, 'aitree') and self.owner.aitree:
+                # if no tree has been assigned, default to the object's class 
+                # tree
 
                 # check if the tree is a BehaviorTree
                 if isinstance(self.owner.aitree, _BEHAVIOR_TREE):
                     tree = self.owner.aitree
 
                 elif (isinstance(self.owner.aitree, str) or
-                    isinstance(self.owner.aitree, unicode)):
+                      isinstance(self.owner.aitree, unicode)):
                     tree = tree_from_name(None, self.owner.aitree)
                     if not tree:
-                        return ("No tree with the name or hash of " +
+                        return (
+                            "No tree with the name or id of " +
                             "{0} has been found ".format(self.owner.aitree) +
-                            "in the database.")
-
-            elif (self.owner.attributes.has("ai") and
-                self.owner.db.ai.has_key('tree')):
-                # if no class tree exists, see if the object has already been
-                # assigned a tree through some other means, and use that 
-                # instead
-                tree = self.owner.db.ai['tree']
+                            "in the database. Cannot assign tree to " +
+                            "{0} {1} (id {2}).\n".format(
+                                obj_type_name, self.owner.name, self.owner.id))
+                else:
+                    return (
+                        "The default AI tree specified for " + 
+                        "{0} {1} (id {2}) ".format(
+                            obj_type_name, self.owner.name, self.owner.id) +
+                        "does not belong to the BehaviorTree class, " +
+                        "but to the {0} class. Cannot assign it.\n".format(
+                            type(self.owner.aitree).__name__))
             else:
-                return ("No tree found in either the blackboard or the " +
-                    "class of {0} {1} (id {2}). ".format(obj_type_name, 
-                    self.owner.name, self.owner.id) + "Please assign the ." +
-                    "agent a tree via the @aiassign command before trying " +
-                    "to set it up.")
+                return (
+                    "No tree found in either the blackboard or the " +
+                    "class of {0} {1} (id {2}). ".format(
+                        obj_type_name, self.owner.name, self.owner.id) +
+                    "Please assign the agent a tree via the @aiassign " +
+                    "command before trying to set it up.\n")
+
+        elif isinstance(tree, str) or isinstance(tree, unicode):
+            tree = tree_from_name(None, self.owner.aitree)
+            if not tree:
+                return (
+                    "No tree with the name or id of " +
+                    "{0} has been found ".format(self.owner.aitree) +
+                    "in the database. Cannot assign tree to " +
+                    "{0} {1} (id {2}).\n".format(
+                        obj_type_name, self.owner.name, self.owner.id))
+        elif not isinstance(tree, _BEHAVIOR_TREE):
+            return (
+                "The default AI tree specified for " + 
+                "{0} {1} (id {2}) ".format(
+                    obj_type_name, self.owner.name, self.owner.id) +
+                "does not belong to the BehaviorTree class, " +
+                "but to the {0} class. Cannot assign it.\n".format(
+                    type(self.owner.aitree).__name__))
 
         # confirm that the tree is valid
+        if not tree.is_valid():
+            return (
+                "Tree {0} (id {1}) is invalid, ".format(tree.name, tree.id) + 
+                "likely deleted. Cannot assign it to " +
+                "{1} (id {2}).\n".format(
+                    obj_type_name, self.owner.name, self.owner.id))
         try:
             tree.validate_tree()
         except Exception as e:
             return e
 
+        # clear all watchlists on the blackboard
+        if (override and
+                self.owner.db.ai and
+                self.owner.db.ai.has_key('tree') and
+                self.owner.db.ai['tree'] and
+                self.owner.db.ai.has_key('nodes') and
+                self.owner.db.ai['nodes']):
+            old_tree = self.owner.db.ai['tree']
+            for node in old_tree.nodes.values():
+                # ignore stale nodes (i.e. nodes that are in the tree's nodes
+                # list but not in the blackboard because of changes to the
+                # tree's structure)
+                if node.hash in self.owner.db.ai['nodes'].keys():
+                    clear_watchlist(node, self.owner.db.ai)
+
         if not self.owner.attributes.has('ai') or override:
             self.owner.db.ai = {}
 
-        if not self.owner.db.ai.has_key('tree') or override:
+        if (not self.owner.db.ai.has_key('tree') or
+                not self.owner.db.ai['tree'] or override):
             self.owner.db.ai['tree'] = tree
 
-        if not self.owner.db.ai.has_key('agent') or override:
+        if (not self.owner.db.ai.has_key('agent') or
+                not self.owner.db.ai['agent'] or override):
             self.owner.db.ai['agent'] = self.owner
 
         if not self.owner.db.ai.has_key('running_pre') or override:
@@ -283,8 +356,8 @@ class AIHandler(object):
 
         # setup the blackboard's dictionary of nodes
         def recursive_setup_node_dict(node):
-            self.owner.db.ai['nodes'][node.hash] = {'running': False,
-                'watchers':[]}
+            self.owner.db.ai['nodes'][node.hash] = {
+                'running': False, 'watchers':[]}
             recurse_multitree(node, recursive_setup_node_dict)
 
         # run on_blackboard_setup for all nodes
@@ -302,10 +375,26 @@ class AIHandler(object):
 
 
 class AIWizardHandler(object):
+    """
+    Stores a dictionary called aiwizard that contains the following entries:
+
+    tree (BehaviorTree) - the currently browsed behavior tree
+
+    node (string) - the full hash of the currently browsed node
+
+    agent (AIObject or AIScript) - the agent whose blackboard is currently
+                                   being browsed
+
+    watching (list) - a list of tuples with thwo entries each: the hash of a
+                      node (string) and a reference to an agent. Together,
+                      these identify a node instance in a particular blackboard
+                      that is in the player's watchlist.
+    """
+
     @property
     def tree(self):
         return self.owner.db.aiwizard['tree']
-    
+
     @tree.setter
     def tree(self, value):
         self.owner.db.aiwizard['tree'] = value
@@ -360,7 +449,7 @@ class AIWizardHandler(object):
     def setup(self, override=False):
         """
         Sets up the attributes associated with the AI handler. If override
-        is set to True, replaces all these attributes with the defaults.   
+        is set to True, replaces all these attributes with the defaults.
         """
         if not self.owner.attributes.has('aiwizard') or override:
             self.owner.db.aiwizard = {}
@@ -376,4 +465,3 @@ class AIWizardHandler(object):
 
         if not self.owner.db.aiwizard.has_key('watching') or override:
             self.owner.db.aiwizard['watching'] = []
-
