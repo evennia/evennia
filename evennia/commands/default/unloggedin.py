@@ -277,11 +277,11 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
         playername, password = parts
 
         # sanity checks
-        if not re.findall('^[\w. @+-]+$', playername) or not (0 < len(playername) <= 30):
+        if not re.findall(r"^[\w. @+\-']+$", playername) or not (0 < len(playername) <= 30):
             # this echoes the restrictions made by django's auth
             # module (except not allowing spaces, for convenience of
             # logging in).
-            string = "\n\r Playername can max be 30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only."
+            string = "\n\r Playername can max be 30 characters or fewer. Letters, spaces, digits and @/./+/-/_/' only."
             session.msg(string)
             return
         # strip excessive spaces in playername
@@ -295,8 +295,8 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
             string = "\n\r That name is reserved. Please choose another Playername."
             session.msg(string)
             return
-        if not re.findall('^[\w. @+-]+$', password) or not (3 < len(password)):
-            string = "\n\r Password should be longer than 3 characers. Letters, spaces, digits and @\.\+\-\_ only." \
+        if not re.findall(r"^[\w. @+\-']+$", password) or not (3 < len(password)):
+            string = "\n\r Password should be longer than 3 characers. Letters, spaces, digits and @/./+/-/_/' only." \
                      "\nFor best security, make it longer than 8 characters. You can also use a phrase of" \
                      "\nmany words if you enclose the password in double quotes."
             session.msg(string)
