@@ -15,7 +15,7 @@ DEFAULT_SCREEN = \
  If you need to create an account, type (without the <>'s):
       {wcreate <username> <password>{n
 
- If you have spaces in your username, enclose it in quotes.
+ If you have spaces in your username, enclose it in double quotes.
  Enter {whelp{n for more info. {wlook{n will re-show this screen.
 {b=============================================================={n""" \
 % (settings.SERVERNAME, utils.get_evennia_version())
