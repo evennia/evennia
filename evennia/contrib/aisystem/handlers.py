@@ -222,6 +222,12 @@ class AIHandler(object):
         status = tree.nodes[tree.root].tick(self.owner.db.ai)
         return status
 
+    def clean(self):
+        self.owner.db.ai['globals']['errors'] = {}
+
+        ## save the blackboard
+        #self.owner.db.ai = self.owner.db.ai
+
     def setup(self, tree=None, override=False):
         """
         Sets up the attributes associated with the AI handler. If override

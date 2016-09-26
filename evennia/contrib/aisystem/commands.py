@@ -3,7 +3,7 @@ Commands for the aisystem. They allow for navigating, studying and
 modifying behavior trees. This module stores the setup- and tree-related
 commands, while the commands_view.py module supplies commands for viewing and
 browsing the trees and the commands_build.py module supplies commands for
-modifying the node structure of the trees and the nodes' attributes.
+modifying the node structure of the trees and the nodes' properties.
 """
 import re
 import string

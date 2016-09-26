@@ -22,8 +22,8 @@ class AIBuildCmdSet(CmdSet):
     priority = -20
 
     def at_cmdset_creation(self):
-        self.add(CmdSetAttr())
-        self.add(CmdDelAttr())
+        self.add(CmdSetProp())
+        self.add(CmdDelProp())
         self.add(CmdAdd())
         self.add(CmdCopy())
         self.add(CmdMove())
@@ -34,7 +34,7 @@ class AIBuildCmdSet(CmdSet):
 
 def set_or_del_prep(s_op, caller, names):
     """
-    A function present in @aiset and @aidelattr that loads the target tree,
+    A function present in @aiset and @aidelprop that loads the target tree,
     node, agent and associated properties from the names provided in the
     command's arguments list.
     """
@@ -46,9 +46,9 @@ def set_or_del_prep(s_op, caller, names):
     obj_arg = None
 
     msg_tree = (
-        "assign a new value to an attribute of the currently browsed node")
+        "assign a new value to a property of the currently browsed node")
     msg_bb = (
-        "assign a new value to an attribute on the currently browsed " +
+        "assign a new value to a property on the currently browsed " +
         "blackboard")
     n_names = len(names)
 
@@ -79,7 +79,7 @@ def set_or_del_prep(s_op, caller, names):
         if not obj_arg == "bb" and not obj_arg == "globals":
             caller.msg(
                 "When providing a single argument to the {0} ".format(s_op) +
-                "command besides the attribute's name and its value, " +
+                "command besides the property's name and its value, " +
                 "only the arguments \"bb\" and \"globals\" (without quotes) " +
                 "are acceptable. You have provided the argument " +
                 "\"{0}\"".format(obj_arg))
@@ -144,7 +144,7 @@ def set_or_del_prep(s_op, caller, names):
         if names[0] != "globals":
             self.caller.msg(
                 "When providing three arguments to the {0} ".format(s_op) +
-                "command besides the attribute's name and its value, " +
+                "command besides the property's name and its value, " +
                 "only the argument \"globals\" (without quotes) " +
                 "is acceptable. You have provided the argument " +
                 "\"{0}\"".format(obj_arg))
@@ -161,7 +161,7 @@ def set_or_del_prep(s_op, caller, names):
         else:
             caller.msg(
                 "The {0} command has received three ".format(s_op) +
-                "arguments besides the attribute's name and its value, " +
+                "arguments besides the property's name and its value, " +
                 "and so the second argument should be 'object' or " +
                 "'script'. Instead, it is {0}.".format(obj_arg))
             return False
@@ -190,7 +190,7 @@ def set_or_del_prep(s_op, caller, names):
         else:
             caller.msg(
                 "The {0} command has received four ".format(s_op) +
-                "arguments besides the attribute's name and its value, " +
+                "arguments besides the property's name and its value, " +
                 "and so the third argument should be 'object' or " +
                 "'script'. Instead, it is {0}.".format(obj_arg))
             return False
@@ -220,8 +220,8 @@ def set_or_del_prep(s_op, caller, names):
         caller.msg(
             "Incorrect number of arguments to the {0} ".format(s_op) +
             "command. Please enter between 0 and 4 arguments " +
-            "followed by the name of the attribute you wish to change, " +
-            "the = sign and the value you wish to assign the attribute.")
+            "followed by the name of the property you wish to change, " +
+            "the = sign and the value you wish to assign the property.")
         return False
 
     return (tree, node, agent, bb, obj_arg)
@@ -246,39 +246,39 @@ def recursive_traverse_indices(obj, indices):
         return obj
 
 
-def get_container(caller, attr, p_attr):
+def get_container(caller, prop, p_prop):
     """
     Wrapper around the recursive_traverse_indices function, meant to
-    provide the same error messages for the @aisetattr and @aidelattr commands.
+    provide the same error messages for the @aisetprop and @aidelprop commands.
     """
     try:
-        container = recursive_traverse_indices(attr, p_attr[1:-1])
+        container = recursive_traverse_indices(prop, p_prop[1:-1])
     except IndexError:
         caller.msg(
             "One of the indices you specified in " +
-            "the attribute's chain of indices is not present in " +
+            "the property's chain of indices is not present in " +
             "its container. Cannot perform the operation.")
         return None
     except TypeError:
         caller.msg(
             "An item of a type that does not support " +
-            "indexing has been encountered in the attribute's " +
+            "indexing has been encountered in the property's " +
             "chain of indexed items. Cannot perform the operation.")
         return None
 
     if type(container) == tuple:
         caller.msg(
-            "The penultimate item in the attribute's " +
+            "The penultimate item in the property's " +
             "chain of indexed items is a tuple. Cannot peroform " +
             "the operation as tuples are immutable.")
         return None
     return container
 
 
-class CmdSetAttr(Command):
+class CmdSetProp(Command):
     """
-    Sets an attribute of the specified node to a specified value. The number of
-    arguments you provide, besides the attribute name and its new value, will
+    Sets a property of the specified node to a specified value. The number of
+    arguments you provide, besides the property's name and its new value, will
     determine what node to browse and how to modify it.
 
     If you provide no extra arguments, the currently browsed node will be
@@ -313,14 +313,14 @@ class CmdSetAttr(Command):
     If the tree and/or agent name is set to 'this', the currently browsed tree
     and/or blackboard will be selected.
 
-    The attribute name does not have to be an attribute itself, but can also be
-    an entry in a dictionary, list or tuple attribute. For instance, if the
-    attribute you wish to modify is called 'targets', and it is a list, you can
-    modify the fourth entry in the list by setting the attribute name to
+    The property name does not have to be a property itself, but can also be
+    an entry in a dictionary, list or tuple property. For instance, if the
+    property you wish to modify is called 'targets', and it is a list, you can
+    modify the fourth entry in the list by setting the property name to
     'targets[3]'. For nestled containers, you can chain indices, e.g.
     'targets[3]['threat level'][15]'.
 
-    The value you assign to an attribute can be a string, an int, a float, or a
+    The value you assign to a property can be a string, an int, a float, or a
     list, dict or tuple thereof, but you cannot assign arbitrary objects,
     classes or functions this way.
 
@@ -328,33 +328,33 @@ class CmdSetAttr(Command):
     in single quotes(the ' symbol).
 
     Finally, be careful about how you use this command. Some of the built-in
-    attributes of various nodes and node instances are not meant to be tampered
+    properties of various nodes and node instances are not meant to be tampered
     with. Modifying them may lead to errors.
 
     Usage:
-        @aiset <attribute>=<value>
-        @aiset <object|script> '<agent name>' <attribute>=<value>
-        @aiset bb <attribute>=<value>
-        @aiset globals <attribute>=<value>
-        @aiset globals <object|script> '<agent name>' <attribute>=<value>
-        @aiset '<tree name>' '<node name>' <attribute>=<value>
-        @aiset '<tree name>' '<node name>' '<agent name>' <attribute>=<value>
-        @aisetattr <any of the above sets of arguments>
+        @aiset <property>=<value>
+        @aiset <object|script> '<agent name>' <property>=<value>
+        @aiset bb <property>=<value>
+        @aiset globals <property>=<value>
+        @aiset globals <object|script> '<agent name>' <property>=<value>
+        @aiset '<tree name>' '<node name>' <property>=<value>
+        @aiset '<tree name>' '<node name>' '<agent name>' <property>=<value>
+        @aisetprop <any of the above sets of arguments>
 
     Examples:
         @aiset name="check for hostiles"
         @aiset object 'tentacle monster' check=False
         @aiset script 'this' weight=15.0
-        @aisetattr bb ticks=2
+        @aisetprop bb ticks=2
         @aiset globals emotions['fear']=5.0
         @aiset globals object 'tentacle monster' emotions['rage']=2.0
         @aiset 'this' 'attack' weapons['blunt'][1]=['mace', 'club', 'hammer']
-        @aisetattr 'Fighter AI' 'Lji' '29415' msg[5]="Surrender or die!"
+        @aisetprop 'Fighter AI' 'Lji' '29415' msg[5]="Surrender or die!"
 
     See also:
-        @aidelattr @ailook @aiassigntree
+        @aidelprop @ailook @aiassigntree
     """
-    key = "@aisetattr"
+    key = "@aisetprop"
     aliases = ['@aiset']
     locks = "cmd:perm(Wizards)"
     arg_regex = r"\s.+|$"
@@ -369,8 +369,8 @@ class CmdSetAttr(Command):
         rhe = re.findall(r"(?<==).*$", args)
         if not rhe:
             self.caller.msg(
-                "No value for the attribute provided. Please " +
-                "ensure that there is an equals sign after the attribute " +
+                "No value for the property provided. Please " +
+                "ensure that there is an equals sign after the property " +
                 "name and a value following that.")
             return False
         rhe = rhe[0].strip()
@@ -379,7 +379,7 @@ class CmdSetAttr(Command):
         except ValueError:
             self.caller.msg(
                 "The value you have specified for the argument " +
-                "is invalid. Cannot assign it to the attribute.")
+                "is invalid. Cannot assign it to the property.")
             return False
 
         # extract a string that lacks the right-hand expression and equals sign
@@ -401,50 +401,50 @@ class CmdSetAttr(Command):
             return False
         tree, node, agent, bb, obj_arg = retval
 
-        # The last entry in names should be the attribute name, possibly
+        # The last entry in names should be the property name, possibly
         # followed by a set of indices.
-        s_attr = names[-1]
+        s_prop = names[-1]
 
         # parse this entry
-        p_attr = re.findall(r"(?<=\[)[^\[\]]+(?=\])|\b\w+", s_attr)
-        p_attr = [x.strip() for x in p_attr]
-        attr_name = p_attr[0]
-        has_indices = len(p_attr) > 1
+        p_prop = re.findall(r"(?<=\[)[^\[\]]+(?=\])|\b\w+", s_prop)
+        p_prop = [x.strip() for x in p_prop]
+        prop_name = p_prop[0]
+        has_indices = len(p_prop) > 1
 
-        # check whether a new attribute will be created or an old one will be
+        # check whether a new property will be created or an old one will be
         # modified
-        if affects_globals and not bb["globals"].has_key(attr_name):
+        if affects_globals and not bb["globals"].has_key(prop_name):
             if has_indices:
                 self.caller.msg(
                     "The global dictionary in the blackboard of " +
                     "{0} '{1}' (id {2}) ".format(
                         obj_arg, agent.name, agent.id) +
-                    "does not have attribute {0}. ".format(attr_name) +
-                    "Cannot assign value to the attribute's item.")
+                    "does not have property {0}. ".format(prop_name) +
+                    "Cannot assign value to the property's item.")
                 return False
             msg_change = "|wcreated|n"
 
         elif affects_globals:
             msg_change = "|wmodified|n"
 
-        elif bb and not bb['nodes'][node.hash].has_key(attr_name):
+        elif bb and not bb['nodes'][node.hash].has_key(prop_name):
             if has_indices:
                 self.caller.msg(
                     "Instance of node '{0}'(\"{1}\") ".format(
                         node.hash[0:3], node.name) +
                     "in the blackboard of " + "{0} '{1}' (id {2}) ".format(
                         obj_arg, agent.name, agent.id) +
-                    "does not have attribute {0}. ".format(attr_name) +
-                    "Cannot assign value to the attribute's item.")
+                    "does not have property {0}. ".format(prop_name) +
+                    "Cannot assign value to the property's item.")
                 return False
             msg_change = "|wcreated|n"
 
-        elif not bb and not hasattr(node, attr_name):
+        elif not bb and not hasattr(node, prop_name):
             if has_indices:
                 self.caller.msg(
                     "Node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
-                    "does not have attribute {0}. ".format(attr_name) +
-                    "Cannot assign value to the attribute's item.")
+                    "does not have property {0}. ".format(prop_name) +
+                    "Cannot assign value to the property's item.")
                 return False
             msg_change = "|wcreated|n"
 
@@ -454,40 +454,40 @@ class CmdSetAttr(Command):
 
         if has_indices:
             if affects_globals:
-                attr = bb['globals']
+                prop = bb['globals']
             elif bb:
-                attr = bb['nodes'][node.hash]
+                prop = bb['nodes'][node.hash]
             else:
-                attr = getattr(node, attr_name)
+                prop = getattr(node, prop_name)
 
             # Extract the penultimate container
             # in the chain of containers designated by these indices.
-            if len(p_attr) > 2:
-                container = get_container(self.caller, attr, p_attr)
+            if len(p_prop) > 2:
+                container = get_container(self.caller, prop, p_prop)
                 if container == None:
                     return False
             else:
-                container = attr
+                container = prop
 
             try:
                 obj_type = type(container)
                 if (obj_type == list or obj_type == _SaverList
                         or obj_type == tuple):
-                    index = int(p_attr[-1])
+                    index = int(p_prop[-1])
                 else: # assuming object is a dict or _SaverDict
-                    index = p_attr[-1][1:-1] #strip quotes
+                    index = p_prop[-1][1:-1] #strip quotes
                 container[index] = val
             except IndexError:
                 self.caller.msg(
-                    "The last index you specified for the attribute " +
+                    "The last index you specified for the property " +
                     "is invalid.")
                 return False
         elif affects_globals:
-            bb['globals'][attr_name] = val
+            bb['globals'][prop_name] = val
         elif bb:
-            bb['nodes'][node.hash][attr_name] = val
+            bb['nodes'][node.hash][prop_name] = val
         else:
-            setattr(node, attr_name, val)
+            setattr(node, prop_name, val)
 
         if affects_globals:
             # save the node's blackboard
@@ -495,7 +495,7 @@ class CmdSetAttr(Command):
 
             self.caller.msg(
                 "Successfully {0} the ".format(msg_change) +
-                "global attribute {0} in the ".format(attr_name) +
+                "global property {0} in the ".format(prop_name) +
                 "blackboard of {0} '{1}' (id {2}). ".format(
                     obj_arg, agent.name, agent.id) +
                 "value is now {0}.".format(rhe))
@@ -506,12 +506,12 @@ class CmdSetAttr(Command):
 
             self.caller.msg(
                 "Successfully {0} the ".format(msg_change) +
-                "attribute {0} in the blackboard of ".format(attr_name) +
+                "property {0} in the blackboard of ".format(prop_name) +
                 "{0} '{1}' (id {2}), at ".format(
                     obj_arg, agent.name, agent.id) +
                 "node '{0}'(\"{1}\") of tree ".format(
                     node.hash[0:3], node.name) +
-                "{0} (id {1}). The attribute's ".format(tree.name, tree.id) +
+                "{0} (id {1}). The property's ".format(tree.name, tree.id) +
                 "value is now {0}.".format(rhe))
         else:
             # save the node's tree
@@ -519,18 +519,18 @@ class CmdSetAttr(Command):
 
             self.caller.msg(
                 "Successfully {0} the ".format(msg_change) +
-                "attribute {0} at node '{1}'".format(
-                    attr_name, node.hash[0:3]) +
+                "property {0} at node '{1}'".format(
+                    prop_name, node.hash[0:3]) +
                 "(\"{0}\") of tree {1} ".format(node.name, tree.name) +
-                "(id {0}). The attribute's value is now ".format(tree.id) + rhe)
+                "(id {0}). The property's value is now ".format(tree.id) + rhe)
 
         return True
 
 
-class CmdDelAttr(Command):
+class CmdDelProp(Command):
     """
-    Deletes an attribute of the specified node. The number of arguments you
-    provide, besides the attribute name, will determine what node to affect.
+    Deletes a property of the specified node. The number of arguments you
+    provide, besides the property's name, will determine what node to affect.
 
     If you provide no extra arguments, the currently browsed node will be
     selected. The change will affect the node itself, not one of its instances.
@@ -564,10 +564,10 @@ class CmdDelAttr(Command):
     If the tree and/or agent name is set to 'this', the currently browsed tree
     and/or blackboard will be selected.
 
-    The attribute name does not have to be an attribute itself, but can also be
-    an entry in a dictionary, list or tuple attribute. For instance, if the
-    attribute you wish to modify is called 'targets', and it is a list, you can
-    delete the fourth entry in the list by setting the attribute name to
+    The property name does not have to be a property itself, but can also be
+    an entry in a dictionary, list or tuple property. For instance, if the
+    property you wish to modify is called 'targets', and it is a list, you can
+    delete the fourth entry in the list by setting the property name to
     'targets[3]'. For nestled containers, you can chain indices, e.g.
     'targets[3]['threat level'][15]'.
 
@@ -575,31 +575,31 @@ class CmdDelAttr(Command):
     in single quotes(the ' symbol).
 
     Finally, be extremely careful about how you use this command. The built-in
-    attributes of various nodes and node instances are not meant to be deleted.
+    properties of various nodes and node instances are not meant to be deleted.
 
     Usage:
-        @aidelattr <attribute>
-        @aidelattr <object|script> '<agent name>' <attribute>
-        @aidelattr bb <attribute>
-        @aidelattr globals <attribute>
-        @aidelattr globals <object|script> '<agent name>' <attribute>=<value>
-        @aidelattr '<tree name>' '<node name>' <attribute>
-        @aidelattr '<tree name>' '<node name>' '<agent name>' <attribute>
+        @aidelprop <property>
+        @aidelprop <object|script> '<agent name>' <property>
+        @aidelprop bb <property>
+        @aidelprop globals <property>
+        @aidelprop globals <object|script> '<agent name>' <property>=<value>
+        @aidelprop '<tree name>' '<node name>' <property>
+        @aidelprop '<tree name>' '<node name>' '<agent name>' <property>
 
     Examples:
-        @aidelattr name
-        @aidelattr object 'tentacle monster' weight
-        @aidelattr script 'marauder army strategy' weight
-        @aidelattr bb ticks=2
-        @aidelattr globals emotions['fear']
-        @aidelattr globals object 'tentacle monster' emotions['rage']=2.0
-        @aidelattr 'this' 'bash them all' weapons
-        @aidelattr 'Fighter AI' 'Lji' '29415' groups[1]
+        @aidelprop name
+        @aidelprop object 'tentacle monster' weight
+        @aidelprop script 'marauder army strategy' weight
+        @aidelprop bb ticks=2
+        @aidelprop globals emotions['fear']
+        @aidelprop globals object 'tentacle monster' emotions['rage']=2.0
+        @aidelprop 'this' 'bash them all' weapons
+        @aidelprop 'Fighter AI' 'Lji' '29415' groups[1]
 
     See also:
         @aiset @ailook @aiassigntree
     """
-    key = "@aidelattr"
+    key = "@aidelprop"
     aliases = []
     locks = "cmd:perm(Wizards)"
     arg_regex = r"\s.+|$"
@@ -623,90 +623,90 @@ class CmdDelAttr(Command):
         names[0] = names[0].strip()
         affects_globals = names[0] == "globals"
 
-        retval = set_or_del_prep("@aidelattr", self.caller, names)
+        retval = set_or_del_prep("@aidelprop", self.caller, names)
         if not retval:
             return False
         tree, node, agent, bb, obj_arg = retval
 
-        # The last entry in names should be the attribute name, possibly
+        # The last entry in names should be the property name, possibly
         # followed by a set of indices.
-        s_attr = names[-1]
+        s_prop = names[-1]
 
         # parse this entry
-        p_attr = re.findall(r"(?<=\[)[^\[\]]+(?=\])|\b\w+", s_attr)
-        p_attr = [x.strip() for x in p_attr]
-        attr_name = p_attr[0]
-        has_indices = len(p_attr) > 1
+        p_prop = re.findall(r"(?<=\[)[^\[\]]+(?=\])|\b\w+", s_prop)
+        p_prop = [x.strip() for x in p_prop]
+        prop_name = p_prop[0]
+        has_indices = len(p_prop) > 1
 
         if has_indices:
             msg_act = "item of "
         else:
             msg_act = ""
 
-        # check that the attribute exists
-        if affects_globals and not bb["globals"].has_key(attr_name):
+        # check that the property exists
+        if affects_globals and not bb["globals"].has_key(prop_name):
             self.caller.msg(
                 "The global dictionary in the blackboard of " +
                 "{0} '{1}' (id {2}) ".format(obj_arg, agent.name, agent.id) +
-                "does not have attribute {0}. ".format(attr_name) +
-                "Cannot assign value to the attribute's item.")
+                "does not have property {0}. ".format(prop_name) +
+                "Cannot assign value to the property's item.")
             return False
 
         if (bb and not affects_globals and
-                not bb['nodes'][node.hash].has_key(attr_name)):
+                not bb['nodes'][node.hash].has_key(prop_name)):
             self.caller.msg(
                 "Instance of node '{0}'(\"{1}\") ".format(
                     node.hash[0:3], node.name) +
                 "in the blackboard of {0} '{1}' (id {2}) ".format(
                     obj_arg, agent.name, agent.id) +
-                "does not have attribute {0}. ".format(attr_name) +
+                "does not have property {0}. ".format(prop_name) +
                 "Cannot proceed with deletion.")
             return False
 
-        elif not bb and not hasattr(node, attr_name):
+        elif not bb and not hasattr(node, prop_name):
             self.caller.msg(
                 "Node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
-                "does not have attribute {0}. Cannot ".format(attr_name) +
+                "does not have property {0}. Cannot ".format(prop_name) +
                 "proceed with deletion.")
             return False
 
         if has_indices:
             if affects_globals:
-                attr = bb['globals']
+                prop = bb['globals']
             elif bb:
-                attr = bb['nodes'][node.hash]
+                prop = bb['nodes'][node.hash]
             else:
-                attr = getattr(node, attr_name)
+                prop = getattr(node, prop_name)
 
             # Extract the penultimate container
             # in the chain of containers designated by these indices.
-            if len(p_attr) > 2:
-                container = get_container(self.caller, attr, p_attr)
+            if len(p_prop) > 2:
+                container = get_container(self.caller, prop, p_prop)
                 if container == None:
                     return False
             else:
-                container = attr
+                container = prop
 
             try:
                 obj_type = type(container)
                 if (obj_type == list or obj_type == _SaverList
                         or obj_type == tuple):
-                    index = int(p_attr[-1])
+                    index = int(p_prop[-1])
                 else: # assuming object is a dict or _SaverDict
-                    index = p_attr[-1][1:-1] #strip quotes
+                    index = p_prop[-1][1:-1] #strip quotes
 
                 del container[index]
             except IndexError:
                 self.caller.msg(
                     "The last index you specified for the " +
-                    "attribute is invalid.")
+                    "property is invalid.")
                 return False
         elif affects_globals:
-            del bb['globals'][attr_name]
+            del bb['globals'][prop_name]
         elif bb:
-            del bb['nodes'][node.hash][attr_name]
+            del bb['nodes'][node.hash][prop_name]
         else:
-            delattr(node, attr_name)
+            delattr(node, prop_name)
 
         if affects_globals:
             # save the node's blackboard
@@ -714,7 +714,7 @@ class CmdDelAttr(Command):
 
             self.caller.msg(
                 "Successfully |wdeleted|n the {0}".format(msg_act) +
-                "global attribute {0} in the ".format(attr_name) +
+                "global property {0} in the ".format(prop_name) +
                 "blackboard of {0} '{1}' (id {2}). ".format(
                     obj_arg, agent.name, agent.id))
         elif bb:
@@ -723,7 +723,7 @@ class CmdDelAttr(Command):
 
             self.caller.msg(
                 "Successfully |wdeleted|n the {0}".format(msg_act) +
-                "attribute {0} in the ".format(attr_name) +
+                "property {0} in the ".format(prop_name) +
                 "blackboard of {0} '{1}' (id {2}), at ".format(
                     obj_arg, agent.name, agent.id) +
                 "node '{0}'(\"{1}\") ".format(node.hash[0:3], node.name) +
@@ -734,8 +734,8 @@ class CmdDelAttr(Command):
 
             self.caller.msg(
                 "Successfully |wdeleted|n the {0} ".format(msg_act) +
-                "attribute {0} at node '{1}'(\"{2}\") ".format(
-                    attr_name, node.hash[0:3], node.name) +
+                "property {0} at node '{1}'(\"{2}\") ".format(
+                    prop_name, node.hash[0:3], node.name) +
                 "of tree {0} (id {1}).".format(tree.name, tree.id))
 
         return True

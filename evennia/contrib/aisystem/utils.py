@@ -444,7 +444,7 @@ def display_node_in_tree(caller, tree, node):
     """
     Displays information pertaining to a given node in a tree:
     its tree, the name and hash values of its parent and children, as well as
-    its attributes
+    its properties
     """
     # get the node's parent
     if node.parent:
@@ -470,17 +470,17 @@ def display_node_in_tree(caller, tree, node):
     else:
         siblings = None
 
-    # get the node's attributes
-    attrs = [x for x in dir(node) if x[0] != '_']
+    # get the node's properties
+    props = [x for x in dir(node) if x[0] != '_']
 
-    # do not include the node's name amongst its attributes
-    attrs.remove('name')
+    # do not include the node's name amongst its properties
+    props.remove('name')
 
     nonfuncs = {}
-    for attr_name in attrs:
-        attr = getattr(node, attr_name)
-        if not hasattr(attr, '__call__'):
-            nonfuncs[attr_name] = attr
+    for prop_name in props:
+        prop = getattr(node, prop_name)
+        if not hasattr(prop, '__call__'):
+            nonfuncs[prop_name] = prop
 
     s = "\n|g{0}|n '{1}'(\"|w{2}|n\")\n".format(
         type(node).__name__, node.hash[0:3], node.name)
@@ -505,10 +505,10 @@ def display_node_in_tree(caller, tree, node):
                 s += s_indent + "{0}. |C{1}|n '{2}'(\"|w{3}|n\")".format(
                     k_sibling, type(sibling).__name__, sibling.hash[0:3],
                     sibling.name)
-    s += "|gAttributes:|n\n"
-    for attr_name, attr in nonfuncs.iteritems():
-        if attr_name not in ['tree', 'hash', 'children', 'parent']:
-            s += parse_attr(attr_name, attr, 1)
+    s += "|gProperties:|n\n"
+    for prop_name, prop in nonfuncs.iteritems():
+        if prop_name not in ['tree', 'hash', 'children', 'parent']:
+            s += parse_prop(prop_name, prop, 1)
 
     evmore.msg(caller, s)
 
@@ -518,7 +518,7 @@ def display_node_in_bb(caller, tree, node, bb):
     Displays information pertaining to a given instance of a node in a
     blackboard: the node's tree, the owner of the blackboard itself,
     the name and hash values of the node's parent and children, as well
-    as the node instance's current attributes
+    as the node instance's current properties
     """
     global _AI_OBJECT
     global _AI_SCRIPT
@@ -592,7 +592,7 @@ def display_node_in_bb(caller, tree, node, bb):
 
     s += "|gData:|n\n"
     for key, val in data.iteritems():
-        s += parse_attr(key, val, 1)
+        s += parse_prop(key, val, 1)
 
     evmore.msg(caller, s)
 
@@ -622,15 +622,15 @@ def display_bb_globals(caller, bb):
 
     s = "Blackboard globals for |g{0}|n {1}:\n".format(owner_type, owner_name)
     for key, val in bb['globals'].iteritems():
-        s += parse_attr(key, val, 1)
+        s += parse_prop(key, val, 1)
 
     evmore.msg(caller, s)
 
 
-def parse_attr(attr_name, attr, indent):
+def parse_prop(prop_name, prop, indent):
     """
-    Parse a given attribute into a string and return it.
-    This function is meant to be recursive in the event that the attribute
+    Parse a given property into a string and return it.
+    This function is meant to be recursive in the event that the property
     is a string or an int.
 
     Reports lists and SaverLists as 'list', tuples as 'tuple',
@@ -638,35 +638,35 @@ def parse_attr(attr_name, attr, indent):
     """
     s = ""
     k_indent = s_indent * indent # current level of indentation
-    if isinstance(attr, list) or isinstance(attr, _SaverList):
-        if attr_name:
-            s += k_indent + "|GList|n {0}:\n".format(attr_name)
+    if isinstance(prop, list) or isinstance(prop, _SaverList):
+        if prop_name:
+            s += k_indent + "|GList|n {0}:\n".format(prop_name)
         else:
             s += k_indent + "|GList|n:\n"
-        for val in attr:
-            s += parse_attr("", val, indent + 1)
+        for val in prop:
+            s += parse_prop("", val, indent + 1)
         return s
 
-    elif isinstance(attr, tuple):
-        if attr_name:
-            s += k_indent + "|GTuple|n {0}:\n".format(attr_name)
+    elif isinstance(prop, tuple):
+        if prop_name:
+            s += k_indent + "|GTuple|n {0}:\n".format(prop_name)
         else:
             s += k_indent + "|GTuple|n:\n"
-        for val in attr:
-            s += parse_attr("", val, indent + 1)
+        for val in prop:
+            s += parse_prop("", val, indent + 1)
         return s
 
-    elif isinstance(attr, dict) or isinstance(attr, _SaverDict):
-        if attr_name:
-            s += k_indent + "|GDict|n {0}:\n".format(attr_name)
+    elif isinstance(prop, dict) or isinstance(prop, _SaverDict):
+        if prop_name:
+            s += k_indent + "|GDict|n {0}:\n".format(prop_name)
         else:
             s += k_indent + "|GDict|n:\n"
-        for key, val in attr.iteritems():
-            s += parse_attr(key, val, indent + 1)
+        for key, val in prop.iteritems():
+            s += parse_prop(key, val, indent + 1)
         return s
 
     else:
-        if attr_name:
-            return k_indent + "{0}: {1}\n".format(attr_name, attr)
+        if prop_name:
+            return k_indent + "{0}: {1}\n".format(prop_name, prop)
         else:
-            return k_indent + str(attr) + "\n"
+            return k_indent + str(prop) + "\n"

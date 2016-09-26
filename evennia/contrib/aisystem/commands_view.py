@@ -73,7 +73,7 @@ class CmdList(Command):
 class CmdLook(Command):
     """
     Displays the name and hash value, the tree, parent, children (if any) and
-    attributes of either the currently browsed node or a specified node in
+    properties of either the currently browsed node or a specified node in
     this tree or a given tree. You may specify the name of the tree and node
     to be looked at by putting the id or name of the tree, as well as the id or
     name of the node, in single quotes (the ' symbol). If the tree name 'this'
@@ -81,7 +81,7 @@ class CmdLook(Command):
     or tree name is specified, the currently browsed node is displayed.
 
     If the bb argument is specified, the node instance's blackboard data and
-    associated AI agent are displayed instead of the node's attributes.
+    associated AI agent are displayed instead of the node's properties.
 
     If the globals argument is specified, the global blackboard data of the
     currently browsed blackboard will be displayed.
@@ -243,7 +243,7 @@ class CmdStatus(Command):
 
 def watch_or_unwatch_prep(s_op, caller, names):
     """
-    A function present in @aiset and @aidelattr that loads the target tree,
+    A function present in @aiset and @aidelprop that loads the target tree,
     node and agent.
     """
     n_names = len(names)

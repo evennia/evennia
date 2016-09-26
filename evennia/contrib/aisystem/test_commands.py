@@ -1043,9 +1043,9 @@ class TestBuildCommands(CommandTest):
     object_typeclass = AIObject
     script_typeclass = AIScript
 
-    def test_set_attr(self):
+    def test_set_prop(self):
         """
-        Test the @aisetattr command
+        Test the @aisetprop command
         """
         self.call(commands.CmdNewTree(), "tree")
         tree = ScriptDB.objects.get(db_key="tree")
@@ -1055,44 +1055,44 @@ class TestBuildCommands(CommandTest):
         leaf.test = False
 
         # check for failure when providing an agent that is not set up
-        self.call(commands_build.CmdSetAttr(), "object 'Obj' test=True")
+        self.call(commands_build.CmdSetProp(), "object 'Obj' test=True")
         assert(not self.obj1.db.ai)
-        self.call(commands_build.CmdSetAttr(), "globals object 'Obj' test=True")
+        self.call(commands_build.CmdSetProp(), "globals object 'Obj' test=True")
         assert(not self.obj1.db.ai)
-        self.call(commands_build.CmdSetAttr(), 
+        self.call(commands_build.CmdSetProp(), 
                   "'tree' 'root' object 'Obj' test=True")
         assert(not self.obj1.db.ai)
 
         self.obj1.ai.setup(tree=tree)
 
         # check for failure when providing no arguments and not browsing
-        self.call(commands_build.CmdSetAttr(), "test=True")
+        self.call(commands_build.CmdSetProp(), "test=True")
         assert(root.test == False and leaf.test == False)
 
         # check for failure when providing the bb or globals argument and not
         # browsing any blackboard
-        self.call(commands_build.CmdSetAttr(), "bb test=True")
+        self.call(commands_build.CmdSetProp(), "bb test=True")
         assert(root.test == False and leaf.test == False)
         assert(not self.obj1.db.ai['globals'].has_key("test"))
 
-        self.call(commands_build.CmdSetAttr(), "globals test=True")
+        self.call(commands_build.CmdSetProp(), "globals test=True")
         assert(root.test == False and leaf.test == False)
         assert(not self.obj1.db.ai['globals'].has_key("test"))
 
         # check for failure when providing an agent but not browsing any tree
-        self.call(commands_build.CmdSetAttr(), "object 'Obj' test=True")
+        self.call(commands_build.CmdSetProp(), "object 'Obj' test=True")
         assert(root.test == False and leaf.test == False)
         assert(not self.obj1.db.ai['globals'].has_key("test"))
 
         # check for success when providing a tree and node even when not
         # browsing
-        self.call(commands_build.CmdSetAttr(), "'tree' 'leaf' test=True")
+        self.call(commands_build.CmdSetProp(), "'tree' 'leaf' test=True")
         assert(root.test == False and leaf.test == True)
         leaf.test = False
 
         # check for success when providing all arguments even when not
         # browsing
-        self.call(commands_build.CmdSetAttr(),
+        self.call(commands_build.CmdSetProp(),
                   "'tree' 'leaf' object 'Obj' test=True")
         assert(root.test == False and leaf.test == False)
         assert(self.obj1.db.ai['nodes'][leaf.hash]['test'] == True)
@@ -1101,7 +1101,7 @@ class TestBuildCommands(CommandTest):
         # check for success when providing the required arguments for the
         # globals <object|script> <agent name> version of the command even
         # when not browsing
-        self.call(commands_build.CmdSetAttr(),
+        self.call(commands_build.CmdSetProp(),
                   "globals object 'Obj' test=True")
         assert(root.test == False and leaf.test == False)
         assert(self.obj1.db.ai['globals']['test'] == True)
@@ -1109,13 +1109,13 @@ class TestBuildCommands(CommandTest):
 
         # check for success when providing no arguments and browsing
         self.call(commands_view.CmdGo(), "'tree' 'root'")
-        self.call(commands_build.CmdSetAttr(), "test=True")
+        self.call(commands_build.CmdSetProp(), "test=True")
         assert(root.test == True and leaf.test == False)
         root.test = False
 
         # check for success when providing an agent and browsing
         self.call(commands_view.CmdGo(), "'tree' 'root'")
-        self.call(commands_build.CmdSetAttr(), "object 'Obj' test=True")
+        self.call(commands_build.CmdSetProp(), "object 'Obj' test=True")
         assert(root.test == False and leaf.test == False)
         assert(self.obj1.db.ai['nodes'][root.hash]['test'] == True)
         del self.obj1.db.ai['nodes'][root.hash]['test']
@@ -1126,7 +1126,7 @@ class TestBuildCommands(CommandTest):
         self.char1.player.aiwizard.node = ""
 
         self.call(commands_view.CmdBB(), "object 'Obj'")
-        self.call(commands_build.CmdSetAttr(), "globals test=True")
+        self.call(commands_build.CmdSetProp(), "globals test=True")
         assert(root.test == False and leaf.test == False)
         assert(self.obj1.db.ai['globals']['test'] == True)
         del self.obj1.db.ai['globals']['test']
@@ -1135,35 +1135,35 @@ class TestBuildCommands(CommandTest):
         # and a node in a tree
         self.call(commands_view.CmdGo(), "'tree' 'root'")
         self.call(commands_view.CmdBB(), "object 'Obj'")
-        self.call(commands_build.CmdSetAttr(), "bb test=True")
+        self.call(commands_build.CmdSetProp(), "bb test=True")
         assert(root.test == False and leaf.test == False)
         assert(self.obj1.db.ai['nodes'][root.hash]['test'] == True)
         del self.obj1.db.ai['nodes'][root.hash]['test']
 
         # check that the command works with a variety of right-hand arguments
         self.call(commands_view.CmdGo(), "'test' 'root'")
-        self.call(commands_build.CmdSetAttr(), "test='string'")
+        self.call(commands_build.CmdSetProp(), "test='string'")
         assert(root.test == 'string')
-        self.call(commands_build.CmdSetAttr(), "test='string'")
+        self.call(commands_build.CmdSetProp(), "test='string'")
         assert(root.test == 'string')
-        self.call(commands_build.CmdSetAttr(), "test=-4.5")
+        self.call(commands_build.CmdSetProp(), "test=-4.5")
         assert(root.test == -4.5)
-        self.call(commands_build.CmdSetAttr(), "test={'a':[1,{'b':2}],'c':3}")
+        self.call(commands_build.CmdSetProp(), "test={'a':[1,{'b':2}],'c':3}")
         assert(root.test == {'a':[1, {'b':2}], 'c':3})
 
         # check that the command works with a chain of indices
         self.call(commands_view.CmdGo(), "'test' 'root'")
         root.test = {'a':[1,{'b':2}],'c':3}
-        self.call(commands_build.CmdSetAttr(), "test['a'][1]['b']=5")
+        self.call(commands_build.CmdSetProp(), "test['a'][1]['b']=5")
         assert(root.test == {'a':[1, {'b':5}],'c':3})
-        self.call(commands_build.CmdSetAttr(), "test['a'][1]={'x':2}")
+        self.call(commands_build.CmdSetProp(), "test['a'][1]={'x':2}")
         assert(root.test == {'a':[1, {'x':2}],'c':3})
-        self.call(commands_build.CmdSetAttr(), "test['a']=True")
+        self.call(commands_build.CmdSetProp(), "test['a']=True")
         assert(root.test == {'a':True, 'c':3})
 
-    def test_del_attr(self):
+    def test_del_prop(self):
         """
-        Test the @aidelattr command
+        Test the @aidelprop command
         """
         self.call(commands.CmdNewTree(), "tree")
         tree = ScriptDB.objects.get(db_key="tree")
@@ -1173,11 +1173,11 @@ class TestBuildCommands(CommandTest):
         leaf.test = False
 
         # check for failure when providing an agent that is not set up
-        self.call(commands_build.CmdDelAttr(), "object 'Obj' test")
+        self.call(commands_build.CmdDelProp(), "object 'Obj' test")
         assert(not self.obj1.db.ai)
-        self.call(commands_build.CmdDelAttr(), "globals object 'Obj' test")
+        self.call(commands_build.CmdDelProp(), "globals object 'Obj' test")
         assert(not self.obj1.db.ai)
-        self.call(commands_build.CmdDelAttr(), 
+        self.call(commands_build.CmdDelProp(), 
                   "'tree' 'root' object 'Obj' test")
         assert(not self.obj1.db.ai)
 
@@ -1186,33 +1186,33 @@ class TestBuildCommands(CommandTest):
         self.obj1.db.ai['globals']['test'] = False
 
         # check for failure when providing no arguments and not browsing
-        self.call(commands_build.CmdDelAttr(), "test")
+        self.call(commands_build.CmdDelProp(), "test")
         assert(root.test == False and leaf.test == False)
 
         # check for failure when providing the bb or globals argument and not
         # browsing any blackboard
-        self.call(commands_build.CmdDelAttr(), "bb test")
+        self.call(commands_build.CmdDelProp(), "bb test")
         assert(root.test == False and leaf.test == False)
         assert(self.obj1.db.ai['globals']['test'] == False)
 
-        self.call(commands_build.CmdDelAttr(), "globals test")
+        self.call(commands_build.CmdDelProp(), "globals test")
         assert(root.test == False and leaf.test == False)
         assert(self.obj1.db.ai['globals']['test'] == False)
 
         # check for failure when providing an agent but not browsing any tree
-        self.call(commands_build.CmdDelAttr(), "object 'Obj' test")
+        self.call(commands_build.CmdDelProp(), "object 'Obj' test")
         assert(root.test == False and leaf.test == False)
         assert(self.obj1.db.ai['globals']['test'] == False)
 
         # check for success when providing a tree and node even when not
         # browsing
-        self.call(commands_build.CmdDelAttr(), "'tree' 'leaf' test")
+        self.call(commands_build.CmdDelProp(), "'tree' 'leaf' test")
         assert(root.test == False and not hasattr(leaf, 'test'))
         leaf.test = False
 
         # check for success when providing all arguments even when not
         # browsing
-        self.call(commands_build.CmdDelAttr(),
+        self.call(commands_build.CmdDelProp(),
                   "'tree' 'leaf' object 'Obj' test")
         assert(root.test == False and leaf.test == False)
         assert(not self.obj1.db.ai['nodes'][leaf.hash].has_key("test"))
@@ -1221,7 +1221,7 @@ class TestBuildCommands(CommandTest):
         # check for success when providing the required arguments for the
         # globals <object|script> <agent name> version of the command even
         # when not browsing
-        self.call(commands_build.CmdDelAttr(),
+        self.call(commands_build.CmdDelProp(),
                   "globals object 'Obj' test")
         assert(root.test == False and leaf.test == False)
         assert(not self.obj1.db.ai['globals'].has_key("test"))
@@ -1229,13 +1229,13 @@ class TestBuildCommands(CommandTest):
 
         # check for success when providing no arguments and browsing
         self.call(commands_view.CmdGo(), "'tree' 'root'")
-        self.call(commands_build.CmdDelAttr(), "test")
+        self.call(commands_build.CmdDelProp(), "test")
         assert(not hasattr(root, 'test') and leaf.test == False)
         root.test = False
 
         # check for success when providing an agent and browsing
         self.call(commands_view.CmdGo(), "'tree' 'root'")
-        self.call(commands_build.CmdDelAttr(), "object 'Obj' test")
+        self.call(commands_build.CmdDelProp(), "object 'Obj' test")
         assert(root.test == False and leaf.test == False)
         assert(not self.obj1.db.ai['nodes'][root.hash].has_key("test"))
         self.obj1.db.ai['nodes'][root.hash]['test'] = False
@@ -1246,7 +1246,7 @@ class TestBuildCommands(CommandTest):
         self.char1.player.aiwizard.node = ""
 
         self.call(commands_view.CmdBB(), "object 'Obj'")
-        self.call(commands_build.CmdDelAttr(), "globals test")
+        self.call(commands_build.CmdDelProp(), "globals test")
         assert(root.test == False and leaf.test == False)
         assert(not self.obj1.db.ai['globals'].has_key("test"))
         self.obj1.db.ai['globals']['test'] = False
@@ -1255,7 +1255,7 @@ class TestBuildCommands(CommandTest):
         # and a node in a tree
         self.call(commands_view.CmdGo(), "'tree' 'root'")
         self.call(commands_view.CmdBB(), "object 'Obj'")
-        self.call(commands_build.CmdDelAttr(), "bb test")
+        self.call(commands_build.CmdDelProp(), "bb test")
         assert(root.test == False and leaf.test == False)
         assert(not self.obj1.db.ai['nodes'][root.hash].has_key("test"))
         self.obj1.db.ai['nodes'][root.hash]['test'] = False
@@ -1263,15 +1263,15 @@ class TestBuildCommands(CommandTest):
         # check that the command works with a chain of indices
         self.call(commands_view.CmdGo(), "'test' 'root'")
         root.test = {'a':[1,{'b':2}],'c':3}
-        self.call(commands_build.CmdDelAttr(), "test['a'][1]['b']")
+        self.call(commands_build.CmdDelProp(), "test['a'][1]['b']")
         assert(root.test == {'a':[1, {}],'c':3})
 
         root.test = {'a':[1,{'b':2}],'c':3}
-        self.call(commands_build.CmdDelAttr(), "test['a'][1]")
+        self.call(commands_build.CmdDelProp(), "test['a'][1]")
         assert(root.test == {'a':[1],'c':3})
 
         root.test = {'a':[1,{'b':2}],'c':3}
-        self.call(commands_build.CmdDelAttr(), "test['a']")
+        self.call(commands_build.CmdDelProp(), "test['a']")
         assert(root.test == {'c':3})
 
 

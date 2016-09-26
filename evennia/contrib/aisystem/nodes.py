@@ -107,7 +107,12 @@ class Node(object):
         """
         if not bb['nodes'][self.hash]['running']:
             self.open(bb)
-        status = self.update(bb)
+
+        try:
+            status = self.update(bb)
+        except Exception as e:
+            bb['globals']['errors'][self.hash] = e
+            status = ERROR
 
         if status == RUNNING:
             #print("running:", bb['nodes'][self.hash]['running'],
@@ -119,11 +124,16 @@ class Node(object):
             self.close(bb)
 
         for player in bb['nodes'][self.hash]['watchers']:
+            if status == ERROR:
+                err_msg = " Error message: " + e.msg
+            else:
+                err_msg = ""
+
             player.msg(
                 "|mAI watchlist|n: {0} '{1}'(\"{2}\") ".format(
                     type(self).__name__, self.hash, self.name) +
-                "ticked with return status |c{0}|n.".format(
-                    status_strings[status]))
+                "ticked with return status |c{0}|n.{1}".format(
+                    status_strings[status], err_msg))
 
         return status
 
@@ -635,9 +645,7 @@ class Transition(LeafNode):
         if target_tree:
             return target_tree.nodes[target_tree.root].tick(bb)
         else:
-            bb['globals']['errors'][self.hash] = (
-                "The node does not have a target tree.")
-            return ERROR
+            raise Exception("The node does not have a target tree.")
 
     def on_blackboard_setup(self, bb, override=False):
         super(Transition, self).on_blackboard_setup(bb, override=override)

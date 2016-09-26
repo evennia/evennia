@@ -594,7 +594,7 @@ class TestTransition(TestCase):
         assert(composite.children[3] == leaf4)
         assert(composite.children[4] == leaf5)
 
-        err = self.tree1.shift(leaf2, 4)
+        err = self.tree1.shift(leaf2, 3)
         assert(not err)        
 
         # check that leaf2 has been moved to the third position
