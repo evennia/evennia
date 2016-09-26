@@ -553,7 +553,8 @@ class CmdSetHandler(object):
         if must_be_default:
             return self.cmdset_stack and self.cmdset_stack[0].key == cmdset_key
         else:
-            return any([cmdset.key == cmdset_key for cmdset in self.cmdset_stack])
+            return any([cmdset.key == cmdset_key or cmdset.path == cmdset_key
+                        for cmdset in self.cmdset_stack])
 
     def reset(self):
         """
