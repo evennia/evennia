@@ -212,12 +212,12 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
             return
 
         args = self.args
-        # extract quoted parts
-        parts = [part.strip() for part in re.split(r"\"|\'", args) if part.strip()]
-        if len(parts) == 1:
-            # this was (hopefully) due to no quotes being found, or a guest login
-            parts = parts[0].split(None, 1)
-            # Guest login
+
+        # separate parts... note that passwords cannot contain spaces
+        parts = [part.strip() for part in args.split() if part.strip()]
+
+        if len(parts) < 2:
+            # Check if guest players are allowed
             if len(parts) == 1 and parts[0].lower() == "guest":
                 enabled, new_player = create_guest_player(session)
                 if new_player:
@@ -225,11 +225,10 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
                 if enabled:
                     return
 
-        if len(parts) != 2:
-            session.msg("\n\r Usage (without <>): connect <name> <password>")
-            return
+        # strip off the password and reassemble the name
+        password = parts.pop()
+        name = " ".join(parts)        
 
-        name, password = parts
         player = create_normal_player(session, name, password)
         if player:
             # actually do the login. This will call all other hooks:
@@ -264,17 +263,19 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
         session = self.caller
         args = self.args.strip()
 
-        # extract quoted parts
-        parts = [part.strip() for part in re.split(r"\"|\'", args) if part.strip()]
-        if len(parts) == 1:
-            # this was (hopefully) due to no quotes being found
-            parts = parts[0].split(None, 1)
-        if len(parts) != 2:
-            string = "\n Usage (without <>): create <name> <password>" \
-                     "\nIf <name> or <password> contains spaces, enclose it in quotes."
+        # code is common with `connect`, needs DRY
+        # separate parts - passwords cannot contain spaces
+        parts = [part.strip() for part in args.split() if part.strip()]
+
+        # no password entered
+        if len(parts) < 2:
+            string = """\n Please enter a username and password"""
             session.msg(string)
             return
-        playername, password = parts
+
+        # strip off the password and reassemble the name
+        password = parts.pop()
+        playername = " ".join(parts)
 
         # sanity checks
         if not re.findall('^[\w. @+-]+$', playername) or not (0 < len(playername) <= 30):
@@ -295,10 +296,11 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
             string = "\n\r That name is reserved. Please choose another Playername."
             session.msg(string)
             return
+        # Future: Password does not need to detect whitespace \w or spaces because
+        #           they are parsed when passed anyways.
         if not re.findall('^[\w. @+-]+$', password) or not (3 < len(password)):
-            string = "\n\r Password should be longer than 3 characers. Letters, spaces, digits and @\.\+\-\_ only." \
-                     "\nFor best security, make it longer than 8 characters. You can also use a phrase of" \
-                     "\nmany words if you enclose the password in quotes."
+            string = "\n\r Password should be longer than 3 characers. Letters, digits and @\.\+\-\_ only." \
+                     "\nFor best security, make it longer than 8 characters."
             session.msg(string)
             return
 
@@ -326,11 +328,7 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
                                     default_home, permissions)
                 # tell the caller everything went well.
                 string = "A new account '%s' was created. Welcome!"
-                if " " in playername:
-                    string += "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
-                else:
-                    string += "\n\nYou can now log with the command 'connect %s <your password>'."
-                session.msg(string % (playername, playername))
+                string += "\n\nYou can now log with the command 'connect %s <your password>'." session.msg(string % (playername, playername))
 
         except Exception:
             # We are in the middle between logged in and -not, so we have
