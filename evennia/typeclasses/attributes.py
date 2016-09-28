@@ -221,7 +221,7 @@ class AttributeHandler(object):
                      "attribute__db_attrtype" : self._attrtype}
             query = Q(**query)
         else:
-            id_dict = {"%s__id" % self._model : self.objid}
+            id_dict = {"%s__id" % self._model : self._objid}
             blank_dict = {"attribute__db_attrtype": ''}
             null_dict = {"attribute__db_attrtype": None}
             query = Q(**id_dict) & Q(Q(**blank_dict) | Q(**null_dict))
