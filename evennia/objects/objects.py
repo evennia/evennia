@@ -559,14 +559,16 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             {}-style format syntax. The keys of `mapping` should match
             named format tokens, and its values will have their
             `get_display_name()` function called for  each object in
-            the room before substitution.
+            the room before substitution. If an item in the mapping does
+            not have `get_display_name()`, its string value will be used.
 
         Example:
             Say char is a Character object and npc is an NPC object:
 
+            action = 'kicks'
             char.location.msg_contents(
-                "{attacker} attacks {defender}",
-                mapping=dict(attacker=char, defender=npc),
+                "{attacker} {action} {defender}",
+                mapping=dict(attacker=char, defender=npc, action=action),
                 exclude=(char, npc))
         """
         contents = self.contents
@@ -575,7 +577,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             contents = [obj for obj in contents if obj not in exclude]
         for obj in contents:
             if mapping:
-                substitutions = {t: sub.get_display_name(obj) for t, sub in mapping.items()}
+                substitutions = {t: sub.get_display_name(obj)
+                                    if hasattr(sub, 'get_display_name')
+                                    else str(sub)
+                                 for t, sub in mapping.items()}
                 obj.msg(message.format(**substitutions), from_obj=from_obj, **kwargs)
             else:
                 obj.msg(message, from_obj=from_obj, **kwargs)
