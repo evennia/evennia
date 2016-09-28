@@ -16,6 +16,7 @@ from collections import defaultdict
 from django.db import models
 from django.conf import settings
 from django.utils.encoding import smart_str
+from django.db.models import Q
 
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.idmapper.models import SharedMemoryModel
@@ -215,9 +216,16 @@ class AttributeHandler(object):
 
     def _fullcache(self):
         "Cache all attributes of this object"
-        query = {"%s__id" % self._model : self._objid,
-                 "attribute__db_attrtype" : self._attrtype}
-        attrs = [conn.attribute for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
+        if self._attrtype:
+            query = {"%s__id" % self._model : self._objid,
+                     "attribute__db_attrtype" : self._attrtype}
+            query = Q(**query)
+        else:
+            id_dict = {"%s__id" % self._model : self.objid}
+            blank_dict = {"attribute__db_attrtype": ''}
+            null_dict = {"attribute__db_attrtype": None}
+            query = Q(**id_dict) & Q(Q(**blank_dict) | Q(**null_dict))
+        attrs = [conn.attribute for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(query)]
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
                                        attr.db_category.lower() if attr.db_category else 'None'),
                             attr) for attr in attrs)
@@ -254,11 +262,39 @@ class AttributeHandler(object):
             if attr:
                 return [attr]  # return cached entity
             else:
-                query = {"%s__id" % self._model : self._objid,
-                         "attribute__db_attrtype" : self._attrtype,
-                         "attribute__db_key__iexact" : key.lower(),
-                         "attribute__db_category__iexact" : category.lower() if category else None}
-                conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
+                if self._attrtype:
+                    if category:
+                        query = {"%s__id" % self._model : self._objid,
+                                 "attribute__db_attrtype" : self._attrtype,
+                                 "attribute__db_key__iexact" : key.lower(),
+                                 "attribute__db_category__iexact" : category.lower()}
+                        query = Q(**query)
+                    else:
+                        query_dict = {"%s__id" % self._model : self._objid,
+                                      "attribute__db_attrtype" : self._attrtype,
+                                      "attribute__db_key__iexact" : key.lower()}
+                        cat_null = {"attribute__db_category": None}
+                        cat_blank = {"attribute__db_category": ''}
+                        query = Q(**query_dict) & Q(Q(**cat_null) | Q(**cat_blank))
+                    
+                else:
+                    if category:
+                        query_dict = {"%s__id" % self._model : self._objid,
+                                      "attribute__db_category__iexact" : category.lower() if category != None else None,
+                                      "attribute__db_key__iexact" : key.lower()}
+                        attr_null = {"attribute__db_attrtype": None}
+                        attr_blank = {"attribute__db_attrtype": ''}
+                        query = Q(**query_dict) & Q( Q(**attr_null) | Q(**attr_blank))
+                    else:
+                        query_dict = {"%s__id" % self._model : self._objid,
+                                      "attribute__db_key__iexact" : key.lower()}
+                        cat_null = {"attribute__db_category": None}
+                        cat_blank = {"attribute__db_category": ''}
+                        attr_null = {"attribute__db_attrtype": None}
+                        attr_blank = {"attribute__db_attrtype": ''}
+                        query = Q(**query_dict) & Q(Q(**cat_null) | Q(**cat_blank)) & Q( Q(**attr_null) | Q(**attr_blank))
+                    
+                conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(query)
                 if conn:
                     attr = conn[0].attribute
                     self._cache[cachekey] = attr
@@ -272,11 +308,19 @@ class AttributeHandler(object):
                 return [attr for key, attr in self._cache.items() if key.endswith(catkey)]
             else:
                 # we have to query to make this category up-date in the cache
-                query = {"%s__id" % self._model : self._objid,
-                         "attribute__db_attrtype" : self._attrtype,
-                         "attribute__db_category__iexact" : category.lower() if category else None}
+                if self._attrtype:
+                    query = {"%s__id" % self._model : self._objid,
+                             "attribute__db_attrtype" : self._attrtype,
+                             "attribute__db_category__iexact" : category.lower() if category else None}
+                    query = Q(**query)
+                else:
+                    query_dict = {"%s__id" % self._model : self._objid,
+                                  "attribute__db_category__iexact" : category.lower() if category != None else None}
+                    attr_null = {"attribute__db_attrtype": None}
+                    attr_blank = {"attribute__db_attrtype": ''}
+                    query = Q(**query_dict) & Q( Q(**attr_null) | Q(**attr_blank)) 
                 attrs = [conn.attribute for conn in getattr(self.obj,
-                            self._m2m_fieldname).through.objects.filter(**query)]
+                            self._m2m_fieldname).through.objects.filter(query)]
                 for attr in attrs:
                     if attr.pk:
                         cachekey = "%s-%s" % (attr.db_key, category)
