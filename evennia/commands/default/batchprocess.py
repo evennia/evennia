@@ -205,9 +205,15 @@ def purge_processor(caller):
         del caller.ndb.batch_batchmode
     except:
         pass
-    # clear everything but the default cmdset.
-    caller.cmdset.delete(BatchSafeCmdSet)
-    caller.cmdset.clear()
+    # clear everything back to the state before the batch call
+    if caller.ndb.batch_cmdset_backup:
+        caller.cmdset.cmdset_stack = caller.ndb.batch_cmdset_backup
+        caller.cmdset.update()
+        del caller.ndb.batch_cmdset_backup
+    else:
+        # something went wrong. Purge cmdset except default
+        caller.cmdset.clear()
+
     caller.scripts.validate()  # this will purge interactive mode
 
 #------------------------------------------------------------
@@ -269,6 +275,8 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
         caller.ndb.batch_stackptr = 0
         caller.ndb.batch_pythonpath = python_path
         caller.ndb.batch_batchmode = "batch_commands"
+        # we use list() here to create a new copy of the cmdset stack
+        caller.ndb.batch_cmdset_backup = list(caller.cmdset.cmdset_stack)
         caller.cmdset.add(BatchSafeCmdSet)
 
         if 'inter' in switches or 'interactive' in switches:
@@ -377,6 +385,8 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
         caller.ndb.batch_pythonpath = python_path
         caller.ndb.batch_batchmode = "batch_code"
         caller.ndb.batch_debug = debug
+        # we use list() here to create a new copy of cmdset_stack
+        caller.ndb.batch_cmdset_backup = list(caller.cmdset.cmdset_stack)
         caller.cmdset.add(BatchSafeCmdSet)
 
         if 'inter' in switches or 'interactive'in switches:
@@ -696,10 +706,7 @@ class CmdStateCC(_COMMAND_DEFAULT_CLASS):
             step_pointer(caller, 1)
             show_curr(caller)
 
-        del caller.ndb.batch_stack
-        del caller.ndb.batch_stackptr
-        del caller.ndb.batch_pythonpath
-        del caller.ndb.batch_batchmode
+        purge_processor(self)
         caller.msg(format_code("Finished processing batch file."))
 
 
