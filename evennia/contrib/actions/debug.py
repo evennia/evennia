@@ -250,8 +250,10 @@ class CmdDebugActSetup(Command):
     def func(self):
         if self.args.find("over") != -1:
             setup(override=True)
+            self.caller.msg("Action system successfully overridden.")
         else:
             setup(override=False)
+            self.caller.msg("Action system successfully set up.")
 
 
 class CmdDebugMessages(Command):
