@@ -42,7 +42,7 @@ _SCREEN_HEIGHT = settings.CLIENT_DEFAULT_HEIGHT
 
 _DISPLAY = \
 """{text}
-({{wmore{{n [{pageno}/{pagemax}] retur{{wn{{n|{{wb{{nack|{{wt{{nop|{{we{{nnd|{{wa{{nbort)"""
+({{wmore{{n [{pageno}/{pagemax}] {{wn{{next|{{wb{{nack|{{wt{{nop|{{we{{nnd|{{wa{{nbort)"""
 
 
 class CmdMore(Command):
@@ -50,7 +50,8 @@ class CmdMore(Command):
     Manipulate the text paging
     """
     key = _CMD_NOINPUT
-    aliases = ["abort", "a", "next", "n", "back", "b", "top", "t", "end", "e"]
+    aliases = ["abort", "a", "next", "n", "back", "b", "top", "t", "end",
+               "e", "look", "l"]
     auto_help = False
 
     def func(self):
@@ -70,13 +71,32 @@ class CmdMore(Command):
             more.page_quit()
         elif cmd in ("back", "b"):
             more.page_back()
-        elif cmd in ("top", "t"):
+        elif cmd in ("top", "t", "look", "l"):
             more.page_top()
         elif cmd in ("end", "e"):
             more.page_end()
         else:
             # return or n, next
             more.page_next()
+
+class CmdEvMoreLook(Command):
+    """
+    Override look to display window and prevent OOCLook from firing
+    """
+    key = "look"
+    aliases = ["l"]
+    auto_help = False
+    def func(self):
+        """
+        Implement the command
+        """
+        more = self.caller.ndb._more
+        if not more and hasattr(self.caller, "player"):
+            more = self.caller.player.ndb._more
+        if not more:
+            self.caller.msg("Error in loading the pager. Contact an admin.")
+            return
+        more.page_top()
 
 
 class CmdSetMore(CmdSet):
@@ -114,6 +134,7 @@ class EvMore(object):
         self._pages = []
         self._npages = []
         self._npos = []
+        self._exit_msg = "{wExiting.{n"
         # we use the first session here
         sessions = caller.sessions.get()
         if not sessions:
@@ -186,6 +207,7 @@ class EvMore(object):
         Quit the pager
         """
         del self._caller.ndb._more
+        self._caller.msg(text=self._exit_msg, **self._kwargs)
         self._caller.cmdset.remove(CmdSetMore)
 
 
