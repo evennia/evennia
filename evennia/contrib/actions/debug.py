@@ -249,9 +249,9 @@ class CmdDebugActSetup(Command):
 
     def func(self):
         if self.args.find("over") != -1:
-            actions.setup(override=True)
+            setup(override=True)
         else:
-            actions.setup(override=False)
+            setup(override=False)
 
 
 class CmdDebugMessages(Command):
