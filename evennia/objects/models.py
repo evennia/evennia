@@ -71,7 +71,7 @@ class ContentsHandler(object):
             pks = self._pkcache
         try:
             return [self._idcache[pk] for pk in pks]
-        except KeyError, err:
+        except KeyError:
             # this can happen if the idmapper cache was cleared for an object
             # in the contents cache. If so we need to re-initialize and try again.
             self.init()
