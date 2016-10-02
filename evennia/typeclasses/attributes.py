@@ -325,6 +325,14 @@ class AttributeHandler(object):
         self._catcache.pop(catkey, None)
         self._cache_complete = False
 
+    def reset_cache(self):
+        """
+        Reset cache from the outside.
+        """
+        self._cache_complete = False
+        self._cache = {}
+        self._catcache = {}
+
     def has(self, key=None, category=None):
         """
         Checks if the given Attribute (or list of Attributes) exists on
@@ -910,7 +918,6 @@ class NAttributeHandler(object):
 
         """
         self._store[key] = value
-        self.obj.set_recache_protection()
 
     def remove(self, key):
         """
@@ -922,7 +929,6 @@ class NAttributeHandler(object):
         """
         if key in self._store:
             del self._store[key]
-        self.obj.set_recache_protection(self._store)
 
     def clear(self):
         """

@@ -228,7 +228,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         con = self.contents_cache.get(exclude=exclude)
-        print "contents_get:", self, con, calledby()
+        #print "contents_get:", self, con, id(self), calledby()
         return con
     contents = property(contents_get)
 
@@ -266,7 +266,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if self.locks.check_lockstring(looker, "perm(Builders)"):
             return "{}(#{})".format(self.name, self.id)
         return self.name
-
 
     def search(self, searchdata,
                global_search=False,
@@ -1133,7 +1132,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         pass
-
 
     # hooks called when moving the object
 

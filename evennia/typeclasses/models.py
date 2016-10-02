@@ -376,6 +376,27 @@ class TypedObject(SharedMemoryModel):
         raise Exception("dbref cannot be deleted!")
     dbref = property(__dbref_get, __dbref_set, __dbref_del)
 
+    def at_idmapper_flush(self):
+        """
+        This is called when the idmapper cache is flushed and
+        allows customized actions when this happens.
+
+        Returns:
+            do_flush (bool): If True, flush this object as normal. If
+                False, don't flush and expect this object to handle
+                the flushing on its own.
+
+        """
+        if self.nattributes.all():
+            # we can't flush this object if we have non-persistent
+            # attributes stored - those would get lost! Nevertheless
+            # we try to flush as many references as we can.
+            self.attributes.reset_cache()
+            self.tags.reset_cache()
+            return False
+        # a normal flush
+        return True
+
     #
     # Object manipulation methods
     #
