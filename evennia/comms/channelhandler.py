@@ -26,13 +26,13 @@ does this for you.
 from builtins import object
 
 from django.conf import settings
-from evennia.comms.models import ChannelDB
 from evennia.commands import cmdset, command
 from evennia.utils.logger import tail_log_file
 from evennia.utils.utils import class_from_module
 from django.utils.translation import ugettext as _
 
 _CHANNEL_COMMAND_CLASS = None
+_CHANNELDB = None
 
 class ChannelCommand(command.Command):
     """
@@ -85,12 +85,16 @@ class ChannelCommand(command.Command):
         Create a new message and send it to channel, using
         the already formatted input.
         """
+        global _CHANNELDB
+        if not _CHANNELDB:
+            from evennia.comms.models import ChannelDB as _CHANNELDB
+
         channelkey, msg = self.args
         caller = self.caller
         if not msg:
             self.msg(_("Say what?"))
             return
-        channel = ChannelDB.objects.get_channel(channelkey)
+        channel = _CHANNELDB.objects.get_channel(channelkey)
 
         if not channel:
             self.msg(_("Channel '%s' not found.") % channelkey)
@@ -200,9 +204,12 @@ class ChannelHandler(object):
         Channel objects. This must be called after deleting a Channel.
 
         """
+        global _CHANNELDB
+        if not _CHANNELDB:
+            from evennia.comms.models import ChannelDB as _CHANNELDB
         self.cached_channel_cmds = []
         self.cached_cmdsets = {}
-        for channel in ChannelDB.objects.get_all_channels():
+        for channel in _CHANNELDB.objects.get_all_channels():
             self.add_channel(channel)
 
     def get_cmdset(self, source_object):
