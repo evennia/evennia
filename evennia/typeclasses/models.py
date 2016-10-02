@@ -386,6 +386,14 @@ class TypedObject(SharedMemoryModel):
                 False, don't flush and expect this object to handle
                 the flushing on its own.
 
+        Notes:
+            The default implementation relies on being able to clear
+            Django's Foreignkey cache on objects not affected by the
+            flush (notably objects with an NAttribute stored). We rely
+            on this cache being stored on the format "_<fieldname>_cache".
+            If Django were to change this name internally, we need to
+            update here (unlikely, but marking just in case).
+
         """
         if self.nattributes.all():
             # we can't flush this object if we have non-persistent
@@ -393,6 +401,12 @@ class TypedObject(SharedMemoryModel):
             # we try to flush as many references as we can.
             self.attributes.reset_cache()
             self.tags.reset_cache()
+            # flush caches for all related fields
+            for field in self._meta.fields:
+                name = "_%s_cache" % field.name
+                if field.is_relation and name in self.__dict__:
+                    # a foreignkey - remove its cache
+                    del self.__dict__[name]
             return False
         # a normal flush
         return True

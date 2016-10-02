@@ -321,8 +321,6 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         else:
             cls.__dbclass__.__instance_cache__ = dict((key, obj) for key, obj in cls.__dbclass__.__instance_cache__.items()
                                                       if not obj.at_idmapper_flush())
-            for ins in cls.__dbclass__.__instance_cache__.itervalues():
-                ins.refresh_from_db()
     #flush_instance_cache = classmethod(flush_instance_cache)
 
     # per-instance methods
@@ -349,8 +347,6 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         if pk:
             if force or self.at_idmapper_flush():
                 self.__class__.__dbclass__.__instance_cache__.pop(pk, None)
-            else:
-                self.refresh_from_db()
 
     def delete(self, *args, **kwargs):
         """
