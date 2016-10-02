@@ -22,7 +22,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from evennia.typeclasses.models import TypedObject
 from evennia.objects.manager import ObjectDBManager
 from evennia.utils import logger
-from evennia.utils.utils import (make_iter, dbref, lazy_property)
+from evennia.utils.utils import (make_iter, dbref, lazy_property, calledby)
 
 
 class ContentsHandler(object):
@@ -51,8 +51,10 @@ class ContentsHandler(object):
         Re-initialize the content cache
 
         """
+        print "__init__", self.obj, calledby()
         self._pkcache.update(dict((obj.pk, None) for obj in
                             ObjectDB.objects.filter(db_location=self.obj) if obj.pk))
+        print "init contentscache: self._pkcache:", self.obj, self._pkcache
 
     def get(self, exclude=None):
         """
@@ -68,12 +70,15 @@ class ContentsHandler(object):
         if exclude:
             pks = [pk for pk in self._pkcache if pk not in [excl.pk for excl in make_iter(exclude)]]
         else:
+            print calledby()
+            print "get: self._pkcache", self.obj, self._pkcache
             pks = self._pkcache
         try:
             return [self._idcache[pk] for pk in pks]
-        except KeyError:
+        except KeyError, err:
             # this can happen if the idmapper cache was cleared for an object
             # in the contents cache. If so we need to re-initialize and try again.
+            print "content_cache.get keyerror:", err, self._pkcache, self._idcache
             self.init()
             try:
                 return [self._idcache[pk] for pk in pks]
@@ -91,6 +96,7 @@ class ContentsHandler(object):
 
         """
         self._pkcache[obj.pk] = None
+        print "add self._pkcache:", self.obj, obj, obj.pk, self._pkcache
 
     def remove(self, obj):
         """
@@ -101,6 +107,7 @@ class ContentsHandler(object):
 
         """
         self._pkcache.pop(obj.pk, None)
+        print "remove self._pkcache", self.obj, obj, obj.pk, self._pkcache
 
     def clear(self):
         """
@@ -109,6 +116,7 @@ class ContentsHandler(object):
         """
         self._pkcache = {}
         self.init()
+        print "clear _pkcache", self.obj, self._pkcache
 
 #------------------------------------------------------------
 #
@@ -264,10 +272,12 @@ class ObjectDB(TypedObject):
             # remove the safe flag
             del self._safe_contents_update
 
+            print "location_set:", self.key, old_location, self.db_location
             # update the contents cache
             if old_location:
                 old_location.contents_cache.remove(self)
             if self.db_location:
+                print "cache add:", self.db_location, self
                 self.db_location.contents_cache.add(self)
 
         except RuntimeError:
