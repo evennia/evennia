@@ -1386,9 +1386,14 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 return "Could not view '%s'." % target.get_display_name(self)
             except AttributeError:
                 return "Could not view '%s'." % target.key
+
+        description = target.return_appearance(self)
+
         # the target's at_desc() method.
+        # this must be the last reference to target so it may delete itself when acted on.
         target.at_desc(looker=self)
-        return target.return_appearance(self)
+
+        return description
 
     def at_desc(self, looker=None):
         """
