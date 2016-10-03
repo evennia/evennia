@@ -3,14 +3,14 @@ Player
 
 The Player represents the game "account" and each login has only one
 Player object. A Player is what chats on default channels but has no
-other in-game-world existance. Rather the Player puppets Objects (such
+other in-game-world existence. Rather the Player puppets Objects (such
 as Characters) in order to actually participate in the game world.
 
 
 Guest
 
 Guest players are simple low-level accounts that are created/deleted
-on the fly and allows users to test the game without the committment
+on the fly and allows users to test the game without the commitment
 of a full registration. Guest accounts are deactivated by default; to
 activate them, add the following line to your settings file:
 
