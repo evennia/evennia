@@ -64,7 +64,7 @@ def validate(action):
     if not isinstance(action['room'], DefaultRoom):
 
         #[DEBUG]
-        if action['owner'].tags.get("debug"):
+        if action['owner'].tags.get("actdebug"):
             action['owner'].msg("|mINVALID ACTION (" + action['key'] +
                 "): The action's room does not exist|n")
 
@@ -79,7 +79,7 @@ def validate(action):
         if superuser:
             superuser = superuser[0]        
 
-        if superuser.tags.get("debug"):
+        if superuser.tags.get("actdebug"):
             superuser.msg("|mINVALID ACTION (" + action['key'] +
                 "): Owner does not exist|n")
 
@@ -88,7 +88,7 @@ def validate(action):
     if action['owner'].location != action['room']:
 
         #[DEBUG]
-        if action['owner'].tags.get("debug"):
+        if action['owner'].tags.get("actdebug"):
             action['owner'].msg("|mINVALID ACTION (" + action['key'] +
                 "): Owner is not in action's room|n")
 
@@ -101,7 +101,7 @@ def validate(action):
         if not action['reach']:
             
             #[DEBUG]
-            if action['owner'].tags.get("debug"):
+            if action['owner'].tags.get("actdebug"):
                 action['owner'].msg("|mINVALID ACTION (" + action['key'] + 
                     "): The action has a target but no reach|n")
 
@@ -110,7 +110,7 @@ def validate(action):
         if not isinstance(action['target'], DefaultObject):
 
             #[DEBUG]
-            if action['owner'].tags.get("debug"):
+            if action['owner'].tags.get("actdebug"):
                 action['owner'].msg("|mINVALID ACTION (" + action['key'] + 
                     "): Target is not a valid object|n")
 
@@ -120,7 +120,7 @@ def validate(action):
             action['reach'] ):
             
             # [DEBUG]
-            if action['owner'].tags.get("debug"):
+            if action['owner'].tags.get("actdebug"):
                 action['owner'].msg("|mINVALID ACTION (" + action['key'] + 
                     "): Target is not inside the action's room|n")
 
@@ -269,19 +269,19 @@ def triage(action):
     underway = is_same_bps_underway(action)
     new = action['owner'].actions.new
 
-    # Ensure that new actions and actions assigned via override can only be added
-    # during the character's turn
+    # Ensure that new actions and actions assigned via override can only be
+    # added during the character's turn
 
     if underway:
         if new == "override":
 
             if (action['room'].actions.mode == 'TB' and not action['non_turn'] 
-            and not action['owner'] == action['room'].actions.turnof):
+                    and not action['owner'] == action['room'].actions.turnof):
                 # inform the owner that they are out of turn, abort adding
                 # the action. [WIP] Can queued actions be popped out-of-turn? 
-                action['owner'].msg("It is not your turn. " +
-                    "In turn-based mode, you can only begin most actions " +
-                    "during your own turn.")
+                action['owner'].msg(
+                    "It is not your turn. In turn-based mode, you can only " +
+                    "begin most actions during your own turn.")
                 return None
 
             for x in underway:
@@ -337,7 +337,7 @@ def triage(action):
         # This action is completely new.
 
         if (action['room'].actions.mode == 'TB' and not action['non_turn'] and
-        not action['owner'] == action['room'].actions.turnof):
+                not action['owner'] == action['room'].actions.turnof):
             # inform the owner that they are out of turn, abort adding
             # the action. [WIP] Can queued actions be popped out-of-turn? 
             action['owner'].msg("It is not your turn. " +
@@ -352,8 +352,9 @@ def triage(action):
             s = action['begin_msg']
 
         if s:
-            action['room'].actions.display(action['owner'], s, 
-                target=action['target'], data=action['data'])
+            action['room'].actions.display(
+                action['owner'], s, target=action['target'],
+                data=action['data'])
  
         # process the action in the room's actions list
         return action['room'].actions
@@ -365,9 +366,6 @@ def process_queue(char):
     share bodyparts with ongoing actions. Transfer all such actions from the 
     character's actions list to the room's actions list.
     """
-    if not char.actions.active:
-        return
-
     for enqueued in char.actions.list:
         if not is_same_bps_underway(enqueued):
             char.actions.pop(enqueued)

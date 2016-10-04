@@ -57,7 +57,7 @@ class ActionSystemScript(DefaultScript):
                 #[DEBUG]
                 for char in handler.owner.contents:
                     if (isinstance(char, DefaultCharacter) and 
-                        char.tags.get("debug")):
+                        char.tags.get("actdebug")):
                         char.msg("|mRestarting RT callback in {0}|n".format(
                             handler.owner.key))
 
@@ -101,7 +101,7 @@ class ActionSystemScript(DefaultScript):
                     #[DEBUG]
                     for char in handler.owner.contents:
                         if (isinstance(char, DefaultCharacter) and
-                            char.tags.get("debug")):
+                            char.tags.get("actdebug")):
                             char.msg("|mActions being processed in RT mode." +
                         "Restarting script in {0} seconds|n".format(interval))
 
@@ -114,7 +114,7 @@ class ActionSystemScript(DefaultScript):
                     #[DEBUG]
                     for char in handler.owner.contents:
                         if (isinstance(char, DefaultCharacter) and
-                            char.tags.get("debug")):
+                            char.tags.get("actdebug")):
                             char.msg("|mPausing actions script|n")
 
                     handler.pause_script()
@@ -123,7 +123,7 @@ class ActionSystemScript(DefaultScript):
                 #[DEBUG]
                 for char in handler.owner.contents:
                     if (isinstance(char, DefaultCharacter) and 
-                        char.tags.get("debug")):
+                        char.tags.get("actdebug")):
                         char.msg("|mRestarting TB callback in {0}|n".format(
                             handler.owner.key))
 

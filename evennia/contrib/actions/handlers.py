@@ -291,14 +291,16 @@ class CharacterActionHandler(object):
         Note: In turn-based mode, popping must only occur while the popped
         action's owner is referenced by the actions_turnof variable
         """
-        if action['target'] in self.owner.location.contents:
+        if (not action['target'] or
+                action['target'] in self.owner.location.contents):
             self.remove(action)
             action = dict(action)
             self.owner.location.actions.add(action)
         else:
             desc = "will not be {0}: target not in room.".format(
                 action['desc'])
-            desc = format_action_desc(self.owner, action['desc'], 
+            desc = format_action_desc(
+		self.owner.location, self.owner, action['desc'], 
                 action['target'], data=action['data'])
             self.owner.msg(desc)
 
@@ -516,7 +518,7 @@ class RoomActionHandler(object):
         """
 
        #[DEBUG]
-        if action['owner'].tags.get("debug"):
+        if action['owner'].tags.get("actdebug"):
             action['owner'].msg(
                 "|mAdding action {0} to the actions queue of room {1}|n".format(
                 action['key'], self.owner))
@@ -682,7 +684,7 @@ class RoomActionHandler(object):
         self.owner.acted = []
         
         # convert all timers from RT to TB
-        pre_time = self.time
+        pre_time = time()
         self.time = 0
         for action in self.list:
             action['onset'] -= pre_time

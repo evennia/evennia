@@ -42,7 +42,7 @@ class CmdDebugActSlow(Command):
 
 class DebugActionSlow(Action):
     def __init__(self, owner, room):
-        duration = 30
+        duration = 10
         super(DebugActionSlow, self).__init__(
             key="DebugActionSlow",
             desc="performing a slow action",
@@ -76,7 +76,7 @@ class CmdDebugActFast(Command):
 
 class DebugActionFast(Action):
     def __init__(self, owner, room):
-        duration = 10
+        duration = 2
         super(DebugActionFast, self).__init__(
             key="DebugActionFast",
             desc="performing a fast action",
@@ -108,7 +108,7 @@ class CmdDebugActLeftArm(Command):
 
 class DebugActionLeftArm(Action):
     def __init__(self, owner, room):
-        duration = 20
+        duration = 7
         super(DebugActionLeftArm, self).__init__(
             key="DebugActionLeftArm",
             desc="performing an action with their left arm",
@@ -139,7 +139,7 @@ class CmdDebugActRightArm(Command):
 
 class DebugActionRightArm(Action):
     def __init__(self, owner, room):
-        duration = 20
+        duration = 7
         super(DebugActionRightArm, self).__init__(
             key="DebugActionRightArm",
             desc="performing an action with their right arm",
@@ -179,7 +179,7 @@ class CmdDebugActFriend(Command):
 
 class DebugActionFriend(Action):
     def __init__(self, owner, room, target):
-        duration = 10
+        duration = 5
         super(DebugActionFriend, self).__init__(
             key="DebugActionFriend",
             desc="performing a $d good action towards $t",
@@ -220,7 +220,7 @@ class CmdDebugActFoe(Command):
 
 class DebugActionFoe(Action):
     def __init__(self, owner, room, target):
-        duration = 10
+        duration = 5
         super(DebugActionFoe, self).__init__(
             key="DebugActionFoe",
             desc="performing a $d hostile action towards $t",
@@ -261,11 +261,11 @@ class CmdDebugMessages(Command):
     Enables / disables debug messages
 
     Usage:
-        @@debug [<on/off>]
+        @@actdebug [<on/off>]
 
-    The use of "@@debug" on its own enables debug messages.
+    The use of "@@actdebug" on its own enables debug messages.
     """
-    key = "@@debug"
+    key = "@@actdebug"
     #aliases = [""]
     locks = "cmd:perm(wizards)"
     #arg_regex = r"$"
@@ -274,9 +274,9 @@ class CmdDebugMessages(Command):
     def func(self):
         if self.args.find("off") != -1:
             self.caller.msg("Debug messages disabled.")
-            self.caller.tags.remove("debug")
+            self.caller.tags.remove("actdebug")
         else: 
             self.caller.msg("Debug messages enabled.")
-            self.caller.tags.add("debug")
+            self.caller.tags.add("actdebug")
 
 
