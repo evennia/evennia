@@ -21,7 +21,7 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
-                                 make_iter, to_unicode)
+                                 make_iter, to_unicode, calledby)
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
@@ -227,7 +227,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             Also available as the `contents` property.
 
         """
-        return self.contents_cache.get(exclude=exclude)
+        con = self.contents_cache.get(exclude=exclude)
+        #print "contents_get:", self, con, id(self), calledby()
+        return con
     contents = property(contents_get)
 
     @property
@@ -264,7 +266,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if self.locks.check_lockstring(looker, "perm(Builders)"):
             return "{}(#{})".format(self.name, self.id)
         return self.name
-
 
     def search(self, searchdata,
                global_search=False,
@@ -1131,7 +1132,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         pass
-
 
     # hooks called when moving the object
 

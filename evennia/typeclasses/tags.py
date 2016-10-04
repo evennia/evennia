@@ -212,6 +212,13 @@ class TagHandler(object):
         self._catcache.pop(catkey, None)
         self._cache_complete = False
 
+    def reset_cache(self):
+        """
+        Reset the cache from the outside.
+        """
+        self._cache_complete = False
+        self._cache = {}
+        self._catcache = {}
 
     def add(self, tag=None, category=None, data=None):
         """

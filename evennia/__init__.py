@@ -2,12 +2,18 @@
 Evennia MUD/MUX/MU* creation system
 
 This is the main top-level API for Evennia. You can also explore the
-evennia library by accessing evennia.<subpackage> directly.
+evennia library by accessing evennia.<subpackage> directly. From
+inside the game you can read docs of all object by viewing its
+`__doc__` string, such as through
 
-For full functionality you need to explore this module via a django-
-aware shell. Go to your game directory and use the command 'evennia.py shell'
+    @py evennia.ObjectDB.__doc__
+
+For full functionality you should explore this module via a django-
+aware shell. Go to your game directory and use the command
+
+   evennia shell
+
 to launch such a shell (using python or ipython depending on your install).
-
 See www.evennia.com for full documentation.
 
 """

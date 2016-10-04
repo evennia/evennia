@@ -188,6 +188,10 @@ class SessionHandler(dict):
         for key, data in kwargs.iteritems():
             key = _validate(key)
             if not data:
+                if key == "text":
+                    # we don't allow sending text = None, this must mean
+                    # that the text command is not to be used.
+                    continue
                 rkwargs[key] = [ [], {} ]
             elif isinstance(data, dict):
                 rkwargs[key] = [ [], _validate(data) ]
