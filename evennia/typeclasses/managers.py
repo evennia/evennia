@@ -557,6 +557,44 @@ class TypeclassManager(TypedObjectManager):
         """
         return super(TypedObjectManager, self).all().filter(db_typeclass_path=self.model.path)
 
+    def first(self):
+        """
+        Overload method to return first match, filtering for typeclass.
+
+        Returns:
+            object (object): The object found.
+
+        Raises:
+            ObjectNotFound: The exact name of this exception depends
+                on the model base used.
+
+        """
+        return super(TypedObjectManager, self).filter(db_typeclass_path=self.model.path).first()
+
+    def last(self):
+        """
+        Overload method to return last match, filtering for typeclass.
+
+        Returns:
+            object (object): The object found.
+
+        Raises:
+            ObjectNotFound: The exact name of this exception depends
+                on the model base used.
+
+        """
+        return super(TypedObjectManager, self).filter(db_typeclass_path=self.model.path).last()
+
+    def count(self):
+        """
+        Overload method to return number of matches, filtering for typeclass.
+
+        Returns:
+            integer : Number of objects found.
+
+        """
+        return super(TypedObjectManager, self).filter(db_typeclass_path=self.model.path).count()
+
     def _get_subclasses(self, cls):
         """
         Recursively get all subclasses to a class.
