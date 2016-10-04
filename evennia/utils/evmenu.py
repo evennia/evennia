@@ -415,7 +415,7 @@ class EvMenu(object):
                  options_formatter=evtable_options_formatter,
                  node_formatter=underline_node_formatter,
                  input_parser=evtable_parse_input,
-                 persistent=False):
+                 persistent=False, **kwargs):
         """
         Initialize the menu tree and start the caller onto the first node.
 
@@ -499,6 +499,10 @@ class EvMenu(object):
                 that all formatters, menu nodes and callables are possible to
                 *pickle*.
 
+        Kwargs:
+            any (any): All kwargs will become initialization variables on `caller._menutree`,
+                to be available at run.
+
         Raises:
             EvMenuError: If the start/end node is not found in menu tree.
 
@@ -538,6 +542,14 @@ class EvMenu(object):
         self.nodetext = None
         self.helptext = None
         self.options = None
+
+        # assign kwargs as initialization vars on ourselves.
+        if set(("_startnode", "_menutree", "_nodetext_formatter", "_options_formatter",
+                "node_formatter", "_input_parser", "_peristent", "cmd_on_exit", "default",
+                "nodetext", "helptext", "options")).intersection(set(kwargs.keys())):
+            raise RuntimeError("One or more of the EvMenu `**kwargs` is reserved by EvMenu for internal use.")
+        for key, val in kwargs.iteritems():
+            setattr(self, key, val)
 
         # store ourself on the object
         self.caller.ndb._menutree = self
@@ -885,6 +897,7 @@ def get_input(caller, prompt, callback):
 #------------------------------------------------------------
 
 def test_start_node(caller):
+    menu = caller.ndb._menutree
     text = """
     This is an example menu.
 
@@ -893,7 +906,10 @@ def test_start_node(caller):
     input.
 
     Select options or use 'quit' to exit the menu.
-    """
+
+    The menu was initialized with two variables: %s and %s.
+    """ % (menu.testval, menu.testval2)
+
     options = ({"key": ("{yS{net", "s"),
                 "desc": "Set an attribute on yourself.",
                 "exec": lambda caller: caller.attributes.add("menuattrtest", "Test value"),
@@ -1005,4 +1021,5 @@ class CmdTestMenu(Command):
             self.caller.msg("Usage: testmenu menumodule")
             return
         # start menu
-        EvMenu(self.caller, self.args.strip(), startnode="test_start_node", persistent=True, cmdset_mergetype="Replace")
+        EvMenu(self.caller, self.args.strip(), startnode="test_start_node", persistent=True, cmdset_mergetype="Replace",
+                testval="val", testval2="val2")
