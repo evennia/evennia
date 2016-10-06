@@ -595,9 +595,10 @@ class AIPlayer(DefaultPlayer):
     to this.
 
     When subclassing from AI player to include your own dictionary of nodes
-    (say, 'new_nodes') for your subclass (say 'MySubclass'), do:
+    (say, 'new_nodes') for your subclass (say 'MySubclass'), put this in your
+    at_player_creation method:
 
-    nodes = super(MySubclass, self).nodes.update(new_nodes)
+    self.ainodes.update(new_nodes)
 
     This will ensure that your new nodes will be added on to the extant
     dictionary of nodes.

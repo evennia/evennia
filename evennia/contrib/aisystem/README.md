@@ -383,8 +383,21 @@ the AI system commands by subclassing it from AIPlayer.
 ```
 from evennia.contrib.aisystem import AIPlayer
 
+new_nodes = [...]
+
 class MyPlayerClass(AIPlayer, <other superclasses>)
+    [...]
+    def at_player_creation(self):
+        super(MyPlayerClass, self). at_player_creation()
+        self.ainodes.update(new_nodes)
 ```
+
+Here, new\_nodes is a dictionary whose keys are the names of node classes that
+you will reference in-game when adding new nodes to your trees, and whose items
+are the respective node classes. For instance, if new\_nodes is
+`{'my_node': MyNode}, then you can add a node of class MyNode to the currently
+browsed node by using the "@aiadd my_node 'my node'" command. Node names should
+only contain alphanumeric characters and underscores, never spaces.
 
 Even if they are subclassed from this class, players will only have access to
 the AI system commands if they are wizards, immortals or the superuser.
