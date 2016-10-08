@@ -290,7 +290,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
             # we are calling the command from the player level
             report_to = player
             player_cmdset = yield _get_cmdsets(player)
-            channel_cmdset = yield _get_channel_cmdset(player, player_cmdset)
+            channel_cmdset = yield _get_channel_cmdset(player)
             cmdsets = player_cmdset + channel_cmdset
             if obj:
                 obj_cmdset = yield _get_cmdsets(obj)

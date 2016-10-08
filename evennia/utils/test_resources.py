@@ -61,3 +61,6 @@ class EvenniaTest(TestCase):
     def tearDown(self):
         flush_cache()
         del SESSIONS[self.session.sessid]
+        self.player.delete()
+        self.player2.delete()
+        super(EvenniaTest, self).tearDown()

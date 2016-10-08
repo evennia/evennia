@@ -403,9 +403,10 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
                 cmdset_c.no_objs = cmdset_a.no_objs
                 cmdset_c.duplicates = cmdset_a.duplicates
 
-            if self.key.startswith("_"):
+            if cmdset_a.key.startswith("_"):
                 # don't rename new output if the merge set's name starts with _
-                cmdset_c.key = cmdset_a.key
+                # these are usually things like exitcmdsets and channelcmdsets)
+                cmdset_c.key = self.key
 
         else:
             # B higher priority than A
