@@ -329,7 +329,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                     prio = cmdset.priority
                     if prio in tempmergers:
                         # merge same-prio cmdset together separately
-                        tempmergers[prio] = yield cmdset + tempmergers[prio]
+                        tempmergers[prio] = yield tempmergers[prio] + cmdset
                     else:
                         tempmergers[prio] = cmdset
 
@@ -339,7 +339,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                 # Merge all command sets into one, beginning with the lowest-prio one
                 cmdset = cmdsets[0]
                 for merging_cmdset in cmdsets[1:]:
-                    cmdset = yield merging_cmdset + cmdset
+                    cmdset = yield cmdset + merging_cmdset
                 # store the full sets for diagnosis
                 cmdset.merged_from = cmdsets
                 # cache
