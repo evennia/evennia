@@ -390,23 +390,12 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
             else:  # Union
                 cmdset_c = self._union(cmdset_a, self)
 
-            if self.priority == cmdset_a.priority:
-                # same prio - pass through if changed
-                cmdset_c.no_channels = self.no_channels if cmdset_a.no_channels is None else cmdset_a.no_channels
-                cmdset_c.no_exits = self.no_exits if cmdset_a.no_exits is None else cmdset_a.no_exits
-                cmdset_c.no_objs = self.no_objs if cmdset_a.no_objs is None else cmdset_a.no_objs
-                cmdset_c.duplicates = self.duplicates if cmdset_a.duplicates is None else cmdset_a.duplicates
-            else:
-                # pass through the options of the higher prio set
-                cmdset_c.no_channels = cmdset_a.no_channels
-                cmdset_c.no_exits = cmdset_a.no_exits
-                cmdset_c.no_objs = cmdset_a.no_objs
-                cmdset_c.duplicates = cmdset_a.duplicates
-
-            if cmdset_a.key.startswith("_"):
-                # don't rename new output if the merge set's name starts with _
-                # these are usually things like exitcmdsets and channelcmdsets)
-                cmdset_c.key = self.key
+            # pass through options whenever they are set, unless the merging or higher-prio
+            # set changes the setting (i.e. has a non-None value).
+            cmdset_c.no_channels = self.no_channels if cmdset_a.no_channels is None else cmdset_a.no_channels
+            cmdset_c.no_exits = self.no_exits if cmdset_a.no_exits is None else cmdset_a.no_exits
+            cmdset_c.no_objs = self.no_objs if cmdset_a.no_objs is None else cmdset_a.no_objs
+            cmdset_c.duplicates = self.duplicates if cmdset_a.duplicates is None else cmdset_a.duplicates
 
         else:
             # B higher priority than A
@@ -425,15 +414,12 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
             else: # Union
                 cmdset_c = self._union(self, cmdset_a)
 
-            cmdset_c.no_channels = self.no_channels
-            cmdset_c.no_exits = self.no_exits
-            cmdset_c.no_objs = self.no_objs
-            cmdset_c.duplicates = self.duplicates
-
-            # update or pass-through
-            if self.key.startswith("_"):
-                # don't rename new output if the merge set's name starts with _
-                cmdset_c.key = cmdset_a.self.key
+            # pass through options whenever they are set, unless the higher-prio
+            # set changes the setting (i.e. has a non-None value).
+            cmdset_c.no_channels = cmdset_a.no_channels if self.no_channels is None else self.no_channels
+            cmdset_c.no_exits = cmdset_a.no_exits if self.no_exits is None else self.no_exits
+            cmdset_c.no_objs = cmdset_a.no_objs if self.no_objs is None else self.no_objs
+            cmdset_c.duplicates = cmdset_a.duplicates if self.duplicates is None else self.duplicates
 
         # we store actual_mergetype since key_mergetypes
         # might be different from the main mergetype.

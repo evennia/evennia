@@ -170,6 +170,8 @@ class TestCmdSetMergers(TestCase):
     def test_option_transfer(self):
         "Test transfer of cmdset options"
         a, b, c, d = self.cmdset_a, self.cmdset_b, self.cmdset_c, self.cmdset_d
+        # the options should pass through since none of the other cmdsets care
+        # to change the setting from None.
         a.no_exits = True
         a.no_objs = True
         a.no_channels = True
@@ -207,15 +209,25 @@ class TestCmdSetMergers(TestCase):
         c.priority = 1
         d.priority = 2
         cmdset_f = d + c + b + a # reverse, A low prio
-        self.assertFalse(cmdset_f.no_exits)
-        self.assertFalse(cmdset_f.no_objs)
-        self.assertFalse(cmdset_f.no_channels)
-        self.assertFalse(cmdset_f.duplicates)
+        self.assertTrue(cmdset_f.no_exits)
+        self.assertTrue(cmdset_f.no_objs)
+        self.assertTrue(cmdset_f.no_channels)
+        self.assertTrue(cmdset_f.duplicates)
         self.assertEqual(len(cmdset_f.commands), 4)
+        cmdset_f = a + b + c + d # forward, A low prio
+        self.assertTrue(cmdset_f.no_exits)
+        self.assertTrue(cmdset_f.no_objs)
+        self.assertTrue(cmdset_f.no_channels)
+        self.assertTrue(cmdset_f.duplicates)
+        self.assertEqual(len(cmdset_f.commands), 4)
+        c.no_exits = False
+        b.no_objs = False
+        d.duplicates = False
+        # higher-prio sets will change the option up the chain
         cmdset_f = a + b + c + d # forward, A low prio
         self.assertFalse(cmdset_f.no_exits)
         self.assertFalse(cmdset_f.no_objs)
-        self.assertFalse(cmdset_f.no_channels)
+        self.assertTrue(cmdset_f.no_channels)
         self.assertFalse(cmdset_f.duplicates)
         self.assertEqual(len(cmdset_f.commands), 4)
         a.priority = 0
@@ -245,17 +257,28 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
             obj.cmdset.add(cmdset)
 
     def test_from_session(self):
-        self.set_cmdsets(self.session, self.cmdset_a)
+        a = self.cmdset_a
+        a.no_channels = True
+        self.set_cmdsets(self.session, a)
         deferred = cmdhandler.get_and_merge_cmdsets(self.session, self.session, None, None, "session")
-        _callback = lambda cmdset: self.assertEqual(cmdset.key, "A")
+        def _callback(cmdset):
+            self.assertEqual(cmdset.key, "A")
         deferred.addCallback(_callback)
         return deferred
 
     def test_from_player(self):
-        self.set_cmdsets(self.player, self.cmdset_a)
+        from evennia.commands.default.cmdset_player import PlayerCmdSet
+        a = self.cmdset_a
+        a.no_channels = True
+        self.set_cmdsets(self.player, a)
         deferred = cmdhandler.get_and_merge_cmdsets(self.player, None, self.player, None, "player")
         # get_and_merge_cmdsets converts  to lower-case internally.
-        _callback = lambda cmdset: self.assertEqual(sum(1 for cmd in cmdset.commands if cmd.key in ("a", "b", "c", "d")), 4)
+        def _callback(cmdset):
+            pcmdset = PlayerCmdSet()
+            pcmdset.at_cmdset_creation()
+            pcmds = [cmd.key for cmd in pcmdset.commands] + ["a", "b", "c", "d"]
+            self.assertTrue(all(cmd.key in pcmds for cmd in cmdset.commands))
+        #_callback = lambda cmdset: self.assertEqual(sum(1 for cmd in cmdset.commands if cmd.key in ("a", "b", "c", "d")), 4)
         deferred.addCallback(_callback)
         return deferred
 
@@ -269,12 +292,33 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
 
     def test_multimerge(self):
         a, b, c, d = self.cmdset_a, self.cmdset_b, self.cmdset_c, self.cmdset_d
-        d.no_exits = True
+        a.no_exits = True
+        a.no_channels = True
         self.set_cmdsets(self.obj1, a, b, c, d)
         deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object")
         def _callback(cmdset):
-            self.assertEqual(cmdset.key, "D")
             self.assertTrue(cmdset.no_exits)
+            self.assertTrue(cmdset.no_channels)
+            self.assertEqual(cmdset.key, "D")
+        deferred.addCallback(_callback)
+        return deferred
+
+    def test_autocmdsets(self):
+        import evennia
+        from evennia.commands.default.cmdset_player import PlayerCmdSet
+        from evennia.comms.channelhandler import CHANNEL_HANDLER
+        testchannel = evennia.create_channel("testchannel", locks="listen:all();send:all()")
+        CHANNEL_HANDLER.add(testchannel)
+        self.assertTrue(testchannel.connect(self.player))
+        a, b, c, d = self.cmdset_a, self.cmdset_b, self.cmdset_c, self.cmdset_d
+        self.set_cmdsets(self.player, a, b, c, d)
+        deferred = cmdhandler.get_and_merge_cmdsets(self.session, self.session, self.player, self.char1, "session")
+        def _callback(cmdset):
+            pcmdset = PlayerCmdSet()
+            pcmdset.at_cmdset_creation()
+            pcmds = [cmd.key for cmd in pcmdset.commands] + ["a", "b", "c", "d"] + ["out"]
+            self.assertTrue(all(cmd.key or hasattr(cmd, "is_channel") in pcmds for cmd in cmdset.commands))
+            self.assertTrue(any(hasattr(cmd, "is_channel") for cmd in cmdset.commands))
         deferred.addCallback(_callback)
         return deferred
 

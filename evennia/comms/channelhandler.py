@@ -162,7 +162,7 @@ class ChannelHandler(object):
         """
         self.cached_channel_cmds = []
 
-    def add_channel(self, channel):
+    def add(self, channel):
         """
         Add an individual channel to the handler. This should be
         called whenever a new channel is created.
@@ -197,6 +197,7 @@ class ChannelHandler(object):
                                          channeldesc=channel.attributes.get("desc", default="").strip())
         self.cached_channel_cmds.append(cmd)
         self.cached_cmdsets = {}
+    add_channel = add # legacy alias
 
     def update(self):
         """
@@ -220,7 +221,7 @@ class ChannelHandler(object):
         Args:
             source_object (Object): An object subscribing to one
                 or more channels.
-
+hannelhandler import CHANNEL_HANDLER
         Returns:
             cmdsets (list): The Channel-Cmdsets `source_object` has
                 access to.
@@ -231,7 +232,7 @@ class ChannelHandler(object):
         else:
             # create a new cmdset holding all channels
             chan_cmdset = cmdset.CmdSet()
-            chan_cmdset.key = '_channelset'
+            chan_cmdset.key = 'ChannelCmdSet'
             chan_cmdset.priority = 101
             chan_cmdset.duplicates = True
             for cmd in [cmd for cmd in self.cached_channel_cmds

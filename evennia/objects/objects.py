@@ -1684,7 +1684,7 @@ class DefaultExit(DefaultObject):
                                 obj=exidbobj)
         # create a cmdset
         exit_cmdset = cmdset.CmdSet(None)
-        exit_cmdset.key = '_exitset'
+        exit_cmdset.key = 'ExitCmdSet'
         exit_cmdset.priority = self.priority
         exit_cmdset.duplicates = True
         # add command to cmdset
