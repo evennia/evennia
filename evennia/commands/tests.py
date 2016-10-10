@@ -186,7 +186,7 @@ class TestCmdSetMergers(TestCase):
         self.assertTrue(cmdset_f.no_exits)
         self.assertTrue(cmdset_f.no_objs)
         self.assertTrue(cmdset_f.no_channels)
-        self.assertTrue(cmdset_f.duplicates)
+        self.assertFalse(cmdset_f.duplicates)
         self.assertEqual(len(cmdset_f.commands), 4)
         a.priority = 2
         b.priority = 1
@@ -198,7 +198,7 @@ class TestCmdSetMergers(TestCase):
         self.assertTrue(cmdset_f.no_channels)
         self.assertTrue(cmdset_f.duplicates)
         self.assertEqual(len(cmdset_f.commands), 4)
-        cmdset_f = a + b + c + d # forward, A top priority
+        cmdset_f = a + b + c + d # forward, A top priority. This never happens in practice.
         self.assertTrue(cmdset_f.no_exits)
         self.assertTrue(cmdset_f.no_objs)
         self.assertTrue(cmdset_f.no_channels)
@@ -208,17 +208,17 @@ class TestCmdSetMergers(TestCase):
         b.priority = 0
         c.priority = 1
         d.priority = 2
-        cmdset_f = d + c + b + a # reverse, A low prio
+        cmdset_f = d + c + b + a # reverse, A low prio. This never happens in practice.
         self.assertTrue(cmdset_f.no_exits)
         self.assertTrue(cmdset_f.no_objs)
         self.assertTrue(cmdset_f.no_channels)
-        self.assertTrue(cmdset_f.duplicates)
+        self.assertFalse(cmdset_f.duplicates)
         self.assertEqual(len(cmdset_f.commands), 4)
         cmdset_f = a + b + c + d # forward, A low prio
         self.assertTrue(cmdset_f.no_exits)
         self.assertTrue(cmdset_f.no_objs)
         self.assertTrue(cmdset_f.no_channels)
-        self.assertTrue(cmdset_f.duplicates)
+        self.assertFalse(cmdset_f.duplicates)
         self.assertEqual(len(cmdset_f.commands), 4)
         c.no_exits = False
         b.no_objs = False
@@ -322,6 +322,18 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         deferred.addCallback(_callback)
         return deferred
 
+    def test_duplicates(self):
+        a, b, c, d = self.cmdset_a, self.cmdset_b, self.cmdset_c, self.cmdset_d
+        a.no_exits = True
+        a.no_channels = True
+        b.duplicates = True
+        d.duplicates = True
+        self.set_cmdsets(self.obj1, a, b, c, d)
+        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object")
+        def _callback(cmdset):
+            self.assertEqual(len(cmdset.commands), 9)
+        deferred.addCallback(_callback)
+        return deferred
 
 
 
