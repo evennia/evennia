@@ -42,7 +42,7 @@ command definition too) with function defintions:
         # code
         return text, options
 
-    def node_with_other_namen(caller, input_string):
+    def node_with_other_name(caller, input_string):
         # code
         return text, options
 ```
