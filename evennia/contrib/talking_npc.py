@@ -64,7 +64,8 @@ def info1(caller):
  
     options = ({"desc": "Sure, *I* do, not sure how you do though. You are just an NPC.",
                 "goto": "info3"},
-               {"desc": "Sure I do. What's yer name, NPC?"},
+               {"desc": "Sure I do. What's yer name, NPC?",
+                "goto": "info2"},
                {"desc": "Ok, bye for now then."},
                {"goto": "END"})
  
