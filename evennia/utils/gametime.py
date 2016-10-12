@@ -9,11 +9,15 @@ from __future__ import division
 
 from time import time
 from django.conf import settings
+from evennia.server.models import ServerConfig
 
 # Speed-up factor of the in-game time compared
 # to real time.
 
 TIMEFACTOR = settings.TIME_FACTOR
+
+# Only set if gametime_reset was called at some point.
+GAME_TIME_OFFSET = ServerConfig.objects.conf("gametime_offset", default=0)
 
 # Common real-life time measure, in seconds.
 # You should not change this.
@@ -36,6 +40,7 @@ YEAR = MONTH * settings.TIME_MONTH_PER_YEAR
 SERVER_START_TIME = 0.0
 SERVER_RUNTIME_LAST_UPDATED = 0.0
 SERVER_RUNTIME = 0.0
+
 
 def _format(seconds, *divisors) :
     """
@@ -83,6 +88,7 @@ def runtime(format=False):
         return _format(runtime, 31536000, 2628000, 604800, 86400, 3600, 60)
     return runtime
 
+
 def uptime(format=False):
     """
     Get the current uptime of the server since last reload
@@ -100,6 +106,7 @@ def uptime(format=False):
         return _format(uptime, 31536000, 2628000, 604800, 86400, 3600, 60)
     return uptime
 
+
 def gametime(format=False):
     """
     Get the total gametime of the server since first start (minus downtimes)
@@ -112,10 +119,23 @@ def gametime(format=False):
             into time units.
 
     """
-    gametime = runtime() * TIMEFACTOR
+    gametime = (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
     if format:
         return _format(gametime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
     return gametime
+
+
+def reset_gametime():
+    """
+    Resets the game time to make it start from the current time.
+
+    """
+    global GAME_TIME_OFFSET
+    GAME_TIME_OFFSET = runtime()
+    ServerConfig.objects.conf("gametime_offset", GAME_TIME_OFFSET)
+
+
+# Conversion functions
 
 
 def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
