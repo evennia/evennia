@@ -339,7 +339,10 @@ class TypedObject(SharedMemoryModel):
     #
 
     def __eq__(self, other):
-        return other and hasattr(other, 'dbid') and self.dbid == other.dbid
+        try:
+            return self.__dbclass__ == other.__dbclass__ and self.dbid == other.dbid
+        except AttributeError:
+            return False
 
     def __str__(self):
         return smart_str("%s" % self.db_key)
