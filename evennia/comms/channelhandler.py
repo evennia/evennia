@@ -145,7 +145,7 @@ class ChannelHandler(object):
         Initializes the channel handler's internal state.
 
         """
-        self.cached_channel_cmds = []
+        self.cached_channel_cmds = {}
         self.cached_cmdsets = {}
 
     def __str__(self):
@@ -160,7 +160,8 @@ class ChannelHandler(object):
         Reset the cache storage.
 
         """
-        self.cached_channel_cmds = []
+        self.cached_channel_cmds = {}
+        self.cached_cmdsets = {}
 
     def add(self, channel):
         """
@@ -195,7 +196,7 @@ class ChannelHandler(object):
         cmd.__doc__ = cmd.__doc__.format(channelkey=key,
                                          lower_channelkey=key.strip().lower(),
                                          channeldesc=channel.attributes.get("desc", default="").strip())
-        self.cached_channel_cmds.append(cmd)
+        self.cached_channel_cmds[channel] = cmd
         self.cached_cmdsets = {}
     add_channel = add # legacy alias
 
@@ -208,10 +209,10 @@ class ChannelHandler(object):
         global _CHANNELDB
         if not _CHANNELDB:
             from evennia.comms.models import ChannelDB as _CHANNELDB
-        self.cached_channel_cmds = []
+        self.cached_channel_cmds = {}
         self.cached_cmdsets = {}
         for channel in _CHANNELDB.objects.get_all_channels():
-            self.add_channel(channel)
+            self.add(channel)
 
     def get_cmdset(self, source_object):
         """
@@ -221,7 +222,7 @@ class ChannelHandler(object):
         Args:
             source_object (Object): An object subscribing to one
                 or more channels.
-hannelhandler import CHANNEL_HANDLER
+
         Returns:
             cmdsets (list): The Channel-Cmdsets `source_object` has
                 access to.
@@ -230,14 +231,18 @@ hannelhandler import CHANNEL_HANDLER
         if source_object in self.cached_cmdsets:
             return self.cached_cmdsets[source_object]
         else:
-            # create a new cmdset holding all channels
-            chan_cmdset = cmdset.CmdSet()
-            chan_cmdset.key = 'ChannelCmdSet'
-            chan_cmdset.priority = 101
-            chan_cmdset.duplicates = True
-            for cmd in [cmd for cmd in self.cached_channel_cmds
-                        if cmd.access(source_object, 'send')]:
-                chan_cmdset.add(cmd)
+            # create a new cmdset holding all viable channels
+            chan_cmdset = None
+            chan_cmds = [channelcmd for channel, channelcmd in self.cached_channel_cmds.iteritems()
+                                if channel.subscriptions.has(source_object)
+                                    and channelcmd.access(source_object, 'send')]
+            if chan_cmds:
+                chan_cmdset = cmdset.CmdSet()
+                chan_cmdset.key = 'ChannelCmdSet'
+                chan_cmdset.priority = 101
+                chan_cmdset.duplicates = True
+                for cmd in chan_cmds:
+                    chan_cmdset.add(cmd)
             self.cached_cmdsets[source_object] = chan_cmdset
             return chan_cmdset
 

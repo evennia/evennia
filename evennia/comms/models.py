@@ -109,7 +109,7 @@ class Msg(SharedMemoryModel):
     db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', null=True, blank=True)
     db_hide_from_channels = models.ManyToManyField("ChannelDB", related_name='hide_from_channels_set', null=True, blank=True)
 
-    db_tags = models.ManyToManyField(Tag, null=True, blank=True, 
+    db_tags = models.ManyToManyField(Tag, null=True, blank=True,
             help_text='tags on this message. Tags are simple string markers to identify, group and alias messages.')
 
     # Database manager
@@ -331,7 +331,7 @@ class Msg(SharedMemoryModel):
         """
         return self.locks.check(accessing_obj,
                                 access_type=access_type, default=default)
-    
+
 #------------------------------------------------------------
 #
 # TempMsg
@@ -448,6 +448,11 @@ class SubscriptionHandler(object):
 
         """
         self.obj = obj
+        self._cache = None
+
+    def _recache(self):
+        self._cache = {player : True for player in self.obj.db_subscriptions.all()}
+        self._cache.update({obj : True for obj in self.obj.db_object_subscriptions.all()})
 
     def has(self, entity):
         """
@@ -463,12 +468,9 @@ class SubscriptionHandler(object):
                 subscriber.
 
         """
-        clsname = entity.__dbclass__.__name__
-        if clsname == "PlayerDB":
-            return entity in self.obj.db_subscriptions.all()
-        elif clsname == "ObjectDB":
-            return entity in self.obj.db_object_subscriptions.all()
-
+        if self._cache is None:
+            self._recache()
+        return entity in self._cache
 
     def add(self, entity):
         """
@@ -492,10 +494,11 @@ class SubscriptionHandler(object):
                     self.obj.db_object_subscriptions.add(subscriber)
                 elif clsname == "PlayerDB":
                     self.obj.db_subscriptions.add(subscriber)
+        self._recache()
 
     def remove(self, entity):
         """
-        Remove a subecriber from the channel.
+        Remove a subscriber from the channel.
 
         Args:
             entity (Player, Object or list): The entity or
@@ -510,6 +513,7 @@ class SubscriptionHandler(object):
                     self.obj.db_subscriptions.remove(entity)
                 elif clsname == "ObjectDB":
                     self.obj.db_object_subscriptions.remove(entity)
+        self._recache()
 
     def all(self):
         """
@@ -520,8 +524,9 @@ class SubscriptionHandler(object):
                 may be a mix of Players and Objects!
 
         """
-        return list(self.obj.db_subscriptions.all()) + \
-               list(self.obj.db_object_subscriptions.all())
+        if self._cache is None:
+            self._recache()
+        return self._cache
 
     def clear(self):
         """
@@ -530,6 +535,7 @@ class SubscriptionHandler(object):
         """
         self.obj.db_subscriptions.clear()
         self.obj.db_object_subscriptions.clear()
+        self._cache = None
 
 
 class ChannelDB(TypedObject):

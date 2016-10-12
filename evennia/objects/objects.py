@@ -875,24 +875,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 
-    def __eq__(self, other):
-        """
-        Checks for equality against an id string or another object or
-        user.
-
-        Args:
-            other (Object): object to compare to.
-
-        """
-        try:
-            return self.dbid == other.dbid
-        except AttributeError:
-           # compare players instead
-            try:
-                return self.player.uid == other.player.uid
-            except AttributeError:
-                return False
-
     #
     # Hook methods
     #

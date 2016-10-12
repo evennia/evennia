@@ -36,6 +36,7 @@ command line. The processing of a command works as follows:
 from collections import defaultdict
 from weakref import WeakValueDictionary
 from traceback import format_exc
+from itertools import chain
 from copy import copy
 from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
@@ -223,7 +224,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                     location = obj.location
                 except Exception:
                     location = None
-                if location:# and not obj_cmdset.no_objs: #TODO
+                if location:
                     # Gather all cmdsets stored on objects in the room and
                     # also in the caller's inventory and the location itself
                     local_objlist = yield (location.contents_get(exclude=obj) +
@@ -239,9 +240,10 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                     # is not seeing e.g. the commands on a fellow player (which is why
                     # the no_superuser_bypass must be True)
                     local_obj_cmdsets = \
-                        yield [lobj.cmdset.current for lobj in local_objlist
-                           if (lobj.cmdset.current and
-                           lobj.access(caller, access_type='call', no_superuser_bypass=True))]
+                        yield list(chain.from_iterable(
+                                lobj.cmdset.cmdset_stack for lobj in local_objlist
+                                if (lobj.cmdset.current and
+                                lobj.access(caller, access_type='call', no_superuser_bypass=True))))
                     for cset in local_obj_cmdsets:
                         #This is necessary for object sets, or we won't be able to
                         # separate the command sets from each other in a busy room. We
@@ -267,8 +269,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported
             try:
-                # we don't return the 'duplicates' option since this happens per-merge
-                returnValue((obj.cmdset.current,  obj.cmdset.cmdset_stack))
+                returnValue((obj.cmdset.current,  list(obj.cmdset.cmdset_stack)))
             except AttributeError:
                 returnValue(((None, None, None), []))
 
@@ -299,12 +300,13 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                     if not current.no_channels:
                         # also objs may have channels
                         channel_cmdsets = yield _get_channel_cmdset(obj)
-                        print "obj channel cmdsets:", len(channel_cmdsets), [cmdset.key for cmdset in channel_cmdsets]
+                        print "obj channel cmdsets:", len(channel_cmdsets), [cmdset.key if cmdset else cmdset for cmdset in channel_cmdsets]
                         cmdsets += channel_cmdsets
-            if not current.no_channels:
-                channel_cmdsets = yield _get_channel_cmdset(obj)
-                print "player channel cmdsets:", len(channel_cmdsets), [cmdset.key for cmdset in channel_cmdsets]
-                cmdsets += channel_cmdsets
+                if not current.no_channels:
+                    channel_cmdsets = yield _get_channel_cmdset(player)
+                    print "player channel cmdsets:", len(channel_cmdsets), [cmdset.key for cmdset in channel_cmdsets]
+                    print channel_cmdsets[0].commands
+                    cmdsets += channel_cmdsets
 
         elif callertype == "player":
             # we are calling the command from the player level
