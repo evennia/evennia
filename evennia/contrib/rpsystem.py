@@ -340,8 +340,8 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
     """
     # Load all candidate regex tuples [(regex, obj, sdesc/recog),...]
     candidate_regexes = \
-            [(_RE_SELF_REF, sender, sender.sdesc.get())] if hasattr(sender, "sdesc") else [] + \
-            [sender.recog.get_regex_tuple(obj) for obj in candidates] if hasattr(sender, "recog") else [] + \
+            ([(_RE_SELF_REF, sender, sender.sdesc.get())] if hasattr(sender, "sdesc") else [])+ \
+            ([sender.recog.get_regex_tuple(obj) for obj in candidates] if hasattr(sender, "recog") else []) + \
             [obj.sdesc.get_regex_tuple()
                     for obj in candidates if hasattr(obj, "sdesc")] + \
             [regex_tuple_from_key_alias(obj)   # handle objects without sdescs
