@@ -1009,13 +1009,13 @@ class OutroRoom(TutorialRoom):
         Do cleanup.
         """
         if character.has_player:
-            if self.db.wracklist:
-                for wrackid in self.db.wracklist:
-                    character.del_attribute(wrackid)
             del character.db.health_max
             del character.db.health
             del character.db.last_climbed
             del character.db.puzzle_clue
             del character.db.combat_parry_mode
             del character.db.tutorial_bridge_position
+            for obj in character.contents:
+                if obj.typeclass_path.startswith("evennia.contrib.tutorial_world"):
+                    obj.delete()
             character.tags.clear(category="tutorial_world")
