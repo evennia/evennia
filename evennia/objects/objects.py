@@ -1708,14 +1708,14 @@ class DefaultExit(DefaultObject):
 
         """
 
-        if "force_init" in kwargs or not self.cmdset.has_cmdset("_exitset", must_be_default=True):
+        if "force_init" in kwargs or not self.cmdset.has_cmdset("ExitCmdSet", must_be_default=True):
             # we are resetting, or no exit-cmdset was set. Create one dynamically.
             self.cmdset.add_default(self.create_exit_cmdset(self), permanent=False)
 
     def at_init(self):
         """
         This is called when this objects is re-loaded from cache. When
-        that happens, we make sure to remove any old _exitset cmdset
+        that happens, we make sure to remove any old ExitCmdSet cmdset
         (this most commonly occurs when renaming an existing exit)
         """
         self.cmdset.remove_default()

@@ -68,7 +68,6 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
             target = self.caller.search(self.args)
             if not target:
                 return
-        print "cmdlook:", id(self), id(self.cmdset)
         self.msg(self.caller.at_look(target))
 
 

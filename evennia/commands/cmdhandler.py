@@ -273,26 +273,21 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
             except AttributeError:
                 returnValue(((None, None, None), []))
 
-        print "callertype:", callertype
         local_obj_cmdsets = []
         if callertype == "session":
             # we are calling the command from the session level
             report_to = session
             current, cmdsets = yield _get_cmdsets(session)
-            print "session cmdsets:", len(cmdsets)
             if player:  # this automatically implies logged-in
                 pcurrent, player_cmdsets = yield _get_cmdsets(player)
-                print "player cmdsets:", len(player_cmdsets)
                 cmdsets += player_cmdsets
                 current = current + pcurrent
                 if obj:
                     ocurrent, obj_cmdsets = yield _get_cmdsets(obj)
-                    print "obj_cmdsets:", len(obj_cmdsets), [cmdset.key for cmdset in obj_cmdsets]
                     current = current + ocurrent
                     cmdsets += obj_cmdsets
                     if not current.no_objs:
                         local_obj_cmdsets = yield _get_local_obj_cmdsets(obj)
-                        print "local_obj_cmdsets:", len(local_obj_cmdsets), [cmdset.key for cmdset in local_obj_cmdsets]
                         if current.no_exits:
                             # filter out all exits
                             local_obj_cmdsets = [cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"]
@@ -300,12 +295,9 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                     if not current.no_channels:
                         # also objs may have channels
                         channel_cmdsets = yield _get_channel_cmdset(obj)
-                        print "obj channel cmdsets:", len(channel_cmdsets), [cmdset.key if cmdset else cmdset for cmdset in channel_cmdsets]
                         cmdsets += channel_cmdsets
                 if not current.no_channels:
                     channel_cmdsets = yield _get_channel_cmdset(player)
-                    print "player channel cmdsets:", len(channel_cmdsets), [cmdset.key for cmdset in channel_cmdsets]
-                    print channel_cmdsets[0].commands
                     cmdsets += channel_cmdsets
 
         elif callertype == "player":
@@ -354,7 +346,6 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
         if cmdsets:
             # faster to do tuple on list than to build tuple directly
             mergehash = tuple([id(cmdset) for cmdset in cmdsets])
-            print "len(mergehash):", len(mergehash)
             if mergehash in _CMDSET_MERGE_CACHE:
                 # cached merge exist; use that
                 cmdset = _CMDSET_MERGE_CACHE[mergehash]
