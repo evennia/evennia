@@ -36,6 +36,8 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
 
+_CHANNELHANDLER = None
+
 
 #------------------------------------------------------------
 #
@@ -486,6 +488,9 @@ class SubscriptionHandler(object):
                 no hooks will be called.
 
         """
+        global _CHANNELHANDLER
+        if not _CHANNELHANDLER:
+            from evennia.comms.channelhandler import CHANNEL_HANDLER as _CHANNELHANDLER
         for subscriber in make_iter(entity):
             if subscriber:
                 clsname = subscriber.__dbclass__.__name__
@@ -494,6 +499,7 @@ class SubscriptionHandler(object):
                     self.obj.db_object_subscriptions.add(subscriber)
                 elif clsname == "PlayerDB":
                     self.obj.db_subscriptions.add(subscriber)
+                _CHANNELHANDLER.cached_cmdsets.pop(subscriber, None)
         self._recache()
 
     def remove(self, entity):
@@ -513,6 +519,7 @@ class SubscriptionHandler(object):
                     self.obj.db_subscriptions.remove(entity)
                 elif clsname == "ObjectDB":
                     self.obj.db_object_subscriptions.remove(entity)
+                _CHANNELHANDLER.cached_cmdsets.pop(subscriber, None)
         self._recache()
 
     def all(self):

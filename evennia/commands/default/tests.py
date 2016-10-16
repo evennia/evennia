@@ -309,5 +309,5 @@ class TestBatchProcess(CommandTest):
     def test_batch_commands(self):
         # cannot test batchcode here, it must run inside the server process
         self.call(batchprocess.CmdBatchCommands(), "example_batch_cmds", "Running Batchcommand processor  Automatic mode for example_batch_cmds")
-        #self.call(batchprocess.CmdBatchCode(), "examples.batch_code", "")
-
+        # we make sure to delete the button again here to stop the running reactor
+        self.call(building.CmdDestroy(), "button", "button was destroyed.")

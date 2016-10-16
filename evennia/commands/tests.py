@@ -3,7 +3,7 @@ Unit testing for the Command system itself.
 
 """
 
-from evennia.utils.test_resources import EvenniaTest, SESSIONS, TestCase
+from evennia.utils.test_resources import EvenniaTest, TestCase
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
 
@@ -307,9 +307,11 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         import evennia
         from evennia.commands.default.cmdset_player import PlayerCmdSet
         from evennia.comms.channelhandler import CHANNEL_HANDLER
-        testchannel = evennia.create_channel("testchannel", locks="listen:all();send:all()")
+        testchannel = evennia.create_channel("channeltest", locks="listen:all();send:all()")
         CHANNEL_HANDLER.add(testchannel)
+        CHANNEL_HANDLER.update()
         self.assertTrue(testchannel.connect(self.player))
+        self.assertTrue(testchannel.has_connection(self.player))
         a, b, c, d = self.cmdset_a, self.cmdset_b, self.cmdset_c, self.cmdset_d
         self.set_cmdsets(self.player, a, b, c, d)
         deferred = cmdhandler.get_and_merge_cmdsets(self.session, self.session, self.player, self.char1, "session")
@@ -334,9 +336,3 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
             self.assertEqual(len(cmdset.commands), 9)
         deferred.addCallback(_callback)
         return deferred
-
-
-
-
-
-
