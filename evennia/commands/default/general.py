@@ -85,7 +85,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
       inputline - replace on the inputline (default)
       object    - replace on object-lookup
       player    - replace on player-lookup
-      delete    - remove nick by number of by index given by /list
+      delete    - remove nick by name or by index given by /list
       clearall  - clear all nicks
       list      - show all defined aliases (also "nicks" works)
       test      - test input to see what it matches with
