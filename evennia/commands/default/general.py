@@ -163,9 +163,10 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 _, _, old_nickstring, old_replstring = oldnick.value
             else:
                 # no old nick, see if a number was given
-                if self.args.isdigit():
+                arg = self.args.lstrip("#")
+                if arg.isdigit():
                     # we are given a index in nicklist
-                    delindex = int(self.args)
+                    delindex = int(arg)
                     if 0 < delindex <= len(nicklist):
                         oldnick = nicklist[delindex-1]
                         _, _, old_nickstring, old_replstring = oldnick.value
@@ -176,9 +177,12 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
             if "delete" in switches or "del" in switches:
                 # clear the nick
-                errstring = ""
-                string += "\nNick removed: '|w%s|n' -> |w%s|n." % (old_nickstring, old_replstring)
-                caller.nicks.remove(nickstring, category=nicktype)
+                if caller.nicks.has(old_nickstring, category=nicktype):
+                    caller.nicks.remove(old_nickstring, category=nicktype)
+                    string += "\nNick removed: '|w%s|n' -> |w%s|n." % (old_nickstring, old_replstring)
+                else:
+                    errstring += "\nNick '|w%s|n' was not deleted." % old_nickstring
+
 
             elif replstring:
                 # creating new nick
