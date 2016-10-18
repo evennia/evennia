@@ -234,13 +234,12 @@ class ChannelHandler(object):
             # create a new cmdset holding all viable channels
             chan_cmdset = None
             chan_cmds = [channelcmd for channel, channelcmd in self.cached_channel_cmds.iteritems()
-                                if channel.subscriptions.has(source_object)
-                                    and channelcmd.access(source_object, 'send')]
+                                if channelcmd.access(source_object, 'send')]
             if chan_cmds:
                 chan_cmdset = cmdset.CmdSet()
                 chan_cmdset.key = 'ChannelCmdSet'
                 chan_cmdset.priority = 101
-                chan_cmdset.duplicates = True
+                chan_cmdset.duplicates = False
                 for cmd in chan_cmds:
                     chan_cmdset.add(cmd)
             self.cached_cmdsets[source_object] = chan_cmdset
