@@ -79,6 +79,34 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             has_sub = self.subscriptions.has(subscriber.player)
         return has_sub
 
+    @property
+    def mutelist(self):
+        return self.db.mute_list or []
+
+    def mute(self, subscriber):
+        """
+        Adds an entity to the list of muted subscribers.
+        A muted subscriber will no longer see channel messages,
+        but may use channel commands.
+        """
+        mutelist = self.mutelist
+        if subscriber not in mutelist:
+            mutelist.append(subscriber)
+            self.db.mute_list = mutelist
+            return True
+
+    def unmute(self, subscriber):
+        """
+        Removes an entity to the list of muted subscribers.
+        A muted subscriber will no longer see channel messages,
+        but may use channel commands.
+        """
+        mutelist = self.mutelist
+        if subscriber in mutelist:
+            mutelist.remove(subscriber)
+            self.db.mute_list = mutelist
+            return True
+
 
     def connect(self, subscriber):
         """
@@ -102,6 +130,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             return False
         # subscribe
         self.subscriptions.add(subscriber)
+        # unmute
+        self.unmute(subscriber)
         # post-join hook
         self.post_join_channel(subscriber)
         return True
@@ -125,6 +155,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             return False
         # disconnect
         self.subscriptions.remove(subscriber)
+        # unmute
+        self.unmute(subscriber)
         # post-disconnect hook
         self.post_leave_channel(subscriber)
         return True
@@ -197,6 +229,9 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         """
         # get all players connected to this channel and send to them
         for entity in self.subscriptions.all():
+            # if the entity is muted, we don't send them a message
+            if entity in self.mutelist:
+                continue
             try:
                 # note our addition of the from_channel keyword here. This could be checked
                 # by a custom player.msg() to treat channel-receives differently.
