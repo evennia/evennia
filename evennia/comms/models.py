@@ -511,6 +511,9 @@ class SubscriptionHandler(object):
                 entities to un-subscribe from the channel.
 
         """
+        global _CHANNELHANDLER
+        if not _CHANNELHANDLER:
+            from evennia.comms.channelhandler import CHANNEL_HANDLER as _CHANNELHANDLER
         for subscriber in make_iter(entity):
             if subscriber:
                 clsname = subscriber.__dbclass__.__name__
