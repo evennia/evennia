@@ -112,7 +112,10 @@ class CmdAddCom(COMMAND_DEFAULT_CLASS):
             else:
                 string += "You now listen to the channel %s. " % channel.key
         else:
-            string += "You are already connected to channel %s." % channel.key
+            if channel.unmute(player):
+                string += "You unmute channel %s." % channel.key
+            else:
+                string += "You are already connected to channel %s." % channel.key
 
         if alias:
             # create a nick and add it to the caller.
@@ -130,10 +133,12 @@ class CmdDelCom(COMMAND_DEFAULT_CLASS):
 
     Usage:
        delcom <alias or channel>
+       delcom/all <channel>
 
     If the full channel name is given, unsubscribe from the
     channel. If an alias is given, remove the alias but don't
-    unsubscribe.
+    unsubscribe. If the 'all' switch is used, remove all aliases
+    for that channel.
     """
 
     key = "delcom"
@@ -162,13 +167,16 @@ class CmdDelCom(COMMAND_DEFAULT_CLASS):
                 self.msg("You are not listening to that channel.")
                 return
             chkey = channel.key.lower()
+            delnicks = "all" in self.switches
             # find all nicks linked to this channel and delete them
-            for nick in [nick for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
-                         if nick and nick.pk and nick.value[3].lower() == chkey]:
-                nick.delete()
+            if delnicks:
+                for nick in [nick for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
+                             if nick and nick.pk and nick.value[3].lower() == chkey]:
+                    nick.delete()
             disconnect = channel.disconnect(player)
             if disconnect:
-                self.msg("You stop listening to channel '%s'. Eventual aliases were removed." % channel.key)
+                wipednicks = " Eventual aliases were removed." if delnicks else ""
+                self.msg("You stop listening to channel '%s'.%s" % channel.key)
             return
         else:
             # we are removing a channel nick
