@@ -331,6 +331,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
         tag = self.get_tag(key=key, category=category, tagtype=tagtype, global_search=True)
         if tag and data is not None:
+            # get tag from list returned by get_tag
+            tag = tag[0]
             # overload data on tag
             tag.db_data = data
             tag.save()
