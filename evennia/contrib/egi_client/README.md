@@ -19,85 +19,89 @@ Start by `cd`'ing to your game directory. From there, open up
 `server/conf/server_services_plugins.py`. It might look something like this
 if you don't have any other optional add-ons enabled:
 
+```python
+"""
+Server plugin services
+
+This plugin module can define user-created services for the Server to
+start.
+
+This module must handle all imports and setups required to start a
+twisted service (see examples in evennia.server.server). It must also
+contain a function start_plugin_services(application). Evennia will
+call this function with the main Server application (so your services
+can be added to it). The function should not return anything. Plugin
+services are started last in the Server startup process.
+"""
+
+
+def start_plugin_services(server):
     """
-    Server plugin services
+    This hook is called by Evennia, last in the Server startup process.
 
-    This plugin module can define user-created services for the Server to
-    start.
-
-    This module must handle all imports and setups required to start a
-    twisted service (see examples in evennia.server.server). It must also
-    contain a function start_plugin_services(application). Evennia will
-    call this function with the main Server application (so your services
-    can be added to it). The function should not return anything. Plugin
-    services are started last in the Server startup process.
+    server - a reference to the main server application.
     """
-
-
-    def start_plugin_services(server):
-        """
-        This hook is called by Evennia, last in the Server startup process.
-
-        server - a reference to the main server application.
-        """
-        pass
-
+    pass
+```
 
 To enable the client, import `EvenniaGameIndexService` and fire it up after the
 Evennia server has finished starting:
 
+```python
+"""
+Server plugin services
+
+This plugin module can define user-created services for the Server to
+start.
+
+This module must handle all imports and setups required to start a
+twisted service (see examples in evennia.server.server). It must also
+contain a function start_plugin_services(application). Evennia will
+call this function with the main Server application (so your services
+can be added to it). The function should not return anything. Plugin
+services are started last in the Server startup process.
+"""
+
+from evennia.contrib.egi_client import EvenniaGameIndexService
+
+def start_plugin_services(server):
     """
-    Server plugin services
+    This hook is called by Evennia, last in the Server startup process.
 
-    This plugin module can define user-created services for the Server to
-    start.
-
-    This module must handle all imports and setups required to start a
-    twisted service (see examples in evennia.server.server). It must also
-    contain a function start_plugin_services(application). Evennia will
-    call this function with the main Server application (so your services
-    can be added to it). The function should not return anything. Plugin
-    services are started last in the Server startup process.
+    server - a reference to the main server application.
     """
-
-    from evennia.contrib.egi_client import EvenniaGameIndexService
-
-    def start_plugin_services(server):
-        """
-        This hook is called by Evennia, last in the Server startup process.
-
-        server - a reference to the main server application.
-        """
-        egi_service = EvenniaGameIndexService()
-        server.services.addService(egi_service)
-
+    egi_service = EvenniaGameIndexService()
+    server.services.addService(egi_service)
+```
 
 Next, configure your game listing by opening up `server/conf/settings.py` and
  using the following as a starting point:
 
-    ######################################################################
-    # Contrib config
-    ######################################################################
+```python
+######################################################################
+# Contrib config
+######################################################################
 
-    GAME_INDEX_LISTING = {
-        'game_status': 'pre-alpha',
-        # Optional, comment out or remove if N/A
-        'game_website': 'http://my-game.com',
-        'short_description': 'This is my game. It is fun. You should play it.',
-        # Optional but highly recommended. Markdown is supported.
-        'long_description': (
-            "Hello, there. You silly person.\n\n"
-            "This is the start of a new paragraph. Markdown is cool. Isn't this "
-            "[neat](http://evennia.com)? My game is best game. Woohoo!\n\n"
-            "Time to wrap this up. One final paragraph for the road."
-        ),
-        'listing_contact': 'me@my-game.com',
-        # At minimum, specify this or the web_client_url options. Both is fine, too.
-        'telnet_hostname': 'my-game.com',
-        'telnet_port': 1234,
-        # At minimum, specify this or the telnet_* options. Both is fine, too.
-        'web_client_url': 'http://my-game.com/webclient',
-    }
+GAME_INDEX_LISTING = {
+    'game_status': 'pre-alpha',
+    # Optional, comment out or remove if N/A
+    'game_website': 'http://my-game.com',
+    'short_description': 'This is my game. It is fun. You should play it.',
+    # Optional but highly recommended. Markdown is supported.
+    'long_description': (
+        "Hello, there. You silly person.\n\n"
+        "This is the start of a new paragraph. Markdown is cool. Isn't this "
+        "[neat](http://evennia.com)? My game is best game. Woohoo!\n\n"
+        "Time to wrap this up. One final paragraph for the road."
+    ),
+    'listing_contact': 'me@my-game.com',
+    # At minimum, specify this or the web_client_url options. Both is fine, too.
+    'telnet_hostname': 'my-game.com',
+    'telnet_port': 1234,
+    # At minimum, specify this or the telnet_* options. Both is fine, too.
+    'web_client_url': 'http://my-game.com/webclient',
+}
+```
 
 The following section in this README.md will go over all possible values.
 
