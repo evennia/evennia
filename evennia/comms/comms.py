@@ -83,6 +83,17 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
     def mutelist(self):
         return self.db.mute_list or []
 
+    @property
+    def wholist(self):
+        subs = self.db_subscriptions.all()
+        listening = [ob for ob in subs if ob.is_connected and ob not in self.mutelist]
+        if subs:
+            # display listening subscribers in bold
+            string = ", ".join([player.key if player not in listening else "{w%s{n" % player.key for player in subs])
+        else:
+            string = "<None>"
+        return string
+
     def mute(self, subscriber):
         """
         Adds an entity to the list of muted subscribers.
