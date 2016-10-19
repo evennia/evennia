@@ -514,7 +514,7 @@ class CmdCWho(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
         string = "\n{CChannel subscriptions{n"
-        string += "\n{w%s:{n\n %s" % (channel.key, channel.wholist)       
+        string += "\n{w%s:{n\n  %s" % (channel.key, channel.wholist)       
         self.msg(string.strip())
 
 
