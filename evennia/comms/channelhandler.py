@@ -43,6 +43,8 @@ class ChannelCommand(command.Command):
     Usage:
        {lower_channelkey}  <message>
        {lower_channelkey}/history [start]
+       {lower_channelkey} off - mutes the channel
+       {lower_channelkey} on  - unmutes the channel
 
     Switch:
         history: View 20 previous messages, either from the end or
@@ -107,6 +109,22 @@ class ChannelCommand(command.Command):
             string = _("You are not permitted to send to channel '%s'.")
             self.msg(string % channelkey)
             return
+        if msg == "on":
+            caller = caller if not hasattr(caller, 'player') else caller.player
+            unmuted = channel.unmute(caller)
+            if unmuted:
+                self.msg("You start listening to %s." % channel)
+                return
+            self.msg("You were already listening to %s." % channel)
+            return
+        if msg == "off":
+            caller = caller if not hasattr(caller, 'player') else caller.player
+            muted = channel.mute(caller)
+            if muted:
+                self.msg("You stop listening to %s." % channel)
+                return
+            self.msg("You were already not listening to %s." % channel)
+            return
         if self.history_start is not None:
             # Try to view history
             log_file = channel.attributes.get("log_file", default="channel_%s.log" % channel.key)
@@ -114,6 +132,10 @@ class ChannelCommand(command.Command):
                                                     if "[-]" in line else line for line in lines))
             tail_log_file(log_file, self.history_start, 20, callback=send_msg)
         else:
+            caller = caller if not hasattr(caller, 'player') else caller.player
+            if caller in channel.mutelist:
+                self.msg("You currently have %s muted." % channel)
+                return
             channel.msg(msg, senders=self.caller, online=True)
 
     def get_extra_info(self, caller, **kwargs):
@@ -234,8 +256,8 @@ class ChannelHandler(object):
             # create a new cmdset holding all viable channels
             chan_cmdset = None
             chan_cmds = [channelcmd for channel, channelcmd in self.cached_channel_cmds.iteritems()
-                                if channel.subscriptions.has(source_object)
-                                    and channelcmd.access(source_object, 'send')]
+                                if channel.subscriptions.has(source_object) and
+                                channelcmd.access(source_object, 'send')]
             if chan_cmds:
                 chan_cmdset = cmdset.CmdSet()
                 chan_cmdset.key = 'ChannelCmdSet'

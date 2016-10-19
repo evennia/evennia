@@ -112,7 +112,10 @@ class CmdAddCom(COMMAND_DEFAULT_CLASS):
             else:
                 string += "You now listen to the channel %s. " % channel.key
         else:
-            string += "You are already connected to channel %s." % channel.key
+            if channel.unmute(player):
+                string += "You unmute channel %s." % channel.key
+            else:
+                string += "You are already connected to channel %s." % channel.key
 
         if alias:
             # create a nick and add it to the caller.
@@ -130,10 +133,12 @@ class CmdDelCom(COMMAND_DEFAULT_CLASS):
 
     Usage:
        delcom <alias or channel>
+       delcom/all <channel>
 
     If the full channel name is given, unsubscribe from the
     channel. If an alias is given, remove the alias but don't
-    unsubscribe.
+    unsubscribe. If the 'all' switch is used, remove all aliases
+    for that channel.
     """
 
     key = "delcom"
@@ -162,13 +167,16 @@ class CmdDelCom(COMMAND_DEFAULT_CLASS):
                 self.msg("You are not listening to that channel.")
                 return
             chkey = channel.key.lower()
+            delnicks = "all" in self.switches
             # find all nicks linked to this channel and delete them
-            for nick in [nick for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
-                         if nick and nick.pk and nick.value[3].lower() == chkey]:
-                nick.delete()
+            if delnicks:
+                for nick in [nick for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
+                             if nick and nick.pk and nick.value[3].lower() == chkey]:
+                    nick.delete()
             disconnect = channel.disconnect(player)
             if disconnect:
-                self.msg("You stop listening to channel '%s'. Eventual aliases were removed." % channel.key)
+                wipednicks = " Eventual aliases were removed." if delnicks else ""
+                self.msg("You stop listening to channel '%s'.%s" % (channel.key, wipednicks))
             return
         else:
             # we are removing a channel nick
@@ -241,12 +249,7 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
             if not channels:
                 string += "No channels."
             for channel in channels:
-                string += "\n{w%s:{n\n" % channel.key
-                subs = channel.db_subscriptions.all()
-                if subs:
-                    string += "  " + ", ".join([player.key for player in subs])
-                else:
-                    string += "  <None>"
+                string += "\n{w%s:{n\n %s" % (channel.key, channel.wholist)
             self.msg(string.strip())
         else:
             # wrong input
@@ -309,13 +312,21 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                 clower = chan.key.lower()
                 nicks = caller.nicks.get(category="channel", return_obj=True)
                 nicks = nicks or []
-                comtable.add_row(*[chan in subs and "{gYes{n" or "{rNo{n",
+                if chan not in subs:
+                    substatus = "{rNo{n"
+                elif caller in chan.mutelist:
+                    substatus = "{rMuted{n"
+                else:
+                    substatus = "{gYes{n"
+                comtable.add_row(*[substatus,
                                   "%s%s" % (chan.key, chan.aliases.all() and
                                   "(%s)" % ",".join(chan.aliases.all()) or ""),
                                   "%s" % ",".join(nick.db_key for nick in make_iter(nicks)
                                   if nick.value[3].lower() == clower),
                                   str(chan.locks),
                                   chan.db.desc])
+            comtable.reformat_column(0, width=9)
+            comtable.reformat_column(3, width=14)
             caller.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)
 
 
@@ -503,12 +514,7 @@ class CmdCWho(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
         string = "\n{CChannel subscriptions{n"
-        string += "\n{w%s:{n\n" % channel.key
-        subs = channel.db_subscriptions.all()
-        if subs:
-            string += "  " + ", ".join([player.key for player in subs])
-        else:
-            string += "  <None>"
+        string += "\n{w%s:{n\n  %s" % (channel.key, channel.wholist)       
         self.msg(string.strip())
 
 
