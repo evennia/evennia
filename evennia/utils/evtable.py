@@ -427,6 +427,7 @@ class EvCell(object):
         # alignments
         self.align = kwargs.get("align", "l")
         self.valign = kwargs.get("valign", "c")
+        self.justify = kwargs.get("justify", False)
 
         #self.data = self._split_lines(unicode(data))
         self.data = self._split_lines(_to_ansi(data))
@@ -573,9 +574,9 @@ class EvCell(object):
         hfill_char = self.hfill_char
         width = self.width
         if align == "l":
-            return [line.lstrip() + hfill_char * (width - m_len(line)) for line in data]
+            return [(line.lstrip() if self.justify else line) + hfill_char * (width - m_len(line)) for line in data]
         elif align == "r":
-            return [hfill_char * (width - m_len(line)) + line.rstrip() for line in data]
+            return [hfill_char * (width - m_len(line)) + (line.rstrip() if self.justify else line) for line in data]
         else: # center, 'c'
             return [self._center(line, self.width, self.hfill_char) for line in data]
 
