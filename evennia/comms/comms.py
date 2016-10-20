@@ -85,7 +85,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
     @property
     def wholist(self):
-        subs = self.db_subscriptions.all()
+        subs = self.subscriptions.all()
         listening = [ob for ob in subs if ob.is_connected and ob not in self.mutelist]
         if subs:
             # display listening subscribers in bold
@@ -238,7 +238,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             This is also where logging happens, if enabled.
 
         """
-        # get all players connected to this channel and send to them
+        # get all players or objects connected to this channel and send to them
         for entity in self.subscriptions.all():
             # if the entity is muted, we don't send them a message
             if entity in self.mutelist:
