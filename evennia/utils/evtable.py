@@ -427,7 +427,6 @@ class EvCell(object):
         # alignments
         self.align = kwargs.get("align", "l")
         self.valign = kwargs.get("valign", "c")
-        self.justify = kwargs.get("justify", False)
 
         #self.data = self._split_lines(unicode(data))
         self.data = self._split_lines(_to_ansi(data))
@@ -561,7 +560,9 @@ class EvCell(object):
 
     def _align(self, data):
         """
-        Align list of rows of cell.
+        Align list of rows of cell. Whitespace characters will be stripped
+        if there is only one whitespace character - otherwise, it's assumed
+        the caller may be trying some manual formatting in the text.
 
         Args:
             data (str): Text to align.
@@ -574,9 +575,9 @@ class EvCell(object):
         hfill_char = self.hfill_char
         width = self.width
         if align == "l":
-            return [(line.lstrip() if self.justify else line) + hfill_char * (width - m_len(line)) for line in data]
+            return [(line.lstrip() if line.startswith(" ") and not line.startswith("  ") else line) + hfill_char * (width - m_len(line)) for line in data]
         elif align == "r":
-            return [hfill_char * (width - m_len(line)) + (line.rstrip() if self.justify else line) for line in data]
+            return [hfill_char * (width - m_len(line)) + (line.rstrip() if line.endswith(" ") and not line.endswith("  ") else line) for line in data]
         else: # center, 'c'
             return [self._center(line, self.width, self.hfill_char) for line in data]
 
