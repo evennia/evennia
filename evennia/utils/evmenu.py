@@ -221,9 +221,14 @@ class CmdEvMenuNode(Command):
             # this will re-start a completely new evmenu call.
             saved_options = caller.attributes.get("_menutree_saved")
             if saved_options:
-                startnode = caller.attributes.get("_menutree_saved_startnode")
+                startnode_tuple = caller.attributes.get("_menutree_saved_startnode")
+                try:
+                    startnode, startnode_input = startnode_tuple
+                except ValueError: # old form of startnode stor
+                    startnode, startnode_input = startnode_tuple, ""
                 if startnode:
                     saved_options[1]["startnode"] = startnode
+                    saved_options[1]["startnode_input"] = startnode_input
                 # this will create a completely new menu call
                 EvMenu(caller, *saved_options[0], **saved_options[1])
                 return True
@@ -415,7 +420,7 @@ class EvMenu(object):
                  options_formatter=evtable_options_formatter,
                  node_formatter=underline_node_formatter,
                  input_parser=evtable_parse_input,
-                 persistent=False, **kwargs):
+                 persistent=False, startnode_input="", **kwargs):
         """
         Initialize the menu tree and start the caller onto the first node.
 
@@ -497,7 +502,13 @@ class EvMenu(object):
                 with caution - if your menu is buggy you may end up in a state
                 you can't get out of! Also note that persistent mode requires
                 that all formatters, menu nodes and callables are possible to
-                *pickle*.
+                *pickle*. When the server is reloaded, the latest node shown will be completely
+                re-run with the same input arguments - so be careful if you are counting
+                up some persistent counter or similar - the counter may be run twice if
+                reload happens on the node that does that.
+            startnode_input (str, optional): Send an input text to `startnode` as if
+                a user input text from a fictional previous node. When the server reloads,
+                the latest visited node will be re-run using this kwarg.
 
         Kwargs:
             any (any): All kwargs will become initialization variables on `caller._menutree`,
@@ -567,7 +578,7 @@ class EvMenu(object):
                           "nodetext_formatter": nodetext_formatter, "options_formatter": options_formatter,
                           "node_formatter": node_formatter, "input_parser": input_parser,
                           "persistent": persistent,}))
-                caller.attributes.add("_menutree_saved_startnode", startnode)
+                caller.attributes.add("_menutree_saved_startnode", (startnode, startnode_input))
             except Exception as err:
                 caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
                 logger.log_trace(_TRACE_PERSISTENT_SAVING)
@@ -580,7 +591,7 @@ class EvMenu(object):
         self.caller.cmdset.add(menu_cmdset, permanent=persistent)
 
         # start the menu
-        self.goto(self._startnode, "")
+        self.goto(self._startnode, startnode_input)
 
     def _parse_menudata(self, menudata):
         """
@@ -737,7 +748,7 @@ class EvMenu(object):
             return
 
         if self._persistent:
-            self.caller.attributes.add("_menutree_saved_startnode", nodename)
+            self.caller.attributes.add("_menutree_saved_startnode", (nodename, raw_string))
 
         # validation of the node return values
         helptext = ""
