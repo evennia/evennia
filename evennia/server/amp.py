@@ -86,6 +86,7 @@ class AmpServerFactory(protocol.ServerFactory):
     connections from the Portal.
     """
     noisy = False
+
     def __init__(self, server):
         """
         Initialize the factory.

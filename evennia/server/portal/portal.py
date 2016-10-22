@@ -230,6 +230,7 @@ if TELNET_ENABLED:
         for port in TELNET_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
             factory = protocol.ServerFactory()
+            factory.noisy = False
             factory.protocol = telnet.TelnetProtocol
             factory.sessionhandler = PORTAL_SESSIONS
             telnet_service = internet.TCPServer(port, factory, interface=interface)
@@ -252,6 +253,7 @@ if SSL_ENABLED:
         for port in SSL_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
             factory = protocol.ServerFactory()
+            factory.noisy = False
             factory.sessionhandler = PORTAL_SESSIONS
             factory.protocol = ssl.SSLProtocol
             ssl_service = internet.SSLServer(port,
@@ -280,6 +282,7 @@ if SSH_ENABLED:
             factory = ssh.makeFactory({'protocolFactory': ssh.SshProtocol,
                                        'protocolArgs': (),
                                        'sessions': PORTAL_SESSIONS})
+            factory.noisy = False
             ssh_service = internet.TCPServer(port, factory, interface=interface)
             ssh_service.setName('EvenniaSSH%s' % pstring)
             PORTAL.services.addService(ssh_service)
@@ -322,6 +325,7 @@ if WEBSERVER_ENABLED:
                         ifacestr = "-%s" % interface
                     pstring = "%s:%s" % (ifacestr, port)
                     factory = protocol.ServerFactory()
+                    factory.noisy = False
                     factory.protocol = webclient.WebSocketClient
                     factory.sessionhandler = PORTAL_SESSIONS
                     websocket_service = internet.TCPServer(port, WebSocketFactory(factory), interface=interface)
@@ -346,6 +350,7 @@ for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
 print('-' * 50)  # end of terminal output
 
 if os.name == 'nt':
+    factory.noisy = False
     # Windows only: Set PID file manually
     with open(PORTAL_PIDFILE, 'w') as f:
         f.write(str(os.getpid()))
