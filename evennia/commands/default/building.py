@@ -144,7 +144,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
                 caller.msg("No aliases exist for '%s'." % obj.get_display_name(caller))
             return
 
-        if not obj.access(caller, 'edit'):
+        if not obj.access(caller, "control") or obj.access(caller, 'edit'):
             caller.msg("You don't have permission to do that.")
             return
 
@@ -490,7 +490,7 @@ class CmdCreate(ObjManipCommand):
 
             # create object (if not a valid typeclass, the default
             # object typeclass will automatically be used)
-            lockstring = "control:id(%s);delete:id(%s) or perm(Wizards)" % (caller.id, caller.id)
+            lockstring = "control:id(%s) or perm(Wizards);delete:id(%s) or perm(Wizards)" % (caller.id, caller.id)
             obj = create.create_object(typeclass, name, caller,
                                        home=caller, aliases=aliases,
                                        locks=lockstring, report_to=caller)
@@ -741,7 +741,7 @@ class CmdDig(ObjManipCommand):
             typeclass = settings.BASE_ROOM_TYPECLASS
 
         # create room
-        lockstring = "control:id(%s) or perm(Immortals); delete:id(%s) or perm(Wizards); edit:id(%s) or perm(Wizards)"
+        lockstring = "control:id(%s) or perm(Wizards); delete:id(%s) or perm(Wizards); edit:id(%s) or perm(Wizards)"
         lockstring = lockstring % (caller.dbref, caller.dbref, caller.dbref)
 
         new_room = create.create_object(typeclass, room["name"],
@@ -1145,7 +1145,7 @@ class CmdName(ObjManipCommand):
                     if not newname:
                         caller.msg("No name defined!")
                         return
-                    if not obj.access(caller, "edit"):
+                    if not obj.access(caller, "control") or obj.access(caller, "edit"):
                         caller.mgs("You don't have right to edit this player %s." % obj)
                         return
                     obj.username = newname
@@ -1165,7 +1165,7 @@ class CmdName(ObjManipCommand):
         if not newname and not aliases:
             caller.msg("No names or aliases defined!")
             return
-        if not obj.access(caller, "edit"):
+        if not obj.access(caller, "control") or obj.access(caller, "edit"):
             caller.msg("You don't have the right to edit %s." % obj)
             return
         # change the name and set aliases:
@@ -1631,7 +1631,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             self.switches.append("force")
             self.switches.append("update")
 
-        if not obj.access(caller, 'edit'):
+        if not obj.access(caller, "control") or obj.access(caller, 'edit'):
             caller.msg("You are not allowed to do that.")
             return
 
@@ -1706,7 +1706,7 @@ class CmdWipe(ObjManipCommand):
         obj = caller.search(objname)
         if not obj:
             return
-        if not obj.access(caller, 'edit'):
+        if not obj.access(caller, "control") or obj.access(caller, 'edit'):
             caller.msg("You are not allowed to do that.")
             return
         if not attrs:
@@ -1754,7 +1754,7 @@ class CmdLock(ObjManipCommand):
     """
     key = "@lock"
     aliases = ["@locks", "lock", "locks"]
-    locks = "cmd: perm(@locks) or perm(Builders)"
+    locks = "cmd: perm(locks) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
@@ -1776,7 +1776,7 @@ class CmdLock(ObjManipCommand):
             string = ""
             if lockdef:
                 if 'del' in self.switches:
-                    if not obj.access(caller, 'control'):
+                    if not obj.access(caller, 'control') or obj.access(caller, "edit"):
                         caller.msg("You are not allowed to do that.")
                         return
                     obj.locks.delete(access_type)
