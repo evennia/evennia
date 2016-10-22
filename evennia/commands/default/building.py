@@ -144,7 +144,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
                 caller.msg("No aliases exist for '%s'." % obj.get_display_name(caller))
             return
 
-        if not obj.access(caller, "control") or obj.access(caller, 'edit'):
+        if not (obj.access(caller, "control") or obj.access(caller, 'edit')):
             caller.msg("You don't have permission to do that.")
             return
 
@@ -648,7 +648,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                 self.caller.msg(" (Objects to destroy must either be local or specified with a unique #dbref.)")
                 return ""
             objname = obj.name
-            if not obj.access(caller, 'delete'):
+            if not (obj.access(caller, "control") or obj.access(caller, 'delete')):
                 return "\nYou don't have permission to delete %s." % objname
             if obj.player and not 'override' in self.switches:
                 return "\nObject %s is controlled by an active player. Use /override to delete anyway." % objname
@@ -1145,7 +1145,7 @@ class CmdName(ObjManipCommand):
                     if not newname:
                         caller.msg("No name defined!")
                         return
-                    if not obj.access(caller, "control") or obj.access(caller, "edit"):
+                    if not (obj.access(caller, "control") or obj.access(caller, "edit")):
                         caller.mgs("You don't have right to edit this player %s." % obj)
                         return
                     obj.username = newname
@@ -1165,7 +1165,7 @@ class CmdName(ObjManipCommand):
         if not newname and not aliases:
             caller.msg("No names or aliases defined!")
             return
-        if not obj.access(caller, "control") or obj.access(caller, "edit"):
+        if not (obj.access(caller, "control") or obj.access(caller, "edit")):
             caller.msg("You don't have the right to edit %s." % obj)
             return
         # change the name and set aliases:
@@ -1631,7 +1631,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             self.switches.append("force")
             self.switches.append("update")
 
-        if not obj.access(caller, "control") or obj.access(caller, 'edit'):
+        if not (obj.access(caller, "control") or obj.access(caller, 'edit')):
             caller.msg("You are not allowed to do that.")
             return
 
@@ -1706,7 +1706,7 @@ class CmdWipe(ObjManipCommand):
         obj = caller.search(objname)
         if not obj:
             return
-        if not obj.access(caller, "control") or obj.access(caller, 'edit'):
+        if not (obj.access(caller, "control") or obj.access(caller, 'edit')):
             caller.msg("You are not allowed to do that.")
             return
         if not attrs:
@@ -1776,7 +1776,7 @@ class CmdLock(ObjManipCommand):
             string = ""
             if lockdef:
                 if 'del' in self.switches:
-                    if not obj.access(caller, 'control') or obj.access(caller, "edit"):
+                    if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
                         caller.msg("You are not allowed to do that.")
                         return
                     obj.locks.delete(access_type)
@@ -1801,7 +1801,7 @@ class CmdLock(ObjManipCommand):
             obj = caller.search(objname)
             if not obj:
                 return
-            if not obj.access(caller, 'control'):
+            if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
                 caller.msg("You are not allowed to do that.")
                 return
             ok = False
