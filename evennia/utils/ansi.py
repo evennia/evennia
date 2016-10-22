@@ -977,7 +977,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
                 break
         return s
 
-    def split(self, by, maxsplit=-1):
+    def split(self, by=None, maxsplit=-1):
         """
         Stolen from PyPy's pure Python string implementation, tweaked for
         ANSIString.
@@ -986,6 +986,10 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         http://opensource.org/licenses/MIT
 
         """
+        drop_spaces = by is None
+        if drop_spaces:
+            by = " "
+
         bylen = len(by)
         if bylen == 0:
             raise ValueError("empty separator")
@@ -1002,6 +1006,8 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
             maxsplit -= 1   # NB. if it's already < 0, it stays < 0
 
         res.append(self[start:len(self)])
+        if drop_spaces:
+            return [part for part in res  if part != ""]
         return res
 
     def __mul__(self, other):
@@ -1027,7 +1033,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
     def __rmul__(self, other):
         return self.__mul__(other)
 
-    def rsplit(self, by, maxsplit=-1):
+    def rsplit(self, by=None, maxsplit=-1):
         """
         Stolen from PyPy's pure Python string implementation, tweaked for
         ANSIString.
@@ -1038,6 +1044,9 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         """
         res = []
         end = len(self)
+        drop_spaces = by is None
+        if drop_spaces:
+            by = " "
         bylen = len(by)
         if bylen == 0:
             raise ValueError("empty separator")
@@ -1053,6 +1062,8 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
 
         res.append(self[:end])
         res.reverse()
+        if drop_spaces:
+            return [part for part in res if part != ""]
         return res
 
     def join(self, iterable):
