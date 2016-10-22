@@ -85,6 +85,7 @@ class AmpServerFactory(protocol.ServerFactory):
     This factory creates the Server as a new AMPProtocol instance for accepting
     connections from the Portal.
     """
+    noisy = False
     def __init__(self, server):
         """
         Initialize the factory.
@@ -124,6 +125,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     initialDelay = 1
     factor = 1.5
     maxDelay = 1
+    noisy = False
 
     def __init__(self, portal):
         """
