@@ -469,6 +469,9 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
         # handle all error messages, don't hide actual coding errors
         sender.msg(err.message)
         return
+    # we escape the object mappings since we'll do the language ones first
+    # (the text could have nested object mappings).
+    emote = _RE_REF.sub(r"{{#\1}}", emote)
 
     if anonymous_add and not "#%i" % sender.id in obj_mapping:
         # no self-reference in the emote - add to the end
@@ -482,7 +485,20 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
 
     # broadcast emote to everyone
     for receiver in receivers:
-        # we make a temporary copy that we can modify
+        # first handle the language mapping, which always produce different keys ##nn
+        receiver_lang_mapping = {}
+        try:
+            process_language = receiver.process_language
+        except AttributeError:
+            process_language = _dummy_process
+        for key, (langname, saytext) in language_mapping.iteritems():
+            # color says
+            receiver_lang_mapping[key] = process_language(saytext, sender, langname)
+        # map the language {##num} markers. This will convert the escaped sdesc markers on
+        # the form {{#num}} to {#num} markers ready to sdescmat in the next step.
+        send_emote = emote.format(**receiver_lang_mapping)
+
+        # handle sdesc mappings. we make a temporary copy that we can modify
         try:
             process_sdesc = receiver.process_sdesc
         except AttributeError:
@@ -495,27 +511,18 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
 
         try:
             recog_get = receiver.recog.get
-            mapping = dict((ref, process_recog(recog_get(obj), obj)) for ref, obj in obj_mapping.items())
+            receiver_sdesc_mapping = dict((ref, process_recog(recog_get(obj), obj)) for ref, obj in obj_mapping.items())
         except AttributeError:
-            mapping = dict((ref, process_sdesc(obj.sdesc.get(), obj)
+            receiver_sdesc_mapping = dict((ref, process_sdesc(obj.sdesc.get(), obj)
                             if hasattr(obj, "sdesc") else process_sdesc(obj.key, obj))
                             for ref, obj in obj_mapping.items())
-        # handle the language mapping, which always produce different keys ##nn
-        try:
-            process_language = receiver.process_language
-        except AttributeError:
-            process_language = _dummy_process
-        for key, (langname, saytext) in language_mapping.iteritems():
-            # color says
-            mapping[key] = process_language(saytext, sender, langname)
         # make sure receiver always sees their real name
         rkey = "#%i" % receiver.id
-        if rkey in mapping:
-            mapping[rkey] = process_sdesc(receiver.key, receiver)
+        if rkey in receiver_sdesc_mapping:
+            receiver_sdesc_mapping[rkey] = process_sdesc(receiver.key, receiver)
 
-        # do the template replacement
-        receiver.msg(emote.format(**mapping))
-
+        # do the template replacement of the sdesc/recog {#num} markers
+        receiver.msg(send_emote.format(**receiver_sdesc_mapping))
 
 #------------------------------------------------------------
 # Handlers for sdesc and recog
@@ -818,6 +825,7 @@ class CmdSay(RPCommand): # replaces standard say
     locks = "cmd:all()"
 
     def func(self):
+
         "Run the say command"
 
         caller = self.caller
@@ -826,18 +834,12 @@ class CmdSay(RPCommand): # replaces standard say
             caller.msg("Say what?")
             return
 
-        speech = self.args
-
         # calling the speech hook on the location
-        speech = caller.location.at_say(caller, speech)
-
-        # Feedback for the object doing the talking.
-        emit_string = '{name} says, "{speech}|n"'
-        for target in caller.location.contents:
-            if target == caller:
-                target.msg(emit_string.format(name=caller.get_display_name(caller), speech=speech))
-            else:
-                target.msg(emit_string.format(name=caller.get_display_name(target), speech=speech))
+        speech = caller.location.at_say(caller, self.args)
+        # preparing the speech with sdesc/speech parsing.
+        speech = "/me says, \"{speech}\"".format(speech=speech)
+        targets = self.caller.location.contents
+        send_emote(self.caller, targets, speech, anonymous_add=None)
 
 
 class CmdSdesc(RPCommand): # set/look at own sdesc
