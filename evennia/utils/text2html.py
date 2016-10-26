@@ -243,7 +243,7 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        return self.re_mxplink.sub(r"""<a id='mxplink' href='#' onclick='Evennia.msg("text",["\1"],{}); return false;'>\2</a>""", text)
+        return self.re_mxplink.sub(r'''<a id="mxplink" href="#" onclick="Evennia.msg(&quot;text&quot;,[&quot;\1&quot;],{}); return false;">\2</a>''', text)
 
     def do_sub(self, match):
         """
