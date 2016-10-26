@@ -99,8 +99,6 @@ function doSendText() {
             var kwargs = cmdarr[2];
             log(cmdname, args, kwargs);
             Evennia.msg(cmdname, args, kwargs);
-        } else if (line.length < 1) {
-          /* do not process empty lines */
         } else {
             input_history.add(line);
             inputfield.val("");
