@@ -201,7 +201,7 @@ class PortalSessionHandler(SessionHandler):
         Called by server to force the initialization of a new protocol
         instance. Server wants this instance to get a unique sessid
         and to be connected back as normal. This is used to initiate
-        irc/imc2/rss etc connections.
+        irc/rss etc connections.
 
         Args:
             protocol_path (st): Full python path to the class factory

@@ -48,7 +48,7 @@ SDISCONN = chr(5)     # server session disconnect
 SDISCONNALL = chr(6)  # server session disconnect all
 SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server session sync
-SCONN = chr(11)        # server creating new connection (for irc/imc2 bots etc)
+SCONN = chr(11)        # server creating new connection (for irc bots and etc)
 PCONNSYNC = chr(12)   # portal post-syncing a session
 PDISCONNALL = chr(13) # portal session disconnect all
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
@@ -589,7 +589,7 @@ class AMPProtocol(amp.AMP):
             # set a flag in case we are about to shut down soon
             self.factory.server_restart_mode = True
 
-        elif operation == SCONN: # server_force_connection (for irc/imc2 etc)
+        elif operation == SCONN: # server_force_connection (for irc/etc)
             portal_sessionhandler.server_connect(**kwargs)
 
         else:

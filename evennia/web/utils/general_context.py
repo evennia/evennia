@@ -28,7 +28,7 @@ except AttributeError:
 PLAYER_RELATED = ['Players']
 GAME_ENTITIES = ['Objects', 'Scripts', 'Comms', 'Help']
 GAME_SETUP = ['Permissions', 'Config']
-CONNECTIONS = ['Irc', 'Imc2']
+CONNECTIONS = ['Irc']
 WEBSITE = ['Flatpages', 'News', 'Sites']
 
 

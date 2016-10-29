@@ -76,7 +76,6 @@ GUEST_ENABLED = settings.GUEST_ENABLED
 
 # server-channel mappings
 WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER_INTERFACES
-IMC2_ENABLED = settings.IMC2_ENABLED
 IRC_ENABLED = settings.IRC_ENABLED
 RSS_ENABLED = settings.RSS_ENABLED
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
@@ -536,10 +535,6 @@ ENABLED = []
 if IRC_ENABLED:
     # IRC channel connections
     ENABLED.append('irc')
-
-if IMC2_ENABLED:
-    # IMC2 channel connections
-    ENABLED.append('imc2')
 
 if RSS_ENABLED:
     # RSS feed channel connections

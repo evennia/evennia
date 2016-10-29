@@ -44,7 +44,6 @@ MSSPTable =  {
                                       # Roleplaying, Simulation, Social or Strategy
     "STATUS":             "Open Beta",  # Alpha, Closed Beta, Open Beta, Live
     "GAMESYSTEM":         "Custom", # D&D, d20 System, World of Darkness, etc. Use Custom if homebrew
-    "INTERMUD":           "IMC2",   # evennia supports IMC2.
     "SUBGENRE":           "None",   # LASG, Medieval Fantasy, World War II, Frankenstein,
                                       # Cyberpunk, Dragonlance, etc. Or None if not available.
 

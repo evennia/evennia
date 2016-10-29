@@ -520,8 +520,8 @@ DEFAULT_CHANNELS = [
 # Note: You do *not* have to make your MUD open to
 # the public to use the external connections, they
 # operate as long as you have an internet connection,
-# just like stand-alone chat clients. IRC and IMC2
-# requires that you have twisted.words installed.
+# just like stand-alone chat clients. IRC requires
+# that you have twisted.words installed.
 
 # Evennia can connect to external IRC channels and
 # echo what is said on the channel to IRC and vice
@@ -536,26 +536,6 @@ IRC_ENABLED = False
 # http://code.google.com/p/feedparser/)
 RSS_ENABLED=False
 RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
-
-# IMC (Inter-MUD communication) allows to connect an Evennia channel
-# to an IMC2 server. This lets them talk to people on other MUDs also
-# using IMC.  Evennia's IMC2 client was developed against MudByte's
-# network. You must register your MUD on the network before you can
-# use it, go to http://www.mudbytes.net/imc2-intermud-join-network.
-# Choose 'Other unsupported IMC2 version' from the choices and and
-# enter your information there. You should enter the same 'short mud
-# name' as your SERVERNAME above, then choose imc network server as
-# well as client/server passwords same as below. When enabled, the
-# command @imc2chan becomes available in-game and allows you to
-# connect Evennia channels to IMC channels on the network. The Evennia
-# discussion channel 'ievennia' is on server01.mudbytes.net:5000.
-
-# NOTE - IMC2 is currently NOT FUNCTIONAL due to lack of testing means.
-IMC2_ENABLED = False
-IMC2_NETWORK = "server01.mudbytes.net"
-IMC2_PORT = 5000 # this is the imc2 port, not on localhost
-IMC2_CLIENT_PWD = ""
-IMC2_SERVER_PWD = ""
 
 ######################################################################
 # Django web features
