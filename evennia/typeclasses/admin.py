@@ -9,7 +9,10 @@ class TagAdmin(admin.ModelAdmin):
     A django Admin wrapper for Tags.
 
     """
-    fields = ('db_key', 'db_category', 'db_data')
+    search_fields = ('db_key', 'db_category', 'db_tagtype')
+    list_display = ('db_key', 'db_category', 'db_tagtype', 'db_data')
+    fields = ('db_key', 'db_category', 'db_tagtype', 'db_data')
+    list_filter = ('db_tagtype',)
 
 
 class TagInline(admin.TabularInline):
@@ -19,8 +22,33 @@ class TagInline(admin.TabularInline):
     """
     # Set this to the through model of your desired M2M when subclassing.
     model = None
+    fields = ('tag', 'key', 'category', 'data', 'tagtype')
     raw_id_fields = ('tag',)
+    readonly_fields = ('key', 'category', 'data', 'tagtype')
     extra = 0
+    def key(self, instance):
+        if not instance.id:
+            return "Not yet set or saved."
+        return '<strong><a href="%s">%s</a></strong>' % (
+            reverse("admin:typeclasses_tag_change",
+                    args=[instance.tag.id]),
+            instance.tag.db_key)
+    key.allow_tags = True
+    
+    def category(self, instance):
+        if not instance.id:
+            return "Not yet set or saved."
+        return instance.tag.db_category
+
+    def data(self, instance):
+        if not instance.id:
+            return "Not yet set or saved."
+        return instance.tag.db_data
+    
+    def tagtype(self, instance):
+        if not instance.id:
+            return "Not yet set or saved."
+        return instance.tag.db_tagtype
 
 
 class AttributeInline(admin.TabularInline):
