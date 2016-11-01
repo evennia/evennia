@@ -479,9 +479,9 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
         obj_mapping[key] = sender
         if anonymous_add == 'first':
             possessive = "" if emote.startswith('\'') else " "
-            emote = "%s%s%s" % ("{%s}" % key, possessive, emote)
+            emote = "%s%s%s" % ("{{%s}}" % key, possessive, emote)
         else:
-            emote = "%s [%s]" % (emote, "{%s}" % key)
+            emote = "%s [%s]" % (emote, "{{%s}}" % key)
 
     # broadcast emote to everyone
     for receiver in receivers:
@@ -1391,7 +1391,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             except AttributeError:
                 recog = None
             sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
-        pose = " %s" % self.db.pose or "" if kwargs.get("pose", False) else ""
+        pose = " %s" % (self.db.pose or "is here.") if kwargs.get("pose", False) else ""
         return "|c%s|n%s%s" % (sdesc, idstr, pose)
 
     def at_object_creation(self):
