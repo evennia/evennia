@@ -57,8 +57,10 @@ SERVER_RESTART = None
 PORTAL_RESTART = None
 SERVER_PY_FILE = None
 PORTAL_PY_FILE = None
+TEST_MODE = False
+ENFORCED_SETTING = False
 
-
+# requirements
 PYTHON_MIN = '2.7'
 TWISTED_MIN = '16.0.0'
 DJANGO_MIN = '1.8'
@@ -368,6 +370,21 @@ ERROR_NODJANGO = \
 NOTE_KEYBOARDINTERRUPT = \
     """
     STOP: Caught keyboard interrupt while in interactive mode.
+    """
+
+NOTE_TEST_DEFAULT = \
+    """
+    TESTING: Using Evennia's default settings file (evennia.settings_default).
+    (use 'evennia --settings settings.py test .' to run tests on the game dir)
+    """
+
+NOTE_TEST_CUSTOM = \
+    """
+    TESTING: Using specified settings file '{settings_dotpath}'.
+
+    (Obs: Evennia's full test suite may not pass if the settings are very
+    different from the default. Use 'test .' as arguments to run only tests
+    on the game dir.)
     """
 
 #------------------------------------------------------------
@@ -831,8 +848,13 @@ def init_game_directory(path, check_db=True):
     # Add gamedir to python path
     sys.path.insert(0, GAMEDIR)
 
-    if sys.argv[1] == 'test':
-        os.environ['DJANGO_SETTINGS_MODULE'] = 'evennia.settings_default'
+    if TEST_MODE:
+        if ENFORCED_SETTING:
+            print(NOTE_TEST_CUSTOM.format(settings_dotpath=SETTINGS_DOTPATH))
+            os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
+        else:
+            print(NOTE_TEST_DEFAULT)
+            os.environ['DJANGO_SETTINGS_MODULE'] = 'evennia.settings_default'
     else:
         os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
 
@@ -1239,11 +1261,13 @@ def main():
     if args.altsettings:
         # use alternative settings file
         sfile = args.altsettings[0]
-        global SETTINGSFILE, SETTINGS_DOTPATH
+        global SETTINGSFILE, SETTINGS_DOTPATH, ENFORCED_SETTING
         SETTINGSFILE = sfile
+        ENFORCED_SETTING = True
         SETTINGS_DOTPATH = "server.conf.%s" % sfile.rstrip(".py")
         print("Using settings file '%s' (%s)." % (
             SETTINGSFILE, SETTINGS_DOTPATH))
+
 
     if args.initsettings:
         # create new settings file
@@ -1281,6 +1305,9 @@ def main():
             # to use the shell we need to initialize it first,
             # and this only works if the database is set up
             check_db = True
+        if option == "test":
+            global TEST_MODE
+            TEST_MODE = True
         init_game_directory(CURRENT_DIR, check_db=check_db)
 
         args = [option]
