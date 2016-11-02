@@ -47,6 +47,15 @@ class IndentedCodeTests(SphinxIntegrationTests):
             '<div class="highlight">'
         )
 
+class NestedHeaderBlock(SphinxIntegrationTests):
+
+    def test_integration(self):
+        self._run_test(
+            'sphinx_nested_header_block',
+            '_build/text/index.html',
+            '<h1>'
+        )
+
 class CustomExtensionTests(SphinxIntegrationTests):
 
     def test_integration(self):
