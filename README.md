@@ -1,5 +1,5 @@
 # Evennia MUD/MU\* Creation System ![evennia logo][logo]
-[![Build Status][travisimg]][travislink] [![Coverage Status](https://coveralls.io/repos/github/evennia/evennia/badge.svg?branch=master)](https://coveralls.io/github/evennia/evennia?branch=master)
+[[![Build Status travisimg]][travislink] [![Coverage Status coverimg]][coverlink]
 
 *Evennia* is a modern library for creating [online multiplayer text games][wikimudpage] (MUD, MUSH, MUX, MUCK, MOO etc) in pure Python. It allows game creators to design and flesh out their ideas with great freedom. Evennia is made available under the very friendly [BSD license][license].
 
@@ -20,7 +20,7 @@ Whereas Evennia is intentionally empty of game content from the onset, we *do* o
 
 ## Current Status
 
-The codebase is currently in **Beta**. While development continues, Evennia is already stable enough to be suitable for prototyping and development of your own games. 
+The codebase is currently in **Beta**. While development continues, Evennia is already stable enough to be suitable for prototyping and development of your own games.
 
 ## Where to go from here
 
@@ -36,6 +36,8 @@ To learn how to get your hands on the code base, the [Getting started][gettingst
 [logo]: https://github.com/evennia/evennia/blob/master/evennia/web/website/static/website/images/evennia_logo.png
 [travisimg]: https://travis-ci.org/evennia/evennia.svg?branch=master
 [travislink]: https://travis-ci.org/evennia/evennia
+[coverimg]: https://coveralls.io/repos/github/evennia/evennia/badge.svg?branch=master
+[coverlink]: https://coveralls.io/github/evennia/evennia?branch=master
 [introduction]: https://github.com/evennia/evennia/wiki/Evennia-Introduction
 [license]: https://github.com/evennia/evennia/wiki/Licensing
 [group]: https://groups.google.com/forum/#!forum/evennia
