@@ -10,6 +10,6 @@ before_script:
   - cd dummy
   - evennia migrate
 script:
-  - coverage run --omit=*.virtualenvs*,*virtualenv* bin/unix/evennia test evennia  
+  - coverage run --omit=*.virtualenvs*,*virtualenv* ../bin/unix/evennia test evennia  
 after_success:
   - coveralls
