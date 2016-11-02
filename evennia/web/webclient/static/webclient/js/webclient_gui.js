@@ -207,6 +207,8 @@ function onText(args, kwargs) {
     mwin.animate({
         scrollTop: document.getElementById("messagewindow").scrollHeight
     }, 0);
+
+    onNewLine(args[0], null);
 }
 
 // Handle prompt output from the server
@@ -245,14 +247,72 @@ function onBeforeUnload() {
     return "You are about to leave the game. Please confirm.";
 }
 
+var unread = 0;
+var originalTitle = document.title;
+var focused = true;
+var favico;
+
+/*function onVisibilityChange() {
+  if(!document.hidden) {
+    document.title = originalTitle;
+  }
+}*/
+
+function onBlur(e) {
+  focused = false;
+}
+
+function onFocus(e) {
+  focused = true;
+  document.title = originalTitle;
+  unread = 0;
+  favico.badge(0);
+}
+
+function onNewLine(text, originator) {
+  if(!focused) {
+    unread++;
+    favico.badge(unread);
+    document.title = "(" + unread + ") " + originalTitle;
+    Notification.requestPermission().then(function(result) {
+      if(result === "granted") {
+        var title = originalTitle === "" ? "Evennia" : originalTitle;
+        var options = {
+          body: text.replace(/(<([^>]+)>)/ig,""),
+          icon: "/static/website/images/evennia_logo.png"
+        }
+        var n = new Notification(title, options);
+        n.onclick = function(e) {
+          e.preventDefault();
+          window.focus();
+          this.close();
+        }
+      }
+    })
+  }
+}
+
 //
 // Register Events
 //
 
 // Event when client finishes loading
 $(document).ready(function() {
+
+    Notification.requestPermission();
+
+    favico = new Favico({
+      animation: 'none'
+    });
+
     // Event when client window changes
     $(window).bind("resize", doWindowResize);
+
+    $(window).blur(onBlur);
+    $(window).focus(onFocus);
+
+    //$(document).on("visibilitychange", onVisibilityChange);
+
     $("#inputfield").bind("resize", doWindowResize)
         .keypress(onKeyPress)
         .bind("paste", resizeInputField)
