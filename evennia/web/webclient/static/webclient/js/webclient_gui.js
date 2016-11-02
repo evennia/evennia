@@ -247,21 +247,17 @@ function onBeforeUnload() {
     return "You are about to leave the game. Please confirm.";
 }
 
+// Notifications 
 var unread = 0;
 var originalTitle = document.title;
 var focused = true;
 var favico;
 
-/*function onVisibilityChange() {
-  if(!document.hidden) {
-    document.title = originalTitle;
-  }
-}*/
-
 function onBlur(e) {
   focused = false;
 }
 
+// Notifications for unfocused window
 function onFocus(e) {
   focused = true;
   document.title = originalTitle;
@@ -271,24 +267,32 @@ function onFocus(e) {
 
 function onNewLine(text, originator) {
   if(!focused) {
+    // Changes unfocused browser tab title to number of unread messages
     unread++;
     favico.badge(unread);
     document.title = "(" + unread + ") " + originalTitle;
-    Notification.requestPermission().then(function(result) {
-      if(result === "granted") {
-        var title = originalTitle === "" ? "Evennia" : originalTitle;
-        var options = {
-          body: text.replace(/(<([^>]+)>)/ig,""),
-          icon: "/static/website/images/evennia_logo.png"
-        }
-        var n = new Notification(title, options);
-        n.onclick = function(e) {
-          e.preventDefault();
-          window.focus();
-          this.close();
-        }
-      }
-    })
+
+    //// TODO: Following code adds a full notification popup. It
+    //// works fine but should be possible to turn off if a player
+    //// wants to (pending webclient config pane).
+    ////
+    //Notification.requestPermission().then(function(result) {
+    //  if(result === "granted") {
+    //
+    //    var title = originalTitle === "" ? "Evennia" : originalTitle;
+    //    var options = {
+    //      body: text.replace(/(<([^>]+)>)/ig,""),
+    //      icon: "/static/website/images/evennia_logo.png"
+    //    }
+    //  
+    //   var n = new Notification(title, options);
+    //   n.onclick = function(e) {
+    //     e.preventDefault();
+    //     window.focus();
+    //     this.close();
+    //   // }
+    //  }
+    //})
   }
 }
 
