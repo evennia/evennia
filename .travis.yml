@@ -2,11 +2,14 @@ language: python
 python:
   - "2.7"
 sudo: false
-install: pip install .
-script:
+install: 
+  - pip install .
+  - pip install coveralls
+before_script:
   - evennia --init dummy
   - cd dummy
   - evennia migrate
-  - evennia test evennia
+script:
+  - coverage run --omit=*.virtualenvs*,*virtualenv* bin/unix/evennia test evennia  
 after_success:
   - coveralls
