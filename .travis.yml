@@ -8,4 +8,5 @@ script:
   - cd dummy
   - evennia migrate
   - evennia test evennia
-
+after_success:
+  - coveralls
