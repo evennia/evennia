@@ -105,6 +105,7 @@ class TagHandler(object):
     def _fullcache(self):
         "Cache all tags of this object"
         query = {"%s__id" % self._model : self._objid,
+                 "tag__db_model" : self._model,
                  "tag__db_tagtype" : self._tagtype}
         tags = [conn.tag for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
         self._cache = dict(("%s-%s" % (to_str(tag.db_key).lower(),
@@ -148,6 +149,7 @@ class TagHandler(object):
                 return [tag]  # return cached entity
             else:
                 query = {"%s__id" % self._model : self._objid,
+                         "tag__db_model" : self._model,
                          "tag__db_tagtype" : self._tagtype,
                          "tag__db_key__iexact" : key.lower(),
                          "tag__db_category__iexact" : category.lower() if category else None}
@@ -254,7 +256,7 @@ class TagHandler(object):
             # will overload data on an existing tag since that is not
             # considered part of making the tag unique)
             tagobj = self.obj.__class__.objects.create_tag(key=tagstr, category=category, data=data,
-                                            tagtype=self._tagtype)
+                                            tagtype=self._tagtype, dbmodel=self._model)
             getattr(self.obj, self._m2m_fieldname).add(tagobj)
             self._setcache(tagstr, category, tagobj)
 

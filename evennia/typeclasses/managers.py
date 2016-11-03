@@ -179,7 +179,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
     # Tag manager methods
 
-    def get_tag(self, key=None, category=None, obj=None, tagtype=None, global_search=False):
+    def get_tag(self, key=None, category=None, obj=None, tagtype=None, dbmodel="objectdb", global_search=False):
         """
         Return Tag objects by key, by category, by object (it is
         stored on) or with a combination of those criteria.
@@ -192,6 +192,9 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 search for is.
             tagtype (str, optional): One of None (normal tags),
                 "alias" or "permission"
+            dbobj (str, optional): A natural_key for which type of
+                entity this tag attaches to. Example, "objectdb" or
+                "scriptdb".
             global_search (bool, optional): Include all possible tags,
                 not just tags on this object
 
@@ -204,7 +207,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             from evennia.typeclasses.models import Tag as _Tag
         if global_search:
             # search all tags using the Tag model
-            query = [("db_tagtype", tagtype)]
+            query = [("db_tagtype", tagtype), ("db_model", dbmodel)]
             if obj:
                 query.append(("id", obj.id))
             if key:
@@ -254,7 +257,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         return self.get_tag(key=key, category=category, obj=obj, tagtype="alias")
 
     @returns_typeclass_list
-    def get_by_tag(self, key=None, category=None, tagtype=None):
+    def get_by_tag(self, key=None, category=None, tagtype=None, dbmodel="objectdb"):
         """
         Return objects having tags with a given key or category or
         combination of the two.
@@ -265,14 +268,17 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             tagtype (str or None, optional): 'type' of Tag, by default
                 this is either `None` (a normal Tag), `alias` or
                 `permission`.
+            dbmodel (str or None, optionsl): The naturalkey of the entity this Tag
+                attaches to. A string like "objectdb", "scriptdb" etc.
         Returns:
             objects (list): Objects with matching tag.
         """
-        query = [("db_tags__db_tagtype", tagtype)]
+        query = [("db_tags__db_tagtype", tagtype), ("db_tags__db_model", dbmodel)]
         if key:
             query.append(("db_tags__db_key", key.lower()))
         if category:
             query.append(("db_tags__db_category", category.lower()))
+        print "get_by_tag query:", query
         return self.filter(**dict(query))
 
     def get_by_permission(self, key=None, category=None):
@@ -301,11 +307,11 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         return self.get_by_tag(key=key, category=category, tagtype="alias")
 
-    def create_tag(self, key=None, category=None, data=None, tagtype=None):
+    def create_tag(self, key=None, category=None, data=None, tagtype=None, dbmodel="objectdb"):
         """
         Create a new Tag of the base type associated with this
         object.  This makes sure to create case-insensitive tags.
-        If the exact same tag configuration (key+category+tagtype)
+        If the exact same tag configuration (key+category+tagtype+dbmodel)
         exists on the model, a new tag will not be created, but an old
         one returned.
 
@@ -317,6 +323,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             tagtype (str or None, optional): 'type' of Tag, by default
                 this is either `None` (a normal Tag), `alias` or
                 `permission`.
+            dbmodel (str, optional): Which model type this Tag attaches to.
+                This is a natural_key like "dbobject" or "dbscript".
 
         Notes:
             The `data` field is not part of the uniqueness of the tag:
@@ -345,6 +353,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 db_key=key.strip().lower() if key is not None else None,
                 db_category=category.strip().lower() if category and key is not None else None,
                 db_data=data,
+                db_model=dbmodel,
                 db_tagtype=tagtype.strip().lower() if tagtype is not None else None)
             tag.save()
         return make_iter(tag)[0]
