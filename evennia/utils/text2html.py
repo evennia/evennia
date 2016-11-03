@@ -234,7 +234,7 @@ class TextToHTMLparser(object):
 
     def convert_links(self, text):
         """
-        Replaces links with HTML code.
+        Replaces MXP links with HTML code.
 
         Args:
             text (str): Text to process.
