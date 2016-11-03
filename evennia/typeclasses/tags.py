@@ -140,7 +140,7 @@ class TagHandler(object):
         if key:
             cachekey = "%s-%s" % (key, category)
             tag = _TYPECLASS_AGGRESSIVE_CACHE and self._cache.get(cachekey, None)
-            if tag:
+            if tag and hasattr(tag, "pk") and tag.pk:
                 return [tag]  # return cached entity
             else:
                 query = {"%s__id" % self._model : self._objid,

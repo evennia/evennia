@@ -251,7 +251,7 @@ class AttributeHandler(object):
         if key:
             cachekey = "%s-%s" % (key, category)
             attr = _TYPECLASS_AGGRESSIVE_CACHE and self._cache.get(cachekey, None)
-            if attr:
+            if attr and hasattr(attr, "pk") and attr.pk:
                 return [attr]  # return cached entity
             else:
                 query = {"%s__id" % self._model : self._objid,
