@@ -251,7 +251,11 @@ class AttributeHandler(object):
         if key:
             cachekey = "%s-%s" % (key, category)
             attr = _TYPECLASS_AGGRESSIVE_CACHE and self._cache.get(cachekey, None)
-            if attr and hasattr(attr, "pk") and attr.pk:
+            if attr and (not hasattr(attr, "pk") and attr.pk is None):
+                # clear out Attributes deleted from elsewhere. We must search this anew.
+                attr = None
+                del self._cache[cachekey]
+            if attr:
                 return [attr]  # return cached entity
             else:
                 query = {"%s__id" % self._model : self._objid,

@@ -140,7 +140,11 @@ class TagHandler(object):
         if key:
             cachekey = "%s-%s" % (key, category)
             tag = _TYPECLASS_AGGRESSIVE_CACHE and self._cache.get(cachekey, None)
-            if tag and hasattr(tag, "pk") and tag.pk:
+            if tag and (not hasattr(tag, "pk") and tag.pk is None):
+                # clear out Tags deleted from elsewhere. We must search this anew.
+                tag = None
+                del self._cache[cachekey]
+            if tag:
                 return [tag]  # return cached entity
             else:
                 query = {"%s__id" % self._model : self._objid,
