@@ -21,7 +21,7 @@ LINKS_SUB = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
 MXP = "\x5B"
 MXP_TEMPSECURE = "\x1B[4z"
 MXP_SEND = MXP_TEMPSECURE + \
-           "<SEND HREF='\\1'>" + \
+           "<SEND HREF=\"\\1\">" + \
            "\\2" + \
            MXP_TEMPSECURE + \
            "</SEND>"
@@ -38,6 +38,7 @@ def mxp_parse(text):
 
     """
     text = text.replace("&", "&amp;") \
+               .replace('"', "&quot;") \
                .replace("<", "&lt;") \
                .replace(">", "&gt;")
 
