@@ -232,9 +232,10 @@ class TextToHTMLparser(object):
         # change pages (and losing our webclient session).
         return self.re_url.sub(r'<a href="\1" target="_blank">\1</a>\2', text)
 
-    def convert_links(self, text):
+    def sub_mxp_links(self, match):
         """
-        Replaces MXP links with HTML code.
+        Helper method to be passed to re.sub,
+        replaces MXP links with HTML code.
 
         Args:
             text (str): Text to process.
@@ -243,9 +244,13 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        return self.re_mxplink.sub(r'''<a id="mxplink" href="#" onclick="Evennia.msg(&quot;text&quot;,[&quot;\1&quot;],{}); return false;">\2</a>''', text)
+        cmd, text = [grp.replace('\"', "&quot;") for grp in match.groups()]
+        val =  r'''<a id="mxplink" href="#" ''' \
+                '''onclick="Evennia.msg(&quot;text&quot;,[&quot;{cmd}&quot;],{{}});''' \
+                '''return false;">{text}</a>'''.format(cmd=cmd, text=text)
+        return val
 
-    def do_sub(self, match):
+    def sub_text(self, match):
         """
         Helper method to be passed to re.sub,
         for handling all substitutions.
@@ -284,7 +289,8 @@ class TextToHTMLparser(object):
         # parse everything to ansi first
         text = parse_ansi(text, strip_ansi=strip_ansi, xterm256=True, mxp=True)
         # convert all ansi to html
-        result = re.sub(self.re_string, self.do_sub, text)
+        result = re.sub(self.re_string, self.sub_text, text)
+        result = re.sub(self.re_mxplink, self.sub_mxp_links, result)
         result = self.re_color(result)
         result = self.re_bold(result)
         result = self.re_underline(result)
@@ -294,7 +300,6 @@ class TextToHTMLparser(object):
         result = self.convert_linebreaks(result)
         result = self.remove_backspaces(result)
         result = self.convert_urls(result)
-        result = self.convert_links(result)
         # clean out eventual ansi that was missed
         #result = parse_ansi(result, strip_ansi=True)
 
