@@ -244,7 +244,7 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        cmd, text = [grp.replace('\"', "&quot;") for grp in match.groups()]
+        cmd, text = [grp.replace('\"', "\\&quot;") for grp in match.groups()]
         val =  r'''<a id="mxplink" href="#" ''' \
                 '''onclick="Evennia.msg(&quot;text&quot;,[&quot;{cmd}&quot;],{{}});''' \
                 '''return false;">{text}</a>'''.format(cmd=cmd, text=text)
