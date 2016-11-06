@@ -56,7 +56,7 @@ class CmdOOCLook(default_cmds.CmdLook):
     key = "look"
     aliases = ["l", "ls"]
     locks = "cmd:all()"
-    help_cateogory = "General"
+    help_category = "General"
 
     def func(self):
         """
