@@ -17,13 +17,22 @@ from twisted.cred.checkers import credentials
 from twisted.cred.portal import Portal
 from twisted.conch.interfaces import IConchUser
 
+_SSH_IMPORT_ERROR = """
+ERROR: Missing crypto library for SSH. Install it with
+
+       pip install cryptography
+
+(On older Twisted versions you may have to do 'pip install pycrypto pyasn1 instead).
+
+If you get a compilation error you must install a C compiler and the
+SSL dev headers (On Debian-derived systems this is the gcc and libssl-dev
+packages).
+"""
+
 try:
     from twisted.conch.ssh.keys import Key
 except ImportError:
-    raise ImportError ("To use SSH, you need to install the crypto libraries:\n"
-                       "      pip install cryptography\n"
-                       "(on older Twisted versions you may instead have to try "
-                       "pip install pycrypto pyasn1)\n")
+    raise ImportError (_SSH_IMPORT_ERROR)
 
 from twisted.conch.ssh.userauth import SSHUserAuthServer
 from twisted.conch.ssh import common
@@ -256,8 +265,8 @@ class SshProtocol(Manhole, session.Session):
         # handle arguments
         options = kwargs.get("options", {})
         flags = self.protocol_flags
-        xterm256 = options.get("xterm256", flags.get('XTERM256', False) if flags["TTYPE"] else True)
-        useansi = options.get("ansi", flags.get('ANSI', False) if flags["TTYPE"] else True)
+        xterm256 = options.get("xterm256", flags.get('XTERM256', False) if flags.get("TTYPE") else True)
+        useansi = options.get("ansi", flags.get('ANSI', False) if flags.get("TTYPE") else True)
         raw = options.get("raw", flags.get("RAW", False))
         nomarkup = options.get("nomarkup", flags.get("NOMARKUP", not (xterm256 or useansi)))
         #echo = options.get("echo", None)
