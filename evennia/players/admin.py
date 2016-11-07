@@ -173,6 +173,7 @@ class PlayerTagInline(TagInline):
 
     """
     model = PlayerDB.db_tags.through
+    related_field = "playerdb"
 
 
 class PlayerAttributeInline(AttributeInline):

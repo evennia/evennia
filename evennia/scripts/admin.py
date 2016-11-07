@@ -14,6 +14,7 @@ class ScriptTagInline(TagInline):
 
     """
     model = ScriptDB.db_tags.through
+    related_field = "scriptdb"
 
 
 class ScriptAttributeInline(AttributeInline):

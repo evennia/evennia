@@ -26,6 +26,7 @@ class ObjectTagInline(TagInline):
 
     """
     model = ObjectDB.db_tags.through
+    related_field = "objectdb"
 
 
 class ObjectCreateForm(forms.ModelForm):
