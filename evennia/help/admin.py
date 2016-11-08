@@ -6,6 +6,11 @@ from builtins import object
 from django import forms
 from django.contrib import admin
 from evennia.help.models import HelpEntry
+from evennia.typeclasses.admin import TagInline
+
+class HelpTagInline(TagInline):
+    model = HelpEntry.db_tags.through
+    related_field = "helpentry"
 
 
 
@@ -22,7 +27,7 @@ class HelpEntryForm(forms.ModelForm):
 
 class HelpEntryAdmin(admin.ModelAdmin):
     "Sets up the admin manaager for help entries"
-
+    inlines = [HelpTagInline]
     list_display = ('id', 'db_key', 'db_help_category', 'db_lock_storage')
     list_display_links = ('id', 'db_key')
     search_fields = ['^db_key', 'db_entrytext']
