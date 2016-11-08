@@ -182,6 +182,7 @@ class PlayerAttributeInline(AttributeInline):
 
     """
     model = PlayerDB.db_attributes.through
+    related_field = "playerdb"
 
 
 class PlayerDBAdmin(BaseUserAdmin):
