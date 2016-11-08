@@ -14,6 +14,7 @@ class ChannelAttributeInline(AttributeInline):
 
     """
     model = ChannelDB.db_attributes.through
+    related_field = "channeldb"
 
 
 class ChannelTagInline(TagInline):
@@ -22,6 +23,7 @@ class ChannelTagInline(TagInline):
 
     """
     model = ChannelDB.db_tags.through
+    related_field = "channeldb"
 
 
 class MsgAdmin(admin.ModelAdmin):

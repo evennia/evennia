@@ -23,6 +23,7 @@ class ScriptAttributeInline(AttributeInline):
 
     """
     model = ScriptDB.db_attributes.through
+    related_field = "scriptdb"
 
 
 class ScriptDBAdmin(admin.ModelAdmin):

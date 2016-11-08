@@ -18,6 +18,7 @@ class ObjectAttributeInline(AttributeInline):
 
     """
     model = ObjectDB.db_attributes.through
+    related_field = "objectdb"
 
 
 class ObjectTagInline(TagInline):
