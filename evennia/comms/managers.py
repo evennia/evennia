@@ -133,7 +133,7 @@ def to_object(inp, objtype='player'):
 # Msg manager
 #
 
-class MsgManager(models.Manager):
+class MsgManager(TypedObjectManager):
     """
     This MsgManager implements methods for searching and manipulating
     Messages directly from the database.
