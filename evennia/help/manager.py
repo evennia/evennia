@@ -3,10 +3,11 @@ Custom manager for HelpEntry objects.
 """
 from django.db import models
 from evennia.utils import logger, utils
+from evennia.typeclasses.managers import TypedObjectManager
 __all__ = ("HelpEntryManager",)
 
 
-class HelpEntryManager(models.Manager):
+class HelpEntryManager(TypedObjectManager):
     """
     This HelpEntryManager implements methods for searching
     and manipulating HelpEntries directly from the database.
