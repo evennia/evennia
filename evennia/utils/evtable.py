@@ -575,9 +575,9 @@ class EvCell(object):
         hfill_char = self.hfill_char
         width = self.width
         if align == "l":
-            return [(line.lstrip(" ") if line.startswith(" ") and not line.startswith("  ") else line) + hfill_char * (width - m_len(line)) for line in data]
+            return [(line.lstrip(" ") + " " if line.startswith(" ") and not line.startswith("  ") else line) + hfill_char * (width - m_len(line)) for line in data]
         elif align == "r":
-            return [hfill_char * (width - m_len(line)) + (line.rstrip(" ") if line.endswith(" ") and not line.endswith("  ") else line) for line in data]
+            return [hfill_char * (width - m_len(line)) + (" " + line.rstrip(" ") if line.endswith(" ") and not line.endswith("  ") else line) for line in data]
         else: # center, 'c'
             return [self._center(line, self.width, self.hfill_char) for line in data]
 
