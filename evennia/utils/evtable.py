@@ -475,7 +475,8 @@ class EvCell(object):
         Apply all EvCells' formatting operations.
 
         """
-        return self._border(self._pad(self._valign(self._align(self._fit_width(self.data)))))
+        data = self._border(self._pad(self._valign(self._align(self._fit_width(self.data)))))
+        return data
 
     def _split_lines(self, text):
         """
@@ -812,7 +813,7 @@ class EvCell(object):
 
     def __repr__(self):
         self.formatted = self._reformat()
-        return unicode(ANSIString("EvCel<%s>" % self.formatted))
+        return unicode(ANSIString("<EvCel %s>" % self.formatted))
 
     def __str__(self):
         "returns cell contents on string form"
@@ -926,7 +927,7 @@ class EvColumn(object):
         self.column[index].reformat(**kwargs)
 
     def __repr__(self):
-        return "EvColumn<%i cels>" % len(self.column)
+        return "<EvColumn\n  %s>" % ("\n  ".join([repr(cell) for cell in self.column]))
     def __len__(self):
         return len(self.column)
     def __iter__(self):

@@ -314,10 +314,10 @@ def evtable_options_formatter(optionlist, caller=None):
         raw_key = strip_ansi(key)
         if raw_key != key:
             # already decorations in key definition
-            table.append(ANSIString(" |lc%s|lt%s|le: %s" % (raw_key, key, desc)))
+            table.append(" |lc%s|lt%s|le: %s" % (raw_key, key, desc))
         else:
             # add a default white color to key
-            table.append(ANSIString(" |lc%s|lt|w%s|n|le: %s" % (raw_key, raw_key, desc)))
+            table.append(" |lc%s|lt|w%s|n|le: %s" % (raw_key, raw_key, desc))
 
     ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
     nlastcol = nlist % ncols # number of elements left in last row
@@ -356,7 +356,7 @@ def underline_node_formatter(nodetext, optionstext, caller=None):
     total_width = max(options_width_max, nodetext_width_max)
     separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
     separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
-    return separator1 + nodetext + separator2 + optionstext
+    return separator1 + "|n" + nodetext + "|n" + separator2 + "|n" + optionstext
 
 
 def null_node_formatter(nodetext, optionstext, caller=None):
