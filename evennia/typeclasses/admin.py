@@ -3,6 +3,7 @@ from django.contrib.admin import ModelAdmin
 from evennia.typeclasses.models import Attribute, Tag
 from django import forms
 from evennia.utils.picklefield import PickledFormField
+from evennia.utils.dbserialize import from_pickle
 import traceback
 
 
@@ -141,11 +142,11 @@ class TagInline(admin.TabularInline):
 
 class AttributeForm(forms.ModelForm):
     """
-    This form overrides the base behavior of the ModelForm that would be used for a Tag-through-model.
-    Since the through-models only have access to the foreignkeys of the Tag and the Object that they're
-    attached to, we need to spoof the behavior of it being a form that would correspond to its tag,
-    or the creation of a tag. Instead of being saved, we'll call to the Object's handler, which will handle
-    the creation, change, or deletion of a tag for us, as well as updating the handler's cache so that all
+    This form overrides the base behavior of the ModelForm that would be used for a Attribute-through-model.
+    Since the through-models only have access to the foreignkeys of the Attribute and the Object that they're
+    attached to, we need to spoof the behavior of it being a form that would correspond to its Attribute,
+    or the creation of an Attribute. Instead of being saved, we'll call to the Object's handler, which will handle
+    the creation, change, or deletion of an Attribute for us, as well as updating the handler's cache so that all
     changes are instantly updated in-game.
     """
     attr_key = forms.CharField(label='Attribute Name')
@@ -187,6 +188,7 @@ class AttributeForm(forms.ModelForm):
         self.instance.attr_key = attr_key
         self.instance.attr_category = attr_category
         self.instance.attr_value = attr_value
+        self.instance.deserialized_value = from_pickle(attr_value)
         self.instance.attr_strvalue = attr_strvalue
         self.instance.attr_type = attr_type
         self.instance.attr_lockstring = attr_lockstring
@@ -204,6 +206,8 @@ class AttributeForm(forms.ModelForm):
         instance.attr_key = self.cleaned_data['attr_key']
         instance.attr_category = self.cleaned_data['attr_category'] or None
         instance.attr_value = self.cleaned_data['attr_value'] or None
+        # convert the serialized string value into an object, if necessary, for AttributeHandler
+        instance.attr_value = from_pickle(instance.attr_value)
         instance.attr_strvalue = self.cleaned_data['attr_strvalue'] or None
         instance.attr_type = self.cleaned_data['attr_type'] or None
         instance.attr_lockstring = self.cleaned_data['attr_lockstring']
