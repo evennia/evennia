@@ -977,6 +977,29 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
                 break
         return s
 
+    def __mul__(self, other):
+        """
+        Multiplication method. Implemented for performance reasons.
+
+        """
+        if not isinstance(other, int):
+            return NotImplemented
+        raw_string = self._raw_string * other
+        clean_string = self._clean_string * other
+        code_indexes = self._code_indexes[:]
+        char_indexes = self._char_indexes[:]
+        for i in range(1, other + 1):
+            code_indexes.extend(
+                self._shifter(self._code_indexes, i * len(self._raw_string)))
+            char_indexes.extend(
+                self._shifter(self._char_indexes, i * len(self._raw_string)))
+        return ANSIString(
+            raw_string, code_indexes=code_indexes, char_indexes=char_indexes,
+            clean_string=clean_string)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
     def split(self, by=None, maxsplit=-1):
         """
         Stolen from PyPy's pure Python string implementation, tweaked for
@@ -1010,29 +1033,6 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
             return [part for part in res  if part != ""]
         return res
 
-    def __mul__(self, other):
-        """
-        Multiplication method. Implemented for performance reasons.
-
-        """
-        if not isinstance(other, int):
-            return NotImplemented
-        raw_string = self._raw_string * other
-        clean_string = self._clean_string * other
-        code_indexes = self._code_indexes[:]
-        char_indexes = self._char_indexes[:]
-        for i in range(1, other + 1):
-            code_indexes.extend(
-                self._shifter(self._code_indexes, i * len(self._raw_string)))
-            char_indexes.extend(
-                self._shifter(self._char_indexes, i * len(self._raw_string)))
-        return ANSIString(
-            raw_string, code_indexes=code_indexes, char_indexes=char_indexes,
-            clean_string=clean_string)
-
-    def __rmul__(self, other):
-        return self.__mul__(other)
-
     def rsplit(self, by=None, maxsplit=-1):
         """
         Stolen from PyPy's pure Python string implementation, tweaked for
@@ -1065,6 +1065,88 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         if drop_spaces:
             return [part for part in res if part != ""]
         return res
+
+    def strip(self, chars=None):
+        """
+        Strip from both ends, taking ANSI markers into account.
+        """
+        clean = self._clean_string
+        raw = self._raw_string
+
+        # count continuous sequence of chars from left and right
+        nlen = len(clean)
+        nlstripped = nlen - len(clean.lstrip(chars))
+        nrstripped = nlen - len(clean.rstrip(chars))
+
+        # within the stripped regions, only retain parts of the raw
+        # string *not* matching the clean string (these are ansi/mxp tags)
+        lstripped = ""
+        ic, ir1 = 0, 0
+        while nlstripped:
+            if ic >= nlstripped:
+                break
+            elif raw[ir1] != clean[ic]:
+                lstripped += raw[ir1]
+            else:
+                ic += 1
+            ir1 += 1
+        rstripped = ""
+        ic, ir2 = nlen-1, len(raw)-1
+        while nrstripped:
+            if nlen - ic > nrstripped:
+                break
+            elif raw[ir2] != clean[ic]:
+                rstripped += raw[ir2]
+            else:
+                ic -= 1
+            ir2 -= 1
+        rstripped = rstripped[::-1]
+        return ANSIString(lstripped + raw[ir1:ir2+1] + rstripped)
+
+
+    def lstrip(self, chars=None):
+        """
+        Strip from the left, taking ANSI markers into account.
+        """
+        clean = self._clean_string
+        raw = self._raw_string
+
+        # count continuous sequence of chars from left and right
+        nlen = len(clean)
+        nlstripped = nlen - len(clean.lstrip(chars))
+        # within the stripped regions, only retain parts of the raw
+        # string *not* matching the clean string (these are ansi/mxp tags)
+        lstripped = ""
+        ic, ir1 = 0, 0
+        while nlstripped:
+            if ic >= nlstripped:
+                break
+            elif raw[ir1] != clean[ic]:
+                lstripped += raw[ir1]
+            else:
+                ic += 1
+            ir1 += 1
+        return ANSIString(lstripped + raw[ir1:])
+
+    def rstrip(self, chars=None):
+        """
+        Strip from the right, taking ANSI markers into account.
+        """
+        clean = self._clean_string
+        raw = self._raw_string
+        nlen = len(clean)
+        nrstripped = nlen - len(clean.rstrip(chars))
+        rstripped = ""
+        ic, ir2 = nlen-1, len(raw)-1
+        while nrstripped:
+            if nlen - ic > nrstripped:
+                break
+            elif raw[ir2] != clean[ic]:
+                rstripped += raw[ir2]
+            else:
+                ic -= 1
+            ir2 -= 1
+        return ANSIString(raw[:ir2+1] + rstripped)
 
     def join(self, iterable):
         """
