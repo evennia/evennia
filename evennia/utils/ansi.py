@@ -1146,6 +1146,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
             else:
                 ic -= 1
             ir2 -= 1
+        rstripped = rstripped[::-1]
         return ANSIString(raw[:ir2+1] + rstripped)
 
     def join(self, iterable):
