@@ -258,7 +258,7 @@ class MsgPortal2Server(amp.Command):
     """
     key = "MsgPortal2Server"
     arguments = [('packed_data', Compressed())]
-    errors = [(Exception, 'EXCEPTION')]
+    errors = {Exception: 'EXCEPTION'}
     response = []
 
 
@@ -269,7 +269,7 @@ class MsgServer2Portal(amp.Command):
     """
     key = "MsgServer2Portal"
     arguments = [('packed_data', Compressed())]
-    errors = [(Exception, 'EXCEPTION')]
+    errors = {Exception: 'EXCEPTION'}
     response = []
 
 
@@ -283,7 +283,7 @@ class AdminPortal2Server(amp.Command):
     """
     key = "AdminPortal2Server"
     arguments = [('packed_data', Compressed())]
-    errors = [(Exception, 'EXCEPTION')]
+    errors = {Exception: 'EXCEPTION'}
     response = []
 
 
@@ -297,7 +297,7 @@ class AdminServer2Portal(amp.Command):
     """
     key = "AdminServer2Portal"
     arguments = [('packed_data', Compressed())]
-    errors = [(Exception, 'EXCEPTION')]
+    errors = {Exception: 'EXCEPTION'}
     response = []
 
 
@@ -314,7 +314,7 @@ class FunctionCall(amp.Command):
                  ('function', amp.String()),
                  ('args', amp.String()),
                  ('kwargs', amp.String())]
-    errors = [(Exception, 'EXCEPTION')]
+    errors = {Exception: 'EXCEPTION'}
     response = [('result', amp.String())]
 
 
