@@ -252,16 +252,16 @@ COMMAND_PARSER = "evennia.commands.cmdparser.cmdparser"
 # the results. If multiple "box" objects
 # are found, they can by default be separated as 1-box, 2-box. Below you
 # can change the regular expression used. The regex must have one
-# have two capturing groups (?P<prefix>...) and (?P<name>...) - the default
-# parser expects this. It should
-# also involve a number starting from 1. When changing this you must also
-# update SEARCH_MULTIMATCH_TEMPLATE to properly describe the syntax.
+# have two capturing groups (?P<number>...) and (?P<name>...) - the default
+# parser expects this. It should also involve a number starting from 1.
+# When changing this you must also update SEARCH_MULTIMATCH_TEMPLATE
+# to properly describe the syntax.
 SEARCH_MULTIMATCH_REGEX = r"(?P<number>[0-9]+)-(?P<name>.*)"
-# To display multimatch errors we must display each multimatch in a way that
-# instructs users to separate their multimatches in a way SEARCH_MULTIMATCH_REGEX
-# above understands; for example by making sure they must write 1-box, 2-box etc.
-# The template must contain {number} - a number to separate multi-matches, starting
-# from 1; {name} - the name of the multimatched entity; {aliases} - eventual
+# To display multimatch errors in various listings we must display
+# the syntax in a way that matches what SEARCH_MULTIMATCH_REGEX understand.
+# The template will be populated with data and expects the following markup:
+# {number} - the order of the multimatch, starting from 1; {name} - the
+# name (key) of the multimatched entity; {aliases} - eventual
 # aliases for the entity; {info} - extra info like #dbrefs for staff. Don't
 # forget a line break if you want one match per line.
 SEARCH_MULTIMATCH_TEMPLATE = " {number}-{name}{aliases}{info}\n"
