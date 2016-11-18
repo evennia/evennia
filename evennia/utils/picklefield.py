@@ -147,13 +147,17 @@ class PickledFormField(CharField):
         super(PickledFormField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
-        if value == '':
+        if not value.strip():
             # Field was left blank. Make this None.
             value = 'None'
         try:
             return literal_eval(value)
         except (ValueError, SyntaxError):
-            raise ValidationError(self.error_messages['invalid'])
+            try:
+                value = "u'%s'" % force_text(value)
+                return literal_eval(value)
+            except (ValueError, SyntaxError):
+                raise ValidationError(self.error_messages['invalid'])
 
 
 class PickledObjectField(models.Field):

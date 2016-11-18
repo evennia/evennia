@@ -1,6 +1,5 @@
 from django.contrib import admin
-from django.contrib.admin import ModelAdmin
-from evennia.typeclasses.models import Attribute, Tag
+from evennia.typeclasses.models import Tag
 from django import forms
 from evennia.utils.picklefield import PickledFormField
 from evennia.utils.dbserialize import from_pickle
@@ -200,8 +199,7 @@ class AttributeForm(forms.ModelForm):
         differently than None objects. So for consistency with how things are handled in game,
         we'll try to make sure that empty form fields will be None, rather than ''.
         """
-        # we are spoofing a tag for the Handler that will be called
-        # instance = super(TagForm, self).save(commit=False)
+        # we are spoofing an Attribute for the Handler that will be called
         instance = self.instance
         instance.attr_key = self.cleaned_data['attr_key']
         instance.attr_category = self.cleaned_data['attr_category'] or None
@@ -218,6 +216,13 @@ class AttributeFormSet(forms.BaseInlineFormSet):
     """
     Attribute version of TagFormSet, as above.
     """
+    def clean(self):
+        if any(self.errors):
+            from django.core.exceptions import FieldError
+            raise FieldError("Sorry, there was an error in saving that form. You may have forgotten to add a name "
+                             "for the Attribute, or you may have provided an invalid literal for an Attribute's value.")
+        super(AttributeFormSet, self).clean()
+
     def save(self, commit=True):
         def get_handler(finished_object):
             related = getattr(finished_object, self.related_field)
