@@ -775,10 +775,9 @@ class EvMenu(object):
                     goto, execute = dic.get("goto", None), dic.get("exec", None)
                     self.default = (goto, execute)
                 else:
-                    keys = list(make_iter(dic.get("key", str(inum+1).strip()))) + [str(inum+1)]
+                    keys = list(make_iter(dic.get("key", str(inum+1).strip())))
                     desc = dic.get("desc", dic.get("text", _ERR_NO_OPTION_DESC).strip())
                     goto, execute = dic.get("goto", None), dic.get("exec", None)
-
                 if keys:
                     display_options.append((keys[0], desc))
                     for key in keys:
