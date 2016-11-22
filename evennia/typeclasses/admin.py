@@ -148,7 +148,7 @@ class AttributeForm(forms.ModelForm):
     the creation, change, or deletion of an Attribute for us, as well as updating the handler's cache so that all
     changes are instantly updated in-game.
     """
-    attr_key = forms.CharField(label='Attribute Name')
+    attr_key = forms.CharField(label='Attribute Name', required=False, initial="Enter Attribute Name Here")
     attr_category = forms.CharField(label="Category", help_text="type of attribute, for sorting", required=False)
     attr_value = PickledFormField(label="Value", help_text="Value to pickle/save", required=False)
     attr_type = forms.CharField(label="Type", help_text="nick for nickname, else leave blank", required=False)
@@ -201,7 +201,7 @@ class AttributeForm(forms.ModelForm):
         """
         # we are spoofing an Attribute for the Handler that will be called
         instance = self.instance
-        instance.attr_key = self.cleaned_data['attr_key']
+        instance.attr_key = self.cleaned_data['attr_key'] or "no_name_entered_for_attribute"
         instance.attr_category = self.cleaned_data['attr_category'] or None
         instance.attr_value = self.cleaned_data['attr_value'] or None
         # convert the serialized string value into an object, if necessary, for AttributeHandler
@@ -216,12 +216,6 @@ class AttributeFormSet(forms.BaseInlineFormSet):
     """
     Attribute version of TagFormSet, as above.
     """
-    def clean(self):
-        if any(self.errors):
-            from django.core.exceptions import FieldError
-            raise FieldError("Sorry, there was an error in saving that form. You may have forgotten to add a name "
-                             "for the Attribute, or you may have provided an invalid literal for an Attribute's value.")
-        super(AttributeFormSet, self).clean()
 
     def save(self, commit=True):
         def get_handler(finished_object):
