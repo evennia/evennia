@@ -324,6 +324,28 @@ class Command(with_metaclass(CommandMeta, object)):
                 session = to_obj.sessions.get()
         to_obj.msg(text=text, from_obj=from_obj, session=session, **kwargs)
 
+    def execute_cmd(self, raw_string, session=None, obj=None, **kwargs):
+        """
+        A shortcut of execute_cmd on the caller. It appends the
+        session automatically.
+
+        Args:
+            raw_string (str): Execute this string as a command input.
+            session (Session, optional): If not given, the current command's Session will be used.
+            obj (Object or Player, optional): Object or Player on which to call the execute_cmd.
+                If not given, self.caller will be used.
+
+        Kwargs:
+            Other keyword arguments will be added to the found command
+            object instace as variables before it executes.  This is
+            unused by default Evennia but may be used to set flags and
+            change operating paramaters for commands at run-time.
+
+        """
+        obj = self.caller if obj is None else obj
+        session = self.session if session is None else session
+        obj.execute_cmd(raw_string, session=session, **kwargs)
+
     # Common Command hooks
 
     def at_pre_cmd(self):

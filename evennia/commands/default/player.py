@@ -214,9 +214,9 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
                     caller.db._playable_characters = [char for char
                                                         in caller.db._playable_characters if char != delobj]
                     delobj.delete()
-                    caller.msg("Character '%s' was permanently deleted." % key)
+                    self.msg("Character '%s' was permanently deleted." % key)
                 else:
-                    caller.msg("Deletion was aborted.")
+                    self.msg("Deletion was aborted.")
                 del caller.ndb._char_to_delete
 
             match = match[0]
@@ -581,7 +581,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
         if val and name in validators:
             optiondict = update(name,  val, validators[name])
         else:
-            self.session.msg("|rNo option named '|w%s|r'." % name)
+            self.msg("|rNo option named '|w%s|r'." % name)
         if optiondict:
             # a valid setting
             if "save" in self.switches:

@@ -436,9 +436,9 @@ class CmdMvAttr(ObjManipCommand):
 
         # simply use @cpattr for all the functionality
         if "copy" in self.switches:
-            self.caller.execute_cmd("@cpattr %s" % self.args)
+            self.execute_cmd("@cpattr %s" % self.args)
         else:
-            self.caller.execute_cmd("@cpattr/move %s" % self.args)
+            self.execute_cmd("@cpattr/move %s" % self.args)
 
 
 class CmdCreate(ObjManipCommand):
@@ -901,7 +901,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
         # build the string we will use to call @dig
         digstring = "@dig%s %s = %s;%s%s" % (telswitch, roomname,
                                              exitname, exitshort, backstring)
-        self.caller.execute_cmd(digstring)
+        self.execute_cmd(digstring)
 
 
 class CmdLink(COMMAND_DEFAULT_CLASS):

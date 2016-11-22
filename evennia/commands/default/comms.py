@@ -217,7 +217,7 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         args = self.args
         if not args:
-            caller.execute_cmd("@channels")
+            self.execute_cmd("@channels")
             self.msg("(Usage: allcom on | off | who | destroy)")
             return
 
@@ -227,18 +227,18 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
             channels = [chan for chan in ChannelDB.objects.get_all_channels()
                         if chan.access(caller, 'listen')]
             for channel in channels:
-                caller.execute_cmd("addcom %s" % channel.key)
+                self.execute_cmd("addcom %s" % channel.key)
         elif args == "off":
              #get names all subscribed channels and disconnect from them all
             channels = ChannelDB.objects.get_subscriptions(caller)
             for channel in channels:
-                caller.execute_cmd("delcom %s" % channel.key)
+                self.execute_cmd("delcom %s" % channel.key)
         elif args == "destroy":
             # destroy all channels you control
             channels = [chan for chan in ChannelDB.objects.get_all_channels()
                         if chan.access(caller, 'control')]
             for channel in channels:
-                caller.execute_cmd("@cdestroy %s" % channel.key)
+                self.execute_cmd("@cdestroy %s" % channel.key)
         elif args == "who":
             # run a who, listing the subscribers on visible channels.
             string = "\n{CChannel subscriptions{n"
@@ -301,7 +301,7 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                                   "%s" % ",".join(nick.db_key for nick in make_iter(nicks)
                                   if nick and nick.value[3].lower() == clower),
                                   chan.db.desc])
-            caller.msg("\n{wChannel subscriptions{n (use {w@channels{n to list all, {waddcom{n/{wdelcom{n to sub/unsub):{n\n%s" % comtable)
+            self.msg("\n{wChannel subscriptions{n (use {w@channels{n to list all, {waddcom{n/{wdelcom{n to sub/unsub):{n\n%s" % comtable)
         else:
             # full listing (of channels caller is able to listen to)
             comtable = evtable.EvTable("{wsub{n", "{wchannel{n", "{wmy aliases{n", "{wlocks{n", "{wdescription{n", maxwidth=_DEFAULT_WIDTH)
@@ -325,7 +325,7 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                                   chan.db.desc])
             comtable.reformat_column(0, width=9)
             comtable.reformat_column(3, width=14)
-            caller.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)
+            self.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)
 
 
 class CmdCdestroy(COMMAND_DEFAULT_CLASS):
@@ -512,7 +512,7 @@ class CmdCWho(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
         string = "\n{CChannel subscriptions{n"
-        string += "\n{w%s:{n\n  %s" % (channel.key, channel.wholist)       
+        string += "\n{w%s:{n\n  %s" % (channel.key, channel.wholist)
         self.msg(string.strip())
 
 
@@ -844,7 +844,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
                 for ircbot in ircbots:
                     ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
                     table.add_row(ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo, ircbot.db.irc_ssl)
-                self.caller.msg(table)
+                self.msg(table)
             else:
                 self.msg("No irc bots found.")
             return
@@ -954,7 +954,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
                                 "{wRSS feed URL{n", border="cells", maxwidth=_DEFAULT_WIDTH)
                 for rssbot in rssbots:
                     table.add_row(rssbot.id, rssbot.db.rss_rate, rssbot.db.ev_channel, rssbot.db.rss_url)
-                self.caller.msg(table)
+                self.msg(table)
             else:
                 self.msg("No rss bots found.")
             return
