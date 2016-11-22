@@ -65,10 +65,10 @@ class Tag(models.Model):
         index_together = (('db_key', 'db_category', 'db_tagtype'),)
 
     def __unicode__(self):
-        return u"<Tag: %s>" % self.db_key
+        return u"<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else "")
 
     def __str__(self):
-        return str("<Tag: %s>" % self.db_key)
+        return str("<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else ""))
 
 
 #
@@ -279,7 +279,7 @@ class TagHandler(object):
         """
         ret = []
         for keystr in make_iter(key):
-            ret.extend([tag if return_tagobj else tag.db_key
+            ret.extend([tag if return_tagobj else to_str(tag.db_key)
                             for tag in self._getcache(key, category)])
         return ret[0] if len(ret) == 1 else (ret if ret else default)
 
@@ -325,14 +325,11 @@ class TagHandler(object):
         self._catcache = {}
         self._cache_complete = False
 
-    def all(self, category=None, return_key_and_category=False):
+    def all(self, return_key_and_category=False):
         """
-        Get all tags in this handler.
+        Get all tags in this handler, regardless of category.
 
         Args:
-            category (str, optional): The Tag category to limit the
-                request to. Note that `None` is the valid, default
-                category.
             return_key_and_category (bool, optional): Return a list of
                 tuples `[(key, category), ...]`.
 
@@ -344,7 +341,7 @@ class TagHandler(object):
         """
         if not self._cache_complete:
             self._fullcache()
-        tags = sorted(self._getcache(None, category), key=lambda o:o.id)
+        tags = sorted(self._cache.values())
         if return_key_and_category:
                 # return tuple (key, category)
             return [(to_str(tag.db_key), to_str(tag.db_category)) for tag in tags]
