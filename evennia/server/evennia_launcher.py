@@ -24,6 +24,7 @@ import django
 
 # Signal processing
 SIG = signal.SIGINT
+CTRL_C_EVENT = 0 # Windows SIGINT-like signal
 
 # Set up the main python paths to Evennia
 EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -712,7 +713,20 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="",
             with open(restart_file, 'w') as f:
                 f.write("shutdown")
         try:
-            os.kill(int(pid), signal)
+            if os.name == 'nt':
+                from win32api import GenerateConsoleCtrlEvent
+                try:
+                    # Windows can only send a SIGINT-like signal to
+                    # *every* process spawned off the same console, so we must
+                    # avoid killing ourselves here.
+                    GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0)
+                except KeyboardInterrupt:
+                    pass
+            else:
+                # Linux can send the SIGINT signal directly
+                # to the specified PID.
+                os.kill(int(pid), signal)
+
         except OSError:
             print("Process %(pid)s cannot be stopped. "\
                   "The PID file 'server/%(pidfile)s' seems stale. "\
@@ -1141,7 +1155,8 @@ def server_operation(mode, service, interactive, profiler, logserver=False):
         if os.name == 'nt':
             print(
                 "Restarting from command line is not supported under Windows. "
-                "Log into the game to restart.")
+                "Use the in-game command (@reload by default) "
+                "or use 'evennia stop && evennia start' for a cold reboot.")
             return
         if service == 'server':
             kill(SERVER_PIDFILE, SIG, "Server reloaded.",
@@ -1164,6 +1179,10 @@ def server_operation(mode, service, interactive, profiler, logserver=False):
                  errmsg % 'Server', SERVER_RESTART, restart=True)
 
     elif mode == 'stop':
+        if os.name == "nt":
+            print (
+                    "(Obs: You can use a single Ctrl-C to skip "
+                    "Windows' annoying 'Terminate batch job (Y/N)?' prompts.)")
         # stop processes, avoiding reload
         if service == 'server':
             kill(SERVER_PIDFILE, SIG,
