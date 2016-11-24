@@ -18,7 +18,7 @@ import re
 
 LINKS_SUB = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
 
-MXP = "\x5B"
+MXP = chr(91)
 MXP_TEMPSECURE = "\x1B[4z"
 MXP_SEND = MXP_TEMPSECURE + \
            "<SEND HREF=\"\\1\">" + \
