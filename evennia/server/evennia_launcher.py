@@ -732,8 +732,12 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="",
                   "The PID file 'server/%(pidfile)s' seems stale. "\
                   "Try removing it." % {'pid': pid, 'pidfile': pidfile})
             return
-        print("Evennia:", succmsg)
-        return
+        try:
+            print("Evennia:", succmsg)
+            return
+        except KeyboardInterrupt:
+            print("Evennia:", succmsg)
+            return
     print("Evennia:", errmsg)
 
 
