@@ -185,26 +185,30 @@ def start_services(server_argv, portal_argv):
     while True:
 
         # this blocks until something is actually returned.
+        from twisted.internet.error import ReactorNotRunning
         try:
-            message, rc = processes.get()
-        except KeyboardInterrupt:
-            # this only matters in interactive mode
+            try:
+                message, rc = processes.get()
+            except KeyboardInterrupt:
+                # this only matters in interactive mode
+                break
+
+            # restart only if process stopped cleanly
+            if (message == "server_stopped" and int(rc) == 0 and
+                 get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
+                print(PROCESS_RESTART.format(component="Server"))
+                SERVER = thread.start_new_thread(server_waiter, (processes, ))
+                continue
+
+            # normally the portal is not reloaded since it's run as a daemon.
+            if (message == "portal_stopped" and int(rc) == 0 and
+                  get_restart_mode(PORTAL_RESTART) == "True"):
+                print(PROCESS_RESTART.format(component="Portal"))
+                PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
+                continue
             break
-
-        # restart only if process stopped cleanly
-        if (message == "server_stopped" and int(rc) == 0 and
-             get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
-            print(PROCESS_RESTART.format(component="Server"))
-            SERVER = thread.start_new_thread(server_waiter, (processes, ))
-            continue
-
-        # normally the portal is not reloaded since it's run as a daemon.
-        if (message == "portal_stopped" and int(rc) == 0 and
-              get_restart_mode(PORTAL_RESTART) == "True"):
-            print(PROCESS_RESTART.format(component="Portal"))
-            PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
-            continue
-        break
+        except ReactorNotRunning:
+            break
 
 
 def main():
