@@ -10,7 +10,7 @@ sessions etc.
 import re
 from twisted.internet.task import LoopingCall
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol
-from twisted.conch.telnet import IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO
+from twisted.conch.telnet import IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO, NULL
 from django.conf import settings
 from evennia.server.session import Session
 from evennia.server.portal import ttype, mssp, telnet_oob, naws
@@ -41,7 +41,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         # initialize the session
         self.line_buffer = []
-        self.iaw_mode = False
         self.no_lb_mode = False
         client_address = self.transport.client
         client_address = client_address[0] if client_address else None
@@ -175,7 +174,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     def _write(self, data):
         "hook overloading the one used in plain telnet"
         data = data.replace('\n', '\r\n').replace('\r\r\n', '\r\n')
-        #data = data.replace('\n', '\r\n')
         super(TelnetProtocol, self)._write(mccp_compress(self, data))
 
     def sendLine(self, line):
@@ -191,7 +189,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         line = line.replace(IAC, IAC + IAC).replace('\n', '\r\n')
         return self.transport.write(mccp_compress(self, line))
 
-    def applicationDataReceived(self, string):
+    def applicationDataReceived(self, data):
         """
         Telnet method called when non-telnet-command data is coming in
         over the telnet connection. We pass it on to the game engine
@@ -201,7 +199,29 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             string (str): Incoming data.
 
         """
-        self.data_in(text=string)
+        if data and data.strip() == NULL:
+            # this is an ancient type of keepalive used by some
+            # legacy clients. There should never be a reason to send a
+            # lone NULL character so this seems to be a safe thing to
+            # support for # backwards compatibility. It also stops the
+            # NULL to continously pop up as an unknown command.
+            data = _IDLE_COMMAND
+
+        if self.no_lb_mode and _RE_LEND.search(data):
+            # we are in no_lb_mode and receive a line break;
+            # this means we should empty the buffer and send
+            # the command.
+            data = "".join(self.line_buffer) + data
+            data = data.rstrip("\r\n") + "\n"
+            self.line_buffer = []
+            self.no_lb_mode = False
+        elif not _RE_LEND.search(data):
+            # no line break at the end of the command, buffer instead.
+            self.line_buffer.append(data)
+            self.no_lb_mode = True
+            return
+
+        self.data_in(text=data)
 
     # Session hooks
 
