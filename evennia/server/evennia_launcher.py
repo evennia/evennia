@@ -714,12 +714,13 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="",
                 f.write("shutdown")
         try:
             if os.name == 'nt':
-                from win32api import GenerateConsoleCtrlEvent
+                from win32api import GenerateConsoleCtrlEvent, SetConsoleCtrlHandler
                 try:
                     # Windows can only send a SIGINT-like signal to
                     # *every* process spawned off the same console, so we must
                     # avoid killing ourselves here.
                     GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0)
+                    SetConsoleCtrlHandler(None, True)
                 except KeyboardInterrupt:
                     pass
             else:
@@ -732,12 +733,8 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="",
                   "The PID file 'server/%(pidfile)s' seems stale. "\
                   "Try removing it." % {'pid': pid, 'pidfile': pidfile})
             return
-        try:
-            print("Evennia:", succmsg)
-            return
-        except KeyboardInterrupt:
-            print("Evennia:", succmsg)
-            return
+        print("Evennia:", succmsg)
+        return
     print("Evennia:", errmsg)
 
 
