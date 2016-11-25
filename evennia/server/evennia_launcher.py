@@ -719,8 +719,8 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="",
                     # Windows can only send a SIGINT-like signal to
                     # *every* process spawned off the same console, so we must
                     # avoid killing ourselves here.
-                    GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0)
                     SetConsoleCtrlHandler(None, True)
+                    GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0)
                 except KeyboardInterrupt:
                     pass
             else:
