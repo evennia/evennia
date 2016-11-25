@@ -9,13 +9,14 @@ sessions etc.
 
 import re
 from twisted.internet.task import LoopingCall
-from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO, NULL
+from twisted.conch.telnet import Telnet, StatefulTelnetProtocol
+from twisted.conch.telnet import IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO
 from django.conf import settings
 from evennia.server.session import Session
 from evennia.server.portal import ttype, mssp, telnet_oob, naws
 from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
-from evennia.utils import ansi, logger
+from evennia.utils import ansi
 from evennia.utils.utils import to_str
 
 _RE_N = re.compile(r"\{n$")
@@ -171,67 +172,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.sessionhandler.disconnect(self)
         self.transport.loseConnection()
 
-    def dataReceived(self, data):
-        """
-        Handle incoming data over the wire.
-
-        This method will split the incoming data depending on if it
-        starts with IAC (a telnet command) or not. All other data will
-        be handled in line mode. Some clients also sends an erroneous
-        line break after IAC, which we must watch out for.
-
-        Args:
-            data (str): Incoming data.
-
-        Notes:
-            OOB protocols (MSDP etc) already intercept subnegotiations on
-            their own, never entering this method. They will relay their
-            parsed data directly to self.data_in.
-
-        """
-        if data and data[0] == IAC or self.iaw_mode:
-            try:
-                super(TelnetProtocol, self).dataReceived(data)
-                if len(data) == 1:
-                    self.iaw_mode = True
-                else:
-                    self.iaw_mode = False
-                return
-            except Exception as err1:
-                conv = ""
-                try:
-                    for b in data:
-                        conv += " " + repr(ord(b))
-                except Exception as err2:
-                    conv = str(err2) + ":", str(data)
-                out = "Telnet Error (%s): %s (%s)" % (err1, data, conv)
-                logger.log_trace(out)
-                return
-
-        if data and data.strip() == NULL:
-            # This is an ancient type of keepalive still used by some
-            # legacy clients. There should never be a reason to send
-            # a lone NULL character so this seems ok to support for
-            # backwards compatibility.
-            data = _IDLE_COMMAND
-
-        if self.no_lb_mode and _RE_LEND.search(data):
-            # we are in no_lb_mode and receive a line break;
-            # this means we should empty the buffer and send
-            # the command.
-            data = "".join(self.line_buffer) + data
-            data = data.rstrip("\r\n") + "\n"
-            self.line_buffer = []
-            self.no_lb_mode = False
-        elif not _RE_LEND.search(data):
-            # no line break at the end of the command, buffer instead.
-            self.line_buffer.append(data)
-            self.no_lb_mode = True
-            return
-
-        # if we get to this point the command should end with a linebreak.
-        StatefulTelnetProtocol.dataReceived(self, data)
-
     def _write(self, data):
         "hook overloading the one used in plain telnet"
         data = data.replace('\n', '\r\n').replace('\r\r\n', '\r\n')
@@ -251,10 +191,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         line = line.replace(IAC, IAC + IAC).replace('\n', '\r\n')
         return self.transport.write(mccp_compress(self, line))
 
-    def lineReceived(self, string):
+    def applicationDataReceived(self, string):
         """
-        Telnet method called when data is coming in over the telnet
-        connection. We pass it on to the game engine directly.
+        Telnet method called when non-telnet-command data is coming in
+        over the telnet connection. We pass it on to the game engine
+        directly.
 
         Args:
             string (str): Incoming data.
