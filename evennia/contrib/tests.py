@@ -4,6 +4,7 @@ Testing suite for contrib folder
 """
 
 from django.conf import settings
+from evennia.commands.default.tests import CommandTest
 from evennia.utils.test_resources import EvenniaTest
 from mock import Mock
 
@@ -168,7 +169,7 @@ settings.TIME_MONTH_PER_YEAR = 12
 settings.TIME_HOUR_PER_DAY = 24
 
 
-class TestExtendedRoom(EvenniaTest):
+class TestExtendedRoom(CommandTest):
     room_typeclass = extended_room.ExtendedRoom
     DETAIL_DESC = "A test detail."
     SUMMER_DESC = "A summer description."
@@ -192,3 +193,17 @@ class TestExtendedRoom(EvenniaTest):
 
     def test_return_detail(self):
         self.assertEqual(self.DETAIL_DESC, self.room1.return_detail("testdetail"))
+
+    def test_cmdextendedlook(self):
+        self.call(extended_room.CmdExtendedLook(), "here","Room(#1)\n%s" % self.SUMMER_DESC)
+        self.call(extended_room.CmdExtendedLook(), "testdetail", self.DETAIL_DESC)
+
+    def test_cmdextendeddesc(self):
+        self.call(extended_room.CmdExtendedDesc(), "", "Details on Room", cmdstring="@detail")
+        self.call(extended_room.CmdExtendedDesc(), "thingie = newdetail with spaces",
+                                                 "Set Detail thingie to 'newdetail with spaces'.", cmdstring="@detail")
+        self.call(extended_room.CmdExtendedDesc(), "/del thingie", "Detail thingie deleted, if it existed.", cmdstring="@detail")
+        self.call(extended_room.CmdExtendedDesc(), "", "Descriptions on Room:")
+
+    def test_cmdgametime(self):
+        self.call(extended_room.CmdGameTime(), "", "It's a summer day, in the morning.")

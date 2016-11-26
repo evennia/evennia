@@ -38,7 +38,7 @@ class CommandTest(EvenniaTest):
     Tests a command
     """
 
-    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None, receiver=None):
+    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None, receiver=None, cmdstring=None):
         """
         Test a command by assigning all the needed
         properties to cmdobj and  running
@@ -52,7 +52,7 @@ class CommandTest(EvenniaTest):
         caller = caller if caller else self.char1
         receiver = receiver if receiver else caller
         cmdobj.caller = caller
-        cmdobj.cmdstring = cmdobj.key
+        cmdobj.cmdstring = cmdstring if cmdstring else cmdobj.key
         cmdobj.args = args
         cmdobj.cmdset = cmdset
         cmdobj.session = SESSIONS.session_from_sessid(1)
