@@ -21,6 +21,7 @@ from evennia.utils.utils import to_str
 
 _RE_N = re.compile(r"\{n$")
 _RE_LEND = re.compile(r"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
+_RE_LINEBREAK = re.compile(r"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 _IDLE_COMMAND = settings.IDLE_COMMAND + "\n"
 
@@ -40,8 +41,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         """
         # initialize the session
-        self.line_buffer = []
-        self.no_lb_mode = False
+        self.line_buffer = ""
         client_address = self.transport.client
         client_address = client_address[0] if client_address else None
         # this number is counted down for every handshake that completes.
@@ -171,6 +171,39 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.sessionhandler.disconnect(self)
         self.transport.loseConnection()
 
+    def applicationDataReceived(self, data):
+        """
+        Telnet method called when non-telnet-command data is coming in
+        over the telnet connection. We pass it on to the game engine
+        directly.
+
+        Args:
+            string (str): Incoming data.
+
+        """
+        if not data:
+            data = [data]
+        elif data.strip() == NULL:
+            # this is an ancient type of keepalive used by some
+            # legacy clients. There should never be a reason to send a
+            # lone NULL character so this seems to be a safe thing to
+            # support for # backwards compatibility. It also stops the
+            # NULL to continously pop up as an unknown command.
+            data = [_IDLE_COMMAND]
+        else:
+            data = _RE_LINEBREAK.split(data)
+            if self.line_buffer and len(data) > 1:
+                # buffer exists, it is terminated by the first line feed
+                data[0] = self.line_buffer + data[0]
+                self.line_buffer = ""
+            # if the last data split is empty, it means all splits have
+            # line breaks, if not, it is unterminated and must be
+            # buffered.
+            self.line_buffer += data.pop()
+        # send all data chunks
+        for dat in data:
+            self.data_in(text=dat + "\n")
+
     def _write(self, data):
         "hook overloading the one used in plain telnet"
         data = data.replace('\n', '\r\n').replace('\r\r\n', '\r\n')
@@ -189,39 +222,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         line = line.replace(IAC, IAC + IAC).replace('\n', '\r\n')
         return self.transport.write(mccp_compress(self, line))
 
-    def applicationDataReceived(self, data):
-        """
-        Telnet method called when non-telnet-command data is coming in
-        over the telnet connection. We pass it on to the game engine
-        directly.
-
-        Args:
-            string (str): Incoming data.
-
-        """
-        if data and data.strip() == NULL:
-            # this is an ancient type of keepalive used by some
-            # legacy clients. There should never be a reason to send a
-            # lone NULL character so this seems to be a safe thing to
-            # support for # backwards compatibility. It also stops the
-            # NULL to continously pop up as an unknown command.
-            data = _IDLE_COMMAND
-
-        if self.no_lb_mode and _RE_LEND.search(data):
-            # we are in no_lb_mode and receive a line break;
-            # this means we should empty the buffer and send
-            # the command.
-            data = "".join(self.line_buffer) + data
-            data = data.rstrip("\r\n") + "\n"
-            self.line_buffer = []
-            self.no_lb_mode = False
-        elif not _RE_LEND.search(data):
-            # no line break at the end of the command, buffer instead.
-            self.line_buffer.append(data)
-            self.no_lb_mode = True
-            return
-
-        self.data_in(text=data)
 
     # Session hooks
 
