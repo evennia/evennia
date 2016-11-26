@@ -370,6 +370,7 @@ class TradeHandler(object):
             self.partB.cmdset.delete("cmdset_trade")
             self.partA_offers = None
             self.partB_offers = None
+            self.partA.scripts.stop("trade_request_timeout")
             # this will kill it also from partB
             del self.partA.ndb.tradehandler
             if self.partB.ndb.tradehandler:
