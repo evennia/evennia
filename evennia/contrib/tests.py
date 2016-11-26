@@ -239,6 +239,7 @@ class TestBarter(CommandTest):
         self.assertEqual(self.char1.msg.mock_calls[0][1][0], "Yes!")
         self.assertEqual(self.char1.msg.mock_calls[1][1][0], "Talking to myself...")
         self.assertEqual(handler.get_other(self.char1), self.char2)
+        handler.finish(force=True)
 
     def test_tradehandler_joins(self):
         handler = barter.TradeHandler(self.char1, self.char2)
@@ -246,6 +247,7 @@ class TestBarter(CommandTest):
         self.assertTrue(handler.unjoin(self.char2))
         self.assertFalse(handler.join(self.char1))
         self.assertFalse(handler.unjoin(self.char1))
+        handler.finish(force=True)
 
     def test_tradehandler_offers(self):
         handler = barter.TradeHandler(self.char1, self.char2)
@@ -293,4 +295,7 @@ class TestBarter(CommandTest):
     def test_cmdtradehelp(self):
         self.call(barter.CmdTrade(), "Char2 : Hey wanna trade?", "You say, \"Hey wanna trade?\"", caller=self.char1)
         self.call(barter.CmdTradeHelp(), "", "Trading commands\n", caller=self.char1)
+        self.call(barter.CmdFinish(), ": Ending.", "You say, \"Ending.\"\n  [You aborted trade. No deal was made.]")
+
+
 
