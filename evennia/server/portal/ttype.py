@@ -142,7 +142,7 @@ class Ttype(object):
         elif self.ttype_step == 3:
             # the MTTS bitstring identifying term capabilities
             if option.startswith("MTTS"):
-                option = option.split(" ")[1]
+                option = option[4:].strip()
                 if option.isdigit():
                     # a number - determine the actual capabilities
                     option = int(option)
