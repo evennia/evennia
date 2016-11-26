@@ -3,9 +3,11 @@ Testing suite for contrib folder
 
 """
 
+from django.conf import settings
 from evennia.utils.test_resources import EvenniaTest
+from mock import Mock
 
-# testing of rplanguage module
+# Testing of rplanguage module
 
 from evennia.contrib import rplanguage
 
@@ -54,7 +56,7 @@ class TestLanguage(EvenniaTest):
             '--------- --s---- -s -----------s f-- - ------ -f ---s--s:--s-s '))
         self.assertEqual(rplanguage.obfuscate_whisper(text, level=1.0), "...")
 
-# testing of emoting / sdesc / recog system
+# Testing of emoting / sdesc / recog system
 
 from evennia import create_object
 from evennia.contrib import rpsystem
@@ -152,11 +154,12 @@ class TestRPSystem(EvenniaTest):
         self.assertEqual(self.speaker.search("receiver of emotes"), self.receiver1)
         self.assertEqual(self.speaker.search("colliding"), self.receiver2)
 
+
+# Testing of ExtendedRoom contrib
+
 from evennia.contrib import extended_room
 from evennia import gametime
-from mock import Mock
 from evennia.objects.objects import DefaultRoom
-from django.conf import settings
 
 # mock gametime to return 7th month, 10 in morning
 gametime.gametime = Mock(return_value=(None, 7, None, None, 10))
