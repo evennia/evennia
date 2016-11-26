@@ -197,12 +197,15 @@ class TestExtendedRoom(CommandTest):
     def test_cmdextendedlook(self):
         self.call(extended_room.CmdExtendedLook(), "here","Room(#1)\n%s" % self.SUMMER_DESC)
         self.call(extended_room.CmdExtendedLook(), "testdetail", self.DETAIL_DESC)
+        self.call(extended_room.CmdExtendedLook(), "nonexistent", "Could not find 'nonexistent'.")
 
     def test_cmdextendeddesc(self):
         self.call(extended_room.CmdExtendedDesc(), "", "Details on Room", cmdstring="@detail")
         self.call(extended_room.CmdExtendedDesc(), "thingie = newdetail with spaces",
                                                  "Set Detail thingie to 'newdetail with spaces'.", cmdstring="@detail")
+        self.call(extended_room.CmdExtendedDesc(), "thingie", "Detail 'thingie' on Room:\n", cmdstring="@detail")
         self.call(extended_room.CmdExtendedDesc(), "/del thingie", "Detail thingie deleted, if it existed.", cmdstring="@detail")
+        self.call(extended_room.CmdExtendedDesc(), "thingie", "Detail 'thingie' not found.", cmdstring="@detail")
         self.call(extended_room.CmdExtendedDesc(), "", "Descriptions on Room:")
 
     def test_cmdgametime(self):
