@@ -187,8 +187,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             # this is an ancient type of keepalive used by some
             # legacy clients. There should never be a reason to send a
             # lone NULL character so this seems to be a safe thing to
-            # support for # backwards compatibility. It also stops the
-            # NULL to continously pop up as an unknown command.
+            # support for backwards compatibility. It also stops the
+            # NULL from continously popping up as an unknown command.
             data = [_IDLE_COMMAND]
         else:
             data = _RE_LINEBREAK.split(data)
