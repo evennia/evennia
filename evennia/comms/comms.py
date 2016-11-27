@@ -201,13 +201,13 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         from evennia.comms.channelhandler import CHANNELHANDLER
         CHANNELHANDLER.update()
 
-    def message_transform(self, msg, emit=False, prefix=True,
+    def message_transform(self, msgobj, emit=False, prefix=True,
                           sender_strings=None, external=False):
         """
         Generates the formatted string sent to listeners on a channel.
 
         Args:
-            msg (str): Message to send.
+            msgobj (Msg): Message object to send.
             emit (bool, optional): In emit mode the message is not associated
                 with a specific sender name.
             prefix (bool, optional): Prefix `msg` with a text given by `self.channel_prefix`.
@@ -216,13 +216,13 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
         """
         if sender_strings or external:
-            body = self.format_external(msg, sender_strings, emit=emit)
+            body = self.format_external(msgobj, sender_strings, emit=emit)
         else:
-            body = self.format_message(msg, emit=emit)
+            body = self.format_message(msgobj, emit=emit)
         if prefix:
-            body = "%s%s" % (self.channel_prefix(msg, emit=emit), body)
-        msg.message = body
-        return msg
+            body = "%s%s" % (self.channel_prefix(msgobj, emit=emit), body)
+        msgobj.message = body
+        return msgobj
 
     def distribute_message(self, msgobj, online=False):
         """
@@ -334,13 +334,13 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         Args:
             msg (str, optional): Prefix text
             emit (bool, optional): Switches to emit mode, which usually
-                means to ignore any sender information. Not used by default.
+                means to not prefix the channel's info.
 
         Returns:
             prefix (str): The created channel prefix.
 
         """
-        return '[%s] ' % self.key
+        return '' if emit else '[%s] ' % self.key
 
     def format_senders(self, senders=None):
         """
