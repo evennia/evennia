@@ -106,7 +106,7 @@ class CmdSetSpeed(Command):
         """
         speed = self.args.lower().strip()
         if speed not in SPEED_DESCS:
-            self.caller.msg("Usage: setspeed stroll|walk|run|sprint")
+            self.caller.msg("Usage: setspeed stroll||walk||run||sprint")
         elif self.caller.db.move_speed == speed:
             self.caller.msg("You are already %s." % SPEED_DESCS[speed])
         else:
