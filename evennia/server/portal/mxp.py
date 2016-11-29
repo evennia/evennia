@@ -38,7 +38,6 @@ def mxp_parse(text):
 
     """
     text = text.replace("&", "&amp;") \
-               .replace('"', "&quot;") \
                .replace("<", "&lt;") \
                .replace(">", "&gt;")
 
