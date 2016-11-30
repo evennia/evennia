@@ -310,7 +310,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             attribute_name (str): Define which property to search. If set, no
                 key+alias search will be performed. This can be used
                 to search database fields (db_ will be automatically
-                appended), and if that fails, it will try to return
+                prepended), and if that fails, it will try to return
                 objects having Attributes with this name and value
                 equal to searchdata. A special use is to search for
                 "key" here if you want to do a key-search without
