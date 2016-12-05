@@ -148,7 +148,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
         if not change:
             # adding a new object
             # have to call init with typeclass passed to it
-            obj.__init__(typeclass=obj.db_typeclass_path)
+            obj.set_class_from_typeclass(typeclass_path=obj.db_typeclass_path)
             obj.basetype_setup()
             obj.basetype_posthook_setup()
             obj.at_object_creation()
