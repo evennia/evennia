@@ -147,13 +147,8 @@ class ObjectDBAdmin(admin.ModelAdmin):
         obj.save()
         if not change:
             # adding a new object
-            # no idea why this has to be called manually, __init__ does not seem to be called
-            from evennia.utils.utils import class_from_module
-            try:
-                typeclass = class_from_module(obj.db_typeclass_path)
-            except ImportError:
-                typeclass = class_from_module("evennia.objects.objects.DefaultObject")
-            obj.__class__ = typeclass
+            # have to call init with typeclass passed to it
+            obj.__init__(typeclass=obj.db_typeclass_path)
             obj.basetype_setup()
             obj.basetype_posthook_setup()
             obj.at_object_creation()
