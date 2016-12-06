@@ -103,11 +103,6 @@ class ObjectDBAdmin(admin.ModelAdmin):
                            )}),
         )
 
-    def get_urls(self):
-        urls = super(ObjectDBAdmin, self).get_urls()
-        print urls
-        return urls
-
     def get_fieldsets(self, request, obj=None):
         """
         Return fieldsets.
