@@ -562,10 +562,10 @@ class ChannelDB(TypedObject):
 
     """
     db_subscriptions = models.ManyToManyField("players.PlayerDB",
-                       related_name="subscription_set", null=True, verbose_name='subscriptions', db_index=True)
+                       related_name="subscription_set", null=True, blank=True, verbose_name='subscriptions', db_index=True)
 
     db_object_subscriptions = models.ManyToManyField("objects.ObjectDB",
-                       related_name="object_subscription_set", null=True, verbose_name='subscriptions', db_index=True)
+                       related_name="object_subscription_set", null=True, blank=True, verbose_name='subscriptions', db_index=True)
 
     # Database manager
     objects = managers.ChannelDBManager()
