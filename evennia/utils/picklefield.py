@@ -147,8 +147,11 @@ class PickledFormField(CharField):
         super(PickledFormField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
-        if not value.strip():
-            # Field was left blank. Make this None.
+        try:
+            if not value.strip():
+                # Field was left blank. Make this None.
+                value = 'None'
+        except AttributeError:
             value = 'None'
         try:
             return literal_eval(value)
