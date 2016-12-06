@@ -103,6 +103,11 @@ class ObjectDBAdmin(admin.ModelAdmin):
                            )}),
         )
 
+    def get_urls(self):
+        urls = super(ObjectDBAdmin, self).get_urls()
+        print urls
+        return urls
+
     def get_fieldsets(self, request, obj=None):
         """
         Return fieldsets.
@@ -153,6 +158,13 @@ class ObjectDBAdmin(admin.ModelAdmin):
             obj.basetype_posthook_setup()
             obj.at_object_creation()
         obj.at_init()
+
+    def response_add(self, request, obj, post_url_continue=None):
+        if '_continue' in request.POST:
+            from django.http import HttpResponseRedirect
+            from django.core.urlresolvers import reverse
+            return HttpResponseRedirect(reverse("admin:objects_objectdb_change", args=[obj.id]))
+        return super(ObjectDBAdmin, self).response_add(request, obj, post_url_continue)
 
 
 admin.site.register(ObjectDB, ObjectDBAdmin)
