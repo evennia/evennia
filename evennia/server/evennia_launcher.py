@@ -1084,7 +1084,7 @@ def run_menu():
         return
 
 
-def server_operation(mode, service, interactive, profiler, logserver=False):
+def server_operation(mode, service, interactive, profiler, logserver=False, doexit=False):
     """
     Handle argument options given on the command line.
 
@@ -1095,6 +1095,10 @@ def server_operation(mode, service, interactive, profiler, logserver=False):
         profiler (bool): Run the service under the profiler.
         logserver (bool, optional): Log Server data to logfile
             specified by settings.SERVER_LOG_FILE.
+        doexit (bool, optional): If True, immediately exit the runner after
+            starting the relevant processes. If the runner exits, Evennia
+            cannot be reloaded. This is meant to be used with an external
+            process manager like Linux' start-stop-daemon.
 
     """
 
@@ -1136,6 +1140,8 @@ def server_operation(mode, service, interactive, profiler, logserver=False):
                 cmdstr.append('--logserver')
             django.core.management.call_command(
                 'collectstatic', verbosity=1, interactive=False)
+        if doexit:
+            cmdstr.append('--doexit')
         cmdstr.extend([
             GAMEDIR, TWISTED_BINARY, SERVER_LOGFILE,
             PORTAL_LOGFILE, HTTP_LOGFILE])
@@ -1243,6 +1249,10 @@ def main():
         default=False,
         help="Create a new, empty settings file as gamedir/server/conf/settings.py.")
     parser.add_argument(
+        '--external-runner', action='store_true', dest="doexit",
+        default=False,
+        help="Handle server restart with an external process manager.")
+    parser.add_argument(
         "operation", nargs='?', default="noop",
         help="Operation to perform: 'start', 'stop', 'reload' or 'menu'.")
     parser.add_argument(
@@ -1315,7 +1325,7 @@ def main():
     elif option in ('start', 'reload', 'stop'):
         # operate the server directly
         init_game_directory(CURRENT_DIR, check_db=True)
-        server_operation(option, service, args.interactive, args.profiler, args.logserver)
+        server_operation(option, service, args.interactive, args.profiler, args.logserver, doexit=args.doexit)
     elif option != "noop":
         # pass-through to django manager
         check_db = False
