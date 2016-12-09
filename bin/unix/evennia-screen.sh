@@ -40,7 +40,7 @@ case $1 in
                 echo "(Re-)Starting Evennia."
                 cd "$GAMEDIR"
                 touch "$GAMEDIR"/server/logs/server.log
-                screen -S $GAMENAME -p evennia -X stuff 'evennia start --log \n'
+                screen -S $GAMENAME -p evennia -X stuff 'evennia --log start\n'
             else
                 # start GNU Screen then run it with this same script, making sure to
                 # not start Screen on the second call
@@ -51,8 +51,14 @@ case $1 in
             # this is executed inside the GNU Screen session
             source "$VIRTUALENV"/bin/activate
             cd "$GAMEDIR"
+            # these will fail unless server died uncleanly
+            rm "$GAMEDIR"/server/server.pid
+            rm "$GAMEDIR"/server/portal.pid
+            # make sure it exists for the first startup
             touch "$GAMEDIR"/server/logs/server.log
-            evennia start
+            # start evennia itself
+            evennia --log start
+            # we must run this to avoid the screen session exiting immediately
             exec sh
         fi
     ;;
@@ -63,11 +69,11 @@ case $1 in
     ;;
     reload | restart)
         cd "$GAMEDIR"
-        screen -S "$GAMENAME" -p evennia -X stuff 'evennia reload --log\n'
+        screen -S "$GAMENAME" -p evennia -X stuff 'evennia --log reload\n'
         echo "Reloading Evennia."
     ;;
     *)
-        echo "Usage: start_evennia {start|stop|restart|reload}"
+        echo "Usage: evennia-screen.sh {start|stop|restart|reload}"
     exit 1
 ;;
 

@@ -1,3 +1,4 @@
+#!/bin/bash 
 #
 # Evennia init.d Screen launcher script (Linux)
 #
@@ -33,4 +34,14 @@ SCRIPTPATH="/home/muddev/mud/mygame/server/evennia-screen.sh"
 USER="muddev"
 
 #------------------------------------------------------------
-su - "$USER" -c "$SCRIPTPATH $1"
+case $1 in 
+    start | stop | reload | restart)
+        # run the start script and forward the argument to it
+        su - "$USER" -c "$SCRIPTPATH $1"
+    ;;
+    *)
+       echo "Usage: evennia {start|stop|restart|reload}"
+       exit 1
+    ;;
+esac
+exit 0
