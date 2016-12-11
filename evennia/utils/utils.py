@@ -1666,9 +1666,8 @@ def m_len(target):
     """
     # Would create circular import if in module root.
     from evennia.utils.ansi import ANSI_PARSER
-    if inherits_from(target, basestring):
-        if "|lt" in target:
-            return len(ANSI_PARSER.strip_mxp(target))
+    if inherits_from(target, basestring) and "|lt" in target:
+        return len(ANSI_PARSER.strip_mxp(target))
     return len(target)
 
 #------------------------------------------------------------------
