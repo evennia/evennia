@@ -468,6 +468,7 @@ class CmdCreate(ObjManipCommand):
     key = "@create"
     locks = "cmd:perm(create) or perm(Builders)"
     help_category = "Building"
+    created_object_permission = "Wizards" # The permission level needed to control or delete the object if not the creator
 
     def func(self):
         """
@@ -490,7 +491,8 @@ class CmdCreate(ObjManipCommand):
 
             # create object (if not a valid typeclass, the default
             # object typeclass will automatically be used)
-            lockstring = "control:id(%s) or perm(Wizards);delete:id(%s) or perm(Wizards)" % (caller.id, caller.id)
+            lockstring = "control:id(%s) or perm(%s);delete:id(%s) or perm(%s)" % (caller.id, 
+                    self.created_object_permission, caller.id, self.created_object_permission)
             obj = create.create_object(typeclass, name, caller,
                                        home=caller, aliases=aliases,
                                        locks=lockstring, report_to=caller)
@@ -715,6 +717,7 @@ class CmdDig(ObjManipCommand):
     key = "@dig"
     locks = "cmd:perm(dig) or perm(Builders)"
     help_category = "Building"
+    created_room_permission = "Wizards" # The permission level needed to control, delete, or edit the room if not the creator
 
     def func(self):
         "Do the digging. Inherits variables from ObjManipCommand.parse()"
@@ -741,8 +744,9 @@ class CmdDig(ObjManipCommand):
             typeclass = settings.BASE_ROOM_TYPECLASS
 
         # create room
-        lockstring = "control:id(%s) or perm(Wizards); delete:id(%s) or perm(Wizards); edit:id(%s) or perm(Wizards)"
-        lockstring = lockstring % (caller.dbref, caller.dbref, caller.dbref)
+        lockstring = "control:id(%s) or perm(%s); delete:id(%s) or perm(%s); edit:id(%s) or perm(%s)"
+        lockstring = lockstring % (caller.dbref, self.created_room_permission, caller.dbref, 
+                        self.created_room_permission, caller.dbref, self.created_room_permission)
 
         new_room = create.create_object(typeclass, room["name"],
                                         aliases=room["aliases"],
