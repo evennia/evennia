@@ -207,7 +207,7 @@ COMMAND_RATE_WARNING ="You entered commands too fast. Wait a moment and try agai
 # 0 or less.
 MAX_CHAR_LIMIT = 6000
 # The warning to echo back to users if they enter a very large string
-MAX_CHAR_LIMIT_WARNING="You entered a string that was too large. Please break it up into separate commands."
+MAX_CHAR_LIMIT_WARNING="You entered a string that was too long. Please break it up into multiple parts."
 # If this is true, errors and tracebacks from the engine will be
 # echoed as text in-game as well as to the log. This can speed up
 # debugging. Showing full tracebacks to regular users could be a
