@@ -203,10 +203,9 @@ MAX_COMMAND_RATE = 80
 COMMAND_RATE_WARNING ="You entered commands too fast. Wait a moment and try again."
 # Determine how large of a string can be sent to the server in number
 # of characters. If they attempt to enter a string over this character
-# limit, we stop them and send a message. Set to None by default. To
-# change it, just set it to a number of characters - ie, 6000 to be
-# roughly two pages of text.
-MAX_CHAR_LIMIT = None
+# limit, we stop them and send a message. To make unlimited, set to
+# 0 or less.
+MAX_CHAR_LIMIT = 6000
 # The warning to echo back to users if they enter a very large string
 MAX_CHAR_LIMIT_WARNING="You entered a string that was too large. Please break it up into separate commands."
 # If this is true, errors and tracebacks from the engine will be

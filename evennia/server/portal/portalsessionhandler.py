@@ -18,7 +18,7 @@ _MOD_IMPORT = None
 # throttles
 _MAX_CONNECTION_RATE = float(settings.MAX_CONNECTION_RATE)
 _MAX_COMMAND_RATE = float(settings.MAX_COMMAND_RATE)
-_MAX_CHAR_LIMIT = settings.MAX_CHAR_LIMIT
+_MAX_CHAR_LIMIT = int(settings.MAX_CHAR_LIMIT)
 
 _MIN_TIME_BETWEEN_CONNECTS = 1.0 / float(settings.MAX_CONNECTION_RATE)
 _ERROR_COMMAND_OVERFLOW = settings.COMMAND_RATE_WARNING
@@ -358,7 +358,7 @@ class PortalSessionHandler(SessionHandler):
         #text = timetrace(text, "portalsessionhandler.data_in")
         try:
             text = kwargs['text']
-            if _MAX_CHAR_LIMIT and len(text) > _MAX_CHAR_LIMIT:
+            if (_MAX_CHAR_LIMIT > 0) and len(text) > _MAX_CHAR_LIMIT:
                 if session:
                     self.data_out(session, text=[[_ERROR_MAX_CHAR], {}])
                 return
