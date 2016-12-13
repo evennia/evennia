@@ -67,7 +67,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
             # Boot by player object
             pobj = search.player_search(args)
             if not pobj:
-                self.caller("Player %s was not found." % pobj.key)
+                self.caller("Player %s was not found." % args)
                 return
             pobj = pobj[0]
             if not pobj.access(caller, 'boot'):
