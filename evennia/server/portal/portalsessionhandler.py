@@ -18,9 +18,11 @@ _MOD_IMPORT = None
 # throttles
 _MAX_CONNECTION_RATE = float(settings.MAX_CONNECTION_RATE)
 _MAX_COMMAND_RATE = float(settings.MAX_COMMAND_RATE)
+_MAX_CHAR_LIMIT = settings.MAX_CHAR_LIMIT
 
 _MIN_TIME_BETWEEN_CONNECTS = 1.0 / float(settings.MAX_CONNECTION_RATE)
 _ERROR_COMMAND_OVERFLOW = settings.COMMAND_RATE_WARNING
+_ERROR_MAX_CHAR = settings.MAX_CHAR_LIMIT_WARNING
 
 _CONNECTION_QUEUE = deque()
 
@@ -354,7 +356,14 @@ class PortalSessionHandler(SessionHandler):
         """
         #from evennia.server.profiling.timetrace import timetrace
         #text = timetrace(text, "portalsessionhandler.data_in")
-
+        try:
+            text = kwargs['text']
+            if _MAX_CHAR_LIMIT and len(text) > _MAX_CHAR_LIMIT:
+                if session:
+                    self.data_out(session, text=[[_ERROR_MAX_CHAR], {}])
+                return
+        except Exception:
+            pass
         if session:
             now = time()
             if self.command_counter > _MAX_COMMAND_RATE:
