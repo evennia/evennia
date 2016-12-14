@@ -1,0 +1,1 @@
+FROM evennia/evennia:latest
