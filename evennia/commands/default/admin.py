@@ -93,7 +93,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
 
         for session in boot_list:
             session.msg(feedback)
-            pobj.disconnect_session_from_player(session)
+            session.player.disconnect_session_from_player(session)
 
 
 # regex matching IP addresses with wildcards, eg. 233.122.4.*
