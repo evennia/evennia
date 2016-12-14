@@ -417,7 +417,7 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
         emit_string = '%s says, "%s{n"' % (caller.name,
                                                speech)
         caller.location.msg_contents(emit_string,
-                                     exclude=caller)
+                                     exclude=caller, from_obj=caller)
 
 
 class CmdPose(COMMAND_DEFAULT_CLASS):
@@ -460,7 +460,7 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
             self.caller.msg(msg)
         else:
             msg = "%s%s" % (self.caller.name, self.args)
-            self.caller.location.msg_contents(msg)
+            self.caller.location.msg_contents(msg, from_obj=self.caller)
 
 
 class CmdAccess(COMMAND_DEFAULT_CLASS):
