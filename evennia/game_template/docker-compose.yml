@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  mygame:
+    build: .
+    image: myuser/mygame
+    stdin_open: true
+    tty: true
+    ports:
+      - "8000-8001:8000-8001"
+      - "4000:4000"
+    volumes: 
+      - .:/usr/src/game
