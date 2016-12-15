@@ -1,8 +1,10 @@
 version: '2'
 
 services:
+  # optionally change service id 'mygame' below to match your game (no spaces)
   mygame:
     build: .
+    # change 'myuser/mygame' below to a valid docker hub repository tag
     image: myuser/mygame
     stdin_open: true
     tty: true
