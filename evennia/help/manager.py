@@ -42,6 +42,8 @@ class HelpEntryManager(TypedObjectManager):
         if dbref:
             return self.filter(id=dbref)
         topics = self.filter(db_key__iexact=topicstr)
+        if not topics:
+            topics = self.get_by_alias(topicstr)
         if not topics and not exact:
             topics = self.filter(db_key__istartswith=topicstr)
             if not topics:

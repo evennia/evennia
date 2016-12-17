@@ -145,6 +145,7 @@ class CmdHelp(Command):
         if len(match) == 1:
             self.msg(format_help_entry(match[0].key,
                      match[0].entrytext,
+                     aliases=match[0].aliases.all(),
                      suggested=suggestions))
             return
 

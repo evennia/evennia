@@ -14,7 +14,7 @@ from builtins import object
 from django.db import models
 from evennia.utils.idmapper.models import SharedMemoryModel
 from evennia.help.manager import HelpEntryManager
-from evennia.typeclasses.models import Tag, TagHandler
+from evennia.typeclasses.models import Tag, TagHandler, AliasHandler
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import lazy_property
 __all__ = ("HelpEntry",)
@@ -78,6 +78,9 @@ class HelpEntry(SharedMemoryModel):
     def tags(self):
         return TagHandler(self)
 
+    @lazy_property
+    def aliases(self):
+        return AliasHandler(self)
 
     class Meta(object):
         "Define Django meta options"
