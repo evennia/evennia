@@ -214,7 +214,7 @@ script = create_script
 # Help entry creation
 #
 
-def create_help_entry(key, entrytext, category="General", locks=None):
+def create_help_entry(key, entrytext, category="General", locks=None, aliases=None):
     """
     Create a static help entry in the help database. Note that Command
     help entries are dynamic and directly taken from the __doc__
@@ -243,6 +243,8 @@ def create_help_entry(key, entrytext, category="General", locks=None):
         new_help.help_category = category
         if locks:
             new_help.locks.add(locks)
+        if aliases:
+            new_help.aliases.add(aliases)
         new_help.save()
         return new_help
     except IntegrityError:

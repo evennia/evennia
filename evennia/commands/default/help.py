@@ -164,21 +164,18 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
     edit the help database
 
     Usage:
-      @help[/switches] <topic>[,category[,locks]] = <text>
+      @help[/switches] <topic>[[;alias;alias][,category[,locks]] = <text>
 
     Switches:
-      add    - add or replace a new topic with text.
-      append - add text to the end of topic with a newline between.
-      merge  - As append, but don't add a newline between the old
-               text and the appended text.
+      replace - overwrite existing help topic.
+      append - add text to the end of existing topic with a newline between.
+      extend - as append, but don't add a newline.
       delete - remove help topic.
-      force  - (used with add) create help topic also if the topic
-               already exists.
 
     Examples:
-      @sethelp/add throw = This throws something at ...
+      @sethelp throw = This throws something at ...
       @sethelp/append pickpocketing,Thievery = This steals ...
-      @sethelp/append pickpocketing, ,attr(is_thief) = This steals ...
+      @sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...
 
     This command manipulates the help database. A help entry can be created,
     appended/merged to and deleted. If you don't assign a category, the
@@ -198,7 +195,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
         lhslist = self.lhslist
 
         if not self.args:
-            self.msg("Usage: @sethelp[/switches] <topic>[,category[,locks,..] = <text>")
+            self.msg("Usage: @sethelp[/switches] <topic>[;alias;alias][,category[,locks,..] = <text>")
             return
 
         nlist = len(lhslist)
@@ -206,10 +203,18 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
         if not topicstr:
             self.msg("You have to define a topic!")
             return
+        topicstrlist = topicstr.split(";")
+        topicstr, aliases = topicstrlist[0], topicstrlist[1:] if len(topicstr) > 1 else []
+        aliastxt = ("(aliases: %s)" % ", ".join(aliases)) if aliases else ""
+        old_entry = None
 
         # check if we have an old entry with the same name
         try:
-            old_entry = HelpEntry.objects.get(db_key__iexact=topicstr)
+            for querystr in topicstrlist:
+                old_entry = HelpEntry.objects.find_topicmatch(querystr) # also search by alias
+                if old_entry:
+                    old_entry = list(old_entry)[0]
+                    break
             category = lhslist[1] if nlist > 1 else old_entry.help_category
             lockstring = ",".join(lhslist[2:]) if nlist > 2 else old_entry.locks.get()
         except Exception:
@@ -218,7 +223,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
             lockstring = ",".join(lhslist[2:]) if nlist > 2 else "view:all()"
         category = category.lower()
 
-        if 'append' in switches or "merge" in switches:
+        if 'append' in switches or "merge" in switches or "extend" in switches:
             # merge/append operations
             if not old_entry:
                 self.msg("Could not find topic '%s'. You must give an exact name." % topicstr)
@@ -230,15 +235,16 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
                 old_entry.entrytext += " " + self.rhs
             else:
                 old_entry.entrytext += "\n%s" % self.rhs
-            self.msg("Entry updated:\n%s" % old_entry.entrytext)
+            old_entry.aliases.add(aliases)
+            self.msg("Entry updated:\n%s%s" % (old_entry.entrytext, aliastxt))
             return
         if 'delete' in switches or 'del' in switches:
             # delete the help entry
             if not old_entry:
-                self.msg("Could not find topic '%s'" % topicstr)
+                self.msg("Could not find topic '%s'%s." % (topicstr, aliastxt))
                 return
             old_entry.delete()
-            self.msg("Deleted help entry '%s'." % topicstr)
+            self.msg("Deleted help entry '%s'%s." % (topicstr, aliastxt))
             return
 
         # at this point it means we want to add a new help entry.
@@ -246,22 +252,25 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
             self.msg("You must supply a help text to add.")
             return
         if old_entry:
-            if 'for' in switches or 'force' in switches:
+            if 'replace' in switches:
                 # overwrite old entry
                 old_entry.key = topicstr
                 old_entry.entrytext = self.rhs
                 old_entry.help_category = category
                 old_entry.locks.clear()
                 old_entry.locks.add(lockstring)
+                old_entry.aliases.add(aliases)
                 old_entry.save()
-                self.msg("Overwrote the old topic '%s'." % topicstr)
+                self.msg("Overwrote the old topic '%s'%s." % (topicstr, aliastxt))
             else:
-                self.msg("Topic '%s' already exists. Use /force to overwrite or /append or /merge to add text to it." % topicstr)
+                self.msg("Topic '%s'%s already exists. Use /replace to overwrite "
+                        "or /append or /merge to add text to it." % (topicstr, aliastxt))
         else:
             # no old entry. Create a new one.
             new_entry = create.create_help_entry(topicstr,
-                                                 self.rhs, category, lockstring)
+                                                 self.rhs, category=category,
+                                                 locks=lockstring,aliases=aliases)
             if new_entry:
-                self.msg("Topic '%s' was successfully created." % topicstr)
+                self.msg("Topic '%s'%s was successfully created." % (topicstr, aliastxt))
             else:
-                self.msg("Error when creating topic '%s'! Contact an admin." % topicstr)
+                self.msg("Error when creating topic '%s'%s! Contact an admin." % (topicstr, aliastxt))

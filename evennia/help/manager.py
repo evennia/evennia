@@ -26,7 +26,8 @@ class HelpEntryManager(TypedObjectManager):
     """
     def find_topicmatch(self, topicstr, exact=False):
         """
-        Searches for matching topics based on player's input.
+        Searches for matching topics or aliases based on player's
+        input.
 
         Args:
             topcistr (str): Help topic to search for.
