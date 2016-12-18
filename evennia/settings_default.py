@@ -210,9 +210,9 @@ MAX_CHAR_LIMIT = 6000
 MAX_CHAR_LIMIT_WARNING="You entered a string that was too long. Please break it up into multiple parts."
 # If this is true, errors and tracebacks from the engine will be
 # echoed as text in-game as well as to the log. This can speed up
-# debugging. Showing full tracebacks to regular users could be a
-# security problem - this should *not* be active in a production game!
-IN_GAME_ERRORS = False
+# debugging. OBS: Showing full tracebacks to regular users could be a
+# security problem -turn this off in a production game!
+IN_GAME_ERRORS = True
 
 ######################################################################
 # Evennia Database config
