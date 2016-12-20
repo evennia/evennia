@@ -12,6 +12,7 @@ from django.conf import settings
 from evennia.utils.logger import log_trace
 
 _MULTIMATCH_REGEX = re.compile(settings.SEARCH_MULTIMATCH_REGEX, re.I + re.U)
+_CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 
 def cmdparser(raw_string, cmdset, caller, match_index=None):
     """
@@ -69,37 +70,64 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         args = string[cmdlen:]
         return (cmdname, args, cmdobj, cmdlen, mratio)
 
+    def build_matches(raw_string, include_prefixes=False):
+        l_raw_string = raw_string.lower()
+        matches = []
+        try:
+            if include_prefixes:
+                for cmd in cmdset:
+                    matches.extend([create_match(cmdname, raw_string, cmd)
+                              for cmdname in [cmd.key] + cmd.aliases
+                                if cmdname and l_raw_string.startswith(cmdname.lower())
+                                   and (not cmd.arg_regex or
+                                     cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
+            else:
+                for cmd in cmdset:
+                    for cmdname in [cmd.key] + cmd.aliases:
+                        cmdname = cmdname.lstrip(_CMD_IGNORE_PREFIXES) if len(cmdname) > 1 else cmdname
+                        if cmdname and l_raw_string.startswith(cmdname.lower()) and \
+                                (not cmd.arg_regex or cmd.arg_regex.match(l_raw_string[len(cmdname):])):
+                            matches.append(create_match(cmdname, raw_string, cmd))
+        except Exception:
+            log_trace("cmdhandler error. raw_input:%s" % raw_string)
+        return matches
+
+    def try_num_prefixes(raw_string):
+        if not matches:
+            # no matches found
+            num_ref_match = _MULTIMATCH_REGEX.match(raw_string)
+            if num_ref_match:
+                # the user might be trying to identify the command
+                # with a #num-command style syntax. We expect the regex to
+                # contain the groups "number" and "name".
+                mindex, new_raw_string = num_ref_match.group("number"), num_ref_match.group("name")
+                return mindex, new_raw_string
+        return None, None
+
     if not raw_string:
         return []
 
-    matches = []
-
-    # match everything that begins with a matching cmdname.
-    l_raw_string = raw_string.lower()
-    for cmd in cmdset:
-        try:
-            matches.extend([create_match(cmdname, raw_string, cmd)
-                      for cmdname in [cmd.key] + cmd.aliases
-                        if cmdname and l_raw_string.startswith(cmdname.lower())
-                           and (not cmd.arg_regex or
-                             cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
-        except Exception:
-            log_trace("cmdhandler error. raw_input:%s" % raw_string)
-
+    # find mathces
+    matches = build_matches(raw_string, include_prefixes=True)
     if not matches:
-        # no matches found
-        num_ref_match = _MULTIMATCH_REGEX.match(raw_string)
-        if num_ref_match:
-            # the user might be trying to identify the command
-            # with a #num-command style syntax. We expect the regex to
-            # contain the groups "number" and "name".
-            mindex, new_raw_string = num_ref_match.group("number"), num_ref_match.group("name")
-            return cmdparser(new_raw_string, cmdset,
-                                 caller, match_index=int(mindex))
+        # try to match a number 1-cmdname, 2-cmdname etc
+        mindex, new_raw_string = try_num_prefixes(raw_string)
+        if mindex is not None:
+            return cmdparser(new_raw_string, cmdset, caller, match_index=int(mindex))
+        elif _CMD_IGNORE_PREFIXES:
+            # still no match. Try to strip prefixes
+            raw_string = raw_string.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_string) > 1 else raw_string
+            matches = build_matches(raw_string, include_prefixes=False)
+            if not matches:
+                # try to match a number 1-cmdname, 2-cmdname etc
+                mindex, new_raw_string = try_num_prefixes(raw_string)
+                if mindex is not None:
+                    return cmdparser(new_raw_string, cmdset, caller, match_index=int(mindex))
 
     # only select command matches we are actually allowed to call.
     matches = [match for match in matches if match[2].access(caller, 'cmd')]
 
+    # try to bring the number of matches down to 1
     if len(matches) > 1:
         # See if it helps to analyze the match with preserved case but only if
         # it leaves at least one match.
@@ -129,4 +157,3 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
 
     # no matter what we have at this point, we have to return it.
     return matches
-
