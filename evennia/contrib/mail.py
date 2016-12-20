@@ -1,0 +1,194 @@
+"""
+In-Game Mail system
+
+Evennia Contribution - grungies1138 2016
+
+A simple Brandymail style @mail system that uses the Msg class from Evennia Core.
+
+Installation:
+    Import this module into the default Player or Character commandset.
+"""
+
+from evennia import default_cmds, search_object
+from evennia.utils import create, utils, evtable, evform
+from evennia.comms.models import Msg
+
+
+HEAD_CHAR = "|015-|n"
+SUB_HEAD_CHAR = "-"
+
+class MailCommand(default_cmds.MuxCommand):
+    """
+    Commands that allow either IC or OOC communications
+
+    Usage:
+        {w@mail{n
+                - Displays all the mail a player has in their mailbox
+
+        {w@mail <#>{n
+                - Displays a specific message
+
+        {w@mail <players>=<subject>/<message>{n
+                - Sends a message to the comma separated list of players.
+
+        {w@mail/delete <#>{n
+                - Deletes a specific message
+
+        {w@mail/forward <player list>=<#>[/<Message>]{n
+                - Forwards an existing message to the specified list of players,
+                  original message is delivered with optional Message prepended.
+
+        {w@mail/reply <#>=<message>{n
+                - Replies to a message #.  Prepends message to the original
+                  message text.
+
+
+    Status Legend:
+        '{wU{n' = Unread/New message
+        '{wO{n' = Read/Old message
+        '{wR{n' = Replied to
+        '{wF{n' = Forwarded
+    """
+    key = "@mail"
+    aliases = ["mail"]
+    lock = "cmd:all()"
+    help_category = "General"
+
+    def func(self):
+        subject = ""
+        body = ""
+        if self.switches or self.args:
+            if "delete" in self.switches:
+                if not self.lhs:
+                    self.caller.msg("No Message ID given.  Unable to delete.")
+                    return
+                else:
+                    if self.get_all_mail()[int(self.lhs) - 1]:
+                        self.get_all_mail()[int(self.lhs) - 1].delete()
+                        self.caller.msg("Message %s deleted" % self.lhs)
+                    else:
+                        self.caller.msg("That message does not exist.")
+                        return
+            elif "forward" in self.switches:
+                if not self.rhs:
+                    self.caller.msg("Cannot forward a message without a player list.  Please try again.")
+                    return
+                elif not self.lhs:
+                    self.caller.msg("You must define a message to forward.")
+                    return
+                else:
+                    if "/" in self.rhs:
+                        message_number, message = self.rhs.split("/")
+                        if self.get_all_mail()[int(message_number) - 1]:
+                            old_message = self.get_all_mail()[int(message_number) - 1]
+
+                            self.send_mail(self.lhslist, "FWD: " + old_message.header,
+                                           message + "\n---- Original Message ----\n" + old_message.message,
+                                           self.caller)
+                            self.caller.msg("Message forwarded.")
+                        else:
+                            self.caller.msg("Message does not exist.")
+                            return
+                    else:
+                        if self.get_all_mail()[int(self.rhs) - 1]:
+                            old_message = self.get_all_mail()[int(self.rhs) - 1]
+                            self.send_mail(self.lhslist, "FWD: " + old_message.header,
+                                           "\n---- Original Message ----\n" + old_message.message, self.caller)
+                            self.caller.msg("Message forwarded.")
+                            old_message.tags.remove("u", category="mail")
+                            old_message.tags.add("f", category="mail")
+                        else:
+                            self.caller.msg("Message does not exist.")
+                            return
+            elif "reply" in self.switches:
+                if not self.rhs:
+                    self.caller.msg("You must define a message to reply to.")
+                    return
+                elif not self.lhs:
+                    self.caller.msg("You must supply a reply message")
+                    return
+                else:
+                    if self.get_all_mail()[int(self.lhs) - 1]:
+                        old_message = self.get_all_mail()[int(self.lhs) - 1]
+                        self.send_mail(old_message.senders, "RE: " + old_message.header,
+                                       self.rhs + "\n---- Original Message ----\n" + old_message.message, self.caller)
+                        old_message.tags.remove("u", category="mail")
+                        old_message.tags.add("r", category="mail")
+                        return
+                    else:
+                        self.caller.msg("Message does not exist.")
+                        return
+
+            else:
+                if self.rhs:
+                    if "/" in self.rhs:
+                        subject, body = self.rhs.split("/", 1)
+                    else:
+                        body = self.rhs
+                    self.send_mail(self.lhslist, subject, body, self.caller)
+                else:
+                    message = self.get_all_mail()[int(self.lhs) - 1]
+
+                    messageForm = []
+                    if message:
+                        messageForm.append(HEAD_CHAR * 78)
+                        messageForm.append("{wFrom:{n %s" % (message.senders[0].key))
+                        messageForm.append("{wSent:{n %s" % message.db_date_created.strftime("%m/%d/%Y %H:%M:%S"))
+                        messageForm.append("{wSubject:{n %s" % message.header)
+                        messageForm.append(SUB_HEAD_CHAR * 78)
+                        messageForm.append(message.message)
+                        messageForm.append(HEAD_CHAR * 78)
+                    self.caller.msg("\n".join(messageForm))
+                    message.tags.remove("u", category="mail")
+                    message.tags.add("o", category="mail")
+
+        else:
+            messages = self.get_all_mail()
+
+            if messages:
+                table = evtable.EvTable("{wID:", "{wFrom:", "{wSubject:", "{wDate:{n", "{wSta:{n",
+                                        table=None, border="header", header_line_char=SUB_HEAD_CHAR, width=78)
+                index = 1
+                for message in messages:
+                    table.add_row(index, message.senders[0], message.header,
+                                  message.db_date_created.strftime("%m/%d/%Y"),
+                                  str(message.db_tags.last().db_key.upper()))
+                    index += 1
+
+                table.reformat_column(0, width=6)
+                table.reformat_column(1, width=17)
+                table.reformat_column(2, width=34)
+                table.reformat_column(3, width=13)
+                table.reformat_column(4, width=7)
+
+                self.caller.msg(HEAD_CHAR * 78)
+                self.caller.msg(table)
+                self.caller.msg(HEAD_CHAR * 78)
+            else:
+                self.caller.msg("Sorry, you don't have any messages.  What a pathetic loser!")
+
+    def get_all_mail(self):
+        mail_messages = Msg.objects.get_by_tag(category="mail")
+        messages = []
+        messages = [m for m in mail_messages if self.caller.player in m.receivers]
+        return messages
+
+    def send_mail(self, recipients, subject, message, caller):
+        recobjs = []
+        for char in recipients:
+
+            if self.caller.player.search(char) is not None:
+                recobjs.append(self.caller.player.search(char))
+        if recobjs:
+            lock_string = ""
+            for recipient in recobjs:
+                recipient.msg("You have received a new @mail from %s" % caller)
+
+                new_message = create.create_message(self.caller, message, receivers=recipient, header=subject)
+                new_message.tags.add("U", category="mail")
+
+            caller.msg("You sent a your message.")
+            return
+        else:
+            caller.msg("No valid players found.  Cannot send message.")
+            return
