@@ -268,7 +268,7 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
     Use addcom/delcom to join and leave channels
     """
     key = "@channels"
-    aliases = ["@clist", "channels", "comlist", "chanlist", "channellist", "all channels"]
+    aliases = ["@clist", "comlist", "chanlist", "channellist", "all channels"]
     help_category = "Comms"
     locks = "cmd: not pperm(channel_banned)"
 

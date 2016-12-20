@@ -292,8 +292,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
     is to let everyone read the help file.
 
     """
-    key = "@help"
-    aliases = "@sethelp"
+    key = "@sethelp"
     locks = "cmd:perm(PlayerHelpers)"
     help_category = "Building"
 

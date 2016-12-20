@@ -112,7 +112,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
     """
     key = "nick"
-    aliases = ["nickname", "nicks", "@nick", "@nicks", "alias"]
+    aliases = ["nickname", "nicks", "alias"]
     locks = "cmd:all()"
 
     def func(self):
@@ -361,13 +361,13 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     describe yourself
 
     Usage:
-      desc <description>
+      setdesc <description>
 
     Add a description to yourself. This
     will be visible to people when they
     look at you.
     """
-    key = "desc"
+    key = "setdesc"
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 

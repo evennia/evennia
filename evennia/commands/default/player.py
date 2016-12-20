@@ -648,7 +648,6 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
     game. Use the /all switch to disconnect from all sessions.
     """
     key = "@quit"
-    aliases = "quit"
     locks = "cmd:all()"
 
     # this is used by the parent
@@ -689,7 +688,6 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     color - if not you will see rubbish appear.
     """
     key = "@color"
-    aliases = "color"
     locks = "cmd:all()"
     help_category = "General"
 

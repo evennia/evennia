@@ -1033,8 +1033,7 @@ class CmdSetHome(CmdLink):
     If no location is given, just view the object's home location.
     """
 
-    key = "@home"
-    aliases = "@sethome"
+    key = "@sethome"
     locks = "cmd:perm(@home) or perm(Builders)"
     help_category = "Building"
 
@@ -1751,7 +1750,7 @@ class CmdLock(ObjManipCommand):
        'get:id(25);delete:perm(Builders)'
     """
     key = "@lock"
-    aliases = ["@locks", "lock", "locks"]
+    aliases = ["@locks"]
     locks = "cmd: perm(locks) or perm(Builders)"
     help_category = "Building"
 
@@ -1844,7 +1843,7 @@ class CmdExamine(ObjManipCommand):
 
     """
     key = "@examine"
-    aliases = ["@ex","ex", "exam", "examine"]
+    aliases = ["@ex","exam"]
     locks = "cmd:perm(examine) or perm(Builders)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
@@ -2113,7 +2112,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@find"
-    aliases = "find, @search, search, @locate, locate"
+    aliases = "@search, @locate"
     locks = "cmd:perm(find) or perm(Builders)"
     help_category = "Building"
 
@@ -2585,7 +2584,6 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@spawn"
-    aliases = ["spawn"]
     locks = "cmd:perm(spawn) or perm(Builders)"
     help_category = "Building"
 
