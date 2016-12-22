@@ -15,7 +15,7 @@ the character's gender, for example the echo
 char.msg("%s falls on {p face with a thud." % char.key)
 ```
 
-will result in "Tom falls on his|her|its face with a thud" depending
+will result in "Tom falls on his|her|their face with a thud" depending
 on the gender of the object being messaged. Default gender is
 "neutral".
 
@@ -41,10 +41,10 @@ _GENDER_PRONOUN_MAP = {"male": {"s": "he",
                                    "o": "her",
                                    "p": "her",
                                    "a": "hers"},
-                       "neutral": {"s": "it",
-                                    "o": "it",
-                                    "p": "its",
-                                    "a": "its"}}
+                       "neutral": {"s": "they",
+                                    "o": "them",
+                                    "p": "their",
+                                    "a": "theirs"}}
 _RE_GENDER_PRONOUN = re.compile(r'({s|{S|{o|{O|{p|{P|{a|{A)')
 
 # in-game command for setting the gender
@@ -98,10 +98,10 @@ class GenderCharacter(DefaultCharacter):
             regex_match (MatchObject): the regular expression match.
 
         Notes:
-            - `{s`, `{S`: Subjective form: he, she, it, He, She, It
-            - `{o`, `{O`: Objective form: him, her, it, Him, Her, It
-            - `{p`, `{P`: Possessive form: his, her, its, His, Her, Its
-            - `{a`, `{A`: Absolute Possessive form: his, hers, its, His, Hers, Its
+            - `{s`, `{S`: Subjective form: he, she, they, He, She, They
+            - `{o`, `{O`: Objective form: him, her, them, Him, Her, Them
+            - `{p`, `{P`: Possessive form: his, her, their, His, Her, Their
+            - `{a`, `{A`: Absolute Possessive form: his, hers, theirs, His, Hers, Theirs
 
         """
         typ = regex_match.group()[1] # "s", "O" etc
