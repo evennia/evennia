@@ -1,0 +1,23 @@
+@media (max-width: 570px) {
+    .oneThird {
+        width: 100%;
+        border-left: none;
+    }
+
+    .quarter {
+        width: 100%;
+        border-left: none;
+    }
+
+    .headerTitle {
+        text-align: right;
+    }
+
+    .headerSubTitle {
+        text-align: right;
+    }
+
+    .headerLinks {
+        position: static;
+    }
+}
