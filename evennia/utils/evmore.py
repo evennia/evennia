@@ -197,6 +197,14 @@ class EvMore(object):
         page = _DISPLAY.format(text=text,
                                pageno=pos + 1,
                                pagemax=self._npages)
+        # check to make sure our session is still valid
+        sessions = self._caller.sessions.get()
+        if not sessions:
+            self.page_quit()
+            return
+        # this must be an 'is', not == check
+        if not any(ses for ses in sessions if self._session is ses):
+            self._session = sessions[0]
         self._caller.msg(text=page, session=self._session, **self._kwargs)
 
     def page_top(self):
