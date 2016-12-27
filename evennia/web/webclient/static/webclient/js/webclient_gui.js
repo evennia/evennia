@@ -107,6 +107,23 @@ function doSendText() {
     }
 }
 
+// Opens the settings dialog
+function doOpenSettings() {
+    if (!Evennia.isConnected()) {
+        alert("You need to be connected.");
+        return;
+    }
+    
+    var optionsdialog = $("#optionsdialog");
+    optionsdialog.show();
+}
+
+// Closes the currently open dialog
+function doCloseDialog(event) {
+    var dialog = $(event.target).closest(".dialog");
+    dialog.hide();
+}
+
 // catch all keyboard input, handle special chars
 function onKeydown (event) {
     var code = event.which;
@@ -300,6 +317,31 @@ function onNewLine(text, originator) {
   }
 }
 
+// User clicked on a dialog to drag it
+function doStartDragDialog(event) {
+    var dialog = $(event.target).closest(".dialog");
+    dialog.css('cursor', 'move');
+    
+    var position = dialog.offset();
+    var diffx = event.pageX;
+    var diffy = event.pageY;
+    
+    var drag = function(event) {
+        var y = position.top + event.pageY - diffy;
+        var x = position.left + event.pageX - diffx;
+        dialog.offset({top: y, left: x});
+    };
+    
+    var undrag = function() {
+        $(document).unbind("mousemove", drag);
+        $(document).unbind("mouseup", undrag);
+        dialog.css('cursor', '');
+    }
+    
+    $(document).bind("mousemove", drag);
+    $(document).bind("mouseup", undrag);
+}
+
 //
 // Register Events
 //
@@ -332,7 +374,16 @@ $(document).ready(function() {
 
     // Pressing the send button
     $("#inputsend").bind("click", doSendText);
+    
+    // Pressing the settings button
+    $("#optionsbutton").bind("click", doOpenSettings);
 
+    // Pressing the close button on a dialog
+    $(".dialogclose").bind("click", doCloseDialog);
+    
+    // Makes dialogs draggable
+    $(".dialogtitle").bind("mousedown", doStartDragDialog);
+        
     // This is safe to call, it will always only
     // initialize once.
     Evennia.init();
@@ -361,6 +412,8 @@ $(document).ready(function() {
     },
     60000*3
     );
+    
+    
 });
 
 })();
