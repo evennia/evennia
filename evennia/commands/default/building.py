@@ -1240,7 +1240,8 @@ class CmdOpen(ObjManipCommand):
                 if old_destination.id != destination.id:
                     # reroute the old exit.
                     exit_obj.destination = destination
-                    [exit_obj.aliases.add(alias) for alias in exit_aliases]
+                    if exit_aliases:
+                        [exit_obj.aliases.add(alias) for alias in exit_aliases]
                     string += " Rerouted its old destination '%s' to '%s' and changed aliases." % \
                         (old_destination.name, destination.name)
                 else:
@@ -1258,9 +1259,10 @@ class CmdOpen(ObjManipCommand):
             if exit_obj:
                 # storing a destination is what makes it an exit!
                 exit_obj.destination = destination
-                string = "Created new Exit '%s' from %s to %s (aliases: %s)." % (exit_name,location.name,
-                                                                                 destination.name,
-                                                                                 ", ".join([str(e) for e in exit_aliases]))
+                string = "" if not exit_aliases else " (aliases: %s)" % (
+                    ", ".join([str(e) for e in exit_aliases]))
+                string = "Created new Exit '%s' from %s to %s%s." % (
+                    exit_name, location.name, destination.name, string)
             else:
                 string = "Error: Exit '%s' not created." % (exit_name)
         # emit results
