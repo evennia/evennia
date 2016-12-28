@@ -220,6 +220,10 @@ function onPrompt(args, kwargs) {
     doWindowResize();
 }
 
+// Called when the user logged in
+function onLoggedIn() {
+}
+
 // Silences events we don't do anything with.
 function onSilence(cmdname, args, kwargs) {}
 
@@ -337,6 +341,7 @@ $(document).ready(function() {
     Evennia.emitter.on("prompt", onPrompt);
     Evennia.emitter.on("default", onDefault);
     Evennia.emitter.on("connection_close", onConnectionClose);
+    Evennia.emitter.on("logged_in", onLoggedIn);
     // silence currently unused events
     Evennia.emitter.on("connection_open", onSilence);
     Evennia.emitter.on("connection_error", onSilence);
