@@ -22,24 +22,21 @@ class CmdMail(default_cmds.MuxCommand):
     """
     Commands that allow either IC or OOC communications
 
-    Usage:    
-        {w@mail{n
-                - Displays all the mail a player has in their mailbox
+    Usage:
+        @mail       - Displays all the mail a player has in their mailbox
 
-        {w@mail <#>{n
-                - Displays a specific message
+        @mail <#>   - Displays a specific message
 
-        {w@mail <players>=<subject>/<message>{n
+        @mail <players>=<subject>/<message>
                 - Sends a message to the comma separated list of players.
 
-        {w@mail/delete <#>{n
-                - Deletes a specific message
+        @mail/delete <#> - Deletes a specific message
 
-        {w@mail/forward <player list>=<#>[/<Message>]{n
+        @mail/forward <player list>=<#>[/<Message>]
                 - Forwards an existing message to the specified list of players,
                   original message is delivered with optional Message prepended.
 
-        {w@mail/reply <#>=<message>{n
+        @mail/reply <#>=<message>
                 - Replies to a message #.  Prepends message to the original
                   message text.
     Switches:
@@ -47,12 +44,6 @@ class CmdMail(default_cmds.MuxCommand):
         forward - forward a received message to another object with an optional message attached.
         reply   - Replies to a received message, appending the original message to the bottom.
 
-    Status Legend:
-        '|wU|n' = Unread/New message
-        '|wO|n' = Read/Old message
-        '|wR|n' = Replied to
-        '|wF|n' = Forwarded
-        
     Examples:
         @mail 2
         @mail Griatch=New mail/Hey man, I am sending you a message!
@@ -70,66 +61,74 @@ class CmdMail(default_cmds.MuxCommand):
         body = ""
         if self.switches or self.args:
             if "delete" in self.switches:
-                if not self.lhs:
-                    self.caller.msg("No Message ID given.  Unable to delete.")
-                    return
-                else:
-                    if self.get_all_mail()[int(self.lhs) - 1]:
-                        self.get_all_mail()[int(self.lhs) - 1].delete()
-                        self.caller.msg("Message %s deleted" % self.lhs)
-                    else:
-                        self.caller.msg("That message does not exist.")
+                try:
+                    if not self.lhs:
+                        self.caller.msg("No Message ID given.  Unable to delete.")
                         return
+                    else:
+                        if self.get_all_mail()[int(self.lhs) - 1]:
+                            self.get_all_mail()[int(self.lhs) - 1].delete()
+                            self.caller.msg("Message %s deleted" % self.lhs)
+                        else:
+                            self.caller.msg("That message does not exist.")
+                            return
+                except ValueError:
+                    self.caller.msg("Usage: @mail/delete <message ID>")
             elif "forward" in self.switches:
-                if not self.rhs:
-                    self.caller.msg("Cannot forward a message without a player list.  Please try again.")
-                    return
-                elif not self.lhs:
-                    self.caller.msg("You must define a message to forward.")
-                    return
-                else:
-                    if "/" in self.rhs:
-                        message_number, message = self.rhs.split("/")
-                        if self.get_all_mail()[int(message_number) - 1]:
-                            old_message = self.get_all_mail()[int(message_number) - 1]
-
-                            self.send_mail(self.lhslist, "FWD: " + old_message.header,
-                                           message + "\n---- Original Message ----\n" + old_message.message,
-                                           self.caller)
-                            self.caller.msg("Message forwarded.")
-                        else:
-                            self.caller.msg("Message does not exist.")
-                            return
+                try:
+                    if not self.rhs:
+                        self.caller.msg("Cannot forward a message without a player list.  Please try again.")
+                        return
+                    elif not self.lhs:
+                        self.caller.msg("You must define a message to forward.")
+                        return
                     else:
-                        if self.get_all_mail()[int(self.rhs) - 1]:
-                            old_message = self.get_all_mail()[int(self.rhs) - 1]
-                            self.send_mail(self.lhslist, "FWD: " + old_message.header,
-                                           "\n---- Original Message ----\n" + old_message.message, self.caller)
-                            self.caller.msg("Message forwarded.")
-                            old_message.tags.remove("u", category="mail")
-                            old_message.tags.add("f", category="mail")
+                        if "/" in self.rhs:
+                            message_number, message = self.rhs.split("/")
+                            if self.get_all_mail()[int(message_number) - 1]:
+                                old_message = self.get_all_mail()[int(message_number) - 1]
+
+                                self.send_mail(self.lhslist, "FWD: " + old_message.header,
+                                               message + "\n---- Original Message ----\n" + old_message.message,
+                                               self.caller)
+                                self.caller.msg("Message forwarded.")
+                            else:
+                                self.caller.msg("Message does not exist.")
+                                return
                         else:
-                            self.caller.msg("Message does not exist.")
-                            return
+                            if self.get_all_mail()[int(self.rhs) - 1]:
+                                old_message = self.get_all_mail()[int(self.rhs) - 1]
+                                self.send_mail(self.lhslist, "FWD: " + old_message.header,
+                                               "\n---- Original Message ----\n" + old_message.message, self.caller)
+                                self.caller.msg("Message forwarded.")
+                                old_message.tags.remove("u", category="mail")
+                                old_message.tags.add("f", category="mail")
+                            else:
+                                self.caller.msg("Message does not exist.")
+                                return
+                except ValueError:
+                    self.caller.msg("Usage: @mail/forward <player list>=<#>[/<Message>]")
             elif "reply" in self.switches:
-                if not self.rhs:
-                    self.caller.msg("You must define a message to reply to.")
-                    return
-                elif not self.lhs:
-                    self.caller.msg("You must supply a reply message")
-                    return
-                else:
-                    if self.get_all_mail()[int(self.lhs) - 1]:
-                        old_message = self.get_all_mail()[int(self.lhs) - 1]
-                        self.send_mail(old_message.senders, "RE: " + old_message.header,
-                                       self.rhs + "\n---- Original Message ----\n" + old_message.message, self.caller)
-                        old_message.tags.remove("u", category="mail")
-                        old_message.tags.add("r", category="mail")
+                try:
+                    if not self.rhs:
+                        self.caller.msg("You must define a message to reply to.")
+                        return
+                    elif not self.lhs:
+                        self.caller.msg("You must supply a reply message")
                         return
                     else:
-                        self.caller.msg("Message does not exist.")
-                        return
-
+                        if self.get_all_mail()[int(self.lhs) - 1]:
+                            old_message = self.get_all_mail()[int(self.lhs) - 1]
+                            self.send_mail(old_message.senders, "RE: " + old_message.header,
+                                           self.rhs + "\n---- Original Message ----\n" + old_message.message, self.caller)
+                            old_message.tags.remove("u", category="mail")
+                            old_message.tags.add("r", category="mail")
+                            return
+                        else:
+                            self.caller.msg("Message does not exist.")
+                            return
+                except ValueError:
+                    self.caller.msg("Usage: @mail/reply <#>=<message>")
             else:
                 if self.rhs:
                     if "/" in self.rhs:
@@ -142,13 +141,13 @@ class CmdMail(default_cmds.MuxCommand):
 
                     messageForm = []
                     if message:
-                        messageForm.append(HEAD_CHAR * _WIDTH)
+                        messageForm.append(_HEAD_CHAR * _WIDTH)
                         messageForm.append("|wFrom:|n %s" % (message.senders[0].key))
                         messageForm.append("|wSent:|n %s" % message.db_date_created.strftime("%m/%d/%Y %H:%M:%S"))
                         messageForm.append("|wSubject:|n %s" % message.header)
-                        messageForm.append(SUB_HEAD_CHAR * _WIDTH)
+                        messageForm.append(_SUB_HEAD_CHAR * _WIDTH)
                         messageForm.append(message.message)
-                        messageForm.append(HEAD_CHAR * _WIDTH)
+                        messageForm.append(_HEAD_CHAR * _WIDTH)
                     self.caller.msg("\n".join(messageForm))
                     message.tags.remove("u", category="mail")
                     message.tags.add("o", category="mail")
@@ -158,7 +157,7 @@ class CmdMail(default_cmds.MuxCommand):
 
             if messages:
                 table = evtable.EvTable("|wID:|n", "|wFrom:|n", "|wSubject:|n", "|wDate:|n", "|wSta:|n",
-                                        table=None, border="header", header_line_char=SUB_HEAD_CHAR, width=_WIDTH)
+                                        table=None, border="header", header_line_char=_SUB_HEAD_CHAR, width=_WIDTH)
                 index = 1
                 for message in messages:
                     table.add_row(index, message.senders[0], message.header,
@@ -172,28 +171,28 @@ class CmdMail(default_cmds.MuxCommand):
                 table.reformat_column(3, width=13)
                 table.reformat_column(4, width=7)
 
-                self.caller.msg(HEAD_CHAR * _WIDTH)
+                self.caller.msg(_HEAD_CHAR * _WIDTH)
                 self.caller.msg(table)
-                self.caller.msg(HEAD_CHAR * _WIDTH)
+                self.caller.msg(_HEAD_CHAR * _WIDTH)
             else:
                 self.caller.msg("Sorry, you don't have any messages.  What a pathetic loser!")
 
     def get_all_mail(self):
         """
         Returns a list of all the messages where the caller is a recipient.
-        
+
         Returns:
             messages (list): list of Msg objects.
         """
-        mail_messages = Msg.objects.get_by_tag(category="mail")
-        messages = []
-        messages = [m for m in mail_messages if self.caller.player in m.receivers]
+        # mail_messages = Msg.objects.get_by_tag(category="mail")
+        # messages = []
+        messages = Msg.objects.get_by_tag(category="mail", raw_queryset=True).filter(db_receivers_players=self.caller.player)
         return messages
 
     def send_mail(self, recipients, subject, message, caller):
         """
         Function for sending new mail.  Also useful for sending notifications from objects or systems.
-        
+
         Args:
             recipients (list): list of Player or character objects to receive the newly created mails.
             subject (str): The header or subject of the message to be delivered.
