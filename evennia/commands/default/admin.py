@@ -67,12 +67,12 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
             # Boot by player object
             pobj = search.player_search(args)
             if not pobj:
-                self.caller("Player %s was not found." % args)
+                caller.msg("Player %s was not found." % args)
                 return
             pobj = pobj[0]
             if not pobj.access(caller, 'boot'):
-                string = "You don't have the permission to boot %s."
-                pobj.msg(string)
+                string = "You don't have the permission to boot %s." % (pobj.key, )
+                caller.msg(string)
                 return
             # we have a bootable object with a connected user
             matches = SESSIONS.sessions_from_player(pobj)
