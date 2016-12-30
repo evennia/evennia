@@ -177,7 +177,10 @@ class LockHandler(object):
             _cache_lockfuncs()
         self.obj = obj
         self.locks = {}
-        self.reset()
+        try:
+            self.reset()
+        except LockException as err:
+            logger.log_trace(err)
 
     def __str__(self):
         return ";".join(self.locks[key][2] for key in sorted(self.locks))

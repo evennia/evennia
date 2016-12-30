@@ -18,6 +18,7 @@ import math
 import re
 import textwrap
 import random
+from os.path import join as osjoin
 from importlib import import_module
 from inspect import ismodule, trace, getmembers, getmodule
 from collections import defaultdict, OrderedDict
@@ -27,7 +28,9 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from evennia.utils import logger
 
-_MULTIMATCH_SEPARATOR = settings.SEARCH_MULTIMATCH_SEPARATOR
+_MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
+_EVENNIA_DIR = settings.EVENNIA_DIR
+_GAME_DIR = settings.GAME_DIR
 
 try:
     import cPickle as pickle
@@ -40,7 +43,6 @@ _SA = object.__setattr__
 _DA = object.__delattr__
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
-
 
 def is_iter(iterable):
     """
@@ -82,8 +84,7 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
     Args:
         text (str): The text to wrap.
         width (int, optional): The number of characters to wrap to.
-        indent (int): How much to indent new lines (the first line
-            will not be indented)
+        indent (int): How much to indent each line (with whitespace).
 
     Returns:
         text (str): Properly wrapped text.
@@ -93,7 +94,7 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
         return ""
     text = to_unicode(text)
     indent = " " * indent
-    return to_str(textwrap.fill(text, width, subsequent_indent=indent))
+    return to_str(textwrap.fill(text, width, initial_indent=indent, subsequent_indent=indent))
 # alias - fill
 fill = wrap
 
@@ -171,6 +172,89 @@ def dedent(text):
     if not text:
         return ""
     return textwrap.dedent(text)
+
+
+def justify(text, width=_DEFAULT_WIDTH, align="f", indent=0):
+    """
+    Fully justify a text so that it fits inside `width`. When using
+    full justification (default) this will be done by padding between
+    words with extra whitespace where necessary. Paragraphs will
+    be retained.
+
+    Args:
+        text (str): Text to justify.
+        width (int, optional): The length of each line, in characters.
+        align (str, optional): The alignment, 'l', 'c', 'r' or 'f'
+            for left, center, right or full justification respectively.
+        indent (int, optional): Number of characters indentation of
+            entire justified text block.
+
+    Returns:
+        justified (str): The justified and indented block of text.
+
+    """
+
+    def _process_line(line):
+        """
+        helper function that distributes extra spaces between words. The number
+        of gaps is nwords - 1 but must be at least 1 for single-word lines. We
+        distribute odd spaces randomly to one of the gaps.
+        """
+        line_rest = width - (wlen + ngaps)
+        gap = " " # minimum gap between words
+        if line_rest > 0:
+            if align == 'l':
+                line[-1] += " " * line_rest
+            elif align == 'r':
+                line[0] = " " * line_rest + line[0]
+            elif align == 'c':
+                pad = " " * (line_rest // 2)
+                line[0] = pad + line[0]
+                line[-1] = line[-1] + pad + " " * (line_rest % 2)
+            else: # align 'f'
+                gap += " " * (line_rest // max(1, ngaps))
+                rest_gap = line_rest % max(1, ngaps)
+                for i in range(rest_gap):
+                    line[i] += " "
+        return gap.join(line)
+
+    # split into paragraphs and words
+    paragraphs = re.split("\n\s*?\n", text, re.MULTILINE)
+    words = []
+    for ip, paragraph in enumerate(paragraphs):
+        if ip > 0:
+            words.append(("\n\n", 0))
+        words.extend((word, len(word)) for word in paragraph.split())
+    ngaps, wlen, line = 0, 0, []
+
+    lines = []
+    while words:
+        if not line:
+            # start a new line
+            word = words.pop(0)
+            wlen = word[1]
+            line.append(word[0])
+        elif (words[0][1] + wlen + ngaps) >= width:
+            # next word would exceed word length of line + smallest gaps
+            lines.append(_process_line(line))
+            ngaps, wlen, line = 0, 0, []
+        else:
+            # put a new word on the line
+            word = words.pop(0)
+            line.append(word[0])
+            if word[1] == 0:
+                # a new paragraph, process immediately
+                lines.append(_process_line(line))
+                ngaps, wlen, line = 0, 0, []
+            else:
+                wlen += word[1]
+                ngaps += 1
+
+
+    if line: # catch any line left behind
+        lines.append(_process_line(line))
+    indentstring = " " * indent
+    return "\n".join([indentstring + line for line in lines])
 
 
 def list_to_string(inlist, endsep="and", addquote=False):
@@ -409,31 +493,52 @@ def get_evennia_version():
     return evennia.__version__
 
 
-def pypath_to_realpath(python_path, file_ending='.py'):
+def pypath_to_realpath(python_path, file_ending='.py', pypath_prefixes=None):
     """
     Converts a dotted Python path to an absolute path under the
     Evennia library directory or under the current game directory.
 
     Args:
-        python_path (str): a dot-python path
-        file_ending (str): a file ending, including the period.
+        python_path (str): A dot-python path
+        file_ending (str): A file ending, including the period.
+        pypath_prefixes (list): A list of paths to test for existence. These
+            should be on python.path form. EVENNIA_DIR and GAME_DIR are automatically
+            checked, they need not be added to this list.
 
     Returns:
-        abspaths (list of str): The two absolute paths created by prepending
-            `EVENNIA_DIR` and `GAME_DIR` respectively. These are checked for
-            existence before being returned, so this may be an empty list.
+        abspaths (list): All existing, absolute paths created by
+            converting `python_path` to an absolute paths and/or
+            prepending `python_path` by `settings.EVENNIA_DIR`,
+            `settings.GAME_DIR` and by`pypath_prefixes` respectively.
+
+    Notes:
+        This will also try a few combinations of paths to allow cases
+        where pypath is given including the "evennia." or "mygame."
+        prefixes.
 
     """
-    pathsplit = python_path.strip().split('.')
-    paths = [os.path.join(settings.EVENNIA_DIR, *pathsplit),
-             os.path.join(settings.GAME_DIR, *pathsplit)]
-    if file_ending:
-        # attach file ending to the paths if not already set (a common mistake)
-        file_ending = ".%s" % file_ending if not file_ending.startswith(".") else file_ending
-        paths = ["%s%s" % (p, file_ending) if not p.endswith(file_ending) else p
-                 for p in paths]
-    # check so the paths actually exists before returning
-    return [p for p in paths if os.path.isfile(p)]
+    path = python_path.strip().split('.')
+    plong = osjoin(*path) + file_ending
+    pshort = osjoin(*path[1:]) + file_ending if len(path) > 1 else plong # in case we had evennia. or mygame.
+    prefixlong = [osjoin(*ppath.strip().split('.'))
+            for ppath in make_iter(pypath_prefixes)] \
+                if pypath_prefixes else []
+    prefixshort = [osjoin(*ppath.strip().split('.')[1:])
+            for ppath in make_iter(pypath_prefixes) if len(ppath.strip().split('.')) > 1] \
+                if pypath_prefixes else []
+    paths = [plong] + \
+            [osjoin(_EVENNIA_DIR, prefix, plong) for prefix in prefixlong] + \
+            [osjoin(_GAME_DIR, prefix, plong) for prefix in prefixlong] + \
+            [osjoin(_EVENNIA_DIR, prefix, plong) for prefix in prefixshort] + \
+            [osjoin(_GAME_DIR, prefix, plong) for prefix in prefixshort] + \
+            [osjoin(_EVENNIA_DIR, plong), osjoin(_GAME_DIR, plong)] + \
+            [osjoin(_EVENNIA_DIR, prefix, pshort) for prefix in prefixshort] + \
+            [osjoin(_GAME_DIR, prefix, pshort) for prefix in prefixshort] + \
+            [osjoin(_EVENNIA_DIR, prefix, pshort) for prefix in prefixlong] + \
+            [osjoin(_GAME_DIR, prefix, pshort) for prefix in prefixlong] + \
+            [osjoin(_EVENNIA_DIR, pshort), osjoin(_GAME_DIR, pshort)]
+    # filter out non-existing paths
+    return list(set(p for p in paths if os.path.isfile(p)))
 
 
 def dbref(dbref, reqhash=True):
@@ -441,7 +546,7 @@ def dbref(dbref, reqhash=True):
     Converts/checks if input is a valid dbref.
 
     Args:
-        dbref (int or str): A datbase ref on the form N or #N.
+        dbref (int or str): A database ref on the form N or #N.
         reqhash (bool, optional): Require the #N form to accept
             input as a valid dbref.
 
@@ -775,16 +880,17 @@ def uses_database(name="sqlite3"):
     return engine == "django.db.backends.%s" % name
 
 
-def delay(delay=2, callback=None, retval=None):
+def delay(delay, callback, *args, **kwargs):
     """
     Delay the return of a value.
 
     Args:
       delay (int or float): The delay in seconds
-      callback (callable, optional): Will be called without arguments
-        or with `retval` after delay seconds.
-      retval (any, optional): Whis will be returned by this function
-        after a delay, or as input to callback.
+      callback (callable): Will be called with optional
+        arguments after `delay` seconds.
+      args (any, optional): Will be used as arguments to callback
+    Kwargs:
+        any (any): Will be used to call the callback.
 
     Returns:
         deferred (deferred): Will fire fire with callback after
@@ -794,11 +900,7 @@ def delay(delay=2, callback=None, retval=None):
             specified here.
 
     """
-    callb = callback or defer.Deferred().callback
-    if retval is not None:
-        return reactor.callLater(delay, callb, retval)
-    else:
-        return reactor.callLater(delay, callb)
+    return reactor.callLater(delay, callback, *args, **kwargs)
 
 
 _TYPECLASSMODELS = None
@@ -1564,7 +1666,7 @@ def m_len(target):
     """
     # Would create circular import if in module root.
     from evennia.utils.ansi import ANSI_PARSER
-    if inherits_from(target, basestring):
+    if inherits_from(target, basestring) and "|lt" in target:
         return len(ANSI_PARSER.strip_mxp(target))
     return len(target)
 
@@ -1610,15 +1712,15 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         matches = None
     elif len(matches) > 1:
         error = kwargs.get("multimatch_string") or \
-                _("More than one match for '%s' (please narrow target):" % query)
+                _("More than one match for '%s' (please narrow target):\n" % query)
         for num, result in enumerate(matches):
             # we need to consider Commands, where .aliases is a list
             aliases = result.aliases.all() if hasattr(result.aliases, "all") else result.aliases
-            error += "\n %i%s%s%s%s" % (
-                num + 1, _MULTIMATCH_SEPARATOR,
-                result.get_display_name(caller) if hasattr(result, "get_display_name") else query,
-                " [%s]" % ";".join(aliases) if aliases else "",
-                result.get_extra_info(caller))
+            error += _MULTIMATCH_TEMPLATE.format(
+                 number=num + 1,
+                 name=result.get_display_name(caller) if hasattr(result, "get_display_name") else query,
+                 aliases=" [%s]" % ";".join(aliases) if aliases else "",
+                 info=result.get_extra_info(caller))
         matches = None
     else:
         # exactly one match

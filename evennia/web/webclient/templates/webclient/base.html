@@ -10,15 +10,18 @@ JQuery available.
 {% load staticfiles %}
 <html dir="ltr" lang="en">
   <head>
+    <title> {{game_name}} </title>
     <meta http-equiv="content-type", content="application/xhtml+xml; charset=UTF-8" />
     <meta name="author" content="Evennia" />
     <meta name="generator" content="Evennia" />
 
     <link rel='stylesheet' type="text/css" media="screen" href={% static "webclient/css/webclient.css" %}>
 
+    <link rel="icon" type="image/x-icon" href="/static/website/images/evennia_logo.png" />
+
     <!-- Import JQuery and warn if there is a problem -->
     {% block jquery_import %}
-        <script src="http://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript" charset="utf-8"></script>
     {% endblock %}
 
     <script type="text/javascript" charset="utf-8">
@@ -53,6 +56,8 @@ JQuery available.
     {% block guilib_import %}
         <script src={% static "webclient/js/webclient_gui.js" %} language="javascript" type="text/javascript" charset="utf-8"></script>
     {% endblock %}
+
+    <script src="https://cdn.rawgit.com/ejci/favico.js/master/favico-0.3.10.min.js" language="javascript" type="text/javascript" charset="utf-8"></script>
 
   </head>
   <body>

@@ -18,6 +18,7 @@ class ObjectAttributeInline(AttributeInline):
 
     """
     model = ObjectDB.db_attributes.through
+    related_field = "objectdb"
 
 
 class ObjectTagInline(TagInline):
@@ -26,6 +27,7 @@ class ObjectTagInline(TagInline):
 
     """
     model = ObjectDB.db_tags.through
+    related_field = "objectdb"
 
 
 class ObjectCreateForm(forms.ModelForm):
@@ -145,10 +147,19 @@ class ObjectDBAdmin(admin.ModelAdmin):
         obj.save()
         if not change:
             # adding a new object
+            # have to call init with typeclass passed to it
+            obj.set_class_from_typeclass(typeclass_path=obj.db_typeclass_path)
             obj.basetype_setup()
             obj.basetype_posthook_setup()
             obj.at_object_creation()
         obj.at_init()
+
+    def response_add(self, request, obj, post_url_continue=None):
+        if '_continue' in request.POST:
+            from django.http import HttpResponseRedirect
+            from django.core.urlresolvers import reverse
+            return HttpResponseRedirect(reverse("admin:objects_objectdb_change", args=[obj.id]))
+        return super(ObjectDBAdmin, self).response_add(request, obj, post_url_continue)
 
 
 admin.site.register(ObjectDB, ObjectDBAdmin)

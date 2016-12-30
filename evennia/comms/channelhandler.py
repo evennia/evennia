@@ -26,13 +26,13 @@ does this for you.
 from builtins import object
 
 from django.conf import settings
-from evennia.comms.models import ChannelDB
 from evennia.commands import cmdset, command
 from evennia.utils.logger import tail_log_file
 from evennia.utils.utils import class_from_module
 from django.utils.translation import ugettext as _
 
 _CHANNEL_COMMAND_CLASS = None
+_CHANNELDB = None
 
 class ChannelCommand(command.Command):
     """
@@ -43,6 +43,8 @@ class ChannelCommand(command.Command):
     Usage:
        {lower_channelkey}  <message>
        {lower_channelkey}/history [start]
+       {lower_channelkey} off - mutes the channel
+       {lower_channelkey} on  - unmutes the channel
 
     Switch:
         history: View 20 previous messages, either from the end or
@@ -85,12 +87,16 @@ class ChannelCommand(command.Command):
         Create a new message and send it to channel, using
         the already formatted input.
         """
+        global _CHANNELDB
+        if not _CHANNELDB:
+            from evennia.comms.models import ChannelDB as _CHANNELDB
+
         channelkey, msg = self.args
         caller = self.caller
         if not msg:
             self.msg(_("Say what?"))
             return
-        channel = ChannelDB.objects.get_channel(channelkey)
+        channel = _CHANNELDB.objects.get_channel(channelkey)
 
         if not channel:
             self.msg(_("Channel '%s' not found.") % channelkey)
@@ -103,6 +109,22 @@ class ChannelCommand(command.Command):
             string = _("You are not permitted to send to channel '%s'.")
             self.msg(string % channelkey)
             return
+        if msg == "on":
+            caller = caller if not hasattr(caller, 'player') else caller.player
+            unmuted = channel.unmute(caller)
+            if unmuted:
+                self.msg("You start listening to %s." % channel)
+                return
+            self.msg("You were already listening to %s." % channel)
+            return
+        if msg == "off":
+            caller = caller if not hasattr(caller, 'player') else caller.player
+            muted = channel.mute(caller)
+            if muted:
+                self.msg("You stop listening to %s." % channel)
+                return
+            self.msg("You were already not listening to %s." % channel)
+            return
         if self.history_start is not None:
             # Try to view history
             log_file = channel.attributes.get("log_file", default="channel_%s.log" % channel.key)
@@ -110,6 +132,10 @@ class ChannelCommand(command.Command):
                                                     if "[-]" in line else line for line in lines))
             tail_log_file(log_file, self.history_start, 20, callback=send_msg)
         else:
+            caller = caller if not hasattr(caller, 'player') else caller.player
+            if caller in channel.mutelist:
+                self.msg("You currently have %s muted." % channel)
+                return
             channel.msg(msg, senders=self.caller, online=True)
 
     def get_extra_info(self, caller, **kwargs):
@@ -141,7 +167,7 @@ class ChannelHandler(object):
         Initializes the channel handler's internal state.
 
         """
-        self.cached_channel_cmds = []
+        self.cached_channel_cmds = {}
         self.cached_cmdsets = {}
 
     def __str__(self):
@@ -156,9 +182,10 @@ class ChannelHandler(object):
         Reset the cache storage.
 
         """
-        self.cached_channel_cmds = []
+        self.cached_channel_cmds = {}
+        self.cached_cmdsets = {}
 
-    def add_channel(self, channel):
+    def add(self, channel):
         """
         Add an individual channel to the handler. This should be
         called whenever a new channel is created.
@@ -191,8 +218,9 @@ class ChannelHandler(object):
         cmd.__doc__ = cmd.__doc__.format(channelkey=key,
                                          lower_channelkey=key.strip().lower(),
                                          channeldesc=channel.attributes.get("desc", default="").strip())
-        self.cached_channel_cmds.append(cmd)
+        self.cached_channel_cmds[channel] = cmd
         self.cached_cmdsets = {}
+    add_channel = add # legacy alias
 
     def update(self):
         """
@@ -200,10 +228,13 @@ class ChannelHandler(object):
         Channel objects. This must be called after deleting a Channel.
 
         """
-        self.cached_channel_cmds = []
+        global _CHANNELDB
+        if not _CHANNELDB:
+            from evennia.comms.models import ChannelDB as _CHANNELDB
+        self.cached_channel_cmds = {}
         self.cached_cmdsets = {}
-        for channel in ChannelDB.objects.get_all_channels():
-            self.add_channel(channel)
+        for channel in _CHANNELDB.objects.get_all_channels():
+            self.add(channel)
 
     def get_cmdset(self, source_object):
         """
@@ -222,14 +253,18 @@ class ChannelHandler(object):
         if source_object in self.cached_cmdsets:
             return self.cached_cmdsets[source_object]
         else:
-            # create a new cmdset holding all channels
-            chan_cmdset = cmdset.CmdSet()
-            chan_cmdset.key = '_channelset'
-            chan_cmdset.priority = 120
-            chan_cmdset.duplicates = True
-            for cmd in [cmd for cmd in self.cached_channel_cmds
-                        if cmd.access(source_object, 'send')]:
-                chan_cmdset.add(cmd)
+            # create a new cmdset holding all viable channels
+            chan_cmdset = None
+            chan_cmds = [channelcmd for channel, channelcmd in self.cached_channel_cmds.iteritems()
+                                if channel.subscriptions.has(source_object) and
+                                channelcmd.access(source_object, 'send')]
+            if chan_cmds:
+                chan_cmdset = cmdset.CmdSet()
+                chan_cmdset.key = 'ChannelCmdSet'
+                chan_cmdset.priority = 101
+                chan_cmdset.duplicates = True
+                for cmd in chan_cmds:
+                    chan_cmdset.add(cmd)
             self.cached_cmdsets[source_object] = chan_cmdset
             return chan_cmdset
 

@@ -241,24 +241,6 @@ msgstr "Questo è l'Utente #1."
 msgid "Limbo"
 msgstr "Limbo"
 
-#: .\server\portal\imc2.py:167
-#, python-format
-msgid "Whois reply from %(origin)s: %(msg)s"
-msgstr "Risposta Whois da %(origin)s: %(msg)s"
-
-#: .\server\portal\imc2.py:175
-#, python-format
-msgid "{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s"
-msgstr "{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s"
-
-#: .\server\portal\imc2.py:193
-msgid "IMC2 server rejected connection."
-msgstr "Il server IMC2 ha rifiutato la connessione."
-
-#: .\server\portal\imc2.py:201
-msgid "IMC2: Autosetup response found."
-msgstr "IMC2: Trovato responso di autosetup."
-
 #: .\server\sessionhandler.py:192
 #, python-format
 msgid "Connection dropped: %s %s (%s)"

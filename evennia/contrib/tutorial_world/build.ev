@@ -279,9 +279,7 @@ start
 #
 @set sign/readable_text =
 
-
- WARNING - The bridge is not safe!
-
+ |rWARNING - The bridge is not safe!|n
 
  Below this official warning, someone has carved some sprawling
  letters into the wood. It reads: "The guardian will not bleed to
@@ -533,6 +531,7 @@ bridge
 # feature of the BridgeRoom.
 #
 @dig/teleport Protruding ledge;cliffledge;ledge;tut#06
+ : tutorial_world.rooms.WeatherRoom
 #
 @set here/tutorial_info =
  This room is stored as an attribute on the 'Bridge' room and used as
@@ -1298,28 +1297,29 @@ Tomb of the hero
 @create/drop Stone sarcophagus;sarcophagus;stone : tutorial_world.objects.WeaponRack
 #
 @desc stone =
- The lid of the coffin is adorned with a stone statue in full size. The weapon held by
- the stone hands looks very realistic ... (
+ The lid of the coffin is adorned with a stone statue in full size.
+The weapon held by the stone hands looks very realistic ...
+
+ The hands of the statue close on what seems to be a real weapon
+rather than one in stone.  This must be the hero's legendary weapon!
+The prize you have been looking for!
 
  (try {wget weapon{n)
 #
 @set sarcophagus/rack_id = rack_sarcophagus
 #
-@set sarcophagus/available_weapons = ["ornate_longsword","warhammer","rune axe","thruning","slayer waraxe","ghostblade","hawkblade"]
+@set sarcophagus/available_weapons = ["ornate longsword","warhammer","rune axe","thruning","slayer waraxe","ghostblade","hawkblade"]
 #
 @set sarcophagus/no_more_weapons_msg =
  The tomb has already granted you all the might it will ever do.
 #
 @set sarcophagus/get_weapon_msg =
- The hands of the statue close on what seems to be a real weapon
- rather than one in stone.  This must be the hero's legendary weapon!
- The prize you have been looking for!
+ Trembling you carefully release the weapon from the stone to test
+ its weight. You are finally holding your prize,
 
- With trembling hands you release the weapon from the stone and hold
- {c%s{n in your hands!
+  The {c%s{n
 
-
-
+ in your hands!
 
  {gThis concludes the Evennia tutorial. From here you can either
  continue to explore the castle (hint: this weapon works better
@@ -1343,7 +1343,7 @@ Tomb of the hero
 # rack_id. This we can use to check if any such weapon is in inventory
 # before unlocking the exit.
 #
-@lock Exit tutorial = view:holds(rack_sarcophagus) ; traverse:holds(rack_sarcophagus)
+@lock Exit tutorial = view:tag(rack_sarcophagus, tutorial_world) ; traverse:tag(rack_sarcophagus, tutorial_world)
 #
 # to tutorial outro
 @tel tut#16

@@ -10,10 +10,10 @@ for easy handling.
 from past.builtins import cmp
 from django.conf import settings
 from evennia.comms.models import ChannelDB, Msg
-#from evennia.comms import irc, imc2, rss
 from evennia.players.models import PlayerDB
 from evennia.players import bots
 from evennia.comms.channelhandler import CHANNELHANDLER
+from evennia.locks.lockhandler import LockException
 from evennia.utils import create, utils, evtable
 from evennia.utils.utils import make_iter, class_from_module
 
@@ -23,8 +23,7 @@ COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 __all__ = ("CmdAddCom", "CmdDelCom", "CmdAllCom",
            "CmdChannels", "CmdCdestroy", "CmdCBoot", "CmdCemit",
            "CmdCWho", "CmdChannelCreate", "CmdClock", "CmdCdesc",
-           "CmdPage", "CmdIRC2Chan", "CmdRSS2Chan")#, "CmdIMC2Chan", "CmdIMCInfo",
-           #"CmdIMCTell")
+           "CmdPage", "CmdIRC2Chan", "CmdRSS2Chan")
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 
@@ -111,7 +110,10 @@ class CmdAddCom(COMMAND_DEFAULT_CLASS):
             else:
                 string += "You now listen to the channel %s. " % channel.key
         else:
-            string += "You are already connected to channel %s." % channel.key
+            if channel.unmute(player):
+                string += "You unmute channel %s." % channel.key
+            else:
+                string += "You are already connected to channel %s." % channel.key
 
         if alias:
             # create a nick and add it to the caller.
@@ -129,10 +131,12 @@ class CmdDelCom(COMMAND_DEFAULT_CLASS):
 
     Usage:
        delcom <alias or channel>
+       delcom/all <channel>
 
     If the full channel name is given, unsubscribe from the
     channel. If an alias is given, remove the alias but don't
-    unsubscribe.
+    unsubscribe. If the 'all' switch is used, remove all aliases
+    for that channel.
     """
 
     key = "delcom"
@@ -161,13 +165,16 @@ class CmdDelCom(COMMAND_DEFAULT_CLASS):
                 self.msg("You are not listening to that channel.")
                 return
             chkey = channel.key.lower()
+            delnicks = "all" in self.switches
             # find all nicks linked to this channel and delete them
-            for nick in [nick for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
-                         if nick and nick.value[3].lower() == chkey]:
-                nick.delete()
+            if delnicks:
+                for nick in [nick for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
+                             if nick and nick.pk and nick.value[3].lower() == chkey]:
+                    nick.delete()
             disconnect = channel.disconnect(player)
             if disconnect:
-                self.msg("You stop listening to channel '%s'. Eventual aliases were removed." % channel.key)
+                wipednicks = " Eventual aliases were removed." if delnicks else ""
+                self.msg("You stop listening to channel '%s'.%s" % (channel.key, wipednicks))
             return
         else:
             # we are removing a channel nick
@@ -210,7 +217,7 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         args = self.args
         if not args:
-            caller.execute_cmd("@channels")
+            self.execute_cmd("@channels")
             self.msg("(Usage: allcom on | off | who | destroy)")
             return
 
@@ -220,18 +227,18 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
             channels = [chan for chan in ChannelDB.objects.get_all_channels()
                         if chan.access(caller, 'listen')]
             for channel in channels:
-                caller.execute_cmd("addcom %s" % channel.key)
+                self.execute_cmd("addcom %s" % channel.key)
         elif args == "off":
              #get names all subscribed channels and disconnect from them all
             channels = ChannelDB.objects.get_subscriptions(caller)
             for channel in channels:
-                caller.execute_cmd("delcom %s" % channel.key)
+                self.execute_cmd("delcom %s" % channel.key)
         elif args == "destroy":
             # destroy all channels you control
             channels = [chan for chan in ChannelDB.objects.get_all_channels()
                         if chan.access(caller, 'control')]
             for channel in channels:
-                caller.execute_cmd("@cdestroy %s" % channel.key)
+                self.execute_cmd("@cdestroy %s" % channel.key)
         elif args == "who":
             # run a who, listing the subscribers on visible channels.
             string = "\n{CChannel subscriptions{n"
@@ -240,12 +247,7 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
             if not channels:
                 string += "No channels."
             for channel in channels:
-                string += "\n{w%s:{n\n" % channel.key
-                subs = channel.db_subscriptions.all()
-                if subs:
-                    string += "  " + ", ".join([player.key for player in subs])
-                else:
-                    string += "  <None>"
+                string += "\n{w%s:{n\n %s" % (channel.key, channel.wholist)
             self.msg(string.strip())
         else:
             # wrong input
@@ -299,7 +301,7 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                                   "%s" % ",".join(nick.db_key for nick in make_iter(nicks)
                                   if nick and nick.value[3].lower() == clower),
                                   chan.db.desc])
-            caller.msg("\n{wChannel subscriptions{n (use {w@channels{n to list all, {waddcom{n/{wdelcom{n to sub/unsub):{n\n%s" % comtable)
+            self.msg("\n{wChannel subscriptions{n (use {w@channels{n to list all, {waddcom{n/{wdelcom{n to sub/unsub):{n\n%s" % comtable)
         else:
             # full listing (of channels caller is able to listen to)
             comtable = evtable.EvTable("{wsub{n", "{wchannel{n", "{wmy aliases{n", "{wlocks{n", "{wdescription{n", maxwidth=_DEFAULT_WIDTH)
@@ -308,14 +310,22 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                 clower = chan.key.lower()
                 nicks = caller.nicks.get(category="channel", return_obj=True)
                 nicks = nicks or []
-                comtable.add_row(*[chan in subs and "{gYes{n" or "{rNo{n",
+                if chan not in subs:
+                    substatus = "{rNo{n"
+                elif caller in chan.mutelist:
+                    substatus = "{rMuted{n"
+                else:
+                    substatus = "{gYes{n"
+                comtable.add_row(*[substatus,
                                   "%s%s" % (chan.key, chan.aliases.all() and
                                   "(%s)" % ",".join(chan.aliases.all()) or ""),
                                   "%s" % ",".join(nick.db_key for nick in make_iter(nicks)
                                   if nick.value[3].lower() == clower),
                                   str(chan.locks),
                                   chan.db.desc])
-            caller.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)
+            comtable.reformat_column(0, width=9)
+            comtable.reformat_column(3, width=14)
+            self.msg("\n{wAvailable channels{n (use {wcomlist{n,{waddcom{n and {wdelcom{n to manage subscriptions):\n%s" % comtable)
 
 
 class CmdCdestroy(COMMAND_DEFAULT_CLASS):
@@ -502,12 +512,7 @@ class CmdCWho(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
         string = "\n{CChannel subscriptions{n"
-        string += "\n{w%s:{n\n" % channel.key
-        subs = channel.db_subscriptions.all()
-        if subs:
-            string += "  " + ", ".join([player.key for player in subs])
-        else:
-            string += "  <None>"
+        string += "\n{w%s:{n\n  %s" % (channel.key, channel.wholist)
         self.msg(string.strip())
 
 
@@ -605,7 +610,11 @@ class CmdClock(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
         # Try to add the lock
-        channel.locks.add(self.rhs)
+        try:
+            channel.locks.add(self.rhs)
+        except LockException, err:
+            self.msg(err)
+            return
         string = "Lock(s) applied. "
         string += "Current locks on %s:" % channel.key
         string = "%s\n %s" % (string, channel.locks)
@@ -702,7 +711,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
 
         if not self.args or not self.rhs:
             pages = pages_we_sent + pages_we_got
-            pages.sort(lambda x, y: cmp(x.date_sent, y.date_sent))
+            pages.sort(lambda x, y: cmp(x.date_created, y.date_created))
 
             number = 5
             if self.args:
@@ -718,7 +727,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 lastpages = pages
             template = "{w%s{n {c%s{n to {c%s{n: %s"
             lastpages = "\n ".join(template %
-                                   (utils.datetime_format(page.date_sent),
+                                   (utils.datetime_format(page.date_created),
                                     ",".join(obj.key for obj in page.senders),
                                     "{n,{c ".join([obj.name for obj in page.receivers]),
                                     page.message) for page in lastpages)
@@ -835,7 +844,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
                 for ircbot in ircbots:
                     ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
                     table.add_row(ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo, ircbot.db.irc_ssl)
-                self.caller.msg(table)
+                self.msg(table)
             else:
                 self.msg("No irc bots found.")
             return
@@ -945,7 +954,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
                                 "{wRSS feed URL{n", border="cells", maxwidth=_DEFAULT_WIDTH)
                 for rssbot in rssbots:
                     table.add_row(rssbot.id, rssbot.db.rss_rate, rssbot.db.ev_channel, rssbot.db.rss_url)
-                self.caller.msg(table)
+                self.msg(table)
             else:
                 self.msg("No rss bots found.")
             return
@@ -984,224 +993,3 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
             bot = create.create_player(botname, None, None, typeclass=bots.RSSBot)
         bot.start(ev_channel=channel, rss_url=url, rss_rate=10)
         self.msg("RSS reporter created. Fetching RSS.")
-
-
-#class CmdIMC2Chan(COMMAND_DEFAULT_CLASS):
-#    """
-#    link an evennia channel to an external IMC2 channel
-#
-#    Usage:
-#      @imc2chan[/switches] <evennia_channel> = <imc2_channel>
-#
-#    Switches:
-#      /disconnect - this clear the imc2 connection to the channel.
-#      /remove     -                "
-#      /list       - show all imc2<->evennia mappings
-#
-#    Example:
-#      @imc2chan myimcchan = ievennia
-#
-#    Connect an existing evennia channel to a channel on an IMC2
-#    network. The network contact information is defined in settings and
-#    should already be accessed at this point. Use @imcchanlist to see
-#    available IMC channels.
-#
-#    """
-#
-#    key = "@imc2chan"
-#    locks = "cmd:serversetting(IMC2_ENABLED) and pperm(Immortals)"
-#    help_category = "Comms"
-#
-#    def func(self):
-#        "Setup the imc-channel mapping"
-#
-#        if not settings.IMC2_ENABLED:
-#            string = """IMC is not enabled. You need to activate it in game/settings.py."""
-#            self.msg(string)
-#            return
-#
-#        if 'list' in self.switches:
-#            # show all connections
-#            connections = ExternalChannelConnection.objects.filter(db_external_key__startswith='imc2_')
-#            if connections:
-#                table = prettytable.PrettyTable(["Evennia channel", "IMC channel"])
-#                for conn in connections:
-#                    table.add_row([conn.channel.key, conn.external_config])
-#                string = "{wIMC connections:{n\n%s" % table
-#                self.msg(string)
-#            else:
-#                self.msg("No connections found.")
-#            return
-#
-#        if not self.args or not self.rhs:
-#            string = "Usage: @imc2chan[/switches] <evennia_channel> = <imc2_channel>"
-#            self.msg(string)
-#            return
-#
-#        channel = self.lhs
-#        imc2_channel = self.rhs
-#
-#        if('disconnect' in self.switches or 'remove' in self.switches or
-#                                                    'delete' in self.switches):
-#            # we don't search for channels before this since we want
-#            # to clear the link also if the channel no longer exists.
-#            ok = imc2.delete_connection(channel, imc2_channel)
-#            if not ok:
-#                self.msg("IMC2 connection could not be removed, does it exist?")
-#            else:
-#                self.msg("IMC2 connection destroyed.")
-#            return
-#
-#        # actually get the channel object
-#        channel = find_channel(self.caller, channel)
-#        if not channel:
-#            return
-#
-#        ok = imc2.create_connection(channel, imc2_channel)
-#        if not ok:
-#            self.msg("The connection %s <-> %s  already exists." % (channel.key, imc2_channel))
-#            return
-#        self.msg("Created connection channel %s <-> IMC channel %s." % (channel.key, imc2_channel))
-#
-#
-#class CmdIMCInfo(COMMAND_DEFAULT_CLASS):
-#    """
-#    get various IMC2 information
-#
-#    Usage:
-#      @imcinfo[/switches]
-#      @imcchanlist - list imc2 channels
-#      @imclist -     list connected muds
-#      @imcwhois <playername> - whois info about a remote player
-#
-#    Switches for @imcinfo:
-#      channels - as @imcchanlist (default)
-#      games or muds - as @imclist
-#      whois - as @imcwhois (requires an additional argument)
-#      update - force an update of all lists
-#
-#    Shows lists of games or channels on the IMC2 network.
-#    """
-#
-#    key = "@imcinfo"
-#    aliases = ["@imcchanlist", "@imclist", "@imcwhois"]
-#    locks = "cmd: serversetting(IMC2_ENABLED) and pperm(Wizards)"
-#    help_category = "Comms"
-#
-#    def func(self):
-#        "Run the command"
-#
-#        if not settings.IMC2_ENABLED:
-#            string = """IMC is not enabled. You need to activate it in game/settings.py."""
-#            self.msg(string)
-#            return
-#
-#        if "update" in self.switches:
-#            # update the lists
-#            import time
-#            from evennia.comms.imc2lib import imc2_packets as pck
-#            from evennia.comms.imc2 import IMC2_MUDLIST, IMC2_CHANLIST, IMC2_CLIENT
-#            # update connected muds
-#            IMC2_CLIENT.send_packet(pck.IMC2PacketKeepAliveRequest())
-#            # prune inactive muds
-#            for name, mudinfo in IMC2_MUDLIST.mud_list.items():
-#                if time.time() - mudinfo.last_updated > 3599:
-#                    del IMC2_MUDLIST.mud_list[name]
-#            # update channel list
-#            IMC2_CLIENT.send_packet(pck.IMC2PacketIceRefresh())
-#            self.msg("IMC2 lists were re-synced.")
-#
-#        elif("games" in self.switches or "muds" in self.switches
-#                                            or self.cmdstring == "@imclist"):
-#            # list muds
-#            from evennia.comms.imc2 import IMC2_MUDLIST
-#
-#            muds = IMC2_MUDLIST.get_mud_list()
-#            networks = set(mud.networkname for mud in muds)
-#            string = ""
-#            nmuds = 0
-#            for network in networks:
-#                table = prettytable.PrettyTable(["Name", "Url", "Host", "Port"])
-#                for mud in (mud for mud in muds if mud.networkname == network):
-#                    nmuds += 1
-#                    table.add_row([mud.name, mud.url, mud.host, mud.port])
-#                string += "\n{wMuds registered on %s:{n\n%s" % (network, table)
-#            string += "\n %i Muds found." % nmuds
-#            self.msg(string)
-#
-#        elif "whois" in self.switches or self.cmdstring == "@imcwhois":
-#            # find out about a player
-#            if not self.args:
-#                self.msg("Usage: @imcwhois <playername>")
-#                return
-#            from evennia.comms.imc2 import IMC2_CLIENT
-#            self.msg("Sending IMC whois request. If you receive no response, no matches were found.")
-#            IMC2_CLIENT.msg_imc2(None,
-#                                 from_obj=self.caller,
-#                                 packet_type="imcwhois",
-#                                 target=self.args)
-#
-#        elif(not self.switches or "channels" in self.switches or
-#                                              self.cmdstring == "@imcchanlist"):
-#            # show channels
-#            from evennia.comms.imc2 import IMC2_CHANLIST, IMC2_CLIENT
-#
-#            channels = IMC2_CHANLIST.get_channel_list()
-#            string = ""
-#            nchans = 0
-#            table = prettytable.PrettyTable(["Full name", "Name", "Owner", "Perm", "Policy"])
-#            for chan in channels:
-#                nchans += 1
-#                table.add_row([chan.name, chan.localname, chan.owner,
-#                               chan.level, chan.policy])
-#            string += "\n{wChannels on %s:{n\n%s" % (IMC2_CLIENT.factory.network, table)
-#            string += "\n%i Channels found." % nchans
-#            self.msg(string)
-#        else:
-#            # no valid inputs
-#            string = "Usage: imcinfo|imcchanlist|imclist"
-#            self.msg(string)
-#
-#
-## unclear if this is working ...
-#class CmdIMCTell(COMMAND_DEFAULT_CLASS):
-#    """
-#    send a page to a remote IMC player
-#
-#    Usage:
-#      imctell User@MUD = <msg>
-#      imcpage      "
-#
-#    Sends a page to a user on a remote MUD, connected
-#    over IMC2.
-#    """
-#
-#    key = "imctell"
-#    aliases = ["imcpage", "imc2tell", "imc2page"]
-#    locks = "cmd: serversetting(IMC2_ENABLED)"
-#    help_category = "Comms"
-#
-#    def func(self):
-#        "Send tell across IMC"
-#
-#        if not settings.IMC2_ENABLED:
-#            string = """IMC is not enabled. You need to activate it in game/settings.py."""
-#            self.msg(string)
-#            return
-#
-#        from evennia.comms.imc2 import IMC2_CLIENT
-#
-#        if not self.args or not '@' in self.lhs or not self.rhs:
-#            string = "Usage: imctell User@Mud = <msg>"
-#            self.msg(string)
-#            return
-#        target, destination = self.lhs.split("@", 1)
-#        message = self.rhs.strip()
-#        data = {"target":target, "destination":destination}
-#
-#        # send to imc2
-#        IMC2_CLIENT.msg_imc2(message, from_obj=self.caller, packet_type="imctell", **data)
-#
-#        self.msg("You paged {c%s@%s{n (over IMC): '%s'." % (target, destination, message))
-#
-#

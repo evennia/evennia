@@ -36,6 +36,8 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
 
+_CHANNELHANDLER = None
+
 
 #------------------------------------------------------------
 #
@@ -59,7 +61,7 @@ class Msg(SharedMemoryModel):
     - db_receivers_channels: Receiving channels
     - db_header: Header text
     - db_message: The actual message text
-    - db_date_sent: time message was sent
+    - db_date_created: time message was created / sent
     - db_hide_from_sender: bool if message should be hidden from sender
     - db_hide_from_receivers: list of receiver objects to hide message from
     - db_hide_from_channels: list of channels objects to hide message from
@@ -77,21 +79,21 @@ class Msg(SharedMemoryModel):
     # an IRC channel; normally there is only one, but if co-modification of
     # a message is allowed, there may be more than one "author"
     db_sender_players = models.ManyToManyField("players.PlayerDB", related_name='sender_player_set',
-                                               null=True, verbose_name='sender(player)', db_index=True)
+                                               null=True, blank=True, verbose_name='sender(player)', db_index=True)
     db_sender_objects = models.ManyToManyField("objects.ObjectDB", related_name='sender_object_set',
-                                               null=True, verbose_name='sender(object)', db_index=True)
-    db_sender_external = models.CharField('external sender', max_length=255, null=True, db_index=True,
+                                               null=True, blank=True, verbose_name='sender(object)', db_index=True)
+    db_sender_external = models.CharField('external sender', max_length=255, null=True, blank=True, db_index=True,
           help_text="identifier for external sender, for example a sender over an "
                     "IRC connection (i.e. someone who doesn't have an exixtence in-game).")
     # The destination objects of this message. Stored as a
     # comma-separated string of object dbrefs. Can be defined along
     # with channels below.
     db_receivers_players = models.ManyToManyField('players.PlayerDB', related_name='receiver_player_set',
-                                                  null=True, help_text="player receivers")
+                                                  null=True, blank=True, help_text="player receivers")
     db_receivers_objects = models.ManyToManyField('objects.ObjectDB', related_name='receiver_object_set',
-                                                  null=True, help_text="object receivers")
+                                                  null=True, blank=True, help_text="object receivers")
     db_receivers_channels = models.ManyToManyField("ChannelDB", related_name='channel_set',
-                                                   null=True, help_text="channel recievers")
+                                                   null=True, blank=True, help_text="channel recievers")
 
     # header could be used for meta-info about the message if your system needs
     # it, or as a separate store for the mail subject line maybe.
@@ -99,17 +101,17 @@ class Msg(SharedMemoryModel):
     # the message body itself
     db_message = models.TextField('messsage')
     # send date
-    db_date_sent = models.DateTimeField('date sent', editable=False, auto_now_add=True, db_index=True)
+    db_date_created = models.DateTimeField('date sent', editable=False, auto_now_add=True, db_index=True)
     # lock storage
     db_lock_storage = models.TextField('locks', blank=True,
                                        help_text='access locks on this message.')
 
     # these can be used to filter/hide a given message from supplied objects/players/channels
-    db_hide_from_players = models.ManyToManyField("players.PlayerDB", related_name='hide_from_players_set', null=True)
-    db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', null=True)
-    db_hide_from_channels = models.ManyToManyField("ChannelDB", related_name='hide_from_channels_set', null=True)
+    db_hide_from_players = models.ManyToManyField("players.PlayerDB", related_name='hide_from_players_set', null=True, blank=True)
+    db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', null=True, blank=True)
+    db_hide_from_channels = models.ManyToManyField("ChannelDB", related_name='hide_from_channels_set', null=True, blank=True)
 
-    db_tags = models.ManyToManyField(Tag, null=True,
+    db_tags = models.ManyToManyField(Tag, null=True, blank=True,
             help_text='tags on this message. Tags are simple string markers to identify, group and alias messages.')
 
     # Database manager
@@ -122,7 +124,7 @@ class Msg(SharedMemoryModel):
 
     class Meta(object):
         "Define Django meta options"
-        verbose_name = "Message"
+        verbose_name = "Msg"
 
     @lazy_property
     def locks(self):
@@ -316,6 +318,21 @@ class Msg(SharedMemoryModel):
         receivers = ",".join(["[%s]" % obj.key for obj in self.channels] + [obj.key for obj in self.receivers])
         return "%s->%s: %s" % (senders, receivers, crop(self.message, width=40))
 
+    def access(self, accessing_obj, access_type='read', default=False):
+        """
+        Checks lock access.
+
+        Args:
+            accessing_obj (Object or Player): The object trying to gain access.
+            access_type (str, optional): The type of lock access to check.
+            default (bool): Fallback to use if `access_type` lock is not defined.
+
+        Returns:
+            result (bool): If access was granted or not.
+
+        """
+        return self.locks.check(accessing_obj,
+                                access_type=access_type, default=default)
 
 #------------------------------------------------------------
 #
@@ -353,7 +370,7 @@ class TempMsg(object):
         self.message = message
         self.lock_storage = lockstring
         self.hide_from = hide_from and make_iter(hide_from) or []
-        self.date_sent = timezone.now()
+        self.date_created = timezone.now()
 
     @lazy_property
     def locks(self):
@@ -433,6 +450,11 @@ class SubscriptionHandler(object):
 
         """
         self.obj = obj
+        self._cache = None
+
+    def _recache(self):
+        self._cache = {player : True for player in self.obj.db_subscriptions.all()}
+        self._cache.update({obj : True for obj in self.obj.db_object_subscriptions.all()})
 
     def has(self, entity):
         """
@@ -448,12 +470,9 @@ class SubscriptionHandler(object):
                 subscriber.
 
         """
-        clsname = entity.__dbclass__.__name__
-        if clsname == "PlayerDB":
-            return entity in self.obj.db_subscriptions.all()
-        elif clsname == "ObjectDB":
-            return entity in self.obj.db_object_subscriptions.all()
-
+        if self._cache is None:
+            self._recache()
+        return entity in self._cache
 
     def add(self, entity):
         """
@@ -469,6 +488,9 @@ class SubscriptionHandler(object):
                 no hooks will be called.
 
         """
+        global _CHANNELHANDLER
+        if not _CHANNELHANDLER:
+            from evennia.comms.channelhandler import CHANNEL_HANDLER as _CHANNELHANDLER
         for subscriber in make_iter(entity):
             if subscriber:
                 clsname = subscriber.__dbclass__.__name__
@@ -477,16 +499,21 @@ class SubscriptionHandler(object):
                     self.obj.db_object_subscriptions.add(subscriber)
                 elif clsname == "PlayerDB":
                     self.obj.db_subscriptions.add(subscriber)
+                _CHANNELHANDLER.cached_cmdsets.pop(subscriber, None)
+        self._recache()
 
     def remove(self, entity):
         """
-        Remove a subecriber from the channel.
+        Remove a subscriber from the channel.
 
         Args:
             entity (Player, Object or list): The entity or
                 entities to un-subscribe from the channel.
 
         """
+        global _CHANNELHANDLER
+        if not _CHANNELHANDLER:
+            from evennia.comms.channelhandler import CHANNEL_HANDLER as _CHANNELHANDLER
         for subscriber in make_iter(entity):
             if subscriber:
                 clsname = subscriber.__dbclass__.__name__
@@ -495,6 +522,8 @@ class SubscriptionHandler(object):
                     self.obj.db_subscriptions.remove(entity)
                 elif clsname == "ObjectDB":
                     self.obj.db_object_subscriptions.remove(entity)
+                _CHANNELHANDLER.cached_cmdsets.pop(subscriber, None)
+        self._recache()
 
     def all(self):
         """
@@ -505,8 +534,9 @@ class SubscriptionHandler(object):
                 may be a mix of Players and Objects!
 
         """
-        return list(self.obj.db_subscriptions.all()) + \
-               list(self.obj.db_object_subscriptions.all())
+        if self._cache is None:
+            self._recache()
+        return self._cache
 
     def clear(self):
         """
@@ -515,6 +545,7 @@ class SubscriptionHandler(object):
         """
         self.obj.db_subscriptions.clear()
         self.obj.db_object_subscriptions.clear()
+        self._cache = None
 
 
 class ChannelDB(TypedObject):
@@ -531,10 +562,10 @@ class ChannelDB(TypedObject):
 
     """
     db_subscriptions = models.ManyToManyField("players.PlayerDB",
-                       related_name="subscription_set", null=True, verbose_name='subscriptions', db_index=True)
+                       related_name="subscription_set", null=True, blank=True, verbose_name='subscriptions', db_index=True)
 
     db_object_subscriptions = models.ManyToManyField("objects.ObjectDB",
-                       related_name="object_subscription_set", null=True, verbose_name='subscriptions', db_index=True)
+                       related_name="object_subscription_set", null=True, blank=True, verbose_name='subscriptions', db_index=True)
 
     # Database manager
     objects = managers.ChannelDBManager()

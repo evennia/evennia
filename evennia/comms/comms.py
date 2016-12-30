@@ -79,6 +79,45 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             has_sub = self.subscriptions.has(subscriber.player)
         return has_sub
 
+    @property
+    def mutelist(self):
+        return self.db.mute_list or []
+
+    @property
+    def wholist(self):
+        subs = self.subscriptions.all()
+        listening = [ob for ob in subs if ob.is_connected and ob not in self.mutelist]
+        if subs:
+            # display listening subscribers in bold
+            string = ", ".join([player.key if player not in listening else "{w%s{n" % player.key for player in subs])
+        else:
+            string = "<None>"
+        return string
+
+    def mute(self, subscriber):
+        """
+        Adds an entity to the list of muted subscribers.
+        A muted subscriber will no longer see channel messages,
+        but may use channel commands.
+        """
+        mutelist = self.mutelist
+        if subscriber not in mutelist:
+            mutelist.append(subscriber)
+            self.db.mute_list = mutelist
+            return True
+
+    def unmute(self, subscriber):
+        """
+        Removes an entity to the list of muted subscribers.
+        A muted subscriber will no longer see channel messages,
+        but may use channel commands.
+        """
+        mutelist = self.mutelist
+        if subscriber in mutelist:
+            mutelist.remove(subscriber)
+            self.db.mute_list = mutelist
+            return True
+
 
     def connect(self, subscriber):
         """
@@ -102,6 +141,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             return False
         # subscribe
         self.subscriptions.add(subscriber)
+        # unmute
+        self.unmute(subscriber)
         # post-join hook
         self.post_join_channel(subscriber)
         return True
@@ -125,6 +166,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             return False
         # disconnect
         self.subscriptions.remove(subscriber)
+        # unmute
+        self.unmute(subscriber)
         # post-disconnect hook
         self.post_leave_channel(subscriber)
         return True
@@ -158,13 +201,13 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         from evennia.comms.channelhandler import CHANNELHANDLER
         CHANNELHANDLER.update()
 
-    def message_transform(self, msg, emit=False, prefix=True,
+    def message_transform(self, msgobj, emit=False, prefix=True,
                           sender_strings=None, external=False):
         """
         Generates the formatted string sent to listeners on a channel.
 
         Args:
-            msg (str): Message to send.
+            msgobj (Msg): Message object to send.
             emit (bool, optional): In emit mode the message is not associated
                 with a specific sender name.
             prefix (bool, optional): Prefix `msg` with a text given by `self.channel_prefix`.
@@ -173,13 +216,13 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
         """
         if sender_strings or external:
-            body = self.format_external(msg, sender_strings, emit=emit)
+            body = self.format_external(msgobj, sender_strings, emit=emit)
         else:
-            body = self.format_message(msg, emit=emit)
+            body = self.format_message(msgobj, emit=emit)
         if prefix:
-            body = "%s%s" % (self.channel_prefix(msg, emit=emit), body)
-        msg.message = body
-        return msg
+            body = "%s%s" % (self.channel_prefix(msgobj, emit=emit), body)
+        msgobj.message = body
+        return msgobj
 
     def distribute_message(self, msgobj, online=False):
         """
@@ -195,8 +238,11 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             This is also where logging happens, if enabled.
 
         """
-        # get all players connected to this channel and send to them
+        # get all players or objects connected to this channel and send to them
         for entity in self.subscriptions.all():
+            # if the entity is muted, we don't send them a message
+            if entity in self.mutelist:
+                continue
             try:
                 # note our addition of the from_channel keyword here. This could be checked
                 # by a custom player.msg() to treat channel-receives differently.
@@ -288,13 +334,13 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         Args:
             msg (str, optional): Prefix text
             emit (bool, optional): Switches to emit mode, which usually
-                means to ignore any sender information. Not used by default.
+                means to not prefix the channel's info.
 
         Returns:
             prefix (str): The created channel prefix.
 
         """
-        return '[%s] ' % self.key
+        return '' if emit else '[%s] ' % self.key
 
     def format_senders(self, senders=None):
         """

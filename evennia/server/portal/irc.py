@@ -313,7 +313,7 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
             reason (str): The reason for the failure.
 
         """
-        if not self.bot.stopping:
+        if not self.bot or (self.bot and self.bot.stopping):
             self.retry(connector)
 
     def start(self):

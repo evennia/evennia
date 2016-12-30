@@ -230,24 +230,6 @@ msgstr "Detta är användare #1."
 msgid "Limbo"
 msgstr "Limbo"
 
-#: server/portal/imc2.py:167
-#, python-format
-msgid "Whois reply from %(origin)s: %(msg)s"
-msgstr "Whois-svar från %(origin)s: %(msg)s"
-
-#: server/portal/imc2.py:175
-#, python-format
-msgid "{c%(sender)s@%(origin)s{n {wpages (over IMC):{n %(msg)s"
-msgstr "{c%(sender)s@%(origin)s{n {wskickar (over IMC):{n %(msg)s"
-
-#: server/portal/imc2.py:193
-msgid "IMC2 server rejected connection."
-msgstr "IMC2 server avvisade uppkopplingen."
-
-#: server/portal/imc2.py:201
-msgid "IMC2: Autosetup response found."
-msgstr "IMC2: Autosetup-svar hittat."
-
 #: server/sessionhandler.py:221
 msgid " ... Server restarted."
 msgstr "... Servern startades om."
@@ -373,28 +355,11 @@ msgstr "Timeout. Kopplar ur."
 #~ msgid " (exit to %s)"
 #~ msgstr "(utgång till %s)"
 
-#~ msgid "Send an IMC2 is-alive packet"
-#~ msgstr "Skicka ett IMC2-is-alive paket"
-
-#~ msgid "Send an IMC2 keepalive-request packet"
-#~ msgstr "Skicka ett IMC2 keepalive-request paket"
-
-#~ msgid "Check IMC2 list for inactive games"
-#~ msgstr "Genomsök IMC2-listan efter inaktiva spel"
-
-#~ msgid "Re-sync IMC2 network channel list"
-#~ msgstr "Återsynca nätverkslistan över IMC2 kanaler"
-
 #~ msgid "Successfully authenticated to the '%s' network."
 #~ msgstr "Identifierade sig framgångsrikt till nätverket '%s'."
 
 #~ msgid "Connection lost: %s"
 #~ msgstr "Uppkopplingen förlorades: %s"
-
-#~ msgid "Cannot attach IMC2<->Evennia: Evennia Channel '%s' not found"
-#~ msgstr ""
-#~ "Kan inte sammankoppla IMC2<->Evennia: Evennia-kanalen '%s' gick inte att "
-#~ "hitta."
 
 #~ msgid "joined %s."
 #~ msgstr "lyssnar till %s."

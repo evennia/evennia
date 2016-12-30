@@ -20,7 +20,7 @@ from mock import Mock
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
 from evennia.commands.default import help, general, system, admin, player, building, batchprocess, comms
-from evennia.utils import ansi
+from evennia.utils import ansi, utils
 from evennia.server.sessionhandler import SESSIONS
 
 
@@ -38,7 +38,7 @@ class CommandTest(EvenniaTest):
     Tests a command
     """
 
-    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None, receiver=None):
+    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None, receiver=None, cmdstring=None):
         """
         Test a command by assigning all the needed
         properties to cmdobj and  running
@@ -52,7 +52,7 @@ class CommandTest(EvenniaTest):
         caller = caller if caller else self.char1
         receiver = receiver if receiver else caller
         cmdobj.caller = caller
-        cmdobj.cmdstring = cmdobj.key
+        cmdobj.cmdstring = cmdstring if cmdstring else cmdobj.key
         cmdobj.args = args
         cmdobj.cmdset = cmdset
         cmdobj.session = SESSIONS.session_from_sessid(1)
@@ -67,8 +67,9 @@ class CommandTest(EvenniaTest):
             cmdobj.parse()
             cmdobj.func()
             cmdobj.at_post_cmd()
-            # clean out prettytable sugar
-            stored_msg = [args[0] if args else kwargs.get("text",kwargs) for name, args, kwargs in receiver.msg.mock_calls]
+            # clean out prettytable sugar. We only operate on text-type
+            stored_msg = [args[0] if args and args[0] else kwargs.get("text",utils.to_str(kwargs, force_string=True))
+                    for name, args, kwargs in receiver.msg.mock_calls]
             returned_msg = "||".join(_RE.sub("", mess) for mess in stored_msg)
             returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
             if msg is not None:
@@ -308,5 +309,5 @@ class TestBatchProcess(CommandTest):
     def test_batch_commands(self):
         # cannot test batchcode here, it must run inside the server process
         self.call(batchprocess.CmdBatchCommands(), "example_batch_cmds", "Running Batchcommand processor  Automatic mode for example_batch_cmds")
-        #self.call(batchprocess.CmdBatchCode(), "examples.batch_code", "")
-
+        # we make sure to delete the button again here to stop the running reactor
+        self.call(building.CmdDestroy(), "button", "button was destroyed.")

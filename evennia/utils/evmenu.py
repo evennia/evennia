@@ -42,7 +42,7 @@ command definition too) with function defintions:
         # code
         return text, options
 
-    def node_with_other_namen(caller, input_string):
+    def node_with_other_name(caller, input_string):
         # code
         return text, options
 ```
@@ -216,25 +216,43 @@ class CmdEvMenuNode(Command):
         """
         Implement all menu commands.
         """
-        caller = self.caller
-        menu = caller.ndb._menutree or self.session.ndb._menutree
-        if not menu:
-            # check if there is a saved menu available
+        def _restore(caller):
+            # check if there is a saved menu available.
+            # this will re-start a completely new evmenu call.
             saved_options = caller.attributes.get("_menutree_saved")
             if saved_options:
-                startnode = caller.attributes.get("_menutree_saved_startnode")
+                startnode_tuple = caller.attributes.get("_menutree_saved_startnode")
+                try:
+                    startnode, startnode_input = startnode_tuple
+                except ValueError: # old form of startnode stor
+                    startnode, startnode_input = startnode_tuple, ""
                 if startnode:
                     saved_options[1]["startnode"] = startnode
+                    saved_options[1]["startnode_input"] = startnode_input
                 # this will create a completely new menu call
                 EvMenu(caller, *saved_options[0], **saved_options[1])
+                return True
 
-                return
-
+        caller = self.caller
+        menu = caller.ndb._menutree
         if not menu:
-            err = "Menu object not found as %s.ndb._menutree!" % (caller)
-            caller.msg(err)
-            raise EvMenuError(err)
+            if _restore(caller):
+                return
+            orig_caller = caller
+            caller = caller.player if hasattr(caller, "player") else None
+            menu = caller.ndb._menutree if caller else None
+            if not menu:
+                if caller and _restore(caller):
+                    return
+                caller = self.session
+                menu = caller.ndb._menutree
+                if not menu:
+                    # can't restore from a session
+                    err = "Menu object not found as %s.ndb._menutree!" % (orig_caller)
+                    orig_caller.msg(err)
+                    raise EvMenuError(err)
 
+        # we have a menu, use it.
         menu._input_parser(menu, self.raw_string, caller)
 
 
@@ -296,10 +314,10 @@ def evtable_options_formatter(optionlist, caller=None):
         raw_key = strip_ansi(key)
         if raw_key != key:
             # already decorations in key definition
-            table.append(ANSIString(" |lc%s|lt%s|le: %s" % (raw_key, key, desc)))
+            table.append(" |lc%s|lt%s|le: %s" % (raw_key, key, desc))
         else:
             # add a default white color to key
-            table.append(ANSIString(" |lc%s|lt|w%s|n|le: %s" % (raw_key, raw_key, desc)))
+            table.append(" |lc%s|lt|w%s|n|le: %s" % (raw_key, raw_key, desc))
 
     ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
     nlastcol = nlist % ncols # number of elements left in last row
@@ -338,7 +356,7 @@ def underline_node_formatter(nodetext, optionstext, caller=None):
     total_width = max(options_width_max, nodetext_width_max)
     separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
     separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
-    return separator1 + nodetext + separator2 + optionstext
+    return separator1 + "|n" + nodetext + "|n" + separator2 + "|n" + optionstext
 
 
 def null_node_formatter(nodetext, optionstext, caller=None):
@@ -402,7 +420,7 @@ class EvMenu(object):
                  options_formatter=evtable_options_formatter,
                  node_formatter=underline_node_formatter,
                  input_parser=evtable_parse_input,
-                 persistent=False):
+                 persistent=False, startnode_input="", **kwargs):
         """
         Initialize the menu tree and start the caller onto the first node.
 
@@ -484,7 +502,17 @@ class EvMenu(object):
                 with caution - if your menu is buggy you may end up in a state
                 you can't get out of! Also note that persistent mode requires
                 that all formatters, menu nodes and callables are possible to
-                *pickle*.
+                *pickle*. When the server is reloaded, the latest node shown will be completely
+                re-run with the same input arguments - so be careful if you are counting
+                up some persistent counter or similar - the counter may be run twice if
+                reload happens on the node that does that.
+            startnode_input (str, optional): Send an input text to `startnode` as if
+                a user input text from a fictional previous node. When the server reloads,
+                the latest visited node will be re-run using this kwarg.
+
+        Kwargs:
+            any (any): All kwargs will become initialization variables on `caller._menutree`,
+                to be available at run.
 
         Raises:
             EvMenuError: If the start/end node is not found in menu tree.
@@ -526,6 +554,14 @@ class EvMenu(object):
         self.helptext = None
         self.options = None
 
+        # assign kwargs as initialization vars on ourselves.
+        if set(("_startnode", "_menutree", "_nodetext_formatter", "_options_formatter",
+                "node_formatter", "_input_parser", "_peristent", "cmd_on_exit", "default",
+                "nodetext", "helptext", "options")).intersection(set(kwargs.keys())):
+            raise RuntimeError("One or more of the EvMenu `**kwargs` is reserved by EvMenu for internal use.")
+        for key, val in kwargs.iteritems():
+            setattr(self, key, val)
+
         # store ourself on the object
         self.caller.ndb._menutree = self
 
@@ -542,7 +578,7 @@ class EvMenu(object):
                           "nodetext_formatter": nodetext_formatter, "options_formatter": options_formatter,
                           "node_formatter": node_formatter, "input_parser": input_parser,
                           "persistent": persistent,}))
-                caller.attributes.add("_menutree_saved_startnode", startnode)
+                caller.attributes.add("_menutree_saved_startnode", (startnode, startnode_input))
             except Exception as err:
                 caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
                 logger.log_trace(_TRACE_PERSISTENT_SAVING)
@@ -555,7 +591,7 @@ class EvMenu(object):
         self.caller.cmdset.add(menu_cmdset, permanent=persistent)
 
         # start the menu
-        self.goto(self._startnode, "")
+        self.goto(self._startnode, startnode_input)
 
     def _parse_menudata(self, menudata):
         """
@@ -712,7 +748,7 @@ class EvMenu(object):
             return
 
         if self._persistent:
-            self.caller.attributes.add("_menutree_saved_startnode", nodename)
+            self.caller.attributes.add("_menutree_saved_startnode", (nodename, raw_string))
 
         # validation of the node return values
         helptext = ""
@@ -739,10 +775,9 @@ class EvMenu(object):
                     goto, execute = dic.get("goto", None), dic.get("exec", None)
                     self.default = (goto, execute)
                 else:
-                    keys = list(make_iter(dic.get("key", str(inum+1).strip()))) + [str(inum+1)]
+                    keys = list(make_iter(dic.get("key", str(inum+1).strip())))
                     desc = dic.get("desc", dic.get("text", _ERR_NO_OPTION_DESC).strip())
                     goto, execute = dic.get("goto", None), dic.get("exec", None)
-
                 if keys:
                     display_options.append((keys[0], desc))
                     for key in keys:
@@ -791,8 +826,15 @@ class CmdGetInput(Command):
         "This is called when user enters anything."
         caller = self.caller
         callback = caller.ndb._getinputcallback
+        if not callback:
+            # this can be happen if called from a player-command when IC
+            caller = self.player
+            callback = caller.ndb._getinputcallback
+            if not callback:
+                raise RuntimeError("No input callback found.")
+
         prompt = caller.ndb._getinputprompt
-        result = self.raw_string
+        result = self.raw_string.strip() # we strip the ending line break caused by sending
 
         ok = not callback(caller, prompt, result)
         if ok:
@@ -842,6 +884,13 @@ def get_input(caller, prompt, callback):
     Raises:
         RuntimeError: If the given callback is not callable.
 
+    Notes:
+        The result value sent to the callback is raw and not
+        processed in any way. This means that you will get
+        the ending line return character from most types of
+        client inputs. So make sure to strip that before
+        doing a comparison.
+
     """
     if not callable(callback):
         raise RuntimeError("get_input: input callback is not callable.")
@@ -858,6 +907,7 @@ def get_input(caller, prompt, callback):
 #------------------------------------------------------------
 
 def test_start_node(caller):
+    menu = caller.ndb._menutree
     text = """
     This is an example menu.
 
@@ -866,7 +916,10 @@ def test_start_node(caller):
     input.
 
     Select options or use 'quit' to exit the menu.
-    """
+
+    The menu was initialized with two variables: %s and %s.
+    """ % (menu.testval, menu.testval2)
+
     options = ({"key": ("{yS{net", "s"),
                 "desc": "Set an attribute on yourself.",
                 "exec": lambda caller: caller.attributes.add("menuattrtest", "Test value"),
@@ -978,4 +1031,5 @@ class CmdTestMenu(Command):
             self.caller.msg("Usage: testmenu menumodule")
             return
         # start menu
-        EvMenu(self.caller, self.args.strip(), startnode="test_start_node", persistent=True, cmdset_mergetype="Replace")
+        EvMenu(self.caller, self.args.strip(), startnode="test_start_node", persistent=True, cmdset_mergetype="Replace",
+                testval="val", testval2="val2")

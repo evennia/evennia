@@ -351,52 +351,51 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
             self._contains_cache[othercmd] = ret
         return ret
 
-    def __add__(self, cmdset_b):
+    def __add__(self, cmdset_a):
         """
-        Merge this cmdset (A) with another cmdset (B) using the + operator,
+        Merge this cmdset (B) with another cmdset (A) using the + operator,
 
-        C = A + B
+        C = B + A
 
         Here, we (by convention) say that 'A is merged onto B to form
         C'.  The actual merge operation used in the 'addition' depends
         on which priorities A and B have. The one of the two with the
         highest priority will apply and give its properties to C. In
-        the case of a tie, A takes priority and replaces the
+        the case of a tie, A  takes priority and replaces the
         same-named commands in B unless A has the 'duplicate' variable
         set (which means both sets' commands are kept).
         """
 
         # It's okay to merge with None
-        if not cmdset_b:
+        if not cmdset_a:
             return self
 
-        sys_commands_a = self.get_system_cmds()
-        sys_commands_b = cmdset_b.get_system_cmds()
+        sys_commands_a = cmdset_a.get_system_cmds()
+        sys_commands_b = self.get_system_cmds()
 
-        if self.priority >= cmdset_b.priority:
-            # A higher or equal priority than B
+        if self.priority <= cmdset_a.priority:
+            # A higher or equal priority to B
 
             # preserve system __commands
             sys_commands = sys_commands_a + [cmd for cmd in sys_commands_b
                                              if cmd not in sys_commands_a]
 
-            mergetype = self.key_mergetypes.get(cmdset_b.key, self.mergetype)
+            mergetype = cmdset_a.key_mergetypes.get(self.key, cmdset_a.mergetype)
             if mergetype == "Intersect":
-                cmdset_c = self._intersect(self, cmdset_b)
+                cmdset_c = self._intersect(cmdset_a, self)
             elif mergetype == "Replace":
-                cmdset_c = self._replace(self, cmdset_b)
+                cmdset_c = self._replace(cmdset_a, self)
             elif mergetype == "Remove":
-                cmdset_c = self._remove(self, cmdset_b)
-            else: # Union
-                cmdset_c = self._union(self, cmdset_b)
-            # update or pass-through
-            cmdset_c.no_channels = cmdset_b.no_channels if self.no_channels is None else self.no_channels
-            cmdset_c.no_exits = cmdset_b.no_exits if self.no_exits is None else self.no_exits
-            cmdset_c.no_objs = cmdset_b.no_objs if self.no_objs is None else self.no_objs
-            cmdset_c.duplicates = cmdset_b.duplicates if self.duplicates is None else self.duplicates
-            if self.key.startswith("_"):
-                # don't rename new output if the merge set's name starts with _
-                cmdset_c.key = cmdset_b.key
+                cmdset_c = self._remove(cmdset_a, self)
+            else:  # Union
+                cmdset_c = self._union(cmdset_a, self)
+
+            # pass through options whenever they are set, unless the merging or higher-prio
+            # set changes the setting (i.e. has a non-None value). We don't pass through
+            # the duplicates setting; that is per-merge
+            cmdset_c.no_channels = self.no_channels if cmdset_a.no_channels is None else cmdset_a.no_channels
+            cmdset_c.no_exits = self.no_exits if cmdset_a.no_exits is None else cmdset_a.no_exits
+            cmdset_c.no_objs = self.no_objs if cmdset_a.no_objs is None else cmdset_a.no_objs
 
         else:
             # B higher priority than A
@@ -405,31 +404,29 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
             sys_commands = sys_commands_b + [cmd for cmd in sys_commands_a
                                              if cmd not in sys_commands_b]
 
-            mergetype = cmdset_b.key_mergetypes.get(self.key, cmdset_b.mergetype)
+            mergetype = self.key_mergetypes.get(cmdset_a.key, self.mergetype)
             if mergetype == "Intersect":
-                cmdset_c = self._intersect(cmdset_b, self)
+                cmdset_c = self._intersect(self, cmdset_a)
             elif mergetype == "Replace":
-                cmdset_c = self._replace(cmdset_b, self)
+                cmdset_c = self._replace(self, cmdset_a)
             elif mergetype == "Remove":
-                cmdset_c = self._remove(cmdset_b, self)
-            else:  # Union
-                cmdset_c = self._union(cmdset_b, self)
-            cmdset_c.no_channels = cmdset_b.no_channels
-            cmdset_c.no_exits = cmdset_b.no_exits
-            cmdset_c.no_objs = cmdset_b.no_objs
-            # update or pass-through
-            cmdset_c.no_channels = self.no_channels if self.no_channels is None else cmdset_b.no_channels
-            cmdset_c.no_exits = self.no_exits if self.no_exits is None else cmdset_b.no_exits
-            cmdset_c.no_objs = self.no_objs if self.no_objs is None else cmdset_b.no_objs
-            cmdset_c.duplicates = self.duplicates if self.duplicates is None else cmdset_b.duplicates
-            if cmdset_b.key.startswith("_"):
-                # don't rename new output if the merge set's name starts with _
-                cmdset_c.key = self.key
+                cmdset_c = self._remove(self, cmdset_a)
+            else: # Union
+                cmdset_c = self._union(self, cmdset_a)
+
+            # pass through options whenever they are set, unless the higher-prio
+            # set changes the setting (i.e. has a non-None value). We don't pass through
+            # the duplicates setting; that is per-merge
+            cmdset_c.no_channels = cmdset_a.no_channels if self.no_channels is None else self.no_channels
+            cmdset_c.no_exits = cmdset_a.no_exits if self.no_exits is None else self.no_exits
+            cmdset_c.no_objs = cmdset_a.no_objs if self.no_objs is None else self.no_objs
 
         # we store actual_mergetype since key_mergetypes
         # might be different from the main mergetype.
         # This is used for diagnosis.
         cmdset_c.actual_mergetype = mergetype
+
+        #print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority, cmdset_a.key, cmdset_a.priority)
 
         # return the system commands to the cmdset
         cmdset_c.add(sys_commands)

@@ -17,10 +17,9 @@ using something like this:
 
 Installation:
 
-To make all new exits of this type, add the following line to your
-settings:
-
-BASE_EXIT_TYPECLASS = "contrib.slow_exit.SlowExit"
+To make this your new default exit, modify mygame/typeclasses/exits.py
+to import this module and change the default Exit class to inherit
+from SlowExit instead.
 
 To get the ability to change your speed and abort your movement,
 simply import and add CmdSetSpeed and CmdStop from this module to your
@@ -107,7 +106,7 @@ class CmdSetSpeed(Command):
         """
         speed = self.args.lower().strip()
         if speed not in SPEED_DESCS:
-            self.caller.msg("Usage: setspeed stroll|walk|run|sprint")
+            self.caller.msg("Usage: setspeed stroll||walk||run||sprint")
         elif self.caller.db.move_speed == speed:
             self.caller.msg("You are already %s." % SPEED_DESCS[speed])
         else:

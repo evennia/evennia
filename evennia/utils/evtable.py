@@ -475,7 +475,8 @@ class EvCell(object):
         Apply all EvCells' formatting operations.
 
         """
-        return self._border(self._pad(self._valign(self._align(self._fit_width(self.data)))))
+        data = self._border(self._pad(self._valign(self._align(self._fit_width(self.data)))))
+        return data
 
     def _split_lines(self, text):
         """
@@ -560,7 +561,9 @@ class EvCell(object):
 
     def _align(self, data):
         """
-        Align list of rows of cell.
+        Align list of rows of cell. Whitespace characters will be stripped
+        if there is only one whitespace character - otherwise, it's assumed
+        the caller may be trying some manual formatting in the text.
 
         Args:
             data (str): Text to align.
@@ -573,9 +576,10 @@ class EvCell(object):
         hfill_char = self.hfill_char
         width = self.width
         if align == "l":
-            return [line + hfill_char * (width - m_len(line)) for line in data]
+            lines= [(line.lstrip(" ") + " " if line.startswith(" ") and not line.startswith("  ") else line) + hfill_char * (width - m_len(line)) for line in data]
+            return lines
         elif align == "r":
-            return [hfill_char * (width - m_len(line)) + line for line in data]
+            return [hfill_char * (width - m_len(line)) + (" " + line.rstrip(" ") if line.endswith(" ") and not line.endswith("  ") else line) for line in data]
         else: # center, 'c'
             return [self._center(line, self.width, self.hfill_char) for line in data]
 
@@ -810,7 +814,7 @@ class EvCell(object):
 
     def __repr__(self):
         self.formatted = self._reformat()
-        return unicode(ANSIString("EvCel<%s>" % self.formatted))
+        return unicode(ANSIString("<EvCel %s>" % self.formatted))
 
     def __str__(self):
         "returns cell contents on string form"
@@ -924,7 +928,7 @@ class EvColumn(object):
         self.column[index].reformat(**kwargs)
 
     def __repr__(self):
-        return "EvColumn<%i cels>" % len(self.column)
+        return "<EvColumn\n  %s>" % ("\n  ".join([repr(cell) for cell in self.column]))
     def __len__(self):
         return len(self.column)
     def __iter__(self):

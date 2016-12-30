@@ -76,7 +76,6 @@ GUEST_ENABLED = settings.GUEST_ENABLED
 
 # server-channel mappings
 WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER_INTERFACES
-IMC2_ENABLED = settings.IMC2_ENABLED
 IRC_ENABLED = settings.IRC_ENABLED
 RSS_ENABLED = settings.RSS_ENABLED
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
@@ -506,7 +505,7 @@ if WEBSERVER_ENABLED:
     # Start a django-compatible webserver.
 
     from twisted.python import threadpool
-    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, NonLoggingSite
+    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, Website
 
     # start a thread pool and define the root url (/) as a wsgi resource
     # recognized by Django
@@ -522,7 +521,7 @@ if WEBSERVER_ENABLED:
         # custom overloads
         web_root = WEB_PLUGINS_MODULE.at_webserver_root_creation(web_root)
 
-    web_site = NonLoggingSite(web_root, logPath=settings.HTTP_LOG_FILE)
+    web_site = Website(web_root, logPath=settings.HTTP_LOG_FILE)
 
     for proxyport, serverport in WEBSERVER_PORTS:
         # create the webserver (we only need the port for this)
@@ -536,10 +535,6 @@ ENABLED = []
 if IRC_ENABLED:
     # IRC channel connections
     ENABLED.append('irc')
-
-if IMC2_ENABLED:
-    # IMC2 channel connections
-    ENABLED.append('imc2')
 
 if RSS_ENABLED:
     # RSS feed channel connections

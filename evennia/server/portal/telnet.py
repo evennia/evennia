@@ -9,17 +9,19 @@ sessions etc.
 
 import re
 from twisted.internet.task import LoopingCall
-from twisted.conch.telnet import Telnet, StatefulTelnetProtocol, IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO, NULL
+from twisted.conch.telnet import Telnet, StatefulTelnetProtocol
+from twisted.conch.telnet import IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO, NULL
 from django.conf import settings
 from evennia.server.session import Session
 from evennia.server.portal import ttype, mssp, telnet_oob, naws
 from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
-from evennia.utils import ansi, logger
+from evennia.utils import ansi
 from evennia.utils.utils import to_str
 
 _RE_N = re.compile(r"\{n$")
 _RE_LEND = re.compile(r"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
+_RE_LINEBREAK = re.compile(r"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 _IDLE_COMMAND = settings.IDLE_COMMAND + "\n"
 
@@ -39,9 +41,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         """
         # initialize the session
-        self.line_buffer = []
-        self.iaw_mode = False
-        self.no_lb_mode = False
+        self.line_buffer = ""
         client_address = self.transport.client
         client_address = client_address[0] if client_address else None
         # this number is counted down for every handshake that completes.
@@ -68,7 +68,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         # timeout the handshakes in case the client doesn't reply at all
         from evennia.utils.utils import delay
-        delay(2, callback=self.handshake_done, retval=True)
+        delay(2, callback=self.handshake_done, force=True)
 
         # TCP/IP keepalive watches for dead links
         self.transport.setTcpKeepAlive(1)
@@ -171,71 +171,42 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.sessionhandler.disconnect(self)
         self.transport.loseConnection()
 
-    def dataReceived(self, data):
+    def applicationDataReceived(self, data):
         """
-        Handle incoming data over the wire.
-
-        This method will split the incoming data depending on if it
-        starts with IAC (a telnet command) or not. All other data will
-        be handled in line mode. Some clients also sends an erroneous
-        line break after IAC, which we must watch out for.
+        Telnet method called when non-telnet-command data is coming in
+        over the telnet connection. We pass it on to the game engine
+        directly.
 
         Args:
-            data (str): Incoming data.
-
-        Notes:
-            OOB protocols (MSDP etc) already intercept subnegotiations on
-            their own, never entering this method. They will relay their
-            parsed data directly to self.data_in.
+            string (str): Incoming data.
 
         """
-        if data and data[0] == IAC or self.iaw_mode:
-            try:
-                super(TelnetProtocol, self).dataReceived(data)
-                if len(data) == 1:
-                    self.iaw_mode = True
-                else:
-                    self.iaw_mode = False
-                return
-            except Exception as err1:
-                conv = ""
-                try:
-                    for b in data:
-                        conv += " " + repr(ord(b))
-                except Exception as err2:
-                    conv = str(err2) + ":", str(data)
-                out = "Telnet Error (%s): %s (%s)" % (err1, data, conv)
-                logger.log_trace(out)
-                return
-
-        if data and data.strip() == NULL:
-            # This is an ancient type of keepalive still used by some
-            # legacy clients. There should never be a reason to send
-            # a lone NULL character so this seems ok to support for
-            # backwards compatibility.
-            data = _IDLE_COMMAND
-
-        if self.no_lb_mode and _RE_LEND.search(data):
-            # we are in no_lb_mode and receive a line break;
-            # this means we should empty the buffer and send
-            # the command.
-            data = "".join(self.line_buffer) + data
-            data = data.rstrip("\r\n") + "\n"
-            self.line_buffer = []
-            self.no_lb_mode = False
-        elif not _RE_LEND.search(data):
-            # no line break at the end of the command, buffer instead.
-            self.line_buffer.append(data)
-            self.no_lb_mode = True
-            return
-
-        # if we get to this point the command should end with a linebreak.
-        StatefulTelnetProtocol.dataReceived(self, data)
+        if not data:
+            data = [data]
+        elif data.strip() == NULL:
+            # this is an ancient type of keepalive used by some
+            # legacy clients. There should never be a reason to send a
+            # lone NULL character so this seems to be a safe thing to
+            # support for backwards compatibility. It also stops the
+            # NULL from continously popping up as an unknown command.
+            data = [_IDLE_COMMAND]
+        else:
+            data = _RE_LINEBREAK.split(data)
+            if self.line_buffer and len(data) > 1:
+                # buffer exists, it is terminated by the first line feed
+                data[0] = self.line_buffer + data[0]
+                self.line_buffer = ""
+            # if the last data split is empty, it means all splits have
+            # line breaks, if not, it is unterminated and must be
+            # buffered.
+            self.line_buffer += data.pop()
+        # send all data chunks
+        for dat in data:
+            self.data_in(text=dat + "\n")
 
     def _write(self, data):
         "hook overloading the one used in plain telnet"
         data = data.replace('\n', '\r\n').replace('\r\r\n', '\r\n')
-        #data = data.replace('\n', '\r\n')
         super(TelnetProtocol, self)._write(mccp_compress(self, data))
 
     def sendLine(self, line):
@@ -251,16 +222,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         line = line.replace(IAC, IAC + IAC).replace('\n', '\r\n')
         return self.transport.write(mccp_compress(self, line))
 
-    def lineReceived(self, string):
-        """
-        Telnet method called when data is coming in over the telnet
-        connection. We pass it on to the game engine directly.
-
-        Args:
-            string (str): Incoming data.
-
-        """
-        self.data_in(text=string)
 
     # Session hooks
 

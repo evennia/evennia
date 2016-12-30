@@ -6,6 +6,7 @@ This defines how Comm models are displayed in the web admin interface.
 from django.contrib import admin
 from evennia.comms.models import ChannelDB
 from evennia.typeclasses.admin import AttributeInline, TagInline
+from django.conf import settings
 
 
 class ChannelAttributeInline(AttributeInline):
@@ -14,6 +15,7 @@ class ChannelAttributeInline(AttributeInline):
 
     """
     model = ChannelDB.db_attributes.through
+    related_field = "channeldb"
 
 
 class ChannelTagInline(TagInline):
@@ -22,6 +24,7 @@ class ChannelTagInline(TagInline):
 
     """
     model = ChannelDB.db_tags.through
+    related_field = "channeldb"
 
 
 class MsgAdmin(admin.ModelAdmin):
@@ -29,12 +32,12 @@ class MsgAdmin(admin.ModelAdmin):
     Defines display for Msg objects
 
     """
-    list_display = ('id', 'db_date_sent', 'db_sender', 'db_receivers',
+    list_display = ('id', 'db_date_created', 'db_sender', 'db_receivers',
                     'db_channels', 'db_message', 'db_lock_storage')
     list_display_links = ("id",)
-    ordering = ["db_date_sent", 'db_sender', 'db_receivers', 'db_channels']
+    ordering = ["db_date_created", 'db_sender', 'db_receivers', 'db_channels']
     #readonly_fields = ['db_message', 'db_sender', 'db_receivers', 'db_channels']
-    search_fields = ['id', '^db_date_sent', '^db_message']
+    search_fields = ['id', '^db_date_created', '^db_message']
     save_as = True
     save_on_top = True
     list_select_related = True
@@ -67,5 +70,31 @@ class ChannelAdmin(admin.ModelAdmin):
 
         """
         return ", ".join([str(sub) for sub in obj.db_subscriptions.all()])
+
+    def save_model(self, request, obj, form, change):
+        """
+        Model-save hook.
+
+        Args:
+            request (Request): Incoming request.
+            obj (Object): Database object.
+            form (Form): Form instance.
+            change (bool): If this is a change or a new object.
+
+        """
+        obj.save()
+        if not change:
+            # adding a new object
+            # have to call init with typeclass passed to it
+            obj.set_class_from_typeclass(typeclass_path=settings.BASE_CHANNEL_TYPECLASS)
+        obj.at_init()
+
+    def response_add(self, request, obj, post_url_continue=None):
+        if '_continue' in request.POST:
+            from django.http import HttpResponseRedirect
+            from django.core.urlresolvers import reverse
+            return HttpResponseRedirect(reverse("admin:comms_channeldb_change", args=[obj.id]))
+        return super(ChannelAdmin, self).response_add(request, obj, post_url_continue)
+
 
 admin.site.register(ChannelDB, ChannelAdmin)

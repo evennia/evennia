@@ -174,6 +174,57 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         self.msg("Created new character %s. Use {w@ic %s{n to enter the game as this character." % (new_character.key, new_character.key))
 
 
+class CmdCharDelete(COMMAND_DEFAULT_CLASS):
+    """
+    delete a character - this cannot be undone!
+
+    Usage:
+        @chardelete <charname>
+
+    Permanently deletes one of your characters.
+    """
+    key = "@chardelete"
+    locks = "cmd:pperm(Players)"
+    help_category = "General"
+
+    def func(self):
+        "delete the character"
+        player = self.player
+
+        if not self.args:
+            self.msg("Usage: @chardelete <charactername>")
+            return
+
+        # use the playable_characters list to search
+        match = [char for char in utils.make_iter(player.db._playable_characters) if char.key.lower() == self.args.lower()]
+        if not match:
+            self.msg("You have no such character to delete.")
+            return
+        elif len(match) > 1:
+            self.msg("Aborting - there are two characters with the same name. Ask an admin to delete the right one.")
+            return
+        else: # one match
+            from evennia.utils.evmenu import get_input
+
+            def _callback(caller, prompt, result):
+                if result.lower() == "yes":
+                    # only take action
+                    delobj = caller.ndb._char_to_delete
+                    key = delobj.key
+                    caller.db._playable_characters = [char for char
+                                                        in caller.db._playable_characters if char != delobj]
+                    delobj.delete()
+                    self.msg("Character '%s' was permanently deleted." % key)
+                else:
+                    self.msg("Deletion was aborted.")
+                del caller.ndb._char_to_delete
+
+            match = match[0]
+            player.ndb._char_to_delete = match
+            prompt = "|rThis will permanently destroy '%s'. This cannot be undone.|n Continue yes/[no]?"
+            get_input(player, prompt % match.key, _callback)
+
+
 class CmdIC(COMMAND_DEFAULT_CLASS):
     """
     control an object you have permission to puppet
@@ -221,7 +272,7 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
                 self.msg("That is not a valid character choice.")
                 return
             if len(new_character) > 1:
-                self.msg("Multiple characters with the same name:\n %s" % ", ".join(new_character))
+                self.msg("Multiple targets with the same name:\n %s" % ", ".join("%s(#%s)" % (obj.key, obj.id) for obj in new_character))
                 return
             else:
                 new_character = new_character[0]
@@ -371,7 +422,7 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                 delta_conn = time.time() - session.conn_time
                 player = session.get_player()
                 puppet = session.get_puppet()
-                location = puppet.location.key if puppet else "None"
+                location = puppet.location.key if puppet and puppet.location else "None"
                 table.add_row([utils.crop(player.name, width=25),
                                utils.time_format(delta_conn, 0),
                                utils.time_format(delta_cmd, 1),
@@ -530,7 +581,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
         if val and name in validators:
             optiondict = update(name,  val, validators[name])
         else:
-            self.session.msg("|rNo option named '|w%s|r'." % name)
+            self.msg("|rNo option named '|w%s|r'." % name)
         if optiondict:
             # a valid setting
             if "save" in self.switches:
@@ -629,7 +680,7 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     testing which colors your client support
 
     Usage:
-      @color ansi|xterm256
+      @color ansi||xterm256
 
     Prints a color map along with in-mud color codes to use to produce
     them.  It also tests what is supported in your client. Choices are
@@ -673,14 +724,16 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
             col1 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[48:56]]
             col2 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[56:64]]
             col3 = ["%s%s|n" % (code.replace("\\",""), code.replace("|", "||").replace("\\", "")) for code, _ in ap.ext_ansi_map[-8:]]
+            col4 = ["%s%s|n" % (code.replace("\\",""), code.replace("|", "||").replace("\\", "")) for code, _ in ap.ansi_bright_bgs[-8:]]
             col2.extend(["" for i in range(len(col1)-len(col2))])
-            table = utils.format_table([col1, col2, col3])
+            table = utils.format_table([col1, col2, col4, col3])
             string = "ANSI colors:"
             for row in table:
                 string += "\n " + " ".join(row)
             self.msg(string)
-            self.msg("||X : black. ||/ : return, ||- : tab, ||_ : space, ||* : invert, ||u : underline")
-            self.msg("To combine background and foreground, add background marker last, e.g. ||r||[B.")
+            self.msg("||X : black. ||/ : return, ||- : tab, ||_ : space, ||* : invert, ||u : underline\n"
+                     "To combine background and foreground, add background marker last, e.g. ||r||[B.\n"
+                     "Note: bright backgrounds like ||[r requires your client handling Xterm256 colors.")
 
         elif self.args.startswith("x"):
             # show xterm256 table

@@ -165,24 +165,24 @@ class TradeHandler(object):
         self.partA_accepted = False
         self.partB_accepted = False
 
-    def msg(self, party, string):
+    def msg_other(self, sender, string):
         """
-        Relay a message to the other party. This allows the calling
-        command to not have to worry about which party they are in the
-        handler.
+        Relay a message to the *other* party without needing to know
+        which party that is. This allows the calling command to not
+        have to worry about which party they are in the handler.
 
         Args:
-            party (object): One of partA or B. The method will figure
-                out which is which.
+            sender (object): One of partA or B. The method will figure
+                out the *other* party to send to.
             string (str): Text to send.
         """
-        if self.partA == party:
+        if self.partA == sender:
             self.partB.msg(string)
-        elif self.partB == party:
+        elif self.partB == sender:
             self.partA.msg(string)
         else:
             # no match, relay to oneself
-            self.party.msg(string)
+            sender.msg(string) if sender else self.partA.msg(string)
 
     def get_other(self, party):
         """
@@ -225,7 +225,7 @@ class TradeHandler(object):
 
         """
         if self.partB == partB:
-            self.finish()
+            self.finish(force=True)
             return True
         return False
 
@@ -285,7 +285,7 @@ class TradeHandler(object):
             return all_offers[imatch]
         except ValueError:
             for offer in all_offers:
-                if offername in offer.aliases:
+                if offer.aliases.get(offername):
                     return offer
         return None
 
@@ -370,6 +370,7 @@ class TradeHandler(object):
             self.partB.cmdset.delete("cmdset_trade")
             self.partA_offers = None
             self.partB_offers = None
+            self.partA.scripts.stop("trade_request_timeout")
             # this will kill it also from partB
             del self.partA.ndb.tradehandler
             if self.partB.ndb.tradehandler:
@@ -396,7 +397,7 @@ class CmdTradeBase(Command):
         self.partB = self.tradehandler.partB
 
         self.other = self.tradehandler.get_other(self.caller)
-        self.msg_other = self.tradehandler.msg
+        self.msg_other = self.tradehandler.msg_other
 
         self.trade_started = self.tradehandler.trade_started
         self.emote = ""

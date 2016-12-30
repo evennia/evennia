@@ -91,7 +91,7 @@ class PlayerDB(TypedObject, AbstractUser):
     db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True,
         help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_CHARACTER.")
     # marks if this is a "virtual" bot player object
-    db_is_bot = models.BooleanField(default=False, verbose_name="is_bot", help_text="Used to identify irc/imc2/rss bots")
+    db_is_bot = models.BooleanField(default=False, verbose_name="is_bot", help_text="Used to identify irc/rss bots")
 
     # Database manager
     objects = PlayerDBManager()

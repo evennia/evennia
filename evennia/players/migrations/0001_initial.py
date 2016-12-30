@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('db_lock_storage', models.TextField(help_text=b"locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.", verbose_name=b'locks', blank=True)),
                 ('db_is_connected', models.BooleanField(default=False, help_text=b'If player is connected to game or not', verbose_name=b'is_connected')),
                 ('db_cmdset_storage', models.CharField(help_text=b'optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_CHARACTER.', max_length=255, null=True, verbose_name=b'cmdset')),
-                ('db_is_bot', models.BooleanField(default=False, help_text=b'Used to identify irc/imc2/rss bots', verbose_name=b'is_bot')),
+                ('db_is_bot', models.BooleanField(default=False, help_text=b'Used to identify irc/rss bots', verbose_name=b'is_bot')),
                 ('db_attributes', models.ManyToManyField(help_text=b'attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).', to='typeclasses.Attribute', null=True)),
                 ('db_tags', models.ManyToManyField(help_text=b'tags on this object. Tags are simple string markers to identify, group and alias objects.', to='typeclasses.Tag', null=True)),
                 ('groups', models.ManyToManyField(related_query_name='user', related_name='user_set', to='auth.Group', blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of his/her group.', verbose_name='groups')),

@@ -87,7 +87,7 @@ def _portal_maintenance():
     reason = "Idle timeout exceeded, disconnecting."
     for session in [sess for sess in PORTAL_SESSIONS.values()
                     if (now - sess.cmd_last) > _IDLE_TIMEOUT]:
-        session.data_out(text=[[reason], {}])
+        session.disconnect(reason=reason)
         PORTAL_SESSIONS.disconnect(session)
 
 if _IDLE_TIMEOUT > 0:
@@ -168,8 +168,7 @@ class Portal(object):
             # we get here due to us calling reactor.stop below. No need
             # to do the shutdown procedure again.
             return
-        for session in self.sessions.itervalues():
-            session.disconnect()
+        self.sessions.disconnect_all()
         self.set_restart_mode(restart)
         if os.name == 'nt' and os.path.exists(PORTAL_PIDFILE):
             # for Windows we need to remove pid files manually
@@ -231,6 +230,7 @@ if TELNET_ENABLED:
         for port in TELNET_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
             factory = protocol.ServerFactory()
+            factory.noisy = False
             factory.protocol = telnet.TelnetProtocol
             factory.sessionhandler = PORTAL_SESSIONS
             telnet_service = internet.TCPServer(port, factory, interface=interface)
@@ -253,6 +253,7 @@ if SSL_ENABLED:
         for port in SSL_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
             factory = protocol.ServerFactory()
+            factory.noisy = False
             factory.sessionhandler = PORTAL_SESSIONS
             factory.protocol = ssl.SSLProtocol
             ssl_service = internet.SSLServer(port,
@@ -281,6 +282,7 @@ if SSH_ENABLED:
             factory = ssh.makeFactory({'protocolFactory': ssh.SshProtocol,
                                        'protocolArgs': (),
                                        'sessions': PORTAL_SESSIONS})
+            factory.noisy = False
             ssh_service = internet.TCPServer(port, factory, interface=interface)
             ssh_service.setName('EvenniaSSH%s' % pstring)
             PORTAL.services.addService(ssh_service)
@@ -323,6 +325,7 @@ if WEBSERVER_ENABLED:
                         ifacestr = "-%s" % interface
                     pstring = "%s:%s" % (ifacestr, port)
                     factory = protocol.ServerFactory()
+                    factory.noisy = False
                     factory.protocol = webclient.WebSocketClient
                     factory.sessionhandler = PORTAL_SESSIONS
                     websocket_service = internet.TCPServer(port, WebSocketFactory(factory), interface=interface)
@@ -347,6 +350,7 @@ for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
 print('-' * 50)  # end of terminal output
 
 if os.name == 'nt':
+    factory.noisy = False
     # Windows only: Set PID file manually
     with open(PORTAL_PIDFILE, 'w') as f:
         f.write(str(os.getpid()))

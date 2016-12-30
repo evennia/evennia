@@ -978,7 +978,7 @@ WEAPON_PROTOTYPES = {
         "damage": 10},
     "hawkblade": {
         "prototype": "ghostblade",
-        "key": "The Hawblade",
+        "key": "The Hawkblade",
         "aliases": ["hawk", "blade"],
         "desc": "The weapon of a long-dead heroine and a more civilized age, the hawk-shaped hilt of this blade almost has a life of its own.",
         "hit": 0.85,

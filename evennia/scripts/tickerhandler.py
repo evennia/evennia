@@ -18,8 +18,15 @@ Example:
     TICKER_HANDLER.add(15, myobj.at_tick, *args, **kwargs)
 ```
 
-You supply the interval to tick and a callable to call regularly
-with any extra args/kwargs. The handler will transparently set
+You supply the interval to tick and a callable to call regularly with
+any extra args/kwargs. The callable should either be a stand-alone
+function in a module *or* the method on a *typeclassed* entity (that
+is, on an object that can be safely and stably returned from the
+database).  Functions that are dynamically created or sits on
+in-memory objects cannot be used by the tickerhandler (there is no way
+to reference them safely across reboots and saves).
+
+The handler will transparently set
 up and add new timers behind the scenes to tick at given intervals,
 using a TickerPool - all callables with the same interval will share
 the interval ticker.
@@ -187,7 +194,7 @@ class Ticker(object):
         if self._is_ticking:
             # protects the subscription dict from
             # updating while it is looping
-            self._to_start.append((store_key, (args, kwargs)))
+            self._to_add.append((store_key, (args, kwargs)))
         else:
             start_delay = kwargs.pop("_start_delay", None)
             self.subscriptions[store_key] = (args, kwargs)
@@ -470,7 +477,8 @@ class TickerHandler(object):
                 a server reload. If this is unset, the ticker will be
                 deleted by a server shutdown.
             args, kwargs (optional): These will be passed into the
-                callback every time it is called.
+                callback every time it is called. This must be data possible
+                to pickle!
 
         Notes:
             The callback will be identified by type and stored either as

@@ -16,6 +16,10 @@ try:
 except AttributeError:
     GAME_NAME = "Evennia"
 SERVER_VERSION = get_evennia_version()
+try:
+    GAME_SLOGAN = settings.GAME_SLOGAN.strip()
+except AttributeError:
+    GAME_SLOGAN = SERVER_VERSION
 
 
 # Setup lists of the most relevant apps so
@@ -24,7 +28,7 @@ SERVER_VERSION = get_evennia_version()
 PLAYER_RELATED = ['Players']
 GAME_ENTITIES = ['Objects', 'Scripts', 'Comms', 'Help']
 GAME_SETUP = ['Permissions', 'Config']
-CONNECTIONS = ['Irc', 'Imc2']
+CONNECTIONS = ['Irc']
 WEBSITE = ['Flatpages', 'News', 'Sites']
 
 
@@ -41,7 +45,7 @@ def general_context(request):
     """
     return {
         'game_name': GAME_NAME,
-        'game_slogan': SERVER_VERSION,
+        'game_slogan': GAME_SLOGAN,
         'evennia_userapps': PLAYER_RELATED,
         'evennia_entityapps': GAME_ENTITIES,
         'evennia_setupapps': GAME_SETUP,

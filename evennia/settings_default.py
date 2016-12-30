@@ -201,11 +201,18 @@ MAX_CONNECTION_RATE = 2
 MAX_COMMAND_RATE = 80
 # The warning to echo back to users if they send commands too fast
 COMMAND_RATE_WARNING ="You entered commands too fast. Wait a moment and try again."
+# Determine how large of a string can be sent to the server in number
+# of characters. If they attempt to enter a string over this character
+# limit, we stop them and send a message. To make unlimited, set to
+# 0 or less.
+MAX_CHAR_LIMIT = 6000
+# The warning to echo back to users if they enter a very large string
+MAX_CHAR_LIMIT_WARNING="You entered a string that was too long. Please break it up into multiple parts."
 # If this is true, errors and tracebacks from the engine will be
 # echoed as text in-game as well as to the log. This can speed up
-# debugging. Showing full tracebacks to regular users could be a
-# security problem - this should *not* be active in a production game!
-IN_GAME_ERRORS = False
+# debugging. OBS: Showing full tracebacks to regular users could be a
+# security problem -turn this off in a production game!
+IN_GAME_ERRORS = True
 
 ######################################################################
 # Evennia Database config
@@ -249,13 +256,26 @@ CONN_MAX_AGE = 3600 * 7
 COMMAND_PARSER = "evennia.commands.cmdparser.cmdparser"
 # On a multi-match when search objects or commands, the user has the
 # ability to search again with an index marker that differentiates
-# the results. If multiple "box" objects are found, they can by
-# default use 1-box, 2-box etc to refine the search. Below you
-# can change the index separator character used.
-SEARCH_MULTIMATCH_SEPARATOR = '-'
+# the results. If multiple "box" objects
+# are found, they can by default be separated as 1-box, 2-box. Below you
+# can change the regular expression used. The regex must have one
+# have two capturing groups (?P<number>...) and (?P<name>...) - the default
+# parser expects this. It should also involve a number starting from 1.
+# When changing this you must also update SEARCH_MULTIMATCH_TEMPLATE
+# to properly describe the syntax.
+SEARCH_MULTIMATCH_REGEX = r"(?P<number>[0-9]+)-(?P<name>.*)"
+# To display multimatch errors in various listings we must display
+# the syntax in a way that matches what SEARCH_MULTIMATCH_REGEX understand.
+# The template will be populated with data and expects the following markup:
+# {number} - the order of the multimatch, starting from 1; {name} - the
+# name (key) of the multimatched entity; {aliases} - eventual
+# aliases for the entity; {info} - extra info like #dbrefs for staff. Don't
+# forget a line break if you want one match per line.
+SEARCH_MULTIMATCH_TEMPLATE = " {number}-{name}{aliases}{info}\n"
 # The handler that outputs errors when using any API-level search
 # (not manager methods). This function should correctly report errors
-# both for command- and object-searches.
+# both for command- and object-searches. This allows full control
+# over the error output (it uses SEARCH_MULTIMATCH_TEMPLATE by default).
 SEARCH_AT_RESULT = "evennia.utils.utils.at_search_result"
 # The module holding text strings for the connection screen.
 # This module should contain one or more variables
@@ -292,6 +312,8 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs",)
 # will be loaded in order, meaning functions in later modules may overload
 # previous ones if having the same name.
 INPUT_FUNC_MODULES = ["evennia.server.inputfuncs", "server.conf.inputfuncs"]
+# Modules that contain prototypes for use with the spawner mechanism.
+PROTOTYPE_MODULES = ["world.prototypes"]
 # Module holding settings/actions for the dummyrunner program (see the
 # dummyrunner for more information)
 DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
@@ -505,8 +527,8 @@ DEFAULT_CHANNELS = [
 # Note: You do *not* have to make your MUD open to
 # the public to use the external connections, they
 # operate as long as you have an internet connection,
-# just like stand-alone chat clients. IRC and IMC2
-# requires that you have twisted.words installed.
+# just like stand-alone chat clients. IRC requires
+# that you have twisted.words installed.
 
 # Evennia can connect to external IRC channels and
 # echo what is said on the channel to IRC and vice
@@ -521,26 +543,6 @@ IRC_ENABLED = False
 # http://code.google.com/p/feedparser/)
 RSS_ENABLED=False
 RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
-
-# IMC (Inter-MUD communication) allows to connect an Evennia channel
-# to an IMC2 server. This lets them talk to people on other MUDs also
-# using IMC.  Evennia's IMC2 client was developed against MudByte's
-# network. You must register your MUD on the network before you can
-# use it, go to http://www.mudbytes.net/imc2-intermud-join-network.
-# Choose 'Other unsupported IMC2 version' from the choices and and
-# enter your information there. You should enter the same 'short mud
-# name' as your SERVERNAME above, then choose imc network server as
-# well as client/server passwords same as below. When enabled, the
-# command @imc2chan becomes available in-game and allows you to
-# connect Evennia channels to IMC channels on the network. The Evennia
-# discussion channel 'ievennia' is on server01.mudbytes.net:5000.
-
-# NOTE - IMC2 is currently NOT FUNCTIONAL due to lack of testing means.
-IMC2_ENABLED = False
-IMC2_NETWORK = "server01.mudbytes.net"
-IMC2_PORT = 5000 # this is the imc2 port, not on localhost
-IMC2_CLIENT_PWD = ""
-IMC2_SERVER_PWD = ""
 
 ######################################################################
 # Django web features

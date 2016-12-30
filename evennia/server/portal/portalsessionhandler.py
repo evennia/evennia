@@ -8,7 +8,8 @@ from time import time
 from collections import deque
 from twisted.internet import reactor
 from django.conf import settings
-from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC
+from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, \
+                                          PCONNSYNC, PDISCONNALL
 from evennia.utils.logger import log_trace
 
 # module import
@@ -17,11 +18,17 @@ _MOD_IMPORT = None
 # throttles
 _MAX_CONNECTION_RATE = float(settings.MAX_CONNECTION_RATE)
 _MAX_COMMAND_RATE = float(settings.MAX_COMMAND_RATE)
+_MAX_CHAR_LIMIT = int(settings.MAX_CHAR_LIMIT)
 
 _MIN_TIME_BETWEEN_CONNECTS = 1.0 / float(settings.MAX_CONNECTION_RATE)
 _ERROR_COMMAND_OVERFLOW = settings.COMMAND_RATE_WARNING
+_ERROR_MAX_CHAR = settings.MAX_CHAR_LIMIT_WARNING
 
 _CONNECTION_QUEUE = deque()
+
+class DummySession(object):
+    sessid = 0
+DUMMYSESSION = DummySession()
 
 #------------------------------------------------------------
 # Portal-SessionHandler class
@@ -152,6 +159,10 @@ class PortalSessionHandler(SessionHandler):
 
         Args:
             session (PortalSession): Session to disconnect.
+            delete (bool, optional): Delete the session from
+                the handler. Only time to not do this is when
+                this is called from a loop, such as from
+                self.disconnect_all().
 
         """
         global _CONNECTION_QUEUE
@@ -160,15 +171,39 @@ class PortalSessionHandler(SessionHandler):
             # to forward this to the Server, so now we just remove it.
             _CONNECTION_QUEUE.remove(session)
             return
+
+        if session.sessid in self and not hasattr(self, "_disconnect_all"):
+            # if this was called directly from the protocol, the
+            # connection is already dead and we just need to cleanup
+            del self[session.sessid]
+
+        # Tell the Server to disconnect its version of the Session as well.
         self.portal.amp_protocol.send_AdminPortal2Server(session,
                                                          operation=PDISCONN)
+
+    def disconnect_all(self):
+        """
+        Disconnect all sessions, informing the Server.
+        """
+        def _callback(result, sessionhandler):
+            # we set a watchdog to stop self.disconnect from deleting
+            # sessions while we are looping over them.
+            sessionhandler._disconnect_all = True
+            for session in sessionhandler.values():
+                session.disconnect()
+            del sessionhandler._disconnect_all
+
+        # inform Server; wait until finished sending before we continue
+        # removing all the sessions.
+        self.portal.amp_protocol.send_AdminPortal2Server(DUMMYSESSION,
+                                operation=PDISCONNALL).addCallback(_callback, self)
 
     def server_connect(self, protocol_path="", config=dict()):
         """
         Called by server to force the initialization of a new protocol
         instance. Server wants this instance to get a unique sessid
         and to be connected back as normal. This is used to initiate
-        irc/imc2/rss etc connections.
+        irc/rss etc connections.
 
         Args:
             protocol_path (st): Full python path to the class factory
@@ -287,7 +322,7 @@ class PortalSessionHandler(SessionHandler):
 
         """
         return [sess for sess in self.get_sessions(include_unloggedin=True)
-                if hasattr(sess, 'csessid') and sess.csessid == csessid]
+                if hasattr(sess, 'csessid') and sess.csessid and sess.csessid == csessid]
 
     def announce_all(self, message):
         """
@@ -321,7 +356,14 @@ class PortalSessionHandler(SessionHandler):
         """
         #from evennia.server.profiling.timetrace import timetrace
         #text = timetrace(text, "portalsessionhandler.data_in")
-
+        try:
+            text = kwargs['text']
+            if (_MAX_CHAR_LIMIT > 0) and len(text) > _MAX_CHAR_LIMIT:
+                if session:
+                    self.data_out(session, text=[[_ERROR_MAX_CHAR], {}])
+                return
+        except Exception:
+            pass
         if session:
             now = time()
             if self.command_counter > _MAX_COMMAND_RATE:

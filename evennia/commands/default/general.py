@@ -85,7 +85,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
       inputline - replace on the inputline (default)
       object    - replace on object-lookup
       player    - replace on player-lookup
-      delete    - remove nick by number of by index given by /list
+      delete    - remove nick by name or by index given by /list
       clearall  - clear all nicks
       list      - show all defined aliases (also "nicks" works)
       test      - test input to see what it matches with
@@ -159,14 +159,14 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         string = ""
         for nicktype in nicktypes:
             oldnick = caller.nicks.get(key=nickstring, category=nicktype, return_obj=True)
-            oldnick = oldnick if oldnick.key is not None else None
             if oldnick:
                 _, _, old_nickstring, old_replstring = oldnick.value
             else:
                 # no old nick, see if a number was given
-                if self.args.isdigit():
+                arg = self.args.lstrip("#")
+                if arg.isdigit():
                     # we are given a index in nicklist
-                    delindex = int(self.args)
+                    delindex = int(arg)
                     if 0 < delindex <= len(nicklist):
                         oldnick = nicklist[delindex-1]
                         _, _, old_nickstring, old_replstring = oldnick.value
@@ -177,9 +177,12 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
             if "delete" in switches or "del" in switches:
                 # clear the nick
-                errstring = ""
-                string += "\nNick removed: '|w%s|n' -> |w%s|n." % (old_nickstring, old_replstring)
-                caller.nicks.remove(nickstring, category=nicktype)
+                if caller.nicks.has(old_nickstring, category=nicktype):
+                    caller.nicks.remove(old_nickstring, category=nicktype)
+                    string += "\nNick removed: '|w%s|n' -> |w%s|n." % (old_nickstring, old_replstring)
+                else:
+                    errstring += "\nNick '|w%s|n' was not deleted." % old_nickstring
+
 
             elif replstring:
                 # creating new nick
@@ -414,7 +417,7 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
         emit_string = '%s says, "%s{n"' % (caller.name,
                                                speech)
         caller.location.msg_contents(emit_string,
-                                     exclude=caller)
+                                     exclude=caller, from_obj=caller)
 
 
 class CmdPose(COMMAND_DEFAULT_CLASS):
@@ -457,7 +460,7 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
             self.caller.msg(msg)
         else:
             msg = "%s%s" % (self.caller.name, self.args)
-            self.caller.location.msg_contents(msg)
+            self.caller.location.msg_contents(msg, from_obj=self.caller)
 
 
 class CmdAccess(COMMAND_DEFAULT_CLASS):

@@ -395,6 +395,11 @@ class DefaultScript(ScriptBase):
             # if this script was paused manually (by a direct call of pause),
             # it cannot be automatically unpaused (e.g. by a @reload)
             raise RuntimeError
+
+        # Ensure that the script is fully unpaused, so that future calls
+        # to unpause do not raise a RuntimeError
+        self.db._manual_pause = False
+
         if self.db._paused_time:
             # only unpause if previously paused
             self.is_active = True
@@ -429,6 +434,11 @@ class DefaultScript(ScriptBase):
             logger.log_trace()
         self._stop_task()
         self.is_active = False
+        # remove all pause flags
+        del self.db._paused_time
+        del self.db._manual_pause
+        del self.db._paused_callcount
+        # set new flags and start over
         if interval is not None:
             self.interval = interval
         if repeats is not None:

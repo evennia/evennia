@@ -537,12 +537,13 @@ class CmdSetHandler(object):
             self.obj.cmdset_storage = storage
         self.update()
 
-    def has_cmdset(self, cmdset_key, must_be_default=False):
+    def has(self, cmdset, must_be_default=False):
         """
-        checks so the cmdsethandler contains a cmdset with the given key.
+        checks so the cmdsethandler contains a given cmdset
 
         Args:
-            cmdset_key (str): Cmdset key to check
+            cmdset (str or Cmdset): Cmdset key, pythonpath or
+                Cmdset to check the existence for.
             must_be_default (bool, optional): Only return True if
                 the checked cmdset is the default one.
 
@@ -550,10 +551,27 @@ class CmdSetHandler(object):
             has_cmdset (bool): Whether or not the cmdset is in the handler.
 
         """
-        if must_be_default:
-            return self.cmdset_stack and self.cmdset_stack[0].key == cmdset_key
+        if callable(cmdset) and hasattr(cmdset, 'path'):
+            # try it as a callable
+            print "Try callable", cmdset
+            if must_be_default:
+                return self.cmdset_stack and (self.cmdset_stack[0].path == cmdset.path)
+            else:
+                print [cset.path for cset in self.cmdset_stack], cmdset.path
+                return any([cset for cset in self.cmdset_stack
+                                        if cset.path == cmdset.path])
         else:
-            return any([cmdset.key == cmdset_key for cmdset in self.cmdset_stack])
+            # try it as a path or key
+            if must_be_default:
+                return self.cmdset_stack and (
+                        self.cmdset_stack[0].key == cmdset or
+                        self.cmdset_stack[0].path == cmdset)
+            else:
+                return any([cset for cset in self.cmdset_stack
+                              if cset.path == cmdset or cset.key == cmdset])
+
+    # backwards-compatability alias
+    has_cmdset = has
 
     def reset(self):
         """

@@ -195,39 +195,7 @@ class TypedObject(SharedMemoryModel):
 
     # typeclass mechanism
 
-    def __init__(self, *args, **kwargs):
-        """
-        The `__init__` method of typeclasses is the core operational
-        code of the typeclass system, where it dynamically re-applies
-        a class based on the db_typeclass_path database field rather
-        than use the one in the model.
-
-        Args:
-            Passed through to parent.
-
-        Kwargs:
-            Passed through to parent.
-
-        Notes:
-            The loading mechanism will attempt the following steps:
-
-            1. Attempt to load typeclass given on command line
-            2. Attempt to load typeclass stored in db_typeclass_path
-            3. Attempt to load `__settingsclasspath__`, which is by the
-               default classes defined to be the respective user-set
-               base typeclass settings, like `BASE_OBJECT_TYPECLASS`.
-            4. Attempt to load `__defaultclasspath__`, which is the
-               base classes in the library, like DefaultObject etc.
-            5. If everything else fails, use the database model.
-
-            Normal operation is to load successfully at either step 1
-            or 2 depending on how the class was called. Tracebacks
-            will be logged for every step the loader must take beyond
-            2.
-
-        """
-        typeclass_path = kwargs.pop("typeclass", None)
-        super(TypedObject, self).__init__(*args, **kwargs)
+    def set_class_from_typeclass(self, typeclass_path=None):
         if typeclass_path:
             try:
                 self.__class__ = class_from_module(typeclass_path, defaultpaths=settings.TYPECLASS_PATHS)
@@ -265,6 +233,42 @@ class TypedObject(SharedMemoryModel):
             self.__dbclass__ = class_from_module("evennia.objects.models.ObjectDB")
             self.db_typeclass_path = "evennia.objects.objects.DefaultObject"
             log_trace("Critical: Class %s of %s is not a valid typeclass!\nTemporarily falling back to %s." % (err_class, self, self.__class__))
+
+    def __init__(self, *args, **kwargs):
+        """
+        The `__init__` method of typeclasses is the core operational
+        code of the typeclass system, where it dynamically re-applies
+        a class based on the db_typeclass_path database field rather
+        than use the one in the model.
+
+        Args:
+            Passed through to parent.
+
+        Kwargs:
+            Passed through to parent.
+
+        Notes:
+            The loading mechanism will attempt the following steps:
+
+            1. Attempt to load typeclass given on command line
+            2. Attempt to load typeclass stored in db_typeclass_path
+            3. Attempt to load `__settingsclasspath__`, which is by the
+               default classes defined to be the respective user-set
+               base typeclass settings, like `BASE_OBJECT_TYPECLASS`.
+            4. Attempt to load `__defaultclasspath__`, which is the
+               base classes in the library, like DefaultObject etc.
+            5. If everything else fails, use the database model.
+
+            Normal operation is to load successfully at either step 1
+            or 2 depending on how the class was called. Tracebacks
+            will be logged for every step the loader must take beyond
+            2.
+
+        """
+        typeclass_path = kwargs.pop("typeclass", None)
+        super(TypedObject, self).__init__(*args, **kwargs)
+        self.set_class_from_typeclass(typeclass_path=typeclass_path)
+
 
     # initialize all handlers in a lazy fashion
     @lazy_property
@@ -339,7 +343,10 @@ class TypedObject(SharedMemoryModel):
     #
 
     def __eq__(self, other):
-        return other and hasattr(other, 'dbid') and self.dbid == other.dbid
+        try:
+            return self.__dbclass__ == other.__dbclass__ and self.dbid == other.dbid
+        except AttributeError:
+            return False
 
     def __str__(self):
         return smart_str("%s" % self.db_key)
@@ -375,6 +382,41 @@ class TypedObject(SharedMemoryModel):
     def __dbref_del(self):
         raise Exception("dbref cannot be deleted!")
     dbref = property(__dbref_get, __dbref_set, __dbref_del)
+
+    def at_idmapper_flush(self):
+        """
+        This is called when the idmapper cache is flushed and
+        allows customized actions when this happens.
+
+        Returns:
+            do_flush (bool): If True, flush this object as normal. If
+                False, don't flush and expect this object to handle
+                the flushing on its own.
+
+        Notes:
+            The default implementation relies on being able to clear
+            Django's Foreignkey cache on objects not affected by the
+            flush (notably objects with an NAttribute stored). We rely
+            on this cache being stored on the format "_<fieldname>_cache".
+            If Django were to change this name internally, we need to
+            update here (unlikely, but marking just in case).
+
+        """
+        if self.nattributes.all():
+            # we can't flush this object if we have non-persistent
+            # attributes stored - those would get lost! Nevertheless
+            # we try to flush as many references as we can.
+            self.attributes.reset_cache()
+            self.tags.reset_cache()
+            # flush caches for all related fields
+            for field in self._meta.fields:
+                name = "_%s_cache" % field.name
+                if field.is_relation and name in self.__dict__:
+                    # a foreignkey - remove its cache
+                    del self.__dict__[name]
+            return False
+        # a normal flush
+        return True
 
     #
     # Object manipulation methods
@@ -414,7 +456,7 @@ class TypedObject(SharedMemoryModel):
             return any(hasattr(cls, "path") and cls.path in typeclass for cls in self.__class__.mro())
 
     def swap_typeclass(self, new_typeclass, clean_attributes=False,
-                       run_start_hooks=True, no_default=True, clean_cmdsets=False):
+                       run_start_hooks="all", no_default=True, clean_cmdsets=False):
         """
         This performs an in-situ swap of the typeclass. This means
         that in-game, this object will suddenly be something else.
@@ -438,16 +480,16 @@ class TypedObject(SharedMemoryModel):
                 sure nothing in the new typeclass clashes with the old
                 one. If you supply a list, only those named attributes
                 will be cleared.
-            run_start_hooks (bool, optional): Trigger the start hooks
-                of the object, as if it was created for the first time.
+            run_start_hooks (str or None, optional): This is either None,
+                to not run any hooks, "all" to run all hooks defined by
+                at_first_start, or a string giving the name of the hook
+                to run (for example 'at_object_creation'). This will
+                always be called without arguments.
             no_default (bool, optiona): If set, the swapper will not
                 allow for swapping to a default typeclass in case the
                 given one fails for some reason. Instead the old one will
                 be preserved.
             clean_cmdsets (bool, optional): Delete all cmdsets on the object.
-        Returns:
-            result (bool): True/False depending on if the swap worked
-                or not.
 
         """
 
@@ -483,9 +525,12 @@ class TypedObject(SharedMemoryModel):
             self.cmdset.clear()
             self.cmdset.remove_default()
 
-        if run_start_hooks:
+        if run_start_hooks == 'all':
             # fake this call to mimic the first save
             self.at_first_save()
+        elif run_start_hooks:
+            # a custom hook-name to call.
+            getattr(self, run_start_hooks)()
 
     #
     # Lock / permission methods

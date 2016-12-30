@@ -101,43 +101,43 @@ An example batch file is `contrib/examples/batch_example.ev`.
 Batch-code processor file syntax
 
 The Batch-code processor accepts full python modules (e.g. `batch.py`)
-that looks identical to normal Python files with a few exceptions that
-allows them to the executed in blocks. This way of working assures a
-sequential execution of the file and allows for features like stepping
-from block to block (without executing those coming before), as well
-as automatic deletion of created objects etc. You can however also run
-a batch-code Python file directly using Python.
+that looks identical to normal Python files. The difference from
+importing and running any Python module is that the batch-code module
+is loaded as a file and executed directly, so changes to the file will
+apply immediately without a server @reload.
 
-Code blocks are separated by python comments starting with special
-code words:
+Optionally, one can add some special commented tokens to split the
+execution of the code for the benefit of the batchprocessor's
+interactive- and debug-modes. This allows to conveniently step through
+the code and re-run sections of it easily during development.
 
-HEADER - this denotes commands global to the entire file, such as
-          import statements and global variables. They will
-          automatically be pasted at the top of all code
-          blocks. Observe that changes to these variables made in one
-          block is not preserved between blocks!
-CODE
-CODE (info)
-CODE (info) objname1, objname1, ... -
-           This designates a code block that will be executed like a
-           stand-alone piece of code together with any #HEADER
-           defined. (info) text is used by the interactive mode to
-           display info about the node to run.  <objname>s mark the
-           (variable-)names of objects created in the code, and which
-           may be auto-deleted by the processor if desired (such as
-           when debugging the script). E.g., if the code contains the
-           command myobj = create.create_object(...), you could put
-           'myobj' in the #CODE header regardless of what the created
-           object is actually called in-game.
-INSERT path.filename - This imports another batch_code.py file and
-          runs it in the given position.  paths are given as python
-          path. The inserted file will retain its own HEADERs which
-          will not be mixed with the HEADERs of the file importing
-          this file.
+Code blocks are marked by commented tokens alone on a line:
 
-The following variables are automatically made available for the script:
+#HEADER - This denotes code that should be pasted at the top of all
+         other code. Multiple HEADER statements - regardless of where
+         it exists in the file - is the same as one big block.
+         Observe that changes to variables made in one block is not
+         preserved between blocks!
+#CODE - This designates a code block that will be executed like a
+       stand-alone piece of code together with any HEADER(s)
+       defined. It is mainly used as a way to mark stop points for
+       the interactive mode of the batchprocessor. If no CODE block
+       is defined in the module, the entire module (including HEADERS)
+       is assumed to be a CODE block.
+#INSERT path.filename - This imports another batch_code.py file and
+      runs it in the given position. The inserted file will retain
+      its own HEADERs which will not be mixed with the headers of
+      this file.
 
-caller - the object executing the script
+Importing works as normal. The following variables are automatically
+made available in the script namespace.
+
+- `caller` -  The object executing the batchscript
+- `DEBUG` - This is a boolean marking if the batchprocessor is running
+            in debug mode. It can be checked to e.g. delete created objects
+            when running a CODE block multiple times during testing.
+            (avoids creating a slew of same-named db objects)
+
 
 Example batch.py file
 -----------------------------------
@@ -151,13 +151,17 @@ from types import basetypes
 
 GOLD = 10
 
-#CODE obj, obj2
+#CODE
 
 obj = create.create_object(basetypes.Object)
 obj2 = create.create_object(basetypes.Object)
 obj.location = caller.location
 obj.db.gold = GOLD
 caller.msg("The object was created!")
+
+if DEBUG:
+    obj.delete()
+    obj2.delete()
 
 #INSERT another_batch_file
 
@@ -175,13 +179,11 @@ import sys
 from django.conf import settings
 from evennia.utils import utils
 
-ENCODINGS = settings.ENCODINGS
-CODE_INFO_HEADER = re.compile(r"\(.*?\)")
-
-RE_INSERT = re.compile(r"^\#INSERT (.*)", re.MULTILINE)
-RE_CLEANBLOCK = re.compile(r"^\#.*?$|^\s*$", re.MULTILINE)
-RE_CMD_SPLIT = re.compile(r"^\#.*?$", re.MULTILINE)
-RE_CODE_SPLIT = re.compile(r"(^\#CODE.*?$|^\#HEADER)$", re.MULTILINE)
+_ENCODINGS = settings.ENCODINGS
+_RE_INSERT = re.compile(r"^\#INSERT (.*)", re.MULTILINE)
+_RE_CLEANBLOCK = re.compile(r"^\#.*?$|^\s*$", re.MULTILINE)
+_RE_CMD_SPLIT = re.compile(r"^\#.*?$", re.MULTILINE)
+_RE_CODE_OR_HEADER = re.compile(r"(\A|^\#CODE|^\#HEADER).*?$(.*?)(?=^#CODE.*?$|^#HEADER.*?$|\Z)", re.MULTILINE + re.DOTALL)
 
 
 #------------------------------------------------------------
@@ -209,13 +211,9 @@ def read_batchfile(pythonpath, file_ending='.py'):
 
     """
 
-    # open the file
-    abspaths = []
-    for basepath in settings.BASE_BATCHPROCESS_PATHS:
-        # note that pypath_to_realpath has already checked the file for existence
-        if basepath.startswith("evennia"):
-            basepath = basepath.split("evennia", 1)[-1]
-        abspaths.extend(utils.pypath_to_realpath("%s.%s" % (basepath, pythonpath), file_ending))
+    # find all possible absolute paths
+    abspaths = utils.pypath_to_realpath(pythonpath,
+                            file_ending, settings.BASE_BATCHPROCESS_PATHS)
     if not abspaths:
         raise IOError
     text = None
@@ -223,7 +221,7 @@ def read_batchfile(pythonpath, file_ending='.py'):
     for abspath in abspaths:
         # try different paths, until we get a match
         # we read the file directly into unicode.
-        for file_encoding in ENCODINGS:
+        for file_encoding in _ENCODINGS:
             # try different encodings, in order
             try:
                 with codecs.open(abspath, 'r', encoding=file_encoding) as fobj:
@@ -277,10 +275,10 @@ class BatchCommandProcessor(object):
             return "\n#".join(self.parse_file(match.group(1)))
 
         # insert commands from inserted files
-        text = RE_INSERT.sub(replace_insert, text)
+        text = _RE_INSERT.sub(replace_insert, text)
         #text = re.sub(r"^\#INSERT (.*?)", replace_insert, text, flags=re.MULTILINE)
         # get all commands
-        commands = RE_CMD_SPLIT.split(text)
+        commands = _RE_CMD_SPLIT.split(text)
         #commands = re.split(r"^\#.*?$", text, flags=re.MULTILINE)
         #remove eventual newline at the end of commands
         commands = [c.strip('\r\n') for c in commands]
@@ -313,79 +311,58 @@ class BatchCodeProcessor(object):
 
     """
 
-    def parse_file(self, pythonpath, debug=False):
+    def parse_file(self, pythonpath):
         """
         This parses the lines of a batchfile according to the following
         rules:
 
         Args:
             pythonpath (str): The dot-python path to the file.
-            debug (bool, optional): Insert delete-commands for
-                deleting created objects.
 
         Returns:
-            codeblocks (list): A list of all #CODE blocks.
+            codeblocks (list): A list of all #CODE blocks, each with
+                prepended #HEADER data. If no #CODE blocks were found,
+                this will be a list of one element.
 
         Notes:
-            1. Lines starting with #HEADER starts a header block (ends other blocks)
-            2. Lines starting with #CODE begins a code block (ends other blocks)
-            3. #CODE headers may be of the following form:
-                                  #CODE (info) objname, objname2, ...
-            4. Lines starting with #INSERT are on form #INSERT filename.
-            5. All lines outside blocks are stripped.
-            6. All excess whitespace beginning/ending a block is stripped.
+            1. Code before a #CODE/HEADER block are considered part of
+                the first code/header block or is the ONLY block if no
+                #CODE/HEADER blocks are defined.
+            2. Lines starting with #HEADER starts a header block (ends other blocks)
+            3. Lines starting with #CODE begins a code block (ends other blocks)
+            4. Lines starting with #INSERT are on form #INSERT filename. Code from
+               this file are processed with their headers *separately* before
+               being inserted at the point of the #INSERT.
+            5. Code after the last block is considered part of the last header/code
+               block
 
         """
 
         text = "".join(read_batchfile(pythonpath, file_ending='.py'))
 
-        def clean_block(text):
-            text = RE_CLEANBLOCK.sub("", text)
-            #text = re.sub(r"^\#.*?$|^\s*$", "", text, flags=re.MULTILINE)
-            return "\n".join([line for line in text.split("\n") if line])
-
         def replace_insert(match):
-            "Map replace entries"
-            return "\#\n".join(self.parse_file(match.group(1)))
+            "Run parse_file on the import before sub:ing it into this file"
+            path = match.group(1)
+            return "# batchcode insert (%s):" % path + "\n".join(self.parse_file(path))
 
-        text = RE_INSERT.sub(replace_insert, text)
-        #text = re.sub(r"^\#INSERT (.*?)", replace_insert, text, flags=re.MULTILINE)
-        blocks = RE_CODE_SPLIT.split(text)
-        #blocks = re.split(r"(^\#CODE.*?$|^\#HEADER)$", text, flags=re.MULTILINE)
+        # process and then insert code from all #INSERTS
+        text = _RE_INSERT.sub(replace_insert, text)
+
         headers = []
-        codes = [] # list of tuples (code, info, objtuple)
-        if blocks:
-            if blocks[0]:
-                # the first block is either empty or an unmarked code block
-                code = clean_block(blocks.pop(0))
-                if code:
-                    codes.append((code, ""))
-            iblock = 0
-            for block in blocks[::2]:
-                # loop over every second component; these are the #CODE/#HEADERs
-                if block.startswith("#HEADER"):
-                    headers.append(clean_block(blocks[iblock + 1]))
-                elif block.startswith("#CODE"):
-                    match = re.search(r"\(.*?\)", block)
-                    info = match.group() if match else ""
-                    objs = []
-                    if debug:
-                        # insert auto-delete lines into code
-                        objs = block[match.end():].split(",")
-                        objs = ["# added by Evennia's debug mode\n%s.delete()" % obj.strip() for obj in objs if obj]
-                    # build the code block
-                    code = "\n".join([clean_block(blocks[iblock + 1])] + objs)
-                    if code:
-                        codes.append((code, info))
-                iblock += 2
+        codes = []
+        for imatch, match in enumerate(list(_RE_CODE_OR_HEADER.finditer(text))):
+            type = match.group(1)
+            istart, iend = match.span(2)
+            code = text[istart:iend]
+            if type == "#HEADER":
+                headers.append(code)
+            else: # either #CODE or matching from start of file
+                codes.append(code)
 
-        # join the headers together to one header
-        headers = "\n".join(headers)
-        if codes:
-            # add the headers at the top of each non-empty block
-            codes = ["%s\n%s\n%s" % ("#CODE %s: " % tup[1], headers, tup[0]) for tup in codes if tup[0]]
-        else:
-            codes = ["#CODE: \n" + headers]
+        # join all headers together to one
+        header = "# batchcode header:\n%s\n\n" % "\n\n".join(headers) if headers else ""
+        # add header to each code block
+        codes = ["%s# batchcode code:\n%s" % (header, code) for code in codes]
         return codes
 
 
@@ -397,24 +374,23 @@ class BatchCodeProcessor(object):
         Args:
             code (str): Code to run.
             extra_environ (dict): Environment variables to run with code.
-            debug (bool, optional): Insert delete statements for objects.
+            debug (bool, optional): Set the DEBUG variable in the execution
+                namespace.
 
         Returns:
             err (str or None): An error code or None (ok).
 
         """
         # define the execution environment
-        environdict = {"settings_module": settings}
-        environ = "settings_module.configure()"
-        if extra_environ:
-            for key, value in extra_environ.items():
-                environdict[key] = value
+        environdict = {"settings_module": settings, "DEBUG": debug}
+        for key, value in extra_environ.items():
+            environdict[key] = value
 
         # initializing the django settings at the top of code
-        code = "# auto-added by Evennia\n" \
-               "try: %s\n" \
+        code = "# batchcode evennia initialization: \n" \
+               "try: settings_module.configure()\n" \
                "except RuntimeError: pass\n" \
-               "finally: del settings_module\n%s" % (environ, code)
+               "finally: del settings_module\n\n%s" % code
 
         # execute the block
         try:

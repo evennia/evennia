@@ -144,7 +144,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
                 caller.msg("No aliases exist for '%s'." % obj.get_display_name(caller))
             return
 
-        if not obj.access(caller, 'edit'):
+        if not (obj.access(caller, "control") or obj.access(caller, 'edit')):
             caller.msg("You don't have permission to do that.")
             return
 
@@ -436,9 +436,9 @@ class CmdMvAttr(ObjManipCommand):
 
         # simply use @cpattr for all the functionality
         if "copy" in self.switches:
-            self.caller.execute_cmd("@cpattr %s" % self.args)
+            self.execute_cmd("@cpattr %s" % self.args)
         else:
-            self.caller.execute_cmd("@cpattr/move %s" % self.args)
+            self.execute_cmd("@cpattr/move %s" % self.args)
 
 
 class CmdCreate(ObjManipCommand):
@@ -469,6 +469,10 @@ class CmdCreate(ObjManipCommand):
     locks = "cmd:perm(create) or perm(Builders)"
     help_category = "Building"
 
+    # lockstring of newly created objects, for easy overloading.
+    # Will be formatted with the {id} of the creating object.
+    new_obj_lockstring = "control:id({id}) or perm(Wizards);delete:id({id}) or perm(Wizards)"
+
     def func(self):
         """
         Creates the object.
@@ -490,7 +494,7 @@ class CmdCreate(ObjManipCommand):
 
             # create object (if not a valid typeclass, the default
             # object typeclass will automatically be used)
-            lockstring = "control:id(%s);delete:id(%s) or perm(Wizards)" % (caller.id, caller.id)
+            lockstring = self.new_obj_lockstring.format(id=caller.id)
             obj = create.create_object(typeclass, name, caller,
                                        home=caller, aliases=aliases,
                                        locks=lockstring, report_to=caller)
@@ -648,7 +652,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                 self.caller.msg(" (Objects to destroy must either be local or specified with a unique #dbref.)")
                 return ""
             objname = obj.name
-            if not obj.access(caller, 'delete'):
+            if not (obj.access(caller, "control") or obj.access(caller, 'delete')):
                 return "\nYou don't have permission to delete %s." % objname
             if obj.player and not 'override' in self.switches:
                 return "\nObject %s is controlled by an active player. Use /override to delete anyway." % objname
@@ -716,6 +720,12 @@ class CmdDig(ObjManipCommand):
     locks = "cmd:perm(dig) or perm(Builders)"
     help_category = "Building"
 
+    # lockstring of newly created rooms, for easy overloading.
+    # Will be formatted with the {id} of the creating object.
+    new_room_lockstring = "control:id({id}) or perm(Wizards); " \
+                          "delete:id({id}) or perm(Wizards); " \
+                          "edit:id({id}) or perm(Wizards)"
+
     def func(self):
         "Do the digging. Inherits variables from ObjManipCommand.parse()"
 
@@ -741,12 +751,10 @@ class CmdDig(ObjManipCommand):
             typeclass = settings.BASE_ROOM_TYPECLASS
 
         # create room
-        lockstring = "control:id(%s) or perm(Immortals); delete:id(%s) or perm(Wizards); edit:id(%s) or perm(Wizards)"
-        lockstring = lockstring % (caller.dbref, caller.dbref, caller.dbref)
-
         new_room = create.create_object(typeclass, room["name"],
                                         aliases=room["aliases"],
                                         report_to=caller)
+        lockstring = self.new_room_lockstring.format(id=caller.id)
         new_room.locks.add(lockstring)
         alias_string = ""
         if new_room.aliases.all():
@@ -901,7 +909,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
         # build the string we will use to call @dig
         digstring = "@dig%s %s = %s;%s%s" % (telswitch, roomname,
                                              exitname, exitshort, backstring)
-        self.caller.execute_cmd(digstring)
+        self.execute_cmd(digstring)
 
 
 class CmdLink(COMMAND_DEFAULT_CLASS):
@@ -1145,7 +1153,7 @@ class CmdName(ObjManipCommand):
                     if not newname:
                         caller.msg("No name defined!")
                         return
-                    if not obj.access(caller, "edit"):
+                    if not (obj.access(caller, "control") or obj.access(caller, "edit")):
                         caller.mgs("You don't have right to edit this player %s." % obj)
                         return
                     obj.username = newname
@@ -1165,7 +1173,7 @@ class CmdName(ObjManipCommand):
         if not newname and not aliases:
             caller.msg("No names or aliases defined!")
             return
-        if not obj.access(caller, "edit"):
+        if not (obj.access(caller, "control") or obj.access(caller, "edit")):
             caller.msg("You don't have the right to edit %s." % obj)
             return
         # change the name and set aliases:
@@ -1563,11 +1571,14 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
       @type                     ''
       @parent                   ''
       @swap - this is a shorthand for using /force/reset flags.
+      @update - this is a shorthand for using the /force/reload flag.
 
     Switch:
-      show - display the current typeclass of object
-      reset - clean out *all* the attributes on the object -
-              basically making this a new clean object.
+      show - display the current typeclass of object (default)
+      update - *only* re-run at_object_creation on this object
+              meaning locks or other properties set later may remain.
+      reset - clean out *all* the attributes and properties on the
+              object - basically making this a new clean object.
       force - change to the typeclass also if the object
               already has a typeclass of the same name.
     Example:
@@ -1580,7 +1591,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
     of the new typeclass will be run on the object. If you have
     clashing properties on the old class, use /reset. By default you
     are protected from changing to a typeclass of the same name as the
-    one you already have, use /force to override this protection.
+    one you already have - use /force to override this protection.
 
     The given typeclass must be identified by its location using
     python dot-notation pointing to the correct module and class. If
@@ -1592,7 +1603,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@typeclass"
-    aliases = ["@type", "@parent", "@swap"]
+    aliases = ["@type", "@parent", "@swap", "@update"]
     locks = "cmd:perm(typeclass) or perm(Builders)"
     help_category = "Building"
 
@@ -1624,8 +1635,11 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
         if self.cmdstring == "@swap":
             self.switches.append("force")
             self.switches.append("reset")
+        elif self.cmdstring == "@update":
+            self.switches.append("force")
+            self.switches.append("update")
 
-        if not obj.access(caller, 'edit'):
+        if not (obj.access(caller, "control") or obj.access(caller, 'edit')):
             caller.msg("You are not allowed to do that.")
             return
 
@@ -1637,11 +1651,14 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
         if is_same and not 'force' in self.switches:
             string = "%s already has the typeclass '%s'. Use /force to override." % (obj.name, new_typeclass)
         else:
+            update = "update" in self.switches
             reset = "reset" in self.switches
+            hooks = "at_object_creation" if update else "all"
             old_typeclass_path = obj.typeclass_path
 
             # we let this raise exception if needed
-            obj.swap_typeclass(new_typeclass, clean_attributes=reset, clean_cmdsets=reset)
+            obj.swap_typeclass(new_typeclass, clean_attributes=reset,
+                    clean_cmdsets=reset, run_start_hooks=hooks)
 
             if is_same:
                 string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.path)
@@ -1649,7 +1666,10 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 string = "%s changed typeclass from %s to %s.\n" % (obj.name,
                                                          old_typeclass_path,
                                                          obj.typeclass_path)
-            string += "Creation hooks were run."
+            if update:
+                string += "Only the at_object_creation hook was run (update mode)."
+            else:
+                string += "All object creation hooks were run."
             if reset:
                 string += " All old attributes where deleted before the swap."
             else:
@@ -1694,7 +1714,7 @@ class CmdWipe(ObjManipCommand):
         obj = caller.search(objname)
         if not obj:
             return
-        if not obj.access(caller, 'edit'):
+        if not (obj.access(caller, "control") or obj.access(caller, 'edit')):
             caller.msg("You are not allowed to do that.")
             return
         if not attrs:
@@ -1742,7 +1762,7 @@ class CmdLock(ObjManipCommand):
     """
     key = "@lock"
     aliases = ["@locks", "lock", "locks"]
-    locks = "cmd: perm(@locks) or perm(Builders)"
+    locks = "cmd: perm(locks) or perm(Builders)"
     help_category = "Building"
 
     def func(self):
@@ -1764,7 +1784,7 @@ class CmdLock(ObjManipCommand):
             string = ""
             if lockdef:
                 if 'del' in self.switches:
-                    if not obj.access(caller, 'control'):
+                    if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
                         caller.msg("You are not allowed to do that.")
                         return
                     obj.locks.delete(access_type)
@@ -1789,7 +1809,7 @@ class CmdLock(ObjManipCommand):
             obj = caller.search(objname)
             if not obj:
                 return
-            if not obj.access(caller, 'control'):
+            if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
                 caller.msg("You are not allowed to do that.")
                 return
             ok = False
@@ -1819,6 +1839,7 @@ class CmdExamine(ObjManipCommand):
 
     Switch:
       player - examine a Player (same as adding *)
+      object - examine an Object (useful when OOC)
 
     The examine command shows detailed game info about an
     object and optionally a specific attribute on it.
@@ -1888,8 +1909,8 @@ class CmdExamine(ObjManipCommand):
         string = "\n|wName/key|n: |c%s|n (%s)" % (obj.name, obj.dbref)
         if hasattr(obj, "aliases") and obj.aliases.all():
             string += "\n|wAliases|n: %s" % (", ".join(utils.make_iter(str(obj.aliases))))
-        if hasattr(obj, "sessions") and obj.sessions:
-            string += "\n|wsession(s)|n: %s" % (", ".join(str(sess.sessid)
+        if hasattr(obj, "sessions") and obj.sessions.all():
+            string += "\n|wSession id(s)|n: %s" % (", ".join("#%i" % sess.sessid
                                                 for sess in obj.sessions.all()))
         if hasattr(obj, "has_player") and obj.has_player:
             string += "\n|wPlayer|n: |c%s|n" % obj.player.name
@@ -2038,14 +2059,14 @@ class CmdExamine(ObjManipCommand):
             obj_name = objdef['name']
             obj_attrs = objdef['attrs']
 
-            self.player_mode = utils.inherits_from(caller, "evennia.players.players.Player") or \
-                           "player" in self.switches or obj_name.startswith('*')
+            self.player_mode = utils.inherits_from(caller, "evennia.players.players.DefaultPlayer") or \
+                               "player" in self.switches or obj_name.startswith('*')
             if self.player_mode:
                 try:
                     obj = caller.search_player(obj_name.lstrip('*'))
                 except AttributeError:
                     # this means we are calling examine from a player object
-                    obj = caller.search(obj_name.lstrip('*'))
+                    obj = caller.search(obj_name.lstrip('*'), search_object = 'object' in self.switches)
             else:
                 obj = caller.search(obj_name)
             if not obj:
@@ -2575,9 +2596,9 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         def _show_prototypes(prototypes):
             "Helper to show a list of available prototypes"
-            string = "\nAvailable prototypes:\n %s"
-            string = string % utils.fill(", ".join(sorted(prototypes.keys())))
-            return string
+            prots = ", ".join(sorted(prototypes.keys()))
+            return "\nAvailable prototypes (case sensistive): %s" % \
+                    ("\n" + utils.fill(prots) if prots else "None")
 
         prototypes = spawn(return_prototypes=True)
         if not self.args:

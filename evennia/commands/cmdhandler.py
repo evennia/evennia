@@ -36,6 +36,7 @@ command line. The processing of a command works as follows:
 from collections import defaultdict
 from weakref import WeakValueDictionary
 from traceback import format_exc
+from itertools import chain
 from copy import copy
 from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
@@ -199,22 +200,20 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
         local_obj_cmdsets = [None]
 
         @inlineCallbacks
-        def _get_channel_cmdsets(player, player_cmdset):
+        def _get_channel_cmdset(player_or_obj):
             """
             Helper-method; Get channel-cmdsets
             """
             # Create cmdset for all player's available channels
             try:
-                channel_cmdset = None
-                if not player_cmdset.no_channels:
-                    channel_cmdset = yield CHANNELHANDLER.get_cmdset(player)
-                returnValue(channel_cmdset)
+                channel_cmdset = yield CHANNELHANDLER.get_cmdset(player_or_obj)
+                returnValue([channel_cmdset])
             except Exception:
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported
 
         @inlineCallbacks
-        def _get_local_obj_cmdsets(obj, obj_cmdset):
+        def _get_local_obj_cmdsets(obj):
             """
             Helper-method; Get Object-level cmdsets
             """
@@ -225,7 +224,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                     location = obj.location
                 except Exception:
                     location = None
-                if location and not obj_cmdset.no_objs:
+                if location:
                     # Gather all cmdsets stored on objects in the room and
                     # also in the caller's inventory and the location itself
                     local_objlist = yield (location.contents_get(exclude=obj) +
@@ -241,9 +240,10 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                     # is not seeing e.g. the commands on a fellow player (which is why
                     # the no_superuser_bypass must be True)
                     local_obj_cmdsets = \
-                        yield [lobj.cmdset.current for lobj in local_objlist
-                           if (lobj.cmdset.current and
-                           lobj.access(caller, access_type='call', no_superuser_bypass=True))]
+                        yield list(chain.from_iterable(
+                                lobj.cmdset.cmdset_stack for lobj in local_objlist
+                                if (lobj.cmdset.current and
+                                lobj.access(caller, access_type='call', no_superuser_bypass=True))))
                     for cset in local_obj_cmdsets:
                         #This is necessary for object sets, or we won't be able to
                         # separate the command sets from each other in a busy room. We
@@ -258,10 +258,10 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
 
 
         @inlineCallbacks
-        def _get_cmdset(obj):
+        def _get_cmdsets(obj):
             """
             Helper method; Get cmdset while making sure to trigger all
-            hooks safely.
+            hooks safely. Returns the stack and the valid options.
             """
             try:
                 yield obj.at_cmdset_get()
@@ -269,43 +269,72 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported
             try:
-                returnValue(obj.cmdset.current)
+                returnValue((obj.cmdset.current,  list(obj.cmdset.cmdset_stack)))
             except AttributeError:
-                returnValue(None)
+                returnValue(((None, None, None), []))
 
+        local_obj_cmdsets = []
         if callertype == "session":
             # we are calling the command from the session level
             report_to = session
-            session_cmdset = yield _get_cmdset(session)
-            cmdsets = [session_cmdset]
+            current, cmdsets = yield _get_cmdsets(session)
             if player:  # this automatically implies logged-in
-                player_cmdset = yield _get_cmdset(player)
-                channel_cmdset = yield _get_channel_cmdsets(player, player_cmdset)
-                cmdsets.extend([player_cmdset, channel_cmdset])
+                pcurrent, player_cmdsets = yield _get_cmdsets(player)
+                cmdsets += player_cmdsets
+                current = current + pcurrent
                 if obj:
-                    obj_cmdset = yield _get_cmdset(obj)
-                    local_obj_cmdsets = yield _get_local_obj_cmdsets(obj, obj_cmdset)
-                    cmdsets.extend([obj_cmdset] + local_obj_cmdsets)
+                    ocurrent, obj_cmdsets = yield _get_cmdsets(obj)
+                    current = current + ocurrent
+                    cmdsets += obj_cmdsets
+                    if not current.no_objs:
+                        local_obj_cmdsets = yield _get_local_obj_cmdsets(obj)
+                        if current.no_exits:
+                            # filter out all exits
+                            local_obj_cmdsets = [cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"]
+                        cmdsets += local_obj_cmdsets
+                    if not current.no_channels:
+                        # also objs may have channels
+                        channel_cmdsets = yield _get_channel_cmdset(obj)
+                        cmdsets += channel_cmdsets
+                if not current.no_channels:
+                    channel_cmdsets = yield _get_channel_cmdset(player)
+                    cmdsets += channel_cmdsets
+
         elif callertype == "player":
             # we are calling the command from the player level
             report_to = player
-            player_cmdset = yield _get_cmdset(player)
-            channel_cmdset = yield _get_channel_cmdsets(player, player_cmdset)
-            cmdsets = [player_cmdset, channel_cmdset]
+            current, cmdsets = yield _get_cmdsets(player)
             if obj:
-                obj_cmdset = yield _get_cmdset(obj)
-                local_obj_cmdsets = yield _get_local_obj_cmdsets(obj, obj_cmdset)
-                cmdsets.extend([obj_cmdset] + local_obj_cmdsets)
+                ocurrent, obj_cmdsets = yield _get_cmdsets(obj)
+                current = current + ocurrent
+                cmdsets += obj_cmdsets
+                if not current.no_objs:
+                    local_obj_cmdsets = yield _get_local_obj_cmdsets(obj)
+                    if current.no_exits:
+                        # filter out all exits
+                        local_obj_cmdsets = [cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"]
+                    cmdsets += local_obj_cmdsets
+                if not current.no_channels:
+                    # also objs may have channels
+                    cmdsets += yield _get_channel_cmdset(obj)
+            if not current.no_channels:
+                cmdsets += yield _get_channel_cmdset(player)
+
         elif callertype == "object":
             # we are calling the command from the object level
             report_to = obj
-            obj_cmdset = yield _get_cmdset(obj)
-            local_obj_cmdsets = yield _get_local_obj_cmdsets(obj, obj_cmdset)
-            cmdsets = [obj_cmdset] + local_obj_cmdsets
+            current, cmdsets = yield _get_cmdsets(obj)
+            if not current.no_objs:
+                local_obj_cmdsets = yield _get_local_obj_cmdsets(obj)
+                if current.no_exits:
+                    # filter out all exits
+                    local_obj_cmdsets = [cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"]
+                cmdsets += yield local_obj_cmdsets
+            if not current.no_channels:
+                # also objs may have channels
+                cmdsets += yield _get_channel_cmdset(obj)
         else:
             raise Exception("get_and_merge_cmdsets: callertype %s is not valid." % callertype)
-        #cmdsets = yield [caller_cmdset] + [player_cmdset] +
-        #          [channel_cmdset] + local_obj_cmdsets
 
         # weed out all non-found sets
         cmdsets = yield [cmdset for cmdset in cmdsets
@@ -329,7 +358,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                     prio = cmdset.priority
                     if prio in tempmergers:
                         # merge same-prio cmdset together separately
-                        tempmergers[prio] = yield cmdset + tempmergers[prio]
+                        tempmergers[prio] = yield tempmergers[prio] + cmdset
                     else:
                         tempmergers[prio] = cmdset
 
@@ -339,14 +368,13 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                 # Merge all command sets into one, beginning with the lowest-prio one
                 cmdset = cmdsets[0]
                 for merging_cmdset in cmdsets[1:]:
-                    cmdset = yield merging_cmdset + cmdset
+                    cmdset = yield cmdset + merging_cmdset
                 # store the full sets for diagnosis
                 cmdset.merged_from = cmdsets
                 # cache
                 _CMDSET_MERGE_CACHE[mergehash] = cmdset
         else:
             cmdset = None
-
         for cset in (cset for cset in local_obj_cmdsets if cset):
             cset.duplicates = cset.old_duplicates
         returnValue(cmdset)
@@ -354,6 +382,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
         raise
     except Exception:
         _msg_err(caller, _ERROR_CMDSETS)
+        raise
         raise ErrorReported
 
 # Main command-handler function
@@ -472,7 +501,6 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 caller.ndb.last_cmd = yield copy(cmd)
             else:
                 caller.ndb.last_cmd = None
-            _COMMAND_NESTING[called_by] -= 1
 
             # return result to the deferred
             returnValue(ret)
@@ -480,6 +508,9 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
         except Exception:
             _msg_err(caller, _ERROR_UNTRAPPED)
             raise ErrorReported
+        finally:
+            _COMMAND_NESTING[called_by] -= 1
+
 
     raw_string = to_unicode(raw_string, force_string=True)
 
@@ -541,12 +572,6 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 # We have a unique command match. But it may still be invalid.
                 match = matches[0]
                 cmdname, args, cmd = match[0], match[1], match[2]
-
-                # check if we allow this type of command
-                if cmdset.no_channels and hasattr(cmd, "is_channel") and cmd.is_channel:
-                    matches = []
-                if cmdset.no_exits and hasattr(cmd, "is_exit") and cmd.is_exit:
-                    matches = []
 
             if not matches:
                 # No commands match our entered command

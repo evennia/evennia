@@ -75,6 +75,7 @@ PROCESS_IOERROR = \
 
 PROCESS_RESTART = "{component} restarting ..."
 
+PROCESS_DOEXIT = "Deferring to external runner."
 
 # Functions
 
@@ -134,7 +135,7 @@ def cycle_logfile(logfile):
 # Start program management
 
 
-def start_services(server_argv, portal_argv):
+def start_services(server_argv, portal_argv, doexit=False):
     """
     This calls a threaded loop that launces the Portal and Server
     and then restarts them when they finish.
@@ -162,7 +163,7 @@ def start_services(server_argv, portal_argv):
 
     if portal_argv:
         try:
-            if get_restart_mode(PORTAL_RESTART) == "True":
+            if not doexit and get_restart_mode(PORTAL_RESTART) == "True":
                 # start portal as interactive, reloadable thread
                 PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
             else:
@@ -175,36 +176,47 @@ def start_services(server_argv, portal_argv):
 
     try:
         if server_argv:
-            # start server as a reloadable thread
-            SERVER = thread.start_new_thread(server_waiter, (processes, ))
+            if doexit:
+                SERVER = Popen(server_argv, env=getenv())
+            else:
+                # start server as a reloadable thread
+                SERVER = thread.start_new_thread(server_waiter, (processes, ))
     except IOError as e:
         print(PROCESS_IOERROR.format(component="Server", traceback=e))
+        return
+
+    if doexit:
+        # Exit immediately
         return
 
     # Reload loop
     while True:
 
         # this blocks until something is actually returned.
+        from twisted.internet.error import ReactorNotRunning
         try:
-            message, rc = processes.get()
-        except KeyboardInterrupt:
-            # this only matters in interactive mode
+            try:
+                message, rc = processes.get()
+            except KeyboardInterrupt:
+                # this only matters in interactive mode
+                break
+
+            # restart only if process stopped cleanly
+            if (message == "server_stopped" and int(rc) == 0 and
+                 get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
+                print(PROCESS_RESTART.format(component="Server"))
+                SERVER = thread.start_new_thread(server_waiter, (processes, ))
+                continue
+
+            # normally the portal is not reloaded since it's run as a daemon.
+            if (message == "portal_stopped" and int(rc) == 0 and
+                  get_restart_mode(PORTAL_RESTART) == "True"):
+                print(PROCESS_RESTART.format(component="Portal"))
+                PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
+                continue
             break
-
-        # restart only if process stopped cleanly
-        if (message == "server_stopped" and int(rc) == 0 and
-             get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
-            print(PROCESS_RESTART.format(component="Server"))
-            SERVER = thread.start_new_thread(server_waiter, (processes, ))
-            continue
-
-        # normally the portal is not reloaded since it's run as a daemon.
-        if (message == "portal_stopped" and int(rc) == 0 and
-              get_restart_mode(PORTAL_RESTART) == "True"):
-            print(PROCESS_RESTART.format(component="Portal"))
-            PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
-            continue
-        break
+        except ReactorNotRunning:
+            break
 
 
 def main():
@@ -230,6 +242,8 @@ def main():
                         default=False, help='Profile Portal')
     parser.add_argument('--nologcycle', action='store_false', dest='nologcycle',
                         default=True, help='Do not cycle log files')
+    parser.add_argument('--doexit', action='store_true', dest='doexit',
+                        default=False, help='Immediately exit after processes have started.')
     parser.add_argument('gamedir', help="path to game dir")
     parser.add_argument('twistdbinary', help="path to twistd binary")
     parser.add_argument('slogfile', help="path to server log file")
@@ -323,6 +337,8 @@ def main():
         if args.pportal:
             portal_argv.extend(pportal_argv)
             print("\nRunning Evennia Portal under cProfile.")
+    if args.doexit:
+        print(PROCESS_DOEXIT)
 
     # Windows fixes (Windows don't support pidfiles natively)
     if os.name == 'nt':
@@ -332,7 +348,7 @@ def main():
             del portal_argv[-2]
 
     # Start processes
-    start_services(server_argv, portal_argv)
+    start_services(server_argv, portal_argv, doexit=args.doexit)
 
 if __name__ == '__main__':
     main()

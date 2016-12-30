@@ -191,7 +191,7 @@ or in the chat.
 
 [pep8]: http://www.python.org/dev/peps/pep-0008
 [pep8tool]: https://pypi.python.org/pypi/pep8
-[googlestyle]: http://google-styleguide.googlecode.com/svn/trunk/pyguide.html?showone=Comments#Comments
+[googlestyle]: http://www.sphinx-doc.org/en/stable/ext/example_google.html
 [githubmarkdown]: https://help.github.com/articles/github-flavored-markdown/
 [markdown-hilight]: https://help.github.com/articles/github-flavored-markdown/#syntax-highlighting
 [command-docstrings]: https://github.com/evennia/evennia/wiki/Using%20MUX%20As%20a%20Standard#documentation-policy

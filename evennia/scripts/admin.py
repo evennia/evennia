@@ -2,6 +2,8 @@
 # This sets up how models are displayed
 # in the web admin interface.
 #
+from django.conf import settings
+
 from evennia.typeclasses.admin import AttributeInline, TagInline
 
 from evennia.scripts.models import ScriptDB
@@ -14,6 +16,7 @@ class ScriptTagInline(TagInline):
 
     """
     model = ScriptDB.db_tags.through
+    related_field = "scriptdb"
 
 
 class ScriptAttributeInline(AttributeInline):
@@ -22,6 +25,7 @@ class ScriptAttributeInline(AttributeInline):
 
     """
     model = ScriptDB.db_attributes.through
+    related_field = "scriptdb"
 
 
 class ScriptDBAdmin(admin.ModelAdmin):
@@ -47,6 +51,23 @@ class ScriptDBAdmin(admin.ModelAdmin):
                             'db_obj')}),
         )
     inlines = [ScriptTagInline, ScriptAttributeInline]
+
+    def save_model(self, request, obj, form, change):
+        """
+        Model-save hook.
+
+        Args:
+            request (Request): Incoming request.
+            obj (Object): Database object.
+            form (Form): Form instance.
+            change (bool): If this is a change or a new object.
+
+        """
+        obj.save()
+        if not change:
+            # adding a new object
+            # have to call init with typeclass passed to it
+            obj.set_class_from_typeclass(typeclass_path=obj.db_typeclass_path)
 
 
 admin.site.register(ScriptDB, ScriptDBAdmin)

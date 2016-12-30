@@ -173,6 +173,7 @@ class PlayerTagInline(TagInline):
 
     """
     model = PlayerDB.db_tags.through
+    related_field = "playerdb"
 
 
 class PlayerAttributeInline(AttributeInline):
@@ -181,6 +182,7 @@ class PlayerAttributeInline(AttributeInline):
 
     """
     model = PlayerDB.db_attributes.through
+    related_field = "playerdb"
 
 
 class PlayerDBAdmin(BaseUserAdmin):
@@ -239,9 +241,16 @@ class PlayerDBAdmin(BaseUserAdmin):
         obj.save()
         if not change:
             #calling hooks for new player
-            ply = obj
-            ply.basetype_setup()
-            ply.at_player_creation()
+            obj.set_class_from_typeclass(typeclass_path=settings.BASE_PLAYER_TYPECLASS)
+            obj.basetype_setup()
+            obj.at_player_creation()
+
+    def response_add(self, request, obj, post_url_continue=None):
+        from django.http import HttpResponseRedirect
+        from django.core.urlresolvers import reverse
+        if '_continue' in request.POST:
+            return HttpResponseRedirect(reverse("admin:players_playerdb_change", args=[obj.id]))
+        return HttpResponseRedirect(reverse("admin:players_playerdb_change", args=[obj.id]))
 
     ## TODO! Remove User reference!
     #def save_formset(self, request, form, formset, change):

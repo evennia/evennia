@@ -641,5 +641,5 @@ class WebSocketFactory(WrappingFactory):
     Factory which wraps another factory to provide WebSockets transports for
     all of its protocols.
     """
-
+    noisy = False
     protocol = WebSocketProtocol

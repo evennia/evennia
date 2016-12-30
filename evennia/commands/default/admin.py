@@ -29,7 +29,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
 
     Switches:
       quiet - Silently boot without informing player
-      port - boot by port number instead of name or dbref
+      sid - boot by session id instead of name or dbref
 
     Boot a player object from the server. If a reason is
     supplied it will be echoed to the user unless /quiet is set.
@@ -55,19 +55,19 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
 
         boot_list = []
 
-        if 'port' in self.switches:
-            # Boot a particular port.
-            sessions = SESSIONS.get_session_list(True)
+        if 'sid' in self.switches:
+            # Boot a particular session id.
+            sessions = SESSIONS.get_sessions(True)
             for sess in sessions:
-                # Find the session with the matching port number.
-                if sess.getClientAddress()[1] == int(args):
+                # Find the session with the matching session id.
+                if sess.sessid == int(args):
                     boot_list.append(sess)
                     break
         else:
             # Boot by player object
             pobj = search.player_search(args)
             if not pobj:
-                self.caller("Player %s was not found." % pobj.key)
+                self.caller("Player %s was not found." % args)
                 return
             pobj = pobj[0]
             if not pobj.access(caller, 'boot'):
@@ -93,7 +93,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
 
         for session in boot_list:
             session.msg(feedback)
-            pobj.disconnect_session_from_player(session)
+            session.player.disconnect_session_from_player(session)
 
 
 # regex matching IP addresses with wildcards, eg. 233.122.4.*

@@ -140,10 +140,11 @@ class DjangoWebRoot(resource.Resource):
 # Site with deactivateable logging
 #
 
-class NonLoggingSite(server.Site):
+class Website(server.Site):
     """
     This class will only log http requests if settings.DEBUG is True.
     """
+    noisy = False
     def log(self, request):
         "Conditional logging"
         if _DEBUG:

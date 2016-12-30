@@ -3,10 +3,11 @@ Custom manager for HelpEntry objects.
 """
 from django.db import models
 from evennia.utils import logger, utils
+from evennia.typeclasses.managers import TypedObjectManager
 __all__ = ("HelpEntryManager",)
 
 
-class HelpEntryManager(models.Manager):
+class HelpEntryManager(TypedObjectManager):
     """
     This HelpEntryManager implements methods for searching
     and manipulating HelpEntries directly from the database.
@@ -25,7 +26,8 @@ class HelpEntryManager(models.Manager):
     """
     def find_topicmatch(self, topicstr, exact=False):
         """
-        Searches for matching topics based on player's input.
+        Searches for matching topics or aliases based on player's
+        input.
 
         Args:
             topcistr (str): Help topic to search for.
@@ -41,6 +43,8 @@ class HelpEntryManager(models.Manager):
         if dbref:
             return self.filter(id=dbref)
         topics = self.filter(db_key__iexact=topicstr)
+        if not topics:
+            topics = self.get_by_alias(topicstr)
         if not topics and not exact:
             topics = self.filter(db_key__istartswith=topicstr)
             if not topics:

@@ -17,10 +17,11 @@ from django.utils import timezone
 from evennia.typeclasses.models import TypeclassBase
 from evennia.players.manager import PlayerManager
 from evennia.players.models import PlayerDB
+from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
 from evennia.utils import logger
-from evennia.utils.utils import (lazy_property, to_str,
+from evennia.utils.utils import (lazy_property,
                                  make_iter, to_unicode, is_iter,
                                  variable_from_module)
 from evennia.typeclasses.attributes import NickHandler
@@ -454,11 +455,11 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         return cmdhandler.cmdhandler(self, raw_string,
                                      callertype="player", session=session, **kwargs)
 
-    def search(self, searchdata, return_puppet=False,
-               nofound_string=None, multimatch_string=None, **kwargs):
+    def search(self, searchdata, return_puppet=False, search_object=False,
+               typeclass=None, nofound_string=None, multimatch_string=None, **kwargs):
         """
-        This is similar to `DefaultObject.search` but will search for
-        Players only.
+        This is similar to `DefaultObject.search` but defaults to searching
+        for Players only.
 
         Args:
             searchdata (str or int): Search criterion, the Player's
@@ -466,12 +467,22 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             return_puppet (bool, optional): Instructs the method to
                 return matches as the object the Player controls rather
                 than the Player itself (or None) if nothing is puppeted).
+            search_object (bool, optional): Search for Objects instead of
+                Players. This is used by e.g. the @examine command when
+                wanting to examine Objects while OOC.
+            typeclass (Player typeclass, optional): Limit the search
+                only to this particular typeclass. This can be used to
+                limit to specific player typeclasses or to limit the search
+                to a particular Object typeclass if `search_object` is True.
             nofound_string (str, optional): A one-time error message
                 to echo if `searchdata` leads to no matches. If not given,
                 will fall back to the default handler.
             multimatch_string (str, optional): A one-time error
                 message to echo if `searchdata` leads to multiple matches.
                 If not given, will fall back to the default handler.
+
+        Return:
+            match (Player, Object or None): A single Player or Object match.
         Notes:
             Extra keywords are ignored, but are allowed in call in
             order to make API more consistent with
@@ -483,7 +494,10 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             # handle wrapping of common terms
             if searchdata.lower() in ("me", "*me", "self", "*self",):
                 return self
-        matches = self.__class__.objects.player_search(searchdata)
+        if search_object:
+            matches = ObjectDB.objects.object_search(searchdata, typeclass=typeclass)
+        else:
+            matches = PlayerDB.objects.player_search(searchdata, typeclass=typeclass)
         matches = _AT_SEARCH_RESULT(matches, self, query=searchdata,
                                     nofound_string=nofound_string,
                                     multimatch_string=multimatch_string)
@@ -730,6 +744,9 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the player.
+            # we make sure to clean up the _playable_characers list in case
+            # any was deleted in the interim.
+            self.db._playable_characters = [char for char in self.db._playable_characters if char]
             self.msg(self.at_look(target=self.db._playable_characters,
                                   session=session))
 
@@ -817,7 +834,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             return target.return_appearance(self)
         else:
             # list of targets - make list to disconnect from db
-            characters = list(target) if target else []
+            characters = list(tar for tar in target if tar) if target else []
             sessions = self.sessions.all()
             is_su = self.is_superuser
 
@@ -840,6 +857,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                     string += "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
                 else:
                     string += "\n |w@charcreate <name> [=description]|n - create new character"
+                    string += "\n |w@chardelete <name>|n - delete a character (cannot be undone!)"
 
             if characters:
                 string_s_ending = len(characters) > 1 and "s" or ""

@@ -152,6 +152,17 @@ class ANSIStringTestCase(TestCase):
         ]
         self.table_check(c, char_table, code_table)
 
+    def test_strip(self):
+        """
+        Test the ansi-aware .strip() methods
+        """
+        a = ANSIString("   |r   Test of stuff |b with spaces   |n   ")
+        b = ANSIString("|r|b")
+        self.assertEqual(a.strip(), ANSIString("|rTest of stuff |b with spaces|n"))
+        self.assertEqual(a.lstrip(), ANSIString("|rTest of stuff |b with spaces   |n   "))
+        self.assertEqual(a.rstrip(), ANSIString("   |r   Test of stuff |b with spaces|n"))
+        self.assertEqual(b.strip(), b)
+
 
 class TestIsIter(TestCase):
     def test_is_iter(self):

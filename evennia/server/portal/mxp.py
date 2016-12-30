@@ -18,10 +18,10 @@ import re
 
 LINKS_SUB = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
 
-MXP = "\x5B"
+MXP = chr(91)
 MXP_TEMPSECURE = "\x1B[4z"
 MXP_SEND = MXP_TEMPSECURE + \
-           "<SEND HREF='\\1'>" + \
+           "<SEND HREF=\"\\1\">" + \
            "\\2" + \
            MXP_TEMPSECURE + \
            "</SEND>"
@@ -82,5 +82,5 @@ class Mxp(object):
 
         """
         self.protocol.protocol_flags["MXP"] = True
-        self.protocol.handshake_done()
         self.protocol.requestNegotiation(MXP, '')
+        self.protocol.handshake_done()
