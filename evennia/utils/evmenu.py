@@ -511,7 +511,7 @@ class EvMenu(object):
                 the latest visited node will be re-run using this kwarg.
 
         Kwargs:
-            any (any): All kwargs will become initialization variables on `caller._menutree`,
+            any (any): All kwargs will become initialization variables on `caller.ndb._menutree`,
                 to be available at run.
 
         Raises:
