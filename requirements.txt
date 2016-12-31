@@ -7,4 +7,6 @@ pillow == 2.9.0
 pytz
 future >= 0.15.2
 django-sekizai
+Jinja2 >= 2.8.1, < 2.9.0
 python-dateutil
+ddt

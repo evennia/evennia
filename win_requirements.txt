@@ -11,3 +11,4 @@ pytz
 future >= 0.15.2
 django-sekizai
 python-dateutil
+ddt
