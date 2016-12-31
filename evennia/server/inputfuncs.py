@@ -421,3 +421,58 @@ def unmonitor(session, *args, **kwargs):
     """
     kwargs["stop"] = True
     monitor(session, *args, **kwargs)
+    
+def _on_webclient_setting_change(**kwargs):
+    """
+    Called when the settings stored on the player changes.
+    Inform the interested clients of this change.
+    """
+    session = kwargs["session"]
+    obj = kwargs["obj"]
+    fieldname = kwargs["fieldname"]    
+    clientsettings = _GA(obj, fieldname)
+    
+    session.msg(webclient_settings=clientsettings)
+
+def webclient_settings(session, *args, **kwargs):
+    """
+    Handles returning and monitoring stored settings relatede to the webclient.
+    
+    Kwargs:
+        monitor (bool): If this is true, starts monitoring the settings for
+          changes too
+    """
+    player = session.player
+    
+    clientsettings = settings.WEBCLIENT_SETTINGS.copy()
+    storedsettings = player.db.webclient_settings or {}
+    clientsettings.update(storedsettings)
+    
+    session.msg(webclient_settings=clientsettings)
+
+    if kwargs.get("monitor", False):
+        from evennia.scripts.monitorhandler import MONITOR_HANDLER
+        MONITOR_HANDLER.add(player, "webclient_settings",
+                            _on_webclient_setting_change,
+                            idstring=session.sessid, persistent=False,
+                            session=session)
+                            
+def set_webclient_settings(session, *args, **kwargs):
+    """
+    Handles changing of a setting related to the webclient: the setting will
+    get saved to the player object.
+    
+    Kwargs:
+        <setting>: A setting to save.
+    """
+    
+    player = session.player
+    
+    clientsettings = settings.WEBCLIENT_SETTINGS.copy()
+    storedsettings = player.db.webclient_settings or {}
+    clientsettings.update(storedsettings)
+    
+    for key, value in kwargs.iteritems():
+        clientsettings[key] = value
+
+    player.db.webclient_settings = clientsettings
