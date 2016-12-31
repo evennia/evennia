@@ -239,6 +239,26 @@ function onPrompt(args, kwargs) {
 
 // Called when the user logged in
 function onLoggedIn() {
+    Evennia.msg("webclient_settings", [], {"monitor": true});
+}
+
+// Called when a setting changed
+function onGotSetting(args, kwargs) {
+    $.each(kwargs, function(key, value) {
+        var elem = $("[data-setting='" + key + "']");
+        if (elem.length === 0) {
+            console.log("Could not find option: " + key);
+        } else {
+            elem.prop('checked', value);
+        };
+    });
+}
+
+// Called when the user changed a setting from the interface
+function onSettingCheckboxChanged() {
+    var name = $(this).data("setting");
+    var value = this.checked;
+    Evennia.msg("set_webclient_settings", [], {name: value});
 }
 
 // Silences events we don't do anything with.
@@ -378,6 +398,9 @@ $(document).ready(function() {
     // Pressing the settings button
     $("#optionsbutton").bind("click", doOpenSettings);
 
+    // Checking a checkbox in the settings dialog
+    $("[data-setting]").bind("change", onSettingCheckboxChanged);
+
     // Pressing the close button on a dialog
     $(".dialogclose").bind("click", doCloseDialog);
     
@@ -393,6 +416,7 @@ $(document).ready(function() {
     Evennia.emitter.on("default", onDefault);
     Evennia.emitter.on("connection_close", onConnectionClose);
     Evennia.emitter.on("logged_in", onLoggedIn);
+    Evennia.emitter.on("webclient_settings", onGotSetting);
     // silence currently unused events
     Evennia.emitter.on("connection_open", onSilence);
     Evennia.emitter.on("connection_error", onSilence);
