@@ -650,7 +650,7 @@ class TestGenderSub(CommandTest):
     def test_gendercharacter(self):
         char = create_object(gendersub.GenderCharacter, key="Gendered", location=self.room1)
         txt = "Test |p gender"
-        self.assertEqual(gendersub._RE_GENDER_PRONOUN.sub(char._get_pronoun, txt), "Test their gender")
+        self.assertEqual(gendersub._RE_GENDER_PRONOUN.sub(gendersub._get_pronoun(char), txt), "Test their gender")
 
 # test mail contrib
 
