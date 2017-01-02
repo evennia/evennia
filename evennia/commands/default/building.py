@@ -1912,6 +1912,8 @@ class CmdExamine(ObjManipCommand):
         if hasattr(obj, "sessions") and obj.sessions.all():
             string += "\n|wSession id(s)|n: %s" % (", ".join("#%i" % sess.sessid
                                                 for sess in obj.sessions.all()))
+        if hasattr(obj, "email") and obj.email:
+            string += "\n|wE-Mail:|n: |c%s|n" % obj.email              
         if hasattr(obj, "has_player") and obj.has_player:
             string += "\n|wPlayer|n: |c%s|n" % obj.player.name
             perms = obj.player.permissions.all()
