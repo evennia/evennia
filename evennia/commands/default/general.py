@@ -261,20 +261,26 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
             caller.msg("You can't get yourself.")
             return
         if not obj.access(caller, 'get'):
-            if obj.db.get_err_msg:
-                caller.msg(obj.db.get_err_msg)
-            else:
-                caller.msg("You can't get that.")
+            self.failure_message(caller, obj)
             return
 
         obj.move_to(caller, quiet=True)
-        caller.msg("You pick up %s." % obj.name)
-        caller.location.msg_contents("%s picks up %s." %
-                                     (caller.name,
-                                      obj.name),
-                                     exclude=caller)
+        self.success_message(caller, obj)
         # calling hook method
         obj.at_get(caller)
+
+    def success_message(self, obj):
+        self.caller.msg("You pick up %s." % obj.name)
+        self.caller.location.msg_contents(
+            "%s picks up %s." % (self.caller.name, obj.name),
+            exclude=self.caller
+        )
+
+    def failure_message(self, obj):
+        if obj.db.get_err_msg:
+            self.caller.msg(obj.db.get_err_msg)
+        else:
+            self.caller.msg("You can't get that.")
 
 
 class CmdDrop(COMMAND_DEFAULT_CLASS):
@@ -309,12 +315,15 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
             return
 
         obj.move_to(caller.location, quiet=True)
-        caller.msg("You drop %s." % (obj.name,))
-        caller.location.msg_contents("%s drops %s." %
-                                     (caller.name, obj.name),
-                                     exclude=caller)
+        self.success_message(obj)
         # Call the object script's at_drop() method.
         obj.at_drop(caller)
+
+    def drop_message(self, obj):
+        self.caller.msg("You drop %s." % (obj.name,))
+        self.caller.location.msg_contents(
+            "%s drops %s." % (self.caller.name, obj.name), exclude=self.caller
+        )
 
 
 class CmdGive(COMMAND_DEFAULT_CLASS):
