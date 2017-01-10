@@ -137,7 +137,11 @@ class CmdMail(default_cmds.MuxCommand):
                         body = self.rhs
                     self.send_mail(self.lhslist, subject, body, self.caller)
                 else:
-                    message = self.get_all_mail()[int(self.lhs) - 1]
+                    try:
+                        message = self.get_all_mail()[int(self.lhs) - 1]
+                    except ValueError:
+                        self.caller.msg("'%s' is not a valid mail id." % self.lhs)
+                        return
 
                     messageForm = []
                     if message:
@@ -212,7 +216,7 @@ class CmdMail(default_cmds.MuxCommand):
                 new_message = create.create_message(self.caller, message, receivers=recipient, header=subject)
                 new_message.tags.add("U", category="mail")
 
-            caller.msg("You sent a your message.")
+            caller.msg("You sent your message.")
             return
         else:
             caller.msg("No valid players found.  Cannot send message.")
