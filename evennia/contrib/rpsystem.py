@@ -68,31 +68,31 @@ Tall man (assuming his name is Tom) sees:
     The godlike figure looks at Tom and says "Hello".
 
 Verbose Installation Instructions:
+
     1. In typeclasses/character.py:
-       Import the ContribRPCharacter class: 
-           "from evennia.contrib.rpsystem import ContribRPCharacter"
+       Import the `ContribRPCharacter` class:
+           `from evennia.contrib.rpsystem import ContribRPCharacter`
        Inherit ContribRPCharacter:
-           Change "class Character(DefaultCharacter):" to 
-           "class Character(ContribRPCharacter):"
-       If you have any overriden calls in at_object_creation(self): 
-           Add "super(Character,self).at_object_creation()" as the top line.
-    2. In typeclasses/rooms.py:
-           Import the ContribRPRoom class: 
-           "from evennia.contrib.rpsystem import ContribRPRoom"
-       Inherit ContribRPRoom:
-           Change "class Character(DefaultRoom):" to 
-           "class Character(ContribRPRoom):"
-    3. In typeclasses/objects.py
-           Import the ContribRPObject class: 
-           "from evennia.contrib.rpsystem import ContribRPObject"
-       Inherit ContribRPObject:
-           Change "class Character(DefaultObject):" to 
-           "class Character(ContribRPObject):"
-    4. Reload the server (@reload or from console: "evennia reload") 
-    5. Force typeclass updates as required: 
-       Example for your character: "@type/reset/force me = 
-       typeclasses.characters.Character"
-          
+           Change "class Character(DefaultCharacter):" to
+           `class Character(ContribRPCharacter):`
+       If you have any overriden calls in `at_object_creation(self)`:
+           Add `super(Character,self).at_object_creation()` as the top line.
+    2. In `typeclasses/rooms.py`:
+           Import the `ContribRPRoom` class:
+           `from evennia.contrib.rpsystem import ContribRPRoom`
+       Inherit `ContribRPRoom`:
+           Change `class Character(DefaultRoom):` to
+           `class Character(ContribRPRoom):`
+    3. In `typeclasses/objects.py`
+           Import the `ContribRPObject` class:
+           `from evennia.contrib.rpsystem import ContribRPObject`
+       Inherit `ContribRPObject`:
+           Change `class Character(DefaultObject):` to
+           `class Character(ContribRPObject):`
+    4. Reload the server (@reload or from console: "evennia reload")
+    5. Force typeclass updates as required. Example for your character:
+           @type/reset/force me = typeclasses.characters.Character
+
 """
 from builtins import object
 
