@@ -9,8 +9,8 @@ Installation:
     import MailCommand from this module into the default Player or Character command set
 """
 
-from evennia import default_cmds, search_object
-from evennia.utils import create, utils, evtable, evform
+from evennia import default_cmds
+from evennia.utils import create, evtable
 from evennia.comms.models import Msg
 
 
@@ -209,7 +209,6 @@ class CmdMail(default_cmds.MuxCommand):
             if self.caller.player.search(char) is not None:
                 recobjs.append(self.caller.player.search(char))
         if recobjs:
-            lock_string = ""
             for recipient in recobjs:
                 recipient.msg("You have received a new @mail from %s" % caller)
 
