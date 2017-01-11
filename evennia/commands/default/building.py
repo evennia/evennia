@@ -1820,6 +1820,11 @@ class CmdLock(ObjManipCommand):
                 ok = obj.locks.add(lockdef)
             except LockException as e:
                 caller.msg(str(e))
+            if "cmd" in lockdef.lower() and \
+                    inherits_from(obj, "evennia.objects.objects.DefaultExit"):
+                # special fix to update Exits since "cmd"-type locks won't
+                # update on them unless their cmdsets are rebuilt.
+                obj.at_init()
             if ok:
                 caller.msg("Added lock '%s' to %s." % (lockdef, obj))
             return
@@ -1915,7 +1920,7 @@ class CmdExamine(ObjManipCommand):
             string += "\n|wSession id(s)|n: %s" % (", ".join("#%i" % sess.sessid
                                                 for sess in obj.sessions.all()))
         if hasattr(obj, "email") and obj.email:
-            string += "\n|wEmail|n: |c%s|n" % obj.email              
+            string += "\n|wEmail|n: |c%s|n" % obj.email
         if hasattr(obj, "has_player") and obj.has_player:
             string += "\n|wPlayer|n: |c%s|n" % obj.player.name
             perms = obj.player.permissions.all()
