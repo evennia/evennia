@@ -394,7 +394,7 @@ class Evennia(object):
             # flag to avoid loops.
             self.shutdown_complete = True
             # kill the server
-            reactor.callLater(0, reactor.stop)
+            reactor.callLater(1, reactor.stop)
 
     # server start/stop hooks
 

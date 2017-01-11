@@ -419,7 +419,10 @@ class ServerSession(Session):
 
     def __eq__(self, other):
         "Handle session comparisons"
-        return self.address == other.address
+        try:
+            return self.address == other.address
+        except AttributeError:
+            return False
 
     def __str__(self):
         """

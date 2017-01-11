@@ -52,7 +52,15 @@ class ObjectSessionHandler(object):
         self._recache()
 
     def _recache(self):
+        global _SESSIONS
+        if not _SESSIONS:
+            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         self._sessid_cache = list(set(int(val) for val in (self.obj.db_sessid or "").split(",") if val))
+        if any(sessid for sessid in self._sessid_cache if sessid not in _SESSIONS):
+            # cache is out of sync with sessionhandler! Only retain the ones in the handler.
+            self.sessid_cache = [sessid for sessid in self._sessid_cache if sessid in _SESSIONS]
+            self.obj.db_sessid = ",".join(str(val) for val in self._sessid_cache)
+            self.obj.save(update_fields=["db_sessid"])
 
     def get(self, sessid=None):
         """
@@ -73,9 +81,14 @@ class ObjectSessionHandler(object):
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         if sessid:
-            return [_SESSIONS[sessid]] if sessid in self._sessid_cache and sessid in _SESSIONS else []
+            sessions = [_SESSIONS[sessid] if sessid in _SESSIONS else None] if sessid in self._sessid_cache else []
         else:
-            return [_SESSIONS[sessid] for sessid in self._sessid_cache if sessid in _SESSIONS]
+            sessions = [_SESSIONS[sessid] if sessid in _SESSIONS else None for sessid in self._sessid_cache]
+        if None in sessions:
+            # this happens only if our cache has gone out of sync with the SessionHandler.
+            self._recache()
+            return self.get(sessid=sessid)
+        return sessions
 
     def all(self):
         """
