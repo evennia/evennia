@@ -88,6 +88,23 @@ class CmdHelp(Command):
         self.original_args = self.args.strip()
         self.args = self.args.strip().lower()
 
+    def check_show_help(self, cmd, caller):
+        """
+        Helper method. If this return True, the given cmd
+        auto-help will be viewable in the help listing.
+        Override this to easily select what is shown to
+        the player. Note that only commands available
+        in the caller's merged cmdset are available.
+
+        Args:
+            cmd (Command): Command class from the merged cmdset
+            caller (Character, Player or Session): The current caller
+                executing the help command.
+
+        """
+        # return only those with auto_help set and passing the cmd: lock
+        return cmd.auto_help and cmd.access(caller)
+
     def func(self):
         """
         Run the dynamic help entry creator.
@@ -106,7 +123,7 @@ class CmdHelp(Command):
         cmdset.make_unique(caller)
 
         # retrieve all available commands and database topics
-        all_cmds = [cmd for cmd in cmdset if cmd.auto_help and cmd.access(caller)]
+        all_cmds = [cmd for cmd in cmdset if self.check_show_help(cmd, caller)]
         all_topics = [topic for topic in HelpEntry.objects.all() if topic.access(caller, 'view', default=True)]
         all_categories = list(set([cmd.help_category.lower() for cmd in all_cmds] + [topic.help_category.lower() for topic in all_topics]))
 
