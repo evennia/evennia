@@ -420,7 +420,8 @@ class EvMenu(object):
                  options_formatter=evtable_options_formatter,
                  node_formatter=underline_node_formatter,
                  input_parser=evtable_parse_input,
-                 persistent=False, startnode_input="", **kwargs):
+                 persistent=False, startnode_input="", 
+                 session=None, **kwargs):
         """
         Initialize the menu tree and start the caller onto the first node.
 
@@ -509,7 +510,10 @@ class EvMenu(object):
             startnode_input (str, optional): Send an input text to `startnode` as if
                 a user input text from a fictional previous node. When the server reloads,
                 the latest visited node will be re-run using this kwarg.
-
+            session(Session, optional): If the caller is a player and specifies
+                a player command (a command with the player_caller set to true)
+                for the cmd_on_exit value, the session needs to be set in to 
+                execute properly.
         Kwargs:
             any (any): All kwargs will become initialization variables on `caller.ndb._menutree`,
                 to be available at run.
@@ -544,7 +548,7 @@ class EvMenu(object):
         self.auto_look = auto_look
         self.auto_help = auto_help
         if isinstance(cmd_on_exit, str):
-            self.cmd_on_exit = lambda caller, menu: caller.execute_cmd(cmd_on_exit)
+            self.cmd_on_exit = lambda caller, menu: caller.execute_cmd(cmd_on_exit, session)
         elif callable(cmd_on_exit):
             self.cmd_on_exit = cmd_on_exit
         else:
