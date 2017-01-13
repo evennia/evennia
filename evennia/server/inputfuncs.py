@@ -287,7 +287,7 @@ def get_value(session, *args, **kwargs):
     name = kwargs.get("name", "")
     obj = session.puppet or session.player
     if name in _gettable:
-        session.msg(get_value=_gettable[name](obj))
+        session.msg(get_value={"name": name, "value": _gettable[name](obj)})
 
 
 def _testrepeat(**kwargs):
