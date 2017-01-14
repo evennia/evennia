@@ -107,8 +107,8 @@ function doSendText() {
     }
 }
 
-// Opens the settings dialog
-function doOpenSettings() {
+// Opens the options dialog
+function doOpenOptions() {
     if (!Evennia.isConnected()) {
         alert("You need to be connected.");
         return;
@@ -239,11 +239,11 @@ function onPrompt(args, kwargs) {
 
 // Called when the user logged in
 function onLoggedIn() {
-    Evennia.msg("webclient_settings", [], {"monitor": true});
+    Evennia.msg("webclient_options", [], {});
 }
 
 // Called when a setting changed
-function onGotSetting(args, kwargs) {
+function onGotOptions(args, kwargs) {
     $.each(kwargs, function(key, value) {
         var elem = $("[data-setting='" + key + "']");
         if (elem.length === 0) {
@@ -255,10 +255,13 @@ function onGotSetting(args, kwargs) {
 }
 
 // Called when the user changed a setting from the interface
-function onSettingCheckboxChanged() {
+function onOptionCheckboxChanged() {
     var name = $(this).data("setting");
     var value = this.checked;
-    Evennia.msg("set_webclient_settings", [], {name: value});
+    var options = {};
+    options[name] = value;
+
+    Evennia.msg("webclient_options", [], options);
 }
 
 // Silences events we don't do anything with.
@@ -341,23 +344,23 @@ function onNewLine(text, originator) {
 function doStartDragDialog(event) {
     var dialog = $(event.target).closest(".dialog");
     dialog.css('cursor', 'move');
-    
+
     var position = dialog.offset();
     var diffx = event.pageX;
     var diffy = event.pageY;
-    
+
     var drag = function(event) {
         var y = position.top + event.pageY - diffy;
         var x = position.left + event.pageX - diffx;
         dialog.offset({top: y, left: x});
     };
-    
+
     var undrag = function() {
         $(document).unbind("mousemove", drag);
         $(document).unbind("mouseup", undrag);
         dialog.css('cursor', '');
     }
-    
+
     $(document).bind("mousemove", drag);
     $(document).bind("mouseup", undrag);
 }
@@ -394,19 +397,19 @@ $(document).ready(function() {
 
     // Pressing the send button
     $("#inputsend").bind("click", doSendText);
-    
+
     // Pressing the settings button
-    $("#optionsbutton").bind("click", doOpenSettings);
+    $("#optionsbutton").bind("click", doOpenOptions);
 
     // Checking a checkbox in the settings dialog
-    $("[data-setting]").bind("change", onSettingCheckboxChanged);
+    $("[data-setting]").bind("change", onOptionCheckboxChanged);
 
     // Pressing the close button on a dialog
     $(".dialogclose").bind("click", doCloseDialog);
-    
+
     // Makes dialogs draggable
     $(".dialogtitle").bind("mousedown", doStartDragDialog);
-        
+
     // This is safe to call, it will always only
     // initialize once.
     Evennia.init();
@@ -416,7 +419,7 @@ $(document).ready(function() {
     Evennia.emitter.on("default", onDefault);
     Evennia.emitter.on("connection_close", onConnectionClose);
     Evennia.emitter.on("logged_in", onLoggedIn);
-    Evennia.emitter.on("webclient_settings", onGotSetting);
+    Evennia.emitter.on("webclient_options", onGotOptions);
     // silence currently unused events
     Evennia.emitter.on("connection_open", onSilence);
     Evennia.emitter.on("connection_error", onSilence);
@@ -436,8 +439,8 @@ $(document).ready(function() {
     },
     60000*3
     );
-    
-    
+
+
 });
 
 })();
