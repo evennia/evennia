@@ -236,7 +236,6 @@ def search_object_by_tag(key=None, category=None):
     """
     return ObjectDB.objects.get_by_tag(key=key, category=category)
 search_tag = search_object_by_tag # this is the most common case
-search_object_by_tag = search_tag
 def search_player_tag(key=None, category=None):
     """
     Find player based on tag or category.
