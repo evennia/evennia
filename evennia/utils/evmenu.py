@@ -71,10 +71,14 @@ menu is immediately exited and the default "look" command is called.
                         # fallback when no other option matches the user input.
          'desc': description, # optional description
          'goto': nodekey,  # node to go to when chosen
-         'exec': nodekey}, # node or callback to trigger as callback when chosen.
-                           # If a node key is given, the node will be executed once
-                           # but its return values are ignored. If a callable is
-                           # given, it must accept one or two args, like any node.
+         'exec': nodekey}, # node or callback to trigger as callback when chosen. This
+                           # will execute *before* going to the next node. Both node
+                           # and the explicit callback will be called as normal nodes
+                           # (with caller and/or raw_string args). If the callable/node
+                           # returns a single string (only), this will replace the current
+                           # goto location string in-place. Note that relying to
+                           # much on letting exec assign the goto location can make it
+                           # hard to debug your menu logic.
         {...}, ...)
 
 If key is not given, the option will automatically be identified by
@@ -99,7 +103,9 @@ Example:
 
     def callback1(caller):
         # this is called when choosing the "testing" option in node1
-        # (before going to node2). It needs not have return values.
+        # (before going to node2). If it returned a string, say 'node3',
+        # then the next node would be node3 instead of node2 as specified
+        # by the normal 'goto' option key above.
         caller.msg("Callback called!")
 
     def node2(caller):
@@ -371,7 +377,7 @@ def null_node_formatter(nodetext, optionstext, caller=None):
 
 def evtable_parse_input(menuobject, raw_string, caller):
     """
-    Processes the user' node inputs.
+    Processes the user's node inputs.
 
     Args:
         menuobject (EvMenu): The EvMenu instance
@@ -710,21 +716,44 @@ class EvMenu(object):
 
 
     def callback_goto(self, callback, goto, raw_string):
+        """
+        Call callback and goto in sequence.
+
+        Args:
+            callback (callable or str): Callback to run before goto. If
+                the callback returns a string, this is used to replace
+                the `goto` string before going to the next node.
+            goto (str): The target node to go to next (unless replaced
+                by `callable`)..
+            raw_string (str): The original user input.
+
+        """
         if callback:
-            self.callback(callback, raw_string)
+            # replace goto only if callback returns
+            goto = self.callback(callback, raw_string) or goto
         if goto:
             self.goto(goto, raw_string)
 
     def callback(self, nodename, raw_string):
         """
-        Run a node as a callback. This makes no use of the return
-        values from the node.
+        Run a function or node as a callback (with the 'exec' option key).
 
         Args:
-            nodename (str): Name of node.
+            nodename (callable or str): A callable to run as
+                `callable(caller, raw_string)`, or the Name of an existing
+                node to run as a callable. This may or may not return
+                a string.
             raw_string (str): The raw default string entered on the
                 previous node (only used if the node accepts it as an
                 argument)
+        Returns:
+            new_goto (str or None): A replacement goto location string or
+                None (no replacement).
+        Notes:
+            Relying on exec callbacks to set the goto location is
+            very powerful but will easily lead to spaghetti structure and
+            hard-to-trace paths through the menu logic. So be careful with
+            relying on this.
 
         """
         if callable(nodename):
@@ -732,20 +761,23 @@ class EvMenu(object):
             try:
                 if len(getargspec(nodename).args) > 1:
                     # callable accepting raw_string
-                    nodename(self.caller, raw_string)
+                    ret = nodename(self.caller, raw_string)
                 else:
                     # normal callable, only the caller as arg
-                    nodename(self.caller)
+                    ret = nodename(self.caller)
             except Exception:
                 self.caller.msg(_ERR_GENERAL.format(nodename=nodename), self._session)
                 raise
         else:
             # nodename is a string; lookup as node
             try:
-                # execute the node; we make no use of the return values here.
-                self._execute_node(nodename, raw_string)
+                # execute the node
+                ret = self._execute_node(nodename, raw_string)
             except EvMenuError:
                 return
+        if isinstance(basestring, ret):
+            # only return a value if a string (a goto target), ignore all other returns
+            return ret
 
     def goto(self, nodename, raw_string):
         """
