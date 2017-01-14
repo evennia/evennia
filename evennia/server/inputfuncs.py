@@ -421,58 +421,62 @@ def unmonitor(session, *args, **kwargs):
     """
     kwargs["stop"] = True
     monitor(session, *args, **kwargs)
-    
-def _on_webclient_setting_change(**kwargs):
+
+
+def _on_webclient_options_change(**kwargs):
     """
-    Called when the settings stored on the player changes.
+    Called when the webclient options stored on the player changes.
     Inform the interested clients of this change.
     """
     session = kwargs["session"]
     obj = kwargs["obj"]
-    fieldname = kwargs["fieldname"]    
-    clientsettings = _GA(obj, fieldname)
-    
-    session.msg(webclient_settings=clientsettings)
+    fieldname = kwargs["fieldname"]
+    clientoptions = _GA(obj, fieldname)
 
-def webclient_settings(session, *args, **kwargs):
+    session.msg(webclient_options=clientoptions)
+
+
+def webclient_options(session, *args, **kwargs):
     """
-    Handles returning and monitoring stored settings relatede to the webclient.
-    
+    Handles retrieving and changing of options related to the webclient.
+
+    If kwargs is empty (or contains just a "cmdid"), the saved options will be
+    sent back to the session.
+    A monitor handler will be created to inform the client of any future options
+    that changes.
+
+    If kwargs is not empty, the key/values stored in there will be persisted
+    to the player object.
+
     Kwargs:
-        monitor (bool): If this is true, starts monitoring the settings for
-          changes too
+        <option name>: an option to save
     """
     player = session.player
-    
-    clientsettings = settings.WEBCLIENT_SETTINGS.copy()
-    storedsettings = player.db.webclient_settings or {}
-    clientsettings.update(storedsettings)
-    
-    session.msg(webclient_settings=clientsettings)
 
-    if kwargs.get("monitor", False):
+    clientoptions = settings.WEBCLIENT_OPTIONS.copy()
+    storedoptions = player.db._saved_webclient_options or {}
+    clientoptions.update(storedoptions)
+
+    # The webclient adds a cmdid to every kwargs, but we don't need it.
+    try:
+        del kwargs["cmdid"]
+    except KeyError:
+        pass
+
+    if not kwargs:
+        # No kwargs: we are getting the stored options
+        session.msg(webclient_options=clientoptions)
+
+        # Create a monitor. If a monitor already exists then it will replace
+        # the previous one since it would use the same idstring
         from evennia.scripts.monitorhandler import MONITOR_HANDLER
-        MONITOR_HANDLER.add(player, "webclient_settings",
-                            _on_webclient_setting_change,
+        MONITOR_HANDLER.add(player, "webclient_options",
+                            _on_webclient_options_change,
                             idstring=session.sessid, persistent=False,
                             session=session)
-                            
-def set_webclient_settings(session, *args, **kwargs):
-    """
-    Handles changing of a setting related to the webclient: the setting will
-    get saved to the player object.
-    
-    Kwargs:
-        <setting>: A setting to save.
-    """
-    
-    player = session.player
-    
-    clientsettings = settings.WEBCLIENT_SETTINGS.copy()
-    storedsettings = player.db.webclient_settings or {}
-    clientsettings.update(storedsettings)
-    
-    for key, value in kwargs.iteritems():
-        clientsettings[key] = value
+    else:
+        # kwargs provided: persist them to the player object
+        for key, value in kwargs.iteritems():
+            clientoptions[key] = value
 
-    player.db.webclient_settings = clientsettings
+        player.db._saved_webclient_options = clientoptions
