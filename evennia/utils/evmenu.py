@@ -150,7 +150,7 @@ from django.conf import settings
 from evennia import Command, CmdSet
 from evennia.utils import logger
 from evennia.utils.evtable import EvTable
-from evennia.utils.ansi import ANSIString, strip_ansi
+from evennia.utils.ansi import strip_ansi
 from evennia.utils.utils import mod_import, make_iter, pad, m_len
 from evennia.commands import cmdhandler
 
@@ -234,6 +234,9 @@ class CmdEvMenuNode(Command):
                 return True
 
         caller = self.caller
+        # we store Session on the menu since this can be hard to
+        # get in multisession environemtns if caller is a Player.
+        caller.ndb._menutree._session = self.session
         menu = caller.ndb._menutree
         if not menu:
             if _restore(caller):
@@ -249,7 +252,7 @@ class CmdEvMenuNode(Command):
                 if not menu:
                     # can't restore from a session
                     err = "Menu object not found as %s.ndb._menutree!" % (orig_caller)
-                    orig_caller.msg(err)
+                    orig_caller.msg(err) # don't use session here, it's a backup
                     raise EvMenuError(err)
 
         # we have a menu, use it.
@@ -394,7 +397,7 @@ def evtable_parse_input(menuobject, raw_string, caller):
         goto, callback = menuobject.default
         menuobject.callback_goto(callback, goto, raw_string)
     else:
-        caller.msg(_HELP_NO_OPTION_MATCH)
+        caller.msg(_HELP_NO_OPTION_MATCH, session=menuobject._session)
 
     if not (menuobject.options or menuobject.default):
         # no options - we are at the end of the menu.
@@ -420,7 +423,8 @@ class EvMenu(object):
                  options_formatter=evtable_options_formatter,
                  node_formatter=underline_node_formatter,
                  input_parser=evtable_parse_input,
-                 persistent=False, startnode_input="", **kwargs):
+                 persistent=False, startnode_input="", session=None,
+                 **kwargs):
         """
         Initialize the menu tree and start the caller onto the first node.
 
@@ -509,6 +513,11 @@ class EvMenu(object):
             startnode_input (str, optional): Send an input text to `startnode` as if
                 a user input text from a fictional previous node. When the server reloads,
                 the latest visited node will be re-run using this kwarg.
+            session (Session, optional): This is useful when calling EvMenu from a player
+                in multisession mode > 2. Note that this session only really relevant
+                for the very first display of the first node - after that, EvMenu itself
+                will keep the session updated from the command input. So a persistent
+                menu will *not* be using this same session anymore after a reload.
 
         Kwargs:
             any (any): All kwargs will become initialization variables on `caller.ndb._menutree`,
@@ -518,10 +527,15 @@ class EvMenu(object):
             EvMenuError: If the start/end node is not found in menu tree.
 
         Notes:
-            In persistent mode, all nodes, formatters and callbacks in
-            the menu must be possible to be *pickled*, this excludes
-            e.g. callables that are class methods or functions defined
-            dynamically or as part of another function. In
+            While running, the menu is stored on the caller as `caller.ndb._menutree`. Also
+            the current Session (from the Command, so this is still valid in multisession
+            environments) is available through `caller.ndb._menutree._session`. The `_menutree`
+            property is a good one for storing intermediary data on between nodes since it
+            will be automatically deleted when the menu closes.
+
+            In persistent mode, all nodes, formatters and callbacks in the menu must be
+            possible to be *pickled*, this excludes e.g. callables that are class methods
+            or functions defined dynamically or as part of another function. In
             non-persistent mode no such restrictions exist.
 
         """
@@ -543,8 +557,11 @@ class EvMenu(object):
         self.auto_quit = auto_quit
         self.auto_look = auto_look
         self.auto_help = auto_help
+        self._session = session
         if isinstance(cmd_on_exit, str):
-            self.cmd_on_exit = lambda caller, menu: caller.execute_cmd(cmd_on_exit)
+            # At this point menu._session will have been replaced by the
+            # menu command to the actual session calling.
+            self.cmd_on_exit = lambda caller, menu: caller.execute_cmd(cmd_on_exit, session=menu._session)
         elif callable(cmd_on_exit):
             self.cmd_on_exit = cmd_on_exit
         else:
@@ -580,7 +597,7 @@ class EvMenu(object):
                           "persistent": persistent,}))
                 caller.attributes.add("_menutree_saved_startnode", (startnode, startnode_input))
             except Exception as err:
-                caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
+                caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err), session=self._session)
                 logger.log_trace(_TRACE_PERSISTENT_SAVING)
                 persistent = False
 
@@ -665,7 +682,7 @@ class EvMenu(object):
         try:
             node = self._menutree[nodename]
         except KeyError:
-            self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename))
+            self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename), session=self._session)
             raise EvMenuError
         try:
             # the node should return data as (text, options)
@@ -676,20 +693,20 @@ class EvMenu(object):
                 # a normal node, only accepting caller
                 nodetext, options = node(self.caller)
         except KeyError:
-            self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename))
+            self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename), session=self._session)
             raise EvMenuError
         except Exception:
-            self.caller.msg(_ERR_GENERAL.format(nodename=nodename))
+            self.caller.msg(_ERR_GENERAL.format(nodename=nodename), session=self._session)
             raise
         return nodetext, options
 
 
     def display_nodetext(self):
-        self.caller.msg(self.nodetext)
+        self.caller.msg(self.nodetext, session=self._session)
 
 
     def display_helptext(self):
-        self.caller.msg(self.helptext)
+        self.caller.msg(self.helptext, session=self._session)
 
 
     def callback_goto(self, callback, goto, raw_string):
@@ -720,7 +737,7 @@ class EvMenu(object):
                     # normal callable, only the caller as arg
                     nodename(self.caller)
             except Exception:
-                self.caller.msg(_ERR_GENERAL.format(nodename=nodename))
+                self.caller.msg(_ERR_GENERAL.format(nodename=nodename), self._session)
                 raise
         else:
             # nodename is a string; lookup as node
@@ -825,23 +842,23 @@ class CmdGetInput(Command):
     def func(self):
         "This is called when user enters anything."
         caller = self.caller
-        callback = caller.ndb._getinputcallback
+        callback = caller.ndb._getinput._callback
         if not callback:
             # this can be happen if called from a player-command when IC
             caller = self.player
-            callback = caller.ndb._getinputcallback
+            callback = caller.ndb._getinput._callback
             if not callback:
                 raise RuntimeError("No input callback found.")
 
-        prompt = caller.ndb._getinputprompt
+        caller.ndb._getinput._session = self.session
+        prompt = caller.ndb._getinput._prompt
         result = self.raw_string.strip() # we strip the ending line break caused by sending
 
         ok = not callback(caller, prompt, result)
         if ok:
             # only clear the state if the callback does not return
             # anything
-            del caller.ndb._getinputcallback
-            del caller.ndb._getinputprompt
+            del caller.ndb._getinput
             caller.cmdset.remove(InputCmdSet)
 
 
@@ -861,7 +878,12 @@ class InputCmdSet(CmdSet):
         self.add(CmdGetInput())
 
 
-def get_input(caller, prompt, callback):
+class _Prompt(object):
+    "Dummy holder"
+    pass
+
+
+def get_input(caller, prompt, callback, session=None):
     """
     This is a helper function for easily request input from
     the caller.
@@ -880,6 +902,12 @@ def get_input(caller, prompt, callback):
             the input prompt will be cleaned up and exited. If
             returning True, the prompt will remain and continue to
             accept input.
+        session (Session, optional): This allows to specify the
+            session to send the prompt to. It's usually only
+            needed if `caller` is a Player in multisession modes
+            greater than 2. The session is then updated by the
+            command and is available (for example in callbacks)
+            through `caller.ndb.getinput._session`.
 
     Raises:
         RuntimeError: If the given callback is not callable.
@@ -891,13 +919,23 @@ def get_input(caller, prompt, callback):
         client inputs. So make sure to strip that before
         doing a comparison.
 
+        When the prompt is running, a temporary object
+        `caller.ndb._getinput` is stored; this will be removed
+        when the prompt finishes.
+        If you need the specific Session of the caller (which
+        may not be easy to get if caller is a player in higher
+        multisession modes), then it is available in the
+        callback through `caller.ndb._getinput._session`.
+
     """
     if not callable(callback):
         raise RuntimeError("get_input: input callback is not callable.")
-    caller.ndb._getinputcallback = callback
-    caller.ndb._getinputprompt = prompt
+    caller.ndb._getinput = _Prompt()
+    caller.ndb._getinput._callback = callback
+    caller.ndb._getinput._prompt = prompt
+    caller.ndb._getinput._session = session
     caller.cmdset.add(InputCmdSet)
-    caller.msg(prompt)
+    caller.msg(prompt, session=session)
 
 
 #------------------------------------------------------------
