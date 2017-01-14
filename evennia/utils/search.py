@@ -218,17 +218,76 @@ search_attribute_object = ObjectDB.objects.get_attribute
 
 # Note that this returns the object attached to the tag, not the tag
 # object itself (this is usually what you want)
-def search_object_tag(key=None, category=None):
+def search_object_by_tag(key=None, category=None):
+    """
+    Find object based on tag or category.
+
+    Args:
+        key (str, optional): The tag key to search for.
+        category (str, optional): The category of tag
+            to search for. If not set, uncategorized
+            tags will be searched.
+
+    Returns:
+        matches (list): List of Objects with tags matching
+            the search criteria, or an empty list if no
+            matches were found.
+
+    """
     return ObjectDB.objects.get_by_tag(key=key, category=category)
-search_tag = search_object_tag # this is the most common case
+search_tag = search_object_by_tag # this is the most common case
+search_object_by_tag = search_tag
 def search_player_tag(key=None, category=None):
+    """
+    Find player based on tag or category.
+
+    Args:
+        key (str, optional): The tag key to search for.
+        category (str, optional): The category of tag
+            to search for. If not set, uncategorized
+            tags will be searched.
+
+    Returns:
+        matches (list): List of Players with tags matching
+            the search criteria, or an empty list if no
+            matches were found.
+
+    """
     return PlayerDB.objects.get_by_tag(key=key, category=category)
 def search_script_tag(key=None, category=None):
+    """
+    Find script based on tag or category.
+
+    Args:
+        key (str, optional): The tag key to search for.
+        category (str, optional): The category of tag
+            to search for. If not set, uncategorized
+            tags will be searched.
+
+    Returns:
+        matches (list): List of Scripts with tags matching
+            the search criteria, or an empty list if no
+            matches were found.
+
+    """
     return ScriptDB.objects.get_by_tag(key=key, category=category)
 def search_channel_tag(key=None, category=None):
+    """
+    Find channel based on tag or category.
+
+    Args:
+        key (str, optional): The tag key to search for.
+        category (str, optional): The category of tag
+            to search for. If not set, uncategorized
+            tags will be searched.
+
+    Returns:
+        matches (list): List of Channels with tags matching
+            the search criteria, or an empty list if no
+            matches were found.
+
+    """
     return Channel.objects.get_by_tag(key=key, category=category)
 
-# search for tag objects
+# search for tag objects (not the objects they are attached to
 search_tag_object = ObjectDB.objects.get_tag
-
-

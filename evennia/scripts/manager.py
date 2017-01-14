@@ -217,7 +217,7 @@ class ScriptDBManager(TypedObjectManager):
         return nr_started, nr_stopped
 
     @returns_typeclass_list
-    def script_search(self, ostring, obj=None, only_timed=False):
+    def search_script(self, ostring, obj=None, only_timed=False):
         """
         Search for a particular script.
 
@@ -245,6 +245,8 @@ class ScriptDBManager(TypedObjectManager):
         timed_restriction = only_timed and Q(interval__gt=0) or Q()
         scripts = self.filter(timed_restriction & obj_restriction & Q(db_key__iexact=ostring))
         return scripts
+    # back-compatibility alias
+    script_search = search_script
 
     def copy_script(self, original_script, new_key=None, new_obj=None, new_locks=None):
         """

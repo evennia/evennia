@@ -291,7 +291,7 @@ class ObjectDBManager(TypedObjectManager):
     # main search methods and helper functions
 
     @returns_typeclass_list
-    def object_search(self, searchdata,
+    def search_object(self, searchdata,
                       attribute_name=None,
                       typeclass=None,
                       candidates=None,
@@ -412,6 +412,8 @@ class ObjectDBManager(TypedObjectManager):
                 pass
         # return a list (possibly empty)
         return matches
+    # alias for backwards compatibility
+    object_search = search_object
 
     #
     # ObjectManager Copy method

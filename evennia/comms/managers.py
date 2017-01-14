@@ -253,7 +253,7 @@ class MsgManager(TypedObjectManager):
         """
         return self.filter(db_receivers_channels=channel).exclude(db_hide_from_channels=channel)
 
-    def message_search(self, sender=None, receiver=None, freetext=None, dbref=None):
+    def search_message(self, sender=None, receiver=None, freetext=None, dbref=None):
         """
         Search the message database for particular messages. At least
         one of the arguments must be given to do a search.
@@ -309,7 +309,8 @@ class MsgManager(TypedObjectManager):
             fulltext_restrict = Q()
         # execute the query
         return list(self.filter(sender_restrict & receiver_restrict & fulltext_restrict))
-
+    # back-compatibility alias
+    message_search = search_message
 
 #
 # Channel manager
@@ -383,7 +384,7 @@ class ChannelDBManager(TypedObjectManager):
         return []
 
     @returns_typeclass_list
-    def channel_search(self, ostring, exact=True):
+    def search_channel(self, ostring, exact=True):
         """
         Search the channel database for a particular channel.
 
@@ -413,6 +414,8 @@ class ChannelDBManager(TypedObjectManager):
                         if ostring.lower() in [a.lower
                             for a in channel.aliases.all()]]
         return channels
+    # back-compatibility alias
+    channel_search = search_channel
 
 class ChannelManager(ChannelDBManager, TypeclassManager):
     """

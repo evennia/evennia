@@ -149,7 +149,7 @@ class PlayerDBManager(TypedObjectManager, UserManager):
             return None
 
     @returns_typeclass_list
-    def player_search(self, ostring, exact=True, typeclass=None):
+    def search_player(self, ostring, exact=True, typeclass=None):
         """
         Searches for a particular player by name or
         database id.
@@ -182,7 +182,8 @@ class PlayerDBManager(TypedObjectManager, UserManager):
             return self.filter(**query)
         else:
             return self.filter(**query)
-
+    # back-compatibility alias
+    player_search = search_player
 
 class PlayerManager(PlayerDBManager, TypeclassManager):
     pass

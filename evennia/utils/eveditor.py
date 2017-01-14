@@ -605,6 +605,8 @@ class EvEditor(object):
     def __init__(self, caller, loadfunc=None, savefunc=None,
                  quitfunc=None, key="", persistent=False):
         """
+        Launches a full in-game line editor, mimicking the functionality of VIM.
+
         Args:
             caller (Object): Who is using the editor.
             loadfunc (callable, optional): This will be called as
