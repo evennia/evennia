@@ -691,7 +691,22 @@ class ServerSessionHandler(SessionHandler):
 
     def data_in(self, session, **kwargs):
         """
-        Data Portal -> Server.
+        We let the data take a "detour" to session.data_in
+        so the user can override and see it all in one place.
+        That method is responsible to in turn always call
+        this class' `sessionhandler.call_inputfunc` with the
+        (possibly processed) data.
+
+        """
+        if session:
+            session.data_in(**kwargs)
+
+    def call_inputfuncs(self, session, **kwargs):
+        """
+        Split incoming data into its inputfunc counterparts.
+        This should be called by the serversession.data_in
+        as sessionhandler.call_inputfunc(self, **kwargs).
+
         We also intercept OOB communication here.
 
         Args:
