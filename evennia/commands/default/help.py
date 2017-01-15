@@ -42,9 +42,19 @@ class CmdHelp(Command):
     # the current cmdset with the call to self.func().
     return_cmdset = True
 
+
     # Help messages are wrapped in an EvMore call.  If you want to
     # avoid this, simply set the 'help_more' flag to False.
     help_more = True
+
+
+    def msg_help(self, text):
+        """
+        messages text to the caller, adding an extra oob argument to indicate
+        that this is a help command result and could be rendered in a separate
+        help window
+        """
+        self.msg((text, {"window": "help"}));
 
     @staticmethod
     def format_help_entry(title, help_text, aliases=None, suggested=None):
@@ -179,7 +189,7 @@ class CmdHelp(Command):
                     hdict_cmd[cmd.help_category].append(cmd.key)
             [hdict_topic[topic.help_category].append(topic.key) for topic in all_topics]
             # report back
-            self.msg(self.format_help_list(hdict_cmd, hdict_topic))
+            self.msg_help(self.format_help_list(hdict_cmd, hdict_topic))
             return
 
         # Try to access a particular command
@@ -202,7 +212,7 @@ class CmdHelp(Command):
             if type(self).help_more:
                 evmore.msg(caller, formatted)
             else:
-                self.msg(formatted)
+                self.msg_help(formatted)
             return
 
         # try an exact database help entry match
@@ -215,13 +225,13 @@ class CmdHelp(Command):
             if type(self).help_more:
                 evmore.msg(caller, formatted)
             else:
-                self.msg(formatted)
+                self.msg_help(formatted)
             return
 
         # try to see if a category name was entered
         if query in all_categories:
-            self.msg(self.format_help_list({query:[cmd.key for cmd in all_cmds if cmd.help_category==query]},
-                                        {query:[topic.key for topic in all_topics if topic.help_category==query]}))
+            self.msg_help(self.format_help_list({query:[cmd.key for cmd in all_cmds if cmd.help_category==query]},
+                                                {query:[topic.key for topic in all_topics if topic.help_category==query]}))
             return
 
         # no exact matches found. Just give suggestions.

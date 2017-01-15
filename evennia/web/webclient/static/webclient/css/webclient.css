@@ -193,12 +193,31 @@ div {margin:0px;}
     z-index: 10;
     background-color: #fefefe;
     border: 1px solid #888;
-    width: 50%;
     color: black;
 
 }
 
+#optionsdialog {
+    width: 50%;
+}
+
+#helpdialog {
+    width: 725px;
+    height: 65%;
+}
+
+#helpdialog .dialogcontent {
+    background-color: #1e1e1e;
+    color: #ccc;
+}
+
+.dialogcontentparent {
+    height: calc(100% - 44px - 40px);
+}
+
 .dialogcontent {
+    overflow: auto;
+    height: 100%;
     padding: 20px;
 }
 
