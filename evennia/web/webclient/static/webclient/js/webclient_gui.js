@@ -15,6 +15,8 @@
 (function () {
 "use strict"
 
+
+var options = {};
 //
 // GUI Elements
 //
@@ -235,6 +237,11 @@ function onPrompt(args, kwargs) {
         .addClass("out")
         .html(args[0]);
     doWindowResize();
+
+    // also display the prompt in the output window if gagging is disabled
+    if (("gagprompt" in options) && (!options["gagprompt"])) {
+        onText(args, kwargs);
+    }
 }
 
 // Called when the user logged in
@@ -244,6 +251,8 @@ function onLoggedIn() {
 
 // Called when a setting changed
 function onGotOptions(args, kwargs) {
+    options = kwargs;
+
     $.each(kwargs, function(key, value) {
         var elem = $("[data-setting='" + key + "']");
         if (elem.length === 0) {
