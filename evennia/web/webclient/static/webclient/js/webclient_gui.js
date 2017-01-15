@@ -367,6 +367,10 @@ function onNewLine(text, originator) {
           }
         });
     }
+    if (("notification_sound" in options) && (options["notification_sound"])) {
+        var audio = new Audio("/static/webclient/media/notification.wav");
+        audio.play();
+    }
   }
 }
 
