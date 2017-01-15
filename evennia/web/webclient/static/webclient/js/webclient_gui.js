@@ -72,6 +72,20 @@ var input_history = function() {
             scratch: scratch}
 }();
 
+function openPopup(dialogname, content) {
+    var dialog = $(dialogname);
+    if (!dialog.length) {
+        console.log("Dialog " + renderto + " not found.");
+        return;
+    }
+
+    if (content) {
+        var contentel = dialog.find(".dialogcontent");
+        contentel.html(content);
+    }
+    dialog.show();
+}
+
 //
 // GUI Event Handlers
 //
@@ -115,9 +129,8 @@ function doOpenOptions() {
         alert("You need to be connected.");
         return;
     }
-    
-    var optionsdialog = $("#optionsdialog");
-    optionsdialog.show();
+
+    openPopup("#optionsdialog");
 }
 
 // Closes the currently open dialog
@@ -220,14 +233,25 @@ function doWindowResize() {
 function onText(args, kwargs) {
     // append message to previous ones, then scroll so latest is at
     // the bottom. Send 'cls' kwarg to modify the output class.
-    var mwin = $("#messagewindow");
-    var cls = kwargs == null ? 'out' : kwargs['cls'];
-    mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
-    mwin.animate({
-        scrollTop: document.getElementById("messagewindow").scrollHeight
-    }, 0);
+    var renderto = "main";
+    if (kwargs["window"] == "help") {
+        if (("helppopup" in options) && (options["helppopup"])) {
+            renderto = "#helpdialog";
+        }
+    }
 
-    onNewLine(args[0], null);
+    if (renderto == "main") {
+        var mwin = $("#messagewindow");
+        var cls = kwargs == null ? 'out' : kwargs['cls'];
+        mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
+        mwin.animate({
+            scrollTop: document.getElementById("messagewindow").scrollHeight
+        }, 0);
+
+        onNewLine(args[0], null);
+    } else {
+        openPopup(renderto, args[0]);
+    }
 }
 
 // Handle prompt output from the server
