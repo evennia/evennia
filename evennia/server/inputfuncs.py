@@ -470,7 +470,7 @@ def webclient_options(session, *args, **kwargs):
         # Create a monitor. If a monitor already exists then it will replace
         # the previous one since it would use the same idstring
         from evennia.scripts.monitorhandler import MONITOR_HANDLER
-        MONITOR_HANDLER.add(player, "webclient_options",
+        MONITOR_HANDLER.add(player, "_saved_webclient_options",
                             _on_webclient_options_change,
                             idstring=session.sessid, persistent=False,
                             session=session)
