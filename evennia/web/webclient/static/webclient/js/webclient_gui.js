@@ -349,27 +349,24 @@ function onNewLine(text, originator) {
     favico.badge(unread);
     document.title = "(" + unread + ") " + originalTitle;
 
-    //// TODO: Following code adds a full notification popup. It
-    //// works fine but should be possible to turn off if a player
-    //// wants to (pending webclient config pane).
-    ////
-    //Notification.requestPermission().then(function(result) {
-    //  if(result === "granted") {
-    //
-    //    var title = originalTitle === "" ? "Evennia" : originalTitle;
-    //    var options = {
-    //      body: text.replace(/(<([^>]+)>)/ig,""),
-    //      icon: "/static/website/images/evennia_logo.png"
-    //    }
-    //  
-    //   var n = new Notification(title, options);
-    //   n.onclick = function(e) {
-    //     e.preventDefault();
-    //     window.focus();
-    //     this.close();
-    //   // }
-    //  }
-    //})
+    if (("notification_popup" in options) && (options["notification_popup"])) {
+        Notification.requestPermission().then(function(result) {
+            if(result === "granted") {
+            var title = originalTitle === "" ? "Evennia" : originalTitle;
+            var options = {
+                body: text.replace(/(<([^>]+)>)/ig,""),
+                icon: "/static/website/images/evennia_logo.png"
+            }
+
+            var n = new Notification(title, options);
+            n.onclick = function(e) {
+                e.preventDefault();
+                 window.focus();
+                 this.close();
+            }
+          }
+        });
+    }
   }
 }
 
