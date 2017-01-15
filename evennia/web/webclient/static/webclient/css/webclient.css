@@ -172,7 +172,7 @@ div {margin:0px;}
 #toolbar {
     position: fixed;
     top: 0;
-    right: 0;
+    right: 5px;
     z-index: 1;
 }
 
