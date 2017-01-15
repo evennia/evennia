@@ -133,7 +133,7 @@ class ScriptDBManager(TypedObjectManager):
         return nr_deleted
 
     def validate(self, scripts=None, obj=None, key=None, dbref=None,
-                 init_mode=False):
+                 init_mode=None):
         """
         This will step through the script database and make sure
         all objects run scripts that are still valid in the context
@@ -153,7 +153,7 @@ class ScriptDBManager(TypedObjectManager):
                 particular id.
             init_mode (str, optional): This is used during server
                 upstart and can have three values:
-                - `False` (no init mode). Called during run.
+                - `None` (no init mode). Called during run.
                 - `"reset"` - server reboot. Kill non-persistent scripts
                 - `"reload"` - server reload. Keep non-persistent scripts.
         Returns:

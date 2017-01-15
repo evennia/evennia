@@ -327,13 +327,11 @@ class ServerSessionHandler(SessionHandler):
             self[sessid] = sess
             sess.at_sync()
 
-        # after sync is complete we force-validate all scripts
-        # (this also starts them)
-        init_mode = _ServerConfig.objects.conf("server_restart_mode", default=None)
-        _ScriptDB.objects.validate(init_mode=init_mode)
-        _ServerConfig.objects.conf("server_restart_mode", delete=True)
+        # tell the server hook we synced
+        self.server.at_post_portal_sync()
         # announce the reconnection
         self.announce_all(_(" ... Server restarted."))
+
 
     def portal_disconnect(self, session):
         """

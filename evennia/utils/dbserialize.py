@@ -375,19 +375,25 @@ def pack_session(item):
     can't be safely serialized).
 
     Args:
-        item (packed_session): The fact that item is a packed Session
-            should be checked before this call.
+        item (Session)): This item must have all properties of a session
+            before entering this call.
 
     Returns:
-        unpacked (any): Either the original input or converts the
-            internal store back to a Session. If the Session no longer
-            exists, None is returned.
+        packed (tuple or None): A session-packed tuple on the form
+            `(__packed_session__, sessid, conn_time)`. If this sessid
+            does not match a session in the Session handler, None is returned.
 
     """
     _init_globals()
-    return item.conn_time and item.sessid and ('__packed_session__',
-                                              _GA(item, "sessid"),
-                                              _GA(item, "conn_time"))
+    session = _SESSION_HANDLER.get(item.sessid)
+    if session and session.conn_time == item.conn_time:
+        # we require connection times to be identical for the Session
+        # to be accepted as actually being a session (sessids gets
+        # reused all the time).
+        return item.conn_time and item.sessid and ('__packed_session__',
+                                                  _GA(item, "sessid"),
+                                                  _GA(item, "conn_time"))
+    return None
 
 def unpack_session(item):
     """
@@ -454,7 +460,7 @@ def to_pickle(data):
                 return item.__class__([process_item(val) for val in item])
             except (AttributeError, TypeError):
                 return [process_item(val) for val in item]
-        elif hasattr(item, "sessid") and hasattr(item, "conn_time") and item.sessid in _SESSION_HANDLER:
+        elif hasattr(item, "sessid") and hasattr(item, "conn_time"):
             return pack_session(item)
         return pack_dbobj(item)
     return process_item(data)

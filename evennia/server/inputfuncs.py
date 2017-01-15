@@ -355,7 +355,10 @@ def _on_monitor_change(**kwargs):
     obj = kwargs["obj"]
     name = kwargs["name"]
     session = kwargs["session"]
-    session.msg(monitor={"name": name, "value": _GA(obj, fieldname)})
+    # the session may be None if the char quits and someone
+    # else then edits the object
+    if session:
+        session.msg(monitor={"name": name, "value": _GA(obj, fieldname)})
 
 
 def monitor(session, *args, **kwargs):

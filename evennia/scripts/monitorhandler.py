@@ -71,11 +71,16 @@ class MonitorHandler(object):
             restored_monitors = dbunserialize(restored_monitors)
             for (obj, fieldname, idstring, path, persistent, kwargs) in restored_monitors:
                 try:
-                    if not persistent and not server_reload:
+                    if not server_reload and not persistent:
                         # this monitor will not be restarted
+                        continue
+                    if "session" in kwargs and not kwargs["session"]:
+                        # the session was removed because it no longer
+                        # exists. Don't restart the monitor.
                         continue
                     modname, varname = path.rsplit(".", 1)
                     callback = variable_from_module(modname, varname)
+
                     if obj and hasattr(obj, fieldname):
                         self.monitors[obj][fieldname][idstring] = (callback, persistent, kwargs)
                 except Exception:
@@ -115,6 +120,13 @@ class MonitorHandler(object):
                 of the same field and object.
             persistent (bool, optional): If False, the monitor will survive
                 a server reload but not a cold restart. This is default.
+
+        Kwargs:
+            session (Session): If this keyword is given, the monitorhandler will
+                correctly analyze it and remove the monitor if after a reload/reboot
+                the session is no longer valid.
+            any (any): Any other kwargs are passed on to the callback. Remember that
+                all kwargs must be possible to pickle!
 
         """
         if not fieldname.startswith("db_") or not hasattr(obj, fieldname):
