@@ -261,8 +261,9 @@ class ServerSession(Session):
             player.at_post_disconnect()
             # remove any webclient settings monitors associated with this
             # session
-            MONITOR_HANDLER.remove(player, "webclient_settings", self.sessid)
-            
+            MONITOR_HANDLER.remove(player, "_saved_webclient_options",
+                                   self.sessid)
+
 
     def get_player(self):
         """
