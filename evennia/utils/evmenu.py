@@ -775,7 +775,7 @@ class EvMenu(object):
                 ret = self._execute_node(nodename, raw_string)
             except EvMenuError:
                 return
-        if isinstance(basestring, ret):
+        if isinstance(ret, basestring):
             # only return a value if a string (a goto target), ignore all other returns
             return ret
 
