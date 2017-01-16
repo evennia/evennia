@@ -104,13 +104,14 @@ class Ttype(object):
             # only support after a certain version, but all support
             # it since at least 4 years. We assume recent client here for now.
             xterm256 = False
-            if clientname.startswith("MUDLET"):
+            cupper = clientname.upper()
+            if cupper.startswith("MUDLET"):
                 # supports xterm256 stably since 1.1 (2010?)
-                xterm256 = clientname.split("MUDLET",1)[1].strip() >= "1.1"
+                xterm256 = cupper.split("MUDLET",1)[1].strip() >= "1.1"
             else:
-                xterm256 = (clientname.startswith("XTERM") or
-                            clientname.endswith("-256COLOR") or
-                            clientname in ("ATLANTIS",      # > 0.9.9.0 (aug 2009)
+                xterm256 = (cupper.startswith("XTERM") or
+                            cupper.endswith("-256COLOR") or
+                            cupper in ("ATLANTIS",      # > 0.9.9.0 (aug 2009)
                                            "CMUD",          # > 3.04 (mar 2009)
                                            "KILDCLIENT",    # > 2.2.0 (sep 2005)
                                            "MUDLET",        # > beta 15 (sep 2009)
@@ -128,10 +129,11 @@ class Ttype(object):
         elif self.ttype_step == 2:
             # this is a term capabilities flag
             term = option
+            tupper = term.upper()
             # identify xterm256 based on flag
-            xterm256 = (term.endswith("-256color")         # Apple Terminal, old Tintin
-                        or term.endswith("xterm") and      # old Tintin, Putty
-                        not term.endswith("-color"))
+            xterm256 = (tupper.endswith("-256COLOR")         # Apple Terminal, old Tintin
+                        or tupper.endswith("XTERM") and      # old Tintin, Putty
+                        not tupper.endswith("-COLOR"))
             if xterm256:
                 self.protocol.protocol_flags['ANSI'] = True
                 self.protocol.protocol_flags['XTERM256'] = xterm256
