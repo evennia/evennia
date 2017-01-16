@@ -242,7 +242,6 @@ class CmdEvMenuNode(Command):
         caller = self.caller
         # we store Session on the menu since this can be hard to
         # get in multisession environemtns if caller is a Player.
-        caller.ndb._menutree._session = self.session
         menu = caller.ndb._menutree
         if not menu:
             if _restore(caller):
@@ -258,9 +257,11 @@ class CmdEvMenuNode(Command):
                 if not menu:
                     # can't restore from a session
                     err = "Menu object not found as %s.ndb._menutree!" % (orig_caller)
-                    orig_caller.msg(err) # don't use session here, it's a backup
+                    orig_caller.msg(err) # don't give the session as a kwarg here, direct to original
                     raise EvMenuError(err)
-
+        # we must do this after the caller with the menui has been correctly identified since it
+        # can be either Player, Object or Session (in the latter case this info will be superfluous).
+        caller.ndb._menutree._session = self.session
         # we have a menu, use it.
         menu._input_parser(menu, self.raw_string, caller)
 
