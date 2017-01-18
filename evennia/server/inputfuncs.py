@@ -48,6 +48,7 @@ def text(session, *args, **kwargs):
     string on the server.
 
     Args:
+        session (Session): The active Session to receive the input.
         text (str): First arg is used as text-command input. Other
             arguments are ignored.
 
@@ -86,6 +87,7 @@ def bot_data_in(session, *args, **kwargs):
     This will trigger the execute_cmd method on the bots in-game counterpart.
 
     Args:
+        session (Session): The active Session to receive the input.
         text (str): First arg is text input. Other arguments are ignored.
 
     """
@@ -101,16 +103,8 @@ def bot_data_in(session, *args, **kwargs):
     if text.strip() in _IDLE_COMMAND:
         session.update_session_counters(idle=True)
         return
-    if session.player:
-        # nick replacement
-        puppet = session.puppet
-        if puppet:
-            text = puppet.nicks.nickreplace(text,
-                          categories=("inputline", "channel"), include_player=True)
-        else:
-            text = session.player.nicks.nickreplace(text,
-                        categories=("inputline", "channel"), include_player=False)
     kwargs.pop("options", None)
+    # Trigger the execute_cmd method of the corresponding bot.
     session.player.execute_cmd(text=text, session=session)
     session.update_session_counters()
 
