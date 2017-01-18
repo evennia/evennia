@@ -80,7 +80,7 @@ class RSSReader(Session):
         if not init:
             # for initialization we just ignore old entries
             for entry in reversed(new_entries):
-                self.data_in("bot_data_in " + entry)
+                self.data_in(entry)
 
     def data_in(self, text=None, **kwargs):
         """
@@ -91,7 +91,7 @@ class RSSReader(Session):
             kwargs (any): Options from protocol.
 
         """
-        self.sessionhandler.data_in(self, text=text, **kwargs)
+        self.sessionhandler.data_in(self, bot_data_in=text, **kwargs)
 
     def _errback(self, fail):
         "Report error"

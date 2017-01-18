@@ -79,29 +79,6 @@ class BotStarter(DefaultScript):
         """
         self.db.started = False
 
-
-class CmdBotListen(Command):
-    """
-    This is a command that absorbs input aimed specifically at the
-    bot. The session must prepend its data with bot_data_in for this
-    to trigger.
-
-    """
-    key = "bot_data_in"
-    def func(self):
-        "Relay to typeclass"
-        self.obj.execute_cmd(self.args.strip(), session=self.session)
-
-class BotCmdSet(CmdSet):
-    """
-    Holds the BotListen command
-
-    """
-    key = "botcmdset"
-    def at_cmdset_creation(self):
-        self.add(CmdBotListen())
-
-
 # Bot base class
 
 class Bot(DefaultPlayer):
@@ -123,7 +100,6 @@ class Bot(DefaultPlayer):
         lockstring = "examine:perm(Wizards);edit:perm(Wizards);delete:perm(Wizards);boot:perm(Wizards);msg:false()"
         self.locks.add(lockstring)
         # set the basics of being a bot
-        self.cmdset.add_default(BotCmdSet)
         script_key = "%s" % self.key
         self.scripts.add(BotStarter, key=script_key)
         self.is_bot = True

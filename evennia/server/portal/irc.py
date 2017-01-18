@@ -178,7 +178,7 @@ class IRCBot(irc.IRCClient, Session):
         if not msg.startswith('***'):
             user = user.split('!', 1)[0]
             user = ansi.raw(user)
-            self.data_in("bot_data_in %s@%s: %s" % (user, channel, msg))
+            self.data_in("%s@%s: %s" % (user, channel, msg))
 
     def action(self, user, channel, msg):
         """
@@ -192,7 +192,7 @@ class IRCBot(irc.IRCClient, Session):
         """
         if not msg.startswith('**'):
             user = user.split('!', 1)[0]
-            self.data_in("bot_data_in %s@%s %s" % (user, channel, msg))
+            self.data_in("%s@%s %s" % (user, channel, msg))
 
     def data_in(self, text=None, **kwargs):
         """
@@ -204,7 +204,7 @@ class IRCBot(irc.IRCClient, Session):
 
         """
 
-        self.sessionhandler.data_in(self, text=text, **kwargs)
+        self.sessionhandler.data_in(self, bot_data_in=text, **kwargs)
 
     def send_text(self, *args, **kwargs):
         """
