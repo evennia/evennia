@@ -133,7 +133,7 @@ strongly recommended.
 Setup:
   1) setup a fresh/clean database (if using sqlite, just safe-copy
      away your real evennia.db3 file and create a new one with
-     manage.py)
+     `evennia migrate`)
   2) in server/conf/settings.py, add
 
         PERMISSION_PLAYER_DEFAULT="Builders"
@@ -148,13 +148,26 @@ Setup:
         evennia --dummyrunner <nr_of_clients>
 
   5) Log on and determine if game remains responsive despite the
-     heavier load. Note that if you do profiling, there is an
-     additional overhead from the profiler too!j
+     heavier load. Note that if you activated profiling, there is a
+     considerate additional overhead from the profiler too so you
+     should usually not consider game responsivity when using the
+     profiler at the same time.
   6) If you use profiling, let the game run long enough to gather
      data, then stop the server cleanly using evennia stop or @shutdown.
      @shutdown. The profile appears as
      server/logs/server.prof/portal.prof (see Python's manual on
      cProfiler).
+
+Notes:
+
+The dummyrunner tends to create a lot of players all at once, which is
+a very heavy operation. This is not a realistic use-case - what you want
+to test is performance during run. A large
+number of clients here may lock up the client until all have been
+created. It may be better to connect multiple dummyrunners instead of
+starting one single one with a lot of players. Exactly what this number
+is depends on your computer power. So start with 10-20 clients and increase
+until you see the initial login slows things too much.
 
 """
 
