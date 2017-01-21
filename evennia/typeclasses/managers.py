@@ -217,7 +217,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             return _Tag.objects.filter(**dict(query))
         else:
             # search only among tags stored on on this model
-            query = [("tag__db_tagtype", tagtype)]
+            query = [("tag__db_tagtype", tagtype), ("tag__db_model", dbmodel)]
             if obj:
                 query.append(("%s__id" % self.model.__name__.lower(), obj.id))
             if key:
@@ -336,7 +336,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         data = str(data) if data is not None else None
         # try to get old tag
 
-        tag = self.get_tag(key=key, category=category, tagtype=tagtype, global_search=True)
+        tag = self.get_tag(key=key, category=category, tagtype=tagtype,
+                           dbmodel=dbmodel, global_search=True)
         if tag and data is not None:
             # get tag from list returned by get_tag
             tag = tag[0]
