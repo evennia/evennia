@@ -303,8 +303,10 @@ class TagHandler(object):
             category = category.strip().lower() if category is not None else None
 
             # This does not delete the tag object itself. Maybe it should do
-            # that when no objects reference the tag anymore (how to check)?
-            tagobj = self.obj.db_tags.filter(db_key=tagstr, db_category=category)
+            # that when no objects reference the tag anymore (but how to check)?
+            # For now, tags are never deleted, only their connection to objects.
+            tagobj = getattr(self, self._m2m_fieldname).filter(db_key=tagstr, db_category=category,
+                                             db_model=self._model, db_tagtype=self._tagtype)
             if tagobj:
                 getattr(self.obj, self._m2m_fieldname).remove(tagobj[0])
             self._delcache(key, category)
@@ -319,10 +321,10 @@ class TagHandler(object):
                 category.
 
         """
-        if not category:
-            getattr(self.obj, self._m2m_fieldname).clear()
-        else:
-            getattr(self.obj, self._m2m_fieldname).filter(db_category=category).delete()
+        query = {"db_model": self._model, "db_tagtype": self._tagtype}
+        if category:
+            query["db_category"] = category
+        getattr(self.obj, self._m2m_fieldname).filter(**query).delete()
         self._cache = {}
         self._catcache = {}
         self._cache_complete = False

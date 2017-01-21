@@ -278,7 +278,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             query.append(("db_tags__db_key", key.lower()))
         if category:
             query.append(("db_tags__db_category", category.lower()))
-        print "get_by_tag query:", query
         return self.filter(**dict(query))
 
     def get_by_permission(self, key=None, category=None):
