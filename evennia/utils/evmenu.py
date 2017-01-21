@@ -70,15 +70,17 @@ menu is immediately exited and the default "look" command is called.
                         # "_default", which marks this option as the default
                         # fallback when no other option matches the user input.
          'desc': description, # optional description
-         'goto': nodekey,  # node to go to when chosen
+         'goto': nodekey,  # node to go to when chosen. This can also be a callable with
+                           # caller and/or raw_string args. It must return a string
+                           # with the key pointing to the node to go to.
          'exec': nodekey}, # node or callback to trigger as callback when chosen. This
                            # will execute *before* going to the next node. Both node
                            # and the explicit callback will be called as normal nodes
                            # (with caller and/or raw_string args). If the callable/node
                            # returns a single string (only), this will replace the current
-                           # goto location string in-place. Note that relying to
-                           # much on letting exec assign the goto location can make it
-                           # hard to debug your menu logic.
+                           # goto location string in-place (if a goto callback, it will never fire).
+                           # Note that relying to much on letting exec assign the goto
+                           # location can make it hard to debug your menu logic.
         {...}, ...)
 
 If key is not given, the option will automatically be identified by
