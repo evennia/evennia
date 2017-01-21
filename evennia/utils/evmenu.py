@@ -785,12 +785,24 @@ class EvMenu(object):
         Run a node by name
 
         Args:
-            nodename (str): Name of node.
+            nodename (str or callable): Name of node or a callable
+                to be called as `function(caller, raw_string)` or `function(caller)`
+                to return the actual goto string.
             raw_string (str): The raw default string entered on the
                 previous node (only used if the node accepts it as an
                 argument)
 
         """
+        if callable(nodename):
+            try:
+                if len(getargspec(nodename).args) > 1:
+                    # callable accepting raw_string
+                    nodename = nodename(self.caller, raw_string)
+                else:
+                    nodename = nodename(self.caller)
+            except Exception:
+                self.caller.msg(_ERR_GENERAL.format(nodename=nodename), self._session)
+                raise
         try:
             # execute the node, make use of the returns.
             nodetext, options = self._execute_node(nodename, raw_string)
