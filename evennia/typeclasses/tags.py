@@ -168,6 +168,7 @@ class TagHandler(object):
             else:
                 # we have to query to make this category up-date in the cache
                 query = {"%s__id" % self._model : self._objid,
+                         "tag__db_model" : self._model,
                          "tag__db_tagtype" : self._tagtype,
                          "tag__db_category__iexact" : category.lower() if category else None}
                 tags = [conn.tag for conn in getattr(self.obj,
@@ -192,6 +193,7 @@ class TagHandler(object):
         """
         if not key: # don't allow an empty key in cache
             return
+        key, category = key.strip().lower(), category.strip().lower() if category else category
         cachekey = "%s-%s" % (key, category)
         catkey = "-%s" % category
         self._cache[cachekey] = tag_obj
@@ -208,6 +210,7 @@ class TagHandler(object):
             category (str or None): A cleaned category name
 
         """
+        key, category = key.strip().lower(), category.strip().lower() if category else category
         catkey = "-%s" % category
         if key:
             cachekey = "%s-%s" % (key, category)
@@ -250,7 +253,7 @@ class TagHandler(object):
             if not tagstr:
                 continue
             tagstr = tagstr.strip().lower()
-            category = category.strip().lower() if category is not None else None
+            category = category.strip().lower() if category else category
             data = str(data) if data is not None else None
             # this will only create tag if no matches existed beforehand (it
             # will overload data on an existing tag since that is not
@@ -281,6 +284,7 @@ class TagHandler(object):
         """
         ret = []
         for keystr in make_iter(key):
+            # note - the _getcache call removes case sensitivity for us
             ret.extend([tag if return_tagobj else to_str(tag.db_key)
                             for tag in self._getcache(key, category)])
         return ret[0] if len(ret) == 1 else (ret if ret else default)
@@ -300,12 +304,12 @@ class TagHandler(object):
             if not (key or key.strip()):  # we don't allow empty tags
                 continue
             tagstr = key.strip().lower()
-            category = category.strip().lower() if category is not None else None
+            category = category.strip().lower() if category else category
 
             # This does not delete the tag object itself. Maybe it should do
             # that when no objects reference the tag anymore (but how to check)?
             # For now, tags are never deleted, only their connection to objects.
-            tagobj = getattr(self, self._m2m_fieldname).filter(db_key=tagstr, db_category=category,
+            tagobj = getattr(self.obj, self._m2m_fieldname).filter(db_key=tagstr, db_category=category,
                                              db_model=self._model, db_tagtype=self._tagtype)
             if tagobj:
                 getattr(self.obj, self._m2m_fieldname).remove(tagobj[0])
@@ -323,7 +327,7 @@ class TagHandler(object):
         """
         query = {"db_model": self._model, "db_tagtype": self._tagtype}
         if category:
-            query["db_category"] = category
+            query["db_category"] = category.strip().lower()
         getattr(self.obj, self._m2m_fieldname).filter(**query).delete()
         self._cache = {}
         self._catcache = {}
