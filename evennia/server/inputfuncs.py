@@ -433,7 +433,10 @@ def _on_webclient_options_change(**kwargs):
     fieldname = kwargs["fieldname"]
     clientoptions = _GA(obj, fieldname)
 
-    session.msg(webclient_options=clientoptions)
+    # the session may be None if the char quits and someone
+    # else then edits the object
+    if session:
+        session.msg(webclient_options=clientoptions)
 
 
 def webclient_options(session, *args, **kwargs):
