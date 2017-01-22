@@ -7,6 +7,14 @@ from django.db import migrations
 def update_tags_with_dbmodel(apps, schema_editor):
     Tag = apps.get_model('typeclasses', 'Tag')
     Attribute = apps.get_model('typeclasses', 'Attribute')
+    ObjectDB = apps.get_model('objects', 'ObjectDB')
+    PlayerDB = apps.get_model('players', 'PlayerDB')
+    ScriptDB = apps.get_model('scripts', 'ScriptDB')
+    HelpEntry = apps.get_model('help', 'HelpEntry')
+    Msg = apps.get_model('comms', 'Msg')
+
+
+
 
 
 class Migration(migrations.Migration):

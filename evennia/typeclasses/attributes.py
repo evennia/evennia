@@ -11,7 +11,6 @@ which is a non-db version of Attributes.
 from builtins import object
 import re
 import weakref
-from collections import defaultdict
 
 from django.db import models
 from django.conf import settings
@@ -279,6 +278,7 @@ class AttributeHandler(object):
             else:
                 # we have to query to make this category up-date in the cache
                 query = {"%s__id" % self._model : self._objid,
+                         "attribute__db_model" : self._model,
                          "attribute__db_attrtype" : self._attrtype,
                          "attribute__db_category__iexact" : category.lower() if category else None}
                 attrs = [conn.attribute for conn in getattr(self.obj,
@@ -478,8 +478,10 @@ class AttributeHandler(object):
                 attr_obj.value = value
         else:
             # create a new Attribute (no OOB handlers can be notified)
-            kwargs = {"db_key" : keystr, "db_category" : category,
-                      "db_model" : self._model, "db_attrtype" : self._attrtype,
+            kwargs = {"db_key" : keystr,
+                      "db_category" : category,
+                      "db_model" : self._model,
+                      "db_attrtype" : self._attrtype,
                       "db_value" : None if strattr else to_pickle(value),
                       "db_strvalue" : value if strattr else None}
             new_attr = Attribute(**kwargs)
@@ -546,7 +548,9 @@ class AttributeHandler(object):
                     attr_obj.value = new_value
             else:
                 # create a new Attribute (no OOB handlers can be notified)
-                kwargs = {"db_key" : keystr, "db_category" : category,
+                kwargs = {"db_key" : keystr,
+                          "db_category" : category,
+                          "db_model": self._model,
                           "db_attrtype" : self._attrtype,
                           "db_value" : None if strattr else to_pickle(new_value),
                           "db_strvalue" : value if strattr else None}
