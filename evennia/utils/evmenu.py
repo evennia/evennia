@@ -70,15 +70,17 @@ menu is immediately exited and the default "look" command is called.
                         # "_default", which marks this option as the default
                         # fallback when no other option matches the user input.
          'desc': description, # optional description
-         'goto': nodekey,  # node to go to when chosen
+         'goto': nodekey,  # node to go to when chosen. This can also be a callable with
+                           # caller and/or raw_string args. It must return a string
+                           # with the key pointing to the node to go to.
          'exec': nodekey}, # node or callback to trigger as callback when chosen. This
                            # will execute *before* going to the next node. Both node
                            # and the explicit callback will be called as normal nodes
                            # (with caller and/or raw_string args). If the callable/node
                            # returns a single string (only), this will replace the current
-                           # goto location string in-place. Note that relying to
-                           # much on letting exec assign the goto location can make it
-                           # hard to debug your menu logic.
+                           # goto location string in-place (if a goto callback, it will never fire).
+                           # Note that relying to much on letting exec assign the goto
+                           # location can make it hard to debug your menu logic.
         {...}, ...)
 
 If key is not given, the option will automatically be identified by
@@ -785,12 +787,24 @@ class EvMenu(object):
         Run a node by name
 
         Args:
-            nodename (str): Name of node.
+            nodename (str or callable): Name of node or a callable
+                to be called as `function(caller, raw_string)` or `function(caller)`
+                to return the actual goto string.
             raw_string (str): The raw default string entered on the
                 previous node (only used if the node accepts it as an
                 argument)
 
         """
+        if callable(nodename):
+            try:
+                if len(getargspec(nodename).args) > 1:
+                    # callable accepting raw_string
+                    nodename = nodename(self.caller, raw_string)
+                else:
+                    nodename = nodename(self.caller)
+            except Exception:
+                self.caller.msg(_ERR_GENERAL.format(nodename=nodename), self._session)
+                raise
         try:
             # execute the node, make use of the returns.
             nodetext, options = self._execute_node(nodename, raw_string)
