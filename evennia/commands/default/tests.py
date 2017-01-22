@@ -70,6 +70,8 @@ class CommandTest(EvenniaTest):
             # clean out prettytable sugar. We only operate on text-type
             stored_msg = [args[0] if args and args[0] else kwargs.get("text",utils.to_str(kwargs, force_string=True))
                     for name, args, kwargs in receiver.msg.mock_calls]
+            # Get the first element of a tuple if msg received a tuple instead of a string
+            stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
             returned_msg = "||".join(_RE.sub("", mess) for mess in stored_msg)
             returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
             if msg is not None:
