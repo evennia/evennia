@@ -291,10 +291,12 @@ function onGotOptions(args, kwargs) {
 function onOptionCheckboxChanged() {
     var name = $(this).data("setting");
     var value = this.checked;
-    var options = {};
-    options[name] = value;
 
-    Evennia.msg("webclient_options", [], options);
+    var changedoptions = {};
+    changedoptions[name] = value;
+    Evennia.msg("webclient_options", [], changedoptions);
+
+    options[name] = value;
 }
 
 // Silences events we don't do anything with.
