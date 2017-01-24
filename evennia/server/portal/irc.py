@@ -203,8 +203,9 @@ class IRCBot(irc.IRCClient, Session):
             kwargs (any): Other data from protocol.
 
         """
-
-        self.sessionhandler.data_in(self, bot_data_in=text)
+        #(cmdname, ((args,), {kwargs}))
+        #("text", ("blah",), {})).
+        self.sessionhandler.data_in(self, bot_data_in=(text), test=test)
 
     def send_text(self, *args, **kwargs):
         """
