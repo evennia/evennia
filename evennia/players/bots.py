@@ -218,7 +218,7 @@ class IRCBot(Bot):
             if not from_obj or from_obj != [self.id]:
                 super(IRCBot, self).msg(text=text, options={"bot_data_out": True})
 
-    def execute_cmd(self, text=None, session=None):
+    def execute_cmd(self, text=None, session=None, **kwargs):
         """
         Take incoming data and send it to connected channel. This is
         triggered by the CmdListen command in the BotCmdSet.
@@ -278,7 +278,7 @@ class RSSBot(Bot):
                       "rate": self.db.rss_rate}
         _SESSIONS.start_bot_session("evennia.server.portal.rss.RSSBotFactory", configdict)
 
-    def execute_cmd(self, text=None, session=None):
+    def execute_cmd(self, text=None, session=None, **kwargs):
         """
         Echo RSS input to connected channel
 
