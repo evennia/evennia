@@ -1,9 +1,7 @@
 """
 EvMenu
 
-This implements a full menu system for Evennia. It is considerably
-more flexible than the older contrib/menusystem.py and also uses
-menu plugin modules.
+This implements a full menu system for Evennia.
 
 To start the menu, just import the EvMenu class from this module.
 Example usage:
