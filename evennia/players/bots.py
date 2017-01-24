@@ -218,15 +218,15 @@ class IRCBot(Bot):
             if not from_obj or from_obj != [self.id]:
                 super(IRCBot, self).msg(text=text, options={"bot_data_out": True})
 
-    def execute_cmd(self, text=None, session=None, **kwargs):
+    def execute_cmd(self, session=None, text=None, **kwargs):
         """
         Take incoming data and send it to connected channel. This is
         triggered by the CmdListen command in the BotCmdSet.
 
         Args:
-            text (str, optional):  Command string.
             session (Session, optional): Session responsible for this
                 command.
+            text (str, optional):  Command string.
 
         """
         if not self.ndb.ev_channel and self.db.ev_channel:
