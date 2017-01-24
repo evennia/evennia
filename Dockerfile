@@ -1,3 +1,15 @@
+#####
+# Base docker image for running Evennia-based games in a container.
+#
+# This Dockerfile creates the evennia/evennia docker image
+# on DockerHub, which can be used as the basis for creating
+# an Evennia game within a container. This base image can be
+# found in DockerHub at https://hub.docker.com/r/evennia/evennia/
+# 
+# For more information on using it to build a container to run your game, see
+#
+# https://github.com/evennia/evennia/wiki/Running%20Evennia%20in%20Docker
+#
 FROM python:2.7-alpine
 MAINTAINER Dan Feeney "feend78@gmail.com"
 
