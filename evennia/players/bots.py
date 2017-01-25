@@ -221,16 +221,23 @@ class IRCBot(Bot):
     def execute_cmd(self, session=None, text=None, **kwargs):
         """
         Take incoming data and send it to connected channel. This is
-        triggered by the CmdListen command in the BotCmdSet.
+        triggered by the bot_data_in Inputfunc.
 
         Args:
             session (Session, optional): Session responsible for this
                 command.
             text (str, optional):  Command string.
+            kwargs (dict, optional): Additional Information passed from bot.
+                Typically information is only passed by IRCbot including:
+                    user (str): The name of the user who sent the message.
+                    channel (str): The name of channel the message was sent to.
+                    type (str): Nature of message. Either 'msg' or 'action'.
 
         """
-        # Dev Test
-        text += str(kwargs)  # if kwargs else ""
+        if kwargs["type"] == "action":
+            text = "%s@%s %s" % (kwargs["user"], kwargs["channel"], text)
+        else:
+            text = "%s@%s: %s" % (kwargs["user"], kwargs["channel"], text)
 
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
@@ -283,7 +290,15 @@ class RSSBot(Bot):
 
     def execute_cmd(self, text=None, session=None, **kwargs):
         """
-        Echo RSS input to connected channel
+        Take incoming data and send it to connected channel. This is
+        triggered by the bot_data_in Inputfunc.
+
+        Args:
+            session (Session, optional): Session responsible for this
+                command.
+            text (str, optional):  Command string.
+            kwargs (dict, optional): Additional Information passed from bot.
+                Not used by the RSSbot by default.
 
         """
         if not self.ndb.ev_channel and self.db.ev_channel:
