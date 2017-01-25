@@ -259,7 +259,7 @@ class TagHandler(object):
             # will overload data on an existing tag since that is not
             # considered part of making the tag unique)
             tagobj = self.obj.__class__.objects.create_tag(key=tagstr, category=category, data=data,
-                                            tagtype=self._tagtype, dbmodel=self._model)
+                                            tagtype=self._tagtype)
             getattr(self.obj, self._m2m_fieldname).add(tagobj)
             self._setcache(tagstr, category, tagobj)
 

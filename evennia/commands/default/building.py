@@ -1945,7 +1945,7 @@ class CmdExamine(ObjManipCommand):
         if perms:
             perms_string = (", ".join(perms))
         else:
-            perms_string = "Default"
+            perms_string = "<None>"
         if obj.is_superuser:
             perms_string += " [Superuser]"
 
@@ -2004,9 +2004,10 @@ class CmdExamine(ObjManipCommand):
         string += self.format_attributes(obj)
 
         # display Tags
-        tags_string = utils.fill(", ".join(tag for tag in obj.tags.all()), indent=5)
+        tags_string = utils.fill(", ".join("%s[%s]" % (tag, category)
+            for tag, category in obj.tags.all(return_key_and_category=True)), indent=5)
         if tags_string:
-            string += "\n|wTags|n: %s" % tags_string
+            string += "\n|wTags[category]|n: %s" % tags_string.strip()
 
         # add the contents
         exits = []
