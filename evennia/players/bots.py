@@ -8,8 +8,6 @@ from __future__ import print_function
 from django.conf import settings
 from evennia.players.players import DefaultPlayer
 from evennia.scripts.scripts import DefaultScript
-from evennia.commands.command import Command
-from evennia.commands.cmdset import CmdSet
 from evennia.utils import search
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT

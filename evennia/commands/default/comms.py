@@ -801,7 +801,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     link an evennia channel to an external IRC channel
 
     Usage:
-      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>
+      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname> [bottypeclass]
       @irc2chan/delete botname|#dbid
 
     Switches:
@@ -882,6 +882,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             return
 
         botname = "ircbot-%s" % irc_botname
+        botclass = self.rhs.split()[4] if len(self.rhs.split()) == 5 else None
         irc_ssl = "ssl" in self.switches
 
         # create a new bot
@@ -893,7 +894,8 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("Player '%s' already exists and is not a bot." % botname)
                 return
         else:
-            bot = create.create_player(botname, None, None, typeclass=bots.IRCBot)
+            bot = create.create_player(botname, None, None,
+                                       typeclass=botclass if botclass else bots.IRCBot)
         bot.start(ev_channel=channel, irc_botname=irc_botname, irc_channel=irc_channel,
                   irc_network=irc_network, irc_port=irc_port, irc_ssl=irc_ssl)
         self.msg("Connection created. Starting IRC bot.")
