@@ -230,7 +230,7 @@ class IRCBot(Bot):
 
         """
         # Dev Test
-        text += str(kwargs) # if kwargs else ""
+        text += str(kwargs)  # if kwargs else ""
 
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
