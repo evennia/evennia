@@ -703,6 +703,7 @@ def to_unicode(obj, encoding='utf-8', force_string=False):
                     obj = unicode(obj, alt_encoding)
                     return obj
                 except UnicodeDecodeError:
+                    # if we still have an error, give up
                     pass
         raise Exception("Error: '%s' contains invalid character(s) not in %s." % (obj, encoding))
     return obj
@@ -744,6 +745,7 @@ def to_str(obj, encoding='utf-8', force_string=False):
                     obj = obj.encode(alt_encoding)
                     return obj
                 except UnicodeEncodeError:
+                    # if we still have an error, give up
                     pass
 
         # if we get to this point we have not found any way to convert this string. Try to parse it manually,
@@ -926,6 +928,7 @@ def clean_object_caches(obj):
     try:
         _SA(obj, "_contents_cache", None)
     except AttributeError:
+        # if the cache cannot be reached, move on anyway
         pass
 
     # on-object property cache
@@ -935,6 +938,7 @@ def clean_object_caches(obj):
         hashid = _GA(obj, "hashid")
         _TYPECLASSMODELS._ATTRIBUTE_CACHE[hashid] = {}
     except AttributeError:
+        # skip caching
         pass
 
 
@@ -1273,9 +1277,9 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
     paths = [path] + make_iter(defaultpaths)
     for modpath in paths:
         try:
-            mod = import_module(path)
+            mod = import_module(modpath)
         except ImportError as ex:
-            if not str(ex).startswith ("No module named %s" % path):
+            if not str(ex).startswith ("No module named %s" % modpath):
                 # this means the module was found but it
                 # triggers an ImportError on import.
                 raise ex
@@ -1521,13 +1525,11 @@ def get_evennia_pids():
     portal_pidfile = os.path.join(settings.GAME_DIR, 'portal.pid')
     server_pid, portal_pid = None, None
     if os.path.exists(server_pidfile):
-        f = open(server_pidfile, 'r')
-        server_pid = f.read()
-        f.close()
+        with open(server_pidfile, 'r') as f:
+            server_pid = f.read()
     if os.path.exists(portal_pidfile):
-        f = open(portal_pidfile, 'r')
-        portal_pid = f.read()
-        f.close()
+        with open(portal_pidfile, 'r') as f:
+            portal_pid = f.read()
     if server_pid and portal_pid:
         return int(server_pid), int(portal_pid)
     return None, None

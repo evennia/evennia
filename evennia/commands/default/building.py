@@ -1355,10 +1355,12 @@ def _convert_from_string(cmd, strobj):
         try:
             return int(obj)
         except ValueError:
+            # obj cannot be converted to int - that's fine
             pass
         try:
             return float(obj)
         except ValueError:
+            # obj cannot be converted to float - that's fine
             pass
         # iterables
         if obj.startswith('[') and obj.endswith(']'):
@@ -1983,6 +1985,7 @@ class CmdExamine(ObjManipCommand):
                     # we have to protect this since many objects don't have sessions.
                     all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.get_session(obj.sessions.get()).cmdset.all()])
                 except (TypeError, AttributeError):
+                    # an error means we are merging an object without a session
                     pass
             all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
             all_cmdsets.sort(key=lambda x: x.priority, reverse=True)

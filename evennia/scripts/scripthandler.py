@@ -46,7 +46,7 @@ class ScriptHandler(object):
                     repeats = script.repeats
                 try:
                     next_repeat = script.time_until_next_repeat()
-                except:
+                except Exception:
                     next_repeat = "?"
             string += _("\n '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s") % \
               {"key": script.key, "next_repeat": next_repeat,

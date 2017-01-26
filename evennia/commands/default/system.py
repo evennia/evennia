@@ -316,10 +316,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
 
         if self.switches and self.switches[0] in ('stop', 'del', 'delete', 'kill'):
             # we want to delete something
-            if not scripts:
-                string = "No scripts/objects matching '%s'. " % args
-                string += "Be more specific."
-            elif len(scripts) == 1:
+            if len(scripts) == 1:
                 # we have a unique match!
                 if 'kill' in self.switches:
                     string = "Killing script '%s'" % scripts[0].key

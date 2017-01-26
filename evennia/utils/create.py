@@ -115,7 +115,7 @@ def create_object(typeclass=None, key=None, location=None,
     # store the call signature for the signal
     new_object._createdict = {"key":key, "location":location, "destination":destination,
                               "home":home, "typeclass":typeclass.path, "permissions":permissions,
-                              "locks":locks, "aliases":aliases, "tags": tags, "destination":destination,
+                              "locks":locks, "aliases":aliases, "tags": tags,
                               "report_to":report_to, "nohome":nohome}
     # this will trigger the save signal which in turn calls the
     # at_first_save hook on the typeclass, where the _createdict can be

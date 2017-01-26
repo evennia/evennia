@@ -409,12 +409,14 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             try:
                 from_obj.at_msg_send(text=text, to_obj=self, **kwargs)
             except Exception:
+                # this may not be assigned.
                 pass
         try:
             if not self.at_msg_receive(text=text, **kwargs):
                 # abort message to this player
                 return
         except Exception:
+            # this may not be assigned.
             pass
 
         kwargs["options"] = options

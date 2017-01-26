@@ -364,6 +364,7 @@ class PortalSessionHandler(SessionHandler):
                     self.data_out(session, text=[[_ERROR_MAX_CHAR], {}])
                 return
         except Exception:
+            # if there is a problem to send, we continue
             pass
         if session:
             now = time()

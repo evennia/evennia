@@ -83,7 +83,7 @@ class ObjectSessionHandler(object):
         if sessid:
             sessions = [_SESSIONS[sessid] if sessid in _SESSIONS else None] if sessid in self._sessid_cache else []
         else:
-            sessions = [_SESSIONS[sessid] if sessid in _SESSIONS else None for sessid in self._sessid_cache]
+            sessions = [_SESSIONS[ssid] if ssid in _SESSIONS else None for ssid in self._sessid_cache]
         if None in sessions:
             # this happens only if our cache has gone out of sync with the SessionHandler.
             self._recache()

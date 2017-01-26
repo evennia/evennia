@@ -696,6 +696,7 @@ try:
     import django_extensions
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
 except ImportError:
+    # Django extensions are not installed in all distros.
     pass
 
 #######################################################################

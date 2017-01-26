@@ -105,7 +105,7 @@ def create_guest_player(session):
             if not PlayerDB.objects.filter(username__iexact=playername):
                 break
             playername = None
-        if playername == None:
+        if playername is None:
             session.msg("All guest accounts are in use. Please try again later.")
             return True, None
 
@@ -126,8 +126,7 @@ def create_guest_player(session):
         # we won't see any errors at all.
         session.msg("An error occurred. Please e-mail an admin if the problem persists.")
         logger.log_trace()
-    finally:
-        return True, new_player
+        raise
 
 
 def create_normal_player(session, name, password):

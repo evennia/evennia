@@ -364,6 +364,7 @@ class TelnetOOB(object):
             try:
                 structure = json.loads(structure)
             except ValueError:
+                # maybe the structure is not json-serialized at all
                 pass
             args, kwargs = [], {}
             if hasattr(structure, "__iter__"):

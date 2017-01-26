@@ -242,12 +242,14 @@ class ObjectDB(TypedObject):
                     return
                 elif loc == self:
                     raise RuntimeError
-                elif loc == None:
+                elif loc is None:
                     raise RuntimeWarning
                 return is_loc_loop(loc.db_location, depth + 1)
             try:
                 is_loc_loop(location)
             except RuntimeWarning:
+                # we caught a infitite location loop!
+                # (location1 is in location2 which is in location1 ...)
                 pass
 
             # if we get to this point we are ready to change location

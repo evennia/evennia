@@ -76,6 +76,7 @@ class WebClient(resource.Resource):
         try:
             del self.requests[csessid]
         except KeyError:
+            # nothing left to delete
             pass
 
     def _keepalive(self):

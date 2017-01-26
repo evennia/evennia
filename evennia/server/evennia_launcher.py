@@ -405,6 +405,7 @@ def evennia_version():
         import evennia
         version = evennia.__version__
     except ImportError:
+        # even if evennia is not found, we should not crash here.
         pass
     try:
         rev = check_output(
@@ -412,6 +413,7 @@ def evennia_version():
             shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip()
         version = "%s (rev %s)" % (version, rev)
     except (IOError, CalledProcessError):
+        # move on if git is not answering
         pass
     return version
 
@@ -520,7 +522,7 @@ def create_settings_file(init=True):
     if not init:
         # if not --init mode, settings file may already exist from before
         if os.path.exists(settings_path):
-            inp = raw_input("server/conf/settings.py already exists. "
+            inp = input("server/conf/settings.py already exists. "
                             "Do you want to reset it? y/[N]> ")
             if not inp.lower() == 'y':
                 print ("Aborted.")
@@ -659,14 +661,13 @@ def get_pid(pidfile):
         pidfile (str): The path of the pid file.
 
     Returns:
-        pid (str): The process id.
+        pid (str or None): The process id.
 
     """
-    pid = None
     if os.path.exists(pidfile):
-        f = open(pidfile, 'r')
-        pid = f.read()
-    return pid
+        with open(pidfile, 'r') as f:
+            pid = f.read()
+            return pid
 
 
 def del_pid(pidfile):
@@ -722,6 +723,7 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="",
                     SetConsoleCtrlHandler(None, True)
                     GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0)
                 except KeyboardInterrupt:
+                    # We must catch and ignore the interrupt sent.
                     pass
             else:
                 # Linux can send the SIGINT signal directly
@@ -986,6 +988,8 @@ def run_dummyrunner(number_of_dummies):
     try:
         call(cmdstr, env=getenv())
     except KeyboardInterrupt:
+        # this signals the dummyrunner to stop cleanly and should
+        # not lead to a traceback here.
         pass
 
 

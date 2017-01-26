@@ -490,6 +490,7 @@ class CmdSetHandler(object):
                             storage.remove(cset.path)
                             updated = True
                         except ValueError:
+                            # nothing to remove
                             pass
                 if updated:
                     self.obj.cmdset_storage = storage
@@ -498,6 +499,7 @@ class CmdSetHandler(object):
                 try:
                     self.cmdset_stack.remove(cset)
                 except ValueError:
+                    # nothing to remove
                     pass
         # re-sync the cmdsethandler.
         self.update()

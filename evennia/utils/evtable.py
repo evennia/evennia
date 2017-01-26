@@ -159,14 +159,14 @@ class ANSITextWrapper(TextWrapper):
         """
         # ignore expand_tabs/replace_whitespace until ANSISTring handles them
         return text
-        if self.expand_tabs:
-            text = text.expandtabs()
-        if self.replace_whitespace:
-            if isinstance(text, str):
-                text = text.translate(self.whitespace_trans)
-            elif isinstance(text, _unicode):
-                text = text.translate(self.unicode_whitespace_trans)
-        return text
+#        if self.expand_tabs:
+#            text = text.expandtabs()
+#        if self.replace_whitespace:
+#            if isinstance(text, str):
+#                text = text.translate(self.whitespace_trans)
+#            elif isinstance(text, _unicode):
+#                text = text.translate(self.unicode_whitespace_trans)
+#        return text
 
 
     def _split(self, text):

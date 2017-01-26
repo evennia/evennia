@@ -12,7 +12,7 @@ from evennia.utils.utils import is_iter, fill, lazy_property, make_iter
 from future.utils import with_metaclass
 
 
-def _init_command(mcs, **kwargs):
+def _init_command(cls, **kwargs):
     """
     Helper command.
     Makes sure all data are stored as lowercase and
@@ -26,60 +26,60 @@ def _init_command(mcs, **kwargs):
     for i in range(len(kwargs)):
         # used for dynamic creation of commands
         key, value = kwargs.popitem()
-        setattr(mcs, key, value)
+        setattr(cls, key, value)
 
-    mcs.key = mcs.key.lower()
-    if mcs.aliases and not is_iter(mcs.aliases):
+    cls.key = cls.key.lower()
+    if cls.aliases and not is_iter(cls.aliases):
         try:
-            mcs.aliases = [str(alias).strip().lower()
-                          for alias in mcs.aliases.split(',')]
+            cls.aliases = [str(alias).strip().lower()
+                          for alias in cls.aliases.split(',')]
         except Exception:
-            mcs.aliases = []
-    mcs.aliases = list(set(alias for alias in mcs.aliases
-                           if alias and alias != mcs.key))
+            cls.aliases = []
+    cls.aliases = list(set(alias for alias in cls.aliases
+                           if alias and alias != cls.key))
 
     # optimization - a set is much faster to match against than a list
-    mcs._matchset = set([mcs.key] + mcs.aliases)
+    cls._matchset = set([cls.key] + cls.aliases)
     # optimization for looping over keys+aliases
-    mcs._keyaliases = tuple(mcs._matchset)
+    cls._keyaliases = tuple(cls._matchset)
 
     # by default we don't save the command between runs
-    if not hasattr(mcs, "save_for_next"):
-        mcs.save_for_next = False
+    if not hasattr(cls, "save_for_next"):
+        cls.save_for_next = False
 
     # pre-process locks as defined in class definition
     temp = []
-    if hasattr(mcs, 'permissions'):
-        mcs.locks = mcs.permissions
-    if not hasattr(mcs, 'locks'):
+    if hasattr(cls, 'permissions'):
+        cls.locks = cls.permissions
+    if not hasattr(cls, 'locks'):
         # default if one forgets to define completely
-        mcs.locks = "cmd:all()"
-    if not "cmd:" in mcs.locks:
-        mcs.locks = "cmd:all();" + mcs.locks
-    for lockstring in mcs.locks.split(';'):
+        cls.locks = "cmd:all()"
+    if not "cmd:" in cls.locks:
+        cls.locks = "cmd:all();" + cls.locks
+    for lockstring in cls.locks.split(';'):
         if lockstring and not ':' in lockstring:
             lockstring = "cmd:%s" % lockstring
         temp.append(lockstring)
-    mcs.lock_storage = ";".join(temp)
+    cls.lock_storage = ";".join(temp)
 
-    if hasattr(mcs, 'arg_regex') and isinstance(mcs.arg_regex, basestring):
-        mcs.arg_regex = re.compile(r"%s" % mcs.arg_regex, re.I + re.UNICODE)
-    if not hasattr(mcs, "auto_help"):
-        mcs.auto_help = True
-    if not hasattr(mcs, 'is_exit'):
-        mcs.is_exit = False
-    if not hasattr(mcs, "help_category"):
-        mcs.help_category = "general"
-    mcs.help_category = mcs.help_category.lower()
+    if hasattr(cls, 'arg_regex') and isinstance(cls.arg_regex, basestring):
+        cls.arg_regex = re.compile(r"%s" % cls.arg_regex, re.I + re.UNICODE)
+    if not hasattr(cls, "auto_help"):
+        cls.auto_help = True
+    if not hasattr(cls, 'is_exit'):
+        cls.is_exit = False
+    if not hasattr(cls, "help_category"):
+        cls.help_category = "general"
+    cls.help_category = cls.help_category.lower()
 
 
 class CommandMeta(type):
     """
     The metaclass cleans up all properties on the class
     """
-    def __init__(mcs, *args, **kwargs):
-        _init_command(mcs, **kwargs)
-        super(CommandMeta, mcs).__init__(*args, **kwargs)
+    def __init__(cls, *args, **kwargs):
+        _init_command(cls, **kwargs)
+        super(CommandMeta, cls).__init__(*args, **kwargs)
 
 #    The Command class is the basic unit of an Evennia command; when
 #    defining new commands, the admin subclass this class and

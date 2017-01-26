@@ -139,6 +139,7 @@ class ScriptDB(TypedObject):
         try:
             value = _GA(value, "dbobj")
         except AttributeError:
+            # deprecated ...
             pass
         if isinstance(value, (basestring, int)):
             from evennia.objects.models import ObjectDB

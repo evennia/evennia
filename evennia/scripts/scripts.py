@@ -100,7 +100,7 @@ class ExtendedLoopingCall(LoopingCall):
         if self.start_delay:
             self.start_delay = None
             self.starttime = self.clock.seconds()
-        super(ExtendedLoopingCall, self).__call__()
+        LoopingCall.__call__(self)
 
     def force_repeat(self):
         """
@@ -210,6 +210,7 @@ class DefaultScript(ScriptBase):
         try:
             self.db_obj.msg(estring)
         except Exception:
+            # we must not crash inside the errback, even if db_obj is None.
             pass
         logger.log_err(estring)
 

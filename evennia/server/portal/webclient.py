@@ -204,7 +204,7 @@ class WebSocketClient(Protocol, Session):
         kwargs["options"].update({"send_prompt": True})
         self.send_text(*args, **kwargs)
 
-    def send_default(session, cmdname, *args, **kwargs):
+    def send_default(self, cmdname, *args, **kwargs):
         """
         Data Evennia -> User.
 
@@ -219,4 +219,4 @@ class WebSocketClient(Protocol, Session):
 
         """
         if not cmdname == "options":
-            session.sendLine(json.dumps([cmdname, args, kwargs]))
+            self.sendLine(json.dumps([cmdname, args, kwargs]))

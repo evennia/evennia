@@ -539,6 +539,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
             if check_holds(accessed_obj.dbid):
                 return True
         except Exception:
+            # we need to catch any trouble here
             pass
         return hasattr(accessed_obj, "obj") and check_holds(accessed_obj.obj.dbid)
     if len(args) == 1:

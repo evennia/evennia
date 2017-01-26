@@ -134,10 +134,6 @@ class SharedMemoryModelBase(ModelBase):
                 "Setter only used on foreign key relations, allows setting with #dbref"
                 if _GA(cls, "_is_deleted"):
                     raise ObjectDoesNotExist("Cannot set %s to %s: Hosting object was already deleted!" % (fname, value))
-                try:
-                    value = _GA(value, "dbobj")
-                except AttributeError:
-                    pass
                 if isinstance(value, (basestring, int)):
                     value = to_str(value, force_string=True)
                     if (value.isdigit() or value.startswith("#")):
@@ -273,6 +269,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
                     # at first initialization
                     instance.at_init()
                 except AttributeError:
+                    # The at_init hook is not assigned to all entities
                     pass
 
     @classmethod

@@ -62,15 +62,18 @@ MSSPTable =  {
     # Protocols set to 1 or 0)
 
     "ANSI":               "1",
-    "GMCP":               "0",
+    "GMCP":               "1",
+    "ATCP":               "0",
     "MCCP":               "0",
     "MCP":                "0",
     "MSDP":               "0",
     "MSP":                "0",
     "MXP":                "0",
     "PUEBLO":             "0",
+    "SSL":                "1",
     "UTF-8":              "1",
     "VT100":              "0",
+    "ZMP":                "0",
     "XTERM 256 COLORS":   "0",
 
     # Commercial set to 1 or 0)
@@ -111,12 +114,4 @@ MSSPTable =  {
     "TRAINING SYSTEM":    "None",  # "None", "Level", "Skill", "Both"
     "WORLD ORIGINALITY":  "None",  # "All Stock", "Mostly Stock", "Mostly Original", "All Original"
 
-    # Protocols (only change if you added/removed something manually)
-
-    "ATCP":               "0",
-    "MSDP":               "0",
-    "MCCP":               "1",
-    "SSL":                "1",
-    "UTF-8":              "1",
-    "ZMP":                "0",
-    "XTERM 256 COLORS":   "0"}
+    }

@@ -809,7 +809,7 @@ class EvEditor(object):
                 formatting information.
 
         """
-        if buf == None:
+        if buf is None:
             buf = self._buffer
         if is_iter(buf):
             buf = "\n".join(buf)

@@ -310,7 +310,7 @@ class ServerSession(Session):
                 cchan = ChannelDB.objects.get_channel(cchan[0])
                 cchan.msg("[%s]: %s" % (cchan.key, message))
             except Exception:
-                pass
+                logger.log_trace()
         logger.log_info(message)
 
     def get_client_size(self):

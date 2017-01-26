@@ -344,6 +344,7 @@ class LightSource(TutorialObject):
                 self.location.msg_contents("A %s on the floor flickers and dies." % self.key)
                 self.location.location.check_light_state()
             except AttributeError:
+                # Mainly happens if we happen to be in a None location
                 pass
         self.delete()
 
@@ -364,6 +365,7 @@ class LightSource(TutorialObject):
                 # maybe we are directly in the room
                 self.location.check_light_state()
             except AttributeError:
+                # we are in a None location
                 pass
         finally:
             # start the burn timer. When it runs out, self._burnout

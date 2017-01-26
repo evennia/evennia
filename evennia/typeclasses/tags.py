@@ -286,7 +286,7 @@ class TagHandler(object):
         for keystr in make_iter(key):
             # note - the _getcache call removes case sensitivity for us
             ret.extend([tag if return_tagobj else to_str(tag.db_key)
-                            for tag in self._getcache(key, category)])
+                            for tag in self._getcache(keystr, category)])
         return ret[0] if len(ret) == 1 else (ret if ret else default)
 
     def remove(self, key, category=None):
@@ -355,7 +355,6 @@ class TagHandler(object):
             return [(to_str(tag.db_key), to_str(tag.db_category)) for tag in tags]
         else:
             return [to_str(tag.db_key) for tag in tags]
-        return []
 
     def __str__(self):
         return ",".join(self.all())

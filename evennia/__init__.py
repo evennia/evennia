@@ -103,6 +103,7 @@ def _create_version():
     try:
         version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=root, stderr=STDOUT).strip())
     except (IOError, CalledProcessError):
+        # ignore if we cannot get to git
         pass
     return version
 

@@ -430,12 +430,12 @@ class PrettyTable(object):
     ##############################
 
     def _get_field_names(self):
-        return self._field_names
         """The names of the fields
 
         Arguments:
 
         fields - list or tuple of field names"""
+        return self._field_names
     def _set_field_names(self, val):
         val = [self._unicode(x) for x in val]
         self._validate_option("field_names", val)

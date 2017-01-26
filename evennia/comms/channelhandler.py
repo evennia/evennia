@@ -79,6 +79,7 @@ class ChannelCommand(command.Command):
             try:
                 self.history_start = int(arg) if arg else 0
             except ValueError:
+                # if no valid number was given, ignore it
                 pass
         self.args = (channelname.strip(), msg.strip())
 

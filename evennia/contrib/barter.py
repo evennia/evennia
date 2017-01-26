@@ -612,6 +612,7 @@ class CmdEvaluate(CmdTradeBase):
             ind = int(self.args)
             self.args = ind - 1
         except Exception:
+            # not a valid index - ignore
             pass
 
         offer = self.tradehandler.search(self.args)

@@ -40,21 +40,21 @@ class _CmdSetMeta(type):
     the cmdset class.
 
     """
-    def __init__(mcs, *args, **kwargs):
+    def __init__(cls, *args, **kwargs):
         """
         Fixes some things in the cmdclass
 
         """
         # by default we key the cmdset the same as the
         # name of its class.
-        if not hasattr(mcs, 'key') or not mcs.key:
-            mcs.key = mcs.__name__
-        mcs.path = "%s.%s" % (mcs.__module__, mcs.__name__)
+        if not hasattr(cls, 'key') or not cls.key:
+            cls.key = cls.__name__
+        cls.path = "%s.%s" % (cls.__module__, cls.__name__)
 
-        if not type(mcs.key_mergetypes) == dict:
-            mcs.key_mergetypes = {}
+        if not type(cls.key_mergetypes) == dict:
+            cls.key_mergetypes = {}
 
-        super(_CmdSetMeta, mcs).__init__(*args, **kwargs)
+        super(_CmdSetMeta, cls).__init__(*args, **kwargs)
 
 
 class CmdSet(with_metaclass(_CmdSetMeta, object)):
@@ -511,6 +511,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
                 ic = self.system_commands.index(cmd)
                 del self.system_commands[ic]
             except ValueError:
+                # ignore error
                 pass
         else:
             self.commands = [oldcmd for oldcmd in self.commands if oldcmd != cmd]

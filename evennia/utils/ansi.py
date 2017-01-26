@@ -575,6 +575,7 @@ def _on_raw(func_name):
             else:
                 args.insert(0, string)
         except IndexError:
+            # just skip out if there are no more strings
             pass
         result = getattr(self._raw_string, func_name)(*args, **kwargs)
         if isinstance(result, basestring):
@@ -850,6 +851,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
             try:
                 string += self._raw_string[i]
             except IndexError:
+                # raw_string not long enough
                 pass
         if i is not None:
             append_tail = self._get_interleving(self._char_indexes.index(i) + 1)

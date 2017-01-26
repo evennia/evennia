@@ -39,7 +39,7 @@ class CmdNudge(Command):
         rand = random.random()
         if rand < 0.5:
             self.caller.msg("You nudge at the lid. It seems stuck.")
-        elif 0.5 <= rand < 0.7:
+        elif rand < 0.7:
             self.caller.msg("You move the lid back and forth. It won't budge.")
         else:
             self.caller.msg("You manage to get a nail under the lid.")

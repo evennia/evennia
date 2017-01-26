@@ -401,6 +401,7 @@ class ChannelDBManager(TypedObjectManager):
             dbref = int(ostring.strip('#'))
             channels = self.filter(id=dbref)
         except Exception:
+            # Usually because we couldn't convert to int - not a dbref
             pass
         if not channels:
             # no id match. Search on the key.
