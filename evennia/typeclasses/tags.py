@@ -61,8 +61,8 @@ class Tag(models.Model):
     class Meta(object):
         "Define Django meta options"
         verbose_name = "Tag"
-        unique_together = (('db_key', 'db_category', 'db_tagtype'),)
-        index_together = (('db_key', 'db_category', 'db_tagtype'),)
+        unique_together = (('db_key', 'db_category', 'db_tagtype', 'db_model'),)
+        index_together = (('db_key', 'db_category', 'db_tagtype', 'db_model'),)
 
     def __unicode__(self):
         return u"<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else "")
