@@ -563,7 +563,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                       "ENCODING": validate_encoding,
                       "MCCP": validate_bool,
                       "MXP": validate_bool,
-                      "NOMARKUP": validate_bool,
+                      "NOCOLOR": validate_bool,
                       "NOPKEEPALIVE": validate_bool,
                       "OOB": validate_bool,
                       "RAW": validate_bool,

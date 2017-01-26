@@ -181,7 +181,7 @@ def client_options(session, *args, **kwargs):
         screenheight (int): Screen height in lines
         screenwidth (int): Screen width in characters
         inputdebug (bool): Debug input functions
-        nomarkup (bool): Strip markup
+        nocolor (bool): Strip color
         raw (bool): Turn off parsing
 
     """
@@ -193,7 +193,7 @@ def client_options(session, *args, **kwargs):
                            "UTF-8", "SCREENREADER", "ENCODING",
                            "MCCP", "SCREENHEIGHT",
                            "SCREENWIDTH", "INPUTDEBUG",
-                           "RAW", "NOMARKUP"))
+                           "RAW", "NOCOLOR"))
         session.msg(client_options=options)
         return
 
@@ -240,8 +240,8 @@ def client_options(session, *args, **kwargs):
             flags["SCREENWIDTH"] = validate_size(value)
         elif key == "inputdebug":
             flags["INPUTDEBUG"] = validate_bool(value)
-        elif key == "nomarkup":
-            flags["NOMARKUP"] = validate_bool(value)
+        elif key == "nocolor":
+            flags["NOCOLOR"] = validate_bool(value)
         elif key == "raw":
             flags["RAW"] = validate_bool(value)
         elif key in ('Char 1', 'Char.Skills 1', 'Char.Items 1',

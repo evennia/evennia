@@ -289,6 +289,7 @@ class PortalSessionHandler(SessionHandler):
         # save protocols
         for sessid in to_save:
             self[sessid].load_sync_data(serversessions[sessid])
+        print ("portalsessionhandler synced:", self[sessid].protocol_flags)
         if clean:
             # disconnect out-of-sync missing protocols
             to_delete = [sessid for sessid in self if sessid not in to_save]

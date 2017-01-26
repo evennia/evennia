@@ -246,8 +246,7 @@ class SshProtocol(Manhole, session.Session):
                    - mxp: Enforce MXP link support.
                    - ansi: Enforce no ANSI colors.
                    - xterm256: Enforce xterm256 colors, regardless of TTYPE setting.
-                   - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
-                   - nomarkup: Strip all ANSI markup. This is the same as noxterm256,noansi
+                   - nocolor: Strip all colors.
                    - raw: Pass string through without any ansi processing
                         (i.e. include Evennia ansi markers but do not
                         convert them into ansi tokens)
@@ -265,10 +264,10 @@ class SshProtocol(Manhole, session.Session):
         # handle arguments
         options = kwargs.get("options", {})
         flags = self.protocol_flags
-        xterm256 = options.get("xterm256", flags.get('XTERM256', False) if flags.get("TTYPE") else True)
-        useansi = options.get("ansi", flags.get('ANSI', False) if flags.get("TTYPE") else True)
+        xterm256 = options.get("xterm256", flags.get('XTERM256', True))
+        useansi = options.get("ansi", flags.get('ANSI', True))
         raw = options.get("raw", flags.get("RAW", False))
-        nomarkup = options.get("nomarkup", flags.get("NOMARKUP", not (xterm256 or useansi)))
+        nocolor = options.get("nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi))
         #echo = options.get("echo", None)
         screenreader =  options.get("screenreader", flags.get("SCREENREADER", False))
 
@@ -284,7 +283,7 @@ class SshProtocol(Manhole, session.Session):
         else:
             # we need to make sure to kill the color at the end in order
             # to match the webclient output.
-            linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256, mxp=False)
+            linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nocolor, xterm256=xterm256, mxp=False)
             self.sendLine(linetosend)
 
     def send_prompt(self, *args, **kwargs):
