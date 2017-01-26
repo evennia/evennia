@@ -653,7 +653,7 @@ class EvEditor(object):
         if savefunc:
             self._savefunc = savefunc
         else:
-            self._savefunc = lambda caller: caller.msg(_ERROR_NO_SAVEFUNC)
+            self._savefunc = lambda caller, buffer: caller.msg(_ERROR_NO_SAVEFUNC)
         if quitfunc:
             self._quitfunc = quitfunc
         else:

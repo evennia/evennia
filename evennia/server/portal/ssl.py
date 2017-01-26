@@ -51,7 +51,7 @@ class SSLProtocol(TelnetProtocol):
     is done with encryption.
     """
     def __init__(self, *args, **kwargs):
-        super(TelnetProtocol, self).__init__(*args, **kwargs)
+        super(SSLProtocol, self).__init__(*args, **kwargs)
         self.protocol_name = "ssl"
 
 def verify_SSL_key_and_cert(keyfile, certfile):

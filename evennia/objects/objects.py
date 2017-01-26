@@ -864,7 +864,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         self.location = None # this updates contents_cache for our location
 
         # Perform the deletion of the object
-        super(ObjectDB, self).delete()
+        super(DefaultObject, self).delete()
         return True
 
     def access(self, accessing_obj, access_type='read', default=False, no_superuser_bypass=False, **kwargs):

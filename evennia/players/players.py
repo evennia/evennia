@@ -382,7 +382,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         self.attributes.clear()
         self.nicks.clear()
         self.aliases.clear()
-        super(PlayerDB, self).delete(*args, **kwargs)
+        super(DefaultPlayer, self).delete(*args, **kwargs)
     ## methods inherited from database model
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
