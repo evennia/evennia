@@ -801,7 +801,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     link an evennia channel to an external IRC channel
 
     Usage:
-      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname> [bottypeclass]
+      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname> [botpath]
       @irc2chan/delete botname|#dbid
 
     Switches:
@@ -818,7 +818,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     This creates an IRC bot that connects to a given IRC network and channel.
     It will relay everything said in the evennia channel to the IRC channel and
     vice versa. The bot will automatically connect at server start, so this
-    comman need only be given once. The /disconnect switch will permanently
+    command need only be given once. The /disconnect switch will permanently
     delete the bot. To only temporarily deactivate it, use the  {w@services{n
     command instead.
     """
