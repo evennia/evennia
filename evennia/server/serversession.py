@@ -304,9 +304,9 @@ class ServerSession(Session):
                 in addition to the server log.
 
         """
-        if channel:
+        cchan = channel and settings.CHANNEL_CONNECTINFO
+        if cchan:
             try:
-                cchan = settings.CHANNEL_CONNECTINFO
                 cchan = ChannelDB.objects.get_channel(cchan[0])
                 cchan.msg("[%s]: %s" % (cchan.key, message))
             except Exception:

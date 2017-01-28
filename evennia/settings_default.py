@@ -521,6 +521,9 @@ DEFAULT_CHANNELS = [
                    "desc": "Connection log",
                    "locks": "control:perm(Immortals);listen:perm(Wizards);send:false()"}
                   ]
+# Extra optional channel for receiving connection messages ("<player> has (dis)connected").
+# While the MudInfo channel will also receieve this, this channel is meant for non-staffers.
+CHANNEL_CONNECTINFO = None
 
 ######################################################################
 # External Channel connections
