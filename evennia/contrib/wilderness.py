@@ -181,289 +181,6 @@ def get_new_coordinates(coordinates, direction):
     return (x, y)
 
 
-class WildernessRoom(DefaultRoom):
-    """
-    This is a single room inside the wilderness. This room provides a "view"
-    into the wilderness map. When a player moves around, instead of going to
-    another room as with traditional rooms, they stay in the same room but the
-    room itself changes to display another area of the wilderness.
-    """
-
-    @property
-    def wilderness(self):
-        """
-        Shortcut property to the wilderness script this room belongs to.
-
-        Returns:
-            WildernessScript: the WildernessScript attached to this room
-        """
-        return self.ndb.wildernessscript
-
-    @property
-    def location_name(self):
-        """
-        Returns the name of the wilderness at this room's coordinates.
-
-        Returns:
-            name (str)
-        """
-        return self.wilderness.mapprovider.get_location_name(
-            self.coordinates)
-
-    @property
-    def coordinates(self):
-        """
-        Returns the coordinates of this room into the wilderness.
-
-        Returns:
-            tuple: (x, y) coordinates of where this room is inside the
-                wilderness.
-        """
-        return self.ndb.active_coordinates
-
-    def at_object_receive(self, moved_obj, source_location):
-        """
-        Called after an object has been moved into this object. This is a
-        default Evennia hook.
-
-        Args:
-            moved_obj (Object): The object moved into this one.
-            source_location (Object): Where `moved_obj` came from.
-        """
-        if moved_obj.destination and moved_obj.destination == moved_obj.location:
-            # Ignore exits looping back to themselves: those are the regular
-            # n, ne, ... exits.
-            return
-
-        itemcoords = self.wilderness.db.itemcoordinates
-        if moved_obj in itemcoords:
-            # This object was already in the wilderness. We need to make sure
-            # it goes to the correct room it belongs to.
-            # Otherwise the following issue can come up:
-            # 1) Player 1 and Player 2 share a room
-            # 2) Player 1 disconnects
-            # 3) Player 2 moves around
-            # 4) Player 1 reconnects
-            # Player 1 will end up in player 2's room, which has the wrong
-            # coordinates
-
-            coordinates = itemcoords[moved_obj]
-            # Setting the location to None is important here so that we always
-            # get a "fresh" room
-            moved_obj.location = None
-            self.wilderness.move_obj(moved_obj, coordinates)
-        else:
-            # This object wasn't in the wilderness yet. Let's add it.
-            itemcoords[moved_obj] = self.coordinates
-
-    def at_object_leave(self, moved_obj, target_location):
-        """
-        Called just before an object leaves from inside this object. This is a
-        default Evennia hook.
-
-        Args:
-            moved_obj (Object): The object leaving
-            target_location (Object): Where `moved_obj` is going.
-
-        """
-        self.wilderness.at_after_object_leave(moved_obj)
-
-    def set_active_coordinates(self, new_coordinates):
-        """
-        Changes this room to show the wilderness map from other coordinates.
-
-        Args:
-            new_coordinates (tuple): coordinates as tuple of (x, y)
-        """
-        # Remove the reference for the old coordinates...
-        rooms = self.wilderness.db.rooms
-        del rooms[self.coordinates]
-        # ...and add it for the new coordinates.
-        self.ndb.active_coordinates = new_coordinates
-        rooms[self.coordinates] = self
-
-        # Every obj inside this room will get its location set to None
-        for item in self.contents:
-            if not item.destination or item.destination != item.location:
-                item.location = None
-        # And every obj matching the new coordinates will get its location set
-        # to this room
-        for item in self.wilderness.get_objs_at_coordinates(new_coordinates):
-            item.location = self
-
-        # Fix the lockfuncs for the exit so we can't go where we're not
-        # supposed to go
-        for exit in self.exits:
-            if exit.destination != self:
-                continue
-            x, y = get_new_coordinates(new_coordinates, exit.key)
-            valid = self.wilderness.is_valid_coordinates((x, y))
-
-            if valid:
-                exit.locks.add("traverse:true();view:true()")
-            else:
-                exit.locks.add("traverse:false();view:false()")
-
-    def get_display_name(self, looker, **kwargs):
-        """
-        Displays the name of the object in a viewer-aware manner.
-
-        Args:
-            looker (TypedObject): The object or player that is looking
-                at/getting inforamtion for this object.
-
-        Returns:
-            name (str): A string containing the name of the object,
-                including the DBREF if this user is privileged to control
-                said object and also its coordinates into the wilderness map.
-
-        Notes:
-            This function could be extended to change how object names
-            appear to users in character, but be wary. This function
-            does not change an object's keys or aliases when
-            searching, and is expected to produce something useful for
-            builders.
-        """
-        if self.locks.check_lockstring(looker, "perm(Builders)"):
-            name = "{}(#{})".format(self.location_name, self.id)
-        else:
-            name = self.location_name
-
-        name += " {0}".format(self.coordinates)
-        return name
-
-
-class WildernessExit(DefaultExit):
-    """
-    This is an Exit object used inside a WildernessRoom. Instead of changing
-    the location of an Object traversing through it (like a traditional exit
-    would do) it changes the coordinates of that traversing Object inside
-    the wilderness map.
-    """
-
-    @property
-    def wilderness(self):
-        """
-        Shortcut property to the wilderness script.
-
-        Returns:
-            WildernessScript: the WildernessScript attached to this exit's room
-        """
-        return self.location.wilderness
-
-    @property
-    def mapprovider(self):
-        """
-        Shortcut property to the map provider.
-
-        Returns:
-            MapProvider object: the mapprovider object used with this
-                wilderness map.
-        """
-        return self.wilderness.mapprovider
-
-    def at_traverse_coordinates(self, traversing_object, current_coordinates,
-                                new_coordinates):
-        """
-        Called when an object wants to travel from one place inside the
-        wilderness to another place inside the wilderness.
-
-        If this returns True, then the traversing can happen. Otherwise it will
-        be blocked.
-
-        This method is similar how the `at_traverse` works on normal exits.
-
-        Args:
-            traversing_object (Object): The object doing the travelling.
-            current_coordinates (tuple): (x, y) coordinates where
-                `traversing_object` currently is.
-            new_coordinates (tuple): (x, y) coordinates of where
-                `traversing_object` wants to travel to.
-
-        Returns:
-            bool: True if traversing_object is allowed to traverse
-        """
-        return True
-
-    def at_traverse(self, traversing_object, target_location):
-        """
-        This implements the actual traversal. The traverse lock has
-        already been checked (in the Exit command) at this point.
-
-        Args:
-            traversing_object (Object): Object traversing us.
-            target_location (Object): Where target is going.
-
-        Returns:
-            bool: True if the traverse is allowed to happen
-
-        """
-        itemcoordinates = self.location.wilderness.db.itemcoordinates
-
-        current_coordinates = itemcoordinates[traversing_object]
-        new_coordinates = get_new_coordinates(current_coordinates, self.key)
-
-        if not self.at_traverse_coordinates(traversing_object,
-                                            current_coordinates,
-                                            new_coordinates):
-            return False
-
-        if not traversing_object.at_before_move(None):
-            return False
-        traversing_object.location.msg_contents("{} leaves to {}".format(
-            traversing_object.key, new_coordinates),
-            exclude=[traversing_object])
-
-        self.location.wilderness.move_obj(traversing_object, new_coordinates)
-
-        traversing_object.location.msg_contents("{} arrives from {}".format(
-            traversing_object.key, current_coordinates),
-            exclude=[traversing_object])
-
-        traversing_object.at_after_move(None)
-        return True
-
-
-class WildernessMapProvider(object):
-    """
-    Default Wilderness Map provider.
-
-    This is a simple provider that just creates an infite large grid area.
-    """
-    room_typeclass = WildernessRoom
-    exit_typeclass = WildernessExit
-
-    def is_valid_coordinates(self, wilderness, coordinates):
-        """Returns True if coordinates is valid and can be walked to.
-
-        Args:
-            wilderness: the wilderness script
-            coordinates (tuple): the coordinates to check as (x, y) tuple.
-
-        Returns:
-            bool: True if the coordinates are valid
-        """
-        x, y = coordinates
-        if x < 0:
-            return False
-        if y < 0:
-            return False
-
-        return True
-
-    def get_location_name(self, coordinates):
-        """
-        Returns a name for the position at coordinates.
-
-        Args:
-            coordinates (tuple): the coordinates as (x, y) tuple.
-
-        Returns:
-            name (str)
-        """
-        return "The wilderness"
-
-
 class WildernessScript(DefaultScript):
     """
     This is the main "handler" for the wilderness system: inside here the
@@ -626,7 +343,7 @@ class WildernessScript(DefaultScript):
                     # room instead of creating a new one
                     room = old_room
 
-        room.set_active_coordinates(new_coordinates)
+        room.set_active_coordinates(new_coordinates, obj)
         obj.location = room
         obj.ndb.wilderness = self
 
@@ -721,3 +438,308 @@ class WildernessScript(DefaultScript):
         # And see if we can put that room away into storage.
         room = self.db.rooms[loc]
         self._destroy_room(room)
+
+
+class WildernessRoom(DefaultRoom):
+    """
+    This is a single room inside the wilderness. This room provides a "view"
+    into the wilderness map. When a player moves around, instead of going to
+    another room as with traditional rooms, they stay in the same room but the
+    room itself changes to display another area of the wilderness.
+    """
+
+    @property
+    def wilderness(self):
+        """
+        Shortcut property to the wilderness script this room belongs to.
+
+        Returns:
+            WildernessScript: the WildernessScript attached to this room
+        """
+        return self.ndb.wildernessscript
+
+    @property
+    def location_name(self):
+        """
+        Returns the name of the wilderness at this room's coordinates.
+
+        Returns:
+            name (str)
+        """
+        return self.wilderness.mapprovider.get_location_name(
+            self.coordinates)
+
+    @property
+    def coordinates(self):
+        """
+        Returns the coordinates of this room into the wilderness.
+
+        Returns:
+            tuple: (x, y) coordinates of where this room is inside the
+                wilderness.
+        """
+        return self.ndb.active_coordinates
+
+    def at_object_receive(self, moved_obj, source_location):
+        """
+        Called after an object has been moved into this object. This is a
+        default Evennia hook.
+
+        Args:
+            moved_obj (Object): The object moved into this one.
+            source_location (Object): Where `moved_obj` came from.
+        """
+        if moved_obj.destination and moved_obj.destination == moved_obj.location:
+            # Ignore exits looping back to themselves: those are the regular
+            # n, ne, ... exits.
+            return
+
+        itemcoords = self.wilderness.db.itemcoordinates
+        if moved_obj in itemcoords:
+            # This object was already in the wilderness. We need to make sure
+            # it goes to the correct room it belongs to.
+            # Otherwise the following issue can come up:
+            # 1) Player 1 and Player 2 share a room
+            # 2) Player 1 disconnects
+            # 3) Player 2 moves around
+            # 4) Player 1 reconnects
+            # Player 1 will end up in player 2's room, which has the wrong
+            # coordinates
+
+            coordinates = itemcoords[moved_obj]
+            # Setting the location to None is important here so that we always
+            # get a "fresh" room
+            moved_obj.location = None
+            self.wilderness.move_obj(moved_obj, coordinates)
+        else:
+            # This object wasn't in the wilderness yet. Let's add it.
+            itemcoords[moved_obj] = self.coordinates
+
+    def at_object_leave(self, moved_obj, target_location):
+        """
+        Called just before an object leaves from inside this object. This is a
+        default Evennia hook.
+
+        Args:
+            moved_obj (Object): The object leaving
+            target_location (Object): Where `moved_obj` is going.
+
+        """
+        self.wilderness.at_after_object_leave(moved_obj)
+
+    def set_active_coordinates(self, new_coordinates, obj):
+        """
+        Changes this room to show the wilderness map from other coordinates.
+
+        Args:
+            new_coordinates (tuple): coordinates as tuple of (x, y)
+            obj (Object): the object that moved into this room and caused the
+                coordinates to change
+        """
+        # Remove the reference for the old coordinates...
+        rooms = self.wilderness.db.rooms
+        del rooms[self.coordinates]
+        # ...and add it for the new coordinates.
+        self.ndb.active_coordinates = new_coordinates
+        rooms[self.coordinates] = self
+
+        # Every obj inside this room will get its location set to None
+        for item in self.contents:
+            if not item.destination or item.destination != item.location:
+                item.location = None
+        # And every obj matching the new coordinates will get its location set
+        # to this room
+        for item in self.wilderness.get_objs_at_coordinates(new_coordinates):
+            item.location = self
+
+        # Fix the lockfuncs for the exit so we can't go where we're not
+        # supposed to go
+        for exit in self.exits:
+            if exit.destination != self:
+                continue
+            x, y = get_new_coordinates(new_coordinates, exit.key)
+            valid = self.wilderness.is_valid_coordinates((x, y))
+
+            if valid:
+                exit.locks.add("traverse:true();view:true()")
+            else:
+                exit.locks.add("traverse:false();view:false()")
+
+        # Finally call the at_prepare_room hook to give a chance to further
+        # customise it
+        self.wilderness.mapprovider.at_prepare_room(new_coordinates, obj, self)
+
+    def get_display_name(self, looker, **kwargs):
+        """
+        Displays the name of the object in a viewer-aware manner.
+
+        Args:
+            looker (TypedObject): The object or player that is looking
+                at/getting inforamtion for this object.
+
+        Returns:
+            name (str): A string containing the name of the object,
+                including the DBREF if this user is privileged to control
+                said object and also its coordinates into the wilderness map.
+
+        Notes:
+            This function could be extended to change how object names
+            appear to users in character, but be wary. This function
+            does not change an object's keys or aliases when
+            searching, and is expected to produce something useful for
+            builders.
+        """
+        if self.locks.check_lockstring(looker, "perm(Builders)"):
+            name = "{}(#{})".format(self.location_name, self.id)
+        else:
+            name = self.location_name
+
+        name += " {0}".format(self.coordinates)
+        return name
+
+
+class WildernessExit(DefaultExit):
+    """
+    This is an Exit object used inside a WildernessRoom. Instead of changing
+    the location of an Object traversing through it (like a traditional exit
+    would do) it changes the coordinates of that traversing Object inside
+    the wilderness map.
+    """
+
+    @property
+    def wilderness(self):
+        """
+        Shortcut property to the wilderness script.
+
+        Returns:
+            WildernessScript: the WildernessScript attached to this exit's room
+        """
+        return self.location.wilderness
+
+    @property
+    def mapprovider(self):
+        """
+        Shortcut property to the map provider.
+
+        Returns:
+            MapProvider object: the mapprovider object used with this
+                wilderness map.
+        """
+        return self.wilderness.mapprovider
+
+    def at_traverse_coordinates(self, traversing_object, current_coordinates,
+                                new_coordinates):
+        """
+        Called when an object wants to travel from one place inside the
+        wilderness to another place inside the wilderness.
+
+        If this returns True, then the traversing can happen. Otherwise it will
+        be blocked.
+
+        This method is similar how the `at_traverse` works on normal exits.
+
+        Args:
+            traversing_object (Object): The object doing the travelling.
+            current_coordinates (tuple): (x, y) coordinates where
+                `traversing_object` currently is.
+            new_coordinates (tuple): (x, y) coordinates of where
+                `traversing_object` wants to travel to.
+
+        Returns:
+            bool: True if traversing_object is allowed to traverse
+        """
+        return True
+
+    def at_traverse(self, traversing_object, target_location):
+        """
+        This implements the actual traversal. The traverse lock has
+        already been checked (in the Exit command) at this point.
+
+        Args:
+            traversing_object (Object): Object traversing us.
+            target_location (Object): Where target is going.
+
+        Returns:
+            bool: True if the traverse is allowed to happen
+
+        """
+        itemcoordinates = self.location.wilderness.db.itemcoordinates
+
+        current_coordinates = itemcoordinates[traversing_object]
+        new_coordinates = get_new_coordinates(current_coordinates, self.key)
+
+        if not self.at_traverse_coordinates(traversing_object,
+                                            current_coordinates,
+                                            new_coordinates):
+            return False
+
+        if not traversing_object.at_before_move(None):
+            return False
+        traversing_object.location.msg_contents("{} leaves to {}".format(
+            traversing_object.key, new_coordinates),
+            exclude=[traversing_object])
+
+        self.location.wilderness.move_obj(traversing_object, new_coordinates)
+
+        traversing_object.location.msg_contents("{} arrives from {}".format(
+            traversing_object.key, current_coordinates),
+            exclude=[traversing_object])
+
+        traversing_object.at_after_move(None)
+        return True
+
+
+class WildernessMapProvider(object):
+    """
+    Default Wilderness Map provider.
+
+    This is a simple provider that just creates an infinite large grid area.
+    """
+    room_typeclass = WildernessRoom
+    exit_typeclass = WildernessExit
+
+    def is_valid_coordinates(self, wilderness, coordinates):
+        """Returns True if coordinates is valid and can be walked to.
+
+        Args:
+            wilderness: the wilderness script
+            coordinates (tuple): the coordinates to check as (x, y) tuple.
+
+        Returns:
+            bool: True if the coordinates are valid
+        """
+        x, y = coordinates
+        if x < 0:
+            return False
+        if y < 0:
+            return False
+
+        return True
+
+    def get_location_name(self, coordinates):
+        """
+        Returns a name for the position at coordinates.
+
+        Args:
+            coordinates (tuple): the coordinates as (x, y) tuple.
+
+        Returns:
+            name (str)
+        """
+        return "The wilderness"
+
+    def at_prepare_room(self, coordinates, caller, room):
+        """
+        Called when a room gets activated for certain coordinates. This happens
+        after every object is moved in it.
+        This can be used to set a custom room desc for instance or run other
+        customisations on the room.
+
+        Args:
+            coordinates (tuple): the coordinates as (x, y) where room is
+                located at
+            caller (Object): the object that moved into this room
+            room (WildernessRoom): the room object that will be used at that
+                wilderness location
+        """
+        pass
