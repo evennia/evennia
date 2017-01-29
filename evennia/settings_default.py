@@ -140,7 +140,7 @@ LANGUAGE_CODE = 'en-us'
 # out. This can be set as big as desired. A user may avoid being
 # thrown off by sending the empty system command 'idle' to the server
 # at regular intervals. Set <=0 to deactivate idle timeout completely.
-IDLE_TIMEOUT = 3600
+IDLE_TIMEOUT = -1
 # The idle command can be sent to keep your session active without actually
 # having to spam normal commands regularly. It gives no feedback, only updates
 # the idle timer. Note that "idle" will *always* work, even if a different
