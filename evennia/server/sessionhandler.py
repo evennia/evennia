@@ -101,6 +101,28 @@ class SessionHandler(dict):
     This handler holds a stack of sessions.
 
     """
+
+    def __getitem__(self, key):
+        "Clean out None-sessions automatically."
+        if None in self:
+            del self[None]
+        return super(SessionHandler, self).__getitem__(key)
+
+    def get(self, key, default=None):
+        "Clean out None-sessions automatically."
+        if None in self:
+            del self[None]
+        return super(SessionHandler, self).get(key, default)
+
+    def __setitem__(self, key, value):
+        "Don't assign None sessions"
+        if key is not None:
+            super(SessionHandler, self).__setitem__(key, value)
+
+    def __contains__(self, key):
+        "None-keys are not accepted."
+        return False if key is None else super(SessionHandler, self).__contains__(key)
+
     def get_sessions(self, include_unloggedin=False):
         """
         Returns the connected session objects.
