@@ -56,7 +56,7 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
         reason = ""
         if self.args:
             reason = "(Reason: %s) " % self.args.rstrip(".")
-        SESSIONS.announce_all(" Server restarting %s..." % reason)
+        SESSIONS.announce_all(" Server restart initiated %s..." % reason)
         SESSIONS.server.shutdown(mode='reload')
 
 

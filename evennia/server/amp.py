@@ -174,6 +174,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
 
         """
         if hasattr(self, "server_restart_mode"):
+            self.portal.sessions.announce_all(" Server restarting ...")
             self.maxDelay = 2
         else:
             # Don't translate this; avoid loading django on portal side.
