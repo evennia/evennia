@@ -329,14 +329,14 @@ class TestWilderness(EvenniaTest):
         wilderness.enter_wilderness(self.char1)
         self.assertIsInstance(self.char1.location, wilderness.WildernessRoom)
         w = self.get_wilderness_script()
-        self.assertEquals(w.db.itemlocations[self.char1], (0, 0))
+        self.assertEquals(w.db.itemcoordinates[self.char1], (0, 0))
 
-    def test_enter_wilderness_custom_location(self):
+    def test_enter_wilderness_custom_coordinates(self):
         wilderness.create_wilderness()
-        wilderness.enter_wilderness(self.char1, location=(1, 2))
+        wilderness.enter_wilderness(self.char1, coordinates=(1, 2))
         self.assertIsInstance(self.char1.location, wilderness.WildernessRoom)
         w = self.get_wilderness_script()
-        self.assertEquals(w.db.itemlocations[self.char1], (1, 2))
+        self.assertEquals(w.db.itemcoordinates[self.char1], (1, 2))
 
     def test_enter_wilderness_custom_name(self):
         name = "customnname"
@@ -362,7 +362,7 @@ class TestWilderness(EvenniaTest):
 
         # If we move to another location not on an edge, then all directions
         # should be visible / traversable
-        wilderness.enter_wilderness(self.char1, location=(1, 1))
+        wilderness.enter_wilderness(self.char1, coordinates=(1, 1))
         exits = [i for i in self.char1.location.contents
                  if i.destination and (
                   i.access(self.char1, "view") or
@@ -404,7 +404,7 @@ class TestWilderness(EvenniaTest):
         self.assertNotEquals(self.char1.location, self.char2.location)
         self.assertEquals(len(w.db.unused_rooms), 0)
 
-    def test_get_new_location(self):
+    def test_get_new_coordinates(self):
         loc = (1, 1)
         directions = {"north": (1, 2),
                       "northeast": (2, 2),
@@ -415,5 +415,5 @@ class TestWilderness(EvenniaTest):
                       "west": (0, 1),
                       "northwest": (0, 2)}
         for direction, correct_loc in directions.iteritems():
-            new_loc = wilderness.get_new_location(loc, direction)
+            new_loc = wilderness.get_new_coordinates(loc, direction)
             self.assertEquals(new_loc, correct_loc, direction)
