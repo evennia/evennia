@@ -512,9 +512,10 @@ class AMPProtocol(amp.AMP):
             server_sessionhandler.portal_session_sync(kwargs.get("sessiondata"))
 
         elif operation == PDISCONN:  # portal_session_disconnect
-            # session closed from portal side
-            session = server_sessionhandler[sessid]
-            server_sessionhandler.portal_disconnect(session)
+            # session closed from portal sid
+            session = server_sessionhandler.get(sessid)
+            if session:
+                server_sessionhandler.portal_disconnect(session)
 
         elif operation == PDISCONNALL: # portal_disconnect_all
             # portal orders all sessions to close
@@ -566,13 +567,15 @@ class AMPProtocol(amp.AMP):
 
         if operation == SLOGIN:  # server_session_login
             # a session has authenticated; sync it.
-            session = portal_sessionhandler[sessid]
-            portal_sessionhandler.server_logged_in(session, kwargs.get("sessiondata"))
+            session = portal_sessionhandler.get(sessid)
+            if session:
+                portal_sessionhandler.server_logged_in(session, kwargs.get("sessiondata"))
 
         elif operation == SDISCONN:  # server_session_disconnect
             # the server is ordering to disconnect the session
-            session = portal_sessionhandler[sessid]
-            portal_sessionhandler.server_disconnect(session, reason=kwargs.get("reason"))
+            session = portal_sessionhandler.get(sessid)
+            if session:
+                portal_sessionhandler.server_disconnect(session, reason=kwargs.get("reason"))
 
         elif operation == SDISCONNALL:  # server_session_disconnect_all
             # server orders all sessions to disconnect
