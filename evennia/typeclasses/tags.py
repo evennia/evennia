@@ -325,10 +325,10 @@ class TagHandler(object):
                 category.
 
         """
-        query = {"db_model": self._model, "db_tagtype": self._tagtype}
+        query = {"%s__id" % self._model : self._objid, "tag__db_model": self._model, "tag__db_tagtype": self._tagtype}
         if category:
-            query["db_category"] = category.strip().lower()
-        getattr(self.obj, self._m2m_fieldname).filter(**query).delete()
+            query["tag__db_category"] = category.strip().lower()
+        getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query).delete()
         self._cache = {}
         self._catcache = {}
         self._cache_complete = False
