@@ -278,6 +278,7 @@ class ObjectDB(TypedObject):
         except Exception as e:
             errmsg = "Error (%s): %s is not a valid location." % (str(e), location)
             raise RuntimeError(errmsg)
+        return
 
     def __location_del(self):
         "Cleanly delete the location reference"

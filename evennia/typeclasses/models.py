@@ -617,18 +617,6 @@ class TypedObject(SharedMemoryModel):
         super(TypedObject, self).delete()
 
     #
-    # Memory management
-    #
-
-    #def flush_from_cache(self):
-    #    """
-    #    Flush this object instance from cache, forcing an object reload.
-    #    Note that this will kill all temporary attributes on this object
-    #     since it will be recreated as a new Typeclass instance.
-    #    """
-    #    self.__class__.flush_cached_instance(self)
-
-    #
     # Attribute storage
     #
 

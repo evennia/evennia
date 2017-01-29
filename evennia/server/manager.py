@@ -49,4 +49,4 @@ class ServerConfigManager(models.Manager):
             if not conf:
                 return default
             return conf[0].value
-
+        return None

@@ -645,6 +645,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             "Simple log helper method"
             logger.log_trace()
             self.msg("%s%s" % (string, "" if err is None else " (%s)" % err))
+            return
 
         errtxt = _("Couldn't perform move ('%s'). Contact an admin.")
         if not emit_to_obj:
@@ -1336,7 +1337,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             looker (Object): Object doing the looking.
         """
         if not looker:
-            return
+            return ""
         # get and identify all objects
         visible = (con for con in self.contents if con != looker and
                                                     con.access(looker, "view"))
@@ -1555,6 +1556,7 @@ class DefaultCharacter(DefaultObject):
         idle = [session.cmd_last_visible for session in self.sessions.all()]
         if idle:
             return time.time() - float(max(idle))
+        return None
 
     @property
     def connection_time(self):
@@ -1565,6 +1567,7 @@ class DefaultCharacter(DefaultObject):
         conn = [session.conn_time for session in self.sessions.all()]
         if conn:
             return time.time() - float(min(conn))
+        return None
 
 #
 # Base Room object

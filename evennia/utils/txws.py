@@ -559,6 +559,7 @@ class WebSocketProtocol(ProtocolWrapper):
                 if "\r\n" in self.buf:
                     request, chaff, self.buf = self.buf.partition("\r\n")
                     try:
+                        # verb and version are never used, maybe in the future.
                         verb, self.location, version = request.split(" ")
                     except ValueError:
                         self.loseConnection()

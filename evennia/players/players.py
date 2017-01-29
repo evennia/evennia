@@ -544,6 +544,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         idle = [session.cmd_last_visible for session in self.sessions.all()]
         if idle:
             return time.time() - float(max(idle))
+        return None
 
     @property
     def connection_time(self):
@@ -554,6 +555,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         conn = [session.conn_time for session in self.sessions.all()]
         if conn:
             return time.time() - float(min(conn))
+        return None
 
     ## player hooks
 

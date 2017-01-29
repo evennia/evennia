@@ -101,13 +101,13 @@ objects = search_objects
 #
 # Search for players
 #
-# def player_search(self, ostring):
-#     """
+# player_search(self, ostring)
+
 #     Searches for a particular player by name or
 #     database id.
 #
 #     ostring = a string or database id.
-#     """
+#
 
 search_player = PlayerDB.objects.player_search
 search_players = search_player
@@ -117,15 +117,15 @@ players = search_players
 #
 #   Searching for scripts
 #
-# def script_search(self, ostring, obj=None, only_timed=False):
-#     """
+# script_search(self, ostring, obj=None, only_timed=False)
+#
 #     Search for a particular script.
 #
 #     ostring - search criterion - a script ID or key
 #     obj - limit search to scripts defined on this object
 #     only_timed - limit search only to scripts that run
 #                  on a timer.
-#     """
+#
 
 search_script = ScriptDB.objects.script_search
 search_scripts = search_script
@@ -135,8 +135,8 @@ scripts = search_scripts
 # Searching for communication messages
 #
 #
-# def message_search(self, sender=None, receiver=None, channel=None, freetext=None):
-#     """
+# message_search(self, sender=None, receiver=None, channel=None, freetext=None)
+#
 #     Search the message database for particular messages. At least one
 #     of the arguments must be given to do a search.
 #
@@ -146,7 +146,7 @@ scripts = search_scripts
 #     freetext - Search for a text string in a message.
 #                NOTE: This can potentially be slow, so make sure to supply
 #                one of the other arguments to limit the search.
-#     """
+#
 
 search_message = Msg.objects.message_search
 search_messages = search_message
@@ -156,13 +156,13 @@ messages = search_messages
 #
 # Search for Communication Channels
 #
-# def channel_search(self, ostring)
-#     """
+# channel_search(self, ostring)
+#
 #     Search the channel database for a particular channel.
 #
 #     ostring - the key or database id of the channel.
 #     exact -  requires an exact ostring match (not case sensitive)
-#     """
+#
 
 search_channel = Channel.objects.channel_search
 search_channels = search_channel
@@ -172,13 +172,13 @@ channels = search_channels
 #
 # Find help entry objects.
 #
-# def search_help(self, ostring, help_category=None):
-#     """
+# search_help(self, ostring, help_category=None)
+#
 #     Retrieve a search entry object.
 #
 #     ostring - the help topic to look for
 #     category - limit the search to a particular help topic
-#     """
+#
 
 search_help = HelpEntry.objects.search_help
 search_help_entry = search_help

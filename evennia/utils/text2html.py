@@ -273,6 +273,7 @@ class TextToHTMLparser(object):
             text = match.group().replace('\t', '&nbsp;' * self.tabstop)
             text = text.replace(' ', '&nbsp;')
             return text
+        return None
 
     def parse(self, text, strip_ansi=False):
         """

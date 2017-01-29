@@ -563,22 +563,6 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
         if not obj:
             return
 
-        def load(caller):
-            return caller.db.evmenu_target.db.desc or ""
-
-        def save(caller, buf):
-            """
-            Save line buffer to the desc prop. This should
-            return True if successful and also report its status to the user.
-            """
-            caller.db.evmenu_target.db.desc = buf
-            caller.msg("Saved.")
-            return True
-
-        def quit(caller):
-            caller.attributes.remove("evmenu_target")
-            caller.msg("Exited editor.")
-
         self.caller.db.evmenu_target = obj
         # launch the editor
         EvEditor(self.caller, loadfunc=_desc_load, savefunc=_desc_save, quitfunc=_desc_quit, key="desc", persistent=True)
@@ -1140,6 +1124,7 @@ class CmdName(ObjManipCommand):
             caller.msg("Usage: @name <obj> = <newname>[;alias;alias;...]")
             return
 
+        obj = None
         if self.lhs_objs:
             objname = self.lhs_objs[0]['name']
             if objname.startswith("*"):
@@ -1224,7 +1209,7 @@ class CmdOpen(ObjManipCommand):
         if len(exit_obj) > 1:
             # give error message and return
             caller.search(exit_name, location=location, exact=True)
-            return
+            return None
         if exit_obj:
             exit_obj = exit_obj[0]
             if not exit_obj.destination:
@@ -1315,11 +1300,11 @@ class CmdOpen(ObjManipCommand):
             back_exit_name = self.lhs_objs[1]['name']
             back_exit_aliases = self.lhs_objs[1]['aliases']
             back_exit_typeclass = self.lhs_objs[1]['option']
-            ok = self.create_exit(back_exit_name,
-                                  destination,
-                                  location,
-                                  back_exit_aliases,
-                                  back_exit_typeclass)
+            self.create_exit(back_exit_name,
+                             destination,
+                             location,
+                             back_exit_aliases,
+                             back_exit_typeclass)
 
 
 def _convert_from_string(cmd, strobj):
@@ -1634,6 +1619,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
         if "show" in self.switches:
             string = "%s's current typeclass is %s." % (obj.name, obj.__class__)
+            caller.msg(string)
             return
 
         if self.cmdstring == "@swap":

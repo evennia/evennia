@@ -70,7 +70,6 @@ class Mssp(object):
 
         """
         self.protocol.handshake_done()
-        pass
 
     def do_mssp(self, option):
         """

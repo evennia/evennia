@@ -532,6 +532,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
         for thiscmd in self.commands:
             if thiscmd == cmd:
                 return thiscmd
+        return None
 
     def count(self):
         """

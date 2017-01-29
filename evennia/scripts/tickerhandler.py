@@ -73,7 +73,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from evennia.scripts.scripts import ExtendedLoopingCall
 from evennia.server.models import ServerConfig
 from evennia.utils.logger import log_trace, log_err
-from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj, unpack_dbobj
+from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj
 from evennia.utils import variable_from_module
 
 _GA = object.__getattribute__
@@ -568,6 +568,7 @@ class TickerHandler(object):
             ticker = self.ticker_pool.tickers.get(interval, None)
             if ticker:
                 return {interval: ticker.subscriptions}
+            return  None
 
     def all_display(self):
         """

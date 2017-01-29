@@ -10,13 +10,13 @@ import sys
 try:
     import OpenSSL
     from twisted.internet import ssl as twisted_ssl
-except ImportError as err:
+except ImportError as error:
     errstr = """
     {err}
     SSL requires the PyOpenSSL library:
         pip install pyopenssl
     """
-    raise ImportError(errstr.format(err=err))
+    raise ImportError(errstr.format(err=error))
 
 from django.conf import settings
 from evennia.server.portal.telnet import TelnetProtocol

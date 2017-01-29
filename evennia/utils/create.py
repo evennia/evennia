@@ -293,7 +293,7 @@ def create_message(senderobj, message, channels=None,
         from evennia.comms.models import Msg as _Msg
     if not message:
         # we don't allow empty messages.
-        return
+        return None
     new_message = _Msg(db_message=message)
     new_message.save()
     for sender in make_iter(senderobj):

@@ -238,6 +238,7 @@ class CmdEvMenuNode(Command):
                 # this will create a completely new menu call
                 EvMenu(caller, *saved_options[0], **saved_options[1])
                 return True
+            return None
 
         caller = self.caller
         # we store Session on the menu since this can be hard to
@@ -330,7 +331,6 @@ def evtable_options_formatter(optionlist, caller=None):
             table.append(" |lc%s|lt|w%s|n|le: %s" % (raw_key, raw_key, desc))
 
     ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
-    nlastcol = nlist % ncols # number of elements left in last row
 
     # get the amount of rows needed (start with 4 rows)
     nrows = 4
@@ -779,6 +779,7 @@ class EvMenu(object):
         if isinstance(ret, basestring):
             # only return a value if a string (a goto target), ignore all other returns
             return ret
+        return None
 
     def goto(self, nodename, raw_string):
         """

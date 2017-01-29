@@ -350,7 +350,6 @@ for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
 print('-' * 50)  # end of terminal output
 
 if os.name == 'nt':
-    factory.noisy = False
     # Windows only: Set PID file manually
     with open(PORTAL_PIDFILE, 'w') as f:
         f.write(str(os.getpid()))

@@ -184,7 +184,6 @@ class TelnetOOB(object):
                 msdp_args += "{msdp_array_open}" \
                                 "{msdp_args}" \
                             "{msdp_array_close}".format(
-                            msdp_var=MSDP_VAR,
                             msdp_array_open=MSDP_ARRAY_OPEN,
                             msdp_array_close=MSDP_ARRAY_CLOSE,
                             msdp_args= "".join("%s%s" % (

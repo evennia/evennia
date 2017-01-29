@@ -11,7 +11,7 @@ import datetime
 import sys
 import django
 import twisted
-from time import time as timemeasure
+import time
 
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
@@ -191,9 +191,9 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
 
             duration = ""
             if "time" in self.switches:
-                t0 = timemeasure()
+                t0 = time.time()
                 ret = eval(pycode_compiled, {}, available_vars)
-                t1 = timemeasure()
+                t1 = time.time()
                 duration = " (runtime ~ %.4f ms)" % ((t1 - t0) * 1000)
             else:
                 ret = eval(pycode_compiled, {}, available_vars)

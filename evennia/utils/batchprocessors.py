@@ -351,10 +351,10 @@ class BatchCodeProcessor(object):
         headers = []
         codes = []
         for imatch, match in enumerate(list(_RE_CODE_OR_HEADER.finditer(text))):
-            type = match.group(1)
+            mtype = match.group(1)
             istart, iend = match.span(2)
             code = text[istart:iend]
-            if type == "#HEADER":
+            if mtype == "#HEADER":
                 headers.append(code)
             else: # either #CODE or matching from start of file
                 codes.append(code)

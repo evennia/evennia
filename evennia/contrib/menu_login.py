@@ -122,13 +122,13 @@ def username(caller, string_input):
             },
             {
                 "key": "_default",
-                "goto": "password",
+                "goto": "ask_password",
             },
         )
 
     return text, options
 
-def password(caller, string_input):
+def ask_password(caller, string_input):
     """Ask the user to enter the password to this player.
 
     This is assuming the user exists (see 'create_username' and
@@ -174,7 +174,7 @@ def password(caller, string_input):
                 },
                 {
                     "key": "_default",
-                    "goto": "password",
+                    "goto": "ask_password",
                 },
             )
     elif banned:

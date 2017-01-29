@@ -116,13 +116,6 @@ def _init():
     Evennia has fully initialized all its models. It sets up the API
     in a safe environment where all models are available already.
     """
-    def imp(path, variable=True):
-        "Helper function"
-        mod, fromlist = path, "None"
-        if variable:
-            mod, fromlist = path.rsplit('.', 1)
-        return __import__(mod, fromlist=[fromlist])
-
     global DefaultPlayer, DefaultObject, DefaultGuest, DefaultCharacter
     global DefaultRoom, DefaultExit, DefaultChannel, DefaultScript
     global ObjectDB, PlayerDB, ScriptDB, ChannelDB, Msg
@@ -263,9 +256,9 @@ def _init():
 
         def __init__(self):
             "populate the object with commands"
-
             def add_cmds(module):
                 "helper method for populating this object with cmds"
+                from evennia.utils import utils
                 cmdlist = utils.variable_from_module(module, module.__all__)
                 self.__dict__.update(dict([(c.__name__, c) for c in cmdlist]))
 

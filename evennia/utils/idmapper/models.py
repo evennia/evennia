@@ -292,6 +292,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
             else:
                 cls._dbclass__.__instance_cache__[key].refresh_from_db()
         except KeyError:
+            # No need to remove if cache doesn't contain it already
             pass
 
     @classmethod
@@ -367,7 +368,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         """
         global _MONITOR_HANDLER
         if not _MONITOR_HANDLER:
-            from evennia.scripts.monitorhandler import MONITOR_HANDLER as _MONITORHANDLER
+            from evennia.scripts.monitorhandler import MONITOR_HANDLER as _MONITOR_HANDLER
 
         if _IS_SUBPROCESS:
             # we keep a store of objects modified in subprocesses so
@@ -398,7 +399,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         for field in update_fields:
             fieldname = field.name
             # trigger eventual monitors
-            _MONITORHANDLER.at_update(self, fieldname)
+            _MONITOR_HANDLER.at_update(self, fieldname)
             # if a hook is defined it must be named exactly on this form
             hookname = "at_%s_postsave" % fieldname
             if hasattr(self, hookname) and callable(_GA(self, hookname)):

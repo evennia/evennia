@@ -8,10 +8,9 @@ are stored on the Portal side)
 """
 from builtins import object
 
-import re
 import weakref
 import importlib
-from time import time
+import time
 from django.utils import timezone
 from django.conf import settings
 from evennia.comms.models import ChannelDB
@@ -218,7 +217,7 @@ class ServerSession(Session):
         self.uid = self.player.id
         self.uname = self.player.username
         self.logged_in = True
-        self.conn_time = time()
+        self.conn_time = time.time()
         self.puid = None
         self.puppet = None
         self.cmdset_storage = settings.CMDSET_SESSION
@@ -332,7 +331,7 @@ class ServerSession(Session):
 
         """
         # Idle time used for timeout calcs.
-        self.cmd_last = time()
+        self.cmd_last = time.time()
 
         # Store the timestamp of the user's last command.
         if not idle:
@@ -508,7 +507,7 @@ class ServerSession(Session):
 
         """
         string = "Cannot assign directly to ndb object! "
-        string = "Use ndb.attr=value instead."
+        string += "Use ndb.attr=value instead."
         raise Exception(string)
 
     #@ndb.deleter

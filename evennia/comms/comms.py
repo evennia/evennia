@@ -105,6 +105,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             mutelist.append(subscriber)
             self.db.mute_list = mutelist
             return True
+        return False
 
     def unmute(self, subscriber):
         """
@@ -117,6 +118,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             mutelist.remove(subscriber)
             self.db.mute_list = mutelist
             return True
+        return False
 
 
     def connect(self, subscriber):

@@ -18,8 +18,8 @@ http://localhost:8000/webclient.)
 """
 import json
 import re
+import time
 
-from time import time
 from twisted.web import server, resource
 from twisted.internet.task import LoopingCall
 from django.utils.functional import Promise
@@ -83,7 +83,7 @@ class WebClient(resource.Resource):
         """
         Callback for checking the connection is still alive.
         """
-        now = time()
+        now = time.time()
         to_remove = []
         keep_alives = ((csessid, remove) for csessid, (t, remove)
                         in self.last_alive.iteritems() if now - t > _KEEPALIVE)
@@ -170,7 +170,7 @@ class WebClient(resource.Resource):
 
         sess.sessionhandler.connect(sess)
 
-        self.last_alive[csessid] = (time(), False)
+        self.last_alive[csessid] = (time.time(), False)
         if not self.keep_alive:
             # the keepalive is not running; start it.
             self.keep_alive = LoopingCall(self._keepalive)
@@ -184,7 +184,7 @@ class WebClient(resource.Resource):
         client is replying to the keepalive.
         """
         csessid = request.args.get('csessid')[0]
-        self.last_alive[csessid] = (time(), False)
+        self.last_alive[csessid] = (time.time(), False)
         return '""'
 
     def mode_input(self, request):
@@ -198,7 +198,7 @@ class WebClient(resource.Resource):
         """
         csessid = request.args.get('csessid')[0]
 
-        self.last_alive[csessid] = (time(), False)
+        self.last_alive[csessid] = (time.time(), False)
         sess = self.sessionhandler.sessions_from_csessid(csessid)
         if sess:
             sess = sess[0]
@@ -218,7 +218,7 @@ class WebClient(resource.Resource):
 
         """
         csessid = request.args.get('csessid')[0]
-        self.last_alive[csessid] = (time(), False)
+        self.last_alive[csessid] = (time.time(), False)
 
         dataentries = self.databuffer.get(csessid, [])
         if dataentries:
@@ -244,7 +244,6 @@ class WebClient(resource.Resource):
             sess.sessionhandler.disconnect(sess)
         except IndexError:
             self.client_disconnect(csessid)
-            pass
         return '""'
 
     def render_POST(self, request):

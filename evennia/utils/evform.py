@@ -345,7 +345,7 @@ class EvForm(object):
             for il, rectline in enumerate(rect):
                 formline = form[iy0+il]
                 # insert new content, replacing old
-                form[iy0+il] = formline = formline[:ix0] + rectline + formline[ix0+width:]
+                form[iy0+il] = formline[:ix0] + rectline + formline[ix0+width:]
         return form
 
     def map(self, cells=None, tables=None, **kwargs):

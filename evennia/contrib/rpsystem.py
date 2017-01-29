@@ -137,13 +137,6 @@ _RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.UNICODE
 
 _RE_PREFIX = re.compile(r"^%s" % _PREFIX, re.UNICODE)
 
-# The num_sep is the (single-character) symbol used to separate the
-# sdesc from the number when  trying to separate identical sdescs from
-# one another. This is the same syntax used in the rest of Evennia, so
-# by default, multiple "tall" can be separated by entering 1-tall,
-# 2-tall etc.
-_NUM_SEP = "-"
-
 # This regex will return groups (num, word), where num is an optional counter to
 # separate multimatches from one another and word is the first word in the
 # marker. So entering "/tall man" will return groups ("", "tall")
@@ -244,7 +237,7 @@ def ordered_permutation_regex(sentence):
             solution.append(_PREFIX + r"[0-9]*%s*%s(?=\W|$)+" % (_NUM_SEP, re_escape(" ".join(comb)).rstrip("\\")))
 
     # combine into a match regex, first matching the longest down to the shortest components
-    regex = r"|".join(sorted(set(solution), key=lambda o:len(o), reverse=True))
+    regex = r"|".join(sorted(set(solution), key=len, reverse=True))
     return regex
 
 def regex_tuple_from_key_alias(obj):
@@ -521,7 +514,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
             receiver_lang_mapping[key] = process_language(saytext, sender, langname)
         # map the language {##num} markers. This will convert the escaped sdesc markers on
         # the form {{#num}} to {#num} markers ready to sdescmat in the next step.
-        send_emote = emote.format(**receiver_lang_mapping)
+        sendemote = emote.format(**receiver_lang_mapping)
 
         # handle sdesc mappings. we make a temporary copy that we can modify
         try:
@@ -547,7 +540,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
             receiver_sdesc_mapping[rkey] = process_sdesc(receiver.key, receiver)
 
         # do the template replacement of the sdesc/recog {#num} markers
-        receiver.msg(send_emote.format(**receiver_sdesc_mapping))
+        receiver.msg(sendemote.format(**receiver_sdesc_mapping))
 
 #------------------------------------------------------------
 # Handlers for sdesc and recog
@@ -1340,7 +1333,7 @@ class ContribRPObject(DefaultObject):
             looker (Object): Object doing the looking.
         """
         if not looker:
-            return
+            return ""
         # get and identify all objects
         visible = (con for con in self.contents if con != looker and
                                                     con.access(looker, "view"))

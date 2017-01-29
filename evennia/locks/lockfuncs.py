@@ -383,6 +383,7 @@ def locattr(accessing_obj, accessed_obj, *args, **kwargs):
         accessing_obj = accessing_obj.obj
     if hasattr(accessing_obj, "location"):
         return attr(accessing_obj.location, accessed_obj, *args, **kwargs)
+    return False
 
 def objlocattr(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -402,6 +403,7 @@ def objlocattr(accessing_obj, accessed_obj, *args, **kwargs):
         accessed_obj = accessed_obj.obj
     if hasattr(accessed_obj, "location"):
         return attr(accessed_obj.location, accessed_obj, *args, **kwargs)
+    return False
 
 
 def attr_eq(accessing_obj, accessed_obj, *args, **kwargs):
@@ -550,6 +552,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
         for obj in contents:
             if obj.attributes.get(args[0]) == args[1]:
                 return True
+    return False
 
 
 def superuser(*args, **kwargs):

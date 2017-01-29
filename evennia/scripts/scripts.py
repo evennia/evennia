@@ -18,9 +18,6 @@ from future.utils import with_metaclass
 __all__ = ["DefaultScript", "DoNothing", "Store"]
 
 
-_GA = object.__getattribute__
-_SESSIONS = None
-
 class ExtendedLoopingCall(LoopingCall):
     """
     LoopingCall that can start at a delay different
@@ -241,6 +238,7 @@ class DefaultScript(ScriptBase):
             return maybeDeferred(self._step_callback).addErrback(self._step_errback)
         except Exception:
             logger.log_trace()
+        return None
 
     # Public methods
 
@@ -279,6 +277,7 @@ class DefaultScript(ScriptBase):
         task = self.ndb._task
         if task:
             return max(0, self.db_repeats - task.callcount)
+        return None
 
     def start(self, force_restart=False):
         """

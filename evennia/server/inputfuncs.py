@@ -56,28 +56,28 @@ def text(session, *args, **kwargs):
     #from evennia.server.profiling.timetrace import timetrace
     #text = timetrace(text, "ServerSession.data_in")
 
-    text = args[0] if args else None
+    txt = args[0] if args else None
 
     #explicitly check for None since text can be an empty string, which is
     #also valid
-    if text is None:
+    if txt is None:
         return
     # this is treated as a command input
     # handle the 'idle' command
-    if text.strip() in _IDLE_COMMAND:
+    if txt.strip() in _IDLE_COMMAND:
         session.update_session_counters(idle=True)
         return
     if session.player:
         # nick replacement
         puppet = session.puppet
         if puppet:
-            text = puppet.nicks.nickreplace(text,
+            txt = puppet.nicks.nickreplace(txt,
                           categories=("inputline", "channel"), include_player=True)
         else:
-            text = session.player.nicks.nickreplace(text,
+            txt = session.player.nicks.nickreplace(txt,
                         categories=("inputline", "channel"), include_player=False)
     kwargs.pop("options", None)
-    cmdhandler(session, text, callertype="session", session=session, **kwargs)
+    cmdhandler(session, txt, callertype="session", session=session, **kwargs)
     session.update_session_counters()
 
 
@@ -92,20 +92,20 @@ def bot_data_in(session, *args, **kwargs):
 
     """
 
-    text = args[0] if args else None
+    txt = args[0] if args else None
 
     # Explicitly check for None since text can be an empty string, which is
     # also valid
-    if text is None:
+    if txt is None:
         return
     # this is treated as a command input
     # handle the 'idle' command
-    if text.strip() in _IDLE_COMMAND:
+    if txt.strip() in _IDLE_COMMAND:
         session.update_session_counters(idle=True)
         return
     kwargs.pop("options", None)
     # Trigger the execute_cmd method of the corresponding bot.
-    session.player.execute_cmd(text=text, session=session)
+    session.player.execute_cmd(text=txt, session=session)
     session.update_session_counters()
 
 

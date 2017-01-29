@@ -197,8 +197,6 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
 
     """
     try:
-        local_obj_cmdsets = [None]
-
         @inlineCallbacks
         def _get_channel_cmdset(player_or_obj):
             """
@@ -568,6 +566,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                     sysarg = yield _SEARCH_AT_RESULT([match[2] for match in matches], caller, query=matches[0][0])
                 raise ExecSystemCommand(syscmd, sysarg)
 
+            cmdname, args, cmd = "", "", None
             if len(matches) == 1:
                 # We have a unique command match. But it may still be invalid.
                 match = matches[0]

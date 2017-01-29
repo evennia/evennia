@@ -19,8 +19,8 @@ from __future__ import print_function
 
 # imports needed on both server and portal side
 import os
-from time import time
-from collections import defaultdict
+import time
+from collections import defaultdict, namedtuple
 from itertools import count
 from cStringIO import StringIO
 try:
@@ -33,9 +33,7 @@ from twisted.internet.defer import Deferred
 from evennia.utils import logger
 from evennia.utils.utils import to_str, variable_from_module
 
-class DummySession(object):
-    sessid = 0
-DUMMYSESSION = DummySession()
+DUMMYSESSION = namedtuple('DummySession', ['sessid'])(0)
 
 # communication bits
 # (chr(9) and chr(10) are \t and \n, so skipping them)
@@ -350,7 +348,7 @@ class AMPProtocol(amp.AMP):
 
         """
         self.send_batch_counter = 0
-        self.send_reset_time = time()
+        self.send_reset_time = time.time()
         self.send_mode = True
         self.send_task = None
 

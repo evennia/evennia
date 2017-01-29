@@ -31,13 +31,13 @@ class CommError(Exception):
 # helper functions
 #
 
-def dbref(dbref, reqhash=True):
+def dbref(inp, reqhash=True):
     """
     Valid forms of dbref (database reference number) are either a
     string '#N' or an integer N.
 
     Args:
-        dbref (int or str): A possible dbref to check syntactically.
+        inp (int or str): A possible dbref to check syntactically.
         reqhash (bool): Require an initial hash `#` to accept.
 
     Returns:
@@ -45,16 +45,16 @@ def dbref(dbref, reqhash=True):
             dbref, otherwise `None`.
 
     """
-    if reqhash and not (isinstance(dbref, basestring) and dbref.startswith("#")):
+    if reqhash and not (isinstance(inp, basestring) and inp.startswith("#")):
         return None
-    if isinstance(dbref, basestring):
-        dbref = dbref.lstrip('#')
+    if isinstance(inp, basestring):
+        inp = inp.lstrip('#')
     try:
-        if int(dbref) < 0:
+        if int(inp) < 0:
             return None
     except Exception:
         return None
-    return dbref
+    return inp
 
 
 def identify_object(inp):
@@ -128,6 +128,8 @@ def to_object(inp, objtype='player'):
             return _ChannelDB.objects.get(id=obj)
         logger.log_err("%s %s %s %s %s", objtype, inp, obj, typ, type(inp))
         raise CommError()
+    # an unknown
+    return None
 
 #
 # Msg manager
