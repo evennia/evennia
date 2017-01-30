@@ -22,7 +22,7 @@ from os.path import join as osjoin
 from importlib import import_module
 from inspect import ismodule, trace, getmembers, getmodule
 from collections import defaultdict, OrderedDict
-from twisted.internet import threads, defer, reactor
+from twisted.internet import threads, reactor
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext as _

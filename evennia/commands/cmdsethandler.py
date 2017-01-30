@@ -212,7 +212,6 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             else:
                 errstring = errstring.format(path=python_path, traceback=err, timestamp=logger.timeformat())
             break
-        return None # an error
 
     if errstring:
         # returning an empty error cmdset
@@ -224,7 +223,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
         err_cmdset = _ErrorCmdSet()
         err_cmdset.errmessage = errstring
         return err_cmdset
-
+    return None # undefined error
 
 # classes
 

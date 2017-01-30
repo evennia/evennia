@@ -183,11 +183,11 @@ EXAMPLE1_LEGEND = {("♣", "♠"): example1_build_forest,
 # -*- coding: utf-8 -*-
 
 # Add the necessary imports for your instructions here.
-from evennia import create_object
-from typeclasses import rooms, exits
-from evennia.utils import utils
-from random import randint
-import random
+#from evennia import create_object
+#from typeclasses import rooms, exits
+#from evennia.utils import utils
+#from random import randint
+#import random
 
 # This is the same layout as Example 1 but included are characters for exits.
 # We can use these characters to determine which rooms should be connected.
