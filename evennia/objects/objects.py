@@ -1347,18 +1347,18 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             if con.destination:
                 exits.append(key)
             elif con.has_player:
-                users.append("{c%s{n" % key)
+                users.append("|c%s|n" % key)
             else:
                 things.append(key)
         # get description, build string
-        string = "{c%s{n\n" % self.get_display_name(looker)
+        string = "|c%s|n\n" % self.get_display_name(looker)
         desc = self.db.desc
         if desc:
             string += "%s" % desc
         if exits:
-            string += "\n{wExits:{n " + ", ".join(exits)
+            string += "\n|wExits:|n " + ", ".join(exits)
         if users or things:
-            string += "\n{wYou see:{n " + ", ".join(users + things)
+            string += "\n|wYou see:|n " + ", ".join(users + things)
         return string
 
     def at_look(self, target):
@@ -1486,26 +1486,19 @@ class DefaultCharacter(DefaultObject):
 
     def at_pre_puppet(self, player, session=None):
         """
-        This implementation recovers the character again after having been "stoved
-        away" to the `None` location in `at_post_unpuppet`.
-
+        Return the character from storage in None location in `at_post_unpuppet`.
         Args:
             player (Player): This is the connecting player.
             session (Session): Session controlling the connection.
-
         """
-        if self.db.prelogout_location:
-            # try to recover
-            self.location = self.db.prelogout_location
-        if self.location is None:
-            # make sure location is never None (home should always exist)
-            self.location = self.home
-        if self.location:
-            # save location again to be sure
-            self.db.prelogout_location = self.location
-            self.location.at_object_receive(self, self.location)
+        if self.location is None:  # Make sure character's location is never None before being puppeted.
+            # Return to last location (or home, which should always exist).
+            self.location = self.db.prelogout_location if self.db.prelogout_location else self.home
+        if self.location:  # If the character is verified to be somewhere,
+            self.db.prelogout_location = self.location  # save location again to be sure
+            self.location.at_object_receive(self, self.location)  # and trigger the location's reception hook.
         else:
-            player.msg("{r%s has no location and no home is set.{n" % self, session=session)
+            player.msg("|r%s has no location and no home is set.|n" % self, session=session)  # Note to set home.
 
     def at_post_puppet(self):
         """
@@ -1519,7 +1512,7 @@ class DefaultCharacter(DefaultObject):
             puppeting this Object.
 
         """
-        self.msg("\nYou become {c%s{n.\n" % self.name)
+        self.msg("\nYou become |c%s|n.\n" % self.name)
         self.msg(self.at_look(self.location))
 
         def message(obj, from_obj):
