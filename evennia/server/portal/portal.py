@@ -32,6 +32,7 @@ from evennia.server.webserver import EvenniaReverseProxyResource
 PORTAL_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)]
 LOCKDOWN_MODE = settings.LOCKDOWN_MODE
 
+PORTAL_PIDFILE = ""
 if os.name == 'nt':
     # For Windows we need to handle pid files manually.
     PORTAL_PIDFILE = os.path.join(settings.GAME_DIR, "server", 'portal.pid')

@@ -38,6 +38,7 @@ from evennia.server.sessionhandler import SESSIONS
 
 _SA = object.__setattr__
 
+SERVER_PIDFILE = ""
 if os.name == 'nt':
     # For Windows we need to handle pid files manually.
     SERVER_PIDFILE = os.path.join(settings.GAME_DIR, "server", 'server.pid')
