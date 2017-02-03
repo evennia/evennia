@@ -606,11 +606,6 @@ class TypedObject(SharedMemoryModel):
 
         """
         global TICKER_HANDLER
-        self.permissions.clear()
-        self.attributes.clear()
-        self.aliases.clear()
-        if hasattr(self, "nicks"):
-            self.nicks.clear()
 
         # scrambling properties
         self.delete = self._deleted

@@ -8,3 +8,5 @@ inherit from the models in this package. Here is also were the
 Attribute and Tag models are defined along with their handlers.
 
 """
+
+default_app_config = "evennia.typeclasses.apps.TypeclassesConfig"
