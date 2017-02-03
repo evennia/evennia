@@ -63,6 +63,7 @@ class Tag(models.Model):
         verbose_name = "Tag"
         unique_together = (('db_key', 'db_category', 'db_tagtype', 'db_model'),)
         index_together = (('db_key', 'db_category', 'db_tagtype', 'db_model'),)
+        app_label = 'typeclasses'
 
     def __unicode__(self):
         return u"<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else "")

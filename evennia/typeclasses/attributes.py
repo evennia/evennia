@@ -99,6 +99,7 @@ class Attribute(SharedMemoryModel):
     class Meta(object):
         "Define Django meta options"
         verbose_name = "Evennia Attribute"
+        app_label = 'typeclasses'
 
     # read-only wrappers
     key = property(lambda self: self.db_key)
