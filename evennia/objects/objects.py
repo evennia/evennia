@@ -1494,7 +1494,7 @@ class DefaultCharacter(DefaultObject):
             session (Session): Session controlling the connection.
 
         """
-        if self.db.prelogout_location:
+        if self.db.prelogout_location and not self.location:
             # try to recover
             self.location = self.db.prelogout_location
         if self.location is None:
