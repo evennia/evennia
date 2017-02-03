@@ -9,4 +9,3 @@ Attribute and Tag models are defined along with their handlers.
 
 """
 
-default_app_config = "evennia.typeclasses.apps.TypeclassesConfig"
