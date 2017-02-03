@@ -11,7 +11,7 @@ from collections import defaultdict
 from evennia.utils.utils import fill, dedent
 from evennia.commands.command import Command
 from evennia.help.models import HelpEntry
-from evennia.utils import create
+from evennia.utils import create, evmore
 from evennia.utils.utils import string_suggestions, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -22,48 +22,9 @@ _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _SEP = "{C" + "-" * _DEFAULT_WIDTH + "{n"
 
 
-def format_help_entry(title, help_text, aliases=None, suggested=None):
-    """
-    This visually formats the help entry.
-    """
-    string = _SEP + "\n"
-    if title:
-        string += "{CHelp for {w%s{n" % title
-    if aliases:
-        string += " {C(aliases: %s{C){n" % ("{C,{n ".join("{w%s{n" % ali for ali in aliases))
-    if help_text:
-        string += "\n%s" % dedent(help_text.rstrip())
-    if suggested:
-        string += "\n\n{CSuggested:{n "
-        string += "%s" % fill("{C,{n ".join("{w%s{n" % sug for sug in suggested))
-    string.strip()
-    string += "\n" + _SEP
-    return string
-
-
-def format_help_list(hdict_cmds, hdict_db):
-    """
-    Output a category-ordered list. The input are the
-    pre-loaded help files for commands and database-helpfiles
-    resectively.
-    """
-    string = ""
-    if hdict_cmds and any(hdict_cmds.values()):
-        string += "\n" + _SEP + "\n   {CCommand help entries{n\n" + _SEP
-        for category in sorted(hdict_cmds.keys()):
-            string += "\n  {w%s{n:\n" % (str(category).title())
-            string += "{G" + fill(", ".join(sorted(hdict_cmds[category]))) + "{n"
-    if hdict_db and any(hdict_db.values()):
-        string += "\n\n" + _SEP + "\n\r  {COther help entries{n\n" + _SEP
-        for category in sorted(hdict_db.keys()):
-            string += "\n\r  {w%s{n:\n" % (str(category).title())
-            string += "{G" + fill(", ".join(sorted([str(topic) for topic in hdict_db[category]]))) + "{n"
-    return string
-
-
 class CmdHelp(Command):
     """
-    view help or a list of topics
+    View help or a list of topics
 
     Usage:
       help <topic or command>
@@ -81,12 +42,60 @@ class CmdHelp(Command):
     # the current cmdset with the call to self.func().
     return_cmdset = True
 
-    def parse(self):
+    # Help messages are wrapped in an EvMore call.  If you want to
+    # avoid this, simply set the 'help_more' flag to False.
+    help_more = True
+
+    @staticmethod
+    def format_help_entry(title, help_text, aliases=None, suggested=None):
         """
-        input is a string containing the command or topic to match.
+        This visually formats the help entry.
+        This method can be overriden to customize the way a help
+        entry is displayed.
+
+        Args:
+            title (str): the title of the help entry.
+            help_text (str): the text of the help entry.
+            aliases (list of str or None): the list of aliases.
+            suggested (list of str or None): suggested reading.
+
+        Returns the formatted string, ready to be sent.
+
         """
-        self.original_args = self.args.strip()
-        self.args = self.args.strip().lower()
+        string = _SEP + "\n"
+        if title:
+            string += "{CHelp for {w%s{n" % title
+        if aliases:
+            string += " {C(aliases: %s{C){n" % ("{C,{n ".join("{w%s{n" % ali for ali in aliases))
+        if help_text:
+            string += "\n%s" % dedent(help_text.rstrip())
+        if suggested:
+            string += "\n\n{CSuggested:{n "
+            string += "%s" % fill("{C,{n ".join("{w%s{n" % sug for sug in suggested))
+        string.strip()
+        string += "\n" + _SEP
+        return string
+
+    @staticmethod
+    def format_help_list(hdict_cmds, hdict_db):
+        """
+        Output a category-ordered list. The input are the
+        pre-loaded help files for commands and database-helpfiles
+        respectively.  You can override this method to return a
+        custom display of the list of commands and topics.
+        """
+        string = ""
+        if hdict_cmds and any(hdict_cmds.values()):
+            string += "\n" + _SEP + "\n   {CCommand help entries{n\n" + _SEP
+            for category in sorted(hdict_cmds.keys()):
+                string += "\n  {w%s{n:\n" % (str(category).title())
+                string += "{G" + fill(", ".join(sorted(hdict_cmds[category]))) + "{n"
+        if hdict_db and any(hdict_db.values()):
+            string += "\n\n" + _SEP + "\n\r  {COther help entries{n\n" + _SEP
+            for category in sorted(hdict_db.keys()):
+                string += "\n\r  {w%s{n:\n" % (str(category).title())
+                string += "{G" + fill(", ".join(sorted([str(topic) for topic in hdict_db[category]]))) + "{n"
+        return string
 
     def check_show_help(self, cmd, caller):
         """
@@ -104,6 +113,37 @@ class CmdHelp(Command):
         """
         # return only those with auto_help set and passing the cmd: lock
         return cmd.auto_help and cmd.access(caller)
+
+    def should_list_cmd(self, cmd, caller):
+        """
+        Should the specified command appear in the help table?
+
+        This method only checks whether a specified command should
+        appear in the table of topics/commands.  The command can be
+        used by the caller (see the 'check_show_help' method) and
+        the command will still be available, for instance, if a
+        character type 'help name of the command'.  However, if
+        you return False, the specified command will not appear in
+        the table.  This is sometimes useful to "hide" commands in
+        the table, but still access them through the help system.
+
+        Args:
+            cmd: the command to be tested.
+            caller: the caller of the help system.
+
+        Return:
+            True: the command should appear in the table.
+            False: the command shouldn't appear in the table.
+
+        """
+        return True
+
+    def parse(self):
+        """
+        input is a string containing the command or topic to match.
+        """
+        self.original_args = self.args.strip()
+        self.args = self.args.strip().lower()
 
     def func(self):
         """
@@ -132,10 +172,14 @@ class CmdHelp(Command):
             hdict_cmd = defaultdict(list)
             hdict_topic = defaultdict(list)
             # create the dictionaries {category:[topic, topic ...]} required by format_help_list
-            [hdict_cmd[cmd.help_category].append(cmd.key) for cmd in all_cmds]
+            # Filter commands that should be reached by the help
+            # system, but not be displayed in the table.
+            for cmd in all_cmds:
+                if self.should_list_cmd(cmd, caller):
+                    hdict_cmd[cmd.help_category].append(cmd.key)
             [hdict_topic[topic.help_category].append(topic.key) for topic in all_topics]
             # report back
-            self.msg(format_help_list(hdict_cmd, hdict_topic))
+            self.msg(self.format_help_list(hdict_cmd, hdict_topic))
             return
 
         # Try to access a particular command
@@ -151,24 +195,32 @@ class CmdHelp(Command):
         # try an exact command auto-help match
         match = [cmd for cmd in all_cmds if cmd == query]
         if len(match) == 1:
-            self.msg(format_help_entry(match[0].key,
+            formatted = self.format_help_entry(match[0].key,
                      match[0].__doc__,
                      aliases=match[0].aliases,
-                     suggested=suggestions))
+                     suggested=suggestions)
+            if type(self).help_more:
+                evmore.msg(caller, formatted)
+            else:
+                self.msg(formatted)
             return
 
         # try an exact database help entry match
         match = list(HelpEntry.objects.find_topicmatch(query, exact=True))
         if len(match) == 1:
-            self.msg(format_help_entry(match[0].key,
+            formatted = self.format_help_entry(match[0].key,
                      match[0].entrytext,
                      aliases=match[0].aliases.all(),
-                     suggested=suggestions))
+                     suggested=suggestions)
+            if type(self).help_more:
+                evmore.msg(caller, formatted)
+            else:
+                self.msg(formatted)
             return
 
         # try to see if a category name was entered
         if query in all_categories:
-            self.msg(format_help_list({query:[cmd.key for cmd in all_cmds if cmd.help_category==query]},
+            self.msg(self.format_help_list({query:[cmd.key for cmd in all_cmds if cmd.help_category==query]},
                                         {query:[topic.key for topic in all_topics if topic.help_category==query]}))
             return
 
