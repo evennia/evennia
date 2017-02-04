@@ -127,7 +127,11 @@ class Command(with_metaclass(CommandMeta, object)):
 
     (Note that if auto_help is on, this initial string is also used by the
     system to create the help entry for the command, so it's a good idea to
-    format it similar to this one)
+    format it similar to this one).  This behavior can be changed by
+    overriding the method 'get_help' of a command: by default, this
+    method returns cmd.__doc__ (that is, this very docstring, or
+    the docstring of your command).  You can, however, extend or
+    replace this without disabling auto_help.
     """
 
     # the main way to call this command (e.g. 'look')
@@ -423,3 +427,22 @@ class Command(with_metaclass(CommandMeta, object)):
         if hasattr(self, 'obj') and self.obj != caller:
             return " (%s)" % self.obj.get_display_name(caller).strip()
         return ""
+
+    def get_help(self, caller, cmdset):
+        """
+        Return the help message for this command and this caller.
+
+        By default, return self.__doc__ (the docstring just under
+        the class definition).  You can override this behavior,
+        though, and even customize it depending on the caller.
+
+        Args:
+            self: the command itself.
+            caller: the caller asking for help on the command.
+            cmdset: the command set (if you need additional commands).
+
+        This should return the string of the help message for this
+        command.
+
+        """
+        return self.__doc__

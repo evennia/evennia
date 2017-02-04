@@ -196,7 +196,7 @@ class CmdHelp(Command):
         match = [cmd for cmd in all_cmds if cmd == query]
         if len(match) == 1:
             formatted = self.format_help_entry(match[0].key,
-                     match[0].__doc__,
+                     match[0].get_help(caller, cmdset),
                      aliases=match[0].aliases,
                      suggested=suggestions)
             if type(self).help_more:
