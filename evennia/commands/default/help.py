@@ -42,11 +42,10 @@ class CmdHelp(Command):
     # the current cmdset with the call to self.func().
     return_cmdset = True
 
-
-    # Help messages are wrapped in an EvMore call.  If you want to
-    # avoid this, simply set the 'help_more' flag to False.
+    # Help messages are wrapped in an EvMore call (unless using the webclient
+    # with separate help popups) If you want to avoid this, simply set the
+    # 'help_more' flag to False.
     help_more = True
-
 
     def msg_help(self, text):
         """
@@ -54,7 +53,22 @@ class CmdHelp(Command):
         that this is a help command result and could be rendered in a separate
         help window
         """
-        self.msg((text, {"window": "help"}));
+        if type(self).help_more:
+            usemore = True
+
+            if self.session.protocol_key in ("websocket", "ajax/comet"):
+                try:
+                    options = self.caller.player.db._saved_webclient_options
+                    if options["helppopup"]:
+                        usemore = False
+                except KeyError:
+                    pass
+
+            if usemore:
+                evmore.msg(self.caller, text)
+                return
+
+        self.msg((text, {"window": "help"}))
 
     @staticmethod
     def format_help_entry(title, help_text, aliases=None, suggested=None):
@@ -209,10 +223,7 @@ class CmdHelp(Command):
                      match[0].__doc__,
                      aliases=match[0].aliases,
                      suggested=suggestions)
-            if type(self).help_more:
-                evmore.msg(caller, formatted)
-            else:
-                self.msg_help(formatted)
+            self.msg_help(formatted)
             return
 
         # try an exact database help entry match
@@ -222,10 +233,7 @@ class CmdHelp(Command):
                      match[0].entrytext,
                      aliases=match[0].aliases.all(),
                      suggested=suggestions)
-            if type(self).help_more:
-                evmore.msg(caller, formatted)
-            else:
-                self.msg_help(formatted)
+            self.msg_help(formatted)
             return
 
         # try to see if a category name was entered
