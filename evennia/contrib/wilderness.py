@@ -85,7 +85,7 @@ Customisation example:
             else:
                 return "Inside a pyramid."
 
-        def at_prepare_room(self, coordinats, caller, room):
+        def at_prepare_room(self, coordinates, caller, room):
             "Any other changes done to the room before showing it"
             x, y = coordinates
             desc = "This is a room in the pyramid.
