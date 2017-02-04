@@ -665,12 +665,12 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
         else:
             nsess = len(player.sessions.all())
             if nsess == 2:
-                player.msg("{RQuitting{n. One session is still connected.", session=self.session)
+                player.msg("|RQuitting|n. One session is still connected.", session=self.session)
             elif nsess > 2:
-                player.msg("{RQuitting{n. %i session are still connected." % (nsess-1), session=self.session)
+                player.msg("|RQuitting|n. %i sessions are still connected." % (nsess-1), session=self.session)
             else:
                 # we are quitting the last available session
-                player.msg("{RQuitting{n. Hope to see you again, soon.", session=self.session)
+                player.msg("|RQuitting|n. Hope to see you again, soon.", session=self.session)
             player.disconnect_session_from_player(self.session)
 
 

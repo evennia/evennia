@@ -479,7 +479,8 @@ CLIENT_DEFAULT_HEIGHT = 45 # telnet standard is 24 but does anyone use such
 # Guest accounts
 ######################################################################
 
-# This enables guest logins, by default via "connect guest"
+# This enables guest logins, by default via "connect guest". Note that
+# you need to edit your login screen to inform about this possibility.
 GUEST_ENABLED = False
 # Typeclass for guest player objects (linked to a character)
 BASE_GUEST_TYPECLASS = "typeclasses.players.Guest"

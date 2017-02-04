@@ -620,7 +620,7 @@ class AttributeHandler(object):
             [attr.delete() for attr in self._cache.values()
              if attr.access(accessing_obj, self._attredit, default=default_access)]
         else:
-            [attr.delete() for attr in self._cache.values()]
+            [attr.delete() for attr in self._cache.values() if attr.pk]
         self._cache = {}
         self._catcache = {}
         self._cache_complete = False
