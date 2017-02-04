@@ -1492,11 +1492,11 @@ class DefaultCharacter(DefaultObject):
             session (Session): Session controlling the connection.
         """
         if self.location is None:  # Make sure character's location is never None before being puppeted.
-            # Return to last location (or home, which should always exist).
+            # Return to last location (or home, which should always exist),
             self.location = self.db.prelogout_location if self.db.prelogout_location else self.home
+            self.location.at_object_receive(self, None)  # and trigger the location's reception hook.
         if self.location:  # If the character is verified to be somewhere,
-            self.db.prelogout_location = self.location  # save location again to be sure
-            self.location.at_object_receive(self, self.location)  # and trigger the location's reception hook.
+            self.db.prelogout_location = self.location  # save location again to be sure.
         else:
             player.msg("|r%s has no location and no home is set.|n" % self, session=session)  # Note to set home.
 
