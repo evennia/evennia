@@ -55,7 +55,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         # delayed import of the channelhandler
         global _CHANNEL_HANDLER
         if not _CHANNEL_HANDLER:
-            from comms.channelhandler import CHANNEL_HANDLER as _CHANNEL_HANDLER
+            from evennia.comms.channelhandler import CHANNEL_HANDLER as _CHANNEL_HANDLER
         # register ourselves with the channelhandler.
         _CHANNEL_HANDLER.add(self)
 
