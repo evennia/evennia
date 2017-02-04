@@ -86,6 +86,20 @@ function openPopup(dialogname, content) {
     dialog.show();
 }
 
+function closePopup(dialogname) {
+    var dialog = $(dialogname);
+    dialog.hide();
+}
+
+function togglePopup(dialogname, content) {
+    var dialog = $(dialogname);
+    if (dialog.css('display') == 'none') {
+        openPopup(dialogname, content);
+    } else {
+        closePopup(dialogname);
+    }
+}
+
 //
 // GUI Event Handlers
 //
@@ -130,7 +144,7 @@ function doOpenOptions() {
         return;
     }
 
-    openPopup("#optionsdialog");
+    togglePopup("#optionsdialog");
 }
 
 // Closes the currently open dialog
