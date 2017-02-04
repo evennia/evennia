@@ -225,7 +225,7 @@ class CmdHelp(Command):
             return
 
         # no exact matches found. Just give suggestions.
-        self.msg(format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions))
+        self.msg(self.format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions))
 
 
 class CmdSetHelp(COMMAND_DEFAULT_CLASS):
