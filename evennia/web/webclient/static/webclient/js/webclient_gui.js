@@ -174,6 +174,11 @@ function onKeydown (event) {
         }
     }
 
+    if (code === 27) { // Escape key
+        closePopup("#optionsdialog");
+        closePopup("#helpdialog");
+    }
+
     if (history_entry !== null) {
         // Doing a history navigation; replace the text in the input.
         inputfield.val(history_entry);
