@@ -59,7 +59,7 @@ class CmdHelp(Command):
             if self.session.protocol_key in ("websocket", "ajax/comet"):
                 try:
                     options = self.caller.player.db._saved_webclient_options
-                    if options["helppopup"]:
+                    if options and options["helppopup"]:
                         usemore = False
                 except KeyError:
                     pass
