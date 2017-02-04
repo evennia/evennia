@@ -1225,6 +1225,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             moved_obj (Object): The object moved into this one
             source_location (Object): Where `moved_object` came from.
+                Note that this could be `None`.
 
         """
         pass
