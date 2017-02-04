@@ -13,16 +13,19 @@ Usage:
     used.
 
     A wilderness map needs to created first. There can be different maps, all
-    with their own name. If no name is provided, then a default one is used.
+    with their own name. If no name is provided, then a default one is used. Internally,
+    the wilderness is stored as a Script with the name you specify. If you don't
+    specify the name, a script named "default" will be created and used.
 
     @py from evennia.contrib import wilderness; wilderness.create_wilderness()
 
     Once created, it is possible to move into that wilderness map:
+
     @py from evennia.contrib import wilderness; wilderness.enter_wilderness(me)
 
-    All coordinates used by the wilderness map are in the format of (x, y)
-    tuples. x goes from left to right and y goes from bottom to top. So x = 0
-    is on the left and y = 0 is at the bottom of the map.
+    All coordinates used by the wilderness map are in the format of `(x, y)`
+    tuples. x goes from left to right and y goes from bottom to top. So `(0, 0)`
+    is the bottom left corner of the map.
 
 
 Customisation:
@@ -61,6 +64,7 @@ Customisation example:
     class PyramidMapProvider(wilderness.WildernessMapProvider):
 
         def is_valid_coordinates(self, wilderness, coordinates):
+            "Validates if these coordinates are inside the map"
             x, y = coordinates
             try:
                 lines = map_str.split("\n")
@@ -74,21 +78,31 @@ Customisation example:
                 return False
 
         def get_location_name(self, coordinates):
+            "Set the location name"
             x, y = coordinates
             if y == 3:
                 return "Atop the pyramid."
             else:
                 return "Inside a pyramid."
+
+        def at_prepare_room(self, coordinats, caller, room):
+            "Any other changes done to the room before showing it"
+            x, y = coordinates
+            desc = "This is a room in the pyramid.
+            if y == 3 :
+                desc = "You can see far and wide from the top of the pyramid."
+            room.db.desc = desc
     ```
 
-    Now we can use our new pyramid-shaped wilderness map. From inside Evennia:
+    Now we can use our new pyramid-shaped wilderness map. From inside Evennia we
+    create a new wilderness (with the name "default") but using our new map provider:
 
     ```
     @py from world import pyramid as p; p.wilderness.create_wilderness(mapprovider=p.PyramidMapProvider())
 
     @py from evennia.contrib import wilderness; wilderness.enter_wilderness(me, coordinates=(4, 1))
-    ```
 
+    ```
 Implementation details:
 
     When a character moves into the wilderness, they get their own room. If
@@ -741,5 +755,9 @@ class WildernessMapProvider(object):
             caller (Object): the object that moved into this room
             room (WildernessRoom): the room object that will be used at that
                 wilderness location
+        Example:
+            An example use of this would to plug in a randomizer to show different
+            descriptions for different coordinates, or place a treasure at a special
+            coordinate.
         """
         pass
