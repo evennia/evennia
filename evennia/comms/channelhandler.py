@@ -188,8 +188,8 @@ class ChannelHandler(object):
 
     def add(self, channel):
         """
-        Add an individual channel to the handler. This should be
-        called whenever a new channel is created.
+        Add an individual channel to the handler. This is called
+        whenever a new channel is created.
 
         Args:
             channel (Channel): The channel to add.
@@ -222,6 +222,18 @@ class ChannelHandler(object):
         self.cached_channel_cmds[channel] = cmd
         self.cached_cmdsets = {}
     add_channel = add # legacy alias
+
+    def remove(self, channel):
+        """
+        Remove channel from channelhandler. This will also delete it.
+
+        Args:
+            channel (Channel): Channel to remove/delete.
+
+        """
+        if channel.pk:
+            channel.delete()
+        self.update()
 
     def update(self):
         """
