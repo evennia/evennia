@@ -118,7 +118,8 @@ class EvMore(object):
     """
     The main pager object
     """
-    def __init__(self, caller, text, always_page=False, session=None, justify_kwargs=None, **kwargs):
+    def __init__(self, caller, text, always_page=False, session=None,
+                justify_kwargs=None, exit_on_lastpage=False, **kwargs):
         """
         Initialization of the text handler.
 
@@ -133,6 +134,10 @@ class EvMore(object):
             justify_kwargs (dict, bool or None, optional): If given, this should
                 be valid keyword arguments to the utils.justify() function. If False,
                 no justification will be done.
+            exit_on_lastpage (bool, optional): If reaching the last page without the
+                page being completely filled, exit pager immediately. If unset,
+                another move forward is required to exit. If set, the pager
+                exit message will not be shown.
             kwargs (any, optional): These will be passed on
                 to the `caller.msg` method.
 
@@ -142,6 +147,7 @@ class EvMore(object):
         self._pages = []
         self._npages = []
         self._npos = []
+        self.exit_on_lastpage = exit_on_lastpage
         self._exit_msg = "Exited |wmore|n pager."
         if not session:
             # if not supplied, use the first session to
@@ -167,7 +173,12 @@ class EvMore(object):
             justify_kwargs["align"] = justify_kwargs.get("align", 'l')
             justify_kwargs["indent"] = justify_kwargs.get("indent", 0)
 
-            lines = justify(text, **justify_kwargs).split("\n")
+            lines = []
+            for line in text.split("\n"):
+                if len(line) > width:
+                    lines.extend(justify(line, **justify_kwargs).split("\n"))
+                else:
+                    lines.append(line)
 
         # always limit number of chars to 10 000 per page
         height = min(10000 // width, height)
@@ -232,6 +243,9 @@ class EvMore(object):
         else:
             self._pos += 1
             self.display()
+            if self.exit_on_lastpage and self._pos == self._pos >= self._npages - 1:
+                self.page_quit()
+
 
     def page_back(self):
         """
