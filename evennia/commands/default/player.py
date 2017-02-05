@@ -751,6 +751,18 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
             for row in table:
                 string += "\n" + "".join(row)
+            table = [[], [], [], [], [], [], [], [], [], [], [], []]
+            for ibatch in range(4):
+                for igray in range(6):
+                    letter = chr(97 + 1 + (ibatch*6 + igray))
+                    table[0 + igray].append("|=%s%s |n" % (letter, "||=%s" % (letter)))
+                    table[6 + igray].append("|%i%i%i|[=%s%s |n" % (5, 0, 0, letter, "||[=%s" % (letter)))
+            table = self.table_format(table)
+            string += "\n"
+            string += "\n   Pure black (||=a)      |=a||=a |n |[=a      Pure black (||[=a)       |500||[=a |n|[=a|n "
+            for row in table:
+                string += "\n" + "".join(row)
+            string += "\n   Pure white (||=z)      |=z||=z |n |[=z      Pure white (||[=z)       |500||[=z |n|[=z|n "
             self.msg(string)
             #self.msg("(e.g. %%123 and %%[123 also work)")
         else:
@@ -819,4 +831,3 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
             else:
                 self.msg("Quelling Player permissions%s. Use @unquell to get them back." % permstr)
         self._recache_locks(player)
-
