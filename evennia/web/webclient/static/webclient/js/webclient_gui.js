@@ -253,7 +253,7 @@ function onText(args, kwargs) {
     // append message to previous ones, then scroll so latest is at
     // the bottom. Send 'cls' kwarg to modify the output class.
     var renderto = "main";
-    if (kwargs["window"] == "help") {
+    if (kwargs["type"] == "help") {
         if (("helppopup" in options) && (options["helppopup"])) {
             renderto = "#helpdialog";
         }
@@ -345,7 +345,7 @@ function onBeforeUnload() {
     return "You are about to leave the game. Please confirm.";
 }
 
-// Notifications 
+// Notifications
 var unread = 0;
 var originalTitle = document.title;
 var focused = true;

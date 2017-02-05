@@ -68,7 +68,7 @@ class CmdHelp(Command):
                 evmore.msg(self.caller, text)
                 return
 
-        self.msg((text, {"window": "help"}))
+        self.msg((text, {"type": "help"}))
 
     @staticmethod
     def format_help_entry(title, help_text, aliases=None, suggested=None):
