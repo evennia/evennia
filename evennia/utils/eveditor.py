@@ -233,13 +233,7 @@ class CmdEditorBase(Command):
             editor = self.caller.ndb._eveditor
         self.editor = editor
 
-        try:
-            linebuffer = self.editor.get_buffer().split("\n")
-        except AttributeError:
-            # this happens if we tried to edit a non-string.
-            self.editor._buffer = to_str(self.editor._buffer, force_string=True)
-            linebuffer = self.editor.get_buffer().split("\n")
-
+        linebuffer = self.editor.get_buffer().split("\n")
 
         nlines = len(linebuffer)
 
@@ -731,6 +725,9 @@ class EvEditor(object):
         """
         try:
             self._buffer = self._loadfunc(self._caller)
+            if not isinstance(self._buffer, basestring):
+                self._buffer = to_str(self._buffer, force_string=True)
+                self._caller.msg("|rNote: input buffer was converted to a string.|n")
         except Exception as e:
             from evennia.utils import logger
             logger.log_trace()
@@ -844,8 +841,6 @@ class EvEditor(object):
         """
         if buf is None:
             buf = self._buffer
-        if not isinstance(buf, basestring):
-            buf = to_str(buf, force_string=True)
         if is_iter(buf):
             buf = "\n".join(buf)
 
