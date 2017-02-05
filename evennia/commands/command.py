@@ -434,15 +434,15 @@ class Command(with_metaclass(CommandMeta, object)):
 
         By default, return self.__doc__ (the docstring just under
         the class definition).  You can override this behavior,
-        though, and even customize it depending on the caller.
+        though, and even customize it depending on the caller, or other
+        commands the caller can use.
 
         Args:
-            self: the command itself.
-            caller: the caller asking for help on the command.
-            cmdset: the command set (if you need additional commands).
+            caller (Object or Player): the caller asking for help on the command.
+            cmdset (CmdSet): the command set (if you need additional commands).
 
-        This should return the string of the help message for this
-        command.
+        Returns:
+            docstring (str): the help text to provide the caller for this command.
 
         """
         return self.__doc__
