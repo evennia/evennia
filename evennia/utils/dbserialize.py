@@ -31,6 +31,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from evennia.utils.utils import to_str, uses_database
 from evennia.utils import logger
+from builtins import int
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle",
             "dbserialize", "dbunserialize")
