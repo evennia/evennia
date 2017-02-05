@@ -319,6 +319,7 @@ def _load_editor(caller):
     """
     saved_options = caller.attributes.get("_eveditor_saved")
     saved_buffer, saved_undo = caller.attributes.get("_eveditor_buffer_temp", (None, None))
+    unsaved = caller.attributes.get("_eveditor_unsaved", False)
     if saved_options:
         eveditor = EvEditor(caller, **saved_options[0])
         if saved_buffer:
@@ -327,6 +328,7 @@ def _load_editor(caller):
             setattr(eveditor, "_buffer", saved_buffer)
             setattr(eveditor, "_undo_buffer", saved_undo)
             setattr(eveditor, "_undo_pos", len(saved_undo) - 1)
+            setattr(eveditor, "_unsaved", unsaved)
         for key, value in saved_options[1].iteritems():
             setattr(eveditor, key, value)
     else:
@@ -680,6 +682,7 @@ class EvEditor(object):
                         {"_pristine_buffer": self._pristine_buffer,
                          "_sep": self._sep}))
                 caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
+                caller.attributes.add("_eveditor_unsaved", False)
             except Exception, err:
                 caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
                 logger.log_trace(_TRACE_PERSISTENT_SAVING)
@@ -731,6 +734,7 @@ class EvEditor(object):
             self._unsaved = True
             if self._persistent:
                 self._caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
+                self._caller.attributes.add("_eveditor_unsaved", True)
 
     def quit(self):
         """
@@ -744,6 +748,7 @@ class EvEditor(object):
         self._caller.nattributes.remove("_eveditor")
         self._caller.attributes.remove("_eveditor_buffer_temp")
         self._caller.attributes.remove("_eveditor_saved")
+        self._caller.attributes.remove("_eveditor_unsaved")
         self._caller.cmdset.remove(EvEditorCmdSet)
 
     def save_buffer(self):
