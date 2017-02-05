@@ -130,13 +130,33 @@ class ANSIParser(object):
         rgbtag = rgbmatch.group()[1:]
 
         background = rgbtag[0] == '['
-        if background:
-            red, green, blue = int(rgbtag[1]), int(rgbtag[2]), int(rgbtag[3])
+        grayscale  = rgbtag[0 + int(background)] == '='
+        if not grayscale:
+            # 6x6x6 color-cube (xterm indexes 16-231)
+            if background:
+                red, green, blue = int(rgbtag[1]), int(rgbtag[2]), int(rgbtag[3])
+            else:
+                red, green, blue = int(rgbtag[0]), int(rgbtag[1]), int(rgbtag[2])
         else:
-            red, green, blue = int(rgbtag[0]), int(rgbtag[1]), int(rgbtag[2])
+            # grayscale values (xterm indexes 0, 232-255, 15) for full spectrum
+            letter = rgbtag[int(background) + 1]
+            if (letter == 'a'):
+                colval = 0         # ansi black @ index 0
+            elif (letter == 'z'):
+                colval = 15        # ansi white @ index 15
+            else:
+                # letter in range [b..y] (exactly 24 values!)
+                colval = 134 + ord(letter)
+
+            # ansi fallback logic expects r,g,b values in [0..5] range
+            gray = (ord(letter)-97)/5.0
+            r, g, b = gray, gray, gray
 
         if use_xterm256:
-            colval = 16 + (red * 36) + (green * 6) + blue
+
+            if not grayscale:
+                colval = 16 + (red * 36) + (green * 6) + blue
+
             return "\033[%s8;5;%sm" % (3 + int(background), colval)
             # replaced since some cliens (like Potato) does not accept codes with leading zeroes, see issue #1024.
             #return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)
@@ -429,6 +449,12 @@ class ANSIParser(object):
         ## |-style
         (r'\|[0-5]{3}', ""),  # |123 - foreground colour
         (r'\|\[[0-5]{3}', ""),  # |[123 - background colour
+
+        ## grayscale entries including ansi extremes: {=a .. {=z
+        (r'\{=[a-z]', ""),
+        (r'\{\[=[a-z]', ""),
+        (r'\|=[a-z]', ""),
+        (r'\|\[=[a-z]', ""),
         ]
 
     mxp_re = r'\|lc(.*?)\|lt(.*?)\|le'
