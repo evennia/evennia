@@ -44,7 +44,7 @@ import re
 
 from django.conf import settings
 from evennia import Command, CmdSet
-from evennia.utils import is_iter, fill, dedent, logger
+from evennia.utils import is_iter, fill, dedent, logger, justify
 from evennia.commands import cmdhandler
 
 # we use cmdhandler instead of evennia.syscmdkeys to
@@ -93,9 +93,10 @@ _HELP_TEXT = \
 
  :s <l> <w> <txt> - search/replace word or regex <w> in buffer or on line <l>
 
- :f <l>    - flood-fill entire buffer or line <l>
- :fi <l>   - indent entire buffer or line <l>
- :fd <l>   - de-indent entire buffer or line <l>
+ :j <l> <w> - justify buffer or line <l>. <w> is f, c, l or r. Default f (full)
+ :f <l>     - flood-fill entire buffer or line <l>: Equivalent to :j left
+ :fi <l>    - indent entire buffer or line <l>
+ :fd <l>    - de-indent entire buffer or line <l>
 
  :echo - turn echoing of the input on/off (helpful for some clients)
 
@@ -370,7 +371,7 @@ class CmdEditorGroup(CmdEditorBase):
     """
     key = ":editor_command_group"
     aliases = [":","::", ":::", ":h", ":w", ":wq", ":q", ":q!", ":u", ":uu", ":UU",
-               ":dd", ":dw", ":DD", ":y", ":x", ":p", ":i",
+               ":dd", ":dw", ":DD", ":y", ":x", ":p", ":i", ":j",
                ":r", ":I", ":A", ":s", ":S", ":f", ":fi", ":fd", ":echo"]
     arg_regex = r"\s.*?|$"
 
@@ -423,7 +424,7 @@ class CmdEditorGroup(CmdEditorBase):
             # quit. If not saved, will ask
             if self.editor._unsaved:
                 caller.cmdset.add(SaveYesNoCmdSet)
-                caller.msg("Save before quitting? {lcyes{lt[Y]{le/{lcno{ltN{le")
+                caller.msg("Save before quitting? |lcyes|lt[Y]|le/|lcno|ltN|le")
             else:
                 editor.quit()
         elif cmd == ":q!":
@@ -551,6 +552,27 @@ class CmdEditorGroup(CmdEditorBase):
             fbuf = "\n".join(linebuffer[lstart:lend])
             fbuf = fill(fbuf, width=width)
             buf = linebuffer[:lstart] + fbuf.split("\n") + linebuffer[lend:]
+            editor.update_buffer(buf)
+        elif cmd == ":j":
+            # :f <l> <w>  justify buffer of <l> with <w> as align (one of
+            # f(ull), c(enter), r(ight) or l(left). Default is full.
+            align_map = {"full": "f", "f": "f", "center": "c", "c": "c",
+                           "right": "r", "r": "r", "left": "l", "l": "l"}
+            align_name = {"f": "Full", "c": "Center", "l": "Left", "r": "Right"}
+            width = _DEFAULT_WIDTH
+            if self.arg1 and self.arg1.lower() not in align_map:
+                self.caller.msg("Valid justifications are [f]ull (default), [c]enter, [r]right or [l]eft")
+                return
+            align = align_map[self.arg1.lower()] if self.arg1 else 'f'
+            if not self.linerange:
+                lstart = 0
+                lend = self.cline + 1
+                self.caller.msg("%s-justified lines %i-%i." % (align_name[align], lstart + 1, lend))
+            else:
+                self.caller.msg("%s-justified %s." % (align_name[align], self.lstr))
+            jbuf = "\n".join(linebuffer[lstart:lend])
+            jbuf = justify(jbuf, width=width, align=align)
+            buf = linebuffer[:lstart] + jbuf.split("\n") + linebuffer[lend:]
             editor.update_buffer(buf)
         elif cmd == ":fi":
             # :fi <l> indent buffer or lines <l> of buffer.
