@@ -141,9 +141,9 @@ class ANSIParser(object):
             # grayscale values (xterm indexes 0, 232-255, 15) for full spectrum
             letter = rgbtag[int(background) + 1]
             if (letter == 'a'):
-                colval = 0         # ansi black @ index 0
+                colval = 16     # pure black @ index 16 (first color cube entry)
             elif (letter == 'z'):
-                colval = 15        # ansi white @ index 15
+                colval = 231    # pure white @ index 231 (last color cube entry)
             else:
                 # letter in range [b..y] (exactly 24 values!)
                 colval = 134 + ord(letter)
