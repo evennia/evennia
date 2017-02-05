@@ -749,22 +749,28 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                                                         "||[%i%i%i" % (ir, ig, ib)))
             table = self.table_format(table)
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
-            for row in table:
-                string += "\n" + "".join(row)
+            string += "\n" + "\n".join("".join(row) for row in table)
             table = [[], [], [], [], [], [], [], [], [], [], [], []]
             for ibatch in range(4):
                 for igray in range(6):
-                    letter = chr(97 + 1 + (ibatch*6 + igray))
+                    letter = chr(97 + (ibatch*6 + igray))
+                    inverse = chr(122 - (ibatch*6 + igray))
                     table[0 + igray].append("|=%s%s |n" % (letter, "||=%s" % (letter)))
-                    table[6 + igray].append("|%i%i%i|[=%s%s |n" % (5, 0, 0, letter, "||[=%s" % (letter)))
+                    table[6 + igray].append("|=%s|[=%s%s |n" % (inverse, letter, "||[=%s" % (letter)))
+            for igray in range(6):
+                # the last row (y, z) has empty columns
+                if igray < 2:
+                    letter = chr(121 + igray)
+                    inverse = chr(98 - igray)
+                    fg =  "|=%s%s |n" % (letter, "||=%s" % (letter))
+                    bg = "|=%s|[=%s%s |n" % (inverse, letter, "||[=%s" % (letter))
+                else:
+                    fg, bg = " ", " "
+                table[0 + igray].append(fg)
+                table[6 + igray].append(bg)
             table = self.table_format(table)
-            string += "\n"
-            string += "\n   Pure black (||=a)      |=a||=a |n |[=a      Pure black (||[=a)       |500||[=a |n|[=a|n "
-            for row in table:
-                string += "\n" + "".join(row)
-            string += "\n   Pure white (||=z)      |=z||=z |n |[=z      Pure white (||[=z)       |500||[=z |n|[=z|n "
+            string += "\n" + "\n".join("".join(row) for row in table)
             self.msg(string)
-            #self.msg("(e.g. %%123 and %%[123 also work)")
         else:
             # malformed input
             self.msg("Usage: @color ansi||xterm256")
