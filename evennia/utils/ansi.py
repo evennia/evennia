@@ -150,7 +150,7 @@ class ANSIParser(object):
 
             # ansi fallback logic expects r,g,b values in [0..5] range
             gray = (ord(letter)-97)/5.0
-            r, g, b = gray, gray, gray
+            red, green, blue = gray, gray, gray
 
         if use_xterm256:
 
