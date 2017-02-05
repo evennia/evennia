@@ -18,6 +18,7 @@ from evennia.utils import logger
 from evennia.utils.utils import make_iter, lazy_property
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
+from evennia.scripts.monitorhandler import MONITOR_HANDLER
 
 ClientSessionStore = importlib.import_module(settings.SESSION_ENGINE).SessionStore
 
@@ -258,6 +259,11 @@ class ServerSession(Session):
                 player.is_connected = False
             # this may be used to e.g. delete player after disconnection etc
             player.at_post_disconnect()
+            # remove any webclient settings monitors associated with this
+            # session
+            MONITOR_HANDLER.remove(player, "_saved_webclient_options",
+                                   self.sessid)
+
 
     def get_player(self):
         """

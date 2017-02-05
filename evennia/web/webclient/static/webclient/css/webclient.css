@@ -156,11 +156,95 @@ div {margin:0px;}
     padding: 0 .45em;
 }
 
+#optionsbutton {
+    width: 40px;
+    font-size: 20px;
+    color: #a6a6a6;
+    background-color: transparent;
+    border: 0px;
+}
+
+#optionsbutton:hover {
+    color: white;
+    cursor: pointer;
+}
+
+#toolbar {
+    position: fixed;
+    top: 0;
+    right: 5px;
+    z-index: 1;
+}
+
 /* No javascript warning */
 #connecting {
     position: absolute;
     width: 100%;
     padding: .5em .9em
+}
+
+/* Dialog window */
+.dialog {
+    display: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -75%);
+    position: absolute;
+    z-index: 10;
+    background-color: #fefefe;
+    border: 1px solid #888;
+    color: black;
+
+}
+
+#optionsdialog {
+    width: 50%;
+}
+
+#helpdialog {
+    width: 725px;
+    height: 65%;
+}
+
+#helpdialog .dialogcontent {
+    background-color: #1e1e1e;
+    color: #ccc;
+}
+
+.dialogcontentparent {
+    height: calc(100% - 44px - 40px);
+}
+
+.dialogcontent {
+    overflow: auto;
+    height: 100%;
+    padding: 20px;
+}
+
+.dialogtitle {
+    border-bottom: 1px solid #888;
+    padding: 10px 20px;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: move;
+    font-weight: bold;
+    font-size: 16px;
+    background-color: #d9d9d9;
+}
+
+.dialogclose {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.dialogclose:hover, .dialogclose:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 /* XTERM256 colors */
