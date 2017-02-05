@@ -12,6 +12,7 @@ from evennia.utils.utils import fill, dedent
 from evennia.commands.command import Command
 from evennia.help.models import HelpEntry
 from evennia.utils import create, evmore
+from evennia.utils.eveditor import EvEditor
 from evennia.utils.utils import string_suggestions, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -228,14 +229,35 @@ class CmdHelp(Command):
         self.msg(self.format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions))
 
 
+def loadhelp(caller):
+    """Load the help entry to edit."""
+    entry = caller.db._editing_help
+    if entry:
+        return entry.entrytext
+    else:
+        return ""
+
+def savehelp(caller, buffer):
+    """Save the help entry."""
+    entry = caller.db._editing_help
+    if entry:
+        entry.entrytext = buffer
+
+
+def quithelp(caller):
+    """Quit the help editor."""
+    caller.msg("Closing the editor.")
+    del caller.db._editing_help
+
 class CmdSetHelp(COMMAND_DEFAULT_CLASS):
     """
-    edit the help database
+    Edit the help database.
 
     Usage:
       @help[/switches] <topic>[[;alias;alias][,category[,locks]] = <text>
 
     Switches:
+      edit - open a line editor to edit the topic's help text.
       replace - overwrite existing help topic.
       append - add text to the end of existing topic with a newline between.
       extend - as append, but don't add a newline.
@@ -306,6 +328,17 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
                 old_entry.entrytext += "\n%s" % self.rhs
             old_entry.aliases.add(aliases)
             self.msg("Entry updated:\n%s%s" % (old_entry.entrytext, aliastxt))
+            return
+        if 'edit' in switches:
+            # open the line editor to edit the helptext
+            if not old_entry:
+                self.msg("Could not find topic '%s'%s." % (topicstr, aliastxt))
+                return
+
+            self.caller.db._editing_help = old_entry
+            EvEditor(self.caller, loadfunc=loadhelp, savefunc=savehelp,
+                    quitfunc=quithelp, key="topic {}".format(old_entry.key),
+                    persistent=True)
             return
         if 'delete' in switches or 'del' in switches:
             # delete the help entry
