@@ -426,12 +426,6 @@ class ANSIParser(object):
     xterm256_map = [
         (r'\{[0-5]{3}', ""),   # {123 - foreground colour
         (r'\{\[[0-5]{3}', ""),   # {[123 - background colour
-        ## -style
-        (r'\|[0-5]{3}', ""),  # |123 - foreground colour
-        (r'\|\[[0-5]{3}', ""),  # |[123 - background colour
-
-        (r'\{[0-5]{3}', ""),   # {123 - foreground colour
-        (r'\{\[[0-5]{3}', ""),   # {[123 - background colour
         ## |-style
         (r'\|[0-5]{3}', ""),  # |123 - foreground colour
         (r'\|\[[0-5]{3}', ""),  # |[123 - background colour
