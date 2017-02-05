@@ -44,7 +44,7 @@ import re
 
 from django.conf import settings
 from evennia import Command, CmdSet
-from evennia.utils import is_iter, fill, dedent, logger, justify
+from evennia.utils import is_iter, fill, dedent, logger, justify, to_str
 from evennia.commands import cmdhandler
 
 # we use cmdhandler instead of evennia.syscmdkeys to
@@ -233,7 +233,13 @@ class CmdEditorBase(Command):
             editor = self.caller.ndb._eveditor
         self.editor = editor
 
-        linebuffer = self.editor.get_buffer().split("\n")
+        try:
+            linebuffer = self.editor.get_buffer().split("\n")
+        except AttributeError:
+            # this happens if we tried to edit a non-string.
+            self.editor._buffer = to_str(self.editor._buffer, force_string=True)
+            linebuffer = self.editor.get_buffer().split("\n")
+
 
         nlines = len(linebuffer)
 
@@ -838,6 +844,8 @@ class EvEditor(object):
         """
         if buf is None:
             buf = self._buffer
+        if not isinstance(buf, basestring):
+            buf = to_str(buf, force_string=True)
         if is_iter(buf):
             buf = "\n".join(buf)
 
@@ -847,9 +855,9 @@ class EvEditor(object):
         nchars = len(buf)
 
         sep = self._sep
-        header = "|n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH-25-len(self._key))
+        header = "|n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH-20-len(self._key))
         footer = "|n" + sep * 10 + "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) \
-                    + sep * 12 + "(:h for help)" + sep * 23
+                    + sep * 12 + "(:h for help)" + sep * 28
         if linenums:
             main = "\n".join("{b%02i|{n %s" % (iline + 1 + offset, line) for iline, line in enumerate(lines))
         else:
