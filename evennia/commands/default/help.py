@@ -229,23 +229,20 @@ class CmdHelp(Command):
         self.msg(self.format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions))
 
 
-def loadhelp(caller):
-    """Load the help entry to edit."""
+def _loadhelp(caller):
     entry = caller.db._editing_help
     if entry:
         return entry.entrytext
     else:
         return ""
 
-def savehelp(caller, buffer):
-    """Save the help entry."""
+def _savehelp(caller, buffer):
     entry = caller.db._editing_help
     if entry:
         entry.entrytext = buffer
 
 
-def quithelp(caller):
-    """Quit the help editor."""
+def _quithelp(caller):
     caller.msg("Closing the editor.")
     del caller.db._editing_help
 
@@ -331,15 +328,12 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
             return
         if 'edit' in switches:
             # open the line editor to edit the helptext
-            if not old_entry:
-                self.msg("Could not find topic '%s'%s." % (topicstr, aliastxt))
+            if old_entry:
+                self.caller.db._editing_help = old_entry
+                EvEditor(self.caller, loadfunc=_loadhelp, savefunc=_savehelp,
+                        quitfunc=_quithelp, key="topic {}".format(old_entry.key),
+                        persistent=True)
                 return
-
-            self.caller.db._editing_help = old_entry
-            EvEditor(self.caller, loadfunc=loadhelp, savefunc=savehelp,
-                    quitfunc=quithelp, key="topic {}".format(old_entry.key),
-                    persistent=True)
-            return
         if 'delete' in switches or 'del' in switches:
             # delete the help entry
             if not old_entry:
@@ -374,5 +368,13 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
                                                  locks=lockstring,aliases=aliases)
             if new_entry:
                 self.msg("Topic '%s'%s was successfully created." % (topicstr, aliastxt))
+                if 'edit' in switches:
+                    # open the line editor to edit the helptext
+                    self.caller.db._editing_help = new_entry
+                    EvEditor(self.caller, loadfunc=_loadhelp,
+                            savefunc=_savehelp, quitfunc=_quithelp,
+                            key="topic {}".format(new_entry.key),
+                            persistent=True)
+                    return
             else:
                 self.msg("Error when creating topic '%s'%s! Contact an admin." % (topicstr, aliastxt))
