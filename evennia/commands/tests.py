@@ -260,7 +260,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         a = self.cmdset_a
         a.no_channels = True
         self.set_cmdsets(self.session, a)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.session, self.session, None, None, "session")
+        deferred = cmdhandler.get_and_merge_cmdsets(self.session, self.session, None, None, "session", "")
         def _callback(cmdset):
             self.assertEqual(cmdset.key, "A")
         deferred.addCallback(_callback)
@@ -271,7 +271,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         a = self.cmdset_a
         a.no_channels = True
         self.set_cmdsets(self.player, a)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.player, None, self.player, None, "player")
+        deferred = cmdhandler.get_and_merge_cmdsets(self.player, None, self.player, None, "player", "")
         # get_and_merge_cmdsets converts  to lower-case internally.
         def _callback(cmdset):
             pcmdset = PlayerCmdSet()
@@ -284,7 +284,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
 
     def test_from_object(self):
         self.set_cmdsets(self.obj1, self.cmdset_a)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object")
+        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object", "")
         # get_and_merge_cmdsets converts  to lower-case internally.
         _callback = lambda cmdset: self.assertEqual(sum(1 for cmd in cmdset.commands if cmd.key in ("a", "b", "c", "d")), 4)
         deferred.addCallback(_callback)
@@ -295,7 +295,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         a.no_exits = True
         a.no_channels = True
         self.set_cmdsets(self.obj1, a, b, c, d)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object")
+        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object", "")
         def _callback(cmdset):
             self.assertTrue(cmdset.no_exits)
             self.assertTrue(cmdset.no_channels)
@@ -314,7 +314,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         self.assertTrue(testchannel.has_connection(self.player))
         a, b, c, d = self.cmdset_a, self.cmdset_b, self.cmdset_c, self.cmdset_d
         self.set_cmdsets(self.player, a, b, c, d)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.session, self.session, self.player, self.char1, "session")
+        deferred = cmdhandler.get_and_merge_cmdsets(self.session, self.session, self.player, self.char1, "session", "")
         def _callback(cmdset):
             pcmdset = PlayerCmdSet()
             pcmdset.at_cmdset_creation()
@@ -331,7 +331,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         b.duplicates = True
         d.duplicates = True
         self.set_cmdsets(self.obj1, a, b, c, d)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object")
+        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object", "")
         def _callback(cmdset):
             self.assertEqual(len(cmdset.commands), 9)
         deferred.addCallback(_callback)
