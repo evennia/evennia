@@ -256,6 +256,7 @@ def _loadhelp(caller):
 
 def _savehelp(caller, buffer):
     entry = caller.db._editing_help
+    caller.msg("Saved help entry.")
     if entry:
         entry.entrytext = buffer
 
@@ -269,7 +270,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
     Edit the help database.
 
     Usage:
-      @help[/switches] <topic>[[;alias;alias][,category[,locks]] = <text>
+      @help[/switches] <topic>[[;alias;alias][,category[,locks]] [= <text>]
 
     Switches:
       edit - open a line editor to edit the topic's help text.
@@ -282,6 +283,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
       @sethelp throw = This throws something at ...
       @sethelp/append pickpocketing,Thievery = This steals ...
       @sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...
+      @sethelp/edit thievery
 
     This command manipulates the help database. A help entry can be created,
     appended/merged to and deleted. If you don't assign a category, the
@@ -329,6 +331,25 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
             lockstring = ",".join(lhslist[2:]) if nlist > 2 else "view:all()"
         category = category.lower()
 
+        if 'edit' in switches:
+            # open the line editor to edit the helptext. No = is needed.
+            if old_entry:
+                topicstr = old_entry.key
+                if self.rhs:
+                    # we assume append here.
+                    old_entry.entrytext += "\n%s" % self.rhs
+                helpentry = old_entry
+            else:
+                helpentry = create.create_help_entry(topicstr,
+                                                     self.rhs, category=category,
+                                                     locks=lockstring,aliases=aliases)
+            self.caller.db._editing_help = helpentry
+
+            EvEditor(self.caller, loadfunc=_loadhelp, savefunc=_savehelp,
+                    quitfunc=_quithelp, key="topic {}".format(topicstr),
+                    persistent=True)
+            return
+
         if 'append' in switches or "merge" in switches or "extend" in switches:
             # merge/append operations
             if not old_entry:
@@ -344,14 +365,6 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
             old_entry.aliases.add(aliases)
             self.msg("Entry updated:\n%s%s" % (old_entry.entrytext, aliastxt))
             return
-        if 'edit' in switches:
-            # open the line editor to edit the helptext
-            if old_entry:
-                self.caller.db._editing_help = old_entry
-                EvEditor(self.caller, loadfunc=_loadhelp, savefunc=_savehelp,
-                        quitfunc=_quithelp, key="topic {}".format(old_entry.key),
-                        persistent=True)
-                return
         if 'delete' in switches or 'del' in switches:
             # delete the help entry
             if not old_entry:
