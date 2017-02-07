@@ -1,4 +1,4 @@
 commonmark<=0.5.4
 docutils>=0.11
-git+https://github.com/pfultz2/sphinx@refdoc
+sphinx>=1.5
 pytest==2.7.2
