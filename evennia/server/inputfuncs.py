@@ -105,7 +105,8 @@ def bot_data_in(session, *args, **kwargs):
         return
     kwargs.pop("options", None)
     # Trigger the execute_cmd method of the corresponding bot.
-    session.player.execute_cmd(text=txt, session=session)
+    session.player.execute_cmd(session=session, text=text, **kwargs)
+
     session.update_session_counters()
 
 
