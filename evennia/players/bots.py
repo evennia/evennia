@@ -216,7 +216,7 @@ class IRCBot(Bot):
             if not from_obj or from_obj != [self.id]:
                 super(IRCBot, self).msg(text=text, options={"bot_data_out": True})
 
-    def execute_cmd(self, session=None, text=None, **kwargs):
+    def execute_cmd(self, session=None, txt=None, **kwargs):
         """
         Take incoming data and send it to connected channel. This is
         triggered by the bot_data_in Inputfunc.
@@ -233,9 +233,9 @@ class IRCBot(Bot):
 
         """
         if kwargs["type"] == "action":
-            text = "%s@%s %s" % (kwargs["user"], kwargs["channel"], text)
+            text = "%s@%s %s" % (kwargs["user"], kwargs["channel"], txt)
         else:
-            text = "%s@%s: %s" % (kwargs["user"], kwargs["channel"], text)
+            text = "%s@%s: %s" % (kwargs["user"], kwargs["channel"], txt)
 
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
@@ -286,7 +286,7 @@ class RSSBot(Bot):
                       "rate": self.db.rss_rate}
         _SESSIONS.start_bot_session("evennia.server.portal.rss.RSSBotFactory", configdict)
 
-    def execute_cmd(self, text=None, session=None, **kwargs):
+    def execute_cmd(self, txt=None, session=None, **kwargs):
         """
         Take incoming data and send it to connected channel. This is
         triggered by the bot_data_in Inputfunc.
@@ -303,4 +303,4 @@ class RSSBot(Bot):
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
         if self.ndb.ev_channel:
-            self.ndb.ev_channel.msg(text, senders=self.id)
+            self.ndb.ev_channel.msg(txt, senders=self.id)
