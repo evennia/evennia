@@ -820,7 +820,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     vice versa. The bot will automatically connect at server start, so this
     command need only be given once. The /disconnect switch will permanently
     delete the bot. To only temporarily deactivate it, use the  {w@services{n
-    command instead.
+    command instead. Provide an optional bot class path to use a custom bot.
     """
 
     key = "@irc2chan"
@@ -882,7 +882,8 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             return
 
         botname = "ircbot-%s" % irc_botname
-        botclass = self.rhs.split()[4] if len(self.rhs.split()) == 5 else None
+        # If path given, use custom bot otherwise use default.
+        botclass = self.rhs.split()[4] if len(self.rhs.split()) == 5 else bots.IRCBot
         irc_ssl = "ssl" in self.switches
 
         # create a new bot
@@ -894,8 +895,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("Player '%s' already exists and is not a bot." % botname)
                 return
         else:
-            bot = create.create_player(botname, None, None,
-                                       typeclass=botclass if botclass else bots.IRCBot)
+            bot = create.create_player(botname, None, None, typeclass=botclass)
         bot.start(ev_channel=channel, irc_botname=irc_botname, irc_channel=irc_channel,
                   irc_network=irc_network, irc_port=irc_port, irc_ssl=irc_ssl)
         self.msg("Connection created. Starting IRC bot.")
