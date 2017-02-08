@@ -83,7 +83,7 @@ class ObjectSessionHandler(object):
         if sessid:
             sessions = [_SESSIONS[sessid] if sessid in _SESSIONS else None] if sessid in self._sessid_cache else []
         else:
-            sessions = [_SESSIONS[sessid] if sessid in _SESSIONS else None for sessid in self._sessid_cache]
+            sessions = [_SESSIONS[ssid] if ssid in _SESSIONS else None for ssid in self._sessid_cache]
         if None in sessions:
             # this happens only if our cache has gone out of sync with the SessionHandler.
             self._recache()
@@ -645,6 +645,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             "Simple log helper method"
             logger.log_trace()
             self.msg("%s%s" % (string, "" if err is None else " (%s)" % err))
+            return
 
         errtxt = _("Couldn't perform move ('%s'). Contact an admin.")
         if not emit_to_obj:
@@ -864,7 +865,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         self.location = None # this updates contents_cache for our location
 
         # Perform the deletion of the object
-        super(ObjectDB, self).delete()
+        super(DefaultObject, self).delete()
         return True
 
     def access(self, accessing_obj, access_type='read', default=False, no_superuser_bypass=False, **kwargs):
@@ -1224,6 +1225,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             moved_obj (Object): The object moved into this one
             source_location (Object): Where `moved_object` came from.
+                Note that this could be `None`.
 
         """
         pass
@@ -1336,7 +1338,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             looker (Object): Object doing the looking.
         """
         if not looker:
-            return
+            return ""
         # get and identify all objects
         visible = (con for con in self.contents if con != looker and
                                                     con.access(looker, "view"))
@@ -1346,18 +1348,18 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             if con.destination:
                 exits.append(key)
             elif con.has_player:
-                users.append("{c%s{n" % key)
+                users.append("|c%s|n" % key)
             else:
                 things.append(key)
         # get description, build string
-        string = "{c%s{n\n" % self.get_display_name(looker)
+        string = "|c%s|n\n" % self.get_display_name(looker)
         desc = self.db.desc
         if desc:
             string += "%s" % desc
         if exits:
-            string += "\n{wExits:{n " + ", ".join(exits)
+            string += "\n|wExits:|n " + ", ".join(exits)
         if users or things:
-            string += "\n{wYou see:{n " + ", ".join(users + things)
+            string += "\n|wYou see:|n " + ", ".join(users + things)
         return string
 
     def at_look(self, target):
@@ -1485,26 +1487,19 @@ class DefaultCharacter(DefaultObject):
 
     def at_pre_puppet(self, player, session=None):
         """
-        This implementation recovers the character again after having been "stoved
-        away" to the `None` location in `at_post_unpuppet`.
-
+        Return the character from storage in None location in `at_post_unpuppet`.
         Args:
             player (Player): This is the connecting player.
             session (Session): Session controlling the connection.
-
         """
-        if self.db.prelogout_location:
-            # try to recover
-            self.location = self.db.prelogout_location
-        if self.location is None:
-            # make sure location is never None (home should always exist)
-            self.location = self.home
-        if self.location:
-            # save location again to be sure
-            self.db.prelogout_location = self.location
-            self.location.at_object_receive(self, self.location)
+        if self.location is None:  # Make sure character's location is never None before being puppeted.
+            # Return to last location (or home, which should always exist),
+            self.location = self.db.prelogout_location if self.db.prelogout_location else self.home
+            self.location.at_object_receive(self, None)  # and trigger the location's reception hook.
+        if self.location:  # If the character is verified to be somewhere,
+            self.db.prelogout_location = self.location  # save location again to be sure.
         else:
-            player.msg("{r%s has no location and no home is set.{n" % self, session=session)
+            player.msg("|r%s has no location and no home is set.|n" % self, session=session)  # Note to set home.
 
     def at_post_puppet(self):
         """
@@ -1518,7 +1513,7 @@ class DefaultCharacter(DefaultObject):
             puppeting this Object.
 
         """
-        self.msg("\nYou become {c%s{n.\n" % self.name)
+        self.msg("\nYou become |c%s|n.\n" % self.name)
         self.msg(self.at_look(self.location))
 
         def message(obj, from_obj):
@@ -1555,6 +1550,7 @@ class DefaultCharacter(DefaultObject):
         idle = [session.cmd_last_visible for session in self.sessions.all()]
         if idle:
             return time.time() - float(max(idle))
+        return None
 
     @property
     def connection_time(self):
@@ -1565,6 +1561,7 @@ class DefaultCharacter(DefaultObject):
         conn = [session.conn_time for session in self.sessions.all()]
         if conn:
             return time.time() - float(min(conn))
+        return None
 
 #
 # Base Room object

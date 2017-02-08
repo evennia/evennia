@@ -99,6 +99,7 @@ def http_headers(s):
             key, value = [i.strip() for i in line.split(":", 1)]
             d[key] = value
         except ValueError:
+            # malformed header, skip it
             pass
 
     return d
@@ -257,8 +258,8 @@ def parse_hybi07_frames(buf):
         if header & 0x70:
             # At least one of the reserved flags is set. Pork chop sandwiches!
             raise WSException("Reserved flag in HyBi-07 frame (%d)" % header)
-            frames.append(("", CLOSE))
-            return frames, buf
+            #frames.append(("", CLOSE))
+            #return frames, buf
 
         # Get the opcode, and translate it to a local enum which we actually
         # care about.
@@ -558,7 +559,9 @@ class WebSocketProtocol(ProtocolWrapper):
                 if "\r\n" in self.buf:
                     request, chaff, self.buf = self.buf.partition("\r\n")
                     try:
-                        verb, self.location, version = request.split(" ")
+                        # verb and version are never used, maybe in the future.
+                        #verb, self.location, version
+                        _, self.location, _ = request.split(" ")
                     except ValueError:
                         self.loseConnection()
                     else:

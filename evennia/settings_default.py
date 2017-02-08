@@ -140,7 +140,7 @@ LANGUAGE_CODE = 'en-us'
 # out. This can be set as big as desired. A user may avoid being
 # thrown off by sending the empty system command 'idle' to the server
 # at regular intervals. Set <=0 to deactivate idle timeout completely.
-IDLE_TIMEOUT = 3600
+IDLE_TIMEOUT = -1
 # The idle command can be sent to keep your session active without actually
 # having to spam normal commands regularly. It gives no feedback, only updates
 # the idle timer. Note that "idle" will *always* work, even if a different
@@ -479,7 +479,8 @@ CLIENT_DEFAULT_HEIGHT = 45 # telnet standard is 24 but does anyone use such
 # Guest accounts
 ######################################################################
 
-# This enables guest logins, by default via "connect guest"
+# This enables guest logins, by default via "connect guest". Note that
+# you need to edit your login screen to inform about this possibility.
 GUEST_ENABLED = False
 # Typeclass for guest player objects (linked to a character)
 BASE_GUEST_TYPECLASS = "typeclasses.players.Guest"
@@ -521,6 +522,9 @@ DEFAULT_CHANNELS = [
                    "desc": "Connection log",
                    "locks": "control:perm(Immortals);listen:perm(Wizards);send:false()"}
                   ]
+# Extra optional channel for receiving connection messages ("<player> has (dis)connected").
+# While the MudInfo channel will also receieve this, this channel is meant for non-staffers.
+CHANNEL_CONNECTINFO = None
 
 ######################################################################
 # External Channel connections
@@ -619,6 +623,17 @@ STATICFILES_IGNORE_PATTERNS = ('README.md',)
 # directory names shown in the templates directory.
 WEBSITE_TEMPLATE = 'website'
 WEBCLIENT_TEMPLATE = 'webclient'
+# The default options used by the webclient
+WEBCLIENT_OPTIONS = {
+        "gagprompt": True, # Gags prompt from the output window and keep them
+                           # together with the input bar
+        "helppopup": True, # Shows help files in a new popup window
+        "notification_popup": False, # Shows notifications of new messages as
+                                     # popup windows
+        "notification_sound": False # Plays a sound for notifications of new
+                                    # messages
+    }
+
 # We setup the location of the website template as well as the admin site.
 TEMPLATES = [{
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -696,6 +711,7 @@ try:
     import django_extensions
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
 except ImportError:
+    # Django extensions are not installed in all distros.
     pass
 
 #######################################################################

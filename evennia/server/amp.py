@@ -19,8 +19,8 @@ from __future__ import print_function
 
 # imports needed on both server and portal side
 import os
-from time import time
-from collections import defaultdict
+import time
+from collections import defaultdict, namedtuple
 from itertools import count
 from cStringIO import StringIO
 try:
@@ -33,9 +33,7 @@ from twisted.internet.defer import Deferred
 from evennia.utils import logger
 from evennia.utils.utils import to_str, variable_from_module
 
-class DummySession(object):
-    sessid = 0
-DUMMYSESSION = DummySession()
+DUMMYSESSION = namedtuple('DummySession', ['sessid'])(0)
 
 # communication bits
 # (chr(9) and chr(10) are \t and \n, so skipping them)
@@ -174,6 +172,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
 
         """
         if hasattr(self, "server_restart_mode"):
+            self.portal.sessions.announce_all(" Server restarting ...")
             self.maxDelay = 2
         else:
             # Don't translate this; avoid loading django on portal side.
@@ -349,7 +348,7 @@ class AMPProtocol(amp.AMP):
 
         """
         self.send_batch_counter = 0
-        self.send_reset_time = time()
+        self.send_reset_time = time.time()
         self.send_mode = True
         self.send_task = None
 
@@ -511,9 +510,10 @@ class AMPProtocol(amp.AMP):
             server_sessionhandler.portal_session_sync(kwargs.get("sessiondata"))
 
         elif operation == PDISCONN:  # portal_session_disconnect
-            # session closed from portal side
-            session = server_sessionhandler[sessid]
-            server_sessionhandler.portal_disconnect(session)
+            # session closed from portal sid
+            session = server_sessionhandler.get(sessid)
+            if session:
+                server_sessionhandler.portal_disconnect(session)
 
         elif operation == PDISCONNALL: # portal_disconnect_all
             # portal orders all sessions to close
@@ -565,13 +565,15 @@ class AMPProtocol(amp.AMP):
 
         if operation == SLOGIN:  # server_session_login
             # a session has authenticated; sync it.
-            session = portal_sessionhandler[sessid]
-            portal_sessionhandler.server_logged_in(session, kwargs.get("sessiondata"))
+            session = portal_sessionhandler.get(sessid)
+            if session:
+                portal_sessionhandler.server_logged_in(session, kwargs.get("sessiondata"))
 
         elif operation == SDISCONN:  # server_session_disconnect
             # the server is ordering to disconnect the session
-            session = portal_sessionhandler[sessid]
-            portal_sessionhandler.server_disconnect(session, reason=kwargs.get("reason"))
+            session = portal_sessionhandler.get(sessid)
+            if session:
+                portal_sessionhandler.server_disconnect(session, reason=kwargs.get("reason"))
 
         elif operation == SDISCONNALL:  # server_session_disconnect_all
             # server orders all sessions to disconnect

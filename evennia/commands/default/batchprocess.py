@@ -203,7 +203,8 @@ def purge_processor(caller):
         del caller.ndb.batch_stackptr
         del caller.ndb.batch_pythonpath
         del caller.ndb.batch_batchmode
-    except:
+    except Exception:
+        # something might have already been erased; it's not critical
         pass
     # clear everything back to the state before the batch call
     if caller.ndb.batch_cmdset_backup:

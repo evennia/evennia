@@ -940,7 +940,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
             return
         try:
             import feedparser
-            feedparser   # to avoid checker error of not being used
+            assert(feedparser)   # to avoid checker error of not being used
         except ImportError:
             string = ("RSS requires python-feedparser (https://pypi.python.org/pypi/feedparser). "
                       "Install before continuing.")

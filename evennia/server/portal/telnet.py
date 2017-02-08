@@ -274,7 +274,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                    - ansi: Enforce no ANSI colors.
                    - xterm256: Enforce xterm256 colors, regardless of TTYPE.
                    - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
-                   - nomarkup: Strip all ANSI markup. This is the same as noxterm256,noansi
+                   - nocolor: Strip all Color, regardless of ansi/xterm256 setting.
                    - raw: Pass string through without any ansi processing
                         (i.e. include Evennia ansi markers but do not
                         convert them into ansi tokens)
@@ -294,7 +294,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         xterm256 = options.get("xterm256", flags.get('XTERM256', False) if flags["TTYPE"] else True)
         useansi = options.get("ansi", flags.get('ANSI', False) if flags["TTYPE"] else True)
         raw = options.get("raw", flags.get("RAW", False))
-        nomarkup = options.get("nomarkup", flags.get("NOMARKUP", not (xterm256 or useansi)))
+        nocolor = options.get("nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi))
         echo = options.get("echo", None)
         mxp = options.get("mxp", flags.get("MXP", False))
         screenreader =  options.get("screenreader", flags.get("SCREENREADER", False))
@@ -308,7 +308,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             # send a prompt instead.
             if not raw:
                 # processing
-                prompt = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256)
+                prompt = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nocolor, xterm256=xterm256)
                 if mxp:
                     prompt = mxp_parse(prompt)
             prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
@@ -335,7 +335,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             else:
                 # we need to make sure to kill the color at the end in order
                 # to match the webclient output.
-                linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nomarkup, xterm256=xterm256, mxp=mxp)
+                linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nocolor, xterm256=xterm256, mxp=mxp)
                 if mxp:
                     linetosend = mxp_parse(linetosend)
                 self.sendLine(linetosend)

@@ -409,6 +409,7 @@ class ObjectDBManager(TypedObjectManager):
             try:
                 matches = [matches[match_number]]
             except IndexError:
+                # match number not matching anything
                 pass
         # return a list (possibly empty)
         return matches

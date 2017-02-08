@@ -249,6 +249,7 @@ def tail_log_file(filename, offset, nlines, callback=None):
         lines_found = lines_found[-nlines-offset:-offset if offset else None]
         if callback:
             callback(lines_found)
+            return None
         else:
             return lines_found
 
@@ -262,6 +263,5 @@ def tail_log_file(filename, offset, nlines, callback=None):
             return deferToThread(seek_file, filehandle, offset, nlines, callback).addErrback(errback)
         else:
             return seek_file(filehandle, offset, nlines, callback)
-
-
-
+    else:
+        return None

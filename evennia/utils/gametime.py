@@ -6,8 +6,7 @@ in-mud time and real-world time as well allows to get the
 total runtime of the server and the current uptime.
 """
 from __future__ import division
-
-from time import time
+import time
 from django.conf import settings
 from evennia.server.models import ServerConfig
 
@@ -83,10 +82,10 @@ def runtime(format=False):
             into time units.
 
     """
-    runtime = SERVER_RUNTIME + (time() - SERVER_RUNTIME_LAST_UPDATED)
+    rtime = SERVER_RUNTIME + (time.time() - SERVER_RUNTIME_LAST_UPDATED)
     if format:
-        return _format(runtime, 31536000, 2628000, 604800, 86400, 3600, 60)
-    return runtime
+        return _format(rtime, 31536000, 2628000, 604800, 86400, 3600, 60)
+    return rtime
 
 
 def uptime(format=False):
@@ -101,10 +100,10 @@ def uptime(format=False):
             into time units.
 
     """
-    uptime = time() - SERVER_START_TIME
+    utime = time.time() - SERVER_START_TIME
     if format:
-        return _format(uptime, 31536000, 2628000, 604800, 86400, 3600, 60)
-    return uptime
+        return _format(utime, 31536000, 2628000, 604800, 86400, 3600, 60)
+    return utime
 
 
 def gametime(format=False):
@@ -119,10 +118,10 @@ def gametime(format=False):
             into time units.
 
     """
-    gametime = (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
+    gtime = (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
     if format:
-        return _format(gametime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
-    return gametime
+        return _format(gtime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
+    return gtime
 
 
 def reset_gametime():
@@ -159,11 +158,11 @@ def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
                         now after which 2 in-game days will have passed.
 
     """
-    realtime = (secs + mins * MIN + hrs * HOUR + days * DAY + weeks * WEEK + \
+    rtime = (secs + mins * MIN + hrs * HOUR + days * DAY + weeks * WEEK + \
                 months * MONTH + yrs * YEAR) / TIMEFACTOR
     if format:
-        return _format(realtime, 31536000, 2628000, 604800, 86400, 3600, 60)
-    return realtime
+        return _format(rtime, 31536000, 2628000, 604800, 86400, 3600, 60)
+    return rtime
 
 
 def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
@@ -186,9 +185,9 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
                                       corresponding to 2 real days.
 
     """
-    gametime = TIMEFACTOR * (secs + mins * 60 + hrs * 3600 + days * 86400 +
+    gtime = TIMEFACTOR * (secs + mins * 60 + hrs * 3600 + days * 86400 +
                              weeks * 604800 + months * 2628000 + yrs * 31536000)
     if format:
-        return _format(gametime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
-    return gametime
+        return _format(gtime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
+    return gtime
 

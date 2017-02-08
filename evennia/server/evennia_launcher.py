@@ -161,13 +161,13 @@ ERROR_SETTINGS = \
         1) You are not running this command from your game directory.
            Change directory to your game directory and try again (or
            create a new game directory using evennia --init <dirname>)
-        2) The settings file contains a syntax error. If you see a
+        2) The ettings file contains a syntax error. If you see a
            traceback above, review it, resolve the problem and try again.
         3) Django is not correctly installed. This usually shows as
            errors mentioning 'DJANGO_SETTINGS_MODULE'. If you run a
            virtual machine, it might be worth to restart it to see if
            this resolves the issue.
-    """.format(settingsfile=SETTINGFILE, settingspath=SETTINGS_PATH)
+    """.format(settingspath=SETTINGS_PATH)
 
 ERROR_INITSETTINGS = \
     """
@@ -402,9 +402,9 @@ def evennia_version():
     """
     version = "Unknown"
     try:
-        import evennia
         version = evennia.__version__
     except ImportError:
+        # even if evennia is not found, we should not crash here.
         pass
     try:
         rev = check_output(
@@ -412,6 +412,7 @@ def evennia_version():
             shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip()
         version = "%s (rev %s)" % (version, rev)
     except (IOError, CalledProcessError):
+        # move on if git is not answering
         pass
     return version
 
@@ -520,7 +521,7 @@ def create_settings_file(init=True):
     if not init:
         # if not --init mode, settings file may already exist from before
         if os.path.exists(settings_path):
-            inp = raw_input("server/conf/settings.py already exists. "
+            inp = input("server/conf/settings.py already exists. "
                             "Do you want to reset it? y/[N]> ")
             if not inp.lower() == 'y':
                 print ("Aborted.")
@@ -592,7 +593,6 @@ def check_database():
         tables = [tableinfo.name for tableinfo in tables]
     if tables and u'players_playerdb' in tables:
         # database exists and seems set up. Initialize evennia.
-        import evennia
         evennia._init()
     # Try to get Player#1
     from evennia.players.models import PlayerDB
@@ -659,14 +659,14 @@ def get_pid(pidfile):
         pidfile (str): The path of the pid file.
 
     Returns:
-        pid (str): The process id.
+        pid (str or None): The process id.
 
     """
-    pid = None
     if os.path.exists(pidfile):
-        f = open(pidfile, 'r')
-        pid = f.read()
-    return pid
+        with open(pidfile, 'r') as f:
+            pid = f.read()
+            return pid
+    return None
 
 
 def del_pid(pidfile):
@@ -683,7 +683,7 @@ def del_pid(pidfile):
         os.remove(pidfile)
 
 
-def kill(pidfile, signal=SIG, succmsg="", errmsg="",
+def kill(pidfile, killsignal=SIG, succmsg="", errmsg="",
          restart_file=SERVER_RESTART, restart=False):
     """
     Send a kill signal to a process based on PID. A customized
@@ -692,7 +692,7 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="",
 
     Args:
         pidfile (str): The path of the pidfile to get the PID from.
-        signal (int, optional): Signal identifier.
+        killsignal (int, optional): Signal identifier for signal to send.
         succmsg (str, optional): Message to log on success.
         errmsg (str, optional): Message to log on failure.
         restart_file (str, optional): Restart file location.
@@ -722,11 +722,12 @@ def kill(pidfile, signal=SIG, succmsg="", errmsg="",
                     SetConsoleCtrlHandler(None, True)
                     GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0)
                 except KeyboardInterrupt:
+                    # We must catch and ignore the interrupt sent.
                     pass
             else:
                 # Linux can send the SIGINT signal directly
                 # to the specified PID.
-                os.kill(int(pid), signal)
+                os.kill(int(pid), killsignal)
 
         except OSError:
             print("Process %(pid)s cannot be stopped. "\
@@ -749,10 +750,8 @@ def show_version_info(about=False):
         version_info (str): A complete version info string.
 
     """
-    import os
     import sys
     import twisted
-    import django
 
     return VERSION_INFO.format(
         version=EVENNIA_VERSION, about=ABOUT_INFO if about else "",
@@ -986,6 +985,8 @@ def run_dummyrunner(number_of_dummies):
     try:
         call(cmdstr, env=getenv())
     except KeyboardInterrupt:
+        # this signals the dummyrunner to stop cleanly and should
+        # not lead to a traceback here.
         pass
 
 

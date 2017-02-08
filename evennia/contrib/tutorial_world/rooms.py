@@ -191,7 +191,7 @@ class CmdTutorialLook(default_cmds.CmdLook):
         caller.msg(looking_at_obj.return_appearance(caller))
         # the object's at_desc() method.
         looking_at_obj.at_desc(looker=caller)
-
+        return
 
 
 class TutorialRoomCmdSet(CmdSet):

@@ -46,6 +46,7 @@ from evennia.utils.utils import (
         class_from_module)
 from evennia.utils.logger import log_trace
 from evennia.typeclasses.django_new_patch import patched_new
+from .signals import remove_attributes_on_delete, post_save
 
 __all__ = ("TypedObject", )
 
@@ -67,14 +68,6 @@ _SA = object.__setattr__
 # Meta class for typeclasses
 #
 
-
-# signal receivers. Assigned in __new__
-def post_save(sender, instance, created, **kwargs):
-    """
-    Receives a signal just after the object is saved.
-    """
-    if created:
-        instance.at_first_save()
 
 class TypeclassBase(SharedMemoryModelBase):
     """
@@ -107,9 +100,9 @@ class TypeclassBase(SharedMemoryModelBase):
         # https://code.djangoproject.com/ticket/11560
         new_class = patched_new(cls, name, bases, attrs)
 
-        # attach signal
+        # attach signals
         signals.post_save.connect(post_save, sender=new_class)
-
+        signals.pre_delete.connect(remove_attributes_on_delete, sender=new_class)
         return new_class
 
 
@@ -611,22 +604,9 @@ class TypedObject(SharedMemoryModel):
         self.aliases.clear()
         if hasattr(self, "nicks"):
             self.nicks.clear()
-
         # scrambling properties
         self.delete = self._deleted
         super(TypedObject, self).delete()
-
-    #
-    # Memory management
-    #
-
-    #def flush_from_cache(self):
-    #    """
-    #    Flush this object instance from cache, forcing an object reload.
-    #    Note that this will kill all temporary attributes on this object
-    #     since it will be recreated as a new Typeclass instance.
-    #    """
-    #    self.__class__.flush_cached_instance(self)
 
     #
     # Attribute storage

@@ -44,7 +44,7 @@ import re
 
 from django.conf import settings
 from evennia import Command, CmdSet
-from evennia.utils import is_iter, fill, dedent, logger
+from evennia.utils import is_iter, fill, dedent, logger, justify, to_str
 from evennia.commands import cmdhandler
 
 # we use cmdhandler instead of evennia.syscmdkeys to
@@ -93,9 +93,10 @@ _HELP_TEXT = \
 
  :s <l> <w> <txt> - search/replace word or regex <w> in buffer or on line <l>
 
- :f <l>    - flood-fill entire buffer or line <l>
- :fi <l>   - indent entire buffer or line <l>
- :fd <l>   - de-indent entire buffer or line <l>
+ :j <l> <w> - justify buffer or line <l>. <w> is f, c, l or r. Default f (full)
+ :f <l>     - flood-fill entire buffer or line <l>: Equivalent to :j left
+ :fi <l>    - indent entire buffer or line <l>
+ :fd <l>    - de-indent entire buffer or line <l>
 
  :echo - turn echoing of the input on/off (helpful for some clients)
 
@@ -319,6 +320,7 @@ def _load_editor(caller):
     """
     saved_options = caller.attributes.get("_eveditor_saved")
     saved_buffer, saved_undo = caller.attributes.get("_eveditor_buffer_temp", (None, None))
+    unsaved = caller.attributes.get("_eveditor_unsaved", False)
     if saved_options:
         eveditor = EvEditor(caller, **saved_options[0])
         if saved_buffer:
@@ -327,6 +329,7 @@ def _load_editor(caller):
             setattr(eveditor, "_buffer", saved_buffer)
             setattr(eveditor, "_undo_buffer", saved_undo)
             setattr(eveditor, "_undo_pos", len(saved_undo) - 1)
+            setattr(eveditor, "_unsaved", unsaved)
         for key, value in saved_options[1].iteritems():
             setattr(eveditor, key, value)
     else:
@@ -368,7 +371,7 @@ class CmdEditorGroup(CmdEditorBase):
     """
     key = ":editor_command_group"
     aliases = [":","::", ":::", ":h", ":w", ":wq", ":q", ":q!", ":u", ":uu", ":UU",
-               ":dd", ":dw", ":DD", ":y", ":x", ":p", ":i",
+               ":dd", ":dw", ":DD", ":y", ":x", ":p", ":i", ":j",
                ":r", ":I", ":A", ":s", ":S", ":f", ":fi", ":fd", ":echo"]
     arg_regex = r"\s.*?|$"
 
@@ -421,7 +424,7 @@ class CmdEditorGroup(CmdEditorBase):
             # quit. If not saved, will ask
             if self.editor._unsaved:
                 caller.cmdset.add(SaveYesNoCmdSet)
-                caller.msg("Save before quitting? {lcyes{lt[Y]{le/{lcno{ltN{le")
+                caller.msg("Save before quitting? |lcyes|lt[Y]|le/|lcno|ltN|le")
             else:
                 editor.quit()
         elif cmd == ":q!":
@@ -550,6 +553,27 @@ class CmdEditorGroup(CmdEditorBase):
             fbuf = fill(fbuf, width=width)
             buf = linebuffer[:lstart] + fbuf.split("\n") + linebuffer[lend:]
             editor.update_buffer(buf)
+        elif cmd == ":j":
+            # :f <l> <w>  justify buffer of <l> with <w> as align (one of
+            # f(ull), c(enter), r(ight) or l(left). Default is full.
+            align_map = {"full": "f", "f": "f", "center": "c", "c": "c",
+                           "right": "r", "r": "r", "left": "l", "l": "l"}
+            align_name = {"f": "Full", "c": "Center", "l": "Left", "r": "Right"}
+            width = _DEFAULT_WIDTH
+            if self.arg1 and self.arg1.lower() not in align_map:
+                self.caller.msg("Valid justifications are [f]ull (default), [c]enter, [r]right or [l]eft")
+                return
+            align = align_map[self.arg1.lower()] if self.arg1 else 'f'
+            if not self.linerange:
+                lstart = 0
+                lend = self.cline + 1
+                self.caller.msg("%s-justified lines %i-%i." % (align_name[align], lstart + 1, lend))
+            else:
+                self.caller.msg("%s-justified %s." % (align_name[align], self.lstr))
+            jbuf = "\n".join(linebuffer[lstart:lend])
+            jbuf = justify(jbuf, width=width, align=align)
+            buf = linebuffer[:lstart] + jbuf.split("\n") + linebuffer[lend:]
+            editor.update_buffer(buf)
         elif cmd == ":fi":
             # :fi <l> indent buffer or lines <l> of buffer.
             indent = " " * 4
@@ -653,7 +677,7 @@ class EvEditor(object):
         if savefunc:
             self._savefunc = savefunc
         else:
-            self._savefunc = lambda caller: caller.msg(_ERROR_NO_SAVEFUNC)
+            self._savefunc = lambda caller, buffer: caller.msg(_ERROR_NO_SAVEFUNC)
         if quitfunc:
             self._quitfunc = quitfunc
         else:
@@ -680,6 +704,7 @@ class EvEditor(object):
                         {"_pristine_buffer": self._pristine_buffer,
                          "_sep": self._sep}))
                 caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
+                caller.attributes.add("_eveditor_unsaved", False)
             except Exception, err:
                 caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
                 logger.log_trace(_TRACE_PERSISTENT_SAVING)
@@ -700,6 +725,9 @@ class EvEditor(object):
         """
         try:
             self._buffer = self._loadfunc(self._caller)
+            if not isinstance(self._buffer, basestring):
+                self._buffer = to_str(self._buffer, force_string=True)
+                self._caller.msg("|rNote: input buffer was converted to a string.|n")
         except Exception as e:
             from evennia.utils import logger
             logger.log_trace()
@@ -731,6 +759,7 @@ class EvEditor(object):
             self._unsaved = True
             if self._persistent:
                 self._caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
+                self._caller.attributes.add("_eveditor_unsaved", True)
 
     def quit(self):
         """
@@ -744,6 +773,7 @@ class EvEditor(object):
         self._caller.nattributes.remove("_eveditor")
         self._caller.attributes.remove("_eveditor_buffer_temp")
         self._caller.attributes.remove("_eveditor_saved")
+        self._caller.attributes.remove("_eveditor_unsaved")
         self._caller.cmdset.remove(EvEditorCmdSet)
 
     def save_buffer(self):
@@ -809,7 +839,7 @@ class EvEditor(object):
                 formatting information.
 
         """
-        if buf == None:
+        if buf is None:
             buf = self._buffer
         if is_iter(buf):
             buf = "\n".join(buf)
@@ -820,9 +850,9 @@ class EvEditor(object):
         nchars = len(buf)
 
         sep = self._sep
-        header = "|n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH-25-len(self._key))
+        header = "|n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH-20-len(self._key))
         footer = "|n" + sep * 10 + "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) \
-                    + sep * 12 + "(:h for help)" + sep * 23
+                    + sep * 12 + "(:h for help)" + sep * 28
         if linenums:
             main = "\n".join("{b%02i|{n %s" % (iline + 1 + offset, line) for iline, line in enumerate(lines))
         else:

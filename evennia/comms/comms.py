@@ -9,6 +9,7 @@ from evennia.comms.managers import ChannelManager
 from evennia.utils import logger
 from evennia.utils.utils import make_iter
 from future.utils import with_metaclass
+_CHANNEL_HANDLER = None
 
 
 class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
@@ -51,7 +52,12 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         Called once, when the channel is first created.
 
         """
-        pass
+        # delayed import of the channelhandler
+        global _CHANNEL_HANDLER
+        if not _CHANNEL_HANDLER:
+            from evennia.comms.channelhandler import CHANNEL_HANDLER as _CHANNEL_HANDLER
+        # register ourselves with the channelhandler.
+        _CHANNEL_HANDLER.add(self)
 
     # helper methods, for easy overloading
 
@@ -105,6 +111,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             mutelist.append(subscriber)
             self.db.mute_list = mutelist
             return True
+        return False
 
     def unmute(self, subscriber):
         """
@@ -117,6 +124,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             mutelist.remove(subscriber)
             self.db.mute_list = mutelist
             return True
+        return False
 
 
     def connect(self, subscriber):

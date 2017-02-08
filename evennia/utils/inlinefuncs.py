@@ -266,71 +266,71 @@ def parse_inlinefunc(string, strip=False, **kwargs):
     if string in _PARSING_CACHE:
         # stack is already cached
         stack = _PARSING_CACHE[string]
+    elif not _RE_STARTTOKEN.search(string):
+        # if there are no unescaped start tokens at all, return immediately.
+        return string
     else:
-        # not a cached string.
-        if not _RE_STARTTOKEN.search(string):
-            # if there are no unescaped start tokens at all, return immediately.
-            return string
-
-        # build a new cache entry
+        # no cached stack; build a new stack and continue
         stack = ParseStack()
-        ncallable = 0
-        for match in _RE_TOKEN.finditer(string):
-            gdict = match.groupdict()
-            if gdict["singlequote"]:
-                stack.append(gdict["singlequote"])
-            elif gdict["doublequote"]:
-                stack.append(gdict["doublequote"])
-            elif gdict["end"]:
-                if ncallable <= 0:
-                    stack.append(")")
-                    continue
-                args = []
-                while stack:
-                    operation = stack.pop()
-                    if callable(operation):
-                        if not strip:
-                            stack.append((operation, [arg for arg in reversed(args)]))
-                        ncallable -= 1
-                        break
-                    else:
-                        args.append(operation)
-            elif gdict["start"]:
-                funcname = _RE_STARTTOKEN.match(gdict["start"]).group(1)
-                try:
-                    # try to fetch the matching inlinefunc from storage
-                    stack.append(_INLINE_FUNCS[funcname])
-                except KeyError:
-                    stack.append(_INLINE_FUNCS["nomatch"])
-                    stack.append(funcname)
-                ncallable += 1
-            elif gdict["escaped"]:
-                # escaped tokens
-                token = gdict["escaped"].lstrip("\\")
-                stack.append(token)
-            elif gdict["comma"]:
-                if ncallable > 0:
-                    # commas outside strings and inside a callable are
-                    # used to mark argument separation - we use None
-                    # in the stack to indicate such a separation.
-                    stack.append(None)
+
+    # process string on stack
+    ncallable = 0
+    for match in _RE_TOKEN.finditer(string):
+        gdict = match.groupdict()
+        if gdict["singlequote"]:
+            stack.append(gdict["singlequote"])
+        elif gdict["doublequote"]:
+            stack.append(gdict["doublequote"])
+        elif gdict["end"]:
+            if ncallable <= 0:
+                stack.append(")")
+                continue
+            args = []
+            while stack:
+                operation = stack.pop()
+                if callable(operation):
+                    if not strip:
+                        stack.append((operation, [arg for arg in reversed(args)]))
+                    ncallable -= 1
+                    break
                 else:
-                    # no callable active - just a string
-                    stack.append(",")
+                    args.append(operation)
+        elif gdict["start"]:
+            funcname = _RE_STARTTOKEN.match(gdict["start"]).group(1)
+            try:
+                # try to fetch the matching inlinefunc from storage
+                stack.append(_INLINE_FUNCS[funcname])
+            except KeyError:
+                stack.append(_INLINE_FUNCS["nomatch"])
+                stack.append(funcname)
+            ncallable += 1
+        elif gdict["escaped"]:
+            # escaped tokens
+            token = gdict["escaped"].lstrip("\\")
+            stack.append(token)
+        elif gdict["comma"]:
+            if ncallable > 0:
+                # commas outside strings and inside a callable are
+                # used to mark argument separation - we use None
+                # in the stack to indicate such a separation.
+                stack.append(None)
             else:
-                # the rest
-                stack.append(gdict["rest"])
-
-        if ncallable > 0:
-            # this means not all inlinefuncs were complete
-            return string
-
-        if _STACK_MAXSIZE > 0 and _STACK_MAXSIZE < len(stack):
-            # if stack is larger than limit, throw away parsing
-            return string + gdict["stackfull"](*args, **kwargs)
+                # no callable active - just a string
+                stack.append(",")
         else:
-            # cache the result
-            _PARSING_CACHE[string] = stack
+            # the rest
+            stack.append(gdict["rest"])
+
+    if ncallable > 0:
+        # this means not all inlinefuncs were complete
+        return string
+
+    if _STACK_MAXSIZE > 0 and _STACK_MAXSIZE < len(stack):
+        # if stack is larger than limit, throw away parsing
+        return string + gdict["stackfull"](*args, **kwargs)
+    else:
+        # cache the stack
+        _PARSING_CACHE[string] = stack
 
     # run the stack recursively
     def _run_stack(item, depth=0):
@@ -356,6 +356,7 @@ def parse_inlinefunc(string, strip=False, **kwargs):
     # execute the stack from the cache
     return "".join(_run_stack(item) for item in _PARSING_CACHE[string])
 
+#
 # Nick templating
 #
 

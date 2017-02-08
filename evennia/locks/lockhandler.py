@@ -525,9 +525,10 @@ class LockHandler(object):
             else:
                 return self._eval_access_type(
                     accessing_obj, locks, access_type)
-
-        for access_type in locks:
-            return self._eval_access_type(accessing_obj, locks, access_type)
+        else:
+            # if no access types was given and multiple locks were
+            # embedded in the lockstring we assume all must be true
+            return all(self._eval_access_type(accessing_obj, locks, access_type) for access_type in locks)
 
 
 def _test():

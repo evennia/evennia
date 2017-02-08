@@ -166,11 +166,14 @@ class ExecSystemCommand(Exception):
 
 class ErrorReported(Exception):
     "Re-raised when a subsructure already reported the error"
+    def __init__(self, raw_string):
+        self.args = (raw_string,)
+        self.raw_string = raw_string
 
 # Helper function
 
 @inlineCallbacks
-def get_and_merge_cmdsets(caller, session, player, obj, callertype):
+def get_and_merge_cmdsets(caller, session, player, obj, callertype, raw_string):
     """
     Gather all relevant cmdsets and merge them.
 
@@ -185,6 +188,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
         obj (Object or None): The Object associated with caller, if any.
         callertype (str): This identifies caller as either "player", "object" or "session"
             to avoid having to do this check internally.
+        raw_string (str): The input string. This is only used for error reporting.
 
     Returns:
         cmdset (Deferred): This deferred fires with the merged cmdset
@@ -197,8 +201,6 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
 
     """
     try:
-        local_obj_cmdsets = [None]
-
         @inlineCallbacks
         def _get_channel_cmdset(player_or_obj):
             """
@@ -210,7 +212,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                 returnValue([channel_cmdset])
             except Exception:
                 _msg_err(caller, _ERROR_CMDSETS)
-                raise ErrorReported
+                raise ErrorReported(raw_string)
 
         @inlineCallbacks
         def _get_local_obj_cmdsets(obj):
@@ -254,7 +256,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                 returnValue(local_obj_cmdsets)
             except Exception:
                 _msg_err(caller, _ERROR_CMDSETS)
-                raise ErrorReported
+                raise ErrorReported(raw_string)
 
 
         @inlineCallbacks
@@ -267,7 +269,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
                 yield obj.at_cmdset_get()
             except Exception:
                 _msg_err(caller, _ERROR_CMDSETS)
-                raise ErrorReported
+                raise ErrorReported(raw_string)
             try:
                 returnValue((obj.cmdset.current,  list(obj.cmdset.cmdset_stack)))
             except AttributeError:
@@ -383,7 +385,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype):
     except Exception:
         _msg_err(caller, _ERROR_CMDSETS)
         raise
-        raise ErrorReported
+        #raise ErrorReported
 
 # Main command-handler function
 
@@ -426,16 +428,17 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
     """
 
     @inlineCallbacks
-    def _run_command(cmd, cmdname, args):
+    def _run_command(cmd, cmdname, args, raw_string):
         """
         Helper function: This initializes and runs the Command
         instance once the parser has identified it as either a normal
         command or one of the system commands.
 
         Args:
-            cmd (Command): command object
-            cmdname (str): name of command
-            args (str): extra text entered after the identified command
+            cmd (Command): Command object
+            cmdname (str): Name of command
+            args (str): Extra text entered after the identified command
+            raw_string (str): Full input string, only used for debugging.
 
         Returns:
             deferred (Deferred): this will fire with the return of the
@@ -507,7 +510,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
 
         except Exception:
             _msg_err(caller, _ERROR_UNTRAPPED)
-            raise ErrorReported
+            raise ErrorReported(raw_string)
         finally:
             _COMMAND_NESTING[called_by] -= 1
 
@@ -538,7 +541,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
         try:  # catch special-type commands
 
             cmdset = yield get_and_merge_cmdsets(caller, session, player, obj,
-                                                  callertype)
+                                                  callertype, raw_string)
             if not cmdset:
                 # this is bad and shouldn't happen.
                 raise NoCmdSets
@@ -565,9 +568,10 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                     syscmd.matches = matches
                 else:
                     # fall back to default error handling
-                    sysarg = yield _SEARCH_AT_RESULT([match[2] for match in matches], caller, query=match[0])
+                    sysarg = yield _SEARCH_AT_RESULT([match[2] for match in matches], caller, query=matches[0][0])
                 raise ExecSystemCommand(syscmd, sysarg)
 
+            cmdname, args, cmd = "", "", None
             if len(matches) == 1:
                 # We have a unique command match. But it may still be invalid.
                 match = matches[0]
@@ -604,13 +608,13 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 raise ExecSystemCommand(cmd, sysarg)
 
             # A normal command.
-            ret = yield _run_command(cmd, cmdname, args)
+            ret = yield _run_command(cmd, cmdname, args, raw_string)
             returnValue(ret)
 
-        except ErrorReported:
+        except ErrorReported as exc:
             # this error was already reported, so we
             # catch it here and don't pass it on.
-            pass
+            logger.log_err("User input was: '%s'." % exc.raw_string)
 
         except ExecSystemCommand as exc:
             # Not a normal command: run a system command, if available,
@@ -619,7 +623,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             sysarg = exc.sysarg
 
             if syscmd:
-                ret = yield _run_command(syscmd, syscmd.key, sysarg)
+                ret = yield _run_command(syscmd, syscmd.key, sysarg, raw_string)
                 returnValue(ret)
             elif sysarg:
                 # return system arg

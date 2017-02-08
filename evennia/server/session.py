@@ -86,7 +86,7 @@ class Session(object):
                                "SCREENREADER":False,
                                "INPUTDEBUG": False,
                                "RAW": False,
-                               "NOMARKUP": False}
+                               "NOCOLOR": False}
         self.server_data = {}
 
         # map of input data to session methods

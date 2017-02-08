@@ -88,7 +88,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             attributes (list): The matching Attributes.
 
         """
-        query = [("attribute__db_attrtype", attrtype)]
+        dbmodel = self.model.__dbclass__.__name__.lower()
+        query = [("attribute__db_attrtype", attrtype), ("attribute__db_model", dbmodel)]
         if obj:
             query.append(("%s__id" % self.model.__name__.lower(), obj.id))
         if key:
@@ -149,7 +150,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             obj (list): Objects having the matching Attributes.
 
         """
-        query = [("db_attributes__db_attrtype", attrtype)]
+        dbmodel = self.model.__dbclass__.__name__.lower()
+        query = [("db_attributes__db_attrtype", attrtype), ("db_attributes__db_model", dbmodel)]
         if key:
             query.append(("db_attributes__db_key", key))
         if category:
@@ -202,9 +204,10 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         global _Tag
         if not _Tag:
             from evennia.typeclasses.models import Tag as _Tag
+        dbmodel = self.model.__dbclass__.__name__.lower()
         if global_search:
             # search all tags using the Tag model
-            query = [("db_tagtype", tagtype)]
+            query = [("db_tagtype", tagtype), ("db_model", dbmodel)]
             if obj:
                 query.append(("id", obj.id))
             if key:
@@ -214,7 +217,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             return _Tag.objects.filter(**dict(query))
         else:
             # search only among tags stored on on this model
-            query = [("tag__db_tagtype", tagtype)]
+            query = [("tag__db_tagtype", tagtype), ("tag__db_model", dbmodel)]
             if obj:
                 query.append(("%s__id" % self.model.__name__.lower(), obj.id))
             if key:
@@ -268,7 +271,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         Returns:
             objects (list): Objects with matching tag.
         """
-        query = [("db_tags__db_tagtype", tagtype)]
+        dbmodel = self.model.__dbclass__.__name__.lower()
+        query = [("db_tags__db_tagtype", tagtype), ("db_tags__db_model", dbmodel)]
         if key:
             query.append(("db_tags__db_key", key.lower()))
         if category:
@@ -305,7 +309,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         Create a new Tag of the base type associated with this
         object.  This makes sure to create case-insensitive tags.
-        If the exact same tag configuration (key+category+tagtype)
+        If the exact same tag configuration (key+category+tagtype+dbmodel)
         exists on the model, a new tag will not be created, but an old
         one returned.
 
@@ -317,7 +321,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             tagtype (str or None, optional): 'type' of Tag, by default
                 this is either `None` (a normal Tag), `alias` or
                 `permission`.
-
         Notes:
             The `data` field is not part of the uniqueness of the tag:
             Setting `data` on an existing tag will overwrite the old
@@ -329,7 +332,9 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         data = str(data) if data is not None else None
         # try to get old tag
 
-        tag = self.get_tag(key=key, category=category, tagtype=tagtype, global_search=True)
+        dbmodel = self.model.__dbclass__.__name__.lower()
+        tag = self.get_tag(key=key, category=category, tagtype=tagtype,
+                           global_search=True)
         if tag and data is not None:
             # get tag from list returned by get_tag
             tag = tag[0]
@@ -345,6 +350,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 db_key=key.strip().lower() if key is not None else None,
                 db_category=category.strip().lower() if category and key is not None else None,
                 db_data=data,
+                db_model=dbmodel,
                 db_tagtype=tagtype.strip().lower() if tagtype is not None else None)
             tag.save()
         return make_iter(tag)[0]
@@ -529,7 +535,7 @@ class TypeclassManager(TypedObjectManager):
 
         """
         kwargs.update({"db_typeclass_path":self.model.path})
-        return super(TypedObjectManager, self).get(**kwargs)
+        return super(TypeclassManager, self).get(**kwargs)
 
     def filter(self, *args, **kwargs):
         """
@@ -547,7 +553,7 @@ class TypeclassManager(TypedObjectManager):
 
         """
         kwargs.update({"db_typeclass_path":self.model.path})
-        return super(TypedObjectManager, self).filter(*args, **kwargs)
+        return super(TypeclassManager, self).filter(*args, **kwargs)
 
     def all(self):
         """
@@ -557,7 +563,7 @@ class TypeclassManager(TypedObjectManager):
             objects (queryset): The objects found.
 
         """
-        return super(TypedObjectManager, self).all().filter(db_typeclass_path=self.model.path)
+        return super(TypeclassManager, self).all().filter(db_typeclass_path=self.model.path)
 
     def first(self):
         """
@@ -571,7 +577,7 @@ class TypeclassManager(TypedObjectManager):
                 on the model base used.
 
         """
-        return super(TypedObjectManager, self).filter(db_typeclass_path=self.model.path).first()
+        return super(TypeclassManager, self).filter(db_typeclass_path=self.model.path).first()
 
     def last(self):
         """
@@ -585,7 +591,7 @@ class TypeclassManager(TypedObjectManager):
                 on the model base used.
 
         """
-        return super(TypedObjectManager, self).filter(db_typeclass_path=self.model.path).last()
+        return super(TypeclassManager, self).filter(db_typeclass_path=self.model.path).last()
 
     def count(self):
         """
@@ -595,7 +601,7 @@ class TypeclassManager(TypedObjectManager):
             integer : Number of objects found.
 
         """
-        return super(TypedObjectManager, self).filter(db_typeclass_path=self.model.path).count()
+        return super(TypeclassManager, self).filter(db_typeclass_path=self.model.path).count()
 
     def _get_subclasses(self, cls):
         """
@@ -628,7 +634,7 @@ class TypeclassManager(TypedObjectManager):
         paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
                          for cls in self._get_subclasses(self.model)]
         kwargs.update({"db_typeclass_path__in":paths})
-        return super(TypedObjectManager, self).get(**kwargs)
+        return super(TypeclassManager, self).get(**kwargs)
 
     def filter_family(self, *args, **kwargs):
         """
@@ -649,7 +655,7 @@ class TypeclassManager(TypedObjectManager):
         paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
                          for cls in self._get_subclasses(self.model)]
         kwargs.update({"db_typeclass_path__in":paths})
-        return super(TypedObjectManager, self).filter(*args, **kwargs)
+        return super(TypeclassManager, self).filter(*args, **kwargs)
 
     def all_family(self):
         """
@@ -662,6 +668,6 @@ class TypeclassManager(TypedObjectManager):
         """
         paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
                          for cls in self._get_subclasses(self.model)]
-        return super(TypedObjectManager, self).all().filter(db_typeclass_path__in=paths)
+        return super(TypeclassManager, self).all().filter(db_typeclass_path__in=paths)
 
 

@@ -314,6 +314,7 @@ class TradeHandler(object):
             else:
                 raise ValueError
             return self.finish()  # try to close the deal
+        return False
 
     def decline(self, party):
         """
@@ -345,6 +346,7 @@ class TradeHandler(object):
                 return False
             else:
                 raise ValueError
+        return False
 
     def finish(self, force=False):
         """
@@ -354,6 +356,8 @@ class TradeHandler(object):
             force (bool, optional): Force cleanup regardless of if the
                 trade was accepted or not (if not, no goods will change
                 hands but trading will stop anyway)
+        Returns:
+            result (bool): If the finish was successful.
 
         """
         fin = False
@@ -376,6 +380,7 @@ class TradeHandler(object):
             if self.partB.ndb.tradehandler:
                 del self.partB.ndb.tradehandler
             return True
+        return False
 
 
 # trading commands (will go into CmdsetTrade, initialized by the
@@ -612,6 +617,7 @@ class CmdEvaluate(CmdTradeBase):
             ind = int(self.args)
             self.args = ind - 1
         except Exception:
+            # not a valid index - ignore
             pass
 
         offer = self.tradehandler.search(self.args)

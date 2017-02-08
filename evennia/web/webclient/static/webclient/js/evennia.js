@@ -124,7 +124,9 @@ An "emitter" object must have a function
             if (!cmdname) {
                 return;
             }
-            kwargs.cmdid = cmdid++;
+            if (kwargs) {
+                kwargs.cmdid = cmdid++;
+            }
             var outargs = args ? args : [];
             var outkwargs = kwargs ? kwargs : {};
             var data = [cmdname, outargs, outkwargs];

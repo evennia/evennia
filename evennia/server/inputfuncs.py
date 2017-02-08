@@ -56,28 +56,28 @@ def text(session, *args, **kwargs):
     #from evennia.server.profiling.timetrace import timetrace
     #text = timetrace(text, "ServerSession.data_in")
 
-    text = args[0] if args else None
+    txt = args[0] if args else None
 
     #explicitly check for None since text can be an empty string, which is
     #also valid
-    if text is None:
+    if txt is None:
         return
     # this is treated as a command input
     # handle the 'idle' command
-    if text.strip() in _IDLE_COMMAND:
+    if txt.strip() in _IDLE_COMMAND:
         session.update_session_counters(idle=True)
         return
     if session.player:
         # nick replacement
         puppet = session.puppet
         if puppet:
-            text = puppet.nicks.nickreplace(text,
+            txt = puppet.nicks.nickreplace(txt,
                           categories=("inputline", "channel"), include_player=True)
         else:
-            text = session.player.nicks.nickreplace(text,
+            txt = session.player.nicks.nickreplace(txt,
                         categories=("inputline", "channel"), include_player=False)
     kwargs.pop("options", None)
-    cmdhandler(session, text, callertype="session", session=session, **kwargs)
+    cmdhandler(session, txt, callertype="session", session=session, **kwargs)
     session.update_session_counters()
 
 
@@ -92,20 +92,21 @@ def bot_data_in(session, *args, **kwargs):
 
     """
 
-    text = args[0] if args else None
+    txt = args[0] if args else None
 
     # Explicitly check for None since text can be an empty string, which is
     # also valid
-    if text is None:
+    if txt is None:
         return
     # this is treated as a command input
     # handle the 'idle' command
-    if text.strip() in _IDLE_COMMAND:
+    if txt.strip() in _IDLE_COMMAND:
         session.update_session_counters(idle=True)
         return
     kwargs.pop("options", None)
     # Trigger the execute_cmd method of the corresponding bot.
     session.player.execute_cmd(session=session, text=text, **kwargs)
+
     session.update_session_counters()
 
 
@@ -181,7 +182,7 @@ def client_options(session, *args, **kwargs):
         screenheight (int): Screen height in lines
         screenwidth (int): Screen width in characters
         inputdebug (bool): Debug input functions
-        nomarkup (bool): Strip markup
+        nocolor (bool): Strip color
         raw (bool): Turn off parsing
 
     """
@@ -193,7 +194,7 @@ def client_options(session, *args, **kwargs):
                            "UTF-8", "SCREENREADER", "ENCODING",
                            "MCCP", "SCREENHEIGHT",
                            "SCREENWIDTH", "INPUTDEBUG",
-                           "RAW", "NOMARKUP"))
+                           "RAW", "NOCOLOR"))
         session.msg(client_options=options)
         return
 
@@ -240,8 +241,8 @@ def client_options(session, *args, **kwargs):
             flags["SCREENWIDTH"] = validate_size(value)
         elif key == "inputdebug":
             flags["INPUTDEBUG"] = validate_bool(value)
-        elif key == "nomarkup":
-            flags["NOMARKUP"] = validate_bool(value)
+        elif key == "nocolor":
+            flags["NOCOLOR"] = validate_bool(value)
         elif key == "raw":
             flags["RAW"] = validate_bool(value)
         elif key in ('Char 1', 'Char.Skills 1', 'Char.Items 1',
@@ -421,3 +422,65 @@ def unmonitor(session, *args, **kwargs):
     """
     kwargs["stop"] = True
     monitor(session, *args, **kwargs)
+
+
+def _on_webclient_options_change(**kwargs):
+    """
+    Called when the webclient options stored on the player changes.
+    Inform the interested clients of this change.
+    """
+    session = kwargs["session"]
+    obj = kwargs["obj"]
+    fieldname = kwargs["fieldname"]
+    clientoptions = _GA(obj, fieldname)
+
+    # the session may be None if the char quits and someone
+    # else then edits the object
+    if session:
+        session.msg(webclient_options=clientoptions)
+
+
+def webclient_options(session, *args, **kwargs):
+    """
+    Handles retrieving and changing of options related to the webclient.
+
+    If kwargs is empty (or contains just a "cmdid"), the saved options will be
+    sent back to the session.
+    A monitor handler will be created to inform the client of any future options
+    that changes.
+
+    If kwargs is not empty, the key/values stored in there will be persisted
+    to the player object.
+
+    Kwargs:
+        <option name>: an option to save
+    """
+    player = session.player
+
+    clientoptions = settings.WEBCLIENT_OPTIONS.copy()
+    storedoptions = player.db._saved_webclient_options or {}
+    clientoptions.update(storedoptions)
+
+    # The webclient adds a cmdid to every kwargs, but we don't need it.
+    try:
+        del kwargs["cmdid"]
+    except KeyError:
+        pass
+
+    if not kwargs:
+        # No kwargs: we are getting the stored options
+        session.msg(webclient_options=clientoptions)
+
+        # Create a monitor. If a monitor already exists then it will replace
+        # the previous one since it would use the same idstring
+        from evennia.scripts.monitorhandler import MONITOR_HANDLER
+        MONITOR_HANDLER.add(player, "_saved_webclient_options",
+                            _on_webclient_options_change,
+                            idstring=session.sessid, persistent=False,
+                            session=session)
+    else:
+        # kwargs provided: persist them to the player object
+        for key, value in kwargs.iteritems():
+            clientoptions[key] = value
+
+        player.db._saved_webclient_options = clientoptions

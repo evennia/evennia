@@ -44,7 +44,12 @@ _GENDER_PRONOUN_MAP = {"male": {"s": "he",
                        "neutral": {"s": "it",
                                     "o": "it",
                                     "p": "its",
-                                    "a": "its"}}
+                                    "a": "its"},
+                       "ambiguous": {"s": "they",
+                                     "o": "them",
+                                     "p": "their",
+                                     "a": "theirs"}
+                                     }
 _RE_GENDER_PRONOUN = re.compile(r'({s|{S|{o|{O|{p|{P|{a|{A)')
 
 # in-game command for setting the gender
@@ -54,7 +59,7 @@ class SetGender(Command):
     Sets gender on yourself
 
     Usage:
-      @gender male|female|neutral
+      @gender male|female|neutral|ambiguous
 
     """
     key = "@gender"
@@ -67,8 +72,8 @@ class SetGender(Command):
         """
         caller = self.caller
         arg = self.args.strip().lower()
-        if not arg in ("male", "female", "neutral"):
-            caller.msg("Usage: @gender male|female|neutral")
+        if not arg in ("male", "female", "neutral", "ambiguous"):
+            caller.msg("Usage: @gender male|female|neutral|ambiguous")
             return
         caller.db.gender = arg
         caller.msg("Your  gender was set to %s." % arg)
@@ -87,7 +92,7 @@ class GenderCharacter(DefaultCharacter):
         Called once when the object is created.
         """
         super(GenderCharacter, self).at_object_creation()
-        self.db.gender = "neutral"
+        self.db.gender = "ambiguous"
 
     def _get_pronoun(self, regex_match):
         """
@@ -98,15 +103,15 @@ class GenderCharacter(DefaultCharacter):
             regex_match (MatchObject): the regular expression match.
 
         Notes:
-            - `{s`, `{S`: Subjective form: he, she, it, He, She, It
-            - `{o`, `{O`: Objective form: him, her, it, Him, Her, It
-            - `{p`, `{P`: Possessive form: his, her, its, His, Her, Its
-            - `{a`, `{A`: Absolute Possessive form: his, hers, its, His, Hers, Its
+            - `{s`, `{S`: Subjective form: he, she, it, He, She, It, They
+            - `{o`, `{O`: Objective form: him, her, it, Him, Her, It, Them
+            - `{p`, `{P`: Possessive form: his, her, its, His, Her, Its, Their
+            - `{a`, `{A`: Absolute Possessive form: his, hers, its, His, Hers, Its, Theirs
 
         """
         typ = regex_match.group()[1] # "s", "O" etc
-        gender = self.attributes.get("gender", default="neutral")
-        gender = gender if gender in ("male", "female", "neutral") else "neutral"
+        gender = self.attributes.get("gender", default="ambiguous")
+        gender = gender if gender in ("male", "female", "neutral") else "ambiguous"
         pronoun = _GENDER_PRONOUN_MAP[gender][typ.lower()]
         return pronoun.capitalize() if typ.isupper() else pronoun
 

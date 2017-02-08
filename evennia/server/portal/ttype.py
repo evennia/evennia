@@ -89,6 +89,7 @@ class Ttype(object):
         try:
             option = "".join(option).lstrip(IS)
         except TypeError:
+            # option is not on a suitable form for joining
             pass
 
         if self.ttype_step == 0:

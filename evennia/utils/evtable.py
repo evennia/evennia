@@ -157,16 +157,17 @@ class ANSITextWrapper(TextWrapper):
         whitespace characters to spaces.  Eg. " foo\tbar\n\nbaz"
         becomes " foo    bar  baz".
         """
-        # ignore expand_tabs/replace_whitespace until ANSISTring handles them
         return text
-        if self.expand_tabs:
-            text = text.expandtabs()
-        if self.replace_whitespace:
-            if isinstance(text, str):
-                text = text.translate(self.whitespace_trans)
-            elif isinstance(text, _unicode):
-                text = text.translate(self.unicode_whitespace_trans)
-        return text
+##TODO: Ignore expand_tabs/replace_whitespace until ANSISTring handles them.
+## - don't remove this code. /Griatch
+#        if self.expand_tabs:
+#            text = text.expandtabs()
+#        if self.replace_whitespace:
+#            if isinstance(text, str):
+#                text = text.translate(self.whitespace_trans)
+#            elif isinstance(text, _unicode):
+#                text = text.translate(self.unicode_whitespace_trans)
+#        return text
 
 
     def _split(self, text):
@@ -1269,9 +1270,8 @@ class EvTable(object):
         for ix, col in enumerate(self.worktable):
             try:
                 col.reformat(width=cwidths[ix], **options)
-            except Exception as e:
-                msg = "ix=%s, width=%s: %s" % (ix, cwidths[ix], e.message)
-                raise #Exception ("Error in horizontal allign:\n %s" % msg)
+            except Exception:
+                raise
 
         # equalize heights for each row (we must do this here, since it may have changed to fit new widths)
         cheights = [max(cell.get_height() for cell in (col[iy] for col in self.worktable)) for iy in range(nrowmax)]

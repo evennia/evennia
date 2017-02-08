@@ -134,10 +134,6 @@ class SharedMemoryModelBase(ModelBase):
                 "Setter only used on foreign key relations, allows setting with #dbref"
                 if _GA(cls, "_is_deleted"):
                     raise ObjectDoesNotExist("Cannot set %s to %s: Hosting object was already deleted!" % (fname, value))
-                try:
-                    value = _GA(value, "dbobj")
-                except AttributeError:
-                    pass
                 if isinstance(value, (basestring, int)):
                     value = to_str(value, force_string=True)
                     if (value.isdigit() or value.startswith("#")):
@@ -273,6 +269,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
                     # at first initialization
                     instance.at_init()
                 except AttributeError:
+                    # The at_init hook is not assigned to all entities
                     pass
 
     @classmethod
@@ -295,6 +292,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
             else:
                 cls._dbclass__.__instance_cache__[key].refresh_from_db()
         except KeyError:
+            # No need to remove if cache doesn't contain it already
             pass
 
     @classmethod
@@ -370,7 +368,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         """
         global _MONITOR_HANDLER
         if not _MONITOR_HANDLER:
-            from evennia.scripts.monitorhandler import MONITOR_HANDLER as _MONITORHANDLER
+            from evennia.scripts.monitorhandler import MONITOR_HANDLER as _MONITOR_HANDLER
 
         if _IS_SUBPROCESS:
             # we keep a store of objects modified in subprocesses so
@@ -401,7 +399,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         for field in update_fields:
             fieldname = field.name
             # trigger eventual monitors
-            _MONITORHANDLER.at_update(self, fieldname)
+            _MONITOR_HANDLER.at_update(self, fieldname)
             # if a hook is defined it must be named exactly on this form
             hookname = "at_%s_postsave" % fieldname
             if hasattr(self, hookname) and callable(_GA(self, hookname)):
