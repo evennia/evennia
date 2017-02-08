@@ -874,7 +874,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
         self.rhs = self.rhs.replace('#', ' ') # to avoid Python comment issues
         try:
             irc_network, irc_port, irc_channel, irc_botname = \
-                       [part.strip() for part in self.rhs.split(None, 3)]
+                       [part.strip() for part in self.rhs.split()[:4]]
             irc_channel = "#%s" % irc_channel
         except Exception:
             string = "IRC bot definition '%s' is not valid." % self.rhs
