@@ -96,6 +96,7 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
         clientFactory = self.proxyClientFactoryClass(
             request.method, rest, request.clientproto,
             request.getAllHeaders(), request.content.read(), request)
+        clientFactory.noisy = False
         self.reactor.connectTCP(self.host, self.port, clientFactory)
         return NOT_DONE_YET
 

@@ -182,7 +182,6 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             #instantiate the cmdset (and catch its errors)
             if callable(cmdsetclass):
                 cmdsetclass = cmdsetclass(cmdsetobj)
-            errstring = ""
             return cmdsetclass
         except ImportError as err:
             logger.log_trace()
@@ -224,7 +223,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
         err_cmdset = _ErrorCmdSet()
         err_cmdset.errmessage = errstring
         return err_cmdset
-
+    return None # undefined error
 
 # classes
 
@@ -490,6 +489,7 @@ class CmdSetHandler(object):
                             storage.remove(cset.path)
                             updated = True
                         except ValueError:
+                            # nothing to remove
                             pass
                 if updated:
                     self.obj.cmdset_storage = storage
@@ -498,6 +498,7 @@ class CmdSetHandler(object):
                 try:
                     self.cmdset_stack.remove(cset)
                 except ValueError:
+                    # nothing to remove
                     pass
         # re-sync the cmdsethandler.
         self.update()

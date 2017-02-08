@@ -222,7 +222,6 @@ class ExtendedRoom(DefaultRoom):
             description (str): Our description.
 
         """
-        raw_desc = self.db.raw_desc or ""
         update = False
 
         # get current time and season

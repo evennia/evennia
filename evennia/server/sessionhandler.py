@@ -12,10 +12,10 @@ There are two similar but separate stores of sessions:
          handle network communication but holds no game info.
 
 """
+import time
 from builtins import object
 from future.utils import listvalues
 
-from time import time
 from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.utils.logger import log_trace
@@ -89,7 +89,10 @@ def delayed_import():
     if not _ScriptDB:
         from evennia.scripts.models import ScriptDB as _ScriptDB
     # including once to avoid warnings in Python syntax checkers
-    _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
+    assert(_ServerSession)
+    assert(_PlayerDB)
+    assert(_ServerConfig)
+    assert(_ScriptDB)
 
 
 #-----------------------------------------------------------
@@ -101,6 +104,28 @@ class SessionHandler(dict):
     This handler holds a stack of sessions.
 
     """
+
+    def __getitem__(self, key):
+        "Clean out None-sessions automatically."
+        if None in self:
+            del self[None]
+        return super(SessionHandler, self).__getitem__(key)
+
+    def get(self, key, default=None):
+        "Clean out None-sessions automatically."
+        if None in self:
+            del self[None]
+        return super(SessionHandler, self).get(key, default)
+
+    def __setitem__(self, key, value):
+        "Don't assign None sessions"
+        if key is not None:
+            super(SessionHandler, self).__setitem__(key, value)
+
+    def __contains__(self, key):
+        "None-keys are not accepted."
+        return False if key is None else super(SessionHandler, self).__contains__(key)
+
     def get_sessions(self, include_unloggedin=False):
         """
         Returns the connected session objects.
@@ -543,7 +568,7 @@ class ServerSessionHandler(SessionHandler):
         see if any are dead or idle.
 
         """
-        tcurr = time()
+        tcurr = time.time()
         reason = _("Idle timeout exceeded, disconnecting.")
         for session in (session for session in self.values()
                         if session.logged_in and _IDLE_TIMEOUT > 0

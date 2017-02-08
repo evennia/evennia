@@ -67,6 +67,8 @@ def _throttle(session, maxlim=None, timeout=None, storage=_LATEST_FAILED_LOGINS)
                 # timeout has passed. Reset faillist
                 storage[address] = []
                 return False
+        else:
+            return False
     else:
         # store the time of the latest fail
         storage[address].append(time.time())
@@ -101,24 +103,28 @@ def create_guest_player(session):
 
     try:
         # Find an available guest name.
-        for playername in settings.GUEST_LIST:
-            if not PlayerDB.objects.filter(username__iexact=playername):
+        playername = None
+        for name in settings.GUEST_LIST:
+            if not PlayerDB.objects.filter(username__iexact=playername).count():
+                playername = name
                 break
-            playername = None
-        if playername == None:
+        if not playername:
             session.msg("All guest accounts are in use. Please try again later.")
             return True, None
+        else:
+            # build a new player with the found guest playername
+            password = "%016x" % getrandbits(64)
+            home = ObjectDB.objects.get_id(settings.GUEST_HOME)
+            permissions = settings.PERMISSION_GUEST_DEFAULT
+            typeclass = settings.BASE_CHARACTER_TYPECLASS
+            ptypeclass = settings.BASE_GUEST_TYPECLASS
+            new_player = _create_player(session, playername, password,
+                                        permissions, ptypeclass)
+            if new_player:
+                _create_character(session, new_player, typeclass,
+                                  home, permissions)
+            return True, new_player
 
-        password = "%016x" % getrandbits(64)
-        home = ObjectDB.objects.get_id(settings.GUEST_HOME)
-        permissions = settings.PERMISSION_GUEST_DEFAULT
-        typeclass = settings.BASE_CHARACTER_TYPECLASS
-        ptypeclass = settings.BASE_GUEST_TYPECLASS
-        new_player = _create_player(session, playername, password,
-                                    permissions, ptypeclass)
-        if new_player:
-            _create_character(session, new_player, typeclass,
-                              home, permissions)
 
     except Exception:
         # We are in the middle between logged in and -not, so we have
@@ -126,8 +132,7 @@ def create_guest_player(session):
         # we won't see any errors at all.
         session.msg("An error occurred. Please e-mail an admin if the problem persists.")
         logger.log_trace()
-    finally:
-        return True, new_player
+        raise
 
 
 def create_normal_player(session, name, password):
@@ -567,5 +572,3 @@ def _create_character(session, new_player, typeclass, home, permissions):
     except Exception as e:
         session.msg("There was an error creating the Character:\n%s\n If this problem persists, contact an admin." % e)
         logger.log_trace()
-        return False
-

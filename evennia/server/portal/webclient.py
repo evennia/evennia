@@ -164,7 +164,7 @@ class WebSocketClient(Protocol, Session):
         Kwargs:
             options (dict): Options-dict with the following keys understood:
                 - raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
-                - nomarkup (bool): Clean out all ansi/html markers and tokens.
+                - nocolor (bool): Clean out all color.
                 - screenreader (bool): Use Screenreader mode.
                 - send_prompt (bool): Send a prompt with parsed html
 
@@ -182,7 +182,7 @@ class WebSocketClient(Protocol, Session):
 
         options = kwargs.pop("options", {})
         raw = options.get("raw", flags.get("RAW", False))
-        nomarkup = options.get("nomarkup", flags.get("NOMARKUP", False))
+        nocolor = options.get("nocolor", flags.get("NOCOLOR", False))
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
         prompt = options.get("send_prompt", False)
 
@@ -194,7 +194,7 @@ class WebSocketClient(Protocol, Session):
         if raw:
             args[0] = text
         else:
-            args[0] = parse_html(text, strip_ansi=nomarkup)
+            args[0] = parse_html(text, strip_ansi=nocolor)
 
         # send to client on required form [cmdname, args, kwargs]
         self.sendLine(json.dumps([cmd, args, kwargs]))
@@ -204,7 +204,7 @@ class WebSocketClient(Protocol, Session):
         kwargs["options"].update({"send_prompt": True})
         self.send_text(*args, **kwargs)
 
-    def send_default(session, cmdname, *args, **kwargs):
+    def send_default(self, cmdname, *args, **kwargs):
         """
         Data Evennia -> User.
 
@@ -219,4 +219,4 @@ class WebSocketClient(Protocol, Session):
 
         """
         if not cmdname == "options":
-            session.sendLine(json.dumps([cmdname, args, kwargs]))
+            self.sendLine(json.dumps([cmdname, args, kwargs]))

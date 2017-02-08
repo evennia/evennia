@@ -101,7 +101,7 @@ class CmdOpen(default_cmds.CmdOpen):
             # we don't create a return exit if it was already created (because
             # we created a door)
             del self.return_exit_already_created
-            return
+            return None
         # create a new exit as normal
         new_exit = super(CmdOpen, self).create_exit(exit_name, location, destination,
                                                     exit_aliases=exit_aliases, typeclass=typeclass)

@@ -70,7 +70,6 @@ class Mssp(object):
 
         """
         self.protocol.handshake_done()
-        pass
 
     def do_mssp(self, option):
         """
@@ -133,13 +132,16 @@ class Mssp(object):
 
         "ANSI":               "1",
         "GMCP":               "0",
+        "ATCP":               "0",
         "MCCP":               "0",
         "MCP":                "0",
         "MSDP":               "0",
         "MSP":                "0",
         "MXP":                "0",
         "PUEBLO":             "0",
+        "SSL":                "1",
         "UTF-8":              "1",
+        "ZMP":                "0",
         "VT100":              "0",
         "XTERM 256 COLORS":   "0",
 
@@ -180,16 +182,7 @@ class Mssp(object):
         "ROLEPLAYING":        "None",  # "None", "Accepted", "Encouraged", "Enforced"
         "TRAINING SYSTEM":    "None",  # "None", "Level", "Skill", "Both"
         "WORLD ORIGINALITY":  "None",  # "All Stock", "Mostly Stock", "Mostly Original", "All Original"
-
-        # Protocols (only change if you added/removed something manually)
-
-        "ATCP":               "0",
-        "MSDP":               "0",
-        "MCCP":               "1",
-        "SSL":                "1",
-        "UTF-8":              "1",
-        "ZMP":                "0",
-        "XTERM 256 COLORS":   "0"}
+        }
 
         # update the static table with the custom one
         if MSSPTable_CUSTOM:

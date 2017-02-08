@@ -11,7 +11,7 @@ import datetime
 import sys
 import django
 import twisted
-from time import time as timemeasure
+import time
 
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
@@ -56,7 +56,7 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
         reason = ""
         if self.args:
             reason = "(Reason: %s) " % self.args.rstrip(".")
-        SESSIONS.announce_all(" Server restarting %s..." % reason)
+        SESSIONS.announce_all(" Server restart initiated %s..." % reason)
         SESSIONS.server.shutdown(mode='reload')
 
 
@@ -191,9 +191,9 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
 
             duration = ""
             if "time" in self.switches:
-                t0 = timemeasure()
+                t0 = time.time()
                 ret = eval(pycode_compiled, {}, available_vars)
-                t1 = timemeasure()
+                t1 = time.time()
                 duration = " (runtime ~ %.4f ms)" % ((t1 - t0) * 1000)
             else:
                 ret = eval(pycode_compiled, {}, available_vars)
@@ -316,10 +316,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
 
         if self.switches and self.switches[0] in ('stop', 'del', 'delete', 'kill'):
             # we want to delete something
-            if not scripts:
-                string = "No scripts/objects matching '%s'. " % args
-                string += "Be more specific."
-            elif len(scripts) == 1:
+            if len(scripts) == 1:
                 # we have a unique match!
                 if 'kill' in self.switches:
                     string = "Killing script '%s'" % scripts[0].key

@@ -92,7 +92,7 @@ from __future__ import print_function
 from django.conf import settings
 from evennia.utils import utils
 
-_PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
+_PERMISSION_HIERARCHY = [pe.lower() for pe in settings.PERMISSION_HIERARCHY]
 
 
 def _to_player(accessing_obj):
@@ -161,7 +161,7 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     gtmode = kwargs.pop("_greater_than", False)
 
     try:
-        perm = args[0].lower()
+        permission = args[0].lower()
         perms_object = [p.lower() for p in accessing_obj.permissions.all()]
     except (AttributeError, IndexError):
         return False
@@ -171,9 +171,9 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
         perms_player = [p.lower() for p in player.permissions.all()]
         is_quell = player.attributes.get("_quell")
 
-        if perm in _PERMISSION_HIERARCHY:
+        if permission in _PERMISSION_HIERARCHY:
             # check hierarchy without allowing escalation obj->player
-            hpos_target = _PERMISSION_HIERARCHY.index(perm)
+            hpos_target = _PERMISSION_HIERARCHY.index(permission)
             hpos_player = [hpos for hpos, hperm in enumerate(_PERMISSION_HIERARCHY) if hperm in perms_player]
             hpos_player = hpos_player and hpos_player[-1] or -1
             if is_quell:
@@ -187,17 +187,17 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
                 return hpos_target < hpos_player
             else:
                 return hpos_target <= hpos_player
-        elif not is_quell and perm in perms_player:
+        elif not is_quell and permission in perms_player:
             # if we get here, check player perms first, otherwise
             # continue as normal
             return True
 
-    if perm in perms_object:
+    if permission in perms_object:
         # simplest case - we have direct match
         return True
-    if perm in _PERMISSION_HIERARCHY:
+    if permission in _PERMISSION_HIERARCHY:
         # check if we have a higher hierarchy position
-        hpos_target = _PERMISSION_HIERARCHY.index(perm)
+        hpos_target = _PERMISSION_HIERARCHY.index(permission)
         return any(1 for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
                    if hperm in perms_object and hpos_target < hpos)
     return False
@@ -252,11 +252,11 @@ def dbref(accessing_obj, accessed_obj, *args, **kwargs):
     if not args:
         return False
     try:
-        dbref = int(args[0].strip().strip('#'))
+        dbr = int(args[0].strip().strip('#'))
     except ValueError:
         return False
     if hasattr(accessing_obj, 'dbid'):
-        return dbref == accessing_obj.dbid
+        return dbr == accessing_obj.dbid
     return False
 
 
@@ -383,6 +383,7 @@ def locattr(accessing_obj, accessed_obj, *args, **kwargs):
         accessing_obj = accessing_obj.obj
     if hasattr(accessing_obj, "location"):
         return attr(accessing_obj.location, accessed_obj, *args, **kwargs)
+    return False
 
 def objlocattr(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -402,6 +403,7 @@ def objlocattr(accessing_obj, accessed_obj, *args, **kwargs):
         accessed_obj = accessed_obj.obj
     if hasattr(accessed_obj, "location"):
         return attr(accessed_obj.location, accessed_obj, *args, **kwargs)
+    return False
 
 
 def attr_eq(accessing_obj, accessed_obj, *args, **kwargs):
@@ -539,6 +541,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
             if check_holds(accessed_obj.dbid):
                 return True
         except Exception:
+            # we need to catch any trouble here
             pass
         return hasattr(accessed_obj, "obj") and check_holds(accessed_obj.obj.dbid)
     if len(args) == 1:
@@ -549,6 +552,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
         for obj in contents:
             if obj.attributes.get(args[0]) == args[1]:
                 return True
+    return False
 
 
 def superuser(*args, **kwargs):

@@ -115,7 +115,7 @@ def create_object(typeclass=None, key=None, location=None,
     # store the call signature for the signal
     new_object._createdict = {"key":key, "location":location, "destination":destination,
                               "home":home, "typeclass":typeclass.path, "permissions":permissions,
-                              "locks":locks, "aliases":aliases, "tags": tags, "destination":destination,
+                              "locks":locks, "aliases":aliases, "tags": tags,
                               "report_to":report_to, "nohome":nohome}
     # this will trigger the save signal which in turn calls the
     # at_first_save hook on the typeclass, where the _createdict can be
@@ -293,7 +293,7 @@ def create_message(senderobj, message, channels=None,
         from evennia.comms.models import Msg as _Msg
     if not message:
         # we don't allow empty messages.
-        return
+        return None
     new_message = _Msg(db_message=message)
     new_message.save()
     for sender in make_iter(senderobj):

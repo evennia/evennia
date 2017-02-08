@@ -344,6 +344,7 @@ class LightSource(TutorialObject):
                 self.location.msg_contents("A %s on the floor flickers and dies." % self.key)
                 self.location.location.check_light_state()
             except AttributeError:
+                # Mainly happens if we happen to be in a None location
                 pass
         self.delete()
 
@@ -364,6 +365,7 @@ class LightSource(TutorialObject):
                 # maybe we are directly in the room
                 self.location.check_light_state()
             except AttributeError:
+                # we are in a None location
                 pass
         finally:
             # start the burn timer. When it runs out, self._burnout
@@ -824,13 +826,14 @@ class CmdAttack(Command):
             # call enemy hook
             if hasattr(target, "at_hit"):
                 # should return True if target is defeated, False otherwise.
-                return target.at_hit(self.obj, self.caller, damage)
+                target.at_hit(self.obj, self.caller, damage)
+                return
             elif target.db.health:
                 target.db.health -= damage
             else:
                 # sorry, impossible to fight this enemy ...
                 self.caller.msg("The enemy seems unaffacted.")
-                return False
+                return
         else:
             self.caller.msg(string + "{rYou miss.{n")
             target.msg(tstring + "{gThey miss you.{n")

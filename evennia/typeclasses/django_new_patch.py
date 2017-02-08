@@ -46,6 +46,7 @@ def patched_new(cls, name, bases, attrs):
     # Look for an application configuration to attach the model to.
     app_config = apps.get_containing_app_config(module)
 
+    kwargs = {}
     if getattr(meta, 'app_label', None) is None:
 
         if app_config is None:
@@ -69,8 +70,6 @@ def patched_new(cls, name, bases, attrs):
                     "else was imported before its application was loaded. " %
                     (module, name))
                 raise RuntimeError(msg)
-    else:
-        kwargs = {}
 
     new_class.add_to_class('_meta', Options(meta, **kwargs))
     if not abstract:

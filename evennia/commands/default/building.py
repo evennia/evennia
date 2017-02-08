@@ -563,22 +563,6 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
         if not obj:
             return
 
-        def load(caller):
-            return caller.db.evmenu_target.db.desc or ""
-
-        def save(caller, buf):
-            """
-            Save line buffer to the desc prop. This should
-            return True if successful and also report its status to the user.
-            """
-            caller.db.evmenu_target.db.desc = buf
-            caller.msg("Saved.")
-            return True
-
-        def quit(caller):
-            caller.attributes.remove("evmenu_target")
-            caller.msg("Exited editor.")
-
         self.caller.db.evmenu_target = obj
         # launch the editor
         EvEditor(self.caller, loadfunc=_desc_load, savefunc=_desc_save, quitfunc=_desc_quit, key="desc", persistent=True)
@@ -1140,6 +1124,7 @@ class CmdName(ObjManipCommand):
             caller.msg("Usage: @name <obj> = <newname>[;alias;alias;...]")
             return
 
+        obj = None
         if self.lhs_objs:
             objname = self.lhs_objs[0]['name']
             if objname.startswith("*"):
@@ -1224,7 +1209,7 @@ class CmdOpen(ObjManipCommand):
         if len(exit_obj) > 1:
             # give error message and return
             caller.search(exit_name, location=location, exact=True)
-            return
+            return None
         if exit_obj:
             exit_obj = exit_obj[0]
             if not exit_obj.destination:
@@ -1315,11 +1300,11 @@ class CmdOpen(ObjManipCommand):
             back_exit_name = self.lhs_objs[1]['name']
             back_exit_aliases = self.lhs_objs[1]['aliases']
             back_exit_typeclass = self.lhs_objs[1]['option']
-            ok = self.create_exit(back_exit_name,
-                                  destination,
-                                  location,
-                                  back_exit_aliases,
-                                  back_exit_typeclass)
+            self.create_exit(back_exit_name,
+                             destination,
+                             location,
+                             back_exit_aliases,
+                             back_exit_typeclass)
 
 
 def _convert_from_string(cmd, strobj):
@@ -1355,10 +1340,12 @@ def _convert_from_string(cmd, strobj):
         try:
             return int(obj)
         except ValueError:
+            # obj cannot be converted to int - that's fine
             pass
         try:
             return float(obj)
         except ValueError:
+            # obj cannot be converted to float - that's fine
             pass
         # iterables
         if obj.startswith('[') and obj.endswith(']'):
@@ -1632,6 +1619,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
         if "show" in self.switches:
             string = "%s's current typeclass is %s." % (obj.name, obj.__class__)
+            caller.msg(string)
             return
 
         if self.cmdstring == "@swap":
@@ -1945,7 +1933,7 @@ class CmdExamine(ObjManipCommand):
         if perms:
             perms_string = (", ".join(perms))
         else:
-            perms_string = "Default"
+            perms_string = "<None>"
         if obj.is_superuser:
             perms_string += " [Superuser]"
 
@@ -1983,6 +1971,7 @@ class CmdExamine(ObjManipCommand):
                     # we have to protect this since many objects don't have sessions.
                     all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.get_session(obj.sessions.get()).cmdset.all()])
                 except (TypeError, AttributeError):
+                    # an error means we are merging an object without a session
                     pass
             all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
             all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
@@ -2004,9 +1993,10 @@ class CmdExamine(ObjManipCommand):
         string += self.format_attributes(obj)
 
         # display Tags
-        tags_string = utils.fill(", ".join(tag for tag in obj.tags.all()), indent=5)
+        tags_string = utils.fill(", ".join("%s[%s]" % (tag, category)
+            for tag, category in obj.tags.all(return_key_and_category=True)), indent=5)
         if tags_string:
-            string += "\n|wTags|n: %s" % tags_string
+            string += "\n|wTags[category]|n: %s" % tags_string.strip()
 
         # add the contents
         exits = []
@@ -2056,7 +2046,7 @@ class CmdExamine(ObjManipCommand):
                     self.msg(caller.at_look(obj))
                     return
                 # using callback for printing result whenever function returns.
-                get_and_merge_cmdsets(obj, self.session, self.player, obj, "object").addCallback(get_cmdset_callback)
+                get_and_merge_cmdsets(obj, self.session, self.player, obj, "object", self.raw_string).addCallback(get_cmdset_callback)
             else:
                 self.msg("You need to supply a target to examine.")
             return
@@ -2099,7 +2089,7 @@ class CmdExamine(ObjManipCommand):
                 else:
                     mergemode = "object"
                 # using callback to print results whenever function returns.
-                get_and_merge_cmdsets(obj, self.session, self.player, obj, mergemode).addCallback(get_cmdset_callback)
+                get_and_merge_cmdsets(obj, self.session, self.player, obj, mergemode, self.raw_string).addCallback(get_cmdset_callback)
 
 
 class CmdFind(COMMAND_DEFAULT_CLASS):

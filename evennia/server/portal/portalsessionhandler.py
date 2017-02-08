@@ -4,8 +4,8 @@ Sessionhandler for portal sessions
 from __future__ import print_function
 from __future__ import division
 
-from time import time
-from collections import deque
+import time
+from collections import deque, namedtuple
 from twisted.internet import reactor
 from django.conf import settings
 from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, \
@@ -26,9 +26,7 @@ _ERROR_MAX_CHAR = settings.MAX_CHAR_LIMIT_WARNING
 
 _CONNECTION_QUEUE = deque()
 
-class DummySession(object):
-    sessid = 0
-DUMMYSESSION = DummySession()
+DUMMYSESSION = namedtuple('DummySession', ['sessid'])(0)
 
 #------------------------------------------------------------
 # Portal-SessionHandler class
@@ -53,13 +51,13 @@ class PortalSessionHandler(SessionHandler):
         super(PortalSessionHandler, self).__init__(*args, **kwargs)
         self.portal = None
         self.latest_sessid = 0
-        self.uptime = time()
+        self.uptime = time.time()
         self.connection_time = 0
 
-        self.connection_last = time()
+        self.connection_last = self.uptime
         self.connection_task = None
         self.command_counter = 0
-        self.command_counter_reset = time()
+        self.command_counter_reset = self.uptime
         self.command_overflow = False
 
     def at_server_connection(self):
@@ -68,7 +66,7 @@ class PortalSessionHandler(SessionHandler):
         At this point, the AMP connection is already established.
 
         """
-        self.connection_time = time()
+        self.connection_time = time.time()
 
     def connect(self, session):
         """
@@ -98,7 +96,7 @@ class PortalSessionHandler(SessionHandler):
                 session.data_out(text=[["%s DoS protection is active. You are queued to connect in %g seconds ..." % (
                                  settings.SERVERNAME,
                                  len(_CONNECTION_QUEUE)*_MIN_TIME_BETWEEN_CONNECTS)],{}])
-        now = time()
+        now = time.time()
         if (now - self.connection_last < _MIN_TIME_BETWEEN_CONNECTS) or not self.portal.amp_protocol:
             if not session or not self.connection_task:
                 self.connection_task = reactor.callLater(_MIN_TIME_BETWEEN_CONNECTS, self.connect, None)
@@ -257,7 +255,7 @@ class PortalSessionHandler(SessionHandler):
         for session in self.values():
             session.disconnect(reason)
             del session
-        self = {}
+        self.clear()
 
     def server_logged_in(self, session, data):
         """
@@ -363,9 +361,10 @@ class PortalSessionHandler(SessionHandler):
                     self.data_out(session, text=[[_ERROR_MAX_CHAR], {}])
                 return
         except Exception:
+            # if there is a problem to send, we continue
             pass
         if session:
-            now = time()
+            now = time.time()
             if self.command_counter > _MAX_COMMAND_RATE:
                 # data throttle (anti DoS measure)
                 dT = now - self.command_counter_reset

@@ -8,10 +8,9 @@ are stored on the Portal side)
 """
 from builtins import object
 
-import re
 import weakref
 import importlib
-from time import time
+import time
 from django.utils import timezone
 from django.conf import settings
 from evennia.comms.models import ChannelDB
@@ -19,6 +18,7 @@ from evennia.utils import logger
 from evennia.utils.utils import make_iter, lazy_property
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
+from evennia.scripts.monitorhandler import MONITOR_HANDLER
 
 ClientSessionStore = importlib.import_module(settings.SESSION_ENGINE).SessionStore
 
@@ -218,7 +218,7 @@ class ServerSession(Session):
         self.uid = self.player.id
         self.uname = self.player.username
         self.logged_in = True
-        self.conn_time = time()
+        self.conn_time = time.time()
         self.puid = None
         self.puppet = None
         self.cmdset_storage = settings.CMDSET_SESSION
@@ -259,6 +259,11 @@ class ServerSession(Session):
                 player.is_connected = False
             # this may be used to e.g. delete player after disconnection etc
             player.at_post_disconnect()
+            # remove any webclient settings monitors associated with this
+            # session
+            MONITOR_HANDLER.remove(player, "_saved_webclient_options",
+                                   self.sessid)
+
 
     def get_player(self):
         """
@@ -304,13 +309,13 @@ class ServerSession(Session):
                 in addition to the server log.
 
         """
-        if channel:
+        cchan = channel and settings.CHANNEL_CONNECTINFO
+        if cchan:
             try:
-                cchan = settings.CHANNEL_CONNECTINFO
                 cchan = ChannelDB.objects.get_channel(cchan[0])
                 cchan.msg("[%s]: %s" % (cchan.key, message))
             except Exception:
-                pass
+                logger.log_trace()
         logger.log_info(message)
 
     def get_client_size(self):
@@ -332,7 +337,7 @@ class ServerSession(Session):
 
         """
         # Idle time used for timeout calcs.
-        self.cmd_last = time()
+        self.cmd_last = time.time()
 
         # Store the timestamp of the user's last command.
         if not idle:
@@ -508,7 +513,7 @@ class ServerSession(Session):
 
         """
         string = "Cannot assign directly to ndb object! "
-        string = "Use ndb.attr=value instead."
+        string += "Use ndb.attr=value instead."
         raise Exception(string)
 
     #@ndb.deleter

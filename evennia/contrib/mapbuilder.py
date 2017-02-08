@@ -183,11 +183,11 @@ EXAMPLE1_LEGEND = {("♣", "♠"): example1_build_forest,
 # -*- coding: utf-8 -*-
 
 # Add the necessary imports for your instructions here.
-from evennia import create_object
-from typeclasses import rooms, exits
-from evennia.utils import utils
-from random import randint
-import random
+#from evennia import create_object
+#from typeclasses import rooms, exits
+#from evennia.utils import utils
+#from random import randint
+#import random
 
 # This is the same layout as Example 1 but included are characters for exits.
 # We can use these characters to determine which rooms should be connected.
@@ -208,7 +208,7 @@ def example2_build_forest(x, y, **kwargs):
     """A basic room"""
     # If on anything other than the first iteration - Do nothing.
     if kwargs["iteration"] > 0:
-        return
+        return None
 
     room = create_object(rooms.Room, key="forest" + str(x) + str(y))
     room.db.desc = "Basic forest room."
@@ -227,11 +227,12 @@ def example2_build_verticle_exit(x, y, **kwargs):
     north_room = kwargs["room_dict"][(x, y-1)]
     south_room = kwargs["room_dict"][(x, y+1)]
 
-    north = create_object(exits.Exit, key="south",
+    # create exits in the rooms
+    create_object(exits.Exit, key="south",
                           aliases=["s"], location=north_room,
                           destination=south_room)
 
-    south = create_object(exits.Exit, key="north",
+    create_object(exits.Exit, key="north",
                           aliases=["n"], location=south_room,
                           destination=north_room)
 
@@ -248,11 +249,11 @@ def example2_build_horizontal_exit(x, y, **kwargs):
     west_room = kwargs["room_dict"][(x-1, y)]
     east_room = kwargs["room_dict"][(x+1, y)]
 
-    west = create_object(exits.Exit, key="east",
+    create_object(exits.Exit, key="east",
                          aliases=["e"], location=west_room,
                          destination=east_room)
 
-    east = create_object(exits.Exit, key="west",
+    create_object(exits.Exit, key="west",
                          aliases=["w"], location=east_room,
                          destination=west_room)
 
@@ -438,29 +439,29 @@ def build_map(caller, game_map, legend, iterations=1, build_exits=True):
             # north
             if (x, y-1) in room_dict:
                 if room_dict[(x, y-1)]:
-                    exit = create_object(exits.Exit, key="north",
-                                         aliases=["n"], location=location,
-                                         destination=room_dict[(x, y-1)])
+                    create_object(exits.Exit, key="north",
+                                  aliases=["n"], location=location,
+                                  destination=room_dict[(x, y-1)])
 
             # east
             if (x+1, y) in room_dict:
                 if room_dict[(x+1, y)]:
-                    exit = create_object(exits.Exit, key="east",
-                                         aliases=["e"], location=location,
-                                         destination=room_dict[(x+1, y)])
+                    create_object(exits.Exit, key="east",
+                                  aliases=["e"], location=location,
+                                  destination=room_dict[(x+1, y)])
 
             # south
             if (x, y+1) in room_dict:
                 if room_dict[(x, y+1)]:
-                    exit = create_object(exits.Exit, key="south",
-                                         aliases=["s"], location=location,
-                                         destination=room_dict[(x, y+1)])
+                    create_object(exits.Exit, key="south",
+                                  aliases=["s"], location=location,
+                                  destination=room_dict[(x, y+1)])
 
             # west
             if (x-1, y) in room_dict:
                 if room_dict[(x-1, y)]:
-                    exit = create_object(exits.Exit, key="west",
-                                         aliases=["w"], location=location,
-                                         destination=room_dict[(x-1, y)])
+                    create_object(exits.Exit, key="west",
+                                  aliases=["w"], location=location,
+                                  destination=room_dict[(x-1, y)])
 
     caller.msg("Map Created.")

@@ -51,6 +51,7 @@ CONNECTION_SCREEN = ""
 try:
     CONNECTION_SCREEN = ansi.parse_ansi(utils.random_string_from_module(CONNECTION_SCREEN_MODULE))
 except Exception:
+    # malformed connection screen or no screen given
     pass
 if not CONNECTION_SCREEN:
     CONNECTION_SCREEN = "\nEvennia: Error in CONNECTION_SCREEN MODULE (randomly picked connection screen variable is not a string). \nEnter 'help' for aid."

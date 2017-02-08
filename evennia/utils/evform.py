@@ -61,10 +61,10 @@ character's width.
 Use as follows:
 
 ```python
-    import evform
+    from evennia import EvForm, EvTable
 
     # create a new form from the template
-    form = evform.EvForm("path/to/testform.py")
+    form = EvForm("path/to/testform.py")
 
     (MudForm can also take a dictionary holding
      the required keys FORMCHAR, TABLECHAR and FORM)
@@ -80,16 +80,16 @@ Use as follows:
                     8: 10,
                     9:  3})
     # create the EvTables
-    tableA = evform.EvTable("HP","MV","MP",
+    tableA = EvTable("HP","MV","MP",
                                table=[["**"], ["*****"], ["***"]],
                                border="incols")
-    tableB = evform.EvTable("Skill", "Value", "Exp",
+    tableB = EvTable("Skill", "Value", "Exp",
                                table=[["Shooting", "Herbalism", "Smithing"],
                                       [12,14,9],["550/1200", "990/1400", "205/900"]],
                                border="incols")
     # add the tables to the proper ids in the form
     form.map(tables={"A": tableA,
-                     "B": tableB}
+                     "B": tableB})
 
     # unicode is required since the example contains non-ascii characters
     print unicode(form)
@@ -345,7 +345,7 @@ class EvForm(object):
             for il, rectline in enumerate(rect):
                 formline = form[iy0+il]
                 # insert new content, replacing old
-                form[iy0+il] = formline = formline[:ix0] + rectline + formline[ix0+width:]
+                form[iy0+il] = formline[:ix0] + rectline + formline[ix0+width:]
         return form
 
     def map(self, cells=None, tables=None, **kwargs):

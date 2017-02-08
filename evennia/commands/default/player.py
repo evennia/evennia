@@ -563,7 +563,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                       "ENCODING": validate_encoding,
                       "MCCP": validate_bool,
                       "MXP": validate_bool,
-                      "NOMARKUP": validate_bool,
+                      "NOCOLOR": validate_bool,
                       "NOPKEEPALIVE": validate_bool,
                       "OOB": validate_bool,
                       "RAW": validate_bool,
@@ -665,12 +665,12 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
         else:
             nsess = len(player.sessions.all())
             if nsess == 2:
-                player.msg("{RQuitting{n. One session is still connected.", session=self.session)
+                player.msg("|RQuitting|n. One session is still connected.", session=self.session)
             elif nsess > 2:
-                player.msg("{RQuitting{n. %i session are still connected." % (nsess-1), session=self.session)
+                player.msg("|RQuitting|n. %i sessions are still connected." % (nsess-1), session=self.session)
             else:
                 # we are quitting the last available session
-                player.msg("{RQuitting{n. Hope to see you again, soon.", session=self.session)
+                player.msg("|RQuitting|n. Hope to see you again, soon.", session=self.session)
             player.disconnect_session_from_player(self.session)
 
 
@@ -749,10 +749,28 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                                                         "||[%i%i%i" % (ir, ig, ib)))
             table = self.table_format(table)
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
-            for row in table:
-                string += "\n" + "".join(row)
+            string += "\n" + "\n".join("".join(row) for row in table)
+            table = [[], [], [], [], [], [], [], [], [], [], [], []]
+            for ibatch in range(4):
+                for igray in range(6):
+                    letter = chr(97 + (ibatch*6 + igray))
+                    inverse = chr(122 - (ibatch*6 + igray))
+                    table[0 + igray].append("|=%s%s |n" % (letter, "||=%s" % (letter)))
+                    table[6 + igray].append("|=%s|[=%s%s |n" % (inverse, letter, "||[=%s" % (letter)))
+            for igray in range(6):
+                # the last row (y, z) has empty columns
+                if igray < 2:
+                    letter = chr(121 + igray)
+                    inverse = chr(98 - igray)
+                    fg =  "|=%s%s |n" % (letter, "||=%s" % (letter))
+                    bg = "|=%s|[=%s%s |n" % (inverse, letter, "||[=%s" % (letter))
+                else:
+                    fg, bg = " ", " "
+                table[0 + igray].append(fg)
+                table[6 + igray].append(bg)
+            table = self.table_format(table)
+            string += "\n" + "\n".join("".join(row) for row in table)
             self.msg(string)
-            #self.msg("(e.g. %%123 and %%[123 also work)")
         else:
             # malformed input
             self.msg("Usage: @color ansi||xterm256")
@@ -819,4 +837,3 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
             else:
                 self.msg("Quelling Player permissions%s. Use @unquell to get them back." % permstr)
         self._recache_locks(player)
-

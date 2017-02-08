@@ -382,7 +382,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         self.attributes.clear()
         self.nicks.clear()
         self.aliases.clear()
-        super(PlayerDB, self).delete(*args, **kwargs)
+        super(DefaultPlayer, self).delete(*args, **kwargs)
     ## methods inherited from database model
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
@@ -409,12 +409,14 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             try:
                 from_obj.at_msg_send(text=text, to_obj=self, **kwargs)
             except Exception:
+                # this may not be assigned.
                 pass
         try:
             if not self.at_msg_receive(text=text, **kwargs):
                 # abort message to this player
                 return
         except Exception:
+            # this may not be assigned.
             pass
 
         kwargs["options"] = options
@@ -542,6 +544,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         idle = [session.cmd_last_visible for session in self.sessions.all()]
         if idle:
             return time.time() - float(max(idle))
+        return None
 
     @property
     def connection_time(self):
@@ -552,6 +555,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         conn = [session.conn_time for session in self.sessions.all()]
         if conn:
             return time.time() - float(min(conn))
+        return None
 
     ## player hooks
 
@@ -906,16 +910,6 @@ class DefaultGuest(DefaultPlayer):
         self._send_to_connect_channel("|G%s connected|n" % self.key)
         self.puppet_object(session, self.db._last_puppet)
 
-    def at_disconnect(self):
-        """
-        A Guest's characters aren't meant to linger on the server.
-        When a Guest disconnects, we remove its character.
-
-        """
-        super(DefaultGuest, self).at_disconnect()
-        characters = self.db._playable_characters
-        for character in characters:
-            if character: character.delete()
 
     def at_server_shutdown(self):
         """
@@ -925,13 +919,17 @@ class DefaultGuest(DefaultPlayer):
         super(DefaultGuest, self).at_server_shutdown()
         characters = self.db._playable_characters
         for character in characters:
-            if character: character.delete()
+            if character:
+                print "deleting Character:", character
+                character.delete()
 
     def at_post_disconnect(self):
         """
-        Guests aren't meant to linger on the server, either. We need
-        to wait until after the Guest disconnects to delete it,
-        though.
+        Once having disconnected, destroy the guest's characters and
         """
         super(DefaultGuest, self).at_post_disconnect()
+        characters = self.db._playable_characters
+        for character in characters:
+            if character:
+                character.delete()
         self.delete()

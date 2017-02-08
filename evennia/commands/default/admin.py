@@ -295,9 +295,9 @@ class CmdDelPlayer(COMMAND_DEFAULT_CLASS):
             return
 
         if len(players) > 1:
-            string = "There were multiple matches:"
-            for player in players:
-                string += "\n %s %s" % (player.id, player.key)
+            string = "There were multiple matches:\n"
+            string += "\n".join(" %s %s" % (player.id, player.key) for player in players)
+            self.msg(string)
             return
 
         # one single match

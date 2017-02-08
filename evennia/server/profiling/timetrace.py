@@ -2,7 +2,7 @@
 Trace a message through the messaging system
 """
 from __future__ import print_function
-from time import time
+import time
 
 def timetrace(message, idstring, tracemessage="TEST_MESSAGE", final=False):
     """
@@ -24,11 +24,11 @@ def timetrace(message, idstring, tracemessage="TEST_MESSAGE", final=False):
             prefix, tlast, t0 = message.split(None, 2)
             tlast, t0 = float(tlast), float(t0)
         except (IndexError, ValueError):
-            t0 = time()
+            t0 = time.time()
             tlast = t0
             t1 = t0
         else:
-            t1 = time()
+            t1 = time.time()
         # print to log (important!)
         print("** timetrace (%s): dT=%fs, total=%fs." % (idstring, t1-tlast, t1-t0))
 

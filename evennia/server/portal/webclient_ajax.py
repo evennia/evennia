@@ -18,8 +18,8 @@ http://localhost:8000/webclient.)
 """
 import json
 import re
+import time
 
-from time import time
 from twisted.web import server, resource
 from twisted.internet.task import LoopingCall
 from django.utils.functional import Promise
@@ -76,13 +76,14 @@ class WebClient(resource.Resource):
         try:
             del self.requests[csessid]
         except KeyError:
+            # nothing left to delete
             pass
 
     def _keepalive(self):
         """
         Callback for checking the connection is still alive.
         """
-        now = time()
+        now = time.time()
         to_remove = []
         keep_alives = ((csessid, remove) for csessid, (t, remove)
                         in self.last_alive.iteritems() if now - t > _KEEPALIVE)
@@ -169,7 +170,7 @@ class WebClient(resource.Resource):
 
         sess.sessionhandler.connect(sess)
 
-        self.last_alive[csessid] = (time(), False)
+        self.last_alive[csessid] = (time.time(), False)
         if not self.keep_alive:
             # the keepalive is not running; start it.
             self.keep_alive = LoopingCall(self._keepalive)
@@ -183,7 +184,7 @@ class WebClient(resource.Resource):
         client is replying to the keepalive.
         """
         csessid = request.args.get('csessid')[0]
-        self.last_alive[csessid] = (time(), False)
+        self.last_alive[csessid] = (time.time(), False)
         return '""'
 
     def mode_input(self, request):
@@ -197,7 +198,7 @@ class WebClient(resource.Resource):
         """
         csessid = request.args.get('csessid')[0]
 
-        self.last_alive[csessid] = (time(), False)
+        self.last_alive[csessid] = (time.time(), False)
         sess = self.sessionhandler.sessions_from_csessid(csessid)
         if sess:
             sess = sess[0]
@@ -217,7 +218,7 @@ class WebClient(resource.Resource):
 
         """
         csessid = request.args.get('csessid')[0]
-        self.last_alive[csessid] = (time(), False)
+        self.last_alive[csessid] = (time.time(), False)
 
         dataentries = self.databuffer.get(csessid, [])
         if dataentries:
@@ -243,7 +244,6 @@ class WebClient(resource.Resource):
             sess.sessionhandler.disconnect(sess)
         except IndexError:
             self.client_disconnect(csessid)
-            pass
         return '""'
 
     def render_POST(self, request):
@@ -325,7 +325,7 @@ class WebClientSession(session.Session):
         Kwargs:
             options (dict): Options-dict with the following keys understood:
                 - raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
-                - nomarkup (bool): Clean out all ansi/html markers and tokens.
+                - nocolor (bool): Remove all color.
                 - screenreader (bool): Use Screenreader mode.
                 - send_prompt (bool): Send a prompt with parsed html
 
@@ -343,7 +343,9 @@ class WebClientSession(session.Session):
 
         options = kwargs.pop("options", {})
         raw = options.get("raw", flags.get("RAW", False))
-        nomarkup = options.get("nomarkup", flags.get("NOMARKUP", False))
+        xterm256 = options.get("xterm256", flags.get('XTERM256', True))
+        useansi = options.get("ansi", flags.get('ANSI', True))
+        nocolor = options.get("nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi))
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
         prompt = options.get("send_prompt", False)
 
@@ -355,7 +357,7 @@ class WebClientSession(session.Session):
         if raw:
             args[0] = text
         else:
-            args[0] = parse_html(text, strip_ansi=nomarkup)
+            args[0] = parse_html(text, strip_ansi=nocolor)
 
         # send to client on required form [cmdname, args, kwargs]
         self.client.lineSend(self.csessid, [cmd, args, kwargs])

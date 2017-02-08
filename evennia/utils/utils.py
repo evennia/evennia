@@ -22,7 +22,7 @@ from os.path import join as osjoin
 from importlib import import_module
 from inspect import ismodule, trace, getmembers, getmodule
 from collections import defaultdict, OrderedDict
-from twisted.internet import threads, defer, reactor
+from twisted.internet import threads, reactor
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -344,6 +344,8 @@ def time_format(seconds, style=0):
             1. "1d"
             2. "1 day, 8 hours, 30 minutes"
             3. "1 day, 8 hours, 30 minutes, 10 seconds"
+    Returns:
+        timeformatted (str): A pretty time string.
     """
     if seconds < 0:
         seconds = 0
@@ -358,7 +360,8 @@ def time_format(seconds, style=0):
     minutes = seconds // 60
     seconds -= minutes * 60
 
-    if style is 0:
+    retval  = ""
+    if style == 0:
         """
         Standard colon-style output.
         """
@@ -368,7 +371,7 @@ def time_format(seconds, style=0):
             retval = '%02i:%02i' % (hours, minutes,)
         return retval
 
-    elif style is 1:
+    elif style == 1:
         """
         Simple, abbreviated form that only shows the highest time amount.
         """
@@ -380,7 +383,7 @@ def time_format(seconds, style=0):
             return '%im' % (minutes,)
         else:
             return '%is' % (seconds,)
-    elif style is 2:
+    elif style == 2:
         """
         Full-detailed, long-winded format. We ignore seconds.
         """
@@ -403,7 +406,7 @@ def time_format(seconds, style=0):
             else:
                 minutes_str = '%i minutes ' % minutes
         retval = '%s%s%s' % (days_str, hours_str, minutes_str)
-    elif style is 3:
+    elif style == 3:
         """
         Full-detailed, long-winded format. Includes seconds.
         """
@@ -541,12 +544,12 @@ def pypath_to_realpath(python_path, file_ending='.py', pypath_prefixes=None):
     return list(set(p for p in paths if os.path.isfile(p)))
 
 
-def dbref(dbref, reqhash=True):
+def dbref(inp, reqhash=True):
     """
     Converts/checks if input is a valid dbref.
 
     Args:
-        dbref (int or str): A database ref on the form N or #N.
+        inp (int, str): A database ref on the form N or #N.
         reqhash (bool, optional): Require the #N form to accept
             input as a valid dbref.
 
@@ -556,16 +559,16 @@ def dbref(dbref, reqhash=True):
 
     """
     if reqhash:
-        num = (int(dbref.lstrip('#')) if (isinstance(dbref, basestring) and
-                                           dbref.startswith("#") and
-                                           dbref.lstrip('#').isdigit())
+        num = (int(inp.lstrip('#')) if (isinstance(inp, basestring) and
+                                           inp.startswith("#") and
+                                           inp.lstrip('#').isdigit())
                                        else None)
         return num if num > 0 else None
-    elif isinstance(dbref, basestring):
-        dbref = dbref.lstrip('#')
-        return int(dbref) if dbref.isdigit() and int(dbref) > 0 else None
+    elif isinstance(inp, basestring):
+        inp = inp.lstrip('#')
+        return int(inp) if inp.isdigit() and int(inp) > 0 else None
     else:
-        return dbref if isinstance(dbref, int) else None
+        return inp if isinstance(inp, int) else None
 
 
 def dbref_to_obj(inp, objclass, raise_errors=True):
@@ -703,6 +706,7 @@ def to_unicode(obj, encoding='utf-8', force_string=False):
                     obj = unicode(obj, alt_encoding)
                     return obj
                 except UnicodeDecodeError:
+                    # if we still have an error, give up
                     pass
         raise Exception("Error: '%s' contains invalid character(s) not in %s." % (obj, encoding))
     return obj
@@ -744,6 +748,7 @@ def to_str(obj, encoding='utf-8', force_string=False):
                     obj = obj.encode(alt_encoding)
                     return obj
                 except UnicodeEncodeError:
+                    # if we still have an error, give up
                     pass
 
         # if we get to this point we have not found any way to convert this string. Try to parse it manually,
@@ -880,27 +885,27 @@ def uses_database(name="sqlite3"):
     return engine == "django.db.backends.%s" % name
 
 
-def delay(delay, callback, *args, **kwargs):
+def delay(timedelay, callback, *args, **kwargs):
     """
     Delay the return of a value.
 
     Args:
-      delay (int or float): The delay in seconds
+      timedelay (int or float): The delay in seconds
       callback (callable): Will be called with optional
-        arguments after `delay` seconds.
+        arguments after `timedelay` seconds.
       args (any, optional): Will be used as arguments to callback
     Kwargs:
         any (any): Will be used to call the callback.
 
     Returns:
         deferred (deferred): Will fire fire with callback after
-            `delay` seconds. Note that if `delay()` is used in the
+            `timedelay` seconds. Note that if `timedelay()` is used in the
             commandhandler callback chain, the callback chain can be
             defined directly in the command body and don't need to be
             specified here.
 
     """
-    return reactor.callLater(delay, callback, *args, **kwargs)
+    return reactor.callLater(timedelay, callback, *args, **kwargs)
 
 
 _TYPECLASSMODELS = None
@@ -926,6 +931,7 @@ def clean_object_caches(obj):
     try:
         _SA(obj, "_contents_cache", None)
     except AttributeError:
+        # if the cache cannot be reached, move on anyway
         pass
 
     # on-object property cache
@@ -935,6 +941,7 @@ def clean_object_caches(obj):
         hashid = _GA(obj, "hashid")
         _TYPECLASSMODELS._ATTRIBUTE_CACHE[hashid] = {}
     except AttributeError:
+        # skip caching
         pass
 
 
@@ -1103,7 +1110,7 @@ def mod_import(module):
                 result = imp.find_module(modname, [path])
             except ImportError:
                 logger.log_trace("Could not find module '%s' (%s.py) at path '%s'" % (modname, modname, path))
-                return
+                return None
             try:
                 mod = imp.load_module(modname, *result)
             except ImportError:
@@ -1273,9 +1280,9 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
     paths = [path] + make_iter(defaultpaths)
     for modpath in paths:
         try:
-            mod = import_module(path)
+            mod = import_module(modpath)
         except ImportError as ex:
-            if not str(ex).startswith ("No module named %s" % path):
+            if not str(ex).startswith ("No module named %s" % modpath):
                 # this means the module was found but it
                 # triggers an ImportError on import.
                 raise ex
@@ -1521,13 +1528,11 @@ def get_evennia_pids():
     portal_pidfile = os.path.join(settings.GAME_DIR, 'portal.pid')
     server_pid, portal_pid = None, None
     if os.path.exists(server_pidfile):
-        f = open(server_pidfile, 'r')
-        server_pid = f.read()
-        f.close()
+        with open(server_pidfile, 'r') as f:
+            server_pid = f.read()
     if os.path.exists(portal_pidfile):
-        f = open(portal_pidfile, 'r')
-        portal_pid = f.read()
-        f.close()
+        with open(portal_pidfile, 'r') as f:
+            portal_pid = f.read()
     if server_pid and portal_pid:
         return int(server_pid), int(portal_pid)
     return None, None
@@ -1641,7 +1646,7 @@ def calledby(callerdepth=1):
             us.
 
     """
-    import inspect, os
+    import inspect
     stack = inspect.stack()
     # we must step one extra level back in stack since we don't want
     # to include the call of this function itself.
