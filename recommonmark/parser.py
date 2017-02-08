@@ -230,6 +230,8 @@ def inline_entity(inline):
 # The goal is to make references work like the `:any:` role except when an url
 # is given. See the XRefRole class in sphinx:
 # https://github.com/sphinx-doc/sphinx/blob/master/sphinx/roles.py
+
+
 def make_refnode(label, target, has_explicit_title):
     if target and target.startswith(('http://', 'https://')):
         ref_node = nodes.reference()
