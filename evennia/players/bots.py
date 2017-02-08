@@ -8,8 +8,6 @@ from __future__ import print_function
 from django.conf import settings
 from evennia.players.players import DefaultPlayer
 from evennia.scripts.scripts import DefaultScript
-from evennia.commands.command import Command
-from evennia.commands.cmdset import CmdSet
 from evennia.utils import search
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
@@ -218,17 +216,27 @@ class IRCBot(Bot):
             if not from_obj or from_obj != [self.id]:
                 super(IRCBot, self).msg(text=text, options={"bot_data_out": True})
 
-    def execute_cmd(self, text=None, session=None):
+    def execute_cmd(self, session=None, txt=None, **kwargs):
         """
         Take incoming data and send it to connected channel. This is
-        triggered by the CmdListen command in the BotCmdSet.
+        triggered by the bot_data_in Inputfunc.
 
         Args:
-            text (str, optional):  Command string.
             session (Session, optional): Session responsible for this
                 command.
+            text (str, optional):  Command string.
+            kwargs (dict, optional): Additional Information passed from bot.
+                Typically information is only passed by IRCbot including:
+                    user (str): The name of the user who sent the message.
+                    channel (str): The name of channel the message was sent to.
+                    type (str): Nature of message. Either 'msg' or 'action'.
 
         """
+        if kwargs["type"] == "action":
+            text = "%s@%s %s" % (kwargs["user"], kwargs["channel"], txt)
+        else:
+            text = "%s@%s: %s" % (kwargs["user"], kwargs["channel"], txt)
+
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
@@ -278,13 +286,21 @@ class RSSBot(Bot):
                       "rate": self.db.rss_rate}
         _SESSIONS.start_bot_session("evennia.server.portal.rss.RSSBotFactory", configdict)
 
-    def execute_cmd(self, text=None, session=None):
+    def execute_cmd(self, txt=None, session=None, **kwargs):
         """
-        Echo RSS input to connected channel
+        Take incoming data and send it to connected channel. This is
+        triggered by the bot_data_in Inputfunc.
+
+        Args:
+            session (Session, optional): Session responsible for this
+                command.
+            text (str, optional):  Command string.
+            kwargs (dict, optional): Additional Information passed from bot.
+                Not used by the RSSbot by default.
 
         """
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
         if self.ndb.ev_channel:
-            self.ndb.ev_channel.msg(text, senders=self.id)
+            self.ndb.ev_channel.msg(txt, senders=self.id)

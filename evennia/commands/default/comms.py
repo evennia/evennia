@@ -801,7 +801,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     link an evennia channel to an external IRC channel
 
     Usage:
-      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>
+      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname> [botpath]
       @irc2chan/delete botname|#dbid
 
     Switches:
@@ -818,9 +818,9 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     This creates an IRC bot that connects to a given IRC network and channel.
     It will relay everything said in the evennia channel to the IRC channel and
     vice versa. The bot will automatically connect at server start, so this
-    comman need only be given once. The /disconnect switch will permanently
+    command need only be given once. The /disconnect switch will permanently
     delete the bot. To only temporarily deactivate it, use the  {w@services{n
-    command instead.
+    command instead. Provide an optional bot class path to use a custom bot.
     """
 
     key = "@irc2chan"
@@ -874,7 +874,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
         self.rhs = self.rhs.replace('#', ' ') # to avoid Python comment issues
         try:
             irc_network, irc_port, irc_channel, irc_botname = \
-                       [part.strip() for part in self.rhs.split(None, 3)]
+                       [part.strip() for part in self.rhs.split()[:4]]
             irc_channel = "#%s" % irc_channel
         except Exception:
             string = "IRC bot definition '%s' is not valid." % self.rhs
@@ -882,6 +882,8 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             return
 
         botname = "ircbot-%s" % irc_botname
+        # If path given, use custom bot otherwise use default.
+        botclass = self.rhs.split()[4] if len(self.rhs.split()) == 5 else bots.IRCBot
         irc_ssl = "ssl" in self.switches
 
         # create a new bot
@@ -893,7 +895,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("Player '%s' already exists and is not a bot." % botname)
                 return
         else:
-            bot = create.create_player(botname, None, None, typeclass=bots.IRCBot)
+            bot = create.create_player(botname, None, None, typeclass=botclass)
         bot.start(ev_channel=channel, irc_botname=irc_botname, irc_channel=irc_channel,
                   irc_network=irc_network, irc_port=irc_port, irc_ssl=irc_ssl)
         self.msg("Connection created. Starting IRC bot.")
