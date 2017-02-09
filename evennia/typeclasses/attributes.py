@@ -222,7 +222,7 @@ class AttributeHandler(object):
                                        attr.db_category.lower() if attr.db_category else None),
                             attr) for attr in attrs)
         self._cache_complete = True
-
+    
     def _getcache(self, key=None, category=None):
         """
         Retrieve from cache or database (always caches)
@@ -250,13 +250,23 @@ class AttributeHandler(object):
         category = category.strip().lower() if category else None
         if key:
             cachekey = "%s-%s" % (key, category)
-            attr = _TYPECLASS_AGGRESSIVE_CACHE and self._cache.get(cachekey, None)
+            cachefound = False
+            try:
+                attr = _TYPECLASS_AGGRESSIVE_CACHE and self._cache[cachekey]
+                cachefound = True
+            except KeyError:
+                attr = None
+
             if attr and (not hasattr(attr, "pk") and attr.pk is None):
                 # clear out Attributes deleted from elsewhere. We must search this anew.
                 attr = None
+                cachefound = False
                 del self._cache[cachekey]
-            if attr:
-                return [attr]  # return cached entity
+            if cachefound:
+                if attr:
+                    return [attr] # return cached entity
+                else:
+                    return []  # no such attribute: return an empty list
             else:
                 query = {"%s__id" % self._model : self._objid,
                          "attribute__db_model" : self._model,
@@ -268,6 +278,12 @@ class AttributeHandler(object):
                     attr = conn[0].attribute
                     self._cache[cachekey] = attr
                     return [attr] if attr.pk else []
+                else:
+                    # There is no such attribute. We will explicitly save that
+                    # in our cache to avoid firing another query if we try to
+                    # retrieve that (non-existent) attribute again.
+                    self._cache[cachekey] = None
+                    return []
         else:
             # only category given (even if it's None) - we can't
             # assume the cache to be complete unless we have queried
@@ -618,9 +634,9 @@ class AttributeHandler(object):
         """
         if accessing_obj:
             [attr.delete() for attr in self._cache.values()
-             if attr.access(accessing_obj, self._attredit, default=default_access)]
+             if attr and attr.access(accessing_obj, self._attredit, default=default_access)]
         else:
-            [attr.delete() for attr in self._cache.values() if attr.pk]
+            [attr.delete() for attr in self._cache.values() if attr and attr.pk]
         self._cache = {}
         self._catcache = {}
         self._cache_complete = False
@@ -644,7 +660,8 @@ class AttributeHandler(object):
         """
         if not self._cache_complete:
             self._fullcache()
-        attrs = sorted(self._cache.values(), key=lambda o: o.id)
+        attrs = sorted([attr for attr in self._cache.values() if attr],
+                       key=lambda o: o.id)
         if accessing_obj:
             return [attr for attr in attrs
                 if attr.access(accessing_obj, self._attredit, default=default_access)]
