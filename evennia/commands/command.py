@@ -149,6 +149,8 @@ class Command(with_metaclass(CommandMeta, object)):
     is_exit = False
     # define the command not only by key but by the regex form of its arguments
     arg_regex = None
+    # whether we share msgs automatically with all sessions
+    share_msgs = False
 
     # auto-set (by Evennia on command instantiation) are:
     #   obj - which object this command is defined on
@@ -304,7 +306,7 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         This is a shortcut instad of calling msg() directly on an
         object - it will detect if caller is an Object or a Player and
-        also appends self.session automatically.
+        also appends self.session automatically if self.share_msgs is False.
 
         Args:
             text (str, optional): Text string of message to send.
@@ -321,7 +323,7 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         from_obj = from_obj or self.caller
         to_obj = to_obj or from_obj
-        if not session:
+        if not session and not self.share_msgs:
             if to_obj == self.caller:
                 session = self.session
             else:
