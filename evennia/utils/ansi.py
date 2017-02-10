@@ -16,6 +16,9 @@ user.
 from builtins import object, range
 
 import re
+
+from django.conf import settings
+
 from evennia.utils import utils
 from evennia.utils.utils import to_str, to_unicode
 from future.utils import with_metaclass
