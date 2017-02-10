@@ -12,6 +12,7 @@ from evennia.utils.utils import fill, dedent
 from evennia.commands.command import Command
 from evennia.help.models import HelpEntry
 from evennia.utils import create, evmore
+from evennia.utils.eveditor import EvEditor
 from evennia.utils.utils import string_suggestions, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -220,7 +221,7 @@ class CmdHelp(Command):
         match = [cmd for cmd in all_cmds if cmd == query]
         if len(match) == 1:
             formatted = self.format_help_entry(match[0].key,
-                     match[0].__doc__,
+                     match[0].get_help(caller, cmdset),
                      aliases=match[0].aliases,
                      suggested=suggestions)
             self.msg_help(formatted)
@@ -246,14 +247,33 @@ class CmdHelp(Command):
         self.msg(self.format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions))
 
 
+def _loadhelp(caller):
+    entry = caller.db._editing_help
+    if entry:
+        return entry.entrytext
+    else:
+        return ""
+
+def _savehelp(caller, buffer):
+    entry = caller.db._editing_help
+    caller.msg("Saved help entry.")
+    if entry:
+        entry.entrytext = buffer
+
+
+def _quithelp(caller):
+    caller.msg("Closing the editor.")
+    del caller.db._editing_help
+
 class CmdSetHelp(COMMAND_DEFAULT_CLASS):
     """
-    edit the help database
+    Edit the help database.
 
     Usage:
-      @help[/switches] <topic>[[;alias;alias][,category[,locks]] = <text>
+      @help[/switches] <topic>[[;alias;alias][,category[,locks]] [= <text>]
 
     Switches:
+      edit - open a line editor to edit the topic's help text.
       replace - overwrite existing help topic.
       append - add text to the end of existing topic with a newline between.
       extend - as append, but don't add a newline.
@@ -263,6 +283,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
       @sethelp throw = This throws something at ...
       @sethelp/append pickpocketing,Thievery = This steals ...
       @sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...
+      @sethelp/edit thievery
 
     This command manipulates the help database. A help entry can be created,
     appended/merged to and deleted. If you don't assign a category, the
@@ -309,6 +330,25 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
             category = lhslist[1] if nlist > 1 else "General"
             lockstring = ",".join(lhslist[2:]) if nlist > 2 else "view:all()"
         category = category.lower()
+
+        if 'edit' in switches:
+            # open the line editor to edit the helptext. No = is needed.
+            if old_entry:
+                topicstr = old_entry.key
+                if self.rhs:
+                    # we assume append here.
+                    old_entry.entrytext += "\n%s" % self.rhs
+                helpentry = old_entry
+            else:
+                helpentry = create.create_help_entry(topicstr,
+                                                     self.rhs, category=category,
+                                                     locks=lockstring,aliases=aliases)
+            self.caller.db._editing_help = helpentry
+
+            EvEditor(self.caller, loadfunc=_loadhelp, savefunc=_savehelp,
+                    quitfunc=_quithelp, key="topic {}".format(topicstr),
+                    persistent=True)
+            return
 
         if 'append' in switches or "merge" in switches or "extend" in switches:
             # merge/append operations
@@ -359,5 +399,13 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
                                                  locks=lockstring,aliases=aliases)
             if new_entry:
                 self.msg("Topic '%s'%s was successfully created." % (topicstr, aliastxt))
+                if 'edit' in switches:
+                    # open the line editor to edit the helptext
+                    self.caller.db._editing_help = new_entry
+                    EvEditor(self.caller, loadfunc=_loadhelp,
+                            savefunc=_savehelp, quitfunc=_quithelp,
+                            key="topic {}".format(new_entry.key),
+                            persistent=True)
+                    return
             else:
                 self.msg("Error when creating topic '%s'%s! Contact an admin." % (topicstr, aliastxt))
