@@ -398,7 +398,7 @@ class CmdCpAttr(ObjManipCommand):
                                                                             to_obj_name,
                                                                             to_attr,
                                                                             repr(value)))
-        caller.msg(result."".join(result)
+        caller.msg("".join(result))
 
 
 class CmdMvAttr(ObjManipCommand):
