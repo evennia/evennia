@@ -414,6 +414,7 @@ class ANSIParser(object):
         (r'|[W', ANSI_BACK_WHITE),    # light grey background
         (r'|[X', ANSI_BACK_BLACK)     # pure black background
         ]
+    ext_ansi_map += settings.ADDITIONAL_ANSI_MAPPINGS
 
     ansi_bright_bgs = [
         # "bright" ANSI backgrounds using xterm256 since ANSI
