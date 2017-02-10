@@ -375,7 +375,8 @@ class CmdLineInput(CmdEditorBase):
         buf = editor.get_buffer()
 
         # add a line of text to buffer
-        line = self.args
+        line = self.raw_string
+        print "Entered", repr(line)
         if not editor._code:
             if not buf:
                 buf = self.args
@@ -413,7 +414,7 @@ class CmdEditorGroup(CmdEditorBase):
     aliases = [":","::", ":::", ":h", ":w", ":wq", ":q", ":q!", ":u", ":uu", ":UU",
                ":dd", ":dw", ":DD", ":y", ":x", ":p", ":i", ":j",
                ":r", ":I", ":A", ":s", ":S", ":f", ":fi", ":fd", ":echo",
-               ":-", "-+", "-="]
+               ":-", ":+", ":="]
     arg_regex = r"\s.*?|$"
 
     def func(self):
