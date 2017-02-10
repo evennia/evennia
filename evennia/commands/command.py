@@ -7,6 +7,9 @@ All commands in Evennia inherit from the 'Command' class in this module.
 from builtins import range
 
 import re
+
+from django.conf import settings
+
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import is_iter, fill, lazy_property, make_iter
 from future.utils import with_metaclass
@@ -140,17 +143,17 @@ class Command(with_metaclass(CommandMeta, object)):
     aliases = []
     # a list of lock definitions on the form
     #   cmd:[NOT] func(args) [ AND|OR][ NOT] func2(args)
-    locks = ""
+    locks = settings.DEFAULT_COMMAND_LOCKS
     # used by the help system to group commands in lists.
-    help_category = "general"
+    help_category = settings.DEFAULT_COMMAND_HELP_CATEGORY
     # This allows to turn off auto-help entry creation for individual commands.
     auto_help = True
     # optimization for quickly separating exit-commands from normal commands
     is_exit = False
     # define the command not only by key but by the regex form of its arguments
-    arg_regex = None
+    arg_regex = settings.DEFAULT_COMMAND_ARG_REGEX
     # whether we share msgs automatically with all sessions
-    share_msgs = False
+    share_msgs = settings.DEFAULT_COMMAND_MSG_SHARE
 
     # auto-set (by Evennia on command instantiation) are:
     #   obj - which object this command is defined on
