@@ -364,14 +364,14 @@ class CmdCpAttr(ObjManipCommand):
             self.caller.msg("|RCannot have duplicate source names when moving!")
             return
 
-        string = ""
+        result = []
 
         for to_obj in to_objs:
             to_obj_name = to_obj['name']
             to_obj_attrs = to_obj['attrs']
             to_obj = caller.search(to_obj_name)
             if not to_obj:
-                string += "\nCould not find object '%s'" % to_obj_name
+                result.append("\nCould not find object '%s'" % to_obj_name)
                 continue
             for inum, from_attr in enumerate(from_obj_attrs):
                 try:
@@ -387,18 +387,18 @@ class CmdCpAttr(ObjManipCommand):
                 if (clear and not (from_obj == to_obj and
                                                      from_attr == to_attr)):
                     from_obj.attributes.remove(from_attr)
-                    string += "\nMoved %s.%s -> %s.%s. (value: %s)" % (from_obj.name,
-                                                                       from_attr,
-                                                                       to_obj_name,
-                                                                       to_attr,
-                                                                       repr(value))
+                    result.append("\nMoved %s.%s -> %s.%s. (value: %s)" % (from_obj.name,
+                                                                           from_attr,
+                                                                           to_obj_name,
+                                                                           to_attr,
+                                                                           repr(value)))
                 else:
-                    string += "\nCopied %s.%s -> %s.%s. (value: %s)" % (from_obj.name,
-                                                            from_attr,
-                                                            to_obj_name,
-                                                            to_attr,
-                                                            repr(value))
-        caller.msg(string)
+                    result.append("\nCopied %s.%s -> %s.%s. (value: %s)" % (from_obj.name,
+                                                                            from_attr,
+                                                                            to_obj_name,
+                                                                            to_attr,
+                                                                            repr(value)))
+        caller.msg(result."".join(result)
 
 
 class CmdMvAttr(ObjManipCommand):
@@ -660,7 +660,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                     string += " Objects inside %s were moved to their homes." % objname
             return string
 
-        string = ""
+        result = []
         for objname in self.lhslist:
             if '-' in objname:
                 # might be a range of dbrefs
@@ -668,13 +668,13 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                               for part in objname.split('-', 1)]
                 if dmin and dmax:
                     for dbref in range(int(dmin), int(dmax + 1)):
-                        string += delobj("#" + str(dbref), True)
+                        result.append(delobj("#" + str(dbref), True))
                 else:
-                    string += delobj(objname)
+                    result.append(delobj(objname))
             else:
-                string += delobj(objname, True)
+                result.append(delobj(objname, True))
         if string:
-            caller.msg(string.strip())
+            caller.msg("".join(result).strip())
 
 
 class CmdDig(ObjManipCommand):
@@ -1513,7 +1513,7 @@ class CmdSetAttribute(ObjManipCommand):
         if not self.check_obj(obj):
             return
 
-        string = ""
+        result = []
         if "edit" in self.switches:
             # edit in the line editor
             if len(attrs) > 1:
@@ -1530,25 +1530,25 @@ class CmdSetAttribute(ObjManipCommand):
                 for attr in attrs:
                     if not self.check_attr(obj, attr):
                         continue
-                    string += self.view_attr(obj, attr)
+                    result.append(self.view_attr(obj, attr))
                 # we view it without parsing markup.
-                self.caller.msg(string.strip(), options={"raw":True})
+                self.caller.msg("".join(result).strip(), options={"raw":True})
                 return
             else:
                 # deleting the attribute(s)
                 for attr in attrs:
                     if not self.check_attr(obj, attr):
                         continue
-                    string += self.rm_attr(obj, attr)
+                    result.append(self.rm_attr(obj, attr))
         else:
             # setting attribute(s). Make sure to convert to real Python type before saving.
             for attr in attrs:
                 if not self.check_attr(obj, attr):
                     continue
                 value = _convert_from_string(self, value)
-                string += self.set_attr(obj, attr, value)
+                result.append(self.set_attr(obj, attr, value))
         # send feedback
-        caller.msg(string.strip('\n'))
+        caller.msg("".join(result).strip('\n'))
 
 
 class CmdTypeclass(COMMAND_DEFAULT_CLASS):
@@ -2365,38 +2365,37 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
         if not obj:
             return
 
-        string = ""
+        result = []
         if not self.rhs:
             # no rhs means we want to operate on all scripts
             scripts = obj.scripts.all()
             if not scripts:
-                string += "No scripts defined on %s." % obj.get_display_name(caller)
+                result.append("No scripts defined on %s." % obj.get_display_name(caller))
             elif not self.switches:
                 # view all scripts
                 from evennia.commands.default.system import format_script_list
-                string += format_script_list(scripts)
+                result.append(format_script_list(scripts))
             elif "start" in self.switches:
                 num = sum([obj.scripts.start(script.key) for script in scripts])
-                string += "%s scripts started on %s." % (num, obj.get_display_name(caller))
+                result.append("%s scripts started on %s." % (num, obj.get_display_name(caller)))
             elif "stop" in self.switches:
                 for script in scripts:
-                    string += "Stopping script %s on %s." % (script.get_display_name(caller),
-                                                             obj.get_display_name(caller))
+                    result.append("Stopping script %s on %s." % (script.get_display_name(caller),
+                                                                 obj.get_display_name(caller)))
                     script.stop()
-                string = string.strip()
             obj.scripts.validate()
         else: # rhs exists
             if not self.switches:
                 # adding a new script, and starting it
                 ok = obj.scripts.add(self.rhs, autostart=True)
                 if not ok:
-                    string += "\nScript %s could not be added and/or started on %s." % (
+                    result.append("\nScript %s could not be added and/or started on %s." % (
                         self.rhs, obj.get_display_name(caller)
-                    )
+                    ))
                 else:
-                    string = "Script |w%s|n successfully added and started on %s." % (
+                    result.append("Script |w%s|n successfully added and started on %s." % (
                         self.rhs, obj.get_display_name(caller)
-                    )
+                    ))
 
             else:
                 paths = [self.rhs] + ["%s.%s" % (prefix, self.rhs)
@@ -2406,20 +2405,20 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
                     for path in paths:
                         ok = obj.scripts.stop(path)
                         if not ok:
-                            string += "\nScript %s could not be stopped. Does it exist?" % path
+                            result.append("\nScript %s could not be stopped. Does it exist?" % path)
                         else:
-                            string = "Script stopped and removed from object."
+                            result = ["Script stopped and removed from object."]
                             break
                 if "start" in self.switches:
                     # we are starting an already existing script
                     for path in paths:
                         ok = obj.scripts.start(path)
                         if not ok:
-                            string += "\nScript %s could not be (re)started." % path
+                            result.append("\nScript %s could not be (re)started." % path)
                         else:
-                            string = "Script started successfully."
+                            result = ["Script started successfully."]
                             break
-        caller.msg(string.strip())
+        caller.msg("".join(result).strip())
 
 
 class CmdTag(COMMAND_DEFAULT_CLASS):
