@@ -375,7 +375,7 @@ class CmdLineInput(CmdEditorBase):
         buf = editor.get_buffer()
 
         # add a line of text to buffer
-        line = self.raw_string
+        line = self.raw_string.strip("\r\n")
         if not editor._code:
             if not buf:
                 buf = line
@@ -396,8 +396,12 @@ class CmdLineInput(CmdEditorBase):
             cline = len(self.editor.get_buffer().split('\n'))
             if editor._code:
                 # display the current level of identation
-                self.caller.msg("{b%02i|{n ({g%d{n) %s" % (
-                        cline, editor._indent, line))
+                indent = editor._indent
+                if indent < 0:
+                    indent = "off"
+
+                self.caller.msg("{b%02i|{n ({g%s{n) %s" % (
+                        cline, indent, line))
             else:
                 self.caller.msg("{b%02i|{n %s" % (cline, self.args))
 
@@ -503,6 +507,13 @@ class CmdEditorGroup(CmdEditorBase):
         elif cmd == ":DD":
             # clear buffer
             editor.update_buffer("")
+
+            # Reset indentation level to 0
+            if editor._code:
+                if editor._indent >= 0:
+                    editor._indent = 0
+                    if editor._persistent:
+                        caller.attributes.add("_eveditor_indent", 0)
             caller.msg("Cleared %i lines from buffer." % self.nlines)
         elif cmd == ":y":
             # :y <l> - yank line(s) to copy buffer
@@ -949,7 +960,7 @@ class EvEditor(object):
 
         """
         string = self._sep * _DEFAULT_WIDTH + _HELP_TEXT
-        if self.code:
+        if self._code:
             string += _HELP_CODE
         string += _HELP_LEGEND + self._sep * _DEFAULT_WIDTH
         self._caller.msg(string)
