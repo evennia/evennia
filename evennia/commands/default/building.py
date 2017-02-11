@@ -673,7 +673,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                     result.append(delobj(objname))
             else:
                 result.append(delobj(objname, True))
-        if string:
+        if result:
             caller.msg("".join(result).strip())
 
 
