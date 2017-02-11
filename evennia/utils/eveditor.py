@@ -115,8 +115,8 @@ _HELP_LEGEND = \
 
 _HELP_CODE = \
 """
- :-    - Decrease the level of automatic indentation for the next lines
- :+    - Increase the level of automatic indentation for the next lines
+ :<    - Decrease the level of automatic indentation for the next lines
+ :>    - Increase the level of automatic indentation for the next lines
  :=    - Switch automatic indentation on/off
 """.strip("\n")
 
@@ -415,7 +415,7 @@ class CmdEditorGroup(CmdEditorBase):
     aliases = [":","::", ":::", ":h", ":w", ":wq", ":q", ":q!", ":u", ":uu", ":UU",
                ":dd", ":dw", ":DD", ":y", ":x", ":p", ":i", ":j",
                ":r", ":I", ":A", ":s", ":S", ":f", ":fi", ":fd", ":echo",
-               ":-", ":+", ":="]
+               ":<", ":>", ":="]
     arg_regex = r"\s.*?|$"
 
     def func(self):
@@ -652,8 +652,8 @@ class CmdEditorGroup(CmdEditorBase):
             # set echoing on/off
             editor._echo_mode = not editor._echo_mode
             caller.msg("Echo mode set to %s" % editor._echo_mode)
-        elif cmd == ":-":
-            # :-
+        elif cmd == ":<":
+            # :<
             if editor._code:
                 editor.decrease_indent()
                 indent = editor._indent
@@ -664,8 +664,8 @@ class CmdEditorGroup(CmdEditorBase):
                     caller.msg("|rManual indentation is OFF.|n Use := to turn it on.")
             else:
                 caller.msg("This is not a code editor, you cannot use this option.")
-        elif cmd == ":+":
-            # :+
+        elif cmd == ":>":
+            # :>
             if editor._code:
                 editor.increase_indent()
                 indent = editor._indent
