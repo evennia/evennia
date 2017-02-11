@@ -8,8 +8,6 @@ from __future__ import print_function
 from django.conf import settings
 from evennia.players.players import DefaultPlayer
 from evennia.scripts.scripts import DefaultScript
-from evennia.commands.command import Command
-from evennia.commands.cmdset import CmdSet
 from evennia.utils import search
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
@@ -218,7 +216,7 @@ class IRCBot(Bot):
             if not from_obj or from_obj != [self.id]:
                 super(IRCBot, self).msg(text=text, options={"bot_data_out": True})
 
-    def execute_cmd(self, text=None, session=None):
+    def execute_cmd(self, text=None, session=None, **kwargs):
         """
         Take incoming data and send it to connected channel. This is
         triggered by the CmdListen command in the BotCmdSet.
@@ -278,7 +276,7 @@ class RSSBot(Bot):
                       "rate": self.db.rss_rate}
         _SESSIONS.start_bot_session("evennia.server.portal.rss.RSSBotFactory", configdict)
 
-    def execute_cmd(self, text=None, session=None):
+    def execute_cmd(self, text=None, session=None, **kwargs):
         """
         Echo RSS input to connected channel
 
