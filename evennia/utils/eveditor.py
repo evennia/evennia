@@ -376,18 +376,15 @@ class CmdLineInput(CmdEditorBase):
 
         # add a line of text to buffer
         line = self.raw_string
-        print "Entered", repr(line)
         if not editor._code:
             if not buf:
-                buf = self.args
+                buf = line
             else:
-                buf = buf + "\n%s" % self.args
+                buf = buf + "\n%s" % line
         else:
             # if automatic indentation is active, add spaces
             if editor._indent >= 0:
                 line = editor.deduce_indent(line, buf)
-            else:
-                line = self.args
 
             if not buf:
                 buf = line
