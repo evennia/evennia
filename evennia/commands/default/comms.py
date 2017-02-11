@@ -801,7 +801,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     link an evennia channel to an external IRC channel
 
     Usage:
-      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname> [botpath]
+      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>[:typeclass]
       @irc2chan/delete botname|#dbid
 
     Switches:
@@ -813,14 +813,18 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
       /ssl        - use an SSL-encrypted connection
 
     Example:
-      @irc2chan myircchan = irc.dalnet.net 6667 myevennia-channel evennia-bot
+      @irc2chan myircchan = irc.dalnet.net 6667 #mychannel evennia-bot
+      @irc2chan public = irc.freenode.net 6667 #evgaming #evbot:players.mybot.MyBot
 
-    This creates an IRC bot that connects to a given IRC network and channel.
-    It will relay everything said in the evennia channel to the IRC channel and
-    vice versa. The bot will automatically connect at server start, so this
-    command need only be given once. The /disconnect switch will permanently
-    delete the bot. To only temporarily deactivate it, use the  {w@services{n
-    command instead. Provide an optional bot class path to use a custom bot.
+    This creates an IRC bot that connects to a given IRC network and
+    channel. If a custom typeclass path is given, this will be used
+    instead of the default bot class.
+    The bot will relay everything said in the evennia channel to the
+    IRC channel and vice versa. The bot will automatically connect at
+    server start, so this command need only be given once. The
+    /disconnect switch will permanently delete the bot. To only
+    temporarily deactivate it, use the  |w@services|n command instead.
+    Provide an optional bot class path to use a custom bot.
     """
 
     key = "@irc2chan"
@@ -866,7 +870,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             return
 
         if not self.args or not self.rhs:
-            string = "Usage: @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>"
+            string = "Usage: @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>[:typeclass]"
             self.msg(string)
             return
 
@@ -874,16 +878,19 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
         self.rhs = self.rhs.replace('#', ' ') # to avoid Python comment issues
         try:
             irc_network, irc_port, irc_channel, irc_botname = \
-                       [part.strip() for part in self.rhs.split()[:4]]
+                       [part.strip() for part in self.rhs.split(None, 4)]
             irc_channel = "#%s" % irc_channel
         except Exception:
             string = "IRC bot definition '%s' is not valid." % self.rhs
             self.msg(string)
             return
 
+        botclass = None
+        if ":" in irc_botname:
+            irc_botname, botclass = [part.strip() for part in irc_botname.split(":", 2)]
         botname = "ircbot-%s" % irc_botname
         # If path given, use custom bot otherwise use default.
-        botclass = self.rhs.split()[4] if len(self.rhs.split()) == 5 else bots.IRCBot
+        botclass = botclass if botclass else bots.IRCBot
         irc_ssl = "ssl" in self.switches
 
         # create a new bot
@@ -895,7 +902,11 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("Player '%s' already exists and is not a bot." % botname)
                 return
         else:
-            bot = create.create_player(botname, None, None, typeclass=botclass)
+            try:
+                bot = create.create_player(botname, None, None, typeclass=botclass)
+            except Exception as err:
+                self.msg("|rError, could not create the bot:|n '%s'." % err)
+                return
         bot.start(ev_channel=channel, irc_botname=irc_botname, irc_channel=irc_channel,
                   irc_network=irc_network, irc_port=irc_port, irc_ssl=irc_ssl)
         self.msg("Connection created. Starting IRC bot.")
