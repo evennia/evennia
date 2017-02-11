@@ -843,7 +843,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
                 table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", "{wSSL{n", maxwidth=_DEFAULT_WIDTH)
                 for ircbot in ircbots:
                     ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
-                    table.add_row(ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo, ircbot.db.irc_ssl)
+                    table.add_row("#%i" % ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo, ircbot.db.irc_ssl)
                 self.msg(table)
             else:
                 self.msg("No irc bots found.")
