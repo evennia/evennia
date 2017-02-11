@@ -796,6 +796,26 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
         self.msg("You paged %s with: '%s'." % (", ".join(received), message))
 
 
+def _list_bots():
+    """
+    Helper function to produce a list of all IRC bots.
+
+    Returns:
+        bots (str): A table of bots or an error message.
+
+    """
+    ircbots = [bot for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
+    if ircbots:
+        from evennia.utils.evtable import EvTable
+        table = EvTable("{w#dbref{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", "{wSSL{n", maxwidth=_DEFAULT_WIDTH)
+        for ircbot in ircbots:
+            ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
+            table.add_row("#%i" % ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo, ircbot.db.irc_ssl)
+        return table
+    else:
+        return "No irc bots found."
+    return
+
 class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     """
     link an evennia channel to an external IRC channel
@@ -841,18 +861,8 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
 
         if 'list' in self.switches:
             # show all connections
-            ircbots = [bot for bot in PlayerDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
-            if ircbots:
-                from evennia.utils.evtable import EvTable
-                table = EvTable("{wdbid{n", "{wbotname{n", "{wev-channel{n", "{wirc-channel{n", "{wSSL{n", maxwidth=_DEFAULT_WIDTH)
-                for ircbot in ircbots:
-                    ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
-                    table.add_row("#%i" % ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo, ircbot.db.irc_ssl)
-                self.msg(table)
-            else:
-                self.msg("No irc bots found.")
+            self.msg(_list_bots())
             return
-
 
         if('disconnect' in self.switches or 'remove' in self.switches or
                                                     'delete' in self.switches):
@@ -910,6 +920,74 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
         bot.start(ev_channel=channel, irc_botname=irc_botname, irc_channel=irc_channel,
                   irc_network=irc_network, irc_port=irc_port, irc_ssl=irc_ssl)
         self.msg("Connection created. Starting IRC bot.")
+
+
+class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
+    """
+    Check and reboot IRC bot.
+
+    Usage:
+        ircstatus [#dbref ping||nicklist||reconnect]
+
+    If not given arguments, will return a list of all bots (like
+    @irc2chan/list). The 'ping' argument will ping the IRC network to
+    see if the connection is still responsive. The 'users' argument
+    will return a list of users on the remote IRC channel.  Finally,
+    'reconnect' will force the client to disconnect and reconnect
+    again. This may be a last resort if the client has silently lost
+    connection (this may happen if the remote network experience
+    network issues). During the reconnection messages sent to either
+    channel will be lost.
+
+    """
+    key = "@ircstatus"
+    locks = "cmd:serversetting(IRC_ENABLED) and perm(ircstatus) or perm(Builders))"
+    help_category = "Comms"
+
+    def func(self):
+        "Handles the functioning of the command."
+
+        if not self.args:
+            self.msg(_list_bots())
+            return
+        # should always be on the form botname option
+        args = self.args.split()
+        if len(args) != 2:
+            self.msg("Usage: @ircstatus [#dbref ping||nicklist||reconnect]")
+            return
+        botname, option = args
+        if option not in ("ping", "users", "reconnect", "nicklist"):
+            self.msg("Not a valid option.")
+            return
+        matches = None
+        if utils.dbref(botname):
+            matches = PlayerDB.objects.filter(db_is_bot=True, id=utils.dbref(botname))
+        else:
+            self.msg("No matching IRC-bot was found.")
+            return
+        ircbot = matches[0]
+        channel = ircbot.db.irc_channel
+        network = ircbot.db.irc_network
+        port = ircbot.db.irc_port
+        chtext = "IRC bot '%s' on channel %s (%s:%s)" % (ircbot.db.irc_botname, channel, network, port)
+        if option == "ping":
+            # check connection by sending outself a ping through the server.
+            self.caller.msg("Pinging through %s." % chtext)
+            ircbot.ping(self.caller)
+        elif option in ("users", "nicklist"):
+            # retrieve user list. The bot must handles the echo since it's
+            # an asynchronous call.
+            self.caller.msg("Requesting nicklist from %s (%s:%s)." % (channel, network, port))
+            ircbot.get_nicklist(self.caller)
+        elif self.caller.locks.check_lockstring(self.caller, "dummy:perm(ircstatus) or perm(Immortals)"):
+            # reboot the client
+            self.caller.msg("Forcing a disconnect + reconnect of %s." % chtext)
+            ircbot.reconnect()
+        else:
+            self.caller.msg("You don't have permission to force-reload the IRC bot.")
+
+
+
 
 # RSS connection
 class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):

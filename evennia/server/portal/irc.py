@@ -134,6 +134,7 @@ class IRCBot(irc.IRCClient, Session):
     logger = None
     factory = None
     channel = None
+    sourceURL = "http://code.evennia.com"
 
     def signedOn(self):
         """
@@ -194,6 +195,42 @@ class IRCBot(irc.IRCClient, Session):
             user = user.split('!', 1)[0]
             self.data_in(text=msg, type="action", user=user, channel=channel)
 
+    def get_nicklist(self):
+        """
+        Retrieve name list from the channel. The return
+        is handled by the catch methods below.
+
+        """
+        if not self.nicklist:
+            self.sendLine("NAMES %s" % self.channel)
+
+    def irc_RPL_NAMREPLY(self, prefix, params):
+        "Handles IRC NAME request returns (nicklist)"
+        channel = params[2].lower()
+        if channel != self.channel.lower():
+            return
+        self.nicklist += params[3].split(' ')
+
+    def irc_RPL_ENDOFNAMES(self, prefix, params):
+        "Called when the nicklist has finished being returned."
+        channel = params[1].lower()
+        if channel != self.channel.lower():
+            return
+        self.data_in(text="", type="nicklist", user="server", channel=channel, nicklist=self.nicklist)
+        self.nicklist = []
+
+    def pong(self, user, time):
+        """
+        Called with the return timing from a PING.
+
+        Args:
+            user (str): Njame of user
+            time (float): Ping time in secs.
+
+        """
+        self.data_in(text="", type="ping", user="server", channel=self.channel, timing=time)
+
+
     def data_in(self, text=None, **kwargs):
         """
         Data IRC -> Server.
@@ -221,6 +258,28 @@ class IRCBot(irc.IRCClient, Session):
             text = parse_irc_colors(text)
             self.say(self.channel, text)
 
+    def send_request_nicklist(self, *args, **kwargs):
+        """
+        Send a request for the channel nicklist. The return (handled
+        by `self.irc_RPL_ENDOFNAMES`) will be sent back as a message
+        with type `nicklist'.
+        """
+        self.get_nicklist()
+
+    def send_ping(self, *args, **kwargs):
+        """
+        Send a ping. The return (handled by `self.pong`) will be sent
+        back as a message of type 'ping'.
+        """
+        self.ping(self.nickname)
+
+    def send_reconnect(self, *args, **kwargs):
+        """
+        The server instructs us to rebuild the connection by force,
+        probably because the client silently lost connection.
+        """
+        self.factory.reconnect()
+
     def send_default(self, *args, **kwargs):
         """
         Ignore other types of sends.
@@ -231,7 +290,7 @@ class IRCBot(irc.IRCClient, Session):
 
 class IRCBotFactory(protocol.ReconnectingClientFactory):
     """
-    Creates instances of AnnounceBot, connecting with a staggered
+    Creates instances of IRCBot, connecting with a staggered
     increase in delay
 
     """
@@ -264,6 +323,7 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
         self.port = port
         self.ssl = ssl
         self.bot = None
+        self.nicklists = {}
 
     def buildProtocol(self, addr):
         """
@@ -280,6 +340,7 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
         protocol.network = self.network
         protocol.port = self.port
         protocol.ssl = self.ssl
+        protocol.nicklist = []
         return protocol
 
     def startedConnecting(self, connector):
@@ -312,8 +373,21 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
             reason (str): The reason for the failure.
 
         """
-        if not self.bot or (self.bot and self.bot.stopping):
+        if not (self.bot or (self.bot and self.bot.stopping)):
             self.retry(connector)
+
+    def reconnect(self):
+        """
+        Force a reconnection of the bot protocol. This requires
+        de-registering the session and then reattaching a new one,
+        otherwise you end up with an ever growing number of bot
+        sessions.
+
+        """
+        self.bot.stopping = True
+        self.bot.transport.loseConnection()
+        self.sessionhandler.server_disconnect(self.bot)
+        self.start()
 
     def start(self):
         """
@@ -326,7 +400,7 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
                     from twisted.internet import ssl
                     service = reactor.connectSSL(self.network, int(self.port), self, ssl.ClientContextFactory())
                 except ImportError:
-                    self.caller.msg("To use SSL, the PyOpenSSL module must be installed.")
+                    logger.log_err("To use SSL, the PyOpenSSL module must be installed.")
             else:
                 service = internet.TCPClient(self.network, int(self.port), self)
             self.sessionhandler.portal.services.addService(service)
