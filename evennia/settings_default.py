@@ -420,6 +420,12 @@ TIME_HOUR_PER_DAY = 24
 TIME_DAY_PER_WEEK = 7
 TIME_WEEK_PER_MONTH = 4
 TIME_MONTH_PER_YEAR = 12
+# The initial timestamp of your virtual time (in-game)
+# You can set this setting to set a fixed, initial timestamp.  Your
+# game time will be this timestamp plus your current variable game time.
+# You can set this setting to a timestamp in 1980, or 2020, or 2500 if
+# you want to.  Leave it to None to deduce the timestamp from the runtime.
+TIME_VIRTUAL_START = None
 
 ######################################################################
 # Inlinefunc

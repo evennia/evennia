@@ -601,11 +601,17 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
 
     def func(self):
         "Show server time data in a table."
+        virtual_epoch = datetime.datetime.fromtimestamp(
+                gametime.virtual_epoch())
+        virtual_current = datetime.datetime.fromtimestamp(
+                gametime.abs_gametime())
         table = prettytable.PrettyTable(["{wserver time statistic","{wtime"])
         table.align = 'l'
         table.add_row(["Current server uptime", utils.time_format(gametime.uptime(), 3)])
         table.add_row(["Total server running time", utils.time_format(gametime.runtime(), 2)])
+        table.add_row(["Game time epoch", virtual_epoch])
         table.add_row(["Total in-game time (realtime x %g)" % (gametime.TIMEFACTOR), utils.time_format(gametime.gametime(), 2)])
+        table.add_row(["Current game time", virtual_current])
         table.add_row(["Server time stamp", datetime.datetime.now()])
         self.caller.msg(str(table))
 
