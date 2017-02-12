@@ -283,7 +283,7 @@ class IRCBot(Bot):
             # the return of a nicklist request
             if hasattr(self, "_nicklist_callers") and self._nicklist_callers:
                 chstr = "%s (%s:%s)" % (self.db.irc_channel, self.db.irc_network, self.db.irc_port)
-                nicklist = ", ".join(sorted(kwargs["nicklist"]))
+                nicklist = ", ".join(sorted(kwargs["nicklist"], key=lambda n: n.lower()))
                 for obj in self._nicklist_callers:
                     obj.msg("Nicks at %s:\n %s" % (chstr, nicklist))
                 self._nicklist_callers = []
@@ -316,7 +316,7 @@ class IRCBot(Bot):
                     whos.append("%s (%s/%s)" % (utils.crop("|w%s|n" % player.name, width=25),
                                                 utils.time_format(delta_conn, 0),
                                                 utils.time_format(delta_cmd, 1)))
-                text = "Who list (online/idle): %s" % ", ".join(whos)
+                text = "Who list (online/idle): %s" % ", ".join(sorted(whos, key=lambda w:w.lower()))
             elif txt.lower().startswith("about"):
                 # some bot info
                 text = "This is an Evennia IRC bot connecting from '%s'." % settings.SERVERNAME
