@@ -433,19 +433,12 @@ BASE_BATCHPROCESS_PATHS = ['world', 'evennia.contrib', 'evennia.contrib.tutorial
 # The time factor dictates if the game world runs faster (timefactor>1)
 # or slower (timefactor<1) than the real world.
 TIME_FACTOR = 2.0
-# These measures might or might not make sense to your game world.
-TIME_SEC_PER_MIN = 60
-TIME_MIN_PER_HOUR = 60
-TIME_HOUR_PER_DAY = 24
-TIME_DAY_PER_WEEK = 7
-TIME_WEEK_PER_MONTH = 4
-TIME_MONTH_PER_YEAR = 12
-# The initial timestamp of your virtual time (in-game)
-# You can set this setting to set a fixed, initial timestamp.  Your
-# game time will be this timestamp plus your current variable game time.
-# You can set this setting to a timestamp in 1980, or 2020, or 2500 if
-# you want to.  Leave it to None to deduce the timestamp from the runtime.
-TIME_VIRTUAL_START = None
+# The starting point of your game time (the epoch), in seconds.
+# In Python a value of 0 means Jan 1 1970. All absolute game times
+# will be calculated relative to this. Defaults to the first time
+# the server was started. This is mainly useful if you want to
+# convert to real-world times.
+TIME_GAME_EPOCH = None
 
 ######################################################################
 # Inlinefunc

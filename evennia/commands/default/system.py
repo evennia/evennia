@@ -18,7 +18,7 @@ from evennia.server.sessionhandler import SESSIONS
 from evennia.scripts.models import ScriptDB
 from evennia.objects.models import ObjectDB
 from evennia.players.models import PlayerDB
-from evennia.utils import logger, utils, gametime, create, prettytable
+from evennia.utils import logger, utils, gametime, create
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
 from evennia.utils.utils import crop, class_from_module
@@ -540,11 +540,10 @@ class CmdService(COMMAND_DEFAULT_CLASS):
         if not switches or switches[0] == "list":
             # Just display the list of installed services and their
             # status, then exit.
-            table = prettytable.PrettyTable(["{wService{n (use @services/start|stop|delete)", "{wstatus"])
-            table.align = 'l'
+            table = EvTable("{wService{n (use @services/start|stop|delete)", "{wstatus", align="l")
             for service in service_collection.services:
-                table.add_row([service.name, service.running and "{gRunning" or "{rNot Running"])
-            caller.msg(str(table))
+                table.add_row(service.name, service.running and "{gRunning" or "{rNot Running")
+            caller.msg(unicode(table))
             return
 
         # Get the service to start / stop
@@ -651,19 +650,18 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
 
     def func(self):
         "Show server time data in a table."
-        virtual_epoch = datetime.datetime.fromtimestamp(
-                gametime.virtual_epoch())
-        virtual_current = datetime.datetime.fromtimestamp(
-                gametime.abs_gametime())
-        table = prettytable.PrettyTable(["{wserver time statistic","{wtime"])
-        table.align = 'l'
-        table.add_row(["Current server uptime", utils.time_format(gametime.uptime(), 3)])
-        table.add_row(["Total server running time", utils.time_format(gametime.runtime(), 2)])
-        table.add_row(["Game time epoch", virtual_epoch])
-        table.add_row(["Total in-game time (realtime x %g)" % (gametime.TIMEFACTOR), utils.time_format(gametime.gametime(), 2)])
-        table.add_row(["Current game time", virtual_current])
-        table.add_row(["Server time stamp", datetime.datetime.now()])
-        self.caller.msg(str(table))
+        table1 = EvTable("|wserver time","|wtime", align="l", width=78)
+        table1.add_row("Current server uptime", utils.time_format(gametime.uptime(), 3))
+        table1.add_row("Total server running time", utils.time_format(gametime.runtime(), 2))
+        table1.add_row("Server epoch (first start)", datetime.datetime.fromtimestamp(gametime.server_epoch()))
+        table1.add_row("Server time stamp", datetime.datetime.now())
+        table1.reformat_column(0, width=30)
+        table2 = EvTable("|wgame time", "|wtime (real x %g)" % gametime.TIMEFACTOR, align="l", width=77, border_top=0)
+        table2.add_row("Game time epoch", datetime.datetime.fromtimestamp(gametime.game_epoch()))
+        table2.add_row("Time passed in game:", utils.time_format(gametime.gametime(), 2))
+        table2.add_row("Current game time", datetime.datetime.fromtimestamp(gametime.gametime(absolute=True)))
+        table2.reformat_column(0, width=30)
+        self.caller.msg(unicode(table1) + "\n" + unicode(table2))
 
 
 class CmdServerLoad(COMMAND_DEFAULT_CLASS):

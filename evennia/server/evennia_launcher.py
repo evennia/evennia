@@ -768,14 +768,11 @@ def error_check_python_modules():
     python source files themselves). Best they fail already here
     before we get any further.
 
-    Raises:
-        DeprecationWarning: For trying to access various modules
-        (usually in `settings.py`) which are no longer supported.
-
     """
 
     from django.conf import settings
-    def imp(path, split=True):
+    def _imp(path, split=True):
+        "helper method"
         mod, fromlist = path, "None"
         if split:
             mod, fromlist = path.rsplit('.', 1)
@@ -783,16 +780,20 @@ def error_check_python_modules():
 
     # check the historical deprecations
     from evennia.server import deprecations
-    deprecations.check_errors(settings)
-    deprecations.check_warnings(settings)
+    try:
+        deprecations.check_errors(settings)
+        deprecations.check_warnings(settings)
+    except DeprecationWarning as err:
+        print(err)
+        sys.exit()
 
     # core modules
-    imp(settings.COMMAND_PARSER)
-    imp(settings.SEARCH_AT_RESULT)
-    imp(settings.CONNECTION_SCREEN_MODULE)
+    _imp(settings.COMMAND_PARSER)
+    _imp(settings.SEARCH_AT_RESULT)
+    _imp(settings.CONNECTION_SCREEN_MODULE)
     #imp(settings.AT_INITIAL_SETUP_HOOK_MODULE, split=False)
     for path in settings.LOCK_FUNC_MODULES:
-        imp(path, split=False)
+        _imp(path, split=False)
 
     from evennia.commands import cmdsethandler
     if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None):
@@ -802,12 +803,12 @@ def error_check_python_modules():
     if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None):
         print("Warning: CMDSET_PLAYER failed to load")
     # typeclasses
-    imp(settings.BASE_PLAYER_TYPECLASS)
-    imp(settings.BASE_OBJECT_TYPECLASS)
-    imp(settings.BASE_CHARACTER_TYPECLASS)
-    imp(settings.BASE_ROOM_TYPECLASS)
-    imp(settings.BASE_EXIT_TYPECLASS)
-    imp(settings.BASE_SCRIPT_TYPECLASS)
+    _imp(settings.BASE_PLAYER_TYPECLASS)
+    _imp(settings.BASE_OBJECT_TYPECLASS)
+    _imp(settings.BASE_CHARACTER_TYPECLASS)
+    _imp(settings.BASE_ROOM_TYPECLASS)
+    _imp(settings.BASE_EXIT_TYPECLASS)
+    _imp(settings.BASE_SCRIPT_TYPECLASS)
 
 def init_game_directory(path, check_db=True):
     """

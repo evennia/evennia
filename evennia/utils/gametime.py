@@ -14,7 +14,6 @@ from evennia.server.models import ServerConfig
 # to real time.
 
 TIMEFACTOR = settings.TIME_FACTOR
-TIME_VIRTUAL_START = settings.TIME_VIRTUAL_START
 
 # Only set if gametime_reset was called at some point.
 GAME_TIME_OFFSET = ServerConfig.objects.conf("gametime_offset", default=0)
@@ -22,55 +21,19 @@ GAME_TIME_OFFSET = ServerConfig.objects.conf("gametime_offset", default=0)
 # Common real-life time measure, in seconds.
 # You should not change this.
 
-REAL_MIN = 60.0  # seconds per minute in real world
-
-# Game-time units, in real-life seconds. These are supplied as
-# a convenient measure for determining the current in-game time,
-# e.g. when defining in-game events. The words month, week and year can
-# be used to mean whatever units of time are used in the game.
-
-MIN = settings.TIME_SEC_PER_MIN
-HOUR = MIN * settings.TIME_MIN_PER_HOUR
-DAY = HOUR * settings.TIME_HOUR_PER_DAY
-WEEK = DAY * settings.TIME_DAY_PER_WEEK
-MONTH = WEEK * settings.TIME_WEEK_PER_MONTH
-YEAR = MONTH * settings.TIME_MONTH_PER_YEAR
-
 # these are kept updated by the server maintenance loop
 SERVER_START_TIME = 0.0
 SERVER_RUNTIME_LAST_UPDATED = 0.0
 SERVER_RUNTIME = 0.0
 
-
-def _format(seconds, *divisors) :
-    """
-    Helper function. Creates a tuple of even dividends given a range
-    of divisors.
-
-    Args:
-        seconds (int): Number of seconds to format
-        *divisors (int): a sequence of numbers of integer dividends. The
-            number of seconds will be integer-divided by the first number in
-            this sequence, the remainder will be divided with the second and
-            so on.
-    Returns:
-        time (tuple): This tuple has length len(*args)+1, with the
-            last element being the last remaining seconds not evenly
-            divided by the supplied dividends.
-
-    """
-    results = []
-    seconds = int(seconds)
-    for divisor in divisors:
-        results.append(seconds // divisor)
-        seconds %= divisor
-    results.append(seconds)
-    return tuple(results)
-
+# note that these should not be accessed directly since they may
+# need further processing. Access from server_epoch() and game_epoch().
+_SERVER_EPOCH = None
+_GAME_EPOCH = None
 
 # Access functions
 
-def runtime(format=False):
+def runtime():
     """
     Get the total runtime of the server since first start (minus
     downtimes)
@@ -83,13 +46,22 @@ def runtime(format=False):
             into time units.
 
     """
-    rtime = SERVER_RUNTIME + (time.time() - SERVER_RUNTIME_LAST_UPDATED)
-    if format:
-        return _format(rtime, 31536000, 2628000, 604800, 86400, 3600, 60)
-    return rtime
+    return SERVER_RUNTIME + time.time() - SERVER_RUNTIME_LAST_UPDATED
 
 
-def uptime(format=False):
+def server_epoch():
+    """
+    Get the server epoch. We may need to calculate this on the fly.
+
+    """
+    global _SERVER_EPOCH
+    if not _SERVER_EPOCH:
+        _SERVER_EPOCH = ServerConfig.objects.conf("server_epoch", default=None) \
+                        or time.time() - runtime()
+    return _SERVER_EPOCH
+
+
+def uptime():
     """
     Get the current uptime of the server since last reload
 
@@ -101,130 +73,48 @@ def uptime(format=False):
             into time units.
 
     """
-    utime = time.time() - SERVER_START_TIME
-    if format:
-        return _format(utime, 31536000, 2628000, 604800, 86400, 3600, 60)
-    return utime
+    return time.time() - SERVER_START_TIME
 
-def virtual_epoch():
-    """Return the number of VIRTUAL seconds since the server started.
 
-    This number is set in the TIME_VIRTUAL_START setting.  If not
-    set, it will be deduced from the current time and server runtime.
-    Notice, in this case, that it will be slightly fluctuant every
-    reload or restart.
-
-    Returns:
-        The number of virtual seconds since the game first started.
+def game_epoch():
+    """
+    Get the game epoch.
 
     """
-    if TIME_VIRTUAL_START is None:
-        virtual_start = time.time() - runtime()
-    else:
-        virtual_start = TIME_VIRTUAL_START
+    return settings.TIME_GAME_EPOCH or server_epoch()
 
-    return virtual_start
 
-def abs_gametime():
-    """Return the absolute number of virtual seconds (in game time).
-
-    This function returns the number of seconds, using your configured
-    virtual start (setting TIME_VIRTUAL_START), and adding the
-    current relative gametime().  If you want to use a standard
-    calendar, it might save you time and efforts.  You could easily
-    convert the value like this:
-    >>> from datetime import datetime
-    >>> current = datetime.fromtimestamp(abs_gametime())
-
-    Returns:
-        The number of virtual seconds using the virtual epoch as a basis.
-
-    """
-    virtual_start = virtual_epoch()
-    return virtual_start + gametime()
-
-def gametime(format=False):
+def gametime(absolute=False):
     """
     Get the total gametime of the server since first start (minus downtimes)
 
     Args:
         format (bool, optional): Format into time representation.
+        absolute (bool, optional): Get the absolute game time, including
+            the epoch. This could be converted to an absolute in-game
+            date.
 
     Returns:
         time (float or tuple): The gametime or the same time split up
             into time units.
 
+    Notes:
+        If one is using a standard calendar, one could convert the unformatted
+        return to a date using Python's standard `datetime` module like this:
+        `datetime.datetime.fromtimestamp(gametime(absolute=True))`
+
     """
-    gtime = (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
-    if format:
-        return _format(gtime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
+    epoch = game_epoch() if absolute else 0
+    gtime = epoch + (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
     return gtime
 
 
 def reset_gametime():
     """
-    Resets the game time to make it start from the current time.
+    Resets the game time to make it start from the current time. Note that
+    the epoch set by `settings.TIME_GAME_EPOCH` will still apply.
 
     """
     global GAME_TIME_OFFSET
     GAME_TIME_OFFSET = runtime()
     ServerConfig.objects.conf("gametime_offset", GAME_TIME_OFFSET)
-
-
-# Conversion functions
-
-
-def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
-                         weeks=0, months=0, yrs=0, format=False):
-    """
-    This method helps to figure out the real-world time it will take until an
-    in-game time has passed. E.g. if an event should take place a month later
-    in-game, you will be able to find the number of real-world seconds this
-    corresponds to (hint: Interval events deal with real life seconds).
-
-    Kwargs:
-        times (int): The various components of the time.
-        format (bool): Formatting the output.
-
-    Returns:
-        time (float or tuple): The realtime difference or the same
-            time split up into time units.
-
-    Example:
-         gametime_to_realtime(days=2) -> number of seconds in real life from
-                        now after which 2 in-game days will have passed.
-
-    """
-    rtime = (secs + mins * MIN + hrs * HOUR + days * DAY + weeks * WEEK + \
-                months * MONTH + yrs * YEAR) / TIMEFACTOR
-    if format:
-        return _format(rtime, 31536000, 2628000, 604800, 86400, 3600, 60)
-    return rtime
-
-
-def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
-                         weeks=0, months=0, yrs=0, format=False):
-    """
-    This method calculates how much in-game time a real-world time
-    interval would correspond to. This is usually a lot less
-    interesting than the other way around.
-
-    Kwargs:
-        times (int): The various components of the time.
-        format (bool): Formatting the output.
-
-    Returns:
-        time (float or tuple): The gametime difference or the same
-            time split up into time units.
-
-     Example:
-      realtime_to_gametime(days=2) -> number of game-world seconds
-                                      corresponding to 2 real days.
-
-    """
-    gtime = TIMEFACTOR * (secs + mins * 60 + hrs * 3600 + days * 86400 +
-                             weeks * 604800 + months * 2628000 + yrs * 31536000)
-    if format:
-        return _format(gtime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
-    return gtime
-

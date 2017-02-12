@@ -12,26 +12,11 @@ def check_errors(settings):
 
     Args:
         settings (Settings): The Django settings file
+
     Raises:
-        DeprecationWarning
+        DeprecationWarning if a critical deprecation is found.
 
     """
-    from django.conf import settings
-    def imp(path, split=True):
-        mod, fromlist = path, "None"
-        if split:
-            mod, fromlist = path.rsplit('.', 1)
-        __import__(mod, fromlist=[fromlist])
-
-    # core modules
-    imp(settings.COMMAND_PARSER)
-    imp(settings.SEARCH_AT_RESULT)
-    imp(settings.CONNECTION_SCREEN_MODULE)
-    #imp(settings.AT_INITIAL_SETUP_HOOK_MODULE, split=False)
-    for path in settings.LOCK_FUNC_MODULES:
-        imp(path, split=False)
-    # cmdsets
-
     deprstring = ("settings.%s should be renamed to %s. If defaults are used, "
                   "their path/classname must be updated "
                   "(see evennia/settings_default.py).")
@@ -72,23 +57,22 @@ def check_errors(settings):
         "Update your settings file (see evennia/settings_default.py "
         "for more info).")
 
-    from evennia.commands import cmdsethandler
-    if not cmdsethandler.import_cmdset(settings.CMDSET_UNLOGGEDIN, None):
-        print("Warning: CMDSET_UNLOGGED failed to load!")
-    if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None):
-        print("Warning: CMDSET_CHARACTER failed to load")
-    if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None):
-        print("Warning: CMDSET_PLAYER failed to load")
-    # typeclasses
-    imp(settings.BASE_PLAYER_TYPECLASS)
-    imp(settings.BASE_OBJECT_TYPECLASS)
-    imp(settings.BASE_CHARACTER_TYPECLASS)
-    imp(settings.BASE_ROOM_TYPECLASS)
-    imp(settings.BASE_EXIT_TYPECLASS)
-    imp(settings.BASE_SCRIPT_TYPECLASS)
+    gametime_deprecation = ("The settings TIME_SEC_PER_MIN, TIME_MIN_PER_HOUR,"
+                            "TIME_HOUR_PER_DAY, TIME_DAY_PER_WEEK, \n"
+                            "TIME_WEEK_PER_MONTH and TIME_MONTH_PER_YEAR "
+                            "are no longer supported. Remove them from your "
+                            "settings file to continue.\nIf you want to use "
+                            "and manipulate these time units, the tools from utils.gametime "
+                            "are now found in contrib/convert_gametime.py instead.")
+    if any(hasattr(settings, value) for value in ("TIME_SEC_PER_MIN", "TIME_MIN_PER_HOUR",
+                        "TIME_HOUR_PER_DAY", "TIME_DAY_PER_WEEK", "TIME_WEEK_PER_MONTH",
+                        "TIME_MONTH_PER_YEAR")):
+        raise DeprecationWarning(gametime_deprecation)
+
 
 def check_warnings(settings):
     """
     Check deprecations that should produce warnings but which
     does not stop launch.
     """
+    pass

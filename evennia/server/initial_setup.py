@@ -7,7 +7,7 @@ Everything starts at handle_setup()
 """
 from __future__ import print_function
 
-import django
+import time
 from django.conf import settings
 from django.utils.translation import ugettext as _
 from evennia.players.models import PlayerDB
@@ -160,6 +160,7 @@ def reset_server():
     also checks so the warm-reset mechanism works as it should.
 
     """
+    ServerConfig.objects.conf("server_epoch", time.time())
     from evennia.server.sessionhandler import SESSIONS
     logger.log_info(" Initial setup complete. Restarting Server once.")
     SESSIONS.server.shutdown(mode='reset')
