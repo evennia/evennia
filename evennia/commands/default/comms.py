@@ -931,13 +931,13 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
 
     If not given arguments, will return a list of all bots (like
     @irc2chan/list). The 'ping' argument will ping the IRC network to
-    see if the connection is still responsive. The 'users' argument
-    will return a list of users on the remote IRC channel.  Finally,
-    'reconnect' will force the client to disconnect and reconnect
-    again. This may be a last resort if the client has silently lost
-    connection (this may happen if the remote network experience
-    network issues). During the reconnection messages sent to either
-    channel will be lost.
+    see if the connection is still responsive. The 'nicklist' argument
+    (aliases are 'who' and 'users') will return a list of users on the
+    remote IRC channel.  Finally, 'reconnect' will force the client to
+    disconnect and reconnect again. This may be a last resort if the
+    client has silently lost connection (this may happen if the remote
+    network experience network issues). During the reconnection
+    messages sent to either channel will be lost.
 
     """
     key = "@ircstatus"
@@ -956,7 +956,7 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
             self.msg("Usage: @ircstatus [#dbref ping||nicklist||reconnect]")
             return
         botname, option = args
-        if option not in ("ping", "users", "reconnect", "nicklist"):
+        if option not in ("ping", "users", "reconnect", "nicklist", "who"):
             self.msg("Not a valid option.")
             return
         matches = None
@@ -974,7 +974,7 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
             # check connection by sending outself a ping through the server.
             self.caller.msg("Pinging through %s." % chtext)
             ircbot.ping(self.caller)
-        elif option in ("users", "nicklist"):
+        elif option in ("users", "nicklist", "who"):
             # retrieve user list. The bot must handles the echo since it's
             # an asynchronous call.
             self.caller.msg("Requesting nicklist from %s (%s:%s)." % (channel, network, port))
