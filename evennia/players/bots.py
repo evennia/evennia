@@ -283,8 +283,9 @@ class IRCBot(Bot):
             # the return of a nicklist request
             if hasattr(self, "_nicklist_callers") and self._nicklist_callers:
                 chstr = "%s (%s:%s)" % (self.db.irc_channel, self.db.irc_network, self.db.irc_port)
+                nicklist = ", ".join(sorted(kwargs["nicklist"]))
                 for obj in self._nicklist_callers:
-                    obj.msg("Nicks at %s:\n %s" % (chstr, ", ".join(kwargs["nicklist"])))
+                    obj.msg("Nicks at %s:\n %s" % (chstr, nicklist))
                 self._nicklist_callers = []
             return
 
