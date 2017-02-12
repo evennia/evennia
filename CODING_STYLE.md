@@ -52,8 +52,9 @@ are useful in the game ...
 Sectioning (`# title`,  `## subtile` etc) should not be used in
 freeform docstrings - this will confuse the sectioning of the auto
 documentation page and the auto-api will create this automatically.
-Use **section** with bold markers if a section is needed. Otherwise
-markdown should be used as needed to format the text.
+Write just the section name bolded on its own line to mark a section. 
+Beyond sections markdown should be used as needed to format
+the text.
 
 Code examples should use [multi-line syntax highlighting][markdown-hilight]
 to mark multi-line code blocks, using the "python" identifier. Just
