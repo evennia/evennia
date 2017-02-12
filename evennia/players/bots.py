@@ -300,7 +300,6 @@ class IRCBot(Bot):
         elif kwargs["type"] == "privmsg":
             # A private message to the bot - a command.
             user = kwargs["user"]
-            print ("Private bot message received from %s: %s" % (user, txt))
 
             if txt.lower().startswith("who"):
                 # return server WHO list (abbreviated for IRC)
@@ -319,7 +318,7 @@ class IRCBot(Bot):
                 text = "Who list (online/idle): %s" % ", ".join(whos)
             elif txt.lower().startswith("about"):
                 # some bot info
-                text = "This is an Evennia IRC bot connecting from the game '%s'." % settings.SERVERNAME
+                text = "This is an Evennia IRC bot connecting from '%s'." % settings.SERVERNAME
             else:
                 text = "I understand 'who' and 'about'"
             super(IRCBot, self).msg(privmsg=((text,), {"user":user}))
