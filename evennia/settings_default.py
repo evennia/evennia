@@ -347,6 +347,19 @@ COMMAND_DEFAULT_CLASS = "evennia.commands.default.muxcommand.MuxCommand"
 # default class logs channel messages to a file and allows for /history.
 # This setting allows to override the command class used with your own.
 CHANNEL_COMMAND_CLASS = "evennia.comms.channelhandler.ChannelCommand"
+# These specify defaults to the base Command parent class. Override them
+# in order to change default behavior for your commands.
+# If specified, DEFAULT_COMMAND_ARG_REGEX forces a command's structure
+# to match the given regular expression.
+DEFAULT_COMMAND_ARG_REGEX = None
+# If True, DEFAULT_COMMAND_MSG_SHARE will share a self.msg() to all sessions
+# associated with the caller.
+# If False, self.msg() will send a message only self.session.
+DEFAULT_COMMAND_MSG_SHARE = False
+# The help category of a command if not otherwise specified.
+DEFAULT_COMMAND_HELP_CATEGORY = "general"
+# The default lockstring of a command.
+DEFAULT_COMMAND_LOCKS = ""
 
 ######################################################################
 # Typeclasses and other paths
