@@ -183,6 +183,12 @@ class docstrings to represent the in-game help entry for that command.
 So for the default look of Command class docstrings see instead 
 [the default command documentation policy][command-docstrings].
 
+### Changing automatic docstring format in PyCharm
+
+Pycharm will generate docstring stubs automatically for you, but the
+default format is reStructuredText. To change it to google-style,
+follow [this guide][pycharm-guide].
+
 ## Ask Questions!
 
 If any of the rules outlined in PEP 8 or in the sections above doesn't
@@ -196,3 +202,4 @@ or in the chat.
 [githubmarkdown]: https://help.github.com/articles/github-flavored-markdown/
 [markdown-hilight]: https://help.github.com/articles/github-flavored-markdown/#syntax-highlighting
 [command-docstrings]: https://github.com/evennia/evennia/wiki/Using%20MUX%20As%20a%20Standard#documentation-policy
+[pycharm-guide]: https://www.jetbrains.com/help/pycharm/2016.3/python-integrated-tools.html
