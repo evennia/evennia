@@ -16,6 +16,9 @@ user.
 from builtins import object, range
 
 import re
+
+from django.conf import settings
+
 from evennia.utils import utils
 from evennia.utils.utils import to_str, to_unicode
 from future.utils import with_metaclass
@@ -414,6 +417,7 @@ class ANSIParser(object):
         (r'|[W', ANSI_BACK_WHITE),    # light grey background
         (r'|[X', ANSI_BACK_BLACK)     # pure black background
         ]
+    ext_ansi_map += settings.ADDITIONAL_ANSI_MAPPINGS
 
     ansi_bright_bgs = [
         # "bright" ANSI backgrounds using xterm256 since ANSI
