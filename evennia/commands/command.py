@@ -143,17 +143,18 @@ class Command(with_metaclass(CommandMeta, object)):
     aliases = []
     # a list of lock definitions on the form
     #   cmd:[NOT] func(args) [ AND|OR][ NOT] func2(args)
-    locks = settings.DEFAULT_COMMAND_LOCKS
+    locks = settings.COMMAND_DEFAULT_LOCKS
     # used by the help system to group commands in lists.
-    help_category = settings.DEFAULT_COMMAND_HELP_CATEGORY
+    help_category = settings.COMMAND_DEFAULT_HELP_CATEGORY
     # This allows to turn off auto-help entry creation for individual commands.
     auto_help = True
     # optimization for quickly separating exit-commands from normal commands
     is_exit = False
     # define the command not only by key but by the regex form of its arguments
-    arg_regex = settings.DEFAULT_COMMAND_ARG_REGEX
-    # whether we share msgs automatically with all sessions
-    share_msgs = settings.DEFAULT_COMMAND_MSG_SHARE
+    arg_regex = settings.COMMAND_DEFAULT_ARG_REGEX
+    # whether self.msg sends to all sessions of a related player/object (default
+    # is to only send to the session sending the command).
+    msg_all_sessions = settings.COMMAND_DEFAULT_MSG_ALL_SESSIONS
 
     # auto-set (by Evennia on command instantiation) are:
     #   obj - which object this command is defined on
@@ -309,14 +310,14 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         This is a shortcut instad of calling msg() directly on an
         object - it will detect if caller is an Object or a Player and
-        also appends self.session automatically if self.share_msgs is False.
+        also appends self.session automatically if self.msg_all_sessions is False.
 
         Args:
             text (str, optional): Text string of message to send.
             to_obj (Object, optional): Target object of message. Defaults to self.caller.
             from_obj (Object, optional): Source of message. Defaults to to_obj.
             session (Session, optional): Supply data only to a unique
-                session.
+                session (ignores the value of `self.msg_all_sessions`).
 
         Kwargs:
             options (dict): Options to the protocol.
@@ -326,7 +327,7 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         from_obj = from_obj or self.caller
         to_obj = to_obj or from_obj
-        if not session and not self.share_msgs:
+        if not session and not self.msg_all_sessions:
             if to_obj == self.caller:
                 session = self.session
             else:
