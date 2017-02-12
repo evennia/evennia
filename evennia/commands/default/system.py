@@ -650,16 +650,17 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
 
     def func(self):
         "Show server time data in a table."
-        table1 = EvTable("|wserver time","|wtime", align="l", width=78)
-        table1.add_row("Current server uptime", utils.time_format(gametime.uptime(), 3))
-        table1.add_row("Total server running time", utils.time_format(gametime.runtime(), 2))
-        table1.add_row("Server epoch (first start)", datetime.datetime.fromtimestamp(gametime.server_epoch()))
-        table1.add_row("Server time stamp", datetime.datetime.now())
+        table1 = EvTable("|wServer time","", align="l", width=78)
+        table1.add_row("Current uptime", utils.time_format(gametime.uptime(), 3))
+        table1.add_row("Total runtime", utils.time_format(gametime.runtime(), 2))
+        table1.add_row("First start", datetime.datetime.fromtimestamp(gametime.server_epoch()))
+        table1.add_row("Current time", datetime.datetime.now())
         table1.reformat_column(0, width=30)
-        table2 = EvTable("|wgame time", "|wtime (real x %g)" % gametime.TIMEFACTOR, align="l", width=77, border_top=0)
-        table2.add_row("Game time epoch", datetime.datetime.fromtimestamp(gametime.game_epoch()))
-        table2.add_row("Time passed in game:", utils.time_format(gametime.gametime(), 2))
-        table2.add_row("Current game time", datetime.datetime.fromtimestamp(gametime.gametime(absolute=True)))
+        table2 = EvTable("|wIn-Game time", "|wReal time x %g" % gametime.TIMEFACTOR, align="l", width=77, border_top=0)
+        epochtxt = "Epoch (%s)" % ("from settings" if settings.TIME_GAME_EPOCH else "server start")
+        table2.add_row(epochtxt, datetime.datetime.fromtimestamp(gametime.game_epoch()))
+        table2.add_row("Total time passed:", utils.time_format(gametime.gametime(), 2))
+        table2.add_row("Current time ", datetime.datetime.fromtimestamp(gametime.gametime(absolute=True)))
         table2.reformat_column(0, width=30)
         self.caller.msg(unicode(table1) + "\n" + unicode(table2))
 

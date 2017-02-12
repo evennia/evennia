@@ -434,10 +434,9 @@ BASE_BATCHPROCESS_PATHS = ['world', 'evennia.contrib', 'evennia.contrib.tutorial
 # or slower (timefactor<1) than the real world.
 TIME_FACTOR = 2.0
 # The starting point of your game time (the epoch), in seconds.
-# In Python a value of 0 means Jan 1 1970. All absolute game times
-# will be calculated relative to this. Defaults to the first time
-# the server was started. This is mainly useful if you want to
-# convert to real-world times.
+# In Python a value of 0 means Jan 1 1970 (use negatives for earlier
+# start date). This will affect the returns from the utils.gametime
+# module.
 TIME_GAME_EPOCH = None
 
 ######################################################################
