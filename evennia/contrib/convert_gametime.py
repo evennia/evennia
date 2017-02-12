@@ -28,23 +28,23 @@ TIMEFACTOR = settings.TIME_FACTOR
 # when defining in-game events. The words month, week and year can  be
 # used to mean whatever units of time are used in your game.
 SEC = 1
-MIN = 60          # seconds per minute
-HOUR = MIN * 60   # minutes per hour
-DAY = HOUR * 24   # hours per day
-WEEK = DAY * 7    # days per week
-MONTH = WEEK * 4  # weeks per month
-YEAR = MONTH * 12 # months per year
-UNITS = {
-    "sec": SEC,
-    "min": MIN,
-    "hr": HOUR,
-    "hour": HOUR,
-    "day": DAY,
-    "week": WEEK,
-    "month": MONTH,
-    "year": YEAR,
-    "yr": YEAR,
-}
+MIN = getattr(settings, "SECS_PER_MIN", 60)
+HOUR = getattr(settings, "MINS_PER_HOUR", 60) * MIN
+DAY = getattr(settings, "HOURS_PER_DAY", 24) * HOUR
+WEEK = getattr(settings, "DAYS_PER_WEEK", 7) * DAY
+MONTH = getattr(settings, "WEEKS_PER_MONTH", 4) * WEEK
+YEAR = getattr(settings, "MONTHS_PER_YEAR", 12) * MONTH
+UNITS = getattr(settings, "TIME_UNITS", {
+        "sec": SEC,
+        "min": MIN,
+        "hr": HOUR,
+        "hour": HOUR,
+        "day": DAY,
+        "week": WEEK,
+        "month": MONTH,
+        "year": YEAR,
+        "yr": YEAR,
+})
 
 
 def time_to_tuple(seconds, *divisors):
