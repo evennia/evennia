@@ -46,6 +46,7 @@ IRC_GRAY = "15"
 # {[rredbg {[ggreenbg {[yyellowbg {[bbluebg {[mmagentabg {[ccyanbg {[wlgreybg {[xblackbg
 
 IRC_COLOR_MAP = dict([
+    # obs - {-type colors are deprecated but still used in many places.
     (r'{n', IRC_RESET),                # reset
     (r'{/', ""),          # line break
     (r'{-', " "),             # tab
@@ -78,7 +79,42 @@ IRC_COLOR_MAP = dict([
     (r'{[m', IRC_COLOR + IRC_NORMAL + "," + IRC_DMAGENTA),
     (r'{[c', IRC_COLOR + IRC_NORMAL + "," + IRC_DCYAN),
     (r'{[w', IRC_COLOR + IRC_NORMAL + "," + IRC_GRAY),    # light grey background
-    (r'{[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK)     # pure black background
+    (r'{[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK),     # pure black background
+
+    # |-type formatting is the thing to use.
+    (r'|n', IRC_RESET),                # reset
+    (r'|/', ""),          # line break
+    (r'|-', " "),             # tab
+    (r'|_', " "),           # space
+    (r'|*', ""),        # invert
+    (r'|^', ""),          # blinking text
+
+    (r'|r', IRC_COLOR + IRC_RED),
+    (r'|g', IRC_COLOR + IRC_GREEN),
+    (r'|y', IRC_COLOR + IRC_YELLOW),
+    (r'|b', IRC_COLOR + IRC_BLUE),
+    (r'|m', IRC_COLOR + IRC_MAGENTA),
+    (r'|c', IRC_COLOR + IRC_CYAN),
+    (r'|w', IRC_COLOR + IRC_WHITE),  # pure white
+    (r'|x', IRC_COLOR + IRC_DGREY),  # dark grey
+
+    (r'|R', IRC_COLOR + IRC_DRED),
+    (r'|G', IRC_COLOR + IRC_DGREEN),
+    (r'|Y', IRC_COLOR + IRC_DYELLOW),
+    (r'|B', IRC_COLOR + IRC_DBLUE),
+    (r'|M', IRC_COLOR + IRC_DMAGENTA),
+    (r'|C', IRC_COLOR + IRC_DCYAN),
+    (r'|W', IRC_COLOR + IRC_GRAY),  # light grey
+    (r'|X', IRC_COLOR + IRC_BLACK),  # pure black
+
+    (r'|[r', IRC_COLOR + IRC_NORMAL + "," + IRC_DRED),
+    (r'|[g', IRC_COLOR + IRC_NORMAL + "," + IRC_DGREEN),
+    (r'|[y', IRC_COLOR + IRC_NORMAL + "," + IRC_DYELLOW),
+    (r'|[b', IRC_COLOR + IRC_NORMAL + "," + IRC_DBLUE),
+    (r'|[m', IRC_COLOR + IRC_NORMAL + "," + IRC_DMAGENTA),
+    (r'|[c', IRC_COLOR + IRC_NORMAL + "," + IRC_DCYAN),
+    (r'|[w', IRC_COLOR + IRC_NORMAL + "," + IRC_GRAY),    # light grey background
+    (r'|[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK)     # pure black background
     ])
 RE_IRC_COLOR = re.compile(r"|".join([re.escape(key) for key in viewkeys(IRC_COLOR_MAP)]), re.DOTALL)
 RE_MXP = re.compile(r'\{lc(.*?)\{lt(.*?)\{le', re.DOTALL)
@@ -176,7 +212,12 @@ class IRCBot(irc.IRCClient, Session):
             msg (str): The message arriving from channel.
 
         """
-        if not msg.startswith('***'):
+        if channel == self.nickname:
+            # private message
+            user = user.split('!', 1)[0]
+            self.data_in(text=msg, type="privmsg", user=user, channel=channel)
+        elif not msg.startswith('***'):
+            # channel message
             user = user.split('!', 1)[0]
             user = ansi.raw(user)
             self.data_in(text=msg, type="msg", user=user, channel=channel)
@@ -224,7 +265,7 @@ class IRCBot(irc.IRCClient, Session):
         Called with the return timing from a PING.
 
         Args:
-            user (str): Njame of user
+            user (str): Name of user
             time (float): Ping time in secs.
 
         """
@@ -242,21 +283,40 @@ class IRCBot(irc.IRCClient, Session):
         """
         self.sessionhandler.data_in(self, bot_data_in=[text, kwargs])
 
-    def send_text(self, *args, **kwargs):
+    def send_channel(self, *args, **kwargs):
         """
-        Send channel text to IRC
+        Send channel text to IRC channel (visible to all). Note that
+        we don't handle the "text" send (it's rerouted to send_default
+        which does nothing) - this is because the IRC bot is a normal
+        session and would otherwise report anything that happens to it
+        to the IRC channel (such as it seeing server reload messages).
 
         Args:
             text (str): Outgoing text
 
+        """
+        text = args[0] if args else ""
+        if text:
+            text = parse_irc_colors(text)
+            self.say(self.channel, text)
+
+    def send_privmsg(self, *args, **kwargs):
+        """
+        Send message only to specific user.
+
+        Args:
+            text (str): Outgoing text.
+
         Kwargs:
-            bot_data_out (bool): If True, echo to channel.
+            user (str): the nick to send
+                privately to.
 
         """
         text = args[0] if args else ""
-        if text and kwargs['options'].get("bot_data_out", False):
+        user = kwargs.get("user", None)
+        if text and user:
             text = parse_irc_colors(text)
-            self.say(self.channel, text)
+            self.msg(user, text)
 
     def send_request_nicklist(self, *args, **kwargs):
         """
