@@ -31,11 +31,15 @@ and initialize it:
    no automatic quit messages will be given.
  - key is an optional identifier for the editing session, to be
    displayed in the editor.
--  persistent means the editor state will be saved to the database making it
+ - persistent means the editor state will be saved to the database making it
    survive a server reload. Note that using this mode, the load- save-
    and quit-funcs must all be possible to pickle - notable unusable
    callables are class methods and functions defined inside other
    functions. With persistent=False, no such restriction exists.
+ - code set to True activates features on the EvEditor to enter Python code.
+
+In addition, the EvEditor can be used to enter Python source code,
+and offers basic handling of indentation.
 
 """
 from builtins import object
@@ -99,12 +103,22 @@ _HELP_TEXT = \
  :fd <l>    - de-indent entire buffer or line <l>
 
  :echo - turn echoing of the input on/off (helpful for some clients)
+"""
 
+_HELP_LEGEND = \
+"""
     Legend:
     <l>   - line number, like '5' or range, like '3:7'.
     <w>   - a single word, or multiple words with quotes around them.
     <txt> - longer string, usually not needing quotes.
 """
+
+_HELP_CODE = \
+"""
+ :<    - Decrease the level of automatic indentation for the next lines
+ :>    - Increase the level of automatic indentation for the next lines
+ :=    - Switch automatic indentation on/off
+""".strip("\n")
 
 _ERROR_LOADFUNC = \
 """
@@ -321,6 +335,8 @@ def _load_editor(caller):
     saved_options = caller.attributes.get("_eveditor_saved")
     saved_buffer, saved_undo = caller.attributes.get("_eveditor_buffer_temp", (None, None))
     unsaved = caller.attributes.get("_eveditor_unsaved", False)
+    code = caller.attributes.get("_eveditor_code", False)
+    indent = caller.attributes.get("_eveditor_indent", 0)
     if saved_options:
         eveditor = EvEditor(caller, **saved_options[0])
         if saved_buffer:
@@ -330,6 +346,8 @@ def _load_editor(caller):
             setattr(eveditor, "_undo_buffer", saved_undo)
             setattr(eveditor, "_undo_pos", len(saved_undo) - 1)
             setattr(eveditor, "_unsaved", unsaved)
+            setattr(eveditor, "_code", code)
+            setattr(eveditor, "_indent", indent)
         for key, value in saved_options[1].iteritems():
             setattr(eveditor, key, value)
     else:
@@ -347,6 +365,9 @@ class CmdLineInput(CmdEditorBase):
     def func(self):
         """
         Adds the line without any formatting changes.
+
+        If the editor handles code, it might add automatic
+        indentation.
         """
         caller = self.caller
         editor = caller.ndb._eveditor
@@ -354,15 +375,36 @@ class CmdLineInput(CmdEditorBase):
         buf = editor.get_buffer()
 
         # add a line of text to buffer
-        if not buf:
-            buf = self.args
+        line = self.raw_string.strip("\r\n")
+        if not editor._code:
+            if not buf:
+                buf = line
+            else:
+                buf = buf + "\n%s" % line
         else:
-            buf = buf + "\n%s" % self.args
+            # if automatic indentation is active, add spaces
+            if editor._indent >= 0:
+                line = editor.deduce_indent(line, buf)
+
+            if not buf:
+                buf = line
+            else:
+                buf = buf + "\n%s" % line
         self.editor.update_buffer(buf)
         if self.editor._echo_mode:
             # need to do it here or we will be off one line
             cline = len(self.editor.get_buffer().split('\n'))
-            self.caller.msg("{b%02i|{n %s" % (cline, self.args))
+            if editor._code:
+                # display the current level of identation
+                indent = editor._indent
+                if indent < 0:
+                    indent = "off"
+
+                self.caller.msg("{b%02i|{n ({g%s{n) %s" % (
+                        cline, indent, line))
+            else:
+                self.caller.msg("{b%02i|{n %s" % (cline, self.args))
+
 
 
 class CmdEditorGroup(CmdEditorBase):
@@ -372,7 +414,8 @@ class CmdEditorGroup(CmdEditorBase):
     key = ":editor_command_group"
     aliases = [":","::", ":::", ":h", ":w", ":wq", ":q", ":q!", ":u", ":uu", ":UU",
                ":dd", ":dw", ":DD", ":y", ":x", ":p", ":i", ":j",
-               ":r", ":I", ":A", ":s", ":S", ":f", ":fi", ":fd", ":echo"]
+               ":r", ":I", ":A", ":s", ":S", ":f", ":fi", ":fd", ":echo",
+               ":<", ":>", ":="]
     arg_regex = r"\s.*?|$"
 
     def func(self):
@@ -464,6 +507,13 @@ class CmdEditorGroup(CmdEditorBase):
         elif cmd == ":DD":
             # clear buffer
             editor.update_buffer("")
+
+            # Reset indentation level to 0
+            if editor._code:
+                if editor._indent >= 0:
+                    editor._indent = 0
+                    if editor._persistent:
+                        caller.attributes.add("_eveditor_indent", 0)
             caller.msg("Cleared %i lines from buffer." % self.nlines)
         elif cmd == ":y":
             # :y <l> - yank line(s) to copy buffer
@@ -602,6 +652,41 @@ class CmdEditorGroup(CmdEditorBase):
             # set echoing on/off
             editor._echo_mode = not editor._echo_mode
             caller.msg("Echo mode set to %s" % editor._echo_mode)
+        elif cmd == ":<":
+            # :<
+            if editor._code:
+                editor.decrease_indent()
+                indent = editor._indent
+                if indent >= 0:
+                    caller.msg("Decreased indentation: new indentation is {}.".format(
+                            indent))
+                else:
+                    caller.msg("|rManual indentation is OFF.|n Use := to turn it on.")
+            else:
+                caller.msg("This is not a code editor, you cannot use this option.")
+        elif cmd == ":>":
+            # :>
+            if editor._code:
+                editor.increase_indent()
+                indent = editor._indent
+                if indent >= 0:
+                    caller.msg("Increased indentation: new indentation is {}.".format(
+                            indent))
+                else:
+                    caller.msg("|rManual indentation is OFF.|n Use := to turn it on.")
+            else:
+                caller.msg("This is not a code editor, you cannot use this option.")
+        elif cmd == ":=":
+            # :=
+            if editor._code:
+                editor.swap_autoindent()
+                indent = editor._indent
+                if indent >= 0:
+                    caller.msg("Auto-indentation turned on.")
+                else:
+                    caller.msg("Auto-indentation turned off.")
+            else:
+                caller.msg("This is not a code editor, you cannot use this option.")
 
 
 class EvEditorCmdSet(CmdSet):
@@ -627,7 +712,7 @@ class EvEditor(object):
     """
 
     def __init__(self, caller, loadfunc=None, savefunc=None,
-                 quitfunc=None, key="", persistent=False):
+                 quitfunc=None, key="", persistent=False, code=False):
         """
         Launches a full in-game line editor, mimicking the functionality of VIM.
 
@@ -651,6 +736,7 @@ class EvEditor(object):
                 session and make it unique from other editing sessions.
             persistent (bool, optional): Make the editor survive a reboot. Note
                 that if this is set, all callables must be possible to pickle
+            code (bool, optional): activate options in a code-like editor
 
         Notes:
             In persistent mode, all the input callables (savefunc etc)
@@ -668,6 +754,8 @@ class EvEditor(object):
         self._buffer = ""
         self._unsaved = False
         self._persistent = persistent
+        self._code = code
+        self._indent = 0
 
         if loadfunc:
             self._loadfunc = loadfunc
@@ -705,6 +793,8 @@ class EvEditor(object):
                          "_sep": self._sep}))
                 caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
                 caller.attributes.add("_eveditor_unsaved", False)
+                caller.attributes.add("_eveditor_code", code)
+                caller.attributes.add("_eveditor_indent", 0)
             except Exception, err:
                 caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
                 logger.log_trace(_TRACE_PERSISTENT_SAVING)
@@ -760,6 +850,8 @@ class EvEditor(object):
             if self._persistent:
                 self._caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
                 self._caller.attributes.add("_eveditor_unsaved", True)
+                self._caller.attributes.add("_eveditor_code", self._code)
+                self._caller.attributes.add("_eveditor_indent", self._indent)
 
     def quit(self):
         """
@@ -774,6 +866,8 @@ class EvEditor(object):
         self._caller.attributes.remove("_eveditor_buffer_temp")
         self._caller.attributes.remove("_eveditor_saved")
         self._caller.attributes.remove("_eveditor_unsaved")
+        self._caller.attributes.remove("_eveditor_code")
+        self._caller.attributes.remove("_eveditor_indent")
         self._caller.cmdset.remove(EvEditorCmdSet)
 
     def save_buffer(self):
@@ -865,5 +959,68 @@ class EvEditor(object):
         Shows the help entry for the editor.
 
         """
-        string = self._sep * _DEFAULT_WIDTH + _HELP_TEXT + self._sep * _DEFAULT_WIDTH
+        string = self._sep * _DEFAULT_WIDTH + _HELP_TEXT
+        if self._code:
+            string += _HELP_CODE
+        string += _HELP_LEGEND + self._sep * _DEFAULT_WIDTH
         self._caller.msg(string)
+
+    def deduce_indent(self, line, buffer):
+        """
+        Try to deduce the level of indentation of the given line.
+
+        """
+        keywords = {
+                "elif ": ["if "],
+                "else:": ["if ", "try"],
+                "except": ["try:"],
+                "finally:": ["try:"],
+        }
+        opening_tags = ("if ", "try:", "for ", "while ")
+
+        # If the line begins by one of the given keywords
+        indent = self._indent
+        if any(line.startswith(kw) for kw in keywords.keys()):
+            # Get the keyword and matching begin tags
+            keyword = [kw for kw in keywords if line.startswith(kw)][0]
+            begin_tags = keywords[keyword]
+            for oline in reversed(buffer.splitlines()):
+                if any(oline.lstrip(" ").startswith(tag) for tag in begin_tags):
+                    # This line begins with a begin tag, takes the identation
+                    indent = (len(oline) - len(oline.lstrip(" "))) / 4
+                    break
+
+            self._indent = indent + 1
+            if self._persistent:
+                self._caller.attributes.add("_eveditor_indent", self._indent)
+        elif any(line.startswith(kw) for kw in opening_tags):
+            self._indent = indent + 1
+            if self._persistent:
+                self._caller.attributes.add("_eveditor_indent", self._indent)
+
+        line = " " * 4 * indent + line
+        return line
+
+    def decrease_indent(self):
+        """Decrease automatic indentation by 1 level."""
+        if self._code and self._indent > 0:
+            self._indent -= 1
+            if self._persistent:
+                self._caller.attributes.add("_eveditor_indent", self._indent)
+
+    def increase_indent(self):
+        """Increase automatic indentation by 1 level."""
+        if self._code and self._indent >= 0:
+            self._indent += 1
+            if self._persistent:
+                self._caller.attributes.add("_eveditor_indent", self._indent)
+    def swap_autoindent(self):
+        """Swap automatic indentation on or off."""
+        if self._code:
+            if self._indent >= 0:
+                self._indent = -1
+            else:
+                self._indent = 0
+
+            if self._persistent:
+                self._caller.attributes.add("_eveditor_indent", self._indent)

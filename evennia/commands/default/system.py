@@ -19,6 +19,7 @@ from evennia.scripts.models import ScriptDB
 from evennia.objects.models import ObjectDB
 from evennia.players.models import PlayerDB
 from evennia.utils import logger, utils, gametime, create, prettytable
+from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
 from evennia.utils.utils import crop, class_from_module
 
@@ -122,19 +123,101 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
         SESSIONS.portal_shutdown()
 
 
+def _py_load(caller):
+    return ""
+
+def _py_save(caller, buf):
+    """
+    Execute the buffer.
+    """
+    caller.msg("Executing the entered code...")
+    _run_snippet(caller, buf, mode="exec", show_input=False)
+    return True
+
+def _py_quit(caller):
+    caller.msg("Exited the code editor.")
+
+def _run_snippet(caller, pycode, mode="eval", m_time=False,
+        show_input=True):
+    """
+    Run code and try to display information to the caller.
+
+    Args:
+        caller (Object): the caller.
+        pycode (str): the Python code to run.
+        m_time (bool, optional): should we measure the time of execution?
+        show_input (bookl, optional): should we display the input?
+
+    """
+    # Try to retrieve the session
+    session = caller
+    if hasattr(caller, "sessions"):
+        session = caller.sessions.get()[0]
+
+    # import useful variables
+    import evennia
+    available_vars = {
+            'self': caller,
+            'me': caller,
+            'here': getattr(caller, "location", None),
+            'evennia': evennia,
+            'ev': evennia,
+            'inherits_from': utils.inherits_from,
+    }
+
+    if show_input:
+        try:
+            caller.msg(">>> %s" % pycode, session=session,
+                    options={"raw":True})
+        except TypeError:
+            caller.msg(">>> %s" % pycode, options={"raw":True})
+
+    try:
+        try:
+            pycode_compiled = compile(pycode, "", mode)
+        except Exception:
+            mode = "exec"
+            pycode_compiled = compile(pycode, "", mode)
+
+        duration = ""
+        if m_time:
+            t0 = time.time()
+            ret = eval(pycode_compiled, {}, available_vars)
+            t1 = time.time()
+            duration = " (runtime ~ %.4f ms)" % ((t1 - t0) * 1000)
+        else:
+            ret = eval(pycode_compiled, {}, available_vars)
+        if mode == "eval":
+            ret = "%s%s" % (str(ret), duration)
+        else:
+            ret = " Done (use self.msg() if you want to catch output)%s" % duration
+    except Exception:
+        errlist = traceback.format_exc().split('\n')
+        if len(errlist) > 4:
+            errlist = errlist[4:]
+        ret = "\n".join("%s" % line for line in errlist if line)
+
+    try:
+        caller.msg(ret, session=session, options={"raw":True})
+    except TypeError:
+        caller.msg(ret, options={"raw":True})
+
 class CmdPy(COMMAND_DEFAULT_CLASS):
     """
     execute a snippet of python code
 
     Usage:
       @py <cmd>
+      @py/edit
 
     Switch:
       time - output an approximate execution time for <cmd>
+      edit - open a code editor to enter several lines of code
 
-    Separate multiple commands by ';'.  A few variables are made
-    available for convenience in order to offer access to the system
-    (you can import more at execution time).
+    Separate multiple commands by ';' or open the editor using the
+    /edit switch.  A few variables are made available for convenience
+    in order to offer access to the system (you can import more at
+    execution time).
 
     Available variables in @py environment:
       self, me                   : caller
@@ -160,58 +243,18 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         pycode = self.args
 
+        if "edit" in self.switches:
+            EvEditor(self.caller, loadfunc=_py_load, savefunc=_py_save,
+                    quitfunc=_py_quit, key="PyEditor", persistent=True,
+                    code=True)
+            return
+
         if not pycode:
             string = "Usage: @py <code>"
             self.msg(string)
             return
 
-        # check if caller is a player
-
-        # import useful variables
-        import evennia
-        available_vars = {'self': caller,
-                          'me': caller,
-                          'here': hasattr(caller, "location") and caller.location or None,
-                          'evennia': evennia,
-                          'ev': evennia,
-                          'inherits_from': utils.inherits_from}
-
-        try:
-            self.msg(">>> %s" % pycode, session=self.session, options={"raw":True})
-        except TypeError:
-            self.msg(">>> %s" % pycode, options={"raw":True})
-
-        mode = "eval"
-        try:
-            try:
-                pycode_compiled = compile(pycode, "", mode)
-            except Exception:
-                mode = "exec"
-                pycode_compiled = compile(pycode, "", mode)
-
-            duration = ""
-            if "time" in self.switches:
-                t0 = time.time()
-                ret = eval(pycode_compiled, {}, available_vars)
-                t1 = time.time()
-                duration = " (runtime ~ %.4f ms)" % ((t1 - t0) * 1000)
-            else:
-                ret = eval(pycode_compiled, {}, available_vars)
-            if mode == "eval":
-                ret = "%s%s" % (str(ret), duration)
-            else:
-                ret = " Done (use self.msg() if you want to catch output)%s" % duration
-        except Exception:
-            errlist = traceback.format_exc().split('\n')
-            if len(errlist) > 4:
-                errlist = errlist[4:]
-            ret = "\n".join("%s" % line for line in errlist if line)
-
-        try:
-            self.msg(ret, session=self.session, options={"raw":True})
-        except TypeError:
-            self.msg(ret, options={"raw":True})
-
+        _run_snippet(caller, self.args, m_time="time" in self.switches)
 
 # helper function. Kept outside so it can be imported and run
 # by other commands.
