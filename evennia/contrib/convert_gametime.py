@@ -23,17 +23,28 @@ from django.conf import settings
 # The game time speedup  / slowdown relative real time
 TIMEFACTOR = settings.TIME_FACTOR
 
-# Game-time units, in real-life seconds. These are supplied as a
+# Game-time units, in game time seconds. These are supplied as a
 # convenient measure for determining the current in-game time, e.g.
 # when defining in-game events. The words month, week and year can  be
 # used to mean whatever units of time are used in your game.
-
+SEC = 1
 MIN = 60          # seconds per minute
 HOUR = MIN * 60   # minutes per hour
 DAY = HOUR * 24   # hours per day
 WEEK = DAY * 7    # days per week
 MONTH = WEEK * 4  # weeks per month
 YEAR = MONTH * 12 # months per year
+UNITS = {
+    "sec": SEC,
+    "min": MIN,
+    "hr": HOUR,
+    "hour": HOUR,
+    "day": DAY,
+    "week": WEEK,
+    "month": MONTH,
+    "year": YEAR,
+    "yr": YEAR,
+}
 
 
 def time_to_tuple(seconds, *divisors):
@@ -62,8 +73,7 @@ def time_to_tuple(seconds, *divisors):
     return tuple(results)
 
 
-def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
-                         weeks=0, months=0, yrs=0, format=False):
+def gametime_to_realtime(format=False, **kwargs):
     """
     This method helps to figure out the real-world time it will take until an
     in-game time has passed. E.g. if an event should take place a month later
@@ -71,8 +81,8 @@ def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
     corresponds to (hint: Interval events deal with real life seconds).
 
     Kwargs:
-        times (int): The various components of the time.
         format (bool): Formatting the output.
+        times (int): The various components of the time (must match UNITS).
 
     Returns:
         time (float or tuple): The realtime difference or the same
@@ -83,8 +93,17 @@ def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
                         now after which 2 in-game days will have passed.
 
     """
-    rtime = (secs + mins * MIN + hrs * HOUR + days * DAY + weeks * WEEK + \
-                months * MONTH + yrs * YEAR) / TIMEFACTOR
+    # Dynamically creates the list of units based on kwarg names and UNITs list
+    rtime = 0
+    for name, value in kwargs.items():
+        if name not in UNITS and name.endswith("s"):
+            name = name[:-1]
+
+        if name not in UNITS:
+            raise ValueError("the unit {} isn't defined as a valid " \
+                    "game time unit".format(name))
+        rtime += value * UNITS[name]
+    rtime /= TIMEFACTOR
     if format:
         return time_to_tuple(rtime, 31536000, 2628000, 604800, 86400, 3600, 60)
     return rtime
@@ -113,6 +132,10 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
     gtime = TIMEFACTOR * (secs + mins * 60 + hrs * 3600 + days * 86400 +
                              weeks * 604800 + months * 2628000 + yrs * 31536000)
     if format:
-        return time_to_tuple(gtime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
+        units = sorted(set(UNITS.values()), reverse=True)
+        # Remove seconds from the tuple
+        del units[-1]
+
+        return time_to_tuple(gtime, *units)
     return gtime
 
