@@ -319,10 +319,12 @@ PROTOTYPE_MODULES = ["world.prototypes"]
 # Module holding settings/actions for the dummyrunner program (see the
 # dummyrunner for more information)
 DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
-# Additional mappings used to extend the existing Evennia ANSI mappings.
-# All mappings should be a tuple of a string to one of the constants provided
-# in ansi.py. For example, (r'%r', "\r\n")
-ADDITIONAL_ANSI_MAPPINGS = []
+# Mapping to extend Evennia's normal ANSI color tags. The mapping is a list of
+# tuples mapping the tag to the ANSI convertion, like `("%c%r", ansi.ANSI_RED)`
+# (the evennia.utils.ansi module contains all ANSI escape sequences). This is
+# mainly supplied for support of legacy codebase tag formats.
+COLOR_ANSI_EXTRA_MAP = []
+
 ######################################################################
 # Default command sets
 ######################################################################
