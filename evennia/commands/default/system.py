@@ -126,18 +126,24 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
 def _py_load(caller):
     return ""
 
-def _py_save(caller, buf):
+def _py_code(caller, buf):
     """
     Execute the buffer.
     """
-    caller.msg("Executing the entered code...")
-    _run_snippet(caller, buf, mode="exec", show_input=False)
+    measure_time = caller.db._py_measure_time
+    string = "Executing code%s ..." % (
+                " (measure timing)" if measure_time else "")
+    caller.msg(string)
+    _run_code_snippet(caller, buf, mode="exec",
+                 measure_time=measure_time,
+                 show_input=False)
     return True
 
 def _py_quit(caller):
+    del caller.db._py_measure_time
     caller.msg("Exited the code editor.")
 
-def _run_snippet(caller, pycode, mode="eval", m_time=False,
+def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
         show_input=True):
     """
     Run code and try to display information to the caller.
@@ -180,7 +186,7 @@ def _run_snippet(caller, pycode, mode="eval", m_time=False,
             pycode_compiled = compile(pycode, "", mode)
 
         duration = ""
-        if m_time:
+        if measure_time:
             t0 = time.time()
             ret = eval(pycode_compiled, {}, available_vars)
             t1 = time.time()
@@ -210,9 +216,9 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
       @py <cmd>
       @py/edit
 
-    Switch:
+    Switches:
       time - output an approximate execution time for <cmd>
-      edit - open a code editor to enter several lines of code
+      edit - open a code editor for multi-line code experimentation
 
     Separate multiple commands by ';' or open the editor using the
     /edit switch.  A few variables are made available for convenience
@@ -244,9 +250,10 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
         pycode = self.args
 
         if "edit" in self.switches:
-            EvEditor(self.caller, loadfunc=_py_load, savefunc=_py_save,
-                    quitfunc=_py_quit, key="PyEditor", persistent=True,
-                    code=True)
+            caller.db._py_measure_time = "time" in self.switches
+            EvEditor(self.caller, loadfunc=_py_load, savefunc=_py_code,
+                    quitfunc=_py_quit, key="Python exec: :w  or :!", persistent=True,
+                    codefunc=_py_code)
             return
 
         if not pycode:
@@ -254,7 +261,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
 
-        _run_snippet(caller, self.args, m_time="time" in self.switches)
+        _run_code_snippet(caller, self.args, measure_time="time" in self.switches)
 
 # helper function. Kept outside so it can be imported and run
 # by other commands.
