@@ -14,6 +14,7 @@ from evennia.server.models import ServerConfig
 # to real time.
 
 TIMEFACTOR = settings.TIME_FACTOR
+TIME_VIRTUAL_START = settings.TIME_VIRTUAL_START
 
 # Only set if gametime_reset was called at some point.
 GAME_TIME_OFFSET = ServerConfig.objects.conf("gametime_offset", default=0)
@@ -105,6 +106,42 @@ def uptime(format=False):
         return _format(utime, 31536000, 2628000, 604800, 86400, 3600, 60)
     return utime
 
+def virtual_epoch():
+    """Return the number of VIRTUAL seconds since the server started.
+
+    This number is set in the TIME_VIRTUAL_START setting.  If not
+    set, it will be deduced from the current time and server runtime.
+    Notice, in this case, that it will be slightly fluctuant every
+    reload or restart.
+
+    Returns:
+        The number of virtual seconds since the game first started.
+
+    """
+    if TIME_VIRTUAL_START is None:
+        virtual_start = time.time() - runtime()
+    else:
+        virtual_start = TIME_VIRTUAL_START
+
+    return virtual_start
+
+def abs_gametime():
+    """Return the absolute number of virtual seconds (in game time).
+
+    This function returns the number of seconds, using your configured
+    virtual start (setting TIME_VIRTUAL_START), and adding the
+    current relative gametime().  If you want to use a standard
+    calendar, it might save you time and efforts.  You could easily
+    convert the value like this:
+    >>> from datetime import datetime
+    >>> current = datetime.fromtimestamp(abs_gametime())
+
+    Returns:
+        The number of virtual seconds using the virtual epoch as a basis.
+
+    """
+    virtual_start = virtual_epoch()
+    return virtual_start + gametime()
 
 def gametime(format=False):
     """
