@@ -962,8 +962,8 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
         matches = None
         if utils.dbref(botname):
             matches = PlayerDB.objects.filter(db_is_bot=True, id=utils.dbref(botname))
-        else:
-            self.msg("No matching IRC-bot was found.")
+        if not matches:
+            self.msg("No matching IRC-bot found. Use @ircstatus without arguments to list active bots.")
             return
         ircbot = matches[0]
         channel = ircbot.db.irc_channel

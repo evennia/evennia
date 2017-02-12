@@ -320,7 +320,7 @@ class IRCBot(Bot):
                 # some bot info
                 text = "This is an Evennia IRC bot connecting from '%s'." % settings.SERVERNAME
             else:
-                text = "I understand 'who' and 'about'"
+                text = "I understand 'who' and 'about'."
             super(IRCBot, self).msg(privmsg=((text,), {"user":user}))
         else:
             # something to send to the main channel
