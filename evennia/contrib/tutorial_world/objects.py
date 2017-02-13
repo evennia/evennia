@@ -666,25 +666,25 @@ class CrumblingWall(TutorialObject, DefaultExit):
         """
         if self.db.button_exposed:
             # we found the button by moving the roots
-            string = "Having moved all the roots aside, you find that the center of the wall, " \
+            result = ["Having moved all the roots aside, you find that the center of the wall, " \
                      "previously hidden by the vegetation, hid a curious square depression. It was maybe once " \
                      "concealed and made to look a part of the wall, but with the crumbling of stone around it," \
-                     "it's now easily identifiable as some sort of button."
+                     "it's now easily identifiable as some sort of button."]
         elif self.db.exit_open:
             # we pressed the button; the exit is open
-            string = "With the button pressed, a crack has opened in the root-covered wall, just wide enough " \
+            result = ["With the button pressed, a crack has opened in the root-covered wall, just wide enough " \
                      "to squeeze through. A cold draft is coming from the hole and you get the feeling the " \
-                     "opening may close again soon."
+                     "opening may close again soon."]
         else:
             # puzzle not solved yet.
-            string = "The wall is old and covered with roots that here and there have permeated the stone. " \
+            result = ["The wall is old and covered with roots that here and there have permeated the stone. " \
                      "The roots (or whatever they are - some of them are covered in small non-descript flowers) " \
                      "crisscross the wall, making it hard to clearly see its stony surface. Maybe you could " \
-                     "try to |wshift|n or |wmove|n them.\n"
+                     "try to |wshift|n or |wmove|n them.\n"]
             # display the root positions to help with the puzzle
             for key, pos in self.db.root_pos.items():
-                string += "\n" + self._translate_position(key, pos)
-        self.db.desc = string
+                result.append("\n" + self._translate_position(key, pos))
+        self.db.desc = "".join(result)
 
         # call the parent to continue execution (will use the desc we just set)
         return super(CrumblingWall, self).return_appearance(caller)
