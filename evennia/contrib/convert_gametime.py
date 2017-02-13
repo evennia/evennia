@@ -19,6 +19,8 @@ Usage:
 # change these to fit your game world
 
 from django.conf import settings
+from evennia import DefaultScript
+from evennia.utils.create import create_script
 from evennia.utils.gametime import gametime
 # The game time speedup  / slowdown relative real time
 TIMEFACTOR = settings.TIME_FACTOR
@@ -186,7 +188,6 @@ def real_seconds_until(**kwargs):
 
     if projected <= current:
         # The time is in the past, increase the higher unit
-        print "Past, let's up"
         if higher_unit:
             divisors[higher_unit - 1] += 1
         else:
@@ -226,4 +227,45 @@ def schedule(callback, repeat=False, **kwargs):
         executed the first time.
 
     """
-    pass
+    seconds = real_seconds_until(**kwargs)
+    script = create_script("evennia.contrib.convert_gametime.GametimeScript",
+            key="GametimeScript", desc="A timegame-sensitive script",
+            interval=seconds, start_delay=True,
+            repeats=-1 if repeat else 1)
+    script.db.callback = callback
+    script.db.gametime = kwargs
+    return script
+
+# Scripts dealing in gametime (use `schedule`  to create it)
+class GametimeScript(DefaultScript):
+
+    """Gametime-sensitive script."""
+
+    def at_script_creation(self):
+        """The script is created."""
+        self.key = "unknown scr"
+        self.interval = 100
+        self.repeats = 0
+        self.persistent = True
+
+    def at_start(self):
+        """The script is started or restarted."""
+        if self.db.gametime:
+            self.ndb._task.interval = real_seconds_until(**self.db.gametime)
+
+    def at_repeat(self):
+        """Call the callback and reset interval."""
+        callback = self.db.callback
+        if callback:
+            callback()
+
+        self.interval = real_seconds_until(**self.db.gametime)
+
+    def at_server_reload(self):
+        """The script is started or restarted."""
+        self.interval = real_seconds_until(**self.db.gametime)
+
+def dummy():
+    from typeclasses.rooms import Room
+    for room in Room.objects.all():
+        room.msg_contents("The script ticks...")
