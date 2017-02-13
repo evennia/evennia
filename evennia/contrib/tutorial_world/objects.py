@@ -666,21 +666,21 @@ class CrumblingWall(TutorialObject, DefaultExit):
         """
         if self.db.button_exposed:
             # we found the button by moving the roots
-            result = ["Having moved all the roots aside, you find that the center of the wall, " \
-                     "previously hidden by the vegetation, hid a curious square depression. It was maybe once " \
-                     "concealed and made to look a part of the wall, but with the crumbling of stone around it," \
-                     "it's now easily identifiable as some sort of button."]
+            result = ["Having moved all the roots aside, you find that the center of the wall, "
+                      "previously hidden by the vegetation, hid a curious square depression. It was maybe once "
+                      "concealed and made to look a part of the wall, but with the crumbling of stone around it,"
+                      "it's now easily identifiable as some sort of button."]
         elif self.db.exit_open:
             # we pressed the button; the exit is open
-            result = ["With the button pressed, a crack has opened in the root-covered wall, just wide enough " \
-                     "to squeeze through. A cold draft is coming from the hole and you get the feeling the " \
-                     "opening may close again soon."]
+            result = ["With the button pressed, a crack has opened in the root-covered wall, just wide enough "
+                      "to squeeze through. A cold draft is coming from the hole and you get the feeling the "
+                      "opening may close again soon."]
         else:
             # puzzle not solved yet.
-            result = ["The wall is old and covered with roots that here and there have permeated the stone. " \
-                     "The roots (or whatever they are - some of them are covered in small non-descript flowers) " \
-                     "crisscross the wall, making it hard to clearly see its stony surface. Maybe you could " \
-                     "try to |wshift|n or |wmove|n them.\n"]
+            result = ["The wall is old and covered with roots that here and there have permeated the stone. "
+                      "The roots (or whatever they are - some of them are covered in small nondescript flowers) "
+                      "crisscross the wall, making it hard to clearly see its stony surface. Maybe you could "
+                      "try to |wshift|n or |wmove|n them.\n"]
             # display the root positions to help with the puzzle
             for key, pos in self.db.root_pos.items():
                 result.append("\n" + self._translate_position(key, pos))
