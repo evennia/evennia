@@ -245,13 +245,14 @@ class GametimeScript(DefaultScript):
         """The script is created."""
         self.key = "unknown scr"
         self.interval = 100
-        self.repeats = 0
+        self.start_delay = True
         self.persistent = True
 
     def at_start(self):
         """The script is started or restarted."""
-        if self.db.gametime:
-            self.ndb._task.interval = real_seconds_until(**self.db.gametime)
+        if self.db.need_reset:
+            self.db.need_reset = False
+            self.restart(interval=real_seconds_until(**self.db.gametime))
 
     def at_repeat(self):
         """Call the callback and reset interval."""
@@ -259,11 +260,17 @@ class GametimeScript(DefaultScript):
         if callback:
             callback()
 
-        self.interval = real_seconds_until(**self.db.gametime)
+        seconds = real_seconds_until(**self.db.gametime)
+        self.restart(interval=seconds)
 
     def at_server_reload(self):
-        """The script is started or restarted."""
-        self.interval = real_seconds_until(**self.db.gametime)
+        """The server is about to reload.  Put the script in need of reset."""
+        self.db.need_reset = True
+
+    def at_server_shutdown(self):
+        """The server is about to shutdown.  Put the script in need of reset."""
+        self.db.need_reset = True
+
 
 def dummy():
     from typeclasses.rooms import Room
