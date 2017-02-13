@@ -89,14 +89,12 @@ def gametime(absolute=False):
     Get the total gametime of the server since first start (minus downtimes)
 
     Args:
-        format (bool, optional): Format into time representation.
         absolute (bool, optional): Get the absolute game time, including
             the epoch. This could be converted to an absolute in-game
             date.
 
     Returns:
-        time (float or tuple): The gametime or the same time split up
-            into time units.
+        time (float): The gametime as a virtual timestamp.
 
     Notes:
         If one is using a standard calendar, one could convert the unformatted

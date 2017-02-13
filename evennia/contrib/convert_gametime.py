@@ -19,7 +19,7 @@ Usage:
 # change these to fit your game world
 
 from django.conf import settings
-
+from evennia.utils.gametime import gametime
 # The game time speedup  / slowdown relative real time
 TIMEFACTOR = settings.TIME_FACTOR
 
@@ -96,6 +96,7 @@ def gametime_to_realtime(format=False, **kwargs):
     # Dynamically creates the list of units based on kwarg names and UNITs list
     rtime = 0
     for name, value in kwargs.items():
+        # Allow plural names (like mins instead of min)
         if name not in UNITS and name.endswith("s"):
             name = name[:-1]
 
@@ -109,8 +110,8 @@ def gametime_to_realtime(format=False, **kwargs):
     return rtime
 
 
-def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
-                         weeks=0, months=0, yrs=0, format=False):
+def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0, weeks=0,
+        months=0, yrs=0, format=False):
     """
     This method calculates how much in-game time a real-world time
     interval would correspond to. This is usually a lot less
@@ -126,7 +127,6 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
 
      Example:
       realtime_to_gametime(days=2) -> number of game-world seconds
-                                      corresponding to 2 real days.
 
     """
     gtime = TIMEFACTOR * (secs + mins * 60 + hrs * 3600 + days * 86400 +
@@ -139,3 +139,91 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
         return time_to_tuple(gtime, *units)
     return gtime
 
+def real_seconds_until(**kwargs):
+    """
+    Return the real seconds until game time.
+
+    If the game time is 5:00, TIME_FACTOR is set to 2 and you ask
+    the number of seconds until it's 5:10, then this function should
+    return 300 (5 minutes).
+
+    Args:
+        times (str: int): the time units.
+
+    Example:
+        real_seconds_until(hour-5, min=10)
+
+    Returns:
+        The number of real seconds before the given game time is up.
+
+    """
+    current = gametime(absolute=True)
+    units = sorted(set(UNITS.values()), reverse=True)
+    # Remove seconds from the tuple
+    del units[-1]
+    divisors = list(time_to_tuple(current, *units))
+
+    # For each keyword, add in the unit's
+    units.append(1)
+    higher_unit = None
+    for unit, value in kwargs.items():
+        # Get the unit's index
+        if unit not in UNITS:
+            raise ValueError("unknown unit".format(unit))
+
+        seconds = UNITS[unit]
+        index = units.index(seconds)
+        divisors[index] = value
+        if higher_unit is None or higher_unit > index:
+            higher_unit = index
+
+    # Check the projected time
+    # Note that it can be already passed (the given time may be in the past)
+    projected = 0
+    for i, value in enumerate(divisors):
+        seconds = units[i]
+        projected += value * seconds
+
+    if projected <= current:
+        # The time is in the past, increase the higher unit
+        print "Past, let's up"
+        if higher_unit:
+            divisors[higher_unit - 1] += 1
+        else:
+            divisors[0] += 1
+
+    # Get the projected time again
+    projected = 0
+    for i, value in enumerate(divisors):
+        seconds = units[i]
+        projected += value * seconds
+
+    return (projected - current) / TIMEFACTOR
+
+def schedule(callback, repeat=False, **kwargs):
+    """
+    Call the callback when the game time is up.
+
+    This function will setup a script that will be called when the
+    time corresponds to the game time.  If the game is stopped for
+    more than a few seconds, the callback may be called with a slight
+    delay.  If `repeat` is set to True, the callback will be called
+    again next time the game time matches the given time.  The time
+    is given in units as keyword arguments.  For instance:
+    >>> schedule(func, min=5) # Will call next hour at :05.
+    >>> schedule(func, hour=2, min=30) # Will call the next day at 02:30.
+
+    Args:
+        callback (function): the callback function that will be called [1].
+        repeat (bool, optional): should the callback be called regularly?
+        times (str: int): the time to call the callback.
+
+    [1] The callback must be a top-level function, since the script will
+        be persistent.
+
+    Returns:
+        The number of real seconds before the callback will be
+        executed the first time.
+
+    """
+    pass
