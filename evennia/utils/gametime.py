@@ -81,7 +81,8 @@ def game_epoch():
     Get the game epoch.
 
     """
-    return settings.TIME_GAME_EPOCH or server_epoch()
+    game_epoch = settings.TIME_GAME_EPOCH
+    return game_epoch if game_epoch is not None else server_epoch()
 
 
 def gametime(absolute=False):
