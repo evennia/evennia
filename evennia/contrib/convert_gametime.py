@@ -242,8 +242,7 @@ def schedule(callback, repeat=False, **kwargs):
         be persistent.
 
     Returns:
-        The number of real seconds before the callback will be
-        executed the first time.
+        The created script (Script).
 
     """
     seconds = real_seconds_until(**kwargs)
