@@ -252,7 +252,8 @@ class GametimeScript(DefaultScript):
         """The script is started or restarted."""
         if self.db.need_reset:
             self.db.need_reset = False
-            self.restart(interval=real_seconds_until(**self.db.gametime))
+            seconds = real_seconds_until(**self.db.gametime)
+            self.restart(interval=seconds)
 
     def at_repeat(self):
         """Call the callback and reset interval."""
@@ -270,9 +271,3 @@ class GametimeScript(DefaultScript):
     def at_server_shutdown(self):
         """The server is about to shutdown.  Put the script in need of reset."""
         self.db.need_reset = True
-
-
-def dummy():
-    from typeclasses.rooms import Room
-    for room in Room.objects.all():
-        room.msg_contents("The script ticks...")
