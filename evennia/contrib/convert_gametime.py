@@ -141,6 +141,25 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0, weeks=0,
         return time_to_tuple(gtime, *units)
     return gtime
 
+def custom_gametime(absolute=False):
+    """
+    Return the game time as a tuple of units, as defined in settings.
+
+    Args:
+        absolute (bool, optional): return the relative or absolute time.
+
+    Returns:
+        The tuple describing the game time.  The length of the tuple
+        is related to the number of unique units defined in the
+        settings.  By default, the tuple would be (year, month,
+        week, day, hour, minute, second).
+
+    """
+    current = gametime(absolute=absolute)
+    units = sorted(set(UNITS.values()), reverse=True)
+    del units[-1]
+    return time_to_tuple(current, *units)
+
 def real_seconds_until(**kwargs):
     """
     Return the real seconds until game time.
