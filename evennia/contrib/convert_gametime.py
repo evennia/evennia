@@ -266,13 +266,6 @@ class GametimeScript(DefaultScript):
         self.start_delay = True
         self.persistent = True
 
-    def at_start(self):
-        """The script is started or restarted."""
-        if self.db.need_reset:
-            self.db.need_reset = False
-            seconds = real_seconds_until(**self.db.gametime)
-            self.restart(interval=seconds)
-
     def at_repeat(self):
         """Call the callback and reset interval."""
         callback = self.db.callback
@@ -281,11 +274,3 @@ class GametimeScript(DefaultScript):
 
         seconds = real_seconds_until(**self.db.gametime)
         self.restart(interval=seconds)
-
-    def at_server_reload(self):
-        """The server is about to reload.  Put the script in need of reset."""
-        self.db.need_reset = True
-
-    def at_server_shutdown(self):
-        """The server is about to shutdown.  Put the script in need of reset."""
-        self.db.need_reset = True

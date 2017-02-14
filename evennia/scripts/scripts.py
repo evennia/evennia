@@ -170,10 +170,6 @@ class DefaultScript(ScriptBase):
 
         """
 
-        if self.ndb._task and self.ndb._task.running:
-            # The task already exists, doesn't start it again
-            return
-
         self.ndb._task = ExtendedLoopingCall(self._step_task)
 
         if self.db._paused_time:
