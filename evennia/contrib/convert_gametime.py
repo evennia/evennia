@@ -143,7 +143,7 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0, weeks=0,
 
 def custom_gametime(absolute=False):
     """
-    Return the game time as a tuple of units, as defined in settings.
+    Return the custom game time as a tuple of units, as defined in settings.
 
     Args:
         absolute (bool, optional): return the relative or absolute time.
@@ -172,7 +172,7 @@ def real_seconds_until(**kwargs):
         times (str: int): the time units.
 
     Example:
-        real_seconds_until(hour-5, min=10)
+        real_seconds_until(hour=5, min=10, sec=0)
 
     Returns:
         The number of real seconds before the given game time is up.
@@ -230,8 +230,8 @@ def schedule(callback, repeat=False, **kwargs):
     delay.  If `repeat` is set to True, the callback will be called
     again next time the game time matches the given time.  The time
     is given in units as keyword arguments.  For instance:
-    >>> schedule(func, min=5) # Will call next hour at :05.
-    >>> schedule(func, hour=2, min=30) # Will call the next day at 02:30.
+    >>> schedule(func, min=5, sec=0) # Will call next hour at :05.
+    >>> schedule(func, hour=2, min=30, sec=0) # Will call the next day at 02:30.
 
     Args:
         callback (function): the callback function that will be called [1].
