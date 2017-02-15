@@ -7,7 +7,11 @@ total runtime of the server and the current uptime.
 """
 from __future__ import division
 import time
+from calendar import monthrange
+from datetime import datetime, timedelta
+
 from django.conf import settings
+from evennia import DefaultScript
 from evennia.server.models import ServerConfig
 
 # Speed-up factor of the in-game time compared
@@ -107,6 +111,106 @@ def gametime(absolute=False):
     gtime = epoch + (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
     return gtime
 
+def real_seconds_until(sec=None, min=None, hour=None, day=None,
+        month=None, year=None):
+    """
+    Return the real seconds until game time.
+
+    If the game time is 5:00, TIME_FACTOR is set to 2 and you ask
+    the number of seconds until it's 5:10, then this function should
+    return 300 (5 minutes).
+
+    Args:
+        sec (int or None): number of absolute seconds.
+        min (int or None): number of absolute minutes.
+        hour (int or None): number of absolute hours.
+        day (int or None): number of absolute days.
+        month (int or None): number of absolute months.
+        year (int or None): number of absolute years.
+
+    Example:
+        real_seconds_until(hour=5, min=10, sec=0)
+
+    Returns:
+        The number of real seconds before the given game time is up.
+
+    """
+    current = datetime.frmtimestamp(gametime(absolute=True))
+    s_sec = year if year is not None else current.second
+    s_min = min if min is not None else current.minute
+    s_hour = hour if hour is not None else current.hour
+    s_day = day if day is not None else current.day
+    s_month = month if month is not None else current.month
+    s_year = year if year is not None else current.year
+    projected = datetime(s_year, s_month, s_day, s_hour, s_min, s_sec)
+
+    if projected <= current:
+        # We increase one unit of time depending on parameters
+        days_in_month = monthrange(s_year, s_month)[1]
+        days_in_year = sum(monthrange(s_year, m + 1)[1] for m in range(12))
+        if month is not None:
+            projected += timedelta(days=days_in_year)
+        elif day is not None:
+            projected += timedelta(days=days_in_month)
+        elif hour is not None:
+            projected += timedelta(days=1)
+        elif min is not None:
+            projected += timedelta(seconds=3600)
+        else:
+            projected += timedelta(seconds=60)
+
+    # Get the number of gametime seconds between these two dates
+    print "Asked", current, projected
+    seconds = (projected - current).total_seconds()
+    print "Found", seconds
+    return seconds / TIMEFACTOR
+
+def schedule(callback, repeat=False, sec=None, min=None, hour=None,
+        day=None, month=None, year=None):
+    """
+    Call the callback when the game time is up.
+
+    This function will setup a script that will be called when the
+    time corresponds to the game time.  If `repeat` is set to True,
+    the callback will be called again next time the game time matches
+    the given time.  The time is given in units as keyword arguments.
+    For instance:
+    >>> schedule(func, min=5, sec=0) # Will call next hour at :05.
+    >>> schedule(func, hour=2, min=30, sec=0) # Will call the next day at 02:30.
+
+    Args:
+        callback (function): the callback function that will be called [1].
+        repeat (bool, optional): should the callback be called regularly?
+        sec (int or None): number of absolute seconds.
+        min (int or None): number of absolute minutes.
+        hour (int or None): number of absolute hours.
+        day (int or None): number of absolute days.
+        month (int or None): number of absolute months.
+        year (int or None): number of absolute years.
+
+    [1] The callback must be a top-level function, since the script will
+        be persistent.
+
+    Returns:
+        The created script (Script).
+
+    """
+    seconds = real_seconds_until(sec=sec, min=min, hour=hour, day=day,
+            month=month, year=year)
+    script = create_script("evennia.utils.gametime.GametimeScript",
+            key="GametimeScript", desc="A gametime-sensitive script",
+            interval=seconds, start_delay=True,
+            repeats=-1 if repeat else 1)
+    script.db.callback = callback
+    script.db.gametime = {
+            "sec": sec,
+            "min": min,
+            "hour": hour,
+            "day": day,
+            "month": month,
+            "year": year,
+    }
+    return script
 
 def reset_gametime():
     """
@@ -117,3 +221,25 @@ def reset_gametime():
     global GAME_TIME_OFFSET
     GAME_TIME_OFFSET = runtime()
     ServerConfig.objects.conf("gametime_offset", GAME_TIME_OFFSET)
+
+
+# Scripts dealing in gametime (use `schedule`  to create it)
+class GametimeScript(DefaultScript):
+
+    """Gametime-sensitive script."""
+
+    def at_script_creation(self):
+        """The script is created."""
+        self.key = "unknown scr"
+        self.interval = 100
+        self.start_delay = True
+        self.persistent = True
+
+    def at_repeat(self):
+        """Call the callback and reset interval."""
+        callback = self.db.callback
+        if callback:
+            callback()
+
+        seconds = real_seconds_until(**self.db.gametime)
+        self.restart(interval=seconds)
