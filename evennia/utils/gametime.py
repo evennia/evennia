@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from evennia import DefaultScript
 from evennia.server.models import ServerConfig
+from evennia.utils.create import create_script
 
 # Speed-up factor of the in-game time compared
 # to real time.
@@ -135,8 +136,8 @@ def real_seconds_until(sec=None, min=None, hour=None, day=None,
         The number of real seconds before the given game time is up.
 
     """
-    current = datetime.frmtimestamp(gametime(absolute=True))
-    s_sec = year if year is not None else current.second
+    current = datetime.fromtimestamp(gametime(absolute=True))
+    s_sec = sec if sec is not None else current.second
     s_min = min if min is not None else current.minute
     s_hour = hour if hour is not None else current.hour
     s_day = day if day is not None else current.day
@@ -160,9 +161,7 @@ def real_seconds_until(sec=None, min=None, hour=None, day=None,
             projected += timedelta(seconds=60)
 
     # Get the number of gametime seconds between these two dates
-    print "Asked", current, projected
     seconds = (projected - current).total_seconds()
-    print "Found", seconds
     return seconds / TIMEFACTOR
 
 def schedule(callback, repeat=False, sec=None, min=None, hour=None,
@@ -197,8 +196,8 @@ def schedule(callback, repeat=False, sec=None, min=None, hour=None,
     """
     seconds = real_seconds_until(sec=sec, min=min, hour=hour, day=day,
             month=month, year=year)
-    script = create_script("evennia.utils.gametime.GametimeScript",
-            key="GametimeScript", desc="A gametime-sensitive script",
+    script = create_script("evennia.utils.gametime.TimeScript",
+            key="TimeScript", desc="A gametime-sensitive script",
             interval=seconds, start_delay=True,
             repeats=-1 if repeat else 1)
     script.db.callback = callback
@@ -224,7 +223,7 @@ def reset_gametime():
 
 
 # Scripts dealing in gametime (use `schedule`  to create it)
-class GametimeScript(DefaultScript):
+class TimeScript(DefaultScript):
 
     """Gametime-sensitive script."""
 
