@@ -19,21 +19,34 @@ Usage:
 # change these to fit your game world
 
 from django.conf import settings
-
+from evennia import DefaultScript
+from evennia.utils.create import create_script
+from evennia.utils.gametime import gametime
 # The game time speedup  / slowdown relative real time
 TIMEFACTOR = settings.TIME_FACTOR
 
-# Game-time units, in real-life seconds. These are supplied as a
+# Game-time units, in game time seconds. These are supplied as a
 # convenient measure for determining the current in-game time, e.g.
 # when defining in-game events. The words month, week and year can  be
 # used to mean whatever units of time are used in your game.
-
-MIN = 60          # seconds per minute
-HOUR = MIN * 60   # minutes per hour
-DAY = HOUR * 24   # hours per day
-WEEK = DAY * 7    # days per week
-MONTH = WEEK * 4  # weeks per month
-YEAR = MONTH * 12 # months per year
+SEC = 1
+MIN = getattr(settings, "SECS_PER_MIN", 60)
+HOUR = getattr(settings, "MINS_PER_HOUR", 60) * MIN
+DAY = getattr(settings, "HOURS_PER_DAY", 24) * HOUR
+WEEK = getattr(settings, "DAYS_PER_WEEK", 7) * DAY
+MONTH = getattr(settings, "WEEKS_PER_MONTH", 4) * WEEK
+YEAR = getattr(settings, "MONTHS_PER_YEAR", 12) * MONTH
+UNITS = getattr(settings, "TIME_UNITS", {
+        "sec": SEC,
+        "min": MIN,
+        "hr": HOUR,
+        "hour": HOUR,
+        "day": DAY,
+        "week": WEEK,
+        "month": MONTH,
+        "year": YEAR,
+        "yr": YEAR,
+})
 
 
 def time_to_tuple(seconds, *divisors):
@@ -62,8 +75,7 @@ def time_to_tuple(seconds, *divisors):
     return tuple(results)
 
 
-def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
-                         weeks=0, months=0, yrs=0, format=False):
+def gametime_to_realtime(format=False, **kwargs):
     """
     This method helps to figure out the real-world time it will take until an
     in-game time has passed. E.g. if an event should take place a month later
@@ -71,8 +83,8 @@ def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
     corresponds to (hint: Interval events deal with real life seconds).
 
     Kwargs:
-        times (int): The various components of the time.
         format (bool): Formatting the output.
+        times (int): The various components of the time (must match UNITS).
 
     Returns:
         time (float or tuple): The realtime difference or the same
@@ -83,15 +95,25 @@ def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
                         now after which 2 in-game days will have passed.
 
     """
-    rtime = (secs + mins * MIN + hrs * HOUR + days * DAY + weeks * WEEK + \
-                months * MONTH + yrs * YEAR) / TIMEFACTOR
+    # Dynamically creates the list of units based on kwarg names and UNITs list
+    rtime = 0
+    for name, value in kwargs.items():
+        # Allow plural names (like mins instead of min)
+        if name not in UNITS and name.endswith("s"):
+            name = name[:-1]
+
+        if name not in UNITS:
+            raise ValueError("the unit {} isn't defined as a valid " \
+                    "game time unit".format(name))
+        rtime += value * UNITS[name]
+    rtime /= TIMEFACTOR
     if format:
         return time_to_tuple(rtime, 31536000, 2628000, 604800, 86400, 3600, 60)
     return rtime
 
 
-def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
-                         weeks=0, months=0, yrs=0, format=False):
+def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0, weeks=0,
+        months=0, yrs=0, format=False):
     """
     This method calculates how much in-game time a real-world time
     interval would correspond to. This is usually a lot less
@@ -107,12 +129,148 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
 
      Example:
       realtime_to_gametime(days=2) -> number of game-world seconds
-                                      corresponding to 2 real days.
 
     """
     gtime = TIMEFACTOR * (secs + mins * 60 + hrs * 3600 + days * 86400 +
                              weeks * 604800 + months * 2628000 + yrs * 31536000)
     if format:
-        return time_to_tuple(gtime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
+        units = sorted(set(UNITS.values()), reverse=True)
+        # Remove seconds from the tuple
+        del units[-1]
+
+        return time_to_tuple(gtime, *units)
     return gtime
 
+def custom_gametime(absolute=False):
+    """
+    Return the custom game time as a tuple of units, as defined in settings.
+
+    Args:
+        absolute (bool, optional): return the relative or absolute time.
+
+    Returns:
+        The tuple describing the game time.  The length of the tuple
+        is related to the number of unique units defined in the
+        settings.  By default, the tuple would be (year, month,
+        week, day, hour, minute, second).
+
+    """
+    current = gametime(absolute=absolute)
+    units = sorted(set(UNITS.values()), reverse=True)
+    del units[-1]
+    return time_to_tuple(current, *units)
+
+def real_seconds_until(**kwargs):
+    """
+    Return the real seconds until game time.
+
+    If the game time is 5:00, TIME_FACTOR is set to 2 and you ask
+    the number of seconds until it's 5:10, then this function should
+    return 300 (5 minutes).
+
+    Args:
+        times (str: int): the time units.
+
+    Example:
+        real_seconds_until(hour=5, min=10, sec=0)
+
+    Returns:
+        The number of real seconds before the given game time is up.
+
+    """
+    current = gametime(absolute=True)
+    units = sorted(set(UNITS.values()), reverse=True)
+    # Remove seconds from the tuple
+    del units[-1]
+    divisors = list(time_to_tuple(current, *units))
+
+    # For each keyword, add in the unit's
+    units.append(1)
+    higher_unit = None
+    for unit, value in kwargs.items():
+        # Get the unit's index
+        if unit not in UNITS:
+            raise ValueError("unknown unit".format(unit))
+
+        seconds = UNITS[unit]
+        index = units.index(seconds)
+        divisors[index] = value
+        if higher_unit is None or higher_unit > index:
+            higher_unit = index
+
+    # Check the projected time
+    # Note that it can be already passed (the given time may be in the past)
+    projected = 0
+    for i, value in enumerate(divisors):
+        seconds = units[i]
+        projected += value * seconds
+
+    if projected <= current:
+        # The time is in the past, increase the higher unit
+        if higher_unit:
+            divisors[higher_unit - 1] += 1
+        else:
+            divisors[0] += 1
+
+    # Get the projected time again
+    projected = 0
+    for i, value in enumerate(divisors):
+        seconds = units[i]
+        projected += value * seconds
+
+    return (projected - current) / TIMEFACTOR
+
+def schedule(callback, repeat=False, **kwargs):
+    """
+    Call the callback when the game time is up.
+
+    This function will setup a script that will be called when the
+    time corresponds to the game time.  If the game is stopped for
+    more than a few seconds, the callback may be called with a slight
+    delay.  If `repeat` is set to True, the callback will be called
+    again next time the game time matches the given time.  The time
+    is given in units as keyword arguments.  For instance:
+    >>> schedule(func, min=5, sec=0) # Will call next hour at :05.
+    >>> schedule(func, hour=2, min=30, sec=0) # Will call the next day at 02:30.
+
+    Args:
+        callback (function): the callback function that will be called [1].
+        repeat (bool, optional): should the callback be called regularly?
+        times (str: int): the time to call the callback.
+
+    [1] The callback must be a top-level function, since the script will
+        be persistent.
+
+    Returns:
+        The created script (Script).
+
+    """
+    seconds = real_seconds_until(**kwargs)
+    script = create_script("evennia.contrib.convert_gametime.GametimeScript",
+            key="GametimeScript", desc="A timegame-sensitive script",
+            interval=seconds, start_delay=True,
+            repeats=-1 if repeat else 1)
+    script.db.callback = callback
+    script.db.gametime = kwargs
+    return script
+
+# Scripts dealing in gametime (use `schedule`  to create it)
+class GametimeScript(DefaultScript):
+
+    """Gametime-sensitive script."""
+
+    def at_script_creation(self):
+        """The script is created."""
+        self.key = "unknown scr"
+        self.interval = 100
+        self.start_delay = True
+        self.persistent = True
+
+    def at_repeat(self):
+        """Call the callback and reset interval."""
+        callback = self.db.callback
+        if callback:
+            callback()
+
+        seconds = real_seconds_until(**self.db.gametime)
+        self.restart(interval=seconds)

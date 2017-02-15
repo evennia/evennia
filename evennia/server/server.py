@@ -346,6 +346,7 @@ class Evennia(object):
         from evennia.objects.models import ObjectDB
         #from evennia.players.models import PlayerDB
         from evennia.server.models import ServerConfig
+        from evennia.utils import gametime as _GAMETIME_MODULE
 
         if mode == 'reload':
             # call restart hooks
@@ -393,6 +394,9 @@ class Evennia(object):
             self.shutdown_complete = True
             # kill the server
             reactor.callLater(1, reactor.stop)
+
+        # we make sure the proper gametime is saved as late as possible
+        ServerConfig.objects.conf("runtime", _GAMETIME_MODULE.runtime())
 
     # server start/stop hooks
 
