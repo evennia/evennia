@@ -36,6 +36,28 @@ SERVER_RUNTIME = 0.0
 _SERVER_EPOCH = None
 _GAME_EPOCH = None
 
+# Helper Script dealing in gametime (created by `schedule` function
+# below).
+
+class TimeScript(DefaultScript):
+    """Gametime-sensitive script."""
+
+    def at_script_creation(self):
+        """The script is created."""
+        self.key = "unknown scr"
+        self.interval = 100
+        self.start_delay = True
+        self.persistent = True
+
+    def at_repeat(self):
+        """Call the callback and reset interval."""
+        callback = self.db.callback
+        if callback:
+            callback()
+
+        seconds = real_seconds_until(**self.db.gametime)
+        self.restart(interval=seconds)
+
 # Access functions
 
 def runtime():
@@ -117,10 +139,6 @@ def real_seconds_until(sec=None, min=None, hour=None, day=None,
     """
     Return the real seconds until game time.
 
-    If the game time is 5:00, TIME_FACTOR is set to 2 and you ask
-    the number of seconds until it's 5:10, then this function should
-    return 300 (5 minutes).
-
     Args:
         sec (int or None): number of absolute seconds.
         min (int or None): number of absolute minutes.
@@ -129,11 +147,16 @@ def real_seconds_until(sec=None, min=None, hour=None, day=None,
         month (int or None): number of absolute months.
         year (int or None): number of absolute years.
 
+    Returns:
+        The number of real seconds before the given game time is up.
+
     Example:
         real_seconds_until(hour=5, min=10, sec=0)
 
-    Returns:
-        The number of real seconds before the given game time is up.
+        If the game time is 5:00, TIME_FACTOR is set to 2 and you ask
+        the number of seconds until it's 5:10, then this function should
+        return 300 (5 minutes).
+
 
     """
     current = datetime.fromtimestamp(gametime(absolute=True))
@@ -167,32 +190,27 @@ def real_seconds_until(sec=None, min=None, hour=None, day=None,
 def schedule(callback, repeat=False, sec=None, min=None, hour=None,
         day=None, month=None, year=None):
     """
-    Call the callback when the game time is up.
-
-    This function will setup a script that will be called when the
-    time corresponds to the game time.  If `repeat` is set to True,
-    the callback will be called again next time the game time matches
-    the given time.  The time is given in units as keyword arguments.
-    For instance:
-    >>> schedule(func, min=5, sec=0) # Will call next hour at :05.
-    >>> schedule(func, hour=2, min=30, sec=0) # Will call the next day at 02:30.
+    Call a callback at a given in-game time.
 
     Args:
-        callback (function): the callback function that will be called [1].
-        repeat (bool, optional): should the callback be called regularly?
-        sec (int or None): number of absolute seconds.
-        min (int or None): number of absolute minutes.
-        hour (int or None): number of absolute hours.
-        day (int or None): number of absolute days.
-        month (int or None): number of absolute months.
-        year (int or None): number of absolute years.
-
-    [1] The callback must be a top-level function, since the script will
-        be persistent.
+        callback (function): The callback function that will be called. Note
+            that the callback must be a module-level function, since the script will
+            be persistent.
+        repeat (bool, optional): Defines if the callback should be called regularly
+            at the specified time.
+        sec (int or None): Number of absolute game seconds at which to run repeat.
+        min (int or None): Number of absolute minutes.
+        hour (int or None): Number of absolute hours.
+        day (int or None): Number of absolute days.
+        month (int or None): Number of absolute months.
+        year (int or None): Number of absolute years.
 
     Returns:
-        The created script (Script).
+        script (Script): The created Script handling the sceduling.
 
+    Examples:
+        schedule(func, min=5, sec=0) # Will call 5 minutes past the next (in-game) hour.
+        schedule(func, hour=2, min=30, sec=0) # Will call the next (in-game) day at 02:30.
     """
     seconds = real_seconds_until(sec=sec, min=min, hour=hour, day=day,
             month=month, year=year)
@@ -222,23 +240,3 @@ def reset_gametime():
     ServerConfig.objects.conf("gametime_offset", GAME_TIME_OFFSET)
 
 
-# Scripts dealing in gametime (use `schedule`  to create it)
-class TimeScript(DefaultScript):
-
-    """Gametime-sensitive script."""
-
-    def at_script_creation(self):
-        """The script is created."""
-        self.key = "unknown scr"
-        self.interval = 100
-        self.start_delay = True
-        self.persistent = True
-
-    def at_repeat(self):
-        """Call the callback and reset interval."""
-        callback = self.db.callback
-        if callback:
-            callback()
-
-        seconds = real_seconds_until(**self.db.gametime)
-        self.restart(interval=seconds)
