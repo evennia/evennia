@@ -1,18 +1,25 @@
 """
-Convert gametime
+Custom gametime
 
-Contrib - Griatch 2017
+Contrib - Griatch 2017, vlgeoff 2017
 
-This is the game-dependent part of the evennia.utils.gametime module
-that used to be settable from the settings file. Since this was just
-a bunch of conversion routines, it is now moved to a contrib since it
-is highly unlikely its use is of general game use. The utils.gametime
-module deals in seconds, and you can use this contrib to convert
-that to fit the calendar of your game.
+This implements the evennia.utils.gametime module but supporting
+a custom calendar for your game world. It allows for scheduling
+events to happen at given in-game times, taking this custom
+calendar into account.
 
 Usage:
-    Import and use as-is or copy this module to mygame/world and
-    modify it to your needs there.
+
+Use as the normal gametime module, that is by importing and using the
+helper functions in this module in your own code. The calendar can be
+specified in your settings file by adding and setting custom values
+for one or more of the variables `TIME_SECS_PER_MIN`,
+`TIME_MINS_PER_HOUR`, `TIME_DAYS_PER_WEEK`, `TIME_WEEKS_PER_MONTH` and
+`TIME_MONTHS_PER_YEAR`. These are all given in seconds and whereas
+they are called "week", "month" etc these names could represent
+whatever fits your game. You can also set `TIME_UNITS` to a dict
+mapping the name of a unit to its length in seconds  (like `{"min":
+60, ...}. If not given, sane defaults will be used.
 
 """
 
@@ -30,12 +37,13 @@ TIMEFACTOR = settings.TIME_FACTOR
 # when defining in-game events. The words month, week and year can  be
 # used to mean whatever units of time are used in your game.
 SEC = 1
-MIN = getattr(settings, "SECS_PER_MIN", 60)
-HOUR = getattr(settings, "MINS_PER_HOUR", 60) * MIN
-DAY = getattr(settings, "HOURS_PER_DAY", 24) * HOUR
-WEEK = getattr(settings, "DAYS_PER_WEEK", 7) * DAY
-MONTH = getattr(settings, "WEEKS_PER_MONTH", 4) * WEEK
-YEAR = getattr(settings, "MONTHS_PER_YEAR", 12) * MONTH
+MIN = getattr(settings, "TIME_SECS_PER_MIN", 60)
+HOUR = getattr(settings, "TIME_MINS_PER_HOUR", 60) * MIN
+DAY = getattr(settings, "TIME_HOURS_PER_DAY", 24) * HOUR
+WEEK = getattr(settings, "TIME_DAYS_PER_WEEK", 7) * DAY
+MONTH = getattr(settings, "TIME_WEEKS_PER_MONTH", 4) * WEEK
+YEAR = getattr(settings, "TIME_MONTHS_PER_YEAR", 12) * MONTH
+# these are the unit names understood by the scheduler.
 UNITS = getattr(settings, "TIME_UNITS", {
         "sec": SEC,
         "min": MIN,
@@ -246,7 +254,7 @@ def schedule(callback, repeat=False, **kwargs):
 
     """
     seconds = real_seconds_until(**kwargs)
-    script = create_script("evennia.contrib.convert_gametime.GametimeScript",
+    script = create_script("evennia.contrib.custom_gametime.GametimeScript",
             key="GametimeScript", desc="A timegame-sensitive script",
             interval=seconds, start_delay=True,
             repeats=-1 if repeat else 1)
