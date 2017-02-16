@@ -47,7 +47,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
 
     """
 
-    def create_match(cmdname, string, cmdobj):
+    def create_match(cmdname, string, cmdobj, raw_cmdname):
         """
         Builds a command match by splitting the incoming string and
         evaluating the quality of the match.
@@ -56,38 +56,44 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
             cmdname (str): Name of command to check for.
             string (str): The string to match against.
             cmdobj (str): The full Command instance.
+            raw_cmdname (str, optional): If CMD_IGNORE_PREFIX is set and the cmdname starts with
+                one of the prefixes to ignore, this contains the raw, unstripped cmdname,
+                otherwise it is None.
 
         Returns:
-            match (tuple): This is on the form (cmdname, args, cmdobj, cmdlen, mratio), where
+            match (tuple): This is on the form (cmdname, args, cmdobj, cmdlen, mratio, raw_cmdname), where
                 `cmdname` is the command's name and `args` the rest of the incoming string,
                 without said command name. `cmdobj` is the Command instance, the cmdlen is
                 the same as len(cmdname) and mratio is a measure of how big a part of the
-                full input string the cmdname takes up - an exact match would be 1.0.
+                full input string the cmdname takes up - an exact match would be 1.0. Finally,
+                the `raw_cmdname` is the cmdname unmodified by eventual prefix-stripping.
 
         """
         cmdlen, strlen = len(unicode(cmdname)), len(unicode(string))
         mratio = 1 - (strlen - cmdlen) / (1.0 * strlen)
         args = string[cmdlen:]
-        return (cmdname, args, cmdobj, cmdlen, mratio)
+        return (cmdname, args, cmdobj, cmdlen, mratio, raw_cmdname)
 
     def build_matches(raw_string, include_prefixes=False):
         l_raw_string = raw_string.lower()
         matches = []
         try:
             if include_prefixes:
+                # use the cmdname as-is
                 for cmd in cmdset:
-                    matches.extend([create_match(cmdname, raw_string, cmd)
+                    matches.extend([create_match(cmdname, raw_string, cmd, cmdname)
                               for cmdname in [cmd.key] + cmd.aliases
                                 if cmdname and l_raw_string.startswith(cmdname.lower())
                                    and (not cmd.arg_regex or
                                      cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
             else:
+                # strip prefixes set in settings
                 for cmd in cmdset:
-                    for cmdname in [cmd.key] + cmd.aliases:
-                        cmdname = cmdname.lstrip(_CMD_IGNORE_PREFIXES) if len(cmdname) > 1 else cmdname
+                    for raw_cmdname in [cmd.key] + cmd.aliases:
+                        cmdname = raw_cmdname.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_cmdname) > 1 else raw_cmdname
                         if cmdname and l_raw_string.startswith(cmdname.lower()) and \
                                 (not cmd.arg_regex or cmd.arg_regex.match(l_raw_string[len(cmdname):])):
-                            matches.append(create_match(cmdname, raw_string, cmd))
+                            matches.append(create_match(cmdname, raw_string, cmd, raw_cmdname))
         except Exception:
             log_trace("cmdhandler error. raw_input:%s" % raw_string)
         return matches
@@ -107,7 +113,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
     if not raw_string:
         return []
 
-    # find mathces
+    # find mathces, first using the full name
     matches = build_matches(raw_string, include_prefixes=True)
     if not matches:
         # try to match a number 1-cmdname, 2-cmdname etc
@@ -116,13 +122,15 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
             return cmdparser(new_raw_string, cmdset, caller, match_index=int(mindex))
         elif _CMD_IGNORE_PREFIXES:
             # still no match. Try to strip prefixes
-            raw_string = raw_string.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_string) > 1 else raw_string
-            matches = build_matches(raw_string, include_prefixes=False)
-            if not matches:
-                # try to match a number 1-cmdname, 2-cmdname etc
-                mindex, new_raw_string = try_num_prefixes(raw_string)
-                if mindex is not None:
-                    return cmdparser(new_raw_string, cmdset, caller, match_index=int(mindex))
+            new_raw_string = raw_string.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_string) > 1 else raw_string
+            if len(new_raw_string) < len(raw_string):
+                raw_string = new_raw_string
+                matches = build_matches(raw_string, include_prefixes=False)
+        if not matches:
+            # try to match a number 1-cmdname, 2-cmdname etc
+            mindex, new_raw_string = try_num_prefixes(raw_string)
+            if mindex is not None:
+                return cmdparser(new_raw_string, cmdset, caller, match_index=int(mindex))
 
     # only select command matches we are actually allowed to call.
     matches = [match for match in matches if match[2].access(caller, 'cmd')]

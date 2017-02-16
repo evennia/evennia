@@ -428,7 +428,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
     """
 
     @inlineCallbacks
-    def _run_command(cmd, cmdname, args, raw_string):
+    def _run_command(cmd, cmdname, raw_cmdname, args):
         """
         Helper function: This initializes and runs the Command
         instance once the parser has identified it as either a normal
@@ -437,8 +437,10 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
         Args:
             cmd (Command): Command object
             cmdname (str): Name of command
-            args (str): Extra text entered after the identified command
-            raw_string (str): Full input string, only used for debugging.
+            raw_cmdname (str): Name of Command, unaffected by eventual
+                prefix-stripping (if no prefix-stripping, this is the same
+                as cmdname).
+            args (str): extra text entered after the identified command
 
         Returns:
             deferred (Deferred): this will fire with the return of the
@@ -452,7 +454,9 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
         try:
             # Assign useful variables to the instance
             cmd.caller = caller
-            cmd.cmdstring = cmdname
+            cmd.cmdname = cmdname
+            cmd.raw_cmdname = raw_cmdname
+            cmd.cmdstring = cmdname  # deprecated
             cmd.args = args
             cmd.cmdset = cmdset
             cmd.session = session
@@ -575,7 +579,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             if len(matches) == 1:
                 # We have a unique command match. But it may still be invalid.
                 match = matches[0]
-                cmdname, args, cmd = match[0], match[1], match[2]
+                cmdname, args, cmd, raw_cmdname = match[0], match[1], match[2], match[5]
 
             if not matches:
                 # No commands match our entered command
@@ -608,7 +612,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 raise ExecSystemCommand(cmd, sysarg)
 
             # A normal command.
-            ret = yield _run_command(cmd, cmdname, args, raw_string)
+            ret = yield _run_command(cmd, cmdname, raw_cmdname, args)
             returnValue(ret)
 
         except ErrorReported as exc:
@@ -623,7 +627,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             sysarg = exc.sysarg
 
             if syscmd:
-                ret = yield _run_command(syscmd, syscmd.key, sysarg, raw_string)
+                ret = yield _run_command(syscmd, syscmd.key, syscmd, sysarg)
                 returnValue(ret)
             elif sysarg:
                 # return system arg
