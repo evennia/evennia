@@ -9,7 +9,7 @@ COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # limit symbol import for API
 __all__ = ("CmdHome", "CmdLook", "CmdNick",
-           "CmdInventory", "CmdGet", "CmdDrop", "CmdGive",
+           "CmdInventory", "CmdSetDesc", "CmdGet", "CmdDrop", "CmdGive",
            "CmdSay", "CmdPose", "CmdAccess")
 
 
@@ -356,7 +356,7 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         target.msg("%s gives you %s." % (caller.key, to_give.key))
 
 
-class CmdDesc(COMMAND_DEFAULT_CLASS):
+class CmdSetDesc(COMMAND_DEFAULT_CLASS):
     """
     describe yourself
 
@@ -367,7 +367,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     will be visible to people when they
     look at you.
     """
-    key = "desc"
+    key = "setdesc"
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 

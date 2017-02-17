@@ -20,7 +20,7 @@ COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # limit symbol import for API
 __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
            "CmdCpAttr", "CmdMvAttr", "CmdCreate",
-           "CmdSetDesc", "CmdDestroy", "CmdDig", "CmdTunnel", "CmdLink",
+           "CmdDesc", "CmdDestroy", "CmdDig", "CmdTunnel", "CmdLink",
            "CmdUnLink", "CmdSetHome", "CmdListCmdSets", "CmdName",
            "CmdOpen", "CmdSetAttribute", "CmdTypeclass", "CmdWipe",
            "CmdLock", "CmdExamine", "CmdFind", "CmdTeleport",
@@ -533,7 +533,7 @@ def _desc_quit(caller):
     caller.attributes.remove("evmenu_target")
     caller.msg("Exited editor.")
 
-class CmdSetDesc(COMMAND_DEFAULT_CLASS):
+class CmdDesc(COMMAND_DEFAULT_CLASS):
     """
     describe an object or the current room.
 
