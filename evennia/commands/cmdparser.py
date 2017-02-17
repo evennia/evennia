@@ -120,17 +120,10 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         mindex, new_raw_string = try_num_prefixes(raw_string)
         if mindex is not None:
             return cmdparser(new_raw_string, cmdset, caller, match_index=int(mindex))
-        elif _CMD_IGNORE_PREFIXES:
+        if _CMD_IGNORE_PREFIXES:
             # still no match. Try to strip prefixes
-            new_raw_string = raw_string.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_string) > 1 else raw_string
-            if len(new_raw_string) < len(raw_string):
-                raw_string = new_raw_string
-                matches = build_matches(raw_string, include_prefixes=False)
-        if not matches:
-            # try to match a number 1-cmdname, 2-cmdname etc
-            mindex, new_raw_string = try_num_prefixes(raw_string)
-            if mindex is not None:
-                return cmdparser(new_raw_string, cmdset, caller, match_index=int(mindex))
+            raw_string = raw_string.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_string) > 1 else raw_string
+            matches = build_matches(raw_string, include_prefixes=False)
 
     # only select command matches we are actually allowed to call.
     matches = [match for match in matches if match[2].access(caller, 'cmd')]

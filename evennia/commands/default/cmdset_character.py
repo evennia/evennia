@@ -63,7 +63,7 @@ class CharacterCmdSet(CmdSet):
         self.add(building.CmdWipe())
         self.add(building.CmdSetAttribute())
         self.add(building.CmdName())
-        self.add(building.CmdDesc())
+        self.add(building.CmdSetDesc())
         self.add(building.CmdCpAttr())
         self.add(building.CmdMvAttr())
         self.add(building.CmdCopy())

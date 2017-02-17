@@ -280,7 +280,7 @@ SEARCH_MULTIMATCH_TEMPLATE = " {number}-{name}{aliases}{info}\n"
 # over the error output (it uses SEARCH_MULTIMATCH_TEMPLATE by default).
 SEARCH_AT_RESULT = "evennia.utils.utils.at_search_result"
 # Single characters to ignore at the beginning of a command. When set, e.g.
-# cmd, @cmd and +cmd will all find a command "cmd" or one named "@cmd". If
+# cmd, @cmd and +cmd will all find a command "cmd" or one named "@cmd" etc. If
 # you have defined two different commands cmd and @cmd you can still enter
 # @cmd to exactly target the second one. Single-character commands consisting
 # of only a prefix character will not be stripped. Set to the empty

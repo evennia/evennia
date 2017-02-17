@@ -549,6 +549,8 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             if not cmdset:
                 # this is bad and shouldn't happen.
                 raise NoCmdSets
+            # store the completely unmodified raw string - including
+            # whitespace and eventual prefixes-to-be-stripped.
             unformatted_raw_string = raw_string
             raw_string = raw_string.strip()
             if not raw_string:

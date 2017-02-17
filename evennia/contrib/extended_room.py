@@ -375,7 +375,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
         "Define extended command"
         caller = self.caller
         location = caller.location
-        if self.cmdstring == '@detail':
+        if self.cmdname == 'detail':
             # switch to detailing mode. This operates only on current location
             if not location:
                 caller.msg("No location to detail!")

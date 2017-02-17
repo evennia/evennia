@@ -229,7 +229,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdName(), "Obj2=Obj3", "Object's name changed to 'Obj3'.")
 
     def test_desc(self):
-        self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#5).")
+        self.call(building.CmdSetDesc(), "Obj2=TestDesc", "The description was set on Obj2(#5).")
 
     def test_wipe(self):
         self.call(building.CmdDestroy(), "Obj", "Obj was destroyed.")

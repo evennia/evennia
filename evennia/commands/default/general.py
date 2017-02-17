@@ -367,7 +367,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     will be visible to people when they
     look at you.
     """
-    key = "setdesc"
+    key = "desc"
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 
