@@ -1,4 +1,0 @@
-commonmark<=0.5.4
-docutils>=0.11
-sphinx>=1.5
-pytest==2.7.2

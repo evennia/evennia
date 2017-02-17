@@ -1,4 +1,4 @@
-strictness: low
+strictness: medium
 
 test-warnings: false
 doc-warnings: true
@@ -7,17 +7,21 @@ ignore-paths:
   - docs
 
 pep8:
-    full: true
-    options:
-        max-line-length: 100
+  full: true
+  options:
+    max-line-length: 100
 
 pylint:
-  max-line-length: 100
+  options:
+    max-line-length: 100
+    docstring-min-length: 20
   disable:
-      - interface-not-implemented
+    - interface-not-implemented
 
 mccabe:
   run: false
 
 pep257:
-  run: false
+  run: true
+  disable:
+    - D211
