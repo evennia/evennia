@@ -321,6 +321,20 @@ class TestTextToHTMLparser(TestCase):
         self.assertEqual(self.parser.convert_urls('</span>http://example.com/<span class="red">'),
             '</span><a href="http://example.com/" target="_blank">http://example.com/</a><span class="red">')
 
+from evennia.utils import evmenu
+from mock import Mock
+class TestEvMenu(TestCase):
+    "Run the EvMenu test."
+    def setUp(self):
+        self.caller = Mock()
+        self.caller.msg = Mock()
+        self.menu = evmenu.EvMenu(self.caller, "evennia.utils.evmenu", startnode="test_start_node",
+                persistent=True, cmdset_mergetype="Replace", testval="val", testval2="val2")
+
+    def test_kwargsave(self):
+        self.assertTrue(hasattr(self.menu, "testval"))
+        self.assertTrue(hasattr(self.menu, "testval2"))
+
 
 from evennia.utils import inlinefuncs
 
