@@ -655,23 +655,23 @@ class CmdStatus(CmdTradeBase):
         caller = self.caller
         part_a_offers, part_b_offers = self.tradehandler.list()
         count = 1
-        part_a_offerlist = ""
+        part_a_offerlist = []
         for offer in part_a_offers:
-            part_a_offerlist += "\n |w%i|n %s" % (count, offer.key)
+            part_a_offerlist.append("\n |w%i|n %s" % (count, offer.key))
             count += 1
         if not part_a_offerlist:
             part_a_offerlist = "\n <nothing>"
-        part_b_offerlist = ""
+        part_b_offerlist = []
         for offer in part_b_offers:
-            part_b_offerlist += "\n |w%i|n %s" % (count, offer.key)
+            part_b_offerlist.append("\n |w%i|n %s" % (count, offer.key))
             count += 1
         if not part_b_offerlist:
             part_b_offerlist = "\n <nothing>"
 
         string = "|gOffered by %s:|n%s\n|yOffered by %s:|n%s" % (self.part_a.key,
-                                                                 part_a_offerlist,
+                                                                 "".join(part_a_offerlist),
                                                                  self.part_b.key,
-                                                                 part_b_offerlist)
+                                                                 "".join(part_b_offerlist))
         accept_a = self.tradehandler.part_a_accepted and "|gYes|n" or "|rNo|n"
         accept_b = self.tradehandler.part_b_accepted and "|gYes|n" or "|rNo|n"
         string += "\n\n%s agreed: %s, %s agreed: %s" % (self.part_a.key, accept_a, self.part_b.key, accept_b)
