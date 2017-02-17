@@ -117,7 +117,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
 
     key = "@alias"
     aliases = "@setobjalias"
-    locks = "cmd:perm(setobjalias) or perm(Builders)"
+    locks = "cmd:perm(setobjalias) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -196,7 +196,7 @@ class CmdCopy(ObjManipCommand):
     """
 
     key = "@copy"
-    locks = "cmd:perm(copy) or perm(Builders)"
+    locks = "cmd:perm(copy) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -276,7 +276,7 @@ class CmdCpAttr(ObjManipCommand):
     If you don't supply a source object, yourself is used.
     """
     key = "@cpattr"
-    locks = "cmd:perm(cpattr) or perm(Builders)"
+    locks = "cmd:perm(cpattr) or perm(Builder)"
     help_category = "Building"
 
     def check_from_attr(self, obj, attr, clear=False):
@@ -418,7 +418,7 @@ class CmdMvAttr(ObjManipCommand):
     object. If you don't supply a source object, yourself is used.
     """
     key = "@mvattr"
-    locks = "cmd:perm(mvattr) or perm(Builders)"
+    locks = "cmd:perm(mvattr) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -466,12 +466,12 @@ class CmdCreate(ObjManipCommand):
     """
 
     key = "@create"
-    locks = "cmd:perm(create) or perm(Builders)"
+    locks = "cmd:perm(create) or perm(Builder)"
     help_category = "Building"
 
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the {id} of the creating object.
-    new_obj_lockstring = "control:id({id}) or perm(Wizards);delete:id({id}) or perm(Wizards)"
+    new_obj_lockstring = "control:id({id}) or perm(Admin);delete:id({id}) or perm(Admin)"
 
     def func(self):
         """
@@ -548,7 +548,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     """
     key = "@setdesc"
     aliases = "@describe"
-    locks = "cmd:perm(desc) or perm(Builders)"
+    locks = "cmd:perm(desc) or perm(Builder)"
     help_category = "Building"
 
     def edit_handler(self):
@@ -616,7 +616,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
 
     key = "@destroy"
     aliases = ["@delete", "@del"]
-    locks = "cmd:perm(destroy) or perm(Builders)"
+    locks = "cmd:perm(destroy) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -701,14 +701,14 @@ class CmdDig(ObjManipCommand):
     would be 'north;no;n'.
     """
     key = "@dig"
-    locks = "cmd:perm(dig) or perm(Builders)"
+    locks = "cmd:perm(dig) or perm(Builder)"
     help_category = "Building"
 
     # lockstring of newly created rooms, for easy overloading.
     # Will be formatted with the {id} of the creating object.
-    new_room_lockstring = "control:id({id}) or perm(Wizards); " \
-                          "delete:id({id}) or perm(Wizards); " \
-                          "edit:id({id}) or perm(Wizards)"
+    new_room_lockstring = "control:id({id}) or perm(Admin); " \
+                          "delete:id({id}) or perm(Admin); " \
+                          "edit:id({id}) or perm(Admin)"
 
     def func(self):
         "Do the digging. Inherits variables from ObjManipCommand.parse()"
@@ -845,7 +845,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
 
     key = "@tunnel"
     aliases = ["@tun"]
-    locks = "cmd: perm(tunnel) or perm(Builders)"
+    locks = "cmd: perm(tunnel) or perm(Builder)"
     help_category = "Building"
 
     # store the direction, full name and its opposite
@@ -918,7 +918,7 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@link"
-    locks = "cmd:perm(link) or perm(Builders)"
+    locks = "cmd:perm(link) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -996,7 +996,7 @@ class CmdUnLink(CmdLink):
     # this is just a child of CmdLink
 
     key = "@unlink"
-    locks = "cmd:perm(unlink) or perm(Builders)"
+    locks = "cmd:perm(unlink) or perm(Builder)"
     help_key = "Building"
 
     def func(self):
@@ -1034,7 +1034,7 @@ class CmdSetHome(CmdLink):
     """
 
     key = "@sethome"
-    locks = "cmd:perm(@home) or perm(Builders)"
+    locks = "cmd:perm(@home) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -1081,7 +1081,7 @@ class CmdListCmdSets(COMMAND_DEFAULT_CLASS):
     """
     key = "@cmdsets"
     aliases = "@listcmsets"
-    locks = "cmd:perm(listcmdsets) or perm(Builders)"
+    locks = "cmd:perm(listcmdsets) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -1112,7 +1112,7 @@ class CmdName(ObjManipCommand):
 
     key = "@name"
     aliases = ["@rename"]
-    locks = "cmd:perm(rename) or perm(Builders)"
+    locks = "cmd:perm(rename) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -1188,7 +1188,7 @@ class CmdOpen(ObjManipCommand):
 
     """
     key = "@open"
-    locks = "cmd:perm(open) or perm(Builders)"
+    locks = "cmd:perm(open) or perm(Builder)"
     help_category = "Building"
 
     # a custom member method to chug out exits and do checks
@@ -1410,7 +1410,7 @@ class CmdSetAttribute(ObjManipCommand):
     """
 
     key = "@set"
-    locks = "cmd:perm(set) or perm(Builders)"
+    locks = "cmd:perm(set) or perm(Builder)"
     help_category = "Building"
 
     def check_obj(self, obj):
@@ -1592,7 +1592,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
     key = "@typeclass"
     aliases = ["@type", "@parent", "@swap", "@update"]
-    locks = "cmd:perm(typeclass) or perm(Builders)"
+    locks = "cmd:perm(typeclass) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -1682,7 +1682,7 @@ class CmdWipe(ObjManipCommand):
     matching the given attribute-wildcard search string.
     """
     key = "@wipe"
-    locks = "cmd:perm(wipe) or perm(Builders)"
+    locks = "cmd:perm(wipe) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -1740,18 +1740,18 @@ class CmdLock(ObjManipCommand):
     Separator expressions need not be capitalized.
 
     For example:
-       'get: id(25) or perm(Wizards)'
+       'get: id(25) or perm(Admin)'
     The 'get' access_type is checked by the get command and will
     an object locked with this string will only be possible to
-    pick up by Wizards or by object with id 25.
+    pick up by Admins or by object with id=25.
 
     You can add several access_types after oneanother by separating
     them by ';', i.e:
-       'get:id(25);delete:perm(Builders)'
+       'get:id(25);delete:perm(Builder)'
     """
     key = "@lock"
     aliases = ["@locks"]
-    locks = "cmd: perm(locks) or perm(Builders)"
+    locks = "cmd: perm(locks) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -1844,7 +1844,7 @@ class CmdExamine(ObjManipCommand):
     """
     key = "@examine"
     aliases = ["@ex","exam"]
-    locks = "cmd:perm(examine) or perm(Builders)"
+    locks = "cmd:perm(examine) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
@@ -2113,7 +2113,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
     key = "@find"
     aliases = "@search, @locate"
-    locks = "cmd:perm(find) or perm(Builders)"
+    locks = "cmd:perm(find) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -2244,7 +2244,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     is teleported to the target location.     """
     key = "@tel"
     aliases = "@teleport"
-    locks = "cmd:perm(teleport) or perm(Builders)"
+    locks = "cmd:perm(teleport) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -2343,7 +2343,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
 
     key = "@script"
     aliases = "@addscript"
-    locks = "cmd:perm(script) or perm(Builders)"
+    locks = "cmd:perm(script) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -2444,7 +2444,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
 
     key = "@tag"
     aliases = ["@tags"]
-    locks = "cmd:perm(tag) or perm(Builders)"
+    locks = "cmd:perm(tag) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
@@ -2584,7 +2584,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@spawn"
-    locks = "cmd:perm(spawn) or perm(Builders)"
+    locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -2626,7 +2626,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         elif isinstance(prototype, dict):
             # we got the prototype on the command line. We must make sure to not allow
             # the 'exec' key unless we are immortals or higher.
-            if "exec" in prototype and not self.caller.check_permstring("Immortals"):
+            if "exec" in prototype and not self.caller.check_permstring("Developer"):
                 self.caller.msg("Spawn aborted: You don't have access to use the 'exec' prototype key.")
                 return
         else:

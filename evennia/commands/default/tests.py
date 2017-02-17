@@ -258,7 +258,7 @@ class TestBuilding(CommandTest):
                 "Obj changed typeclass from evennia.objects.objects.DefaultObject to evennia.objects.objects.DefaultExit.")
 
     def test_lock(self):
-        self.call(building.CmdLock(), "Obj = test:perm(Immortals)", "Added lock 'test:perm(Immortals)' to Obj.")
+        self.call(building.CmdLock(), "Obj = test:perm(Developer)", "Added lock 'test:perm(Developer)' to Obj.")
 
     def test_find(self):
         self.call(building.CmdFind(), "Room2", "One Match")

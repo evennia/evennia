@@ -293,7 +293,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
 
     """
     key = "@sethelp"
-    locks = "cmd:perm(PlayerHelpers)"
+    locks = "cmd:perm(Helper)"
     help_category = "Building"
 
     def func(self):

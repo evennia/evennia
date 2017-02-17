@@ -47,7 +47,7 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
     @reset to purge) and at_reload() hooks will be called.
     """
     key = "@reload"
-    locks = "cmd:perm(reload) or perm(Immortals)"
+    locks = "cmd:perm(reload) or perm(Developer)"
     help_category = "System"
 
     def func(self):
@@ -83,7 +83,7 @@ class CmdReset(COMMAND_DEFAULT_CLASS):
     """
     key = "@reset"
     aliases = ['@reboot']
-    locks = "cmd:perm(reload) or perm(Immortals)"
+    locks = "cmd:perm(reload) or perm(Developer)"
     help_category = "System"
 
     def func(self):
@@ -105,7 +105,7 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
     Gracefully shut down both Server and Portal.
     """
     key = "@shutdown"
-    locks = "cmd:perm(shutdown) or perm(Immortals)"
+    locks = "cmd:perm(shutdown) or perm(Developer)"
     help_category = "System"
 
     def func(self):
@@ -240,7 +240,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
     """
     key = "@py"
     aliases = ["!"]
-    locks = "cmd:perm(py) or perm(Immortals)"
+    locks = "cmd:perm(py) or perm(Developer)"
     help_category = "System"
 
     def func(self):
@@ -322,7 +322,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     """
     key = "@scripts"
     aliases = ["@globalscript", "@listscripts"]
-    locks = "cmd:perm(listscripts) or perm(Wizards)"
+    locks = "cmd:perm(listscripts) or perm(Admin)"
     help_category = "System"
 
     def func(self):
@@ -405,7 +405,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
     """
     key = "@objects"
     aliases = ["@listobjects", "@listobjs", '@stats', '@db']
-    locks = "cmd:perm(listobjects) or perm(Builders)"
+    locks = "cmd:perm(listobjects) or perm(Builder)"
     help_category = "System"
 
     def func(self):
@@ -469,7 +469,7 @@ class CmdPlayers(COMMAND_DEFAULT_CLASS):
     """
     key = "@players"
     aliases = ["@listplayers"]
-    locks = "cmd:perm(listplayers) or perm(Wizards)"
+    locks = "cmd:perm(listplayers) or perm(Admin)"
     help_category = "System"
 
     def func(self):
@@ -521,7 +521,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
 
     key = "@service"
     aliases = ["@services"]
-    locks = "cmd:perm(service) or perm(Immortals)"
+    locks = "cmd:perm(service) or perm(Developer)"
     help_category = "System"
 
     def func(self):
@@ -645,7 +645,7 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
     """
     key = "@time"
     aliases = "@uptime"
-    locks = "cmd:perm(time) or perm(Players)"
+    locks = "cmd:perm(time) or perm(Player)"
     help_category = "System"
 
     def func(self):
@@ -703,7 +703,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
     """
     key = "@server"
     aliases = ["@serverload", "@serverprocess"]
-    locks = "cmd:perm(list) or perm(Immortals)"
+    locks = "cmd:perm(list) or perm(Developer)"
     help_category = "System"
 
     def func(self):
@@ -821,7 +821,7 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
     """
     key = "@tickers"
     help_category = "System"
-    locks = "cmd:perm(tickers) or perm(Builders)"
+    locks = "cmd:perm(tickers) or perm(Builder)"
 
     def func(self):
         from evennia import TICKER_HANDLER

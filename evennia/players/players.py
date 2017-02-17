@@ -566,8 +566,8 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
         """
         # A basic security setup
-        lockstring = "examine:perm(Wizards);edit:perm(Wizards);" \
-                     "delete:perm(Wizards);boot:perm(Wizards);msg:all()"
+        lockstring = "examine:perm(Admin);edit:perm(Admin);" \
+                     "delete:perm(Admin);boot:perm(Admin);msg:all()"
         self.locks.add(lockstring)
 
         # The ooc player cmdset

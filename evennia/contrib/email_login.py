@@ -235,8 +235,8 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
                 # set playable character list
                 new_player.db._playable_characters.append(new_character)
 
-                # allow only the character itself and the player to puppet this character (and Immortals).
-                new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
+                # allow only the character itself and the player to puppet this character (and Admin).
+                new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
                                         (new_character.id, new_player.id))
 
                 # If no description is set, set a default description

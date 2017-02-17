@@ -36,7 +36,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@boot"
-    locks = "cmd:perm(boot) or perm(Wizards)"
+    locks = "cmd:perm(boot) or perm(Admin)"
     help_category = "Admin"
 
     def func(self):
@@ -152,7 +152,7 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
     """
     key = "@ban"
     aliases = ["@bans"]
-    locks = "cmd:perm(ban) or perm(Immortals)"
+    locks = "cmd:perm(ban) or perm(Developer)"
     help_category = "Admin"
 
     def func(self):
@@ -219,7 +219,7 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
 
     """
     key = "@unban"
-    locks = "cmd:perm(unban) or perm(Immortals)"
+    locks = "cmd:perm(unban) or perm(Developer)"
     help_category = "Admin"
 
     def func(self):
@@ -266,7 +266,7 @@ class CmdDelPlayer(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@delplayer"
-    locks = "cmd:perm(delplayer) or perm(Immortals)"
+    locks = "cmd:perm(delplayer) or perm(Developer)"
     help_category = "Admin"
 
     def func(self):
@@ -342,7 +342,7 @@ class CmdEmit(COMMAND_DEFAULT_CLASS):
     """
     key = "@emit"
     aliases = ["@pemit", "@remit"]
-    locks = "cmd:perm(emit) or perm(Builders)"
+    locks = "cmd:perm(emit) or perm(Builder)"
     help_category = "Admin"
 
     def func(self):
@@ -410,7 +410,7 @@ class CmdNewPassword(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@userpassword"
-    locks = "cmd:perm(newpassword) or perm(Wizards)"
+    locks = "cmd:perm(newpassword) or perm(Admin)"
     help_category = "Admin"
 
     def func(self):
@@ -451,7 +451,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
     """
     key = "@perm"
     aliases = "@setperm"
-    locks = "cmd:perm(perm) or perm(Immortals)"
+    locks = "cmd:perm(perm) or perm(Developer)"
     help_category = "Admin"
 
     def func(self):
@@ -546,7 +546,7 @@ class CmdWall(COMMAND_DEFAULT_CLASS):
     Announces a message to all connected players.
     """
     key = "@wall"
-    locks = "cmd:perm(wall) or perm(Wizards)"
+    locks = "cmd:perm(wall) or perm(Admin)"
     help_category = "Admin"
 
     def func(self):

@@ -77,9 +77,9 @@ def create_objects():
     god_player.swap_typeclass(player_typeclass, clean_attributes=True)
     god_player.basetype_setup()
     god_player.at_player_creation()
-    god_player.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all()")
+    god_player.locks.add("examine:perm(Developer);edit:false();delete:false();boot:false();msg:all()")
     # this is necessary for quelling to work correctly.
-    god_player.permissions.add("Immortals")
+    god_player.permissions.add("Developer")
 
     # Limbo is the default "nowhere" starting room
 
@@ -93,8 +93,8 @@ def create_objects():
     god_character.id = 1
     god_character.save()
     god_character.db.desc = _('This is User #1.')
-    god_character.locks.add("examine:perm(Immortals);edit:false();delete:false();boot:false();msg:all();puppet:false()")
-    god_character.permissions.add("Immortals")
+    god_character.locks.add("examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();puppet:false()")
+    god_character.permissions.add("Developer")
 
     god_player.attributes.add("_first_login", True)
     god_player.attributes.add("_last_puppet", god_character)

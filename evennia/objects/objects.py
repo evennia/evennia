@@ -276,7 +276,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             builders.
 
         """
-        if self.locks.check_lockstring(looker, "perm(Builders)"):
+        if self.locks.check_lockstring(looker, "perm(Builder)"):
             return "{}(#{})".format(self.name, self.id)
         return self.name
 
@@ -973,15 +973,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         # controller, for example)
 
         self.locks.add(";".join([
-            "control:perm(Immortals)",  # edit locks/permissions, delete
-            "examine:perm(Builders)",   # examine properties
+            "control:perm(Developer)",  # edit locks/permissions, delete
+            "examine:perm(Builder)",   # examine properties
             "view:all()",               # look at object (visibility)
-            "edit:perm(Wizards)",       # edit properties/attributes
-            "delete:perm(Wizards)",     # delete object
+            "edit:perm(Admin)",       # edit properties/attributes
+            "delete:perm(Admin)",     # delete object
             "get:all()",                # pick up object
             "call:true()",              # allow to call commands on this object
-            "tell:perm(Wizards)",        # allow emits to this object
-            "puppet:pperm(Immortals)"])) # lock down puppeting only to staff by default
+            "tell:perm(Admin)",        # allow emits to this object
+            "puppet:pperm(Developer)"])) # lock down puppeting only to staff by default
 
     def basetype_posthook_setup(self):
         """

@@ -56,21 +56,21 @@ Example:
 
  We want to limit who may edit a particular object (let's call this access_type
 for 'edit', it depends on what the command is looking for). We want this to
-only work for those with the Permission 'Builders'. So we use our lock
+only work for those with the Permission 'Builder'. So we use our lock
 function above and define it like this:
 
-  'edit:perm(Builders)'
+  'edit:perm(Builder)'
 
 Here, the lock-function perm() will be called with the string
-'Builders' (accessing_obj and accessed_obj are added automatically,
+'Builder' (accessing_obj and accessed_obj are added automatically,
 you only need to add the args/kwargs, if any).
 
-If we wanted to make sure the accessing object was BOTH a Builders and a
+If we wanted to make sure the accessing object was BOTH a Builder and a
 GoodGuy, we could use AND:
 
-  'edit:perm(Builders) AND perm(GoodGuy)'
+  'edit:perm(Builder) AND perm(GoodGuy)'
 
-To allow EITHER Builders and GoodGuys, we replace AND with OR. perm() is just
+To allow EITHER Builder and GoodGuys, we replace AND with OR. perm() is just
 one example, the lock function can do anything and compare any properties of
 the calling object to decide if the lock is passed or not.
 
@@ -79,7 +79,7 @@ the calling object to decide if the lock is passed or not.
 To make these work, add the string to the lockhandler of the object you want
 to apply the lock to:
 
-  obj.lockhandler.add('edit:perm(Builders)')
+  obj.lockhandler.add('edit:perm(Builder)')
 
 From then on, a command that wants to check for 'edit' access on this
 object would do something like this:
@@ -541,13 +541,13 @@ def _test():
     obj1 = TestObj()
     obj2 = TestObj()
 
-    #obj1.lock_storage = "owner:dbref(#4);edit:dbref(#5) or perm(Wizards);examine:perm(Builders);delete:perm(Wizards);get:all()"
+    #obj1.lock_storage = "owner:dbref(#4);edit:dbref(#5) or perm(Admin);examine:perm(Builder);delete:perm(Admin);get:all()"
     #obj1.lock_storage = "cmd:all();admin:id(1);listen:all();send:all()"
-    obj1.lock_storage = "listen:perm(Immortals)"
+    obj1.lock_storage = "listen:perm(Developer)"
 
     pdb.set_trace()
     obj1.locks = LockHandler(obj1)
-    obj2.permissions.add("Immortals")
+    obj2.permissions.add("Developer")
     obj2.id = 4
 
     #obj1.locks.add("edit:attr(test)")

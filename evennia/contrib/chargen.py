@@ -169,7 +169,7 @@ class CmdOOCCharacterCreate(Command):
             self.caller.msg("{rThe Character couldn't be created. This is a bug. Please contact an admin.")
             return
         # make sure to lock the character to only be puppeted by this player
-        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
+        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
                                 (new_character.id, self.caller.id))
 
         # save dbref

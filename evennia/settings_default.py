@@ -485,15 +485,15 @@ MULTISESSION_MODE = 0
 MAX_NR_CHARACTERS = 1
 # The access hierarchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()
-# lock functions.
-PERMISSION_HIERARCHY = ["Guests", # note-only used if GUEST_ENABLED=True
-                        "Players",
-                        "PlayerHelpers",
-                        "Builders",
-                        "Wizards",
-                        "Immortals"]
+# lock functions, which accepts both plural and singular (Admin & Admins)
+PERMISSION_HIERARCHY = ["Guest", # note-only used if GUEST_ENABLED=True
+                        "Player",
+                        "Helper",
+                        "Builder",
+                        "Admin",
+                        "Developer"]
 # The default permission given to all new players
-PERMISSION_PLAYER_DEFAULT = "Players"
+PERMISSION_PLAYER_DEFAULT = "Player"
 # Default sizes for client window (in number of characters), if client
 # is not supplying this on its own
 CLIENT_DEFAULT_WIDTH = 78
@@ -540,12 +540,12 @@ DEFAULT_CHANNELS = [
                   {"key": "Public",
                   "aliases": ('ooc', 'pub'),
                   "desc": "Public discussion",
-                  "locks": "control:perm(Wizards);listen:all();send:all()"},
+                  "locks": "control:perm(Admin);listen:all();send:all()"},
                   # connection/mud info
                   {"key": "MudInfo",
                    "aliases": "",
                    "desc": "Connection log",
-                   "locks": "control:perm(Immortals);listen:perm(Wizards);send:false()"}
+                   "locks": "control:perm(Developer);listen:perm(Admin);send:false()"}
                   ]
 # Extra optional channel for receiving connection messages ("<player> has (dis)connected").
 # While the MudInfo channel will also receieve this, this channel is meant for non-staffers.

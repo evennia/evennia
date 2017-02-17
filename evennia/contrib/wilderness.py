@@ -603,7 +603,7 @@ class WildernessRoom(DefaultRoom):
             searching, and is expected to produce something useful for
             builders.
         """
-        if self.locks.check_lockstring(looker, "perm(Builders)"):
+        if self.locks.check_lockstring(looker, "perm(Builder)"):
             name = "{}(#{})".format(self.location_name, self.id)
         else:
             name = self.location_name

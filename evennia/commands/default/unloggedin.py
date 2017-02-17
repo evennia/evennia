@@ -12,7 +12,7 @@ from evennia.objects.models import ObjectDB
 from evennia.server.models import ServerConfig
 from evennia.comms.models import ChannelDB
 
-from evennia.utils import create, logger, utils, ansi
+from evennia.utils import create, logger, utils
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -560,8 +560,8 @@ def _create_character(session, new_player, typeclass, home, permissions):
         # set playable character list
         new_player.db._playable_characters.append(new_character)
 
-        # allow only the character itself and the player to puppet this character (and Immortals).
-        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
+        # allow only the character itself and the player to puppet this character (and Developers).
+        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
                                 (new_character.id, new_player.id))
 
         # If no description is set, set a default description

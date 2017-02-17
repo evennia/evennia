@@ -168,7 +168,8 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
 
     if utils.inherits_from(accessing_obj, "evennia.objects.objects.DefaultObject") and accessing_obj.player:
         player = accessing_obj.player
-        perms_player = [p.lower() for p in player.permissions.all()]
+        # we strip eventual plural forms, so Builders == Builder
+        perms_player = [p.lower().rstrip("s") for p in player.permissions.all()]
         is_quell = player.attributes.get("_quell")
 
         if permission in _PERMISSION_HIERARCHY:

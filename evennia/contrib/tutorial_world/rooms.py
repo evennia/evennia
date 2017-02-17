@@ -98,7 +98,7 @@ class CmdTutorialSetDetail(default_cmds.MuxCommand):
     multiple aliases to the detail all at once.
     """
     key = "@detail"
-    locks = "cmd:perm(Builders)"
+    locks = "cmd:perm(Builder)"
     help_category = "TutorialWorld"
 
     def func(self):

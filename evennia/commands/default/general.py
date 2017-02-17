@@ -24,7 +24,7 @@ class CmdHome(COMMAND_DEFAULT_CLASS):
     """
 
     key = "home"
-    locks = "cmd:perm(home) or perm(Builders)"
+    locks = "cmd:perm(home) or perm(Builder)"
     arg_regex = r"$"
 
     def func(self):

@@ -96,7 +96,7 @@ class Bot(DefaultPlayer):
         # the text encoding to use.
         self.db.encoding = "utf-8"
         # A basic security setup
-        lockstring = "examine:perm(Wizards);edit:perm(Wizards);delete:perm(Wizards);boot:perm(Wizards);msg:false()"
+        lockstring = "examine:perm(Admin);edit:perm(Admin);delete:perm(Admin);boot:perm(Admin);msg:false()"
         self.locks.add(lockstring)
         # set the basics of being a bot
         script_key = "%s" % self.key

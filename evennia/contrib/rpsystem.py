@@ -1256,7 +1256,7 @@ class ContribRPObject(DefaultObject):
                     candidates.append(self)
 
         # the sdesc-related substitution
-        is_builder = self.locks.check_lockstring(self, "perm(Builders)")
+        is_builder = self.locks.check_lockstring(self, "perm(Builder)")
         use_dbref = is_builder if use_dbref is None else use_dbref
         search_obj = lambda string: ObjectDB.objects.object_search(string,
                                                  attribute_name=attribute_name,

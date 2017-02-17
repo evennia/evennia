@@ -453,7 +453,7 @@ class CmdCemit(COMMAND_DEFAULT_CLASS):
 
     key = "@cemit"
     aliases = ["@cmsg"]
-    locks = "cmd: not pperm(channel_banned) and pperm(Players)"
+    locks = "cmd: not pperm(channel_banned) and pperm(Player)"
     help_category = "Comms"
 
     # this is used by the COMMAND_DEFAULT_CLASS parent
@@ -530,7 +530,7 @@ class CmdChannelCreate(COMMAND_DEFAULT_CLASS):
 
     key = "@ccreate"
     aliases = "channelcreate"
-    locks = "cmd:not pperm(channel_banned) and pperm(Players)"
+    locks = "cmd:not pperm(channel_banned) and pperm(Player)"
     help_category = "Comms"
 
     # this is used by the COMMAND_DEFAULT_CLASS parent
@@ -850,7 +850,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@irc2chan"
-    locks = "cmd:serversetting(IRC_ENABLED) and pperm(Immortals)"
+    locks = "cmd:serversetting(IRC_ENABLED) and pperm(Developer)"
     help_category = "Comms"
 
     def func(self):
@@ -943,7 +943,7 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
 
     """
     key = "@ircstatus"
-    locks = "cmd:serversetting(IRC_ENABLED) and perm(ircstatus) or perm(Builders))"
+    locks = "cmd:serversetting(IRC_ENABLED) and perm(ircstatus) or perm(Builder))"
     help_category = "Comms"
 
     def func(self):
@@ -981,7 +981,7 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
             # an asynchronous call.
             self.caller.msg("Requesting nicklist from %s (%s:%s)." % (channel, network, port))
             ircbot.get_nicklist(self.caller)
-        elif self.caller.locks.check_lockstring(self.caller, "dummy:perm(ircstatus) or perm(Immortals)"):
+        elif self.caller.locks.check_lockstring(self.caller, "dummy:perm(ircstatus) or perm(Developer)"):
             # reboot the client
             self.caller.msg("Forcing a disconnect + reconnect of %s." % chtext)
             ircbot.reconnect()
@@ -1016,7 +1016,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@rss2chan"
-    locks = "cmd:serversetting(RSS_ENABLED) and pperm(Immortals)"
+    locks = "cmd:serversetting(RSS_ENABLED) and pperm(Developer)"
     help_category = "Comms"
 
     def func(self):
