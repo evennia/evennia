@@ -55,9 +55,11 @@ class Msg(SharedMemoryModel):
 
     - db_sender_players: Player senders
     - db_sender_objects: Object senders
+    - db_sender_scripts: Script senders
     - db_sender_external: External senders (defined as string names)
     - db_receivers_players: Receiving players
     - db_receivers_objects: Receiving objects
+    - db_receivers_scripts: Receiveing scripts
     - db_receivers_channels: Receiving channels
     - db_header: Header text
     - db_message: The actual message text
@@ -82,6 +84,8 @@ class Msg(SharedMemoryModel):
                                                null=True, blank=True, verbose_name='sender(player)', db_index=True)
     db_sender_objects = models.ManyToManyField("objects.ObjectDB", related_name='sender_object_set',
                                                null=True, blank=True, verbose_name='sender(object)', db_index=True)
+    db_sender_scripts = models.ManyToManyField("scripts.ScriptDB", related_name='sender_script_set',
+                                               null=True, blank=True, verbose_name='sender(script)', db_index=True)
     db_sender_external = models.CharField('external sender', max_length=255, null=True, blank=True, db_index=True,
           help_text="identifier for external sender, for example a sender over an "
                     "IRC connection (i.e. someone who doesn't have an exixtence in-game).")
@@ -92,6 +96,8 @@ class Msg(SharedMemoryModel):
                                                   null=True, blank=True, help_text="player receivers")
     db_receivers_objects = models.ManyToManyField('objects.ObjectDB', related_name='receiver_object_set',
                                                   null=True, blank=True, help_text="object receivers")
+    db_receivers_scripts = models.ManyToManyField('scripts.ScriptDB', related_name='receiver_script_set',
+                                                  null=True, blank=True, help_text="script_receivers")
     db_receivers_channels = models.ManyToManyField("ChannelDB", related_name='channel_set',
                                                    null=True, blank=True, help_text="channel recievers")
 
@@ -148,6 +154,7 @@ class Msg(SharedMemoryModel):
         "Getter. Allows for value = self.sender"
         return  list(self.db_sender_players.all()) + \
                 list(self.db_sender_objects.all()) + \
+                list(self.db_sender_scripts.all()) + \
                 self.extra_senders
 
     #@sender.setter
@@ -168,12 +175,15 @@ class Msg(SharedMemoryModel):
                 self.db_sender_objects.add(sender)
             elif clsname == "PlayerDB":
                 self.db_sender_players.add(sender)
+            elif clsname == "ScriptDB":
+                self.db_sender_scripts.add(sender)
 
     #@sender.deleter
     def __senders_del(self):
         "Deleter. Clears all senders"
         self.db_sender_players.clear()
         self.db_sender_objects.clear()
+        self.db_sender_scripts.clear()
         self.db_sender_external = ""
         self.extra_senders = []
         self.save()
@@ -200,15 +210,20 @@ class Msg(SharedMemoryModel):
                 self.db_sender_objects.remove(sender)
             elif clsname == "PlayerDB":
                 self.db_sender_players.remove(sender)
+            elif clsname == "ScriptDB":
+                self.db_sender_players.remove(sender)
 
     # receivers property
     #@property
     def __receivers_get(self):
         """
         Getter. Allows for value = self.receivers.
-        Returns three lists of receivers: players, objects and channels.
+        Returns four lists of receivers: players, objects, scripts and channels.
         """
-        return list(self.db_receivers_players.all()) + list(self.db_receivers_objects.all())
+        return list(self.db_receivers_players.all()) + \
+               list(self.db_receivers_objects.all()) + \
+               list(self.db_receivers_scripts.all()) + \
+               list(self.db_receivers_channels.all())
 
     #@receivers.setter
     def __receivers_set(self, receivers):
@@ -226,12 +241,19 @@ class Msg(SharedMemoryModel):
                 self.db_receivers_objects.add(receiver)
             elif clsname == "PlayerDB":
                 self.db_receivers_players.add(receiver)
+            elif clsname == "ScriptDB":
+                self.db_receivers_scripts.add(receiver)
+            elif clsname == "ChannelDB":
+                self.db_receivers_channels.add(receiver)
+
 
     #@receivers.deleter
     def __receivers_del(self):
         "Deleter. Clears all receivers"
         self.db_receivers_players.clear()
         self.db_receivers_objects.clear()
+        self.db_receivers_scripts.clear()
+        self.db_receivers_channels.clear()
         self.save()
     receivers = property(__receivers_get, __receivers_set, __receivers_del)
 
@@ -240,7 +262,7 @@ class Msg(SharedMemoryModel):
         Remove a single receiver or a list of receivers.
 
         Args:
-            receivers (Player, Object, Channel or list): Receiver to remove.
+            receivers (Player, Object, Script, Channel or list): Receiver to remove.
 
         """
         for receiver in make_iter(receivers):
@@ -253,6 +275,10 @@ class Msg(SharedMemoryModel):
                 self.db_receivers_objects.remove(receiver)
             elif clsname == "PlayerDB":
                 self.db_receivers_players.remove(receiver)
+            elif clsname == "ScriptDB":
+                self.db_receivers_scripts.remove(receiver)
+            elif clsname == "ChannelDB":
+                self.db_receivers_channels.remove(receiver)
 
     # channels property
     #@property
