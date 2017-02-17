@@ -20,7 +20,7 @@ COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # limit symbol import for API
 __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
            "CmdCpAttr", "CmdMvAttr", "CmdCreate",
-           "CmdDesc", "CmdDestroy", "CmdDig", "CmdTunnel", "CmdLink",
+           "CmdSetDesc", "CmdDestroy", "CmdDig", "CmdTunnel", "CmdLink",
            "CmdUnLink", "CmdSetHome", "CmdListCmdSets", "CmdName",
            "CmdOpen", "CmdSetAttribute", "CmdTypeclass", "CmdWipe",
            "CmdLock", "CmdExamine", "CmdFind", "CmdTeleport",
@@ -533,12 +533,12 @@ def _desc_quit(caller):
     caller.attributes.remove("evmenu_target")
     caller.msg("Exited editor.")
 
-class CmdDesc(COMMAND_DEFAULT_CLASS):
+class CmdSetDesc(COMMAND_DEFAULT_CLASS):
     """
-    describe an object
+    describe an object or the current room.
 
     Usage:
-      @desc [<obj> =] <description>
+      @setdesc [<obj> =] <description>
 
     Switches:
       edit - Open up a line editor for more advanced editing.
@@ -546,7 +546,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     Sets the "desc" attribute on an object. If an object is not given,
     describe the current room.
     """
-    key = "@desc"
+    key = "@setdesc"
     aliases = "@describe"
     locks = "cmd:perm(desc) or perm(Builders)"
     help_category = "Building"
