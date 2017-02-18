@@ -70,6 +70,7 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
             resource (EvenniaReverseProxyResource): A proxy resource.
 
         """
+        request.notifyFinish().addErrback(lambda f: f.cancel())
         return EvenniaReverseProxyResource(
             self.host, self.port, self.path + '/' + urlquote(path, safe=""),
             self.reactor)
@@ -98,6 +99,8 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
             request.getAllHeaders(), request.content.read(), request)
         clientFactory.noisy = False
         self.reactor.connectTCP(self.host, self.port, clientFactory)
+        # don't trigger traceback if connection is lost before request finish.
+        request.notifyFinish().addErrback(lambda f: f.cancel())
         return NOT_DONE_YET
 
 
