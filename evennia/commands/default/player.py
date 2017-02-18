@@ -163,7 +163,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
                                              location=start_location,
                                              home=default_home,
                                              permissions=permissions)
-        # only allow creator (and immortals) to puppet this char
+        # only allow creator (and developers) to puppet this char
         new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
                                 (new_character.id, player.id))
         player.db._playable_characters.append(new_character)
@@ -403,7 +403,7 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
         if self.cmdstring == "doing":
             show_session_data = False
         else:
-            show_session_data = player.check_permstring("Developer") or player.check_permstring("Wizards")
+            show_session_data = player.check_permstring("Developer") or player.check_permstring("Admins")
 
         nplayers = (SESSIONS.player_count())
         if show_session_data:

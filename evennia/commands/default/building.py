@@ -2625,7 +2625,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
         elif isinstance(prototype, dict):
             # we got the prototype on the command line. We must make sure to not allow
-            # the 'exec' key unless we are immortals or higher.
+            # the 'exec' key unless we are developers or higher.
             if "exec" in prototype and not self.caller.check_permstring("Developer"):
                 self.caller.msg("Spawn aborted: You don't have access to use the 'exec' prototype key.")
                 return

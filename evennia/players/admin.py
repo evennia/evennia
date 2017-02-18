@@ -124,7 +124,7 @@ class PlayerForm(forms.ModelForm):
         help_text="In-game permissions. A comma-separated list of text "
                   "strings checked by certain locks. They are often used for "
                   "hierarchies, such as letting a Player have permission "
-                  "'Wizards', 'Builders' etc. A Player permission can be "
+                  "'Admin', 'Builder' etc. A Player permission can be "
                   "overloaded by the permissions of a controlled Character. "
                   "Normal players use 'Players' by default.")
 

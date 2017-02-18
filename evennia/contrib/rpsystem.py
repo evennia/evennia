@@ -1203,7 +1203,7 @@ class ContribRPObject(DefaultObject):
             nofound_string (str):  optional custom string for not-found error message.
             multimatch_string (str): optional custom string for multimatch error header.
             use_dbref (bool or None): If None, only turn off use_dbref if we are of a lower
-                permission than Builders. Otherwise, honor the True/False value.
+                permission than Builder. Otherwise, honor the True/False value.
 
         Returns:
             match (Object, None or list): will return an Object/None if `quiet=False`,

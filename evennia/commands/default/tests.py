@@ -156,8 +156,8 @@ class TestAdmin(CommandTest):
         self.call(admin.CmdEmit(), "Char2 = Test", "Emitted to Char2:\nTest")
 
     def test_perm(self):
-        self.call(admin.CmdPerm(), "Obj = Builders", "Permission 'Builders' given to Obj (the Object/Character).")
-        self.call(admin.CmdPerm(), "Char2 = Builders", "Permission 'Builders' given to Char2 (the Object/Character).")
+        self.call(admin.CmdPerm(), "Obj = Builder", "Permission 'Builder' given to Obj (the Object/Character).")
+        self.call(admin.CmdPerm(), "Char2 = Builder", "Permission 'Builder' given to Char2 (the Object/Character).")
 
     def test_wall(self):
         self.call(admin.CmdWall(), "Test", "Announcing to all connected players ...")
@@ -203,7 +203,7 @@ class TestPlayer(CommandTest):
         self.call(player.CmdCharCreate(), "Test1=Test char", "Created new character Test1. Use @ic Test1 to enter the game", caller=self.player)
 
     def test_quell(self):
-        self.call(player.CmdQuell(), "", "Quelling to current puppet's permissions (immortals).", caller=self.player)
+        self.call(player.CmdQuell(), "", "Quelling to current puppet's permissions (developer).", caller=self.player)
 
 
 class TestBuilding(CommandTest):

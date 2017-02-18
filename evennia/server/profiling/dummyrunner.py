@@ -15,7 +15,7 @@ full step-by-step setup help.
 Basically (for testing default Evennia):
 
  - Use an empty/testing database.
- - set PERMISSION_PLAYER_DEFAULT = "Builders"
+ - set PERMISSION_PLAYER_DEFAULT = "Builder"
  - start server, eventually with profiling active
  - launch this client runner
 
@@ -95,7 +95,7 @@ ERROR_NO_MIXIN = \
         from evennia.server.profiling.settings_mixin import *
 
     This will change the settings in the following way:
-        - change PERMISSION_PLAYER_DEFAULT to 'Immortals' to allow clients
+        - change PERMISSION_PLAYER_DEFAULT to 'Developer' to allow clients
           to test all commands
         - change PASSWORD_HASHERS to use a faster (but less safe) algorithm
           when creating large numbers of accounts at the same time
@@ -136,7 +136,7 @@ Setup:
      `evennia migrate`)
   2) in server/conf/settings.py, add
 
-        PERMISSION_PLAYER_DEFAULT="Builders"
+        PERMISSION_PLAYER_DEFAULT="Builder"
 
      This is so that the dummy players can test building operations.
      You can also customize the dummyrunner by modifying a setting

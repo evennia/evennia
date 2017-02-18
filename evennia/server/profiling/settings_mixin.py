@@ -18,4 +18,4 @@ PASSWORD_HASHERS = (
             'django.contrib.auth.hashers.MD5PasswordHasher',
             )
 # make dummy clients able to test all commands
-PERMISSION_PLAYER_DEFAULT = "Immortals"
+PERMISSION_PLAYER_DEFAULT = "Developer"
