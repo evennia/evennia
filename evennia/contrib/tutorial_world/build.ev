@@ -94,7 +94,7 @@
 # describe the tutorial exit
 #
 @desc tutorial =
- This starts the {gEvennia tutorial{n, using a small solo game to show off
+ This starts the |gEvennia tutorial|n, using a small solo game to show off
  some of the server's possibilities.
 #
 # now we actually go to the tutorial
@@ -104,13 +104,13 @@ tutorial
 # ... and describe it.
 #
 @desc
- {gWelcome to the Evennia tutorial!{n
+ |gWelcome to the Evennia tutorial!|n
 
 
  The following tutorial consists of a small single-player quest
  area. The various rooms are designed to show off some of the power
  and possibilities of the Evennia mud creation system. At any time
- during this tutorial you can use the {wtutorial{n (or {wtut{n)
+ during this tutorial you can use the |wtutorial|n (or |wtut|n)
  command to get some background info about the room or certain objects
  to see what is going on "behind the scenes".
 
@@ -127,8 +127,8 @@ tutorial
  along a high, rocky coast ...
 
 
- {g(write 'start' or 'begin' to start the tutorial. Try 'tutorial'
- to get behind-the-scenes help anywhere.){n
+ |g(write 'start' or 'begin' to start the tutorial. Try 'tutorial'
+ to get behind-the-scenes help anywhere.)|n
 #
 # Show that the tutorial command works ...
 #
@@ -203,12 +203,12 @@ start
  used for all tutorial rooms can display.
 #
 @desc
- You stand on the high coast line overlooking a stormy {wsea{n far
+ You stand on the high coast line overlooking a stormy |wsea|n far
  below. Around you the ground is covered in low gray-green grass,
  pushed flat by wind and rain. Inland, the vast dark moors begin, only
  here and there covered in patches of low trees and brushes.
 
- To the east, you glimpse the ragged outline of a castle {wruin{n. It sits
+ To the east, you glimpse the ragged outline of a castle |wruin|n. It sits
  perched on a sheer cliff out into the water, isolated from the
  shore. The only way to reach it seems by way of an old hanging bridge,
  anchored not far east from here.
@@ -327,9 +327,9 @@ start
  The branches are wet and slippery but can easily carry your
  weight. From this high vantage point you can see far and wide.
 
- ... In fact, you notice {Ya faint yellowish light{n not far to the north,
+ ... In fact, you notice |Ya faint yellowish light|n not far to the north,
  beyond the trees. It looks like some sort of building. From this angle
- you can make out a {wfaint footpath{n leading in that direction, all
+ you can make out a |wfaint footpath|n leading in that direction, all
  but impossible to make out from ground level. You mentally register
  where the footpath starts and will now be able to find it again.
 
@@ -376,7 +376,7 @@ north
 @desc
  You stand outside a one-story sturdy wooden building. Light flickers
  behind closed storm shutters. Over the door a sign creaks in the wind
- - the writing says {cEvennia Inn{n and the curly letters are
+ - the writing says |cEvennia Inn|n and the curly letters are
  surrounded by a painted image of some sort of snake.  From inside you
  hear the sound of laughter, singing and loud conversation.
 #
@@ -413,12 +413,12 @@ north
 
 
  Soon you have a beer in hand and are chatting with the locals. Your
- eye falls on a {wbarrel{n in a corner with a few old rusty weapons
- sticking out. There is a sign next to it: {wFree to take{n. A patron
+ eye falls on a |wbarrel|n in a corner with a few old rusty weapons
+ sticking out. There is a sign next to it: |wFree to take|n. A patron
  tells you cheerfully that it's the leftovers from those foolish
  adventurers that challenged the old ruin before you ...
 
- (to get a weapon from the barrel, use {wget weapon{n)
+ (to get a weapon from the barrel, use |wget weapon|n)
 #
 @desc barrel =
  This barrel has the air of leftovers - it contains an assorted
@@ -544,11 +544,11 @@ bridge
 @desc
  You are on a narrow ledge protruding from the side of the cliff,
  about halfway down.  The air is saturated with salty sea water,
- sprays hitting your face from the crashing waves {wbelow{n.
+ sprays hitting your face from the crashing waves |wbelow|n.
 
  The ledge is covered with a few black-grey brushes. Not far from you
  the cliff-face is broken down to reveal a narrow natural opening into
- the cliff. High above you the {wbridge{n sways and creaks in the wind.
+ the cliff. High above you the |wbridge|n sways and creaks in the wind.
 #
 @detail brush;brushes =
  The brushes covering the ledge are gray and dwarfed from constantly
@@ -662,7 +662,7 @@ hole
 # light source.
 #
 @desc
- {YThe {yflickering light{Y of your makeshift light reveals a small square
+ |YThe |yflickering light|Y of your makeshift light reveals a small square
  cell. It does not seem like you are still in the castle, for the
  stone of the walls are chiseled crudely and drip with water and mold.
 
@@ -671,7 +671,7 @@ hole
  been a bed or a bench but is now nothing more than a pile of splinters,
  one of which you are using for light. One of the walls is covered with a
  thick cover of black roots having broken through the cracks from the
- outside.{n
+ outside.|n
 #
 @detail iron-cast door;iron;door;iron-cast =
  The door is very solid and clad in iron. No matter how much you push
@@ -740,9 +740,9 @@ hole
  portcullis, formerly blocking off the inner castle from attack, is
  sprawled over the ground together with most of its frame.
 
- {wEast{n the gatehouse leads out to a small open area surrounded by
+ |wEast|n the gatehouse leads out to a small open area surrounded by
  the remains of the castle.  There is also a standing archway
- offering passage to a path along the old {wsouth{nern inner wall.
+ offering passage to a path along the old |wsouth|nern inner wall.
 #
 @detail portoculis;fall;fallen;grating =
  This heavy iron grating used to block off the inner part of the gate house, now it has fallen
@@ -784,9 +784,9 @@ archway
  against the outer wall. The whole scene is directly open to the sky.
 
  The buildings make a half-circle along the main wall, here and there
- broken by falling stone and rubble. At one end (the {wnorth{nern) of
+ broken by falling stone and rubble. At one end (the |wnorth|nern) of
  this half-circle is the entrance to the castle, the ruined
- gatehoue. {wEast{nwards from here is some sort of open courtyard.
+ gatehoue. |wEast|nwards from here is some sort of open courtyard.
 
 #------------------------------------------------------------
 #
@@ -802,13 +802,13 @@ archway
 #
 @desc
  The ruins opens up to the sky in a small open area, lined by
- columns. The open area is dominated by a huge stone {wobelisk{n in its
+ columns. The open area is dominated by a huge stone |wobelisk|n in its
  center, an ancient ornament miraculously still standing.
 
  Previously one could probably continue past the obelisk and eastward
  into the castle keep itself, but that way is now completely blocked
- by fallen rubble. To the {wwest{n is the gatehouse and entrance to
- the castle, whereas {wsouth{nwards the collumns make way for a wide
+ by fallen rubble. To the |wwest|n is the gatehouse and entrance to
+ the castle, whereas |wsouth|nwards the collumns make way for a wide
  open courtyard.
 #
 @set here/tutorial_info =
@@ -829,7 +829,7 @@ archway
 # Set the puzzle clues on the obelisk. The order should correspond
 # to the ids later checked by the antechamber puzzle.
 #
-@set obelisk/puzzle_descs = ("You can briefly make out the image of {ba woman with a blue bird{n.", "You for a moment see the visage of {ba woman on a horse{n.", "For the briefest moment you make out an engraving of {ba regal woman wearing a crown{n.", "You think you can see the outline of {ba flaming shield{n in the stone.", "The surface for a moment seems to portray {ba sharp-faced woman with white hair{n.")
+@set obelisk/puzzle_descs = ("You can briefly make out the image of |ba woman with a blue bird|n.", "You for a moment see the visage of |ba woman on a horse|n.", "For the briefest moment you make out an engraving of |ba regal woman wearing a crown|n.", "You think you can see the outline of |ba flaming shield|n in the stone.", "The surface for a moment seems to portray |ba sharp-faced woman with white hair|n.")
 
 # Create the mobile. This is its start location.
 @create/drop Ghostly apparition;ghost;apparition;fog : tutorial_world.mob.Mob
@@ -942,9 +942,9 @@ mobon ghost
  overgrown with low grass and patches of thorny vines. There is a
  collapsed structure close to the gatehouse that looks like a stable.
 
- {wNorth{nwards is a smaller area cornered in the debris, adorned with
- a large obelisk-like thing. To the {wwest{n the castle walls loom
- over a mess of collapsed buildings. On the opposite, {weast{nern side
+ |wNorth|nwards is a smaller area cornered in the debris, adorned with
+ a large obelisk-like thing. To the |wwest|n the castle walls loom
+ over a mess of collapsed buildings. On the opposite, |weast|nern side
  of the yard is a large building with a curved roof that seem to have
  withstood the test of time better than many of those around it, it
  looks like some sort of temple.
@@ -1009,7 +1009,7 @@ stairs down
  close to great power.
 
  The sides of the chamber are lined with stone archways, these are
- entrances to the {wtombs{n of what must have been influential
+ entrances to the |wtombs|n of what must have been influential
  families or individual heroes of the realm. Each is adorned by a
  stone statue or symbol of fine make. They do not seem to be ordered
  in any particular order or rank.
@@ -1050,8 +1050,8 @@ Blue bird tomb
  make out a coffin in front of you in the gloom.
 
 
- {rSuddenly you hear a distinct 'click' and the ground abruptly
- disappears under your feet! You fall ... things go dark. {n
+ |rSuddenly you hear a distinct 'click' and the ground abruptly
+ disappears under your feet! You fall ... things go dark. |n
 
 
  ...
@@ -1097,8 +1097,8 @@ Tomb of woman on horse
  make out a coffin in front of you in the gloom.
 
 
- {rSuddenly you hear a distinct 'click' and the ground abruptly
- disappears under your feet! You fall ... things go dark. {n
+ |rSuddenly you hear a distinct 'click' and the ground abruptly
+ disappears under your feet! You fall ... things go dark. |n
 
 
  ...
@@ -1143,8 +1143,8 @@ Tomb of the crowned queen
  make out a coffin in front of you in the gloom.
 
 
- {rSuddenly you hear a distinct 'click' and the ground abruptly
- disappears under your feet! You fall ... things go dark. {n
+ |rSuddenly you hear a distinct 'click' and the ground abruptly
+ disappears under your feet! You fall ... things go dark. |n
 
 
  ...
@@ -1190,8 +1190,8 @@ Tomb of the shield
  make out a coffin in front of you in the gloom.
 
 
- {rSuddenly you hear a distinct 'click' and the ground abruptly
- disappears under your feet! You fall ... things go dark. {n
+ |rSuddenly you hear a distinct 'click' and the ground abruptly
+ disappears under your feet! You fall ... things go dark. |n
 
 
  ...
@@ -1238,8 +1238,8 @@ Tomb of the hero
  make out a coffin in front of you in the gloom.
 
 
- {rSuddenly you hear a distinct 'click' and the ground abruptly
- disappears under your feet! You fall ... things go dark. {n
+ |rSuddenly you hear a distinct 'click' and the ground abruptly
+ disappears under your feet! You fall ... things go dark. |n
 
 
  ...
@@ -1304,7 +1304,7 @@ The weapon held by the stone hands looks very realistic ...
 rather than one in stone.  This must be the hero's legendary weapon!
 The prize you have been looking for!
 
- (try {wget weapon{n)
+ (try |wget weapon|n)
 #
 @set sarcophagus/rack_id = rack_sarcophagus
 #
@@ -1317,14 +1317,14 @@ The prize you have been looking for!
  Trembling you carefully release the weapon from the stone to test
  its weight. You are finally holding your prize,
 
-  The {c%s{n
+  The |c%s|n
 
  in your hands!
 
- {gThis concludes the Evennia tutorial. From here you can either
+ |gThis concludes the Evennia tutorial. From here you can either
  continue to explore the castle (hint: this weapon works better
  against the castle guardian than any you might have found earlier) or
- you can choose to exit.{n
+ you can choose to exit.|n
 
 #------------------------------------------------------------
 #
@@ -1353,14 +1353,14 @@ The prize you have been looking for!
 #
 # this room quits the tutorial and cleans up all variables that were set.
 @desc
- {gThanks for trying out this little Evennia tutorial!
+ |gThanks for trying out this little Evennia tutorial!
 
 
  The game play given here is of course just scraping the surface of
  what can be done with Evennia. The tutorial focuses more on showing
  various techniques than to supply any sort of novel storytelling or
  gaming challenge.  The full README and source code for the tutorial
- world can be found under {wcontrib/tutorial_world{g.
+ world can be found under |wcontrib/tutorial_world|g.
 
 
  If you went through the tutorial quest once, it can be interesting to
@@ -1368,7 +1368,7 @@ The prize you have been looking for!
  not have come across yet, maybe with the source/build code next to
  you.  If you play as superuser (user #1) the mobile will ignore you
  and teleport rooms etc will not affect you (this will also disable all
- locks, so keep that in mind when checking functionality).{n
+ locks, so keep that in mind when checking functionality).|n
 #
 @set here/tutorial_info =
  This room cleans up all temporary attributes and tags that were put

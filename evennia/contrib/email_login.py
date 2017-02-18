@@ -54,7 +54,8 @@ except Exception:
     # malformed connection screen or no screen given
     pass
 if not CONNECTION_SCREEN:
-    CONNECTION_SCREEN = "\nEvennia: Error in CONNECTION_SCREEN MODULE (randomly picked connection screen variable is not a string). \nEnter 'help' for aid."
+    CONNECTION_SCREEN = "\nEvennia: Error in CONNECTION_SCREEN MODULE" \
+                        " (randomly picked connection screen variable is not a string). \nEnter 'help' for aid."
 
 
 class CmdUnconnectedConnect(MuxCommand):
@@ -108,14 +109,15 @@ class CmdUnconnectedConnect(MuxCommand):
                      or
                      any(tup[2].match(session.address[0]) for tup in bans if tup[2])):
             # this is a banned IP or name!
-            string = "{rYou have been banned and cannot continue from here."
-            string += "\nIf you feel this ban is in error, please email an admin.{x"
+            string = "|rYou have been banned and cannot continue from here."
+            string += "\nIf you feel this ban is in error, please email an admin.|x"
             session.msg(string)
             session.execute_cmd("quit")
             return
 
         # actually do the login. This will call all hooks.
         session.sessionhandler.login(session, player)
+
 
 class CmdUnconnectedCreate(MuxCommand):
     """
@@ -156,7 +158,7 @@ class CmdUnconnectedCreate(MuxCommand):
         self.playerinfo = (playername, email, password)
 
     def func(self):
-        "Do checks and create account"
+        """Do checks and create account"""
 
         session = self.caller
 
@@ -167,11 +169,11 @@ class CmdUnconnectedCreate(MuxCommand):
             session.msg(string)
             return
         if not re.findall('^[\w. @+-]+$', playername) or not (0 < len(playername) <= 30):
-            session.msg("\n\r Playername can be max 30 characters, or less. Letters, spaces, dig\
-its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth module.
+            session.msg("\n\r Playername can be max 30 characters, or less. Letters, spaces,"
+                        " digits and @/./+/-/_ only.")  # this echoes the restrictions made by django's auth module.
             return
         if not email or not password:
-            session.msg("\n\r You have to supply an e-mail address followed by a password." )
+            session.msg("\n\r You have to supply an e-mail address followed by a password.")
             return
 
         if not utils.validate_email_address(email):
@@ -205,11 +207,11 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
             permissions = settings.PERMISSION_PLAYER_DEFAULT
 
             try:
-                new_player = create.create_player(playername, email, password,
-                                                     permissions=permissions)
+                new_player = create.create_player(playername, email, password, permissions=permissions)
 
             except Exception as e:
-                session.msg("There was an error creating the default Player/Character:\n%s\n If this problem persists, contact an admin." % e)
+                session.msg("There was an error creating the default Player/Character:\n%s\n"
+                            " If this problem persists, contact an admin." % e)
                 logger.log_trace()
                 return
 
@@ -230,8 +232,8 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
                 # if we only allow one character, create one with the same name as Player
                 # (in mode 2, the character must be created manually once logging in)
                 new_character = create.create_object(typeclass, key=playername,
-                                          location=default_home, home=default_home,
-                                          permissions=permissions)
+                                                     location=default_home, home=default_home,
+                                                     permissions=permissions)
                 # set playable character list
                 new_player.db._playable_characters.append(new_character)
 
@@ -260,6 +262,7 @@ its and @/./+/-/_ only.") # this echoes the restrictions made by django's auth m
             session.msg("An error occurred. Please e-mail an admin if the problem persists.")
             logger.log_trace()
 
+
 class CmdUnconnectedQuit(MuxCommand):
     """
     We maintain a different version of the `quit` command
@@ -271,7 +274,7 @@ class CmdUnconnectedQuit(MuxCommand):
     locks = "cmd:all()"
 
     def func(self):
-        "Simply close the connection."
+        """Simply close the connection."""
         session = self.caller
         session.msg("Good bye! Disconnecting ...")
         session.session_disconnect()
@@ -289,7 +292,7 @@ class CmdUnconnectedLook(MuxCommand):
     locks = "cmd:all()"
 
     def func(self):
-        "Show the connect screen."
+        """Show the connect screen."""
         self.caller.msg(CONNECTION_SCREEN)
 
 
@@ -303,34 +306,34 @@ class CmdUnconnectedHelp(MuxCommand):
     locks = "cmd:all()"
 
     def func(self):
-        "Shows help"
+        """Shows help"""
 
         string = \
             """
 You are not yet logged into the game. Commands available at this point:
-  {wcreate, connect, look, help, quit{n
+  |wcreate, connect, look, help, quit|n
 
 To login to the system, you need to do one of the following:
 
-{w1){n If you have no previous account, you need to use the 'create'
+|w1)|n If you have no previous account, you need to use the 'create'
    command like this:
 
-     {wcreate "Anna the Barbarian" anna@myemail.com c67jHL8p{n
+     |wcreate "Anna the Barbarian" anna@myemail.com c67jHL8p|n
 
    It's always a good idea (not only here, but everywhere on the net)
    to not use a regular word for your password. Make it longer than
    3 characters (ideally 6 or more) and mix numbers and capitalization
    into it.
 
-{w2){n If you have an account already, either because you just created
-   one in {w1){n above or you are returning, use the 'connect' command:
+|w2)|n If you have an account already, either because you just created
+   one in |w1)|n above or you are returning, use the 'connect' command:
 
-     {wconnect anna@myemail.com c67jHL8p{n
+     |wconnect anna@myemail.com c67jHL8p|n
 
-   This should log you in. Run {whelp{n again once you're logged in
+   This should log you in. Run |whelp|n again once you're logged in
    to get more aid. Hope you enjoy your stay!
 
-You can use the {wlook{n command if you want to see the connect screen again.
+You can use the |wlook|n command if you want to see the connect screen again.
 """
         self.caller.msg(string)
 
@@ -345,7 +348,7 @@ class UnloggedinCmdSet(CmdSet):
     priority = 0
 
     def at_cmdset_creation(self):
-        "Populate the cmdset"
+        """Populate the cmdset"""
         self.add(CmdUnconnectedConnect())
         self.add(CmdUnconnectedCreate())
         self.add(CmdUnconnectedQuit())

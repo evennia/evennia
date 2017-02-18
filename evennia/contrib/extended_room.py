@@ -108,7 +108,7 @@ class ExtendedRoom(DefaultRoom):
     look command.
     """
     def at_object_creation(self):
-        "Called when room is first created only."
+        """Called when room is first created only."""
         self.db.spring_desc = ""
         self.db.summer_desc = ""
         self.db.autumn_desc = ""
@@ -367,12 +367,12 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
     aliases = ["@describe", "@detail"]
 
     def reset_times(self, obj):
-        "By deleteting the caches we force a re-load."
+        """By deleteting the caches we force a re-load."""
         obj.ndb.last_season = None
         obj.ndb.last_timeslot = None
 
     def func(self):
-        "Define extended command"
+        """Define extended command"""
         caller = self.caller
         location = caller.location
         if self.cmdname == 'detail':
@@ -393,13 +393,14 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
             if not self.args:
                 # No args given. Return all details on location
                 string = "|wDetails on %s|n:" % location
-                details = "\n".join(" |w%s|n: %s" % (key, utils.crop(text)) for key, text in location.db.details.items())
+                details = "\n".join(" |w%s|n: %s"
+                                    % (key, utils.crop(text)) for key, text in location.db.details.items())
                 caller.msg("%s\n%s" % (string, details) if details else "%s None." % string)
                 return
             if not self.rhs:
                 # no '=' used - list content of given detail
                 if self.args in location.db.details:
-                    string = "{wDetail '%s' on %s:\n{n" % (self.args, location)
+                    string = "|wDetail '%s' on %s:\n|n" % (self.args, location)
                     string += str(location.db.details[self.args])
                     caller.msg(string)
                 else:
@@ -414,18 +415,15 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
             # we are doing a @desc call
             if not self.args:
                 if location:
-                    string = "{wDescriptions on %s{n:\n" % location.key
-                    string += " {wspring:{n %s\n" % location.db.spring_desc
-                    string += " {wsummer:{n %s\n" % location.db.summer_desc
-                    string += " {wautumn:{n %s\n" % location.db.autumn_desc
-                    string += " {wwinter:{n %s\n" % location.db.winter_desc
-                    string += " {wgeneral:{n %s" % location.db.general_desc
+                    string = "|wDescriptions on %s|n:\n" % location.key
+                    string += " |wspring:|n %s\n" % location.db.spring_desc
+                    string += " |wsummer:|n %s\n" % location.db.summer_desc
+                    string += " |wautumn:|n %s\n" % location.db.autumn_desc
+                    string += " |wwinter:|n %s\n" % location.db.winter_desc
+                    string += " |wgeneral:|n %s" % location.db.general_desc
                     caller.msg(string)
                     return
-            if self.switches and self.switches[0] in ("spring",
-                                                      "summer",
-                                                      "autumn",
-                                                      "winter"):
+            if self.switches and self.switches[0] in ("spring", "summer", "autumn", "winter"):
                 # a seasonal switch was given
                 if self.rhs:
                     caller.msg("Seasonal descs only works with rooms, not objects.")
@@ -455,7 +453,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 else:
                     text = self.args
                     obj = location
-                obj.db.desc = text # a compatibility fallback
+                obj.db.desc = text  # a compatibility fallback
                 if obj.attributes.has("general_desc"):
                     obj.db.general_desc = text
                     self.reset_times(obj)
@@ -481,7 +479,7 @@ class CmdGameTime(default_cmds.MuxCommand):
     help_category = "General"
 
     def func(self):
-        "Reads time info from current room"
+        """Reads time info from current room"""
         location = self.caller.location
         if not location or not hasattr(location, "get_time_and_season"):
             self.caller.msg("No location available - you are outside time.")
