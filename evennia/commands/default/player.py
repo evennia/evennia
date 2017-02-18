@@ -549,7 +549,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
         def update(name, val, validator):
             # helper: update property and report errors
             try:
-                old_val = flags[name]
+                old_val = flags.get(name, False)
                 new_val = validator(val)
                 flags[name] = new_val
                 self.msg("Option |w%s|n was changed from '|w%s|n' to '|w%s|n'." % (name, old_val, new_val))
