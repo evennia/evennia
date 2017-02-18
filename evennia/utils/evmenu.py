@@ -888,24 +888,28 @@ class CmdGetInput(Command):
     def func(self):
         "This is called when user enters anything."
         caller = self.caller
-        callback = caller.ndb._getinput._callback
-        if not callback:
-            # this can be happen if called from a player-command when IC
-            caller = self.player
-            callback = caller.ndb._getinput._callback
-            if not callback:
-                raise RuntimeError("No input callback found.")
+        try:
+            getinput = caller.ndb._getinput
+            if not getinput and hasattr(caller, "player"):
+                getinput = caller.player.ndb._getinput
+                caller = caller.player
+            callback = getinput._callback
 
-        caller.ndb._getinput._session = self.session
-        prompt = caller.ndb._getinput._prompt
-        result = self.raw_string.strip() # we strip the ending line break caused by sending
+            caller.ndb._getinput._session = self.session
+            prompt = caller.ndb._getinput._prompt
+            result = self.raw_string.strip() # we strip the ending line break caused by sending
 
-        ok = not callback(caller, prompt, result)
-        if ok:
-            # only clear the state if the callback does not return
-            # anything
-            del caller.ndb._getinput
-            caller.cmdset.remove(InputCmdSet)
+            ok = not callback(caller, prompt, result)
+            if ok:
+                # only clear the state if the callback does not return
+                # anything
+                del caller.ndb._getinput
+                caller.cmdset.remove(InputCmdSet)
+        except Exception:
+            # make sure to clean up cmdset if something goes wrong
+            caller.msg("|rError in get_input. Choice not confirmed (report to admin)|n")
+            logger.log_trace("Error in get_input")
+            caller.cdmset.remove(InputCmdSet)
 
 
 class InputCmdSet(CmdSet):
