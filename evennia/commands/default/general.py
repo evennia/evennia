@@ -175,10 +175,9 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                         errstring += "Not a valid nick index."
                 else:
                     errstring += "Nick not found."
-
             if "delete" in switches or "del" in switches:
                 # clear the nick
-                if caller.nicks.has(old_nickstring, category=nicktype):
+                if old_nickstring and caller.nicks.has(old_nickstring, category=nicktype):
                     caller.nicks.remove(old_nickstring, category=nicktype)
                     string += "\nNick removed: '|w%s|n' -> |w%s|n." % (old_nickstring, old_replstring)
                 else:
