@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Testing suite for contrib folder
 
@@ -538,3 +539,55 @@ class TestMail(CommandTest):
         self.call(mail.CmdMail(), "/forward TestPlayer2 = 1/Forward message", "You sent your message.|Message forwarded.", caller=self.player)
         self.call(mail.CmdMail(), "/reply 2=Reply Message2", "You sent your message.", caller=self.player)
         self.call(mail.CmdMail(), "/delete 2", "Message 2 deleted", caller=self.player)
+
+# test map builder contrib
+
+from evennia.contrib import mapbuilder
+
+class TestMapBuilder(CommandTest):
+    def test_cmdmapbuilder(self):
+        self.call(mapbuilder.CmdMapBuilder(),
+            "evennia.contrib.mapbuilder.EXAMPLE1_MAP evennia.contrib.mapbuilder.EXAMPLE1_LEGEND",
+"""Creating Map...|≈≈≈≈≈
+≈♣n♣≈
+≈∩▲∩≈
+≈♠n♠≈
+≈≈≈≈≈
+|Creating Landmass...|""")
+        self.call(mapbuilder.CmdMapBuilder(),
+            "evennia.contrib.mapbuilder.EXAMPLE2_MAP evennia.contrib.mapbuilder.EXAMPLE2_LEGEND",
+"""Creating Map...|≈ ≈ ≈ ≈ ≈
+
+≈ ♣♣♣ ≈
+    ≈ ♣ ♣ ♣ ≈
+  ≈ ♣♣♣ ≈
+
+≈ ≈ ≈ ≈ ≈
+|Creating Landmass...|""")
+
+
+# test menu_login
+
+from evennia.contrib import menu_login
+
+class TestMenuLogin(CommandTest):
+    def test_cmdunloggedlook(self):
+        self.call(menu_login.CmdUnloggedinLook(), "", "======")
+
+
+# test multidescer contrib
+
+from evennia.contrib import multidescer
+
+class TestMultidescer(CommandTest):
+    def test_cmdmultidesc(self):
+        self.call(multidescer.CmdMultiDesc(),"/list", "Stored descs:\ncaller:")
+        self.call(multidescer.CmdMultiDesc(),"test = Desc 1", "Stored description 'test': \"Desc 1\"")
+        self.call(multidescer.CmdMultiDesc(),"test2 = Desc 2", "Stored description 'test2': \"Desc 2\"")
+        self.call(multidescer.CmdMultiDesc(),"/swap test-test2", "Swapped descs 'test' and 'test2'.")
+        self.call(multidescer.CmdMultiDesc(),"test3 = Desc 3init", "Stored description 'test3': \"Desc 3init\"")
+        self.call(multidescer.CmdMultiDesc(),"/list", "Stored descs:\ntest3: Desc 3init\ntest: Desc 1\ntest2: Desc 2\ncaller:")
+        self.call(multidescer.CmdMultiDesc(),"test3 = Desc 3", "Stored description 'test3': \"Desc 3\"")
+        self.call(multidescer.CmdMultiDesc(),"/set test1 + test2 + + test3", "test1 Desc 2 Desc 3\n\n"
+                                             "The above was set as the current description.")
+        self.assertEqual(self.char1.db.desc, "test1 Desc 2 Desc 3")
