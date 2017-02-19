@@ -109,7 +109,7 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
     help_category = "System"
 
     def func(self):
-        "Define function"
+        """Define function"""
         # Only allow shutdown if caller has session
         if not self.caller.sessions.get():
             return
@@ -126,6 +126,7 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
 def _py_load(caller):
     return ""
 
+
 def _py_code(caller, buf):
     """
     Execute the buffer.
@@ -139,9 +140,11 @@ def _py_code(caller, buf):
                  show_input=False)
     return True
 
+
 def _py_quit(caller):
     del caller.db._py_measure_time
     caller.msg("Exited the code editor.")
+
 
 def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
         show_input=True):
@@ -174,9 +177,9 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
     if show_input:
         try:
             caller.msg(">>> %s" % pycode, session=session,
-                    options={"raw":True})
+                    options={"raw": True})
         except TypeError:
-            caller.msg(">>> %s" % pycode, options={"raw":True})
+            caller.msg(">>> %s" % pycode, options={"raw": True})
 
     try:
         try:
@@ -204,9 +207,10 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
         ret = "\n".join("%s" % line for line in errlist if line)
 
     try:
-        caller.msg(ret, session=session, options={"raw":True})
+        caller.msg(ret, session=session, options={"raw": True})
     except TypeError:
-        caller.msg(ret, options={"raw":True})
+        caller.msg(ret, options={"raw": True})
+
 
 class CmdPy(COMMAND_DEFAULT_CLASS):
     """
@@ -234,8 +238,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
     You can explore The evennia API from inside the game by calling
     evennia.help(), evennia.managers.help() etc.
 
-    {rNote: In the wrong hands this command is a severe security risk.
-    It should only be accessible by trusted server admins/superusers.{n
+    |rNote: In the wrong hands this command is a severe security risk.
+    It should only be accessible by trusted server admins/superusers.|n
 
     """
     key = "@py"
@@ -244,7 +248,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
     help_category = "System"
 
     def func(self):
-        "hook function"
+        """hook function"""
 
         caller = self.caller
         pycode = self.args
@@ -266,13 +270,14 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
 # helper function. Kept outside so it can be imported and run
 # by other commands.
 
+
 def format_script_list(scripts):
-    "Takes a list of scripts and formats the output."
+    """Takes a list of scripts and formats the output."""
     if not scripts:
         return "<No scripts>"
 
-    table = EvTable("{wdbref{n", "{wobj{n", "{wkey{n", "{wintval{n", "{wnext{n",
-                    "{wrept{n", "{wdb", "{wtypeclass{n", "{wdesc{n",
+    table = EvTable("|wdbref|n", "|wobj|n", "|wkey|n", "|wintval|n", "|wnext|n",
+                    "|wrept|n", "|wdb", "|wtypeclass|n", "|wdesc|n",
                     align='r', border="tablecols")
     for script in scripts:
         nextrep = script.time_until_next_repeat()
@@ -326,12 +331,11 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     help_category = "System"
 
     def func(self):
-        "implement method"
+        """implement method"""
 
         caller = self.caller
         args = self.args
 
-        string = ""
         if args:
             if "start" in self.switches:
                 # global script-start mode
@@ -374,9 +378,9 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
                 else:
                     string = "Stopping script '%s'." % scripts[0].key
                     scripts[0].stop()
-                #import pdb
-                #pdb.set_trace()
-                ScriptDB.objects.validate() #just to be sure all is synced
+                # import pdb  # DEBUG
+                # pdb.set_trace()  # DEBUG
+                ScriptDB.objects.validate()  # just to be sure all is synced
             else:
                 # multiple matches.
                 string = "Multiple script matches. Please refine your search:\n"
@@ -409,26 +413,21 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
     help_category = "System"
 
     def func(self):
-        "Implement the command"
+        """Implement the command"""
 
         caller = self.caller
-
-        if self.args and self.args.isdigit():
-            nlim = int(self.args)
-        else:
-            nlim = 10
-
+        nlim = int(self.args) if self.args and self.args.isdigit() else 10
         nobjs = ObjectDB.objects.count()
         base_char_typeclass = settings.BASE_CHARACTER_TYPECLASS
         nchars = ObjectDB.objects.filter(db_typeclass_path=base_char_typeclass).count()
-        nrooms = ObjectDB.objects.filter(db_location__isnull=True).exclude(db_typeclass_path=base_char_typeclass).count()
+        nrooms = ObjectDB.objects.filter(db_location__isnull=True).exclude(
+            db_typeclass_path=base_char_typeclass).count()
         nexits = ObjectDB.objects.filter(db_location__isnull=False, db_destination__isnull=False).count()
         nother = nobjs - nchars - nrooms - nexits
-
-        nobjs = nobjs or 1 # fix zero-div error with empty database
+        nobjs = nobjs or 1  # fix zero-div error with empty database
 
         # total object sum table
-        totaltable = EvTable("{wtype{n", "{wcomment{n", "{wcount{n", "{w%%{n", border="table", align="l")
+        totaltable = EvTable("|wtype|n", "|wcomment|n", "|wcount|n", "|w%%|n", border="table", align="l")
         totaltable.align = 'l'
         totaltable.add_row("Characters", "(BASE_CHARACTER_TYPECLASS)", nchars, "%.2f" % ((float(nchars) / nobjs) * 100))
         totaltable.add_row("Rooms", "(location=None)", nrooms, "%.2f" % ((float(nrooms) / nobjs) * 100))
@@ -436,7 +435,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         totaltable.add_row("Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100))
 
         # typeclass table
-        typetable = EvTable("{wtypeclass{n", "{wcount{n", "{w%%{n", border="table", align="l")
+        typetable = EvTable("|wtypeclass|n", "|wcount|n", "|w%%|n", border="table", align="l")
         typetable.align = 'l'
         dbtotals = ObjectDB.objects.object_totals()
         for path, count in dbtotals.items():
@@ -444,15 +443,15 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
 
         # last N table
         objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim):]
-        latesttable = EvTable("{wcreated{n", "{wdbref{n", "{wname{n", "{wtypeclass{n", align="l", border="table")
+        latesttable = EvTable("|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", align="l", border="table")
         latesttable.align = 'l'
         for obj in objs:
             latesttable.add_row(utils.datetime_format(obj.date_created),
                                 obj.dbref, obj.key, obj.path)
 
-        string = "\n{wObject subtype totals (out of %i Objects):{n\n%s" % (nobjs, totaltable)
-        string += "\n{wObject typeclass distribution:{n\n%s" % typetable
-        string += "\n{wLast %s Objects created:{n\n%s" % (min(nobjs, nlim), latesttable)
+        string = "\n|wObject subtype totals (out of %i Objects):|n\n%s" % (nobjs, totaltable)
+        string += "\n|wObject typeclass distribution:|n\n%s" % typetable
+        string += "\n|wLast %s Objects created:|n\n%s" % (min(nobjs, nlim), latesttable)
         caller.msg(string)
 
 
@@ -473,7 +472,7 @@ class CmdPlayers(COMMAND_DEFAULT_CLASS):
     help_category = "System"
 
     def func(self):
-        "List the players"
+        """List the players"""
 
         caller = self.caller
         if self.args and self.args.isdigit():
@@ -485,17 +484,17 @@ class CmdPlayers(COMMAND_DEFAULT_CLASS):
 
         # typeclass table
         dbtotals = PlayerDB.objects.object_totals()
-        typetable = EvTable("{wtypeclass{n", "{wcount{n", "{w%%{n", border="cells", align="l")
+        typetable = EvTable("|wtypeclass|n", "|wcount|n", "|w%%|n", border="cells", align="l")
         for path, count in dbtotals.items():
             typetable.add_row(path, count, "%.2f" % ((float(count) / nplayers) * 100))
         # last N table
         plyrs = PlayerDB.objects.all().order_by("db_date_created")[max(0, nplayers - nlim):]
-        latesttable = EvTable("{wcreated{n", "{wdbref{n", "{wname{n", "{wtypeclass{n", border="cells", align="l")
+        latesttable = EvTable("|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", border="cells", align="l")
         for ply in plyrs:
             latesttable.add_row(utils.datetime_format(ply.date_created), ply.dbref, ply.key, ply.path)
 
-        string = "\n{wPlayer typeclass distribution:{n\n%s" % typetable
-        string += "\n{wLast %s Players created:{n\n%s" % (min(nplayers, nlim), latesttable)
+        string = "\n|wPlayer typeclass distribution:|n\n%s" % typetable
+        string += "\n|wLast %s Players created:|n\n%s" % (min(nplayers, nlim), latesttable)
         caller.msg(string)
 
 
@@ -525,7 +524,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
     help_category = "System"
 
     def func(self):
-        "Implement command"
+        """Implement command"""
 
         caller = self.caller
         switches = self.switches
@@ -540,9 +539,9 @@ class CmdService(COMMAND_DEFAULT_CLASS):
         if not switches or switches[0] == "list":
             # Just display the list of installed services and their
             # status, then exit.
-            table = EvTable("{wService{n (use @services/start|stop|delete)", "{wstatus", align="l")
+            table = EvTable("|wService|n (use @services/start|stop|delete)", "|wstatus", align="l")
             for service in service_collection.services:
-                table.add_row(service.name, service.running and "{gRunning" or "{rNot Running")
+                table.add_row(service.name, service.running and "|gRunning" or "|rNot Running")
             caller.msg(unicode(table))
             return
 
@@ -584,7 +583,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
             return
 
         if switches[0] == "start":
-            #Starts a service.
+            # Attempt to start a service.
             if service.running:
                 caller.msg('That service is already running.')
                 return
@@ -608,23 +607,23 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
     help_category = "System"
 
     def func(self):
-        "Show the version"
+        """Show the version"""
 
         string = """
-         {cEvennia{n %s{n
+         |cEvennia|n %s|n
          MUD/MUX/MU* development system
 
-         {wLicence{n BSD 3-Clause Licence
-         {wWeb{n http://www.evennia.com
-         {wIrc{n #evennia on FreeNode
-         {wForum{n http://www.evennia.com/discussions
-         {wMaintainer{n (2010-)   Griatch (griatch AT gmail DOT com)
-         {wMaintainer{n (2006-10) Greg Taylor
+         |wLicence|n BSD 3-Clause Licence
+         |wWeb|n http://www.evennia.com
+         |wIrc|n #evennia on FreeNode
+         |wForum|n http://www.evennia.com/discussions
+         |wMaintainer|n (2010-)   Griatch (griatch AT gmail DOT com)
+         |wMaintainer|n (2006-10) Greg Taylor
 
-         {wOS{n %s
-         {wPython{n %s
-         {wTwisted{n %s
-         {wDjango{n %s
+         |wOS|n %s
+         |wPython|n %s
+         |wTwisted|n %s
+         |wDjango|n %s
         """ % (utils.get_evennia_version(),
                os.name,
                sys.version.split()[0],
@@ -649,8 +648,8 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
     help_category = "System"
 
     def func(self):
-        "Show server time data in a table."
-        table1 = EvTable("|wServer time","", align="l", width=78)
+        """Show server time data in a table."""
+        table1 = EvTable("|wServer time", "", align="l", width=78)
         table1.add_row("Current uptime", utils.time_format(gametime.uptime(), 3))
         table1.add_row("Total runtime", utils.time_format(gametime.runtime(), 2))
         table1.add_row("First start", datetime.datetime.fromtimestamp(gametime.server_epoch()))
@@ -682,20 +681,20 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
 
     Some Important statistics in the table:
 
-    {wServer load{n is an average of processor usage. It's usually
+    |wServer load|n is an average of processor usage. It's usually
     between 0 (no usage) and 1 (100% usage), but may also be
     temporarily higher if your computer has multiple CPU cores.
 
-    The {wResident/Virtual memory{n displays the total memory used by
+    The |wResident/Virtual memory|n displays the total memory used by
     the server process.
 
-    Evennia {wcaches{n all retrieved database entities when they are
+    Evennia |wcaches|n all retrieved database entities when they are
     loaded by use of the idmapper functionality. This allows Evennia
     to maintain the same instances of an entity and allowing
     non-persistent storage schemes. The total amount of cached objects
     are displayed plus a breakdown of database object types.
 
-    The {wflushmem{n switch allows to flush the object cache. Please
+    The |wflushmem|n switch allows to flush the object cache. Please
     note that due to how Python's memory management works, releasing
     caches may not show you a lower Residual/Virtual memory footprint,
     the released memory will instead be re-used by the program.
@@ -707,7 +706,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
     help_category = "System"
 
     def func(self):
-        "Show list."
+        """Show list."""
 
         global _IDMAPPER
         if not _IDMAPPER:
@@ -741,21 +740,21 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
             if has_psutil:
                 loadavg = psutil.cpu_percent()
                 _mem = psutil.virtual_memory()
-                rmem = _mem.used  / (1000.0 * 1000)
+                rmem = _mem.used / (1000.0 * 1000)
                 pmem = _mem.percent
 
                 if "mem" in self.switches:
-                    string = "Total computer memory usage: {w%g{n MB (%g%%)"
+                    string = "Total computer memory usage: |w%g|n MB (%g%%)"
                     self.caller.msg(string % (rmem, pmem))
                     return
                 # Display table
                 loadtable = EvTable("property", "statistic", align="l")
                 loadtable.add_row("Total CPU load", "%g %%" % loadavg)
-                loadtable.add_row("Total computer memory usage","%g MB (%g%%)" % (rmem, pmem))
+                loadtable.add_row("Total computer memory usage", "%g MB (%g%%)" % (rmem, pmem))
                 loadtable.add_row("Process ID", "%g" % pid),
             else:
                 loadtable = "Not available on Windows without 'psutil' library " \
-                            "(install with {wpip install psutil{n)."
+                            "(install with |wpip install psutil|n)."
 
         else:
             # Linux / BSD (OSX) - proper pid-based statistics
@@ -767,45 +766,48 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
             loadavg = os.getloadavg()[0]
             rmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "rss")).read()) / 1000.0  # resident memory
             vmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "vsz")).read()) / 1000.0  # virtual memory
-            pmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "%mem")).read())  # percent of resident memory to total
+            pmem = float(os.popen('ps -p %d -o %s | tail -1' % (pid, "%mem")).read())  # % of resident memory to total
             rusage = _RESOURCE.getrusage(_RESOURCE.RUSAGE_SELF)
 
             if "mem" in self.switches:
-                string = "Memory usage: RMEM: {w%g{n MB (%g%%), " \
-                         " VMEM (res+swap+cache): {w%g{n MB."
+                string = "Memory usage: RMEM: |w%g|n MB (%g%%), VMEM (res+swap+cache): |w%g|n MB."
                 self.caller.msg(string % (rmem, pmem, vmem))
                 return
 
             loadtable = EvTable("property", "statistic", align="l")
             loadtable.add_row("Server load (1 min)", "%g" % loadavg)
             loadtable.add_row("Process ID", "%g" % pid),
-            loadtable.add_row("Memory usage","%g MB (%g%%)" % (rmem, pmem))
+            loadtable.add_row("Memory usage", "%g MB (%g%%)" % (rmem, pmem))
             loadtable.add_row("Virtual address space", "")
-            loadtable.add_row("{x(resident+swap+caching){n", "%g MB" % vmem)
-            loadtable.add_row("CPU time used (total)", "%s (%gs)" % (utils.time_format(rusage.ru_utime), rusage.ru_utime))
-            loadtable.add_row("CPU time used (user)", "%s (%gs)" % (utils.time_format(rusage.ru_stime), rusage.ru_stime))
-            loadtable.add_row("Page faults", "%g hard,  %g soft, %g swapouts" % (rusage.ru_majflt, rusage.ru_minflt, rusage.ru_nswap))
+            loadtable.add_row("|x(resident+swap+caching)|n", "%g MB" % vmem)
+            loadtable.add_row("CPU time used (total)", "%s (%gs)"
+                              % (utils.time_format(rusage.ru_utime), rusage.ru_utime))
+            loadtable.add_row("CPU time used (user)", "%s (%gs)"
+                              % (utils.time_format(rusage.ru_stime), rusage.ru_stime))
+            loadtable.add_row("Page faults", "%g hard,  %g soft, %g swapouts"
+                              % (rusage.ru_majflt, rusage.ru_minflt, rusage.ru_nswap))
             loadtable.add_row("Disk I/O", "%g reads, %g writes" % (rusage.ru_inblock, rusage.ru_oublock))
             loadtable.add_row("Network I/O", "%g in, %g out" % (rusage.ru_msgrcv, rusage.ru_msgsnd))
-            loadtable.add_row("Context switching", "%g vol, %g forced, %g signals" % (rusage.ru_nvcsw, rusage.ru_nivcsw, rusage.ru_nsignals))
-
+            loadtable.add_row("Context switching", "%g vol, %g forced, %g signals"
+                              % (rusage.ru_nvcsw, rusage.ru_nivcsw, rusage.ru_nsignals))
 
         # os-generic
 
-        string = "{wServer CPU and Memory load:{n\n%s" % loadtable
+        string = "|wServer CPU and Memory load:|n\n%s" % loadtable
 
         # object cache count (note that sys.getsiseof is not called so this works for pypy too.
         total_num, cachedict = _IDMAPPER.cache_size()
         sorted_cache = sorted([(key, num) for key, num in cachedict.items() if num > 0],
-                                key=lambda tup: tup[1], reverse=True)
+                              key=lambda tup: tup[1], reverse=True)
         memtable = EvTable("entity name", "number", "idmapper %", align="l")
         for tup in sorted_cache:
             memtable.add_row(tup[0], "%i" % tup[1], "%.2f" % (float(tup[1]) / total_num * 100))
 
-        string += "\n{w Entity idmapper cache:{n %i items\n%s" % (total_num, memtable)
+        string += "\n|w Entity idmapper cache:|n %i items\n%s" % (total_num, memtable)
 
         # return to caller
         self.caller.msg(string)
+
 
 class CmdTickers(COMMAND_DEFAULT_CLASS):
     """
@@ -832,13 +834,9 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
         table = EvTable("interval (s)", "object", "path/methodname", "idstring", "db")
         for sub in all_subs:
             table.add_row(sub[3],
-                          "%s%s" % (sub[0] or "[None]", sub[0] and " (#%s)" % (sub[0].id if hasattr(sub[0], "id") else "") or ""),
+                          "%s%s" % (sub[0] or "[None]",
+                                    sub[0] and " (#%s)" % (sub[0].id if hasattr(sub[0], "id") else "") or ""),
                           sub[1] if sub[1] else sub[2],
                           sub[4] or "[Unset]",
                           "*" if sub[5] else "-")
         self.caller.msg("|wActive tickers|n:\n" + unicode(table))
-
-
-
-
-
