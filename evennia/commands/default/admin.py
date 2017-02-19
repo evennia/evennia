@@ -495,9 +495,10 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
             return
 
         # we supplied an argument on the form obj = perm
-
-        if not obj.access(caller, 'control'):
-            caller.msg("You are not allowed to edit this object's permissions.")
+        locktype = "edit" if playermode else "control"
+        if not obj.access(caller, locktype):
+            caller.msg("You are not allowed to edit this %s's permissions." %
+                            ("player" if playermode else "object"))
             return
 
         cstring = ""
