@@ -618,4 +618,13 @@ class TestSlowExit(CommandTest):
         self.call(slow_exit.CmdSetSpeed(), "walk", "You are now walking.")
         self.call(slow_exit.CmdStop(), "", "You stop moving.")
 
+# test talking npc contrib
+
+from evennia.contrib import talking_npc
+
+class TestTalkingNPC(CommandTest):
+    def test_talkingnpc(self):
+        create_object(talking_npc.TalkingNPC, key="npctalker", location=self.room1)
+        self.call(talking_npc.CmdTalk(), "","(You walk up and talk to Char.)|")
+
 
