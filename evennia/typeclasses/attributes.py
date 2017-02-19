@@ -222,7 +222,7 @@ class AttributeHandler(object):
                                        attr.db_category.lower() if attr.db_category else None),
                             attr) for attr in attrs)
         self._cache_complete = True
-    
+
     def _getcache(self, key=None, category=None):
         """
         Retrieve from cache or database (always caches)
@@ -290,7 +290,7 @@ class AttributeHandler(object):
             # for this category before
             catkey = "-%s" % category
             if _TYPECLASS_AGGRESSIVE_CACHE and catkey in self._catcache:
-                return [attr for key, attr in self._cache.items() if key.endswith(catkey)]
+                return [attr for key, attr in self._cache.items() if key.endswith(catkey) and attr]
             else:
                 # we have to query to make this category up-date in the cache
                 query = {"%s__id" % self._model : self._objid,
