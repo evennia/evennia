@@ -580,7 +580,7 @@ class CmdDecline(CmdTradeBase):
             self.msg_other(caller, self.str_other
                            % "%s changes their mind, |Rdeclining|n the current offer." % caller.key)
         else:
-            # no accept_ance to change
+            # no acceptance to change
             caller.msg(self.str_caller % "You |Rdecline|n the current offer.")
             self.msg_other(caller, self.str_other % "%s declines the current offer." % caller.key)
 
