@@ -489,6 +489,18 @@ class TestDice(CommandTest):
         self.call(dice.CmdDice(), "100000d1000", "The maximum roll allowed is 10000d10000.")
         self.call(dice.CmdDice(), "/secret 3d6 + 4", "You roll 3d6 + 4 (secret, not echoed).")
 
+# Test email-login
 
+from evennia.contrib import email_login
 
-
+class TestEmailLogin(CommandTest):
+    def test_connect(self):
+        self.call(email_login.CmdUnconnectedConnect(), "mytest@test.com test", "The email 'mytest@test.com' does not match any accounts.")
+        self.call(email_login.CmdUnconnectedCreate(), '"mytest" mytest@test.com test11111', "A new account 'mytest' was created. Welcome!")
+        self.call(email_login.CmdUnconnectedConnect(), "mytest@test.com test11111", "", caller=self.player.sessions.get()[0])
+    def test_quit(self):
+        self.call(email_login.CmdUnconnectedQuit(), "", "", caller=self.player.sessions.get()[0])
+    def test_unconnectedlook(self):
+        self.call(email_login.CmdUnconnectedLook(), "", "==========")
+    def test_unconnectedhelp(self):
+        self.call(email_login.CmdUnconnectedHelp(), "", "You are not yet logged into the game.")

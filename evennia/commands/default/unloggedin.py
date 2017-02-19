@@ -12,7 +12,7 @@ from evennia.objects.models import ObjectDB
 from evennia.server.models import ServerConfig
 from evennia.comms.models import ChannelDB
 
-from evennia.utils import create, logger, utils, ansi
+from evennia.utils import create, logger, utils
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -516,12 +516,12 @@ class CmdUnconnectedScreenreader(COMMAND_DEFAULT_CLASS):
         self.session.sessionhandler.session_portal_sync(self.session)
 
 
-def _create_player(session, playername, password, permissions, typeclass=None):
+def _create_player(session, playername, password, permissions, typeclass=None, email=None):
     """
     Helper function, creates a player of the specified typeclass.
     """
     try:
-        new_player = create.create_player(playername, None, password, permissions=permissions, typeclass=typeclass)
+        new_player = create.create_player(playername, email, password, permissions=permissions, typeclass=typeclass)
 
     except Exception as e:
         session.msg("There was an error creating the Player:\n%s\n If this problem persists, contact an admin." % e)
@@ -535,7 +535,7 @@ def _create_player(session, playername, password, permissions, typeclass=None):
 
     # join the new player to the public channel
     pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
-    if not pchannel.connect(new_player):
+    if not pchannel or not pchannel.connect(new_player):
         string = "New player '%s' could not connect to public channel!" % new_player.key
         logger.log_err(string)
     return new_player
