@@ -95,7 +95,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         listening = [ob for ob in subs if ob.is_connected and ob not in self.mutelist]
         if subs:
             # display listening subscribers in bold
-            string = ", ".join([player.key if player not in listening else "{w%s{n" % player.key for player in subs])
+            string = ", ".join([player.key if player not in listening else "|w%s|n" % player.key for player in subs])
         else:
             string = "<None>"
         return string
@@ -125,7 +125,6 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             self.db.mute_list = mutelist
             return True
         return False
-
 
     def connect(self, subscriber):
         """
@@ -254,7 +253,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             try:
                 # note our addition of the from_channel keyword here. This could be checked
                 # by a custom player.msg() to treat channel-receives differently.
-                entity.msg(msgobj.message, from_obj=msgobj.senders, options={"from_channel":self.id})
+                entity.msg(msgobj.message, from_obj=msgobj.senders, options={"from_channel": self.id})
             except AttributeError as e:
                 logger.log_trace("%s\nCannot send msg to '%s'." % (e, entity))
 
@@ -331,7 +330,6 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         """
         self.msg(message, senders=senders, header=header, keep_log=False)
 
-
     # hooks
 
     def channel_prefix(self, msg=None, emit=False):
@@ -376,7 +374,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         message accordingly.
 
         Args:
-            msgob (Msg or TempMsg): The message to analyze for a pose.
+            msgobj (Msg or TempMsg): The message to analyze for a pose.
             sender_string (str): The name of the sender/poser.
 
         Returns:
@@ -426,7 +424,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         Hook method. Formats a message body for display.
 
         Args:
-            msgob (Msg or TempMsg): The message object to send.
+            msgobj (Msg or TempMsg): The message object to send.
             emit (bool, optional): The message is agnostic of senders.
 
         Returns:
@@ -475,7 +473,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         value, leaving the channel will be aborted.
 
         Args:
-            joiner (object): The joining object.
+            leaver (object): The leaving object.
 
         Returns:
             should_leave (bool): If `False`, channel parting is aborted.
@@ -488,7 +486,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         Hook method. Runs right after an object or player leaves a channel.
 
         Args:
-            joiner (object): The joining object.
+            leaver (object): The leaving object.
 
         """
         pass
