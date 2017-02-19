@@ -504,3 +504,17 @@ class TestEmailLogin(CommandTest):
         self.call(email_login.CmdUnconnectedLook(), "", "==========")
     def test_unconnectedhelp(self):
         self.call(email_login.CmdUnconnectedHelp(), "", "You are not yet logged into the game.")
+
+# test gendersub contrib
+
+from evennia.contrib import gendersub
+
+class TestGenderSub(CommandTest):
+    def test_setgender(self):
+        self.call(gendersub.SetGender(), "male", "Your gender was set to male.")
+        self.call(gendersub.SetGender(), "ambiguous", "Your gender was set to ambiguous.")
+        self.call(gendersub.SetGender(), "Foo", "Usage: @gender")
+    def test_gendercharacter(self):
+        char = create_object(gendersub.GenderCharacter, key="Gendered", location=self.room1)
+        txt = "Test |p gender"
+        self.assertEqual(gendersub._RE_GENDER_PRONOUN.sub(char._get_pronoun, txt), "Test their gender")
