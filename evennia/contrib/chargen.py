@@ -2,32 +2,25 @@
 
 Contribution - Griatch 2011
 
-[Note - with the advent of MULTISESSION_MODE=2, this is not really as
+> Note - with the advent of MULTISESSION_MODE=2, this is not really as
 necessary anymore - the ooclook and @charcreate commands in that mode
-replaces this module with better functionality.]
+replaces this module with better functionality. This remains here for
+inspiration.
 
-This is a simple character creation commandset. A suggestion is to
-test this together with menu_login, which doesn't create a Character
-on its own. This shows some more info and gives the Player the option
-to create a character without any more customizations than their name
-(further options are unique for each game anyway).
+This is a simple character creation commandset for the Player level.
+It shows some more info and gives the Player the option to create a
+character without any more customizations than their name (further
+options are unique for each game anyway).
 
-Since this extends the OOC cmdset, logging in from the menu will
-automatically drop the Player into this cmdset unless they logged off
-while puppeting a Character already before.
+In MULTISESSION_MODEs 0 and 1, you will automatically log into an
+existing Character. When using `@ooc` you will then end up in this
+cmdset.
 
 Installation:
 
-Read the instructions in contrib/examples/cmdset.py in order to create
-a new default cmdset module for Evennia to use (copy the template up
-one level, and change the settings file's relevant variables to point
-to the cmdsets inside). If you already have such a module you should
-of course use that.
-
-Next import this module in your custom cmdset module and add the
-following line to the end of OOCCmdSet's at_cmdset_creation():
-
-   self.add(chargen.OOCCmdSetCharGen)
+Import this module to `mygame/commands/default_cmdsets.py` and
+add `chargen.OOCCMdSetCharGen` to the `PlayerCmdSet` class
+(it says where to add it). Reload.
 
 """
 
@@ -179,7 +172,7 @@ class CmdOOCCharacterCreate(Command):
         else:
             avail_chars = [new_character.id]
         self.caller.db._character_dbrefs = avail_chars
-        self.caller.msg("|gThe Character |c%s|g was successfully created!" % charname)
+        self.caller.msg("|gThe character |c%s|g was successfully created!" % charname)
 
 
 class OOCCmdSetCharGen(default_cmds.PlayerCmdSet):

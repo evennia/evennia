@@ -12,14 +12,23 @@ Usage:
 
 Use as the normal gametime module, that is by importing and using the
 helper functions in this module in your own code. The calendar can be
-specified in your settings file by adding and setting custom values
-for one or more of the variables `TIME_SECS_PER_MIN`,
-`TIME_MINS_PER_HOUR`, `TIME_DAYS_PER_WEEK`, `TIME_WEEKS_PER_MONTH` and
-`TIME_MONTHS_PER_YEAR`. These are all given in seconds and whereas
-they are called "week", "month" etc these names could represent
-whatever fits your game. You can also set `TIME_UNITS` to a dict
-mapping the name of a unit to its length in seconds  (like `{"min":
-60, ...}. If not given, sane defaults will be used.
+customized by adding the `TIME_UNITS` dictionary to your settings
+file. This maps unit names to their length, expressed in the smallest
+unit. Here's the default as an example:
+
+    TIME_UNITS = {
+        "sec": 1,
+        "min": 60,
+        "hr": 60 * 60,
+        "hour": 60 * 60,
+        "day": 60 * 60 * 24,
+        "week": 60 * 60 * 24 * 7,
+        "month": 60 * 60 * 24 * 7 * 4,
+        "yr": 60 * 60 * 24 * 7 * 4 * 12,
+        "year": 60 * 60 * 24 * 7 * 4 * 12, }
+
+When using a custom calendar, these time unit names are used as kwargs to
+the converter functions in this module.
 
 """
 
@@ -28,33 +37,23 @@ mapping the name of a unit to its length in seconds  (like `{"min":
 from django.conf import settings
 from evennia import DefaultScript
 from evennia.utils.create import create_script
-from evennia.utils.gametime import gametime
+from evennia.utils import gametime
 # The game time speedup  / slowdown relative real time
 TIMEFACTOR = settings.TIME_FACTOR
 
-# Game-time units, in game time seconds. These are supplied as a
-# convenient measure for determining the current in-game time, e.g.
-# when defining in-game events. The words month, week and year can  be
-# used to mean whatever units of time are used in your game.
-SEC = 1
-MIN = getattr(settings, "TIME_SECS_PER_MIN", 60)
-HOUR = getattr(settings, "TIME_MINS_PER_HOUR", 60) * MIN
-DAY = getattr(settings, "TIME_HOURS_PER_DAY", 24) * HOUR
-WEEK = getattr(settings, "TIME_DAYS_PER_WEEK", 7) * DAY
-MONTH = getattr(settings, "TIME_WEEKS_PER_MONTH", 4) * WEEK
-YEAR = getattr(settings, "TIME_MONTHS_PER_YEAR", 12) * MONTH
-# these are the unit names understood by the scheduler.
+# These are the unit names understood by the scheduler.
+# Each unit must be consistent and expressed in seconds.
 UNITS = getattr(settings, "TIME_UNITS", {
-        "sec": SEC,
-        "min": MIN,
-        "hr": HOUR,
-        "hour": HOUR,
-        "day": DAY,
-        "week": WEEK,
-        "month": MONTH,
-        "year": YEAR,
-        "yr": YEAR,
-})
+    # default custom calendar
+        "sec": 1,
+        "min": 60,
+        "hr": 60 * 60,
+        "hour": 60 * 60,
+        "day": 60 * 60 * 24,
+        "week": 60 * 60 * 24 * 7,
+        "month": 60 * 60 * 24 * 7 * 4,
+        "yr": 60 * 60 * 24 * 7 * 4 * 12,
+        "year": 60 * 60 * 24 * 7 * 4 * 12, })
 
 
 def time_to_tuple(seconds, *divisors):
@@ -92,7 +91,8 @@ def gametime_to_realtime(format=False, **kwargs):
 
     Kwargs:
         format (bool): Formatting the output.
-        times (int): The various components of the time (must match UNITS).
+        days, month etc (int): These are the names of time units that must
+            match the `settings.TIME_UNITS` dict keys.
 
     Returns:
         time (float or tuple): The realtime difference or the same
@@ -163,7 +163,7 @@ def custom_gametime(absolute=False):
         week, day, hour, minute, second).
 
     """
-    current = gametime(absolute=absolute)
+    current = gametime.gametime(absolute=absolute)
     units = sorted(set(UNITS.values()), reverse=True)
     del units[-1]
     return time_to_tuple(current, *units)
@@ -186,7 +186,7 @@ def real_seconds_until(**kwargs):
         The number of real seconds before the given game time is up.
 
     """
-    current = gametime(absolute=True)
+    current = gametime.gametime(absolute=True)
     units = sorted(set(UNITS.values()), reverse=True)
     # Remove seconds from the tuple
     del units[-1]
@@ -232,25 +232,26 @@ def schedule(callback, repeat=False, **kwargs):
     """
     Call the callback when the game time is up.
 
-    This function will setup a script that will be called when the
-    time corresponds to the game time.  If the game is stopped for
-    more than a few seconds, the callback may be called with a slight
-    delay.  If `repeat` is set to True, the callback will be called
-    again next time the game time matches the given time.  The time
-    is given in units as keyword arguments.  For instance:
-    >>> schedule(func, min=5, sec=0) # Will call next hour at :05.
-    >>> schedule(func, hour=2, min=30, sec=0) # Will call the next day at 02:30.
-
     Args:
-        callback (function): the callback function that will be called [1].
-        repeat (bool, optional): should the callback be called regularly?
-        times (str: int): the time to call the callback.
-
-    [1] The callback must be a top-level function, since the script will
-        be persistent.
+        callback (function): The callback function that will be called. This
+            must be a top-level function since the script will be persistent.
+        repeat (bool, optional): Should the callback be called regularly?
+        day, month, etc (str: int): The time units to call the callback; should
+            match the keys of TIME_UNITS.
 
     Returns:
-        The created script (Script).
+        script (Script): The created script.
+
+    Examples:
+        schedule(func, min=5, sec=0)          # Will call next hour at :05.
+        schedule(func, hour=2, min=30, sec=0) # Will call the next day at 02:30.
+    Notes:
+        This function will setup a script that will be called when the
+        time corresponds to the game time.  If the game is stopped for
+        more than a few seconds, the callback may be called with a
+        slight delay. If `repeat` is set to True, the callback will be
+        called again next time the game time matches the given time.
+        The time is given in units as keyword arguments.
 
     """
     seconds = real_seconds_until(**kwargs)

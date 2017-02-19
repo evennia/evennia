@@ -3,7 +3,6 @@ Testing suite for contrib folder
 
 """
 
-from django.conf import settings
 from evennia.commands.default.tests import CommandTest
 from evennia.utils.test_resources import EvenniaTest
 from mock import Mock
@@ -172,40 +171,36 @@ from evennia.contrib import extended_room
 from evennia import gametime
 from evennia.objects.objects import DefaultRoom
 
-# mock gametime to return 7th month, 10 in morning
-gametime.gametime = Mock(return_value=(None, 7, None, None, 10))
-# mock settings so we're not affected by a given server's hours of day/months in year
-settings.TIME_MONTH_PER_YEAR = 12
-settings.TIME_HOUR_PER_DAY = 24
-
-
 class TestExtendedRoom(CommandTest):
     room_typeclass = extended_room.ExtendedRoom
     DETAIL_DESC = "A test detail."
-    SUMMER_DESC = "A summer description."
+    SPRING_DESC = "A spring description."
     OLD_DESC = "Old description."
 
     def setUp(self):
         super(TestExtendedRoom, self).setUp()
-        self.room1.ndb.last_timeslot = "night"
+        self.room1.ndb.last_timeslot = "afternoon"
         self.room1.ndb.last_season = "winter"
         self.room1.db.details = {'testdetail': self.DETAIL_DESC}
-        self.room1.db.summer_desc = self.SUMMER_DESC
+        self.room1.db.spring_desc = self.SPRING_DESC
         self.room1.db.desc = self.OLD_DESC
+        # mock gametime to return 7th month, 10 in morning
+        gametime.gametime = Mock(return_value=2975000766) # spring evening
 
     def test_return_appearance(self):
         # get the appearance of a non-extended room for contrast purposes
         old_desc = DefaultRoom.return_appearance(self.room1, self.char1)
         # the new appearance should be the old one, but with the desc switched
-        self.assertEqual(old_desc.replace(self.OLD_DESC, self.SUMMER_DESC), self.room1.return_appearance(self.char1))
-        self.assertEqual("summer", self.room1.ndb.last_season)
-        self.assertEqual("morning", self.room1.ndb.last_timeslot)
+        self.assertEqual(old_desc.replace(self.OLD_DESC, self.SPRING_DESC),
+                        self.room1.return_appearance(self.char1))
+        self.assertEqual("spring", self.room1.ndb.last_season)
+        self.assertEqual("evening", self.room1.ndb.last_timeslot)
 
     def test_return_detail(self):
         self.assertEqual(self.DETAIL_DESC, self.room1.return_detail("testdetail"))
 
     def test_cmdextendedlook(self):
-        self.call(extended_room.CmdExtendedLook(), "here", "Room(#1)\n%s" % self.SUMMER_DESC)
+        self.call(extended_room.CmdExtendedLook(), "here", "Room(#1)\n%s" % self.SPRING_DESC)
         self.call(extended_room.CmdExtendedLook(), "testdetail", self.DETAIL_DESC)
         self.call(extended_room.CmdExtendedLook(), "nonexistent", "Could not find 'nonexistent'.")
 
@@ -220,14 +215,12 @@ class TestExtendedRoom(CommandTest):
         self.call(extended_room.CmdExtendedDesc(), "", "Descriptions on Room:")
 
     def test_cmdgametime(self):
-        self.call(extended_room.CmdGameTime(), "", "It's a summer day, in the morning.")
+        self.call(extended_room.CmdGameTime(), "", "It's a spring day, in the evening.")
 
 
 # Test the contrib barter system
 
-from evennia import create_object
 from evennia.contrib import barter
-
 
 class TestBarter(CommandTest):
 
@@ -309,10 +302,10 @@ class TestBarter(CommandTest):
         self.call(barter.CmdTradeHelp(), "", "Trading commands\n", caller=self.char1)
         self.call(barter.CmdFinish(), ": Ending.", "You say, \"Ending.\"\n  [You aborted trade. No deal was made.]")
 
+# Test wilderness
 
 from evennia.contrib import wilderness
 from evennia import DefaultCharacter
-
 
 class TestWilderness(EvenniaTest):
 
@@ -429,3 +422,56 @@ class TestWilderness(EvenniaTest):
         for direction, correct_loc in directions.iteritems():  # Not compatible with Python 3
             new_loc = wilderness.get_new_coordinates(loc, direction)
             self.assertEquals(new_loc, correct_loc, direction)
+
+# Testing chargen contrib
+from evennia.contrib import chargen
+
+class TestChargen(CommandTest):
+
+    def test_ooclook(self):
+        self.call(chargen.CmdOOCLook(), "foo", "You have no characters to look at", caller=self.player)
+        self.call(chargen.CmdOOCLook(), "", "You, TestPlayer, are an OOC ghost without form.", caller=self.player)
+
+    def test_charcreate(self):
+        self.call(chargen.CmdOOCCharacterCreate(), "testchar", "The character testchar was successfully created!", caller=self.player)
+        self.call(chargen.CmdOOCCharacterCreate(), "testchar", "Character testchar already exists.", caller=self.player)
+        self.assertTrue(self.player.db._character_dbrefs)
+        self.call(chargen.CmdOOCLook(), "", "You, TestPlayer, are an OOC ghost without form.",caller=self.player)
+        self.call(chargen.CmdOOCLook(), "testchar", "testchar(", caller=self.player)
+
+# Testing custom_gametime
+from evennia.contrib import custom_gametime
+
+def _testcallback():
+    pass
+
+class TestCustomGameTime(EvenniaTest):
+    def setUp(self):
+        super(TestCustomGameTime, self).setUp()
+        gametime.gametime = Mock(return_value=2975000898.46) # does not seem to work
+    def tearDown(self):
+        if hasattr(self, "timescript"):
+            self.timescript.stop()
+    def test_time_to_tuple(self):
+        self.assertEqual(custom_gametime.time_to_tuple(10000, 34,2,4,6,1), (294, 2, 0, 0, 0, 0))
+        self.assertEqual(custom_gametime.time_to_tuple(10000, 3,3,4), (3333, 0, 0, 1))
+        self.assertEqual(custom_gametime.time_to_tuple(100000, 239,24,3), (418, 4, 0, 2))
+    def test_gametime_to_realtime(self):
+        self.assertEqual(custom_gametime.gametime_to_realtime(days=2, mins=4), 86520.0)
+        self.assertEqual(custom_gametime.gametime_to_realtime(format=True, days=2), (0,0,0,1,0,0,0))
+    def test_realtime_to_gametime(self):
+        self.assertEqual(custom_gametime.realtime_to_gametime(days=2, mins=34), 349680.0)
+        self.assertEqual(custom_gametime.realtime_to_gametime(days=2, mins=34, format=True), (0, 0, 0, 4, 1, 8, 0))
+        self.assertEqual(custom_gametime.realtime_to_gametime(format=True, days=2, mins=4), (0, 0, 0, 4, 0, 8, 0))
+    def test_custom_gametime(self):
+        self.assertEqual(custom_gametime.custom_gametime(), (102, 5, 2, 6, 21, 8, 18))
+        self.assertEqual(custom_gametime.custom_gametime(absolute=True), (102, 5, 2, 6, 21, 8, 18))
+    def test_real_seconds_until(self):
+        self.assertEqual(custom_gametime.real_seconds_until(year=2300, month=11, day=6), 31911667199.77)
+    def test_schedule(self):
+        self.timescript = custom_gametime.schedule(_testcallback, repeat=True, min=5, sec=0)
+        self.assertEqual(self.timescript.interval, 1700.7699999809265)
+
+
+
+
