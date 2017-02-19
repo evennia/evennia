@@ -584,6 +584,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 "{attacker} {action} {defender}",
                 mapping=dict(attacker=char, defender=npc, action=action),
                 exclude=(char, npc))
+
         """
         contents = self.contents
         if exclude:

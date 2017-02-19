@@ -591,3 +591,31 @@ class TestMultidescer(CommandTest):
         self.call(multidescer.CmdMultiDesc(),"/set test1 + test2 + + test3", "test1 Desc 2 Desc 3\n\n"
                                              "The above was set as the current description.")
         self.assertEqual(self.char1.db.desc, "test1 Desc 2 Desc 3")
+
+# test simpledoor contrib
+
+from evennia.contrib import simpledoor
+
+class TestSimpleDoor(CommandTest):
+    def test_cmdopen(self):
+        self.call(simpledoor.CmdOpen(), "newdoor;door:contrib.simpledoor.SimpleDoor,backdoor;door = Room2",
+                "Created new Exit 'newdoor' from Room to Room2 (aliases: door).|Note: A doortype exit was "
+                "created  ignored eventual custom returnexit type.|Created new Exit 'newdoor' from Room2 to Room (aliases: door).")
+        self.call(simpledoor.CmdOpenCloseDoor(), "newdoor", "You close newdoor.", cmdstring="close")
+        self.call(simpledoor.CmdOpenCloseDoor(), "newdoor", "newdoor is already closed.", cmdstring="close")
+        self.call(simpledoor.CmdOpenCloseDoor(), "newdoor", "You open newdoor.", cmdstring="open")
+        self.call(simpledoor.CmdOpenCloseDoor(), "newdoor", "newdoor is already open.", cmdstring="open")
+
+# test slow_exit contrib
+
+from evennia.contrib import slow_exit
+slow_exit.MOVE_DELAY = {"stroll":0, "walk": 0, "run": 0, "sprint": 0}
+
+class TestSlowExit(CommandTest):
+    def test_exit(self):
+        exi = create_object(slow_exit.SlowExit, key="slowexit", location=self.room1, destination=self.room2)
+        exi.at_traverse(self.char1, self.room2)
+        self.call(slow_exit.CmdSetSpeed(), "walk", "You are now walking.")
+        self.call(slow_exit.CmdStop(), "", "You stop moving.")
+
+
