@@ -818,22 +818,22 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
     def func(self):
         """Perform the command"""
         player = self.player
-        permstr = player.is_superuser and " (superuser)" or " (%s)" % (", ".join(player.permissions.all()))
+        permstr = player.is_superuser and " (superuser)" or "(%s)" % (", ".join(player.permissions.all()))
         if self.cmdstring == '@unquell':
             if not player.attributes.get('_quell'):
-                self.msg("Already using normal Player permissions%s." % permstr)
+                self.msg("Already using normal Player permissions %s." % permstr)
             else:
                 player.attributes.remove('_quell')
-                self.msg("Player permissions%s restored." % permstr)
+                self.msg("Player permissions %s restored." % permstr)
         else:
             if player.attributes.get('_quell'):
-                self.msg("Already quelling Player%s permissions." % permstr)
+                self.msg("Already quelling Player %s permissions." % permstr)
                 return
             player.attributes.add('_quell', True)
             puppet = self.session.puppet
             if puppet:
                 cpermstr = "(%s)" % ", ".join(puppet.permissions.all())
-                cpermstr = "Quelling to current puppet's permissions%s." % cpermstr
+                cpermstr = "Quelling to current puppet's permissions %s." % cpermstr
                 cpermstr += "\n(Note: If this is higher than Player permissions %s," \
                             " the lowest of the two will be used.)" % permstr
                 cpermstr += "\nUse @unquell to return to normal permission usage."
