@@ -521,5 +521,20 @@ class TestGenderSub(CommandTest):
 
 # test mail contrib
 
-class TestMail(CommandTest):
+from evennia.contrib import mail
 
+class TestMail(CommandTest):
+    def test_mail(self):
+        self.call(mail.CmdMail(), "2", "'2' is not a valid mail id.", caller=self.player)
+        self.call(mail.CmdMail(), "", "Sorry, you don't have any messages.", caller=self.player)
+        self.call(mail.CmdMail(), "Char=Message 1", "You have received a new @mail from Char|You sent your message.", caller=self.char1)
+        self.call(mail.CmdMail(), "Char=Message 2", "You sent your message.", caller=self.char2)
+        self.call(mail.CmdMail(), "TestPlayer2=Message 2",
+            "You have received a new @mail from TestPlayer2(player 2)|You sent your message.", caller=self.player2)
+        self.call(mail.CmdMail(), "TestPlayer=Message 1", "You sent your message.", caller=self.player2)
+        self.call(mail.CmdMail(), "TestPlayer=Message 2", "You sent your message.", caller=self.player2)
+        self.call(mail.CmdMail(), "", "| ID:   From:            Subject:", caller=self.player)
+        self.call(mail.CmdMail(), "2", "From: TestPlayer2", caller=self.player)
+        self.call(mail.CmdMail(), "/forward TestPlayer2 = 1/Forward message", "You sent your message.|Message forwarded.", caller=self.player)
+        self.call(mail.CmdMail(), "/reply 2=Reply Message2", "You sent your message.", caller=self.player)
+        self.call(mail.CmdMail(), "/delete 2", "Message 2 deleted", caller=self.player)
