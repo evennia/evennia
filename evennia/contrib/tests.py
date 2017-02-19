@@ -5,7 +5,7 @@ Testing suite for contrib folder
 
 from evennia.commands.default.tests import CommandTest
 from evennia.utils.test_resources import EvenniaTest
-from mock import Mock
+from mock import Mock, patch
 
 # Testing of rplanguage module
 
@@ -471,6 +471,23 @@ class TestCustomGameTime(EvenniaTest):
     def test_schedule(self):
         self.timescript = custom_gametime.schedule(_testcallback, repeat=True, min=5, sec=0)
         self.assertEqual(self.timescript.interval, 1700.7699999809265)
+
+# Test dice module
+
+
+@patch('random.randint', return_value=5)
+class TestDice(CommandTest):
+    def test_roll_dice(self, mocked_randint):
+        # we must import dice here for the mocked randint to apply correctly.
+        from evennia.contrib import dice
+        self.assertEqual(dice.roll_dice(6, 6, modifier=('+', 4)), mocked_randint()*6 + 4)
+        self.assertEqual(dice.roll_dice(6, 6, conditional=('<', 35)), True)
+        self.assertEqual(dice.roll_dice(6, 6, conditional=('>', 33)), False)
+    def test_cmddice(self, mocked_randint):
+        from evennia.contrib import dice
+        self.call(dice.CmdDice(), "3d6 + 4", "You roll 3d6 + 4.| Roll(s): 5, 5 and 5. Total result is 19.")
+        self.call(dice.CmdDice(), "100000d1000", "The maximum roll allowed is 10000d10000.")
+        self.call(dice.CmdDice(), "/secret 3d6 + 4", "You roll 3d6 + 4 (secret, not echoed).")
 
 
 
