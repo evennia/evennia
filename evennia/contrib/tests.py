@@ -624,7 +624,103 @@ from evennia.contrib import talking_npc
 
 class TestTalkingNPC(CommandTest):
     def test_talkingnpc(self):
-        create_object(talking_npc.TalkingNPC, key="npctalker", location=self.room1)
+        npc = create_object(talking_npc.TalkingNPC, key="npctalker", location=self.room1)
         self.call(talking_npc.CmdTalk(), "","(You walk up and talk to Char.)|")
+        npc.delete()
 
 
+# tests for the tutorial world
+
+# test tutorial_world/mob
+
+from evennia.contrib.tutorial_world import mob
+
+class TestTutorialWorldMob(EvenniaTest):
+    def test_mob(self):
+        mobobj = create_object(mob.Mob, key="mob")
+        self.assertEqual(mobobj.db.is_dead, True)
+        mobobj.set_alive()
+        self.assertEqual(mobobj.db.is_dead, False)
+        mobobj.set_dead()
+        self.assertEqual(mobobj.db.is_dead, True)
+        mobobj._set_ticker(0, "foo", stop=True)
+        #TODO should be expanded with further tests of the modes and damage etc.
+
+#  test tutorial_world/objects
+
+from evennia.contrib.tutorial_world import objects as tutobjects
+
+class TestTutorialWorldObjects(CommandTest):
+    def test_tutorialobj(self):
+        obj1 = create_object(tutobjects.TutorialObject, key="tutobj")
+        obj1.reset()
+        self.assertEqual(obj1.location, obj1.home)
+    def test_readable(self):
+        readable = create_object(tutobjects.Readable, key="book", location=self.room1)
+        readable.db.readable_text = "Text to read"
+        self.call(tutobjects.CmdRead(), "book","You read book:\n  Text to read", obj=readable)
+    def test_climbable(self):
+        climbable = create_object(tutobjects.Climbable, key="tree", location=self.room1)
+        self.call(tutobjects.CmdClimb(), "tree", "You climb tree. Having looked around, you climb down again.", obj=climbable)
+        self.assertEqual(self.char1.tags.get("tutorial_climbed_tree", category="tutorial_world"), "tutorial_climbed_tree")
+    def test_obelisk(self):
+        obelisk = create_object(tutobjects.Obelisk, key="obelisk", location=self.room1)
+        self.assertEqual(obelisk.return_appearance(self.char1).startswith("|cobelisk("), True)
+    def test_lightsource(self):
+        light = create_object(tutobjects.LightSource, key="torch", location=self.room1)
+        self.call(tutobjects.CmdLight(), "", "You light torch.", obj=light)
+        light._burnout()
+        if hasattr(light, "deferred"):
+            light.deferred.cancel()
+        self.assertFalse(light.pk)
+    def test_crumblingwall(self):
+        wall = create_object(tutobjects.CrumblingWall, key="wall", location=self.room1)
+        self.assertFalse(wall.db.button_exposed)
+        self.assertFalse(wall.db.exit_open)
+        wall.db.root_pos = {"yellow":0, "green":0,"red":0,"blue":0}
+        self.call(tutobjects.CmdShiftRoot(), "blue root right",
+                "You shove the root adorned with small blue flowers to the right.", obj=wall)
+        self.call(tutobjects.CmdShiftRoot(), "red root left",
+                "You shift the reddish root to the left.", obj=wall)
+        self.call(tutobjects.CmdShiftRoot(), "yellow root down",
+                "You shove the root adorned with small yellow flowers downwards.", obj=wall)
+        self.call(tutobjects.CmdShiftRoot(), "green root up",
+                "You shift the weedy green root upwards.|Holding aside the root you think you notice something behind it ...", obj=wall)
+        self.call(tutobjects.CmdPressButton(), "",
+                "You move your fingers over the suspicious depression, then gives it a decisive push. First", obj=wall)
+        self.assertTrue(wall.db.button_exposed)
+        self.assertTrue(wall.db.exit_open)
+        wall.reset()
+        if hasattr(wall, "deferred"):
+            wall.deferred.cancel()
+        wall.delete()
+    def test_weapon(self):
+        weapon = create_object(tutobjects.Weapon, key="sword", location=self.char1)
+        self.call(tutobjects.CmdAttack(), "Char", "You stab with sword.", obj=weapon, cmdstring="stab")
+        self.call(tutobjects.CmdAttack(), "Char", "You slash with sword.", obj=weapon, cmdstring="slash")
+    def test_weaponrack(self):
+        rack = create_object(tutobjects.WeaponRack, key="rack", location=self.room1)
+        rack.db.available_weapons = ["sword"]
+        self.call(tutobjects.CmdGetWeapon(), "", "You find Rusty sword.", obj=rack)
+
+# test tutorial_world/
+from evennia.contrib.tutorial_world import rooms as tutrooms
+
+class TestTutorialWorldRooms(CommandTest):
+    def test_cmdtutorial(self):
+        room = create_object(tutrooms.TutorialRoom, key="tutroom")
+        self.char1.location = room
+        self.call(tutrooms.CmdTutorial(), "", "Sorry, there is no tutorial help available here.")
+        self.call(tutrooms.CmdTutorialSetDetail(), "detail;foo;foo2 = A detail", "Detail set: 'detail;foo;foo2': 'A detail'", obj=room)
+        self.call(tutrooms.CmdTutorialLook(), "", "tutroom(", obj=room)
+        self.call(tutrooms.CmdTutorialLook(), "detail", "A detail", obj=room)
+        self.call(tutrooms.CmdTutorialLook(), "foo", "A detail", obj=room)
+        room.delete()
+    def test_weatherroom(self):
+        room = create_object(tutrooms.WeatherRoom, key="weatherroom")
+        room.update_weather()
+        tutrooms.TICKER_HANDLER.remove(interval=room.db.interval, callback=room.update_weather, idstring="tutorial")
+        room.delete()
+    def test_introroom(self):
+        room = create_object(tutrooms.IntroRoom, key="introroom")
+        room.at_object_receive(self.char1, self.room1)

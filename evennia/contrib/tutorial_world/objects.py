@@ -367,8 +367,9 @@ class LightSource(TutorialObject):
                 pass
         finally:
             # start the burn timer. When it runs out, self._burnout
-            # will be called.
-            utils.delay(60 * 3, self._burnout)
+            # will be called. We store the deferred so it can be
+            # killed in unittesting.
+            self.deferred = utils.delay(60 * 3, self._burnout)
         return True
 
 
@@ -636,9 +637,10 @@ class CrumblingWall(TutorialObject, DefaultExit):
             self.caller.msg("The exit leads nowhere, there's just more stone behind it ...")
         else:
             self.destination = eloc[0]
-        self.exit_open = True
-        # start a 45 second timer before closing again
-        utils.delay(45, self.reset)
+        self.db.exit_open = True
+        # start a 45 second timer before closing again. We store the deferred so it can be
+        # killed in unittesting.
+        self.deferred = utils.delay(45, self.reset)
 
     def _translate_position(self, root, ipos):
         """Translates the position into words"""
