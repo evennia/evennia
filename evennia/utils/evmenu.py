@@ -18,12 +18,12 @@ Example usage:
 
 Where `caller` is the Object to use the menu on - it will get a new
 cmdset while using the Menu. The menu_module_path is the python path
-to a python module containing function defintions.  By adjusting the
+to a python module containing function definitions.  By adjusting the
 keyword options of the Menu() initialization call you can start the
 menu at different places in the menu definition file, adjust if the
 menu command should overload the normal commands or not, etc.
 
-The `perstent` keyword will make the menu survive a server reboot.
+The `persistent` keyword will make the menu survive a server reboot.
 It is `False` by default. Note that if using persistent mode, every
 node and callback in the menu must be possible to be *pickled*, this
 excludes e.g. callables that are class methods or functions defined
@@ -31,7 +31,7 @@ dynamically or as part of another function. In non-persistent mode
 no such restrictions exist.
 
 The menu is defined in a module (this can be the same module as the
-command definition too) with function defintions:
+command definition too) with function definitions:
 
 ```python
 
@@ -181,8 +181,7 @@ _HELP_NO_OPTIONS = _("Commands: help, quit")
 _HELP_NO_OPTIONS_NO_QUIT = _("Commands: help")
 _HELP_NO_OPTION_MATCH = _("Choose an option or try 'help'.")
 
-_ERROR_PERSISTENT_SAVING = \
-"""
+_ERROR_PERSISTENT_SAVING = """
 {error}
 
 |rThe menu state could not be saved for persistent mode. Switching
@@ -190,10 +189,9 @@ to non-persistent mode (which means the menu session won't survive
 an eventual server reload).|n
 """
 
-_TRACE_PERSISTENT_SAVING = \
-"EvMenu persistent-mode error. Commonly, this is because one or " \
-"more of the EvEditor callbacks could not be pickled, for example " \
-"because it's a class method or is defined inside another function."
+_TRACE_PERSISTENT_SAVING = "EvMenu persistent-mode error. Commonly, this is because one or " \
+                           "more of the EvEditor callbacks could not be pickled, for example " \
+                           "because it's a class method or is defined inside another function."
 
 
 class EvMenuError(RuntimeError):
@@ -203,11 +201,12 @@ class EvMenuError(RuntimeError):
     """
     pass
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Menu command and command set
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
+
 
 class CmdEvMenuNode(Command):
     """
@@ -230,7 +229,7 @@ class CmdEvMenuNode(Command):
                 startnode_tuple = caller.attributes.get("_menutree_saved_startnode")
                 try:
                     startnode, startnode_input = startnode_tuple
-                except ValueError: # old form of startnode stor
+                except ValueError:  # old form of startnode store
                     startnode, startnode_input = startnode_tuple, ""
                 if startnode:
                     saved_options[1]["startnode"] = startnode
@@ -257,7 +256,7 @@ class CmdEvMenuNode(Command):
                 menu = caller.ndb._menutree
                 if not menu:
                     # can't restore from a session
-                    err = "Menu object not found as %s.ndb._menutree!" % (orig_caller)
+                    err = "Menu object not found as %s.ndb._menutree!" % orig_caller
                     orig_caller.msg(err) # don't give the session as a kwarg here, direct to original
                     raise EvMenuError(err)
         # we must do this after the caller with the menui has been correctly identified since it
@@ -330,23 +329,23 @@ def evtable_options_formatter(optionlist, caller=None):
             # add a default white color to key
             table.append(" |lc%s|lt|w%s|n|le: %s" % (raw_key, raw_key, desc))
 
-    ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
+    ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1  # number of ncols
 
     # get the amount of rows needed (start with 4 rows)
     nrows = 4
     while nrows * ncols < nlist:
         nrows += 1
-    ncols = nlist // nrows # number of full columns
-    nlastcol = nlist % nrows # number of elements in last column
+    ncols = nlist // nrows  # number of full columns
+    nlastcol = nlist % nrows  # number of elements in last column
 
     # get the final column count
     ncols = ncols + 1 if nlastcol > 0 else ncols
     if ncols > 1:
         # only extend if longer than one column
-        table.extend([" " for i in range(nrows - nlastcol)])
+        table.extend([" " for _ in range(nrows - nlastcol)])
 
     # build the actual table grid
-    table = [table[icol * nrows : (icol * nrows) + nrows] for icol in range(0, ncols)]
+    table = [table[icol * nrows: (icol * nrows) + nrows] for icol in range(0, ncols)]
 
     # adjust the width of each column
     for icol in range(len(table)):
@@ -410,11 +409,12 @@ def evtable_parse_input(menuobject, raw_string, caller):
         # no options - we are at the end of the menu.
         menuobject.close_menu()
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Menu main class
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
+
 
 class EvMenu(object):
     """
@@ -593,15 +593,16 @@ class EvMenu(object):
             # save the menu to the database
             try:
                 caller.attributes.add("_menutree_saved",
-                        ((menudata, ),
-                         {"startnode": startnode,
-                          "cmdset_mergetype": cmdset_mergetype,
-                          "cmdset_priority": cmdset_priority,
-                          "auto_quit": auto_quit, "auto_look": auto_look, "auto_help": auto_help,
-                          "cmd_on_exit": cmd_on_exit,
-                          "nodetext_formatter": nodetext_formatter, "options_formatter": options_formatter,
-                          "node_formatter": node_formatter, "input_parser": input_parser,
-                          "persistent": persistent,}))
+                                      ((menudata, ),
+                                       {"startnode": startnode,
+                                        "cmdset_mergetype": cmdset_mergetype,
+                                        "cmdset_priority": cmdset_priority,
+                                        "auto_quit": auto_quit, "auto_look": auto_look, "auto_help": auto_help,
+                                        "cmd_on_exit": cmd_on_exit,
+                                        "nodetext_formatter": nodetext_formatter,
+                                        "options_formatter": options_formatter,
+                                        "node_formatter": node_formatter, "input_parser": input_parser,
+                                        "persistent": persistent, }))
                 caller.attributes.add("_menutree_saved_startnode", (startnode, startnode_input))
             except Exception as err:
                 caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err), session=self._session)
@@ -670,7 +671,6 @@ class EvMenu(object):
         # format the entire node
         return self._node_formatter(nodetext, optionstext, self.caller)
 
-
     def _execute_node(self, nodename, raw_string):
         """
         Execute a node.
@@ -707,14 +707,11 @@ class EvMenu(object):
             raise
         return nodetext, options
 
-
     def display_nodetext(self):
         self.caller.msg(self.nodetext, session=self._session)
 
-
     def display_helptext(self):
         self.caller.msg(self.helptext, session=self._session)
-
 
     def callback_goto(self, callback, goto, raw_string):
         """
@@ -886,7 +883,7 @@ class CmdGetInput(Command):
     aliases = _CMD_NOINPUT
 
     def func(self):
-        "This is called when user enters anything."
+        """This is called when user enters anything."""
         caller = self.caller
         try:
             getinput = caller.ndb._getinput
@@ -897,7 +894,7 @@ class CmdGetInput(Command):
 
             caller.ndb._getinput._session = self.session
             prompt = caller.ndb._getinput._prompt
-            result = self.raw_string.strip() # we strip the ending line break caused by sending
+            result = self.raw_string.strip()  # we strip the ending line break caused by sending
 
             ok = not callback(caller, prompt, result)
             if ok:
@@ -924,12 +921,12 @@ class InputCmdSet(CmdSet):
     no_channels = False
 
     def at_cmdset_creation(self):
-        "called once at creation"
+        """called once at creation"""
         self.add(CmdGetInput())
 
 
 class _Prompt(object):
-    "Dummy holder"
+    """Dummy holder"""
     pass
 
 
@@ -988,11 +985,11 @@ def get_input(caller, prompt, callback, session=None):
     caller.msg(prompt, session=session)
 
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # test menu strucure and testing command
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 def test_start_node(caller):
     menu = caller.ndb._menutree
@@ -1008,17 +1005,17 @@ def test_start_node(caller):
     The menu was initialized with two variables: %s and %s.
     """ % (menu.testval, menu.testval2)
 
-    options = ({"key": ("{yS{net", "s"),
+    options = ({"key": ("|yS|net", "s"),
                 "desc": "Set an attribute on yourself.",
                 "exec": lambda caller: caller.attributes.add("menuattrtest", "Test value"),
                 "goto": "test_set_node"},
-               {"key": ("{yL{nook", "l"),
+               {"key": ("|yL|nook", "l"),
                 "desc": "Look and see a custom message.",
                 "goto": "test_look_node"},
-               {"key": ("{yV{niew", "v"),
+               {"key": ("|yV|niew", "v"),
                 "desc": "View your own name",
                 "goto": "test_view_node"},
-               {"key": ("{yQ{nuit", "quit", "q", "Q"),
+               {"key": ("|yQ|nuit", "quit", "q", "Q"),
                 "desc": "Quit this menu example.",
                 "goto": "test_end_node"},
                {"key": "_default",
@@ -1028,16 +1025,17 @@ def test_start_node(caller):
 
 def test_look_node(caller):
     text = ""
-    options = {"key": ("{yL{nook", "l"),
+    options = {"key": ("|yL|nook", "l"),
                "desc": "Go back to the previous menu.",
                "goto": "test_start_node"}
     return text, options
+
 
 def test_set_node(caller):
     text = ("""
     The attribute 'menuattrtest' was set to
 
-            {w%s{n
+            |w%s|n
 
     (check it with examine after quitting the menu).
 
@@ -1045,9 +1043,8 @@ def test_set_node(caller):
     string "_default", meaning it will catch any input, in this case
     to return to the main menu.  So you can e.g. press <return> to go
     back now.
-    """ % caller.db.menuattrtest,
-    # optional help text for this node
-    """
+    """ % caller.db.menuattrtest,  # optional help text for this node
+            """
     This is the help entry for this node. It is created by returning
     the node text as a tuple - the second string in that tuple will be
     used as the help text.
@@ -1061,7 +1058,7 @@ def test_set_node(caller):
 
 def test_view_node(caller):
     text = """
-    Your name is {g%s{n!
+    Your name is |g%s|n!
 
     click |lclook|lthere|le to trigger a look command under MXP.
     This node's option has no explicit key (nor the "_default" key
@@ -1074,11 +1071,11 @@ def test_view_node(caller):
     return text, options
 
 
-def  test_displayinput_node(caller, raw_string):
+def test_displayinput_node(caller, raw_string):
     text = """
     You entered the text:
 
-        "{w%s{n"
+        "|w%s|n"
 
     ... which could now be handled or stored here in some way if this
     was not just an example.
@@ -1089,7 +1086,7 @@ def  test_displayinput_node(caller, raw_string):
     to the start node.
     """ % raw_string
     options = {"key": "_default",
-              "goto": "test_start_node"}
+               "goto": "test_start_node"}
     return text, options
 
 
@@ -1119,5 +1116,5 @@ class CmdTestMenu(Command):
             self.caller.msg("Usage: testmenu menumodule")
             return
         # start menu
-        EvMenu(self.caller, self.args.strip(), startnode="test_start_node", persistent=True, cmdset_mergetype="Replace",
-                testval="val", testval2="val2")
+        EvMenu(self.caller, self.args.strip(), startnode="test_start_node", persistent=True,
+               cmdset_mergetype="Replace", testval="val", testval2="val2")
