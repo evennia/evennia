@@ -5,12 +5,15 @@ Use the codes defined in ANSIPARSER in your text
 to apply colour to text according to the ANSI standard.
 
 Examples:
- This is %crRed text%cn and this is normal again.
- This is {rRed text{n and this is normal again.
+ This is |rRed text|n and this is normal again.
+ This is {rRed text{n and this is normal again.   # soon to be depreciated
+ This is %crRed text%cn and this is normal again. # depreciated
+
 
 Mostly you should not need to call parse_ansi() explicitly;
 it is run by Evennia just before returning data to/from the
-user.
+user.  Depreciated example forms are available by extending
+the ansi mapping.
 
 """
 from builtins import object, range
@@ -133,7 +136,7 @@ class ANSIParser(object):
         rgbtag = rgbmatch.group()[1:]
 
         background = rgbtag[0] == '['
-        grayscale  = rgbtag[0 + int(background)] == '='
+        grayscale = rgbtag[0 + int(background)] == '='
         if not grayscale:
             # 6x6x6 color-cube (xterm indexes 16-231)
             if background:
@@ -143,9 +146,9 @@ class ANSIParser(object):
         else:
             # grayscale values (xterm indexes 0, 232-255, 15) for full spectrum
             letter = rgbtag[int(background) + 1]
-            if (letter == 'a'):
+            if letter == 'a':
                 colval = 16     # pure black @ index 16 (first color cube entry)
-            elif (letter == 'z'):
+            elif letter == 'z':
                 colval = 231    # pure white @ index 231 (last color cube entry)
             else:
                 # letter in range [b..y] (exactly 24 values!)
@@ -161,8 +164,8 @@ class ANSIParser(object):
                 colval = 16 + (red * 36) + (green * 6) + blue
 
             return "\033[%s8;5;%sm" % (3 + int(background), colval)
-            # replaced since some cliens (like Potato) does not accept codes with leading zeroes, see issue #1024.
-            #return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)
+            # replaced since some clients (like Potato) does not accept codes with leading zeroes, see issue #1024.
+            # return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)
 
         else:
             # xterm256 not supported, convert the rgb value to ansi instead
@@ -289,7 +292,7 @@ class ANSIParser(object):
         in_string = utils.to_str(string)
 
         # do string replacement
-        parsed_string =  ""
+        parsed_string = ""
         parts = self.ansi_escapes.split(in_string) + [" "]
         for part, sep in zip(parts[::2], parts[1::2]):
             pstring = self.xterm256_sub.sub(do_xterm256, part)
@@ -307,7 +310,7 @@ class ANSIParser(object):
         # cache and crop old cache
         _PARSE_CACHE[cachekey] = parsed_string
         if len(_PARSE_CACHE) > _PARSE_CACHE_SIZE:
-           _PARSE_CACHE.popitem(last=False)
+            _PARSE_CACHE.popitem(last=False)
 
         return parsed_string
 
@@ -321,8 +324,8 @@ class ANSIParser(object):
         (r'{/', ANSI_RETURN),          # line break
         (r'{-', ANSI_TAB),             # tab
         (r'{_', ANSI_SPACE),           # space
-        (r'{*', ANSI_INVERSE),        # invert
-        (r'{^', ANSI_BLINK),          # blinking text (very annoying and not supported by all clients)
+        (r'{*', ANSI_INVERSE),         # invert
+        (r'{^', ANSI_BLINK),           # blinking text (very annoying and not supported by all clients)
         (r'{u', ANSI_UNDERLINE),       # underline
 
         (r'{r', hilite + ANSI_RED),
@@ -366,14 +369,14 @@ class ANSIParser(object):
         (r'{[W', ANSI_BACK_WHITE),    # light grey background
         (r'{[X', ANSI_BACK_BLACK),     # pure black background
 
-        ## alternative |-format
+        # alternative |-format
 
         (r'|n', ANSI_NORMAL),          # reset
         (r'|/', ANSI_RETURN),          # line break
         (r'|-', ANSI_TAB),             # tab
         (r'|_', ANSI_SPACE),           # space
-        (r'|*', ANSI_INVERSE),        # invert
-        (r'|^', ANSI_BLINK),          # blinking text (very annoying and not supported by all clients)
+        (r'|*', ANSI_INVERSE),         # invert
+        (r'|^', ANSI_BLINK),           # blinking text (very annoying and not supported by all clients)
         (r'|u', ANSI_UNDERLINE),       # underline
 
         (r'|r', hilite + ANSI_RED),
@@ -433,8 +436,7 @@ class ANSIParser(object):
         (r'{[w', r'{[555'),     # white background
         (r'{[x', r'{[222'),     # dark grey background
 
-        ## |-style variations
-
+        # |-style variations
         (r'|[r', r'|[500'),
         (r'|[g', r'|[050'),
         (r'|[y', r'|[550'),
@@ -448,13 +450,13 @@ class ANSIParser(object):
     # the sub_xterm256 method
 
     xterm256_map = [
-        (r'\{[0-5]{3}', ""),   # {123 - foreground colour
+        (r'\{[0-5]{3}', ""),     # {123 - foreground colour
         (r'\{\[[0-5]{3}', ""),   # {[123 - background colour
-        ## |-style
-        (r'\|[0-5]{3}', ""),  # |123 - foreground colour
-        (r'\|\[[0-5]{3}', ""),  # |[123 - background colour
+        # |-style
+        (r'\|[0-5]{3}', ""),     # |123 - foreground colour
+        (r'\|\[[0-5]{3}', ""),   # |[123 - background colour
 
-        ## grayscale entries including ansi extremes: {=a .. {=z
+        # grayscale entries including ansi extremes: {=a .. {=z
         (r'\{=[a-z]', ""),
         (r'\{\[=[a-z]', ""),
         (r'\|=[a-z]', ""),
@@ -512,6 +514,7 @@ def strip_ansi(string, parser=ANSI_PARSER):
     markup.
 
     Args:
+        string (str): The string to strip.
         parser (ansi.AnsiParser, optional): The parser to use.
 
     Returns:
@@ -519,6 +522,7 @@ def strip_ansi(string, parser=ANSI_PARSER):
 
     """
     return parser.parse_ansi(string, strip_ansi=True)
+
 
 def strip_raw_ansi(string, parser=ANSI_PARSER):
     """
@@ -1056,7 +1060,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
 
         res.append(self[start:len(self)])
         if drop_spaces:
-            return [part for part in res  if part != ""]
+            return [part for part in res if part != ""]
         return res
 
     def rsplit(self, by=None, maxsplit=-1):
@@ -1128,7 +1132,6 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
             ir2 -= 1
         rstripped = rstripped[::-1]
         return ANSIString(lstripped + raw[ir1:ir2+1] + rstripped)
-
 
     def lstrip(self, chars=None):
         """
