@@ -19,11 +19,12 @@ from evennia.server.portal.mxp import Mxp, mxp_parse
 from evennia.utils import ansi
 from evennia.utils.utils import to_str
 
-_RE_N = re.compile(r"\{n$")
+_RE_N = re.compile(r"\|n$")
 _RE_LEND = re.compile(r"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
 _RE_LINEBREAK = re.compile(r"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 _IDLE_COMMAND = settings.IDLE_COMMAND + "\n"
+
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
@@ -46,7 +47,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         client_address = client_address[0] if client_address else None
         # this number is counted down for every handshake that completes.
         # when it reaches 0 the portal/server syncs their data
-        self.handshakes = 7 # naws, ttype, mccp, mssp, msdp, gmcp, mxp
+        self.handshakes = 7  # naws, ttype, mccp, mssp, msdp, gmcp, mxp
         self.init_session(self.protocol_name, client_address, self.factory.sessionhandler)
 
         # negotiate client size
@@ -79,7 +80,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.toggle_nop_keepalive()
 
     def _send_nop_keepalive(self):
-        "Send NOP keepalive unless flag is set"
+        """Send NOP keepalive unless flag is set"""
         if self.protocol_flags.get("NOPKEEPALIVE"):
             self._write(IAC + NOP)
 
@@ -178,7 +179,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         directly.
 
         Args:
-            string (str): Incoming data.
+            data (str): Incoming data.
 
         """
         if not data:
@@ -205,7 +206,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.data_in(text=dat + "\n")
 
     def _write(self, data):
-        "hook overloading the one used in plain telnet"
+        """hook overloading the one used in plain telnet"""
         data = data.replace('\n', '\r\n').replace('\r\r\n', '\r\n')
         super(TelnetProtocol, self)._write(mccp_compress(self, data))
 
@@ -217,11 +218,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             line (str): Line to send.
 
         """
-        #escape IAC in line mode, and correctly add \r\n
+        # escape IAC in line mode, and correctly add \r\n
         line += self.delimiter
         line = line.replace(IAC, IAC + IAC).replace('\n', '\r\n')
         return self.transport.write(mccp_compress(self, line))
-
 
     # Session hooks
 
@@ -245,8 +245,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             kwargs (any): Options from the protocol.
 
         """
-        #from evennia.server.profiling.timetrace import timetrace
-        #text = timetrace(text, "telnet.data_in")
+        # from evennia.server.profiling.timetrace import timetrace  # DEBUG
+        # text = timetrace(text, "telnet.data_in")  # DEBUG
 
         self.sessionhandler.data_in(self, **kwargs)
 
@@ -297,7 +297,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         nocolor = options.get("nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi))
         echo = options.get("echo", None)
         mxp = options.get("mxp", flags.get("MXP", False))
-        screenreader =  options.get("screenreader", flags.get("SCREENREADER", False))
+        screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
 
         if screenreader:
             # screenreader mode cleans up output
@@ -308,7 +308,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             # send a prompt instead.
             if not raw:
                 # processing
-                prompt = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nocolor, xterm256=xterm256)
+                prompt = ansi.parse_ansi(_RE_N.sub("", text) + "|n", strip_ansi=nocolor, xterm256=xterm256)
                 if mxp:
                     prompt = mxp_parse(prompt)
             prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
@@ -335,7 +335,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             else:
                 # we need to make sure to kill the color at the end in order
                 # to match the webclient output.
-                linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nocolor, xterm256=xterm256, mxp=mxp)
+                linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "|n", strip_ansi=nocolor, xterm256=xterm256, mxp=mxp)
                 if mxp:
                     linetosend = mxp_parse(linetosend)
                 self.sendLine(linetosend)
@@ -347,7 +347,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         kwargs["options"].update({"send_prompt": True})
         self.send_text(*args, **kwargs)
-
 
     def send_default(self, cmdname, *args, **kwargs):
         """
