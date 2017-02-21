@@ -9,7 +9,7 @@ import re
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
 from evennia.server.models import ServerConfig
-from evennia.utils import prettytable, search, class_from_module
+from evennia.utils import evtable, search, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -40,7 +40,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
     help_category = "Admin"
 
     def func(self):
-        "Implementing the function"
+        """Implementing the function"""
         caller = self.caller
         args = self.args
 
@@ -86,7 +86,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
         # Carry out the booting of the sessions in the boot list.
 
         feedback = None
-        if not 'quiet' in self.switches:
+        if 'quiet' not in self.switches:
             feedback = "You have been disconnected by %s.\n" % caller.name
             if reason:
                 feedback += "\nReason given: %s" % reason
@@ -108,13 +108,12 @@ def list_bans(banlist):
     if not banlist:
         return "No active bans were found."
 
-    table = prettytable.PrettyTable(["{wid", "{wname/ip", "{wdate", "{wreason"])
+    table = evtable.EvTable("|wid", "|wname/ip", "|wdate", "|wreason")
     for inum, ban in enumerate(banlist):
-        table.add_row([str(inum + 1),
-                       ban[0] and ban[0] or ban[1],
-                       ban[3], ban[4]])
-    string = "{wActive bans:{n\n%s" % table
-    return string
+        table.add_row(str(inum + 1),
+                      ban[0] and ban[0] or ban[1],
+                      ban[3], ban[4])
+    return "|wActive bans:|n\n%s" % table
 
 
 class CmdBan(COMMAND_DEFAULT_CLASS):
@@ -174,7 +173,7 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
 
         if not self.args or (self.switches
                              and not any(switch in ('ip', 'name')
-                             for switch in self.switches)):
+                                         for switch in self.switches)):
             self.caller.msg(list_bans(banlist))
             return
 
@@ -202,7 +201,7 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
         # save updated banlist
         banlist.append(bantup)
         ServerConfig.objects.conf('server_bans', banlist)
-        self.caller.msg("%s-Ban {w%s{n was added." % (typ, ban))
+        self.caller.msg("%s-Ban |w%s|n was added." % (typ, ban))
 
 
 class CmdUnban(COMMAND_DEFAULT_CLASS):
@@ -223,7 +222,7 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
     help_category = "Admin"
 
     def func(self):
-        "Implement unbanning"
+        """Implement unbanning"""
 
         banlist = ServerConfig.objects.conf('server_bans')
 
@@ -240,14 +239,14 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
         if not banlist:
             self.caller.msg("There are no bans to clear.")
         elif not (0 < num < len(banlist) + 1):
-            self.caller.msg("Ban id {w%s{x was not found." % self.args)
+            self.caller.msg("Ban id |w%s|x was not found." % self.args)
         else:
             # all is ok, clear ban
             ban = banlist[num - 1]
             del banlist[num - 1]
             ServerConfig.objects.conf('server_bans', banlist)
             self.caller.msg("Cleared ban %s: %s" %
-                                    (num, " ".join([s for s in ban[:2]])))
+                            (num, " ".join([s for s in ban[:2]])))
 
 
 class CmdDelPlayer(COMMAND_DEFAULT_CLASS):
@@ -270,7 +269,7 @@ class CmdDelPlayer(COMMAND_DEFAULT_CLASS):
     help_category = "Admin"
 
     def func(self):
-        "Implements the command."
+        """Implements the command."""
 
         caller = self.caller
         args = self.args
@@ -346,7 +345,7 @@ class CmdEmit(COMMAND_DEFAULT_CLASS):
     help_category = "Admin"
 
     def func(self):
-        "Implement the command"
+        """Implement the command"""
 
         caller = self.caller
         args = self.args
@@ -382,7 +381,7 @@ class CmdEmit(COMMAND_DEFAULT_CLASS):
             obj = caller.search(objname, global_search=True)
             if not obj:
                 return
-            if rooms_only and not obj.location is None:
+            if rooms_only and obj.location is not None:
                 caller.msg("%s is not a room. Ignored." % objname)
                 continue
             if players_only and not obj.has_player:
@@ -414,7 +413,7 @@ class CmdNewPassword(COMMAND_DEFAULT_CLASS):
     help_category = "Admin"
 
     def func(self):
-        "Implement the function."
+        """Implement the function."""
 
         caller = self.caller
 
@@ -455,7 +454,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
     help_category = "Admin"
 
     def func(self):
-        "Implement function"
+        """Implement function"""
 
         caller = self.caller
         switches = self.switches
@@ -481,14 +480,14 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                 caller.msg("You are not allowed to examine this object.")
                 return
 
-            string = "Permissions on {w%s{n: " % obj.key
+            string = "Permissions on |w%s|n: " % obj.key
             if not obj.permissions.all():
                 string += "<None>"
             else:
                 string += ", ".join(obj.permissions.all())
                 if (hasattr(obj, 'player') and
                     hasattr(obj.player, 'is_superuser') and
-                    obj.player.is_superuser):
+                        obj.player.is_superuser):
                     string += "\n(... but this object is currently controlled by a SUPERUSER! "
                     string += "All access checks are passed automatically.)"
             caller.msg(string)
@@ -497,21 +496,21 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
         # we supplied an argument on the form obj = perm
         locktype = "edit" if playermode else "control"
         if not obj.access(caller, locktype):
-            caller.msg("You are not allowed to edit this %s's permissions." %
-                            ("player" if playermode else "object"))
+            caller.msg("You are not allowed to edit this %s's permissions."
+                       % ("player" if playermode else "object"))
             return
 
-        cstring = ""
-        tstring = ""
+        caller_result = []
+        target_result = []
         if 'del' in switches:
             # delete the given permission(s) from object.
             for perm in self.rhslist:
                 obj.permissions.remove(perm)
                 if obj.permissions.get(perm):
-                    cstring += "\nPermissions %s could not be removed from %s." % (perm, obj.name)
+                    caller_result.append("\nPermissions %s could not be removed from %s." % (perm, obj.name))
                 else:
-                    cstring += "\nPermission %s removed from %s (if they existed)." % (perm, obj.name)
-                    tstring += "\n%s revokes the permission(s) %s from you." % (caller.name, perm)
+                    caller_result.append("\nPermission %s removed from %s (if they existed)." % (perm, obj.name))
+                    target_result.append("\n%s revokes the permission(s) %s from you." % (caller.name, perm))
         else:
             # add a new permission
             permissions = obj.permissions.all()
@@ -526,15 +525,16 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                     return
 
                 if perm in permissions:
-                    cstring += "\nPermission '%s' is already defined on %s." % (rhs, obj.name)
+                    caller_result.append("\nPermission '%s' is already defined on %s." % (rhs, obj.name))
                 else:
                     obj.permissions.add(perm)
                     plystring = "the Player" if playermode else "the Object/Character"
-                    cstring += "\nPermission '%s' given to %s (%s)." % (rhs, obj.name, plystring)
-                    tstring += "\n%s gives you (%s, %s) the permission '%s'." % (caller.name, obj.name, plystring, rhs)
-        caller.msg(cstring.strip())
-        if tstring:
-            obj.msg(tstring.strip())
+                    caller_result.append("\nPermission '%s' given to %s (%s)." % (rhs, obj.name, plystring))
+                    target_result.append("\n%s gives you (%s, %s) the permission '%s'."
+                                         % (caller.name, obj.name, plystring, rhs))
+        caller.msg("".join(caller_result).strip())
+        if target_result:
+            obj.msg("".join(target_result).strip())
 
 
 class CmdWall(COMMAND_DEFAULT_CLASS):
@@ -551,7 +551,7 @@ class CmdWall(COMMAND_DEFAULT_CLASS):
     help_category = "Admin"
 
     def func(self):
-        "Implements command"
+        """Implements command"""
         if not self.args:
             self.caller.msg("Usage: @wall <message>")
             return
