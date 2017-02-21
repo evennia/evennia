@@ -41,6 +41,7 @@ _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 _CMDSET_PLAYER = settings.CMDSET_PLAYER
 _CONNECT_CHANNEL = None
 
+
 class PlayerSessionHandler(object):
     """
     Manages the session(s) attached to a player.
@@ -97,7 +98,6 @@ class PlayerSessionHandler(object):
 
         """
         return len(self.get())
-
 
 
 class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
@@ -187,7 +187,6 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
     @lazy_property
     def sessions(self):
         return PlayerSessionHandler(self)
-
 
     # session-related methods
 
@@ -337,8 +336,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                 by this Player.
 
         """
-        return list(set(session.puppet for session in self.sessions.all()
-                                                    if session.puppet))
+        return list(set(session.puppet for session in self.sessions.all() if session.puppet))
 
     def __get_single_puppet(self):
         """
@@ -383,7 +381,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         self.nicks.clear()
         self.aliases.clear()
         super(DefaultPlayer, self).delete(*args, **kwargs)
-    ## methods inherited from database model
+    # methods inherited from database model
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
         """
@@ -447,8 +445,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
         """
         raw_string = to_unicode(raw_string)
-        raw_string = self.nicks.nickreplace(raw_string,
-                          categories=("inputline", "channel"), include_player=False)
+        raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_player=False)
         if not session and _MULTISESSION_MODE in (0, 1):
             # for these modes we use the first/only session
             sessions = self.sessions.get()
@@ -557,7 +554,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             return time.time() - float(min(conn))
         return None
 
-    ## player hooks
+    # player hooks
 
     def basetype_setup(self):
         """
@@ -599,7 +596,6 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
         """
         pass
-
 
     # Note that the hooks below also exist in the character object's
     # typeclass. You can often ignore these and rely on the character
@@ -847,34 +843,36 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             is_su = self.is_superuser
 
             # text shown when looking in the ooc area
-            string = "Account |g%s|n (you are Out-of-Character)" % (self.key)
+            result = ["Account |g%s|n (you are Out-of-Character)" % self.key]
 
             nsess = len(sessions)
-            string += nsess == 1 and "\n\n|wConnected session:|n" or "\n\n|wConnected sessions (%i):|n" % nsess
+            result.append(nsess == 1 and "\n\n|wConnected session:|n" or "\n\n|wConnected sessions (%i):|n" % nsess)
             for isess, sess in enumerate(sessions):
                 csessid = sess.sessid
-                addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple) and str(sess.address[0]) or str(sess.address))
-                string += "\n %s %s" % (session.sessid == csessid and "|w* %s|n" % (isess + 1) or "  %s" % (isess + 1), addr)
-            string += "\n\n |whelp|n - more commands"
-            string += "\n |wooc <Text>|n - talk on public channel"
+                addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple)
+                                    and str(sess.address[0]) or str(sess.address))
+                result.append("\n %s %s" % (session.sessid == csessid and "|w* %s|n" % (isess + 1)
+                                            or "  %s" % (isess + 1), addr))
+            result.append("\n\n |whelp|n - more commands")
+            result.append("\n |wooc <Text>|n - talk on public channel")
 
             charmax = _MAX_NR_CHARACTERS if _MULTISESSION_MODE > 1 else 1
 
             if is_su or len(characters) < charmax:
                 if not characters:
-                    string += "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
+                    result.append("\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one.")
                 else:
-                    string += "\n |w@charcreate <name> [=description]|n - create new character"
-                    string += "\n |w@chardelete <name>|n - delete a character (cannot be undone!)"
+                    result.append("\n |w@charcreate <name> [=description]|n - create new character")
+                    result.append("\n |w@chardelete <name>|n - delete a character (cannot be undone!)")
 
             if characters:
                 string_s_ending = len(characters) > 1 and "s" or ""
-                string += "\n |w@ic <character>|n - enter the game (|w@ooc|n to get back here)"
+                result.append("\n |w@ic <character>|n - enter the game (|w@ooc|n to get back here)")
                 if is_su:
-                    string += "\n\nAvailable character%s (%i/unlimited):" % (string_s_ending, len(characters))
+                    result.append("\n\nAvailable character%s (%i/unlimited):" % (string_s_ending, len(characters)))
                 else:
-                    string += "\n\nAvailable character%s%s:"  % (string_s_ending,
-                             charmax > 1 and " (%i/%i)" % (len(characters), charmax) or "")
+                    result.append("\n\nAvailable character%s%s:"
+                                  % (string_s_ending, charmax > 1 and " (%i/%i)" % (len(characters), charmax) or ""))
 
                 for char in characters:
                     csessions = char.sessions.all()
@@ -883,14 +881,16 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                             # character is already puppeted
                             sid = sess in sessions and sessions.index(sess) + 1
                             if sess and sid:
-                                string += "\n - |G%s|n [%s] (played by you in session %i)" % (char.key, ", ".join(char.permissions.all()), sid)
+                                result.append("\n - |G%s|n [%s] (played by you in session %i)"
+                                              % (char.key, ", ".join(char.permissions.all()), sid))
                             else:
-                                string += "\n - |R%s|n [%s] (played by someone else)" % (char.key, ", ".join(char.permissions.all()))
+                                result.append("\n - |R%s|n [%s] (played by someone else)"
+                                              % (char.key, ", ".join(char.permissions.all())))
                     else:
                         # character is "free to puppet"
-                        string += "\n - %s [%s]" % (char.key, ", ".join(char.permissions.all()))
-            string = ("-" * 68) + "\n" + string + "\n" + ("-" * 68)
-            return string
+                        result.append("\n - %s [%s]" % (char.key, ", ".join(char.permissions.all())))
+            look_string = ("-" * 68) + "\n" + "".join(result) + "\n" + ("-" * 68)
+            return look_string
 
 
 class DefaultGuest(DefaultPlayer):
@@ -909,7 +909,6 @@ class DefaultGuest(DefaultPlayer):
         """
         self._send_to_connect_channel("|G%s connected|n" % self.key)
         self.puppet_object(session, self.db._last_puppet)
-
 
     def at_server_shutdown(self):
         """
