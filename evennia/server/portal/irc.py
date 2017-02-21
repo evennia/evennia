@@ -40,18 +40,23 @@ IRC_MAGENTA = "13"
 IRC_DGREY = "14"
 IRC_GRAY = "15"
 
-# test:
+# obsolete test:
 # {rred {ggreen {yyellow {bblue {mmagenta {ccyan {wwhite {xdgrey
 # {Rdred {Gdgreen {Ydyellow {Bdblue {Mdmagenta {Cdcyan {Wlgrey {Xblack
 # {[rredbg {[ggreenbg {[yyellowbg {[bbluebg {[mmagentabg {[ccyanbg {[wlgreybg {[xblackbg
 
+# test:
+# |rred |ggreen |yyellow |bblue |mmagenta |ccyan |wwhite |xdgrey
+# |Rdred |Gdgreen |Ydyellow |Bdblue |Mdmagenta |Cdcyan |Wlgrey |Xblack
+# |[rredbg |[ggreenbg |[yyellowbg |[bbluebg |[mmagentabg |[ccyanbg |[wlgreybg |[xblackbg
+
 IRC_COLOR_MAP = dict([
     # obs - {-type colors are deprecated but still used in many places.
-    (r'{n', IRC_RESET),                # reset
+    (r'{n', IRC_RESET),   # reset
     (r'{/', ""),          # line break
-    (r'{-', " "),             # tab
-    (r'{_', " "),           # space
-    (r'{*', ""),        # invert
+    (r'{-', " "),         # tab
+    (r'{_', " "),         # space
+    (r'{*', ""),          # invert
     (r'{^', ""),          # blinking text
 
     (r'{r', IRC_COLOR + IRC_RED),
@@ -69,7 +74,7 @@ IRC_COLOR_MAP = dict([
     (r'{B', IRC_COLOR + IRC_DBLUE),
     (r'{M', IRC_COLOR + IRC_DMAGENTA),
     (r'{C', IRC_COLOR + IRC_DCYAN),
-    (r'{W', IRC_COLOR + IRC_GRAY),  # light grey
+    (r'{W', IRC_COLOR + IRC_GRAY),   # light grey
     (r'{X', IRC_COLOR + IRC_BLACK),  # pure black
 
     (r'{[r', IRC_COLOR + IRC_NORMAL + "," + IRC_DRED),
@@ -79,14 +84,14 @@ IRC_COLOR_MAP = dict([
     (r'{[m', IRC_COLOR + IRC_NORMAL + "," + IRC_DMAGENTA),
     (r'{[c', IRC_COLOR + IRC_NORMAL + "," + IRC_DCYAN),
     (r'{[w', IRC_COLOR + IRC_NORMAL + "," + IRC_GRAY),    # light grey background
-    (r'{[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK),     # pure black background
+    (r'{[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK),   # pure black background
 
     # |-type formatting is the thing to use.
-    (r'|n', IRC_RESET),                # reset
+    (r'|n', IRC_RESET),   # reset
     (r'|/', ""),          # line break
-    (r'|-', " "),             # tab
-    (r'|_', " "),           # space
-    (r'|*', ""),        # invert
+    (r'|-', " "),         # tab
+    (r'|_', " "),         # space
+    (r'|*', ""),          # invert
     (r'|^', ""),          # blinking text
 
     (r'|r', IRC_COLOR + IRC_RED),
@@ -104,7 +109,7 @@ IRC_COLOR_MAP = dict([
     (r'|B', IRC_COLOR + IRC_DBLUE),
     (r'|M', IRC_COLOR + IRC_DMAGENTA),
     (r'|C', IRC_COLOR + IRC_DCYAN),
-    (r'|W', IRC_COLOR + IRC_GRAY),  # light grey
+    (r'|W', IRC_COLOR + IRC_GRAY),   # light grey
     (r'|X', IRC_COLOR + IRC_BLACK),  # pure black
 
     (r'|[r', IRC_COLOR + IRC_NORMAL + "," + IRC_DRED),
@@ -114,11 +119,12 @@ IRC_COLOR_MAP = dict([
     (r'|[m', IRC_COLOR + IRC_NORMAL + "," + IRC_DMAGENTA),
     (r'|[c', IRC_COLOR + IRC_NORMAL + "," + IRC_DCYAN),
     (r'|[w', IRC_COLOR + IRC_NORMAL + "," + IRC_GRAY),    # light grey background
-    (r'|[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK)     # pure black background
+    (r'|[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK)    # pure black background
     ])
 RE_IRC_COLOR = re.compile(r"|".join([re.escape(key) for key in viewkeys(IRC_COLOR_MAP)]), re.DOTALL)
-RE_MXP = re.compile(r'\{lc(.*?)\{lt(.*?)\{le', re.DOTALL)
+RE_MXP = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
 RE_ANSI_ESCAPES = re.compile(r"(%s)" % "|".join(("{{", "%%", "\\\\")), re.DOTALL)
+
 
 def sub_irc(ircmatch):
     """
@@ -132,6 +138,7 @@ def sub_irc(ircmatch):
 
     """
     return IRC_COLOR_MAP.get(ircmatch.group(), "")
+
 
 def parse_irc_colors(string):
     """
@@ -156,9 +163,10 @@ def parse_irc_colors(string):
 
 # IRC bot
 
+
 class IRCBot(irc.IRCClient, Session):
     """
-    An IRC bot that tracks actitivity in a channel as well
+    An IRC bot that tracks activity in a channel as well
     as sends text to it when prompted
 
     """
@@ -246,14 +254,14 @@ class IRCBot(irc.IRCClient, Session):
             self.sendLine("NAMES %s" % self.channel)
 
     def irc_RPL_NAMREPLY(self, prefix, params):
-        "Handles IRC NAME request returns (nicklist)"
+        """"Handles IRC NAME request returns (nicklist)"""
         channel = params[2].lower()
         if channel != self.channel.lower():
             return
         self.nicklist += params[3].split(' ')
 
     def irc_RPL_ENDOFNAMES(self, prefix, params):
-        "Called when the nicklist has finished being returned."
+        """Called when the nicklist has finished being returned."""
         channel = params[1].lower()
         if channel != self.channel.lower():
             return
@@ -270,7 +278,6 @@ class IRCBot(irc.IRCClient, Session):
 
         """
         self.data_in(text="", type="ping", user="server", channel=self.channel, timing=time)
-
 
     def data_in(self, text=None, **kwargs):
         """
