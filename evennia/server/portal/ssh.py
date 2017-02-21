@@ -32,7 +32,7 @@ packages).
 try:
     from twisted.conch.ssh.keys import Key
 except ImportError:
-    raise ImportError (_SSH_IMPORT_ERROR)
+    raise ImportError(_SSH_IMPORT_ERROR)
 
 from twisted.conch.ssh.userauth import SSHUserAuthServer
 from twisted.conch.ssh import common
@@ -49,7 +49,7 @@ from evennia.players.models import PlayerDB
 from evennia.utils import ansi
 from evennia.utils.utils import to_str
 
-_RE_N = re.compile(r"\{n$")
+_RE_N = re.compile(r"\|n$")
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 _GAME_DIR = settings.GAME_DIR
 
@@ -206,7 +206,7 @@ class SshProtocol(Manhole, session.Session):
 
         """
         for line in string.split('\n'):
-            #this is the telnet-specific method for sending
+            # the telnet-specific method for sending
             self.terminal.write(line)
             self.terminal.nextLine()
 
@@ -255,7 +255,7 @@ class SshProtocol(Manhole, session.Session):
                         Note that it must be actively turned back on again!
 
         """
-        #print "telnet.send_text", args,kwargs
+        # print "telnet.send_text", args,kwargs  # DEBUG
         text = args[0] if args else ""
         if text is None:
             return
@@ -268,8 +268,8 @@ class SshProtocol(Manhole, session.Session):
         useansi = options.get("ansi", flags.get('ANSI', True))
         raw = options.get("raw", flags.get("RAW", False))
         nocolor = options.get("nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi))
-        #echo = options.get("echo", None)
-        screenreader =  options.get("screenreader", flags.get("SCREENREADER", False))
+        # echo = options.get("echo", None)  # DEBUG
+        screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
 
         if screenreader:
             # screenreader mode cleans up output
@@ -283,7 +283,7 @@ class SshProtocol(Manhole, session.Session):
         else:
             # we need to make sure to kill the color at the end in order
             # to match the webclient output.
-            linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "{n", strip_ansi=nocolor, xterm256=xterm256, mxp=False)
+            linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "|n", strip_ansi=nocolor, xterm256=xterm256, mxp=False)
             self.sendLine(linetosend)
 
     def send_prompt(self, *args, **kwargs):
@@ -453,11 +453,10 @@ def makeFactory(configdict):
         factory.publicKeys = {'ssh-rsa': publicKey}
         factory.privateKeys = {'ssh-rsa': privateKey}
     except Exception as err:
-        print ( "getKeyPair error: {err}\n WARNING: Evennia could not " \
-                "auto-generate SSH keypair. Using conch default keys instead.\n" \
-                "If this error persists, create {pub} and " \
-                "{priv} yourself using third-party tools.".format(
-                    err=err, pub=pubkeyfile, priv=privkeyfile))
+        print("getKeyPair error: {err}\n WARNING: Evennia could not "
+              "auto-generate SSH keypair. Using conch default keys instead.\n"
+              "If this error persists, create {pub} and "
+              "{priv} yourself using third-party tools.".format(err=err, pub=pubkeyfile, priv=privkeyfile))
 
     factory.services = factory.services.copy()
     factory.services['ssh-userauth'] = ExtraInfoAuthServer
