@@ -15,8 +15,7 @@ from evennia.server.models import ServerConfig
 from evennia.utils import create, logger
 
 
-ERROR_NO_SUPERUSER = \
-    """
+ERROR_NO_SUPERUSER = """
     No superuser exists yet. The superuser is the 'owner' account on
     the Evennia server. Create a new superuser using the command
 
@@ -26,16 +25,14 @@ ERROR_NO_SUPERUSER = \
     """
 
 
-LIMBO_DESC = \
-    _("""
-Welcome to your new {wEvennia{n-based game! Visit http://www.evennia.com if you need
+LIMBO_DESC = _("""
+Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if you need
 help, want to contribute, report issues or just join the community.
-As Player #1 you can create a demo/tutorial area with {w@batchcommand tutorial_world.build{n.
+As Player #1 you can create a demo/tutorial area with |w@batchcommand tutorial_world.build|n.
     """)
 
 
-WARNING_POSTGRESQL_FIX = \
-    """
+WARNING_POSTGRESQL_FIX = """
     PostgreSQL-psycopg2 compatibility fix:
     The in-game channels {chan1}, {chan2} and {chan3} were created,
     but the superuser was not yet connected to them. Please use in
