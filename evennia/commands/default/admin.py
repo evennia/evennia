@@ -9,7 +9,7 @@ import re
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
 from evennia.server.models import ServerConfig
-from evennia.utils import evtable, search, class_from_module
+from evennia.utils import prettytable, search, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -108,11 +108,11 @@ def list_bans(banlist):
     if not banlist:
         return "No active bans were found."
 
-    table = evtable.EvTable("|wid", "|wname/ip", "|wdate", "|wreason")
+    table = prettytable.PrettyTable(["|wid", "|wname/ip", "|wdate", "|wreason"])
     for inum, ban in enumerate(banlist):
-        table.add_row(str(inum + 1),
-                      ban[0] and ban[0] or ban[1],
-                      ban[3], ban[4])
+        table.add_row([str(inum + 1),
+                       ban[0] and ban[0] or ban[1],
+                       ban[3], ban[4]])
     return "|wActive bans:|n\n%s" % table
 
 
