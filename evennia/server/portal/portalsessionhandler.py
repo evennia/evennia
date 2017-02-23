@@ -28,9 +28,11 @@ _CONNECTION_QUEUE = deque()
 
 DUMMYSESSION = namedtuple('DummySession', ['sessid'])(0)
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 # Portal-SessionHandler class
-#------------------------------------------------------------
+# -------------------------------------------------------------
+
+
 class PortalSessionHandler(SessionHandler):
     """
     This object holds the sessions connected to the portal at any time.
@@ -95,7 +97,7 @@ class PortalSessionHandler(SessionHandler):
             if len(_CONNECTION_QUEUE) > 1:
                 session.data_out(text=[["%s DoS protection is active. You are queued to connect in %g seconds ..." % (
                                  settings.SERVERNAME,
-                                 len(_CONNECTION_QUEUE)*_MIN_TIME_BETWEEN_CONNECTS)],{}])
+                                 len(_CONNECTION_QUEUE)*_MIN_TIME_BETWEEN_CONNECTS)], {}])
         now = time.time()
         if (now - self.connection_last < _MIN_TIME_BETWEEN_CONNECTS) or not self.portal.amp_protocol:
             if not session or not self.connection_task:
@@ -176,8 +178,7 @@ class PortalSessionHandler(SessionHandler):
             del self[session.sessid]
 
         # Tell the Server to disconnect its version of the Session as well.
-        self.portal.amp_protocol.send_AdminPortal2Server(session,
-                                                         operation=PDISCONN)
+        self.portal.amp_protocol.send_AdminPortal2Server(session, operation=PDISCONN)
 
     def disconnect_all(self):
         """
@@ -194,7 +195,7 @@ class PortalSessionHandler(SessionHandler):
         # inform Server; wait until finished sending before we continue
         # removing all the sessions.
         self.portal.amp_protocol.send_AdminPortal2Server(DUMMYSESSION,
-                                operation=PDISCONNALL).addCallback(_callback, self)
+                                                         operation=PDISCONNALL).addCallback(_callback, self)
 
     def server_connect(self, protocol_path="", config=dict()):
         """
@@ -233,8 +234,8 @@ class PortalSessionHandler(SessionHandler):
         Called by server to force a disconnect by sessid.
 
         Args:
-            sessid (int): Session id to disconnect.
-            reason (str, optional): Motivation for disconect.
+            session (portalsession): Session to disconnect.
+            reason (str, optional): Motivation for disconnect.
 
         """
         if session:
@@ -335,7 +336,7 @@ class PortalSessionHandler(SessionHandler):
 
         """
         for session in self.values():
-            self.data_out(session, text=[[message],{}])
+            self.data_out(session, text=[[message], {}])
 
     def data_in(self, session, **kwargs):
         """
@@ -352,8 +353,8 @@ class PortalSessionHandler(SessionHandler):
             Data is serialized before passed on.
 
         """
-        #from evennia.server.profiling.timetrace import timetrace
-        #text = timetrace(text, "portalsessionhandler.data_in")
+        # from evennia.server.profiling.timetrace import timetrace  # DEBUG
+        # text = timetrace(text, "portalsessionhandler.data_in")  # DEBUG
         try:
             text = kwargs['text']
             if (_MAX_CHAR_LIMIT > 0) and len(text) > _MAX_CHAR_LIMIT:
@@ -367,14 +368,14 @@ class PortalSessionHandler(SessionHandler):
             now = time.time()
             if self.command_counter > _MAX_COMMAND_RATE > 0:
                 # data throttle (anti DoS measure)
-                dT = now - self.command_counter_reset
+                delta_time = now - self.command_counter_reset
                 self.command_counter = 0
                 self.command_counter_reset = now
-                self.command_overflow = dT < 1.0
+                self.command_overflow = delta_time < 1.0
                 if self.command_overflow:
                     reactor.callLater(1.0, self.data_in, None)
             if self.command_overflow:
-                self.data_out(session, text=[[_ERROR_COMMAND_OVERFLOW],{}])
+                self.data_out(session, text=[[_ERROR_COMMAND_OVERFLOW], {}])
                 return
             # scrub data
             kwargs = self.clean_senddata(session, kwargs)
@@ -385,7 +386,7 @@ class PortalSessionHandler(SessionHandler):
             self.portal.amp_protocol.send_MsgPortal2Server(session,
                                                            **kwargs)
         else:
-           # called by the callLater callback
+            # called by the callLater callback
             if self.command_overflow:
                 self.command_overflow = False
                 reactor.callLater(1.0, self.data_in, None)
@@ -405,8 +406,8 @@ class PortalSessionHandler(SessionHandler):
             method exixts, it sends the data to a method send_default.
 
         """
-        #from evennia.server.profiling.timetrace import timetrace
-        #text = timetrace(text, "portalsessionhandler.data_out")
+        # from evennia.server.profiling.timetrace import timetrace  # DEBUG
+        # text = timetrace(text, "portalsessionhandler.data_out")  # DEBUG
 
         # distribute outgoing data to the correct session methods.
         if session:
