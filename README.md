@@ -34,6 +34,10 @@ source_suffix = ['.rst', '.md']
 
 This allows you to write both `.md` and `.rst` files inside of the same project.
 
+### Links
+
+For all links in commonmark that aren't explicit URLs, they are treated as cross references with the [`:any:`](http://www.sphinx-doc.org/en/stable/markup/inline.html#role-any) role. This allows referencing a lot of things including files, labels, and even objects in the loaded domain.
+
 ### AutoStructify
 
 To use the advanced markdown to rst transformations you must add `AutoStructify` to your Sphinx conf.py.
