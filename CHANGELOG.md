@@ -1,5 +1,5 @@
 # Evennia Changelog
-# Feb 2017:
+## Feb 2017:
 New devel branch created, to lead up to Evennia 0.7.
 
 ## Dec 2016:
