@@ -3,7 +3,7 @@ Example script for testing. This adds a simple timer that has your
 character make observations and notices at irregular intervals.
 
 To test, use
-  @script me = examples.bodyfunctions.BodyFunctions
+  @script me = tutorial_examples.bodyfunctions.BodyFunctions
 
 The script will only send messages to the object it is stored on, so
 make sure to put it on yourself or you won't see any messages!
