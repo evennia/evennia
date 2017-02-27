@@ -133,6 +133,7 @@ class ExtendedRoom(DefaultRoom):
         # get the current time as parts of year and parts of day.
         # we assume a standard calendar here and use 24h format.
         timestamp = gametime.gametime(absolute=True)
+        # note that fromtimestamp includes the effects of server time zone!
         datestamp = datetime.datetime.fromtimestamp(timestamp)
         season = float(datestamp.month) / MONTHS_PER_YEAR
         timeslot = float(datestamp.hour) / HOURS_PER_DAY
