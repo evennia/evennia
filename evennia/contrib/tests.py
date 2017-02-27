@@ -180,13 +180,13 @@ class TestExtendedRoom(CommandTest):
 
     def setUp(self):
         super(TestExtendedRoom, self).setUp()
-        self.room1.ndb.last_timeslot = "evening"
-        self.room1.ndb.last_season = "spring"
+        self.room1.ndb.last_timeslot = "afternoon"
+        self.room1.ndb.last_season = "winter"
         self.room1.db.details = {'testdetail': self.DETAIL_DESC}
         self.room1.db.spring_desc = self.SPRING_DESC
         self.room1.db.desc = self.OLD_DESC
-        # mock gametime to return 7th month, 10 in morning
-        gametime.gametime = Mock(return_value=2975000766) # spring evening
+        # mock gametime to return April 9, 2064, at 21:06 (spring evening)
+        gametime.gametime = Mock(return_value=2975000766)
 
     def test_return_appearance(self):
         # get the appearance of a non-extended room for contrast purposes
