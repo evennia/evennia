@@ -106,10 +106,10 @@ class PlayerDB(TypedObject, AbstractUser):
 
     # alias to the objs property
     def __characters_get(self):
-        return self.objs
+        return self.db._playable_characters
 
     def __characters_set(self, value):
-        self.objs = value
+        self.db._playable_characters = value
 
     def __characters_del(self):
         raise Exception("Cannot delete name")
