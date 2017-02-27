@@ -356,7 +356,6 @@ class CmdSessions(COMMAND_DEFAULT_CLASS):
         """Implement function"""
         player = self.player
         sessions = player.sessions.all()
-
         table = prettytable.PrettyTable(["|wsessid",
                                          "|wprotocol",
                                          "|whost",
@@ -368,8 +367,7 @@ class CmdSessions(COMMAND_DEFAULT_CLASS):
                            type(sess.address) == tuple and sess.address[0] or sess.address,
                            char and str(char) or "None",
                            char and str(char.location) or "N/A"])
-        string = "|wYour current session(s):|n\n%s" % table
-        self.msg(string)
+        self.msg("|wYour current session(s):|n\n%s" % table)
 
 
 class CmdWho(COMMAND_DEFAULT_CLASS):
@@ -447,9 +445,8 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                                utils.time_format(delta_cmd, 1)])
 
         is_one = nplayers == 1
-        string = "|wPlayers:|n\n%s\n%s unique account%s logged in." \
-                 % (table, "One" if is_one else nplayers, "" if is_one else "s")
-        self.msg(string)
+        self.msg("|wPlayers:|n\n%s\n%s unique account%s logged in."
+                 % (table, "One" if is_one else nplayers, "" if is_one else "s"))
 
 
 class CmdOption(COMMAND_DEFAULT_CLASS):
@@ -524,7 +521,6 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     changed = "|y*|n" if key in saved_options and flags[key] != saved_options[key] else ""
                     row.append("%s%s" % (saved, changed))
                 table.add_row(*row)
-
             self.msg("|wClient settings (%s):|n\n%s|n" % (self.session.protocol_key, table))
 
             return
@@ -599,9 +595,8 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                 for key in optiondict:
                     self.player.attributes.get("_saved_protocol_flags", {}).pop(key, None)
                     self.msg("|gCleared saved %s." % key)
-
-
             self.session.update_flags(**optiondict)
+
 
 class CmdPassword(COMMAND_DEFAULT_CLASS):
     """
