@@ -365,7 +365,7 @@ class PortalSessionHandler(SessionHandler):
             pass
         if session:
             now = time.time()
-            if self.command_counter > _MAX_COMMAND_RATE:
+            if self.command_counter > _MAX_COMMAND_RATE > 0:
                 # data throttle (anti DoS measure)
                 dT = now - self.command_counter_reset
                 self.command_counter = 0
