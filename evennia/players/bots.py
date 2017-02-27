@@ -13,6 +13,9 @@ from evennia.utils import utils
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 
+_IRC_ENABLED = settings.IRC_ENABLED
+_RSS_ENABLED = settings.RSS_ENABLED
+
 _SESSIONS = None
 
 
@@ -157,6 +160,12 @@ class IRCBot(Bot):
             irc_ssl (bool): Indicates whether to use SSL connection.
 
         """
+        if not _IRC_ENABLED:
+            # the bot was created, then IRC was turned off. We delete
+            # ourselves (this will also kill the start script)
+            self.delete()
+            return
+
         global _SESSIONS
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
@@ -360,6 +369,11 @@ class RSSBot(Bot):
             RuntimeError: If `ev_channel` does not exist.
 
         """
+        if not _RSS_EMABLED:
+            # The bot was created, then RSS was turned off. Delete ourselves.
+             self.delete()
+             return
+
         global _SESSIONS
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
