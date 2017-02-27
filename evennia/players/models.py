@@ -104,17 +104,6 @@ class PlayerDB(TypedObject, AbstractUser):
     class Meta(object):
         verbose_name = 'Player'
 
-    # alias to the objs property
-    def __characters_get(self):
-        return self.objs
-
-    def __characters_set(self, value):
-        self.objs = value
-
-    def __characters_del(self):
-        raise Exception("Cannot delete name")
-    characters = property(__characters_get, __characters_set, __characters_del)
-
     # cmdset_storage property
     # This seems very sensitive to caching, so leaving it be for now /Griatch
     #@property
