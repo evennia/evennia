@@ -168,6 +168,7 @@ class TestRPSystem(EvenniaTest):
 
 # Testing of ExtendedRoom contrib
 
+from django.conf import settings
 from evennia.contrib import extended_room
 from evennia import gametime
 from evennia.objects.objects import DefaultRoom
@@ -177,6 +178,7 @@ class TestExtendedRoom(CommandTest):
     DETAIL_DESC = "A test detail."
     SPRING_DESC = "A spring description."
     OLD_DESC = "Old description."
+    settings.TIME_ZONE = "UTC"
 
     def setUp(self):
         super(TestExtendedRoom, self).setUp()
