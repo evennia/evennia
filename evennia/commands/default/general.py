@@ -10,7 +10,7 @@ COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # limit symbol import for API
 __all__ = ("CmdHome", "CmdLook", "CmdNick",
            "CmdInventory", "CmdGet", "CmdDrop", "CmdGive",
-           "CmdSay", "CmdPose", "CmdAccess")
+           "CmdSay", "CmdWhisper", "CmdPose", "CmdAccess")
 
 
 class CmdHome(COMMAND_DEFAULT_CLASS):
@@ -415,6 +415,44 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
         # Build the string to emit to neighbors.
         emit_string = '%s says, "%s|n"' % (caller.name, speech)
         caller.location.msg_contents(emit_string, exclude=caller, from_obj=caller)
+
+
+class CmdWhisper(COMMAND_DEFAULT_CLASS):
+    """
+    Speak privately as your character to another
+
+    Usage:
+      whisper <player> = <message>
+
+    Talk privately to those in your current location.
+    """
+
+    key = "whisper"
+    locks = "cmd:all()"
+
+    def func(self):
+        """Run the whisper command"""
+
+        caller = self.caller
+
+        if not self.lhs or not self.rhs:
+            caller.msg("Usage: whisper <player> = <message>")
+            return
+           
+        receiver = caller.search(self.lhs,
+                                 nofound_string="'%s' cannot be found." % self.lhs)
+        if caller == receiver:
+            caller.msg("You can't whisper yourself.")
+           return
+
+        speech = self.rhs
+
+        # Feedback for the object doing the talking.
+        caller.msg('You whisper %s, "%s|n"' % (receiver.key, speech))
+
+        # Build the string to emit to receiver.
+        emit_string = '%s whispers, "%s|n"' % (caller.name, speech)
+        receiver.msg(emit_string, from_obj=caller)
 
 
 class CmdPose(COMMAND_DEFAULT_CLASS):
