@@ -1241,6 +1241,9 @@ class EvTable(object):
         # actual table. This allows us to add columns/rows
         # and re-balance over and over without issue.
         self.worktable = deepcopy(self.table)
+
+        self._borders()
+        return
         options = copy(self.options)
 
         # balance number of rows to make a rectangular table
@@ -1572,3 +1575,10 @@ def _test():
     table.reformat_column(3, width=30, align='r')
     print(unicode(table))
     return table
+
+def _test2():
+    table = EvTable("|yHeading1|n", "|B|[GHeading2|n", "Heading3")
+    for i in range(100):
+        table.add_row("This is col 0, row %i" % i, "|gThis is col 1, row |w%i|n|g.|n" % i, "This is col 2, row %i" % i)
+    return table
+

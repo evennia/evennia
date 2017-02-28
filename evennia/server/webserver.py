@@ -23,6 +23,8 @@ from twisted.web.wsgi import WSGIResource
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 
+from evennia.utils import logger
+
 _UPSTREAM_IPS = settings.UPSTREAM_IPS
 _DEBUG = settings.DEBUG
 
@@ -70,7 +72,7 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
             resource (EvenniaReverseProxyResource): A proxy resource.
 
         """
-        request.notifyFinish().addErrback(lambda f: f.cancel())
+        request.notifyFinish().addErrback(lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f))
         return EvenniaReverseProxyResource(
             self.host, self.port, self.path + '/' + urlquote(path, safe=""),
             self.reactor)
