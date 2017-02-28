@@ -4,6 +4,7 @@ Testing suite for contrib folder
 
 """
 
+import datetime
 from evennia.commands.default.tests import CommandTest
 from evennia.utils.test_resources import EvenniaTest
 from mock import Mock, patch
@@ -173,6 +174,16 @@ from evennia.contrib import extended_room
 from evennia import gametime
 from evennia.objects.objects import DefaultRoom
 
+class ForceUTCDatetime(datetime.datetime):
+
+    """Force UTC datetime."""
+
+    @classmethod
+    def fromtimestamp(cls, timestamp):
+        """Force fromtimestamp to run with naive datetimes."""
+        return datetime.datetime.utcfromtimestamp(timestamp)
+
+@patch('evennia.contrib.extended_room.datetime.datetime', ForceUTCDatetime)
 class TestExtendedRoom(CommandTest):
     room_typeclass = extended_room.ExtendedRoom
     DETAIL_DESC = "A test detail."
