@@ -439,11 +439,15 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
             caller.msg("Usage: whisper <player> = <message>")
             return
            
-        receiver = caller.search(self.lhs,
-                                 nofound_string="'%s' cannot be found." % self.lhs)
+        receiver = caller.search(self.lhs)
+
+        if not receiver:
+            caller.msg("Usage: whisper <player> = <message>")
+            return
+           
         if caller == receiver:
-            caller.msg("You can't whisper yourself.")
-           return
+            caller.msg("You can't whisper to yourself.")
+            return
 
         speech = self.rhs
 
