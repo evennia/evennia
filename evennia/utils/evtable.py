@@ -1241,9 +1241,8 @@ class EvTable(object):
         # actual table. This allows us to add columns/rows
         # and re-balance over and over without issue.
         self.worktable = deepcopy(self.table)
-
-        self._borders()
-        return
+#        self._borders()
+#        return
         options = copy(self.options)
 
         # balance number of rows to make a rectangular table
