@@ -591,9 +591,11 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
             if not obj:
                 return
             desc = self.args
-
-        obj.db.desc = desc
-        caller.msg("The description was set on %s." % obj.get_display_name(caller))
+        if obj.access(caller, "edit"):
+            obj.db.desc = desc
+            caller.msg("The description was set on %s." % obj.get_display_name(caller))
+        else:
+            caller.msg("You don't have permission to edit the description of %s." % obj.key)
 
 
 class CmdDestroy(COMMAND_DEFAULT_CLASS):
