@@ -235,7 +235,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, raw_string):
                     for lobj in local_objlist:
                         try:
                             # call hook in case we need to do dynamic changing to cmdset
-                            _GA(lobj, "at_cmdset_get")()
+                            _GA(lobj, "at_cmdset_get")(caller=caller)
                         except Exception:
                             logger.log_trace()
                     # the call-type lock is checked here, it makes sure a player
