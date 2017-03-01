@@ -118,7 +118,7 @@ class TestGeneral(CommandTest):
         self.call(general.CmdSay(), "Testing", "You say, \"Testing\"")
 
     def test_whisper(self):
-        self.call(general.CmdWhisper(), "Obj = Testing", "You whisper Obj, \"Testing\"")
+        self.call(general.CmdWhisper(), "Obj = Testing", "You whisper to Obj, \"Testing\"")
 
     def test_access(self):
         self.call(general.CmdAccess(), "", "Permission Hierarchy (climbing):")

@@ -424,7 +424,8 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
     Usage:
       whisper <player> = <message>
 
-    Talk privately to those in your current location.
+    Talk privately to those in your current location, without
+    others being informed.
     """
 
     key = "whisper"
@@ -438,13 +439,12 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
         if not self.lhs or not self.rhs:
             caller.msg("Usage: whisper <player> = <message>")
             return
-           
+
         receiver = caller.search(self.lhs)
 
         if not receiver:
-            caller.msg("Usage: whisper <player> = <message>")
             return
-           
+
         if caller == receiver:
             caller.msg("You can't whisper to yourself.")
             return
@@ -452,7 +452,7 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
         speech = self.rhs
 
         # Feedback for the object doing the talking.
-        caller.msg('You whisper %s, "%s|n"' % (receiver.key, speech))
+        caller.msg('You whisper to %s, "%s|n"' % (receiver.key, speech))
 
         # Build the string to emit to receiver.
         emit_string = '%s whispers, "%s|n"' % (caller.name, speech)
