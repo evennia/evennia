@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 import itertools
+import sphinx
 
 from docutils import parsers, nodes
 
@@ -226,17 +227,35 @@ def inline_entity(inline):
     entity_node = nodes.paragraph('', val, format='html')
     return entity_node
 
+# The goal is to make references work like the `:any:` role except when an url
+# is given. See the XRefRole class in sphinx:
+# https://github.com/sphinx-doc/sphinx/blob/master/sphinx/roles.py
+
+
+def make_refnode(label, target, has_explicit_title):
+    if target and target.startswith(('http://', 'https://')):
+        ref_node = nodes.reference()
+        ref_node['name'] = label
+        ref_node['refuri'] = target
+        return ref_node
+    xref_node = sphinx.addnodes.pending_xref(
+        label,
+        reftype='any',
+        refexplicit=has_explicit_title,
+        refwarn=True)
+    if target:
+        xref_node['reftarget'] = target
+    else:
+        xref_node['refname'] = label
+    return xref_node
+
 
 def reference(block):
-    ref_node = nodes.reference()
 
     label = make_refname(block.label)
 
-    ref_node['name'] = label
-    if block.destination is not None:
-        ref_node['refuri'] = block.destination
-    else:
-        ref_node['refname'] = label
+    has_explicit_title = True if block.title else False
+    ref_node = make_refnode(label, block.destination, has_explicit_title)
 
     if block.title:
         ref_node['title'] = block.title
