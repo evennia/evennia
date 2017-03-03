@@ -37,9 +37,9 @@ if os.name == 'nt':
     # For Windows we need to handle pid files manually.
     PORTAL_PIDFILE = os.path.join(settings.GAME_DIR, "server", 'portal.pid')
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 # Evennia Portal settings
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 VERSION = get_evennia_version()
 
@@ -76,6 +76,8 @@ AMP_ENABLED = AMP_HOST and AMP_PORT and AMP_INTERFACE
 # Maintenance function - this is called repeatedly by the portal.
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+
+
 def _portal_maintenance():
     """
     The maintenance function handles repeated checks and updates that
@@ -94,12 +96,12 @@ def _portal_maintenance():
 if _IDLE_TIMEOUT > 0:
     # only start the maintenance task if we care about idling.
     _maintenance_task = LoopingCall(_portal_maintenance)
-    _maintenance_task.start(60) # called every minute
+    _maintenance_task.start(60)  # called every minute
 
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 # Portal Service object
-#------------------------------------------------------------
+# -------------------------------------------------------------
 class Portal(object):
 
     """
@@ -180,11 +182,11 @@ class Portal(object):
             self.shutdown_complete = True
             reactor.callLater(0, reactor.stop)
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Start the Portal proxy server and add all active services
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 # twistd requires us to define the variable 'application' so it knows
 # what to execute from.
