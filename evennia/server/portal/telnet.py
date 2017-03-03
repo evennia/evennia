@@ -141,7 +141,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             enable (bool): If this option should be enabled.
 
         """
-        return (option == MCCP or option==ECHO)
+        return option == MCCP or option == ECHO
 
     def disableLocal(self, option):
         """
@@ -225,16 +225,16 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
     # Session hooks
 
-    def disconnect(self, reason=None):
+    def disconnect(self, reason=""):
         """
         generic hook for the engine to call in order to
         disconnect this protocol.
 
         Args:
-            reason (str): Reason for disconnecting.
+            reason (str, optional): Reason for disconnecting.
 
         """
-        self.data_out(text=((reason or "",), {}))
+        self.data_out(text=((reason,), {}))
         self.connectionLost(reason)
 
     def data_in(self, **kwargs):
@@ -306,9 +306,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         if options.get("send_prompt"):
             # send a prompt instead.
+            prompt = text
             if not raw:
                 # processing
-                prompt = ansi.parse_ansi(_RE_N.sub("", text) + "|n", strip_ansi=nocolor, xterm256=xterm256)
+                prompt = ansi.parse_ansi(_RE_N.sub("", prompt) + ("|n" if prompt[-1] != "|" else "||n"),
+                                         strip_ansi=nocolor, xterm256=xterm256)
                 if mxp:
                     prompt = mxp_parse(prompt)
             prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
@@ -335,7 +337,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             else:
                 # we need to make sure to kill the color at the end in order
                 # to match the webclient output.
-                linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "|n", strip_ansi=nocolor, xterm256=xterm256, mxp=mxp)
+                linetosend = ansi.parse_ansi(_RE_N.sub("", text) + ("|n" if text[-1] != "|" else "||n"),
+                                             strip_ansi=nocolor, xterm256=xterm256, mxp=mxp)
                 if mxp:
                     linetosend = mxp_parse(linetosend)
                 self.sendLine(linetosend)
