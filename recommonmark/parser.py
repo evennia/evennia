@@ -1,6 +1,7 @@
 """Docutils CommonMark parser"""
 
 from docutils import parsers, nodes
+from sphinx import addnodes
 
 from CommonMark import Parser
 
@@ -113,19 +114,23 @@ class CommonMarkParser(parsers.Parser):
         self.current_node = n
 
     def visit_link(self, mdnode):
-        ref_node = nodes.reference()
-        # ref_node['name'] = 'foo'
+        ref_node = None
 
-        if mdnode.destination is not None:
-            ref_node['refuri'] = mdnode.destination
-        else:
-            ref_node['refname'] = 'foo'
-
+        inner_node = nodes.reference()
+        inner_node['refuri'] = mdnode.destination
+        ref_node = addnodes.pending_xref(
+            reftarget=mdnode.destination,
+            reftype='any',
+            refexplicit=True,
+            refwarn=True
+        )
         if mdnode.title:
             ref_node['title'] = mdnode.title
+            inner_node['title'] = mdnode.title
+        ref_node.append(inner_node)
 
         self.current_node.append(ref_node)
-        self.current_node = ref_node
+        self.current_node = inner_node
 
     def visit_image(self, mdnode):
         img_node = nodes.image()

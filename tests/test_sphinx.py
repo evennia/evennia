@@ -112,6 +112,19 @@ class GenericTests(SphinxIntegrationTests):
              'href="http://example.com/foobar">ref link</a>'),
             output
         )
+        self.assertIn(
+            ('This is a '
+             '<a class="reference external" '
+             'href="/example">relative link</a>'),
+            output
+        )
+        self.assertIn(
+            ('This is a '
+             '<a class="reference internal" href="#">'
+             '<span class="doc">pending ref</span>'
+             '</a>'),
+            output
+        )
 
     def test_image(self):
         output = self.read_file('index.html')

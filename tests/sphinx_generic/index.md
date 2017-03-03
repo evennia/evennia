@@ -10,6 +10,11 @@ This is a [link](http://example.com "Example")
 
 This is a [ref link][example]
 
+This is a [relative link](/example)
+
+This is a [pending ref](index)
+
+
 [example]: http://example.com/foobar "Example"
 
 Foo

@@ -125,7 +125,9 @@ class TestParsing(unittest.TestCase):
             <document source="&lt;string&gt;">
               <paragraph>
                 This is a \n\
-                <reference refuri="http://example.com">link</reference>
+                <pending_xref refexplicit="True" reftarget="http://example.com" reftype="any" refwarn="True">
+                  <reference refuri="http://example.com">link</reference>
+                </pending_xref>
               </paragraph>
             </document>
             """
@@ -141,7 +143,9 @@ class TestParsing(unittest.TestCase):
             <document source="&lt;string&gt;">
               <paragraph>
                 This is a \n\
-                <reference refuri="http://example.com" title="Example">link</reference>
+                <pending_xref refexplicit="True" reftarget="http://example.com" reftype="any" refwarn="True" title="Example">
+                  <reference refuri="http://example.com" title="Example">link</reference>
+                </pending_xref>
               </paragraph>
             </document>
             """
@@ -157,7 +161,9 @@ class TestParsing(unittest.TestCase):
             <document source="&lt;string&gt;">
               <paragraph>
                 This is a \n\
-                <reference refuri="http://example.com">link</reference>
+                <pending_xref refexplicit="True" reftarget="http://example.com" reftype="any" refwarn="True">
+                  <reference refuri="http://example.com">link</reference>
+                </pending_xref>
               </paragraph>
             </document>
             """
@@ -170,7 +176,39 @@ class TestParsing(unittest.TestCase):
             <?xml version="1.0" ?>
             <document source="&lt;string&gt;">
               <paragraph>
-                <reference refuri="http://example.com">http://example.com</reference>
+                <pending_xref refexplicit="True" reftarget="http://example.com" reftype="any" refwarn="True">
+                  <reference refuri="http://example.com">http://example.com</reference>
+                </pending_xref>
+              </paragraph>
+            </document>
+            """
+        )
+        self.assertParses(
+            """
+            [link](/foo)
+            """,
+            """
+            <?xml version="1.0" ?>
+            <document source="&lt;string&gt;">
+              <paragraph>
+                <pending_xref refexplicit="True" reftarget="/foo" reftype="any" refwarn="True">
+                  <reference refuri="/foo">link</reference>
+                </pending_xref>
+              </paragraph>
+            </document>
+            """
+        )
+        self.assertParses(
+            """
+            [link](foo)
+            """,
+            """
+            <?xml version="1.0" ?>
+            <document source="&lt;string&gt;">
+              <paragraph>
+                <pending_xref refexplicit="True" reftarget="foo" reftype="any" refwarn="True">
+                  <reference refuri="foo">link</reference>
+                </pending_xref>
               </paragraph>
             </document>
             """
