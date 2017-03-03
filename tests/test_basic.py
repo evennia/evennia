@@ -125,9 +125,7 @@ class TestParsing(unittest.TestCase):
             <document source="&lt;string&gt;">
               <paragraph>
                 This is a \n\
-                <pending_xref refexplicit="True" reftarget="http://example.com" reftype="any" refwarn="True">
-                  <reference refuri="http://example.com">link</reference>
-                </pending_xref>
+                <reference refuri="http://example.com">link</reference>
               </paragraph>
             </document>
             """
@@ -143,9 +141,7 @@ class TestParsing(unittest.TestCase):
             <document source="&lt;string&gt;">
               <paragraph>
                 This is a \n\
-                <pending_xref refexplicit="True" reftarget="http://example.com" reftype="any" refwarn="True" title="Example">
-                  <reference refuri="http://example.com" title="Example">link</reference>
-                </pending_xref>
+                <reference refuri="http://example.com" title="Example">link</reference>
               </paragraph>
             </document>
             """
@@ -161,9 +157,7 @@ class TestParsing(unittest.TestCase):
             <document source="&lt;string&gt;">
               <paragraph>
                 This is a \n\
-                <pending_xref refexplicit="True" reftarget="http://example.com" reftype="any" refwarn="True">
-                  <reference refuri="http://example.com">link</reference>
-                </pending_xref>
+                <reference refuri="http://example.com">link</reference>
               </paragraph>
             </document>
             """
@@ -176,9 +170,7 @@ class TestParsing(unittest.TestCase):
             <?xml version="1.0" ?>
             <document source="&lt;string&gt;">
               <paragraph>
-                <pending_xref refexplicit="True" reftarget="http://example.com" reftype="any" refwarn="True">
-                  <reference refuri="http://example.com">http://example.com</reference>
-                </pending_xref>
+                <reference refuri="http://example.com">http://example.com</reference>
               </paragraph>
             </document>
             """
@@ -248,6 +240,41 @@ class TestParsing(unittest.TestCase):
                 </list_item>
                 <list_item>
                   <paragraph>List item 3</paragraph>
+                </list_item>
+              </bullet_list>
+            </document>
+            """
+        )
+        self.assertParses(
+            """
+            * [List item 1](/1)
+            * [List item 2](/2)
+            * [List item 3](/3)
+            """,
+            """
+            <?xml version="1.0" ?>
+            <document source="&lt;string&gt;">
+              <bullet_list>
+                <list_item>
+                  <paragraph>
+                    <pending_xref refexplicit="True" reftarget="/1" reftype="any" refwarn="True">
+                      <reference refuri="/1">List item 1</reference>
+                    </pending_xref>
+                  </paragraph>
+                </list_item>
+                <list_item>
+                  <paragraph>
+                    <pending_xref refexplicit="True" reftarget="/2" reftype="any" refwarn="True">
+                      <reference refuri="/2">List item 2</reference>
+                    </pending_xref>
+                  </paragraph>
+                </list_item>
+                <list_item>
+                  <paragraph>
+                    <pending_xref refexplicit="True" reftarget="/3" reftype="any" refwarn="True">
+                      <reference refuri="/3">List item 3</reference>
+                    </pending_xref>
+                  </paragraph>
                 </list_item>
               </bullet_list>
             </document>

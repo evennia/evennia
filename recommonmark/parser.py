@@ -1,5 +1,7 @@
 """Docutils CommonMark parser"""
 
+from urlparse import urlparse
+
 from docutils import parsers, nodes
 from sphinx import addnodes
 
@@ -114,23 +116,41 @@ class CommonMarkParser(parsers.Parser):
         self.current_node = n
 
     def visit_link(self, mdnode):
-        ref_node = None
-
-        inner_node = nodes.reference()
-        inner_node['refuri'] = mdnode.destination
-        ref_node = addnodes.pending_xref(
-            reftarget=mdnode.destination,
-            reftype='any',
-            refexplicit=True,
-            refwarn=True
-        )
+        ref_node = nodes.reference()
+        ref_node['refuri'] = mdnode.destination
+        # TODO okay, so this is acutally not always the right line number, but
+        # these mdnodes won't have sourcepos on them for whatever reason. This
+        # is better than 0 though.
+        ref_node.line = (mdnode.sourcepos[0][0] if mdnode.sourcepos
+                         else mdnode.parent.sourcepos[0][0])
         if mdnode.title:
             ref_node['title'] = mdnode.title
-            inner_node['title'] = mdnode.title
-        ref_node.append(inner_node)
+        next_node = ref_node
 
-        self.current_node.append(ref_node)
-        self.current_node = inner_node
+        url_check = urlparse(mdnode.destination)
+        if not url_check.scheme and not url_check.fragment:
+            wrap_node = addnodes.pending_xref(
+                reftarget=mdnode.destination,
+                reftype='any',
+                refexplicit=True,
+                refwarn=True
+            )
+            # TODO also not correct sourcepos
+            wrap_node.line = (mdnode.sourcepos[0][0] if mdnode.sourcepos
+                              else mdnode.parent.sourcepos[0][0])
+            if mdnode.title:
+                wrap_node['title'] = mdnode.title
+            wrap_node.append(ref_node)
+            next_node = wrap_node
+
+        self.current_node.append(next_node)
+        self.current_node = ref_node
+
+    def depart_link(self, mdnode):
+        if isinstance(self.current_node.parent, addnodes.pending_xref):
+            self.current_node = self.current_node.parent.parent
+        else:
+            self.current_node = self.current_node.parent
 
     def visit_image(self, mdnode):
         img_node = nodes.image()
