@@ -2,17 +2,17 @@
 
 import sys
 
-if sys.version_info < (3, 0):
-    from urlparse import urlparse
-else:
-    from urllib.parse import urlparse
-
 from docutils import parsers, nodes
 from sphinx import addnodes
 
 from CommonMark import Parser
 
 from warnings import warn
+
+if sys.version_info < (3, 0):
+    from urlparse import urlparse
+else:
+    from urllib.parse import urlparse
 
 __all__ = ['CommonMarkParser']
 
