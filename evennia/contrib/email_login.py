@@ -40,6 +40,7 @@ from evennia.commands.cmdset import CmdSet
 from evennia.utils import create, logger, utils, ansi
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.cmdhandler import CMD_LOGINSTART
+from evennia.commands.default import unloggedin as default_unloggedin  # Used in CmdUnconnectedCreate
 
 # limit symbol import for API
 __all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
@@ -118,7 +119,7 @@ class CmdUnconnectedConnect(MuxCommand):
         # actually do the login. This will call all hooks.
         session.sessionhandler.login(session, player)
 
-from evennia.commands.default import unloggedin as default_unloggedin
+
 class CmdUnconnectedCreate(MuxCommand):
     """
     Create a new account.
@@ -237,9 +238,10 @@ class CmdUnconnectedCreate(MuxCommand):
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
-            raise
-            session.msg("%sAn error occurred. Please e-mail an admin if the problem persists.")
+            session.msg("An error occurred. Please e-mail an admin if the problem persists.")
             logger.log_trace()
+            raise
+
 
 class CmdUnconnectedQuit(MuxCommand):
     """
