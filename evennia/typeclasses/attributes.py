@@ -24,11 +24,12 @@ from evennia.utils.utils import lazy_property, to_str, make_iter
 
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 #   Attributes
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
+
 
 class Attribute(SharedMemoryModel):
     """
@@ -90,7 +91,7 @@ class Attribute(SharedMemoryModel):
         'date_created', editable=False, auto_now_add=True)
 
     # Database manager
-    #objects = managers.AttributeManager()
+    # objects = managers.AttributeManager()
 
     @lazy_property
     def locks(self):
@@ -110,12 +111,15 @@ class Attribute(SharedMemoryModel):
 
     def __lock_storage_get(self):
         return self.db_lock_storage
+
     def __lock_storage_set(self, value):
         self.db_lock_storage = value
         self.save(update_fields=["db_lock_storage"])
+
     def __lock_storage_del(self):
         self.db_lock_storage = ""
         self.save(update_fields=["db_lock_storage"])
+
     lock_storage = property(__lock_storage_get, __lock_storage_set, __lock_storage_del)
 
     # Wrapper properties to easily set database fields. These are
@@ -127,7 +131,7 @@ class Attribute(SharedMemoryModel):
     # is the object in question).
 
     # value property (wraps db_value)
-    #@property
+    # @property
     def __value_get(self):
         """
         Getter. Allows for `value = self.value`.
@@ -137,19 +141,19 @@ class Attribute(SharedMemoryModel):
         """
         return from_pickle(self.db_value, db_obj=self)
 
-    #@value.setter
+    # @value.setter
     def __value_set(self, new_value):
         """
         Setter. Allows for self.value = value. We cannot cache here,
         see self.__value_get.
         """
         self.db_value = to_pickle(new_value)
-        #print "value_set, self.db_value:", repr(self.db_value)
+        # print("value_set, self.db_value:", repr(self.db_value))  # DEBUG
         self.save(update_fields=["db_value"])
 
-    #@value.deleter
+    # @value.deleter
     def __value_del(self):
-        "Deleter. Allows for del attr.value. This removes the entire attribute."
+        """Deleter. Allows for del attr.value. This removes the entire attribute."""
         self.delete()
     value = property(__value_get, __value_set, __value_del)
 
@@ -163,7 +167,7 @@ class Attribute(SharedMemoryModel):
         return smart_str("%s(%s)" % (self.db_key, self.id))
 
     def __unicode__(self):
-        return u"%s(%s)" % (self.db_key,self.id)
+        return u"%s(%s)" % (self.db_key, self.id)
 
     def access(self, accessing_obj, access_type='read', default=False, **kwargs):
         """
@@ -202,7 +206,7 @@ class AttributeHandler(object):
     _attrtype = None
 
     def __init__(self, obj):
-        "Initialize handler."
+        """Initialize handler."""
         self.obj = obj
         self._objid = obj.id
         self._model = to_str(obj.__dbclass__.__name__.lower())
@@ -213,10 +217,10 @@ class AttributeHandler(object):
         self._cache_complete = False
 
     def _fullcache(self):
-        "Cache all attributes of this object"
-        query = {"%s__id" % self._model : self._objid,
-                 "attribute__db_model" : self._model,
-                 "attribute__db_attrtype" : self._attrtype}
+        """Cache all attributes of this object"""
+        query = {"%s__id" % self._model: self._objid,
+                 "attribute__db_model": self._model,
+                 "attribute__db_attrtype": self._attrtype}
         attrs = [conn.attribute for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
                                        attr.db_category.lower() if attr.db_category else None),
@@ -264,15 +268,15 @@ class AttributeHandler(object):
                 del self._cache[cachekey]
             if cachefound:
                 if attr:
-                    return [attr] # return cached entity
+                    return [attr]  # return cached entity
                 else:
                     return []  # no such attribute: return an empty list
             else:
-                query = {"%s__id" % self._model : self._objid,
-                         "attribute__db_model" : self._model,
-                         "attribute__db_attrtype" : self._attrtype,
-                         "attribute__db_key__iexact" : key.lower(),
-                         "attribute__db_category__iexact" : category.lower() if category else None}
+                query = {"%s__id" % self._model: self._objid,
+                         "attribute__db_model": self._model,
+                         "attribute__db_attrtype": self._attrtype,
+                         "attribute__db_key__iexact": key.lower(),
+                         "attribute__db_category__iexact": category.lower() if category else None}
                 conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
                 if conn:
                     attr = conn[0].attribute
@@ -293,12 +297,12 @@ class AttributeHandler(object):
                 return [attr for key, attr in self._cache.items() if key.endswith(catkey) and attr]
             else:
                 # we have to query to make this category up-date in the cache
-                query = {"%s__id" % self._model : self._objid,
-                         "attribute__db_model" : self._model,
-                         "attribute__db_attrtype" : self._attrtype,
-                         "attribute__db_category__iexact" : category.lower() if category else None}
-                attrs = [conn.attribute for conn in getattr(self.obj,
-                            self._m2m_fieldname).through.objects.filter(**query)]
+                query = {"%s__id" % self._model: self._objid,
+                         "attribute__db_model": self._model,
+                         "attribute__db_attrtype": self._attrtype,
+                         "attribute__db_category__iexact": category.lower() if category else None}
+                attrs = [conn.attribute for conn
+                         in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
                 for attr in attrs:
                     if attr.pk:
                         cachekey = "%s-%s" % (attr.db_key, category)
@@ -306,7 +310,6 @@ class AttributeHandler(object):
                 # mark category cache as up-to-date
                 self._catcache[catkey] = True
                 return attrs
-        return []
 
     def _setcache(self, key, category, attr_obj):
         """
@@ -318,7 +321,7 @@ class AttributeHandler(object):
             attr_obj (Attribute): The newly saved attribute
 
         """
-        if not key: # don't allow an empty key in cache
+        if not key:  # don't allow an empty key in cache
             return
         cachekey = "%s-%s" % (key, category)
         catkey = "-%s" % category
@@ -342,7 +345,7 @@ class AttributeHandler(object):
             self._cache.pop(cachekey, None)
         else:
             self._cache = {key: attrobj for key, attrobj in
-                        self._cache.items() if not key.endswith(catkey)}
+                           self._cache.items() if not key.endswith(catkey)}
         # mark that the category cache is no longer up-to-date
         self._catcache.pop(catkey, None)
         self._cache_complete = False
@@ -402,6 +405,7 @@ class AttributeHandler(object):
             accessing_obj (object, optional): If set, an `attrread`
                 permission lock will be checked before returning each
                 looked-after Attribute.
+            default_access (bool, optional):
 
         Returns:
             result (any, Attribute or list): This will be the value of the found
@@ -416,7 +420,7 @@ class AttributeHandler(object):
         """
 
         class RetDefault(object):
-            "Holds default values"
+            """Holds default values"""
             def __init__(self):
                 self.key = None
                 self.value = default
@@ -444,8 +448,7 @@ class AttributeHandler(object):
             ret = ret if return_obj else [attr.value for attr in ret if attr]
         if not ret:
             return ret if len(key) > 1 else default
-        return ret[0] if len(ret)==1 else ret
-
+        return ret[0] if len(ret) == 1 else ret
 
     def add(self, key, value, category=None, lockstring="",
             strattr=False, accessing_obj=None, default_access=True):
@@ -470,8 +473,7 @@ class AttributeHandler(object):
                 `attrcreate` is defined on the Attribute in question.
 
         """
-        if accessing_obj and not self.obj.access(accessing_obj,
-                                      self._attrcreate, default=default_access):
+        if accessing_obj and not self.obj.access(accessing_obj, self._attrcreate, default=default_access):
             # check create access
             return
 
@@ -494,21 +496,20 @@ class AttributeHandler(object):
                 attr_obj.value = value
         else:
             # create a new Attribute (no OOB handlers can be notified)
-            kwargs = {"db_key" : keystr,
-                      "db_category" : category,
-                      "db_model" : self._model,
-                      "db_attrtype" : self._attrtype,
-                      "db_value" : None if strattr else to_pickle(value),
-                      "db_strvalue" : value if strattr else None}
+            kwargs = {"db_key": keystr,
+                      "db_category": category,
+                      "db_model": self._model,
+                      "db_attrtype": self._attrtype,
+                      "db_value": None if strattr else to_pickle(value),
+                      "db_strvalue": value if strattr else None}
             new_attr = Attribute(**kwargs)
             new_attr.save()
             getattr(self.obj, self._m2m_fieldname).add(new_attr)
             # update cache
             self._setcache(keystr, category, new_attr)
 
-
     def batch_add(self, key, value, category=None, lockstring="",
-            strattr=False, accessing_obj=None, default_access=True):
+                  strattr=False, accessing_obj=None, default_access=True):
         """
         Batch-version of `add()`. This is more efficient than
         repeat-calling add when having many Attributes to add.
@@ -535,8 +536,7 @@ class AttributeHandler(object):
             RuntimeError: If `key` and `value` lists are not of the
                 same lengths.
         """
-        if accessing_obj and not self.obj.access(accessing_obj,
-                                      self._attrcreate, default=default_access):
+        if accessing_obj and not self.obj.access(accessing_obj, self._attrcreate, default=default_access):
             # check create access
             return
 
@@ -564,12 +564,12 @@ class AttributeHandler(object):
                     attr_obj.value = new_value
             else:
                 # create a new Attribute (no OOB handlers can be notified)
-                kwargs = {"db_key" : keystr,
-                          "db_category" : category,
+                kwargs = {"db_key": keystr,
+                          "db_category": category,
                           "db_model": self._model,
-                          "db_attrtype" : self._attrtype,
-                          "db_value" : None if strattr else to_pickle(new_value),
-                          "db_strvalue" : value if strattr else None}
+                          "db_attrtype": self._attrtype,
+                          "db_value": None if strattr else to_pickle(new_value),
+                          "db_strvalue": value if strattr else None}
                 new_attr = Attribute(**kwargs)
                 new_attr.save()
                 new_attrobjs.append(new_attr)
@@ -577,7 +577,6 @@ class AttributeHandler(object):
         if new_attrobjs:
             # Add new objects to m2m field all at once
             getattr(self.obj, self._m2m_fieldname).add(*new_attrobjs)
-
 
     def remove(self, key, raise_exception=False, category=None,
                accessing_obj=None, default_access=True):
@@ -664,7 +663,7 @@ class AttributeHandler(object):
                        key=lambda o: o.id)
         if accessing_obj:
             return [attr for attr in attrs
-                if attr.access(accessing_obj, self._attredit, default=default_access)]
+                    if attr.access(accessing_obj, self._attredit, default=default_access)]
         else:
             return attrs
 
@@ -728,7 +727,6 @@ def initialize_nick_templates(in_template, out_template):
             number of $args.
 
     """
-
 
     # create the regex for in_template
     regex_string = fnmatch.translate(in_template)
@@ -876,12 +874,12 @@ class NickHandler(AttributeHandler):
         nicks = {}
         for category in make_iter(categories):
             nicks.update({nick.key: nick
-              for nick in make_iter(self.get(category=category, return_obj=True)) if nick and nick.key})
+                          for nick in make_iter(self.get(category=category, return_obj=True)) if nick and nick.key})
         if include_player and self.obj.has_player:
             for category in make_iter(categories):
                 nicks.update({nick.key: nick
-                    for nick in make_iter(self.obj.player.nicks.get(category=category, return_obj=True))
-                        if nick and nick.key})
+                              for nick in make_iter(self.obj.player.nicks.get(category=category, return_obj=True))
+                              if nick and nick.key})
         for key, nick in nicks.iteritems():
             nick_regex, template, _, _ = nick.value
             regex = self._regex_cache.get(nick_regex)
