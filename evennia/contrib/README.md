@@ -19,6 +19,8 @@ things you want from here into your game folder and change them there.
   for any game. Allows safe trading of any godds (including coin)
 * CharGen (Griatch 2011) - A simple Character creator for OOC mode.
   Meant as a starting point for a more fleshed-out system.
+* Custom gametime (Griatch, vlgeoff 2017) - Implements Evennia's
+  gametime module but for custom game world-specific calendars.
 * Dice (Griatch 2012) - A fully featured dice rolling system.
 * Email-login (Griatch 2012) - A variant of the standard login system
   that requires an email to login rather then just name+password.

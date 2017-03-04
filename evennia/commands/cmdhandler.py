@@ -235,7 +235,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, raw_string):
                     for lobj in local_objlist:
                         try:
                             # call hook in case we need to do dynamic changing to cmdset
-                            _GA(lobj, "at_cmdset_get")()
+                            _GA(lobj, "at_cmdset_get")(caller=caller)
                         except Exception:
                             logger.log_trace()
                     # the call-type lock is checked here, it makes sure a player
@@ -391,7 +391,8 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, raw_string):
 
 
 @inlineCallbacks
-def cmdhandler(called_by, raw_string, _testing=False, callertype="session", session=None, **kwargs):
+def cmdhandler(called_by, raw_string, _testing=False, callertype="session", session=None,
+               cmdobj=None, cmdobj_key=None, **kwargs):
     """
     This is the main mechanism that handles any string sent to the engine.
 
@@ -413,6 +414,15 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             precendence for same-name and same-prio commands.
         session (Session, optional): Relevant if callertype is "player" - the session will help
             retrieve the correct cmdsets from puppeted objects.
+        cmdobj (Command, optional): If given a command instance, this will be executed using
+            `called_by` as the caller, `raw_string` representing its arguments and (optionally)
+            `cmdobj_key` as its input command name. No cmdset lookup will be performed but
+            all other options apply as normal. This allows for running a specific Command
+            within the command system mechanism.
+        cmdobj_key (string, optional): Used together with `cmdobj` keyword to specify
+            which cmdname should be assigned when calling the specified Command instance. This
+            is made available as `self.cmdstring` when the Command runs.
+            If not given, the command will be assumed to be called as `cmdobj.key`.
 
     Kwargs:
         kwargs (any): other keyword arguments will be assigned as named variables on the
@@ -428,17 +438,20 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
     """
 
     @inlineCallbacks
-    def _run_command(cmd, cmdname, args, raw_string):
+    def _run_command(cmd, cmdname, args, raw_string, cmdset, session, player):
         """
         Helper function: This initializes and runs the Command
         instance once the parser has identified it as either a normal
         command or one of the system commands.
 
         Args:
-            cmd (Command): Command object
-            cmdname (str): Name of command
-            args (str): Extra text entered after the identified command
-            raw_string (str): Full input string, only used for debugging.
+            cmd (Command): Command object.
+            cmdname (str): Name of command.
+            args (str): Extra text entered after the identified command.
+            raw_string (str): Full input string.
+            cmdset (CmdSet): Command sert the command belongs to (if any)..
+            session (Session): Session of caller (if any).
+            player (Player): Player of caller (if any).
 
         Returns:
             deferred (Deferred): this will fire with the return of the
@@ -457,7 +470,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             cmd.cmdset = cmdset
             cmd.session = session
             cmd.player = player
-            cmd.raw_string = unformatted_raw_string
+            cmd.raw_string = raw_string
             #cmd.obj  # set via on-object cmdset handler for each command,
                       # since this may be different for every command when
                       # merging multuple cmdsets
@@ -478,7 +491,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             _COMMAND_NESTING[called_by] += 1
             if _COMMAND_NESTING[called_by] > _COMMAND_RECURSION_LIMIT:
                 err = _ERROR_RECURSION_LIMIT.format(recursion_limit=_COMMAND_RECURSION_LIMIT,
-                                                    raw_string=unformatted_raw_string,
+                                                    raw_string=raw_string,
                                                     cmdclass=cmd.__class__)
                 raise RuntimeError(err)
 
@@ -539,76 +552,89 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
 
     try:  # catch bugs in cmdhandler itself
         try:  # catch special-type commands
+            if cmdobj:
+                # the command object is already given
 
-            cmdset = yield get_and_merge_cmdsets(caller, session, player, obj,
-                                                  callertype, raw_string)
-            if not cmdset:
-                # this is bad and shouldn't happen.
-                raise NoCmdSets
-            unformatted_raw_string = raw_string
-            raw_string = raw_string.strip()
-            if not raw_string:
-                # Empty input. Test for system command instead.
-                syscmd = yield cmdset.get(CMD_NOINPUT)
-                sysarg = ""
-                raise ExecSystemCommand(syscmd, sysarg)
-            # Parse the input string and match to available cmdset.
-            # This also checks for permissions, so all commands in match
-            # are commands the caller is allowed to call.
-            matches = yield _COMMAND_PARSER(raw_string, cmdset, caller)
+                cmd = cmdobj() if callable(cmdobj) else cmdobj
+                cmdname = cmdobj_key if cmdobj_key else cmd.key
+                args = raw_string
+                unformatted_raw_string = "%s%s" % (cmdname, args)
+                cmdset = None
+                session = session
+                player = player
 
-            # Deal with matches
+            else:
+                # no explicit cmdobject given, figure it out
 
-            if len(matches) > 1:
-                # We have a multiple-match
-                syscmd = yield cmdset.get(CMD_MULTIMATCH)
-                sysarg = _("There were multiple matches.")
-                if syscmd:
-                    # use custom CMD_MULTIMATCH
-                    syscmd.matches = matches
-                else:
-                    # fall back to default error handling
-                    sysarg = yield _SEARCH_AT_RESULT([match[2] for match in matches], caller, query=matches[0][0])
-                raise ExecSystemCommand(syscmd, sysarg)
+                cmdset = yield get_and_merge_cmdsets(caller, session, player, obj,
+                                                      callertype, raw_string)
+                if not cmdset:
+                    # this is bad and shouldn't happen.
+                    raise NoCmdSets
+                unformatted_raw_string = raw_string
+                raw_string = raw_string.strip()
+                if not raw_string:
+                    # Empty input. Test for system command instead.
+                    syscmd = yield cmdset.get(CMD_NOINPUT)
+                    sysarg = ""
+                    raise ExecSystemCommand(syscmd, sysarg)
+                # Parse the input string and match to available cmdset.
+                # This also checks for permissions, so all commands in match
+                # are commands the caller is allowed to call.
+                matches = yield _COMMAND_PARSER(raw_string, cmdset, caller)
 
-            cmdname, args, cmd = "", "", None
-            if len(matches) == 1:
-                # We have a unique command match. But it may still be invalid.
-                match = matches[0]
-                cmdname, args, cmd = match[0], match[1], match[2]
+                # Deal with matches
 
-            if not matches:
-                # No commands match our entered command
-                syscmd = yield cmdset.get(CMD_NOMATCH)
-                if syscmd:
-                    # use custom CMD_NOMATCH command
-                    sysarg = raw_string
-                else:
-                    # fallback to default error text
-                    sysarg = _("Command '%s' is not available.") % raw_string
-                    suggestions = string_suggestions(raw_string,
-                                    cmdset.get_all_cmd_keys_and_aliases(caller),
-                                    cutoff=0.7, maxnum=3)
-                    if suggestions:
-                        sysarg += _(" Maybe you meant %s?") % utils.list_to_string(suggestions, _('or'), addquote=True)
+                if len(matches) > 1:
+                    # We have a multiple-match
+                    syscmd = yield cmdset.get(CMD_MULTIMATCH)
+                    sysarg = _("There were multiple matches.")
+                    if syscmd:
+                        # use custom CMD_MULTIMATCH
+                        syscmd.matches = matches
                     else:
-                        sysarg += _(" Type \"help\" for help.")
-                raise ExecSystemCommand(syscmd, sysarg)
+                        # fall back to default error handling
+                        sysarg = yield _SEARCH_AT_RESULT([match[2] for match in matches], caller, query=matches[0][0])
+                    raise ExecSystemCommand(syscmd, sysarg)
 
-            # Check if this is a Channel-cmd match.
-            if hasattr(cmd, 'is_channel') and cmd.is_channel:
-                # even if a user-defined syscmd is not defined, the
-                # found cmd is already a system command in its own right.
-                syscmd = yield cmdset.get(CMD_CHANNEL)
-                if syscmd:
-                    # replace system command with custom version
-                    cmd = syscmd
-                cmd.session = session
-                sysarg = "%s:%s" % (cmdname, args)
-                raise ExecSystemCommand(cmd, sysarg)
+                cmdname, args, cmd = "", "", None
+                if len(matches) == 1:
+                    # We have a unique command match. But it may still be invalid.
+                    match = matches[0]
+                    cmdname, args, cmd = match[0], match[1], match[2]
+
+                if not matches:
+                    # No commands match our entered command
+                    syscmd = yield cmdset.get(CMD_NOMATCH)
+                    if syscmd:
+                        # use custom CMD_NOMATCH command
+                        sysarg = raw_string
+                    else:
+                        # fallback to default error text
+                        sysarg = _("Command '%s' is not available.") % raw_string
+                        suggestions = string_suggestions(raw_string,
+                                        cmdset.get_all_cmd_keys_and_aliases(caller),
+                                        cutoff=0.7, maxnum=3)
+                        if suggestions:
+                            sysarg += _(" Maybe you meant %s?") % utils.list_to_string(suggestions, _('or'), addquote=True)
+                        else:
+                            sysarg += _(" Type \"help\" for help.")
+                    raise ExecSystemCommand(syscmd, sysarg)
+
+                # Check if this is a Channel-cmd match.
+                if hasattr(cmd, 'is_channel') and cmd.is_channel:
+                    # even if a user-defined syscmd is not defined, the
+                    # found cmd is already a system command in its own right.
+                    syscmd = yield cmdset.get(CMD_CHANNEL)
+                    if syscmd:
+                        # replace system command with custom version
+                        cmd = syscmd
+                    cmd.session = session
+                    sysarg = "%s:%s" % (cmdname, args)
+                    raise ExecSystemCommand(cmd, sysarg)
 
             # A normal command.
-            ret = yield _run_command(cmd, cmdname, args, raw_string)
+            ret = yield _run_command(cmd, cmdname, args, unformatted_raw_string, cmdset, session, player)
             returnValue(ret)
 
         except ErrorReported as exc:
@@ -623,7 +649,8 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             sysarg = exc.sysarg
 
             if syscmd:
-                ret = yield _run_command(syscmd, syscmd.key, sysarg, raw_string)
+                ret = yield _run_command(syscmd, syscmd.key, sysarg,
+                                         unformatted_raw_string, cmdset, session, player)
                 returnValue(ret)
             elif sysarg:
                 # return system arg

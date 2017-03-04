@@ -1,4 +1,23 @@
 # Evennia Changelog
+## Feb 2017:
+New devel branch created, to lead up to Evennia 0.7.
+
+## Dec 2016:
+Lots of bugfixes and considerable uptick in contributors. Unittest coverage
+and PEP8 adoption and refactoring.
+
+## May 2016:
+Evennia 0.6 with completely reworked Out-of-band system, making 
+the message path completely flexible and built around input/outputfuncs.
+A completely new webclient, split into the evennia.js library and a 
+gui library, making it easier to customize.
+
+## Feb 2016:
+Added the new EvMenu and EvMore utilities, updated EvEdit and cleaned up
+a lot of the batchcommand functionality. Started work on new Devel branch.
+
+## Sept 2015:
+Evennia 0.5. Merged devel branch, full library format implemented.
 
 ## Feb 2015:
 Development currently in devel/ branch. Moved typeclasses to use

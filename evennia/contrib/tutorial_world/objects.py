@@ -27,7 +27,7 @@ from evennia import utils
 from evennia.utils import search
 from evennia.utils.spawner import spawn
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # TutorialObject
 #
@@ -41,7 +41,7 @@ from evennia.utils.spawner import spawn
 # itself, or the removal of an inventory item from a
 # character's inventory when leaving the tutorial, for example.
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 
 class TutorialObject(DefaultObject):
@@ -50,20 +50,20 @@ class TutorialObject(DefaultObject):
     """
 
     def at_object_creation(self):
-        "Called when the object is first created."
+        """Called when the object is first created."""
         super(TutorialObject, self).at_object_creation()
         self.db.tutorial_info = "No tutorial info is available for this object."
 
     def reset(self):
-        "Resets the object, whatever that may mean."
+        """Resets the object, whatever that may mean."""
         self.location = self.home
 
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Readable - an object that can be "read"
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 #
 # Read command
@@ -96,7 +96,7 @@ class CmdRead(Command):
         # we want an attribute read_text to be defined.
         readtext = obj.db.readable_text
         if readtext:
-            string = "You read {C%s{n:\n  %s" % (obj.key, readtext)
+            string = "You read |C%s|n:\n  %s" % (obj.key, readtext)
         else:
             string = "There is nothing to read on %s." % obj.key
         self.caller.msg(string)
@@ -129,7 +129,7 @@ class Readable(TutorialObject):
         self.cmdset.add_default(CmdSetReadable, permanent=True)
 
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Climbable object
 #
@@ -139,7 +139,7 @@ class Readable(TutorialObject):
 # of what was last climbed is used in a simple puzzle in the
 # tutorial.
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 class CmdClimb(Command):
     """
@@ -155,7 +155,7 @@ class CmdClimb(Command):
     help_category = "TutorialWorld"
 
     def func(self):
-        "Implements function"
+        """Implements function"""
 
         if not self.args:
             self.caller.msg("What do you want to climb?")
@@ -175,9 +175,9 @@ class CmdClimb(Command):
 
 
 class CmdSetClimbable(CmdSet):
-    "Climbing cmdset"
+    """Climbing cmdset"""
     def at_cmdset_creation(self):
-        "populate set"
+        """populate set"""
         self.add(CmdClimb())
 
 
@@ -188,12 +188,11 @@ class Climbable(TutorialObject):
     """
 
     def at_object_creation(self):
-        "Called at initial creation only"
+        """Called at initial creation only"""
         self.cmdset.add_default(CmdSetClimbable, permanent=True)
 
 
-
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Obelisk - a unique item
 #
@@ -203,7 +202,7 @@ class Climbable(TutorialObject):
 # looking also stores a key attribute on the looking object (different
 # depending on which text you saw) for later reference.
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 class Obelisk(TutorialObject):
     """
@@ -219,7 +218,7 @@ class Obelisk(TutorialObject):
     """
 
     def at_object_creation(self):
-        "Called when object is created."
+        """Called when object is created."""
         super(Obelisk, self).at_object_creation()
         self.db.tutorial_info = "This object changes its desc randomly, and makes sure to remember which one you saw."
         self.db.puzzle_descs = ["You see a normal stone slab"]
@@ -247,7 +246,7 @@ class Obelisk(TutorialObject):
         return super(Obelisk, self).return_appearance(caller)
 
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # LightSource
 #
@@ -262,7 +261,7 @@ class Obelisk(TutorialObject):
 # where the light matters (in the Dark Room where you can
 # find new light sources easily), this is okay here.
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 class CmdLight(Command):
     """
@@ -288,13 +287,13 @@ class CmdLight(Command):
 
 
 class CmdSetLight(CmdSet):
-    "CmdSet for the lightsource commands"
+    """CmdSet for the lightsource commands"""
     key = "lightsource_cmdset"
     # this is higher than the dark cmdset - important!
     priority = 3
 
     def at_cmdset_creation(self):
-        "called at cmdset creation"
+        """called at cmdset creation"""
         self.add(CmdLight())
 
 
@@ -316,7 +315,7 @@ class LightSource(TutorialObject):
             self.delete()
 
     def at_object_creation(self):
-        "Called when object is first created."
+        """Called when object is first created."""
         super(LightSource, self).at_object_creation()
         self.db.tutorial_info = "This object can be lit to create light. It has a timeout for how long it burns."
         self.db.is_giving_light = False
@@ -336,7 +335,7 @@ class LightSource(TutorialObject):
         self.db.is_giving_light = False
         try:
             self.location.location.msg_contents("%s's %s flickers and dies." %
-                                (self.location, self.key), exclude=self.location)
+                                                (self.location, self.key), exclude=self.location)
             self.location.msg("Your %s flickers and dies." % self.key)
             self.location.location.check_light_state()
         except AttributeError:
@@ -347,7 +346,6 @@ class LightSource(TutorialObject):
                 # Mainly happens if we happen to be in a None location
                 pass
         self.delete()
-
 
     def light(self):
         """
@@ -369,12 +367,13 @@ class LightSource(TutorialObject):
                 pass
         finally:
             # start the burn timer. When it runs out, self._burnout
-            # will be called.
-            utils.delay(60 * 3, self._burnout)
+            # will be called. We store the deferred so it can be
+            # killed in unittesting.
+            self.deferred = utils.delay(60 * 3, self._burnout)
         return True
 
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Crumbling wall - unique exit
 #
@@ -388,7 +387,7 @@ class LightSource(TutorialObject):
 # position - when they have, the "press button" command
 # is made available and the Exit is made traversable.
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 # There are four roots - two horizontal and two vertically
 # running roots. Each can have three positions: top/middle/bottom
@@ -454,7 +453,7 @@ class CmdShiftRoot(Command):
         # get current root positions dict
         root_pos = self.obj.db.root_pos
 
-        if not color in root_pos:
+        if color not in root_pos:
             self.caller.msg("No such root to move.")
             return
 
@@ -526,7 +525,7 @@ class CmdShiftRoot(Command):
         self.obj.db.root_pos = root_pos
 
         # Check victory condition
-        if listvalues(root_pos).count(0) == 0: # no roots in middle position
+        if listvalues(root_pos).count(0) == 0:  # no roots in middle position
             # This will affect the cmd: lock of CmdPressButton
             self.obj.db.button_exposed = True
             self.caller.msg("Holding aside the root you think you notice something behind it ...")
@@ -546,7 +545,7 @@ class CmdPressButton(Command):
     help_category = "TutorialWorld"
 
     def func(self):
-        "Implements the command"
+        """Implements the command"""
 
         if self.caller.db.crumbling_wall_found_exit:
             # we already pushed the button
@@ -556,22 +555,22 @@ class CmdPressButton(Command):
         # pushing the button
         string = "You move your fingers over the suspicious depression, then gives it a " \
                  "decisive push. First nothing happens, then there is a rumble and a hidden " \
-                 "{wpassage{n opens, dust and pebbles rumbling as part of the wall moves aside."
+                 "|wpassage|n opens, dust and pebbles rumbling as part of the wall moves aside."
         self.caller.msg(string)
         string = "%s moves their fingers over the suspicious depression, then gives it a " \
                  "decisive push. First nothing happens, then there is a rumble and a hidden " \
-                 "{wpassage{n opens, dust and pebbles rumbling as part of the wall moves aside."
+                 "|wpassage|n opens, dust and pebbles rumbling as part of the wall moves aside."
         self.caller.location.msg_contents(string % self.caller.key, exclude=self.caller)
         self.obj.open_wall()
 
 
 class CmdSetCrumblingWall(CmdSet):
-    "Group the commands for crumblingWall"
+    """Group the commands for crumblingWall"""
     key = "crumblingwall_cmdset"
     priority = 2
 
     def at_cmdset_creation(self):
-        "called when object is first created."
+        """called when object is first created."""
         self.add(CmdShiftRoot())
         self.add(CmdPressButton())
 
@@ -597,7 +596,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         self.reset()
 
     def at_object_creation(self):
-        "called when the object is first created."
+        """called when the object is first created."""
         super(CrumblingWall, self).at_object_creation()
 
         self.aliases.add(["secret passage", "passage",
@@ -638,22 +637,23 @@ class CrumblingWall(TutorialObject, DefaultExit):
             self.caller.msg("The exit leads nowhere, there's just more stone behind it ...")
         else:
             self.destination = eloc[0]
-        self.exit_open = True
-        # start a 45 second timer before closing again
-        utils.delay(45, self.reset)
+        self.db.exit_open = True
+        # start a 45 second timer before closing again. We store the deferred so it can be
+        # killed in unittesting.
+        self.deferred = utils.delay(45, self.reset)
 
     def _translate_position(self, root, ipos):
-        "Translates the position into words"
-        rootnames = {"red": "The {rreddish{n vertical-hanging root ",
-                     "blue": "The thick vertical root with {bblue{n flowers ",
-                     "yellow": "The thin horizontal-hanging root with {yyellow{n flowers ",
-                     "green": "The weedy {ggreen{n horizontal root "}
-        vpos = {-1: "hangs far to the {wleft{n on the wall.",
-                 0: "hangs straight down the {wmiddle{n of the wall.",
-                 1: "hangs far to the {wright{n of the wall."}
-        hpos = {-1: "covers the {wupper{n part of the wall.",
-                 0: "passes right over the {wmiddle{n of the wall.",
-                 1: "nearly touches the floor, near the {wbottom{n of the wall."}
+        """Translates the position into words"""
+        rootnames = {"red": "The |rreddish|n vertical-hanging root ",
+                     "blue": "The thick vertical root with |bblue|n flowers ",
+                     "yellow": "The thin horizontal-hanging root with |yyellow|n flowers ",
+                     "green": "The weedy |ggreen|n horizontal root "}
+        vpos = {-1: "hangs far to the |wleft|n on the wall.",
+                0: "hangs straight down the |wmiddle|n of the wall.",
+                1: "hangs far to the |wright|n of the wall."}
+        hpos = {-1: "covers the |wupper|n part of the wall.",
+                0: "passes right over the |wmiddle|n of the wall.",
+                1: "nearly touches the floor, near the |wbottom|n of the wall."}
 
         if root in ("yellow", "green"):
             string = rootnames[root] + hpos[ipos]
@@ -668,25 +668,25 @@ class CrumblingWall(TutorialObject, DefaultExit):
         """
         if self.db.button_exposed:
             # we found the button by moving the roots
-            string = "Having moved all the roots aside, you find that the center of the wall, " \
-                     "previously hidden by the vegetation, hid a curious square depression. It was maybe once " \
-                     "concealed and made to look a part of the wall, but with the crumbling of stone around it," \
-                     "it's now easily identifiable as some sort of button."
+            result = ["Having moved all the roots aside, you find that the center of the wall, "
+                      "previously hidden by the vegetation, hid a curious square depression. It was maybe once "
+                      "concealed and made to look a part of the wall, but with the crumbling of stone around it,"
+                      "it's now easily identifiable as some sort of button."]
         elif self.db.exit_open:
             # we pressed the button; the exit is open
-            string = "With the button pressed, a crack has opened in the root-covered wall, just wide enough " \
-                     "to squeeze through. A cold draft is coming from the hole and you get the feeling the " \
-                     "opening may close again soon."
+            result = ["With the button pressed, a crack has opened in the root-covered wall, just wide enough "
+                      "to squeeze through. A cold draft is coming from the hole and you get the feeling the "
+                      "opening may close again soon."]
         else:
             # puzzle not solved yet.
-            string =  "The wall is old and covered with roots that here and there have permeated the stone. " \
-                      "The roots (or whatever they are - some of them are covered in small non-descript flowers) " \
-                      "crisscross the wall, making it hard to clearly see its stony surface. Maybe you could " \
-                      "try to {wshift{n or {wmove{n them.\n"
+            result = ["The wall is old and covered with roots that here and there have permeated the stone. "
+                      "The roots (or whatever they are - some of them are covered in small nondescript flowers) "
+                      "crisscross the wall, making it hard to clearly see its stony surface. Maybe you could "
+                      "try to |wshift|n or |wmove|n them.\n"]
             # display the root positions to help with the puzzle
             for key, pos in self.db.root_pos.items():
-                string += "\n" + self._translate_position(key, pos)
-        self.db.desc = string
+                result.append("\n" + self._translate_position(key, pos))
+        self.db.desc = "".join(result)
 
         # call the parent to continue execution (will use the desc we just set)
         return super(CrumblingWall, self).return_appearance(caller)
@@ -701,7 +701,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         self.reset()
 
     def at_failed_traverse(self, traverser):
-        "This is called if the player fails to pass the Exit."
+        """This is called if the player fails to pass the Exit."""
         traverser.msg("No matter how you try, you cannot force yourself through %s." % self.key)
 
     def reset(self):
@@ -717,15 +717,15 @@ class CrumblingWall(TutorialObject, DefaultExit):
         self.destination = None
 
         # Reset the roots with some random starting positions for the roots:
-        start_pos = [{"yellow":1, "green":0, "red":0, "blue":0},
-                     {"yellow":0, "green":0, "red":0, "blue":0},
-                     {"yellow":0, "green":1, "red":-1, "blue":0},
-                     {"yellow":1, "green":0, "red":0, "blue":0},
-                     {"yellow":0, "green":0, "red":0, "blue":1}]
+        start_pos = [{"yellow": 1, "green": 0, "red": 0, "blue": 0},
+                     {"yellow": 0, "green": 0, "red": 0, "blue": 0},
+                     {"yellow": 0, "green": 1, "red": -1, "blue": 0},
+                     {"yellow": 1, "green": 0, "red": 0, "blue": 0},
+                     {"yellow": 0, "green": 0, "red": 0, "blue": 1}]
         self.db.root_pos = random.choice(start_pos)
 
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Weapon - object type
 #
@@ -739,7 +739,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
 # we let the weapon itself determine how easy/hard it is
 # to hit with it, and how much damage it can do.
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 class CmdAttack(Command):
     """
@@ -760,13 +760,12 @@ class CmdAttack(Command):
     # command class, using the given command alias to separate between them.
 
     key = "attack"
-    aliases = ["hit","kill", "fight", "thrust", "pierce", "stab",
-               "slash", "chop", "parry", "defend"]
+    aliases = ["hit", "kill", "fight", "thrust", "pierce", "stab", "slash", "chop", "parry", "defend"]
     locks = "cmd:all()"
     help_category = "TutorialWorld"
 
     def func(self):
-        "Implements the stab"
+        """Implements the stab"""
 
         cmdstring = self.cmdstring
 
@@ -790,9 +789,6 @@ class CmdAttack(Command):
         if not target:
             return
 
-        string = ""
-        tstring = ""
-        ostring = ""
         if cmdstring in ("thrust", "pierce", "stab"):
             hit = float(self.obj.db.hit) * 0.7  # modified due to stab
             damage = self.obj.db.damage * 2  # modified due to stab
@@ -815,13 +811,13 @@ class CmdAttack(Command):
 
         if target.db.combat_parry_mode:
             # target is defensive; even harder to hit!
-            target.msg("{GYou defend, trying to avoid the attack.{n")
+            target.msg("|GYou defend, trying to avoid the attack.|n")
             hit *= 0.5
 
         if random.random() <= hit:
-            self.caller.msg(string + "{gIt's a hit!{n")
-            target.msg(tstring + "{rIt's a hit!{n")
-            self.caller.location.msg_contents(ostring + "It's a hit!", exclude=[target,self.caller])
+            self.caller.msg(string + "|gIt's a hit!|n")
+            target.msg(tstring + "|rIt's a hit!|n")
+            self.caller.location.msg_contents(ostring + "It's a hit!", exclude=[target, self.caller])
 
             # call enemy hook
             if hasattr(target, "at_hit"):
@@ -832,18 +828,18 @@ class CmdAttack(Command):
                 target.db.health -= damage
             else:
                 # sorry, impossible to fight this enemy ...
-                self.caller.msg("The enemy seems unaffacted.")
+                self.caller.msg("The enemy seems unaffected.")
                 return
         else:
-            self.caller.msg(string + "{rYou miss.{n")
-            target.msg(tstring + "{gThey miss you.{n")
+            self.caller.msg(string + "|rYou miss.|n")
+            target.msg(tstring + "|gThey miss you.|n")
             self.caller.location.msg_contents(ostring + "They miss.", exclude=[target, self.caller])
 
 
 class CmdSetWeapon(CmdSet):
-    "Holds the attack command."
+    """Holds the attack command."""
     def at_cmdset_creation(self):
-        "called at first object creation."
+        """called at first object creation."""
         self.add(CmdAttack())
 
 
@@ -859,7 +855,7 @@ class Weapon(TutorialObject):
 
     """
     def at_object_creation(self):
-        "Called at first creation of the object"
+        """Called at first creation of the object"""
         super(Weapon, self).at_object_creation()
         self.db.hit = 0.4    # hit chance
         self.db.parry = 0.8  # parry chance
@@ -873,13 +869,14 @@ class Weapon(TutorialObject):
         to return to.
         """
         if self.location.has_player and self.home == self.location:
-            self.location.msg_contents("%s suddenly and magically fades into nothingness, as if it was never there ..." % self.key)
+            self.location.msg_contents("%s suddenly and magically fades into nothingness, as if it was never there ..."
+                                       % self.key)
             self.delete()
         else:
             self.location = self.home
 
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Weapon rack - spawns weapons
 #
@@ -890,7 +887,7 @@ class Weapon(TutorialObject):
 # used to create unique and interesting variations of typeclassed
 # objects.
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 WEAPON_PROTOTYPES = {
     "weapon": {
@@ -905,7 +902,7 @@ WEAPON_PROTOTYPES = {
         "prototype": "weapon",
         "aliases": "sword",
         "key": "Kitchen knife",
-        "desc":"A rusty kitchen knife. Better than nothing.",
+        "desc": "A rusty kitchen knife. Better than nothing.",
         "damage": 3},
     "dagger": {
         "prototype": "knife",
@@ -923,20 +920,20 @@ WEAPON_PROTOTYPES = {
         "parry": 0.5},
     "club": {
         "prototype": "weapon",
-        "key":"Club",
+        "key": "Club",
         "desc": "A heavy wooden club, little more than a heavy branch.",
         "hit": 0.4,
         "damage": 6,
         "parry": 0.2},
     "axe": {
         "prototype": "weapon",
-        "key":"Axe",
+        "key": "Axe",
         "desc": "A woodcutter's axe with a keen edge.",
         "hit": 0.4,
         "damage": 6,
         "parry": 0.2},
     "ornate longsword": {
-        "prototype":"sword",
+        "prototype": "sword",
         "key": "Ornate longsword",
         "desc": "A fine longsword with some swirling patterns on the handle.",
         "hit": 0.5,
@@ -968,14 +965,16 @@ WEAPON_PROTOTYPES = {
         "prototype": "rune axe",
         "key": "Slayer waraxe",
         "aliases": ["waraxe", "war", "slayer"],
-        "desc": "A huge double-bladed axe marked with the runes for 'Slayer'. It has more runic inscriptions on its head, which you cannot decipher.",
+        "desc": "A huge double-bladed axe marked with the runes for 'Slayer'."
+                " It has more runic inscriptions on its head, which you cannot decipher.",
         "hit": 0.7,
         "damage": 8},
     "ghostblade": {
         "prototype": "ornate longsword",
         "key": "The Ghostblade",
         "aliases": ["blade", "ghost"],
-        "desc": "This massive sword is large as you are tall, yet seems to weigh almost nothing. It's almost like it's not really there.",
+        "desc": "This massive sword is large as you are tall, yet seems to weigh almost nothing."
+                " It's almost like it's not really there.",
         "hit": 0.9,
         "parry": 0.8,
         "damage": 10},
@@ -983,7 +982,8 @@ WEAPON_PROTOTYPES = {
         "prototype": "ghostblade",
         "key": "The Hawkblade",
         "aliases": ["hawk", "blade"],
-        "desc": "The weapon of a long-dead heroine and a more civilized age, the hawk-shaped hilt of this blade almost has a life of its own.",
+        "desc": "The weapon of a long-dead heroine and a more civilized age,"
+                " the hawk-shaped hilt of this blade almost has a life of its own.",
         "hit": 0.85,
         "parry": 0.7,
         "damage": 11}
@@ -1000,7 +1000,7 @@ class CmdGetWeapon(Command):
     key = "get weapon"
     aliases = "get weapon"
     locks = "cmd:all()"
-    help_cateogory = "TutorialWorld"
+    help_category = "TutorialWorld"
 
     def func(self):
         """
@@ -1009,6 +1009,7 @@ class CmdGetWeapon(Command):
         """
         self.obj.produce_weapon(self.caller)
 
+
 class CmdSetWeaponRack(CmdSet):
     """
     The cmdset for the rack.
@@ -1016,7 +1017,7 @@ class CmdSetWeaponRack(CmdSet):
     key = "weaponrack_cmdset"
 
     def at_cmdset_creation(self):
-        "Called at first creation of cmdset"
+        """Called at first creation of cmdset"""
         self.add(CmdGetWeapon())
 
 
@@ -1044,7 +1045,7 @@ class WeaponRack(TutorialObject):
         self.db.rack_id = "weaponrack_1"
         # these are prototype names from the prototype
         # dictionary above.
-        self.db.get_weapon_msg = "You find {c%s{n."
+        self.db.get_weapon_msg = "You find |c%s|n."
         self.db.no_more_weapons_msg = "you find nothing else of use."
         self.db.available_weapons = ["knife", "dagger",
                                      "sword", "club"]

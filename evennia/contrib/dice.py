@@ -97,7 +97,7 @@ def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=F
     if modifier:
         # make sure to check types well before eval
         mod, modvalue = modifier
-        if not mod in ('+', '-', '*', '/'):
+        if mod not in ('+', '-', '*', '/'):
             raise TypeError("Non-supported dice modifier: %s" % mod)
         modvalue = int(modvalue)  # for safety
         result = eval("%s %s %s" % (result, mod, modvalue))
@@ -105,13 +105,13 @@ def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=F
     if conditional:
         # make sure to check types well before eval
         cond, condvalue = conditional
-        if not cond in ('>', '<', '>=', '<=', '!=', '=='):
+        if cond not in ('>', '<', '>=', '<=', '!=', '=='):
             raise TypeError("Non-supported dice result conditional: %s" % conditional)
         condvalue = int(condvalue)  # for safety
         outcome = eval("%s %s %s" % (result, cond, condvalue))  # True/False
         diff = abs(result - condvalue)
     if return_tuple:
-        return (result, outcome, diff, rolls)
+        return result, outcome, diff, rolls
     else:
         if conditional:
             return outcome
@@ -155,7 +155,7 @@ class CmdDice(default_cmds.MuxCommand):
     locks = "cmd:all()"
 
     def func(self):
-        "Mostly parsing for calling the dice roller function"
+        """Mostly parsing for calling the dice roller function"""
 
         if not self.args:
             self.caller.msg("Usage: @dice <nr>d<sides> [modifier] [conditional]")
@@ -163,35 +163,33 @@ class CmdDice(default_cmds.MuxCommand):
         argstring = "".join(str(arg) for arg in self.args)
 
         parts = [part for part in RE_PARTS.split(self.args) if part]
-        lparts = len(parts)
-
-        ndice = 0
-        nsides = 0
+        len_parts = len(parts)
         modifier = None
         conditional = None
 
-        if lparts < 3 or parts[1] != 'd':
-            self.caller.msg("You must specify the die roll(s) as <nr>d<sides>. For example, 2d6 means rolling a 6-sided die 2 times.")
+        if len_parts < 3 or parts[1] != 'd':
+            self.caller.msg("You must specify the die roll(s) as <nr>d<sides>."
+                            " For example, 2d6 means rolling a 6-sided die 2 times.")
             return
 
         # Limit the number of dice and sides a character can roll to prevent server slow down and crashes
-        ndicelimit = 10000 # Maximum number of dice
-        nsidelimit = 10000 # Maximum number of sides
+        ndicelimit = 10000  # Maximum number of dice
+        nsidelimit = 10000  # Maximum number of sides
         if int(parts[0]) > ndicelimit or int(parts[2]) > nsidelimit:
             self.caller.msg("The maximum roll allowed is %sd%s." % (ndicelimit, nsidelimit))
             return
 
         ndice, nsides = parts[0], parts[2]
-        if lparts == 3:
+        if len_parts == 3:
             # just something like 1d6
             pass
-        elif lparts == 5:
+        elif len_parts == 5:
             # either e.g. 1d6 + 3  or something like 1d6 > 3
             if parts[3] in ('+', '-', '*', '/'):
                 modifier = (parts[3], parts[4])
             else:  # assume it is a conditional
                 conditional = (parts[3], parts[4])
-        elif lparts == 7:
+        elif len_parts == 7:
             # the whole sequence, e.g. 1d6 + 3 > 5
             modifier = (parts[3], parts[4])
             conditional = (parts[5], parts[6])
@@ -207,7 +205,8 @@ class CmdDice(default_cmds.MuxCommand):
                                                      conditional=conditional,
                                                      return_tuple=True)
         except ValueError:
-            self.caller.msg("You need to enter valid integer numbers, modifiers and operators. {w%s{n was not understood." % self.args)
+            self.caller.msg("You need to enter valid integer numbers, modifiers and operators."
+                            " |w%s|n was not understood." % self.args)
             return
         # format output
         if len(rolls) > 1:
@@ -217,12 +216,12 @@ class CmdDice(default_cmds.MuxCommand):
         if outcome is None:
             outcomestring = ""
         elif outcome:
-            outcomestring = " This is a {gsuccess{n (by %s)." % diff
+            outcomestring = " This is a |gsuccess|n (by %s)." % diff
         else:
-            outcomestring = " This is a {rfailure{n (by %s)." % diff
+            outcomestring = " This is a |rfailure|n (by %s)." % diff
         yourollstring = "You roll %s%s."
         roomrollstring = "%s rolls %s%s."
-        resultstring = " Roll(s): %s. Total result is {w%s{n."
+        resultstring = " Roll(s): %s. Total result is |w%s|n."
 
         if 'secret' in self.switches:
             # don't echo to the room at all
@@ -250,11 +249,12 @@ class CmdDice(default_cmds.MuxCommand):
             string += outcomestring
             self.caller.location.msg_contents(string)
 
+
 class DiceCmdSet(CmdSet):
     """
     a small cmdset for testing purposes.
     Add with @py self.cmdset.add("contrib.dice.DiceCmdSet")
     """
     def at_cmdset_creation(self):
-        "Called when set is created"
+        """Called when set is created"""
         self.add(CmdDice())

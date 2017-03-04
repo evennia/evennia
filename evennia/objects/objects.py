@@ -584,6 +584,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 "{attacker} {action} {defender}",
                 mapping=dict(attacker=char, defender=npc, action=action),
                 exclude=(char, npc))
+
         """
         contents = self.contents
         if exclude:
@@ -1032,8 +1033,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         have no cmdsets.
 
         Kwargs:
-            Usually not set but could be used e.g. to force rebuilding
-            of a dynamically created cmdset or similar.
+            caller (Session, Object or Player): The caller requesting
+                this cmdset.
 
         """
         pass

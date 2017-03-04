@@ -7,6 +7,9 @@ All commands in Evennia inherit from the 'Command' class in this module.
 from builtins import range
 
 import re
+
+from django.conf import settings
+
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import is_iter, fill, lazy_property, make_iter
 from future.utils import with_metaclass
@@ -32,7 +35,7 @@ def _init_command(cls, **kwargs):
     if cls.aliases and not is_iter(cls.aliases):
         try:
             cls.aliases = [str(alias).strip().lower()
-                          for alias in cls.aliases.split(',')]
+                           for alias in cls.aliases.split(',')]
         except Exception:
             cls.aliases = []
     cls.aliases = list(set(alias for alias in cls.aliases
@@ -54,7 +57,7 @@ def _init_command(cls, **kwargs):
     if not hasattr(cls, 'locks'):
         # default if one forgets to define completely
         cls.locks = "cmd:all()"
-    if not "cmd:" in cls.locks:
+    if "cmd:" not in cls.locks:
         cls.locks = "cmd:all();" + cls.locks
     for lockstring in cls.locks.split(';'):
         if lockstring and not ':' in lockstring:
@@ -140,15 +143,18 @@ class Command(with_metaclass(CommandMeta, object)):
     aliases = []
     # a list of lock definitions on the form
     #   cmd:[NOT] func(args) [ AND|OR][ NOT] func2(args)
-    locks = ""
+    locks = settings.COMMAND_DEFAULT_LOCKS
     # used by the help system to group commands in lists.
-    help_category = "general"
+    help_category = settings.COMMAND_DEFAULT_HELP_CATEGORY
     # This allows to turn off auto-help entry creation for individual commands.
     auto_help = True
     # optimization for quickly separating exit-commands from normal commands
     is_exit = False
     # define the command not only by key but by the regex form of its arguments
-    arg_regex = None
+    arg_regex = settings.COMMAND_DEFAULT_ARG_REGEX
+    # whether self.msg sends to all sessions of a related player/object (default
+    # is to only send to the session sending the command).
+    msg_all_sessions = settings.COMMAND_DEFAULT_MSG_ALL_SESSIONS
 
     # auto-set (by Evennia on command instantiation) are:
     #   obj - which object this command is defined on
@@ -191,7 +197,6 @@ class Command(with_metaclass(CommandMeta, object)):
         try:
             # first assume input is a command (the most common case)
             return self._matchset.intersection(cmd._matchset)
-            #return cmd.key in self._matchset
         except AttributeError:
             # probably got a string
             return cmd in self._matchset
@@ -205,9 +210,8 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         try:
             return self._matchset.isdisjoint(cmd._matchset)
-            #return not cmd.key in self._matcheset
         except AttributeError:
-            return not cmd in self._matchset
+            return cmd not in self._matchset
 
     def __contains__(self, query):
         """
@@ -302,16 +306,16 @@ class Command(with_metaclass(CommandMeta, object)):
     def msg(self, text=None, to_obj=None, from_obj=None,
             session=None, **kwargs):
         """
-        This is a shortcut instad of calling msg() directly on an
+        This is a shortcut instead of calling msg() directly on an
         object - it will detect if caller is an Object or a Player and
-        also appends self.session automatically.
+        also appends self.session automatically if self.msg_all_sessions is False.
 
         Args:
             text (str, optional): Text string of message to send.
             to_obj (Object, optional): Target object of message. Defaults to self.caller.
             from_obj (Object, optional): Source of message. Defaults to to_obj.
             session (Session, optional): Supply data only to a unique
-                session.
+                session (ignores the value of `self.msg_all_sessions`).
 
         Kwargs:
             options (dict): Options to the protocol.
@@ -321,7 +325,7 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         from_obj = from_obj or self.caller
         to_obj = to_obj or from_obj
-        if not session:
+        if not session and not self.msg_all_sessions:
             if to_obj == self.caller:
                 session = self.session
             else:
@@ -392,17 +396,18 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         # a simple test command to show the available properties
         string = "-" * 50
-        string += "\n{w%s{n - Command variables from evennia:\n" % self.key
+        string += "\n|w%s|n - Command variables from evennia:\n" % self.key
         string += "-" * 50
-        string += "\nname of cmd (self.key): {w%s{n\n" % self.key
-        string += "cmd aliases (self.aliases): {w%s{n\n" % self.aliases
-        string += "cmd locks (self.locks): {w%s{n\n" % self.locks
-        string += "help category (self.help_category): {w%s{n\n" % self.help_category.capitalize()
-        string += "object calling (self.caller): {w%s{n\n" % self.caller
-        string += "object storing cmdset (self.obj): {w%s{n\n" % self.obj
-        string += "command string given (self.cmdstring): {w%s{n\n" % self.cmdstring
+        string += "\nname of cmd (self.key): |w%s|n\n" % self.key
+        string += "cmd aliases (self.aliases): |w%s|n\n" % self.aliases
+        string += "cmd locks (self.locks): |w%s|n\n" % self.locks
+        string += "help category (self.help_category): |w%s|n\n" % self.help_category.capitalize()
+        string += "object calling (self.caller): |w%s|n\n" % self.caller
+        string += "object storing cmdset (self.obj): |w%s|n\n" % self.obj
+        string += "command string given (self.cmdstring): |w%s|n\n" % self.cmdstring
         # show cmdset.key instead of cmdset to shorten output
-        string += fill("current cmdset (self.cmdset): {w%s{n\n" % (self.cmdset.key if self.cmdset.key else self.cmdset.__class__))
+        string += fill("current cmdset (self.cmdset): |w%s|n\n" %
+                       (self.cmdset.key if self.cmdset.key else self.cmdset.__class__))
 
         self.caller.msg(string)
 

@@ -319,6 +319,11 @@ PROTOTYPE_MODULES = ["world.prototypes"]
 # Module holding settings/actions for the dummyrunner program (see the
 # dummyrunner for more information)
 DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
+# Mapping to extend Evennia's normal ANSI color tags. The mapping is a list of
+# tuples mapping the tag to the ANSI convertion, like `("%c%r", ansi.ANSI_RED)`
+# (the evennia.utils.ansi module contains all ANSI escape sequences). This is
+# mainly supplied for support of legacy codebase tag formats.
+COLOR_ANSI_EXTRA_MAP = []
 
 ######################################################################
 # Default command sets
@@ -342,6 +347,21 @@ CMDSET_PATHS = ["commands", "evennia", "contribs"]
 # Parent class for all default commands. Changing this class will
 # modify all default commands, so do so carefully.
 COMMAND_DEFAULT_CLASS = "evennia.commands.default.muxcommand.MuxCommand"
+# Command.arg_regex is a regular expression desribing how the arguments
+# to the command must be structured for the command to match a given user
+# input. By default there is no restriction as long as the input string
+# starts with the command name.
+COMMAND_DEFAULT_ARG_REGEX = None
+# By default, Command.msg will only send data to the Session calling
+# the Command in the first place. If set, Command.msg will instead return
+# data to all Sessions connected to the Player/Character associated with
+# calling the Command. This may be more intuitive for users in certain
+# multisession modes.
+COMMAND_DEFAULT_MSG_ALL_SESSIONS = False
+# The help category of a command if not otherwise specified.
+COMMAND_DEFAULT_HELP_CATEGORY = "general"
+# The default lockstring of a command.
+COMMAND_DEFAULT_LOCKS = ""
 # The Channel Handler will create a command to represent each channel,
 # creating it with the key of the channel, its aliases, locks etc. The
 # default class logs channel messages to a file and allows for /history.
@@ -413,13 +433,11 @@ BASE_BATCHPROCESS_PATHS = ['world', 'evennia.contrib', 'evennia.contrib.tutorial
 # The time factor dictates if the game world runs faster (timefactor>1)
 # or slower (timefactor<1) than the real world.
 TIME_FACTOR = 2.0
-# These measures might or might not make sense to your game world.
-TIME_SEC_PER_MIN = 60
-TIME_MIN_PER_HOUR = 60
-TIME_HOUR_PER_DAY = 24
-TIME_DAY_PER_WEEK = 7
-TIME_WEEK_PER_MONTH = 4
-TIME_MONTH_PER_YEAR = 12
+# The starting point of your game time (the epoch), in seconds.
+# In Python a value of 0 means Jan 1 1970 (use negatives for earlier
+# start date). This will affect the returns from the utils.gametime
+# module.
+TIME_GAME_EPOCH = None
 
 ######################################################################
 # Inlinefunc

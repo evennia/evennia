@@ -38,7 +38,7 @@ class CommandTest(EvenniaTest):
     Tests a command
     """
 
-    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None, receiver=None, cmdstring=None):
+    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None, receiver=None, cmdstring=None, obj=None):
         """
         Test a command by assigning all the needed
         properties to cmdobj and  running
@@ -58,7 +58,7 @@ class CommandTest(EvenniaTest):
         cmdobj.session = SESSIONS.session_from_sessid(1)
         cmdobj.player = self.player
         cmdobj.raw_string = cmdobj.key + " " + args
-        cmdobj.obj = caller if caller else self.char1
+        cmdobj.obj = obj or (caller if caller else self.char1)
         # test
         old_msg = receiver.msg
         try:
@@ -116,6 +116,9 @@ class TestGeneral(CommandTest):
 
     def test_say(self):
         self.call(general.CmdSay(), "Testing", "You say, \"Testing\"")
+
+    def test_whisper(self):
+        self.call(general.CmdWhisper(), "Obj = Testing", "You whisper to Obj, \"Testing\"")
 
     def test_access(self):
         self.call(general.CmdAccess(), "", "Permission Hierarchy (climbing):")

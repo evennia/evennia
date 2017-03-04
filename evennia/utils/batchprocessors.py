@@ -183,12 +183,13 @@ _ENCODINGS = settings.ENCODINGS
 _RE_INSERT = re.compile(r"^\#INSERT (.*)", re.MULTILINE)
 _RE_CLEANBLOCK = re.compile(r"^\#.*?$|^\s*$", re.MULTILINE)
 _RE_CMD_SPLIT = re.compile(r"^\#.*?$", re.MULTILINE)
-_RE_CODE_OR_HEADER = re.compile(r"(\A|^\#CODE|^\#HEADER).*?$(.*?)(?=^#CODE.*?$|^#HEADER.*?$|\Z)", re.MULTILINE + re.DOTALL)
+_RE_CODE_OR_HEADER = re.compile(r"(\A|^\#CODE|^\#HEADER).*?$(.*?)(?=^#CODE.*?$|^#HEADER.*?$|\Z)",
+                                re.MULTILINE + re.DOTALL)
 
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 # Helper function
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 def read_batchfile(pythonpath, file_ending='.py'):
     """
@@ -212,8 +213,7 @@ def read_batchfile(pythonpath, file_ending='.py'):
     """
 
     # find all possible absolute paths
-    abspaths = utils.pypath_to_realpath(pythonpath,
-                            file_ending, settings.BASE_BATCHPROCESS_PATHS)
+    abspaths = utils.pypath_to_realpath(pythonpath, file_ending, settings.BASE_BATCHPROCESS_PATHS)
     if not abspaths:
         raise IOError
     text = None
@@ -237,11 +237,11 @@ def read_batchfile(pythonpath, file_ending='.py'):
     return text
 
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Batch-command processor
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 class BatchCommandProcessor(object):
     """
@@ -271,35 +271,35 @@ class BatchCommandProcessor(object):
         text = "".join(read_batchfile(pythonpath, file_ending='.ev'))
 
         def replace_insert(match):
-            "Map replace entries"
+            """Map replace entries"""
             return "\n#".join(self.parse_file(match.group(1)))
 
         # insert commands from inserted files
         text = _RE_INSERT.sub(replace_insert, text)
-        #text = re.sub(r"^\#INSERT (.*?)", replace_insert, text, flags=re.MULTILINE)
+        #      re.sub(r"^\#INSERT (.*?)", replace_insert, text, flags=re.MULTILINE)
         # get all commands
         commands = _RE_CMD_SPLIT.split(text)
-        #commands = re.split(r"^\#.*?$", text, flags=re.MULTILINE)
-        #remove eventual newline at the end of commands
+        #          re.split(r"^\#.*?$", text, flags=re.MULTILINE)
+        # remove eventual newline at the end of commands
         commands = [c.strip('\r\n') for c in commands]
         commands = [c for c in commands if c]
 
         return commands
 
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Batch-code processor
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 def tb_filename(tb):
-    "Helper to get filename from traceback"
+    """Helper to get filename from traceback"""
     return tb.tb_frame.f_code.co_filename
 
 
 def tb_iter(tb):
-    "Traceback iterator."
+    """Traceback iterator."""
     while tb is not None:
         yield tb
         tb = tb.tb_next
@@ -341,7 +341,7 @@ class BatchCodeProcessor(object):
         text = "".join(read_batchfile(pythonpath, file_ending='.py'))
 
         def replace_insert(match):
-            "Run parse_file on the import before sub:ing it into this file"
+            """Run parse_file on the import before sub:ing it into this file"""
             path = match.group(1)
             return "# batchcode insert (%s):" % path + "\n".join(self.parse_file(path))
 
@@ -356,7 +356,7 @@ class BatchCodeProcessor(object):
             code = text[istart:iend]
             if mtype == "#HEADER":
                 headers.append(code)
-            else: # either #CODE or matching from start of file
+            else:  # either #CODE or matching from start of file
                 codes.append(code)
 
         # join all headers together to one
@@ -364,7 +364,6 @@ class BatchCodeProcessor(object):
         # add header to each code block
         codes = ["%s# batchcode code:\n%s" % (header, code) for code in codes]
         return codes
-
 
     def code_exec(self, code, extra_environ=None, debug=False):
         """
@@ -406,7 +405,7 @@ class BatchCodeProcessor(object):
             err = ""
             for iline, line in enumerate(code.split("\n")):
                 if iline == lineno:
-                    err += "\n{w%02i{n: %s" % (iline + 1, line)
+                    err += "\n|w%02i|n: %s" % (iline + 1, line)
                 elif lineno - 5 < iline < lineno + 5:
                     err += "\n%02i: %s" % (iline + 1, line)
 

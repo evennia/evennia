@@ -31,13 +31,11 @@ class ANSIStringTestCase(TestCase):
         """
         Make sure the ANSIString is always constructed correctly.
         """
-        clean = u'This isA{r testTest'
-        encoded = u'\x1b[1m\x1b[32mThis is\x1b[1m\x1b[31mA{r test\x1b[0mTest\x1b[0m'
-        target = ANSIString(r'{gThis is{rA{{r test{nTest{n')
-        char_table = [9, 10, 11, 12, 13, 14, 15, 25, 26, 27, 28, 29, 30, 31,
-                      32, 37, 38, 39, 40]
-        code_table = [0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 17, 18, 19, 20, 21, 22,
-                      23, 24, 33, 34, 35, 36, 41, 42, 43, 44]
+        clean = u'This isA|r testTest'
+        encoded = u'\x1b[1m\x1b[32mThis is\x1b[1m\x1b[31mA|r test\x1b[0mTest\x1b[0m'
+        target = ANSIString(r'|gThis is|rA||r test|nTest|n')
+        char_table = [9, 10, 11, 12, 13, 14, 15, 25, 26, 27, 28, 29, 30, 31, 32, 37, 38, 39, 40]
+        code_table = [0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 17, 18, 19, 20, 21, 22, 23, 24, 33, 34, 35, 36, 41, 42, 43, 44]
         self.checker(target, encoded, clean)
         self.table_check(target, char_table, code_table)
         self.checker(ANSIString(target), encoded, clean)
@@ -54,7 +52,7 @@ class ANSIStringTestCase(TestCase):
         Verifies that slicing an ANSIString results in expected color code
         distribution.
         """
-        target = ANSIString(r'{gTest{rTest{n')
+        target = ANSIString(r'|gTest|rTest|n')
         result = target[:3]
         self.checker(result, u'\x1b[1m\x1b[32mTes', u'Tes')
         result = target[:4]
@@ -80,7 +78,7 @@ class ANSIStringTestCase(TestCase):
         Verifies that re.split and .split behave similarly and that color
         codes end up where they should.
         """
-        target = ANSIString("{gThis is {nA split string{g")
+        target = ANSIString("|gThis is |nA split string|g")
         first = (u'\x1b[1m\x1b[32mThis is \x1b[0m', u'This is ')
         second = (u'\x1b[1m\x1b[32m\x1b[0m split string\x1b[1m\x1b[32m',
                   u' split string')
@@ -96,9 +94,9 @@ class ANSIStringTestCase(TestCase):
         Verify that joining a set of ANSIStrings works.
         """
         # This isn't the desired behavior, but the expected one. Python
-        # concatinates the in-memory representation with the built-in string's
+        # concatenates the in-memory representation with the built-in string's
         # join.
-        l = [ANSIString("{gTest{r") for s in range(0, 3)]
+        l = [ANSIString("|gTest|r") for _ in range(0, 3)]
         # Force the generator to be evaluated.
         result = "".join(l)
         self.assertEqual(unicode(result), u'TestTestTest')
@@ -112,14 +110,14 @@ class ANSIStringTestCase(TestCase):
         Make sure that length reporting on ANSIStrings does not include
         ANSI codes.
         """
-        self.assertEqual(len(ANSIString('{gTest{n')), 4)
+        self.assertEqual(len(ANSIString('|gTest|n')), 4)
 
     def test_capitalize(self):
         """
         Make sure that capitalization works. This is the simplest of the
         _transform functions.
         """
-        target = ANSIString('{gtest{n')
+        target = ANSIString('|gtest|n')
         result = u'\x1b[1m\x1b[32mTest\x1b[0m'
         self.checker(target.capitalize(), result, u'Test')
 
@@ -127,8 +125,8 @@ class ANSIStringTestCase(TestCase):
         """
         Make sure MXP tags are not treated like ANSI codes, but normal text.
         """
-        mxp1 = "{lclook{ltat{le"
-        mxp2 = "Start to {lclook here{ltclick somewhere here{le first"
+        mxp1 = "|lclook|ltat|le"
+        mxp2 = "Start to |lclook here|ltclick somewhere here|le first"
         self.assertEqual(15, len(ANSIString(mxp1)))
         self.assertEqual(53, len(ANSIString(mxp2)))
         # These would indicate an issue with the tables.
@@ -139,17 +137,15 @@ class ANSIStringTestCase(TestCase):
 
     def test_add(self):
         """
-        Verify concatination works correctly.
+        Verify concatenation works correctly.
         """
-        a = ANSIString("{gTest")
-        b = ANSIString("{cString{n")
+        a = ANSIString("|gTest")
+        b = ANSIString("|cString|n")
         c = a + b
         result = u'\x1b[1m\x1b[32mTest\x1b[1m\x1b[36mString\x1b[0m'
         self.checker(c, result, u'TestString')
         char_table = [9, 10, 11, 12, 22, 23, 24, 25, 26, 27]
-        code_table = [
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21, 28, 29, 30, 31
-        ]
+        code_table = [0, 1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21, 28, 29, 30, 31]
         self.table_check(c, char_table, code_table)
 
     def test_strip(self):
@@ -166,7 +162,7 @@ class ANSIStringTestCase(TestCase):
 
 class TestIsIter(TestCase):
     def test_is_iter(self):
-        self.assertEqual(True, utils.is_iter([1,2,3,4]))
+        self.assertEqual(True, utils.is_iter([1, 2, 3, 4]))
         self.assertEqual(False, utils.is_iter("This is not an iterable"))
 
 
@@ -213,10 +209,10 @@ class TestListToString(TestCase):
         [1,2,3] -> '"1", "2" and "3"'
     """
     def test_list_to_string(self):
-        self.assertEqual('1, 2, 3', utils.list_to_string([1,2,3], endsep=""))
-        self.assertEqual('"1", "2", "3"', utils.list_to_string([1,2,3], endsep="", addquote=True))
-        self.assertEqual('1, 2 and 3', utils.list_to_string([1,2,3]))
-        self.assertEqual('"1", "2" and "3"', utils.list_to_string([1,2,3], endsep="and", addquote=True))
+        self.assertEqual('1, 2, 3', utils.list_to_string([1, 2, 3], endsep=""))
+        self.assertEqual('"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep="", addquote=True))
+        self.assertEqual('1, 2 and 3', utils.list_to_string([1, 2, 3]))
+        self.assertEqual('"1", "2" and "3"', utils.list_to_string([1, 2, 3], endsep="and", addquote=True))
 
 
 class TestMLen(TestCase):
@@ -231,10 +227,10 @@ class TestMLen(TestCase):
         self.assertEqual(utils.m_len('|lclook|ltat|le'), 2)
 
     def test_mxp_ansi_string(self):
-        self.assertEqual(utils.m_len(ANSIString('|lcl|gook|ltat|le{n')), 2)
+        self.assertEqual(utils.m_len(ANSIString('|lcl|gook|ltat|le|n')), 2)
 
     def test_non_mxp_ansi_string(self):
-        self.assertEqual(utils.m_len(ANSIString('{gHello{n')), 5)
+        self.assertEqual(utils.m_len(ANSIString('{gHello{n')), 5)  # TODO - cause this to fail by default.
         self.assertEqual(utils.m_len(ANSIString('|gHello|n')), 5)
 
     def test_list(self):
@@ -246,6 +242,7 @@ class TestMLen(TestCase):
 
 from .text2html import TextToHTMLparser
 
+
 class TestTextToHTMLparser(TestCase):
     def setUp(self):
         self.parser = TextToHTMLparser()
@@ -255,77 +252,85 @@ class TestTextToHTMLparser(TestCase):
 
     def test_url_scheme_ftp(self):
         self.assertEqual(self.parser.convert_urls('ftp.example.com'),
-            '<a href="ftp.example.com" target="_blank">ftp.example.com</a>')
+                         '<a href="ftp.example.com" target="_blank">ftp.example.com</a>')
 
     def test_url_scheme_www(self):
         self.assertEqual(self.parser.convert_urls('www.example.com'),
-            '<a href="www.example.com" target="_blank">www.example.com</a>')
+                         '<a href="www.example.com" target="_blank">www.example.com</a>')
 
     def test_url_scheme_ftpproto(self):
         self.assertEqual(self.parser.convert_urls('ftp://ftp.example.com'),
-            '<a href="ftp://ftp.example.com" target="_blank">ftp://ftp.example.com</a>')
+                         '<a href="ftp://ftp.example.com" target="_blank">ftp://ftp.example.com</a>')
 
     def test_url_scheme_http(self):
         self.assertEqual(self.parser.convert_urls('http://example.com'),
-            '<a href="http://example.com" target="_blank">http://example.com</a>')
+                         '<a href="http://example.com" target="_blank">http://example.com</a>')
 
     def test_url_scheme_https(self):
         self.assertEqual(self.parser.convert_urls('https://example.com'),
-            '<a href="https://example.com" target="_blank">https://example.com</a>')
+                         '<a href="https://example.com" target="_blank">https://example.com</a>')
 
     def test_url_chars_slash(self):
         self.assertEqual(self.parser.convert_urls('www.example.com/homedir'),
-            '<a href="www.example.com/homedir" target="_blank">www.example.com/homedir</a>')
+                         '<a href="www.example.com/homedir" target="_blank">www.example.com/homedir</a>')
 
     def test_url_chars_colon(self):
         self.assertEqual(self.parser.convert_urls('https://example.com:8000/login/'),
-            '<a href="https://example.com:8000/login/" target="_blank">https://example.com:8000/login/</a>')
+                         '<a href="https://example.com:8000/login/" target="_blank">'
+                         'https://example.com:8000/login/</a>')
 
     def test_url_chars_querystring(self):
         self.assertEqual(self.parser.convert_urls('https://example.com/submitform?field1=val1+val3&field2=val2'),
-            '<a href="https://example.com/submitform?field1=val1+val3&field2=val2" target="_blank">https://example.com/submitform?field1=val1+val3&field2=val2</a>')
+                         '<a href="https://example.com/submitform?field1=val1+val3&field2=val2" target="_blank">'
+                         'https://example.com/submitform?field1=val1+val3&field2=val2</a>')
 
     def test_url_chars_anchor(self):
         self.assertEqual(self.parser.convert_urls('http://www.example.com/menu#section_1'),
-            '<a href="http://www.example.com/menu#section_1" target="_blank">http://www.example.com/menu#section_1</a>')
+                         '<a href="http://www.example.com/menu#section_1" target="_blank">'
+                         'http://www.example.com/menu#section_1</a>')
 
     def test_url_chars_exclam(self):
-        self.assertEqual(self.parser.convert_urls('https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve'),
-            '<a href="https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve" target="_blank">https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve</a>')
+        self.assertEqual(self.parser.convert_urls('https://groups.google.com/forum/'
+                                                  '?fromgroups#!categories/evennia/ainneve'),
+                         '<a href="https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve"'
+                         ' target="_blank">https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve</a>')
 
     def test_url_edge_leadingw(self):
         self.assertEqual(self.parser.convert_urls('wwww.example.com'),
-            'w<a href="www.example.com" target="_blank">www.example.com</a>')
+                         'w<a href="www.example.com" target="_blank">www.example.com</a>')
 
     def test_url_edge_following_period_eol(self):
         self.assertEqual(self.parser.convert_urls('www.example.com.'),
-            '<a href="www.example.com" target="_blank">www.example.com</a>.')
+                         '<a href="www.example.com" target="_blank">www.example.com</a>.')
 
     def test_url_edge_following_period(self):
         self.assertEqual(self.parser.convert_urls('see www.example.com. '),
-            'see <a href="www.example.com" target="_blank">www.example.com</a>. ')
+                         'see <a href="www.example.com" target="_blank">www.example.com</a>. ')
 
     def test_url_edge_brackets(self):
         self.assertEqual(self.parser.convert_urls('[http://example.com/]'),
-            '[<a href="http://example.com/" target="_blank">http://example.com/</a>]')
+                         '[<a href="http://example.com/" target="_blank">http://example.com/</a>]')
 
     def test_url_edge_multiline(self):
         self.assertEqual(self.parser.convert_urls('  * http://example.com/info\n  * bullet'),
-            '  * <a href="http://example.com/info" target="_blank">http://example.com/info</a>\n  * bullet')
+                         '  * <a href="http://example.com/info" target="_blank">'
+                         'http://example.com/info</a>\n  * bullet')
 
     def test_url_edge_following_htmlentity(self):
         self.assertEqual(self.parser.convert_urls('http://example.com/info&lt;span&gt;'),
-            '<a href="http://example.com/info" target="_blank">http://example.com/info</a>&lt;span&gt;')
+                         '<a href="http://example.com/info" target="_blank">http://example.com/info</a>&lt;span&gt;')
 
     def test_url_edge_surrounded_spans(self):
         self.assertEqual(self.parser.convert_urls('</span>http://example.com/<span class="red">'),
-            '</span><a href="http://example.com/" target="_blank">http://example.com/</a><span class="red">')
+                         '</span><a href="http://example.com/" target="_blank">'
+                         'http://example.com/</a><span class="red">')
 
 
 from evennia.utils import inlinefuncs
 
+
 class TestInlineFuncs(TestCase):
-    "Test the nested inlinefunc module"
+    """Test the nested inlinefunc module"""
     def test_nofunc(self):
         self.assertEqual(inlinefuncs.parse_inlinefunc(
             "as$382ewrw w we w werw,|44943}"),
@@ -358,11 +363,50 @@ class TestInlineFuncs(TestCase):
 
 from evennia.utils import evform
 
+
 class TestEvForm(TestCase):
     def test_form(self):
         self.maxDiff = None
         self.assertEqual(evform._test(),
-                u'.------------------------------------------------.\n|                                                |\n|  Name: \x1b[0m\x1b[1m\x1b[32mTom\x1b[1m\x1b[32m \x1b[1m\x1b[32mthe\x1b[1m\x1b[32m \x1b[0m   \x1b[0m    Player: \x1b[0m\x1b[1m\x1b[33mGriatch        \x1b[0m\x1b[0m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[0m\x1b[0m  |\n|        \x1b[0m\x1b[1m\x1b[32mBouncer\x1b[0m    \x1b[0m                             |\n|                                                |\n >----------------------------------------------<\n|                                                |\n| Desc:  \x1b[0mA sturdy \x1b[0m  \x1b[0m    STR: \x1b[0m12 \x1b[0m\x1b[0m\x1b[0m\x1b[0m    DEX: \x1b[0m10 \x1b[0m\x1b[0m\x1b[0m\x1b[0m     |\n|        \x1b[0mfellow\x1b[0m     \x1b[0m    INT: \x1b[0m5  \x1b[0m\x1b[0m\x1b[0m\x1b[0m    STA: \x1b[0m18 \x1b[0m\x1b[0m\x1b[0m\x1b[0m     |\n|        \x1b[0m           \x1b[0m    LUC: \x1b[0m10 \x1b[0m\x1b[0m\x1b[0m    MAG: \x1b[0m3  \x1b[0m\x1b[0m\x1b[0m     |\n|                                                |\n >----------.-----------------------------------<\n|           |                                    |\n| \x1b[0mHP\x1b[0m|\x1b[0mMV \x1b[0m|\x1b[0mMP\x1b[0m | \x1b[0mSkill      \x1b[0m|\x1b[0mValue     \x1b[0m|\x1b[0mExp        \x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m |\n| ~~+~~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~+~~~~~~~~~~~ |\n| \x1b[0m**\x1b[0m|\x1b[0m***\x1b[0m\x1b[0m|\x1b[0m**\x1b[0m\x1b[0m | \x1b[0mShooting   \x1b[0m|\x1b[0m12        \x1b[0m|\x1b[0m550/1200   \x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m |\n| \x1b[0m  \x1b[0m|\x1b[0m**\x1b[0m \x1b[0m|\x1b[0m*\x1b[0m \x1b[0m | \x1b[0mHerbalism  \x1b[0m|\x1b[0m14        \x1b[0m|\x1b[0m990/1400   \x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m |\n| \x1b[0m  \x1b[0m|\x1b[0m   \x1b[0m|\x1b[0m  \x1b[0m | \x1b[0mSmithing   \x1b[0m|\x1b[0m9         \x1b[0m|\x1b[0m205/900    \x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m |\n|           |                                    |\n -----------`-------------------------------------\n')
+                         u'.------------------------------------------------.\n'
+                         u'|                                                |\n'
+                         u'|  Name: \x1b[0m\x1b[1m\x1b[32mTom\x1b[1m\x1b[32m \x1b'
+                         u'[1m\x1b[32mthe\x1b[1m\x1b[32m \x1b[0m   \x1b[0m    '
+                         u'Player: \x1b[0m\x1b[1m\x1b[33mGriatch        '
+                         u'\x1b[0m\x1b[0m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[0m\x1b[0m  '
+                         u'|\n'
+                         u'|        \x1b[0m\x1b[1m\x1b[32mBouncer\x1b[0m    \x1b[0m                             |\n'
+                         u'|                                                |\n'
+                         u' >----------------------------------------------<\n'
+                         u'|                                                |\n'
+                         u'| Desc:  \x1b[0mA sturdy \x1b[0m  \x1b[0m'
+                         u'    STR: \x1b[0m12 \x1b[0m\x1b[0m\x1b[0m\x1b[0m'
+                         u'    DEX: \x1b[0m10 \x1b[0m\x1b[0m\x1b[0m\x1b[0m     |\n'
+                         u'|        \x1b[0mfellow\x1b[0m     \x1b[0m'
+                         u'    INT: \x1b[0m5  \x1b[0m\x1b[0m\x1b[0m\x1b[0m'
+                         u'    STA: \x1b[0m18 \x1b[0m\x1b[0m\x1b[0m\x1b[0m     |\n'
+                         u'|        \x1b[0m           \x1b[0m'
+                         u'    LUC: \x1b[0m10 \x1b[0m\x1b[0m\x1b[0m'
+                         u'    MAG: \x1b[0m3  \x1b[0m\x1b[0m\x1b[0m     |\n'
+                         u'|                                                |\n'
+                         u' >----------.-----------------------------------<\n'
+                         u'|           |                                    |\n'
+                         u'| \x1b[0mHP\x1b[0m|\x1b[0mMV \x1b[0m|\x1b[0mMP\x1b[0m '
+                         u'| \x1b[0mSkill      \x1b[0m|\x1b[0mValue     \x1b[0m'
+                         u'|\x1b[0mExp        \x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m |\n'
+                         u'| ~~+~~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~+~~~~~~~~~~~ |\n'
+                         u'| \x1b[0m**\x1b[0m|\x1b[0m***\x1b[0m\x1b[0m|\x1b[0m**\x1b[0m\x1b[0m '
+                         u'| \x1b[0mShooting   \x1b[0m|\x1b[0m12        \x1b[0m'
+                         u'|\x1b[0m550/1200   \x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m |\n'
+                         u'| \x1b[0m  \x1b[0m|\x1b[0m**\x1b[0m \x1b[0m|\x1b[0m*\x1b[0m \x1b[0m '
+                         u'| \x1b[0mHerbalism  \x1b[0m|\x1b[0m14        \x1b[0m'
+                         u'|\x1b[0m990/1400   \x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m |\n'
+                         u'| \x1b[0m  \x1b[0m|\x1b[0m   \x1b[0m|\x1b[0m  \x1b[0m '
+                         u'| \x1b[0mSmithing   \x1b[0m|\x1b[0m9         \x1b[0m'
+                         u'|\x1b[0m205/900    \x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m |\n'
+                         u'|           |                                    |\n'
+                         u' -----------`-------------------------------------\n')
+
     def test_ansi_escape(self):
         # note that in a msg() call, the result would be the  correct |-----,
         # in a print, ansi only gets called once, so ||----- is the result

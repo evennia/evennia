@@ -7,8 +7,13 @@ total runtime of the server and the current uptime.
 """
 from __future__ import division
 import time
+from calendar import monthrange
+from datetime import datetime, timedelta
+
 from django.conf import settings
+from evennia import DefaultScript
 from evennia.server.models import ServerConfig
+from evennia.utils.create import create_script
 
 # Speed-up factor of the in-game time compared
 # to real time.
@@ -21,55 +26,41 @@ GAME_TIME_OFFSET = ServerConfig.objects.conf("gametime_offset", default=0)
 # Common real-life time measure, in seconds.
 # You should not change this.
 
-REAL_MIN = 60.0  # seconds per minute in real world
-
-# Game-time units, in real-life seconds. These are supplied as
-# a convenient measure for determining the current in-game time,
-# e.g. when defining in-game events. The words month, week and year can
-# be used to mean whatever units of time are used in the game.
-
-MIN = settings.TIME_SEC_PER_MIN
-HOUR = MIN * settings.TIME_MIN_PER_HOUR
-DAY = HOUR * settings.TIME_HOUR_PER_DAY
-WEEK = DAY * settings.TIME_DAY_PER_WEEK
-MONTH = WEEK * settings.TIME_WEEK_PER_MONTH
-YEAR = MONTH * settings.TIME_MONTH_PER_YEAR
-
 # these are kept updated by the server maintenance loop
 SERVER_START_TIME = 0.0
 SERVER_RUNTIME_LAST_UPDATED = 0.0
 SERVER_RUNTIME = 0.0
 
+# note that these should not be accessed directly since they may
+# need further processing. Access from server_epoch() and game_epoch().
+_SERVER_EPOCH = None
+_GAME_EPOCH = None
 
-def _format(seconds, *divisors) :
-    """
-    Helper function. Creates a tuple of even dividends given a range
-    of divisors.
+# Helper Script dealing in gametime (created by `schedule` function
+# below).
 
-    Args:
-        seconds (int): Number of seconds to format
-        *divisors (int): a sequence of numbers of integer dividends. The
-            number of seconds will be integer-divided by the first number in
-            this sequence, the remainder will be divided with the second and
-            so on.
-    Returns:
-        time (tuple): This tuple has length len(*args)+1, with the
-            last element being the last remaining seconds not evenly
-            divided by the supplied dividends.
+class TimeScript(DefaultScript):
+    """Gametime-sensitive script."""
 
-    """
-    results = []
-    seconds = int(seconds)
-    for divisor in divisors:
-        results.append(seconds // divisor)
-        seconds %= divisor
-    results.append(seconds)
-    return tuple(results)
+    def at_script_creation(self):
+        """The script is created."""
+        self.key = "unknown scr"
+        self.interval = 100
+        self.start_delay = True
+        self.persistent = True
 
+    def at_repeat(self):
+        """Call the callback and reset interval."""
+        callback = self.db.callback
+        if callback:
+            callback()
+
+        seconds = real_seconds_until(**self.db.gametime)
+        self.restart(interval=seconds)
 
 # Access functions
 
-def runtime(format=False):
+def runtime():
     """
     Get the total runtime of the server since first start (minus
     downtimes)
@@ -82,13 +73,22 @@ def runtime(format=False):
             into time units.
 
     """
-    rtime = SERVER_RUNTIME + (time.time() - SERVER_RUNTIME_LAST_UPDATED)
-    if format:
-        return _format(rtime, 31536000, 2628000, 604800, 86400, 3600, 60)
-    return rtime
+    return SERVER_RUNTIME + time.time() - SERVER_RUNTIME_LAST_UPDATED
 
 
-def uptime(format=False):
+def server_epoch():
+    """
+    Get the server epoch. We may need to calculate this on the fly.
+
+    """
+    global _SERVER_EPOCH
+    if not _SERVER_EPOCH:
+        _SERVER_EPOCH = ServerConfig.objects.conf("server_epoch", default=None) \
+                        or time.time() - runtime()
+    return _SERVER_EPOCH
+
+
+def uptime():
     """
     Get the current uptime of the server since last reload
 
@@ -100,94 +100,143 @@ def uptime(format=False):
             into time units.
 
     """
-    utime = time.time() - SERVER_START_TIME
-    if format:
-        return _format(utime, 31536000, 2628000, 604800, 86400, 3600, 60)
-    return utime
+    return time.time() - SERVER_START_TIME
 
 
-def gametime(format=False):
+def game_epoch():
+    """
+    Get the game epoch.
+
+    """
+    game_epoch = settings.TIME_GAME_EPOCH
+    return game_epoch if game_epoch is not None else server_epoch()
+
+
+def gametime(absolute=False):
     """
     Get the total gametime of the server since first start (minus downtimes)
 
     Args:
-        format (bool, optional): Format into time representation.
+        absolute (bool, optional): Get the absolute game time, including
+            the epoch. This could be converted to an absolute in-game
+            date.
 
     Returns:
-        time (float or tuple): The gametime or the same time split up
-            into time units.
+        time (float): The gametime as a virtual timestamp.
+
+    Notes:
+        If one is using a standard calendar, one could convert the unformatted
+        return to a date using Python's standard `datetime` module like this:
+        `datetime.datetime.fromtimestamp(gametime(absolute=True))`
 
     """
-    gtime = (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
-    if format:
-        return _format(gtime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
+    epoch = game_epoch() if absolute else 0
+    gtime = epoch + (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
     return gtime
 
+def real_seconds_until(sec=None, min=None, hour=None, day=None,
+        month=None, year=None):
+    """
+    Return the real seconds until game time.
+
+    Args:
+        sec (int or None): number of absolute seconds.
+        min (int or None): number of absolute minutes.
+        hour (int or None): number of absolute hours.
+        day (int or None): number of absolute days.
+        month (int or None): number of absolute months.
+        year (int or None): number of absolute years.
+
+    Returns:
+        The number of real seconds before the given game time is up.
+
+    Example:
+        real_seconds_until(hour=5, min=10, sec=0)
+
+        If the game time is 5:00, TIME_FACTOR is set to 2 and you ask
+        the number of seconds until it's 5:10, then this function should
+        return 300 (5 minutes).
+
+
+    """
+    current = datetime.fromtimestamp(gametime(absolute=True))
+    s_sec = sec if sec is not None else current.second
+    s_min = min if min is not None else current.minute
+    s_hour = hour if hour is not None else current.hour
+    s_day = day if day is not None else current.day
+    s_month = month if month is not None else current.month
+    s_year = year if year is not None else current.year
+    projected = datetime(s_year, s_month, s_day, s_hour, s_min, s_sec)
+
+    if projected <= current:
+        # We increase one unit of time depending on parameters
+        days_in_month = monthrange(s_year, s_month)[1]
+        days_in_year = sum(monthrange(s_year, m + 1)[1] for m in range(12))
+        if month is not None:
+            projected += timedelta(days=days_in_year)
+        elif day is not None:
+            projected += timedelta(days=days_in_month)
+        elif hour is not None:
+            projected += timedelta(days=1)
+        elif min is not None:
+            projected += timedelta(seconds=3600)
+        else:
+            projected += timedelta(seconds=60)
+
+    # Get the number of gametime seconds between these two dates
+    seconds = (projected - current).total_seconds()
+    return seconds / TIMEFACTOR
+
+def schedule(callback, repeat=False, sec=None, min=None, hour=None,
+        day=None, month=None, year=None):
+    """
+    Call a callback at a given in-game time.
+
+    Args:
+        callback (function): The callback function that will be called. Note
+            that the callback must be a module-level function, since the script will
+            be persistent.
+        repeat (bool, optional): Defines if the callback should be called regularly
+            at the specified time.
+        sec (int or None): Number of absolute game seconds at which to run repeat.
+        min (int or None): Number of absolute minutes.
+        hour (int or None): Number of absolute hours.
+        day (int or None): Number of absolute days.
+        month (int or None): Number of absolute months.
+        year (int or None): Number of absolute years.
+
+    Returns:
+        script (Script): The created Script handling the sceduling.
+
+    Examples:
+        schedule(func, min=5, sec=0) # Will call 5 minutes past the next (in-game) hour.
+        schedule(func, hour=2, min=30, sec=0) # Will call the next (in-game) day at 02:30.
+    """
+    seconds = real_seconds_until(sec=sec, min=min, hour=hour, day=day,
+            month=month, year=year)
+    script = create_script("evennia.utils.gametime.TimeScript",
+            key="TimeScript", desc="A gametime-sensitive script",
+            interval=seconds, start_delay=True,
+            repeats=-1 if repeat else 1)
+    script.db.callback = callback
+    script.db.gametime = {
+            "sec": sec,
+            "min": min,
+            "hour": hour,
+            "day": day,
+            "month": month,
+            "year": year,
+    }
+    return script
 
 def reset_gametime():
     """
-    Resets the game time to make it start from the current time.
+    Resets the game time to make it start from the current time. Note that
+    the epoch set by `settings.TIME_GAME_EPOCH` will still apply.
 
     """
     global GAME_TIME_OFFSET
     GAME_TIME_OFFSET = runtime()
     ServerConfig.objects.conf("gametime_offset", GAME_TIME_OFFSET)
 
-
-# Conversion functions
-
-
-def gametime_to_realtime(secs=0, mins=0, hrs=0, days=0,
-                         weeks=0, months=0, yrs=0, format=False):
-    """
-    This method helps to figure out the real-world time it will take until an
-    in-game time has passed. E.g. if an event should take place a month later
-    in-game, you will be able to find the number of real-world seconds this
-    corresponds to (hint: Interval events deal with real life seconds).
-
-    Kwargs:
-        times (int): The various components of the time.
-        format (bool): Formatting the output.
-
-    Returns:
-        time (float or tuple): The realtime difference or the same
-            time split up into time units.
-
-    Example:
-         gametime_to_realtime(days=2) -> number of seconds in real life from
-                        now after which 2 in-game days will have passed.
-
-    """
-    rtime = (secs + mins * MIN + hrs * HOUR + days * DAY + weeks * WEEK + \
-                months * MONTH + yrs * YEAR) / TIMEFACTOR
-    if format:
-        return _format(rtime, 31536000, 2628000, 604800, 86400, 3600, 60)
-    return rtime
-
-
-def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0,
-                         weeks=0, months=0, yrs=0, format=False):
-    """
-    This method calculates how much in-game time a real-world time
-    interval would correspond to. This is usually a lot less
-    interesting than the other way around.
-
-    Kwargs:
-        times (int): The various components of the time.
-        format (bool): Formatting the output.
-
-    Returns:
-        time (float or tuple): The gametime difference or the same
-            time split up into time units.
-
-     Example:
-      realtime_to_gametime(days=2) -> number of game-world seconds
-                                      corresponding to 2 real days.
-
-    """
-    gtime = TIMEFACTOR * (secs + mins * 60 + hrs * 3600 + days * 86400 +
-                             weeks * 604800 + months * 2628000 + yrs * 31536000)
-    if format:
-        return _format(gtime, YEAR, MONTH, WEEK, DAY, HOUR, MIN)
-    return gtime
 

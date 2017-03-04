@@ -31,11 +31,15 @@ and initialize it:
    no automatic quit messages will be given.
  - key is an optional identifier for the editing session, to be
    displayed in the editor.
--  persistent means the editor state will be saved to the database making it
+ - persistent means the editor state will be saved to the database making it
    survive a server reload. Note that using this mode, the load- save-
    and quit-funcs must all be possible to pickle - notable unusable
    callables are class methods and functions defined inside other
    functions. With persistent=False, no such restriction exists.
+ - code set to True activates features on the EvEditor to enter Python code.
+
+In addition, the EvEditor can be used to enter Python source code,
+and offers basic handling of indentation.
 
 """
 from builtins import object
@@ -56,14 +60,13 @@ _RE_GROUP = re.compile(r"\".*?\"|\'.*?\'|\S*")
 # use NAWS in the future?
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # texts
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
-_HELP_TEXT = \
-"""
+_HELP_TEXT = """
  <txt>  - any non-command is appended to the end of the buffer.
  :  <l> - view buffer or only line(s) <l>
  :: <l> - raw-view buffer or only line(s) <l>
@@ -99,22 +102,29 @@ _HELP_TEXT = \
  :fd <l>    - de-indent entire buffer or line <l>
 
  :echo - turn echoing of the input on/off (helpful for some clients)
+"""
 
+_HELP_LEGEND = """
     Legend:
     <l>   - line number, like '5' or range, like '3:7'.
     <w>   - a single word, or multiple words with quotes around them.
     <txt> - longer string, usually not needing quotes.
 """
 
-_ERROR_LOADFUNC = \
-"""
+_HELP_CODE = """
+ :!    - Execute code buffer without saving
+ :<    - Decrease the level of automatic indentation for the next lines
+ :>    - Increase the level of automatic indentation for the next lines
+ :=    - Switch automatic indentation on/off
+""".lstrip("\n")
+
+_ERROR_LOADFUNC = """
 {error}
 
 |rBuffer load function error. Could not load initial data.|n
 """
 
-_ERROR_SAVEFUNC = \
-"""
+_ERROR_SAVEFUNC = """
 {error}
 
 |rSave function returned an error. Buffer not saved.|n
@@ -125,15 +135,13 @@ _ERROR_NO_SAVEFUNC = "|rNo save function defined. Buffer cannot be saved.|n"
 _MSG_SAVE_NO_CHANGE = "No changes need saving"
 _DEFAULT_NO_QUITFUNC = "Exited editor."
 
-_ERROR_QUITFUNC = \
-"""
+_ERROR_QUITFUNC = """
 {error}
 
 |rQuit function gave an error. Skipping.|n
 """
 
-_ERROR_PERSISTENT_SAVING = \
-"""
+_ERROR_PERSISTENT_SAVING = """
 {error}
 
 |rThe editor state could not be saved for persistent mode. Switching
@@ -142,9 +150,9 @@ an eventual server reload - so save often!)|n
 """
 
 _TRACE_PERSISTENT_SAVING = \
-"EvEditor persistent-mode error. Commonly, this is because one or " \
-"more of the EvEditor callbacks could not be pickled, for example " \
-"because it's a class method or is defined inside another function."
+    "EvEditor persistent-mode error. Commonly, this is because one or " \
+    "more of the EvEditor callbacks could not be pickled, for example " \
+    "because it's a class method or is defined inside another function."
 
 
 _MSG_NO_UNDO = "Nothing to undo."
@@ -152,11 +160,12 @@ _MSG_NO_REDO = "Nothing to redo."
 _MSG_UNDO = "Undid one step."
 _MSG_REDO = "Redid one step."
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Handle yes/no quit question
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
+
 
 class CmdSaveYesNo(Command):
     """
@@ -170,7 +179,7 @@ class CmdSaveYesNo(Command):
     help_cateogory = "LineEditor"
 
     def func(self):
-        "Implement the yes/no choice."
+        """Implement the yes/no choice."""
         # this is only called from inside the lineeditor
         # so caller.ndb._lineditor must be set.
 
@@ -185,21 +194,21 @@ class CmdSaveYesNo(Command):
 
 
 class SaveYesNoCmdSet(CmdSet):
-    "Stores the yesno question"
+    """Stores the yesno question"""
     key = "quitsave_yesno"
     priority = 1
     mergetype = "Replace"
 
     def at_cmdset_creation(self):
-        "at cmdset creation"
+        """at cmdset creation"""
         self.add(CmdSaveYesNo())
 
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Editor commands
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
 
 class CmdEditorBase(Command):
     """
@@ -208,7 +217,6 @@ class CmdEditorBase(Command):
     locks = "cmd:all()"
     help_entry = "LineEditor"
 
-    code = None
     editor = None
 
     def parse(self):
@@ -225,7 +233,6 @@ class CmdEditorBase(Command):
             txt - extra text (string), could be encased in quotes.
         """
 
-        linebuffer = []
         editor = self.caller.ndb._eveditor
         if not editor:
             # this will completely replace the editor
@@ -283,11 +290,7 @@ class CmdEditorBase(Command):
             arglist = arglist[1:]
 
         # nicer output formatting of the line range.
-        lstr = ""
-        if not linerange or lstart + 1 == lend:
-            lstr = "line %i" % (lstart + 1)
-        else:
-            lstr = "lines %i-%i" % (lstart + 1, lend)
+        lstr = "line %i" % (lstart + 1) if not linerange or lstart + 1 == lend else "lines %i-%i" % (lstart + 1, lend)
 
         # arg1 and arg2 is whatever arguments. Line numbers or -ranges are
         # never included here.
@@ -321,6 +324,7 @@ def _load_editor(caller):
     saved_options = caller.attributes.get("_eveditor_saved")
     saved_buffer, saved_undo = caller.attributes.get("_eveditor_buffer_temp", (None, None))
     unsaved = caller.attributes.get("_eveditor_unsaved", False)
+    indent = caller.attributes.get("_eveditor_indent", 0)
     if saved_options:
         eveditor = EvEditor(caller, **saved_options[0])
         if saved_buffer:
@@ -330,6 +334,7 @@ def _load_editor(caller):
             setattr(eveditor, "_undo_buffer", saved_undo)
             setattr(eveditor, "_undo_pos", len(saved_undo) - 1)
             setattr(eveditor, "_unsaved", unsaved)
+            setattr(eveditor, "_indent", indent)
         for key, value in saved_options[1].iteritems():
             setattr(eveditor, key, value)
     else:
@@ -347,22 +352,34 @@ class CmdLineInput(CmdEditorBase):
     def func(self):
         """
         Adds the line without any formatting changes.
+
+        If the editor handles code, it might add automatic
+        indentation.
         """
         caller = self.caller
         editor = caller.ndb._eveditor
-
         buf = editor.get_buffer()
 
         # add a line of text to buffer
-        if not buf:
-            buf = self.args
-        else:
-            buf = buf + "\n%s" % self.args
+        line = self.raw_string.strip("\r\n")
+        if editor._codefunc and editor._indent >= 0:
+            # if automatic indentation is active, add spaces
+            line = editor.deduce_indent(line, buf)
+        buf = line if not buf else buf + "\n%s" % line
         self.editor.update_buffer(buf)
         if self.editor._echo_mode:
             # need to do it here or we will be off one line
             cline = len(self.editor.get_buffer().split('\n'))
-            self.caller.msg("{b%02i|{n %s" % (cline, self.args))
+            if editor._codefunc:
+                # display the current level of identation
+                indent = editor._indent
+                if indent < 0:
+                    indent = "off"
+
+                self.caller.msg("|b%02i|||n (|g%s|n) %s" % (
+                        cline, indent, line))
+            else:
+                self.caller.msg("|b%02i|||n %s" % (cline, self.args))
 
 
 class CmdEditorGroup(CmdEditorBase):
@@ -370,9 +387,10 @@ class CmdEditorGroup(CmdEditorBase):
     Commands for the editor
     """
     key = ":editor_command_group"
-    aliases = [":","::", ":::", ":h", ":w", ":wq", ":q", ":q!", ":u", ":uu", ":UU",
+    aliases = [":", "::", ":::", ":h", ":w", ":wq", ":q", ":q!", ":u", ":uu", ":UU",
                ":dd", ":dw", ":DD", ":y", ":x", ":p", ":i", ":j",
-               ":r", ":I", ":A", ":s", ":S", ":f", ":fi", ":fd", ":echo"]
+               ":r", ":I", ":A", ":s", ":S", ":f", ":fi", ":fd", ":echo",
+               ":!", ":<", ":>", ":="]
     arg_regex = r"\s.*?|$"
 
     def func(self):
@@ -402,9 +420,9 @@ class CmdEditorGroup(CmdEditorBase):
                 buf = linebuffer[lstart:lend]
                 editor.display_buffer(buf=buf,
                                       offset=lstart,
-                                      linenums=False, options={"raw":True})
+                                      linenums=False, options={"raw": True})
             else:
-                editor.display_buffer(linenums=False, options={"raw":True})
+                editor.display_buffer(linenums=False, options={"raw": True})
         elif cmd == ":::":
             # Insert single colon alone on a line
             editor.update_buffer(editor.buffer + "\n:")
@@ -444,7 +462,7 @@ class CmdEditorGroup(CmdEditorBase):
             # :dd <l> - delete line <l>
             buf = linebuffer[:lstart] + linebuffer[lend:]
             editor.update_buffer(buf)
-            caller.msg("Deleted %s." % (self.lstr))
+            caller.msg("Deleted %s." % self.lstr)
         elif cmd == ":dw":
             # :dw <w> - delete word in entire buffer
             # :dw <l> <w> delete word only on line(s) <l>
@@ -464,6 +482,13 @@ class CmdEditorGroup(CmdEditorBase):
         elif cmd == ":DD":
             # clear buffer
             editor.update_buffer("")
+
+            # Reset indentation level to 0
+            if editor._codefunc:
+                if editor._indent >= 0:
+                    editor._indent = 0
+                    if editor._persistent:
+                        caller.attributes.add("_eveditor_indent", 0)
             caller.msg("Cleared %i lines from buffer." % self.nlines)
         elif cmd == ":y":
             # :y <l> - yank line(s) to copy buffer
@@ -505,10 +530,11 @@ class CmdEditorGroup(CmdEditorBase):
                 caller.msg("Replaced %i line(s) at %s." % (len(new_lines), self.lstr))
         elif cmd == ":I":
             # :I <l> <txt> - insert text at beginning of line(s) <l>
-            if not self.args:
+            if not self.raw_string and not editor._codefunc:
                 caller.msg("You need to enter text to insert.")
             else:
-                buf = linebuffer[:lstart] + ["%s%s" % (self.args, line) for line in linebuffer[lstart:lend]] + linebuffer[lend:]
+                buf = linebuffer[:lstart] + ["%s%s" % (self.args, line)
+                                             for line in linebuffer[lstart:lend]] + linebuffer[lend:]
                 editor.update_buffer(buf)
                 caller.msg("Inserted text at beginning of %s." % self.lstr)
         elif cmd == ":A":
@@ -516,7 +542,8 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.args:
                 caller.msg("You need to enter text to append.")
             else:
-                buf = linebuffer[:lstart] + ["%s%s" % (line, self.args) for line in linebuffer[lstart:lend]] + linebuffer[lend:]
+                buf = linebuffer[:lstart] + ["%s%s" % (line, self.args)
+                                             for line in linebuffer[lstart:lend]] + linebuffer[lend:]
                 editor.update_buffer(buf)
                 caller.msg("Appended text to end of %s." % self.lstr)
         elif cmd == ":s":
@@ -528,7 +555,7 @@ class CmdEditorGroup(CmdEditorBase):
                 if not self.linerange:
                     lstart = 0
                     lend = self.cline + 1
-                    caller.msg("Search-replaced %s -> %s for lines %i-%i." % (self.arg1, self.arg2, lstart + 1 , lend))
+                    caller.msg("Search-replaced %s -> %s for lines %i-%i." % (self.arg1, self.arg2, lstart + 1, lend))
                 else:
                     caller.msg("Search-replaced %s -> %s for %s." % (self.arg1, self.arg2, self.lstr))
                 sarea = "\n".join(linebuffer[lstart:lend])
@@ -537,7 +564,8 @@ class CmdEditorGroup(CmdEditorBase):
                 regarg = self.arg1.strip("\'").strip('\"')
                 if " " in regarg:
                     regarg = regarg.replace(" ", " +")
-                sarea = re.sub(regex % (regarg, regarg, regarg, regarg, regarg), self.arg2.strip("\'").strip('\"'), sarea, re.MULTILINE)
+                sarea = re.sub(regex % (regarg, regarg, regarg, regarg, regarg), self.arg2.strip("\'").strip('\"'),
+                               sarea, re.MULTILINE)
                 buf = linebuffer[:lstart] + sarea.split("\n") + linebuffer[lend:]
                 editor.update_buffer(buf)
         elif cmd == ":f":
@@ -546,7 +574,7 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                caller.msg("Flood filled lines %i-%i." % (lstart + 1 , lend))
+                caller.msg("Flood filled lines %i-%i." % (lstart + 1, lend))
             else:
                 caller.msg("Flood filled %s." % self.lstr)
             fbuf = "\n".join(linebuffer[lstart:lend])
@@ -557,7 +585,7 @@ class CmdEditorGroup(CmdEditorBase):
             # :f <l> <w>  justify buffer of <l> with <w> as align (one of
             # f(ull), c(enter), r(ight) or l(left). Default is full.
             align_map = {"full": "f", "f": "f", "center": "c", "c": "c",
-                           "right": "r", "r": "r", "left": "l", "l": "l"}
+                         "right": "r", "r": "r", "left": "l", "l": "l"}
             align_name = {"f": "Full", "c": "Center", "l": "Left", "r": "Right"}
             width = _DEFAULT_WIDTH
             if self.arg1 and self.arg1.lower() not in align_map:
@@ -580,7 +608,7 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                caller.msg("Indented lines %i-%i." % (lstart + 1 , lend))
+                caller.msg("Indented lines %i-%i." % (lstart + 1, lend))
             else:
                 caller.msg("Indented %s." % self.lstr)
             fbuf = [indent + line for line in linebuffer[lstart:lend]]
@@ -591,7 +619,7 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                caller.msg("Removed left margin (dedented) lines %i-%i." % (lstart + 1 , lend))
+                caller.msg("Removed left margin (dedented) lines %i-%i." % (lstart + 1, lend))
             else:
                 caller.msg("Removed left margin (dedented) %s." % self.lstr)
             fbuf = "\n".join(linebuffer[lstart:lend])
@@ -602,21 +630,63 @@ class CmdEditorGroup(CmdEditorBase):
             # set echoing on/off
             editor._echo_mode = not editor._echo_mode
             caller.msg("Echo mode set to %s" % editor._echo_mode)
+        elif cmd == ":!":
+            if editor._codefunc:
+                editor._codefunc(caller, editor._buffer)
+            else:
+                caller.msg("This command is only available in code editor mode.")
+        elif cmd == ":<":
+            # :<
+            if editor._codefunc:
+                editor.decrease_indent()
+                indent = editor._indent
+                if indent >= 0:
+                    caller.msg("Decreased indentation: new indentation is {}.".format(
+                            indent))
+                else:
+                    caller.msg("|rManual indentation is OFF.|n Use := to turn it on.")
+            else:
+                caller.msg("This command is only available in code editor mode.")
+        elif cmd == ":>":
+            # :>
+            if editor._codefunc:
+                editor.increase_indent()
+                indent = editor._indent
+                if indent >= 0:
+                    caller.msg("Increased indentation: new indentation is {}.".format(
+                            indent))
+                else:
+                    caller.msg("|rManual indentation is OFF.|n Use := to turn it on.")
+            else:
+                caller.msg("This command is only available in code editor mode.")
+        elif cmd == ":=":
+            # :=
+            if editor._codefunc:
+                editor.swap_autoindent()
+                indent = editor._indent
+                if indent >= 0:
+                    caller.msg("Auto-indentation turned on.")
+                else:
+                    caller.msg("Auto-indentation turned off.")
+            else:
+                caller.msg("This command is only available in code editor mode.")
 
 
 class EvEditorCmdSet(CmdSet):
-    "CmdSet for the editor commands"
+    """CmdSet for the editor commands"""
     key = "editorcmdset"
     mergetype = "Replace"
+
     def at_cmdset_creation(self):
         self.add(CmdLineInput())
         self.add(CmdEditorGroup())
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # Main Editor object
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
+
 
 class EvEditor(object):
     """
@@ -627,7 +697,7 @@ class EvEditor(object):
     """
 
     def __init__(self, caller, loadfunc=None, savefunc=None,
-                 quitfunc=None, key="", persistent=False):
+                 quitfunc=None, key="", persistent=False, codefunc=False):
         """
         Launches a full in-game line editor, mimicking the functionality of VIM.
 
@@ -651,6 +721,8 @@ class EvEditor(object):
                 session and make it unique from other editing sessions.
             persistent (bool, optional): Make the editor survive a reboot. Note
                 that if this is set, all callables must be possible to pickle
+            codefunc (bool, optional): If given, will run the editor in code mode.
+                This will be called as `codefunc(caller, buf)`.
 
         Notes:
             In persistent mode, all the input callables (savefunc etc)
@@ -668,6 +740,7 @@ class EvEditor(object):
         self._buffer = ""
         self._unsaved = False
         self._persistent = persistent
+        self._indent = 0
 
         if loadfunc:
             self._loadfunc = loadfunc
@@ -682,6 +755,7 @@ class EvEditor(object):
             self._quitfunc = quitfunc
         else:
             self._quitfunc = lambda caller: caller.msg(_DEFAULT_NO_QUITFUNC)
+        self._codefunc = codefunc
 
         # store the original version
         self._pristine_buffer = self._buffer
@@ -698,13 +772,13 @@ class EvEditor(object):
         if persistent:
             # save in tuple {kwargs, other options}
             try:
-                caller.attributes.add("_eveditor_saved",(
-                        {"loadfunc":loadfunc, "savefunc": savefunc,
-                         "quitfunc": quitfunc, "key": key, "persistent": persistent},
-                        {"_pristine_buffer": self._pristine_buffer,
-                         "_sep": self._sep}))
+                caller.attributes.add("_eveditor_saved", (
+                    dict(loadfunc=loadfunc, savefunc=savefunc, quitfunc=quitfunc,
+                         codefunc=codefunc, key=key, persistent=persistent),
+                    dict(_pristine_buffer=self._pristine_buffer, _sep=self._sep)))
                 caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
                 caller.attributes.add("_eveditor_unsaved", False)
+                caller.attributes.add("_eveditor_indent", 0)
             except Exception, err:
                 caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
                 logger.log_trace(_TRACE_PERSISTENT_SAVING)
@@ -760,6 +834,7 @@ class EvEditor(object):
             if self._persistent:
                 self._caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
                 self._caller.attributes.add("_eveditor_unsaved", True)
+                self._caller.attributes.add("_eveditor_indent", self._indent)
 
     def quit(self):
         """
@@ -774,6 +849,7 @@ class EvEditor(object):
         self._caller.attributes.remove("_eveditor_buffer_temp")
         self._caller.attributes.remove("_eveditor_saved")
         self._caller.attributes.remove("_eveditor_unsaved")
+        self._caller.attributes.remove("_eveditor_indent")
         self._caller.cmdset.remove(EvEditorCmdSet)
 
     def save_buffer(self):
@@ -781,7 +857,9 @@ class EvEditor(object):
         Saves the content of the buffer.
 
         """
-        if self._unsaved:
+        if self._unsaved or self._codefunc:
+            # always save code - this allows us to tie execution to
+            # saving if we want.
             try:
                 if self._savefunc(self._caller, self._buffer):
                     # Save codes should return a true value to indicate
@@ -825,7 +903,7 @@ class EvEditor(object):
             self._undo_buffer = self._undo_buffer[:self._undo_pos + 1] + [self._buffer]
             self._undo_pos = len(self._undo_buffer) - 1
 
-    def display_buffer(self, buf=None, offset=0, linenums=True, options={"raw":False}):
+    def display_buffer(self, buf=None, offset=0, linenums=True, options={"raw": False}):
         """
         This displays the line editor buffer, or selected parts of it.
 
@@ -835,7 +913,7 @@ class EvEditor(object):
                 `offset` should define the actual starting line number, to
                 get the linenum display right.
             linenums (bool, optional): Show line numbers in buffer.
-            raw (bool, optional): Tell protocol to not parse
+            options: raw (bool, optional): Tell protocol to not parse
                 formatting information.
 
         """
@@ -851,10 +929,10 @@ class EvEditor(object):
 
         sep = self._sep
         header = "|n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH-20-len(self._key))
-        footer = "|n" + sep * 10 + "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) \
-                    + sep * 12 + "(:h for help)" + sep * 28
+        footer = "|n" + sep * 10 +\
+                 "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) + sep * 12 + "(:h for help)" + sep * 28
         if linenums:
-            main = "\n".join("{b%02i|{n %s" % (iline + 1 + offset, line) for iline, line in enumerate(lines))
+            main = "\n".join("|b%02i|||n %s" % (iline + 1 + offset, line) for iline, line in enumerate(lines))
         else:
             main = "\n".join(lines)
         string = "%s\n%s\n%s" % (header, main, footer)
@@ -865,5 +943,69 @@ class EvEditor(object):
         Shows the help entry for the editor.
 
         """
-        string = self._sep * _DEFAULT_WIDTH + _HELP_TEXT + self._sep * _DEFAULT_WIDTH
+        string = self._sep * _DEFAULT_WIDTH + _HELP_TEXT
+        if self._codefunc:
+            string += _HELP_CODE
+        string += _HELP_LEGEND + self._sep * _DEFAULT_WIDTH
         self._caller.msg(string)
+
+    def deduce_indent(self, line, buffer):
+        """
+        Try to deduce the level of indentation of the given line.
+
+        """
+        keywords = {
+                "elif ": ["if "],
+                "else:": ["if ", "try"],
+                "except": ["try:"],
+                "finally:": ["try:"],
+        }
+        opening_tags = ("if ", "try:", "for ", "while ")
+
+        # If the line begins by one of the given keywords
+        indent = self._indent
+        if any(line.startswith(kw) for kw in keywords.keys()):
+            # Get the keyword and matching begin tags
+            keyword = [kw for kw in keywords if line.startswith(kw)][0]
+            begin_tags = keywords[keyword]
+            for oline in reversed(buffer.splitlines()):
+                if any(oline.lstrip(" ").startswith(tag) for tag in begin_tags):
+                    # This line begins with a begin tag, takes the identation
+                    indent = (len(oline) - len(oline.lstrip(" "))) / 4
+                    break
+
+            self._indent = indent + 1
+            if self._persistent:
+                self._caller.attributes.add("_eveditor_indent", self._indent)
+        elif any(line.startswith(kw) for kw in opening_tags):
+            self._indent = indent + 1
+            if self._persistent:
+                self._caller.attributes.add("_eveditor_indent", self._indent)
+
+        line = " " * 4 * indent + line
+        return line
+
+    def decrease_indent(self):
+        """Decrease automatic indentation by 1 level."""
+        if self._codefunc and self._indent > 0:
+            self._indent -= 1
+            if self._persistent:
+                self._caller.attributes.add("_eveditor_indent", self._indent)
+
+    def increase_indent(self):
+        """Increase automatic indentation by 1 level."""
+        if self._codefunc and self._indent >= 0:
+            self._indent += 1
+            if self._persistent:
+                self._caller.attributes.add("_eveditor_indent", self._indent)
+
+    def swap_autoindent(self):
+        """Swap automatic indentation on or off."""
+        if self._codefunc:
+            if self._indent >= 0:
+                self._indent = -1
+            else:
+                self._indent = 0
+
+            if self._persistent:
+                self._caller.attributes.add("_eveditor_indent", self._indent)
