@@ -193,7 +193,7 @@ class CmdYell(Command):
         # Yell in this room
         location.msg_contents("{char} yells: {msg}.",
                 mapping=dict(char=character, msg=message))
-'''
+```
 
 Note that the `call` function takes as argument:
 
