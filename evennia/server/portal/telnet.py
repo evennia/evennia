@@ -189,7 +189,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             # legacy clients. There should never be a reason to send a
             # lone NULL character so this seems to be a safe thing to
             # support for backwards compatibility. It also stops the
-            # NULL from continously popping up as an unknown command.
+            # NULL from continuously popping up as an unknown command.
             data = [_IDLE_COMMAND]
         else:
             data = _RE_LINEBREAK.split(data)
