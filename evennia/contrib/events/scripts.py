@@ -12,3 +12,7 @@ class EventHandler(DefaultScript):
         self.key = "event_handler"
         self.desc = "Global event handler"
         self.persistent = True
+
+        # Permanent data to be stored
+        self.db.event_types = {}
+        self.db.events = {}

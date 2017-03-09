@@ -122,7 +122,7 @@ This section will explain how to add new helper functions and events.
 
 Default events are great but you may need more events to fit with your purposes.  For instance, if you have a `yell` command and would like a `can_yell` event in all your rooms.
 
-The way to do this is to add, below your class definition, lines to add these events.  The `create_event` function should be called.  It takes the following arguments:
+The way to do this is to add, below your class definition, lines to add these events.  The `create_event_type` function should be called.  It takes the following arguments:
 
 - The class to have these events (defined above).
 - The name of the event to add (str).
@@ -134,7 +134,7 @@ Here's an example of adding the `can_yell` event to all your rooms:
 ```python
 # In typeclasses/rooms.py
 from evennia import DefaultRoom
-from evennia.contrib.events.extend import create_event
+from evennia.contrib.events.extend import create_event_type
 
 class Room(DefaultRoom):
     """
@@ -149,7 +149,7 @@ class Room(DefaultRoom):
     pass
 
 # Room events
-create_event(Room, "can_yell", ["character", "room", "message"], """
+create_event_type(Room, "can_yell", ["character", "room", "message"], """
         Can the character yell in this room?
         This event is called when a character uses the 'yell' command
         to yell in this room.  This event is called BEFORE the character
