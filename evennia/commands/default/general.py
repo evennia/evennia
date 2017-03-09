@@ -417,7 +417,8 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
 
         # Build the string to emit to neighbors.
         emit_string = '%s says, "%s|n"' % (caller.name, speech)
-        caller.location.msg_contents(emit_string, exclude=caller, from_obj=caller, type="say")
+        caller.location.msg_contents(emit_string, exclude=caller,
+                                     from_obj=caller, options={"type": "say"})
 
 
 class CmdWhisper(COMMAND_DEFAULT_CLASS):
@@ -459,7 +460,7 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
 
         # Build the string to emit to receiver.
         emit_string = '%s whispers, "%s|n"' % (caller.name, speech)
-        receiver.msg(emit_string, from_obj=caller, type="whisper")
+        receiver.msg(emit_string, from_obj=caller, options={"type": "whisper"})
 
 
 class CmdPose(COMMAND_DEFAULT_CLASS):
@@ -502,7 +503,8 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
             self.caller.msg(msg)
         else:
             msg = "%s%s" % (self.caller.name, self.args)
-            self.caller.location.msg_contents(msg, from_obj=self.caller, type="pose")
+            self.caller.location.msg_contents(msg, from_obj=self.caller,
+                                              options={"type": "pose"})
 
 
 class CmdAccess(COMMAND_DEFAULT_CLASS):
