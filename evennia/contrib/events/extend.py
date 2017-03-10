@@ -9,6 +9,8 @@ and are designed to be used more by developers to add event types.
 from evennia import logger
 from evennia import ScriptDB
 
+hooks = []
+
 def create_event_type(typeclass, event_name, variables, help_text):
     """
     Create a new event type for a specific typeclass.
@@ -37,9 +39,9 @@ def create_event_type(typeclass, event_name, variables, help_text):
         return
 
     # Get the event types for this typeclass
-    event_types = script.db.event_types.get(typeclass_name, {})
-    if not event_types:
-        script.db.event_types[typeclass_name] = event_types
+    if typeclass_name not in script.db.event_types:
+        script.db.event_types[typeclass_name] = {}
+    event_types = script.db.event_types[typeclass_name]
 
     # Add or replace the event
     event_types[event_name] = (variables, help_text)
@@ -70,3 +72,33 @@ def del_event_type(typeclass, event_name):
     event_types = script.db.event_types.get(typeclass_name, {})
     if event_name in event_types:
         del event_types[event_name]
+
+def patch_hook(typeclass, method_name):
+    """Decorator to softly patch a hook in a typeclass."""
+    hook = getattr(typeclass, method_name)
+    def wrapper(method):
+        """Wrapper around the hook."""
+        def overridden_hook(*args, **kwargs):
+            """Function to call the new hook."""
+            # Enforce the old hook as a keyword argument
+            kwargs["hook"] = hook
+            ret = method(*args, **kwargs)
+            return ret
+        hooks.append((typeclass, method_name, overridden_hook))
+        return overridden_hook
+    return wrapper
+
+def patch_hooks():
+    """
+    Patch all the configured hooks.
+
+    This function should be called only once when the event system
+    has loaded, is set and has defined its patched typeclasses.
+    It will be called internally by the event system, you shouldn't
+    call this function in your game.
+
+    """
+    while hooks:
+        typeclass, method_name, new_hook = hooks[0]
+        setattr(typeclass, method_name, new_hook)
+        del hooks[0]
