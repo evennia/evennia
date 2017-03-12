@@ -18,7 +18,7 @@ from evennia.utils import logger, utils, ansi
 
 IRC_BOLD = "\002"
 IRC_COLOR = "\003"
-IRC_RESET = "\017"
+IRC_RESET = "\015"
 IRC_ITALIC = "\026"
 IRC_NORMAL = "99"
 IRC_UNDERLINE = "37"
