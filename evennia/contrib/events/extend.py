@@ -11,6 +11,16 @@ from evennia import ScriptDB
 
 hooks = []
 
+def get_event_handler():
+    """Return the event handler or None."""
+    try:
+        script = ScriptDB.objects.get(db_key="event_handler")
+    except ScriptDB.DoesNotExist:
+        logger.log_err("Can't get the event handler.")
+        script = None
+
+    return script
+
 def create_event_type(typeclass, event_name, variables, help_text):
     """
     Create a new event type for a specific typeclass.

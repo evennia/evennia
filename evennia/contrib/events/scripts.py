@@ -27,6 +27,39 @@ class EventHandler(DefaultScript):
         """Set up the event system."""
         patch_hooks()
 
+    def get_events(self, obj):
+        """
+        Return a dictionary of the object's events.
+
+        Args:
+            obj (Object): the connected objects.
+
+        """
+        return self.db.events.get(obj, {})
+
+    def get_event_types(self, obj):
+        """
+        Return a dictionary of event types on this object.
+
+        Args:
+            obj (Object): the connected object.
+
+        """
+        types = {}
+        event_types = self.db.event_types
+        classes = Queue()
+        classes.put(type(obj))
+        while not classes.empty():
+            typeclass = classes.get()
+            typeclass_name = typeclass.__module__ + "." + typeclass.__name__
+            types.update(event_types.get(typeclass_name, {}))
+
+            # Look for the parent classes
+            for parent in typeclass.__bases__:
+                classes.put(parent)
+
+        return types
+
     def add_event(self, obj, event_name, code, author=None, valid=True):
         """
         Add the specified event.
@@ -75,22 +108,7 @@ class EventHandler(DefaultScript):
         """
         # First, look for the event type corresponding to this name
         # To do so, go back the inheritance tree
-        event_type = None
-        event_types = self.db.event_types
-        classes = Queue()
-        classes.put(type(obj))
-        while not classes.empty():
-            typeclass = classes.get()
-            typeclass_name = typeclass.__module__ + "." + typeclass.__name__
-            event_type = event_types.get(typeclass_name, {}).get(event_name)
-            if event_type:
-                break
-            else:
-                # Look for the parent classes
-                for parent in typeclass.__bases__:
-                    classes.put(parent)
-
-        # If there is still no event_type
+        event_type = self.get_event_types(obj).get(event_name)
         if not event_type:
             logger.log_err("The event {} for the object {} (typeclass " \
                     "{}) can't be found".format(event_name, obj, type(obj)))
