@@ -123,6 +123,9 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         lock = "perm({}) or perm(events_validating)".format(VALIDATING)
         validator = caller.locks.check_lockstring(caller, lock)
+        lock = "perm({}) or perm(events_without_validation)".format(
+            WITHOUT_VALIDATION)
+        autovalid = caller.locks.check_lockstring(caller, lock)
 
         # First and foremost, get the event handler and set other variables
         self.handler = get_event_handler()
@@ -131,6 +134,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         self.event_name, sep, self.parameters = rhs.partition(" ")
         self.event_name = self.event_name.lower()
         self.is_validator = validator
+        self.autovalid = autovalid
         if self.handler is None:
             caller.msg("The event handler is not running, can't " \
                     "access the event system.")
@@ -210,23 +214,23 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
 
                 row = [str(i + 1), author, updated_on]
                 if self.is_validator:
-                    row.append("Yes" if event.get("valid") else "no")
+                    row.append("Yes" if event.get("valid") else "No")
                 table.add_row(*row)
 
             table.reformat_column(0, align="r")
             self.msg(table)
         else:
-            table = EvTable("Event name", "Number", "Lines", "Description",
+            table = EvTable("Event name", "Number", "Description",
                     width=78)
             for name, infos in sorted(types.items()):
                 number = len(events.get(name, []))
                 lines = sum(len(e["code"].splitlines()) for e in \
                         events.get(name, []))
+                no = "{} ({})".format(number, lines)
                 description = infos[1].splitlines()[0]
-                table.add_row(name, number, lines, description)
+                table.add_row(name, no, description)
 
-            table.reformat_column(1, align="r")
-            table.reformat_column(2, align="r")
+            table.reformat_column(1, width=10, align="r")
             self.msg(table)
 
     def add_event(self):
@@ -261,22 +265,43 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         events = self.handler.get_events(obj)
         types = self.handler.get_event_types(obj)
 
+        # If no event name is specified, display the list of events
+        if not event_name:
+            self.list_events()
+            return
+
         # Check that the event exists
         if not event_name in events:
             self.msg("The event name {} can't be found in {}.".format(
                     event_name, obj))
             return
 
-        # Check that the parameter points to an existing event
-        try:
-            parameters = int(parameters) - 1
-            assert parameters >= 0
-            event = events[event_name][parameters]
-        except (AssertionError, ValueError):
-            self.msg("The event {} {} cannot be found in {}.".format(
-                    event_name, parameters, obj))
+        # If there's only one event, just edit it
+        if len(events[event_name]) == 1:
+            event = events[event_name][0]
+        else:
+            if not parameters:
+                self.msg("Which event do you wish to edit?  Specify a number.")
+                self.list_events()
+                return
+
+            # Check that the parameter points to an existing event
+            try:
+                parameters = int(parameters) - 1
+                assert parameters >= 0
+                event = events[event_name][parameters]
+            except (AssertionError, ValueError):
+                self.msg("The event {} {} cannot be found in {}.".format(
+                        event_name, parameters, obj))
+                return
+
+        # If caller can't edit without validation, forbid editing
+        # others' works
+        if not self.autovalid and event["author"] is not self.caller:
+            self.msg("You cannot edit this event created by someone else.")
             return
 
+        # Check the definition of the event
         definition = types[event_name]
         description = definition[1]
         self.msg(description)
