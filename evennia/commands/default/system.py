@@ -607,7 +607,7 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
     help_category = "System"
 
     def func(self):
-        """Show the version"""
+        """Display information about server or target"""
 
         string = """
          |cEvennia|n %s|n
