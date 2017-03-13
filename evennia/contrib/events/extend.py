@@ -10,6 +10,7 @@ from evennia import logger
 from evennia import ScriptDB
 
 hooks = []
+event_types = []
 
 def get_event_handler():
     """Return the event handler or None."""
@@ -41,20 +42,7 @@ def create_event_type(typeclass, event_name, variables, help_text):
 
     """
     typeclass_name = typeclass.__module__ + "." + typeclass.__name__
-    try:
-        script = ScriptDB.objects.get(db_key="event_handler")
-    except ScriptDB.DoesNotExist:
-        logger.log_err("Can't create event {} in typeclass {}, the " \
-                "script handler isn't defined".format(name, typeclass_name))
-        return
-
-    # Get the event types for this typeclass
-    if typeclass_name not in script.db.event_types:
-        script.db.event_types[typeclass_name] = {}
-    event_types = script.db.event_types[typeclass_name]
-
-    # Add or replace the event
-    event_types[event_name] = (variables, help_text)
+    event_types.append((typeclass_name, event_name, variables, help_text))
 
 def del_event_type(typeclass, event_name):
     """
@@ -79,7 +67,7 @@ def del_event_type(typeclass, event_name):
         return
 
     # Get the event types for this typeclass
-    event_types = script.db.event_types.get(typeclass_name, {})
+    event_types = script.ndb.event_types.get(typeclass_name, {})
     if event_name in event_types:
         del event_types[event_name]
 
@@ -112,3 +100,27 @@ def patch_hooks():
         typeclass, method_name, new_hook = hooks[0]
         setattr(typeclass, method_name, new_hook)
         del hooks[0]
+
+def connect_event_types():
+    """
+    Connect the event types when the script runs.
+
+    This method should be called automatically by the event handler
+    (the script).
+
+    """
+    try:
+        script = ScriptDB.objects.get(db_key="event_handler")
+    except ScriptDB.DoesNotExist:
+        logger.log_err("Can't connect event types, the event handler " \
+                "cannot be found.")
+        return
+
+    for typeclass_name, event_name, variables, help_text in event_types:
+        # Get the event types for this typeclass
+        if typeclass_name not in script.ndb.event_types:
+            script.ndb.event_types[typeclass_name] = {}
+        types = script.ndb.event_types[typeclass_name]
+
+        # Add or replace the event
+        types[event_name] = (variables, help_text)

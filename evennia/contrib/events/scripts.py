@@ -8,7 +8,7 @@ from Queue import Queue
 from evennia import DefaultScript
 from evennia import logger
 from evennia.contrib.events.exceptions import InterruptEvent
-from evennia.contrib.events.extend import patch_hooks
+from evennia.contrib.events.extend import connect_event_types, patch_hooks
 from evennia.contrib.events import typeclasses
 from evennia.utils.utils import all_from_module
 
@@ -22,11 +22,12 @@ class EventHandler(DefaultScript):
         self.persistent = True
 
         # Permanent data to be stored
-        self.db.event_types = {}
         self.db.events = {}
 
     def at_start(self):
         """Set up the event system."""
+        self.ndb.event_types = {}
+        connect_event_types()
         patch_hooks()
 
     def get_events(self, obj):
@@ -48,7 +49,7 @@ class EventHandler(DefaultScript):
 
         """
         types = {}
-        event_types = self.db.event_types
+        event_types = self.ndb.event_types
         classes = Queue()
         classes.put(type(obj))
         while not classes.empty():
