@@ -7,8 +7,10 @@ from Queue import Queue
 
 from evennia import DefaultScript
 from evennia import logger
+from evennia.contrib.events.exceptions import InterruptEvent
 from evennia.contrib.events.extend import patch_hooks
 from evennia.contrib.events import typeclasses
+from evennia.utils.utils import all_from_module
 
 class EventHandler(DefaultScript):
 
@@ -60,7 +62,7 @@ class EventHandler(DefaultScript):
 
         return types
 
-    def add_event(self, obj, event_name, code, author=None, valid=True):
+    def add_event(self, obj, event_name, code, author=None, valid=False):
         """
         Add the specified event.
 
@@ -92,6 +94,46 @@ class EventHandler(DefaultScript):
                 "code": code,
         })
 
+        definition = dict(events[-1])
+        definition["obj"] = obj
+        definition["name"] = event_name
+        definition["number"] = len(events) - 1
+        return definition
+
+    def edit_event(self, obj, event_name, number, code, author=None,
+            valid=False):
+        """
+        Edit the specified event.
+
+        Args:
+            obj (Object): the Evennia typeclassed object to be modified.
+            event_name (str): the name of the event to add.
+            number (int): the event number to be changed.
+            code (str): the Python code associated with this event.
+            author (optional, Character, Player): the author of the event.
+            valid (optional, bool): should the event be connected?
+
+        This method doesn't check that the event type exists.
+
+        """
+        obj_events = self.db.events.get(obj, {})
+        if not obj_events:
+            self.db.events[obj] = {}
+            obj_events = self.db.events[obj]
+
+        events = obj_events.get(event_name, [])
+        if not events:
+            obj_events[event_name] = []
+            events = obj_events[event_name]
+
+        # Edit the event
+        events[number].update({
+                "updated_on": datetime.now(),
+                "updated_by": author,
+                "valid": valid,
+                "code": code,
+        })
+
     def call_event(self, obj, event_name, *args):
         """
         Call the event.
@@ -115,7 +157,7 @@ class EventHandler(DefaultScript):
             return False
 
         # Prepare the locals
-        locals = {}
+        locals = all_from_module("evennia.contrib.events.helpers")
         for i, variable in enumerate(event_type[0]):
             try:
                 locals[variable] = args[i]
@@ -131,4 +173,9 @@ class EventHandler(DefaultScript):
             if not event["valid"]:
                 continue
 
-            exec(event["code"], locals, locals)
+            try:
+                exec(event["code"], locals, locals)
+            except InterruptEvent:
+                return False
+
+        return True

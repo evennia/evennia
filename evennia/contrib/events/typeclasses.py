@@ -30,11 +30,19 @@ class PatchedExit(object):
         """
         if inherits_from(traversing_object, DefaultCharacter):
             script = ScriptDB.objects.get(db_key="event_handler")
-            script.call_event(exit, "at_traverse", traversing_object,
+            allow = script.call_event(exit, "can_traverse", traversing_object,
                     exit, exit.location)
+            if not allow:
+                return
 
         hook(exit, traversing_object, target_location)
 
 # Default events
-create_event_type(DefaultExit, "at_traverse", ["character", "exit", "room"],
-        """When traversing""")
+create_event_type(DefaultExit, "can_traverse", ["character", "exit", "room"],
+    """Can the character traverse through this exit?
+    This event is called when a character is about to traverse this
+    exit.  You can use the deny() function to deny the character from
+    using this exit for the time being.  The 'character' variable
+    contains the character who wants to traverse through this exit.
+    The 'exit' variable contains the exit, the 'room' variable
+    contains the room in which the character and exit are.""")
