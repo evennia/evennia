@@ -6,6 +6,8 @@ and are designed to be used more by developers to add event types.
 
 """
 
+from textwrap import dedent
+
 from evennia import logger
 from evennia import ScriptDB
 
@@ -123,4 +125,5 @@ def connect_event_types():
         types = script.ndb.event_types[typeclass_name]
 
         # Add or replace the event
+        help_text = dedent(help_text.strip("\n"))
         types[event_name] = (variables, help_text)
