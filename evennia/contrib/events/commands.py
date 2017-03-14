@@ -367,6 +367,41 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         obj = self.obj
         event_name = self.event_name
         parameters = self.parameters
+
+        # If no object, display the list of events to be checked
+        if obj is None:
+            table = EvTable("ID", "Type", "Object", "Name", "Updated by",
+                    "On", width=78)
+            table.reformat_column(0, align="r")
+            now = datetime.now()
+            for obj, name, number in self.handler.db.to_valid:
+                events = self.handler.db.events.get(obj, {}).get(name)
+                if events is None:
+                    continue
+
+                try:
+                    event = events[number]
+                except IndexError:
+                    continue
+
+                type_name = obj.typeclass_path.split(".")[-1]
+                by = event.get("updated_by")
+                by = by.key if by else "|gUnknown|n"
+                updated_on = event.get("updated_on")
+                if updated_on is None:
+                    updated_on = event.get("created_on")
+
+                if updated_on:
+                    updated_on = time_format(
+                            (now - updated_on).total_seconds(), 1)
+                else:
+                    updated_on = "|gUnknown|n"
+
+                table.add_row(obj.id, type_name, obj, name, by, updated_on)
+            self.msg(table)
+            return
+
+        # An object was specified
         events = self.handler.get_events(obj)
         types = self.handler.get_event_types(obj)
 
@@ -400,7 +435,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         if event["valid"]:
             self.msg("This event has already been accepted.")
         else:
-            event["valid"] = True
+            self.handler.accept_event(obj, event_name, parameters)
             self.msg("The event {} {} of {} has been accepted.".format(
                     event_name, parameters, obj))
 
