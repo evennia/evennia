@@ -2,9 +2,9 @@
 Patched typeclasses for Evennia.
 """
 
-from evennia import DefaultCharacter, DefaultExit
+from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia import ScriptDB
-from evennia.contrib.events.extend import create_event_type, patch_hook
+from evennia.contrib.events.custom import create_event_type, patch_hook
 from evennia.utils.utils import inherits_from
 
 class PatchedExit(object):
@@ -44,7 +44,8 @@ class PatchedExit(object):
                     exit, exit.location, exit.destination)
 
 
-# Default events
+## Default events
+# Exit events
 create_event_type(DefaultExit, "can_traverse", ["character", "exit", "room"],
     """
     Can the character traverse through this exit?
@@ -68,3 +69,24 @@ create_event_type(DefaultExit, "traverse", ["character", "exit",
     before traversing, while 'destination' contains the room in which
     the character now is.
     """)
+
+# Room events
+create_event_type(DefaultRoom, "time", ["room", "time"], """
+    A repeated event to be called regularly.
+    This event is scheduled to repeat at different times, specified
+    as parameters.  You can set it to run every day at 8:00 AM (game
+    time).  You have to specify the time as an argument to @event/add, like:
+        @event/add here = time 8:00
+    The parameter (8:00 here) must be a suite of digits separated by
+    spaces, colons or dashes.  Keep it as close from a recognizable
+    date format, like this:
+        @event/add here = time 06-15 12:20
+    This event will fire every year on June 15th at 12 PM (still
+    game time).  Units have to be specified depending on your set calendar
+    (ask a developer for more details).
+
+    Variables you can use in this event:
+        room: the room connected to this event.
+        time: a string containing the current time.
+""")
+

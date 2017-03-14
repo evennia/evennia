@@ -134,7 +134,7 @@ Here's an example of adding the `can_yell` event to all your rooms:
 ```python
 # In typeclasses/rooms.py
 from evennia import DefaultRoom
-from evennia.contrib.events.extend import create_event_type
+from evennia.contrib.events.custom import create_event_type
 
 class Room(DefaultRoom):
     """
@@ -219,7 +219,7 @@ A helper function is really a Python function.  Its docstring should be sufficie
 
 ### Adding new typeclasses
 
-Adding a new typeclass is not different from extending one, and will obey to the same rules: define the class as you have been accustomed to doing, and create the events with `create_event` under the class definition.
+Adding a new typeclass is not different from ing one, and will obey to the same rules: define the class as you have been accustomed to doing, and create the events with `create_event` under the class definition.
 
 Note: events obey the inheritance hierarchy: if you define events on the `Room` class, then create a typeclass inheriting from `Room`, the objects of this latter typeclass will have events of both typeclasses.
 

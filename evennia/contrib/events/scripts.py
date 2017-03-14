@@ -8,7 +8,7 @@ from Queue import Queue
 from evennia import DefaultScript
 from evennia import logger
 from evennia.contrib.events.exceptions import InterruptEvent
-from evennia.contrib.events.extend import connect_event_types, patch_hooks
+from evennia.contrib.events.custom import connect_event_types, patch_hooks
 from evennia.contrib.events import typeclasses
 from evennia.utils.utils import all_from_module
 
