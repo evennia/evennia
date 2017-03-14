@@ -182,6 +182,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         """Display the list of events connected to the object."""
         obj = self.obj
         event_name = self.event_name
+        parameters = self.parameters
         events = self.handler.get_events(obj)
         types = self.handler.get_event_types(obj)
 
@@ -192,12 +193,51 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                 self.msg("No event {} has been set on {}.".format(event_name, obj))
                 return
 
-            # Create the table
+            if parameters:
+                # Check that the parameter points to an existing event
+                try:
+                    parameters = int(parameters) - 1
+                    assert parameters >= 0
+                    event = events[event_name][parameters]
+                except (AssertionError, ValueError):
+                    self.msg("The event {} {} cannot be found in {}.".format(
+                            event_name, parameters, obj))
+                    return
+
+                # Display the events' details
+                author = event.get("author")
+                author = author.key if author else "|gUnknown|n"
+                updated_by = event.get("updated_by")
+                updated_by = updated_by.key if updated_by else "|gUnknown|n"
+                created_on = event.get("created_on")
+                created_on = created_on.strftime("%Y-%m-%d %H:%M:%S") \
+                        if created_on else "|gUnknown|n"
+                updated_on = event.get("updated_on")
+                updated_on = updated_on.strftime("%Y-%m-%d %H:%M:%S") \
+                        if updated_on else "|gUnknown|n"
+                number = parameters + 1
+                msg = "Event {} {} of {}:".format(event_name, number, obj)
+                msg += "\nCreated by {} at {}.".format(author, created_on)
+                msg += "\nUpdated by {} at {}".format(updated_by, updated_on)
+
+                if self.is_validator:
+                    if event.get("valid"):
+                        msg += "\nThis event is |rconnected|n and active."
+                    else:
+                        msg += "\nThis event |rhasn't been|n accepted yet."
+
+                msg += "\nEvent code:\n    "
+                msg += "\n    ".join([l for l in event["code"].splitlines()])
+                self.msg(msg)
+                return
+
+            # No parameter has been specified, display the table of events
             cols = ["Number", "Author", "Updated"]
             if self.is_validator:
                 cols.append("Valid")
 
             table = EvTable(*cols, width=78)
+            table.reformat_column(0, align="r")
             now = datetime.now()
             for i, event in enumerate(created):
                 author = event.get("author")
@@ -217,11 +257,13 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                     row.append("Yes" if event.get("valid") else "No")
                 table.add_row(*row)
 
-            table.reformat_column(0, align="r")
             self.msg(table)
         else:
             table = EvTable("Event name", "Number", "Description",
-                    width=78)
+                    valign="t", width=78)
+            table.reformat_column(0, width=20)
+            table.reformat_column(1, width=10, align="r")
+            table.reformat_column(2, width=48)
             for name, infos in sorted(types.items()):
                 number = len(events.get(name, []))
                 lines = sum(len(e["code"].splitlines()) for e in \
@@ -230,7 +272,6 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                 description = infos[1].splitlines()[0]
                 table.add_row(name, no, description)
 
-            table.reformat_column(1, width=10, align="r")
             self.msg(table)
 
     def add_event(self):
@@ -324,7 +365,44 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
     def accept_event(self):
         """Accept an event."""
         obj = self.obj
-        self.msg("Calling accept.")
+        event_name = self.event_name
+        parameters = self.parameters
+        events = self.handler.get_events(obj)
+        types = self.handler.get_event_types(obj)
+
+        # If no event name is specified, display the list of events
+        if not event_name:
+            self.list_events()
+            return
+
+        # Check that the event exists
+        if not event_name in events:
+            self.msg("The event name {} can't be found in {}.".format(
+                    event_name, obj))
+            return
+
+        if not parameters:
+            self.msg("Which event do you wish to accept?  Specify a number.")
+            self.list_events()
+            return
+
+        # Check that the parameter points to an existing event
+        try:
+            parameters = int(parameters) - 1
+            assert parameters >= 0
+            event = events[event_name][parameters]
+        except (AssertionError, ValueError):
+            self.msg("The event {} {} cannot be found in {}.".format(
+                    event_name, parameters, obj))
+            return
+
+        # Accept the event
+        if event["valid"]:
+            self.msg("This event has already been accepted.")
+        else:
+            event["valid"] = True
+            self.msg("The event {} {} of {} has been accepted.".format(
+                    event_name, parameters, obj))
 
 # Private functions to handle editing
 def _ev_load(caller):
