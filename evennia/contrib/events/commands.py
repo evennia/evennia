@@ -6,7 +6,7 @@ from datetime import datetime
 
 from django.conf import settings
 from evennia import Command
-from evennia.contrib.events.extend import get_event_handler
+from evennia.contrib.events.custom import get_event_handler
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
 from evennia.utils.utils import class_from_module, time_format
