@@ -23,6 +23,7 @@ class EventHandler(DefaultScript):
 
         # Permanent data to be stored
         self.db.events = {}
+        self.db.to_valid = []
 
     def at_start(self):
         """Set up the event system."""
@@ -95,6 +96,11 @@ class EventHandler(DefaultScript):
                 "code": code,
         })
 
+        # If not valid, set it in 'to_valid'
+        if not valid:
+            self.db.to_valid.append((obj, event_name, len(events) - 1))
+
+        # Build the definition to return (a dictionary)
         definition = dict(events[-1])
         definition["obj"] = obj
         definition["name"] = event_name
@@ -134,6 +140,28 @@ class EventHandler(DefaultScript):
                 "valid": valid,
                 "code": code,
         })
+
+        # If not valid, set it in 'to_valid'
+        if not valid and (obj, event_name, number) not in self.db.to_valid:
+            self.db.to_valid.append((obj, event_name, number))
+
+    def accept_event(self, obj, event_name, number):
+        """
+        Valid an event.
+
+        Args:
+            obj (Object): the object containing the event.
+            event_name (str): the name of the event.
+            number (int): the number of the event.
+
+        """
+        obj_events = self.db.events.get(obj, {})
+        events = obj_events.get(event_name, [])
+
+        # Accept and connect the event
+        events[number].update({"valid": True})
+        if (obj, event_name, number) in self.db.to_valid:
+            self.db.to_valid.remove((obj, event_name, number))
 
     def call_event(self, obj, event_name, *args):
         """
