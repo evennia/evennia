@@ -292,7 +292,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
 
         # Open the editor
         event = self.handler.add_event(obj, event_name, "",
-                self.caller, False)
+                self.caller, False, parameters=self.parameters)
         self.caller.db._event = event
         EvEditor(self.caller, loadfunc=_ev_load, savefunc=_ev_save,
                 quitfunc=_ev_quit, key="Event {} of {}".format(

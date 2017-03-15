@@ -4,7 +4,8 @@ Patched typeclasses for Evennia.
 
 from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia import ScriptDB
-from evennia.contrib.events.custom import create_event_type, patch_hook
+from evennia.contrib.events.custom import create_event_type, patch_hook, \
+        create_time_event
 from evennia.utils.utils import inherits_from
 
 class PatchedExit(object):
@@ -31,7 +32,7 @@ class PatchedExit(object):
         is_character = inherits_from(traversing_object, DefaultCharacter)
         script = ScriptDB.objects.get(db_key="event_handler")
         if is_character:
-            allow = script.call_event(exit, "can_traverse", traversing_object,
+            allow = script.call_event(exit, "can_traverse", None, traversing_object,
                     exit, exit.location)
             if not allow:
                 return
@@ -40,7 +41,7 @@ class PatchedExit(object):
 
         # After traversing
         if is_character:
-            script.call_event(exit, "traverse", traversing_object,
+            script.call_event(exit, "traverse", None, traversing_object,
                     exit, exit.location, exit.destination)
 
 
@@ -71,7 +72,7 @@ create_event_type(DefaultExit, "traverse", ["character", "exit",
     """)
 
 # Room events
-create_event_type(DefaultRoom, "time", ["room", "time"], """
+create_event_type(DefaultRoom, "time", ["room"], """
     A repeated event to be called regularly.
     This event is scheduled to repeat at different times, specified
     as parameters.  You can set it to run every day at 8:00 AM (game
@@ -87,6 +88,4 @@ create_event_type(DefaultRoom, "time", ["room", "time"], """
 
     Variables you can use in this event:
         room: the room connected to this event.
-        time: a string containing the current time.
-""")
-
+""", create_time_event)

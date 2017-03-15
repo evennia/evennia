@@ -8,8 +8,13 @@ and are designed to be used more by developers to add event types.
 
 from textwrap import dedent
 
+from django.conf import settings
 from evennia import logger
 from evennia import ScriptDB
+from evennia.contrib.custom_gametime import UNITS
+from evennia.contrib.custom_gametime import real_seconds_until as custom_rsu
+from evennia.utils.create import create_script
+from evennia.utils.gametime import real_seconds_until as standard_rsu
 
 hooks = []
 event_types = []
@@ -24,7 +29,8 @@ def get_event_handler():
 
     return script
 
-def create_event_type(typeclass, event_name, variables, help_text):
+def create_event_type(typeclass, event_name, variables, help_text,
+        custom_add=None):
     """
     Create a new event type for a specific typeclass.
 
@@ -33,6 +39,8 @@ def create_event_type(typeclass, event_name, variables, help_text):
         event_name (str): the name of the event to be added.
         variables (list of str): a list of variable names.
         help_text (str): a help text of the event.
+        custom_add (function, default None): a callback to call when adding
+                the new event.
 
     Events obey the inheritance hierarchy: if you set an event on
     DefaultRoom, for instance, and if your Room typeclass inherits
@@ -44,7 +52,8 @@ def create_event_type(typeclass, event_name, variables, help_text):
 
     """
     typeclass_name = typeclass.__module__ + "." + typeclass.__name__
-    event_types.append((typeclass_name, event_name, variables, help_text))
+    event_types.append((typeclass_name, event_name, variables, help_text,
+            custom_add))
 
 def del_event_type(typeclass, event_name):
     """
@@ -118,7 +127,8 @@ def connect_event_types():
                 "cannot be found.")
         return
 
-    for typeclass_name, event_name, variables, help_text in event_types:
+    for typeclass_name, event_name, variables, help_text, \
+            custom_add in event_types:
         # Get the event types for this typeclass
         if typeclass_name not in script.ndb.event_types:
             script.ndb.event_types[typeclass_name] = {}
@@ -126,4 +136,80 @@ def connect_event_types():
 
         # Add or replace the event
         help_text = dedent(help_text.strip("\n"))
-        types[event_name] = (variables, help_text)
+        types[event_name] = (variables, help_text, custom_add)
+
+# Custom callbacks for specific events
+def get_next_wait(format):
+    """
+    Get the length of time in seconds before format.
+
+    Args:
+        format (str): a time format matching the set calendar.
+
+    The time format could be something like "2018-01-08 12:00".  The
+    number of units set in the calendar affects the way seconds are
+    calculated.
+
+    """
+    calendar = getattr(settings, "EVENTS_CALENDAR", None)
+    if calendar is None:
+        logger.log_err("A time-related event has been set whereas " \
+                "the gametime calendar has not been set in the settings.")
+        return
+    elif calendar == "standard":
+        rsu = standard_rsu
+        units = ["min", "hour", "day", "month", "year"]
+    elif calendar == "custom":
+        rsu = custom_rsu
+        back = dict([(value, name) for name, value in UNITS.items()])
+        sorted_units = sorted(back.items())
+        del sorted_units[0]
+        units = [n for v, n in sorted_units]
+
+    params = {}
+    for delimiter in ("-", ":"):
+        format = format.replace(delimiter, " ")
+
+    pieces = list(reversed(format.split()))
+    details = []
+    i = 0
+    for uname in units:
+        try:
+            piece = pieces[i]
+        except IndexError:
+            break
+
+        if not piece.isdigit():
+            logger.log_err("The time specified '{}' in {} isn't " \
+                    "a valid number".format(piece, format))
+            return
+
+        # Convert the piece to int
+        piece = int(piece)
+        params[uname] = piece
+        details.append("{}={}".format(uname, piece))
+        i += 1
+
+    params["sec"] = 0
+    details = " ".join(details)
+    seconds = rsu(**params)
+    return seconds, details
+
+def create_time_event(obj, event_name, number, parameters):
+    """
+    Create an time-related event.
+
+    args:
+        obj (Object): the object on which stands the event.
+        event_name (str): the event's name.
+        number (int): the number of the event.
+        parameter (str): the parameter of the event.
+
+    """
+    print "parameters", repr(parameters)
+    seconds, key = get_next_wait(parameters)
+    script = create_script("evennia.contrib.events.scripts.TimeEventScript", interval=seconds, obj=obj)
+    script.key = key
+    script.desc = "time event called regularly on {}".format(key)
+    script.db.time_format = parameters
+    script.db.number = number

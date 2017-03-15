@@ -5,10 +5,12 @@ Scripts for the event system.
 from datetime import datetime
 from Queue import Queue
 
-from evennia import DefaultScript
+from django.conf import settings
+from evennia import DefaultScript, ScriptDB
 from evennia import logger
+from evennia.contrib.events.custom import connect_event_types, \
+        get_next_wait, patch_hooks
 from evennia.contrib.events.exceptions import InterruptEvent
-from evennia.contrib.events.custom import connect_event_types, patch_hooks
 from evennia.contrib.events import typeclasses
 from evennia.utils.utils import all_from_module
 
@@ -64,7 +66,8 @@ class EventHandler(DefaultScript):
 
         return types
 
-    def add_event(self, obj, event_name, code, author=None, valid=False):
+    def add_event(self, obj, event_name, code, author=None, valid=False,
+            parameters=""):
         """
         Add the specified event.
 
@@ -74,6 +77,7 @@ class EventHandler(DefaultScript):
             code (str): the Python code associated with this event.
             author (optional, Character, Player): the author of the event.
             valid (optional, bool): should the event be connected?
+            parameters (str, optional): optional parameters.
 
         This method doesn't check that the event type exists.
 
@@ -99,6 +103,13 @@ class EventHandler(DefaultScript):
         # If not valid, set it in 'to_valid'
         if not valid:
             self.db.to_valid.append((obj, event_name, len(events) - 1))
+
+        # Call the custom_add if needed
+        custom_add = self.get_event_types(obj).get(
+                event_name, [None, None, None])[2]
+        print "custom_add", custom_add
+        if custom_add:
+            custom_add(obj, event_name, len(events) - 1, parameters)
 
         # Build the definition to return (a dictionary)
         definition = dict(events[-1])
@@ -163,7 +174,7 @@ class EventHandler(DefaultScript):
         if (obj, event_name, number) in self.db.to_valid:
             self.db.to_valid.remove((obj, event_name, number))
 
-    def call_event(self, obj, event_name, *args):
+    def call_event(self, obj, event_name, number=None, *args):
         """
         Call the event.
 
@@ -171,6 +182,7 @@ class EventHandler(DefaultScript):
             obj (Object): the Evennia typeclassed object.
             event_name (str): the event name to call.
             *args: additional variables for this event.
+            number (int, default None): call just a specific event.
 
         Returns:
             True to report the event was called without interruption,
@@ -198,8 +210,11 @@ class EventHandler(DefaultScript):
 
         # Now execute all the valid events linked at this address
         events = self.db.events.get(obj, {}).get(event_name, [])
-        for event in events:
+        for i, event in enumerate(events):
             if not event["valid"]:
+                continue
+
+            if number is not None and i != number:
                 continue
 
             try:
@@ -208,3 +223,51 @@ class EventHandler(DefaultScript):
                 return False
 
         return True
+
+
+# Script to call time-related events
+class TimeEventScript(DefaultScript):
+
+    """Gametime-sensitive script."""
+
+    def at_script_creation(self):
+        """The script is created."""
+        self.start_delay = True
+        self.persistent = True
+
+        # Script attributes
+        self.db.time_format = None
+        self.db.event_name = "time"
+        self.db.number = None
+
+    def at_repeat(self):
+        """Call the event and reset interval."""
+        # Get the event handler and call the script
+        try:
+            script = ScriptDB.objects.get(db_key="event_handler")
+        except ScriptDB.DoesNotExist:
+            logger.log_err("Can't get the event handler.")
+            return
+
+        if self.db.event_name and self.db.number is not None:
+            obj = self.obj
+            event_name = self.db.event_name
+            number = self.db.number
+            events = script.db.events.get(obj, {}).get(event_name)
+            if events is None:
+                logger.log_err("Cannot find the event {} on {}".format(
+                        event_name, obj))
+                return
+
+            try:
+                event = events[number]
+            except IndexError:
+                logger.log_err("Cannot find the event {} {} on {}".format(
+                        event_name, number, obj))
+                return
+
+            script.call_event(obj, event_name, number, obj)
+
+        if self.db.time_format:
+            seconds, details = get_next_wait(self.db.time_format)
+            self.restart(interval=seconds)
