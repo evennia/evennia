@@ -1141,7 +1141,7 @@ class CmdName(ObjManipCommand):
                         caller.msg("No name defined!")
                         return
                     if not (obj.access(caller, "control") or obj.access(caller, "edit")):
-                        caller.mgs("You don't have right to edit this player %s." % obj)
+                        caller.msg("You don't have right to edit this player %s." % obj)
                         return
                     obj.username = newname
                     obj.save()
