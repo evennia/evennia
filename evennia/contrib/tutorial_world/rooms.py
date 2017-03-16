@@ -279,7 +279,7 @@ class TutorialRoom(DefaultRoom):
 # These are rainy weather strings
 WEATHER_STRINGS = (
         "The rain coming down from the iron-grey sky intensifies.",
-        "A gush of wind throws the rain right in your face. Despite your cloak you shiver.",
+        "A gust of wind throws the rain right in your face. Despite your cloak you shiver.",
         "The rainfall eases a bit and the sky momentarily brightens.",
         "For a moment it looks like the rain is slowing, then it begins anew with renewed force.",
         "The rain pummels you with large, heavy drops. You hear the rumble of thunder in the distance.",
@@ -590,7 +590,7 @@ class BridgeCmdSet(CmdSet):
 
 BRIDGE_WEATHER = (
         "The rain intensifies, making the planks of the bridge even more slippery.",
-        "A gush of wind throws the rain right in your face.",
+        "A gust of wind throws the rain right in your face.",
         "The rainfall eases a bit and the sky momentarily brightens.",
         "The bridge shakes under the thunder of a closeby thunder strike.",
         "The rain pummels you with large, heavy drops. You hear the distinct howl of a large hound in the distance.",
