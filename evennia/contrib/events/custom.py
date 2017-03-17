@@ -214,7 +214,6 @@ def create_time_event(obj, event_name, number, parameters):
         parameter (str): the parameter of the event.
 
     """
-    print "parameters", repr(parameters)
     seconds, key = get_next_wait(parameters)
     script = create_script("evennia.contrib.events.scripts.TimeEventScript", interval=seconds, obj=obj)
     script.key = key
