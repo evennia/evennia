@@ -352,7 +352,7 @@ class TimeEventScript(DefaultScript):
                         event_name, number, obj))
                 return
 
-            script.call_event(obj, event_name, number, obj)
+            script.call_event(obj, event_name, obj, number=number)
 
         if self.db.time_format:
             seconds, details = get_next_wait(self.db.time_format)
