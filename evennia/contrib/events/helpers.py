@@ -6,7 +6,7 @@ Hlpers are just Python function that can be used inside of events.  They
 
 """
 
-from evennia import ObjectDB
+from evennia import ObjectDB, ScriptDB
 from evennia.contrib.events.exceptions import InterruptEvent
 
 def deny():
@@ -51,3 +51,34 @@ def get(**kwargs):
         object = None
 
     return object
+
+def call(obj, event_name, seconds=0):
+    """
+    Call the specified event in X seconds.
+
+    This helper can be used to call other events from inside of an event
+    in a given time.  This will create a pause between events.  This
+    will not freeze the game, and you can expect characters to move
+    around (unless you prevent them from doing so).
+
+    Variables that are accessible in your event using 'call()' will be
+    kept and passed on to the event to call.
+
+    Args:
+        obj (Object): the typeclassed object containing the event.
+        event_name (str): the event name to be called.
+        seconds (int or float): the number of seconds to wait before calling
+                the event.
+
+    Notice that chained events are designed for this very purpose: they
+    are never called automatically by the game, rather, they need to be
+    called from inside another event.
+
+    """
+    try:
+        script = ScriptDB.objects.get(db_key="event_handler")
+    except ScriptDB.DoesNotExist:
+        return
+
+    # Schedule the task
+    script.set_task(seconds, obj, event_name)

@@ -226,13 +226,13 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                     else:
                         msg += "\nThis event |rhasn't been|n accepted yet."
 
-                msg += "\nEvent code:\n    "
-                msg += "\n    ".join([l for l in event["code"].splitlines()])
+                msg += "\nEvent code:\n"
+                msg += "\n".join([l for l in event["code"].splitlines()])
                 self.msg(msg)
                 return
 
             # No parameter has been specified, display the table of events
-            cols = ["Number", "Author", "Updated"]
+            cols = ["Number", "Author", "Updated", "Param"]
             if self.is_validator:
                 cols.append("Valid")
 
@@ -251,25 +251,28 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                             (now - updated_on).total_seconds(), 1)
                 else:
                     updated_on = "|gUnknown|n"
+                parameters = event.get("parameters", "")
 
-                row = [str(i + 1), author, updated_on]
+                row = [str(i + 1), author, updated_on, parameters]
                 if self.is_validator:
                     row.append("Yes" if event.get("valid") else "No")
                 table.add_row(*row)
 
             self.msg(table)
         else:
+            names = list(set(list(types.keys()) + list(events.keys())))
             table = EvTable("Event name", "Number", "Description",
                     valign="t", width=78)
             table.reformat_column(0, width=20)
             table.reformat_column(1, width=10, align="r")
             table.reformat_column(2, width=48)
-            for name, infos in sorted(types.items()):
+            for name in sorted(names):
                 number = len(events.get(name, []))
                 lines = sum(len(e["code"].splitlines()) for e in \
                         events.get(name, []))
                 no = "{} ({})".format(number, lines)
-                description = infos[1].splitlines()[0]
+                description = types.get(name, (None, "Chained event."))[1]
+                description = description.splitlines()[0]
                 table.add_row(name, no, description)
 
             self.msg(table)
@@ -281,12 +284,12 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         types = self.handler.get_event_types(obj)
 
         # Check that the event exists
-        if not event_name in types:
+        if not event_name.startswith("chain_") and not event_name in types:
             self.msg("The event name {} can't be found in {} of " \
                     "typeclass {}.".format(event_name, obj, type(obj)))
             return
 
-        definition = types[event_name]
+        definition = types.get(event_name, (None, "Chain event"))
         description = definition[1]
         self.msg(description)
 
@@ -319,6 +322,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
 
         # If there's only one event, just edit it
         if len(events[event_name]) == 1:
+            parameters = 0
             event = events[event_name][0]
         else:
             if not parameters:
@@ -343,7 +347,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             return
 
         # Check the definition of the event
-        definition = types[event_name]
+        definition = types.get(event_name, (None, "Chained event"))
         description = definition[1]
         self.msg(description)
 

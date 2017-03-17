@@ -30,7 +30,7 @@ def get_event_handler():
     return script
 
 def create_event_type(typeclass, event_name, variables, help_text,
-        custom_add=None):
+        custom_add=None, custom_call=None):
     """
     Create a new event type for a specific typeclass.
 
@@ -41,6 +41,8 @@ def create_event_type(typeclass, event_name, variables, help_text,
         help_text (str): a help text of the event.
         custom_add (function, default None): a callback to call when adding
                 the new event.
+        custom_xcall (function, default None): a callback to call when
+                preparing to call the events.
 
     Events obey the inheritance hierarchy: if you set an event on
     DefaultRoom, for instance, and if your Room typeclass inherits
@@ -53,7 +55,7 @@ def create_event_type(typeclass, event_name, variables, help_text,
     """
     typeclass_name = typeclass.__module__ + "." + typeclass.__name__
     event_types.append((typeclass_name, event_name, variables, help_text,
-            custom_add))
+            custom_add, custom_call))
 
 def del_event_type(typeclass, event_name):
     """
@@ -127,8 +129,13 @@ def connect_event_types():
                 "cannot be found.")
         return
 
-    for typeclass_name, event_name, variables, help_text, \
-            custom_add in event_types:
+    if script.ndb.event_types is None:
+        return
+
+    while event_types:
+        typeclass_name, event_name, variables, help_text, \
+                custom_add, custom_call = event_types[0]
+
         # Get the event types for this typeclass
         if typeclass_name not in script.ndb.event_types:
             script.ndb.event_types[typeclass_name] = {}
@@ -136,7 +143,8 @@ def connect_event_types():
 
         # Add or replace the event
         help_text = dedent(help_text.strip("\n"))
-        types[event_name] = (variables, help_text, custom_add)
+        types[event_name] = (variables, help_text, custom_add, custom_call)
+        del event_types[0]
 
 # Custom callbacks for specific events
 def get_next_wait(format):
@@ -213,3 +221,30 @@ def create_time_event(obj, event_name, number, parameters):
     script.desc = "time event called regularly on {}".format(key)
     script.db.time_format = parameters
     script.db.number = number
+
+def keyword_event(events, parameters):
+    """
+    Custom call for events with keywords (like say, or push, or pull, or turn...).
+
+    This function should be imported and added as a custom_call
+    parameter to add the event type when the event supports keywords
+    as parameters.  Keywords in parameters are one or more words
+    separated by a comma.  For instance, a 'push 1, one' event can
+    be triggered to trigger when the player 'push 1' or 'push one'.
+
+    Args:
+        events (list of dict): the list of events to be called.
+        parameters (str): the actual parameters entered to trigger the event.
+
+    Returns:
+        A list containing the event dictionaries to be called.
+
+    """
+    key = parameters.strip().lower()
+    to_call = []
+    for event in events:
+        keys = event["parameters"]
+        if not keys or key in [p.strip().lower() for p in keys.split(",")]:
+            to_call.append(event)
+
+    return to_call
