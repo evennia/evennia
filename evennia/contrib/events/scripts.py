@@ -2,7 +2,7 @@
 Scripts for the event system.
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from Queue import Queue
 
 from django.conf import settings
@@ -12,7 +12,8 @@ from evennia.contrib.events.custom import connect_event_types, \
         get_next_wait, patch_hooks
 from evennia.contrib.events.exceptions import InterruptEvent
 from evennia.contrib.events import typeclasses
-from evennia.utils.utils import all_from_module
+from evennia.utils.dbserialize import dbserialize
+from evennia.utils.utils import all_from_module, delay
 
 class EventHandler(DefaultScript):
 
@@ -27,11 +28,33 @@ class EventHandler(DefaultScript):
         self.db.events = {}
         self.db.to_valid = []
 
+        # Tasks
+        self.db.task_id = 0
+        self.db.tasks = {}
+
     def at_start(self):
         """Set up the event system."""
         self.ndb.event_types = {}
         connect_event_types()
         patch_hooks()
+
+        # Generate locals
+        self.ndb.current_locals = {}
+        addresses = ["evennia.contrib.events.helpers"]
+        self.ndb.fresh_locals = {}
+        for address in addresses:
+            self.ndb.fresh_locals.update(all_from_module(address))
+
+        # Restart the delayed tasks
+        now = datetime.now()
+        for task_id, definition in tuple(self.db.tasks.items()):
+            future, obj, event_name, locals = definition
+            seconds = (future - now).total_seconds()
+            if seconds < 0:
+                seconds = 0
+
+            delay(seconds, complete_task, task_id)
+
 
     def get_events(self, obj):
         """
@@ -98,6 +121,7 @@ class EventHandler(DefaultScript):
                 "author": author,
                 "valid": valid,
                 "code": code,
+                "parameters": parameters,
         })
 
         # If not valid, set it in 'to_valid'
@@ -107,7 +131,6 @@ class EventHandler(DefaultScript):
         # Call the custom_add if needed
         custom_add = self.get_event_types(obj).get(
                 event_name, [None, None, None])[2]
-        print "custom_add", custom_add
         if custom_add:
             custom_add(obj, event_name, len(events) - 1, parameters)
 
@@ -174,7 +197,7 @@ class EventHandler(DefaultScript):
         if (obj, event_name, number) in self.db.to_valid:
             self.db.to_valid.remove((obj, event_name, number))
 
-    def call_event(self, obj, event_name, number=None, *args):
+    def call_event(self, obj, event_name, *args, **kwargs):
         """
         Call the event.
 
@@ -182,7 +205,11 @@ class EventHandler(DefaultScript):
             obj (Object): the Evennia typeclassed object.
             event_name (str): the event name to call.
             *args: additional variables for this event.
+
+        Kwargs:
             number (int, default None): call just a specific event.
+            parameters (str, default ""): call an event with parameters.
+            locals (dict): a locals replacement.
 
         Returns:
             True to report the event was called without interruption,
@@ -190,26 +217,46 @@ class EventHandler(DefaultScript):
 
         """
         # First, look for the event type corresponding to this name
-        # To do so, go back the inheritance tree
+        number = kwargs.get("number")
+        parameters = kwargs.get("parameters")
+        locals = kwargs.get("locals")
+
+        # Errors should not pass silently
+        allowed = ("number", "parameters", "locals")
+        if any(k for k in kwargs if k not in allowed):
+            raise TypeError("Unknown keyword arguments were specified " \
+                    "to call events: {}".format(kwargs))
+
         event_type = self.get_event_types(obj).get(event_name)
-        if not event_type:
+        if locals is None and not event_type:
             logger.log_err("The event {} for the object {} (typeclass " \
                     "{}) can't be found".format(event_name, obj, type(obj)))
             return False
 
-        # Prepare the locals
-        locals = all_from_module("evennia.contrib.events.helpers")
-        for i, variable in enumerate(event_type[0]):
-            try:
-                locals[variable] = args[i]
-            except IndexError:
-                logger.log_err("event {} of {} ({}): need variable " \
-                        "{} in position {}".format(event_name, obj,
-                        type(obj), variable, i))
-                return False
+        # Prepare the locals if necessary
+        if locals is None:
+            locals = self.ndb.fresh_locals.copy()
+            for i, variable in enumerate(event_type[0]):
+                try:
+                    locals[variable] = args[i]
+                except IndexError:
+                    logger.log_err("event {} of {} ({}): need variable " \
+                            "{} in position {}".format(event_name, obj,
+                            type(obj), variable, i))
+                    return False
+        else:
+            locals = {key: value for key, value in locals.items()}
+
+        events = self.db.events.get(obj, {}).get(event_name, [])
+
+        # Filter down of events if there is a custom call
+        if event_type:
+            custom_call = event_type[3]
+            if custom_call:
+                events = custom_call(events, parameters)
 
         # Now execute all the valid events linked at this address
-        events = self.db.events.get(obj, {}).get(event_name, [])
+        self.ndb.current_locals = locals
         for i, event in enumerate(events):
             if not event["valid"]:
                 continue
@@ -223,6 +270,45 @@ class EventHandler(DefaultScript):
                 return False
 
         return True
+
+    def set_task(self, seconds, obj, event_name):
+        """
+        Set and schedule a task to run.
+
+        This method allows to schedule a "persistent" task.
+        'utils.delay' is called, but a copy of the task is kept in
+        the event handler, and when the script restarts (after reload),
+        the differed delay is called again.
+
+        Args:
+            seconds (int/float): the delay in seconds from now.
+            obj (Object): the typecalssed object connected to the event.
+            event_name (str): the event's name.
+
+        Note that the dictionary of locals is frozen and will be
+        available again when the task runs.  This feature, however,
+        is limited by the database: all data cannot be saved.  Lambda
+        functions, class methods, objects inside an instance and so
+        on will not be kept in the locals dictionary.
+
+        """
+        now = datetime.now()
+        delta = timedelta(seconds=seconds)
+        task_id = self.db.task_id
+        self.db.task_id += 1
+
+        # Collect and freeze current locals
+        locals = {}
+        for key, value in self.ndb.current_locals.items():
+            try:
+                dbserialize(value)
+            except TypeError:
+                continue
+            else:
+                locals[key] = value
+
+        self.db.tasks[task_id] = (now + delta, obj, event_name, locals)
+        delay(seconds, complete_task, task_id)
 
 
 # Script to call time-related events
@@ -271,3 +357,29 @@ class TimeEventScript(DefaultScript):
         if self.db.time_format:
             seconds, details = get_next_wait(self.db.time_format)
             self.restart(interval=seconds)
+
+
+# Functions to manipulate tasks
+def complete_task(task_id):
+    """
+    Mark the task in the event handler as complete.
+
+    This function should be called automatically for individual tasks.
+
+    Args:
+        task_id (int): the task id.
+
+    """
+    try:
+        script = ScriptDB.objects.get(db_key="event_handler")
+    except ScriptDB.DoesNotExist:
+        logger.log_err("Can't get the event handler.")
+        return
+
+    if task_id not in script.db.tasks:
+        logger.log_err("The task #{} was scheduled, but it cannot be " \
+                "found".format(task_id))
+        return
+
+    delta, obj, event_name, locals = script.db.tasks.pop(task_id)
+    script.call_event(obj, event_name, locals=locals)
