@@ -178,6 +178,57 @@ class EventHandler(DefaultScript):
         # If not valid, set it in 'to_valid'
         if not valid and (obj, event_name, number) not in self.db.to_valid:
             self.db.to_valid.append((obj, event_name, number))
+        elif valid and (obj, event_name, number) in self.db.to_valid:
+            self.db.to_valid.remove((obj, event_name, number))
+
+
+    def del_event(self, obj, event_name, number):
+        """
+        Delete the specified event.
+
+        Args:
+            obj (Object): the typeclassed object containing the event.
+            event_name (str): the name of the event to delete.
+            number (int): the number of the event to delete.
+
+        """
+        obj_events = self.db.events.get(obj, {})
+        events = obj_events.get(event_name, [])
+
+        # Delete the event itself
+        try:
+            code = events[number]["code"]
+        except IndexError:
+            return
+        else:
+            logger.log_info("Deleting event {} {} of {}:\n{}".format(
+                    event_name, number, obj, code))
+            del events[number]
+
+        # Change IDs of events to be validated
+        i = 0
+        while i < len(self.db.to_valid):
+            t_obj, t_event_name, t_number = self.db.to_valid[i]
+            if obj is t_obj and event_name == t_event_name:
+                if t_number == number:
+                    # Strictly equal, delete the event
+                    del self.db.to_valid[i]
+                    i -= 1
+                elif t_number > number:
+                    # Change the ID for this event
+                    self.db.to_valid.insert(i, (t_obj, t_event_name,
+                            t_number - 1))
+                    del self.db.to_valid[i + 1]
+            i += 1
+
+        # Delete time-related events associated with this object
+        for script in list(obj.scripts.all()):
+            if isinstance(script, TimeEventScript):
+                if script.obj is obj and script.db.event_name == event_name:
+                    if script.db.number == number:
+                        script.stop()
+                    elif script.db.number > number:
+                        script.db.number -= 1
 
     def accept_event(self, obj, event_name, number):
         """
