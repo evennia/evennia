@@ -364,7 +364,53 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
     def del_event(self):
         """Delete an event."""
         obj = self.obj
-        self.msg("Calling del.")
+        event_name = self.event_name
+        parameters = self.parameters
+        events = self.handler.get_events(obj)
+        types = self.handler.get_event_types(obj)
+
+        # If no event name is specified, display the list of events
+        if not event_name:
+            self.list_events()
+            return
+
+        # Check that the event exists
+        if not event_name in events:
+            self.msg("The event name {} can't be found in {}.".format(
+                    event_name, obj))
+            return
+
+        # If there's only one event, just delete it
+        if len(events[event_name]) == 1:
+            parameters = 0
+            event = events[event_name][0]
+        else:
+            if not parameters:
+                self.msg("Which event do you wish to delete?  Specify " \
+                        "a number.")
+                self.list_events()
+                return
+
+            # Check that the parameter points to an existing event
+            try:
+                parameters = int(parameters) - 1
+                assert parameters >= 0
+                event = events[event_name][parameters]
+            except (AssertionError, ValueError):
+                self.msg("The event {} {} cannot be found in {}.".format(
+                        event_name, parameters, obj))
+                return
+
+        # If caller can't edit without validation, forbid deleting
+        # others' works
+        if not self.autovalid and event["author"] is not self.caller:
+            self.msg("You cannot delete this event created by someone else.")
+            return
+
+        # Delete the event
+        self.handler.del_event(obj, event_name, parameters)
+        self.msg("The event {} {} of {} was deleted.".format(
+                obj, event_name, parameters + 1))
 
     def accept_event(self):
         """Accept an event."""
