@@ -283,7 +283,8 @@ class SshProtocol(Manhole, session.Session):
         else:
             # we need to make sure to kill the color at the end in order
             # to match the webclient output.
-            linetosend = ansi.parse_ansi(_RE_N.sub("", text) + "|n", strip_ansi=nocolor, xterm256=xterm256, mxp=False)
+            linetosend = ansi.parse_ansi(_RE_N.sub("", text) + ("|n" if text[-1] != "|" else "||n"),
+                                         strip_ansi=nocolor, xterm256=xterm256, mxp=False)
             self.sendLine(linetosend)
 
     def send_prompt(self, *args, **kwargs):
