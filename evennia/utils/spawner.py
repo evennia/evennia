@@ -154,8 +154,9 @@ def _batch_create_object(*objparams):
     # bulk create all objects in one go
 
     # unfortunately this doesn't work since bulk_create doesn't creates pks;
-    # the result are database objects at the next stage
-    # dbobjs = _ObjectDB.objects.bulk_create(dbobjs)
+    # the result would be duplicate objects at the next stage, so we comment
+    # it out for now:
+    #  dbobjs = _ObjectDB.objects.bulk_create(dbobjs)
 
     dbobjs = [ObjectDB(**objparam[0]) for objparam in objparams]
     objs = []
