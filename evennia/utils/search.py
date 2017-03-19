@@ -46,9 +46,9 @@ HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_c
 Tag = ContentType.objects.get(app_label="typeclasses", model="tag").model_class()
 
 
-#------------------------------------------------------------------
+# -------------------------------------------------------------------
 # Search manager-wrappers
-#------------------------------------------------------------------
+# -------------------------------------------------------------------
 
 #
 # Search objects as a character
@@ -199,10 +199,16 @@ help_entries = search_help
 
 def search_object_attribute(key=None, category=None, value=None, strvalue=None):
     return ObjectDB.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
+
+
 def search_player_attribute(key=None, category=None, value=None, strvalue=None):
     return PlayerDB.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
+
+
 def search_script_attribute(key=None, category=None, value=None, strvalue=None):
     return ScriptDB.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
+
+
 def search_channel_attribute(key=None, category=None, value=None, strvalue=None):
     return Channel.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
 
@@ -218,6 +224,8 @@ search_attribute_object = ObjectDB.objects.get_attribute
 
 # Note that this returns the object attached to the tag, not the tag
 # object itself (this is usually what you want)
+
+
 def search_object_by_tag(key=None, category=None):
     """
     Find object based on tag or category.
@@ -235,7 +243,9 @@ def search_object_by_tag(key=None, category=None):
 
     """
     return ObjectDB.objects.get_by_tag(key=key, category=category)
-search_tag = search_object_by_tag # this is the most common case
+search_tag = search_object_by_tag  # this is the most common case
+
+
 def search_player_tag(key=None, category=None):
     """
     Find player based on tag or category.
@@ -253,6 +263,8 @@ def search_player_tag(key=None, category=None):
 
     """
     return PlayerDB.objects.get_by_tag(key=key, category=category)
+
+
 def search_script_tag(key=None, category=None):
     """
     Find script based on tag or category.
@@ -270,6 +282,8 @@ def search_script_tag(key=None, category=None):
 
     """
     return ScriptDB.objects.get_by_tag(key=key, category=category)
+
+
 def search_channel_tag(key=None, category=None):
     """
     Find channel based on tag or category.
