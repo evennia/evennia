@@ -222,7 +222,7 @@ class AttributeHandler(object):
                                        attr.db_category.lower() if attr.db_category else None),
                             attr) for attr in attrs)
         self._cache_complete = True
-
+    
     def _getcache(self, key=None, category=None):
         """
         Retrieve from cache or database (always caches)
