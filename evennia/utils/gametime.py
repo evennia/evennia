@@ -39,6 +39,7 @@ _GAME_EPOCH = None
 # Helper Script dealing in gametime (created by `schedule` function
 # below).
 
+
 class TimeScript(DefaultScript):
     """Gametime-sensitive script."""
 
@@ -59,6 +60,7 @@ class TimeScript(DefaultScript):
         self.restart(interval=seconds)
 
 # Access functions
+
 
 def runtime():
     """
@@ -134,8 +136,9 @@ def gametime(absolute=False):
     gtime = epoch + (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
     return gtime
 
-def real_seconds_until(sec=None, min=None, hour=None, day=None,
-        month=None, year=None):
+
+def real_seconds_until(sec=None, min=None, hour=None,
+                       day=None, month=None, year=None):
     """
     Return the real seconds until game time.
 
@@ -187,8 +190,9 @@ def real_seconds_until(sec=None, min=None, hour=None, day=None,
     seconds = (projected - current).total_seconds()
     return seconds / TIMEFACTOR
 
-def schedule(callback, repeat=False, sec=None, min=None, hour=None,
-        day=None, month=None, year=None):
+
+def schedule(callback, repeat=False, sec=None, min=None,
+             hour=None, day=None, month=None, year=None):
     """
     Call a callback at a given in-game time.
 
@@ -212,12 +216,12 @@ def schedule(callback, repeat=False, sec=None, min=None, hour=None,
         schedule(func, min=5, sec=0) # Will call 5 minutes past the next (in-game) hour.
         schedule(func, hour=2, min=30, sec=0) # Will call the next (in-game) day at 02:30.
     """
-    seconds = real_seconds_until(sec=sec, min=min, hour=hour, day=day,
-            month=month, year=year)
+    seconds = real_seconds_until(sec=sec, min=min, hour=hour,
+                                 day=day, month=month, year=year)
     script = create_script("evennia.utils.gametime.TimeScript",
-            key="TimeScript", desc="A gametime-sensitive script",
-            interval=seconds, start_delay=True,
-            repeats=-1 if repeat else 1)
+                           key="TimeScript", desc="A gametime-sensitive script",
+                           interval=seconds, start_delay=True,
+                           repeats=-1 if repeat else 1)
     script.db.callback = callback
     script.db.gametime = {
             "sec": sec,
@@ -229,6 +233,7 @@ def schedule(callback, repeat=False, sec=None, min=None, hour=None,
     }
     return script
 
+
 def reset_gametime():
     """
     Resets the game time to make it start from the current time. Note that
@@ -238,5 +243,3 @@ def reset_gametime():
     global GAME_TIME_OFFSET
     GAME_TIME_OFFSET = runtime()
     ServerConfig.objects.conf("gametime_offset", GAME_TIME_OFFSET)
-
-
