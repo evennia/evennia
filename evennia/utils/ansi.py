@@ -548,7 +548,7 @@ def raw(string):
         string (str): The raw, escaped string.
 
     """
-    return string.replace('{', '{{')
+    return string.replace('{', '{{').replace('|', '||')
 
 
 def group(lst, n):
