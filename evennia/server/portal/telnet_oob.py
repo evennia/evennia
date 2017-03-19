@@ -67,7 +67,7 @@ EVENNIA_TO_GMCP = {"client_options": "Core.Supports.Get",
                    "repeat": "Char.Repeat.Update",
                    "monitor": "Char.Monitor.Update"}
 
-# Msdp object handler
+# MSDP/GMCP communication handler
 
 class TelnetOOB(object):
     """
