@@ -27,6 +27,7 @@ class EventHandler(DefaultScript):
         # Permanent data to be stored
         self.db.events = {}
         self.db.to_valid = []
+        self.db.locked = []
 
         # Tasks
         self.db.task_id = 0
@@ -167,6 +168,10 @@ class EventHandler(DefaultScript):
             obj_events[event_name] = []
             events = obj_events[event_name]
 
+        # If locked, don't edit it
+        if (obj, event_name, number) in self.db.locked:
+            raise RunTimeError("this event is locked.")
+
         # Edit the event
         events[number].update({
                 "updated_on": datetime.now(),
@@ -195,6 +200,10 @@ class EventHandler(DefaultScript):
         obj_events = self.db.events.get(obj, {})
         events = obj_events.get(event_name, [])
 
+        # If locked, don't edit it
+        if (obj, event_name, number) in self.db.locked:
+            raise RunTimeError("this event is locked.")
+
         # Delete the event itself
         try:
             code = events[number]["code"]
@@ -220,6 +229,13 @@ class EventHandler(DefaultScript):
                             t_number - 1))
                     del self.db.to_valid[i + 1]
             i += 1
+
+        # Update locked event
+        for line in self.db.locked:
+            t_obj, t_event_name, t_number = line
+            if obj is t_obj and event_name == t_event_name:
+                if number > t_number:
+                    line[2] -= 1
 
         # Delete time-related events associated with this object
         for script in list(obj.scripts.all()):
