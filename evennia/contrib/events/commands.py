@@ -28,12 +28,14 @@ BASIC_USAGES = [
         "@event/add object name = event name [parameters]",
         "@event/edit object name = event name [event number]",
         "@event/del object name = event name [event number]",
+        "@event/tasks [object name [= event name [event number]]]",
 ]
 
 BASIC_SWITCHES = [
     "add - add and edit a new event",
     "edit - edit an existing event",
     "del - delete an existing event",
+    "tasks - show the list of differed tasks",
 ]
 
 VALIDATOR_USAGES = [
@@ -52,7 +54,11 @@ switches to see what event are active on an object:
 You can also specify an event name if you want the list of events associated
 with this object of this name:
     @event north = can_traverse
+You might need to specify a number after the event if there are more than one:
+    @event here = say 2
 You can also add, edit or remove events using the add, edit or del switches.
+Additionally, you can see the list of differed tasks created by events
+(chained events to be called) using the /tasks switch.
 """
 
 VALIDATOR_TEXT = """
@@ -174,6 +180,8 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             self.del_event()
         elif switch == "accept" and validator:
             self.accept_event()
+        elif switch in ["tasks", "task"]:
+            self.list_tasks()
         else:
             caller.msg("Mutually exclusive or invalid switches were " \
                     "used, cannot proceed.")
@@ -499,6 +507,28 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             self.handler.accept_event(obj, event_name, parameters)
             self.msg("The event {} {} of {} has been accepted.".format(
                     event_name, parameters, obj))
+
+    def list_tasks(self):
+        """List the active tasks."""
+        obj = self.obj
+        event_name = self.event_name
+        handler = self.handler
+        tasks = [(k, v[0], v[1], v[2]) for k, v in handler.db.tasks.items()]
+        if obj:
+            tasks = [task for task in tasks if task[2] is obj]
+        if event_name:
+            tasks = [task for task in tasks if task[3] == event_name]
+
+        tasks.sort()
+        table = EvTable("ID", "Object", "Event", "In", width=78)
+        table.reformat_column(0, align="r")
+        now = datetime.now()
+        for task_id, future, obj, event_name in tasks:
+            key = obj.get_display_name(self.caller)
+            delta = time_format((future - now).total_seconds(), 1)
+            table.add_row(task_id, key, event_name, delta)
+
+        self.msg(table)
 
 # Private functions to handle editing
 def _ev_load(caller):
