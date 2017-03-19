@@ -198,7 +198,7 @@ class IRCBot(irc.IRCClient, Session):
         logger.log_info("IRC bot '%s' connected to %s at %s:%s." % (self.nickname, self.channel,
                                                                     self.network, self.port))
 
-    def disconnect(self, reason=None):
+    def disconnect(self, reason=""):
         """
         Called by sessionhandler to disconnect this protocol.
 
@@ -206,7 +206,7 @@ class IRCBot(irc.IRCClient, Session):
             reason (str): Motivation for the disconnect.
 
         """
-        self.sessionhandler.disconnect(self)
+        self.sessionhandler.disconnect(self, reason=reason)
         self.stopping = True
         self.transport.loseConnection()
 

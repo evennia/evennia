@@ -607,13 +607,13 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
     help_category = "System"
 
     def func(self):
-        """Show the version"""
+        """Display information about server or target"""
 
         string = """
          |cEvennia|n %s|n
          MUD/MUX/MU* development system
 
-         |wLicence|n BSD 3-Clause Licence
+         |wLicence|n https://opensource.org/licenses/BSD-3-Clause
          |wWeb|n http://www.evennia.com
          |wIrc|n #evennia on FreeNode
          |wForum|n http://www.evennia.com/discussions

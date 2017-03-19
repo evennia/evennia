@@ -98,6 +98,7 @@ from typeclasses import rooms, exits
 from random import randint
 import random
 
+
 # A map with a temple (▲) amongst mountains (n,∩) in a forest (♣,♠) on an
 # island surrounded by water (≈). By giving no instructions for the water
 # characters we effectively skip it and create no rooms for those squares.
@@ -322,7 +323,8 @@ def build_map(caller, game_map, legend, iterations=1, build_exits=True):
         for y in xrange(len(game_map)):
             for x in xrange(len(game_map[y])):
                 for key in legend:
-                    if game_map[y][x] in key:
+                    # obs - we must use == for unicode
+                    if utils.to_unicode(game_map[y][x]) == utils.to_unicode(key):
                         room = legend[key](x, y, iteration=iteration,
                                            room_dict=room_dict,
                                            caller=caller)

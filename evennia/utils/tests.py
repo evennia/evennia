@@ -411,3 +411,98 @@ class TestEvForm(TestCase):
         # note that in a msg() call, the result would be the  correct |-----,
         # in a print, ansi only gets called once, so ||----- is the result
         self.assertEqual(unicode(evform.EvForm(form={"FORM":"\n||-----"})), "||-----")
+
+class TestTimeformat(TestCase):
+    """
+    Default function header from utils.py:
+    time_format(seconds, style=0)
+
+    """
+
+    def test_style_0(self):
+        """Test the style 0 of time_format."""
+        self.assertEqual(utils.time_format(0, 0), "00:00")
+        self.assertEqual(utils.time_format(28, 0), "00:00")
+        self.assertEqual(utils.time_format(92, 0), "00:01")
+        self.assertEqual(utils.time_format(300, 0), "00:05")
+        self.assertEqual(utils.time_format(660, 0), "00:11")
+        self.assertEqual(utils.time_format(3600, 0), "01:00")
+        self.assertEqual(utils.time_format(3725, 0), "01:02")
+        self.assertEqual(utils.time_format(86350, 0), "23:59")
+        self.assertEqual(utils.time_format(86800, 0), "1d 00:06")
+        self.assertEqual(utils.time_format(130800, 0), "1d 12:20")
+        self.assertEqual(utils.time_format(530800, 0), "6d 03:26")
+
+    def test_style_1(self):
+        """Test the style 1 of time_format."""
+        self.assertEqual(utils.time_format(0, 1), "0s")
+        self.assertEqual(utils.time_format(28, 1), "28s")
+        self.assertEqual(utils.time_format(92, 1), "1m")
+        self.assertEqual(utils.time_format(300, 1), "5m")
+        self.assertEqual(utils.time_format(660, 1), "11m")
+        self.assertEqual(utils.time_format(3600, 1), "1h")
+        self.assertEqual(utils.time_format(3725, 1), "1h")
+        self.assertEqual(utils.time_format(86350, 1), "23h")
+        self.assertEqual(utils.time_format(86800, 1), "1d")
+        self.assertEqual(utils.time_format(130800, 1), "1d")
+        self.assertEqual(utils.time_format(530800, 1), "6d")
+
+    def test_style_2(self):
+        """Test the style 2 of time_format."""
+        self.assertEqual(utils.time_format(0, 2), "0 minutes")
+        self.assertEqual(utils.time_format(28, 2), "0 minutes")
+        self.assertEqual(utils.time_format(92, 2), "1 minute")
+        self.assertEqual(utils.time_format(300, 2), "5 minutes")
+        self.assertEqual(utils.time_format(660, 2), "11 minutes")
+        self.assertEqual(utils.time_format(3600, 2), "1 hour, 0 minutes")
+        self.assertEqual(utils.time_format(3725, 2), "1 hour, 2 minutes")
+        self.assertEqual(utils.time_format(86350, 2), "23 hours, 59 minutes")
+        self.assertEqual(utils.time_format(86800, 2),
+                "1 day, 0 hours, 6 minutes")
+        self.assertEqual(utils.time_format(130800, 2),
+                "1 day, 12 hours, 20 minutes")
+        self.assertEqual(utils.time_format(530800, 2),
+                "6 days, 3 hours, 26 minutes")
+
+    def test_style_3(self):
+        """Test the style 3 of time_format."""
+        self.assertEqual(utils.time_format(0, 3), "")
+        self.assertEqual(utils.time_format(28, 3), "28 seconds")
+        self.assertEqual(utils.time_format(92, 3), "1 minute 32 seconds")
+        self.assertEqual(utils.time_format(300, 3), "5 minutes 0 seconds")
+        self.assertEqual(utils.time_format(660, 3), "11 minutes 0 seconds")
+        self.assertEqual(utils.time_format(3600, 3),
+                "1 hour, 0 minutes")
+        self.assertEqual(utils.time_format(3725, 3),
+                "1 hour, 2 minutes 5 seconds")
+        self.assertEqual(utils.time_format(86350, 3),
+                "23 hours, 59 minutes 10 seconds")
+        self.assertEqual(utils.time_format(86800, 3),
+                "1 day, 0 hours, 6 minutes 40 seconds")
+        self.assertEqual(utils.time_format(130800, 3),
+                "1 day, 12 hours, 20 minutes 0 seconds")
+        self.assertEqual(utils.time_format(530800, 3),
+                "6 days, 3 hours, 26 minutes 40 seconds")
+
+    def test_style_4(self):
+        """Test the style 4 of time_format."""
+        self.assertEqual(utils.time_format(0, 4), "0 seconds")
+        self.assertEqual(utils.time_format(28, 4), "28 seconds")
+        self.assertEqual(utils.time_format(92, 4), "a minute")
+        self.assertEqual(utils.time_format(300, 4), "5 minutes")
+        self.assertEqual(utils.time_format(660, 4), "11 minutes")
+        self.assertEqual(utils.time_format(3600, 4), "an hour")
+        self.assertEqual(utils.time_format(3725, 4), "an hour")
+        self.assertEqual(utils.time_format(86350, 4), "23 hours")
+        self.assertEqual(utils.time_format(86800, 4), "a day")
+        self.assertEqual(utils.time_format(130800, 4), "a day")
+        self.assertEqual(utils.time_format(530800, 4), "6 days")
+        self.assertEqual(utils.time_format(3030800, 4), "a month")
+        self.assertEqual(utils.time_format(7030800, 4), "2 months")
+        self.assertEqual(utils.time_format(40030800, 4), "a year")
+        self.assertEqual(utils.time_format(90030800, 4), "2 years")
+
+    def test_unknown_format(self):
+        """Test that unknown formats raise exceptions."""
+        self.assertRaises(ValueError, utils.time_format, 0, 5)
+        self.assertRaises(ValueError, utils.time_format, 0, "u")

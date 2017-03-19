@@ -345,6 +345,7 @@ def time_format(seconds, style=0):
             1. "1d"
             2. "1 day, 8 hours, 30 minutes"
             3. "1 day, 8 hours, 30 minutes, 10 seconds"
+            4. highest unit (like "3 years" or "8 months" or "1 second")
     Returns:
         timeformatted (str): A pretty time string.
     """
@@ -433,6 +434,38 @@ def time_format(seconds, style=0):
             else:
                 seconds_str = '%i seconds ' % seconds
         retval = '%s%s%s%s' % (days_str, hours_str, minutes_str, seconds_str)
+    elif style == 4:
+        """
+        Only return the highest unit.
+        """
+        if days >= 730: # Several years
+            return "{} years".format(days // 365)
+        elif days >= 365: # One year
+            return "a year"
+        elif days >= 62: # Several months
+            return "{} months".format(days // 31)
+        elif days >= 31: # One month
+            return "a month"
+        elif days >= 2: # Several days
+            return "{} days".format(days)
+        elif days > 0:
+            return "a day"
+        elif hours >= 2: # Several hours
+            return "{} hours".format(hours)
+        elif hours > 0: # One hour
+            return "an hour"
+        elif minutes >= 2: # Several minutes
+            return "{} minutes".format(minutes)
+        elif minutes > 0: # One minute
+            return "a minute"
+        elif seconds >= 2: # Several seconds
+            return "{} seconds".format(seconds)
+        elif seconds == 1:
+            return "a second"
+        else:
+            return "0 seconds"
+    else:
+        raise ValueError("Unknown style for time format: %s" % style)
 
     return retval.strip()
 

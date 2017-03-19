@@ -26,6 +26,7 @@ from twisted.internet.threads import deferToThread
 _LOGDIR = None
 _TIMEZONE = None
 
+
 def timeformat(when=None):
     """
     This helper function will format the current time in the same
@@ -88,7 +89,7 @@ def log_err(errmsg):
     Prints/logs an error message to the server log.
 
     Args:
-        errormsg (str): The message to be logged.
+        errmsg (str): The message to be logged.
 
     """
     try:
@@ -97,7 +98,7 @@ def log_err(errmsg):
         errmsg = str(e)
     for line in errmsg.splitlines():
         log.msg('[EE] %s' % line)
-    #log.err('ERROR: %s' % (errormsg,))
+    # log.err('ERROR: %s' % (errmsg,))
 log_errmsg = log_err
 
 
@@ -115,7 +116,7 @@ def log_warn(warnmsg):
         warnmsg = str(e)
     for line in warnmsg.splitlines():
         log.msg('[WW] %s' % line)
-    #log.msg('WARNING: %s' % (warnmsg,))
+    # log.msg('WARNING: %s' % (warnmsg,))
 log_warnmsg = log_warn
 
 
@@ -152,7 +153,8 @@ log_depmsg = log_dep
 
 # Arbitrary file logger
 
-_LOG_FILE_HANDLES = {} # holds open log handles
+_LOG_FILE_HANDLES = {}  # holds open log handles
+
 
 def _open_log_file(filename):
     """
@@ -171,7 +173,7 @@ def _open_log_file(filename):
         return _LOG_FILE_HANDLES[filename]
     else:
         try:
-            filehandle = open(filename, "a+") # append mode + reading
+            filehandle = open(filename, "a+")  # append mode + reading
             _LOG_FILE_HANDLES[filename] = filehandle
             return filehandle
         except IOError:
@@ -184,13 +186,14 @@ def log_file(msg, filename="game.log"):
     Arbitrary file logger using threads.
 
     Args:
+        msg (str): String to append to logfile.
         filename (str, optional): Defaults to 'game.log'. All logs
             will appear in the logs directory and log entries will start
             on new lines following datetime info.
 
     """
     def callback(filehandle, msg):
-        "Writing to file and flushing result"
+        """Writing to file and flushing result"""
         msg = "\n%s [-] %s" % (timeformat(), msg.strip())
         filehandle.write(msg)
         # since we don't close the handle, we need to flush
@@ -199,7 +202,7 @@ def log_file(msg, filename="game.log"):
         filehandle.flush()
 
     def errback(failure):
-        "Catching errors to normal log"
+        """Catching errors to normal log"""
         log_trace()
 
     # save to server/logs/ directory
@@ -230,7 +233,7 @@ def tail_log_file(filename, offset, nlines, callback=None):
 
     """
     def seek_file(filehandle, offset, nlines, callback):
-        "step backwards in chunks and stop only when we have enough lines"
+        """step backwards in chunks and stop only when we have enough lines"""
         lines_found = []
         buffer_size = 4098
         block_count = -1
@@ -254,7 +257,7 @@ def tail_log_file(filename, offset, nlines, callback=None):
             return lines_found
 
     def errback(failure):
-        "Catching errors to normal log"
+        """Catching errors to normal log"""
         log_trace()
 
     filehandle = _open_log_file(filename)
