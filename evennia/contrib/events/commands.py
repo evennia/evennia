@@ -346,6 +346,12 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             self.msg("You cannot edit this event created by someone else.")
             return
 
+        # If the event is locked (edited by someone else)
+        if (obj, event_name, parameters) in self.handler.db.locked:
+            self.msg("This event is locked, you cannot edit it.")
+            return
+        self.handler.db.locked.append((obj, event_name, parameters))
+
         # Check the definition of the event
         definition = types.get(event_name, (None, "Chained event"))
         description = definition[1]
@@ -405,6 +411,11 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         # others' works
         if not self.autovalid and event["author"] is not self.caller:
             self.msg("You cannot delete this event created by someone else.")
+            return
+
+        # If the event is locked (edited by someone else)
+        if (obj, event_name, parameters) in self.handler.db.locked:
+            self.msg("This event is locked, you cannot delete it.")
             return
 
         # Delete the event
@@ -504,6 +515,10 @@ def _ev_save(caller, buf):
             ("obj", "name", "number", "valid")):
         caller.msg("Couldn't save this event.")
         return False
+
+    if (event["obj"], event["name"], event["number"]) in handler.db.locked:
+        handler.db.locked.remove((event["obj"], event["name"],
+                event["number"]))
 
     handler.edit_event(event["obj"], event["name"], event["number"], buf,
             caller, valid=autovalid)
