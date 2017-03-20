@@ -81,7 +81,9 @@ class BotStarter(DefaultScript):
         """
         self.db.started = False
 
+#
 # Bot base class
+
 
 class Bot(DefaultPlayer):
     """
@@ -196,9 +198,9 @@ class IRCBot(Bot):
 
         # instruct the server and portal to create a new session with
         # the stored configuration
-        configdict = {"uid":self.dbid,
+        configdict = {"uid": self.dbid,
                       "botname": self.db.irc_botname,
-                      "channel": self.db.irc_channel ,
+                      "channel": self.db.irc_channel,
                       "network": self.db.irc_network,
                       "port": self.db.irc_port,
                       "ssl": self.db.irc_ssl}
@@ -325,30 +327,31 @@ class IRCBot(Bot):
                     whos.append("%s (%s/%s)" % (utils.crop("|w%s|n" % player.name, width=25),
                                                 utils.time_format(delta_conn, 0),
                                                 utils.time_format(delta_cmd, 1)))
-                text = "Who list (online/idle): %s" % ", ".join(sorted(whos, key=lambda w:w.lower()))
+                text = "Who list (online/idle): %s" % ", ".join(sorted(whos, key=lambda w: w.lower()))
             elif txt.lower().startswith("about"):
                 # some bot info
                 text = "This is an Evennia IRC bot connecting from '%s'." % settings.SERVERNAME
             else:
                 text = "I understand 'who' and 'about'."
-            super(IRCBot, self).msg(privmsg=((text,), {"user":user}))
+            super(IRCBot, self).msg(privmsg=((text,), {"user": user}))
         else:
             # something to send to the main channel
             if kwargs["type"] == "action":
                 # An action (irc pose)
                 text = "%s@%s %s" % (kwargs["user"], kwargs["channel"], txt)
-
             else:
                 # msg - A normal channel message
                 text = "%s@%s: %s" % (kwargs["user"], kwargs["channel"], txt)
 
-                if not self.ndb.ev_channel and self.db.ev_channel:
-                    # cache channel lookup
-                    self.ndb.ev_channel = self.db.ev_channel
-                if self.ndb.ev_channel:
-                    self.ndb.ev_channel.msg(text, senders=self.id)
+            if not self.ndb.ev_channel and self.db.ev_channel:
+                # cache channel lookup
+                self.ndb.ev_channel = self.db.ev_channel
+            if self.ndb.ev_channel:
+                self.ndb.ev_channel.msg(text, senders=self.id)
 
+#
 # RSS
+
 
 class RSSBot(Bot):
     """
@@ -363,7 +366,7 @@ class RSSBot(Bot):
         Args:
             ev_channel (str): Key of the Evennia channel to connect to.
             rss_url (str): Full URL to the RSS feed to subscribe to.
-            rss_update_rate (int): How often for the feedreader to update.
+            rss_rate (int): How often for the feedreader to update.
 
         Raises:
             RuntimeError: If `ev_channel` does not exist.
@@ -371,8 +374,8 @@ class RSSBot(Bot):
         """
         if not _RSS_EMABLED:
             # The bot was created, then RSS was turned off. Delete ourselves.
-             self.delete()
-             return
+            self.delete()
+            return
 
         global _SESSIONS
         if not _SESSIONS:
@@ -404,7 +407,7 @@ class RSSBot(Bot):
         Args:
             session (Session, optional): Session responsible for this
                 command.
-            text (str, optional):  Command string.
+            txt (str, optional):  Command string.
             kwargs (dict, optional): Additional Information passed from bot.
                 Not used by the RSSbot by default.
 
