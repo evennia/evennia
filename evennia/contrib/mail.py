@@ -87,7 +87,7 @@ class CmdMail(default_cmds.MuxCommand):
         """
         # mail_messages = Msg.objects.get_by_tag(category="mail")
         # messages = []
-        messages = Msg.objects.get_by_tag(category="mail", raw_queryset=True).filter(db_receivers_players=self.caller)
+        messages = Msg.objects.get_by_tag(category="mail", raw_queryset=True).filter(db_receivers_players=self.caller.player)
         return messages
 
     def send_mail(self, recipients, subject, message, caller):
