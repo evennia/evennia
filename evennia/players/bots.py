@@ -372,7 +372,7 @@ class RSSBot(Bot):
             RuntimeError: If `ev_channel` does not exist.
 
         """
-        if not _RSS_EMABLED:
+        if not _RSS_ENABLED:
             # The bot was created, then RSS was turned off. Delete ourselves.
             self.delete()
             return
