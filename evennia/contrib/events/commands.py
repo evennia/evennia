@@ -6,12 +6,12 @@ from datetime import datetime
 
 from django.conf import settings
 from evennia import Command
-from evennia.contrib.events.custom import get_event_handler
+from evennia.utils.ansi import raw
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
 from evennia.utils.utils import class_from_module, time_format
+from evennia.contrib.events.custom import get_event_handler
 
-COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # Permissions
@@ -20,26 +20,26 @@ WITHOUT_VALIDATION = getattr(settings, "EVENTS_WITHOUT_VALIDATION",
         "immortals")
 VALIDATING = getattr(settings, "EVENTS_VALIDATING", "immortals")
 
-# Split help file
+# Split help text
 BASIC_HELP = "Add, edit or delete events."
 
 BASIC_USAGES = [
-        "@event object name [= event name]",
-        "@event/add object name = event name [parameters]",
-        "@event/edit object name = event name [event number]",
-        "@event/del object name = event name [event number]",
-        "@event/tasks [object name [= event name [event number]]]",
+        "@event <object name> [= <event name>]",
+        "@event/add <object name> = <event name> [parameters]",
+        "@event/edit <object name> = <event name> [event number]",
+        "@event/del <object name> = <event name> [event number]",
+        "@event/tasks [object name [= <event name>]]",
 ]
 
 BASIC_SWITCHES = [
-    "add - add and edit a new event",
-    "edit - edit an existing event",
-    "del - delete an existing event",
-    "tasks - show the list of differed tasks",
+    "add    - add and edit a new event",
+    "edit   - edit an existing event",
+    "del    - delete an existing event",
+    "tasks  - show the list of differed tasks",
 ]
 
 VALIDATOR_USAGES = [
-        "@event/accept [object name = event name [event number]]",
+        "@event/accept [object name = <event name> [event number]]",
 ]
 
 VALIDATOR_SWITCHES = [
@@ -50,12 +50,12 @@ BASIC_TEXT = """
 This command is used to manipulate events.  An event can be linked to
 an object, to fire at a specific moment.  You can use the command without
 switches to see what event are active on an object:
-    @event self
+  @event self
 You can also specify an event name if you want the list of events associated
 with this object of this name:
-    @event north = can_traverse
-You might need to specify a number after the event if there are more than one:
-    @event here = say 2
+  @event north = can_traverse
+You can also add a number after the event name to see details on one event:
+  @event here = say 2
 You can also add, edit or remove events using the add, edit or del switches.
 Additionally, you can see the list of differed tasks created by events
 (chained events to be called) using the /tasks switch.
@@ -66,26 +66,25 @@ You can also use this command to validate events.  Depending on your game
 setting, some users might be allowed to add new events, but these events
 will not be fired until you accept them.  To see the events needing
 validation, enter the /accept switch without argument:
-    @event/accept
+  @event/accept
 A table will show you the events that are not validated yet, who created
-it and when.  You can then accept a specific event:
-    @event here = enter
-Or, if more than one events are connected here, specify the number:
-    @event here = enter 3
+them and when.  You can then accept a specific event:
+  @event here = enter 1
 Use the /del switch to remove events that should not be connected.
 """
 
 class CmdEvent(COMMAND_DEFAULT_CLASS):
 
-    """Command to edit events."""
+    """
+    Command to edit events.
+    """
 
     key = "@event"
-    locks = "cmd:perm({})".format(VALIDATING)
     aliases = ["@events", "@ev"]
+    locks = "cmd:perm({})".format(VALIDATING)
     if WITH_VALIDATION:
         locks += " or perm({})".format(WITH_VALIDATION)
     help_category = "Building"
-
 
     def get_help(self, caller, cmdset):
         """
@@ -104,18 +103,18 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         """
         lock = "perm({}) or perm(events_validating)".format(VALIDATING)
         validator = caller.locks.check_lockstring(caller, lock)
-        text = "\n" + BASIC_HELP + "\n\nUsages:\n    "
+        text = "\n" + BASIC_HELP + "\n\nUsages:\n  "
 
         # Usages
-        text += "\n    ".join(BASIC_USAGES)
+        text += "\n  ".join(BASIC_USAGES)
         if validator:
-            text += "\n    " + "\n    ".join(VALIDATOR_USAGES)
+            text += "\n  " + "\n  ".join(VALIDATOR_USAGES)
 
         # Switches
-        text += "\n\nSwitches:\n    "
-        text += "\n    ".join(BASIC_SWITCHES)
+        text += "\n\nSwitches:\n  "
+        text += "\n  ".join(BASIC_SWITCHES)
         if validator:
-            text += "\n    " + "\n".join(VALIDATOR_SWITCHES)
+            text += "\n  " + "\n  ".join(VALIDATOR_SWITCHES)
 
         # Text
         text += "\n" + BASIC_TEXT
@@ -146,37 +145,25 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                     "access the event system.")
             return
 
-        # Before the equal sign is always an object name
-        if self.args.strip():
+        # Before the equal sign, there is an object name or nothing
+        if self.lhs:
             self.obj = caller.search(self.lhs)
             if not self.obj:
                 return
 
         # Switches are mutually exclusive
         switch = self.switches and self.switches[0] or ""
-        if switch == "":
-            if not self.obj:
-                caller.msg("Specify an object's name or #ID.")
-                return
+        if switch in ("", "add", "edit", "del") and self.obj is None:
+            caller.msg("Specify an object's name or #ID.")
+            return
 
+        if switch == "":
             self.list_events()
         elif switch == "add":
-            if not self.obj:
-                caller.msg("Specify an object's name or #ID.")
-                return
-
             self.add_event()
         elif switch == "edit":
-            if not self.obj:
-                caller.msg("Specify an object's name or #ID.")
-                return
-
             self.edit_event()
         elif switch == "del":
-            if not self.obj:
-                caller.msg("Specify an object's name or #ID.")
-                return
-
             self.del_event()
         elif switch == "accept" and validator:
             self.accept_event()
@@ -198,16 +185,17 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             # Check that the event name can be found in this object
             created = events.get(event_name)
             if created is None:
-                self.msg("No event {} has been set on {}.".format(event_name, obj))
+                self.msg("No event {} has been set on {}.".format(event_name,
+                        obj))
                 return
 
             if parameters:
                 # Check that the parameter points to an existing event
                 try:
-                    parameters = int(parameters) - 1
-                    assert parameters >= 0
-                    event = events[event_name][parameters]
-                except (AssertionError, ValueError):
+                    number = int(parameters) - 1
+                    assert number >= 0
+                    event = events[event_name][number]
+                except (ValueError, AssertionError, IndexError):
                     self.msg("The event {} {} cannot be found in {}.".format(
                             event_name, parameters, obj))
                     return
@@ -223,10 +211,9 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                 updated_on = event.get("updated_on")
                 updated_on = updated_on.strftime("%Y-%m-%d %H:%M:%S") \
                         if updated_on else "|gUnknown|n"
-                number = parameters + 1
-                msg = "Event {} {} of {}:".format(event_name, number, obj)
-                msg += "\nCreated by {} at {}.".format(author, created_on)
-                msg += "\nUpdated by {} at {}".format(updated_by, updated_on)
+                msg = "Event {} {} of {}:".format(event_name, parameters, obj)
+                msg += "\nCreated by {} on {}.".format(author, created_on)
+                msg += "\nUpdated by {} on {}".format(updated_by, updated_on)
 
                 if self.is_validator:
                     if event.get("valid"):
@@ -235,7 +222,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                         msg += "\nThis event |rhasn't been|n accepted yet."
 
                 msg += "\nEvent code:\n"
-                msg += "\n".join([l for l in event["code"].splitlines()])
+                msg += raw(event["code"])
                 self.msg(msg)
                 return
 
@@ -255,8 +242,9 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                     updated_on = event.get("created_on")
 
                 if updated_on:
-                    updated_on = time_format(
-                            (now - updated_on).total_seconds(), 1)
+                    updated_on = "{} ago".format(time_format(
+                            (now - updated_on).total_seconds(),
+                            4).capitalize())
                 else:
                     updated_on = "|gUnknown|n"
                 parameters = event.get("parameters", "")
@@ -330,7 +318,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
 
         # If there's only one event, just edit it
         if len(events[event_name]) == 1:
-            parameters = 0
+            number = 0
             event = events[event_name][0]
         else:
             if not parameters:
@@ -340,10 +328,10 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
 
             # Check that the parameter points to an existing event
             try:
-                parameters = int(parameters) - 1
-                assert parameters >= 0
-                event = events[event_name][parameters]
-            except (AssertionError, ValueError):
+                number = int(parameters) - 1
+                assert number >= 0
+                event = events[event_name][number]
+            except (ValueError, AssertionError, IndexError):
                 self.msg("The event {} {} cannot be found in {}.".format(
                         event_name, parameters, obj))
                 return
@@ -355,10 +343,10 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             return
 
         # If the event is locked (edited by someone else)
-        if (obj, event_name, parameters) in self.handler.db.locked:
+        if (obj, event_name, number) in self.handler.db.locked:
             self.msg("This event is locked, you cannot edit it.")
             return
-        self.handler.db.locked.append((obj, event_name, parameters))
+        self.handler.db.locked.append((obj, event_name, number))
 
         # Check the definition of the event
         definition = types.get(event_name, (None, "Chained event"))
@@ -369,7 +357,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         event = dict(event)
         event["obj"] = obj
         event["name"] = event_name
-        event["number"] = parameters
+        event["number"] = number
         self.caller.db._event = event
         EvEditor(self.caller, loadfunc=_ev_load, savefunc=_ev_save,
                 quitfunc=_ev_quit, key="Event {} of {}".format(
@@ -396,7 +384,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
 
         # If there's only one event, just delete it
         if len(events[event_name]) == 1:
-            parameters = 0
+            number = 0
             event = events[event_name][0]
         else:
             if not parameters:
@@ -407,10 +395,10 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
 
             # Check that the parameter points to an existing event
             try:
-                parameters = int(parameters) - 1
-                assert parameters >= 0
-                event = events[event_name][parameters]
-            except (AssertionError, ValueError):
+                number = int(parameters) - 1
+                assert number >= 0
+                event = events[event_name][number]
+            except (ValueError, AssertionError, IndexError):
                 self.msg("The event {} {} cannot be found in {}.".format(
                         event_name, parameters, obj))
                 return
@@ -422,14 +410,14 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             return
 
         # If the event is locked (edited by someone else)
-        if (obj, event_name, parameters) in self.handler.db.locked:
+        if (obj, event_name, number) in self.handler.db.locked:
             self.msg("This event is locked, you cannot delete it.")
             return
 
         # Delete the event
-        self.handler.del_event(obj, event_name, parameters)
+        self.handler.del_event(obj, event_name, number)
         self.msg("The event {} {} of {} was deleted.".format(
-                obj, event_name, parameters + 1))
+                obj, event_name, parameters))
 
     def accept_event(self):
         """Accept an event."""
@@ -461,8 +449,9 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                     updated_on = event.get("created_on")
 
                 if updated_on:
-                    updated_on = time_format(
-                            (now - updated_on).total_seconds(), 1)
+                    updated_on = "{} ago".format(time_format(
+                            (now - updated_on).total_seconds(),
+                            4).capitalize())
                 else:
                     updated_on = "|gUnknown|n"
 
@@ -492,10 +481,10 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
 
         # Check that the parameter points to an existing event
         try:
-            parameters = int(parameters) - 1
-            assert parameters >= 0
-            event = events[event_name][parameters]
-        except (AssertionError, ValueError):
+            number = int(parameters) - 1
+            assert number >= 0
+            event = events[event_name][number]
+        except (ValueError, AssertionError, IndexError):
             self.msg("The event {} {} cannot be found in {}.".format(
                     event_name, parameters, obj))
             return
@@ -504,7 +493,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         if event["valid"]:
             self.msg("This event has already been accepted.")
         else:
-            self.handler.accept_event(obj, event_name, parameters)
+            self.handler.accept_event(obj, event_name, number)
             self.msg("The event {} {} of {} has been accepted.".format(
                     event_name, parameters, obj))
 

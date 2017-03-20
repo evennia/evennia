@@ -4,9 +4,9 @@ Patched typeclasses for Evennia.
 
 from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia import ScriptDB
+from evennia.utils.utils import inherits_from
 from evennia.contrib.events.custom import create_event_type, patch_hook, \
         create_time_event
-from evennia.utils.utils import inherits_from
 
 class PatchedExit(object):
 
@@ -52,10 +52,12 @@ create_event_type(DefaultExit, "can_traverse", ["character", "exit", "room"],
     Can the character traverse through this exit?
     This event is called when a character is about to traverse this
     exit.  You can use the deny() function to deny the character from
-    using this exit for the time being.  The 'character' variable
-    contains the character who wants to traverse through this exit.
-    The 'exit' variable contains the exit, the 'room' variable
-    contains the room in which the character and exit are.
+    exitting for this time.
+
+    Variables you can use in this event:
+        character: the character that wants to traverse this exit.
+        exit: the exit to be traversed.
+        room: the room in which stands the character before moving.
 """)
 create_event_type(DefaultExit, "traverse", ["character", "exit",
         "origin", "destination"], """
@@ -64,11 +66,12 @@ create_event_type(DefaultExit, "traverse", ["character", "exit",
     exit.  Traversing cannot be prevented using 'deny()' at this
     point.  The character will be in a different room and she will
     have received the room's description when this event is called.
-    The 'character' variable contains the character who has traversed
-    through this exit.  The 'exit' variable contains the exit, the
-    'origin' variable contains the room in which the character was
-    before traversing, while 'destination' contains the room in which
-    the character now is.
+
+    Variables you can use in this event:
+        character: the character who has traversed through this exit.
+        exit: the exit that was just traversed through.
+        origin: the exit's location (where the character was before moving).
+        destination: the character's location after moving.
     """)
 
 # Room events
@@ -82,7 +85,7 @@ create_event_type(DefaultRoom, "time", ["room"], """
     spaces, colons or dashes.  Keep it as close from a recognizable
     date format, like this:
         @event/add here = time 06-15 12:20
-    This event will fire every year on June 15th at 12 PM (still
+    This event will fire every year on June the 15th at 12 PM (still
     game time).  Units have to be specified depending on your set calendar
     (ask a developer for more details).
 

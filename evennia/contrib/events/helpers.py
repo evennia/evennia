@@ -1,8 +1,7 @@
 """
 Module defining basic helpers for the event system.
 
-
-Hlpers are just Python function that can be used inside of events.  They
+Hlpers are just Python functions that can be used inside of events.  They
 
 """
 
@@ -70,9 +69,10 @@ def call(obj, event_name, seconds=0):
         seconds (int or float): the number of seconds to wait before calling
                 the event.
 
-    Notice that chained events are designed for this very purpose: they
-    are never called automatically by the game, rather, they need to be
-    called from inside another event.
+    Note:
+        Chained events are designed for this very purpose: they
+        are never called automatically by the game, rather, they need
+        to be called from inside another event.
 
     """
     try:

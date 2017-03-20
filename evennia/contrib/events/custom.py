@@ -11,10 +11,10 @@ from textwrap import dedent
 from django.conf import settings
 from evennia import logger
 from evennia import ScriptDB
-from evennia.contrib.custom_gametime import UNITS
-from evennia.contrib.custom_gametime import real_seconds_until as custom_rsu
 from evennia.utils.create import create_script
 from evennia.utils.gametime import real_seconds_until as standard_rsu
+from evennia.contrib.custom_gametime import UNITS
+from evennia.contrib.custom_gametime import real_seconds_until as custom_rsu
 
 hooks = []
 event_types = []
@@ -24,7 +24,7 @@ def get_event_handler():
     try:
         script = ScriptDB.objects.get(db_key="event_handler")
     except ScriptDB.DoesNotExist:
-        logger.log_err("Can't get the event handler.")
+        logger.log_trace("Can't get the event handler.")
         script = None
 
     return script
@@ -39,10 +39,10 @@ def create_event_type(typeclass, event_name, variables, help_text,
         event_name (str): the name of the event to be added.
         variables (list of str): a list of variable names.
         help_text (str): a help text of the event.
-        custom_add (function, default None): a callback to call when adding
+        custom_add (function, optional): a callback to call when adding
                 the new event.
-        custom_xcall (function, default None): a callback to call when
-                preparing to call the events.
+        custom_call (function, optional): a callback to call when
+                preparing to call the event.
 
     Events obey the inheritance hierarchy: if you set an event on
     DefaultRoom, for instance, and if your Room typeclass inherits
@@ -50,42 +50,23 @@ def create_event_type(typeclass, event_name, variables, help_text,
     all rooms.  Objects of the typeclass set in argument will be
     able to set one or more events of that name.
 
-    If the event already exists in the typeclass, replace it.
+    If the event type already exists in the typeclass, replace it.
 
     """
     typeclass_name = typeclass.__module__ + "." + typeclass.__name__
     event_types.append((typeclass_name, event_name, variables, help_text,
             custom_add, custom_call))
 
-def del_event_type(typeclass, event_name):
-    """
-    Delete the event type for this typeclass.
-
-    Args:
-        typeclass (type): the class defining the typeclass.
-        event_name (str): the name of the event to be deleted.
-
-    If you want to delete an event type, you need to remove it from
-    the typeclass that defined it: other typeclasses in the inheritance
-    hierarchy are not affected.  This method doesn't remove the
-    already-created events associated with individual objects.
-
-    """
-    typeclass_name = typeclass.__module__ + "." + typeclass.__name__
-    try:
-        script = ScriptDB.objects.get(db_key="event_handler")
-    except ScriptDB.DoesNotExist:
-        logger.log_err("Can't create event {} in typeclass {}, the " \
-                "script handler isn't defined".format(name, typeclass_name))
-        return
-
-    # Get the event types for this typeclass
-    event_types = script.ndb.event_types.get(typeclass_name, {})
-    if event_name in event_types:
-        del event_types[event_name]
-
 def patch_hook(typeclass, method_name):
-    """Decorator to softly patch a hook in a typeclass."""
+    """
+    Decorator to softly patch a hook in a typeclass.
+
+    This decorator should not be used, unless for good reasons, outside
+    of this contrib.  The advantage of using decorated soft patchs is
+    in allowing users to customize typeclasses without changing the
+    inheritance tree for a couple of methods.
+
+    """
     hook = getattr(typeclass, method_name)
     def wrapper(method):
         """Wrapper around the hook."""
@@ -119,13 +100,14 @@ def connect_event_types():
     Connect the event types when the script runs.
 
     This method should be called automatically by the event handler
-    (the script).
+    (the script).  It might be useful, however, to call it after adding
+    new event types in typeclasses.
 
     """
     try:
         script = ScriptDB.objects.get(db_key="event_handler")
     except ScriptDB.DoesNotExist:
-        logger.log_err("Can't connect event types, the event handler " \
+        logger.log_trace("Can't connect event types, the event handler " \
                 "cannot be found.")
         return
 
@@ -146,7 +128,7 @@ def connect_event_types():
         types[event_name] = (variables, help_text, custom_add, custom_call)
         del event_types[0]
 
-# Custom callbacks for specific events
+# Custom callbacks for specific event types
 def get_next_wait(format):
     """
     Get the length of time in seconds before format.
@@ -188,7 +170,7 @@ def get_next_wait(format):
             break
 
         if not piece.isdigit():
-            logger.log_err("The time specified '{}' in {} isn't " \
+            logger.log_trace("The time specified '{}' in {} isn't " \
                     "a valid number".format(piece, format))
             return
 
@@ -205,13 +187,13 @@ def get_next_wait(format):
 
 def create_time_event(obj, event_name, number, parameters):
     """
-    Create an time-related event.
+    Create a time-related event.
 
-    args:
+    Args:
         obj (Object): the object on which stands the event.
         event_name (str): the event's name.
         number (int): the number of the event.
-        parameter (str): the parameter of the event.
+        parameters (str): the parameter of the event.
 
     """
     seconds, key = get_next_wait(parameters)
@@ -229,7 +211,7 @@ def keyword_event(events, parameters):
     parameter to add the event type when the event supports keywords
     as parameters.  Keywords in parameters are one or more words
     separated by a comma.  For instance, a 'push 1, one' event can
-    be triggered to trigger when the player 'push 1' or 'push one'.
+    be set to trigger when the player 'push 1' or 'push one'.
 
     Args:
         events (list of dict): the list of events to be called.
