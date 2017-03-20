@@ -8,16 +8,24 @@ from Queue import Queue
 from django.conf import settings
 from evennia import DefaultScript, ScriptDB
 from evennia import logger
+from evennia.utils.dbserialize import dbserialize
+from evennia.utils.utils import all_from_module, delay
 from evennia.contrib.events.custom import connect_event_types, \
         get_next_wait, patch_hooks
 from evennia.contrib.events.exceptions import InterruptEvent
 from evennia.contrib.events import typeclasses
-from evennia.utils.dbserialize import dbserialize
-from evennia.utils.utils import all_from_module, delay
 
 class EventHandler(DefaultScript):
 
-    """Event handler that contains all events in a global script."""
+    """
+    The event handler that contains all events in a global script.
+
+    This script shouldn't be created more than once.  It contains
+    event types (in a non-persistent attribute) and events (in a
+    persistent attribute).  The script method would help adding,
+    editing and deleting these events.
+
+    """
 
     def at_script_creation(self):
         self.key = "event_handler"
@@ -41,8 +49,9 @@ class EventHandler(DefaultScript):
 
         # Generate locals
         self.ndb.current_locals = {}
-        addresses = ["evennia.contrib.events.helpers"]
         self.ndb.fresh_locals = {}
+        addresses = ["evennia.contrib.events.helpers"]
+        addresses.extend(getattr(settings, "EVENTS_HELPERS_LOCATIONS", []))
         for address in addresses:
             self.ndb.fresh_locals.update(all_from_module(address))
 
@@ -56,13 +65,19 @@ class EventHandler(DefaultScript):
 
             delay(seconds, complete_task, task_id)
 
-
     def get_events(self, obj):
         """
         Return a dictionary of the object's events.
 
         Args:
             obj (Object): the connected objects.
+
+        Returns:
+            A dictionary of the object's events.
+
+        Note:
+            This method can be useful to override in some contexts,
+            when several objects would share events.
 
         """
         return self.db.events.get(obj, {})
@@ -73,6 +88,14 @@ class EventHandler(DefaultScript):
 
         Args:
             obj (Object): the connected object.
+
+        Returns:
+            A dictionary of the object's event types.
+
+        Note:
+            Event types would define what the object can have as
+            events.  Note, however, that chained events will not
+            appear in event types and are handled separately.
 
         """
         types = {}
@@ -96,11 +119,11 @@ class EventHandler(DefaultScript):
         Add the specified event.
 
         Args:
-            obj (Object): the Evennia typeclassed object to be modified.
+            obj (Object): the Evennia typeclassed object to be extended.
             event_name (str): the name of the event to add.
             code (str): the Python code associated with this event.
-            author (optional, Character, Player): the author of the event.
-            valid (optional, bool): should the event be connected?
+            author (Character or Player, optional): the author of the event.
+            valid (bool, optional): should the event be connected?
             parameters (str, optional): optional parameters.
 
         This method doesn't check that the event type exists.
@@ -148,12 +171,15 @@ class EventHandler(DefaultScript):
         Edit the specified event.
 
         Args:
-            obj (Object): the Evennia typeclassed object to be modified.
-            event_name (str): the name of the event to add.
+            obj (Object): the Evennia typeclassed object to be edited.
+            event_name (str): the name of the event to edit.
             number (int): the event number to be changed.
             code (str): the Python code associated with this event.
-            author (optional, Character, Player): the author of the event.
-            valid (optional, bool): should the event be connected?
+            author (Character or Player, optional): the author of the event.
+            valid (bool, optional): should the event be connected?
+
+        Raises:
+            RuntimeError if the event is locked.
 
         This method doesn't check that the event type exists.
 
@@ -170,7 +196,7 @@ class EventHandler(DefaultScript):
 
         # If locked, don't edit it
         if (obj, event_name, number) in self.db.locked:
-            raise RunTimeError("this event is locked.")
+            raise RuntimeError("this event is locked.")
 
         # Edit the event
         events[number].update({
@@ -186,7 +212,6 @@ class EventHandler(DefaultScript):
         elif valid and (obj, event_name, number) in self.db.to_valid:
             self.db.to_valid.remove((obj, event_name, number))
 
-
     def del_event(self, obj, event_name, number):
         """
         Delete the specified event.
@@ -196,13 +221,16 @@ class EventHandler(DefaultScript):
             event_name (str): the name of the event to delete.
             number (int): the number of the event to delete.
 
+        Raises:
+            RuntimeError if the event is locked.
+
         """
         obj_events = self.db.events.get(obj, {})
         events = obj_events.get(event_name, [])
 
         # If locked, don't edit it
         if (obj, event_name, number) in self.db.locked:
-            raise RunTimeError("this event is locked.")
+            raise RuntimeError("this event is locked.")
 
         # Delete the event itself
         try:
@@ -274,9 +302,9 @@ class EventHandler(DefaultScript):
             *args: additional variables for this event.
 
         Kwargs:
-            number (int, default None): call just a specific event.
-            parameters (str, default ""): call an event with parameters.
-            locals (dict): a locals replacement.
+            number (int, optional): call just a specific event.
+            parameters (str, optional): call an event with parameters.
+            locals (dict, optional): a locals replacement.
 
         Returns:
             True to report the event was called without interruption,
@@ -307,7 +335,7 @@ class EventHandler(DefaultScript):
                 try:
                     locals[variable] = args[i]
                 except IndexError:
-                    logger.log_err("event {} of {} ({}): need variable " \
+                    logger.log_trace("event {} of {} ({}): need variable " \
                             "{} in position {}".format(event_name, obj,
                             type(obj), variable, i))
                     return False
@@ -348,15 +376,16 @@ class EventHandler(DefaultScript):
         the differed delay is called again.
 
         Args:
-            seconds (int/float): the delay in seconds from now.
+            seconds (int, float): the delay in seconds from now.
             obj (Object): the typecalssed object connected to the event.
             event_name (str): the event's name.
 
-        Note that the dictionary of locals is frozen and will be
-        available again when the task runs.  This feature, however,
-        is limited by the database: all data cannot be saved.  Lambda
-        functions, class methods, objects inside an instance and so
-        on will not be kept in the locals dictionary.
+        Note:
+            The dictionary of locals is frozen and will be available
+            again when the task runs.  This feature, however, is limited
+            by the database: all data cannot be saved.  Lambda functions,
+            class methods, objects inside an instance and so on will
+            not be kept in the locals dictionary.
 
         """
         now = datetime.now()
@@ -399,7 +428,7 @@ class TimeEventScript(DefaultScript):
         try:
             script = ScriptDB.objects.get(db_key="event_handler")
         except ScriptDB.DoesNotExist:
-            logger.log_err("Can't get the event handler.")
+            logger.log_trace("Can't get the event handler.")
             return
 
         if self.db.event_name and self.db.number is not None:
@@ -434,13 +463,13 @@ def complete_task(task_id):
     This function should be called automatically for individual tasks.
 
     Args:
-        task_id (int): the task id.
+        task_id (int): the task ID.
 
     """
     try:
         script = ScriptDB.objects.get(db_key="event_handler")
     except ScriptDB.DoesNotExist:
-        logger.log_err("Can't get the event handler.")
+        logger.log_trace("Can't get the event handler.")
         return
 
     if task_id not in script.db.tasks:
