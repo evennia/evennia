@@ -60,9 +60,9 @@ class CmdHelp(Command):
 
             if self.session.protocol_key in ("websocket", "ajax/comet"):
                 try:
-                   player = self.caller.player
+                   account = self.caller.player
                 except AttributeError:
-                   player = self.caller
+                   account = self.caller
                 try:
                     options = player.db._saved_webclient_options
                 except KeyError:
