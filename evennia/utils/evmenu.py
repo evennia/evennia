@@ -906,7 +906,7 @@ class CmdGetInput(Command):
             # make sure to clean up cmdset if something goes wrong
             caller.msg("|rError in get_input. Choice not confirmed (report to admin)|n")
             logger.log_trace("Error in get_input")
-            caller.cdmset.remove(InputCmdSet)
+            caller.cmdset.remove(InputCmdSet)
 
 
 class InputCmdSet(CmdSet):
