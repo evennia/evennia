@@ -4,9 +4,16 @@ Patched typeclasses for Evennia.
 
 from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia import ScriptDB
-from evennia.utils.utils import inherits_from
-from evennia.contrib.events.custom import create_event_type, patch_hook, \
-        create_time_event
+from evennia.utils.utils import inherits_from, lazy_property
+from evennia.contrib.events.custom import (
+        create_event_type, patch_hook, create_time_event)
+from evennia.contrib.events.handler import EventsHandler
+
+class PatchedObject(object):
+    @lazy_property
+    def events(self):
+        """Return the EventsHandler."""
+        return EventsHandler(self)
 
 class PatchedExit(object):
 

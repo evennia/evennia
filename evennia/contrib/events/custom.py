@@ -67,7 +67,7 @@ def patch_hook(typeclass, method_name):
     inheritance tree for a couple of methods.
 
     """
-    hook = getattr(typeclass, method_name)
+    hook = getattr(typeclass, method_name, None)
     def wrapper(method):
         """Wrapper around the hook."""
         def overridden_hook(*args, **kwargs):
