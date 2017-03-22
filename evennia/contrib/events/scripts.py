@@ -6,13 +6,14 @@ from datetime import datetime, timedelta
 from Queue import Queue
 
 from django.conf import settings
-from evennia import DefaultScript, ScriptDB
+from evennia import DefaultObject, DefaultScript, ScriptDB
 from evennia import logger
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.utils import all_from_module, delay
-from evennia.contrib.events.custom import connect_event_types, \
-        get_next_wait, patch_hooks
+from evennia.contrib.events.custom import (
+        connect_event_types, get_next_wait, patch_hooks)
 from evennia.contrib.events.exceptions import InterruptEvent
+from evennia.contrib.events.handler import EventsHandler as Handler
 from evennia.contrib.events import typeclasses
 
 class EventHandler(DefaultScript):
@@ -65,6 +66,10 @@ class EventHandler(DefaultScript):
 
             delay(seconds, complete_task, task_id)
 
+        # Place the script in the EventsHandler
+        Handler.script = self
+        DefaultObject.events = typeclasses.PatchedObject.events
+
     def get_events(self, obj):
         """
         Return a dictionary of the object's events.
@@ -80,7 +85,21 @@ class EventHandler(DefaultScript):
             when several objects would share events.
 
         """
-        return self.db.events.get(obj, {})
+        obj_events = self.db.events.get(obj, {})
+        events = {}
+        for event_name, event_list in obj_events.items():
+            new_list = []
+            for i, event in enumerate(event_list):
+                event = dict(event)
+                event["obj"] = obj
+                event["name"] = event_name
+                event["number"] = i
+                new_list.append(event)
+
+            if new_list:
+                events[event_name] = new_list
+
+        return events
 
     def get_event_types(self, obj):
         """
@@ -212,6 +231,13 @@ class EventHandler(DefaultScript):
         elif valid and (obj, event_name, number) in self.db.to_valid:
             self.db.to_valid.remove((obj, event_name, number))
 
+        # Build the definition to return (a dictionary)
+        definition = dict(events[number])
+        definition["obj"] = obj
+        definition["name"] = event_name
+        definition["number"] = number
+        return definition
+
     def del_event(self, obj, event_name, number):
         """
         Delete the specified event.
@@ -259,11 +285,11 @@ class EventHandler(DefaultScript):
             i += 1
 
         # Update locked event
-        for line in self.db.locked:
+        for i, line in enumerate(self.db.locked):
             t_obj, t_event_name, t_number = line
             if obj is t_obj and event_name == t_event_name:
-                if number > t_number:
-                    line[2] -= 1
+                if number < t_number:
+                    self.db.locked[i] = (t_obj, t_event_name, t_number - 1)
 
         # Delete time-related events associated with this object
         for script in list(obj.scripts.all()):
