@@ -64,7 +64,7 @@ class CmdHelp(Command):
                 except AttributeError:
                    account = self.caller
                 try:
-                    options = player.db._saved_webclient_options
+                    options = account.db._saved_webclient_options
                 except KeyError:
                     pass
                 if options and options["helppopup"]:
