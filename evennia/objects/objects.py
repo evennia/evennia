@@ -1416,6 +1416,22 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         pass
+      
+    def at_give(self, giver, getter):
+        """
+        Called by the default `give` command when this object has been
+        given.
+
+        Args:
+            giver (Object): The object giving this object.
+            getter (Object): The object getting this object.
+
+        Notes:
+            This hook cannot stop the give from happening. Use
+            permissions for that.
+
+        """
+        pass
 
     def at_drop(self, dropper):
         """
@@ -1426,7 +1442,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             dropper (Object): The object which just dropped this object.
 
         Notes:
-            This hook cannot stop the pickup from happening. Use
+            This hook cannot stop the drop from happening. Use
             permissions from that.
 
         """
