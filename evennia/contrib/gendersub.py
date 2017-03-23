@@ -50,7 +50,7 @@ _GENDER_PRONOUN_MAP = {"male": {"s": "he",
                                      "p": "their",
                                      "a": "theirs"}
                                      }
-_RE_GENDER_PRONOUN = re.compile(r'(\|s|\|S|\|o|\|O|\|p|\|P|\|a|\|A)')
+_RE_GENDER_PRONOUN = re.compile(r'(?<!\|)\|(?!\|)[sSoOpPaA]')
 
 # in-game command for setting the gender
 
@@ -59,7 +59,7 @@ class SetGender(Command):
     Sets gender on yourself
 
     Usage:
-      @gender male|female|neutral|ambiguous
+      @gender male||female||neutral||ambiguous
 
     """
     key = "@gender"
@@ -73,7 +73,7 @@ class SetGender(Command):
         caller = self.caller
         arg = self.args.strip().lower()
         if not arg in ("male", "female", "neutral", "ambiguous"):
-            caller.msg("Usage: @gender male|female|neutral|ambiguous")
+            caller.msg("Usage: @gender male||female||neutral||ambiguous")
             return
         caller.db.gender = arg
         caller.msg("Your gender was set to %s." % arg)
