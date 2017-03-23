@@ -134,5 +134,8 @@ class GenderCharacter(DefaultCharacter):
 
         """
         # pre-process the text before continuing
-        text = _RE_GENDER_PRONOUN.sub(self._get_pronoun, text)
+        try:
+            text = _RE_GENDER_PRONOUN.sub(self._get_pronoun, text)
+        except TypeError:
+            pass
         super(GenderCharacter, self).msg(text, from_obj=from_obj, session=session, **kwargs)
