@@ -221,6 +221,23 @@ class TestParsing(unittest.TestCase):
             """
         )
 
+    def test_inline_code(self):
+        self.assertParses(
+            """
+            This is `code` right?
+            """,
+            """
+            <?xml version="1.0" ?>
+            <document source="&lt;string&gt;">
+              <paragraph>
+                This is \n\
+                <literal>code</literal>
+                 right?
+              </paragraph>
+            </document>
+            """
+        )
+
     def test_bullet_list(self):
         self.assertParses(
             """

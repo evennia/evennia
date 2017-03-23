@@ -120,6 +120,10 @@ class CommonMarkParser(parsers.Parser):
         self.current_node.append(n)
         self.current_node = n
 
+    def visit_code(self, mdnode):
+        n = nodes.literal(mdnode.literal, mdnode.literal)
+        self.current_node.append(n)
+
     def visit_link(self, mdnode):
         ref_node = nodes.reference()
         ref_node['refuri'] = mdnode.destination
