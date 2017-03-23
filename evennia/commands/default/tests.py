@@ -48,6 +48,10 @@ class CommandTest(EvenniaTest):
             cmdobj.at_post_cmd()
         The msgreturn value is compared to eventual
         output sent to caller.msg in the game
+
+        Returns:
+            msg (str): The received message that was sent to the caller.
+
         """
         caller = caller if caller else self.char1
         receiver = receiver if receiver else caller
@@ -61,6 +65,7 @@ class CommandTest(EvenniaTest):
         cmdobj.obj = obj or (caller if caller else self.char1)
         # test
         old_msg = receiver.msg
+        returned_msg = ""
         try:
             receiver.msg = Mock()
             cmdobj.at_pre_cmd()
@@ -83,6 +88,8 @@ class CommandTest(EvenniaTest):
                     raise AssertionError(retval)
         finally:
             receiver.msg = old_msg
+
+        return returned_msg
 
 # ------------------------------------------------------------
 # Individual module Tests
