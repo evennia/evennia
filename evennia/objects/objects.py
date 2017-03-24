@@ -34,6 +34,7 @@ _SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
 
 from django.utils.translation import ugettext as _
 
+
 class ObjectSessionHandler(object):
     """
     Handles the get/setting of the sessid
@@ -133,7 +134,7 @@ class ObjectSessionHandler(object):
         Remove session from handler.
 
         Args:
-            sessid (Session or int): Session or session id to remove.
+            session (Session or int): Session or session id to remove.
 
         """
         try:
@@ -144,7 +145,7 @@ class ObjectSessionHandler(object):
         sessid_cache = self._sessid_cache
         if sessid in sessid_cache:
             sessid_cache.remove(sessid)
-            self.obj.db_sessid =  ",".join(str(val) for val in sessid_cache)
+            self.obj.db_sessid = ",".join(str(val) for val in sessid_cache)
             self.obj.save(update_fields=["db_sessid"])
 
     def clear(self):
@@ -167,10 +168,9 @@ class ObjectSessionHandler(object):
         return len(self._sessid_cache)
 
 
-
 #
 # Base class to inherit from.
-#
+
 
 class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     """
@@ -221,7 +221,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         return self.db_player and self.db_player.is_superuser \
-                and not self.db_player.attributes.get("_quell")
+            and not self.db_player.attributes.get("_quell")
 
     def contents_get(self, exclude=None):
         """
@@ -241,7 +241,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         con = self.contents_cache.get(exclude=exclude)
-        #print "contents_get:", self, con, id(self), calledby()
+        # print "contents_get:", self, con, id(self), calledby()  # DEBUG
         return con
     contents = property(contents_get)
 
@@ -370,8 +370,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # do nick-replacement on search
             searchdata = self.nicks.nickreplace(searchdata, categories=("object", "player"), include_player=True)
 
-        if(global_search or (is_string and searchdata.startswith("#") and
-                    len(searchdata) > 1 and searchdata[1:].isdigit())):
+        if (global_search or (is_string and searchdata.startswith("#") and
+                              len(searchdata) > 1 and searchdata[1:].isdigit())):
             # only allow exact matching if searching the entire database
             # or unique #dbrefs
             exact = True
@@ -403,8 +403,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                                                  use_dbref=use_dbref)
         if quiet:
             return results
-        return  _AT_SEARCH_RESULT(results, self, query=searchdata,
-                nofound_string=nofound_string, multimatch_string=multimatch_string)
+        return _AT_SEARCH_RESULT(results, self, query=searchdata,
+                                 nofound_string=nofound_string, multimatch_string=multimatch_string)
 
     def search_player(self, searchdata, quiet=False):
         """
@@ -474,10 +474,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         # nick replacement - we require full-word matching.
         # do text encoding conversion
         raw_string = to_unicode(raw_string)
-        raw_string = self.nicks.nickreplace(raw_string,
-                     categories=("inputline", "channel"), include_player=True)
+        raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_player=True)
         return cmdhandler.cmdhandler(self, raw_string, callertype="object", session=session, **kwargs)
-
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
         """
@@ -593,9 +591,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         for obj in contents:
             if mapping:
                 substitutions = {t: sub.get_display_name(obj)
-                                    if hasattr(sub, 'get_display_name')
-                                    else str(sub)
-                                 for t, sub in mapping.items()}
+                                 if hasattr(sub, 'get_display_name')
+                                 else str(sub) for t, sub in mapping.items()}
                 obj.msg(message.format(**substitutions), from_obj=from_obj, **kwargs)
             else:
                 obj.msg(message, from_obj=from_obj, **kwargs)
@@ -643,7 +640,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         def logerr(string="", err=None):
-            "Simple log helper method"
+            """Simple log helper method"""
             logger.log_trace()
             self.msg("%s%s" % (string, "" if err is None else " (%s)" % err))
             return
@@ -685,7 +682,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 return False
 
         if not quiet:
-            #tell the old room we are leaving
+            # tell the old room we are leaving
             try:
                 self.announce_move_from(destination)
             except Exception as err:
@@ -705,7 +702,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 self.announce_move_to(source_location)
             except Exception as err:
                 logerr(errtxt % "announce_move_to()", err)
-                return  False
+                return False
 
         if move_hooks:
             # Perform eventual extra commands on the receiving location
@@ -780,7 +777,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                     obj.msg(_(string))
             obj.move_to(home)
 
-
     def copy(self, new_key=None):
         """
         Makes an identical copy of this object, identical except for a
@@ -804,15 +800,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             """
             key = self.key
             num = 1
-            for obj in (obj for obj in self.location.contents
-                        if obj.key.startswith(key) and
-                            obj.key.lstrip(key).isdigit()):
+            for _ in (obj for obj in self.location.contents
+                      if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()):
                 num += 1
             return "%s%03i" % (key, num)
         new_key = new_key or find_clone_key()
         return ObjectDB.objects.copy_object(self, new_key=new_key)
 
     delete_iter = 0
+
     def delete(self):
         """
         Deletes this object.  Before deletion, this method makes sure
@@ -863,7 +859,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         self.attributes.clear()
         self.nicks.clear()
         self.aliases.clear()
-        self.location = None # this updates contents_cache for our location
+        self.location = None  # this updates contents_cache for our location
 
         # Perform the deletion of the object
         super(DefaultObject, self).delete()
@@ -956,8 +952,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         self.basetype_posthook_setup()
 
-
-    ## hooks called by the game engine
+    # hooks called by the game engine #
 
     def basetype_setup(self):
         """
@@ -974,15 +969,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         # controller, for example)
 
         self.locks.add(";".join([
-            "control:perm(Immortals)",  # edit locks/permissions, delete
-            "examine:perm(Builders)",   # examine properties
-            "view:all()",               # look at object (visibility)
-            "edit:perm(Wizards)",       # edit properties/attributes
-            "delete:perm(Wizards)",     # delete object
-            "get:all()",                # pick up object
-            "call:true()",              # allow to call commands on this object
-            "tell:perm(Wizards)",        # allow emits to this object
-            "puppet:pperm(Immortals)"])) # lock down puppeting only to staff by default
+            "control:perm(Immortals)",    # edit locks/permissions, delete
+            "examine:perm(Builders)",     # examine properties
+            "view:all()",                 # look at object (visibility)
+            "edit:perm(Wizards)",         # edit properties/attributes
+            "delete:perm(Wizards)",       # delete object
+            "get:all()",                  # pick up object
+            "call:true()",                # allow to call commands on this object
+            "tell:perm(Wizards)",         # allow emits to this object
+            "puppet:pperm(Immortals)"]))  # lock down puppeting only to staff by default
 
     def basetype_posthook_setup(self):
         """
@@ -1119,9 +1114,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         Args:
             result (bool): The outcome of the access call.
-            accessing_obj (Object or Player): The entity trying to
-            gain access.  access_type (str): The type of access that
-            was requested.
+            accessing_obj (Object or Player): The entity trying to gain access.
+            access_type (str): The type of access that was requested.
 
         Kwargs:
             Not used by default, added for possible expandability in a
@@ -1141,14 +1135,14 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             destination (Object): The object we are moving to
 
         Returns:
-            shouldmove (bool): If we should move or not.
+            (bool): If we should move or not.
 
         Notes:
             If this method returns False/None, the move is cancelled
             before it is even started.
 
         """
-        #return has_perm(self, destination, "can_move")
+        # return has_perm(self, destination, "can_move")
         return True
 
     def announce_move_from(self, destination):
@@ -1289,7 +1283,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         check for this. .
 
         Consider this a pre-processing method before msg is passed on
-        to the user sesssion. If this method returns False, the msg
+        to the user session. If this method returns False, the msg
         will not be passed on.
 
         Args:
@@ -1342,7 +1336,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             return ""
         # get and identify all objects
         visible = (con for con in self.contents if con != looker and
-                                                    con.access(looker, "view"))
+                   con.access(looker, "view"))
         exits, users, things = [], [], []
         for con in visible:
             key = con.get_display_name(looker)
@@ -1474,7 +1468,7 @@ class DefaultCharacter(DefaultObject):
         """
         super(DefaultCharacter, self).basetype_setup()
         self.locks.add(";".join(["get:false()",  # noone can pick up the character
-                                 "call:false()"])) # no commands can be called on character from outside
+                                 "call:false()"]))  # no commands can be called on character from outside
         # add the default cmdset
         self.cmdset.add_default(settings.CMDSET_CHARACTER, permanent=True)
 
@@ -1566,7 +1560,7 @@ class DefaultCharacter(DefaultObject):
 
 #
 # Base Room object
-#
+
 
 class DefaultRoom(DefaultObject):
     """
@@ -1582,7 +1576,7 @@ class DefaultRoom(DefaultObject):
 
         super(DefaultRoom, self).basetype_setup()
         self.locks.add(";".join(["get:false()",
-                                 "puppet:false()"])) # would be weird to puppet a room ...
+                                 "puppet:false()"]))  # would be weird to puppet a room ...
         self.location = None
 
 
@@ -1632,7 +1626,7 @@ class ExitCommand(command.Command):
 
 #
 # Base Exit object
-#
+
 
 class DefaultExit(DefaultObject):
     """
@@ -1684,8 +1678,8 @@ class DefaultExit(DefaultObject):
         exit_cmdset.add(cmd)
         return exit_cmdset
 
-
     # Command hooks
+
     def basetype_setup(self):
         """
         Setup exit-security
@@ -1697,8 +1691,8 @@ class DefaultExit(DefaultObject):
         super(DefaultExit, self).basetype_setup()
 
         # setting default locks (overload these in at_object_creation()
-        self.locks.add(";".join(["puppet:false()", # would be weird to puppet an exit ...
-                                 "traverse:all()", # who can pass through exit by default
+        self.locks.add(";".join(["puppet:false()",  # would be weird to puppet an exit ...
+                                 "traverse:all()",  # who can pass through exit by default
                                  "get:false()"]))   # noone can pick up the exit
 
         # an exit should have a destination (this is replaced at creation time)
