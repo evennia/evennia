@@ -60,16 +60,17 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
         """
         Handle the looking.
         """
+        caller = self.caller
         if not self.args:
-            target = self.caller.location
+            target = caller.location
             if not target:
-                self.caller.msg("You have no location to look at!")
+                caller.msg("You have no location to look at!")
                 return
         else:
-            target = self.caller.search(self.args)
+            target = caller.search(self.args, use_dbref=caller.check_permstring("Builders"))
             if not target:
                 return
-        self.msg(self.caller.at_look(target))
+        self.msg(caller.at_look(target))
 
 
 class CmdNick(COMMAND_DEFAULT_CLASS):
