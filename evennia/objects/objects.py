@@ -1135,7 +1135,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             destination (Object): The object we are moving to
 
         Returns:
-            (bool): If we should move or not.
+            shouldmove (bool): If we should move or not.
 
         Notes:
             If this method returns False/None, the move is cancelled
