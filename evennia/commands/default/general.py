@@ -60,16 +60,17 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
         """
         Handle the looking.
         """
+        caller = self.caller
         if not self.args:
-            target = self.caller.location
+            target = caller.location
             if not target:
-                self.caller.msg("You have no location to look at!")
+                caller.msg("You have no location to look at!")
                 return
         else:
-            target = self.caller.search(self.args)
+            target = caller.search(self.args, use_dbref=caller.check_permstring("Builders"))
             if not target:
                 return
-        self.msg(self.caller.at_look(target))
+        self.msg(caller.at_look(target))
 
 
 class CmdNick(COMMAND_DEFAULT_CLASS):
@@ -353,6 +354,8 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         caller.msg("You give %s to %s." % (to_give.key, target.key))
         to_give.move_to(target, quiet=True)
         target.msg("%s gives you %s." % (caller.key, to_give.key))
+        # Call the object script's at_give() method.
+        obj.at_give(caller, target)
 
 
 class CmdDesc(COMMAND_DEFAULT_CLASS):

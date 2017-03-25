@@ -6,7 +6,8 @@ Evennia Contribution - grungies1138 2016
 A simple Brandymail style @mail system that uses the Msg class from Evennia Core.
 
 Installation:
-    import MailCommand from this module into the default Player or Character command set
+    import CmdMail from this module (from evennia.contrib.mail import CmdMail),
+    and add into the default Player or Character command set (self.add(CmdMail)).
 
 """
 
@@ -51,7 +52,7 @@ class CmdMail(default_cmds.MuxCommand):
         @mail 2
         @mail Griatch=New mail/Hey man, I am sending you a message!
         @mail/delete 6
-        @mail/forward feend78 Griatch=You guys should read this.
+        @mail/forward feend78 Griatch=4/You guys should read this.
         @mail/reply 9=Thanks for the info!
     """
     key = "@mail"
