@@ -77,15 +77,18 @@ class CommandTest(EvenniaTest):
                     for name, args, kwargs in receiver.msg.mock_calls]
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
-            returned_msg = "||".join(_RE.sub("", mess) for mess in stored_msg)
-            returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
             if msg is not None:
+                returned_msg = "||".join(_RE.sub("", mess) for mess in stored_msg)
+                returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
                 if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
                     sep1 = "\n" + "="*30 + "Wanted message" + "="*34 + "\n"
                     sep2 = "\n" + "="*30 + "Returned message" + "="*32 + "\n"
                     sep3 = "\n" + "="*78
                     retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
                     raise AssertionError(retval)
+            else:
+                returned_msg = "\n".join(stored_msg)
+                returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
         finally:
             receiver.msg = old_msg
 
