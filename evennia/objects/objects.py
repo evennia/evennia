@@ -1416,7 +1416,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         pass
-      
+
     def at_give(self, giver, getter):
         """
         Called by the default `give` command when this object has been
