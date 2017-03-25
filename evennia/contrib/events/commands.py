@@ -254,7 +254,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                     row.append("Yes" if event.get("valid") else "No")
                 table.add_row(*row)
 
-            self.msg(table)
+            self.msg(unicode(table))
         else:
             names = list(set(list(types.keys()) + list(events.keys())))
             table = EvTable("Event name", "Number", "Description",
@@ -271,7 +271,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                 description = description.splitlines()[0]
                 table.add_row(name, no, description)
 
-            self.msg(table)
+            self.msg(unicode(table))
 
     def add_event(self):
         """Add an event."""
@@ -292,6 +292,11 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         # Open the editor
         event = self.handler.add_event(obj, event_name, "",
                 self.caller, False, parameters=self.parameters)
+
+        # Lock this event right away
+        self.handler.db.locked.append((obj, event_name, event["number"]))
+
+        # Open the editor for this event
         self.caller.db._event = event
         EvEditor(self.caller, loadfunc=_ev_load, savefunc=_ev_save,
                 quitfunc=_ev_quit, key="Event {} of {}".format(
@@ -456,7 +461,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                     updated_on = "|gUnknown|n"
 
                 table.add_row(obj.id, type_name, obj, name, by, updated_on)
-            self.msg(table)
+            self.msg(unicode(table))
             return
 
         # An object was specified
@@ -517,7 +522,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             delta = time_format((future - now).total_seconds(), 1)
             table.add_row(task_id, key, event_name, delta)
 
-        self.msg(table)
+        self.msg(unicode(table))
 
 # Private functions to handle editing
 def _ev_load(caller):

@@ -114,9 +114,10 @@ def connect_event_types():
     if script.ndb.event_types is None:
         return
 
-    while event_types:
+    t_event_types = list(event_types)
+    while t_event_types:
         typeclass_name, event_name, variables, help_text, \
-                custom_add, custom_call = event_types[0]
+                custom_add, custom_call = t_event_types[0]
 
         # Get the event types for this typeclass
         if typeclass_name not in script.ndb.event_types:
@@ -126,7 +127,7 @@ def connect_event_types():
         # Add or replace the event
         help_text = dedent(help_text.strip("\n"))
         types[event_name] = (variables, help_text, custom_add, custom_call)
-        del event_types[0]
+        del t_event_types[0]
 
 # Custom callbacks for specific event types
 def get_next_wait(format):
