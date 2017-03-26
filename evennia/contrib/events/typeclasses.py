@@ -91,7 +91,7 @@ class PatchedCharacter:
             if exits:
                 exits[0].events.call("msg_arrive", character, exits[0],
                         origin, destination, string)
-            string = exits[0].events.get_variable("message")
+                string = exits[0].events.get_variable("message")
 
         mapping = {
                 "character": character,
