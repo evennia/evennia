@@ -75,10 +75,12 @@ def call(obj, event_name, seconds=0):
         to be called from inside another event.
 
     """
-    try:
-        script = ScriptDB.objects.get(db_key="event_handler")
-    except ScriptDB.DoesNotExist:
-        return
-
-    # Schedule the task
-    script.set_task(seconds, obj, event_name)
+    script = type(obj.events).script
+    if script:
+        # If seconds is 0, call the event immediately
+        if seconds == 0:
+            locals = dict(script.ndb.current_locals)
+            obj.events.call(event_name, locals=locals)
+        else:
+            # Schedule the task
+            script.set_task(seconds, obj, event_name)
