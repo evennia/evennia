@@ -132,6 +132,31 @@ class EventHandler(DefaultScript):
 
         return types
 
+    def get_variable(self, variable_name):
+        """
+        Return the variable defined in the locals.
+
+        This can be very useful to check the value of a variable that can be modified in an event, and whose value will be used in code.  This system allows additional customization.
+
+        Args:
+            variable_name (str): the name of the variable to return.
+
+        Returns:
+            The variable if found in the locals.
+            None if not found in the locals.
+
+        Note:
+            This will return the variable from the current locals.
+            Keep in mind that locals are shared between events.  As
+            every event is called one by one, this doesn't pose
+            additional problems if you get the variable right after
+            an event has been executed.  If, however, you differ,
+            there's no guarantee the variable will be here or will
+            mean the same thing.
+
+        """
+        return self.ndb.current_locals.get(variable_name)
+
     def add_event(self, obj, event_name, code, author=None, valid=False,
             parameters=""):
         """

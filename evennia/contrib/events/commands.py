@@ -287,7 +287,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
 
         definition = types.get(event_name, (None, "Chain event"))
         description = definition[1]
-        self.msg(description)
+        self.msg(raw(description))
 
         # Open the editor
         event = self.handler.add_event(obj, event_name, "",
@@ -356,7 +356,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
         # Check the definition of the event
         definition = types.get(event_name, (None, "Chained event"))
         description = definition[1]
-        self.msg(description)
+        self.msg(raw(description))
 
         # Open the editor
         event = dict(event)
