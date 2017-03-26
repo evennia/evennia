@@ -209,6 +209,23 @@ create_event_type(DefaultExit, "msg_leave", ["character", "exit",
         destination: the destination of the character.
         message: the message to be displayed in the location.
 """)
+create_event_type(DefaultExit, "time", ["exit"], """
+    A repeated event to be called regularly.
+    This event is scheduled to repeat at different times, specified
+    as parameters.  You can set it to run every day at 8:00 AM (game
+    time).  You have to specify the time as an argument to @event/add, like:
+        @event/add north = time 8:00
+    The parameter (8:00 here) must be a suite of digits separated by
+    spaces, colons or dashes.  Keep it as close from a recognizable
+    date format, like this:
+        @event/add south = time 06-15 12:20
+    This event will fire every year on June the 15th at 12 PM (still
+    game time).  Units have to be specified depending on your set calendar
+    (ask a developer for more details).
+
+    Variables you can use in this event:
+        exit: the exit connected to this event.
+    """, create_time_event)
 create_event_type(DefaultExit, "traverse", ["character", "exit",
         "origin", "destination"], """
     After the characer has traversed through this exit.
