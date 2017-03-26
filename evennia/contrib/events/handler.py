@@ -60,6 +60,23 @@ class EventsHandler(object):
         """
         return self.all().get(event_name, [])
 
+    def get_variable(self, variable_name):
+        """
+        Return the variable value or None.
+
+        Args:
+            variable_name (str): the name of the variable.
+
+        Returns:
+            Either the variable's value or None.
+
+        """
+        handler = type(self).script
+        if handler:
+            return handler.get_variable(variable_name)
+
+        return None
+
     def add(self, event_name, code, author=None, valid=False, parameters=""):
         """
         Add a new event for this object.
