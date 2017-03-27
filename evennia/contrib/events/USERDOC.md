@@ -33,7 +33,7 @@ The `deny()` function denies characters from moving and so, after the message ha
 This time, we have an event that behaves differently when a character eats an apple... and is a goblin, or something else.  Notice that the race system will need to be in your game, the event system just provides ways to access your regular Evennia objects and attributes.
 
     Edit the event 'time' of a specific NPC with the parameter '19:45':
-        cmd(character, "say Well, it's time to go home, folks!")
+        character.execute_cmd("say Well, it's time to go home, folks!")
         exit = character.location.search("up")
 
         exit.db.lock = False
@@ -66,11 +66,23 @@ The object to display or edit is searched in the room, by default, which makes e
 
 (In most settings, this will show the events linked with the character 1, the superuser.)
 
-By default, if you try this command on an object that doesn't have any event, it should display something like:
+This command will display a table, containing:
 
-    No event has been defined in TYPE DISPLAY_NAME.
+- The name of each event in the first column.
+- The number of events of this name, and the number of total lines of these events in the second column.
+- A short help to tell you when the event is triggered in the third column.
 
-If there are events linked to this object, you will see them in a table (with the event and the number of line).
+Notice that several events can be linked at the same location.  For instance, you can have several events in an exit's "can_traverse" event: each event will be called in the order and each can prevent the character from going elsewhere.
+
+You can see the list of events of each name by using the same command, specifying the name of the event after an equal sign:
+
+    @event south = can_traverse
+
+If you have more than one event of this name, they will be shown in a table with numbers starting from 1.  You can examine a specific event by providing the number after the event's name:
+
+    @event south = can_traverse 1
+
+This command will allow you to examine the event more closely, including seeing its associated code.
 
 #### Creating a new event
 
@@ -173,11 +185,20 @@ The `deny()` function is such a helper.  It allows to interrupt the event and th
 
 Behind the scene, the `deny()` function raises an exception that is being intercepted by the handler of events.  Calling this function in events that cannot be stopped may result in errors.
 
-You could easily add other helper functions.  This will greatly depend on the objects you have defined in your game, and how often specific features have to be used by event users.  You will find a list of helper functions, their syntax and examples, in the documentation on events specific to you game (see below).
+You could easily add other helper functions.  This will greatly depend on the objects you have defined in your game, and how often specific features have to be used by event users.
 
 ### Variables in events
 
 Most events have variables.  Variables are just Python variables.  As you've seen in the previous example, when we manipulate characters or character actions, we often have a `character` variable that holds the character doing the action.  The list of variables can change between events, and is always available in the help of the event.  When you edit or add a new event, you'll see the help: read it carefully until you're familiar with this event, since it will give you useful information beyond the list of variables.
+
+Sometimes, variables in events can also be set to contain new directions.  One simple example is the exits' "msg_leave" event, that is called when a character leaves a room through this exit.  This event is executed and you can set a custom message when a character walks through this exit, which can sometimes be useful:
+
+    @event/add down = msg_leave
+        message = "{character} falls into a hole in the ground!"
+
+Then, if the character Wilfred takes this story, others in the room will see:
+
+    Wildred falls into a hole in the ground!
 
 ### Events with parameters
 
@@ -296,10 +317,6 @@ A word of caution on events that call chained events: it isn't impossible for an
 
 Be also careful when it comes to handling characters or objects that may very well move during your pause between event calls.  When you use `call()`, the MUD doesn't pause and commands can be entered by players, fortunately.  It also means that, a character could start an event that pauses for awhile, but be gone when the chained event is called.  You need to check that, even lock the character into place while you are pausing (some actions should require locking) or at least, checking that the character is still in the room, for it might create illogical situations if you don't.
 
-## Getting help on events
-
-It is not always the case, but game developers who are using the event system are encouraged to allow the system to create and maintain an automatic help file that contains the basic explanation of events, how to use them and, more importantly, the list of available helpers.  This is important, because each game can append new helpers, and this documentation only shows a few, common one: the automatically-generated help file allows you to check what helpers exist and how to use them.  If set, you can enter `help events` to see it.  If not, you might want to ask a game developer to have access to this information.
-
 ## Errors in events
 
 There are a lot of ways to make mistakes while writing events.  Once you begin, you might encounter syntax errors very often, but leave them behind as you gain in confidence.  However, there are still so many ways to trigger errors:  passing the wrong arguments to a helper function is only one of many possible examples.
@@ -307,9 +324,9 @@ There are a lot of ways to make mistakes while writing events.  Once you begin, 
 When an event encounters an error, it stops abruptly and sends the error on a special channel, named "everror", on which you can connect or disconnect should the amount of information be overwhelming.  These error messages will contain:
 
 - The name and ID of the object that encountered the error.
-- The name of the event, with possible parameters, that crashed.
+- The name and number of the event that crashed.
+- The line number (and code) that caused the error.
 - The short error messages (it might not be that short at times).
 
 The error will also be logged, so an administrator can still access it more completely, seeing the full traceback, which can help to understand the error sometimes.
-
 

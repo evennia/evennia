@@ -430,9 +430,10 @@ class EventHandler(DefaultScript):
                 etype, evalue, tb = sys.exc_info()
                 trace = traceback.format_exception(etype, evalue, tb)
                 number = event["number"]
+                oid = obj.id
                 logger.log_err("An error occurred during the event {} of " \
-                        "{}, number {}\n{}".format(event_name, obj,
-                        number + 1, "\n".join(trace)))
+                        "{} (#{}), number {}\n{}".format(event_name, obj,
+                        oid, number + 1, "\n".join(trace)))
 
                 # Inform the 'everror' channel
                 line = "|runknown|n"
@@ -451,9 +452,9 @@ class EventHandler(DefaultScript):
                             else:
                                 break
 
-                self.ndb.channel.msg("Error in {} of {}[{}], line {}:" \
+                self.ndb.channel.msg("Error in {} of {} (#{})[{}], line {}:" \
                         " {}\n          {}".format(event_name, obj,
-                        number + 1, lineno, line, repr(evalue)))
+                        oid, number + 1, lineno, line, repr(evalue)))
 
         return True
 
