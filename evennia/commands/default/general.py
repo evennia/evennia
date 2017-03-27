@@ -355,7 +355,7 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         to_give.move_to(target, quiet=True)
         target.msg("%s gives you %s." % (caller.key, to_give.key))
         # Call the object script's at_give() method.
-        obj.at_give(caller, target)
+        to_give.at_give(caller, target)
 
 
 class CmdDesc(COMMAND_DEFAULT_CLASS):
