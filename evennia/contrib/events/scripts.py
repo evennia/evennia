@@ -4,10 +4,14 @@ Scripts for the event system.
 
 from datetime import datetime, timedelta
 from Queue import Queue
+import re
+import sys
+import traceback
 
 from django.conf import settings
-from evennia import DefaultObject, DefaultScript, ScriptDB
+from evennia import DefaultObject, DefaultScript, ChannelDB, ScriptDB
 from evennia import logger
+from evennia.utils.create import create_channel
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.utils import all_from_module, delay
 from evennia.contrib.events.custom import (
@@ -15,6 +19,9 @@ from evennia.contrib.events.custom import (
 from evennia.contrib.events.exceptions import InterruptEvent
 from evennia.contrib.events.handler import EventsHandler as Handler
 from evennia.contrib.events import typeclasses
+
+# Constants
+RE_LINE_ERROR = re.compile(r'^  File "\<string\>", line (\d+)')
 
 class EventHandler(DefaultScript):
 
@@ -69,6 +76,13 @@ class EventHandler(DefaultScript):
         # Place the script in the EventsHandler
         Handler.script = self
         DefaultObject.events = typeclasses.PatchedObject.events
+
+        # Create the channel if non-existent
+        try:
+            self.ndb.channel = ChannelDB.objects.get(db_key="everror")
+        except ChannelDB.DoesNotExist:
+            self.ndb.channel = create_channel("everror", desc="Event errors",
+                    locks="control:false();listen:perm(Builders);send:false()")
 
     def get_events(self, obj):
         """
@@ -393,9 +407,7 @@ class EventHandler(DefaultScript):
         else:
             locals = {key: value for key, value in locals.items()}
 
-        events = self.db.events.get(obj, {}).get(event_name, [])
-
-        # Filter down of events if there is a custom call
+        events = self.get_events(obj).get(event_name, [])
         if event_type:
             custom_call = event_type[3]
             if custom_call:
@@ -407,13 +419,41 @@ class EventHandler(DefaultScript):
             if not event["valid"]:
                 continue
 
-            if number is not None and i != number:
+            if number is not None and event["number"] != number:
                 continue
 
             try:
                 exec(event["code"], locals, locals)
             except InterruptEvent:
                 return False
+            except Exception:
+                etype, evalue, tb = sys.exc_info()
+                trace = traceback.format_exception(etype, evalue, tb)
+                number = event["number"]
+                logger.log_err("An error occurred during the event {} of " \
+                        "{}, number {}\n{}".format(event_name, obj,
+                        number + 1, "\n".join(trace)))
+
+                # Inform the 'everror' channel
+                line = "|runknown|n"
+                lineno = "|runknown|n"
+                for error in trace:
+                    if error.startswith('  File "<string>", line '):
+                        res = RE_LINE_ERROR.search(error)
+                        if res:
+                            lineno = int(res.group(1))
+
+                            # Try to extract the line
+                            try:
+                                line = event["code"].splitlines()[lineno - 1]
+                            except IndexError:
+                                continue
+                            else:
+                                break
+
+                self.ndb.channel.msg("Error in {} of {}[{}], line {}:" \
+                        " {}\n          {}".format(event_name, obj,
+                        number + 1, lineno, line, repr(evalue)))
 
         return True
 
@@ -474,36 +514,37 @@ class TimeEventScript(DefaultScript):
         self.db.number = None
 
     def at_repeat(self):
-        """Call the event and reset interval."""
-        # Get the event handler and call the script
-        try:
-            script = ScriptDB.objects.get(db_key="event_handler")
-        except ScriptDB.DoesNotExist:
-            logger.log_trace("Can't get the event handler.")
-            return
+        """
+        Call the event and reset interval.
+
+        It is necessary to restart the script to reset its interval
+        only twice after a reload.  When the script has undergone
+        down time, there's usually a slight shift in game time.  Once
+        the script restarts once, it will set the average time it
+        needs for all its future intervals and should not need to be
+        restarted.  In short, a script that is created shouldn't need
+        to restart more than once, and a script that is reloaded should
+        restart only twice.
+
+        """
+        if self.db.time_format:
+            # If the 'usual' time is set, use it
+            seconds = self.ndb.usual
+            if seconds is None:
+                seconds, usual, details = get_next_wait(self.db.time_format)
+                self.ndb.usual = usual
+
+            if self.interval != seconds:
+                self.restart(interval=seconds)
 
         if self.db.event_name and self.db.number is not None:
             obj = self.obj
+            if not obj.events:
+                return
+
             event_name = self.db.event_name
             number = self.db.number
-            events = script.db.events.get(obj, {}).get(event_name)
-            if events is None:
-                logger.log_err("Cannot find the event {} on {}".format(
-                        event_name, obj))
-                return
-
-            try:
-                event = events[number]
-            except IndexError:
-                logger.log_err("Cannot find the event {} {} on {}".format(
-                        event_name, number, obj))
-                return
-
-            script.call_event(obj, event_name, obj, number=number)
-
-        if self.db.time_format:
-            seconds, details = get_next_wait(self.db.time_format)
-            self.restart(interval=seconds)
+            obj.events.call(event_name, obj, number=number)
 
 
 # Functions to manipulate tasks

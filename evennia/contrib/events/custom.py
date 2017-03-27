@@ -14,6 +14,7 @@ from evennia import ScriptDB
 from evennia.utils.create import create_script
 from evennia.utils.gametime import real_seconds_until as standard_rsu
 from evennia.contrib.custom_gametime import UNITS
+from evennia.contrib.custom_gametime import gametime_to_realtime
 from evennia.contrib.custom_gametime import real_seconds_until as custom_rsu
 
 hooks = []
@@ -141,6 +142,11 @@ def get_next_wait(format):
     number of units set in the calendar affects the way seconds are
     calculated.
 
+    Returns:
+        until (int or float): the number of seconds until the event.
+        usual (int or float): the usual number of seconds between events.
+        format (str): a string format representing the time.
+
     """
     calendar = getattr(settings, "EVENTS_CALENDAR", None)
     if calendar is None:
@@ -179,12 +185,20 @@ def get_next_wait(format):
         piece = int(piece)
         params[uname] = piece
         details.append("{}={}".format(uname, piece))
+        if i < len(units):
+            next_unit = units[i + 1]
+        else:
+            next_unit = None
         i += 1
 
     params["sec"] = 0
     details = " ".join(details)
-    seconds = rsu(**params)
-    return seconds, details
+    until = rsu(**params)
+    usual = -1
+    if next_unit:
+        kwargs = {next_unit: 1}
+        usual = gametime_to_realtime(**kwargs)
+    return until, usual, details
 
 def create_time_event(obj, event_name, number, parameters):
     """
@@ -197,12 +211,13 @@ def create_time_event(obj, event_name, number, parameters):
         parameters (str): the parameter of the event.
 
     """
-    seconds, key = get_next_wait(parameters)
+    seconds, usual, key = get_next_wait(parameters)
     script = create_script("evennia.contrib.events.scripts.TimeEventScript", interval=seconds, obj=obj)
     script.key = key
     script.desc = "event on {}".format(key)
     script.db.time_format = parameters
     script.db.number = number
+    script.ndb.usual = usual
 
 def keyword_event(events, parameters):
     """
