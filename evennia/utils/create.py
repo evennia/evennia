@@ -369,7 +369,7 @@ def create_player(key, email, password,
         key (str): The player's name. This should be unique.
         email (str): Email on valid addr@addr.domain form. This is
             technically required but if set to `None`, an email of
-            `dummy@dummy.com` will be used as a placeholder.
+            `dummy@example.com` will be used as a placeholder.
         password (str): Password in cleartext.
 
     Kwargs:
@@ -404,7 +404,7 @@ def create_player(key, email, password,
     # correctly when each object is recovered).
 
     if not email:
-        email = "dummy@dummy.com"
+        email = "dummy@example.com"
     if _PlayerDB.objects.filter(username__iexact=key):
         raise ValueError("A Player with the name '%s' already exists." % key)
 
