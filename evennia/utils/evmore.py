@@ -181,7 +181,7 @@ class EvMore(object):
                     lines.append(line)
 
         # always limit number of chars to 10 000 per page
-        height = min(10000 // width, height)
+        height = min(10000 // max(1, width), height)
 
         self._pages = ["\n".join(lines[i:i+height]) for i in range(0, len(lines), height)]
         self._npages = len(self._pages)
