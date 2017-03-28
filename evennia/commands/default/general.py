@@ -409,16 +409,15 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
 
         speech = self.args
 
-        # calling the speech hook on the location
-        speech = caller.location.at_say(caller, speech)
+        # Calling the at_before_say hook on the character
+        speech = caller.at_before_say(speech)
 
-        # Feedback for the object doing the talking.
-        caller.msg('You say, "%s|n"' % speech)
+        # If speech is empty, stop here
+        if not speech:
+            return
 
-        # Build the string to emit to neighbors.
-        emit_string = '%s says, "%s|n"' % (caller.name, speech)
-        caller.location.msg_contents(emit_string, exclude=caller, from_obj=caller)
-
+        # Call the at_after_say hook on the character
+        caller.at_after_say(speech)
 
 class CmdWhisper(COMMAND_DEFAULT_CLASS):
     """

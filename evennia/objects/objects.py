@@ -1442,8 +1442,81 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
+    def at_before_say(self, speech):
+        """
+        Before the object says something.
+
+        This hook is called by the 'say' command on the object itself
+        (probably a character).  It is called before the actual say,
+        and can be used to control the content of the text to be said,
+        prevent saying altogether or perform some alternative checks.
+        This hook should return the modified speech.  If this return
+        value is empty (like ""  or None), the command is aborted.
+
+        Args:
+            speech (str): the text to be said by self.
+
+        Returns:
+            speech (str): the text to be said (can be modified).
+
+        """
+        return speech
+
+    def at_after_say(self, speech, msg_self=None, msg_location=None,
+            mapping=None):
+        """
+        Display the actual say of self.
+
+        This hook should display the actual say of the object in its
+        location.  It should both alert the object (self) and its
+        location that some text is spoken.  The overriding of messages or
+        `mapping` allows for simple customization of the hook without
+        re-writing it completely.
+
+        Args:
+            speech (str): the text to be said by self.
+            msg_self (str, optional): the replacement message to say to self.
+            msg_location (str, optional): the replacement message to say
+                    to the location.
+            mapping (dict, optional): Additional mapping in messages.
+
+        Both `msg_self` and `msg_location` should contain references
+        to other objects between braces, the way `locaiton.msg_contents`
+        would allow.  For instance:
+            msg_self = 'You say: "{speech}"'
+            msg_location = '{object} says: "{speech}"'
+
+        The following mappings can be used in both messages:
+            object: the object speaking.
+            location: the location where object is.
+            speech: the text spoken by self.
+
+        You can use additional mappings if you want to add other
+        information in your messages.
+
+        """
+        if self.location is None:
+            self.msg("You can't utter a sound in the void.")
+            return
+
+        msg_self = msg_self or 'You say, "{speech}"|n'
+        msg_location = msg_location or '{object} says, "{speech}"|n'
+        mapping = mapping or {}
+        mapping.update({
+                "object": self,
+                "location": self.location,
+                "speech": speech,
+        })
+        self_mapping = {k: v.get_display_name(self) if hasattr(
+                v, "get_display_name") else str(v) for k, v in mapping.items()}
+        print self_mapping
+        self.msg(msg_self.format(**self_mapping))
+        self.location.msg_contents(msg_location, exclude=(self, ),
+                mapping=mapping)
+
     def at_say(self, speaker, message):
         """
+        DEPRECATED.
         Called on this object if an object inside this object speaks.
         The string returned from this method is the final form of the
         speech.
