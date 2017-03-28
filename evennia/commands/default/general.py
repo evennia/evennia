@@ -417,7 +417,7 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
 
         # Build the string to emit to neighbors.
         emit_string = '%s says, "%s|n"' % (caller.name, speech)
-        caller.location.msg_contents((emit_string, {"type": "say"}), 
+        caller.location.msg_contents((emit_string, {"type": "Say"}), 
                                      exclude=caller, from_obj=caller)
 
 
@@ -503,7 +503,7 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
             self.caller.msg(msg)
         else:
             msg = "%s%s" % (self.caller.name, self.args)
-            self.caller.location.msg_contents((msg, {"type": "pose"}), 
+            self.caller.location.msg_contents((msg, {"type": "Pose"}), 
                                               from_obj=self.caller)
 
 
