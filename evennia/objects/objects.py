@@ -1509,7 +1509,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         })
         self_mapping = {k: v.get_display_name(self) if hasattr(
                 v, "get_display_name") else str(v) for k, v in mapping.items()}
-        print self_mapping
         self.msg(msg_self.format(**self_mapping))
         self.location.msg_contents(msg_location, exclude=(self, ),
                 mapping=mapping)
@@ -1532,6 +1531,79 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         return message
+
+    def at_before_whisper(self, receiver, speech):
+        """
+        Before the object whispers something to receiver.
+
+        This hook is called by the 'whisper' command on the object itself
+        (probably a character).  It is called before the actual whisper,
+        and can be used to control the content of the text to be whispered,
+        prevent whispering altogether or perform some alternative checks.
+        This hook should return the modified speech.  If this return
+        value is empty (like ""  or None), the command is aborted.
+
+        Args:
+            receiver (Object): the object to whisper to.
+            speech (str): the text to be whispered by self.
+
+        Returns:
+            speech (str): the text to be whispered (can be modified).
+
+        """
+        return speech
+
+    def at_after_whisper(self, receiver, speech, msg_self=None,
+            msg_receiver=None, mapping=None):
+        """
+        Display the actual whisper of self.
+
+        This hook should display the actual whisper of the object to
+        receiver.  It should both alert the object (self) and the
+        receiver.  You can also notify the location if you want to,
+        to indicate to others that a message was whispered but you
+        can't hear it.  The overriding of messages or
+        `mapping` allows for simple customization of the hook without
+        re-writing it completely.
+
+        Args:
+            receiver (Objecvt): the object to whisper to.
+            speech (str): the text to be said by self.
+            msg_self (str, optional): the replacement message to say to self.
+            msg_receiver (str, optional): the replacement message to say
+                    to receiver.
+            mapping (dict, optional): Additional mapping in messages.
+
+        Both `msg_self` and `msg_receiver` should contain references
+        to other objects between braces, the way `locaiton.msg_contents`
+        would allow.  For instance:
+            msg_self = 'You whisper to {receiver}, "{speech}"|n'
+            msg_receiver = '{object} whispers: "{speech}"|n'
+
+        The following mappings can be used in both messages:
+            object: the object whispering.
+            receiver: the object whispered to.
+            speech: the text spoken by self.
+
+        You can use additional mappings if you want to add other
+        information in your messages.
+
+        """
+        msg_self = msg_self or 'You whisper to {receiver}, "{speech}"|n'
+        msg_receiver = msg_receiver or '{object} whispers: "{speech}"|n'
+        mapping = mapping or {}
+        mapping.update({
+                "object": self,
+                "receiver": receiver,
+                "speech": speech,
+        })
+        self_mapping = {k: v.get_display_name(self) if hasattr(
+                v, "get_display_name") else str(v) for k, v in mapping.items()}
+        receiver_mapping = {k: v.get_display_name(receiver) if hasattr(
+                v, "get_display_name") else str(v) for k, v in mapping.items()}
+        self.msg(msg_self.format(**self_mapping))
+        receiver.msg(msg_receiver.format(**receiver_mapping))
+
 
 
 #

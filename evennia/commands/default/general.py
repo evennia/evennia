@@ -452,13 +452,15 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
             return
 
         speech = self.rhs
+        # Call a hook to change the speech before whispering
+        speech = caller.at_before_whisper(receiver, speech)
 
-        # Feedback for the object doing the talking.
-        caller.msg('You whisper to %s, "%s|n"' % (receiver.key, speech))
+        # If the speech is empty, abort the command
+        if not speech:
+            return
 
-        # Build the string to emit to receiver.
-        emit_string = '%s whispers, "%s|n"' % (caller.name, speech)
-        receiver.msg(emit_string, from_obj=caller)
+        # Call the at_after_whisper hook for feedback
+        caller.at_after_whisper(receiver, speech)
 
 
 class CmdPose(COMMAND_DEFAULT_CLASS):
