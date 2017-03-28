@@ -1145,7 +1145,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         # return has_perm(self, destination, "can_move")
         return True
 
-    def announce_move_from(self, destination, msg=None):
+    def announce_move_from(self, destination, msg=None, mapping=None):
         """
         Called if the move is to be announced. This is
         called while we are still standing in the old
@@ -1154,6 +1154,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             destination (Object): The place we are going to.
             msg (str, optional): a replacement message.
+            mapping (dict, optional): additional mapping objects.
 
         You can override this method and call its parent with a
         message to simply change the default message.  In the string,
@@ -1173,16 +1174,19 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         location = self.location
         exits = [o for o in location.contents if o.location is location and o.destination is destination]
-        mapping = {
+        if not mapping:
+            mapping = {}
+
+        mapping.update({
                 "character": self,
                 "exit": exits[0] if exits else "somwhere",
                 "origin": location or "nowhere",
                 "destination": destination or "nowhere",
-        }
+        })
 
         location.msg_contents(string, exclude=(self, ), mapping=mapping)
 
-    def announce_move_to(self, source_location, msg=None):
+    def announce_move_to(self, source_location, msg=None, mapping=None):
         """
         Called after the move if the move was not quiet. At this point
         we are standing in the new location.
@@ -1190,6 +1194,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             source_location (Object): The place we came from
             msg (str, optional): the replacement message if location.
+            mapping (dict, optional): additional mapping objects.
 
         You can override this method and call its parent with a
         message to simply change the default message.  In the string,
@@ -1222,12 +1227,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if origin:
             exits = [o for o in destination.contents if o.location is destination and o.destination is origin]
 
-        mapping = {
+        if not mapping:
+            mapping = {}
+
+        mapping.update({
                 "character": self,
                 "exit": exits[0] if exits else "somewhere",
                 "origin": origin or "nowhere",
                 "destination": destination or "nowhere",
-        }
+        })
 
         destination.msg_contents(string, exclude=(self, ), mapping=mapping)
 
