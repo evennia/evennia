@@ -1176,10 +1176,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         You can override this method and call its parent with a
         message to simply change the default message.  In the string,
         you can use the following as mappings (between braces):
-            character: the character who is moving.
-            exit: the exit from which the character is moving (if found).
-            origin: the location of the character before the move.
-            destination: the location of the character after moving.
+            object: the object which is moving.
+            exit: the exit from which the object is moving (if found).
+            origin: the location of the object before the move.
+            destination: the location of the object after moving.
 
         """
         if not self.location:
@@ -1187,7 +1187,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if msg:
             string = msg
         else:
-            string = "{character} is leaving {origin}, heading for {destination}."
+            string = "{object} is leaving {origin}, heading for {destination}."
 
         location = self.location
         exits = [o for o in location.contents if o.location is location and o.destination is destination]
@@ -1195,7 +1195,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             mapping = {}
 
         mapping.update({
-                "character": self,
+                "object": self,
                 "exit": exits[0] if exits else "somwhere",
                 "origin": location or "nowhere",
                 "destination": destination or "nowhere",
@@ -1216,10 +1216,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         You can override this method and call its parent with a
         message to simply change the default message.  In the string,
         you can use the following as mappings (between braces):
-            character: the character who is moving.
-            exit: the exit from which the character is moving (if found).
-            origin: the location of the character before the move.
-            destination: the location of the character after moving.
+            object: the object which is moving.
+            exit: the exit from which the object is moving (if found).
+            origin: the location of the object before the move.
+            destination: the location of the object after moving.
 
         """
 
@@ -1234,9 +1234,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             if msg:
                 string = msg
             else:
-                string = "{character} arrives to {destination} from {origin}."
+                string = "{object} arrives to {destination} from {origin}."
         else:
-            string = "{character} arrives to {destination}."
+            string = "{object} arrives to {destination}."
 
         origin = source_location
         destination = self.location
@@ -1248,7 +1248,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             mapping = {}
 
         mapping.update({
-                "character": self,
+                "object": self,
                 "exit": exits[0] if exits else "somewhere",
                 "origin": origin or "nowhere",
                 "destination": destination or "nowhere",
