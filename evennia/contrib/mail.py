@@ -252,5 +252,5 @@ class CmdMail(default_cmds.MuxCommand):
                 self.caller.msg(unicode(table))
                 self.caller.msg(_HEAD_CHAR * _WIDTH)
             else:
-                self.caller.msg("Sorry, you don't have any messages.  What a pathetic loser!")
+                self.caller.msg("There are no messages in your inbox.")
 
