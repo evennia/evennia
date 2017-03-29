@@ -88,7 +88,11 @@ class CmdMail(default_cmds.MuxCommand):
         """
         # mail_messages = Msg.objects.get_by_tag(category="mail")
         # messages = []
-        messages = Msg.objects.get_by_tag(category="mail", raw_queryset=True).filter(db_receivers_players=self.caller)
+        try:
+            player = self.caller.player
+        except AttributeError:
+            player = self.caller
+        messages = Msg.objects.get_by_tag(category="mail", raw_queryset=True).filter(db_receivers_players=player)
         return messages
 
     def send_mail(self, recipients, subject, message, caller):
@@ -248,5 +252,5 @@ class CmdMail(default_cmds.MuxCommand):
                 self.caller.msg(unicode(table))
                 self.caller.msg(_HEAD_CHAR * _WIDTH)
             else:
-                self.caller.msg("Sorry, you don't have any messages.  What a pathetic loser!")
+                self.caller.msg("There are no messages in your inbox.")
 
