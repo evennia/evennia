@@ -21,7 +21,7 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
-                                 make_iter, to_unicode, calledby)
+                                 make_iter, to_unicode, calledby, is_iter)
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
@@ -547,21 +547,28 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         for obj in contents:
             func(obj, **kwargs)
 
-    def msg_contents(self, message, exclude=None, from_obj=None, mapping=None, **kwargs):
+    def msg_contents(self, text=None, exclude=None, from_obj=None, mapping=None, **kwargs):
         """
         Emits a message to all objects inside this object.
 
-        Args:
-            message (str): Message to send.
+        Argsu:
+            text (str or tuple): Message to send. If a tuple, this should be
+                on the valid OOB outmessage form `(message, {kwargs})`,
+                where kwargs are optional data passed to the `text`
+                outputfunc.
             exclude (list, optional): A list of objects not to send to.
             from_obj (Object, optional): An object designated as the
                 "sender" of the message. See `DefaultObject.msg()` for
                 more info.
             mapping (dict, optional): A mapping of formatting keys
                 `{"key":<object>, "key2":<object2>,...}. The keys
-                must match `{key}` markers in `message` and will be
+                must match `{key}` markers in the `text` if this is a string or
+                in the internal `message` if `text` is a tuple. These
+                formatting statements will be
                 replaced by the return of `<object>.get_display_name(looker)`
-                for every looker that is messaged.
+                for every looker in contents that receives the
+                message. This allows for every object to potentially
+                get its own customized string.
         Kwargs:
             Keyword arguments will be passed on to `obj.msg()` for all
             messaged objects.
@@ -575,15 +582,23 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             not have `get_display_name()`, its string value will be used.
 
         Example:
-            Say char is a Character object and npc is an NPC object:
+            Say Char is a Character object and Npc is an NPC object:
 
-            action = 'kicks'
             char.location.msg_contents(
-                "{attacker} {action} {defender}",
-                mapping=dict(attacker=char, defender=npc, action=action),
-                exclude=(char, npc))
+                "{attacker} kicks {defender}",
+                mapping=dict(attacker=char, defender=npc), exclude=(char, npc))
+
+            This will result in everyone in the room seeing 'Char kicks NPC'
+            where everyone may potentially see different results for Char and Npc
+            depending on the results of `char.get_display_name(looker)` and
+            `npc.get_display_name(looker)` for each particular onlooker
 
         """
+        # we also accept an outcommand on the form (message, {kwargs})
+        is_outcmd = text and is_iter(text)
+        inmessage = text[0] if is_outcmd else text
+        outkwargs = text[1] if is_outcmd and len(text) > 1 else {}
+
         contents = self.contents
         if exclude:
             exclude = make_iter(exclude)
@@ -593,9 +608,11 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 substitutions = {t: sub.get_display_name(obj)
                                  if hasattr(sub, 'get_display_name')
                                  else str(sub) for t, sub in mapping.items()}
-                obj.msg(message.format(**substitutions), from_obj=from_obj, **kwargs)
+                outmessage = inmessage.format(**substitutions)
             else:
-                obj.msg(message, from_obj=from_obj, **kwargs)
+                outmessage = inmessage
+
+            obj.msg(text=((outmessage,), outkwargs), from_obj=from_obj, **kwargs)
 
     def move_to(self, destination, quiet=False,
                 emit_to_obj=None, use_destination=True, to_none=False, move_hooks=True):
