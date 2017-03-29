@@ -1,5 +1,16 @@
 """
 Patched typeclasses for Evennia.
+
+These typeclasses are not inherited from DefaultObject and other
+Evennia default types.  They softly "patch" some of these object hooks
+however.  While this adds a new layer in this module, it's (normally)
+more simple to use from game designers, since it doesn't require a
+new inheritance.  These replaced hooks are only active if the event
+system is active.  You shouldn't need to change this module, just
+override the hooks as you usually do in your custom typeclasses.
+Calling super() would call the Default hooks (which would call the
+event hook without further ado).
+
 """
 
 from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
@@ -9,7 +20,7 @@ from evennia.contrib.events.custom import (
         create_event_type, patch_hook, create_time_event)
 from evennia.contrib.events.handler import EventsHandler
 
-class PatchedCharacter:
+class EventCharacter:
 
     """Patched typeclass for DefaultCharcter."""
 
@@ -86,6 +97,7 @@ class PatchedCharacter:
 
         origin = source_location
         destination = character.location
+        exits = []
         if origin:
             exits = [o for o in destination.contents if o.location is destination and o.destination is origin]
             if exits:
@@ -132,6 +144,9 @@ class PatchedCharacter:
                     origin, destination)
             if can:
                 can = origin.events.call("can_move", character, origin)
+
+            if can is None:
+                return True
 
             return can
 
@@ -212,13 +227,7 @@ class PatchedCharacter:
         hook(character)
 
 
-class PatchedObject(object):
-    @lazy_property
-    def events(self):
-        """Return the EventsHandler."""
-        return EventsHandler(self)
-
-class PatchedExit(object):
+class EventExit(object):
 
     """Patched exit to patch some hooks of DefaultExit."""
 
@@ -254,7 +263,7 @@ class PatchedExit(object):
                     exit, exit.location, exit.destination)
 
 
-class PatchedRoom:
+class EventRoom:
 
     """Soft-patching of room's default hooks."""
 
@@ -272,6 +281,16 @@ class PatchedRoom:
 
         room.events.call("delete", room)
         return True
+
+
+class EventObject(object):
+
+    """Patched default object."""
+
+    @lazy_property
+    def events(self):
+        """Return the EventsHandler."""
+        return EventsHandler(self)
 
 ## Default events
 # Character events

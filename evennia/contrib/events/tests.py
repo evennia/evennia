@@ -13,6 +13,7 @@ from evennia.utils import ansi, utils
 from evennia.utils.create import create_object, create_script
 from evennia.utils.test_resources import EvenniaTest
 from evennia.contrib.events.commands import CmdEvent
+from evennia.contrib.events.handler import EventsHandler
 
 # Force settings
 settings.EVENTS_CALENDAR = "standard"
@@ -32,6 +33,7 @@ class TestEventHandler(EvenniaTest):
     def tearDown(self):
         """Stop the event handler."""
         self.handler.stop()
+        EventsHandler.script = None
         super(TestEventHandler, self).tearDown()
 
     def test_start(self):
@@ -265,6 +267,7 @@ class TestCmdEvent(CommandTest):
                 db_typeclass_path="evennia.contrib.events.scripts.TimeEventScript"):
             script.stop()
 
+        EventsHandler.script = None
         super(TestCmdEvent, self).tearDown()
 
     def test_list(self):
@@ -412,6 +415,7 @@ class TestDefaultEvents(CommandTest):
     def tearDown(self):
         """Stop the event handler."""
         self.handler.stop()
+        EventsHandler.script = None
         super(TestDefaultEvents, self).tearDown()
 
     def test_exit(self):
