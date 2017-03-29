@@ -144,6 +144,13 @@ class EventCharacter:
                     origin, destination)
             if can:
                 can = origin.events.call("can_move", character, origin)
+                if can:
+                    # Call other character's 'can_part' event
+                    for present in [o for o in origin.contents if isinstance(
+                            o, DefaultCharacter) and o is not character]:
+                        can = present.events.call("can_part", present, character)
+                        if not can:
+                            break
 
             if can is None:
                 return True
@@ -209,6 +216,11 @@ class EventCharacter:
         hook(character)
         character.events.call("puppeted", character)
 
+        # Call the room's puppeted_in event
+        location = character.location
+        if location and isinstance(location, DefaultRoom):
+            location.events.call("puppeted_in", character, location)
+
     @staticmethod
     @patch_hook(DefaultCharacter, "at_pre_unpuppet")
     def at_pre_unpuppet(character, hook=None):
@@ -225,6 +237,11 @@ class EventCharacter:
         """
         character.events.call("unpuppeted", character)
         hook(character)
+
+        # Call the room's unpuppeted_in event
+        location = character.location
+        if location and isinstance(location, DefaultRoom):
+            location.events.call("unpuppeted_in", character, location)
 
 
 class EventExit(object):
@@ -314,6 +331,19 @@ create_event_type(DefaultCharacter, "can_delete", ["character"], """
     'delete' event is called right away.
 
     Variables you can use in this event:
+        character: the character connected to this event.
+    """)
+create_event_type(DefaultCharacter, "can_part", ["character", "departing"], """
+    Can the departing charaacter leave this room?
+    This event is called before another character can move from the
+    location where the current character also is.  This event can be
+    used to prevent someone to leave this room if, for instance, he/she
+    hasn't paid, or he/she is going to a protected area, past a guard,
+    and so on.  Use 'deny()' to prevent the departing character from
+    moving.
+
+    Variables you can use in this event:
+        departing: the character who wants to leave this room.
         character: the character connected to this event.
     """)
 create_event_type(DefaultCharacter, "delete", ["character"], """
@@ -500,6 +530,17 @@ create_event_type(DefaultRoom, "move", ["character",
         origin: the old location of the character.
         destination: the new location of the character.
     """)
+create_event_type(DefaultRoom, "puppeted_in", ["character", "room"], """
+    After the character has been puppeted in this room.
+    This event is called after a character has been puppeted in this
+    room.  This can happen when a player, having connected, begins
+    to puppet a character.  The character's location at this point,
+    if it's a room, will see this event fire.
+
+    Variables you can use in this event:
+        character: the character who have just been puppeted in this room.
+        room: the room connected to this event.
+    """)
 create_event_type(DefaultRoom, "time", ["room"], """
     A repeated event to be called regularly.
     This event is scheduled to repeat at different times, specified
@@ -517,3 +558,14 @@ create_event_type(DefaultRoom, "time", ["room"], """
     Variables you can use in this event:
         room: the room connected to this event.
     """, create_time_event)
+create_event_type(DefaultRoom, "unpuppeted_in", ["character", "room"], """
+    Before the character is un-puppeted in this room.
+    This event is called before a character is un-puppeted in this
+    room.  This can happen when a player, puppeting a character, is
+    disconnecting.  The character's location at this point, if it's a
+    room, will see this event fire.
+
+    Variables you can use in this event:
+        character: the character who is about to be un-puppeted in this room.
+        room: the room connected to this event.
+    """)
