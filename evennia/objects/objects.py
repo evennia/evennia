@@ -1513,25 +1513,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         self.location.msg_contents(msg_location, exclude=(self, ),
                 mapping=mapping)
 
-    def at_say(self, speaker, message):
-        """
-        DEPRECATED.
-        Called on this object if an object inside this object speaks.
-        The string returned from this method is the final form of the
-        speech.
-
-        Args:
-            speaker (Object): The object speaking.
-            message (str): The words spoken.
-
-        Notes:
-            You should not need to add things like 'you say: ' or
-            similar here, that should be handled by the say command before
-            this.
-
-        """
-        return message
-
     def at_before_whisper(self, receiver, speech):
         """
         Before the object whispers something to receiver.
