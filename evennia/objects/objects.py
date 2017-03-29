@@ -1162,7 +1162,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         # return has_perm(self, destination, "can_move")
         return True
 
-    def announce_move_from(self, destination):
+    def announce_move_from(self, destination, msg=None, mapping=None):
         """
         Called if the move is to be announced. This is
         called while we are still standing in the old
@@ -1170,25 +1170,56 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         Args:
             destination (Object): The place we are going to.
+            msg (str, optional): a replacement message.
+            mapping (dict, optional): additional mapping objects.
+
+        You can override this method and call its parent with a
+        message to simply change the default message.  In the string,
+        you can use the following as mappings (between braces):
+            object: the object which is moving.
+            exit: the exit from which the object is moving (if found).
+            origin: the location of the object before the move.
+            destination: the location of the object after moving.
 
         """
         if not self.location:
             return
-        string = "%s is leaving %s, heading for %s."
-        location = self.location
-        for obj in self.location.contents:
-            if obj != self:
-                obj.msg(string % (self.get_display_name(obj),
-                                  location.get_display_name(obj) if location else "nowhere",
-                                  destination.get_display_name(obj)))
+        if msg:
+            string = msg
+        else:
+            string = "{object} is leaving {origin}, heading for {destination}."
 
-    def announce_move_to(self, source_location):
+        location = self.location
+        exits = [o for o in location.contents if o.location is location and o.destination is destination]
+        if not mapping:
+            mapping = {}
+
+        mapping.update({
+                "object": self,
+                "exit": exits[0] if exits else "somwhere",
+                "origin": location or "nowhere",
+                "destination": destination or "nowhere",
+        })
+
+        location.msg_contents(string, exclude=(self, ), mapping=mapping)
+
+    def announce_move_to(self, source_location, msg=None, mapping=None):
         """
         Called after the move if the move was not quiet. At this point
         we are standing in the new location.
 
         Args:
             source_location (Object): The place we came from
+            msg (str, optional): the replacement message if location.
+            mapping (dict, optional): additional mapping objects.
+
+        You can override this method and call its parent with a
+        message to simply change the default message.  In the string,
+        you can use the following as mappings (between braces):
+            object: the object which is moving.
+            exit: the exit from which the object is moving (if found).
+            origin: the location of the object before the move.
+            destination: the location of the object after moving.
 
         """
 
@@ -1199,13 +1230,31 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             self.location.msg(string)
             return
 
-        string = "%s arrives to %s%s."
-        location = self.location
-        for obj in self.location.contents:
-            if obj != self:
-                obj.msg(string % (self.get_display_name(obj),
-                                  location.get_display_name(obj) if location else "nowhere",
-                                  " from %s" % source_location.get_display_name(obj) if source_location else ""))
+        if source_location:
+            if msg:
+                string = msg
+            else:
+                string = "{object} arrives to {destination} from {origin}."
+        else:
+            string = "{object} arrives to {destination}."
+
+        origin = source_location
+        destination = self.location
+        exits = []
+        if origin:
+            exits = [o for o in destination.contents if o.location is destination and o.destination is origin]
+
+        if not mapping:
+            mapping = {}
+
+        mapping.update({
+                "object": self,
+                "exit": exits[0] if exits else "somewhere",
+                "origin": origin or "nowhere",
+                "destination": destination or "nowhere",
+        })
+
+        destination.msg_contents(string, exclude=(self, ), mapping=mapping)
 
     def at_after_move(self, source_location):
         """
