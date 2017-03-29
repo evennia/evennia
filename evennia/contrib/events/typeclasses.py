@@ -26,57 +26,73 @@ class EventCharacter:
 
     @staticmethod
     @patch_hook(DefaultCharacter, "announce_move_from")
-    def announce_move_from(character, destination, msg=None, hook=None):
+    def announce_move_from(character, destination, msg=None, mapping=None,
+            hook=None):
         """
         Called if the move is to be announced. This is
         called while we are still standing in the old
-        location.  Customizing the message through events is possible.
+        location.
 
         Args:
             destination (Object): The place we are going to.
-            msg (optional): a custom message to replace the default one.
+            msg (str, optional): a replacement message.
+            mapping (dict, optional): additional mapping objects.
+
+        You can override this method and call its parent with a
+        message to simply change the default message.  In the string,
+        you can use the following as mappings (between braces):
+            object: the object which is moving.
+            exit: the exit from which the object is moving (if found).
+            origin: the location of the object before the move.
+            destination: the location of the object after moving.
 
         """
         if not character.location:
             return
 
-        if msg:
-            string = msg
-        else:
-            string = "{character} is leaving {origin}, heading for {destination}."
+        string = msg or "{object} is leaving {origin}, heading for {destination}."
 
         # Get the exit from location to destination
         location = character.location
         exits = [o for o in location.contents if o.location is location and o.destination is destination]
+        mapping = mapping or {}
+        mapping.update({
+                "character": character,
+        })
+
         if exits:
             exits[0].events.call("msg_leave", character, exits[0],
-                    location, destination, string)
+                    location, destination, string, mapping)
             string = exits[0].events.get_variable("message")
-
-        mapping = {
-                "character": character,
-                "exit": exits[0] if exits else "somewhere",
-                "origin": location or "nowhere",
-                "destination": destination or "nowhere",
-        }
+            mapping = exits[0].events.get_variable("mapping")
 
         # If there's no string, don't display anything
         # It can happen if the "message" variable in events is set to None
         if not string:
             return
 
-        location.msg_contents(string, exclude=(character, ), mapping=mapping)
+        hook(character, destination, msg=string, mapping=mapping)
 
     @staticmethod
     @patch_hook(DefaultCharacter, "announce_move_to")
-    def announce_move_to(character, source_location, msg=None, hook=None):
+    def announce_move_to(character, source_location, msg=None, mapping=None,
+            hook=None):
         """
         Called after the move if the move was not quiet. At this point
         we are standing in the new location.
 
         Args:
             source_location (Object): The place we came from
-            msg (str, optional): the default message to be displayed.
+            msg (str, optional): the replacement message if location.
+            mapping (dict, optional): additional mapping objects.
+
+        You can override this method and call its parent with a
+        message to simply change the default message.  In the string,
+        you can use the following as mappings (between braces):
+            object: the object which is moving.
+            exit: the exit from which the object is moving (if found).
+            origin: the location of the object before the move.
+            destination: the location of the object after moving.
 
         """
 
@@ -88,36 +104,32 @@ class EventCharacter:
             return
 
         if source_location:
-            if msg:
-                string = msg
-            else:
-                string = "{character} arrives to {destination} from {origin}."
+            string = msg or "{character} arrives to {destination} from {origin}."
         else:
             string = "{character} arrives to {destination}."
 
         origin = source_location
         destination = character.location
         exits = []
+        mapping = mapping or {}
+        mapping.update({
+                "character": character,
+        })
+
         if origin:
             exits = [o for o in destination.contents if o.location is destination and o.destination is origin]
             if exits:
                 exits[0].events.call("msg_arrive", character, exits[0],
-                        origin, destination, string)
+                        origin, destination, string, mapping)
                 string = exits[0].events.get_variable("message")
-
-        mapping = {
-                "character": character,
-                "exit": exits[0] if exits else "somewhere",
-                "origin": origin or "nowhere",
-                "destination": destination or "nowhere",
-        }
+                mapping = exits[0].events.get_variable("mapping")
 
         # If there's no string, don't display anything
         # It can happen if the "message" variable in events is set to None
         if not string:
             return
 
-        destination.msg_contents(string, exclude=(character, ), mapping=mapping)
+        hook(character, source_location, msg=string, mapping=mapping)
 
     @staticmethod
     @patch_hook(DefaultCharacter, "at_before_move")
@@ -412,7 +424,7 @@ create_event_type(DefaultExit, "can_traverse", ["character", "exit", "room"],
         room: the room in which stands the character before moving.
 """)
 create_event_type(DefaultExit, "msg_arrive", ["character", "exit",
-        "origin", "destination", "message"], """
+        "origin", "destination", "message", "mapping"], """
     Customize the message when a character arrives through this exit.
     This event is called when a character arrives through this exit.
     To customize the message that will be sent to the room where the
@@ -432,9 +444,10 @@ create_event_type(DefaultExit, "msg_arrive", ["character", "exit",
         origin: the past location of the character.
         destination: the current location of the character.
         message: the message to be displayed in the destination.
+        mapping: a dictionary containing the mapping of the message.
 """)
 create_event_type(DefaultExit, "msg_leave", ["character", "exit",
-        "origin", "destination", "message"], """
+        "origin", "destination", "message", "mapping"], """
     Customize the message when a character leaves through this exit.
     This event is called when a character leaves through this exit.
     To customize the message that will be sent to the room where the
@@ -455,6 +468,7 @@ create_event_type(DefaultExit, "msg_leave", ["character", "exit",
         origin: the location of the character.
         destination: the destination of the character.
         message: the message to be displayed in the location.
+        mapping: a dictionary containing additional mapping.
 """)
 create_event_type(DefaultExit, "time", ["exit"], """
     A repeated event to be called regularly.
