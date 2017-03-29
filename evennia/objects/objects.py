@@ -612,7 +612,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             else:
                 outmessage = inmessage
 
-            obj.msg(text=((outmessage,), outkwargs), from_obj=from_obj, **kwargs)
+            obj.msg(text=(outmessage, outkwargs), from_obj=from_obj, **kwargs)
 
     def move_to(self, destination, quiet=False,
                 emit_to_obj=None, use_destination=True, to_none=False, move_hooks=True):
