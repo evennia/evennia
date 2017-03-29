@@ -151,14 +151,15 @@ class EventsHandler(object):
 
         Returns:
             True to report the event was called without interruption,
-            False otherwise.
+            False otherwise.  If the EventHandler isn't found, return
+            None.
 
         """
         handler = type(self).script
         if handler:
             return handler.call_event(self.obj, event_name, *args, **kwargs)
 
-        return False
+        return None
 
     @staticmethod
     def format_event(event):

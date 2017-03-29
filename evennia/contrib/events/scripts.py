@@ -75,7 +75,7 @@ class EventHandler(DefaultScript):
 
         # Place the script in the EventsHandler
         Handler.script = self
-        DefaultObject.events = typeclasses.PatchedObject.events
+        DefaultObject.events = typeclasses.EventObject.events
 
         # Create the channel if non-existent
         try:
