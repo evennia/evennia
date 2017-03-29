@@ -421,8 +421,8 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
 
         # Delete the event
         self.handler.del_event(obj, event_name, number)
-        self.msg("The event {} {} of {} was deleted.".format(
-                obj, event_name, parameters))
+        self.msg("The event {}[{}] of {} was deleted.".format(
+                event_name, number + 1, obj))
 
     def accept_event(self):
         """Accept an event."""
@@ -549,5 +549,16 @@ def _ev_save(caller, buf):
     return True
 
 def _ev_quit(caller):
+    event = caller.db._event
+    handler = get_event_handler()
+    if not handler or not event or not all(key in event for key in \
+            ("obj", "name", "number", "valid")):
+        caller.msg("Couldn't save this event.")
+        return False
+
+    if (event["obj"], event["name"], event["number"]) in handler.db.locked:
+        handler.db.locked.remove((event["obj"], event["name"],
+                event["number"]))
+
     del caller.db._event
     caller.msg("Exited the code editor.")
