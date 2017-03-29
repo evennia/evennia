@@ -107,6 +107,110 @@ class PatchedCharacter:
 
         destination.msg_contents(string, exclude=(character, ), mapping=mapping)
 
+    @staticmethod
+    @patch_hook(DefaultCharacter, "at_before_move")
+    def at_before_move(character, destination, hook=None):
+        """
+        Called just before starting to move this object to
+        destination.
+
+        Args:
+            destination (Object): The object we are moving to
+
+        Returns:
+            shouldmove (bool): If we should move or not.
+
+        Notes:
+            If this method returns False/None, the move is cancelled
+            before it is even started.
+
+        """
+        origin = character.location
+        Room = DefaultRoom
+        if isinstance(origin, Room) and isinstance(destination, Room):
+            can = character.events.call("can_move", character,
+                    origin, destination)
+            if can:
+                can = origin.events.call("can_move", character, origin)
+
+            return can
+
+        return True
+
+    @staticmethod
+    @patch_hook(DefaultCharacter, "at_after_move")
+    def at_after_move(character, source_location, hook=None):
+        """
+        Called after move has completed, regardless of quiet mode or
+        not.  Allows changes to the object due to the location it is
+        now in.
+
+        Args:
+            source_location (Object): Wwhere we came from. This may be `None`.
+
+        """
+        hook(character, source_location)
+        origin = source_location
+        destination = character.location
+        Room = DefaultRoom
+        if isinstance(origin, Room) and isinstance(destination, Room):
+            character.events.call("move", character, origin, destination)
+            destination.events.call("move", character, origin, destination)
+
+            # Call the 'greet' event of characters in the location
+            for present in [o for o in destination.contents if isinstance(
+                    o, DefaultCharacter)]:
+                present.events.call("greet", present, character)
+
+    @staticmethod
+    @patch_hook(DefaultCharacter, "at_object_delete")
+    def at_object_delete(character, hook=None):
+        """
+        Called just before the database object is permanently
+        delete()d from the database. If this method returns False,
+        deletion is aborted.
+
+        """
+        if not character.events.call("can_delete", character):
+            return False
+
+        character.events.call("delete", character)
+        return True
+
+    @staticmethod
+    @patch_hook(DefaultCharacter, "at_post_puppet")
+    def at_post_puppet(character, hook=None):
+        """
+        Called just after puppeting has been completed and all
+        Player<->Object links have been established.
+
+        Note:
+            You can use `self.player` and `self.sessions.get()` to get
+            player and sessions at this point; the last entry in the
+            list from `self.sessions.get()` is the latest Session
+            puppeting this Object.
+
+        """
+        hook(character)
+        character.events.call("puppeted", character)
+
+    @staticmethod
+    @patch_hook(DefaultCharacter, "at_pre_unpuppet")
+    def at_pre_unpuppet(character, hook=None):
+        """
+        Called just before beginning to un-connect a puppeting from
+        this Player.
+
+        Note:
+            You can use `self.player` and `self.sessions.get()` to get
+            player and sessions at this point; the last entry in the
+            list from `self.sessions.get()` is the latest Session
+            puppeting this Object.
+
+        """
+        character.events.call("unpuppeted", character)
+        hook(character)
+
 
 class PatchedObject(object):
     @lazy_property
@@ -150,7 +254,101 @@ class PatchedExit(object):
                     exit, exit.location, exit.destination)
 
 
+class PatchedRoom:
+
+    """Soft-patching of room's default hooks."""
+
+    @staticmethod
+    @patch_hook(DefaultRoom, "at_object_delete")
+    def at_object_delete(room, hook=None):
+        """
+        Called just before the database object is permanently
+        delete()d from the database. If this method returns False,
+        deletion is aborted.
+
+        """
+        if not room.events.call("can_delete", room):
+            return False
+
+        room.events.call("delete", room)
+        return True
+
 ## Default events
+# Character events
+create_event_type(DefaultCharacter, "can_move", ["character",
+        "origin", "destination"], """
+    Can the character move?
+    This event is called before the character moves into another
+    location.  You can prevent the character from moving
+    using the 'deny()' function.
+
+    Variables you can use in this event:
+        character: the character connected to this event.
+        origin: the current location of the character.
+        destination: the future location of the character.
+    """)
+create_event_type(DefaultCharacter, "can_delete", ["character"], """
+    Can the character be deleted?
+    This event is called before the character is deleted.  You can use
+    'deny()' in this event to prevent this character from being deleted.
+    If this event doesn't prevent the character from being deleted, its
+    'delete' event is called right away.
+
+    Variables you can use in this event:
+        character: the character connected to this event.
+    """)
+create_event_type(DefaultCharacter, "delete", ["character"], """
+    Before deleting the character.
+    This event is called just before deleting this character.  It shouldn't
+    be prevented (using the `deny()` function at this stage doesn't
+    have any effect).  If you want to prevent deletion of this character,
+    use the event `can_delete` instead.
+
+    Variables you can use in this event:
+        character: the character connected to this event.
+    """)
+create_event_type(DefaultCharacter, "greet", ["character", "newcomer"], """
+    A new character arrives in the location of this character.
+    This event is called when another character arrives in the location
+    where the current character is.  For instance, a puppeted character
+    arrives in the shop of a shopkeeper (assuming the shopkeeper is
+    a character).  As its name suggests, this event can be very useful
+    to have NPC greeting one another, or players, who come to visit.
+
+    Variables you can use in this event:
+        character: the character connected to this event.
+        newcomer: the character arriving in the same location.
+    """)
+create_event_type(DefaultCharacter, "move", ["character",
+        "origin", "destination"], """
+    After the character has moved into its new room.
+    This event is called when the character has moved into a new
+    room.  It is too late to prevent the move at this point.
+
+    Variables you can use in this event:
+        character: the character connected to this event.
+        origin: the old location of the character.
+        destination: the new location of the character.
+    """)
+create_event_type(DefaultCharacter, "puppeted", ["character"], """
+    When the character has been puppeted by a player.
+    This event is called when a player has just puppeted this character.
+    This can commonly happen when a player connects onto this character,
+    or when puppeting to a NPC or free character.
+
+    Variables you can use in this event:
+        character: the character connected to this event.
+    """)
+create_event_type(DefaultCharacter, "unpuppeted", ["character"], """
+    When the character is about to be un-puppeted.
+    This event is called when a player is about to un-puppet the
+    character, which can happen if the player is disconnecting or
+    changing puppets.
+
+    Variables you can use in this event:
+        character: the character connected to this event.
+    """)
+
 # Exit events
 create_event_type(DefaultExit, "can_traverse", ["character", "exit", "room"],
     """
@@ -242,6 +440,47 @@ create_event_type(DefaultExit, "traverse", ["character", "exit",
     """)
 
 # Room events
+create_event_type(DefaultRoom, "can_delete", ["room"], """
+    Can the room be deleted?
+    This event is called before the room is deleted.  You can use
+    'deny()' in this event to prevent this room from being deleted.
+    If this event doesn't prevent the room from being deleted, its
+    'delete' event is called right away.
+
+    Variables you can use in this event:
+        room: the room connected to this event.
+    """)
+create_event_type(DefaultRoom, "can_move", ["character", "room"], """
+    Can the character move into this room?
+    This event is called before the character can move into this
+    specific room.  You can prevent the move by using the 'deny()'
+    function.
+
+    Variables you can use in this event:
+        character: the character who wants to move in this room.
+        room: the room connected to this event.
+    """)
+create_event_type(DefaultRoom, "delete", ["room"], """
+    Before deleting the room.
+    This event is called just before deleting this room.  It shouldn't
+    be prevented (using the `deny()` function at this stage doesn't
+    have any effect).  If you want to prevent deletion of this room,
+    use the event `can_delete` instead.
+
+    Variables you can use in this event:
+        room: the room connected to this event.
+    """)
+create_event_type(DefaultRoom, "move", ["character",
+        "origin", "destination"], """
+    After the character has moved into this room.
+    This event is called when the character has moved into this
+    room.  It is too late to prevent the move at this point.
+
+    Variables you can use in this event:
+        character: the character connected to this event.
+        origin: the old location of the character.
+        destination: the new location of the character.
+    """)
 create_event_type(DefaultRoom, "time", ["room"], """
     A repeated event to be called regularly.
     This event is scheduled to repeat at different times, specified
