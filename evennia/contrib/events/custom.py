@@ -58,6 +58,28 @@ def create_event_type(typeclass, event_name, variables, help_text,
     event_types.append((typeclass_name, event_name, variables, help_text,
             custom_add, custom_call))
 
+def invalidate_event_type(typeclass, event_name):
+    """
+    Invalidate a descending event type defined above in the hierarchy.
+
+    Event types follow the hierarchy of inheritance.  Events defined
+    in DefaultObjects would be accessible in DefaultRooms, for instance.
+    This can ensure that the event is limited and doesn't apply to
+    children with instances.
+
+    Args:
+        typeclass (type): the class describing the typeclass.
+        event_name (str): the name of the event to invalidate.
+
+    Example:
+        create_event_type(DefaultObject, "get", ["object"], "Someone gets.")
+        invalidate_event_type(DefaultRoom, "get")
+        # room objects won't have the 'get' event
+
+    """
+    typeclass_name = typeclass.__module__ + "." + typeclass.__name__
+    event_types.append((typeclass_name, event_name, None, "", None, None))
+
 def patch_hook(typeclass, method_name):
     """
     Decorator to softly patch a hook in a typeclass.

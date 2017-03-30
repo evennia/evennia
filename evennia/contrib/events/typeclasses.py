@@ -17,7 +17,7 @@ from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia import ScriptDB
 from evennia.utils.utils import inherits_from, lazy_property
 from evennia.contrib.events.custom import (
-        create_event_type, patch_hook, create_time_event)
+        create_event_type, invalidate_event_type, patch_hook, create_time_event)
 from evennia.contrib.events.handler import EventsHandler
 
 class EventCharacter:
@@ -71,7 +71,8 @@ class EventCharacter:
         if not string:
             return
 
-        hook(character, destination, msg=string, mapping=mapping)
+        if hook:
+            hook(character, destination, msg=string, mapping=mapping)
 
     @staticmethod
     @patch_hook(DefaultCharacter, "announce_move_to")
@@ -129,7 +130,8 @@ class EventCharacter:
         if not string:
             return
 
-        hook(character, source_location, msg=string, mapping=mapping)
+        if hook:
+            hook(character, source_location, msg=string, mapping=mapping)
 
     @staticmethod
     @patch_hook(DefaultCharacter, "at_before_move")
@@ -183,7 +185,9 @@ class EventCharacter:
             source_location (Object): Wwhere we came from. This may be `None`.
 
         """
-        hook(character, source_location)
+        if hook:
+            hook(character, source_location)
+
         origin = source_location
         destination = character.location
         Room = DefaultRoom
@@ -225,7 +229,9 @@ class EventCharacter:
             puppeting this Object.
 
         """
-        hook(character)
+        if hook:
+            hook(character)
+
         character.events.call("puppeted", character)
 
         # Call the room's puppeted_in event
@@ -248,7 +254,9 @@ class EventCharacter:
 
         """
         character.events.call("unpuppeted", character)
-        hook(character)
+
+        if hook:
+            hook(character)
 
         # Call the room's unpuppeted_in event
         location = character.location
@@ -284,7 +292,8 @@ class EventExit(object):
             if not allow:
                 return
 
-        hook(exit, traversing_object, target_location)
+        if hook:
+            hook(exit, traversing_object, target_location)
 
         # After traversing
         if is_character:
@@ -320,6 +329,45 @@ class EventObject(object):
     def events(self):
         """Return the EventsHandler."""
         return EventsHandler(self)
+    @staticmethod
+    @patch_hook(DefaultObject, "at_get")
+    def at_get(obj, getter, hook=None):
+        """
+        Called by the default `get` command when this object has been
+        picked up.
+
+        Args:
+            getter (Object): The object getting this object.
+
+        Notes:
+            This hook cannot stop the pickup from happening. Use
+            permissions for that.
+
+        """
+        if hook:
+            hook(obj, getter)
+
+        obj.events.call("get", getter, obj)
+
+    @staticmethod
+    @patch_hook(DefaultObject, "at_drop")
+    def at_drop(obj, dropper, hook=None):
+        """
+        Called by the default `drop` command when this object has been
+        dropped.
+
+        Args:
+            dropper (Object): The object which just dropped this object.
+
+        Notes:
+            This hook cannot stop the drop from happening. Use
+            permissions from that.
+
+        """
+        if hook:
+            hook(obj, dropper)
+
+        obj.events.call("drop", dropper, obj)
 
 ## Default events
 # Character events
@@ -368,6 +416,8 @@ create_event_type(DefaultCharacter, "delete", ["character"], """
     Variables you can use in this event:
         character: the character connected to this event.
     """)
+invalidate_event_type(DefaultCharacter, "drop")
+invalidate_event_type(DefaultCharacter, "get")
 create_event_type(DefaultCharacter, "greet", ["character", "newcomer"], """
     A new character arrives in the location of this character.
     This event is called when another character arrives in the location
@@ -400,6 +450,23 @@ create_event_type(DefaultCharacter, "puppeted", ["character"], """
     Variables you can use in this event:
         character: the character connected to this event.
     """)
+create_event_type(DefaultCharacter, "time", ["character"], """
+    A repeated event to be called regularly.
+    This event is scheduled to repeat at different times, specified
+    as parameters.  You can set it to run every day at 8:00 AM (game
+    time).  You have to specify the time as an argument to @event/add, like:
+        @event/add here = time 8:00
+    The parameter (8:00 here) must be a suite of digits separated by
+    spaces, colons or dashes.  Keep it as close from a recognizable
+    date format, like this:
+        @event/add here = time 06-15 12:20
+    This event will fire every year on June the 15th at 12 PM (still
+    game time).  Units have to be specified depending on your set calendar
+    (ask a developer for more details).
+
+    Variables you can use in this event:
+        character: the character connected to this event.
+    """, create_time_event)
 create_event_type(DefaultCharacter, "unpuppeted", ["character"], """
     When the character is about to be un-puppeted.
     This event is called when a player is about to un-puppet the
@@ -409,6 +476,45 @@ create_event_type(DefaultCharacter, "unpuppeted", ["character"], """
     Variables you can use in this event:
         character: the character connected to this event.
     """)
+
+# Object events
+create_event_type(DefaultObject, "drop", ["character", "obj"], """
+    When a character drops this object.
+    This event is called when a character drops this object.  It is
+    called after the command has ended and displayed its message, and
+    the action cannot be prevented at this time.
+
+    Variables you can use in this event:
+        character: the character having dropped the object.
+        obj: the object connected to this event.
+    """)
+create_event_type(DefaultObject, "get", ["character", "obj"], """
+    When a character gets this object.
+    This event is called when a character gets this object.  It is
+    called after the command has ended and displayed its message, and
+    the action cannot be prevented at this time.
+
+    Variables you can use in this event:
+        character: the character having picked up the object.
+        obj: the object connected to this event.
+    """)
+create_event_type(DefaultObject, "time", ["object"], """
+    A repeated event to be called regularly.
+    This event is scheduled to repeat at different times, specified
+    as parameters.  You can set it to run every day at 8:00 AM (game
+    time).  You have to specify the time as an argument to @event/add, like:
+        @event/add here = time 8:00
+    The parameter (8:00 here) must be a suite of digits separated by
+    spaces, colons or dashes.  Keep it as close from a recognizable
+    date format, like this:
+        @event/add here = time 06-15 12:20
+    This event will fire every year on June the 15th at 12 PM (still
+    game time).  Units have to be specified depending on your set calendar
+    (ask a developer for more details).
+
+    Variables you can use in this event:
+        object: the object connected to this event.
+    """, create_time_event)
 
 # Exit events
 create_event_type(DefaultExit, "can_traverse", ["character", "exit", "room"],
@@ -422,7 +528,9 @@ create_event_type(DefaultExit, "can_traverse", ["character", "exit", "room"],
         character: the character that wants to traverse this exit.
         exit: the exit to be traversed.
         room: the room in which stands the character before moving.
-""")
+    """)
+invalidate_event_type(DefaultExit, "drop")
+invalidate_event_type(DefaultExit, "get")
 create_event_type(DefaultExit, "msg_arrive", ["character", "exit",
         "origin", "destination", "message", "mapping"], """
     Customize the message when a character arrives through this exit.
@@ -445,7 +553,7 @@ create_event_type(DefaultExit, "msg_arrive", ["character", "exit",
         destination: the current location of the character.
         message: the message to be displayed in the destination.
         mapping: a dictionary containing the mapping of the message.
-""")
+    """)
 create_event_type(DefaultExit, "msg_leave", ["character", "exit",
         "origin", "destination", "message", "mapping"], """
     Customize the message when a character leaves through this exit.
@@ -469,7 +577,7 @@ create_event_type(DefaultExit, "msg_leave", ["character", "exit",
         destination: the destination of the character.
         message: the message to be displayed in the location.
         mapping: a dictionary containing additional mapping.
-""")
+    """)
 create_event_type(DefaultExit, "time", ["exit"], """
     A repeated event to be called regularly.
     This event is scheduled to repeat at different times, specified
@@ -533,6 +641,8 @@ create_event_type(DefaultRoom, "delete", ["room"], """
     Variables you can use in this event:
         room: the room connected to this event.
     """)
+invalidate_event_type(DefaultRoom, "drop")
+invalidate_event_type(DefaultRoom, "get")
 create_event_type(DefaultRoom, "move", ["character",
         "origin", "destination"], """
     After the character has moved into this room.
