@@ -135,10 +135,18 @@ class EventHandler(DefaultScript):
         event_types = self.ndb.event_types
         classes = Queue()
         classes.put(type(obj))
+        invalid = []
         while not classes.empty():
             typeclass = classes.get()
             typeclass_name = typeclass.__module__ + "." + typeclass.__name__
-            types.update(event_types.get(typeclass_name, {}))
+            for key, etype in event_types.get(typeclass_name, {}).items():
+                if key in invalid:
+                    continue
+                if etype[0] is None: # Invalidate
+                    invalid.append(key)
+                    continue
+                if key not in types:
+                    types[key] = etype
 
             # Look for the parent classes
             for parent in typeclass.__bases__:
