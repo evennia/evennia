@@ -210,7 +210,7 @@ class ObjectDB(TypedObject):
         return [path.strip() for path in storage.split(',')] if storage else []
 
     def __cmdset_storage_set(self, value):
-        """"setter"""
+        """setter"""
         self.db_cmdset_storage = ",".join(str(val).strip() for val in make_iter(value))
         self.save(update_fields=["db_cmdset_storage"])
 
