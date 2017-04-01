@@ -12,18 +12,18 @@ When in use, all messages being sent to the character will make use of
 the character's gender, for example the echo
 
 ```
-char.msg("%s falls on {p face with a thud." % char.key)
+char.msg("%s falls on |p face with a thud." % char.key)
 ```
 
-will result in "Tom falls on his|her|its face with a thud" depending
-on the gender of the object being messaged. Default gender is
-"neutral".
+will result in "Tom falls on his|her|its|their face with a thud"
+depending on the gender of the object being messaged. Default gender
+is "ambiguous" (they).
 
 To use, have DefaultCharacter inherit from this, or change
 setting.DEFAULT_CHARACTER to point to this class.
 
-The `@gender` command needs to be added to the default cmdset
-before it becomes available.
+The `@gender` command needs to be added to the default cmdset before
+it becomes available.
 
 """
 
@@ -50,7 +50,7 @@ _GENDER_PRONOUN_MAP = {"male": {"s": "he",
                                      "p": "their",
                                      "a": "theirs"}
                                      }
-_RE_GENDER_PRONOUN = re.compile(r'({s|{S|{o|{O|{p|{P|{a|{A)')
+_RE_GENDER_PRONOUN = re.compile(r'(?<!\|)\|(?!\|)[sSoOpPaA]')
 
 # in-game command for setting the gender
 
@@ -59,7 +59,7 @@ class SetGender(Command):
     Sets gender on yourself
 
     Usage:
-      @gender male|female|neutral|ambiguous
+      @gender male||female||neutral||ambiguous
 
     """
     key = "@gender"
@@ -73,10 +73,10 @@ class SetGender(Command):
         caller = self.caller
         arg = self.args.strip().lower()
         if not arg in ("male", "female", "neutral", "ambiguous"):
-            caller.msg("Usage: @gender male|female|neutral|ambiguous")
+            caller.msg("Usage: @gender male||female||neutral||ambiguous")
             return
         caller.db.gender = arg
-        caller.msg("Your  gender was set to %s." % arg)
+        caller.msg("Your gender was set to %s." % arg)
 
 
 # Gender-aware character class
@@ -103,10 +103,10 @@ class GenderCharacter(DefaultCharacter):
             regex_match (MatchObject): the regular expression match.
 
         Notes:
-            - `{s`, `{S`: Subjective form: he, she, it, He, She, It, They
-            - `{o`, `{O`: Objective form: him, her, it, Him, Her, It, Them
-            - `{p`, `{P`: Possessive form: his, her, its, His, Her, Its, Their
-            - `{a`, `{A`: Absolute Possessive form: his, hers, its, His, Hers, Its, Theirs
+            - `|s`, `|S`: Subjective form: he, she, it, He, She, It, They
+            - `|o`, `|O`: Objective form: him, her, it, Him, Her, It, Them
+            - `|p`, `|P`: Possessive form: his, her, its, His, Her, Its, Their
+            - `|a`, `|A`: Absolute Possessive form: his, hers, its, His, Hers, Its, Theirs
 
         """
         typ = regex_match.group()[1] # "s", "O" etc
@@ -134,5 +134,8 @@ class GenderCharacter(DefaultCharacter):
 
         """
         # pre-process the text before continuing
-        text = _RE_GENDER_PRONOUN.sub(self._get_pronoun, text)
+        try:
+            text = _RE_GENDER_PRONOUN.sub(self._get_pronoun, text)
+        except TypeError:
+            pass
         super(GenderCharacter, self).msg(text, from_obj=from_obj, session=session, **kwargs)

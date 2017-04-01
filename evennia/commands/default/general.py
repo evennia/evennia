@@ -60,16 +60,17 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
         """
         Handle the looking.
         """
+        caller = self.caller
         if not self.args:
-            target = self.caller.location
+            target = caller.location
             if not target:
-                self.caller.msg("You have no location to look at!")
+                caller.msg("You have no location to look at!")
                 return
         else:
-            target = self.caller.search(self.args)
+            target = caller.search(self.args, use_dbref=caller.check_permstring("Builders"))
             if not target:
                 return
-        self.msg(self.caller.at_look(target))
+        self.msg(caller.at_look(target))
 
 
 class CmdNick(COMMAND_DEFAULT_CLASS):
@@ -175,10 +176,9 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                         errstring += "Not a valid nick index."
                 else:
                     errstring += "Nick not found."
-
             if "delete" in switches or "del" in switches:
                 # clear the nick
-                if caller.nicks.has(old_nickstring, category=nicktype):
+                if old_nickstring and caller.nicks.has(old_nickstring, category=nicktype):
                     caller.nicks.remove(old_nickstring, category=nicktype)
                     string += "\nNick removed: '|w%s|n' -> |w%s|n." % (old_nickstring, old_replstring)
                 else:
@@ -354,6 +354,8 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         caller.msg("You give %s to %s." % (to_give.key, target.key))
         to_give.move_to(target, quiet=True)
         target.msg("%s gives you %s." % (caller.key, to_give.key))
+        # Call the object script's at_give() method.
+        to_give.at_give(caller, target)
 
 
 class CmdSetDesc(COMMAND_DEFAULT_CLASS):
@@ -415,7 +417,50 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
 
         # Build the string to emit to neighbors.
         emit_string = '%s says, "%s|n"' % (caller.name, speech)
-        caller.location.msg_contents(emit_string, exclude=caller, from_obj=caller)
+        caller.location.msg_contents(text=(emit_string, {"type": "say"}),
+                                     exclude=caller, from_obj=caller)
+
+
+class CmdWhisper(COMMAND_DEFAULT_CLASS):
+    """
+    Speak privately as your character to another
+
+    Usage:
+      whisper <player> = <message>
+
+    Talk privately to those in your current location, without
+    others being informed.
+    """
+
+    key = "whisper"
+    locks = "cmd:all()"
+
+    def func(self):
+        """Run the whisper command"""
+
+        caller = self.caller
+
+        if not self.lhs or not self.rhs:
+            caller.msg("Usage: whisper <player> = <message>")
+            return
+
+        receiver = caller.search(self.lhs)
+
+        if not receiver:
+            return
+
+        if caller == receiver:
+            caller.msg("You can't whisper to yourself.")
+            return
+
+        speech = self.rhs
+
+        # Feedback for the object doing the talking.
+        caller.msg('You whisper to %s, "%s|n"' % (receiver.key, speech))
+
+        # Build the string to emit to receiver.
+        emit_string = '%s whispers, "%s|n"' % (caller.name, speech)
+        receiver.msg(text=(emit_string, {"type": "whisper"}), from_obj=caller)
 
 
 class CmdPose(COMMAND_DEFAULT_CLASS):
@@ -458,7 +503,8 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
             self.caller.msg(msg)
         else:
             msg = "%s%s" % (self.caller.name, self.args)
-            self.caller.location.msg_contents(msg, from_obj=self.caller)
+            self.caller.location.msg_contents(text=(msg, {"type": "pose"}),
+                                              from_obj=self.caller)
 
 
 class CmdAccess(COMMAND_DEFAULT_CLASS):

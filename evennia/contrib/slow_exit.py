@@ -135,9 +135,10 @@ class CmdStop(Command):
         stored deferred from the exit traversal above.
         """
         currently_moving = self.caller.ndb.currently_moving
-        if currently_moving:
+        if currently_moving and not currently_moving.called:
             currently_moving.cancel()
             self.caller.msg("You stop moving.")
-            self.caller.location.msg_contents("%s stops." % self.get_display_name())
+            for observer in self.caller.location.contents_get(self.caller):
+                observer.msg("%s stops." % self.caller.get_display_name(observer))
         else:
             self.caller.msg("You are not moving.")

@@ -68,6 +68,7 @@ Installation/testing:
 """
 from __future__ import division
 
+import datetime
 import re
 from django.conf import settings
 from evennia import DefaultRoom
@@ -129,12 +130,13 @@ class ExtendedRoom(DefaultRoom):
         """
         Calculate the current time and season ids.
         """
-        # get the current time as parts of year and parts of day
-        # returns a tuple (years,months,weeks,days,hours,minutes,sec)
-        time = gametime.gametime(format=True)
-        month, hour = time[1], time[4]
-        season = float(month) / MONTHS_PER_YEAR
-        timeslot = float(hour) / HOURS_PER_DAY
+        # get the current time as parts of year and parts of day.
+        # we assume a standard calendar here and use 24h format.
+        timestamp = gametime.gametime(absolute=True)
+        # note that fromtimestamp includes the effects of server time zone!
+        datestamp = datetime.datetime.fromtimestamp(timestamp)
+        season = float(datestamp.month) / MONTHS_PER_YEAR
+        timeslot = float(datestamp.hour) / HOURS_PER_DAY
 
         # figure out which slots these represent
         if SEASONAL_BOUNDARIES[0] <= season < SEASONAL_BOUNDARIES[1]:

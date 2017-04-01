@@ -33,9 +33,10 @@ from evennia.utils.utils import to_str, uses_database
 from evennia.utils import logger
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle",
-            "dbserialize", "dbunserialize")
+           "dbserialize", "dbunserialize")
 
 PICKLE_PROTOCOL = 2
+
 
 def _get_mysql_db_version():
     """
@@ -93,7 +94,7 @@ def _TO_DATESTRING(obj):
 
 
 def _init_globals():
-    "Lazy importing to avoid circular import issues"
+    """Lazy importing to avoid circular import issues"""
     global _FROM_MODEL_MAP, _TO_MODEL_MAP, _SESSION_HANDLER
     if not _FROM_MODEL_MAP:
         _FROM_MODEL_MAP = defaultdict(str)
@@ -110,7 +111,7 @@ def _init_globals():
 
 
 def _save(method):
-    "method decorator that saves data to Attribute"
+    """method decorator that saves data to Attribute"""
     def save_wrapper(self, *args, **kwargs):
         self.__doc__ = method.__doc__
         ret = method(self, *args, **kwargs)
@@ -127,17 +128,17 @@ class _SaverMutable(object):
     will not save the updated value to the database.
     """
     def __init__(self, *args, **kwargs):
-        "store all properties for tracking the tree"
+        """store all properties for tracking the tree"""
         self._parent = kwargs.pop("_parent", None)
         self._db_obj = kwargs.pop("_db_obj", None)
         self._data = None
 
     def __nonzero__(self):
-        "Make sure to evaluate as False if empty"
+        """Make sure to evaluate as False if empty"""
         return bool(self._data)
 
     def _save_tree(self):
-        "recursively traverse back up the tree, save when we reach the root"
+        """recursively traverse back up the tree, save when we reach the root"""
         if self._parent:
             self._parent._save_tree()
         elif self._db_obj:
@@ -146,9 +147,9 @@ class _SaverMutable(object):
             logger.log_err("_SaverMutable %s has no root Attribute to save to." % self)
 
     def _convert_mutables(self, data):
-        "converts mutables to Saver* variants and assigns ._parent property"
+        """converts mutables to Saver* variants and assigns ._parent property"""
         def process_tree(item, parent):
-            "recursively populate the tree, storing parents"
+            """recursively populate the tree, storing parents"""
             dtype = type(item)
             if dtype in (basestring, int, float, bool, tuple):
                 return item
@@ -216,7 +217,6 @@ class _SaverList(_SaverMutable, MutableSequence):
 
     def index(self, value, *args):
         return self._data.index(value, *args)
-
 
 
 class _SaverDict(_SaverMutable, MutableMapping):
@@ -290,8 +290,10 @@ class _SaverDeque(_SaverMutable):
     # maxlen property
     def _getmaxlen(self):
         return self._data.maxlen
+
     def _setmaxlen(self, value):
         self._data.maxlen = value
+
     def _delmaxlen(self):
         del self._data.maxlen
     maxlen = property(_getmaxlen, _setmaxlen, _delmaxlen)
@@ -314,7 +316,7 @@ class _SaverDeque(_SaverMutable):
 
 #
 # serialization helpers
-#
+
 
 def pack_dbobj(item):
     """
@@ -335,7 +337,7 @@ def pack_dbobj(item):
     # build the internal representation as a tuple
     #  ("__packed_dbobj__", key, creation_time, id)
     return natural_key and ('__packed_dbobj__', natural_key,
-                             _TO_DATESTRING(obj), _GA(obj, "id")) or item
+                            _TO_DATESTRING(obj), _GA(obj, "id")) or item
 
 
 def unpack_dbobj(item):
@@ -391,9 +393,10 @@ def pack_session(item):
         # to be accepted as actually being a session (sessids gets
         # reused all the time).
         return item.conn_time and item.sessid and ('__packed_session__',
-                                                  _GA(item, "sessid"),
-                                                  _GA(item, "conn_time"))
+                                                   _GA(item, "sessid"),
+                                                   _GA(item, "conn_time"))
     return None
+
 
 def unpack_session(item):
     """
@@ -419,7 +422,7 @@ def unpack_session(item):
 
 #
 # Access methods
-#
+
 
 def to_pickle(data):
     """
@@ -437,7 +440,7 @@ def to_pickle(data):
 
     """
     def process_item(item):
-        "Recursive processor and identification of data"
+        """Recursive processor and identification of data"""
         dtype = type(item)
         if dtype in (basestring, int, float, bool):
             return item
@@ -466,7 +469,7 @@ def to_pickle(data):
     return process_item(data)
 
 
-#@transaction.autocommit
+# @transaction.autocommit
 def from_pickle(data, db_obj=None):
     """
     This should be fed a just de-pickled data object. It will be converted back
@@ -489,7 +492,7 @@ def from_pickle(data, db_obj=None):
 
     """
     def process_item(item):
-        "Recursive processor and identification of data"
+        """Recursive processor and identification of data"""
         dtype = type(item)
         if dtype in (basestring, int, float, bool):
             return item
@@ -518,7 +521,7 @@ def from_pickle(data, db_obj=None):
         return item
 
     def process_tree(item, parent):
-        "Recursive processor, building a parent-tree from iterable data"
+        """Recursive processor, building a parent-tree from iterable data"""
         dtype = type(item)
         if dtype in (basestring, int, float, bool):
             return item
@@ -534,7 +537,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == dict:
             dat = _SaverDict(_parent=parent)
             dat._data.update((process_item(key), process_tree(val, dat))
-                                   for key, val in item.items())
+                             for key, val in item.items())
             return dat
         elif dtype == set:
             dat = _SaverSet(_parent=parent)
@@ -543,7 +546,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == OrderedDict:
             dat = _SaverOrderedDict(_parent=parent)
             dat._data.update((process_item(key), process_tree(val, dat))
-                                for key, val in item.items())
+                             for key, val in item.items())
             return dat
         elif dtype == deque:
             dat = _SaverDeque(_parent=parent)
@@ -571,7 +574,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == dict:
             dat = _SaverDict(_db_obj=db_obj)
             dat._data.update((process_item(key), process_tree(val, dat))
-                              for key, val in data.items())
+                             for key, val in data.items())
             return dat
         elif dtype == set:
             dat = _SaverSet(_db_obj=db_obj)
@@ -580,7 +583,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == OrderedDict:
             dat = _SaverOrderedDict(_db_obj=db_obj)
             dat._data.update((process_item(key), process_tree(val, dat))
-                              for key, val in data.items())
+                             for key, val in data.items())
             return dat
         elif dtype == deque:
             dat = _SaverDeque(_db_obj=db_obj)
@@ -590,20 +593,20 @@ def from_pickle(data, db_obj=None):
 
 
 def do_pickle(data):
-    "Perform pickle to string"
+    """Perform pickle to string"""
     return to_str(dumps(data, protocol=PICKLE_PROTOCOL))
 
 
 def do_unpickle(data):
-    "Retrieve pickle from pickled string"
+    """Retrieve pickle from pickled string"""
     return loads(to_str(data))
 
 
 def dbserialize(data):
-    "Serialize to pickled form in one step"
+    """Serialize to pickled form in one step"""
     return do_pickle(to_pickle(data))
 
 
 def dbunserialize(data, db_obj=None):
-    "Un-serialize in one step. See from_pickle for help db_obj."
+    """Un-serialize in one step. See from_pickle for help db_obj."""
     return from_pickle(do_unpickle(data), db_obj=db_obj)

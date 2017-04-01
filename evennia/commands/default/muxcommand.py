@@ -9,6 +9,7 @@ from evennia.commands.command import Command
 # limit symbol import for API
 __all__ = ("MuxCommand", "MuxPlayerCommand")
 
+
 class MuxCommand(Command):
     """
     This sets up the basis for a MUX command. The idea
@@ -98,7 +99,7 @@ class MuxCommand(Command):
 
         # split out switches
         switches = []
-        if args and len(args) > 1 and args[0] == "/":
+        if args and len(args) > 1 and raw[0] == "/":
             # we have a switch, or a set of switches. These end with a space.
             switches = args[1:].split(None, 1)
             if len(switches) > 1:
@@ -150,32 +151,31 @@ class MuxCommand(Command):
         """
         # a simple test command to show the available properties
         string = "-" * 50
-        string += "\n{w%s{n - Command variables from evennia:\n" % self.key
+        string += "\n|w%s|n - Command variables from evennia:\n" % self.key
         string += "-" * 50
-        string += "\nname of cmd (self.key): {w%s{n\n" % self.key
-        string += "cmd aliases (self.aliases): {w%s{n\n" % self.aliases
-        string += "cmd locks (self.locks): {w%s{n\n" % self.locks
-        string += "help category (self.help_category): {w%s{n\n" % self.help_category
-        string += "object calling (self.caller): {w%s{n\n" % self.caller
-        string += "object storing cmdset (self.obj): {w%s{n\n" % self.obj
-        string += "command string given (self.cmdstring): {w%s{n\n" % self.cmdstring
+        string += "\nname of cmd (self.key): |w%s|n\n" % self.key
+        string += "cmd aliases (self.aliases): |w%s|n\n" % self.aliases
+        string += "cmd locks (self.locks): |w%s|n\n" % self.locks
+        string += "help category (self.help_category): |w%s|n\n" % self.help_category
+        string += "object calling (self.caller): |w%s|n\n" % self.caller
+        string += "object storing cmdset (self.obj): |w%s|n\n" % self.obj
+        string += "command string given (self.cmdstring): |w%s|n\n" % self.cmdstring
         # show cmdset.key instead of cmdset to shorten output
-        string += utils.fill("current cmdset (self.cmdset): {w%s{n\n" % self.cmdset)
-
-
+        string += utils.fill("current cmdset (self.cmdset): |w%s|n\n" % self.cmdset)
         string += "\n" + "-" * 50
-        string +=  "\nVariables from MuxCommand baseclass\n"
+        string += "\nVariables from MuxCommand baseclass\n"
         string += "-" * 50
-        string += "\nraw argument (self.raw): {w%s{n \n" % self.raw
-        string += "cmd args (self.args): {w%s{n\n" % self.args
-        string += "cmd switches (self.switches): {w%s{n\n" % self.switches
-        string += "space-separated arg list (self.arglist): {w%s{n\n" % self.arglist
-        string += "lhs, left-hand side of '=' (self.lhs): {w%s{n\n" % self.lhs
-        string += "lhs, comma separated (self.lhslist): {w%s{n\n" % self.lhslist
-        string += "rhs, right-hand side of '=' (self.rhs): {w%s{n\n" % self.rhs
-        string += "rhs, comma separated (self.rhslist): {w%s{n\n" % self.rhslist
+        string += "\nraw argument (self.raw): |w%s|n \n" % self.raw
+        string += "cmd args (self.args): |w%s|n\n" % self.args
+        string += "cmd switches (self.switches): |w%s|n\n" % self.switches
+        string += "space-separated arg list (self.arglist): |w%s|n\n" % self.arglist
+        string += "lhs, left-hand side of '=' (self.lhs): |w%s|n\n" % self.lhs
+        string += "lhs, comma separated (self.lhslist): |w%s|n\n" % self.lhslist
+        string += "rhs, right-hand side of '=' (self.rhs): |w%s|n\n" % self.rhs
+        string += "rhs, comma separated (self.rhslist): |w%s|n\n" % self.rhslist
         string += "-" * 50
         self.caller.msg(string)
+
 
 class MuxPlayerCommand(MuxCommand):
     """

@@ -35,7 +35,7 @@ def _init_command(cls, **kwargs):
     if cls.aliases and not is_iter(cls.aliases):
         try:
             cls.aliases = [str(alias).strip().lower()
-                          for alias in cls.aliases.split(',')]
+                           for alias in cls.aliases.split(',')]
         except Exception:
             cls.aliases = []
     cls.aliases = list(set(alias for alias in cls.aliases
@@ -57,7 +57,7 @@ def _init_command(cls, **kwargs):
     if not hasattr(cls, 'locks'):
         # default if one forgets to define completely
         cls.locks = "cmd:all()"
-    if not "cmd:" in cls.locks:
+    if "cmd:" not in cls.locks:
         cls.locks = "cmd:all();" + cls.locks
     for lockstring in cls.locks.split(';'):
         if lockstring and not ':' in lockstring:
@@ -197,7 +197,6 @@ class Command(with_metaclass(CommandMeta, object)):
         try:
             # first assume input is a command (the most common case)
             return self._matchset.intersection(cmd._matchset)
-            #return cmd.key in self._matchset
         except AttributeError:
             # probably got a string
             return cmd in self._matchset
@@ -211,9 +210,8 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         try:
             return self._matchset.isdisjoint(cmd._matchset)
-            #return not cmd.key in self._matcheset
         except AttributeError:
-            return not cmd in self._matchset
+            return cmd not in self._matchset
 
     def __contains__(self, query):
         """
@@ -308,7 +306,7 @@ class Command(with_metaclass(CommandMeta, object)):
     def msg(self, text=None, to_obj=None, from_obj=None,
             session=None, **kwargs):
         """
-        This is a shortcut instad of calling msg() directly on an
+        This is a shortcut instead of calling msg() directly on an
         object - it will detect if caller is an Object or a Player and
         also appends self.session automatically if self.msg_all_sessions is False.
 
@@ -398,17 +396,18 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         # a simple test command to show the available properties
         string = "-" * 50
-        string += "\n{w%s{n - Command variables from evennia:\n" % self.key
+        string += "\n|w%s|n - Command variables from evennia:\n" % self.key
         string += "-" * 50
-        string += "\nname of cmd (self.key): {w%s{n\n" % self.key
-        string += "cmd aliases (self.aliases): {w%s{n\n" % self.aliases
-        string += "cmd locks (self.locks): {w%s{n\n" % self.locks
-        string += "help category (self.help_category): {w%s{n\n" % self.help_category.capitalize()
-        string += "object calling (self.caller): {w%s{n\n" % self.caller
-        string += "object storing cmdset (self.obj): {w%s{n\n" % self.obj
-        string += "command string given (self.cmdstring): {w%s{n\n" % self.cmdstring
+        string += "\nname of cmd (self.key): |w%s|n\n" % self.key
+        string += "cmd aliases (self.aliases): |w%s|n\n" % self.aliases
+        string += "cmd locks (self.locks): |w%s|n\n" % self.locks
+        string += "help category (self.help_category): |w%s|n\n" % self.help_category.capitalize()
+        string += "object calling (self.caller): |w%s|n\n" % self.caller
+        string += "object storing cmdset (self.obj): |w%s|n\n" % self.obj
+        string += "command string given (self.cmdstring): |w%s|n\n" % self.cmdstring
         # show cmdset.key instead of cmdset to shorten output
-        string += fill("current cmdset (self.cmdset): {w%s{n\n" % (self.cmdset.key if self.cmdset.key else self.cmdset.__class__))
+        string += fill("current cmdset (self.cmdset): |w%s|n\n" %
+                       (self.cmdset.key if self.cmdset.key else self.cmdset.__class__))
 
         self.caller.msg(string)
 

@@ -1,12 +1,13 @@
+# -*- coding: utf-8 -*-
 """
 Testing suite for contrib folder
 
 """
 
-from django.conf import settings
+import datetime
 from evennia.commands.default.tests import CommandTest
 from evennia.utils.test_resources import EvenniaTest
-from mock import Mock
+from mock import Mock, patch
 
 # Testing of rplanguage module
 
@@ -168,44 +169,52 @@ class TestRPSystem(EvenniaTest):
 
 # Testing of ExtendedRoom contrib
 
+from django.conf import settings
 from evennia.contrib import extended_room
 from evennia import gametime
 from evennia.objects.objects import DefaultRoom
 
-# mock gametime to return 7th month, 10 in morning
-gametime.gametime = Mock(return_value=(None, 7, None, None, 10))
-# mock settings so we're not affected by a given server's hours of day/months in year
-settings.TIME_MONTH_PER_YEAR = 12
-settings.TIME_HOUR_PER_DAY = 24
+class ForceUTCDatetime(datetime.datetime):
 
+    """Force UTC datetime."""
 
+    @classmethod
+    def fromtimestamp(cls, timestamp):
+        """Force fromtimestamp to run with naive datetimes."""
+        return datetime.datetime.utcfromtimestamp(timestamp)
+
+@patch('evennia.contrib.extended_room.datetime.datetime', ForceUTCDatetime)
 class TestExtendedRoom(CommandTest):
     room_typeclass = extended_room.ExtendedRoom
     DETAIL_DESC = "A test detail."
-    SUMMER_DESC = "A summer description."
+    SPRING_DESC = "A spring description."
     OLD_DESC = "Old description."
+    settings.TIME_ZONE = "UTC"
 
     def setUp(self):
         super(TestExtendedRoom, self).setUp()
-        self.room1.ndb.last_timeslot = "night"
+        self.room1.ndb.last_timeslot = "afternoon"
         self.room1.ndb.last_season = "winter"
         self.room1.db.details = {'testdetail': self.DETAIL_DESC}
-        self.room1.db.summer_desc = self.SUMMER_DESC
+        self.room1.db.spring_desc = self.SPRING_DESC
         self.room1.db.desc = self.OLD_DESC
+        # mock gametime to return April 9, 2064, at 21:06 (spring evening)
+        gametime.gametime = Mock(return_value=2975000766)
 
     def test_return_appearance(self):
         # get the appearance of a non-extended room for contrast purposes
         old_desc = DefaultRoom.return_appearance(self.room1, self.char1)
         # the new appearance should be the old one, but with the desc switched
-        self.assertEqual(old_desc.replace(self.OLD_DESC, self.SUMMER_DESC), self.room1.return_appearance(self.char1))
-        self.assertEqual("summer", self.room1.ndb.last_season)
-        self.assertEqual("morning", self.room1.ndb.last_timeslot)
+        self.assertEqual(old_desc.replace(self.OLD_DESC, self.SPRING_DESC),
+                        self.room1.return_appearance(self.char1))
+        self.assertEqual("spring", self.room1.ndb.last_season)
+        self.assertEqual("evening", self.room1.ndb.last_timeslot)
 
     def test_return_detail(self):
         self.assertEqual(self.DETAIL_DESC, self.room1.return_detail("testdetail"))
 
     def test_cmdextendedlook(self):
-        self.call(extended_room.CmdExtendedLook(), "here", "Room(#1)\n%s" % self.SUMMER_DESC)
+        self.call(extended_room.CmdExtendedLook(), "here", "Room(#1)\n%s" % self.SPRING_DESC)
         self.call(extended_room.CmdExtendedLook(), "testdetail", self.DETAIL_DESC)
         self.call(extended_room.CmdExtendedLook(), "nonexistent", "Could not find 'nonexistent'.")
 
@@ -219,7 +228,7 @@ class TestExtendedRoom(CommandTest):
         self.call(extended_room.CmdExtendedDesc(), "", "Descriptions on Room:")
 
     def test_cmdgametime(self):
-        self.call(extended_room.CmdGameTime(), "", "It's a summer day, in the morning.")
+        self.call(extended_room.CmdGameTime(), "", "It's a spring day, in the evening.")
 
 
 # Test the contrib barter system
@@ -306,10 +315,10 @@ class TestBarter(CommandTest):
         self.call(barter.CmdTradeHelp(), "", "Trading commands\n", caller=self.char1)
         self.call(barter.CmdFinish(), ": Ending.", "You say, \"Ending.\"\n  [You aborted trade. No deal was made.]")
 
+# Test wilderness
 
 from evennia.contrib import wilderness
 from evennia import DefaultCharacter
-
 
 class TestWilderness(EvenniaTest):
 
@@ -426,3 +435,323 @@ class TestWilderness(EvenniaTest):
         for direction, correct_loc in directions.iteritems():  # Not compatible with Python 3
             new_loc = wilderness.get_new_coordinates(loc, direction)
             self.assertEquals(new_loc, correct_loc, direction)
+
+# Testing chargen contrib
+from evennia.contrib import chargen
+
+class TestChargen(CommandTest):
+
+    def test_ooclook(self):
+        self.call(chargen.CmdOOCLook(), "foo", "You have no characters to look at", caller=self.player)
+        self.call(chargen.CmdOOCLook(), "", "You, TestPlayer, are an OOC ghost without form.", caller=self.player)
+
+    def test_charcreate(self):
+        self.call(chargen.CmdOOCCharacterCreate(), "testchar", "The character testchar was successfully created!", caller=self.player)
+        self.call(chargen.CmdOOCCharacterCreate(), "testchar", "Character testchar already exists.", caller=self.player)
+        self.assertTrue(self.player.db._character_dbrefs)
+        self.call(chargen.CmdOOCLook(), "", "You, TestPlayer, are an OOC ghost without form.",caller=self.player)
+        self.call(chargen.CmdOOCLook(), "testchar", "testchar(", caller=self.player)
+
+# Testing custom_gametime
+from evennia.contrib import custom_gametime
+
+def _testcallback():
+    pass
+
+class TestCustomGameTime(EvenniaTest):
+    def setUp(self):
+        super(TestCustomGameTime, self).setUp()
+        gametime.gametime = Mock(return_value=2975000898.46) # does not seem to work
+    def tearDown(self):
+        if hasattr(self, "timescript"):
+            self.timescript.stop()
+    def test_time_to_tuple(self):
+        self.assertEqual(custom_gametime.time_to_tuple(10000, 34,2,4,6,1), (294, 2, 0, 0, 0, 0))
+        self.assertEqual(custom_gametime.time_to_tuple(10000, 3,3,4), (3333, 0, 0, 1))
+        self.assertEqual(custom_gametime.time_to_tuple(100000, 239,24,3), (418, 4, 0, 2))
+    def test_gametime_to_realtime(self):
+        self.assertEqual(custom_gametime.gametime_to_realtime(days=2, mins=4), 86520.0)
+        self.assertEqual(custom_gametime.gametime_to_realtime(format=True, days=2), (0,0,0,1,0,0,0))
+    def test_realtime_to_gametime(self):
+        self.assertEqual(custom_gametime.realtime_to_gametime(days=2, mins=34), 349680.0)
+        self.assertEqual(custom_gametime.realtime_to_gametime(days=2, mins=34, format=True), (0, 0, 0, 4, 1, 8, 0))
+        self.assertEqual(custom_gametime.realtime_to_gametime(format=True, days=2, mins=4), (0, 0, 0, 4, 0, 8, 0))
+    def test_custom_gametime(self):
+        self.assertEqual(custom_gametime.custom_gametime(), (102, 5, 2, 6, 21, 8, 18))
+        self.assertEqual(custom_gametime.custom_gametime(absolute=True), (102, 5, 2, 6, 21, 8, 18))
+    def test_real_seconds_until(self):
+        self.assertEqual(custom_gametime.real_seconds_until(year=2300, month=11, day=6), 31911667199.77)
+    def test_schedule(self):
+        self.timescript = custom_gametime.schedule(_testcallback, repeat=True, min=5, sec=0)
+        self.assertEqual(self.timescript.interval, 1700.7699999809265)
+
+# Test dice module
+
+
+@patch('random.randint', return_value=5)
+class TestDice(CommandTest):
+    def test_roll_dice(self, mocked_randint):
+        # we must import dice here for the mocked randint to apply correctly.
+        from evennia.contrib import dice
+        self.assertEqual(dice.roll_dice(6, 6, modifier=('+', 4)), mocked_randint()*6 + 4)
+        self.assertEqual(dice.roll_dice(6, 6, conditional=('<', 35)), True)
+        self.assertEqual(dice.roll_dice(6, 6, conditional=('>', 33)), False)
+    def test_cmddice(self, mocked_randint):
+        from evennia.contrib import dice
+        self.call(dice.CmdDice(), "3d6 + 4", "You roll 3d6 + 4.| Roll(s): 5, 5 and 5. Total result is 19.")
+        self.call(dice.CmdDice(), "100000d1000", "The maximum roll allowed is 10000d10000.")
+        self.call(dice.CmdDice(), "/secret 3d6 + 4", "You roll 3d6 + 4 (secret, not echoed).")
+
+# Test email-login
+
+from evennia.contrib import email_login
+
+class TestEmailLogin(CommandTest):
+    def test_connect(self):
+        self.call(email_login.CmdUnconnectedConnect(), "mytest@test.com test", "The email 'mytest@test.com' does not match any accounts.")
+        self.call(email_login.CmdUnconnectedCreate(), '"mytest" mytest@test.com test11111', "A new account 'mytest' was created. Welcome!")
+        self.call(email_login.CmdUnconnectedConnect(), "mytest@test.com test11111", "", caller=self.player.sessions.get()[0])
+    def test_quit(self):
+        self.call(email_login.CmdUnconnectedQuit(), "", "", caller=self.player.sessions.get()[0])
+    def test_unconnectedlook(self):
+        self.call(email_login.CmdUnconnectedLook(), "", "==========")
+    def test_unconnectedhelp(self):
+        self.call(email_login.CmdUnconnectedHelp(), "", "You are not yet logged into the game.")
+
+# test gendersub contrib
+
+from evennia.contrib import gendersub
+
+class TestGenderSub(CommandTest):
+    def test_setgender(self):
+        self.call(gendersub.SetGender(), "male", "Your gender was set to male.")
+        self.call(gendersub.SetGender(), "ambiguous", "Your gender was set to ambiguous.")
+        self.call(gendersub.SetGender(), "Foo", "Usage: @gender")
+    def test_gendercharacter(self):
+        char = create_object(gendersub.GenderCharacter, key="Gendered", location=self.room1)
+        txt = "Test |p gender"
+        self.assertEqual(gendersub._RE_GENDER_PRONOUN.sub(char._get_pronoun, txt), "Test their gender")
+
+# test mail contrib
+
+from evennia.contrib import mail
+
+class TestMail(CommandTest):
+    def test_mail(self):
+        self.call(mail.CmdMail(), "2", "'2' is not a valid mail id.", caller=self.player)
+        self.call(mail.CmdMail(), "", "There are no messages in your inbox.", caller=self.player)
+        self.call(mail.CmdMail(), "Char=Message 1", "You have received a new @mail from Char|You sent your message.", caller=self.char1)
+        self.call(mail.CmdMail(), "Char=Message 2", "You sent your message.", caller=self.char2)
+        self.call(mail.CmdMail(), "TestPlayer2=Message 2",
+            "You have received a new @mail from TestPlayer2(player 2)|You sent your message.", caller=self.player2)
+        self.call(mail.CmdMail(), "TestPlayer=Message 1", "You sent your message.", caller=self.player2)
+        self.call(mail.CmdMail(), "TestPlayer=Message 2", "You sent your message.", caller=self.player2)
+        self.call(mail.CmdMail(), "", "| ID:   From:            Subject:", caller=self.player)
+        self.call(mail.CmdMail(), "2", "From: TestPlayer2", caller=self.player)
+        self.call(mail.CmdMail(), "/forward TestPlayer2 = 1/Forward message", "You sent your message.|Message forwarded.", caller=self.player)
+        self.call(mail.CmdMail(), "/reply 2=Reply Message2", "You sent your message.", caller=self.player)
+        self.call(mail.CmdMail(), "/delete 2", "Message 2 deleted", caller=self.player)
+
+# test map builder contrib
+
+from evennia.contrib import mapbuilder
+
+class TestMapBuilder(CommandTest):
+    def test_cmdmapbuilder(self):
+        self.call(mapbuilder.CmdMapBuilder(),
+            "evennia.contrib.mapbuilder.EXAMPLE1_MAP evennia.contrib.mapbuilder.EXAMPLE1_LEGEND",
+"""Creating Map...|≈≈≈≈≈
+≈♣n♣≈
+≈∩▲∩≈
+≈♠n♠≈
+≈≈≈≈≈
+|Creating Landmass...|""")
+        self.call(mapbuilder.CmdMapBuilder(),
+            "evennia.contrib.mapbuilder.EXAMPLE2_MAP evennia.contrib.mapbuilder.EXAMPLE2_LEGEND",
+"""Creating Map...|≈ ≈ ≈ ≈ ≈
+
+≈ ♣♣♣ ≈
+    ≈ ♣ ♣ ♣ ≈
+  ≈ ♣♣♣ ≈
+
+≈ ≈ ≈ ≈ ≈
+|Creating Landmass...|""")
+
+
+# test menu_login
+
+from evennia.contrib import menu_login
+
+class TestMenuLogin(CommandTest):
+    def test_cmdunloggedlook(self):
+        self.call(menu_login.CmdUnloggedinLook(), "", "======")
+
+
+# test multidescer contrib
+
+from evennia.contrib import multidescer
+
+class TestMultidescer(CommandTest):
+    def test_cmdmultidesc(self):
+        self.call(multidescer.CmdMultiDesc(),"/list", "Stored descs:\ncaller:")
+        self.call(multidescer.CmdMultiDesc(),"test = Desc 1", "Stored description 'test': \"Desc 1\"")
+        self.call(multidescer.CmdMultiDesc(),"test2 = Desc 2", "Stored description 'test2': \"Desc 2\"")
+        self.call(multidescer.CmdMultiDesc(),"/swap test-test2", "Swapped descs 'test' and 'test2'.")
+        self.call(multidescer.CmdMultiDesc(),"test3 = Desc 3init", "Stored description 'test3': \"Desc 3init\"")
+        self.call(multidescer.CmdMultiDesc(),"/list", "Stored descs:\ntest3: Desc 3init\ntest: Desc 1\ntest2: Desc 2\ncaller:")
+        self.call(multidescer.CmdMultiDesc(),"test3 = Desc 3", "Stored description 'test3': \"Desc 3\"")
+        self.call(multidescer.CmdMultiDesc(),"/set test1 + test2 + + test3", "test1 Desc 2 Desc 3\n\n"
+                                             "The above was set as the current description.")
+        self.assertEqual(self.char1.db.desc, "test1 Desc 2 Desc 3")
+
+# test simpledoor contrib
+
+from evennia.contrib import simpledoor
+
+class TestSimpleDoor(CommandTest):
+    def test_cmdopen(self):
+        self.call(simpledoor.CmdOpen(), "newdoor;door:contrib.simpledoor.SimpleDoor,backdoor;door = Room2",
+                "Created new Exit 'newdoor' from Room to Room2 (aliases: door).|Note: A doortype exit was "
+                "created  ignored eventual custom returnexit type.|Created new Exit 'newdoor' from Room2 to Room (aliases: door).")
+        self.call(simpledoor.CmdOpenCloseDoor(), "newdoor", "You close newdoor.", cmdstring="close")
+        self.call(simpledoor.CmdOpenCloseDoor(), "newdoor", "newdoor is already closed.", cmdstring="close")
+        self.call(simpledoor.CmdOpenCloseDoor(), "newdoor", "You open newdoor.", cmdstring="open")
+        self.call(simpledoor.CmdOpenCloseDoor(), "newdoor", "newdoor is already open.", cmdstring="open")
+
+# test slow_exit contrib
+
+from evennia.contrib import slow_exit
+slow_exit.MOVE_DELAY = {"stroll":0, "walk": 0, "run": 0, "sprint": 0}
+
+class TestSlowExit(CommandTest):
+    def test_exit(self):
+        exi = create_object(slow_exit.SlowExit, key="slowexit", location=self.room1, destination=self.room2)
+        exi.at_traverse(self.char1, self.room2)
+        self.call(slow_exit.CmdSetSpeed(), "walk", "You are now walking.")
+        self.call(slow_exit.CmdStop(), "", "You stop moving.")
+
+# test talking npc contrib
+
+from evennia.contrib import talking_npc
+
+class TestTalkingNPC(CommandTest):
+    def test_talkingnpc(self):
+        npc = create_object(talking_npc.TalkingNPC, key="npctalker", location=self.room1)
+        self.call(talking_npc.CmdTalk(), "","(You walk up and talk to Char.)|")
+        npc.delete()
+
+
+# tests for the tutorial world
+
+# test tutorial_world/mob
+
+from evennia.contrib.tutorial_world import mob
+
+class TestTutorialWorldMob(EvenniaTest):
+    def test_mob(self):
+        mobobj = create_object(mob.Mob, key="mob")
+        self.assertEqual(mobobj.db.is_dead, True)
+        mobobj.set_alive()
+        self.assertEqual(mobobj.db.is_dead, False)
+        mobobj.set_dead()
+        self.assertEqual(mobobj.db.is_dead, True)
+        mobobj._set_ticker(0, "foo", stop=True)
+        #TODO should be expanded with further tests of the modes and damage etc.
+
+#  test tutorial_world/objects
+
+from evennia.contrib.tutorial_world import objects as tutobjects
+
+class TestTutorialWorldObjects(CommandTest):
+    def test_tutorialobj(self):
+        obj1 = create_object(tutobjects.TutorialObject, key="tutobj")
+        obj1.reset()
+        self.assertEqual(obj1.location, obj1.home)
+    def test_readable(self):
+        readable = create_object(tutobjects.Readable, key="book", location=self.room1)
+        readable.db.readable_text = "Text to read"
+        self.call(tutobjects.CmdRead(), "book","You read book:\n  Text to read", obj=readable)
+    def test_climbable(self):
+        climbable = create_object(tutobjects.Climbable, key="tree", location=self.room1)
+        self.call(tutobjects.CmdClimb(), "tree", "You climb tree. Having looked around, you climb down again.", obj=climbable)
+        self.assertEqual(self.char1.tags.get("tutorial_climbed_tree", category="tutorial_world"), "tutorial_climbed_tree")
+    def test_obelisk(self):
+        obelisk = create_object(tutobjects.Obelisk, key="obelisk", location=self.room1)
+        self.assertEqual(obelisk.return_appearance(self.char1).startswith("|cobelisk("), True)
+    def test_lightsource(self):
+        light = create_object(tutobjects.LightSource, key="torch", location=self.room1)
+        self.call(tutobjects.CmdLight(), "", "You light torch.", obj=light)
+        light._burnout()
+        if hasattr(light, "deferred"):
+            light.deferred.cancel()
+        self.assertFalse(light.pk)
+    def test_crumblingwall(self):
+        wall = create_object(tutobjects.CrumblingWall, key="wall", location=self.room1)
+        self.assertFalse(wall.db.button_exposed)
+        self.assertFalse(wall.db.exit_open)
+        wall.db.root_pos = {"yellow":0, "green":0,"red":0,"blue":0}
+        self.call(tutobjects.CmdShiftRoot(), "blue root right",
+                "You shove the root adorned with small blue flowers to the right.", obj=wall)
+        self.call(tutobjects.CmdShiftRoot(), "red root left",
+                "You shift the reddish root to the left.", obj=wall)
+        self.call(tutobjects.CmdShiftRoot(), "yellow root down",
+                "You shove the root adorned with small yellow flowers downwards.", obj=wall)
+        self.call(tutobjects.CmdShiftRoot(), "green root up",
+                "You shift the weedy green root upwards.|Holding aside the root you think you notice something behind it ...", obj=wall)
+        self.call(tutobjects.CmdPressButton(), "",
+                "You move your fingers over the suspicious depression, then gives it a decisive push. First", obj=wall)
+        self.assertTrue(wall.db.button_exposed)
+        self.assertTrue(wall.db.exit_open)
+        wall.reset()
+        if hasattr(wall, "deferred"):
+            wall.deferred.cancel()
+        wall.delete()
+    def test_weapon(self):
+        weapon = create_object(tutobjects.Weapon, key="sword", location=self.char1)
+        self.call(tutobjects.CmdAttack(), "Char", "You stab with sword.", obj=weapon, cmdstring="stab")
+        self.call(tutobjects.CmdAttack(), "Char", "You slash with sword.", obj=weapon, cmdstring="slash")
+    def test_weaponrack(self):
+        rack = create_object(tutobjects.WeaponRack, key="rack", location=self.room1)
+        rack.db.available_weapons = ["sword"]
+        self.call(tutobjects.CmdGetWeapon(), "", "You find Rusty sword.", obj=rack)
+
+# test tutorial_world/
+from evennia.contrib.tutorial_world import rooms as tutrooms
+
+class TestTutorialWorldRooms(CommandTest):
+    def test_cmdtutorial(self):
+        room = create_object(tutrooms.TutorialRoom, key="tutroom")
+        self.char1.location = room
+        self.call(tutrooms.CmdTutorial(), "", "Sorry, there is no tutorial help available here.")
+        self.call(tutrooms.CmdTutorialSetDetail(), "detail;foo;foo2 = A detail", "Detail set: 'detail;foo;foo2': 'A detail'", obj=room)
+        self.call(tutrooms.CmdTutorialLook(), "", "tutroom(", obj=room)
+        self.call(tutrooms.CmdTutorialLook(), "detail", "A detail", obj=room)
+        self.call(tutrooms.CmdTutorialLook(), "foo", "A detail", obj=room)
+        room.delete()
+    def test_weatherroom(self):
+        room = create_object(tutrooms.WeatherRoom, key="weatherroom")
+        room.update_weather()
+        tutrooms.TICKER_HANDLER.remove(interval=room.db.interval, callback=room.update_weather, idstring="tutorial")
+        room.delete()
+    def test_introroom(self):
+        room = create_object(tutrooms.IntroRoom, key="introroom")
+        room.at_object_receive(self.char1, self.room1)
+    def test_bridgeroom(self):
+        room = create_object(tutrooms.BridgeRoom, key="bridgeroom")
+        room.update_weather()
+        self.char1.move_to(room)
+        self.call(tutrooms.CmdBridgeHelp(), "", "You are trying hard not to fall off the bridge ...", obj=room)
+        self.call(tutrooms.CmdLookBridge(), "", "bridgeroom\nYou are standing very close to the the bridge's western foundation.", obj=room)
+        room.at_object_leave(self.char1, self.room1)
+        tutrooms.TICKER_HANDLER.remove(interval=room.db.interval, callback=room.update_weather, idstring="tutorial")
+        room.delete()
+    def test_darkroom(self):
+        room = create_object(tutrooms.DarkRoom, key="darkroom")
+        self.char1.move_to(room)
+        self.call(tutrooms.CmdDarkHelp(), "", "Can't help you until")
+    def test_teleportroom(self):
+        create_object(tutrooms.TeleportRoom, key="teleportroom")
+    def test_outroroom(self):
+        create_object(tutrooms.OutroRoom, key="outroroom")
+
+

@@ -30,6 +30,7 @@ class CharacterCmdSet(CmdSet):
         self.add(general.CmdDrop())
         self.add(general.CmdGive())
         self.add(general.CmdSay())
+        self.add(general.CmdWhisper())
         self.add(general.CmdAccess())
 
         # The help system

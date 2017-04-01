@@ -38,7 +38,7 @@ class CommandTest(EvenniaTest):
     Tests a command
     """
 
-    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None, receiver=None, cmdstring=None):
+    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None, receiver=None, cmdstring=None, obj=None):
         """
         Test a command by assigning all the needed
         properties to cmdobj and  running
@@ -48,6 +48,10 @@ class CommandTest(EvenniaTest):
             cmdobj.at_post_cmd()
         The msgreturn value is compared to eventual
         output sent to caller.msg in the game
+
+        Returns:
+            msg (str): The received message that was sent to the caller.
+
         """
         caller = caller if caller else self.char1
         receiver = receiver if receiver else caller
@@ -60,9 +64,10 @@ class CommandTest(EvenniaTest):
         cmdobj.session = SESSIONS.session_from_sessid(1)
         cmdobj.player = self.player
         cmdobj.raw_string = cmdobj.key + " " + args
-        cmdobj.obj = caller if caller else self.char1
+        cmdobj.obj = obj or (caller if caller else self.char1)
         # test
         old_msg = receiver.msg
+        returned_msg = ""
         try:
             receiver.msg = Mock()
             cmdobj.at_pre_cmd()
@@ -74,17 +79,22 @@ class CommandTest(EvenniaTest):
                     for name, args, kwargs in receiver.msg.mock_calls]
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
-            returned_msg = "||".join(_RE.sub("", mess) for mess in stored_msg)
-            returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
             if msg is not None:
+                returned_msg = "||".join(_RE.sub("", mess) for mess in stored_msg)
+                returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
                 if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
                     sep1 = "\n" + "="*30 + "Wanted message" + "="*34 + "\n"
                     sep2 = "\n" + "="*30 + "Returned message" + "="*32 + "\n"
                     sep3 = "\n" + "="*78
                     retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
                     raise AssertionError(retval)
+            else:
+                returned_msg = "\n".join(stored_msg)
+                returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
         finally:
             receiver.msg = old_msg
+
+        return returned_msg
 
 # ------------------------------------------------------------
 # Individual module Tests
@@ -118,6 +128,9 @@ class TestGeneral(CommandTest):
 
     def test_say(self):
         self.call(general.CmdSay(), "Testing", "You say, \"Testing\"")
+
+    def test_whisper(self):
+        self.call(general.CmdWhisper(), "Obj = Testing", "You whisper to Obj, \"Testing\"")
 
     def test_access(self):
         self.call(general.CmdAccess(), "", "Permission Hierarchy (climbing):")

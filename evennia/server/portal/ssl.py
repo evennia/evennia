@@ -54,6 +54,7 @@ class SSLProtocol(TelnetProtocol):
         super(SSLProtocol, self).__init__(*args, **kwargs)
         self.protocol_name = "ssl"
 
+
 def verify_SSL_key_and_cert(keyfile, certfile):
     """
     This function looks for RSA key and certificate in the current
@@ -82,7 +83,7 @@ def verify_SSL_key_and_cert(keyfile, certfile):
         # try to create the certificate
         CERT_EXPIRE = 365 * 20  # twenty years validity
         # default:
-        #openssl req -new -x509 -key ssl.key -out ssl.cert -days 7300
+        # openssl req -new -x509 -key ssl.key -out ssl.cert -days 7300
         exestring = "openssl req -new -x509 -key %s -out %s -days %s" % (keyfile, certfile, CERT_EXPIRE)
         try:
             subprocess.call(exestring)

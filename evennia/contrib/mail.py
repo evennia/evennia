@@ -6,11 +6,15 @@ Evennia Contribution - grungies1138 2016
 A simple Brandymail style @mail system that uses the Msg class from Evennia Core.
 
 Installation:
-    import MailCommand from this module into the default Player or Character command set
+    import CmdMail from this module (from evennia.contrib.mail import CmdMail),
+    and add into the default Player or Character command set (self.add(CmdMail)).
+
 """
 
+import re
+from evennia import ObjectDB, PlayerDB
 from evennia import default_cmds
-from evennia.utils import create, evtable
+from evennia.utils import create, evtable, make_iter
 from evennia.comms.models import Msg
 
 
@@ -48,7 +52,7 @@ class CmdMail(default_cmds.MuxCommand):
         @mail 2
         @mail Griatch=New mail/Hey man, I am sending you a message!
         @mail/delete 6
-        @mail/forward feend78 Griatch=You guys should read this.
+        @mail/forward feend78 Griatch=4/You guys should read this.
         @mail/reply 9=Thanks for the info!
     """
     key = "@mail"
@@ -56,9 +60,67 @@ class CmdMail(default_cmds.MuxCommand):
     lock = "cmd:all()"
     help_category = "General"
 
+    def search_targets(self, namelist):
+        """
+        Search a list of targets of the same type as caller.
+
+        Args:
+            caller (Object or Player): The type of object to search.
+            namelist (list): List of strings for objects to search for.
+
+        Returns:
+            targetlist (list): List of matches, if any.
+
+        """
+        nameregex = r"|".join(r"^%s$" % re.escape(name) for name in make_iter(namelist))
+        if hasattr(self.caller, "player") and self.caller.player:
+            matches = list(ObjectDB.objects.filter(db_key__iregex=nameregex))
+        else:
+            matches = list(PlayerDB.objects.filter(username__iregex=nameregex))
+        return matches
+
+    def get_all_mail(self):
+        """
+        Returns a list of all the messages where the caller is a recipient.
+
+        Returns:
+            messages (list): list of Msg objects.
+        """
+        # mail_messages = Msg.objects.get_by_tag(category="mail")
+        # messages = []
+        try:
+            player = self.caller.player
+        except AttributeError:
+            player = self.caller
+        messages = Msg.objects.get_by_tag(category="mail", raw_queryset=True).filter(db_receivers_players=player)
+        return messages
+
+    def send_mail(self, recipients, subject, message, caller):
+        """
+        Function for sending new mail.  Also useful for sending notifications from objects or systems.
+
+        Args:
+            recipients (list): list of Player or character objects to receive the newly created mails.
+            subject (str): The header or subject of the message to be delivered.
+            message (str): The body of the message being sent.
+            caller (obj): The object (or Player or Character) that is sending the message.
+        """
+        for recipient in recipients:
+            recipient.msg("You have received a new @mail from %s" % caller)
+            new_message = create.create_message(self.caller, message, receivers=recipient, header=subject)
+            new_message.tags.add("U", category="mail")
+
+        if recipients:
+            caller.msg("You sent your message.")
+            return
+        else:
+            caller.msg("No valid players found.  Cannot send message.")
+            return
+
     def func(self):
         subject = ""
         body = ""
+
         if self.switches or self.args:
             if "delete" in self.switches:
                 try:
@@ -66,12 +128,15 @@ class CmdMail(default_cmds.MuxCommand):
                         self.caller.msg("No Message ID given.  Unable to delete.")
                         return
                     else:
-                        if self.get_all_mail()[int(self.lhs) - 1]:
-                            self.get_all_mail()[int(self.lhs) - 1].delete()
+                        all_mail = self.get_all_mail()
+                        mind = int(self.lhs) - 1
+                        if all_mail[mind]:
+                            all_mail[mind].delete()
                             self.caller.msg("Message %s deleted" % self.lhs)
                         else:
-                            self.caller.msg("That message does not exist.")
-                            return
+                            raise IndexError
+                except IndexError:
+                    self.caller.msg("That message does not exist.")
                 except ValueError:
                     self.caller.msg("Usage: @mail/delete <message ID>")
             elif "forward" in self.switches:
@@ -83,29 +148,33 @@ class CmdMail(default_cmds.MuxCommand):
                         self.caller.msg("You must define a message to forward.")
                         return
                     else:
+                        all_mail = self.get_all_mail()
                         if "/" in self.rhs:
                             message_number, message = self.rhs.split("/")
-                            if self.get_all_mail()[int(message_number) - 1]:
-                                old_message = self.get_all_mail()[int(message_number) - 1]
+                            mind = int(message_number) - 1
 
-                                self.send_mail(self.lhslist, "FWD: " + old_message.header,
+                            if all_mail[mind]:
+                                old_message = all_mail[mind]
+
+                                self.send_mail(self.search_targets(self.lhslist), "FWD: " + old_message.header,
                                                message + "\n---- Original Message ----\n" + old_message.message,
                                                self.caller)
                                 self.caller.msg("Message forwarded.")
                             else:
-                                self.caller.msg("Message does not exist.")
-                                return
+                                raise IndexError
                         else:
-                            if self.get_all_mail()[int(self.rhs) - 1]:
-                                old_message = self.get_all_mail()[int(self.rhs) - 1]
-                                self.send_mail(self.lhslist, "FWD: " + old_message.header,
+                            mind = int(self.rhs) - 1
+                            if all_mail[mind]:
+                                old_message = all_mail[mind]
+                                self.send_mail(self.search_targets(self.lhslist), "FWD: " + old_message.header,
                                                "\n---- Original Message ----\n" + old_message.message, self.caller)
                                 self.caller.msg("Message forwarded.")
                                 old_message.tags.remove("u", category="mail")
                                 old_message.tags.add("f", category="mail")
                             else:
-                                self.caller.msg("Message does not exist.")
-                                return
+                                raise IndexError
+                except IndexError:
+                    self.caller.msg("Message does not exixt.")
                 except ValueError:
                     self.caller.msg("Usage: @mail/forward <player list>=<#>[/<Message>]")
             elif "reply" in self.switches:
@@ -117,29 +186,33 @@ class CmdMail(default_cmds.MuxCommand):
                         self.caller.msg("You must supply a reply message")
                         return
                     else:
-                        if self.get_all_mail()[int(self.lhs) - 1]:
-                            old_message = self.get_all_mail()[int(self.lhs) - 1]
+                        all_mail = self.get_all_mail()
+                        mind = int(self.lhs) - 1
+                        if all_mail[mind]:
+                            old_message = all_mail[mind]
                             self.send_mail(old_message.senders, "RE: " + old_message.header,
                                            self.rhs + "\n---- Original Message ----\n" + old_message.message, self.caller)
                             old_message.tags.remove("u", category="mail")
                             old_message.tags.add("r", category="mail")
                             return
                         else:
-                            self.caller.msg("Message does not exist.")
-                            return
+                            raise IndexError
+                except IndexError:
+                    self.caller.msg("Message does not exist.")
                 except ValueError:
                     self.caller.msg("Usage: @mail/reply <#>=<message>")
             else:
+                # normal send
                 if self.rhs:
                     if "/" in self.rhs:
                         subject, body = self.rhs.split("/", 1)
                     else:
                         body = self.rhs
-                    self.send_mail(self.lhslist, subject, body, self.caller)
+                    self.send_mail(self.search_targets(self.lhslist), subject, body, self.caller)
                 else:
                     try:
                         message = self.get_all_mail()[int(self.lhs) - 1]
-                    except ValueError:
+                    except (ValueError, IndexError):
                         self.caller.msg("'%s' is not a valid mail id." % self.lhs)
                         return
 
@@ -176,47 +249,8 @@ class CmdMail(default_cmds.MuxCommand):
                 table.reformat_column(4, width=7)
 
                 self.caller.msg(_HEAD_CHAR * _WIDTH)
-                self.caller.msg(table)
+                self.caller.msg(unicode(table))
                 self.caller.msg(_HEAD_CHAR * _WIDTH)
             else:
-                self.caller.msg("Sorry, you don't have any messages.  What a pathetic loser!")
+                self.caller.msg("There are no messages in your inbox.")
 
-    def get_all_mail(self):
-        """
-        Returns a list of all the messages where the caller is a recipient.
-
-        Returns:
-            messages (list): list of Msg objects.
-        """
-        # mail_messages = Msg.objects.get_by_tag(category="mail")
-        # messages = []
-        messages = Msg.objects.get_by_tag(category="mail", raw_queryset=True).filter(db_receivers_players=self.caller.player)
-        return messages
-
-    def send_mail(self, recipients, subject, message, caller):
-        """
-        Function for sending new mail.  Also useful for sending notifications from objects or systems.
-
-        Args:
-            recipients (list): list of Player or character objects to receive the newly created mails.
-            subject (str): The header or subject of the message to be delivered.
-            message (str): The body of the message being sent.
-            caller (obj): The object (or Player or Character) that is sending the message.
-        """
-        recobjs = []
-        for char in recipients:
-
-            if self.caller.player.search(char) is not None:
-                recobjs.append(self.caller.player.search(char))
-        if recobjs:
-            for recipient in recobjs:
-                recipient.msg("You have received a new @mail from %s" % caller)
-
-                new_message = create.create_message(self.caller, message, receivers=recipient, header=subject)
-                new_message.tags.add("U", category="mail")
-
-            caller.msg("You sent your message.")
-            return
-        else:
-            caller.msg("No valid players found.  Cannot send message.")
-            return

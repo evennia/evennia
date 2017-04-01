@@ -27,6 +27,7 @@ MTTS = [(128, 'PROXY'),
         (2, 'VT100'),
         (1, 'ANSI')]
 
+
 class Ttype(object):
     """
     Handles ttype negotiations. Called and initiated by the
@@ -104,22 +105,21 @@ class Ttype(object):
             # use name to identify support for xterm256. Many of these
             # only support after a certain version, but all support
             # it since at least 4 years. We assume recent client here for now.
-            xterm256 = False
             cupper = clientname.upper()
             if cupper.startswith("MUDLET"):
                 # supports xterm256 stably since 1.1 (2010?)
-                xterm256 = cupper.split("MUDLET",1)[1].strip() >= "1.1"
+                xterm256 = cupper.split("MUDLET", 1)[1].strip() >= "1.1"
             else:
                 xterm256 = (cupper.startswith("XTERM") or
                             cupper.endswith("-256COLOR") or
                             cupper in ("ATLANTIS",      # > 0.9.9.0 (aug 2009)
-                                           "CMUD",          # > 3.04 (mar 2009)
-                                           "KILDCLIENT",    # > 2.2.0 (sep 2005)
-                                           "MUDLET",        # > beta 15 (sep 2009)
-                                           "MUSHCLIENT",    # > 4.02 (apr 2007)
-                                           "PUTTY",         # > 0.58 (apr 2005)
-                                           "BEIP",          # > 2.00.206 (late 2009) (BeipMu)
-                                           "POTATO"))       # > 2.00 (maybe earlier)
+                                       "CMUD",          # > 3.04 (mar 2009)
+                                       "KILDCLIENT",    # > 2.2.0 (sep 2005)
+                                       "MUDLET",        # > beta 15 (sep 2009)
+                                       "MUSHCLIENT",    # > 4.02 (apr 2007)
+                                       "PUTTY",         # > 0.58 (apr 2005)
+                                       "BEIP",          # > 2.00.206 (late 2009) (BeipMu)
+                                       "POTATO"))       # > 2.00 (maybe earlier)
 
             # all clients supporting TTYPE at all seem to support ANSI
             self.protocol.protocol_flags['ANSI'] = True

@@ -98,6 +98,7 @@ from typeclasses import rooms, exits
 from random import randint
 import random
 
+
 # A map with a temple (▲) amongst mountains (n,∩) in a forest (♣,♠) on an
 # island surrounded by water (≈). By giving no instructions for the water
 # characters we effectively skip it and create no rooms for those squares.
@@ -287,6 +288,88 @@ def _map_to_list(game_map):
             else character for character in list_map]
 
 
+def build_map(caller, game_map, legend, iterations=1, build_exits=True):
+    """
+    Receives the fetched map and legend vars provided by the player.
+
+    Args:
+        caller (Object): The creator of the map.
+        game_map (str): An ASCII map string.
+        legend (dict): Mapping of map symbols to object types.
+        iterations (int): The number of iteration passes.
+        build_exits (bool): Create exits between new rooms.
+
+    Notes:
+        The map
+        is iterated over character by character, comparing it to the trigger
+        characters in the legend var and executing the build instructions on
+        finding a match. The map is iterated over according to the `iterations`
+        value and exits are optionally generated between adjacent rooms according
+        to the `build_exits` value.
+
+    """
+
+    # Split map string to list of rows and create reference list.
+    caller.msg("Creating Map...")
+    caller.msg(game_map)
+    game_map = _map_to_list(game_map)
+
+    # Create a reference dictionary which be passed to build functions and
+    # will store obj returned by build functions so objs can be referenced.
+    room_dict = {}
+
+    caller.msg("Creating Landmass...")
+    for iteration in xrange(iterations):
+        for y in xrange(len(game_map)):
+            for x in xrange(len(game_map[y])):
+                for key in legend:
+                    # obs - we must use == for unicode
+                    if utils.to_unicode(game_map[y][x]) == utils.to_unicode(key):
+                        room = legend[key](x, y, iteration=iteration,
+                                           room_dict=room_dict,
+                                           caller=caller)
+                        if iteration == 0:
+                            room_dict[(x, y)] = room
+
+    if build_exits:
+        # Creating exits. Assumes single room object in dict entry
+        caller.msg("Connecting Areas...")
+        for loc_key, location in room_dict.iteritems():
+            x = loc_key[0]
+            y = loc_key[1]
+
+            # north
+            if (x, y-1) in room_dict:
+                if room_dict[(x, y-1)]:
+                    create_object(exits.Exit, key="north",
+                                  aliases=["n"], location=location,
+                                  destination=room_dict[(x, y-1)])
+
+            # east
+            if (x+1, y) in room_dict:
+                if room_dict[(x+1, y)]:
+                    create_object(exits.Exit, key="east",
+                                  aliases=["e"], location=location,
+                                  destination=room_dict[(x+1, y)])
+
+            # south
+            if (x, y+1) in room_dict:
+                if room_dict[(x, y+1)]:
+                    create_object(exits.Exit, key="south",
+                                  aliases=["s"], location=location,
+                                  destination=room_dict[(x, y+1)])
+
+            # west
+            if (x-1, y) in room_dict:
+                if room_dict[(x-1, y)]:
+                    create_object(exits.Exit, key="west",
+                                  aliases=["w"], location=location,
+                                  destination=room_dict[(x-1, y)])
+
+    caller.msg("Map Created.")
+
+# access command
+
 class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
     """
     Build a map from a 2D ASCII map.
@@ -396,72 +479,3 @@ class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
         # Pass map and legend to the build function.
         build_map(caller, game_map, legend, iterations, build_exits)
 
-
-def build_map(caller, game_map, legend, iterations=1, build_exits=True):
-    """
-    Receives the fetched map and legend vars provided by the player. The map
-    is iterated over character by character, comparing it to the trigger
-    characters in the legend var and executing the build instructions on
-    finding a match. The map is iterated over according to the `iterations`
-    value and exits are optionally generated between adjacent rooms according
-    to the `build_exits` value.
-
-    """
-
-    # Split map string to list of rows and create reference list.
-    caller.msg("Creating Map...")
-    caller.msg(game_map)
-    game_map = _map_to_list(game_map)
-
-    # Create a reference dictionary which be passed to build functions and
-    # will store obj returned by build functions so objs can be referenced.
-    room_dict = {}
-
-    caller.msg("Creating Landmass...")
-    for iteration in xrange(iterations):
-        for y in xrange(len(game_map)):
-            for x in xrange(len(game_map[y])):
-                for key in legend:
-                    if game_map[y][x] in key:
-                        room = legend[key](x, y, iteration=iteration,
-                                           room_dict=room_dict,
-                                           caller=caller)
-                        if iteration == 0:
-                            room_dict[(x, y)] = room
-
-    if build_exits:
-        # Creating exits. Assumes single room object in dict entry
-        caller.msg("Connecting Areas...")
-        for loc_key, location in room_dict.iteritems():
-            x = loc_key[0]
-            y = loc_key[1]
-
-            # north
-            if (x, y-1) in room_dict:
-                if room_dict[(x, y-1)]:
-                    create_object(exits.Exit, key="north",
-                                  aliases=["n"], location=location,
-                                  destination=room_dict[(x, y-1)])
-
-            # east
-            if (x+1, y) in room_dict:
-                if room_dict[(x+1, y)]:
-                    create_object(exits.Exit, key="east",
-                                  aliases=["e"], location=location,
-                                  destination=room_dict[(x+1, y)])
-
-            # south
-            if (x, y+1) in room_dict:
-                if room_dict[(x, y+1)]:
-                    create_object(exits.Exit, key="south",
-                                  aliases=["s"], location=location,
-                                  destination=room_dict[(x, y+1)])
-
-            # west
-            if (x-1, y) in room_dict:
-                if room_dict[(x-1, y)]:
-                    create_object(exits.Exit, key="west",
-                                  aliases=["w"], location=location,
-                                  destination=room_dict[(x-1, y)])
-
-    caller.msg("Map Created.")
