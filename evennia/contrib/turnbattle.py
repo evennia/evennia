@@ -289,7 +289,7 @@ class TurnHandler(Script):
         for fighter in self.db.fighters:
             combat_cleanup(fighter) #Clean up leftover combat attributes beforehand, just in case.
             fighter.db.Combat_ActionsLeft = 1 #Actions remaining - start of turn adds to this, turn ends when it reaches 0
-            fighter.db.Combat_TurnHandler = self #Add a reference to this scrip to the character
+            fighter.db.Combat_TurnHandler = self #Add a reference to this script to the character
             fighter.db.Combat_LastAction = "null" #Track last action taken in combat
         # Roll initiative and sort the list of fighters depending on who rolls highest to determine turn order.
         # The initiative roll is determined by the roll_init function and can be customized easily.
@@ -318,6 +318,7 @@ class TurnHandler(Script):
         # If the current character has no actions remaining, go to the next turn.
         if not currentchar.db.Combat_ActionsLeft:
             self.next_turn()
+            return
             
         # Warn the current character if they're about to time out.
         if self.db.timer == 10: # 10 seconds left
