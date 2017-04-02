@@ -16,25 +16,254 @@ is easily extensible and can be used as the foundation for implementing
 the rules from your turn-based tabletop game of choice or making your
 own battle system.
 
-To install and test, add the following to your settings.py file:
+To install and test, import this module's BattleCharacter object:
 
-BASE_CHARACTER_TYPECLASS = "evennia.contrib.turnbattle.BattleCharacter"
-CMDSET_CHARACTER = "evennia.contrib.turnbattle.CharacterCmdSet"
+    from evennia.contrib.turnbattle import BattleCharacter
 
-If you want to expand upon this system, it's recommended you copy the
-code over to your game's modules and import from there instead.
+And change your game's character typeclass to inherit from BattleCharacter
+instead of the default:
+
+    class Character(BattleCharacter):
+
+This module is meant to be heavily expanded on, so you may want to copy it
+to your game's 'world' folder and modify it there rather than importing it
+in your game and using it as-is.
 """
 
-from evennia import Command
-from evennia import default_cmds
-from typeclasses.scripts import Script
-from typeclasses.characters import Character
-from commands.command import Command
 from random import randint
+from evennia import DefaultCharacter, Command, default_cmds, DefaultScript
 
-class BattleCharacter(Character):
+"""
+----------------------------------------------------------------------------
+COMBAT FUNCTIONS START HERE
+----------------------------------------------------------------------------
+"""
+def roll_init(character):
+    """
+    Rolls a number between 1-1000 to determine initiative.
+    
+    Args:
+        character (obj): The character to determine initiative for
+        
+    Returns:
+        initiative (int): The character's place in initiative - higher
+        numbers go first.
+        
+    Notes:
+        By default, does not reference the character and simply returns
+        a random integer from 1 to 1000.
+    """
+    return randint(1,1000)
+    """
+    Since the character is passed to this function, you can easily reference
+    a character's stats to determine an initiative roll - for example, if your
+    character has a 'dexterity' attribute, you can use it to give that character
+    an advantage in turn order, like so:
+    
+    return (randint(1,20)) + character.db.dexterity
+    
+    This way, characters with a higher dexterity will go first more often.
+    """
+    
+def start_turn(character):
+    """
+    Readies a character for the start of their turn by replenishing their
+    available actions and notifying them that their turn has come up.
+    
+    Args:
+       character (obj): Character to be readied.
+    """
+    character.db.Combat_ActionsLeft = 1 # 1 action per turn.
+    """
+    Here, you only get one action per turn, but you might want to allow more than
+    one per turn, or even grant a number of actions based on a character's
+    attributes. You can even add multiple different kinds of actions, I.E. actions
+    separated for movement, by adding "character.db.Combat_MovesLeft = 3" or
+    something similar.
+    """
+    # Prompt the character for their turn and give some information.
+    character.msg("|wIt's your turn! You have %i HP remaining.|n" % character.db.hp)
+    
+def get_attack(attacker, defender):
+    """
+    Returns a value for an attack roll.
+    
+    Args:
+        attacker (obj): Character doing the attacking
+        defender (obj): Character being attacked
+        
+    Returns:
+        attack_value (int): Attack roll value, compared against a defense value
+            to determine whether an attack hits or misses.
+            
+    Notes:
+        By default, returns a random integer from 1 to 100 without using any
+        properties from either the attacker or defender.
+    """
+    # For this example, just return a random integer up to 100.
+    attack_value = randint(1, 100)
+    """
+    This can easily be expanded to return a value based on characters stats,
+    equipment, and abilities. This is why the attacker and defender are passed
+    to this function, even though nothing from either one are used in this example.
+    """
+    return attack_value
+    
+def get_defense(attacker, defender):
+    """
+    Returns a value for defense, which an attack roll must equal or exceed in order
+    for an attack to hit.
+    
+    Args:
+        attacker (obj): Character doing the attacking
+        defender (obj): Character being attacked
+        
+    Returns:
+        defense_value (int): Defense value, compared against an attack roll
+            to determine whether an attack hits or misses.
+            
+    Notes:
+        By default, returns 50, not taking any properties of the defender or
+        attacker into account.
+    """
+    # For this example, just return 50, for about a 50/50 chance of hit.
+    defense_value = 50
+    """
+    As above, this can be expanded upon based on character stats and equipment.
+    """
+    return defense_value
+    
+def get_damage(attacker, defender):
+    """
+    Returns a value for damage to be deducted from the defender's HP after abilities
+    successful hit.
+    
+    Args:
+        attacker (obj): Character doing the attacking
+        defender (obj): Character being damaged
+        
+    Returns:
+        damage_value (int): Damage value, which is to be deducted from the defending
+            character's HP.
+            
+    Notes:
+        By default, returns a random integer from 15 to 25 without using any
+        properties from either the attacker or defender.
+    """
+    # For this example, just generate a number between 15 and 25.
+    damage_value = randint(15, 25)
+    """
+    Again, this can be expanded upon.
+    """
+    return damage_value
+    
+def apply_damage(defender, damage):
+    """
+    Applies damage to a target, reducing their HP by the damage amount to a
+    minimum of 0.
+    
+    Args:
+        defender (obj): Character taking damage
+        damage (int): Amount of damage being taken
+    """
+    defender.db.hp -= damage # Reduce defender's HP by the damage dealt.
+    # If this reduces it to 0 or less, set HP to 0.
+    if defender.db.hp <= 0:
+        defender.db.hp = 0
+    
+def resolve_attack(attacker, defender):
+    """
+    Resolves an attack and outputs the result.
+    
+    Args:
+        attacker (obj): Character doing the attacking
+        defender (obj): Character being attacked
+    """
+    # Get an attack roll from the attacker.
+    attack_value = get_attack(attacker, defender)
+    # Get a defense value from the defender.
+    defense_value = get_defense(attacker, defender)
+    """
+    Even though these functions are very simple, separating them out
+    makes it much easier to make the calculations more involved later.
+    """
+    # If the attack value is lower than the defense value, miss. Otherwise, hit.
+    if attack_value < defense_value:
+        attacker.location.msg_contents("%s's attack misses %s!" % (attacker, defender))
+    else:
+        damage_value = get_damage(attacker, defender) # Calculate damage value.
+        # Announce damage dealt and apply damage.
+        attacker.location.msg_contents("%s hits %s for %i damage!" % (attacker, defender, damage_value))
+        apply_damage (defender, damage_value)
+        # If defender HP is reduced to 0 or less, announce defeat.
+        if defender.db.hp <= 0:
+            attacker.location.msg_contents("%s has been defeated!" % defender)
+    
+def combat_cleanup(character):
+    """
+    Cleans up all the temporary combat-related attributes on a character.
+    
+    Args:
+        character (obj): Character to have their combat attributes removed
+
+    Notes:
+        Any attribute whose key begins with 'combat_' is temporary and no
+        longer needed once a fight ends.
+    """
+    for attr in character.attributes.all():
+        if attr.key[:7] == "combat_": # If the attribute name starts with 'combat_'...
+            character.attributes.remove(key=attr.key) # ...then delete it!
+            
+def is_in_combat(character):
+    """
+    Returns true if the given character is in combat.
+    
+    Args:
+        character (obj): Character to determine if is in combat or not
+
+    Returns:
+        (bool): True if in combat or False if not in combat
+    """
+    if character.db.Combat_TurnHandler:
+        return True
+    return False
+        
+def is_turn(character):
+    """
+    Returns true if it's currently the given character's turn in combat.
+    
+    Args:
+        character (obj): Character to determine if it is their turn or not
+
+    Returns:
+        (bool): True if it is their turn or False otherwise
+    """
+    turnhandler = character.db.Combat_TurnHandler
+    currentchar = turnhandler.db.fighters[turnhandler.db.turn]
+    if character == currentchar:
+        return True
+    return False
+
+"""
+----------------------------------------------------------------------------
+CHARACTER TYPECLASS & COMMAND SET STARTS HERE
+----------------------------------------------------------------------------
+"""
+
+class BattleCharacter(DefaultCharacter):
+    """
+    A character able to participate in turn-based combat. Has attributes for current
+    and maximum HP, and access to combat commands.
+    """
     
     def at_object_creation(self):
+        """
+        Called once, when this object is first created. This is the
+        normal hook to overload for most object types.
+        """
+        self.cmdset.add('contrib.turnbattle.BattleCmdSet') # Add combat commands
+        self.db.max_hp = 100 # Set maximum HP to 100
+        self.db.hp = self.db.max_hp # Set current HP to maximum
         """
         Adds attributes for a character's current and maximum HP.
         We're just going to set this value at '100' by default.
@@ -42,13 +271,23 @@ class BattleCharacter(Character):
         You may want to expand this to include various 'stats' that
         can be changed at creation and factor into combat calculations.
         """
-        self.db.max_hp = 100
-        self.db.hp = self.db.max_hp
-    pass
     def at_before_move(self, destination):
         """
-        This keeps characters from moving when in combat or at 0 HP.
+        Called just before starting to move this object to
+        destination.
+
+        Args:
+            destination (Object): The object we are moving to
+
+        Returns:
+            shouldmove (bool): If we should move or not.
+
+        Notes:
+            If this method returns False/None, the move is cancelled
+            before it is even started.
+
         """
+        # Keep the character from moving if at 0 HP or in combat.
         if is_in_combat(self):
             self.caller.msg("You can't exit a room while in combat!")
             return False # Returning false keeps the character from moving.
@@ -57,17 +296,17 @@ class BattleCharacter(Character):
             return False
         return True
     
-class CharacterCmdSet(default_cmds.CharacterCmdSet):
+class BattleCmdSet(default_cmds.CharacterCmdSet):
     """
     Adds combat commands to the default command set.
     """
-    key = "DefaultCharacter"
+    key = "BattleCmdSet"
 
     def at_cmdset_creation(self):
         """
         Populates the cmdset
         """
-        super(CharacterCmdSet, self).at_cmdset_creation()
+        super(default_cmds.CharacterCmdSet, self).at_cmdset_creation()
         self.add(CmdFight())
         self.add(CmdAttack())
         self.add(CmdRest())
@@ -261,7 +500,7 @@ SCRIPTS START HERE
 ----------------------------------------------------------------------------
 """
 
-class TurnHandler(Script):
+class TurnHandler(DefaultScript):
     """
     This is the script that handles the progression of combat through turns.
     On creation (when a fight is started) it adds all combat-ready characters
@@ -289,7 +528,7 @@ class TurnHandler(Script):
         for fighter in self.db.fighters:
             combat_cleanup(fighter) #Clean up leftover combat attributes beforehand, just in case.
             fighter.db.Combat_ActionsLeft = 1 #Actions remaining - start of turn adds to this, turn ends when it reaches 0
-            fighter.db.Combat_TurnHandler = self #Add a reference to this script to the character
+            fighter.db.Combat_TurnHandler = self #Add a reference to this scrip to the character
             fighter.db.Combat_LastAction = "null" #Track last action taken in combat
         # Roll initiative and sort the list of fighters depending on who rolls highest to determine turn order.
         # The initiative roll is determined by the roll_init function and can be customized easily.
@@ -318,7 +557,6 @@ class TurnHandler(Script):
         # If the current character has no actions remaining, go to the next turn.
         if not currentchar.db.Combat_ActionsLeft:
             self.next_turn()
-            return
             
         # Warn the current character if they're about to time out.
         if self.db.timer == 10: # 10 seconds left
@@ -337,21 +575,21 @@ class TurnHandler(Script):
         """
         
         # Check to see if every character disengaged as their last action. If so, end combat.
-        DisengageCheck = True
+        disengage_check = True
         for fighter in self.db.fighters:
             if fighter.db.Combat_LastAction != "disengage": # If a character has done anything but disengage
-                DisengageCheck = False
-        if DisengageCheck == True: # All characters have disengaged
+                disengage_check = False
+        if disengage_check == True: # All characters have disengaged
             self.obj.msg_contents("All fighters have disengaged! Combat is over!")
             self.stop() # Stop this script and end combat.
             return
         
         # Check to see if only one character is left standing. If so, end combat.
-        DefeatedCharacters = 0
+        defeated_characters = 0
         for fighter in self.db.fighters:
             if fighter.db.HP == 0:
-                DefeatedCharacters += 1 # Add 1 for every fighter with 0 HP left (defeated)
-        if DefeatedCharacters == (len(self.db.fighters) - 1): # If only one character isn't defeated
+                defeated_characters += 1 # Add 1 for every fighter with 0 HP left (defeated)
+        if defeated_characters == (len(self.db.fighters) - 1): # If only one character isn't defeated
             for fighter in self.db.fighters:
                 if fighter.db.HP != 0:
                     LastStanding = fighter # Pick the one fighter left with HP remaining
@@ -372,6 +610,9 @@ class TurnHandler(Script):
     def join_fight(self, character):
         """
         Adds a new character to a fight already in progress.
+        
+        Args:
+            character (obj): Character to be added to the fight.
         """
         # Inserts the fighter to the turn order behind whoever's turn it currently is.
         self.db.fighters.insert(self.db.turn, character)
@@ -382,139 +623,3 @@ class TurnHandler(Script):
         fighter.db.Combat_ActionsLeft = 0 # Actions remaining - start of turn adds to this, turn ends when it reaches 0
         fighter.db.Combat_TurnHandler = self # Add a reference to this scrip to the character
         fighter.db.Combat_LastAction = "null" # Track last action taken in combat
-        
-    
-    
-
-"""
-----------------------------------------------------------------------------
-COMBAT FUNCTIONS START HERE
-----------------------------------------------------------------------------
-"""
-def roll_init(character):
-    """
-    Rolls a number between 1-1000 to determine initiative.
-    """
-    return randint(1,1000)
-    """
-    Since the character is passed to this function, you can easily reference
-    a character's stats to determine an initiative roll - for example, if your
-    character has a 'dexterity' attribute, you can use it to give that character
-    an advantage in turn order, like so:
-    
-    return (randint(1,20)) + character.db.dexterity
-    
-    This way, characters with a higher dexterity will go first more often.
-    """
-    
-def start_turn(character):
-    """
-    Readies a character for the start of their turn.
-    """
-    character.db.Combat_ActionsLeft = 1 # 1 action per turn.
-    """
-    Here, you only get one action per turn, but you might want to allow more than
-    one per turn, or even grant a number of actions based on a character's
-    attributes. You can even add multiple different kinds of actions, I.E. actions
-    separated for movement, by adding "character.db.Combat_MovesLeft = 3" or
-    something similar.
-    """
-    # Prompt the character for their turn and give some information.
-    character.msg("|wIt's your turn! You have %i HP remaining.|n" % character.db.hp)
-    
-    
-    
-def resolve_attack(attacker, defender):
-    """
-    Resolves an attack and outputs the result.
-    """
-    # Get an attack roll from the attacker.
-    attack_value = get_attack(attacker, defender)
-    # Get a defense value from the defender.
-    defense_value = get_defense(attacker, defender)
-    """
-    Even though these functions are very simple, separating them out
-    makes it much easier to make the calculations more involved later.
-    """
-    # If the attack value is lower than the defense value, miss. Otherwise, hit.
-    if attack_value < defense_value:
-        attacker.location.msg_contents("%s's attack misses %s!" % (attacker, defender))
-    else:
-        damage_value = get_damage(attacker, defender) # Calculate damage value.
-        # Announce damage dealt and apply damage.
-        attacker.location.msg_contents("%s hits %s for %i damage!" % (attacker, defender, damage_value))
-        apply_damage (defender, damage_value)
-        # If defender HP is reduced to 0 or less, announce defeat.
-        if defender.db.hp <= 0:
-            attacker.location.msg_contents("%s has been defeated!" % defender)
-        
-def get_attack(attacker, defender):
-    """
-    Returns a value for an attack roll.
-    """
-    # For this example, just return a random integer up to 100.
-    attack_value = randint(1, 100)
-    """
-    This can easily be expanded to return a value based on characters stats,
-    equipment, and abilities. This is why the attacker and defender are passed
-    to this function, even though nothing from either one are used in this example.
-    """
-    return attack_value
-    
-def get_defense(attacker, defender):
-    """
-    Returns a value for defense for an attack roll to beat.
-    """
-    # For this example, just return 50, for about a 50/50 chance of hit.
-    defense_value = 50
-    """
-    As above, this can be expanded upon based on character stats and equipment.
-    """
-    return defense_value
-    
-def get_damage(attacker, defender):
-    """
-    Returns a value for damage.
-    """
-    # For this example, just generate a number between 15 and 25.
-    damage_value = randint(15, 25)
-    """
-    Again, this can be expanded upon.
-    """
-    return damage_value
-    
-def apply_damage(defender, damage):
-    """
-    Applies damage to a target, reducing their HP.
-    """
-    defender.db.hp -= damage # Reduce defender's HP by the damage dealt.
-    # If this reduces it to 0 or less, set HP to 0.
-    if defender.db.hp <= 0:
-        defender.db.hp = 0
-    
-def combat_cleanup(character):
-    """
-    Cleans up all the temporary combat-related attributes on a character.
-    """
-    for attr in character.attributes.all():
-        if attr.key[:7] == "combat_": # If the attribute name starts with 'combat_'...
-            character.attributes.remove(key=attr.key) # ...then delete it!
-            
-def is_in_combat(character):
-    """
-    Returns true if the given character is in combat.
-    """
-    if character.db.Combat_TurnHandler:
-        return True
-    return False
-        
-def is_turn(character):
-    """
-    Returns true if it's the given character's turn in combat.
-    """
-    turnhandler = character.db.Combat_TurnHandler
-    currentchar = turnhandler.db.fighters[turnhandler.db.turn]
-    if character == currentchar:
-        return True
-    return False
-    
