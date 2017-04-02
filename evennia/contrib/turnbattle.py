@@ -16,7 +16,8 @@ is easily extensible and can be used as the foundation for implementing
 the rules from your turn-based tabletop game of choice or making your
 own battle system.
 
-To install and test, import this module's BattleCharacter object:
+To install and test, import this module's BattleCharacter object into
+your game's character.py module:
 
     from evennia.contrib.turnbattle import BattleCharacter
 
@@ -24,6 +25,21 @@ And change your game's character typeclass to inherit from BattleCharacter
 instead of the default:
 
     class Character(BattleCharacter):
+        
+Next, import the combat commands into your default_cmdsets.py module:
+
+    from evennia.contrib.turnbattle import CmdFight, CmdAttack, CmdRest, CmdPass, CmdDisengage
+
+And add the commands to your default command set:
+
+    #
+    # any commands you add below will overload the default ones.
+    #
+    self.add(CmdFight())
+    self.add(CmdAttack())
+    self.add(CmdRest())
+    self.add(CmdPass())
+    self.add(CmdDisengage())
 
 This module is meant to be heavily expanded on, so you may want to copy it
 to your game's 'world' folder and modify it there rather than importing it
@@ -64,25 +80,6 @@ def roll_init(character):
     
     This way, characters with a higher dexterity will go first more often.
     """
-    
-def start_turn(character):
-    """
-    Readies a character for the start of their turn by replenishing their
-    available actions and notifying them that their turn has come up.
-    
-    Args:
-       character (obj): Character to be readied.
-    """
-    character.db.Combat_ActionsLeft = 1 # 1 action per turn.
-    """
-    Here, you only get one action per turn, but you might want to allow more than
-    one per turn, or even grant a number of actions based on a character's
-    attributes. You can even add multiple different kinds of actions, I.E. actions
-    separated for movement, by adding "character.db.Combat_MovesLeft = 3" or
-    something similar.
-    """
-    # Prompt the character for their turn and give some information.
-    character.msg("|wIt's your turn! You have %i HP remaining.|n" % character.db.hp)
     
 def get_attack(attacker, defender):
     """
@@ -243,6 +240,29 @@ def is_turn(character):
     if character == currentchar:
         return True
     return False
+    
+def spend_action(character, actions, action_name=None):
+    """
+    Spends a character's available combat actions and checks for end of turn.
+    
+    Args:
+        character (obj): Character spending the action
+        actions (int) or 'all': Number of actions to spend, or 'all' to spend all actions
+        
+    Kwargs:
+        action_name (str or None): If a string is given, sets character's last action in
+        combat to provided string
+    """
+    if action_name:
+        character.db.Combat_LastAction = action_name
+    if actions == 'all': # If spending all actions
+        character.db.Combat_ActionsLeft = 0 # Set actions to 0
+    else:
+        character.db.Combat_ActionsLeft -= actions # Use up actions.
+        if character.db.Combat_ActionsLeft < 0:
+            character.db.Combat_ActionsLeft = 0 # Can't have fewer than 0 actions
+    character.db.Combat_TurnHandler.turn_end_check(character) # Signal potential end of turn.
+    
 
 """
 ----------------------------------------------------------------------------
@@ -261,7 +281,6 @@ class BattleCharacter(DefaultCharacter):
         Called once, when this object is first created. This is the
         normal hook to overload for most object types.
         """
-        self.cmdset.add('contrib.turnbattle.BattleCmdSet') # Add combat commands
         self.db.max_hp = 100 # Set maximum HP to 100
         self.db.hp = self.db.max_hp # Set current HP to maximum
         """
@@ -295,24 +314,7 @@ class BattleCharacter(DefaultCharacter):
             self.caller.msg("You can't move, you've been defeated!")
             return False
         return True
-    
-class BattleCmdSet(default_cmds.CharacterCmdSet):
-    """
-    Adds combat commands to the default command set.
-    """
-    key = "BattleCmdSet"
 
-    def at_cmdset_creation(self):
-        """
-        Populates the cmdset
-        """
-        super(default_cmds.CharacterCmdSet, self).at_cmdset_creation()
-        self.add(CmdFight())
-        self.add(CmdAttack())
-        self.add(CmdRest())
-        self.add(CmdPass())
-        self.add(CmdDisengage())
-        
 """
 ----------------------------------------------------------------------------
 COMMANDS START HERE
@@ -401,9 +403,7 @@ class CmdAttack(Command):
         
         "If everything checks out, call the attack resolving function."
         resolve_attack(attacker, defender)
-        self.caller.db.Combat_LastAction = "attack"
-        self.caller.db.Combat_ActionsLeft -= 1 # Use up one action.
-        self.caller.db.Combat_TurnHandler.turn_end_check(self.caller) # Signal potential end of turn.
+        spend_action(self.caller, 1, action_name="attack") # Use up one action.
         
 class CmdPass(Command):
     """
@@ -433,9 +433,7 @@ class CmdPass(Command):
             return
         
         self.caller.location.msg_contents("%s takes no further action, passing the turn." % self.caller)
-        self.caller.db.Combat_LastAction = "pass"
-        self.caller.db.Combat_ActionsLeft = 0
-        self.caller.db.Combat_TurnHandler.turn_end_check(self.caller) # Signal end of turn.
+        spend_action(self.caller, 'all', action_name="pass") # Spend all remaining actions.
 
 class CmdDisengage(Command):
     """
@@ -466,9 +464,11 @@ class CmdDisengage(Command):
             return
         
         self.caller.location.msg_contents("%s disengages, ready to stop fighting." % self.caller)
-        self.caller.db.Combat_LastAction = "disengage" # This is checked by the turn handler to end combat if all disengage.
-        self.caller.db.Combat_ActionsLeft = 0
-        self.caller.db.Combat_TurnHandler.turn_end_check(self.caller) # Signal end of turn.
+        spend_action(self.caller, 'all', action_name="disengage") # Spend all remaining actions.
+        """
+        The action_name kwarg sets the character's last action to "disengage", which is checked by
+        the turn handler script to see if all fighters have disengaged.
+        """
         
 class CmdRest(Command):
     """
@@ -523,23 +523,25 @@ class TurnHandler(DefaultScript):
         self.interval = 10 # Once every 10 seconds
         self.persistent = True
         self.db.fighters = []
+        
         # Add all fighters in the room with at least 1 HP to the combat."
         for object in self.obj.contents:
             if object.db.hp:
                 self.db.fighters.append(object)
+        
         # Initialize each fighter for combat
         for fighter in self.db.fighters:
-            combat_cleanup(fighter) #Clean up leftover combat attributes beforehand, just in case.
-            fighter.db.Combat_ActionsLeft = 1 #Actions remaining - start of turn adds to this, turn ends when it reaches 0
-            fighter.db.Combat_TurnHandler = self #Add a reference to this script to the character
-            fighter.db.Combat_LastAction = "null" #Track last action taken in combat
+            self.initialize_for_combat(fighter)
+        
         # Roll initiative and sort the list of fighters depending on who rolls highest to determine turn order.
         # The initiative roll is determined by the roll_init function and can be customized easily.
         ordered_by_roll = sorted(self.db.fighters, key=roll_init, reverse=True)
         self.db.fighters = ordered_by_roll
+        
         # Announce the turn order.
         self.obj.msg_contents("Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters))
-        "Set up the current turn and turn timeout delay."
+        
+        #Set up the current turn and turn timeout delay.
         self.db.turn = 0
         self.db.timer = 30 # 30 seconds
 
@@ -563,21 +565,37 @@ class TurnHandler(DefaultScript):
         
         # Force current character to disengage if timer runs out.
         if self.db.timer <= 0:
-            currentchar.db.Combat_LastAction = "disengage" # Set last action to 'disengage'
-            currentchar.db.Combat_ActionsLeft = 0 # Set actions remaining to 0
             self.obj.msg_contents("%s's turn timed out!" % currentchar)
-            self.next_turn()
-
-    def turn_end_check(self, character):
+            spend_action(currentchar, 'all', action_name="disengage") # Spend all remaining actions.
+            
+            
+    def initialize_for_combat(self, character):
         """
-        Tests to see if a character's turn is over, and cycles to the next turn if it is.
+        Prepares a character for combat when starting or entering a fight.
+        """
+        combat_cleanup(character) # Clean up leftover combat attributes beforehand, just in case.
+        character.db.Combat_ActionsLeft = 0 # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+        character.db.Combat_TurnHandler = self # Add a reference to this turn handler script to the character
+        character.db.Combat_LastAction = "null" # Track last action taken in combat
+        
+    def start_turn(self, character):
+        """
+        Readies a character for the start of their turn by replenishing their
+        available actions and notifying them that their turn has come up.
         
         Args:
-            character (obj): Character to test for end of turn
+        character (obj): Character to be readied.
         """
-        if not character.db.Combat_ActionsLeft: # Character has no actions remaining
-            self.next_turn()
-            return
+        character.db.Combat_ActionsLeft = 1 # 1 action per turn.
+        """
+        Here, you only get one action per turn, but you might want to allow more than
+        one per turn, or even grant a number of actions based on a character's
+        attributes. You can even add multiple different kinds of actions, I.E. actions
+        separated for movement, by adding "character.db.Combat_MovesLeft = 3" or
+        something similar.
+        """
+        # Prompt the character for their turn and give some information.
+        character.msg("|wIt's your turn! You have %i HP remaining.|n" % character.db.hp)
             
     def next_turn(self):
         """
@@ -613,9 +631,22 @@ class TurnHandler(DefaultScript):
         if self.db.turn > len(self.db.fighters) - 1:
             self.db.turn = 0 # Go back to the first in the turn order once you reach the end.
         newchar = self.db.fighters[self.db.turn]
-        self.db.timer = 30 # Reset the timer.
+        # Reset the timer.
+        self.db.timer = 30 + self.interval
+        self.force_repeat()
         self.obj.msg_contents("%s's turn ends - %s's turn begins!" % (currentchar, newchar))
-        start_turn(newchar) # Start the new character's turn.
+        self.start_turn(newchar) # Start the new character's turn.
+        
+    def turn_end_check(self, character):
+        """
+        Tests to see if a character's turn is over, and cycles to the next turn if it is.
+        
+        Args:
+            character (obj): Character to test for end of turn
+        """
+        if not character.db.Combat_ActionsLeft: # Character has no actions remaining
+            self.next_turn()
+            return
         
     def join_fight(self, character):
         """
@@ -624,12 +655,9 @@ class TurnHandler(DefaultScript):
         Args:
             character (obj): Character to be added to the fight.
         """
-        # Inserts the fighter to the turn order behind whoever's turn it currently is.
+        # Inserts the fighter to the turn order, right behind whoever's turn it currently is.
         self.db.fighters.insert(self.db.turn, character)
         # Tick the turn counter forward one to compensate.
         self.db.turn += 1
         # Initialize the character like you do at the start.
-        combat_cleanup(fighter) # Clean up leftover combat attributes beforehand, just in case.
-        fighter.db.Combat_ActionsLeft = 0 # Actions remaining - start of turn adds to this, turn ends when it reaches 0
-        fighter.db.Combat_TurnHandler = self # Add a reference to this scrip to the character
-        fighter.db.Combat_LastAction = "null" # Track last action taken in combat
+        self.initialize_for_combat(character)
