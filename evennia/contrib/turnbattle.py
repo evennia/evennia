@@ -305,10 +305,10 @@ class BattleCharacter(DefaultCharacter):
         """
         # Keep the character from moving if at 0 HP or in combat.
         if is_in_combat(self):
-            self.caller.msg("You can't exit a room while in combat!")
+            self.msg("You can't exit a room while in combat!")
             return False # Returning false keeps the character from moving.
         if self.db.HP <= 0:
-            self.caller.msg("You can't move, you've been defeated!")
+            self.msg("You can't move, you've been defeated!")
             return False
         return True
 
