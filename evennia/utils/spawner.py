@@ -182,9 +182,11 @@ def _batch_create_object(*objparams):
 
 def spawn(*prototypes, **kwargs):
     """
-    Spawn a number of prototyped objects. Each argument should be a
-    prototype dictionary.
+    Spawn a number of prototyped objects.
 
+    Args:
+        prototypes (dict): Each argument should be a prototype
+            dictionary.
     Kwargs:
         prototype_modules (str or list): A python-path to a prototype
             module, or a list of such paths. These will be used to build
@@ -196,6 +198,7 @@ def spawn(*prototypes, **kwargs):
             prototypes from prototype_modules.
         return_prototypes (bool): Only return a list of the
             prototype-parents (no object creation happens)
+
     """
 
     protparents = {}
@@ -249,6 +252,7 @@ def spawn(*prototypes, **kwargs):
         alias_string = aliasval() if callable(aliasval) else aliasval
         tagval = prot.pop("tags", "")
         tags = tagval() if callable(tagval) else tagval
+
         exval = prot.pop("exec", "")
         execs = make_iter(exval() if callable(exval) else exval)
 

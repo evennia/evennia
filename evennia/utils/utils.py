@@ -1834,3 +1834,7 @@ def get_game_dir_path():
         else:
             os.chdir(os.pardir)
     raise RuntimeError("server/conf/settings.py not found: Must start from inside game dir.")
+
+
+
+

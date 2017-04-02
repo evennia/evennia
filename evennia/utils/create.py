@@ -65,10 +65,10 @@ def create_object(typeclass=None, key=None, location=None, home=None,
             #dbref will be set.
         home (Object or str): Obj or #dbref to use as the object's
             home location.
-        permissions (str): A comma-separated string of permissions.
+        permissions (list): A list of permission strings or tuples (permstring, category).
         locks (str): one or more lockstrings, separated by semicolons.
-        aliases (list): A list of alternative keys.
-        tags (list): List of tag keys (using no category).
+        aliases (list): A list of alternative keys or tuples (aliasstring, category).
+        tags (list): List of tag keys or tuples (tagkey, category).
         destination (Object or str): Obj or #dbref to use as an Exit's
             target.
         report_to (Object): The object to return error messages to.
