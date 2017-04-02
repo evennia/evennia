@@ -266,7 +266,7 @@ def spend_action(character, actions, action_name=None):
 
 """
 ----------------------------------------------------------------------------
-CHARACTER TYPECLASS & COMMAND SET STARTS HERE
+CHARACTER TYPECLASS
 ----------------------------------------------------------------------------
 """
 
