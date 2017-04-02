@@ -68,18 +68,17 @@ def roll_init(character):
     Notes:
         By default, does not reference the character and simply returns
         a random integer from 1 to 1000.
+        
+        Since the character is passed to this function, you can easily reference
+        a character's stats to determine an initiative roll - for example, if your
+        character has a 'dexterity' attribute, you can use it to give that character
+        an advantage in turn order, like so:
+        
+        return (randint(1,20)) + character.db.dexterity
+        
+        This way, characters with a higher dexterity will go first more often.
     """
     return randint(1,1000)
-    """
-    Since the character is passed to this function, you can easily reference
-    a character's stats to determine an initiative roll - for example, if your
-    character has a 'dexterity' attribute, you can use it to give that character
-    an advantage in turn order, like so:
-    
-    return (randint(1,20)) + character.db.dexterity
-    
-    This way, characters with a higher dexterity will go first more often.
-    """
     
 def get_attack(attacker, defender):
     """
@@ -96,14 +95,13 @@ def get_attack(attacker, defender):
     Notes:
         By default, returns a random integer from 1 to 100 without using any
         properties from either the attacker or defender.
+        
+        This can easily be expanded to return a value based on characters stats,
+        equipment, and abilities. This is why the attacker and defender are passed
+        to this function, even though nothing from either one are used in this example.
     """
     # For this example, just return a random integer up to 100.
     attack_value = randint(1, 100)
-    """
-    This can easily be expanded to return a value based on characters stats,
-    equipment, and abilities. This is why the attacker and defender are passed
-    to this function, even though nothing from either one are used in this example.
-    """
     return attack_value
     
 def get_defense(attacker, defender):
@@ -122,12 +120,11 @@ def get_defense(attacker, defender):
     Notes:
         By default, returns 50, not taking any properties of the defender or
         attacker into account.
+        
+        As above, this can be expanded upon based on character stats and equipment.
     """
     # For this example, just return 50, for about a 50/50 chance of hit.
     defense_value = 50
-    """
-    As above, this can be expanded upon based on character stats and equipment.
-    """
     return defense_value
     
 def get_damage(attacker, defender):
@@ -146,12 +143,11 @@ def get_damage(attacker, defender):
     Notes:
         By default, returns a random integer from 15 to 25 without using any
         properties from either the attacker or defender.
+        
+        Again, this can be expanded upon.
     """
     # For this example, just generate a number between 15 and 25.
     damage_value = randint(15, 25)
-    """
-    Again, this can be expanded upon.
-    """
     return damage_value
     
 def apply_damage(defender, damage):
@@ -175,15 +171,16 @@ def resolve_attack(attacker, defender):
     Args:
         attacker (obj): Character doing the attacking
         defender (obj): Character being attacked
+        
+    Notes:
+        Even though the attack and defense values are calculated
+        extremely simply, they are separated out into their own functions
+        so that they are easier to expand upon.
     """
     # Get an attack roll from the attacker.
     attack_value = get_attack(attacker, defender)
     # Get a defense value from the defender.
     defense_value = get_defense(attacker, defender)
-    """
-    Even though these functions are very simple, separating them out
-    makes it much easier to make the calculations more involved later.
-    """
     # If the attack value is lower than the defense value, miss. Otherwise, hit.
     if attack_value < defense_value:
         attacker.location.msg_contents("%s's attack misses %s!" % (attacker, defender))
@@ -572,6 +569,9 @@ class TurnHandler(DefaultScript):
     def initialize_for_combat(self, character):
         """
         Prepares a character for combat when starting or entering a fight.
+        
+        Args:
+            character (obj): Character to initialize for combat.
         """
         combat_cleanup(character) # Clean up leftover combat attributes beforehand, just in case.
         character.db.Combat_ActionsLeft = 0 # Actions remaining - start of turn adds to this, turn ends when it reaches 0
