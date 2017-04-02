@@ -403,6 +403,7 @@ class CmdAttack(Command):
         resolve_attack(attacker, defender)
         self.caller.db.Combat_LastAction = "attack"
         self.caller.db.Combat_ActionsLeft -= 1 # Use up one action.
+        self.caller.db.Combat_TurnHandler.turn_end_check(self.caller) # Signal potential end of turn.
         
 class CmdPass(Command):
     """
@@ -434,6 +435,7 @@ class CmdPass(Command):
         self.caller.location.msg_contents("%s takes no further action, passing the turn." % self.caller)
         self.caller.db.Combat_LastAction = "pass"
         self.caller.db.Combat_ActionsLeft = 0
+        self.caller.db.Combat_TurnHandler.turn_end_check(self.caller) # Signal end of turn.
 
 class CmdDisengage(Command):
     """
@@ -466,6 +468,7 @@ class CmdDisengage(Command):
         self.caller.location.msg_contents("%s disengages, ready to stop fighting." % self.caller)
         self.caller.db.Combat_LastAction = "disengage" # This is checked by the turn handler to end combat if all disengage.
         self.caller.db.Combat_ActionsLeft = 0
+        self.caller.db.Combat_TurnHandler.turn_end_check(self.caller) # Signal end of turn.
         
 class CmdRest(Command):
     """
@@ -517,7 +520,7 @@ class TurnHandler(DefaultScript):
         Called once, when the script is created.
         """
         self.key = "Combat Turn Handler"
-        self.interval = 1 # Once a second
+        self.interval = 10 # Once every 10 seconds
         self.persistent = True
         self.db.fighters = []
         # Add all fighters in the room with at least 1 HP to the combat."
@@ -539,7 +542,7 @@ class TurnHandler(DefaultScript):
         "Set up the current turn and turn timeout delay."
         self.db.turn = 0
         self.db.timer = 30 # 30 seconds
-        
+
     def at_stop(self):
         """
         Called at script termination.
@@ -552,12 +555,7 @@ class TurnHandler(DefaultScript):
         Called once every self.interval seconds.
         """
         currentchar = self.db.fighters[self.db.turn] # Note the current character in the turn order.
-        self.db.timer -= 1 # Count down the timer by one second.
-        
-        # If the current character has no actions remaining, go to the next turn.
-        if not currentchar.db.Combat_ActionsLeft:
-            self.next_turn()
-            return
+        self.db.timer -= self.interval # Count down the timer.
             
         # Warn the current character if they're about to time out.
         if self.db.timer == 10: # 10 seconds left
@@ -569,6 +567,17 @@ class TurnHandler(DefaultScript):
             currentchar.db.Combat_ActionsLeft = 0 # Set actions remaining to 0
             self.obj.msg_contents("%s's turn timed out!" % currentchar)
             self.next_turn()
+
+    def turn_end_check(self, character):
+        """
+        Tests to see if a character's turn is over, and cycles to the next turn if it is.
+        
+        Args:
+            character (obj): Character to test for end of turn
+        """
+        if not character.db.Combat_ActionsLeft: # Character has no actions remaining
+            self.next_turn()
+            return
             
     def next_turn(self):
         """
