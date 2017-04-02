@@ -517,7 +517,7 @@ class TurnHandler(DefaultScript):
         Called once, when the script is created.
         """
         self.key = "Combat Turn Handler"
-        self.interval = 10 # Once every 10 seconds
+        self.interval = 5 # Once every 5 seconds
         self.persistent = True
         self.db.fighters = []
         
@@ -556,14 +556,15 @@ class TurnHandler(DefaultScript):
         currentchar = self.db.fighters[self.db.turn] # Note the current character in the turn order.
         self.db.timer -= self.interval # Count down the timer.
             
-        # Warn the current character if they're about to time out.
-        if self.db.timer == 10: # 10 seconds left
-            currentchar.msg("WARNING: About to time out!")
-        
-        # Force current character to disengage if timer runs out.
         if self.db.timer <= 0:
+            # Force current character to disengage if timer runs out.
             self.obj.msg_contents("%s's turn timed out!" % currentchar)
             spend_action(currentchar, 'all', action_name="disengage") # Spend all remaining actions.
+            return
+        elif self.db.timer <= 10 and not self.db.timeout_warning_given: # 10 seconds left
+            # Warn the current character if they're about to time out.
+            currentchar.msg("WARNING: About to time out!")
+            self.db.timeout_warning_given = True
             
             
     def initialize_for_combat(self, character):
@@ -584,16 +585,16 @@ class TurnHandler(DefaultScript):
         available actions and notifying them that their turn has come up.
         
         Args:
-        character (obj): Character to be readied.
+            character (obj): Character to be readied.
+        
+        Notes:
+            Here, you only get one action per turn, but you might want to allow more than
+            one per turn, or even grant a number of actions based on a character's
+            attributes. You can even add multiple different kinds of actions, I.E. actions
+            separated for movement, by adding "character.db.Combat_MovesLeft = 3" or
+            something similar.
         """
         character.db.Combat_ActionsLeft = 1 # 1 action per turn.
-        """
-        Here, you only get one action per turn, but you might want to allow more than
-        one per turn, or even grant a number of actions based on a character's
-        attributes. You can even add multiple different kinds of actions, I.E. actions
-        separated for movement, by adding "character.db.Combat_MovesLeft = 3" or
-        something similar.
-        """
         # Prompt the character for their turn and give some information.
         character.msg("|wIt's your turn! You have %i HP remaining.|n" % character.db.hp)
             
@@ -630,12 +631,12 @@ class TurnHandler(DefaultScript):
         self.db.turn += 1 # Go to the next in the turn order.
         if self.db.turn > len(self.db.fighters) - 1:
             self.db.turn = 0 # Go back to the first in the turn order once you reach the end.
-        newchar = self.db.fighters[self.db.turn]
-        # Reset the timer.
-        self.db.timer = 30 + self.interval
-        self.force_repeat()
+        newchar = self.db.fighters[self.db.turn] # Note the new character
+        self.db.timer = 30 + self.time_until_next_repeat() # Reset the timer.
+        self.db.timeout_warning_given = False # Reset the timeout warning.
         self.obj.msg_contents("%s's turn ends - %s's turn begins!" % (currentchar, newchar))
         self.start_turn(newchar) # Start the new character's turn.
+
         
     def turn_end_check(self, character):
         """
