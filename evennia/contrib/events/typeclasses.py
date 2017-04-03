@@ -1,33 +1,23 @@
 """
-Patched typeclasses for Evennia.
+Typeclasses for the event system.
 
-These typeclasses are not inherited from DefaultObject and other
-Evennia default types.  They softly "patch" some of these object hooks
-however.  While this adds a new layer in this module, it's (normally)
-more simple to use from game designers, since it doesn't require a
-new inheritance.  These replaced hooks are only active if the event
-system is active.  You shouldn't need to change this module, just
-override the hooks as you usually do in your custom typeclasses.
-Calling super() would call the Default hooks (which would call the
-event hook without further ado).
+To use thm, one should inherit from these classes (EventObject,
+EventRoom, EventCharacter and EventExit).
 
 """
 
 from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia import ScriptDB
-from evennia.utils.utils import inherits_from, lazy_property
+from evennia.utils.utils import delay, inherits_from, lazy_property
 from evennia.contrib.events.custom import (
-        create_event_type, invalidate_event_type, patch_hook, create_time_event)
+        create_event_type, invalidate_event_type, create_time_event, phrase_event)
 from evennia.contrib.events.handler import EventsHandler
 
-class EventCharacter:
+class EventCharacter(DefaultCharacter):
 
-    """Patched typeclass for DefaultCharcter."""
+    """Typeclass to represent a character and call event types."""
 
-    @staticmethod
-    @patch_hook(DefaultCharacter, "announce_move_from")
-    def announce_move_from(character, destination, msg=None, mapping=None,
-            hook=None):
+    def announce_move_from(self, destination, msg=None, mapping=None):
         """
         Called if the move is to be announced. This is
         called while we are still standing in the old
@@ -47,21 +37,21 @@ class EventCharacter:
             destination: the location of the object after moving.
 
         """
-        if not character.location:
+        if not self.location:
             return
 
         string = msg or "{object} is leaving {origin}, heading for {destination}."
 
         # Get the exit from location to destination
-        location = character.location
+        location = self.location
         exits = [o for o in location.contents if o.location is location and o.destination is destination]
         mapping = mapping or {}
         mapping.update({
-                "character": character,
+                "character": self,
         })
 
         if exits:
-            exits[0].events.call("msg_leave", character, exits[0],
+            exits[0].events.call("msg_leave", self, exits[0],
                     location, destination, string, mapping)
             string = exits[0].events.get_variable("message")
             mapping = exits[0].events.get_variable("mapping")
@@ -71,13 +61,9 @@ class EventCharacter:
         if not string:
             return
 
-        if hook:
-            hook(character, destination, msg=string, mapping=mapping)
+        super(EventCharacter, self).announce_move_from(destination, msg=string, mapping=mapping)
 
-    @staticmethod
-    @patch_hook(DefaultCharacter, "announce_move_to")
-    def announce_move_to(character, source_location, msg=None, mapping=None,
-            hook=None):
+    def announce_move_to(self, source_location, msg=None, mapping=None):
         """
         Called after the move if the move was not quiet. At this point
         we are standing in the new location.
@@ -97,11 +83,11 @@ class EventCharacter:
 
         """
 
-        if not source_location and character.location.has_player:
+        if not source_location and self.location.has_player:
             # This was created from nowhere and added to a player's
             # inventory; it's probably the result of a create command.
             string = "You now have %s in your possession." % self.get_display_name(self.location)
-            character.location.msg(string)
+            self.location.msg(string)
             return
 
         if source_location:
@@ -110,17 +96,17 @@ class EventCharacter:
             string = "{character} arrives to {destination}."
 
         origin = source_location
-        destination = character.location
+        destination = self.location
         exits = []
         mapping = mapping or {}
         mapping.update({
-                "character": character,
+                "character": self,
         })
 
         if origin:
             exits = [o for o in destination.contents if o.location is destination and o.destination is origin]
             if exits:
-                exits[0].events.call("msg_arrive", character, exits[0],
+                exits[0].events.call("msg_arrive", self, exits[0],
                         origin, destination, string, mapping)
                 string = exits[0].events.get_variable("message")
                 mapping = exits[0].events.get_variable("mapping")
@@ -130,12 +116,9 @@ class EventCharacter:
         if not string:
             return
 
-        if hook:
-            hook(character, source_location, msg=string, mapping=mapping)
+        super(EventCharacter, self).announce_move_to(source_location, msg=string, mapping=mapping)
 
-    @staticmethod
-    @patch_hook(DefaultCharacter, "at_before_move")
-    def at_before_move(character, destination, hook=None):
+    def at_before_move(self, destination):
         """
         Called just before starting to move this object to
         destination.
@@ -151,18 +134,18 @@ class EventCharacter:
             before it is even started.
 
         """
-        origin = character.location
+        origin = self.location
         Room = DefaultRoom
         if isinstance(origin, Room) and isinstance(destination, Room):
-            can = character.events.call("can_move", character,
+            can = self.events.call("can_move", self,
                     origin, destination)
             if can:
-                can = origin.events.call("can_move", character, origin)
+                can = origin.events.call("can_move", self, origin)
                 if can:
                     # Call other character's 'can_part' event
                     for present in [o for o in origin.contents if isinstance(
-                            o, DefaultCharacter) and o is not character]:
-                        can = present.events.call("can_part", present, character)
+                            o, DefaultCharacter) and o is not self]:
+                        can = present.events.call("can_part", present, self)
                         if not can:
                             break
 
@@ -173,9 +156,7 @@ class EventCharacter:
 
         return True
 
-    @staticmethod
-    @patch_hook(DefaultCharacter, "at_after_move")
-    def at_after_move(character, source_location, hook=None):
+    def at_after_move(self, source_location):
         """
         Called after move has completed, regardless of quiet mode or
         not.  Allows changes to the object due to the location it is
@@ -185,39 +166,34 @@ class EventCharacter:
             source_location (Object): Wwhere we came from. This may be `None`.
 
         """
-        if hook:
-            hook(character, source_location)
+        super(EventCharacter, self).at_after_move(source_location)
 
         origin = source_location
-        destination = character.location
+        destination = self.location
         Room = DefaultRoom
         if isinstance(origin, Room) and isinstance(destination, Room):
-            character.events.call("move", character, origin, destination)
-            destination.events.call("move", character, origin, destination)
+            self.events.call("move", self, origin, destination)
+            destination.events.call("move", self, origin, destination)
 
             # Call the 'greet' event of characters in the location
             for present in [o for o in destination.contents if isinstance(
-                    o, DefaultCharacter)]:
-                present.events.call("greet", present, character)
+                    o, DefaultCharacter) and o is not self]:
+                present.events.call("greet", present, self)
 
-    @staticmethod
-    @patch_hook(DefaultCharacter, "at_object_delete")
-    def at_object_delete(character, hook=None):
+    def at_object_delete(self):
         """
         Called just before the database object is permanently
         delete()d from the database. If this method returns False,
         deletion is aborted.
 
         """
-        if not character.events.call("can_delete", character):
+        if not self.events.call("can_delete", self):
             return False
 
-        character.events.call("delete", character)
+        self.events.call("delete", self)
         return True
 
-    @staticmethod
-    @patch_hook(DefaultCharacter, "at_post_puppet")
-    def at_post_puppet(character, hook=None):
+    def at_post_puppet(self):
         """
         Called just after puppeting has been completed and all
         Player<->Object links have been established.
@@ -229,19 +205,16 @@ class EventCharacter:
             puppeting this Object.
 
         """
-        if hook:
-            hook(character)
+        super(EventCharacter, self).at_post_puppet()
 
-        character.events.call("puppeted", character)
+        self.events.call("puppeted", self)
 
         # Call the room's puppeted_in event
-        location = character.location
+        location = self.location
         if location and isinstance(location, DefaultRoom):
-            location.events.call("puppeted_in", character, location)
+            location.events.call("puppeted_in", self, location)
 
-    @staticmethod
-    @patch_hook(DefaultCharacter, "at_pre_unpuppet")
-    def at_pre_unpuppet(character, hook=None):
+    def at_pre_unpuppet(self):
         """
         Called just before beginning to un-connect a puppeting from
         this Player.
@@ -253,24 +226,21 @@ class EventCharacter:
             puppeting this Object.
 
         """
-        character.events.call("unpuppeted", character)
-
-        if hook:
-            hook(character)
+        self.events.call("unpuppeted", self)
 
         # Call the room's unpuppeted_in event
-        location = character.location
+        location = self.location
         if location and isinstance(location, DefaultRoom):
-            location.events.call("unpuppeted_in", character, location)
+            location.events.call("unpuppeted_in", self, location)
+
+        super(EventCharacter, self).at_pre_unpuppet()
 
 
-class EventExit(object):
+class EventExit(DefaultExit):
 
-    """Patched exit to patch some hooks of DefaultExit."""
+    """Modified exit including management of events."""
 
-    @staticmethod
-    @patch_hook(DefaultExit, "at_traverse")
-    def at_traverse(exit, traversing_object, target_location, hook=None):
+    def at_traverse(self, traversing_object, target_location):
         """
         This hook is responsible for handling the actual traversal,
         normally by calling
@@ -287,51 +257,91 @@ class EventExit(object):
         """
         is_character = inherits_from(traversing_object, DefaultCharacter)
         if is_character:
-            allow = exit.events.call("can_traverse", traversing_object,
-                    exit, exit.location)
+            allow = self.events.call("can_traverse", traversing_object,
+                    self, self.location)
             if not allow:
                 return
 
-        if hook:
-            hook(exit, traversing_object, target_location)
+        super(EventExit, self).at_traverse(traversing_object, target_location)
 
         # After traversing
         if is_character:
-            exit.events.call("traverse", traversing_object,
-                    exit, exit.location, exit.destination)
+            self.events.call("traverse", traversing_object,
+                    self, self.location, self.destination)
 
 
-class EventRoom:
+class EventRoom(DefaultRoom):
 
-    """Soft-patching of room's default hooks."""
+    """Default room with management of events."""
 
-    @staticmethod
-    @patch_hook(DefaultRoom, "at_object_delete")
-    def at_object_delete(room, hook=None):
+    def at_object_delete(self):
         """
         Called just before the database object is permanently
         delete()d from the database. If this method returns False,
         deletion is aborted.
 
         """
-        if not room.events.call("can_delete", room):
+        if not self.events.call("can_delete", self):
             return False
 
-        room.events.call("delete", room)
+        self.events.call("delete", self)
         return True
 
+    def at_say(self, speaker, message):
+        """
+        Called on this object if an object inside this object speaks.
+        The string returned from this method is the final form of the
+        speech.
 
-class EventObject(object):
+        Args:
+            speaker (Object): The object speaking.
+            message (str): The words spoken.
 
-    """Patched default object."""
+        Notes:
+            You should not need to add things like 'you say: ' or
+            similar here, that should be handled by the say command before
+            this.
+
+        """
+        allow = self.events.call("can_say", speaker, self, message,
+                parameters=message)
+        if not allow:
+            return
+
+        message = self.events.get_variable("message")
+
+        # Call the event "can_say" of other characters in the location
+        for present in [o for o in self.contents if isinstance(
+                o, DefaultCharacter) and o is not speaker]:
+            allow = present.events.call("can_say", speaker, present,
+                    message, parameters=message)
+            if not allow:
+                return
+
+            message = present.events.get_variable("message")
+
+        # We force the next event to be called after the message
+        # This will have to change when the Evennia API adds new hooks
+        delay(0, self.events.call, "say", speaker, self, message,
+                parameters=message)
+        for present in [o for o in self.contents if isinstance(
+                o, DefaultCharacter) and o is not speaker]:
+            delay(0, present.events.call, "say", speaker, present, message,
+                    parameters=message)
+
+        return message
+
+
+class EventObject(DefaultObject):
+
+    """Default object with management of events."""
 
     @lazy_property
     def events(self):
         """Return the EventsHandler."""
         return EventsHandler(self)
-    @staticmethod
-    @patch_hook(DefaultObject, "at_get")
-    def at_get(obj, getter, hook=None):
+
+    def at_get(self, getter):
         """
         Called by the default `get` command when this object has been
         picked up.
@@ -344,14 +354,10 @@ class EventObject(object):
             permissions for that.
 
         """
-        if hook:
-            hook(obj, getter)
+        super(EventObject, self).at_get(getter)
+        self.events.call("get", getter, self)
 
-        obj.events.call("get", getter, obj)
-
-    @staticmethod
-    @patch_hook(DefaultObject, "at_drop")
-    def at_drop(obj, dropper, hook=None):
+    def at_drop(self, dropper):
         """
         Called by the default `drop` command when this object has been
         dropped.
@@ -364,10 +370,8 @@ class EventObject(object):
             permissions from that.
 
         """
-        if hook:
-            hook(obj, dropper)
-
-        obj.events.call("drop", dropper, obj)
+        super(EventObject, self).at_drop(dropper)
+        self.events.call("drop", dropper, self)
 
 ## Default events
 # Character events
@@ -406,6 +410,19 @@ create_event_type(DefaultCharacter, "can_part", ["character", "departing"], """
         departing: the character who wants to leave this room.
         character: the character connected to this event.
     """)
+create_event_type(DefaultCharacter, "can_say", ["speaker", "character", "message"], """
+    Before another character can say something in the same location.
+    This event is called before another character says something in the
+    character's location.  The "something" in question can be modified,
+    or the action can be prevented by using 'deny()'.  To change the
+    content of what the character says, simply change the variable
+    'message' to another string of characters.
+
+    Variables you can use in this event:
+        speaker: the character who is using the say command.
+        character: the character connected to this event.
+        message: the text spoken by the character.
+    """, custom_call=phrase_event)
 create_event_type(DefaultCharacter, "delete", ["character"], """
     Before deleting the character.
     This event is called just before deleting this character.  It shouldn't
@@ -450,6 +467,27 @@ create_event_type(DefaultCharacter, "puppeted", ["character"], """
     Variables you can use in this event:
         character: the character connected to this event.
     """)
+create_event_type(DefaultCharacter, "say", ["speaker", "character", "message"], """
+    After another character has said something in the character's room.
+    This event is called right after another character has said
+    something in the same location..  The action cannot be prevented
+    at this moment.  Instead, this event is ideal to create keywords
+    that would trigger a character (like a NPC) in doing something
+    if a specific phrase is spoken in the same location.
+    To use this event, you have to specify a list of keywords as
+    parameters that should be present, as separate words, in the
+    spoken phrase.  For instance, you can set an event tthat would
+    fire if the phrase spoken by the character contains "menu" or
+    "dinner" or "lunch":
+        @event/add ... = say menu, dinner, lunch
+    Then if one of the words is present in what the character says,
+    this event will fire.
+
+    Variables you can use in this event:
+        speaker: the character speaking in this room.
+        character: the character connected to this event.
+        message: the text having been spoken by the character.
+    """, custom_call=phrase_event)
 create_event_type(DefaultCharacter, "time", ["character"], """
     A repeated event to be called regularly.
     This event is scheduled to repeat at different times, specified
@@ -631,6 +669,19 @@ create_event_type(DefaultRoom, "can_move", ["character", "room"], """
         character: the character who wants to move in this room.
         room: the room connected to this event.
     """)
+create_event_type(DefaultRoom, "can_say", ["character", "room", "message"], """
+    Before a character can say something in this room.
+    This event is called before a character says something in this
+    room.  The "something" in question can be modified, or the action
+    can be prevented by using 'deny()'.  To change the content of what
+    the character says, simply change the variable 'message' to another
+    string of characters.
+
+    Variables you can use in this event:
+        character: the character who is using the say command.
+        room: the room connected to this event.
+        message: the text spoken by the character.
+    """, custom_call=phrase_event)
 create_event_type(DefaultRoom, "delete", ["room"], """
     Before deleting the room.
     This event is called just before deleting this room.  It shouldn't
@@ -665,6 +716,25 @@ create_event_type(DefaultRoom, "puppeted_in", ["character", "room"], """
         character: the character who have just been puppeted in this room.
         room: the room connected to this event.
     """)
+create_event_type(DefaultRoom, "say", ["character", "room", "message"], """
+    After the character has said something in the room.
+    This event is called right after a character has said something
+    in this room.  The action cannot be prevented at this moment.
+    Instead, this event is ideal to create actions that will respond
+    to something being said aloud.  To use this event, you have to
+    specify a list of keywords as parameters that should be present,
+    as separate words, in the spoken phrase.  For instance, you can
+    set an event tthat would fire if the phrase spoken by the character
+    contains "menu" or "dinner" or "lunch":
+        @event/add ... = say menu, dinner, lunch
+    Then if one of the words is present in what the character says,
+    this event will fire.
+
+    Variables you can use in this event:
+        character: the character having spoken in this room.
+        room: the room connected to this event.
+        message: the text having been spoken by the character.
+    """, custom_call=phrase_event)
 create_event_type(DefaultRoom, "time", ["room"], """
     A repeated event to be called regularly.
     This event is scheduled to repeat at different times, specified

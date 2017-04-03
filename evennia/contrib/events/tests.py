@@ -30,6 +30,13 @@ class TestEventHandler(EvenniaTest):
         self.handler = create_script(
                 "evennia.contrib.events.scripts.EventHandler")
 
+        # Alter typeclasses
+        self.char1.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
+        self.char2.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
+        self.room1.swap_typeclass("evennia.contrib.events.typeclasses.EventRoom")
+        self.room2.swap_typeclass("evennia.contrib.events.typeclasses.EventRoom")
+        self.exit.swap_typeclass("evennia.contrib.events.typeclasses.EventExit")
+
     def tearDown(self):
         """Stop the event handler."""
         self.handler.stop()
@@ -225,28 +232,28 @@ class TestEventHandler(EvenniaTest):
         self.assertIsNotNone(self.char1.events)
 
         # Add an event
-        event = self.room1.events.add("say", "pass", author=self.char1,
+        event = self.room1.events.add("dummy", "pass", author=self.char1,
                 valid=True)
         self.assertEqual(event.obj, self.room1)
-        self.assertEqual(event.name, "say")
+        self.assertEqual(event.name, "dummy")
         self.assertEqual(event.code, "pass")
         self.assertEqual(event.author, self.char1)
         self.assertEqual(event.valid, True)
         self.assertIn([event], self.room1.events.all().values())
 
         # Edit this very event
-        new = self.room1.events.edit("say", 0, "character.db.say = True",
+        new = self.room1.events.edit("dummy", 0, "character.db.say = True",
                 author=self.char1, valid=True)
         self.assertIn([new], self.room1.events.all().values())
         self.assertNotIn([event], self.room1.events.all().values())
 
         # Try to call this event
-        self.assertTrue(self.room1.events.call("say",
+        self.assertTrue(self.room1.events.call("dummy",
                 locals={"character": self.char2}))
         self.assertTrue(self.char2.db.say)
 
         # Delete the event
-        self.room1.events.remove("say", 0)
+        self.room1.events.remove("dummy", 0)
         self.assertEqual(self.room1.events.all(), {})
 
 
@@ -259,6 +266,13 @@ class TestCmdEvent(CommandTest):
         super(TestCmdEvent, self).setUp()
         self.handler = create_script(
                 "evennia.contrib.events.scripts.EventHandler")
+
+        # Alter typeclasses
+        self.char1.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
+        self.char2.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
+        self.room1.swap_typeclass("evennia.contrib.events.typeclasses.EventRoom")
+        self.room2.swap_typeclass("evennia.contrib.events.typeclasses.EventRoom")
+        self.exit.swap_typeclass("evennia.contrib.events.typeclasses.EventExit")
 
     def tearDown(self):
         """Stop the event handler."""
@@ -412,6 +426,13 @@ class TestDefaultEvents(CommandTest):
         self.handler = create_script(
                 "evennia.contrib.events.scripts.EventHandler")
 
+        # Alter typeclasses
+        self.char1.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
+        self.char2.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
+        self.room1.swap_typeclass("evennia.contrib.events.typeclasses.EventRoom")
+        self.room2.swap_typeclass("evennia.contrib.events.typeclasses.EventRoom")
+        self.exit.swap_typeclass("evennia.contrib.events.typeclasses.EventExit")
+
     def tearDown(self):
         """Stop the event handler."""
         self.handler.stop()
@@ -428,6 +449,9 @@ class TestDefaultEvents(CommandTest):
                 character.msg("You cannot leave.")
                 deny()
         """.strip("\n"))
+        # Enforce self.exit.destination since swapping typeclass lose it
+        self.exit.destination = self.room2
+
         # Try the can_traverse event
         self.handler.add_event(self.exit, "can_traverse", code,
                 author=self.char1, valid=True)
