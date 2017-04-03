@@ -80,44 +80,6 @@ def invalidate_event_type(typeclass, event_name):
     typeclass_name = typeclass.__module__ + "." + typeclass.__name__
     event_types.append((typeclass_name, event_name, None, "", None, None))
 
-def patch_hook(typeclass, method_name):
-    """
-    Decorator to softly patch a hook in a typeclass.
-
-    This decorator should not be used, unless for good reasons, outside
-    of this contrib.  The advantage of using decorated soft patchs is
-    in allowing users to customize typeclasses without changing the
-    inheritance tree for a couple of methods.
-
-    """
-    hook = getattr(typeclass, method_name, None)
-    def wrapper(method):
-        """Wrapper around the hook."""
-        def overridden_hook(*args, **kwargs):
-            """Function to call the new hook."""
-            # Enforce the old hook as a keyword argument
-            kwargs["hook"] = hook
-            ret = method(*args, **kwargs)
-            return ret
-        hooks.append((typeclass, method_name, overridden_hook))
-        return overridden_hook
-    return wrapper
-
-def patch_hooks():
-    """
-    Patch all the configured hooks.
-
-    This function should be called only once when the event system
-    has loaded, is set and has defined its patched typeclasses.
-    It will be called internally by the event system, you shouldn't
-    call this function in your game.
-
-    """
-    while hooks:
-        typeclass, method_name, new_hook = hooks[0]
-        setattr(typeclass, method_name, new_hook)
-        del hooks[0]
-
 def connect_event_types():
     """
     Connect the event types when the script runs.
@@ -243,7 +205,7 @@ def create_time_event(obj, event_name, number, parameters):
 
 def keyword_event(events, parameters):
     """
-    Custom call for events with keywords (like say, or push, or pull, or turn...).
+    Custom call for events with keywords (like push, or pull, or turn...).
 
     This function should be imported and added as a custom_call
     parameter to add the event type when the event supports keywords
@@ -264,6 +226,40 @@ def keyword_event(events, parameters):
     for event in events:
         keys = event["parameters"]
         if not keys or key in [p.strip().lower() for p in keys.split(",")]:
+            to_call.append(event)
+
+    return to_call
+
+def phrase_event(events, parameters):
+    """
+    Custom call for events with keywords in sentences (like say or whisper).
+
+    This function should be imported and added as a custom_call
+    parameter to add the event type when the event supports keywords
+    in phrase as parameters.  Keywords in parameters are one or more
+    words separated by a comma.  For instance, a 'say yes, okay' event
+    can be set to trigger when the player says something containing
+    either "yes" or "okay" (maybe 'say I don't like it, but okay').
+
+    Args:
+        events (list of dict): the list of events to be called.
+        parameters (str): the actual parameters entered to trigger the event.
+
+    Returns:
+        A list containing the event dictionaries to be called.
+
+    """
+    phrase = parameters.strip().lower()
+    # Remove punctuation marks
+    punctuations = ',.";?!'
+    for p in punctuations:
+        phrase = phrase.replace(p, " ")
+    words = phrase.split()
+    words = [w.strip("' ") for w in words if w.strip("' ")]
+    to_call = []
+    for event in events:
+        keys = event["parameters"]
+        if not keys or any(key.strip().lower() in words for key in keys.split(",")):
             to_call.append(event)
 
     return to_call

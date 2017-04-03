@@ -14,8 +14,7 @@ from evennia import logger
 from evennia.utils.create import create_channel
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.utils import all_from_module, delay
-from evennia.contrib.events.custom import (
-        connect_event_types, get_next_wait, patch_hooks)
+from evennia.contrib.events.custom import connect_event_types, get_next_wait
 from evennia.contrib.events.exceptions import InterruptEvent
 from evennia.contrib.events.handler import EventsHandler as Handler
 from evennia.contrib.events import typeclasses
@@ -36,6 +35,7 @@ class EventHandler(DefaultScript):
     """
 
     def at_script_creation(self):
+        """Hook called when the script is created."""
         self.key = "event_handler"
         self.desc = "Global event handler"
         self.persistent = True
@@ -50,10 +50,21 @@ class EventHandler(DefaultScript):
         self.db.tasks = {}
 
     def at_start(self):
-        """Set up the event system."""
+        """Set up the event system when starting.
+
+        Note that this hook is called every time the server restarts
+        (including when it's reloaded).  This hook performs the following
+        tasks:
+
+        -   Refresh and re-connect event types.
+        -   Generate locals (individual events' namespace).
+        -   Load event helpers, including user-defined ones.
+        -   Re-schedule tasks that aren't set to fire anymore.
+        -   Effectively connect the handler to the main script.
+
+        """
         self.ndb.event_types = {}
         connect_event_types()
-        patch_hooks()
 
         # Generate locals
         self.ndb.current_locals = {}
