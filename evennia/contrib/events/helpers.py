@@ -51,7 +51,7 @@ def get(**kwargs):
 
     return object
 
-def call(obj, event_name, seconds=0):
+def call_event(obj, event_name, seconds=0):
     """
     Call the specified event in X seconds.
 
