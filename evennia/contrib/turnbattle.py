@@ -44,6 +44,7 @@ in your game and using it as-is.
 
 from random import randint
 from evennia import DefaultCharacter, Command, default_cmds, DefaultScript
+from evennia.commands.default.help import CmdHelp, _loadhelp, _savehelp, HelpEntry, defaultdict
 
 """
 ----------------------------------------------------------------------------
@@ -337,6 +338,9 @@ class CmdFight(Command):
         if not self.caller.db.hp: # If you don't have any hp
             self.caller.msg("You can't start a fight if you've been defeated!")
             return
+        if is_in_combat(self.caller): # Already in a fight
+            self.caller.msg("You're already in a fight!")
+            return
         for thing in here.contents: # Test everything in the room to add it to the fight.
             if thing.db.HP: # If the object has HP...
                 fighters.append(thing) # ...then add it to the fight.
@@ -489,6 +493,108 @@ class CmdRest(Command):
         """
         You'll probably want to replace this with your own system for recovering HP.
         """
+        
+class CmdCombatHelp(CmdHelp):
+    """
+    View help or a list of topics
+
+    Usage:
+      help <topic or command>
+      help list
+      help all
+
+    This will search for help on commands and other
+    topics related to the game.
+    """
+    # Just like the default help command, but will give quick
+    # tips on combat when used in a fight with no arguments.
+    
+    def func(self):
+        """
+        Run the dynamic help entry creator.
+        """
+        query, cmdset = self.args, self.cmdset
+        caller = self.caller
+
+        suggestion_cutoff = 0.6
+        suggestion_maxnum = 5
+
+        if not query:
+            # Return quick list of combat command when used in combat with no arguments.
+            if is_in_combat(self.caller):
+                self.caller.msg("""
+                Available combat commands:
+                
+                |wAttack:|n Attack a target, attempting to deal damage.
+                |wPass:|n Pass your turn without further action.
+                |wDisengage:|n End your turn and attempt to end combat.
+                """)
+                return
+            else:
+                query = "all"
+
+        # removing doublets in cmdset, caused by cmdhandler
+        # having to allow doublet commands to manage exits etc.
+        cmdset.make_unique(caller)
+
+        # retrieve all available commands and database topics
+        all_cmds = [cmd for cmd in cmdset if self.check_show_help(cmd, caller)]
+        all_topics = [topic for topic in HelpEntry.objects.all() if topic.access(caller, 'view', default=True)]
+        all_categories = list(set([cmd.help_category.lower() for cmd in all_cmds] + [topic.help_category.lower() for topic in all_topics]))
+
+        if query in ("list", "all"):
+            # we want to list all available help entries, grouped by category
+            hdict_cmd = defaultdict(list)
+            hdict_topic = defaultdict(list)
+            # create the dictionaries {category:[topic, topic ...]} required by format_help_list
+            # Filter commands that should be reached by the help
+            # system, but not be displayed in the table.
+            for cmd in all_cmds:
+                if self.should_list_cmd(cmd, caller):
+                    hdict_cmd[cmd.help_category].append(cmd.key)
+            [hdict_topic[topic.help_category].append(topic.key) for topic in all_topics]
+            # report back
+            self.msg_help(self.format_help_list(hdict_cmd, hdict_topic))
+            return
+
+        # Try to access a particular command
+
+        # build vocabulary of suggestions and rate them by string similarity.
+        vocabulary = [cmd.key for cmd in all_cmds if cmd] + [topic.key for topic in all_topics] + all_categories
+        [vocabulary.extend(cmd.aliases) for cmd in all_cmds]
+        suggestions = [sugg for sugg in string_suggestions(query, set(vocabulary), cutoff=suggestion_cutoff, maxnum=suggestion_maxnum)
+                       if sugg != query]
+        if not suggestions:
+            suggestions = [sugg for sugg in vocabulary if sugg != query and sugg.startswith(query)]
+
+        # try an exact command auto-help match
+        match = [cmd for cmd in all_cmds if cmd == query]
+        if len(match) == 1:
+            formatted = self.format_help_entry(match[0].key,
+                     match[0].get_help(caller, cmdset),
+                     aliases=match[0].aliases,
+                     suggested=suggestions)
+            self.msg_help(formatted)
+            return
+
+        # try an exact database help entry match
+        match = list(HelpEntry.objects.find_topicmatch(query, exact=True))
+        if len(match) == 1:
+            formatted = self.format_help_entry(match[0].key,
+                     match[0].entrytext,
+                     aliases=match[0].aliases.all(),
+                     suggested=suggestions)
+            self.msg_help(formatted)
+            return
+
+        # try to see if a category name was entered
+        if query in all_categories:
+            self.msg_help(self.format_help_list({query:[cmd.key for cmd in all_cmds if cmd.help_category==query]},
+                                                {query:[topic.key for topic in all_topics if topic.help_category==query]}))
+            return
+
+        # no exact matches found. Just give suggestions.
+        self.msg(self.format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions))
 
 class BattleCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -505,6 +611,7 @@ class BattleCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdRest())
         self.add(CmdPass())
         self.add(CmdDisengage())
+        self.add(CmdCombatHelp())
         
 """
 ----------------------------------------------------------------------------
