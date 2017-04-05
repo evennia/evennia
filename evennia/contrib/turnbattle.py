@@ -26,20 +26,16 @@ instead of the default:
 
     class Character(BattleCharacter):
         
-Next, import the combat commands into your default_cmdsets.py module:
+Next, import this module into your default_cmdsets.py module:
 
-    from evennia.contrib.turnbattle import CmdFight, CmdAttack, CmdRest, CmdPass, CmdDisengage
+    from evennia.contrib import turnbattle
 
-And add the commands to your default command set:
+And add the battle command set to your default command set:
 
     #
     # any commands you add below will overload the default ones.
     #
-    self.add(CmdFight())
-    self.add(CmdAttack())
-    self.add(CmdRest())
-    self.add(CmdPass())
-    self.add(CmdDisengage())
+    self.add(turnbattle.BattleCmdSet())
 
 This module is meant to be heavily expanded on, so you may want to copy it
 to your game's 'world' folder and modify it there rather than importing it
@@ -494,6 +490,22 @@ class CmdRest(Command):
         You'll probably want to replace this with your own system for recovering HP.
         """
 
+class BattleCmdSet(default_cmds.CharacterCmdSet):
+    """
+    This command set includes all the commmands used in the battle system.
+    """
+    key = "DefaultCharacter"
+
+    def at_cmdset_creation(self):
+        """
+        Populates the cmdset
+        """
+        self.add(CmdFight())
+        self.add(CmdAttack())
+        self.add(CmdRest())
+        self.add(CmdPass())
+        self.add(CmdDisengage())
+        
 """
 ----------------------------------------------------------------------------
 SCRIPTS START HERE
