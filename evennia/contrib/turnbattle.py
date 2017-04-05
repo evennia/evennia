@@ -204,6 +204,7 @@ def combat_cleanup(character):
     for attr in character.attributes.all():
         if attr.key[:7] == "combat_": # If the attribute name starts with 'combat_'...
             character.attributes.remove(key=attr.key) # ...then delete it!
+    character.location.db.Combat_TurnHandler = None # Remove reference to turn handler in location
             
 def is_in_combat(character):
     """
@@ -648,6 +649,9 @@ class TurnHandler(DefaultScript):
         # Initialize each fighter for combat
         for fighter in self.db.fighters:
             self.initialize_for_combat(fighter)
+            
+        # Add a reference to this script to the room
+        self.obj.db.Combat_TurnHandler = self
         
         # Roll initiative and sort the list of fighters depending on who rolls highest to determine turn order.
         # The initiative roll is determined by the roll_init function and can be customized easily.
