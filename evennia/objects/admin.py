@@ -40,16 +40,21 @@ class ObjectCreateForm(forms.ModelForm):
         fields = '__all__'
     db_key = forms.CharField(label="Name/Key",
                              widget=forms.TextInput(attrs={'size': '78'}),
-                             help_text="Main identifier, like 'apple', 'strong guy', 'Elizabeth' etc. If creating a Character, check so the name is unique among characters!",)
+                             help_text="Main identifier, like 'apple', 'strong guy', 'Elizabeth' etc. "
+                                       "If creating a Character, check so the name is unique among characters!",)
     db_typeclass_path = forms.CharField(label="Typeclass",
                                         initial=settings.BASE_OBJECT_TYPECLASS,
                                         widget=forms.TextInput(attrs={'size': '78'}),
-                                        help_text="This defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass. If you are creating a Character you should use the typeclass defined by settings.BASE_CHARACTER_TYPECLASS or one derived from that.")
+                                        help_text="This defines what 'type' of entity this is. This variable holds a "
+                                                  "Python path to a module with a valid Evennia Typeclass. If you are "
+                                                  "creating a Character you should use the typeclass defined by "
+                                                  "settings.BASE_CHARACTER_TYPECLASS or one derived from that.")
     db_cmdset_storage = forms.CharField(label="CmdSet",
                                         initial="",
                                         required=False,
                                         widget=forms.TextInput(attrs={'size': '78'}),
-                                        help_text="Most non-character objects don't need a cmdset and can leave this field blank.")
+                                        help_text="Most non-character objects don't need a cmdset"
+                                                  " and can leave this field blank.")
     raw_id_fields = ('db_destination', 'db_location', 'db_home')
 
 
@@ -63,8 +68,10 @@ class ObjectEditForm(ObjectCreateForm):
         fields = '__all__'
     db_lock_storage = forms.CharField(label="Locks",
                                       required=False,
-                                      widget=forms.Textarea(attrs={'cols':'100', 'rows':'2'}),
-                                      help_text="In-game lock definition string. If not given, defaults will be used. This string should be on the form <i>type:lockfunction(args);type2:lockfunction2(args);...")
+                                      widget=forms.Textarea(attrs={'cols': '100', 'rows': '2'}),
+                                      help_text="In-game lock definition string. If not given, defaults will be used. "
+                                                "This string should be on the form "
+                                                "<i>type:lockfunction(args);type2:lockfunction2(args);...")
 
 
 class ObjectDBAdmin(admin.ModelAdmin):
@@ -90,15 +97,15 @@ class ObjectDBAdmin(admin.ModelAdmin):
     form = ObjectEditForm
     fieldsets = (
         (None, {
-                'fields': (('db_key','db_typeclass_path'), ('db_lock_storage', ),
-                           ('db_location', 'db_home'), 'db_destination','db_cmdset_storage'
+                'fields': (('db_key', 'db_typeclass_path'), ('db_lock_storage', ),
+                           ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
                            )}),
         )
 
     add_form = ObjectCreateForm
     add_fieldsets = (
         (None, {
-                'fields': (('db_key','db_typeclass_path'),
+                'fields': (('db_key', 'db_typeclass_path'),
                            ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
                            )}),
         )

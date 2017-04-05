@@ -551,7 +551,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         Emits a message to all objects inside this object.
 
-        Argsu:
+        Args:
             text (str or tuple): Message to send. If a tuple, this should be
                 on the valid OOB outmessage form `(message, {kwargs})`,
                 where kwargs are optional data passed to the `text`
@@ -611,7 +611,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 outmessage = inmessage.format(**substitutions)
             else:
                 outmessage = inmessage
-
             obj.msg(text=(outmessage, outkwargs), from_obj=from_obj, **kwargs)
 
     def move_to(self, destination, quiet=False,
@@ -673,7 +672,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 self.location = None
                 return True
             emit_to_obj.msg(_("The destination doesn't exist."))
-            return
+            return False
         if destination.destination and use_destination:
             # traverse exits
             destination = destination.destination
@@ -682,7 +681,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if move_hooks:
             try:
                 if not self.at_before_move(destination):
-                    return
+                    return False
             except Exception as err:
                 logerr(errtxt % "at_before_move()", err)
                 return False

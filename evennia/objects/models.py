@@ -51,8 +51,7 @@ class ContentsHandler(object):
         Re-initialize the content cache
 
         """
-        self._pkcache.update(dict((obj.pk, None) for obj in
-                            ObjectDB.objects.filter(db_location=self.obj) if obj.pk))
+        self._pkcache.update(dict((obj.pk, None) for obj in ObjectDB.objects.filter(db_location=self.obj) if obj.pk))
 
     def get(self, exclude=None):
         """
@@ -79,7 +78,7 @@ class ContentsHandler(object):
                 return [self._idcache[pk] for pk in pks]
             except KeyError:
                 # this means an actual failure of caching. Return real database match.
-                logger.log_err("contents cache failed for %s." % (self.obj.key))
+                logger.log_err("contents cache failed for %s." % self.obj.key)
                 return list(ObjectDB.objects.filter(db_location=self.obj))
 
     def add(self, obj):
@@ -110,11 +109,12 @@ class ContentsHandler(object):
         self._pkcache = {}
         self.init()
 
-#------------------------------------------------------------
+# -------------------------------------------------------------
 #
 # ObjectDB
 #
-#------------------------------------------------------------
+# -------------------------------------------------------------
+
 
 class ObjectDB(TypedObject):
     """
@@ -173,17 +173,18 @@ class ObjectDB(TypedObject):
                                   help_text='a Player connected to this object, if any.')
     # the session id associated with this player, if any
     db_sessid = models.CommaSeparatedIntegerField(null=True, max_length=32, verbose_name="session id",
-                                    help_text="csv list of session ids of connected Player, if any.")
+                                                  help_text="csv list of session ids of connected Player, if any.")
     # The location in the game world. Since this one is likely
     # to change often, we set this with the 'location' property
     # to transparently handle Typeclassing.
     db_location = models.ForeignKey('self', related_name="locations_set", db_index=True, on_delete=models.SET_NULL,
-                                     blank=True, null=True, verbose_name='game location')
+                                    blank=True, null=True, verbose_name='game location')
     # a safety location, this usually don't change much.
     db_home = models.ForeignKey('self', related_name="homes_set", on_delete=models.SET_NULL,
-                                 blank=True, null=True, verbose_name='home location')
+                                blank=True, null=True, verbose_name='home location')
     # destination of this object - primarily used by exits.
-    db_destination = models.ForeignKey('self', related_name="destinations_set", db_index=True, on_delete=models.SET_NULL,
+    db_destination = models.ForeignKey('self', related_name="destinations_set",
+                                       db_index=True, on_delete=models.SET_NULL,
                                        blank=True, null=True, verbose_name='destination',
                                        help_text='a destination, used only by exit objects.')
     # database storage of persistant cmdsets.
@@ -204,28 +205,28 @@ class ObjectDB(TypedObject):
 
     # cmdset_storage property handling
     def __cmdset_storage_get(self):
-        "getter"
+        """getter"""
         storage = self.db_cmdset_storage
         return [path.strip() for path in storage.split(',')] if storage else []
 
     def __cmdset_storage_set(self, value):
-        "setter"
-        self.db_cmdset_storage =  ",".join(str(val).strip() for val in make_iter(value))
+        """setter"""
+        self.db_cmdset_storage = ",".join(str(val).strip() for val in make_iter(value))
         self.save(update_fields=["db_cmdset_storage"])
 
     def __cmdset_storage_del(self):
-        "deleter"
+        """deleter"""
         self.db_cmdset_storage = None
         self.save(update_fields=["db_cmdset_storage"])
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set, __cmdset_storage_del)
 
     # location getsetter
     def __location_get(self):
-        "Get location"
+        """Get location"""
         return self.db_location
 
     def __location_set(self, location):
-        "Set location, checking for loops and allowing dbref"
+        """Set location, checking for loops and allowing dbref"""
         if isinstance(location, (basestring, int)):
             # allow setting of #dbref
             dbid = dbref(location, reqhash=False)
@@ -237,9 +238,9 @@ class ObjectDB(TypedObject):
                     pass
         try:
             def is_loc_loop(loc, depth=0):
-                "Recursively traverse target location, trying to catch a loop."
+                """Recursively traverse target location, trying to catch a loop."""
                 if depth > 10:
-                    return
+                    return None
                 elif loc == self:
                     raise RuntimeError
                 elif loc is None:
@@ -248,7 +249,7 @@ class ObjectDB(TypedObject):
             try:
                 is_loc_loop(location)
             except RuntimeWarning:
-                # we caught a infitite location loop!
+                # we caught an infinite location loop!
                 # (location1 is in location2 which is in location1 ...)
                 pass
 
@@ -281,7 +282,7 @@ class ObjectDB(TypedObject):
         return
 
     def __location_del(self):
-        "Cleanly delete the location reference"
+        """Cleanly delete the location reference"""
         self.db_location = None
         self.save(update_fields=["db_location"])
     location = property(__location_get, __location_set, __location_del)
@@ -311,7 +312,6 @@ class ObjectDB(TypedObject):
                 [o.contents_cache.init() for o in self.__dbclass__.get_all_cached_instances()]
 
     class Meta(object):
-        "Define Django meta options"
+        """Define Django meta options"""
         verbose_name = "Object"
         verbose_name_plural = "Objects"
-

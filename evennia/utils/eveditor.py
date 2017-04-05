@@ -49,6 +49,7 @@ import re
 from django.conf import settings
 from evennia import Command, CmdSet
 from evennia.utils import is_iter, fill, dedent, logger, justify, to_str
+from evennia.utils.ansi import raw
 from evennia.commands import cmdhandler
 
 # we use cmdhandler instead of evennia.syscmdkeys to
@@ -377,9 +378,9 @@ class CmdLineInput(CmdEditorBase):
                     indent = "off"
 
                 self.caller.msg("|b%02i|||n (|g%s|n) %s" % (
-                        cline, indent, line))
+                        cline, indent, raw(line)))
             else:
-                self.caller.msg("|b%02i|||n %s" % (cline, self.args))
+                self.caller.msg("|b%02i|||n %s" % (cline, raw(self.args)))
 
 
 class CmdEditorGroup(CmdEditorBase):
@@ -932,9 +933,9 @@ class EvEditor(object):
         footer = "|n" + sep * 10 +\
                  "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) + sep * 12 + "(:h for help)" + sep * 28
         if linenums:
-            main = "\n".join("|b%02i|||n %s" % (iline + 1 + offset, line) for iline, line in enumerate(lines))
+            main = "\n".join("|b%02i|||n %s" % (iline + 1 + offset, raw(line)) for iline, line in enumerate(lines))
         else:
-            main = "\n".join(lines)
+            main = "\n".join([raw(line) for line in lines])
         string = "%s\n%s\n%s" % (header, main, footer)
         self._caller.msg(string, options=options)
 
