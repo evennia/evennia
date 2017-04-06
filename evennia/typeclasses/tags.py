@@ -357,7 +357,7 @@ class TagHandler(object):
         else:
             return [to_str(tag.db_key) for tag in tags]
 
-    def batch_add(self, *tuples):
+    def batch_add(self, *args):
         """
         Batch-add tags from a list of tuples.
 
@@ -374,19 +374,18 @@ class TagHandler(object):
         """
         keys = defaultdict(list)
         data = {}
-        for tup in tuples:
+        for tup in args:
             tup = make_iter(tup)
             nlen = len(tup)
-            if nlen == 1: # just a key
+            if nlen == 1:  # just a key
                 keys[None].append(tup[0])
             elif nlen == 2:
                 keys[tup[1]].append(tup[0])
             else:
                 keys[tup[1]].append(tup[0])
-                data[tup[1]] = tup[2] # overwrite previous
+                data[tup[1]] = tup[2]  # overwrite previous
         for category, key in keys.iteritems():
             self.add(tag=key, category=category, data=data.get(category, None))
-
 
     def __str__(self):
         return ",".join(self.all())

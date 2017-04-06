@@ -508,47 +508,47 @@ class AttributeHandler(object):
             # update cache
             self._setcache(keystr, category, new_attr)
 
-    def batch_add(self, key, value, category=None, lockstring="",
-                  strattr=False, accessing_obj=None, default_access=True):
+    def batch_add(self, *args, **kwargs):
         """
         Batch-version of `add()`. This is more efficient than
         repeat-calling add when having many Attributes to add.
 
         Args:
-            key (list): A list of Attribute names to add.
-            value (list): A list of values. It must match the `key`
-                list.  If `strattr` keyword is set, all entries *must* be
-                strings.
-            category (str, optional): The category for the Attribute.
-                The default `None` is the normal category used.
-            lockstring (str, optional): A lock string limiting access
-                to the attribute.
-            strattr (bool, optional): Make this a string-only Attribute.
-                This is only ever useful for optimization purposes.
-            accessing_obj (object, optional): An entity to check for
-                the `attrcreate` access-type. If not passing, this method
-                will be exited.
-            default_access (bool, optional): What access to grant if
-                `accessing_obj` is given but no lock of the type
-                `attrcreate` is defined on the Attribute in question.
+            indata (tuple): Tuples of varying length representing the
+                Attribute to add to this object.
+                    - `(key, value)`
+                    - `(key, value, category)`
+                    - `(key, value, category, lockstring)`
+                    - `(key, value, category, lockstring, default_access)`
+
+        Kwargs:
+            strattr (bool): If `True`, value must be a string. This
+                will save the value without pickling which is less
+                flexible but faster to search (not often used except
+                internally).
 
         Raises:
-            RuntimeError: If `key` and `value` lists are not of the
-                same lengths.
+            RuntimeError: If trying to pass a non-iterable as argument.
+
+        Notes:
+            The indata tuple order matters, so if you want a lockstring
+            but no category, set the category to `None`. This method
+            does not have the ability to check editing permissions like
+            normal .add does, and is mainly used internally. It does not
+            use the normal self.add but apply the Attributes directly
+            to the database.
+
         """
-        if accessing_obj and not self.obj.access(accessing_obj, self._attrcreate, default=default_access):
-            # check create access
-            return
-
-        keys, values = make_iter(key), make_iter(value)
-
-        if len(keys) != len(values):
-            raise RuntimeError("AttributeHandler.add(): key and value lists of different length: %s vs %s" % key, value)
-        category = category.strip().lower() if category is not None else None
         new_attrobjs = []
-        for ikey, keystr in enumerate(keys):
-            keystr = keystr.strip().lower()
-            new_value = values[ikey]
+        strattr = kwargs.get('strattr', False)
+        for tup in args:
+            if not is_iter(tup) or len(tup) < 2:
+                raise RuntimeError("batch_add requires iterables as arguments (got %r)." % tup)
+            ntup = len(tup)
+            keystr = str(tup[0]).strip().lower()
+            new_value = tup[1]
+            category = str(tup[2]).strip().lower() if tup > 2 else None
+            lockstring = tup[3] if tup > 3 else ""
 
             attr_objs = self._getcache(keystr, category)
 

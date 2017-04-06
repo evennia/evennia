@@ -16,7 +16,8 @@ GOBLIN = {
  "resists": ["cold", "poison"],
  "attacks": ["fists"],
  "weaknesses": ["fire", "light"]
- "tags:": ["mob", "evil"]
+ "tags": ["mob", "evil", ('greenskin','mob')]
+ "args": [("weapon", "sword")]
  }
 ```
 
@@ -31,21 +32,28 @@ Possible keywords are:
     permissions - string or list of permission strings
     locks - a lock-string
     aliases - string or list of strings
-    tags - string or list of strings
-    ndb_<name> - value of a nattribute (ndb_ is stripped)
     exec - this is a string of python code to execute or a list of such codes.
         This can be used e.g. to trigger custom handlers on the object. The
-        execution environment contains 'evennia' for the library and 'obj'
-        for accessing the just created object.
-    any other keywords are interpreted as Attributes and their values.
+        execution namespace contains 'evennia' for the library and 'obj'
+    tags - string or list of strings or tuples `(tagstr, category)`. Plain
+        strings will be result in tags with no category (default tags).
+    args - tuple or list of tuples of Attributes to add. This form allows
+    more complex Attributes to be set. Tuples at least specify `(key, value)`
+        but can also specify up to `(key, value, category, lockstring)`. If
+        you want to specify a lockstring but not a category, set the category
+        to `None`.
+    ndb_<name> - value of a nattribute (ndb_ is stripped)
+    other - any other name is interpreted as the key of an Attribute with
+        its value. Such Attributes have no categories.
 
 Each value can also be a callable that takes no arguments. It should
 return the value to enter into the field and will be called every time
-the prototype is used to spawn an object.
+the prototype is used to spawn an object. Note, if you want to store
+a callable in an Attribute, embed it in a tuple to the `args` keyword.
 
-By specifying a prototype, the child will inherit all prototype slots
-it does not explicitly define itself, while overloading those that it
-does specify.
+By specifying the "prototype" key, the prototype becomes a child of
+that prototype, inheritng all prototype slots it does not explicitly
+define itself, while overloading those that it does specify.
 
 ```python
 GOBLIN_WIZARD = {
@@ -252,6 +260,8 @@ def spawn(*prototypes, **kwargs):
         alias_string = aliasval() if callable(aliasval) else aliasval
         tagval = prot.pop("tags", "")
         tags = tagval() if callable(tagval) else tagval
+        attrval = prot.pop("args", "")
+        attributes = attrval() if callable(tagval) else attrval
 
         exval = prot.pop("exec", "")
         execs = make_iter(exval() if callable(exval) else exval)
@@ -261,9 +271,10 @@ def spawn(*prototypes, **kwargs):
                            for key, value in prot.items() if key.startswith("ndb_"))
 
         # the rest are attributes
-        attributes = dict((key, value() if callable(value) else value)
-                          for key, value in prot.items()
-                          if not (key in _CREATE_OBJECT_KWARGS or key.startswith("ndb_")))
+        simple_attributes = [(key, value) if callable(value) else value
+                                for key, value in prot.items() if not key.startswith("ndb_")]
+        attributes = attributes + simple_attributes
+        attributes = [tup for tup in attributes if not tup[0] in _CREATE_OBJECT_KWARGS]
 
         # pack for call into _batch_create_object
         objsparams.append((create_kwargs, permission_string, lock_string,
