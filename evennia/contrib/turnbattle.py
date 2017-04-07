@@ -372,8 +372,6 @@ class CmdAttack(Command):
     def func(self):
         "This performs the actual command."
         "Set the attacker to the caller and the defender to the target."
-        attacker = self.caller
-        defender = self.caller.search(self.args)
         
         if not is_in_combat(self.caller): # If not in combat, can't attack.
             self.caller.msg("You can only do that in combat. (see: help fight)")
@@ -386,6 +384,9 @@ class CmdAttack(Command):
         if not self.caller.db.hp: # Can't attack if you have no HP.
             self.caller.msg("You can't attack, you've been defeated.")
             return
+            
+        attacker = self.caller
+        defender = self.caller.search(self.args)
         
         if not defender: # No valid target given.
             return
