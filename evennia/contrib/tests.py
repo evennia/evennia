@@ -799,7 +799,7 @@ class TestTurnBattleFunc(EvenniaTest):
         turnbattle.resolve_attack(attacker, defender, attack_value=20, defense_value=10)
         self.assertTrue(defender.db.hp < 40)
         # Combat cleanup
-        attacker.db.combat_attribute = True
+        attacker.db.Combat_attribute = True
         turnbattle.combat_cleanup(attacker)
         self.assertFalse(attacker.db.combat_attribute)
         # Is in combat
@@ -814,8 +814,34 @@ class TestTurnBattleFunc(EvenniaTest):
         # Test is turn
         self.assertTrue(turnbattle.is_turn(attacker))
         # Spend actions
-        attacker.db.combat_ActionsLeft = 1
+        attacker.db.Combat_ActionsLeft = 1
         turnbattle.spend_action(attacker, 1, action_name="Test")
-        self.assertTrue(attacker.db.combat_ActionsLeft == 0)
-        self.assertTrue(attacker.db.combat_LastAction == "Test")
-        
+        self.assertTrue(attacker.db.Combat_ActionsLeft == 0)
+        self.assertTrue(attacker.db.Combat_LastAction == "Test")
+        # Initialize for combat
+        attacker.db.Combat_ActionsLeft = 983
+        turnhandler.initialize_for_combat(attacker)
+        self.assertTrue(attacker.db.Combat_ActionsLeft == 0)
+        self.assertTrue(attacker.db.Combat_LastAction == "null")
+        # Start turn
+        defender.db.Combat_ActionsLeft = 0
+        turnhandler.start_turn(defender)
+        self.assertTrue(defender.db.Combat_ActionsLeft == 1)
+        # Next turn
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        turnhandler.next_turn()
+        self.assertTrue(turnhandler.db.turn == 1)
+        # Turn end check
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        attacker.db.Combat_ActionsLeft = 0
+        turnhandler.turn_end_check(attacker)
+        self.assertTrue(turnhandler.db.turn == 1)
+        # Join fight
+        joiner = create_object(turnbattle.BattleCharacter, key="Joiner")
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        turnhandler.join_fight(joiner)
+        self.assertTrue(turnhandler.db.turn == 1)
+        self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
