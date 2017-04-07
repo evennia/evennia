@@ -755,4 +755,15 @@ class TestTutorialWorldRooms(CommandTest):
     def test_outroroom(self):
         create_object(tutrooms.OutroRoom, key="outroroom")
 
+# test turnbattle
+from evennia.contrib import turnbattle
 
+class TestTurnBattle(CommandTest):
+    
+    # Test combat commands
+    def test_turnbattlecmd(self):
+        self.call(turnbattle.CmdFight(), "", "You can't start a fight if you've been defeated!")
+        self.call(turnbattle.CmdAttack(), "", "You can only do that in combat. (see: help fight)")
+        self.call(turnbattle.CmdPass(), "", "You can only do that in combat. (see: help fight)")
+        self.call(turnbattle.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
+        self.call(turnbattle.CmdRest(), "", "Char rests to recover HP.")
