@@ -161,7 +161,7 @@ def apply_damage(defender, damage):
     if defender.db.hp <= 0:
         defender.db.hp = 0
     
-def resolve_attack(attacker, defender):
+def resolve_attack(attacker, defender, attack_value=None, defense_value=None):
     """
     Resolves an attack and outputs the result.
     
@@ -175,9 +175,11 @@ def resolve_attack(attacker, defender):
         so that they are easier to expand upon.
     """
     # Get an attack roll from the attacker.
-    attack_value = get_attack(attacker, defender)
+    if not attack_value:
+        attack_value = get_attack(attacker, defender)
     # Get a defense value from the defender.
-    defense_value = get_defense(attacker, defender)
+    if not defense_value:
+        defense_value = get_defense(attacker, defender)
     # If the attack value is lower than the defense value, miss. Otherwise, hit.
     if attack_value < defense_value:
         attacker.location.msg_contents("%s's attack misses %s!" % (attacker, defender))
