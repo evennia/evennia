@@ -845,3 +845,5 @@ class TestTurnBattleFunc(EvenniaTest):
         turnhandler.join_fight(joiner)
         self.assertTrue(turnhandler.db.turn == 1)
         self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
+        # Remove the script at the end
+        turnhandler.stop()
