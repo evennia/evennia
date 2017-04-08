@@ -45,6 +45,8 @@ things you want from here into your game folder and change them there.
   time to pass depending on if you are walking/running etc.
 * Talking NPC (Griatch 2011) - A talking NPC object that offers a
   menu-driven conversation tree.
+* Turnbattle (BattleJenkins 2017) - A turn-based combat engine meant
+  as a start to build from. Has attack/disengage and turn timeouts.
 * Wilderness (titeuf87 2017) - Make infinitely large wilderness areas
   with dynamically created locations.
 
