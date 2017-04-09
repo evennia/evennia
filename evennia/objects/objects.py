@@ -943,21 +943,20 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 self.save(update_fields=updates)
 
             if cdict.get("permissions"):
-                self.permissions.batch_add(cdict["permissions"])
+                self.permissions.batch_add(*cdict["permissions"])
             if cdict.get("locks"):
                 self.locks.add(cdict["locks"])
             if cdict.get("aliases"):
-                self.aliases.batch_add(cdict["aliases"])
+                self.aliases.batch_add(*cdict["aliases"])
             if cdict.get("location"):
                 cdict["location"].at_object_receive(self, None)
                 self.at_after_move(None)
             if cdict.get("tags"):
                 # this should be a list of tags
-                self.tags.batch_add(cdict["tags"])
+                self.tags.batch_add(*cdict["tags"])
             if cdict.get("attributes"):
                 # this should be a dict of attrname:value
-                keys, values = list(cdict["attributes"]), listvalues(cdict["attributes"])
-                self.attributes.batch_add(keys, values)
+                self.attributes.batch_add(*cdict["attributes"])
             if cdict.get("nattributes"):
                 # this should be a dict of nattrname:value
                 for key, value in cdict["nattributes"].items():

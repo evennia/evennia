@@ -624,7 +624,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                 permissions = cdict["permissions"]
             del self._createdict
 
-        self.permissions.batch_add(permissions)
+        self.permissions.batch_add(*permissions)
 
     def at_access(self, result, accessing_obj, access_type, **kwargs):
         """

@@ -10,6 +10,7 @@ which is a non-db version of Attributes.
 """
 from builtins import object
 import re
+import fnmatch
 import weakref
 
 from django.db import models
@@ -20,7 +21,7 @@ from evennia.locks.lockhandler import LockHandler
 from evennia.utils.idmapper.models import SharedMemoryModel
 from evennia.utils.dbserialize import to_pickle, from_pickle
 from evennia.utils.picklefield import PickledObjectField
-from evennia.utils.utils import lazy_property, to_str, make_iter
+from evennia.utils.utils import lazy_property, to_str, make_iter, is_iter
 
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 
@@ -221,7 +222,11 @@ class AttributeHandler(object):
         query = {"%s__id" % self._model: self._objid,
                  "attribute__db_model": self._model,
                  "attribute__db_attrtype": self._attrtype}
-        attrs = [conn.attribute for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
+        attrs = [
+            conn.attribute for conn in getattr(
+                self.obj,
+                self._m2m_fieldname).through.objects.filter(
+                **query)]
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
                                        attr.db_category.lower() if attr.db_category else None),
                             attr) for attr in attrs)
@@ -421,6 +426,7 @@ class AttributeHandler(object):
 
         class RetDefault(object):
             """Holds default values"""
+
             def __init__(self):
                 self.key = None
                 self.value = default
@@ -441,7 +447,8 @@ class AttributeHandler(object):
 
         if accessing_obj:
             # check 'attrread' locks
-            ret = [attr for attr in ret if attr.access(accessing_obj, self._attrread, default=default_access)]
+            ret = [attr for attr in ret if attr.access(accessing_obj,
+                                                       self._attrread, default=default_access)]
         if strattr:
             ret = ret if return_obj else [attr.strvalue for attr in ret if attr]
         else:
@@ -473,7 +480,8 @@ class AttributeHandler(object):
                 `attrcreate` is defined on the Attribute in question.
 
         """
-        if accessing_obj and not self.obj.access(accessing_obj, self._attrcreate, default=default_access):
+        if accessing_obj and not self.obj.access(accessing_obj, self._attrcreate,
+                                                 default=default_access):
             # check create access
             return
 
@@ -547,14 +555,17 @@ class AttributeHandler(object):
             ntup = len(tup)
             keystr = str(tup[0]).strip().lower()
             new_value = tup[1]
-            category = str(tup[2]).strip().lower() if tup > 2 else None
-            lockstring = tup[3] if tup > 3 else ""
+            category = str(tup[2]).strip().lower() if ntup > 2 else None
+            lockstring = tup[3] if ntup > 3 else ""
 
             attr_objs = self._getcache(keystr, category)
 
             if attr_objs:
                 attr_obj = attr_objs[0]
                 # update an existing attribute object
+                attr_obj.db_category = category
+                attr_obj.db_lock_storage = lockstring
+                attr_obj.save(update_fields=["db_category", "db_lock_storage"])
                 if strattr:
                     # store as a simple string (will not notify OOB handlers)
                     attr_obj.db_strvalue = new_value
@@ -569,7 +580,8 @@ class AttributeHandler(object):
                           "db_model": self._model,
                           "db_attrtype": self._attrtype,
                           "db_value": None if strattr else to_pickle(new_value),
-                          "db_strvalue": value if strattr else None}
+                          "db_strvalue": new_value if strattr else None,
+                          "db_lock_storage": lockstring}
                 new_attr = Attribute(**kwargs)
                 new_attr.save()
                 new_attrobjs.append(new_attr)
@@ -605,8 +617,11 @@ class AttributeHandler(object):
         for keystr in make_iter(key):
             attr_objs = self._getcache(keystr, category)
             for attr_obj in attr_objs:
-                if not (accessing_obj and not attr_obj.access(accessing_obj,
-                        self._attredit, default=default_access)):
+                if not (
+                    accessing_obj and not attr_obj.access(
+                        accessing_obj,
+                        self._attredit,
+                        default=default_access)):
                     try:
                         attr_obj.delete()
                     except AssertionError:
@@ -698,7 +713,6 @@ Custom arg markers
    $N      argument position (1-99)
 
 """
-import fnmatch
 _RE_NICK_ARG = re.compile(r"\\(\$)([1-9][0-9]?)")
 _RE_NICK_TEMPLATE_ARG = re.compile(r"(\$)([1-9][0-9]?)")
 _RE_NICK_SPACE = re.compile(r"\\ ")
@@ -816,7 +830,8 @@ class NickHandler(AttributeHandler):
         else:
             retval = super(NickHandler, self).get(key=key, category=category, **kwargs)
             if retval:
-                return retval[3] if isinstance(retval, tuple) else [tup[3] for tup in make_iter(retval)]
+                return retval[3] if isinstance(retval, tuple) else \
+                    [tup[3] for tup in make_iter(retval)]
             return None
 
     def add(self, key, replacement, category="inputline", **kwargs):
@@ -836,7 +851,8 @@ class NickHandler(AttributeHandler):
             nick_regex, nick_template = initialize_nick_templates(key + " $1", replacement + " $1")
         else:
             nick_regex, nick_template = initialize_nick_templates(key, replacement)
-        super(NickHandler, self).add(key, (nick_regex, nick_template, key, replacement), category=category, **kwargs)
+        super(NickHandler, self).add(key, (nick_regex, nick_template, key, replacement),
+                                     category=category, **kwargs)
 
     def remove(self, key, category="inputline", **kwargs):
         """
@@ -873,13 +889,12 @@ class NickHandler(AttributeHandler):
         """
         nicks = {}
         for category in make_iter(categories):
-            nicks.update({nick.key: nick
-                          for nick in make_iter(self.get(category=category, return_obj=True)) if nick and nick.key})
+            nicks.update({nick.key: nick for nick in make_iter(
+                self.get(category=category, return_obj=True)) if nick and nick.key})
         if include_player and self.obj.has_player:
             for category in make_iter(categories):
-                nicks.update({nick.key: nick
-                              for nick in make_iter(self.obj.player.nicks.get(category=category, return_obj=True))
-                              if nick and nick.key})
+                nicks.update({nick.key: nick for nick in make_iter(self.obj.player.nicks.get(
+                    category=category, return_obj=True)) if nick and nick.key})
         for key, nick in nicks.iteritems():
             nick_regex, template, _, _ = nick.value
             regex = self._regex_cache.get(nick_regex)
@@ -900,6 +915,7 @@ class NAttributeHandler(object):
     by the `.ndb` handler in the same way as `.db` does
     for the `AttributeHandler`.
     """
+
     def __init__(self, obj):
         """
         Initialized on the object

@@ -272,15 +272,15 @@ def spawn(*prototypes, **kwargs):
         create_kwargs["db_typeclass_path"] = typval() if callable(typval) else typval
 
         # extract calls to handlers
-        permval = prot.pop("permissions", "")
+        permval = prot.pop("permissions", [])
         permission_string = permval() if callable(permval) else permval
         lockval = prot.pop("locks", "")
         lock_string = lockval() if callable(lockval) else lockval
         aliasval = prot.pop("aliases", "")
         alias_string = aliasval() if callable(aliasval) else aliasval
-        tagval = prot.pop("tags", "")
+        tagval = prot.pop("tags", [])
         tags = tagval() if callable(tagval) else tagval
-        attrval = prot.pop("args", "")
+        attrval = prot.pop("args", [])
         attributes = attrval() if callable(tagval) else attrval
 
         exval = prot.pop("exec", "")
@@ -291,7 +291,7 @@ def spawn(*prototypes, **kwargs):
                            for key, value in prot.items() if key.startswith("ndb_"))
 
         # the rest are attributes
-        simple_attributes = [(key, value) if callable(value) else value
+        simple_attributes = [(key, value()) if callable(value) else (key, value)
                              for key, value in prot.items() if not key.startswith("ndb_")]
         attributes = attributes + simple_attributes
         attributes = [tup for tup in attributes if not tup[0] in _CREATE_OBJECT_KWARGS]
