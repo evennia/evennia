@@ -21,7 +21,8 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
-                                 make_iter, to_unicode, calledby, is_iter)
+                                 make_iter, to_unicode, is_iter)
+from django.utils.translation import ugettext as _
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
@@ -31,8 +32,6 @@ _SESSIONS = None
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 # the sessid_max is based on the length of the db_sessid csv field (excluding commas)
 _SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
-
-from django.utils.translation import ugettext as _
 
 
 class ObjectSessionHandler(object):
@@ -816,8 +815,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             """
             key = self.key
             num = 1
-            for _ in (obj for obj in self.location.contents
-                      if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()):
+            for inum in (obj for obj in self.location.contents
+                         if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()):
                 num += 1
             return "%s%03i" % (key, num)
         new_key = new_key or find_clone_key()
@@ -993,7 +992,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             "get:all()",                # pick up object
             "call:true()",              # allow to call commands on this object
             "tell:perm(Admin)",        # allow emits to this object
-            "puppet:pperm(Developer)"])) # lock down puppeting only to staff by default
+            "puppet:pperm(Developer)"]))  # lock down puppeting only to staff by default
 
     def basetype_posthook_setup(self):
         """

@@ -90,10 +90,6 @@ many traits with a normal *goblin*.
 from __future__ import print_function
 
 import copy
-# TODO
-# sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-# os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
-
 from django.conf import settings
 from random import randint
 import evennia
@@ -102,7 +98,9 @@ from evennia.utils.utils import make_iter, all_from_module, dbid_to_obj
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 
-_handle_dbref = lambda inp: dbid_to_obj(inp, ObjectDB)
+
+def _handle_dbref(inp):
+    dbid_to_obj(inp, ObjectDB)
 
 
 def _validate_prototype(key, prototype, protparents, visited):
@@ -150,12 +148,34 @@ def _batch_create_object(*objparams):
     so make sure the spawned Typeclass works before using this!
 
     Args:
-        objsparams (any): Each argument should be a tuple of arguments
+        objsparams (tuple): Parameters for the respective creation/add
+            handlers in the following order:
+                - `create_kwargs` (dict): For use as new_obj = `ObjectDB(**create_kwargs)`.
+                - `permissions` (str): Permission string used with `new_obj.batch_add(permission)`.
+                - `lockstring` (str): Lockstring used with `new_obj.locks.add(lockstring)`.
+                - `aliases` (list): A list of alias strings for
+                    adding with `new_object.aliases.batch_add(*aliases)`.
+                - `nattributes` (list): list of tuples `(key, value)` to be loop-added to
+                    add with `new_obj.nattributes.add(*tuple)`.
+                - `attributes` (list): list of tuples `(key, value[,category[,lockstring]])` for
+                    adding with `new_obj.attributes.batch_add(*attributes)`.
+                - `tags` (list): list of tuples `(key, category)` for adding
+                    with `new_obj.tags.batch_add(*tags)`.
+                - `execs` (list): Code strings to execute together with the creation
+                    of each object. They will be executed with `evennia` and `obj`
+                        (the newly created object) available in the namespace. Execution
+                        will happend after all other properties have been assigned and
+                        is intended for calling custom handlers etc.
             for the respective creation/add handlers in the following
-            order: (create, permissions, locks, aliases, nattributes,
-            attributes)
+            order: (create_kwargs, permissions, locks, aliases, nattributes,
+            attributes, tags, execs)
+
     Returns:
         objects (list): A list of created objects
+
+    Notes:
+        The `exec` list will execute arbitrary python code so don't allow this to be availble to
+        unprivileged users!
 
     """
 
@@ -272,7 +292,7 @@ def spawn(*prototypes, **kwargs):
 
         # the rest are attributes
         simple_attributes = [(key, value) if callable(value) else value
-                                for key, value in prot.items() if not key.startswith("ndb_")]
+                             for key, value in prot.items() if not key.startswith("ndb_")]
         attributes = attributes + simple_attributes
         attributes = [tup for tup in attributes if not tup[0] in _CREATE_OBJECT_KWARGS]
 
