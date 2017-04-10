@@ -4,14 +4,42 @@ which is appended to a character's description when worn.
 
 Evennia contribution - Tim Ashley Jenkins 2017
 
+Clothing items, when worn, are added to the character's description
+in a list. For example, if wearing the following clothing items:
+
+    a thin and delicate necklace
+    a pair of regular ol' shoes 
+    one nice hat
+    a very pretty dress
+
+A character's description may look like this:
+
+    Superuser(#1)
+    This is User #1.
+    
+    Suuperuser is wearing one nice hat, a thin and delicate necklace, 
+    a very pretty dress and a pair of regular ol' shoes.
+    
+Characters can also specify the style of wear for their clothing - I.E.
+to wear a scarf 'tied into a tight knot around the neck' or 'draped
+loosely across the shoulders' - to add an easy avenue of customization.
+For example, after entering:
+
+    wear scarf draped loosely across the shoulders
+    
+The garment appears like so in the description:
+
+    Superuser(#1)
+    This is User #1.
+
+    Superuser is wearing a fanciful-looking scarf draped loosely
+    across the shoulders.
+
 Items of clothing can be used to cover other items, and many options
 are provided to define your own clothing types and their limits and
 behaviors. For example, to have undergarments automatically covered
 by outerwear, or to put a limit on the number of each type of item
-that can be worn. Characters can also specify the style of wear for
-their clothing - I.E. to wear a scarf 'tied into a tight knot around
-the neck' or 'draped loosely across the shoulders' - to add an easy
-avenue of customization. The system as-is is fairly freeform - you
+that can be worn. The system as-is is fairly freeform - you
 can cover any garment with almost any other, for example - but it
 can easily be made more restrictive, and can even be tied into a
 system for armor or other equipment.
@@ -134,7 +162,7 @@ class Clothing(DefaultObject):
         if not quiet:
             wearer.location.msg_contents(remove_message)
             
-    def at_get(self):
+    def at_get(self, getter):
         """
         Makes absolutely sure clothes aren't already set as 'worn'
         when they're picked up, in case they've somehow had their
@@ -176,7 +204,7 @@ class ClothedCharacter(DefaultCharacter):
             if garment.db.worn == True:
                 worn_string_list.append(garment.name)
             # Otherwise, append the name and the string value of 'worn'
-            elif thing.db.worn:
+            elif garment.db.worn:
                 worn_string_list.append("%s %s" % (garment.name, garment.db.worn))
         if desc:
             string += "%s" % desc
@@ -242,7 +270,7 @@ def get_worn_clothes(character, exclude_covered=False):
         # If uncovered or not excluding covered items
         if not thing.db.covered_by or exclude_covered == False:
             # If 'worn' is True, add to the list
-            if thing.db.worn == True:
+            if thing.db.worn:
                 clothes_list.append(thing)
     # Might as well put them in order here too.
     ordered_clothes_list = order_clothes_list(clothes_list)
