@@ -51,7 +51,7 @@ inherit from ClothedCharacter in your game's characters.py file:
 
     class Character(ClothedCharacter):
         
-And do the same with the ClothedCharacterCmdSet in your game'same
+And do the same with the ClothedCharacterCmdSet in your game's
 default_cmdsets.py:
 
     from evennia.contrib.clothing import ClothedCharacterCmdSet
