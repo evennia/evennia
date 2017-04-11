@@ -17,7 +17,7 @@ A character's description may look like this:
     Superuser(#1)
     This is User #1.
     
-    Suuperuser is wearing one nice hat, a thin and delicate necklace, 
+    Superuser is wearing one nice hat, a thin and delicate necklace, 
     a very pretty dress and a pair of regular ol' shoes.
     
 Characters can also specify the style of wear for their clothing - I.E.
@@ -51,7 +51,7 @@ inherit from ClothedCharacter in your game's characters.py file:
 
     class Character(ClothedCharacter):
         
-And do the same with the ClothedCharacterCmdSet in your game'same
+And do the same with the ClothedCharacterCmdSet in your game's
 default_cmdsets.py:
 
     from evennia.contrib.clothing import ClothedCharacterCmdSet
