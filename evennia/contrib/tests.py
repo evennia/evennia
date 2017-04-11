@@ -452,7 +452,66 @@ class TestChargen(CommandTest):
         self.assertTrue(self.player.db._character_dbrefs)
         self.call(chargen.CmdOOCLook(), "", "You, TestPlayer, are an OOC ghost without form.",caller=self.player)
         self.call(chargen.CmdOOCLook(), "testchar", "testchar(", caller=self.player)
+        
+# Testing clothing contrib
+from evennia.contrib import clothing
+from evennia.objects.objects import DefaultRoom
 
+class TestClothingCmd(CommandTest):
+    
+    def test_clothingcommands(self):
+        self.player.contents = []
+        self.call(clothing.CmdWear(), "", "Usage: wear <obj> [wear style]", caller=self.player)
+        self.call(clothing.CmdRemove(), "", "Could not find ''.", caller=self.player)
+        self.call(clothing.CmdCover(), "", "Usage: cover <worn clothing> [with] <clothing object>", caller=self.player)
+        self.call(clothing.CmdUncover(), "", "Usage: uncover <worn clothing object>", caller=self.player)
+        self.call(clothing.CmdDrop(), "", "Drop what?", caller=self.player)
+        self.call(clothing.CmdGive(), "", "Usage: give <inventory object> = <target>", caller=self.player)
+        self.call(clothing.CmdInventory(), "", "You are not carrying or wearing anything.", caller=self.player)
+
+class TestClothingFunc(EvenniaTest):
+    
+    def test_clothingfunctions(self):
+        wearer = create_object(clothing.ClothedCharacter, key="Wearer")
+        room = create_object(DefaultRoom, key="room")
+        wearer.location = room
+        # Make a test hat
+        test_hat = create_object(clothing.Clothing, key="test hat")
+        test_hat.db.clothing_type = 'hat'
+        test_hat.location = wearer
+        # Make a test shirt
+        test_shirt = create_object(clothing.Clothing, key="test shirt")
+        test_shirt.db.clothing_type = 'top'
+        test_shirt.location = wearer
+        # Make a test pants
+        test_pants = create_object(clothing.Clothing, key="test pants")
+        test_pants.db.clothing_type = 'bottom'
+        test_pants.location = wearer
+
+        test_hat.wear(wearer, 'on the head')
+        self.assertEqual(test_hat.db.worn, 'on the head')
+        
+        test_hat.remove(wearer)
+        self.assertEqual(test_hat.db.worn, False)
+        
+        test_hat.worn = True
+        test_hat.at_get(wearer)
+        self.assertEqual(test_hat.db.worn, False)
+        
+        clothes_list = [test_shirt, test_hat, test_pants]
+        self.assertEqual(clothing.order_clothes_list(clothes_list), [test_hat, test_shirt, test_pants])
+        
+        test_hat.wear(wearer, True)
+        test_pants.wear(wearer, True)
+        self.assertEqual(clothing.get_worn_clothes(wearer), [test_hat, test_pants])
+        
+        self.assertEqual(clothing.clothing_type_count(clothes_list), {'hat':1, 'top':1, 'bottom':1})
+        
+        self.assertEqual(clothing.single_type_count(clothes_list, 'hat'), 1)
+        
+
+        
+    
 # Testing custom_gametime
 from evennia.contrib import custom_gametime
 
