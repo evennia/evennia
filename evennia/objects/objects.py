@@ -618,7 +618,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
     def move_to(self, destination, quiet=False,
                 emit_to_obj=None, use_destination=True, to_none=False, move_hooks=True,
-                **kwargs):
+                quiet_arrival=False, quiet_departure=False, **kwargs):
         """
         Moves this object to a new location.
 
@@ -628,6 +628,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 destination property is used as destination.
             quiet (bool): If true, turn off the calling of the emit hooks
                 (announce_move_to/from etc)
+            quiet_arrival (bool): Silences messages for arrival. Overwritten by quiet.
+            quiet_departure (bool): Silences messages for departure. Overwritten by quiet.
             emit_to_obj (Object): object to receive error messages
             use_destination (bool): Default is for objects to use the "destination"
                  property of destinations as the target to move to. Turning off this
@@ -672,6 +674,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if not emit_to_obj:
             emit_to_obj = self
 
+        if quiet:
+            quiet_arrival = True
+            quiet_departure = True
         if not destination:
             if to_none:
                 # immediately move to None. There can be no hooks called since
@@ -704,7 +709,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 logerr(errtxt % "at_object_leave()", err)
                 return False
 
-        if not quiet:
+        if not quiet_departure:
             # tell the old room we are leaving
             try:
                 self.announce_move_from(destination, **kwargs)
@@ -719,7 +724,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             logerr(errtxt % "location change", err)
             return False
 
-        if not quiet:
+        if not quiet_arrival:
             # Tell the new room we are there.
             try:
                 self.announce_move_to(source_location, **kwargs)
