@@ -1,0 +1,269 @@
+key,name,alias,typeclass,desc,attributes,tutorial_info
+room_tut_01,Intro,tut#01,tutorial_world.rooms.IntroRoom," {gWelcome to the Evennia tutorial!{n
+
+
+ The following tutorial consists of a small single-player quest
+ area. The various rooms are designed to show off some of the power
+ and possibilities of the Evennia mud creation system. At any time
+ during this tutorial you can use the {wtutorial{n (or {wtut{n)
+ command to get some background info about the room or certain objects
+ to see what is going on ""behind the scenes"".
+
+
+ To get into the mood of this miniature quest, imagine you are an
+ adventurer out to find fame and fortune. You have heard rumours of an
+ old castle ruin by the coast. In its depth a warrior princess was
+ buried together with her powerful magical weapon - a valuable prize,
+ if it's true.  Of course this is a chance to adventure that you
+ cannot turn down!
+
+ You reach the coast in the midst of a raging thunderstorm. With wind
+ and rain screaming in your face you stand where the moor meet the sea
+ along a high, rocky coast ...
+
+
+ {g(write 'start' or 'begin' to start the tutorial. Try 'tutorial'
+ to get behind-the-scenes help anywhere.){n",," You just tried the tutorial command. Use it in various rooms to see
+what's technically going on and what you could try in each room. The
+intro room assigns some properties to your character, like a simple
+""health"" property used when fighting. Other rooms and puzzles might do
+the same. Leaving the tutorial world through any of the normal exit
+rooms will clean away all such temporary properties.
+
+If you play this scenario as superuser, you will see a big red
+warning.  This warning is generated in the intro-rooms Typeclass."
+room_tut_02,Leaving Tutorial,,tutorial_world.rooms.OutroRoom," You are quitting the Evennia tutorial prematurely! Please come back
+ later.",," This outro room cleans up properties on the character that was set by
+ the tutorial."
+room_tut_03,Cliff by the coast,cliff;tut#02,tutorial_world.rooms.WeatherRoom," You stand on the high coast line overlooking a stormy {wsea{n far
+ below. Around you the ground is covered in low gray-green grass,
+ pushed flat by wind and rain. Inland, the vast dark moors begin, only
+ here and there covered in patches of low trees and brushes.
+
+ To the east, you glimpse the ragged outline of a castle {wruin{n. It sits
+ perched on a sheer cliff out into the water, isolated from the
+ shore. The only way to reach it seems by way of an old hanging bridge,
+ anchored not far east from here.",," Weather room
+
+ This room inherits from a parent called WeatherRoom. It uses the
+ tickerhandler to regularly 'tick and randomly display various
+ weather-related messages.
+
+ The room also has 'details' set on it (such as the ruin in the distance), those
+ are snippets of text stored on the room that the custom look command
+ used for all tutorial rooms can display."
+room_tut_04,Outside Evennia Inn,outside inn;tut#03,tutorial_world.rooms.WeatherRoom," You stand outside a one-story sturdy wooden building. Light flickers
+ behind closed storm shutters. Over the door a sign creaks in the wind
+ - the writing says {cEvennia Inn{n and the curly letters are
+ surrounded by a painted image of some sort of snake.  From inside you
+ hear the sound of laughter, singing and loud conversation.",
+room_tut_05,The Evennia Inn,evennia inn;inn;tut#04,tutorial_world.rooms.TutorialRoom,"The Evennia Inn consists of one large room filled with
+ tables. The bardisk extends along the east wall, where multiple
+ barrels and bottles line the shelves. The barkeep seems busy handing
+ out ale and chatting with the patrons, which are a rowdy and cheerful
+ lot, keeping the sound level only just below thunderous. This is a
+ rare spot of warmth and mirth on this dread moor.
+
+
+ Soon you have a beer in hand and are chatting with the locals. Your
+ eye falls on a {wbarrel{n in a corner with a few old rusty weapons
+ sticking out. There is a sign next to it: {wFree to take{n. A patron
+ tells you cheerfully that it's the leftovers from those foolish
+ adventurers that challenged the old ruin before you ...
+
+ (to get a weapon from the barrel, use {wget weapon{n)
+",," Nothing special about this room, only a bonus place to potentially go
+ for chatting with other online players. Oh, and don't forget to grab
+ a blade if you don't already have one."
+room_tut_06,The old bridge,bridge;tut#05,tutorial_world.rooms.BridgeRoom,,"{'west_exit':'tut#02','east_exit':'tut#09','fall_exit':'tut#06'}"," All of the bridge is actually a single room that uses a custom cmdset
+ to overrule the movement commands. This makes it take several steps to
+ cross it despite it being only one room in the database.
+
+
+ The bridge has no normal exits, instead it has a counter that tracks
+ how far out on the bridge the Character is. For the bridge to work it
+ needs the names of links to the adjoining rooms, and when the counter
+ indicates the Character is leaving the bridge, they are teleported
+ there.
+
+
+ The room also inherits from the weather room to cause the bridge to
+ sway at regular intervals. It also implements a timer and a random
+ occurrence at every step across the bridge. It might be worth trying
+ this passage a few times to see what may happen.  Hint: you can fall
+ off!"
+room_tut_07,Protruding ledge,cliffledge;ledge;tut#06,," You are on a narrow ledge protruding from the side of the cliff,
+ about halfway down.  The air is saturated with salty sea water,
+ sprays hitting your face from the crashing waves {wbelow{n.
+
+ The ledge is covered with a few black-grey brushes. Not far from you
+ the cliff-face is broken down to reveal a narrow natural opening into
+ the cliff. High above you the {wbridge{n sways and creaks in the wind.",," This room is stored as an attribute on the 'Bridge' room and used as
+ a destination should the player fall off the bridge. It is the only
+ way to get to this room. In our example the bridge is relatively
+ simple and always drops us to the same ledge; a more advanced
+ implementation might implement different locations to end up in
+ depending on what happens on the bridge."
+room_tut_08,Underground passages,passages;underground;tut#07,tutorial_world.rooms.TutorialRoom," The underground cavern system you have entered seems to stretch on
+ forever, with criss-crossing paths and natural caverns probably
+ carved by water. It is not completely dark, here and there faint
+ daylight sifts down from above - the cliff is porous leaving channels
+ of air and light up to the surface.
+
+
+ (some time later)
+
+
+ You eventually come upon a cavern with a black pool of stale
+ water. In it sits a murky bucket, the first remnant of any sort of
+ intelligent life down here. The bucket has disconnected from a chain
+ hanging down from a circular opening high above. Gray daylight
+ simmers down the hole together with rain that ripples the black
+ surface of the pool.",," This room acts as a hub for getting the player back to the
+ start again, regardless of how you got here."
+room_tut_09,Dark cell,dark;cell;tut#08,tutorial_world.rooms.DarkRoom," {YThe {yflickering light{Y of your makeshift light reveals a small square
+ cell. It does not seem like you are still in the castle, for the
+ stone of the walls are chiseled crudely and drip with water and mold.
+
+ One wall holds a solid iron-cast door. While rusted and covered with
+ lichen it seems very sturdy. In a corner lies what might have once
+ been a bed or a bench but is now nothing more than a pile of splinters,
+ one of which you are using for light. One of the walls is covered with a
+ thick cover of black roots having broken through the cracks from the
+ outside.{n",," Dark room
+
+ The dark room implements a custom ""dark"" state. This is a very
+ restricted state that completely redefines the look command and only
+ allows limited interactions.
+
+ Looking around repeatedly will eventually produce hints as to how to
+ get out of the dark room. 
+
+This room presents a puzzle that has to be solved in order to get out
+ of the room. The root-covered wall is in fact an advanced Exit-type
+ object that is locked until the puzzle is solved."
+room_tut_10,Ruined gatehouse,gatehouse;tut#09,tutorial_world.rooms.TutorialRoom," The old gatehouse is near collapse. Part of its northern wall has
+ already fallen down, together with parts of the fortifications in
+ that direction.  Heavy stone pillars hold up sections of ceiling, but
+ elsewhere the flagstones are exposed to open sky. Part of a heavy
+ portcullis, formerly blocking off the inner castle from attack, is
+ sprawled over the ground together with most of its frame.
+
+ {wEast{n the gatehouse leads out to a small open area surrounded by
+ the remains of the castle.  There is also a standing archway
+ offering passage to a path along the old {wsouth{nern inner wall.",," This is part of a four-room area patrolled by a mob: the guardian of
+ the castle. The mob initiates combat if the player stays in the same
+ room for long enough.
+
+ Combat itself is a very simple affair which takes advantage of the
+ strength of the weapon you use, but dictates a fixed skill for you and
+ your enemy. The enemy is quite powerful, so don't stick around too
+ long …"
+room_tut_11,Along inner wall,inner wall;along;tut#10,tutorial_world.rooms.WeatherRoom," What appears at first sight to be a series of connected rooms
+ actually turns out to be collapsed buildings so mashed together by
+ the ravages of time that they all seem to lean on each other and
+ against the outer wall. The whole scene is directly open to the sky.
+
+ The buildings make a half-circle along the main wall, here and there
+ broken by falling stone and rubble. At one end (the {wnorth{nern) of
+ this half-circle is the entrance to the castle, the ruined
+ gatehoue. {wEast{nwards from here is some sort of open courtyard.",," This is part of a four-room area patrolled by a mob; the guardian of
+ the castle. The mob initiates combat if the player stays in the same
+ room for long enough.
+
+ Combat itself is a very simple affair which takes advantage of the
+ strength of the weapon you use, but dictates a fixed skill for you and
+ your enemy."
+room_tut_12,Corner of castle ruins,corner;tut#11,tutorial_world.rooms.TutorialRoom," The ruins opens up to the sky in a small open area, lined by
+ columns. The open area is dominated by a huge stone {wobelisk{n in its
+ center, an ancient ornament miraculously still standing.
+
+ Previously one could probably continue past the obelisk and eastward
+ into the castle keep itself, but that way is now completely blocked
+ by fallen rubble. To the {wwest{n is the gatehouse and entrance to
+ the castle, whereas {wsouth{nwards the collumns make way for a wide
+ open courtyard.",,"This is part of a four-room area patrolled by a mob; the guardian of
+ the castle. The mob initiates combat if the player stays in the same
+ room for long enough.
+
+ Combat itself is a very simple affair which takes advantage of the
+ strength of the weapon you use, but dictates a fixed skill for you and
+ your enemy."
+room_tut_13,Overgrown courtyard,courtyard;tut#12,tutorial_world.rooms.WeatherRoom," The inner courtyard of the old castle is littered with debris and
+ overgrown with low grass and patches of thorny vines. There is a
+ collapsed structure close to the gatehouse that looks like a stable.
+
+ {wNorth{nwards is a smaller area cornered in the debris, adorned with
+ a large obelisk-like thing. To the {wwest{n the castle walls loom
+ over a mess of collapsed buildings. On the opposite, {weast{nern side
+ of the yard is a large building with a curved roof that seem to have
+ withstood the test of time better than many of those around it, it
+ looks like some sort of temple.",," This is part of a four-room area patrolled by a mob; the guardian of
+ the castle. The mob initiates combat if the player stays in the same
+ room for long enough.
+
+ Combat itself is a very simple affair which takes advantage of the
+ strength of the weapon you use, but dictates a fixed skill for you and
+ your enemy."
+room_tut_14,The ruined temple,temple;in;tut#13,tutorial_world.rooms.TutorialRoom," This building seems to have survived the ravages of time better than
+ most of the others. Its arched roof and wide spaces suggests that
+ this is a temple or church of some kind.
+
+
+ The wide hall of the temple stretches before you. At the far edge is
+ a stone altar with no clear markings. Despite its relatively good
+ condition, the temple is empty of all furniture or valuables, like it
+ was looted or its treasures moved ages ago.
+
+ Stairs lead down to the temple's dungeon on either side of the
+ altar. A gaping door opening shows the a wide courtyard to the west.",
+room_tut_15,Antechamber,antechamber;tut#14,tutorial_world.rooms.TutorialRoom," This chamber lies almost directly under the main altar of the
+ temple. The passage of aeons is felt here and you also sense you are
+ close to great power.
+
+ The sides of the chamber are lined with stone archways, these are
+ entrances to the {wtombs{n of what must have been influential
+ families or individual heroes of the realm. Each is adorned by a
+ stone statue or symbol of fine make. They do not seem to be ordered
+ in any particular order or rank.",," This is the second part of a puzzle involving the Obelisk in the
+ castle's north-east corner. The correct exit to use will vary
+ depending on which scene was shown on the Obelisk surface.
+
+ Each tomb is a teleporter room and is keyed to a number corresponding
+ to the scene last shown on the obelisk (now stored on player). If the
+ number doesn't match, the tomb is a trap that teleports to a second
+ Teleporter room describing how you fall in a trap - that room then
+ directly relay you on to the Dark Cell. If correct, the tomb
+ teleports to the Ancient Tomb treasure chamber."
+room_tut_16,Blue bird tomb,,tutorial_world.rooms.TeleportRoom,,"{""puzzle_value"":0,""failure_teleport_to"":""tut#08"",""success_teleport_to"":""tut#15"",""failure_teleport_msg"":"" The tomb is dark. You fumble your way through it. You think you can\n make out a coffin in front of you in the gloom.\n\n\n {rSuddenly you hear a distinct 'click' and the ground abruptly\n disappears under your feet! You fall ... things go dark. {n\n\n\n ...\n\n\n ... You come to your senses. You lie down. On stone floor. You\n shakily come to your feet. Somehow you suspect that you are not under\n the tomb anymore, like you were magically snatched away.\n\n The air is damp. Where are you?"",""success_teleport_msg"":"" The tomb is dark. You fumble your way through it. You think you can\n make out a coffin in front of you in the gloom.\n\n The coffin comes into view. On and around it are chiseled scenes of a\n stern woman in armor. They depict great heroic deeds. This is clearly\n the tomb of some sort of ancient heroine - it must be the goal you\n have been looking for!""}"
+room_tut_17,Tomb of woman on horse,,tutorial_world.rooms.TeleportRoom,,"{""puzzle_value"":1,""failure_teleport_to"":""tut#08"",""success_teleport_to"":""tut#15"",""failure_teleport_msg"":"" The tomb is dark. You fumble your way through it. You think you can\n make out a coffin in front of you in the gloom.\n\n\n {rSuddenly you hear a distinct 'click' and the ground abruptly\n disappears under your feet! You fall ... things go dark. {n\n\n\n ...\n\n\n ... You come to your senses. You lie down. On stone floor. You\n shakily come to your feet. Somehow you suspect that you are not under\n the tomb anymore, like you were magically snatched away.\n\n The air is damp. Where are you?"",""success_teleport_msg"":"" The tomb is dark. You fumble your way through it. You think you can\n make out a coffin in front of you in the gloom.\n\n The coffin comes into view. On and around it are chiseled scenes of a\n stern woman in armor. They depict great heroic deeds. This is clearly\n the tomb of some sort of ancient heroine - it must be the goal you\n have been looking for!""}"
+room_tut_18,Tomb of the crowned queen,,tutorial_world.rooms.TeleportRoom,,"{""puzzle_value"":2,""failure_teleport_to"":""tut#08"",""success_teleport_to"":""tut#15"",""failure_teleport_msg"":"" The tomb is dark. You fumble your way through it. You think you can\n make out a coffin in front of you in the gloom.\n\n\n {rSuddenly you hear a distinct 'click' and the ground abruptly\n disappears under your feet! You fall ... things go dark. {n\n\n\n ...\n\n\n ... You come to your senses. You lie down. On stone floor. You\n shakily come to your feet. Somehow you suspect that you are not under\n the tomb anymore, like you were magically snatched away.\n\n The air is damp. Where are you?"",""success_teleport_msg"":"" The tomb is dark. You fumble your way through it. You think you can\n make out a coffin in front of you in the gloom.\n\n The coffin comes into view. On and around it are chiseled scenes of a\n stern woman in armor. They depict great heroic deeds. This is clearly\n the tomb of some sort of ancient heroine - it must be the goal you\n have been looking for!""}"
+room_tut_19,Tomb of the shield,,tutorial_world.rooms.TeleportRoom,,"{""puzzle_value"":3,""failure_teleport_to"":""tut#08"",""success_teleport_to"":""tut#15"",""failure_teleport_msg"":"" The tomb is dark. You fumble your way through it. You think you can\n make out a coffin in front of you in the gloom.\n\n\n {rSuddenly you hear a distinct 'click' and the ground abruptly\n disappears under your feet! You fall ... things go dark. {n\n\n\n ...\n\n\n ... You come to your senses. You lie down. On stone floor. You\n shakily come to your feet. Somehow you suspect that you are not under\n the tomb anymore, like you were magically snatched away.\n\n The air is damp. Where are you?"",""success_teleport_msg"":"" The tomb is dark. You fumble your way through it. You think you can\n make out a coffin in front of you in the gloom.\n\n The coffin comes into view. On and around it are chiseled scenes of a\n stern woman in armor. They depict great heroic deeds. This is clearly\n the tomb of some sort of ancient heroine - it must be the goal you\n have been looking for!""}"
+room_tut_20,Tomb of the hero,,tutorial_world.rooms.TeleportRoom,,"{""puzzle_value"":4,""failure_teleport_to"":""tut#08"",""success_teleport_to"":""tut#15"",""failure_teleport_msg"":"" The tomb is dark. You fumble your way through it. You think you can\n make out a coffin in front of you in the gloom.\n\n\n {rSuddenly you hear a distinct 'click' and the ground abruptly\n disappears under your feet! You fall ... things go dark. {n\n\n\n ...\n\n\n ... You come to your senses. You lie down. On stone floor. You\n shakily come to your feet. Somehow you suspect that you are not under\n the tomb anymore, like you were magically snatched away.\n\n The air is damp. Where are you?"",""success_teleport_msg"":"" The tomb is dark. You fumble your way through it. You think you can\n make out a coffin in front of you in the gloom.\n\n The coffin comes into view. On and around it are chiseled scenes of a\n stern woman in armor. They depict great heroic deeds. This is clearly\n the tomb of some sort of ancient heroine - it must be the goal you\n have been looking for!""}"
+room_tut_21,Ancient tomb,tut#15,tutorial_world.rooms.TutorialRoom," Apart from the ornate sarcophagus, the tomb is bare from extra decorations.
+ This is the resting place of a warrior with little patience for
+ glamour and trinkets. You have reached the end of your quest.",," Congratulations, you have reached the end of this little tutorial
+ scenario. Just grab the mythical weapon (get weapon) and the exit
+ will open.
+
+ You can end the quest here or go back through the tutorial rooms to
+ explore further. You will find this weapon works better against the
+ castle's guardian than any of the others you have found …"
+room_tut_22,End of tutorial,end;tut#16,tutorial_world.rooms.OutroRoom," {gThanks for trying out this little Evennia tutorial!
+
+
+ The game play given here is of course just scraping the surface of
+ what can be done with Evennia. The tutorial focuses more on showing
+ various techniques than to supply any sort of novel storytelling or
+ gaming challenge.  The full README and source code for the tutorial
+ world can be found under {wcontrib/tutorial_world{g.
+
+
+ If you went through the tutorial quest once, it can be interesting to
+ do it again to explore the various possibilities and rooms you might
+ not have come across yet, maybe with the source/build code next to
+ you.  If you play as superuser (user #1) the mobile will ignore you
+ and teleport rooms etc will not affect you (this will also disable all
+ locks, so keep that in mind when checking functionality).{n","{'wracklist':['rack_barrel', 'rack_sarcophagus']}"," This room cleans up all temporary attributes and tags that were put
+ on the character during the tutorial. Hope you enjoyed the play
+ through!"
