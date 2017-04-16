@@ -4,10 +4,11 @@ abstract models in dbobjects.py (and which are thus shared by
 all Attributes and TypedObjects).
 
 """
+import shlex
 from functools import update_wrapper
 from django.db.models import Q
 from evennia.utils import idmapper
-from evennia.utils.utils import make_iter, variable_from_module
+from evennia.utils.utils import make_iter, variable_from_module, to_unicode
 
 __all__ = ("TypedObjectManager", )
 _GA = object.__getattribute__
@@ -356,6 +357,55 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         return make_iter(tag)[0]
 
     # object-manager methods
+    def smart_search(self, query):
+        """
+        Search by supplying a string with optional extra search criteria to aid the query.
+
+        Args:
+            query (str): A search criteria that accepts extra search criteria on the
+                following forms: [key|alias|#dbref...] [tag==<tagstr>[:category]...] [attr==<key>:<value>:category...]
+                                           "                !=              "               !=      "
+        Returns:
+            matches (queryset): A queryset result matching all queries exactly. If wanting to use spaces or
+            ==, != in tags or attributes, enclose them in quotes.
+
+        Note:
+            The flexibility of this method is limited by the input line format. Tag/attribute
+            matching only works for matching primitives.  For even more complex queries, such as
+            'in' operations or object field matching, use the full django query language.
+
+        """
+        RE_TAG=
+        # shlex splits by spaces unless escaped by quotes
+        querysplit = shlex.split(to_unicode(query, force=True))
+        plustags, plusattrs, negtags, negattrs = [], [], [], []
+        for ipart, part in enumerate(querysplit):
+            # tags are on the form tag or tag:category
+            if part.startswith('tag==') or part.startswith('tag!='):
+                tagstr, category = part, None
+                if ":" in part:
+                    tagstr, category = part.split(':', 1)
+                plustags.append((tagstr, category))
+            elif part.startswith('tag!='):
+                tagstr, category = part, None
+                if ":" in part:
+                    tagstr, category = part.split(':', 1)
+                negtags.append((tagstr, category))
+            elif part.startswith('attr=='):
+                #
+                tagstr, category = part, None
+                if ":" in part:
+                    tagstr, category = part.split(':', 1)
+                negtags.append((tagstr, category))
+
+
+
+        tags = [part.split(':', 1) if ':' in part else (part, None)
+                for part in spacesplit if part.startswith('tag==') or part.startswith('tag!=')]
+        attrs =
+
+
+
 
     def dbref(self, dbref, reqhash=True):
         """
