@@ -460,14 +460,45 @@ from evennia.objects.objects import DefaultRoom
 class TestClothingCmd(CommandTest):
     
     def test_clothingcommands(self):
-        self.player.contents = []
-        self.call(clothing.CmdWear(), "", "Usage: wear <obj> [wear style]", caller=self.player)
-        self.call(clothing.CmdRemove(), "", "Could not find ''.", caller=self.player)
-        self.call(clothing.CmdCover(), "", "Usage: cover <worn clothing> [with] <clothing object>", caller=self.player)
-        self.call(clothing.CmdUncover(), "", "Usage: uncover <worn clothing object>", caller=self.player)
-        self.call(clothing.CmdDrop(), "", "Drop what?", caller=self.player)
-        self.call(clothing.CmdGive(), "", "Usage: give <inventory object> = <target>", caller=self.player)
-        self.call(clothing.CmdInventory(), "", "You are not carrying or wearing anything.", caller=self.player)
+        wearer = create_object(clothing.ClothedCharacter, key="Wearer")
+        friend = create_object(clothing.ClothedCharacter, key="Friend")
+        room = create_object(DefaultRoom, key="room")
+        wearer.location = room
+        friend.location = room
+        # Make a test hat
+        test_hat = create_object(clothing.Clothing, key="test hat")
+        test_hat.db.clothing_type = 'hat'
+        test_hat.location = wearer
+        # Make a test scarf
+        test_scarf = create_object(clothing.Clothing, key="test scarf")
+        test_scarf.db.clothing_type = 'accessory'
+        test_scarf.location = wearer
+        # Test wear command
+        self.call(clothing.CmdWear(), "", "Usage: wear <obj> [wear style]", caller=wearer)
+        self.call(clothing.CmdWear(), "hat", "Wearer puts on test hat.", caller=wearer)
+        self.call(clothing.CmdWear(), "scarf stylishly", "Wearer wears test scarf stylishly.", caller=wearer)
+        # Test cover command.
+        self.call(clothing.CmdCover(), "", "Usage: cover <worn clothing> [with] <clothing object>", caller=wearer)
+        self.call(clothing.CmdCover(), "hat with scarf", "Wearer covers test hat with test scarf.", caller=wearer)
+        # Test remove command.
+        self.call(clothing.CmdRemove(), "", "Could not find ''.", caller=wearer)
+        self.call(clothing.CmdRemove(), "hat", "You have to take off test scarf first.", caller=wearer)
+        self.call(clothing.CmdRemove(), "scarf", "Wearer removes test scarf, revealing test hat.", caller=wearer)
+        # Test uncover command.
+        test_scarf.wear(wearer, True)
+        test_hat.db.covered_by = test_scarf
+        self.call(clothing.CmdUncover(), "", "Usage: uncover <worn clothing object>", caller=wearer)
+        self.call(clothing.CmdUncover(), "hat", "Wearer uncovers test hat.", caller=wearer)
+        # Test drop command.
+        test_hat.db.covered_by = test_scarf
+        self.call(clothing.CmdDrop(), "", "Drop what?", caller=wearer)
+        self.call(clothing.CmdDrop(), "hat", "You can't drop that because it's covered by test scarf.", caller=wearer)
+        self.call(clothing.CmdDrop(), "scarf", "You drop test scarf.", caller=wearer)
+        # Test give command.
+        self.call(clothing.CmdGive(), "", "Usage: give <inventory object> = <target>", caller=wearer)
+        self.call(clothing.CmdGive(), "hat = Friend", "Wearer removes test hat.|You give test hat to Friend.", caller=wearer)
+        # Test inventory command.
+        self.call(clothing.CmdInventory(), "", "You are not carrying or wearing anything.", caller=wearer)
 
 class TestClothingFunc(EvenniaTest):
     
