@@ -309,7 +309,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             prompt = text
             if not raw:
                 # processing
-                prompt = ansi.parse_ansi(_RE_N.sub("", prompt) + ("|n" if prompt[-1] != "|" else "||n"),
+                prompt = ansi.parse_ansi(_RE_N.sub("", prompt) + ("||n" if prompt.endswith("|") else "|n"),
                                          strip_ansi=nocolor, xterm256=xterm256)
                 if mxp:
                     prompt = mxp_parse(prompt)
