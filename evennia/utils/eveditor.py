@@ -275,7 +275,7 @@ class CmdEditorBase(Command):
 
         lstart, lend = cline, cline + 1
         linerange = False
-        if arglist and ':' in arglist[0]:
+        if arglist and arglist[0].count(':') == 1:
             part1, part2 = arglist[0].split(':')
             if part1 and part1.isdigit():
                 lstart = min(max(0, int(part1)) - 1, nlines)
@@ -426,7 +426,7 @@ class CmdEditorGroup(CmdEditorBase):
                 editor.display_buffer(linenums=False, options={"raw": True})
         elif cmd == ":::":
             # Insert single colon alone on a line
-            editor.update_buffer(editor.buffer + "\n:")
+            editor.update_buffer([":"] if lstart == 0 else linebuffer + [":"])
             if echo_mode:
                 caller.msg("Single ':' added to buffer.")
         elif cmd == ":h":
