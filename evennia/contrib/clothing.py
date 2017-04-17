@@ -61,8 +61,8 @@ default_cmdsets.py:
 From here, you can use the default builder commands to create clothes
 with which to test the system:
     
-    @create a pretty dress : evennia.contrib.clothing.Clothing
-    @set dress/clothing_type = 'body'
+    @create a pretty shirt : evennia.contrib.clothing.Clothing
+    @set shirt/clothing_type = 'top'
 """
 
 from evennia import DefaultObject
@@ -77,7 +77,7 @@ from evennia.utils import evtable
 # Maximum character length of 'wear style' strings, or None for unlimited.
 WEARSTYLE_MAXLENGTH = 50 
 # The order in which clothing types appear on the description. Untyped clothing goes last.
-CLOTHING_TYPE_ORDER = ['hat','jewelry','top','undershirt','gloves','body','bottom','underpants','socks','shoes','accessory']
+CLOTHING_TYPE_ORDER = ['hat','jewelry','top','undershirt','gloves','fullbody','bottom','underpants','socks','shoes','accessory']
 # The maximum number of each type of clothes that can be worn. Unlimited if untyped or not specified.
 CLOTHING_TYPE_LIMIT = {
                     'hat':1,
@@ -88,14 +88,122 @@ CLOTHING_TYPE_LIMIT = {
 # The maximum number of clothing items that can be worn, or None for unlimited.
 CLOTHING_OVERALL_LIMIT = 20 
 # What types of clothes will automatically cover what other types of clothes when worn.
+# Note that clothing only gets auto-covered if it's already worn when you put something
+# on that auto-covers it - for example, it's perfectly possible to have your underpants
+# showing if you put them on after your pants!
 CLOTHING_TYPE_AUTOCOVER = {
                         'top':['undershirt'],
                         'bottom':['underpants'],
-                        'body':['undershirt','underpants'],
+                        'fullbody':['undershirt','underpants'],
                         'shoes':['socks']
                         }
 # Types of clothes that can't be used to cover other clothes.
 CLOTHING_TYPE_CANT_COVER_WITH = ['jewelry']
+
+"""
+----------------------------------------------------------------------------
+HELPER FUNCTIONS START HERE
+----------------------------------------------------------------------------
+"""
+
+def order_clothes_list(clothes_list):
+    """
+    Orders a given clothes list by the order specified in CLOTHING_TYPE_ORDER.
+    
+    Args:
+        clothes_list (list): List of clothing items to put in order
+    
+    Returns:
+        ordered_clothes_list (list): The same list as passed, but re-ordered
+                                     according to the hierarchy of clothing types
+                                     specified in CLOTHING_TYPE_ORDER.
+    """
+    ordered_clothes_list = clothes_list
+    # For each type of clothing that exists...
+    for current_type in reversed(CLOTHING_TYPE_ORDER):
+        # Check each item in the given clothes list.
+        for clothes in clothes_list:
+            # If the item has a clothing type...
+            if clothes.db.clothing_type:
+                item_type = clothes.db.clothing_type
+                # And the clothing type matches the current type...
+                if item_type == current_type:
+                    # Move it to the front of the list!
+                    ordered_clothes_list.remove(clothes)
+                    ordered_clothes_list.insert(0, clothes)
+    return ordered_clothes_list
+
+def get_worn_clothes(character, exclude_covered=False):
+    """
+    Get a list of clothes worn by a given character.
+    
+    Args:
+        character (obj): The character to get a list of worn clothes from.
+        
+    Kwargs:
+        exclude_covered (bool): If True, excludes clothes covered by other
+                                clothing from the returned list.
+                                
+    Returns:
+        ordered_clothes_list (list): A list of clothing items worn by the
+                                     given character, ordered according to
+                                     the CLOTHING_TYPE_ORDER option specified
+                                     in this module.
+    """
+    clothes_list = []
+    for thing in character.contents:
+        # If uncovered or not excluding covered items
+        if not thing.db.covered_by or exclude_covered == False:
+            # If 'worn' is True, add to the list
+            if thing.db.worn:
+                clothes_list.append(thing)
+    # Might as well put them in order here too.
+    ordered_clothes_list = order_clothes_list(clothes_list)
+    return ordered_clothes_list
+    
+def clothing_type_count(clothes_list):
+    """
+    Returns a dictionary of the number of each clothing type
+    in a given list of clothing objects.
+    
+    Args:
+        clothes_list (list): A list of clothing items from which
+                             to count the number of clothing types
+                             represented among them.
+    
+    Returns:
+        types_count (dict): A dictionary of clothing types represented
+                            in the given list and the number of each
+                            clothing type represented.
+    """
+    types_count = {}
+    for garment in clothes_list:
+        if garment.db.clothing_type:
+            type = garment.db.clothing_type
+            if type not in types_count.keys():
+                types_count[type] = 1
+            else:
+                types_count[type] += 1
+    return types_count
+    
+def single_type_count(clothes_list, type):
+    """
+    Returns an integer value of the number of a given type of clothing in a list.
+    
+    Args:
+        clothes_list (list): List of clothing objects to count from
+        type (str): Clothing type to count
+        
+    Returns:
+        type_count (int): Number of garments of the specified type in the given
+                          list of clothing objects
+    """
+    type_count = 0
+    for garment in clothes_list:
+        if garment.db.clothing_type:
+            if garment.db.clothing_type == type:
+                type_count += 1
+    return type_count
 
 class Clothing(DefaultObject):
     
@@ -214,111 +322,6 @@ class ClothedCharacter(DefaultCharacter):
         else:
             string += "|/|/%s is not wearing anything." % self
         return string
-        
-"""
-----------------------------------------------------------------------------
-HELPER FUNCTIONS START HERE
-----------------------------------------------------------------------------
-"""
-
-def order_clothes_list(clothes_list):
-    """
-    Orders a given clothes list by the order specified in CLOTHING_TYPE_ORDER.
-    
-    Args:
-        clothes_list (list): List of clothing items to put in order
-    
-    Returns:
-        ordered_clothes_list (list): The same list as passed, but re-ordered
-                                     according to the hierarchy of clothing types
-                                     specified in CLOTHING_TYPE_ORDER.
-    """
-    ordered_clothes_list = clothes_list
-    # For each type of clothing that exists...
-    for current_type in reversed(CLOTHING_TYPE_ORDER):
-        # Check each item in the given clothes list.
-        for clothes in clothes_list:
-            # If the item has a clothing type...
-            if clothes.db.clothing_type:
-                item_type = clothes.db.clothing_type
-                # And the clothing type matches the current type...
-                if item_type == current_type:
-                    # Move it to the front of the list!
-                    ordered_clothes_list.remove(clothes)
-                    ordered_clothes_list.insert(0, clothes)
-    return ordered_clothes_list
-
-def get_worn_clothes(character, exclude_covered=False):
-    """
-    Get a list of clothes worn by a given character.
-    
-    Args:
-        character (obj): The character to get a list of worn clothes from.
-        
-    Kwargs:
-        exclude_covered (bool): If True, excludes clothes covered by other
-                                clothing from the returned list.
-                                
-    Returns:
-        ordered_clothes_list (list): A list of clothing items worn by the
-                                     given character, ordered according to
-                                     the CLOTHING_TYPE_ORDER option specified
-                                     in this module.
-    """
-    clothes_list = []
-    for thing in character.contents:
-        # If uncovered or not excluding covered items
-        if not thing.db.covered_by or exclude_covered == False:
-            # If 'worn' is True, add to the list
-            if thing.db.worn:
-                clothes_list.append(thing)
-    # Might as well put them in order here too.
-    ordered_clothes_list = order_clothes_list(clothes_list)
-    return ordered_clothes_list
-    
-def clothing_type_count(clothes_list):
-    """
-    Returns a dictionary of the number of each clothing type
-    in a given list of clothing objects.
-    
-    Args:
-        clothes_list (list): A list of clothing items from which
-                             to count the number of clothing types
-                             represented among them.
-    
-    Returns:
-        types_count (dict): A dictionary of clothing types represented
-                            in the given list and the number of each
-                            clothing type represented.
-    """
-    types_count = {}
-    for garment in clothes_list:
-        if garment.db.clothing_type:
-            type = garment.db.clothing_type
-            if type not in types_count.keys():
-                types_count[type] = 1
-            else:
-                types_count[type] += 1
-    return types_count
-    
-def single_type_count(clothes_list, type):
-    """
-    Returns an integer value of the number of a given type of clothing in a list.
-    
-    Args:
-        clothes_list (list): List of clothing objects to count from
-        type (str): Clothing type to count
-        
-    Returns:
-        type_count (int): Number of garments of the specified type in the given
-                          list of clothing objects
-    """
-    type_count = 0
-    for garment in clothes_list:
-        if garment.db.clothing_type:
-            if garment.db.clothing_type == type:
-                type_count += 1
-    return type_count
 
 """
 ----------------------------------------------------------------------------
@@ -624,10 +627,10 @@ class CmdGive(MuxCommand):
         if to_give.db.covered_by:
             caller.msg("You can't give that away because it's covered by %s." % to_give.db.covered_by)
             return
-        # Remove clothes if they're dropped.
+        # Remove clothes if they're given.
         if to_give.db.worn:
             to_give.remove(caller)
-        obj.move_to(caller.location, quiet=True)
+        to_give.move_to(caller.location, quiet=True)
         # give object
         caller.msg("You give %s to %s." % (to_give.key, target.key))
         to_give.move_to(target, quiet=True)
