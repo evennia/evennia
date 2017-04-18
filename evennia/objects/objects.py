@@ -1525,6 +1525,17 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         return message
 
+    def at_rename(self, oldname, newname):
+        """
+        This Hook is called by @name on a successful rename.
+
+        Args:
+            oldname (str): The object's original name.
+            newname (str): The new name for the object.
+
+        Returns: Nothing.
+        """
+        pass
 
 #
 # Base Character object
