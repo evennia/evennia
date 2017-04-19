@@ -364,7 +364,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         Args:
             query (str): A search criteria that accepts extra search criteria on the
                 following forms: [key|alias|#dbref...] [tag==<tagstr>[:category]...] [attr==<key>:<value>:category...]
-                                           "                !=              "               !=      "
+                                          "                !=             "               !=      "
         Returns:
             matches (queryset): A queryset result matching all queries exactly. If wanting to use spaces or
             ==, != in tags or attributes, enclose them in quotes.
@@ -375,36 +375,36 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             'in' operations or object field matching, use the full django query language.
 
         """
-        RE_TAG=
         # shlex splits by spaces unless escaped by quotes
         querysplit = shlex.split(to_unicode(query, force=True))
-        plustags, plusattrs, negtags, negattrs = [], [], [], []
+        queries, plustags, plusattrs, negtags, negattrs = [], [], [], [], []
         for ipart, part in enumerate(querysplit):
+            key, rest = part, ""
+            if ":" in part:
+                key, rest = part.split(':', 1)
             # tags are on the form tag or tag:category
-            if part.startswith('tag==') or part.startswith('tag!='):
-                tagstr, category = part, None
-                if ":" in part:
-                    tagstr, category = part.split(':', 1)
-                plustags.append((tagstr, category))
-            elif part.startswith('tag!='):
-                tagstr, category = part, None
-                if ":" in part:
-                    tagstr, category = part.split(':', 1)
-                negtags.append((tagstr, category))
-            elif part.startswith('attr=='):
-                #
-                tagstr, category = part, None
-                if ":" in part:
-                    tagstr, category = part.split(':', 1)
-                negtags.append((tagstr, category))
-
-
-
-        tags = [part.split(':', 1) if ':' in part else (part, None)
-                for part in spacesplit if part.startswith('tag==') or part.startswith('tag!=')]
-        attrs =
-
-
+            if key.startswith('tag=='):
+                plustags.append((key[5:], rest))
+                continue
+            elif key.startswith('tag!='):
+                negtags.append((key[5:], rest))
+                continue
+            # attrs are on the form attr:value or attr:value:category
+            elif rest:
+                value, category = rest, ""
+                if ":" in rest:
+                    value, category = rest.split(':', 1)
+                if key.startswith('attr=='):
+                    plusattrs.append((key[7:], value, category))
+                    continue
+                elif key.startswith('attr!='):
+                    negattrs.append((key[7:], value, category))
+                    continue
+            # if we get here, we are entering a key search criterion which
+            # we assume is one word.
+            queries.append(part)
+        # build query from components
+        query = ' '.join(queries)
 
 
     def dbref(self, dbref, reqhash=True):
