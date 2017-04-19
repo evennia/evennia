@@ -431,6 +431,7 @@ class ObjectDBManager(TypedObjectManager):
         return matches
     # alias for backwards compatibility
     object_search = search_object
+    search = search_object
 
     #
     # ObjectManager Copy method

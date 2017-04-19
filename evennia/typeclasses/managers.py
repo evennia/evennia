@@ -356,57 +356,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             tag.save()
         return make_iter(tag)[0]
 
-    # object-manager methods
-    def smart_search(self, query):
-        """
-        Search by supplying a string with optional extra search criteria to aid the query.
-
-        Args:
-            query (str): A search criteria that accepts extra search criteria on the
-                following forms: [key|alias|#dbref...] [tag==<tagstr>[:category]...] [attr==<key>:<value>:category...]
-                                          "                !=             "               !=      "
-        Returns:
-            matches (queryset): A queryset result matching all queries exactly. If wanting to use spaces or
-            ==, != in tags or attributes, enclose them in quotes.
-
-        Note:
-            The flexibility of this method is limited by the input line format. Tag/attribute
-            matching only works for matching primitives.  For even more complex queries, such as
-            'in' operations or object field matching, use the full django query language.
-
-        """
-        # shlex splits by spaces unless escaped by quotes
-        querysplit = shlex.split(to_unicode(query, force=True))
-        queries, plustags, plusattrs, negtags, negattrs = [], [], [], [], []
-        for ipart, part in enumerate(querysplit):
-            key, rest = part, ""
-            if ":" in part:
-                key, rest = part.split(':', 1)
-            # tags are on the form tag or tag:category
-            if key.startswith('tag=='):
-                plustags.append((key[5:], rest))
-                continue
-            elif key.startswith('tag!='):
-                negtags.append((key[5:], rest))
-                continue
-            # attrs are on the form attr:value or attr:value:category
-            elif rest:
-                value, category = rest, ""
-                if ":" in rest:
-                    value, category = rest.split(':', 1)
-                if key.startswith('attr=='):
-                    plusattrs.append((key[7:], value, category))
-                    continue
-                elif key.startswith('attr!='):
-                    negattrs.append((key[7:], value, category))
-                    continue
-            # if we get here, we are entering a key search criterion which
-            # we assume is one word.
-            queries.append(part)
-        # build query from components
-        query = ' '.join(queries)
-
-
     def dbref(self, dbref, reqhash=True):
         """
         Determing if input is a valid dbref.
@@ -564,6 +513,58 @@ class TypeclassManager(TypedObjectManager):
     model.
 
     """
+
+    # object-manager methods
+    def smart_search(self, query):
+        """
+        Search by supplying a string with optional extra search criteria to aid the query.
+
+        Args:
+            query (str): A search criteria that accepts extra search criteria on the
+
+                following forms: [key|alias|#dbref...] [tag==<tagstr>[:category]...] [attr==<key>:<value>:category...]
+                                          "                !=             "               !=      "
+        Returns:
+            matches (queryset): A queryset result matching all queries exactly. If wanting to use spaces or
+            ==, != in tags or attributes, enclose them in quotes.
+
+        Note:
+            The flexibility of this method is limited by the input line format. Tag/attribute
+            matching only works for matching primitives.  For even more complex queries, such as
+            'in' operations or object field matching, use the full django query language.
+
+        """
+        # shlex splits by spaces unless escaped by quotes
+        querysplit = shlex.split(to_unicode(query, force=True))
+        queries, plustags, plusattrs, negtags, negattrs = [], [], [], [], []
+        for ipart, part in enumerate(querysplit):
+            key, rest = part, ""
+            if ":" in part:
+                key, rest = part.split(':', 1)
+            # tags are on the form tag or tag:category
+            if key.startswith('tag=='):
+                plustags.append((key[5:], rest))
+                continue
+            elif key.startswith('tag!='):
+                negtags.append((key[5:], rest))
+                continue
+            # attrs are on the form attr:value or attr:value:category
+            elif rest:
+                value, category = rest, ""
+                if ":" in rest:
+                    value, category = rest.split(':', 1)
+                if key.startswith('attr=='):
+                    plusattrs.append((key[7:], value, category))
+                    continue
+                elif key.startswith('attr!='):
+                    negattrs.append((key[7:], value, category))
+                    continue
+            # if we get here, we are entering a key search criterion which
+            # we assume is one word.
+            queries.append(part)
+        # build query from components
+        query = ' '.join(queries)
+        #TODO
 
     def get(self, *args, **kwargs):
         """
