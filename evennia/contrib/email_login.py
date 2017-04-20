@@ -34,10 +34,9 @@ from django.conf import settings
 from evennia.players.models import PlayerDB
 from evennia.objects.models import ObjectDB
 from evennia.server.models import ServerConfig
-from evennia.comms.models import ChannelDB
 
 from evennia.commands.cmdset import CmdSet
-from evennia.utils import create, logger, utils, ansi
+from evennia.utils import logger, utils, ansi
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.commands.default import unloggedin as default_unloggedin  # Used in CmdUnconnectedCreate
@@ -100,14 +99,13 @@ class CmdUnconnectedConnect(MuxCommand):
             session.msg(string)
             return
         # We have at least one result, so we can check the password.
-        if not player.check_password(password):
+        if not player[0].check_password(password):
             session.msg("Incorrect password.")
             return
 
         # Check IP and/or name bans
         bans = ServerConfig.objects.conf("server_bans")
-        if bans and (any(tup[0] == player.name for tup in bans)
-                     or
+        if bans and (any(tup[0] == player.name for tup in bans) or
                      any(tup[2].match(session.address[0]) for tup in bans if tup[2])):
             # this is a banned IP or name!
             string = "|rYou have been banned and cannot continue from here."
@@ -207,8 +205,7 @@ class CmdUnconnectedCreate(MuxCommand):
 
         # Check IP and/or name bans
         bans = ServerConfig.objects.conf("server_bans")
-        if bans and (any(tup[0] == playername.lower() for tup in bans)
-                     or
+        if bans and (any(tup[0] == playername.lower() for tup in bans) or
                      any(tup[2].match(session.address) for tup in bans if tup[2])):
             # this is a banned IP or name!
             string = "|rYou have been banned and cannot continue from here." \

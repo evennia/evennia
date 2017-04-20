@@ -5,7 +5,6 @@ all Attributes and TypedObjects).
 
 """
 import shlex
-from functools import update_wrapper
 from django.db.models import Q
 from evennia.utils import idmapper
 from evennia.utils.utils import make_iter, variable_from_module, to_unicode
@@ -14,40 +13,6 @@ __all__ = ("TypedObjectManager", )
 _GA = object.__getattribute__
 _Tag = None
 
-#
-# Decorators
-#
-
-def returns_typeclass_list(method):
-    """
-    Decorator: Always returns a list, even if it is empty.
-
-    """
-    def func(self, *args, **kwargs):
-        self.__doc__ = method.__doc__
-        raw_queryset = kwargs.pop('raw_queryset', False)
-        result = method(self, *args, **kwargs)
-        if raw_queryset:
-            return result
-        else:
-            return list(result)
-    return update_wrapper(func, method)
-
-
-def returns_typeclass(method):
-    """
-    Decorator: Returns a single typeclass match or None.
-
-    """
-    def func(self, *args, **kwargs):
-        self.__doc__ = method.__doc__
-        query = method(self, *args, **kwargs)
-        if hasattr(query, "__iter__"):
-            result = list(query)
-            return result[0] if result else None
-        else:
-            return query
-    return update_wrapper(func, method)
 
 # Managers
 
@@ -58,7 +23,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
     """
     # common methods for all typed managers. These are used
     # in other methods. Returns querysets.
-
 
     # Attribute manager methods
     def get_attribute(self, key=None, category=None, value=None, strvalue=None, obj=None, attrtype=None):
@@ -125,7 +89,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         return self.get_attribute(key=key, category=category, value=value, strvalue=strvalue, obj=obj)
 
-    @returns_typeclass_list
     def get_by_attribute(self, key=None, category=None, value=None, strvalue=None, attrtype=None):
         """
         Return objects having attributes with the given key, category,
@@ -257,7 +220,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         return self.get_tag(key=key, category=category, obj=obj, tagtype="alias")
 
-    @returns_typeclass_list
     def get_by_tag(self, key=None, category=None, tagtype=None):
         """
         Return objects having tags with a given key or category or
@@ -384,7 +346,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             return None
         return dbref
 
-    @returns_typeclass
     def get_id(self, dbref):
         """
         Find object with given dbref.
@@ -416,7 +377,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         return self.get_id(dbref)
 
-    @returns_typeclass_list
     def get_dbref_range(self, min_dbref=None, max_dbref=None):
         """
         Get objects within a certain range of dbrefs.
@@ -455,7 +415,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                self.filter(db_typeclass_path=typeclass_path).count()
         return dbtotals
 
-    @returns_typeclass_list
     def typeclass_search(self, typeclass, include_children=False, include_parents=False):
         """
         Searches through all objects returning those which has a
@@ -585,7 +544,7 @@ class TypeclassManager(TypedObjectManager):
                 on the model base used.
 
         """
-        kwargs.update({"db_typeclass_path":self.model.path})
+        kwargs.update({"db_typeclass_path": self.model.path})
         return super(TypeclassManager, self).get(**kwargs)
 
     def filter(self, *args, **kwargs):
@@ -603,7 +562,7 @@ class TypeclassManager(TypedObjectManager):
             objects (queryset): The objects found.
 
         """
-        kwargs.update({"db_typeclass_path":self.model.path})
+        kwargs.update({"db_typeclass_path": self.model.path})
         return super(TypeclassManager, self).filter(*args, **kwargs)
 
     def all(self):
@@ -683,8 +642,8 @@ class TypeclassManager(TypedObjectManager):
 
         """
         paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
-                         for cls in self._get_subclasses(self.model)]
-        kwargs.update({"db_typeclass_path__in":paths})
+                                     for cls in self._get_subclasses(self.model)]
+        kwargs.update({"db_typeclass_path__in": paths})
         return super(TypeclassManager, self).get(**kwargs)
 
     def filter_family(self, *args, **kwargs):
@@ -704,8 +663,8 @@ class TypeclassManager(TypedObjectManager):
         """
         # query, including all subclasses
         paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
-                         for cls in self._get_subclasses(self.model)]
-        kwargs.update({"db_typeclass_path__in":paths})
+                                     for cls in self._get_subclasses(self.model)]
+        kwargs.update({"db_typeclass_path__in": paths})
         return super(TypeclassManager, self).filter(*args, **kwargs)
 
     def all_family(self):
@@ -718,7 +677,5 @@ class TypeclassManager(TypedObjectManager):
 
         """
         paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
-                         for cls in self._get_subclasses(self.model)]
+                                     for cls in self._get_subclasses(self.model)]
         return super(TypeclassManager, self).all().filter(db_typeclass_path__in=paths)
-
-

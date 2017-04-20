@@ -5,10 +5,7 @@ The managers for the custom Player object and permissions.
 import datetime
 from django.utils import timezone
 from django.contrib.auth.models import UserManager
-#from functools import update_wrapper
-from evennia.typeclasses.managers import (returns_typeclass_list, returns_typeclass,
-                                      TypedObjectManager, TypeclassManager)
-from evennia.utils.utils import make_iter
+from evennia.typeclasses.managers import (TypedObjectManager, TypeclassManager)
 __all__ = ("PlayerManager",)
 
 
@@ -51,7 +48,6 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         """
         return self.count()
 
-    @returns_typeclass_list
     def get_connected_players(self):
         """
         Get all currently connected players.
@@ -63,7 +59,6 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         """
         return self.filter(db_is_connected=True)
 
-    @returns_typeclass_list
     def get_recently_created_players(self, days=7):
         """
         Get players recently created.
@@ -80,7 +75,6 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         start_date = end_date - tdelta
         return self.filter(date_joined__range=(start_date, end_date))
 
-    @returns_typeclass_list
     def get_recently_connected_players(self, days=7):
         """
         Get players recently connected to the game.
@@ -99,7 +93,6 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         return self.filter(last_login__range=(
                 start_date, end_date)).order_by('-last_login')
 
-    @returns_typeclass
     def get_player_from_email(self, uemail):
         """
         Search player by
@@ -114,7 +107,6 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         """
         return self.filter(email__iexact=uemail)
 
-    @returns_typeclass
     def get_player_from_uid(self, uid):
         """
         Get a player by id.
@@ -131,7 +123,6 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         except self.model.DoesNotExist:
             return None
 
-    @returns_typeclass
     def get_player_from_name(self, uname):
         """
         Get player object based on name.
@@ -148,7 +139,6 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         except self.model.DoesNotExist:
             return None
 
-    @returns_typeclass_list
     def search_player(self, ostring, exact=True, typeclass=None):
         """
         Searches for a particular player by name or
@@ -184,6 +174,7 @@ class PlayerDBManager(TypedObjectManager, UserManager):
             return self.filter(**query)
     # back-compatibility alias
     player_search = search_player
+
 
 class PlayerManager(PlayerDBManager, TypeclassManager):
     pass

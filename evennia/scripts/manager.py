@@ -4,7 +4,6 @@ The custom manager for Scripts.
 
 from django.db.models import Q
 from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
-from evennia.typeclasses.managers import returns_typeclass_list
 from evennia.utils.utils import make_iter
 __all__ = ("ScriptManager",)
 _GA = object.__getattribute__
@@ -35,7 +34,6 @@ class ScriptDBManager(TypedObjectManager):
     copy_script
 
     """
-    @returns_typeclass_list
     def get_all_scripts_on_obj(self, obj, key=None):
         """
         Find all Scripts related to a particular object.
@@ -68,7 +66,6 @@ class ScriptDBManager(TypedObjectManager):
         else:
             return self.filter(db_obj=obj)
 
-    @returns_typeclass_list
     def get_all_scripts(self, key=None):
         """
         Get all scripts in the database.
@@ -200,7 +197,7 @@ class ScriptDBManager(TypedObjectManager):
             elif obj:
                 scripts = self.get_all_scripts_on_obj(obj, key=key)
             else:
-                scripts = self.get_all_scripts(key=key) #self.model.get_all_cached_instances()
+                scripts = self.get_all_scripts(key=key)
 
         if not scripts:
             # no scripts available to validate
@@ -216,7 +213,6 @@ class ScriptDBManager(TypedObjectManager):
         VALIDATE_ITERATION -= 1
         return nr_started, nr_stopped
 
-    @returns_typeclass_list
     def search_script(self, ostring, obj=None, only_timed=False):
         """
         Search for a particular script.
@@ -236,8 +232,8 @@ class ScriptDBManager(TypedObjectManager):
         if dbref or dbref == 0:
             # this is a dbref, try to find the script directly
             dbref_match = self.dbref_search(dbref)
-            if dbref_match and not ((obj and obj != dbref_match.obj)
-                                     or (only_timed and dbref_match.interval)):
+            if dbref_match and not ((obj and obj != dbref_match.obj) or
+                                    (only_timed and dbref_match.interval)):
                 return [dbref_match]
 
         # not a dbref; normal search
@@ -272,6 +268,7 @@ class ScriptDBManager(TypedObjectManager):
         new_script = create.create_script(typeclass, key=new_key, obj=new_obj,
                                           locks=new_locks, autostart=True)
         return new_script
+
 
 class ScriptManager(ScriptDBManager, TypeclassManager):
     pass

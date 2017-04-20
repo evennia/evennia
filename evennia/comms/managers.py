@@ -5,10 +5,8 @@ Comm system components.
 """
 from __future__ import print_function
 
-from django.db import models
 from django.db.models import Q
-from evennia.typeclasses.managers import (TypedObjectManager, TypeclassManager,
-                                          returns_typeclass_list, returns_typeclass)
+from evennia.typeclasses.managers import (TypedObjectManager, TypeclassManager)
 from evennia.utils import logger
 
 _GA = object.__getattribute__
@@ -130,6 +128,7 @@ def to_object(inp, objtype='player'):
         raise CommError()
     # an unknown
     return None
+
 
 #
 # Msg manager
@@ -314,6 +313,7 @@ class MsgManager(TypedObjectManager):
     # back-compatibility alias
     message_search = search_message
 
+
 #
 # Channel manager
 #
@@ -332,7 +332,6 @@ class ChannelDBManager(TypedObjectManager):
     subscribed to the Channel.
 
     """
-    @returns_typeclass_list
     def get_all_channels(self):
         """
         Get all channels.
@@ -343,7 +342,6 @@ class ChannelDBManager(TypedObjectManager):
         """
         return self.all()
 
-    @returns_typeclass
     def get_channel(self, channelkey):
         """
         Return the channel object if given its key.
@@ -366,7 +364,6 @@ class ChannelDBManager(TypedObjectManager):
             return channels[0]
         return None
 
-    @returns_typeclass_list
     def get_subscriptions(self, subscriber):
         """
         Return all channels a given entity is subscribed to.
@@ -385,7 +382,6 @@ class ChannelDBManager(TypedObjectManager):
             return subscriber.object_subscription_set.all()
         return []
 
-    @returns_typeclass_list
     def search_channel(self, ostring, exact=True):
         """
         Search the channel database for a particular channel.
@@ -397,7 +393,8 @@ class ChannelDBManager(TypedObjectManager):
 
         """
         channels = []
-        if not ostring: return channels
+        if not ostring:
+            return channels
         try:
             # try an id match first
             dbref = int(ostring.strip('#'))
@@ -414,16 +411,14 @@ class ChannelDBManager(TypedObjectManager):
         if not channels:
             # still no match. Search by alias.
             channels = [channel for channel in self.all()
-                        if ostring.lower() in [a.lower
-                            for a in channel.aliases.all()]]
+                        if ostring.lower() in [a.lower for a in channel.aliases.all()]]
         return channels
     # back-compatibility alias
     channel_search = search_channel
+
 
 class ChannelManager(ChannelDBManager, TypeclassManager):
     """
     Wrapper to group the typeclass manager to a consistent name.
     """
     pass
-
-
