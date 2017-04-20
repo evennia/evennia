@@ -664,7 +664,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         """
         pass
 
-    def at_first_login(self):
+    def at_first_login(self, **kwargs):
         """
         Called the very first time this player logs into the game.
         Note that this is called *before* at_pre_login, so no session
@@ -672,13 +672,21 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         this point. This hook is intended for player-specific setup
         like configurations.
 
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         pass
 
-    def at_pre_login(self):
+    def at_pre_login(self, **kwargs):
         """
         Called every time the user logs in, just before the actual
         login-state is set.
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
@@ -706,13 +714,15 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         else:
             logger.log_info("[%s]: %s" % (now, message))
 
-    def at_post_login(self, session=None):
+    def at_post_login(self, session=None, **kwargs):
         """
         Called at the end of the login process, just before letting
         the player loose.
 
         Args:
             session (Session, optional): Session logging in, if any.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             This is called *before* an eventual Character's
@@ -754,7 +764,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             self.msg(self.at_look(target=self.db._playable_characters,
                                   session=session))
 
-    def at_failed_login(self, session):
+    def at_failed_login(self, session, **kwargs):
         """
         Called by the login process if a user account is targeted correctly
         but provided with an invalid password. By default it does nothing,
@@ -762,41 +772,59 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
         Args:
             session (session): Session logging in.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
         """
         pass
 
-    def at_disconnect(self, reason=None):
+    def at_disconnect(self, reason=None, **kwargs):
         """
         Called just before user is disconnected.
 
         Args:
             reason (str, optional): The reason given for the disconnect,
                 (echoed to the connection channel by default).
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
 
         """
         reason = reason and "(%s)" % reason or ""
         self._send_to_connect_channel("|R%s disconnected %s|n" % (self.key, reason))
 
-    def at_post_disconnect(self):
+    def at_post_disconnect(self, **kwargs):
         """
         This is called *after* disconnection is complete. No messages
         can be relayed to the player from here. After this call, the
         player should not be accessed any more, making this a good
         spot for deleting it (in the case of a guest player account,
         for example).
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         pass
 
-    def at_message_receive(self, message, from_obj=None):
+    def at_message_receive(self, message, from_obj=None, **kwargs):
         """
         This is currently unused.
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         return True
 
-    def at_message_send(self, message, to_object):
+    def at_message_send(self, message, to_object, **kwargs):
         """
         This is currently unused.
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
@@ -817,7 +845,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         """
         pass
 
-    def at_look(self, target=None, session=None):
+    def at_look(self, target=None, session=None, **kwargs):
         """
         Called when this object executes a look. It allows to customize
         just what this means.
@@ -826,6 +854,8 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             target (Object or list, optional): An object or a list
                 objects to inspect.
             session (Session, optional): The session doing this look.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             look_string (str): A prepared look string, ready to send
@@ -898,13 +928,15 @@ class DefaultGuest(DefaultPlayer):
     This class is used for guest logins. Unlike Players, Guests and
     their characters are deleted after disconnection.
     """
-    def at_post_login(self, session=None):
+    def at_post_login(self, session=None, **kwargs):
         """
         In theory, guests only have one character regardless of which
         MULTISESSION_MODE we're in. They don't get a choice.
 
         Args:
             session (Session, optional): Session connecting.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         self._send_to_connect_channel("|G%s connected|n" % self.key)
@@ -922,9 +954,14 @@ class DefaultGuest(DefaultPlayer):
                 print "deleting Character:", character
                 character.delete()
 
-    def at_post_disconnect(self):
+    def at_post_disconnect(self, **kwargs):
         """
         Once having disconnected, destroy the guest's characters and
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         super(DefaultGuest, self).at_post_disconnect()
         characters = self.db._playable_characters

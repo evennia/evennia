@@ -1048,7 +1048,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
-    def at_pre_puppet(self, player, session=None):
+    def at_pre_puppet(self, player, session=None, **kwargs):
         """
         Called just before a Player connects to this object to puppet
         it.
@@ -1056,14 +1056,20 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             player (Player): This is the connecting player.
             session (Session): Session controlling the connection.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         pass
 
-    def at_post_puppet(self):
+    def at_post_puppet(self, **kwargs):
         """
         Called just after puppeting has been completed and all
         Player<->Object links have been established.
 
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
         Note:
             You can use `self.player` and `self.sessions.get()` to get
             player and sessions at this point; the last entry in the
@@ -1073,11 +1079,14 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         self.player.db._last_puppet = self
 
-    def at_pre_unpuppet(self):
+    def at_pre_unpuppet(self, **kwargs):
         """
         Called just before beginning to un-connect a puppeting from
         this Player.
 
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
         Note:
             You can use `self.player` and `self.sessions.get()` to get
             player and sessions at this point; the last entry in the
@@ -1087,7 +1096,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
-    def at_post_unpuppet(self, player, session=None):
+    def at_post_unpuppet(self, player, session=None, **kwargs):
         """
         Called just after the Player successfully disconnected from
         this object, severing all connections.
@@ -1097,6 +1106,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 from this object.
             session (Session): Session id controlling the connection that
                 just disconnected.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
@@ -1140,13 +1151,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
     # hooks called when moving the object
 
-    def at_before_move(self, destination):
+    def at_before_move(self, destination, **kwargs):
         """
         Called just before starting to move this object to
         destination.
 
         Args:
             destination (Object): The object we are moving to
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             shouldmove (bool): If we should move or not.
@@ -1159,7 +1172,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         # return has_perm(self, destination, "can_move")
         return True
 
-    def announce_move_from(self, destination, msg=None, mapping=None):
+    def announce_move_from(self, destination, msg=None, mapping=None, **kwargs):
         """
         Called if the move is to be announced. This is
         called while we are still standing in the old
@@ -1169,6 +1182,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             destination (Object): The place we are going to.
             msg (str, optional): a replacement message.
             mapping (dict, optional): additional mapping objects.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         You can override this method and call its parent with a
         message to simply change the default message.  In the string,
@@ -1200,7 +1215,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         location.msg_contents(string, exclude=(self, ), mapping=mapping)
 
-    def announce_move_to(self, source_location, msg=None, mapping=None):
+    def announce_move_to(self, source_location, msg=None, mapping=None, **kwargs):
         """
         Called after the move if the move was not quiet. At this point
         we are standing in the new location.
@@ -1209,14 +1224,17 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             source_location (Object): The place we came from
             msg (str, optional): the replacement message if location.
             mapping (dict, optional): additional mapping objects.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
-        You can override this method and call its parent with a
-        message to simply change the default message.  In the string,
-        you can use the following as mappings (between braces):
-            object: the object which is moving.
-            exit: the exit from which the object is moving (if found).
-            origin: the location of the object before the move.
-            destination: the location of the object after moving.
+        Notes:
+            You can override this method and call its parent with a
+            message to simply change the default message.  In the string,
+            you can use the following as mappings (between braces):
+                object: the object which is moving.
+                exit: the exit from which the object is moving (if found).
+                origin: the location of the object before the move.
+                destination: the location of the object after moving.
 
         """
 
@@ -1253,7 +1271,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         destination.msg_contents(string, exclude=(self, ), mapping=mapping)
 
-    def at_after_move(self, source_location):
+    def at_after_move(self, source_location, **kwargs):
         """
         Called after move has completed, regardless of quiet mode or
         not.  Allows changes to the object due to the location it is
@@ -1261,22 +1279,26 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         Args:
             source_location (Object): Wwhere we came from. This may be `None`.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def at_object_leave(self, moved_obj, target_location):
+    def at_object_leave(self, moved_obj, target_location, **kwargs):
         """
         Called just before an object leaves from inside this object
 
         Args:
             moved_obj (Object): The object leaving
             target_location (Object): Where `moved_obj` is going.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def at_object_receive(self, moved_obj, source_location):
+    def at_object_receive(self, moved_obj, source_location, **kwargs):
         """
         Called after an object has been moved into this object.
 
@@ -1284,11 +1306,13 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             moved_obj (Object): The object moved into this one
             source_location (Object): Where `moved_object` came from.
                 Note that this could be `None`.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def at_traverse(self, traversing_object, target_location):
+    def at_traverse(self, traversing_object, target_location, **kwargs):
         """
         This hook is responsible for handling the actual traversal,
         normally by calling
@@ -1301,11 +1325,13 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             traversing_object (Object): Object traversing us.
             target_location (Object): Where target is going.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def at_after_traverse(self, traversing_object, source_location):
+    def at_after_traverse(self, traversing_object, source_location, **kwargs):
         """
         Called just after an object successfully used this object to
         traverse to another object (i.e. this object is a type of
@@ -1314,19 +1340,23 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             traversing_object (Object): The object traversing us.
             source_location (Object): Where `traversing_object` came from.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             The target location should normally be available as `self.destination`.
         """
         pass
 
-    def at_failed_traverse(self, traversing_object):
+    def at_failed_traverse(self, traversing_object, **kwargs):
         """
         This is called if an object fails to traverse this object for
         some reason.
 
         Args:
             traversing_object (Object): The object that failed traversing us.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             Using the default exits, this hook will not be called if an
@@ -1387,13 +1417,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
     # hooks called by the default cmdset.
 
-    def return_appearance(self, looker):
+    def return_appearance(self, looker, **kwargs):
         """
         This formats a description. It is the hook a 'look' command
         should call.
 
         Args:
             looker (Object): Object doing the looking.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
         """
         if not looker:
             return ""
@@ -1420,7 +1452,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             string += "\n|wYou see:|n " + ", ".join(users + things)
         return string
 
-    def at_look(self, target):
+    def at_look(self, target, **kwargs):
         """
         Called when this object performs a look. It allows to
         customize just what this means. It will not itself
@@ -1430,6 +1462,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             target (Object): The target being looked at. This is
                 commonly an object or the current location. It will
                 be checked for the "view" type access.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             lookstring (str): A ready-processed look string
@@ -1450,22 +1484,27 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         return description
 
-    def at_desc(self, looker=None):
+    def at_desc(self, looker=None, **kwargs):
         """
         This is called whenever someone looks at this object.
 
-        looker (Object): The object requesting the description.
+        Args:
+            looker (Object, optional): The object requesting the description.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def at_get(self, getter):
+    def at_get(self, getter, **kwargs):
         """
         Called by the default `get` command when this object has been
         picked up.
 
         Args:
             getter (Object): The object getting this object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             This hook cannot stop the pickup from happening. Use
@@ -1474,7 +1513,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
-    def at_give(self, giver, getter):
+    def at_give(self, giver, getter, **kwargs):
         """
         Called by the default `give` command when this object has been
         given.
@@ -1482,6 +1521,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             giver (Object): The object giving this object.
             getter (Object): The object getting this object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             This hook cannot stop the give from happening. Use
@@ -1490,13 +1531,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
-    def at_drop(self, dropper):
+    def at_drop(self, dropper, **kwargs):
         """
         Called by the default `drop` command when this object has been
         dropped.
 
         Args:
             dropper (Object): The object which just dropped this object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             This hook cannot stop the drop from happening. Use
@@ -1505,7 +1548,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
-    def at_say(self, speaker, message):
+    def at_say(self, speaker, message, **kwargs):
         """
         Called on this object if an object inside this object speaks.
         The string returned from this method is the final form of the
@@ -1514,6 +1557,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             speaker (Object): The object speaking.
             message (str): The words spoken.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             You should not need to add things like 'you say: ' or
@@ -1551,7 +1596,7 @@ class DefaultCharacter(DefaultObject):
         # add the default cmdset
         self.cmdset.add_default(settings.CMDSET_CHARACTER, permanent=True)
 
-    def at_after_move(self, source_location):
+    def at_after_move(self, source_location, **kwargs):
         """
         We make sure to look around after a move.
 
@@ -1559,7 +1604,7 @@ class DefaultCharacter(DefaultObject):
         if self.location.access(self, "view"):
             self.msg(self.at_look(self.location))
 
-    def at_pre_puppet(self, player, session=None):
+    def at_pre_puppet(self, player, session=None, **kwargs):
         """
         Return the character from storage in None location in `at_post_unpuppet`.
         Args:
@@ -1575,11 +1620,14 @@ class DefaultCharacter(DefaultObject):
         else:
             player.msg("|r%s has no location and no home is set.|n" % self, session=session)  # Note to set home.
 
-    def at_post_puppet(self):
+    def at_post_puppet(self, **kwargs):
         """
         Called just after puppeting has been completed and all
         Player<->Object links have been established.
 
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
         Note:
             You can use `self.player` and `self.sessions.get()` to get
             player and sessions at this point; the last entry in the
@@ -1594,7 +1642,7 @@ class DefaultCharacter(DefaultObject):
             obj.msg("%s has entered the game." % self.get_display_name(obj), from_obj=from_obj)
         self.location.for_contents(message, exclude=[self], from_obj=self)
 
-    def at_post_unpuppet(self, player, session=None):
+    def at_post_unpuppet(self, player, session=None, **kwargs):
         """
         We stove away the character when the player goes ooc/logs off,
         otherwise the character object will remain in the room also
@@ -1605,6 +1653,8 @@ class DefaultCharacter(DefaultObject):
                 from this object.
             session (Session): Session controlling the connection that
                 just disconnected.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
         """
         if not self.sessions.count():
             # only remove this char from grid if no sessions control it anymore.
@@ -1694,6 +1744,8 @@ class ExitCommand(command.Command):
 
         Args:
             caller (Object): The object (usually a character) that entered an ambiguous command.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             A string with identifying information to disambiguate the command, conventionally with a preceding space.
@@ -1804,7 +1856,7 @@ class DefaultExit(DefaultObject):
         """
         self.cmdset.remove_default()
 
-    def at_traverse(self, traversing_object, target_location):
+    def at_traverse(self, traversing_object, target_location, **kwargs):
         """
         This implements the actual traversal. The traverse lock has
         already been checked (in the Exit command) at this point.
@@ -1812,6 +1864,8 @@ class DefaultExit(DefaultObject):
         Args:
             traversing_object (Object): Object traversing us.
             target_location (Object): Where target is going.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         source_location = traversing_object.location
@@ -1825,12 +1879,14 @@ class DefaultExit(DefaultObject):
                 # No shorthand error message. Call hook.
                 self.at_failed_traverse(traversing_object)
 
-    def at_failed_traverse(self, traversing_object):
+    def at_failed_traverse(self, traversing_object, **kwargs):
         """
         Overloads the default hook to implement a simple default error message.
 
         Args:
             traversing_object (Object): The object that failed traversing us.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             Using the default exits, this hook will not be called if an

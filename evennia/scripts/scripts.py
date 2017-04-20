@@ -115,7 +115,6 @@ class ExtendedLoopingCall(LoopingCall):
         self.starttime = self.clock.seconds()
         self()
 
-
     def next_call_time(self):
         """
         Get the next call time. This also takes the eventual effect
@@ -473,11 +472,16 @@ class DefaultScript(ScriptBase):
         if task:
             task.force_repeat()
 
-    def at_first_save(self):
+    def at_first_save(self, **kwargs):
         """
         This is called after very first time this object is saved.
         Generally, you don't need to overload this, but only the hooks
         called by this method.
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         self.at_script_creation()
 
@@ -516,10 +520,10 @@ class DefaultScript(ScriptBase):
         # auto-start script (default)
         self.start()
 
-
     def at_script_creation(self):
         """
         Only called once, by the create function.
+
         """
         pass
 
@@ -528,28 +532,44 @@ class DefaultScript(ScriptBase):
         Is called to check if the script is valid to run at this time.
         Should return a boolean. The method is assumed to collect all
         needed information from its related self.obj.
+
         """
         return not self._is_deleted
 
-    def at_start(self):
+    def at_start(self, **kwargs):
         """
         Called whenever the script is started, which for persistent
         scripts is at least once every server start. It will also be
         called when starting again after a pause (such as after a
         server reload)
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         pass
 
-    def at_repeat(self):
+    def at_repeat(self, **kwargs):
         """
         Called repeatedly if this Script is set to repeat regularly.
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         pass
 
-    def at_stop(self):
+    def at_stop(self, **kwargs):
         """
         Called whenever when it's time for this script to stop (either
         because is_valid returned False or it runs out of iterations)
+
+        Args
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         pass
 

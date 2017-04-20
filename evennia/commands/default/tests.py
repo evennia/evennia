@@ -74,7 +74,7 @@ class CommandTest(EvenniaTest):
             cmdobj.parse()
             cmdobj.func()
             cmdobj.at_post_cmd()
-            # clean out prettytable sugar. We only operate on text-type
+            # clean out evtable sugar. We only operate on text-type
             stored_msg = [args[0] if args and args[0] else kwargs.get("text",utils.to_str(kwargs, force_string=True))
                     for name, args, kwargs in receiver.msg.mock_calls]
             # Get the first element of a tuple if msg received a tuple instead of a string

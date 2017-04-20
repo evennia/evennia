@@ -100,11 +100,17 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             string = "<None>"
         return string
 
-    def mute(self, subscriber):
+    def mute(self, subscriber, **kwargs):
         """
         Adds an entity to the list of muted subscribers.
         A muted subscriber will no longer see channel messages,
         but may use channel commands.
+
+        Args:
+            subscriber (Object or Player): Subscriber to mute.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         mutelist = self.mutelist
         if subscriber not in mutelist:
@@ -113,11 +119,16 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             return True
         return False
 
-    def unmute(self, subscriber):
+    def unmute(self, subscriber, **kwargs):
         """
-        Removes an entity to the list of muted subscribers.
-        A muted subscriber will no longer see channel messages,
+        Removes an entity to the list of muted subscribers.  A muted subscriber will no longer see channel messages,
         but may use channel commands.
+
+        Args:
+            subscriber (Object or Player): The subscriber to unmute.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         mutelist = self.mutelist
         if subscriber in mutelist:
@@ -126,13 +137,15 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             return True
         return False
 
-    def connect(self, subscriber):
+    def connect(self, subscriber, **kwargs):
         """
         Connect the user to this channel. This checks access.
 
         Args:
             subscriber (Player or Object): the entity to subscribe
                 to this channel.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             success (bool): Whether or not the addition was
@@ -154,13 +167,15 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         self.post_join_channel(subscriber)
         return True
 
-    def disconnect(self, subscriber):
+    def disconnect(self, subscriber, **kwargs):
         """
         Disconnect entity from this channel.
 
         Args:
             subscriber (Player of Object): the
                 entity to disconnect.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             success (bool): Whether or not the removal was
@@ -179,7 +194,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         self.post_leave_channel(subscriber)
         return True
 
-    def access(self, accessing_obj, access_type='listen', default=False, no_superuser_bypass=False):
+    def access(self, accessing_obj, access_type='listen', default=False, no_superuser_bypass=False, **kwargs):
         """
         Determines if another object has permission to access.
 
@@ -189,6 +204,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             default (bool, optional): What to return if no lock of access_type was found
             no_superuser_bypass (bool, optional): Turns off superuser
                 lock bypass. Be careful with this one.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             return (bool): Result of lock check.
@@ -209,7 +226,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         CHANNELHANDLER.update()
 
     def message_transform(self, msgobj, emit=False, prefix=True,
-                          sender_strings=None, external=False):
+                          sender_strings=None, external=False, **kwargs):
         """
         Generates the formatted string sent to listeners on a channel.
 
@@ -220,6 +237,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             prefix (bool, optional): Prefix `msg` with a text given by `self.channel_prefix`.
             sender_strings (list, optional): Used by bots etc, one string per external sender.
             external (bool, optional): If this is an external sender or not.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         if sender_strings or external:
@@ -231,7 +250,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         msgobj.message = body
         return msgobj
 
-    def distribute_message(self, msgobj, online=False):
+    def distribute_message(self, msgobj, online=False, **kwargs):
         """
         Method for grabbing all listeners that a message should be
         sent to on this channel, and sending them a message.
@@ -240,6 +259,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             msgobj (Msg or TempMsg): Message to distribute.
             online (bool): Only send to receivers who are actually online
                 (not currently used):
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             This is also where logging happens, if enabled.
@@ -332,7 +353,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
     # hooks
 
-    def channel_prefix(self, msg=None, emit=False):
+    def channel_prefix(self, msg=None, emit=False, **kwargs):
 
         """
         Hook method. How the channel should prefix itself for users.
@@ -341,6 +362,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             msg (str, optional): Prefix text
             emit (bool, optional): Switches to emit mode, which usually
                 means to not prefix the channel's info.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             prefix (str): The created channel prefix.
@@ -348,12 +371,14 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         """
         return '' if emit else '[%s] ' % self.key
 
-    def format_senders(self, senders=None):
+    def format_senders(self, senders=None, **kwargs):
         """
         Hook method. Function used to format a list of sender names.
 
         Args:
             senders (list): Sender object names.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             formatted_list (str): The list of names formatted appropriately.
@@ -368,7 +393,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             return ''
         return ', '.join(senders)
 
-    def pose_transform(self, msgobj, sender_string):
+    def pose_transform(self, msgobj, sender_string, **kwargs):
         """
         Hook method. Detects if the sender is posing, and modifies the
         message accordingly.
@@ -376,6 +401,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         Args:
             msgobj (Msg or TempMsg): The message to analyze for a pose.
             sender_string (str): The name of the sender/poser.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             string (str): A message that combines the `sender_string`
@@ -398,7 +425,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         else:
             return '%s: %s' % (sender_string, message)
 
-    def format_external(self, msgobj, senders, emit=False):
+    def format_external(self, msgobj, senders, emit=False, **kwargs):
         """
         Hook method. Used for formatting external messages. This is
         needed as a separate operation because the senders of external
@@ -409,6 +436,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             msgobj (Msg or TempMsg): The message to send.
             senders (list): Strings, one per sender.
             emit (bool, optional): A sender-agnostic message or not.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             transformed (str): A formatted string.
@@ -419,13 +448,15 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         senders = ', '.join(senders)
         return self.pose_transform(msgobj, senders)
 
-    def format_message(self, msgobj, emit=False):
+    def format_message(self, msgobj, emit=False, **kwargs):
         """
         Hook method. Formats a message body for display.
 
         Args:
             msgobj (Msg or TempMsg): The message object to send.
             emit (bool, optional): The message is agnostic of senders.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             transformed (str): The formatted message.
@@ -443,13 +474,15 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             senders = ', '.join(senders)
             return self.pose_transform(msgobj, senders)
 
-    def pre_join_channel(self, joiner):
+    def pre_join_channel(self, joiner, **kwargs):
         """
         Hook method. Runs right before a channel is joined. If this
         returns a false value, channel joining is aborted.
 
         Args:
             joiner (object): The joining object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             should_join (bool): If `False`, channel joining is aborted.
@@ -457,23 +490,27 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         """
         return True
 
-    def post_join_channel(self, joiner):
+    def post_join_channel(self, joiner, **kwargs):
         """
         Hook method. Runs right after an object or player joins a channel.
 
         Args:
             joiner (object): The joining object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def pre_leave_channel(self, leaver):
+    def pre_leave_channel(self, leaver, **kwargs):
         """
         Hook method. Runs right before a user leaves a channel. If this returns a false
         value, leaving the channel will be aborted.
 
         Args:
             leaver (object): The leaving object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             should_leave (bool): If `False`, channel parting is aborted.
@@ -481,17 +518,19 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         """
         return True
 
-    def post_leave_channel(self, leaver):
+    def post_leave_channel(self, leaver, **kwargs):
         """
         Hook method. Runs right after an object or player leaves a channel.
 
         Args:
             leaver (object): The leaving object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def pre_send_message(self, msg):
+    def pre_send_message(self, msg, **kwargs):
         """
         Hook method.  Runs before a message is sent to the channel and
         should return the message object, after any transformations.
@@ -499,6 +538,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
         Args:
             msg (Msg or TempMsg): Message to send.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             result (Msg, TempMsg or bool): If False, abort send.
@@ -506,12 +547,14 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         """
         return msg
 
-    def post_send_message(self, msg):
+    def post_send_message(self, msg, **kwargs):
         """
         Hook method. Run after a message is sent to the channel.
 
         Args:
             msg (Msg or TempMsg): Message sent.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
