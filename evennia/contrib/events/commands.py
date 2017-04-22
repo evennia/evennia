@@ -1,5 +1,5 @@
 """
-Module containing the commands of the event system.
+Module containing the commands of the callback system.
 """
 
 from datetime import datetime
@@ -10,77 +10,77 @@ from evennia.utils.ansi import raw
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
 from evennia.utils.utils import class_from_module, time_format
-from evennia.contrib.events.custom import get_event_handler
+from evennia.contrib.events.utils import get_event_handler
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # Permissions
-WITH_VALIDATION = getattr(settings, "EVENTS_WITH_VALIDATION", None)
-WITHOUT_VALIDATION = getattr(settings, "EVENTS_WITHOUT_VALIDATION",
+WITH_VALIDATION = getattr(settings, "callbackS_WITH_VALIDATION", None)
+WITHOUT_VALIDATION = getattr(settings, "callbackS_WITHOUT_VALIDATION",
         "immortals")
-VALIDATING = getattr(settings, "EVENTS_VALIDATING", "immortals")
+VALIDATING = getattr(settings, "callbackS_VALIDATING", "immortals")
 
 # Split help text
-BASIC_HELP = "Add, edit or delete events."
+BASIC_HELP = "Add, edit or delete callbacks."
 
 BASIC_USAGES = [
-        "@event <object name> [= <event name>]",
-        "@event/add <object name> = <event name> [parameters]",
-        "@event/edit <object name> = <event name> [event number]",
-        "@event/del <object name> = <event name> [event number]",
-        "@event/tasks [object name [= <event name>]]",
+        "@call <object name> [= <callback name>]",
+        "@call/add <object name> = <callback name> [parameters]",
+        "@call/edit <object name> = <callback name> [callback number]",
+        "@call/del <object name> = <callback name> [callback number]",
+        "@call/tasks [object name [= <callback name>]]",
 ]
 
 BASIC_SWITCHES = [
-    "add    - add and edit a new event",
-    "edit   - edit an existing event",
-    "del    - delete an existing event",
+    "add    - add and edit a new callback",
+    "edit   - edit an existing callback",
+    "del    - delete an existing callback",
     "tasks  - show the list of differed tasks",
 ]
 
 VALIDATOR_USAGES = [
-        "@event/accept [object name = <event name> [event number]]",
+        "@call/accept [object name = <callback name> [callback number]]",
 ]
 
 VALIDATOR_SWITCHES = [
-    "accept - show events to be validated or accept one",
+    "accept - show callbacks to be validated or accept one",
 ]
 
 BASIC_TEXT = """
-This command is used to manipulate events.  An event can be linked to
+This command is used to manipulate callbacks.  A callback can be linked to
 an object, to fire at a specific moment.  You can use the command without
-switches to see what event are active on an object:
-  @event self
-You can also specify an event name if you want the list of events associated
-with this object of this name:
-  @event north = can_traverse
-You can also add a number after the event name to see details on one event:
-  @event here = say 2
-You can also add, edit or remove events using the add, edit or del switches.
-Additionally, you can see the list of differed tasks created by events
-(chained events to be called) using the /tasks switch.
+switches to see what callbacks are active on an object:
+  @call self
+You can also specify a callback name if you want the list of callbacks
+associated with this object of this name:
+  @call north = can_traverse
+You can also add a number after the callback name to see details on one callback:
+  @call here = say 2
+You can also add, edit or remove callbacks using the add, edit or del switches.
+Additionally, you can see the list of differed tasks created by callbacks
+(chained callbacks to be called) using the /tasks switch.
 """
 
 VALIDATOR_TEXT = """
-You can also use this command to validate events.  Depending on your game
-setting, some users might be allowed to add new events, but these events
-will not be fired until you accept them.  To see the events needing
+You can also use this command to validate callbacks.  Depending on your game
+setting, some users might be allowed to add new callbacks, but these callbacks
+will not be fired until you accept them.  To see the callbacks needing
 validation, enter the /accept switch without argument:
-  @event/accept
-A table will show you the events that are not validated yet, who created
-them and when.  You can then accept a specific event:
-  @event here = enter 1
-Use the /del switch to remove events that should not be connected.
+  @call/accept
+A table will show you the callbacks that are not validated yet, who created
+them and when.  You can then accept a specific callback:
+  @call here = enter 1
+Use the /del switch to remove callbacks that should not be connected.
 """
 
-class CmdEvent(COMMAND_DEFAULT_CLASS):
+class CmdCallback(COMMAND_DEFAULT_CLASS):
 
     """
-    Command to edit events.
+    Command to edit callbacks.
     """
 
-    key = "@event"
-    aliases = ["@events", "@ev"]
+    key = "@call"
+    aliases = ["@callback", "@callbacks", "@calls"]
     locks = "cmd:perm({})".format(VALIDATING)
     if WITH_VALIDATION:
         locks += " or perm({})".format(WITH_VALIDATION)
@@ -101,7 +101,7 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             docstring (str): the help text to provide the caller for this command.
 
         """
-        lock = "perm({}) or perm(events_validating)".format(VALIDATING)
+        lock = "perm({}) or perm(callbacks_validating)".format(VALIDATING)
         validator = caller.locks.check_lockstring(caller, lock)
         text = "\n" + BASIC_HELP + "\n\nUsages:\n  "
 
@@ -132,12 +132,12 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             WITHOUT_VALIDATION)
         autovalid = caller.locks.check_lockstring(caller, lock)
 
-        # First and foremost, get the event handler and set other variables
+        # First and foremost, get the callback handler and set other variables
         self.handler = get_event_handler()
         self.obj = None
         rhs = self.rhs or ""
-        self.event_name, sep, self.parameters = rhs.partition(" ")
-        self.event_name = self.event_name.lower()
+        self.callback_name, sep, self.parameters = rhs.partition(" ")
+        self.callback_name = self.callback_name.lower()
         self.is_validator = validator
         self.autovalid = autovalid
         if self.handler is None:
@@ -158,75 +158,73 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             return
 
         if switch == "":
-            self.list_events()
+            self.list_callbacks()
         elif switch == "add":
-            self.add_event()
+            self.add_callback()
         elif switch == "edit":
-            self.edit_event()
+            self.edit_callback()
         elif switch == "del":
-            self.del_event()
+            self.del_callback()
         elif switch == "accept" and validator:
-            self.accept_event()
+            self.accept_callback()
         elif switch in ["tasks", "task"]:
             self.list_tasks()
         else:
             caller.msg("Mutually exclusive or invalid switches were " \
                     "used, cannot proceed.")
 
-    def list_events(self):
-        """Display the list of events connected to the object."""
+    def list_callbacks(self):
+        """Display the list of callbacks connected to the object."""
         obj = self.obj
-        event_name = self.event_name
+        callback_name = self.callback_name
         parameters = self.parameters
-        events = self.handler.get_events(obj)
-        types = self.handler.get_event_types(obj)
+        callbacks = self.handler.get_callbacks(obj)
+        types = self.handler.get_events(obj)
 
-        if event_name:
-            # Check that the event name can be found in this object
-            created = events.get(event_name)
+        if callback_name:
+            # Check that the callback name can be found in this object
+            created = callbacks.get(callback_name)
             if created is None:
-                self.msg("No event {} has been set on {}.".format(event_name,
+                self.msg("No callback {} has been set on {}.".format(callback_name,
                         obj))
                 return
 
             if parameters:
-                # Check that the parameter points to an existing event
+                # Check that the parameter points to an existing callback
                 try:
                     number = int(parameters) - 1
                     assert number >= 0
-                    event = events[event_name][number]
+                    callback = callbacks[callback_name][number]
                 except (ValueError, AssertionError, IndexError):
-                    self.msg("The event {} {} cannot be found in {}.".format(
-                            event_name, parameters, obj))
+                    self.msg("The callback {} {} cannot be found in {}.".format(
+                            callback_name, parameters, obj))
                     return
 
-                # Display the events' details
-                author = event.get("author")
+                # Display the callback's details
+                author = callback.get("author")
                 author = author.key if author else "|gUnknown|n"
-                updated_by = event.get("updated_by")
+                updated_by = callback.get("updated_by")
                 updated_by = updated_by.key if updated_by else "|gUnknown|n"
-                created_on = event.get("created_on")
-                created_on = created_on.strftime("%Y-%m-%d %H:%M:%S") \
-                        if created_on else "|gUnknown|n"
-                updated_on = event.get("updated_on")
-                updated_on = updated_on.strftime("%Y-%m-%d %H:%M:%S") \
-                        if updated_on else "|gUnknown|n"
-                msg = "Event {} {} of {}:".format(event_name, parameters, obj)
+                created_on = callback.get("created_on")
+                created_on = created_on.strftime("%Y-%m-%d %H:%M:%S") if created_on else "|gUnknown|n"
+                updated_on = callback.get("updated_on")
+                updated_on = updated_on.strftime("%Y-%m-%d %H:%M:%S") if updated_on else "|gUnknown|n"
+                msg = "Callback {} {} of {}:".format(callback_name, parameters, obj)
                 msg += "\nCreated by {} on {}.".format(author, created_on)
                 msg += "\nUpdated by {} on {}".format(updated_by, updated_on)
 
                 if self.is_validator:
-                    if event.get("valid"):
-                        msg += "\nThis event is |rconnected|n and active."
+                    if callback.get("valid"):
+                        msg += "\nThis callback is |rconnected|n and active."
                     else:
-                        msg += "\nThis event |rhasn't been|n accepted yet."
+                        msg += "\nThis callback |rhasn't been|n accepted yet."
 
-                msg += "\nEvent code:\n"
-                msg += raw(event["code"])
+                msg += "\nCallback code:\n"
+                msg += raw(callback["code"])
                 self.msg(msg)
                 return
 
-            # No parameter has been specified, display the table of events
+            # No parameter has been specified, display the table of callbacks
             cols = ["Number", "Author", "Updated", "Param"]
             if self.is_validator:
                 cols.append("Valid")
@@ -234,12 +232,12 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             table = EvTable(*cols, width=78)
             table.reformat_column(0, align="r")
             now = datetime.now()
-            for i, event in enumerate(created):
-                author = event.get("author")
+            for i, callback in enumerate(created):
+                author = callback.get("author")
                 author = author.key if author else "|gUnknown|n"
-                updated_on = event.get("updated_on")
+                updated_on = callback.get("updated_on")
                 if updated_on is None:
-                    updated_on = event.get("created_on")
+                    updated_on = callback.get("created_on")
 
                 if updated_on:
                     updated_on = "{} ago".format(time_format(
@@ -247,211 +245,211 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
                             4).capitalize())
                 else:
                     updated_on = "|gUnknown|n"
-                parameters = event.get("parameters", "")
+                parameters = callback.get("parameters", "")
 
                 row = [str(i + 1), author, updated_on, parameters]
                 if self.is_validator:
-                    row.append("Yes" if event.get("valid") else "No")
+                    row.append("Yes" if callback.get("valid") else "No")
                 table.add_row(*row)
 
             self.msg(unicode(table))
         else:
-            names = list(set(list(types.keys()) + list(events.keys())))
-            table = EvTable("Event name", "Number", "Description",
+            names = list(set(list(types.keys()) + list(callbacks.keys())))
+            table = EvTable("Callback name", "Number", "Description",
                     valign="t", width=78)
             table.reformat_column(0, width=20)
             table.reformat_column(1, width=10, align="r")
             table.reformat_column(2, width=48)
             for name in sorted(names):
-                number = len(events.get(name, []))
-                lines = sum(len(e["code"].splitlines()) for e in \
-                        events.get(name, []))
+                number = len(callbacks.get(name, []))
+                lines = sum(len(e["code"].splitlines()) for e in callbacks.get(name, []))
                 no = "{} ({})".format(number, lines)
-                description = types.get(name, (None, "Chained event."))[1]
-                description = description.splitlines()[0]
+                description = types.get(name, (None, "Chained callback."))[1]
+                description = description.strip("\n").splitlines()[0]
                 table.add_row(name, no, description)
 
             self.msg(unicode(table))
 
-    def add_event(self):
-        """Add an event."""
+    def add_callback(self):
+        """Add a callback."""
         obj = self.obj
-        event_name = self.event_name
-        types = self.handler.get_event_types(obj)
+        callback_name = self.callback_name
+        types = self.handler.get_events(obj)
 
-        # Check that the event exists
-        if not event_name.startswith("chain_") and not event_name in types:
-            self.msg("The event name {} can't be found in {} of " \
-                    "typeclass {}.".format(event_name, obj, type(obj)))
+        # Check that the callback exists
+        if not callback_name.startswith("chain_") and not callback_name in types:
+            self.msg("The callback name {} can't be found in {} of " \
+                    "typeclass {}.".format(callback_name, obj, type(obj)))
             return
 
-        definition = types.get(event_name, (None, "Chain event"))
+        definition = types.get(callback_name, (None, "Chained callback"))
         description = definition[1]
-        self.msg(raw(description))
+        self.msg(raw(description.strip("\n")))
 
         # Open the editor
-        event = self.handler.add_event(obj, event_name, "",
+        callback = self.handler.add_callback(obj, callback_name, "",
                 self.caller, False, parameters=self.parameters)
 
-        # Lock this event right away
-        self.handler.db.locked.append((obj, event_name, event["number"]))
+        # Lock this callback right away
+        self.handler.db.locked.append((obj, callback_name, callback["number"]))
 
-        # Open the editor for this event
-        self.caller.db._event = event
+        # Open the editor for this callback
+        self.caller.db._callback = callback
         EvEditor(self.caller, loadfunc=_ev_load, savefunc=_ev_save,
-                quitfunc=_ev_quit, key="Event {} of {}".format(
-                event_name, obj), persistent=True, codefunc=_ev_save)
+                quitfunc=_ev_quit, key="Callback {} of {}".format(
+                callback_name, obj), persistent=True, codefunc=_ev_save)
 
-    def edit_event(self):
-        """Edit an event."""
+    def edit_callback(self):
+        """Edit a callback."""
         obj = self.obj
-        event_name = self.event_name
+        callback_name = self.callback_name
         parameters = self.parameters
-        events = self.handler.get_events(obj)
-        types = self.handler.get_event_types(obj)
+        callbacks = self.handler.get_callbacks(obj)
+        types = self.handler.get_events(obj)
 
-        # If no event name is specified, display the list of events
-        if not event_name:
-            self.list_events()
+        # If no callback name is specified, display the list of callbacks
+        if not callback_name:
+            self.list_callbacks()
             return
 
-        # Check that the event exists
-        if not event_name in events:
-            self.msg("The event name {} can't be found in {}.".format(
-                    event_name, obj))
+        # Check that the callback exists
+        if not callback_name in callbacks:
+            self.msg("The callback name {} can't be found in {}.".format(
+                    callback_name, obj))
             return
 
-        # If there's only one event, just edit it
-        if len(events[event_name]) == 1:
+        # If there's only one callback, just edit it
+        if len(callbacks[callback_name]) == 1:
             number = 0
-            event = events[event_name][0]
+            callback = callbacks[callback_name][0]
         else:
             if not parameters:
-                self.msg("Which event do you wish to edit?  Specify a number.")
-                self.list_events()
+                self.msg("Which callback do you wish to edit?  Specify a number.")
+                self.list_callbacks()
                 return
 
-            # Check that the parameter points to an existing event
+            # Check that the parameter points to an existing callback
             try:
                 number = int(parameters) - 1
                 assert number >= 0
-                event = events[event_name][number]
+                callback = callbacks[callback_name][number]
             except (ValueError, AssertionError, IndexError):
-                self.msg("The event {} {} cannot be found in {}.".format(
-                        event_name, parameters, obj))
+                self.msg("The callback {} {} cannot be found in {}.".format(
+                        callback_name, parameters, obj))
                 return
 
         # If caller can't edit without validation, forbid editing
         # others' works
-        if not self.autovalid and event["author"] is not self.caller:
-            self.msg("You cannot edit this event created by someone else.")
+        if not self.autovalid and callback["author"] is not self.caller:
+            self.msg("You cannot edit this callback created by someone else.")
             return
 
-        # If the event is locked (edited by someone else)
-        if (obj, event_name, number) in self.handler.db.locked:
-            self.msg("This event is locked, you cannot edit it.")
+        # If the callback is locked (edited by someone else)
+        if (obj, callback_name, number) in self.handler.db.locked:
+            self.msg("This callback is locked, you cannot edit it.")
             return
-        self.handler.db.locked.append((obj, event_name, number))
 
-        # Check the definition of the event
-        definition = types.get(event_name, (None, "Chained event"))
+        self.handler.db.locked.append((obj, callback_name, number))
+
+        # Check the definition of the callback
+        definition = types.get(callback_name, (None, "Chained callback"))
         description = definition[1]
-        self.msg(raw(description))
+        self.msg(raw(description.strip("\n")))
 
         # Open the editor
-        event = dict(event)
-        event["obj"] = obj
-        event["name"] = event_name
-        event["number"] = number
-        self.caller.db._event = event
+        callback = dict(callback)
+        callback["obj"] = obj
+        callback["name"] = callback_name
+        callback["number"] = number
+        self.caller.db._callback = callback
         EvEditor(self.caller, loadfunc=_ev_load, savefunc=_ev_save,
-                quitfunc=_ev_quit, key="Event {} of {}".format(
-                event_name, obj), persistent=True, codefunc=_ev_save)
+                quitfunc=_ev_quit, key="Callback {} of {}".format(
+                callback_name, obj), persistent=True, codefunc=_ev_save)
 
-    def del_event(self):
-        """Delete an event."""
+    def del_callback(self):
+        """Delete a callback."""
         obj = self.obj
-        event_name = self.event_name
+        callback_name = self.callback_name
         parameters = self.parameters
-        events = self.handler.get_events(obj)
-        types = self.handler.get_event_types(obj)
+        callbacks = self.handler.get_callbacks(obj)
+        types = self.handler.get_events(obj)
 
-        # If no event name is specified, display the list of events
-        if not event_name:
-            self.list_events()
+        # If no callback name is specified, display the list of callbacks
+        if not callback_name:
+            self.list_callbacks()
             return
 
-        # Check that the event exists
-        if not event_name in events:
-            self.msg("The event name {} can't be found in {}.".format(
-                    event_name, obj))
+        # Check that the callback exists
+        if not callback_name in callbacks:
+            self.msg("The callback name {} can't be found in {}.".format(
+                    callback_name, obj))
             return
 
-        # If there's only one event, just delete it
-        if len(events[event_name]) == 1:
+        # If there's only one callback, just delete it
+        if len(callbacks[callback_name]) == 1:
             number = 0
-            event = events[event_name][0]
+            callback = callbacks[callback_name][0]
         else:
             if not parameters:
-                self.msg("Which event do you wish to delete?  Specify " \
+                self.msg("Which callback do you wish to delete?  Specify " \
                         "a number.")
-                self.list_events()
+                self.list_callbacks()
                 return
 
-            # Check that the parameter points to an existing event
+            # Check that the parameter points to an existing callback
             try:
                 number = int(parameters) - 1
                 assert number >= 0
-                event = events[event_name][number]
+                callback = callbacks[callback_name][number]
             except (ValueError, AssertionError, IndexError):
-                self.msg("The event {} {} cannot be found in {}.".format(
-                        event_name, parameters, obj))
+                self.msg("The callback {} {} cannot be found in {}.".format(
+                        callback_name, parameters, obj))
                 return
 
         # If caller can't edit without validation, forbid deleting
         # others' works
-        if not self.autovalid and event["author"] is not self.caller:
-            self.msg("You cannot delete this event created by someone else.")
+        if not self.autovalid and callback["author"] is not self.caller:
+            self.msg("You cannot delete this callback created by someone else.")
             return
 
-        # If the event is locked (edited by someone else)
-        if (obj, event_name, number) in self.handler.db.locked:
-            self.msg("This event is locked, you cannot delete it.")
+        # If the callback is locked (edited by someone else)
+        if (obj, callback_name, number) in self.handler.db.locked:
+            self.msg("This callback is locked, you cannot delete it.")
             return
 
-        # Delete the event
-        self.handler.del_event(obj, event_name, number)
-        self.msg("The event {}[{}] of {} was deleted.".format(
-                event_name, number + 1, obj))
+        # Delete the callback
+        self.handler.del_callback(obj, callback_name, number)
+        self.msg("The callback {}[{}] of {} was deleted.".format(
+                callback_name, number + 1, obj))
 
-    def accept_event(self):
-        """Accept an event."""
+    def accept_callback(self):
+        """Accept a callback."""
         obj = self.obj
-        event_name = self.event_name
+        callback_name = self.callback_name
         parameters = self.parameters
 
-        # If no object, display the list of events to be checked
+        # If no object, display the list of callbacks to be checked
         if obj is None:
             table = EvTable("ID", "Type", "Object", "Name", "Updated by",
                     "On", width=78)
             table.reformat_column(0, align="r")
             now = datetime.now()
             for obj, name, number in self.handler.db.to_valid:
-                events = self.handler.db.events.get(obj, {}).get(name)
-                if events is None:
+                callbacks = self.handler.get_callbacks(obj).get(name)
+                if callbacks is None:
                     continue
 
                 try:
-                    event = events[number]
+                    callback = callbacks[number]
                 except IndexError:
                     continue
 
                 type_name = obj.typeclass_path.split(".")[-1]
-                by = event.get("updated_by")
+                by = callback.get("updated_by")
                 by = by.key if by else "|gUnknown|n"
-                updated_on = event.get("updated_on")
+                updated_on = callback.get("updated_on")
                 if updated_on is None:
-                    updated_on = event.get("created_on")
+                    updated_on = callback.get("created_on")
 
                 if updated_on:
                     updated_on = "{} ago".format(time_format(
@@ -465,100 +463,100 @@ class CmdEvent(COMMAND_DEFAULT_CLASS):
             return
 
         # An object was specified
-        events = self.handler.get_events(obj)
-        types = self.handler.get_event_types(obj)
+        callbacks = self.handler.get_callbacks(obj)
+        types = self.handler.get_events(obj)
 
-        # If no event name is specified, display the list of events
-        if not event_name:
-            self.list_events()
+        # If no callback name is specified, display the list of callbacks
+        if not callback_name:
+            self.list_callbacks()
             return
 
-        # Check that the event exists
-        if not event_name in events:
-            self.msg("The event name {} can't be found in {}.".format(
-                    event_name, obj))
+        # Check that the callback exists
+        if not callback_name in callbacks:
+            self.msg("The callback name {} can't be found in {}.".format(
+                    callback_name, obj))
             return
 
         if not parameters:
-            self.msg("Which event do you wish to accept?  Specify a number.")
-            self.list_events()
+            self.msg("Which callback do you wish to accept?  Specify a number.")
+            self.list_callbacks()
             return
 
-        # Check that the parameter points to an existing event
+        # Check that the parameter points to an existing callback
         try:
             number = int(parameters) - 1
             assert number >= 0
-            event = events[event_name][number]
+            callback = callbacks[callback_name][number]
         except (ValueError, AssertionError, IndexError):
-            self.msg("The event {} {} cannot be found in {}.".format(
-                    event_name, parameters, obj))
+            self.msg("The callback {} {} cannot be found in {}.".format(
+                    callback_name, parameters, obj))
             return
 
-        # Accept the event
-        if event["valid"]:
-            self.msg("This event has already been accepted.")
+        # Accept the callback
+        if callback["valid"]:
+            self.msg("This callback has already been accepted.")
         else:
-            self.handler.accept_event(obj, event_name, number)
-            self.msg("The event {} {} of {} has been accepted.".format(
-                    event_name, parameters, obj))
+            self.handler.accept_callback(obj, callback_name, number)
+            self.msg("The callback {} {} of {} has been accepted.".format(
+                    callback_name, parameters, obj))
 
     def list_tasks(self):
         """List the active tasks."""
         obj = self.obj
-        event_name = self.event_name
+        callback_name = self.callback_name
         handler = self.handler
         tasks = [(k, v[0], v[1], v[2]) for k, v in handler.db.tasks.items()]
         if obj:
             tasks = [task for task in tasks if task[2] is obj]
-        if event_name:
-            tasks = [task for task in tasks if task[3] == event_name]
+        if callback_name:
+            tasks = [task for task in tasks if task[3] == callback_name]
 
         tasks.sort()
-        table = EvTable("ID", "Object", "Event", "In", width=78)
+        table = EvTable("ID", "Object", "Callback", "In", width=78)
         table.reformat_column(0, align="r")
         now = datetime.now()
-        for task_id, future, obj, event_name in tasks:
+        for task_id, future, obj, callback_name in tasks:
             key = obj.get_display_name(self.caller)
             delta = time_format((future - now).total_seconds(), 1)
-            table.add_row(task_id, key, event_name, delta)
+            table.add_row(task_id, key, callback_name, delta)
 
         self.msg(unicode(table))
 
 # Private functions to handle editing
 def _ev_load(caller):
-    return caller.db._event and caller.db._event.get("code", "") or ""
+    return caller.db._callback and caller.db._callback.get("code", "") or ""
 
 def _ev_save(caller, buf):
-    """Save and add the event."""
+    """Save and add the callback."""
     lock = "perm({}) or perm(events_without_validation)".format(
             WITHOUT_VALIDATION)
     autovalid = caller.locks.check_lockstring(caller, lock)
-    event = caller.db._event
+    callback = caller.db._callback
     handler = get_event_handler()
-    if not handler or not event or not all(key in event for key in \
+    if not handler or not callback or not all(key in callback for key in \
             ("obj", "name", "number", "valid")):
-        caller.msg("Couldn't save this event.")
+        caller.msg("Couldn't save this callback.")
         return False
 
-    if (event["obj"], event["name"], event["number"]) in handler.db.locked:
-        handler.db.locked.remove((event["obj"], event["name"],
-                event["number"]))
+    if (callback["obj"], callback["name"], callback["number"]) in handler.db.locked:
+        handler.db.locked.remove((callback["obj"], callback["name"],
+                callback["number"]))
 
-    handler.edit_event(event["obj"], event["name"], event["number"], buf,
+    handler.edit_callback(callback["obj"], callback["name"], callback["number"], buf,
             caller, valid=autovalid)
     return True
 
 def _ev_quit(caller):
-    event = caller.db._event
+    callback = caller.db._callback
     handler = get_event_handler()
-    if not handler or not event or not all(key in event for key in \
+    if not handler or not callback or not all(key in callback for key in \
             ("obj", "name", "number", "valid")):
-        caller.msg("Couldn't save this event.")
+        caller.msg("Couldn't save this callback.")
         return False
 
-    if (event["obj"], event["name"], event["number"]) in handler.db.locked:
-        handler.db.locked.remove((event["obj"], event["name"],
-                event["number"]))
+    if (callback["obj"], callback["name"], callback["number"]) in handler.db.locked:
+        handler.db.locked.remove((callback["obj"], callback["name"],
+                callback["number"]))
 
-    del caller.db._event
+    del caller.db._callback
     caller.msg("Exited the code editor.")

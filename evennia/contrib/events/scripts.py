@@ -14,10 +14,9 @@ from evennia import logger
 from evennia.utils.create import create_channel
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.utils import all_from_module, delay
-from evennia.contrib.events.custom import connect_event_types, get_next_wait
 from evennia.contrib.events.exceptions import InterruptEvent
-from evennia.contrib.events.handler import EventsHandler as Handler
-from evennia.contrib.events import typeclasses
+from evennia.contrib.events.handler import CallbackHandler
+from evennia.contrib.events.utils import get_next_wait, EVENTS
 
 # Constants
 RE_LINE_ERROR = re.compile(r'^  File "\<string\>", line (\d+)')
@@ -28,7 +27,7 @@ class EventHandler(DefaultScript):
     The event handler that contains all events in a global script.
 
     This script shouldn't be created more than once.  It contains
-    event types (in a non-persistent attribute) and events (in a
+    event (in a non-persistent attribute) and callbacks (in a
     persistent attribute).  The script method would help adding,
     editing and deleting these events.
 
@@ -41,7 +40,7 @@ class EventHandler(DefaultScript):
         self.persistent = True
 
         # Permanent data to be stored
-        self.db.events = {}
+        self.db.callbacks = {}
         self.db.to_valid = []
         self.db.locked = []
 
@@ -56,21 +55,22 @@ class EventHandler(DefaultScript):
         (including when it's reloaded).  This hook performs the following
         tasks:
 
-        -   Refresh and re-connect event types.
+        -   Create temporarily stored events.
         -   Generate locals (individual events' namespace).
-        -   Load event helpers, including user-defined ones.
+        -   Load eventfuncs, including user-defined ones.
         -   Re-schedule tasks that aren't set to fire anymore.
         -   Effectively connect the handler to the main script.
 
         """
-        self.ndb.event_types = {}
-        connect_event_types()
+        self.ndb.events = {}
+        for typeclass, name, variables, help_text, custom_call, custom_add in EVENTS:
+            self.add_event(typeclass, name, variables, help_text, custom_call, custom_add)
 
         # Generate locals
         self.ndb.current_locals = {}
         self.ndb.fresh_locals = {}
-        addresses = ["evennia.contrib.events.helpers"]
-        addresses.extend(getattr(settings, "EVENTS_HELPERS_LOCATIONS", []))
+        addresses = ["evennia.contrib.events.eventfuncs"]
+        addresses.extend(getattr(settings, "EVENTFUNCS_LOCATIONS", []))
         for address in addresses:
             self.ndb.fresh_locals.update(all_from_module(address))
 
@@ -84,9 +84,10 @@ class EventHandler(DefaultScript):
 
             delay(seconds, complete_task, task_id)
 
-        # Place the script in the EventsHandler
-        Handler.script = self
-        DefaultObject.events = typeclasses.EventObject.events
+        # Place the script in the CallbackHandler
+        from evennia.contrib.events import typeclasses
+        CallbackHandler.script = self
+        DefaultObject.callbacks = typeclasses.EventObject.callbacks
 
         # Create the channel if non-existent
         try:
@@ -97,73 +98,42 @@ class EventHandler(DefaultScript):
 
     def get_events(self, obj):
         """
-        Return a dictionary of the object's events.
-
-        Args:
-            obj (Object): the connected objects.
-
-        Returns:
-            A dictionary of the object's events.
-
-        Note:
-            This method can be useful to override in some contexts,
-            when several objects would share events.
-
-        """
-        obj_events = self.db.events.get(obj, {})
-        events = {}
-        for event_name, event_list in obj_events.items():
-            new_list = []
-            for i, event in enumerate(event_list):
-                event = dict(event)
-                event["obj"] = obj
-                event["name"] = event_name
-                event["number"] = i
-                new_list.append(event)
-
-            if new_list:
-                events[event_name] = new_list
-
-        return events
-
-    def get_event_types(self, obj):
-        """
-        Return a dictionary of event types on this object.
+        Return a dictionary of events on this object.
 
         Args:
             obj (Object): the connected object.
 
         Returns:
-            A dictionary of the object's event types.
+            A dictionary of the object's events.
 
         Note:
-            Event types would define what the object can have as
-            events.  Note, however, that chained events will not
-            appear in event types and are handled separately.
+            Events would define what the object can have as
+            callbacks.  Note, however, that chained callbacks will not
+            appear in events and are handled separately.
 
         """
-        types = {}
-        event_types = self.ndb.event_types
+        events = {}
+        all_events = self.ndb.events
         classes = Queue()
         classes.put(type(obj))
         invalid = []
         while not classes.empty():
             typeclass = classes.get()
             typeclass_name = typeclass.__module__ + "." + typeclass.__name__
-            for key, etype in event_types.get(typeclass_name, {}).items():
+            for key, etype in all_events.get(typeclass_name, {}).items():
                 if key in invalid:
                     continue
                 if etype[0] is None: # Invalidate
                     invalid.append(key)
                     continue
-                if key not in types:
-                    types[key] = etype
+                if key not in events:
+                    events[key] = etype
 
             # Look for the parent classes
             for parent in typeclass.__bases__:
                 classes.put(parent)
 
-        return types
+        return events
 
     def get_variable(self, variable_name):
         """
@@ -190,34 +160,66 @@ class EventHandler(DefaultScript):
         """
         return self.ndb.current_locals.get(variable_name)
 
-    def add_event(self, obj, event_name, code, author=None, valid=False,
+    def get_callbacks(self, obj):
+        """
+        Return a dictionary of the object's callbacks.
+
+        Args:
+            obj (Object): the connected objects.
+
+        Returns:
+            A dictionary of the object's callbacks.
+
+        Note:
+            This method can be useful to override in some contexts,
+            when several objects would share callbacks.
+
+        """
+        obj_callbacks = self.db.callbacks.get(obj, {})
+        callbacks = {}
+        for callback_name, callback_list in obj_callbacks.items():
+            new_list = []
+            for i, callback in enumerate(callback_list):
+                callback = dict(callback)
+                callback["obj"] = obj
+                callback["name"] = callback_name
+                callback["number"] = i
+                new_list.append(callback)
+
+            if new_list:
+                callbacks[callback_name] = new_list
+
+        return callbacks
+
+    def add_callback(self, obj, callback_name, code, author=None, valid=False,
             parameters=""):
         """
-        Add the specified event.
+        Add the specified callback.
 
         Args:
             obj (Object): the Evennia typeclassed object to be extended.
-            event_name (str): the name of the event to add.
-            code (str): the Python code associated with this event.
-            author (Character or Player, optional): the author of the event.
-            valid (bool, optional): should the event be connected?
+            callback_name (str): the name of the callback to add.
+            code (str): the Python code associated with this callback.
+            author (Character or Player, optional): the author of the callback.
+            valid (bool, optional): should the callback be connected?
             parameters (str, optional): optional parameters.
 
-        This method doesn't check that the event type exists.
+        Note:
+            This method doesn't check that the callback type exists.
 
         """
-        obj_events = self.db.events.get(obj, {})
-        if not obj_events:
-            self.db.events[obj] = {}
-            obj_events = self.db.events[obj]
+        obj_callbacks = self.db.callbacks.get(obj, {})
+        if not obj_callbacks:
+            self.db.callbacks[obj] = {}
+            obj_callbacks = self.db.callbacks[obj]
 
-        events = obj_events.get(event_name, [])
-        if not events:
-            obj_events[event_name] = []
-            events = obj_events[event_name]
+        callbacks = obj_callbacks.get(callback_name, [])
+        if not callbacks:
+            obj_callbacks[callback_name] = []
+            callbacks = obj_callbacks[callback_name]
 
-        # Add the event in the list
-        events.append({
+        # Add the callback in the list
+        callbacks.append({
                 "created_on": datetime.now(),
                 "author": author,
                 "valid": valid,
@@ -227,56 +229,57 @@ class EventHandler(DefaultScript):
 
         # If not valid, set it in 'to_valid'
         if not valid:
-            self.db.to_valid.append((obj, event_name, len(events) - 1))
+            self.db.to_valid.append((obj, callback_name, len(callbacks) - 1))
 
         # Call the custom_add if needed
-        custom_add = self.get_event_types(obj).get(
-                event_name, [None, None, None])[2]
+        custom_add = self.get_events(obj).get(
+                callback_name, [None, None, None, None])[3]
         if custom_add:
-            custom_add(obj, event_name, len(events) - 1, parameters)
+            custom_add(obj, callback_name, len(callbacks) - 1, parameters)
 
         # Build the definition to return (a dictionary)
-        definition = dict(events[-1])
+        definition = dict(callbacks[-1])
         definition["obj"] = obj
-        definition["name"] = event_name
-        definition["number"] = len(events) - 1
+        definition["name"] = callback_name
+        definition["number"] = len(callbacks) - 1
         return definition
 
-    def edit_event(self, obj, event_name, number, code, author=None,
+    def edit_callback(self, obj, callback_name, number, code, author=None,
             valid=False):
         """
-        Edit the specified event.
+        Edit the specified callback.
 
         Args:
             obj (Object): the Evennia typeclassed object to be edited.
-            event_name (str): the name of the event to edit.
-            number (int): the event number to be changed.
-            code (str): the Python code associated with this event.
-            author (Character or Player, optional): the author of the event.
-            valid (bool, optional): should the event be connected?
+            callback_name (str): the name of the callback to edit.
+            number (int): the callback number to be changed.
+            code (str): the Python code associated with this callback.
+            author (Character or Player, optional): the author of the callback.
+            valid (bool, optional): should the callback be connected?
 
         Raises:
-            RuntimeError if the event is locked.
+            RuntimeError if the callback is locked.
 
-        This method doesn't check that the event type exists.
+        Note:
+            This method doesn't check that the callback type exists.
 
         """
-        obj_events = self.db.events.get(obj, {})
-        if not obj_events:
-            self.db.events[obj] = {}
-            obj_events = self.db.events[obj]
+        obj_callbacks = self.db.callbacks.get(obj, {})
+        if not obj_callbacks:
+            self.db.callbacks[obj] = {}
+            obj_callbacks = self.db.callbacks[obj]
 
-        events = obj_events.get(event_name, [])
-        if not events:
-            obj_events[event_name] = []
-            events = obj_events[event_name]
+        callbacks = obj_callbacks.get(callback_name, [])
+        if not callbacks:
+            obj_callbacks[callback_name] = []
+            callbacks = obj_callbacks[callback_name]
 
         # If locked, don't edit it
-        if (obj, event_name, number) in self.db.locked:
-            raise RuntimeError("this event is locked.")
+        if (obj, callback_name, number) in self.db.locked:
+            raise RuntimeError("this callback is locked.")
 
-        # Edit the event
-        events[number].update({
+        # Edit the callback
+        callbacks[number].update({
                 "updated_on": datetime.now(),
                 "updated_by": author,
                 "valid": valid,
@@ -284,118 +287,118 @@ class EventHandler(DefaultScript):
         })
 
         # If not valid, set it in 'to_valid'
-        if not valid and (obj, event_name, number) not in self.db.to_valid:
-            self.db.to_valid.append((obj, event_name, number))
-        elif valid and (obj, event_name, number) in self.db.to_valid:
-            self.db.to_valid.remove((obj, event_name, number))
+        if not valid and (obj, callback_name, number) not in self.db.to_valid:
+            self.db.to_valid.append((obj, callback_name, number))
+        elif valid and (obj, callback_name, number) in self.db.to_valid:
+            self.db.to_valid.remove((obj, callback_name, number))
 
         # Build the definition to return (a dictionary)
-        definition = dict(events[number])
+        definition = dict(callbacks[number])
         definition["obj"] = obj
-        definition["name"] = event_name
+        definition["name"] = callback_name
         definition["number"] = number
         return definition
 
-    def del_event(self, obj, event_name, number):
+    def del_callback(self, obj, callback_name, number):
         """
-        Delete the specified event.
+        Delete the specified callback.
 
         Args:
-            obj (Object): the typeclassed object containing the event.
-            event_name (str): the name of the event to delete.
-            number (int): the number of the event to delete.
+            obj (Object): the typeclassed object containing the callback.
+            callback_name (str): the name of the callback to delete.
+            number (int): the number of the callback to delete.
 
         Raises:
-            RuntimeError if the event is locked.
+            RuntimeError if the callback is locked.
 
         """
-        obj_events = self.db.events.get(obj, {})
-        events = obj_events.get(event_name, [])
+        obj_callbacks = self.db.callbacks.get(obj, {})
+        callbacks = obj_callbacks.get(callback_name, [])
 
         # If locked, don't edit it
-        if (obj, event_name, number) in self.db.locked:
-            raise RuntimeError("this event is locked.")
+        if (obj, callback_name, number) in self.db.locked:
+            raise RuntimeError("this callback is locked.")
 
-        # Delete the event itself
+        # Delete the callback itself
         try:
-            code = events[number]["code"]
+            code = callbacks[number]["code"]
         except IndexError:
             return
         else:
-            logger.log_info("Deleting event {} {} of {}:\n{}".format(
-                    event_name, number, obj, code))
-            del events[number]
+            logger.log_info("Deleting callback {} {} of {}:\n{}".format(
+                    callback_name, number, obj, code))
+            del callbacks[number]
 
-        # Change IDs of events to be validated
+        # Change IDs of callbacks to be validated
         i = 0
         while i < len(self.db.to_valid):
-            t_obj, t_event_name, t_number = self.db.to_valid[i]
-            if obj is t_obj and event_name == t_event_name:
+            t_obj, t_callback_name, t_number = self.db.to_valid[i]
+            if obj is t_obj and callback_name == t_callback_name:
                 if t_number == number:
-                    # Strictly equal, delete the event
+                    # Strictly equal, delete the callback
                     del self.db.to_valid[i]
                     i -= 1
                 elif t_number > number:
-                    # Change the ID for this event
-                    self.db.to_valid.insert(i, (t_obj, t_event_name,
+                    # Change the ID for this callback
+                    self.db.to_valid.insert(i, (t_obj, t_callback_name,
                             t_number - 1))
                     del self.db.to_valid[i + 1]
             i += 1
 
-        # Update locked event
+        # Update locked callback
         for i, line in enumerate(self.db.locked):
-            t_obj, t_event_name, t_number = line
-            if obj is t_obj and event_name == t_event_name:
+            t_obj, t_callback_name, t_number = line
+            if obj is t_obj and callback_name == t_callback_name:
                 if number < t_number:
-                    self.db.locked[i] = (t_obj, t_event_name, t_number - 1)
+                    self.db.locked[i] = (t_obj, t_callback_name, t_number - 1)
 
-        # Delete time-related events associated with this object
+        # Delete time-related callbacks associated with this object
         for script in list(obj.scripts.all()):
-            if isinstance(script, TimeEventScript):
-                if script.obj is obj and script.db.event_name == event_name:
+            if isinstance(script, TimecallbackScript):
+                if script.obj is obj and script.db.callback_name == callback_name:
                     if script.db.number == number:
                         script.stop()
                     elif script.db.number > number:
                         script.db.number -= 1
 
-    def accept_event(self, obj, event_name, number):
+    def accept_callback(self, obj, callback_name, number):
         """
-        Valid an event.
+        Valid a callback.
 
         Args:
-            obj (Object): the object containing the event.
-            event_name (str): the name of the event.
-            number (int): the number of the event.
+            obj (Object): the object containing the callback.
+            callback_name (str): the name of the callback.
+            number (int): the number of the callback.
 
         """
-        obj_events = self.db.events.get(obj, {})
-        events = obj_events.get(event_name, [])
+        obj_callbacks = self.db.callbacks.get(obj, {})
+        callbacks = obj_callbacks.get(callback_name, [])
 
-        # Accept and connect the event
-        events[number].update({"valid": True})
-        if (obj, event_name, number) in self.db.to_valid:
-            self.db.to_valid.remove((obj, event_name, number))
+        # Accept and connect the callback
+        callbacks[number].update({"valid": True})
+        if (obj, callback_name, number) in self.db.to_valid:
+            self.db.to_valid.remove((obj, callback_name, number))
 
-    def call_event(self, obj, event_name, *args, **kwargs):
+    def call(self, obj, callback_name, *args, **kwargs):
         """
-        Call the event.
+        Call the connected callbacks.
 
         Args:
             obj (Object): the Evennia typeclassed object.
-            event_name (str): the event name to call.
-            *args: additional variables for this event.
+            callback_name (str): the callback name to call.
+            *args: additional variables for this callback.
 
         Kwargs:
-            number (int, optional): call just a specific event.
-            parameters (str, optional): call an event with parameters.
+            number (int, optional): call just a specific callback.
+            parameters (str, optional): call a callback with parameters.
             locals (dict, optional): a locals replacement.
 
         Returns:
-            True to report the event was called without interruption,
+            True to report the callback was called without interruption,
             False otherwise.
 
         """
-        # First, look for the event type corresponding to this name
+        # First, look for the callback type corresponding to this name
         number = kwargs.get("number")
         parameters = kwargs.get("parameters")
         locals = kwargs.get("locals")
@@ -404,54 +407,54 @@ class EventHandler(DefaultScript):
         allowed = ("number", "parameters", "locals")
         if any(k for k in kwargs if k not in allowed):
             raise TypeError("Unknown keyword arguments were specified " \
-                    "to call events: {}".format(kwargs))
+                    "to call callbacks: {}".format(kwargs))
 
-        event_type = self.get_event_types(obj).get(event_name)
-        if locals is None and not event_type:
-            logger.log_err("The event {} for the object {} (typeclass " \
-                    "{}) can't be found".format(event_name, obj, type(obj)))
+        event = self.get_events(obj).get(callback_name)
+        if locals is None and not event:
+            logger.log_err("The callback {} for the object {} (typeclass " \
+                    "{}) can't be found".format(callback_name, obj, type(obj)))
             return False
 
         # Prepare the locals if necessary
         if locals is None:
             locals = self.ndb.fresh_locals.copy()
-            for i, variable in enumerate(event_type[0]):
+            for i, variable in enumerate(event[0]):
                 try:
                     locals[variable] = args[i]
                 except IndexError:
-                    logger.log_trace("event {} of {} ({}): need variable " \
-                            "{} in position {}".format(event_name, obj,
+                    logger.log_trace("callback {} of {} ({}): need variable " \
+                            "{} in position {}".format(callback_name, obj,
                             type(obj), variable, i))
                     return False
         else:
             locals = {key: value for key, value in locals.items()}
 
-        events = self.get_events(obj).get(event_name, [])
-        if event_type:
-            custom_call = event_type[3]
+        callbacks = self.get_callbacks(obj).get(callback_name, [])
+        if event:
+            custom_call = event[2]
             if custom_call:
-                events = custom_call(events, parameters)
+                callbacks = custom_call(callbacks, parameters)
 
-        # Now execute all the valid events linked at this address
+        # Now execute all the valid callbacks linked at this address
         self.ndb.current_locals = locals
-        for i, event in enumerate(events):
-            if not event["valid"]:
+        for i, callback in enumerate(callbacks):
+            if not callback["valid"]:
                 continue
 
-            if number is not None and event["number"] != number:
+            if number is not None and callback["number"] != number:
                 continue
 
             try:
-                exec(event["code"], locals, locals)
+                exec(callback["code"], locals, locals)
             except InterruptEvent:
                 return False
             except Exception:
                 etype, evalue, tb = sys.exc_info()
                 trace = traceback.format_exception(etype, evalue, tb)
-                number = event["number"]
+                number = callback["number"]
                 oid = obj.id
-                logger.log_err("An error occurred during the event {} of " \
-                        "{} (#{}), number {}\n{}".format(event_name, obj,
+                logger.log_err("An error occurred during the callback {} of " \
+                        "{} (#{}), number {}\n{}".format(callback_name, obj,
                         oid, number + 1, "\n".join(trace)))
 
                 # Inform the 'everror' channel
@@ -465,33 +468,54 @@ class EventHandler(DefaultScript):
 
                             # Try to extract the line
                             try:
-                                line = event["code"].splitlines()[lineno - 1]
+                                line = callback["code"].splitlines()[lineno - 1]
                             except IndexError:
                                 continue
                             else:
                                 break
 
                 self.ndb.channel.msg("Error in {} of {} (#{})[{}], line {}:" \
-                        " {}\n          {}".format(event_name, obj,
+                        " {}\n          {}".format(callback_name, obj,
                         oid, number + 1, lineno, line, repr(evalue)))
 
         return True
 
-    def set_task(self, seconds, obj, event_name):
+    def add_event(self, typeclass, name, variables, help_text, custom_call, custom_add):
+        """
+        Add a new event for a defined typeclass.
+
+        Args:
+            typeclass (str): the path leading to the typeclass.
+            name (str): the name of the event to add.
+            variables (list of str): list of variable names for this event.
+            help_text (str): the long help text of the event.
+            custom_call (callable or None): the function to be called
+                    when the event fires.
+            custom_add (callable or None): the function to be called when
+                    a callback is added.
+
+        """
+        if typeclass not in self.ndb.events:
+            self.ndb.events[typeclass] = {}
+
+        events = self.ndb.events[typeclass]
+        if name not in events:
+            events[name] = (variables, help_text, custom_call, custom_add)
+
+    def set_task(self, seconds, obj, callback_name):
         """
         Set and schedule a task to run.
-
-        This method allows to schedule a "persistent" task.
-        'utils.delay' is called, but a copy of the task is kept in
-        the event handler, and when the script restarts (after reload),
-        the differed delay is called again.
 
         Args:
             seconds (int, float): the delay in seconds from now.
             obj (Object): the typecalssed object connected to the event.
-            event_name (str): the event's name.
+            callback_name (str): the callback's name.
 
-        Note:
+        Notes:
+            This method allows to schedule a "persistent" task.
+            'utils.delay' is called, but a copy of the task is kept in
+            the event handler, and when the script restarts (after reload),
+            the differed delay is called again.
             The dictionary of locals is frozen and will be available
             again when the task runs.  This feature, however, is limited
             by the database: all data cannot be saved.  Lambda functions,
@@ -514,7 +538,7 @@ class EventHandler(DefaultScript):
             else:
                 locals[key] = value
 
-        self.db.tasks[task_id] = (now + delta, obj, event_name, locals)
+        self.db.tasks[task_id] = (now + delta, obj, callback_name, locals)
         delay(seconds, complete_task, task_id)
 
 
@@ -572,10 +596,11 @@ def complete_task(task_id):
     """
     Mark the task in the event handler as complete.
 
-    This function should be called automatically for individual tasks.
-
     Args:
         task_id (int): the task ID.
+
+    Note:
+        This function should be called automatically for individual tasks.
 
     """
     try:
@@ -589,5 +614,5 @@ def complete_task(task_id):
                 "found".format(task_id))
         return
 
-    delta, obj, event_name, locals = script.db.tasks.pop(task_id)
-    script.call_event(obj, event_name, locals=locals)
+    delta, obj, callback_name, locals = script.db.tasks.pop(task_id)
+    script.call(obj, callback_name, locals=locals)
