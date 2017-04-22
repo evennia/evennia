@@ -92,7 +92,7 @@ class CmdMail(default_cmds.MuxCommand):
             player = self.caller.player
         except AttributeError:
             player = self.caller
-        messages = Msg.objects.get_by_tag(category="mail", raw_queryset=True).filter(db_receivers_players=player)
+        messages = Msg.objects.get_by_tag(category="mail").filter(db_receivers_players=player)
         return messages
 
     def send_mail(self, recipients, subject, message, caller):
