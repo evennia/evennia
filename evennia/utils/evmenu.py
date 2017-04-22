@@ -894,9 +894,11 @@ class CmdGetInput(Command):
 
             caller.ndb._getinput._session = self.session
             prompt = caller.ndb._getinput._prompt
+            args = caller.ndb._getinput._args
+            kwargs = caller.ndb._getinput._kwargs
             result = self.raw_string.strip()  # we strip the ending line break caused by sending
 
-            ok = not callback(caller, prompt, result)
+            ok = not callback(caller, prompt, result, *args, **kwargs)
             if ok:
                 # only clear the state if the callback does not return
                 # anything
@@ -930,7 +932,7 @@ class _Prompt(object):
     pass
 
 
-def get_input(caller, prompt, callback, session=None):
+def get_input(caller, prompt, callback, session=None, *args, **kwargs):
     """
     This is a helper function for easily request input from
     the caller.
@@ -981,6 +983,8 @@ def get_input(caller, prompt, callback, session=None):
     caller.ndb._getinput._callback = callback
     caller.ndb._getinput._prompt = prompt
     caller.ndb._getinput._session = session
+    caller.ndb._getinput._args = args
+    caller.ndb._getinput._kwargs = kwargs
     caller.cmdset.add(InputCmdSet)
     caller.msg(prompt, session=session)
 
