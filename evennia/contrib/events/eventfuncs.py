@@ -1,7 +1,7 @@
 """
-Module defining basic helpers for the event system.
+Module defining basic eventfuncs for the event system.
 
-Hlpers are just Python functions that can be used inside of events.  They
+Eventfuncs are just Python functions that can be used inside of calllbacks.
 
 """
 
