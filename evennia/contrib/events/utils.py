@@ -233,3 +233,15 @@ def phrase_event(callbacks, parameters):
             to_call.append(callback)
 
     return to_call
+
+class InterruptEvent(RuntimeError):
+
+    """
+    Interrupt the current event.
+
+    You shouldn't have to use this exception directly, probably use the
+    `deny()` function that handles it instead.
+
+    """
+
+    pass
