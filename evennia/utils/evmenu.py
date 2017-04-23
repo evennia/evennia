@@ -957,6 +957,13 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
             greater than 2. The session is then updated by the
             command and is available (for example in callbacks)
             through `caller.ndb.getinput._session`.
+        *args, **kwargs (optional): Extra arguments will be 
+            passed to the fall back function as a list 'args' 
+            and all keyword arguments as a dictionary 'kwargs'.
+            To utilise *args and **kwargs, a value for the
+            session argument must be provided (None by default)
+            and the callback function must take *args and 
+            **kwargs as arguments.
 
     Raises:
         RuntimeError: If the given callback is not callable.
@@ -975,6 +982,12 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
         may not be easy to get if caller is a player in higher
         multisession modes), then it is available in the
         callback through `caller.ndb._getinput._session`.
+        
+        Chaining get_input functions will result in the caller
+        stacking ever more instances of InputCmdSets. Whilst 
+        they will all be cleared on concluding the get_input 
+        chain, EvMenu should be considered for anything beyond 
+        a single question.
 
     """
     if not callable(callback):
