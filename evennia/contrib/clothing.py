@@ -76,7 +76,14 @@ from evennia.utils import evtable
 # Options start here.
 # Maximum character length of 'wear style' strings, or None for unlimited.
 WEARSTYLE_MAXLENGTH = 50
-# The order in which clothing types appear on the description. Untyped clothing goes last.
+
+# The rest of these options have to do with clothing types. Clothing types are optional,
+# but can be used to give better control over how different items of clothing behave. You
+# can freely add, remove, or change clothing types to suit the needs of your game and use
+# the options below to affect their behavior.
+
+# The order in which clothing types appear on the description. Untyped clothing or clothing
+# with a type not given in this list goes last.
 CLOTHING_TYPE_ORDER = ['hat', 'jewelry', 'top', 'undershirt', 'gloves', 'fullbody', 'bottom',
                        'underpants', 'socks', 'shoes', 'accessory']
 # The maximum number of each type of clothes that can be worn. Unlimited if untyped or not specified.
