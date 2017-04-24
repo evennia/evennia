@@ -13,7 +13,7 @@ from evennia import DefaultObject, DefaultScript, ChannelDB, ScriptDB
 from evennia import logger
 from evennia.utils.create import create_channel
 from evennia.utils.dbserialize import dbserialize
-from evennia.utils.utils import all_from_module, delay
+from evennia.utils.utils import all_from_module, delay, pypath_to_realpath
 from evennia.contrib.events.callbackhandler import CallbackHandler
 from evennia.contrib.events.utils import get_next_wait, EVENTS, InterruptEvent
 
@@ -69,9 +69,10 @@ class EventHandler(DefaultScript):
         self.ndb.current_locals = {}
         self.ndb.fresh_locals = {}
         addresses = ["evennia.contrib.events.eventfuncs"]
-        addresses.extend(getattr(settings, "EVENTFUNCS_LOCATIONS", []))
+        addresses.extend(getattr(settings, "EVENTFUNCS_LOCATIONS", ["world.eventfuncs"]))
         for address in addresses:
-            self.ndb.fresh_locals.update(all_from_module(address))
+            if pypath_to_realpath(address):
+                self.ndb.fresh_locals.update(all_from_module(address))
 
         # Restart the delayed tasks
         now = datetime.now()
