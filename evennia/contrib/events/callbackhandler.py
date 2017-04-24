@@ -1,5 +1,5 @@
 """
-Module containing the EventHandler for individual objects.
+Module containing the CallbackHandler for individual objects.
 """
 
 from collections import namedtuple

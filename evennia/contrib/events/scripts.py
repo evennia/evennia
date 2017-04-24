@@ -14,7 +14,7 @@ from evennia import logger
 from evennia.utils.create import create_channel
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.utils import all_from_module, delay
-from evennia.contrib.events.handler import CallbackHandler
+from evennia.contrib.events.callbackhandler import CallbackHandler
 from evennia.contrib.events.utils import get_next_wait, EVENTS, InterruptEvent
 
 # Constants

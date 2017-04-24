@@ -9,8 +9,8 @@ EventRoom, EventCharacter and EventExit).
 from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia import ScriptDB
 from evennia.utils.utils import delay, inherits_from, lazy_property
+from evennia.contrib.events.callbackhandler import CallbackHandler
 from evennia.contrib.events.utils import register_events, time_event, phrase_event
-from evennia.contrib.events.handler import CallbackHandler
 
 # Character help
 CHARACTER_CAN_DELETE = """
@@ -28,7 +28,7 @@ CHARACTER_CAN_MOVE = """
 Can the character move?
 This event is called before the character moves into another
 location.  You can prevent the character from moving
-using the 'deny()' function.
+using the 'deny()' eventfunc.
 
 Variables you can use in this event:
     character: the character connected to this event.
@@ -781,6 +781,9 @@ class EventRoom(DefaultRoom):
         Args:
             speaker (Object): The object speaking.
             message (str): The words spoken.
+
+        Returns:
+            The message to be said (str) or None.
 
         Notes:
             You should not need to add things like 'you say: ' or

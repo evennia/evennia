@@ -58,7 +58,7 @@ You can also add a number after the callback name to see details on one callback
   @call here = say 2
 You can also add, edit or remove callbacks using the add, edit or del switches.
 Additionally, you can see the list of differed tasks created by callbacks
-(chained callbacks to be called) using the /tasks switch.
+(chained events to be called) using the /tasks switch.
 """
 
 VALIDATOR_TEXT = """
@@ -264,7 +264,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
                 number = len(callbacks.get(name, []))
                 lines = sum(len(e["code"].splitlines()) for e in callbacks.get(name, []))
                 no = "{} ({})".format(number, lines)
-                description = types.get(name, (None, "Chained callback."))[1]
+                description = types.get(name, (None, "Chained event."))[1]
                 description = description.strip("\n").splitlines()[0]
                 table.add_row(name, no, description)
 
@@ -282,7 +282,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
                     "typeclass {}.".format(callback_name, obj, type(obj)))
             return
 
-        definition = types.get(callback_name, (None, "Chained callback"))
+        definition = types.get(callback_name, (None, "Chained event."))
         description = definition[1]
         self.msg(raw(description.strip("\n")))
 
@@ -352,7 +352,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
         self.handler.db.locked.append((obj, callback_name, number))
 
         # Check the definition of the callback
-        definition = types.get(callback_name, (None, "Chained callback"))
+        definition = types.get(callback_name, (None, "Chained event."))
         description = definition[1]
         self.msg(raw(description.strip("\n")))
 
