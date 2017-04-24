@@ -90,14 +90,15 @@ def get_next_wait(format):
     Args:
         format (str): a time format matching the set calendar.
 
-    The time format could be something like "2018-01-08 12:00".  The
-    number of units set in the calendar affects the way seconds are
-    calculated.
-
     Returns:
         until (int or float): the number of seconds until the event.
         usual (int or float): the usual number of seconds between events.
         format (str): a string format representing the time.
+
+    Notes:
+        The time format could be something like "2018-01-08 12:00".  The
+        number of units set in the calendar affects the way seconds are
+        calculated.
 
     """
     calendar = getattr(settings, "EVENTS_CALENDAR", None)
@@ -157,7 +158,7 @@ def time_event(obj, event_name, number, parameters):
     Create a time-related event.
 
     Args:
-        obj (Object): the object on which stands the event.
+        obj (Object): the object on which sits the event.
         event_name (str): the event's name.
         number (int): the number of the event.
         parameters (str): the parameter of the event.
