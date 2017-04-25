@@ -583,12 +583,12 @@ class TimeEventScript(DefaultScript):
 
         if self.db.event_name and self.db.number is not None:
             obj = self.obj
-            if not obj.events:
+            if not obj.callbacks:
                 return
 
             event_name = self.db.event_name
             number = self.db.number
-            obj.events.call(event_name, obj, number=number)
+            obj.callbacks.call(event_name, obj, number=number)
 
 
 # Functions to manipulate tasks
