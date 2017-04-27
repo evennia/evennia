@@ -11,6 +11,7 @@ import traceback
 from django.conf import settings
 from evennia import DefaultObject, DefaultScript, ChannelDB, ScriptDB
 from evennia import logger
+from evennia.utils.ansi import raw
 from evennia.utils.create import create_channel
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.utils import all_from_module, delay, pypath_to_realpath
@@ -451,34 +452,67 @@ class EventHandler(DefaultScript):
             except Exception:
                 etype, evalue, tb = sys.exc_info()
                 trace = traceback.format_exception(etype, evalue, tb)
-                number = callback["number"]
-                oid = obj.id
-                logger.log_err("An error occurred during the callback {} of " \
-                        "{} (#{}), number {}\n{}".format(callback_name, obj,
-                        oid, number + 1, "\n".join(trace)))
-
-                # Inform the 'everror' channel
-                line = "|runknown|n"
-                lineno = "|runknown|n"
-                for error in trace:
-                    if error.startswith('  File "<string>", line '):
-                        res = RE_LINE_ERROR.search(error)
-                        if res:
-                            lineno = int(res.group(1))
-
-                            # Try to extract the line
-                            try:
-                                line = callback["code"].splitlines()[lineno - 1]
-                            except IndexError:
-                                continue
-                            else:
-                                break
-
-                self.ndb.channel.msg("Error in {} of {} (#{})[{}], line {}:" \
-                        " {}\n          {}".format(callback_name, obj,
-                        oid, number + 1, lineno, line, repr(evalue)))
+                self.handle_error(callback, trace)
 
         return True
+
+    def handle_error(self, callback, trace):
+        """
+        Handle an error in a callback.
+
+        Args:
+            callback (dict): the callback representation.
+            trace (list): the traceback containing the exception.
+
+        Notes:
+            This method can be useful to override to change the default
+            handling of errors.  By default, the error message is sent to
+            the character who last updated the callback, if connected.
+            If not, display to the everror channel.
+
+        """
+        callback_name = callback["name"]
+        number = callback["number"]
+        obj = callback["obj"]
+        oid = obj.id
+        logger.log_err("An error occurred during the callback {} of " \
+                "{} (#{}), number {}\n{}".format(callback_name, obj,
+                oid, number + 1, "\n".join(trace)))
+
+        # Create the error message
+        line = "|runknown|n"
+        lineno = "|runknown|n"
+        for error in trace:
+            if error.startswith('  File "<string>", line '):
+                res = RE_LINE_ERROR.search(error)
+                if res:
+                    lineno = int(res.group(1))
+
+                    # Try to extract the line
+                    try:
+                        line = raw(callback["code"].splitlines()[lineno - 1])
+                    except IndexError:
+                        continue
+                    else:
+                        break
+
+        exc = raw(trace[-1].strip("\n").splitlines()[-1])
+        err_msg = "Error in {} of {} (#{})[{}], line {}:" \
+                " {}\n{}".format(callback_name, obj,
+                oid, number + 1, lineno, line, exc)
+
+        # Inform the last updater if connected
+        updater = callback.get("updated_by")
+        if updater is None:
+            updater = callback["created_by"]
+
+        if updater and updater.sessions.all():
+            updater.msg(err_msg)
+        else:
+            err_msg = "Error in {} of {} (#{})[{}], line {}:" \
+                    " {}\n          {}".format(callback_name, obj,
+                    oid, number + 1, lineno, line, exc)
+            self.ndb.channel.msg(err_msg)
 
     def add_event(self, typeclass, name, variables, help_text, custom_call, custom_add):
         """
