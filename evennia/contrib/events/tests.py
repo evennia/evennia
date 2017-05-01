@@ -18,6 +18,9 @@ from evennia.contrib.events.callbackhandler import CallbackHandler
 # Force settings
 settings.EVENTS_CALENDAR = "standard"
 
+# Constants
+OLD_EVENTS = {}
+
 class TestEventHandler(EvenniaTest):
 
     """
@@ -30,6 +33,10 @@ class TestEventHandler(EvenniaTest):
         self.handler = create_script(
                 "evennia.contrib.events.scripts.EventHandler")
 
+        # Copy old events if necessary
+        if OLD_EVENTS:
+            self.handler.ndb.events = dict(OLD_EVENTS)
+
         # Alter typeclasses
         self.char1.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
         self.char2.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
@@ -39,6 +46,8 @@ class TestEventHandler(EvenniaTest):
 
     def tearDown(self):
         """Stop the event handler."""
+        OLD_EVENTS.clear()
+        OLD_EVENTS.update(self.handler.ndb.events)
         self.handler.stop()
         CallbackHandler.script = None
         super(TestEventHandler, self).tearDown()
@@ -243,6 +252,10 @@ class TestCmdCallback(CommandTest):
         self.handler = create_script(
                 "evennia.contrib.events.scripts.EventHandler")
 
+        # Copy old events if necessary
+        if OLD_EVENTS:
+            self.handler.ndb.events = dict(OLD_EVENTS)
+
         # Alter typeclasses
         self.char1.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
         self.char2.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
@@ -252,6 +265,8 @@ class TestCmdCallback(CommandTest):
 
     def tearDown(self):
         """Stop the callback handler."""
+        OLD_EVENTS.clear()
+        OLD_EVENTS.update(self.handler.ndb.events)
         self.handler.stop()
         for script in ScriptDB.objects.filter(
                 db_typeclass_path="evennia.contrib.events.scripts.TimeEventScript"):
@@ -402,6 +417,10 @@ class TestDefaultCallbacks(CommandTest):
         self.handler = create_script(
                 "evennia.contrib.events.scripts.EventHandler")
 
+        # Copy old events if necessary
+        if OLD_EVENTS:
+            self.handler.ndb.events = dict(OLD_EVENTS)
+
         # Alter typeclasses
         self.char1.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
         self.char2.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
@@ -411,6 +430,8 @@ class TestDefaultCallbacks(CommandTest):
 
     def tearDown(self):
         """Stop the callback handler."""
+        OLD_EVENTS.clear()
+        OLD_EVENTS.update(self.handler.ndb.events)
         self.handler.stop()
         CallbackHandler.script = None
         super(TestDefaultCallbacks, self).tearDown()
