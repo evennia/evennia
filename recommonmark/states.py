@@ -1,4 +1,5 @@
 """Implement statemachine and state that are needed to Generate Derivatives."""
+
 from docutils.statemachine import StateMachineWS
 from docutils.parsers.rst import languages
 from docutils.parsers.rst.states import Struct, RSTState, Inliner
@@ -88,9 +89,7 @@ class DummyStateMachine(StateMachineWS):
             content = []
         if arguments is None:
             arguments = []
-        direc, msg = directive(name,
-                               self.language,
-                               self.document)
+        direc, _ = directive(name, self.language, self.document)
         direc = direc(name=name,
                       arguments=arguments,
                       options=options,
@@ -121,17 +120,17 @@ class DummyStateMachine(StateMachineWS):
             options = {}
         if content is None:
             content = []
-        role_fn, msg = role(name,
-                            self.language,
-                            self.node.line,
-                            self.reporter)
-        vec, msg = role_fn(name,
-                           rawtext=str(content),
-                           text=str(content),
-                           lineno=self.node.line,
-                           inliner=self.memo.inliner,
-                           options=options,
-                           content=content)
+        role_fn, _ = role(name,
+                          self.language,
+                          self.node.line,
+                          self.reporter)
+        vec, _ = role_fn(name,
+                         rawtext=str(content),
+                         text=str(content),
+                         lineno=self.node.line,
+                         inliner=self.memo.inliner,
+                         options=options,
+                         content=content)
         assert len(vec) == 1, 'only support one list in role'
         return vec[0]
 

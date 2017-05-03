@@ -1,308 +1,239 @@
-from contextlib import contextmanager
-import itertools
-import sphinx
+"""Docutils CommonMark parser"""
+
+import sys
 
 from docutils import parsers, nodes
+from sphinx import addnodes
 
-from CommonMark import DocParser, HTMLRenderer
+from CommonMark import Parser
+
 from warnings import warn
+
+if sys.version_info < (3, 0):
+    from urlparse import urlparse
+else:
+    from urllib.parse import urlparse
 
 __all__ = ['CommonMarkParser']
 
 
-def flatten(iterator):
-    return itertools.chain.from_iterable(iterator)
-
-
-class _SectionHandler(object):
-
-    def __init__(self, document):
-        self._level_to_elem = {0: document}
-
-    def _parent_elem(self, child_level):
-        parent_level = max(level for level in self._level_to_elem
-                           if child_level > level)
-        return self._level_to_elem[parent_level]
-
-    def _prune_levels(self, limit_level):
-        self._level_to_elem = dict((level, elem)
-                                   for level, elem in self._level_to_elem.items()
-                                   if level <= limit_level)
-
-    def add_new_section(self, section, level):
-        parent = self._parent_elem(level)
-        parent.append(section)
-        self._level_to_elem[level] = section
-        self._prune_levels(level)
-
-
 class CommonMarkParser(parsers.Parser):
 
-    """Parser of recommonmark."""
+    """Docutils parser for CommonMark"""
+
     supported = ('md', 'markdown')
 
-    def convert_blocks(self, blocks):
-        for block in blocks:
-            self.convert_block(block)
-
-    def convert_block(self, block):
-        if (block.t == "Document"):
-            self.convert_blocks(block.children)
-        elif (block.t == "ATXHeader") or (block.t == "SetextHeader"):
-            self.section(block)
-        elif (block.t == "Paragraph"):
-            self.paragraph(block)
-        elif (block.t == "BlockQuote"):
-            self.blockquote(block)
-        elif (block.t == "ListItem"):
-            self.list_item(block)
-        elif (block.t == "List"):
-            self.list_block(block)
-        elif (block.t == "IndentedCode"):
-            self.verbatim(block.string_content)
-        elif (block.t == "FencedCode"):
-            if len(block.strings) and len(block.strings[0]):
-                lexer = block.strings[0].strip()
-            else:
-                lexer = 'none'
-            self.code(lexer, block.string_content)
-        elif (block.t == "ReferenceDef"):
-            self.reference(block)
-        elif (block.t == "HorizontalRule"):
-            self.horizontal_rule()
-        elif (block.t == "HtmlBlock"):
-            self.html_block(block)
-        else:
-            warn("Unsupported block type: " + block.t)
+    def __init__(self):
+        self._level_to_elem = {}
 
     def parse(self, inputstring, document):
-        self.setup_parse(inputstring, document)
-
         self.document = document
         self.current_node = document
-        self.section_handler = _SectionHandler(document)
-
-        parser = DocParser()
-
+        self.setup_parse(inputstring, document)
+        self.setup_sections()
+        parser = Parser()
         ast = parser.parse(inputstring + '\n')
-
-        self.convert_block(ast)
-
+        self.convert_ast(ast)
         self.finish_parse()
 
-    @contextmanager
-    def _temp_current_node(self, current_node):
-        saved_node = self.current_node
-        self.current_node = current_node
-        yield
-        self.current_node = saved_node
+    def convert_ast(self, ast):
+        for (node, entering) in ast.walker():
+            fn_prefix = "visit" if entering else "depart"
+            fn_name = "{0}_{1}".format(fn_prefix, node.t.lower())
+            fn_default = "default_{0}".format(fn_prefix)
+            fn = getattr(self, fn_name, None)
+            if fn is None:
+                fn = getattr(self, fn_default)
+            fn(node)
 
-    # Blocks
-    def section(self, block):
-        new_section = nodes.section(' '.join(block.strings))
-        new_section.line = block.start_line
-        new_section['level'] = block.level
+    # Node type enter/exit handlers
+    def default_visit(self, mdnode):
+        pass
 
-        title_node = nodes.title(' '.join(block.strings))
-        title_node.line = block.start_line
-        append_inlines(title_node, block.inline_content)
+    def default_depart(self, mdnode):
+        """Default node depart handler
+
+        If there is a matching ``visit_<type>`` method for a container node,
+        then we should make sure to back up to it's parent element when the node
+        is exited.
+        """
+        if mdnode.is_container():
+            fn_name = 'visit_{0}'.format(mdnode.t)
+            if not hasattr(self, fn_name):
+                warn("Container node skipped: type={0}".format(mdnode.t))
+            else:
+                self.current_node = self.current_node.parent
+
+    def visit_heading(self, mdnode):
+        # Test if we're replacing a section level first
+        if isinstance(self.current_node, nodes.section):
+            if self.is_section_level(mdnode.level, self.current_node):
+                self.current_node = self.current_node.parent
+
+        title_node = nodes.title()
+        title_node.line = mdnode.sourcepos[0][0]
+
+        new_section = nodes.section()
+        new_section.line = mdnode.sourcepos[0][0]
         new_section.append(title_node)
-        name = nodes.fully_normalize_name(title_node.astext())
-        new_section['names'].append(name)
-        self.current_node.document.note_implicit_target(new_section, new_section)
 
-        self.section_handler.add_new_section(new_section, block.level)
-        self.current_node = new_section
+        self.add_section(new_section, mdnode.level)
 
-    def verbatim(self, text):
-        verbatim_node = nodes.literal_block()
-        text = ''.join(flatten(text))
-        if text.endswith('\n'):
-            text = text[:-1]
-        verbatim_node.append(nodes.Text(text, text))
-        self.current_node.append(verbatim_node)
+        # Set the current node to the title node to accumulate text children/etc
+        # for heading.
+        self.current_node = title_node
 
-    def code(self, language, text):
-        node = nodes.literal_block(text, text, language=language)
-        self.current_node.append(node)
+    def depart_heading(self, _):
+        """Finish establishing section
 
-    def paragraph(self, block):
-        p = nodes.paragraph(' '.join(block.strings))
-        p.line = block.start_line
-        append_inlines(p, block.inline_content)
+        Wrap up title node, but stick in the section node. Add the section names
+        based on all the text nodes added to the title.
+        """
+        assert isinstance(self.current_node, nodes.title)
+        # The title node has a tree of text nodes, use the whole thing to
+        # determine the section id and names
+        name = nodes.fully_normalize_name(self.current_node.astext())
+        section = self.current_node.parent
+        section['names'].append(name)
+        self.document.note_implicit_target(section, section)
+        self.current_node = section
+
+    def visit_text(self, mdnode):
+        self.current_node.append(nodes.Text(mdnode.literal, mdnode.literal))
+
+    def visit_softbreak(self, _):
+        self.current_node.append(nodes.Text('\n'))
+
+    def visit_paragraph(self, mdnode):
+        p = nodes.paragraph(mdnode.literal)
+        p.line = mdnode.sourcepos[0][0]
         self.current_node.append(p)
+        self.current_node = p
 
-    def blockquote(self, block):
-        q = nodes.block_quote(' '.join(block.strings))
-        q.line = block.start_line
+    def visit_emph(self, _):
+        n = nodes.emphasis()
+        self.current_node.append(n)
+        self.current_node = n
 
-        self.current_node.append(q)
+    def visit_strong(self, _):
+        n = nodes.strong()
+        self.current_node.append(n)
+        self.current_node = n
 
-        with self._temp_current_node(q):
-            self.convert_blocks(block.children)
+    def visit_code(self, mdnode):
+        n = nodes.literal(mdnode.literal, mdnode.literal)
+        self.current_node.append(n)
 
-    def list_item(self, block):
-        node = nodes.list_item(' '.join(block.strings))
-        node.line = block.start_line
+    def visit_link(self, mdnode):
+        ref_node = nodes.reference()
+        ref_node['refuri'] = mdnode.destination
+        # TODO okay, so this is acutally not always the right line number, but
+        # these mdnodes won't have sourcepos on them for whatever reason. This
+        # is better than 0 though.
+        ref_node.line = (mdnode.sourcepos[0][0] if mdnode.sourcepos
+                         else mdnode.parent.sourcepos[0][0])
+        if mdnode.title:
+            ref_node['title'] = mdnode.title
+        next_node = ref_node
 
-        self.current_node.append(node)
+        url_check = urlparse(mdnode.destination)
+        if not url_check.scheme and not url_check.fragment:
+            wrap_node = addnodes.pending_xref(
+                reftarget=mdnode.destination,
+                reftype='any',
+                refexplicit=True,
+                refwarn=True
+            )
+            # TODO also not correct sourcepos
+            wrap_node.line = (mdnode.sourcepos[0][0] if mdnode.sourcepos
+                              else mdnode.parent.sourcepos[0][0])
+            if mdnode.title:
+                wrap_node['title'] = mdnode.title
+            wrap_node.append(ref_node)
+            next_node = wrap_node
 
-        with self._temp_current_node(node):
-            self.convert_blocks(block.children)
+        self.current_node.append(next_node)
+        self.current_node = ref_node
 
-    def list_block(self, block):
+    def depart_link(self, mdnode):
+        if isinstance(self.current_node.parent, addnodes.pending_xref):
+            self.current_node = self.current_node.parent.parent
+        else:
+            self.current_node = self.current_node.parent
+
+    def visit_image(self, mdnode):
+        img_node = nodes.image()
+        img_node['uri'] = mdnode.destination
+
+        if mdnode.title:
+            img_node['alt'] = mdnode.title
+
+        self.current_node.append(img_node)
+        self.current_node = img_node
+
+    def visit_list(self, mdnode):
         list_node = None
-        if (block.list_data['type'] == "Bullet"):
+        if (mdnode.list_data['type'] == "bullet"):
             list_node_cls = nodes.bullet_list
         else:
             list_node_cls = nodes.enumerated_list
-        list_node = list_node_cls(' '.join(block.strings))
-        list_node.line = block.start_line
+        list_node = list_node_cls()
+        list_node.line = mdnode.sourcepos[0][0]
 
         self.current_node.append(list_node)
+        self.current_node = list_node
 
-        with self._temp_current_node(list_node):
-            self.convert_blocks(block.children)
+    def visit_item(self, mdnode):
+        node = nodes.list_item()
+        node.line = mdnode.sourcepos[0][0]
+        self.current_node.append(node)
+        self.current_node = node
 
-    def html_block(self, block):
-        raw_node = nodes.raw(' '.join(block.strings),
-                             block.string_content, format='html')
-        raw_node.line = block.start_line
+    def visit_code_block(self, mdnode):
+        kwargs = {}
+        if mdnode.is_fenced and mdnode.info:
+            kwargs['language'] = mdnode.info
+        text = ''.join(mdnode.literal)
+        if text.endswith('\n'):
+            text = text[:-1]
+        node = nodes.literal_block(text, text, **kwargs)
+        self.current_node.append(node)
+
+    def visit_block_quote(self, mdnode):
+        q = nodes.block_quote()
+        q.line = mdnode.sourcepos[0][0]
+        self.current_node.append(q)
+        self.current_node = q
+
+    def visit_html_inline(self, mdnode):
+        raw_node = nodes.raw(mdnode.literal,
+                             mdnode.literal, format='html')
+        if mdnode.sourcepos is not None:
+            raw_node.line = mdnode.sourcepos[0][0]
         self.current_node.append(raw_node)
 
-    def horizontal_rule(self):
-        transition_node = nodes.transition()
-        self.current_node.append(transition_node)
+    def visit_thematic_break(self, _):
+        self.current_node.append(nodes.transition())
 
-    def reference(self, block):
-        target_node = nodes.target()
-        target_node.line = block.start_line
+    # Section handling
+    def setup_sections(self):
+        self._level_to_elem = {0: self.document}
 
-        target_node['names'].append(make_refname(block.label))
+    def add_section(self, section, level):
+        parent_level = max(
+            section_level for section_level in self._level_to_elem
+            if level > section_level
+        )
+        parent = self._level_to_elem[parent_level]
+        parent.append(section)
+        self._level_to_elem[level] = section
 
-        target_node['refuri'] = block.destination
+        # Prune level to limit
+        self._level_to_elem = dict(
+            (section_level, section)
+            for section_level, section in self._level_to_elem.items()
+            if section_level <= level
+        )
 
-        if block.title:
-            target_node['title'] = block.title
-
-        self.current_node.append(target_node)
-
-
-def make_refname(label):
-    return text_only(label).lower()
-
-
-def text_only(nodes):
-    return "".join(s.c if s.t == "Str" else text_only(s.children)
-                   for s in nodes)
-
-# Inlines
-
-
-def emph(inlines):
-    emph_node = nodes.emphasis()
-    append_inlines(emph_node, inlines)
-    return emph_node
-
-
-def strong(inlines):
-    strong_node = nodes.strong()
-    append_inlines(strong_node, inlines)
-    return strong_node
-
-
-def inline_code(inline):
-    literal_node = nodes.literal()
-    literal_node.append(nodes.Text(inline.c))
-    return literal_node
-
-
-def inline_html(inline):
-    literal_node = nodes.raw('', inline.c, format='html')
-    return literal_node
-
-
-def inline_entity(inline):
-    val = HTMLRenderer().renderInline(inline)
-    entity_node = nodes.paragraph('', val, format='html')
-    return entity_node
-
-# The goal is to make references work like the `:any:` role except when an url
-# is given. See the XRefRole class in sphinx:
-# https://github.com/sphinx-doc/sphinx/blob/master/sphinx/roles.py
-
-
-def make_refnode(label, target, has_explicit_title):
-    if target and target.startswith(('http://', 'https://')):
-        ref_node = nodes.reference()
-        ref_node['name'] = label
-        ref_node['refuri'] = target
-        return ref_node
-    xref_node = sphinx.addnodes.pending_xref(
-        label,
-        reftype='any',
-        refexplicit=has_explicit_title,
-        refwarn=True)
-    if target:
-        xref_node['reftarget'] = target
-    else:
-        xref_node['refname'] = label
-    return xref_node
-
-
-def reference(block):
-
-    label = make_refname(block.label)
-
-    has_explicit_title = True if block.title else False
-    ref_node = make_refnode(label, block.destination, has_explicit_title)
-
-    if block.title:
-        ref_node['title'] = block.title
-
-    append_inlines(ref_node, block.label)
-    return ref_node
-
-
-def image(block):
-    img_node = nodes.image()
-
-    img_node['uri'] = block.destination
-
-    if block.title:
-        img_node['title'] = block.title
-
-    img_node['alt'] = text_only(block.label)
-    return img_node
-
-
-def parse_inline(parent_node, inline):
-    node = None
-    if (inline.t == "Str"):
-        node = nodes.Text(inline.c)
-    elif (inline.t == "Softbreak"):
-        node = nodes.Text('\n')
-    elif inline.t == "Emph":
-        node = emph(inline.c)  # noqa
-    elif inline.t == "Strong":
-        node = strong(inline.c)
-    elif inline.t == "Link":
-        node = reference(inline)
-    elif inline.t == "Image":
-        node = image(inline)
-    elif inline.t == "Code":
-        node = inline_code(inline)
-    elif inline.t == "Html":
-        node = inline_html(inline)
-    elif (inline.t == "Entity"):
-        node = inline_entity(inline)
-    else:
-        warn("Unsupported inline type " + inline.t)
-        return
-    node.line = inline.start_line
-    parent_node.append(node)
-
-
-def append_inlines(parent_node, inlines):
-    for line in inlines:
-        parse_inline(parent_node, line)
+    def is_section_level(self, level, section):
+        return self._level_to_elem.get(level, None) == section

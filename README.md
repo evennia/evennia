@@ -8,6 +8,7 @@ Documentation is available on Read the Docs: <http://recommonmark.readthedocs.or
 
 Contents
 --------
+
 * [API Reference](api_ref.md)
 * [AutoStructify Component](auto_structify.md)
 
@@ -62,7 +63,7 @@ AutoStructify comes with the following options. See http://recommonmark.readthed
 
 * __enable_auto_toc_tree__: enable the Auto Toc Tree feature.
 * __auto_toc_tree_section__: when True, Auto Toc Tree will only be enabled on section that matches the title.
-* __enable_auto_doc_ref__: enable the Auto Doc Ref feature.
+* __enable_auto_doc_ref__: enable the Auto Doc Ref feature. **Deprecated**
 * __enable_math__: enable the Math Formula feature.
 * __enable_inline_math__: enable the Inline Math feature.
 * __enable_eval_rst__: enable the evaluate embedded reStructuredText feature.

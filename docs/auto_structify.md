@@ -26,7 +26,7 @@ All the features are by default enabled
 ***List of options***
 * __enable_auto_toc_tree__: whether enable [Auto Toc Tree](#auto-toc-tree) feature.
 * __auto_toc_tree_section__: when enabled,  [Auto Toc Tree](#auto-toc-tree) will only be enabled on section that matches the title.
-* __enable_auto_doc_ref__: whether enable [Auto Doc Ref](#auto-doc-ref) feature.
+* __enable_auto_doc_ref__: whether enable [Auto Doc Ref](#auto-doc-ref) feature.  **Deprecated**
 * __enable_math__: whether enable [Math Formula](#math-formula)
 * __enable_inline_math__: whether enable [Inline Math](#inline-math)
 * __enable_eval_rst__: whether [Embed reStructuredText](#embed-restructuredtext) is enabled.
@@ -56,6 +56,14 @@ You can also find the usage of this feature in `index.md` of this document.
 
 Auto Doc Ref
 ------------
+
+```eval_rst
+.. note:: **This option is deprecated.**
+    This option has been superseded by the default linking behavior, which
+    will first try to resolve as an internal reference, and then as an
+    external reference.
+```
+
 It is common to refer to another document page in one document. We usually use reference to do that.
 AutoStructify will translate these reference block into a structured document reference. For example
 ```
@@ -65,7 +73,7 @@ will be translated to the AST of following reStructuredText code
 ```
 :doc:`API Reference </api_ref>`
 ```
-And it will be rendered as [API Reference](api_ref.md)
+And it will be rendered as [API Reference](api_ref)
 
 URL Resolver
 ------------
