@@ -1,12 +1,18 @@
+# Evennia systemd unit script
+# Place in the appropriate directory for a system or user account
+# Then, register with systemctl
 [Unit]
 Description=Evennia Server
 
 [Service]
 Type=forking
+# Change to your location.
 WorkingDirectory=/var/evennia/evennia
+# These paths must be absolute.  Change to your location.
 ExecStart=/bin/bash -c 'source /var/evennia/pyenv/bin/activate ; evennia start'
 ExecStop=/bin/bash -c 'source /var/evennia/pyenv/bin/activate ; evennia stop'
 ExecReload=/bin/bash -c 'source /var/evennia/pyenv/bin/activate ; evennia reload'
+# restart on all failures, wait 3 seconds before doing so.
 Restart=on-failure
 RestartSec=3
 
