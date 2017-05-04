@@ -1,0 +1,14 @@
+[Unit]
+Description=Evennia Server
+
+[Service]
+Type=forking
+WorkingDirectory=/var/evennia/evennia
+ExecStart=/bin/bash -c 'source /var/evennia/pyenv/bin/activate ; evennia start'
+ExecStop=/bin/bash -c 'source /var/evennia/pyenv/bin/activate ; evennia stop'
+ExecReload=/bin/bash -c 'source /var/evennia/pyenv/bin/activate ; evennia reload'
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
