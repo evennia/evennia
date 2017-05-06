@@ -62,7 +62,7 @@ When you pick up this object you should see something like:
 Being in a separate contrib, the event system isn't installed by default.  You need to do it
 manually, following these steps:
 
-1. Launch the main script:
+1. Launch the main script (important!):
    ```@py evennia.create_script("evennia.contrib.events.scripts.EventHandler")```
 2. Set the permissions (optional):
    - `EVENTS_WITH_VALIDATION`: a group that can edit callbacks, but will need approval (default to
@@ -80,6 +80,10 @@ manually, following these steps:
    - `evennia.contrib.events.typeclasses.EventRoom`: to replace `DefaultRoom`.
 
 The following sections describe in details each step of the installation.
+
+> Note: If you were to start the game without having started the main script (such as when 
+resetting your database) you will most likely face a traceback when logging in, telling you
+that a 'callback' property is not defined. After performing step `1` the error will go away. 
 
 ### Starting the event script
 
