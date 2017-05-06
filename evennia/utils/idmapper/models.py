@@ -572,7 +572,7 @@ def cache_size(mb=True):
             if not subclasses:
                 num = len(submodel.get_all_cached_instances())
                 numtotal[0] += num
-                classdict[submodel.__name__] = num
+                classdict[submodel.__dbclass__.__name__] = num
             else:
                 get_recurse(subclasses)
     get_recurse(SharedMemoryModel.__subclasses__())
