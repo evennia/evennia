@@ -6,6 +6,9 @@ know what data to read and how to display it.
 
 """
 from collections import deque
+from evennia.utils.utils import to_str, to_unicode
+from evennia.utils.olc import olc_utils
+
 # from django.conf import settings
 
 _OLC_VALIDATION_ERROR = """
@@ -16,6 +19,22 @@ The reported error was
 """
 
 _LEN_HISTORY = 10     # settings.OLC_HISTORY_LENGTH
+
+
+class InvalidActionError(RuntimeError):
+    """
+    Raised when trying to perform a field action the field
+    does not support.
+    """
+    pass
+
+
+class ValidationError(RuntimeError):
+    """
+    Raised when failing to validate new data being entered
+    into the field (from any source)
+    """
+    pass
 
 
 class OLCField(object):
@@ -31,10 +50,10 @@ class OLCField(object):
     # used for displaying extra info in the OLC
     label = "Empty field"
     # initial value of field if not given
-    initial = None
+    default = None
     # actions available on this field. Available actions
     # are replace, edit, append, remove, clear, help
-    actions = ['replace', 'edit', 'remove', 'clear', 'help']
+    actions = ['replace', 'edit', 'clear', 'help']
 
     def __init__(self, olcsession):
         self.olcsession = olcsession
@@ -43,7 +62,74 @@ class OLCField(object):
         self._has_changed = False
 
     def __repr__(self):
-        return self.display()
+        return to_str(self.display())
+
+    def __unicode__(self):
+        return to_unicode(self.display())
+
+    # perform actions
+    # TODO - include editor in check!
+    def do_replace(self, newval):
+        """
+        Replace field value.
+
+        Args:
+            newval (any): New value to replace existing one.
+
+        Raises:
+            InvalidActionError: If replacing is not allowed.
+
+        """
+        if 'replace' in self.actions:
+            self.value = newval
+        else:
+            raise InvalidActionError('Replace {value}->{newval}'.format(value=self.value, newval))
+
+    def can_edit(self):
+        """
+        Check if we may edit.
+
+        Returns:
+            can_edit (bool): If we can edit or not.
+
+        """
+        if 'edit' in self.actions:
+            return self.value
+        return False
+
+    def do_clear(self):
+        """
+        Clear field back to default.
+
+        Returns:
+            default (any): The field'd default value, now set.
+
+        Raises:
+            InvalidActionError: If clearing is not allowed.
+
+        """
+        if 'clear' in self.actions:
+            # don't validate this
+            object.__setattr__(self, 'value', self.default)
+            return self.value
+        else:
+            raise InvalidActionError('Clear')
+
+    def get_help(self):
+        """
+        Get the help text for the field.
+
+        Returns:
+            help (str): Field help text.
+
+        Raises:
+            InvalidActionError: If help is not given for this field,
+                either becuase it's disallowed or unset.
+
+        """
+        if 'help' not in self.actions or not self.__doc__:
+            raise InvalidActioNError('Help')
+        return self.__doc__
 
     # storing data to the field in a history-aware way
     @property
@@ -60,8 +146,7 @@ class OLCField(object):
             value = self.validate(value)
         except Exception as err:
             errtext = _OLC_VALIDATION_ERROR.format(fieldname=self.key, value=original_value, error=err)
-            self.olcsession.caller.msg(errtext)
-            return
+            raise ValidationError(errtxt)
         if (self._value_history and isinstance(value, (basestring, bool, int, float)) and
                 self._value_history[0] == value):
             # don't change/update history if re-adding the same thing
@@ -104,7 +189,9 @@ class OLCField(object):
 
     def from_entity(self, entity, **kwargs):
         """
-        Populate this field from an entity.
+        Populate this field by retrieving data from an entity.
+        All fields on a page will have this called, so must
+        be able to handle also incompatible entities.
 
         Args:
             entity (any): An object to use for
@@ -124,7 +211,7 @@ class OLCField(object):
 
     def validate(self, value, **kwargs):
         """
-        Validate/preprocess data to store in this field.
+        Validate/preprocess incoming data to store in this field.
 
         Args:
             value (any): An input value to
@@ -187,7 +274,7 @@ class OLCLocationField(OLCField):
     label = "The object's current location"
 
     def validate(self, value):
-        return self.olcsession.search_by_string(value)
+        return olc_utils.search_by_string(self.olcsession, value)
 
     def from_entity(self, entity, **kwargs):
         self.value = entity.db_location
@@ -208,13 +295,14 @@ class OLCHomeField(OLCField):
     label = "The object's home location"
 
     def validate(self, value):
-        return self.olcsession.search_by_string(value)
+        return olc_utils.search_by_string(self.olcsession, value)
 
     def from_entity(self, entity, **kwargs):
         self.value = entity.db_home
 
     def to_prototype(self, prototype):
         prototype['home'] = self.value
+
 
 class OLCDestinationField(OLCField):
     """
@@ -229,7 +317,7 @@ class OLCDestinationField(OLCField):
     label = "The object's (usually exit's) destination"
 
     def validate(self, value):
-        return self.olcsession.search_by_string(value)
+        return olc_utils.search_by_string(self.olcsession, value)
 
     def from_entity(self, entity, **kwargs):
         self.value = entity.db_destination
@@ -238,6 +326,7 @@ class OLCDestinationField(OLCField):
         prototype['destination'] = self.value
 
 
+# batch-setting aliases
 class OLCAliasField(OLCField):
     """
     Specify as a comma-separated list. Use quotes around the
@@ -255,7 +344,7 @@ class OLCAliasField(OLCField):
     actions = OLCField.actions + ['append']
 
     def validate(self, value):
-        return split_by_comma(value)
+        return olc_utils.split_by_comma(value)
 
     def from_entity(self, entity, **kwargs):
         self.value = list(entity.db_aliases.all())
@@ -264,6 +353,7 @@ class OLCAliasField(OLCField):
         prototype['aliases'] = self.value
 
 
+# batch-setting tags
 class OLCTagField(OLCField):
     """
     Specify as a comma-separated list of tagname or tagname:category.
@@ -276,12 +366,12 @@ class OLCTagField(OLCField):
     """
     key = 'Aliases'
     required = False
-    label = "The object's (usually exit's) destination"
+    label = "Alternative ways to refer to this object."
     actions = OLCField.actions + ['append']
 
     def validate(self, value):
-        return [tagstr.split(':', 1) if ':' in tagstr else (tagstr, None)
-                for tagstr in split_by_comma(value)]
+        return [tuple(tagstr.split(':', 1)) if ':' in tagstr else (tagstr, None)
+                for tagstr in olc_utils.split_by_comma(value)]
 
     def from_entity(self, entity, **kwargs):
         self.value = entity.tags.all(return_key_and_category=True)
@@ -289,3 +379,26 @@ class OLCTagField(OLCField):
     def to_prototype(self, prototype):
         prototype['tags'] = self.value
 
+
+# batch-setting attributes
+class OLCAttributeField(OLCField):
+    """
+    Specify as a comma-separated list of attrname=value or attrname:category=value.
+
+    Attributes are arbitrary pieces of data attached to an object. They can
+    contain references to other objects as well as simple Python structures such
+    as lists and dicts.
+
+    """
+    key = 'Attributes'
+    required = False
+    label = "Additional data attached to this object."
+    actions = OLCField.actions + ['append']
+
+    def validate(self, value):
+        return [tuple(lhs.split(':', 1) + [rhs]) if ':' in lhs else (lhs, None) + (rhs, )
+                for lhs, rhs in (attrstr.split('=', 1) if ':' in attrstr else ((attrstr, None),))
+                for attrstr in olc_utils.split_by_comma(value)]
+
+    def from_entity(self, entity, **kwargs):
+        self.value = entity.attributes.all
