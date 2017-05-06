@@ -69,7 +69,7 @@ class OLCField(object):
 
     # perform actions
     # TODO - include editor in check!
-    def do_replace(self, newval):
+    def action_replace(self, newval):
         """
         Replace field value.
 
@@ -85,7 +85,7 @@ class OLCField(object):
         else:
             raise InvalidActionError('Replace {value}->{newval}'.format(value=self.value, newval))
 
-    def can_edit(self):
+    def action_edit(self):
         """
         Check if we may edit.
 
@@ -97,7 +97,7 @@ class OLCField(object):
             return self.value
         return False
 
-    def do_clear(self):
+    def action_clear(self):
         """
         Clear field back to default.
 
@@ -115,7 +115,7 @@ class OLCField(object):
         else:
             raise InvalidActionError('Clear')
 
-    def get_help(self):
+    def action_help(self):
         """
         Get the help text for the field.
 
@@ -326,8 +326,46 @@ class OLCDestinationField(OLCField):
         prototype['destination'] = self.value
 
 
+class OLCBatchField(OLCField):
+    """
+    A field managing multiple values that can be appended to and
+    a given component popped out.
+    """
+    actions = OLCField.actions + ['append', 'pop']
+
+    def action_append(self, value):
+        """
+        Append a new value to this field.
+
+        Args:
+            value (any): The value to append.
+
+        """
+        value = self.value
+        value.append(value)
+        self.value = value
+
+    def action_pop(self, index=-1):
+        """
+        Pop an element from the field.
+
+        Args:
+            index (int, optional): Pop this index, otherwise pop the last
+                element in the field.
+
+        Returns:
+            element (any or None): The popped element or None.
+
+        """
+        lst = self.value
+        try:
+            return lst.pop(int(index))
+        except IndexError:
+            return None
+
+
 # batch-setting aliases
-class OLCAliasField(OLCField):
+class OLCAliasBatchField(OLCBatchField):
     """
     Specify as a comma-separated list. Use quotes around the
     alias if the alias itself contains a comma.
@@ -341,7 +379,6 @@ class OLCAliasField(OLCField):
     key = 'Aliases'
     required = False
     label = "The object's alternative name or names"
-    actions = OLCField.actions + ['append']
 
     def validate(self, value):
         return olc_utils.split_by_comma(value)
@@ -354,7 +391,7 @@ class OLCAliasField(OLCField):
 
 
 # batch-setting tags
-class OLCTagField(OLCField):
+class OLCTagBatchField(OLCBatchField):
     """
     Specify as a comma-separated list of tagname or tagname:category.
 
@@ -367,11 +404,14 @@ class OLCTagField(OLCField):
     key = 'Aliases'
     required = False
     label = "Alternative ways to refer to this object."
-    actions = OLCField.actions + ['append']
 
     def validate(self, value):
-        return [tuple(tagstr.split(':', 1)) if ':' in tagstr else (tagstr, None)
-                for tagstr in olc_utils.split_by_comma(value)]
+        if isinstance(value, basestring):
+            return [tuple(tagstr.split(':', 1)) if ':' in tagstr else (tagstr, None)
+                    for tagstr in olc_utils.split_by_comma(value)]
+        else:
+            # assume a list of (key, category) - just let it pass
+            return value
 
     def from_entity(self, entity, **kwargs):
         self.value = entity.tags.all(return_key_and_category=True)
@@ -379,9 +419,15 @@ class OLCTagField(OLCField):
     def to_prototype(self, prototype):
         prototype['tags'] = self.value
 
+    def display(self):
+        outstr = []
+        for key, category in self.value:
+            outstr.append("{key}:{category}".format(key=key, category=category))
+        return '\n'.join(outstr)
+
 
 # batch-setting attributes
-class OLCAttributeField(OLCField):
+class OLCAttributeBatchField(OLCBatchField):
     """
     Specify as a comma-separated list of attrname=value or attrname:category=value.
 
@@ -396,9 +442,28 @@ class OLCAttributeField(OLCField):
     actions = OLCField.actions + ['append']
 
     def validate(self, value):
-        return [tuple(lhs.split(':', 1) + [rhs]) if ':' in lhs else (lhs, None) + (rhs, )
-                for lhs, rhs in (attrstr.split('=', 1) if ':' in attrstr else ((attrstr, None),))
-                for attrstr in olc_utils.split_by_comma(value)]
+        if isinstance(value, basestring):
+            return [tuple(lhs.split(':', 1) + [rhs]) if ':' in lhs else (lhs, None) + (rhs, )
+                    for lhs, rhs in (attrstr.split('=', 1) if ':' in attrstr else ((attrstr, None),))
+                    for attrstr in olc_utils.split_by_comma(value)]
+        else:
+            # we assume this is a list of Attributes
+            return [(attr.key, attr.category, attr.value) for attr in value]
 
     def from_entity(self, entity, **kwargs):
-        self.value = entity.attributes.all
+        self.value = entity.attributes.all()
+
+    def to_prototype(self, prototype):
+        for key, category, value in self.value:
+            prototype['attrs'] = (key, value, category)
+
+    def display(self):
+        outstr = []
+        for key, category, value in self.value:
+            outstr.append("{key}:{category} = {value}".format(key=key, category=category, value=value))
+        return '\n'.join(outstr)
+
+
+# Details - individual attrs/tags/aliases on an object rather than batch-adding
+
+

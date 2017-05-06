@@ -37,7 +37,7 @@ Possible keywords are:
         execution namespace contains 'evennia' for the library and 'obj'
     tags - string or list of strings or tuples `(tagstr, category)`. Plain
         strings will be result in tags with no category (default tags).
-    args - tuple or list of tuples of Attributes to add. This form allows
+    attrs - tuple or list of tuples of Attributes to add. This form allows
     more complex Attributes to be set. Tuples at least specify `(key, value)`
         but can also specify up to `(key, value, category, lockstring)`. If
         you want to specify a lockstring but not a category, set the category
@@ -280,7 +280,7 @@ def spawn(*prototypes, **kwargs):
         alias_string = aliasval() if callable(aliasval) else aliasval
         tagval = prot.pop("tags", [])
         tags = tagval() if callable(tagval) else tagval
-        attrval = prot.pop("args", [])
+        attrval = prot.pop("attrs", [])
         attributes = attrval() if callable(tagval) else attrval
 
         exval = prot.pop("exec", "")
