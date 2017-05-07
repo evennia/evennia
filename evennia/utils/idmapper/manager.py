@@ -25,6 +25,12 @@ class SharedMemoryManager(Manager):
                 key = key[:-len('__exact')]
             if key in ('pk', self.model._meta.pk.attname):
                 inst = self.model.get_cached_instance(kwargs[items[0]])
+                try:
+                    # we got the item from cache, but if this is a fk, check it's ours
+                    if getattr(inst, str(self.field).split(".")[-1]) != self.instance:
+                        inst = None
+                except Exception:
+                    pass
         if inst is None:
             inst = super(SharedMemoryManager, self).get(*args, **kwargs)
         return inst
