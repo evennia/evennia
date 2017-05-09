@@ -45,7 +45,6 @@ class EventHandler(DefaultScript):
         self.db.locked = []
 
         # Tasks
-        self.db.task_id = 0
         self.db.tasks = {}
 
     def at_start(self):
@@ -559,8 +558,12 @@ class EventHandler(DefaultScript):
         """
         now = datetime.now()
         delta = timedelta(seconds=seconds)
-        task_id = self.db.task_id
-        self.db.task_id += 1
+
+        # Choose a free task_id
+        used_ids = list(self.db.tasks.keys())
+        task_id = 1
+        while task_id in used_ids:
+            task_id += 1
 
         # Collect and freeze current locals
         locals = {}

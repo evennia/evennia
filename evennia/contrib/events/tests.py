@@ -58,7 +58,6 @@ class TestEventHandler(EvenniaTest):
         self.assertEqual(self.handler.db.to_valid, [])
         self.assertEqual(self.handler.db.locked, [])
         self.assertEqual(self.handler.db.tasks, {})
-        self.assertEqual(self.handler.db.task_id, 0)
         self.assertIsNotNone(self.handler.ndb.events)
 
     def test_add_validation(self):
