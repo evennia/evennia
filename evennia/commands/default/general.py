@@ -124,6 +124,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         nicktypes = [switch for switch in switches if switch in ("object", "player", "inputline")] or ["inputline"]
 
         nicklist = utils.make_iter(caller.nicks.get(return_obj=True) or [])
+        nicklist = [nick for nick in nicklist if hasattr(nick, 'value')]
 
         if 'list' in switches or self.cmdstring in ("nicks", "@nicks"):
 
