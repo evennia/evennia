@@ -1927,6 +1927,10 @@ class CmdExamine(ObjManipCommand):
             string += "\n|wLocation|n: %s" % obj.location
             if obj.location:
                 string += " (#%s)" % obj.location.id
+        if hasattr(obj, "home"):
+            string += "\n|wHome|n: %s" % obj.home
+            if obj.home:
+                string += " (#%s)" % obj.home.id
         if hasattr(obj, "destination") and obj.destination:
             string += "\n|wDestination|n: %s" % obj.destination
             if obj.destination:
