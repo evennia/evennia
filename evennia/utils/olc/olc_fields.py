@@ -364,6 +364,23 @@ class OLCBatchField(OLCField):
             return None
 
 
+# setting single Alias
+class OLCAliasField(OLCField):
+    key = "Alias"
+    required = False
+    label = "An alternative name for the object"
+
+    def from_entity(self, entity, **kwargs):
+        if "index" in kwargs:
+            self.value = entity.aliases.all()[int(kwargs)]
+
+    def to_prototype(self, prototype):
+        if is_iter(prototype["aliases"]):
+            prototype["aliases"].append(self.value)
+        else:
+            prototype["aliases"] = [self.value]
+
+
 # batch-setting aliases
 class OLCAliasBatchField(OLCBatchField):
     """
@@ -384,26 +401,52 @@ class OLCAliasBatchField(OLCBatchField):
         return olc_utils.split_by_comma(value)
 
     def from_entity(self, entity, **kwargs):
-        self.value = list(entity.db_aliases.all())
+        self.value = list(entity.aliases.all())
 
     def to_prototype(self, prototype):
         prototype['aliases'] = self.value
 
 
-# batch-setting tags
+# setting single Tag
+class OLCTagField(OLCField):
+    """
+    Specify as tagname or tagname:category
+
+    Tags are used to identify groups of objects for later quick retrieval.
+    This is very useful for anything from creating zones of rooms to
+    easily find all Characters belonging a given group etc. A tag can also
+    have a category for a second level of grouping.
+
+    """
+    key = "Tag"
+    required = False
+    label = "A single label for the object."
+
+    def validate(self, value):
+
+    def from_entity(self, entity, **kwargs):
+        if "index" in kwargs:
+            self.value = entity.tags.all()[int(kwargs)]
+
+    def to_prototype(self, prototype):
+        if is_iter(prototype["tags"]): prototype["tags"].append(self.value)
+        else:
+            prototype["tags"] = [self.value]
+
+
+# batch-setting Tags
 class OLCTagBatchField(OLCBatchField):
     """
     Specify as a comma-separated list of tagname or tagname:category.
 
-    Aliases are alternate names for an object. An alias is just
-    as fast to search for as a key and two objects are assumed
-    to have the same name is *either* their name or any of their
-    aliases match.
+    Tags are used to identify groups of objects for later quick retrieval.
+    This is very useful for anything from creating zones of rooms to
+    easily find all Characters belonging a given group etc.
 
     """
-    key = 'Aliases'
+    key = 'Tags'
     required = False
-    label = "Alternative ways to refer to this object."
+    label = "Attach labels to objects to group and find them."
 
     def validate(self, value):
         if isinstance(value, basestring):
@@ -424,6 +467,23 @@ class OLCTagBatchField(OLCBatchField):
         for key, category in self.value:
             outstr.append("{key}:{category}".format(key=key, category=category))
         return '\n'.join(outstr)
+
+
+# setting single Attribute
+class OLCAttributeField(OLCField):
+    key = "Attribute"
+    required = False
+    label = "An alternative name for the object"
+
+    def from_entity(self, entity, **kwargs):
+        if "index" in kwargs:
+            self.value = entity.attributes.all()[int(kwargs)]
+
+    def to_prototype(self, prototype):
+        if is_iter(prototype["attrs"]):
+            prototype["attrs"].append(self.value)
+        else:
+            prototype["attrs"] = [self.value]
 
 
 # batch-setting attributes
@@ -462,8 +522,5 @@ class OLCAttributeBatchField(OLCBatchField):
         for key, category, value in self.value:
             outstr.append("{key}:{category} = {value}".format(key=key, category=category, value=value))
         return '\n'.join(outstr)
-
-
-# Details - individual attrs/tags/aliases on an object rather than batch-adding
 
 
