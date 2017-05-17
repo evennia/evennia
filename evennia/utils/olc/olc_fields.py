@@ -53,7 +53,7 @@ class OLCField(object):
     default = None
     # actions available on this field. Available actions
     # are replace, edit, append, remove, clear, help
-    actions = ['replace', 'edit', 'clear', 'help']
+    actions = ['edit', 'clear', 'help']
 
     def __init__(self, olcsession):
         self.olcsession = olcsession
@@ -69,35 +69,27 @@ class OLCField(object):
 
     # perform actions
     # TODO - include editor in check!
-    def action_replace(self, newval):
+    def action_edit(self, *args):
         """
-        Replace field value.
+        Edit field value.
 
         Args:
-            newval (any): New value to replace existing one.
+            newval (any): New value to add/replace with.
 
         Raises:
-            InvalidActionError: If replacing is not allowed.
+            InvalidActionError: If editing is not allowed.
 
         """
-        if 'replace' in self.actions:
-            self.value = newval
+        if args:
+            newval = args[0]
+            if 'edit' in self.actions:
+                self.value = newval
+                return
         else:
-            raise InvalidActionError('Replace {value}->{newval}'.format(value=self.value, newval))
+            newval = "<Not given>"
+        raise InvalidActionError('Edit {value}->{newval}'.format(value=self.value, newval))
 
-    def action_edit(self):
-        """
-        Check if we may edit.
-
-        Returns:
-            can_edit (bool): If we can edit or not.
-
-        """
-        if 'edit' in self.actions:
-            return self.value
-        return False
-
-    def action_clear(self):
+    def action_clear(self, *args):
         """
         Clear field back to default.
 
@@ -112,10 +104,9 @@ class OLCField(object):
             # don't validate this
             object.__setattr__(self, 'value', self.default)
             return self.value
-        else:
-            raise InvalidActionError('Clear')
+        raise InvalidActionError('Clear')
 
-    def action_help(self):
+    def action_help(self, *args):
         """
         Get the help text for the field.
 
@@ -423,13 +414,18 @@ class OLCTagField(OLCField):
     label = "A single label for the object."
 
     def validate(self, value):
+        category = None
+        if ':' in value:
+            value, category = value.rsplit(':', 1)
+        return (value, category)
 
     def from_entity(self, entity, **kwargs):
         if "index" in kwargs:
             self.value = entity.tags.all()[int(kwargs)]
 
     def to_prototype(self, prototype):
-        if is_iter(prototype["tags"]): prototype["tags"].append(self.value)
+        if is_iter(prototype["tags"]):
+            prototype["tags"].append(self.value)
         else:
             prototype["tags"] = [self.value]
 
@@ -469,6 +465,7 @@ class OLCTagBatchField(OLCBatchField):
         return '\n'.join(outstr)
 
 
+# TODO fix this to correctly handle key, value, category
 # setting single Attribute
 class OLCAttributeField(OLCField):
     key = "Attribute"
