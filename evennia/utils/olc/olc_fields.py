@@ -56,12 +56,11 @@ class OLCField(object):
     actions = ['edit', 'clear', 'help']
 
     def __init__(self, olcsession):
-        self.olcsession = olcsession
-        self._value_history = deque([self.initial], _LEN_HISTORY)
+        self._value_history = deque([self.default], _LEN_HISTORY)
         self._history_pos = 0
         self._has_changed = False
 
-    def __repr__(self):
+    def __str__(self):
         return to_str(self.display())
 
     def __unicode__(self):
@@ -87,7 +86,7 @@ class OLCField(object):
                 return
         else:
             newval = "<Not given>"
-        raise InvalidActionError('Edit {value}->{newval}'.format(value=self.value, newval))
+        raise InvalidActionError('Edit {value}->{newval}'.format(value=self.value, newval=newval))
 
     def action_clear(self, *args):
         """
@@ -136,7 +135,7 @@ class OLCField(object):
         try:
             value = self.validate(value)
         except Exception as err:
-            errtext = _OLC_VALIDATION_ERROR.format(fieldname=self.key, value=original_value, error=err)
+            errtxt = _OLC_VALIDATION_ERROR.format(fieldname=self.key, value=original_value, error=err)
             raise ValidationError(errtxt)
         if (self._value_history and isinstance(value, (basestring, bool, int, float)) and
                 self._value_history[0] == value):
@@ -150,7 +149,7 @@ class OLCField(object):
     @value.deleter
     def value(self):
         self.history_pos = 0
-        self._value_history.appendleft(self.initial)
+        self._value_history.appendleft(self.default)
 
     def history(self, step):
         """
@@ -187,6 +186,7 @@ class OLCField(object):
         Args:
             entity (any): An object to use for
                 populating this field (like an Object).
+
         """
         pass
 
@@ -197,6 +197,7 @@ class OLCField(object):
         Args:
             prototype (dict): The prototype dict
                 to update with the value of this field.
+
         """
         pass
 
@@ -216,7 +217,7 @@ class OLCField(object):
                 validated and/or processed to store in this field.
 
         Raises:
-            Exception: If the field was given an
+            ValidateException: If the field was given an
                 invalid value to validate.
 
         """
@@ -232,8 +233,7 @@ class OLCField(object):
 
 # OLCFields for all the standard model properties
 # key, location, destination, home, aliases,
-# permissions, tags, attributes
-# ...
+# permissions, tags, attributes ...
 
 
 class OLCKeyField(OLCField):

@@ -23,8 +23,8 @@ Stored so as to be possible to reproduce.
 
 """
 
-from collections import OrderedDict
 from time import time
+from collections import OrderedDict
 from evennia.utils.evmenu import EvMenu
 from evennia.commands.command import Command
 
@@ -46,15 +46,11 @@ def _new_session():
     Returns:
         olcsession (dict): An empty OLCSession.
 
-    Notes:
-        This is a customized dict which the Attribute system will
-        understand how to pickle and depickle since it provides
-        iteration.
     """
     return {
         # header info
         "caller": None,                                 # the current user of this session
-        "modified": time.now(),                         # last time this olcsession was active
+        "modified": time(),
         "db_model": None,                               # currently unused, ObjectDB for now
         "prompt_template": _DEFAULT_PROMPT,             # prompt display
         "olcfields": OrderedDict(),                                # registered OLCFields. Order matters
@@ -84,7 +80,7 @@ def search_entity(osession, query):
         query (str): This is a string, a #dbref or an extended search
 
     """
-    osession['db_model'].__class__.
+    pass
 
 
 
@@ -114,6 +110,18 @@ def display_field_value(osession, fieldname):
 
 
 # Access function
+
+from evennia.utils.olc import olc_pages
+def display_obj(obj):
+    """
+    Test of displaying object using fields and pages.
+    """
+    olcsession = _new_session()
+    olcsession['caller'] = obj
+    page = olc_pages.OLCObjectPage(olcsession)
+    obj.msg(str(page))
+
+
 
 def OLC(caller, target=None, startnode=None):
     """
