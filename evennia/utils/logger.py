@@ -21,7 +21,6 @@ from datetime import datetime
 from traceback import format_exc
 from twisted.python import log, logfile
 from twisted.internet.threads import deferToThread
-from django.conf import settings
 
 
 _LOGDIR = None
@@ -161,6 +160,7 @@ class EvenniaLogFile(logfile.LogFile):
     lines of the previous log to the start of the new log, in order
     to preserve a continuous chat history for channel log files.
     """
+    from django.conf import settings
     num_lines_to_append = settings.CHANNEL_LOG_NUM_TAIL_LINES
 
     def rotate(self):
@@ -209,6 +209,7 @@ def _open_log_file(filename):
     handle.  Will create a new file in the log dir if one didn't
     exist.
     """
+    from django.conf import settings
     global _LOG_FILE_HANDLES, _LOGDIR
     if not _LOGDIR:
         _LOGDIR = settings.LOG_DIR
