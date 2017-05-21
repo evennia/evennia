@@ -155,9 +155,19 @@ log_depmsg = log_dep
 # Arbitrary file logger
 
 class EvenniaLogFile(logfile.LogFile):
-    num_lines_to_append = settings.NUM_LOG_TAIL_LINES
+    """
+    A rotating logfile based off Twisted's LogFile. It overrides
+    the LogFile's rotate method in order to append some of the last
+    lines of the previous log to the start of the new log, in order
+    to preserve a continuous chat history for channel log files.
+    """
+    num_lines_to_append = settings.CHANNEL_LOG_NUM_TAIL_LINES
 
     def rotate(self):
+        """
+        Rotates our log file and appends some number of lines from
+        the previous log to the start of the new one.
+        """
         append_tail = self.num_lines_to_append > 0
         if not append_tail:
             logfile.LogFile.rotate(self)
@@ -168,9 +178,26 @@ class EvenniaLogFile(logfile.LogFile):
             self.write(line)
 
     def seek(self, *args, **kwargs):
+        """
+        Convenience method for accessing our _file attribute's seek method,
+        which is used in tail_log_function.
+        Args:
+            *args: Same args as file.seek
+            **kwargs: Same kwargs as file.seek
+        """
         return self._file.seek(*args, **kwargs)
 
     def readlines(self, *args, **kwargs):
+        """
+        Convenience method for accessing our _file attribute's readlines method,
+        which is used in tail_log_function.
+        Args:
+            *args: same args as file.readlines
+            **kwargs: same kwargs as file.readlines
+
+        Returns:
+            lines (list): lines from our _file attribute.
+        """
         return self._file.readlines(*args, **kwargs)
 
 _LOG_FILE_HANDLES = {}  # holds open log handles
@@ -192,7 +219,7 @@ def _open_log_file(filename):
         return _LOG_FILE_HANDLES[filename]
     else:
         try:
-            filehandle = EvenniaLogFile.fromFullPath(filename, rotateLength=settings.LOG_ROTATE_SIZE)
+            filehandle = EvenniaLogFile.fromFullPath(filename, rotateLength=settings.CHANNEL_LOG_ROTATE_SIZE)
             # filehandle = open(filename, "a+")  # append mode + reading
             _LOG_FILE_HANDLES[filename] = filehandle
             return filehandle
