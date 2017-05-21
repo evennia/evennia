@@ -159,12 +159,10 @@ class EvenniaLogFile(logfile.LogFile):
 
     def rotate(self):
         append_tail = self.num_lines_to_append > 0
-        print "append_tail is %s" % append_tail
         if not append_tail:
             logfile.LogFile.rotate(self)
             return
         lines = tail_log_file(self.path, 0, self.num_lines_to_append)
-        print "lines is %s" % lines
         logfile.LogFile.rotate(self)
         for line in lines:
             self.write(line)
