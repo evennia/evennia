@@ -19,8 +19,9 @@ import os
 import time
 from datetime import datetime
 from traceback import format_exc
-from twisted.python import log
+from twisted.python import log, logfile
 from twisted.internet.threads import deferToThread
+from django.conf import settings
 
 
 _LOGDIR = None
@@ -153,6 +154,27 @@ log_depmsg = log_dep
 
 # Arbitrary file logger
 
+class EvenniaLogFile(logfile.LogFile):
+    num_lines_to_append = settings.NUM_LOG_TAIL_LINES
+
+    def rotate(self):
+        append_tail = self.num_lines_to_append > 0
+        print "append_tail is %s" % append_tail
+        if not append_tail:
+            logfile.LogFile.rotate(self)
+            return
+        lines = tail_log_file(self.path, 0, self.num_lines_to_append)
+        print "lines is %s" % lines
+        logfile.LogFile.rotate(self)
+        for line in lines:
+            self.write(line)
+
+    def seek(self, *args, **kwargs):
+        return self._file.seek(*args, **kwargs)
+
+    def readlines(self, *args, **kwargs):
+        return self._file.readlines(*args, **kwargs)
+
 _LOG_FILE_HANDLES = {}  # holds open log handles
 
 
@@ -164,7 +186,6 @@ def _open_log_file(filename):
     """
     global _LOG_FILE_HANDLES, _LOGDIR
     if not _LOGDIR:
-        from django.conf import settings
         _LOGDIR = settings.LOG_DIR
 
     filename = os.path.join(_LOGDIR, filename)
@@ -173,7 +194,8 @@ def _open_log_file(filename):
         return _LOG_FILE_HANDLES[filename]
     else:
         try:
-            filehandle = open(filename, "a+")  # append mode + reading
+            filehandle = EvenniaLogFile.fromFullPath(filename, rotateLength=settings.LOG_ROTATE_SIZE)
+            # filehandle = open(filename, "a+")  # append mode + reading
             _LOG_FILE_HANDLES[filename] = filehandle
             return filehandle
         except IOError:
