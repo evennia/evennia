@@ -24,7 +24,9 @@ from twisted.internet.threads import deferToThread
 
 
 _LOGDIR = None
+_LOG_ROTATE_SIZE = None
 _TIMEZONE = None
+_CHANNEL_LOG_NUM_TAIL_LINES = None
 
 
 def timeformat(when=None):
@@ -160,8 +162,13 @@ class EvenniaLogFile(logfile.LogFile):
     lines of the previous log to the start of the new log, in order
     to preserve a continuous chat history for channel log files.
     """
-    from django.conf import settings
-    num_lines_to_append = settings.CHANNEL_LOG_NUM_TAIL_LINES
+    # we delay import of settings to keep logger module as free
+    # from django as possible.
+    global _CHANNEL_LOG_NUM_TAIL_LINES
+    if _CHANNEL_LOG_NUM_TAIL_LINES is None:
+        from django.conf import settings
+        _CHANNEL_LOG_NUM_TAIL_LINES = settings.CHANNEL_LOG_NUM_TAIL_LINES
+    num_lines_to_append = _CHANNEL_LOG_NUM_TAIL_LINES
 
     def rotate(self):
         """
@@ -209,10 +216,13 @@ def _open_log_file(filename):
     handle.  Will create a new file in the log dir if one didn't
     exist.
     """
-    from django.conf import settings
-    global _LOG_FILE_HANDLES, _LOGDIR
+    # we delay import of settings to keep logger module as free
+    # from django as possible.
+    global _LOG_FILE_HANDLES, _LOGDIR, _LOG_ROTATE_SIZE
     if not _LOGDIR:
+        from django.conf import settings
         _LOGDIR = settings.LOG_DIR
+        _LOG_ROTATE_SIZE = settings.CHANNEL_LOG_ROTATE_SIZE
 
     filename = os.path.join(_LOGDIR, filename)
     if filename in _LOG_FILE_HANDLES:
@@ -220,7 +230,7 @@ def _open_log_file(filename):
         return _LOG_FILE_HANDLES[filename]
     else:
         try:
-            filehandle = EvenniaLogFile.fromFullPath(filename, rotateLength=settings.CHANNEL_LOG_ROTATE_SIZE)
+            filehandle = EvenniaLogFile.fromFullPath(filename, rotateLength=_LOG_ROTATE_SIZE)
             # filehandle = open(filename, "a+")  # append mode + reading
             _LOG_FILE_HANDLES[filename] = filehandle
             return filehandle
