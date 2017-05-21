@@ -538,6 +538,24 @@ class SubscriptionHandler(object):
             self._recache()
         return self._cache
 
+    def online(self):
+        """
+        Get all online players from our cache
+        Returns:
+            subscribers (list): Subscribers who are online or
+                are puppeted by an online player.
+        """
+        subs = []
+        for obj in self.all():
+            if hasattr(obj, 'player'):
+                if not obj.player:
+                    continue
+                obj = obj.player
+            if not obj.is_connected:
+                continue
+            subs.append(obj)
+        return subs
+
     def clear(self):
         """
         Remove all subscribers from channel.
