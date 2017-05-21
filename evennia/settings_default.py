@@ -125,8 +125,6 @@ LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, 'lockwarnings.log')
 # file sizes down. Turn off to get ever growing log files and never
 # loose log info.
 CYCLE_LOGFILES = True
-# whether channels attempt to message offline players by default
-CHANNELS_MSG_OFFLINE = False
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 TIME_ZONE = 'UTC'

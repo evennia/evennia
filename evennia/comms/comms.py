@@ -2,8 +2,6 @@
 Base typeclass for in-game Channels.
 
 """
-from django.conf import settings
-
 from evennia.typeclasses.models import TypeclassBase
 from evennia.comms.models import TempMsg, ChannelDB
 from evennia.comms.managers import ChannelManager
@@ -240,7 +238,6 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         Args:
             msgobj (Msg or TempMsg): Message to distribute.
             online (bool): Only send to receivers who are actually online
-                (not currently used):
 
         Notes:
             This is also where logging happens, if enabled.
@@ -267,7 +264,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             logger.log_file(msgobj.message, self.attributes.get("log_file") or "channel_%s.log" % self.key)
 
     def msg(self, msgobj, header=None, senders=None, sender_strings=None,
-            keep_log=None, online=settings.CHANNELS_MSG_OFFLINE, emit=False, external=False):
+            keep_log=None, online=False, emit=False, external=False):
         """
         Send the given message to all players connected to channel. Note that
         no permission-checking is done here; it is assumed to have been
