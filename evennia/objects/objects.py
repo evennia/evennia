@@ -1401,7 +1401,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             return ""
         # get and identify all objects
         visible = (con for con in self.contents if con != looker and
-                   con.access(looker, "view"))
+                   con.access(looker, "view") and
+                   con.access(looker, "notice", default=True))
         exits, users, things = [], [], []
         for con in visible:
             key = con.get_display_name(looker)
