@@ -721,6 +721,7 @@ def kill(pidfile, killsignal=SIG, succmsg="", errmsg="",
                     # avoid killing ourselves here.
                     SetConsoleCtrlHandler(None, True)
                     GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0)
+                    SetConsoleCtrlHandler(None, True)
                 except KeyboardInterrupt:
                     # We must catch and ignore the interrupt sent.
                     pass
