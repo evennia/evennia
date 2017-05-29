@@ -294,6 +294,7 @@ if SSH_ENABLED:
 
 
 if WEBSERVER_ENABLED:
+    from evennia.server.webserver import Website
 
     # Start a reverse proxy to relay data to the Server-side webserver
 
@@ -337,7 +338,7 @@ if WEBSERVER_ENABLED:
                     websocket_started = True
                     webclientstr = "\n   + webclient%s" % pstring
 
-            web_root = server.Site(web_root, logPath=settings.HTTP_LOG_FILE)
+            web_root = Website(web_root, logPath=settings.HTTP_LOG_FILE)
             proxy_service = internet.TCPServer(proxyport,
                                                web_root,
                                                interface=interface)
