@@ -151,7 +151,8 @@ class Evennia(object):
         sys.path.insert(1, '.')
 
         # create a store of services
-        self.services = service.IServiceCollection(application)
+        self.services = service.MultiService()
+        self.services.setServiceParent(application)
         self.amp_protocol = None  # set by amp factory
         self.sessions = SESSIONS
         self.sessions.server = self
@@ -348,6 +349,10 @@ class Evennia(object):
         from evennia.server.models import ServerConfig
         from evennia.utils import gametime as _GAMETIME_MODULE
 
+        if WEBSERVER_ENABLED:
+            # finish all pending web requests. Otherwise stopping threadpool will cause deadlock.
+            yield self.web_root.get_pending_requests()
+
         if mode == 'reload':
             # call restart hooks
             ServerConfig.objects.conf("server_restart_mode", "reload")
@@ -533,11 +538,13 @@ if WEBSERVER_ENABLED:
     # recognized by Django
     threads = threadpool.ThreadPool(minthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[0]),
                                     maxthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[1]))
+
     web_root = DjangoWebRoot(threads)
     # point our media resources to url /media
     web_root.putChild("media", static.File(settings.MEDIA_ROOT))
     # point our static resources to url /static
     web_root.putChild("static", static.File(settings.STATIC_ROOT))
+    EVENNIA.web_root = web_root
 
     if WEB_PLUGINS_MODULE:
         # custom overloads
