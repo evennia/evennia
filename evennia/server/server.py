@@ -397,8 +397,15 @@ class Evennia(object):
             # this will also send a reactor.stop signal, so we set a
             # flag to avoid loops.
             self.shutdown_complete = True
-            # kill the server
-            reactor.callLater(1, reactor.stop)
+            if WEBSERVER_ENABLED:
+                # Just to be extra sure, get all pending requests that might have occurred after we started
+                d = self.web_root.get_pending_requests()
+                d.addCallback(lambda _: reactor.stop())
+                from twisted.internet import task
+                yield task.deferLater(reactor, 1, d.callback, None)
+            else:
+                # kill the server
+                reactor.callLater(1, reactor.stop)
 
         # we make sure the proper gametime is saved as late as possible
         ServerConfig.objects.conf("runtime", _GAMETIME_MODULE.runtime())
