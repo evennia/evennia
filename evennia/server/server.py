@@ -526,12 +526,12 @@ if WEBSERVER_ENABLED:
 
     # Start a django-compatible webserver.
 
-    from twisted.python import threadpool
-    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, Website
+    #from twisted.python import threadpool
+    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, Website, LockableThreadPool
 
     # start a thread pool and define the root url (/) as a wsgi resource
     # recognized by Django
-    threads = threadpool.ThreadPool(minthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[0]),
+    threads = LockableThreadPool(minthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[0]),
                                     maxthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[1]))
     web_root = DjangoWebRoot(threads)
     # point our media resources to url /media

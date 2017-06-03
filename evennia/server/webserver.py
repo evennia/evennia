@@ -18,6 +18,8 @@ from twisted.internet import reactor
 from twisted.application import internet
 from twisted.web.proxy import ReverseProxyResource
 from twisted.web.server import NOT_DONE_YET
+from twisted.python import threadpool
+from twisted.internet.defer import Deferred
 
 from twisted.web.wsgi import WSGIResource
 from django.conf import settings
@@ -27,6 +29,25 @@ from evennia.utils import logger
 
 _UPSTREAM_IPS = settings.UPSTREAM_IPS
 _DEBUG = settings.DEBUG
+
+
+class LockableThreadPool(threadpool.ThreadPool):
+    """
+    Threadpool that can be locked from accepting new requests.
+    """
+    def __init__(self, *args, **kwargs):
+        self._accept_new = True
+
+    def lock(self):
+        self._accept_new = False
+
+    def callInThread(self, func, *args, **kwargs):
+        """
+        called in the main reactor thread.
+        """
+        if self._accept_new:
+            threadpool.ThreadPool(self, func, *args, **kwargs)
+
 
 #
 # X-Forwarded-For Handler
@@ -115,7 +136,7 @@ class DjangoWebRoot(resource.Resource):
     """
     This creates a web root (/) that Django
     understands by tweaking the way
-    child instancee ars recognized.
+    child instances are recognized.
     """
     def __init__(self, pool):
         """
