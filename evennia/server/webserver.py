@@ -28,6 +28,7 @@ from evennia.utils import logger
 _UPSTREAM_IPS = settings.UPSTREAM_IPS
 _DEBUG = settings.DEBUG
 
+
 #
 # X-Forwarded-For Handler
 #
@@ -117,6 +118,8 @@ class DjangoWebRoot(resource.Resource):
     understands by tweaking the way
     child instancee ars recognized.
     """
+    open_requests = []
+
     def __init__(self, pool):
         """
         Setup the django+twisted resource.
@@ -127,6 +130,21 @@ class DjangoWebRoot(resource.Resource):
         """
         resource.Resource.__init__(self)
         self.wsgi_resource = WSGIResource(reactor, pool, WSGIHandler())
+
+    def get_pending_requests(self):
+        """
+        Converts our open_requests list of deferreds into a DeferredList
+
+        Returns:
+            d_list (deferred): A DeferredList object of all our requests
+        """
+        from twisted.internet import defer
+        return defer.DeferredList(self.open_requests, consumeErrors=True)
+
+    def _decrement_requests(self, *args, **kwargs):
+        deferred = kwargs.get('deferred', None)
+        if deferred in self.open_requests:
+            self.open_requests.remove(deferred)
 
     def getChild(self, path, request):
         """
@@ -140,7 +158,11 @@ class DjangoWebRoot(resource.Resource):
         """
         path0 = request.prepath.pop(0)
         request.postpath.insert(0, path0)
+        deferred = request.notifyFinish()
+        self.open_requests.append(deferred)
+        deferred.addBoth(self._decrement_requests, deferred=deferred)
         return self.wsgi_resource
+
 
 #
 # Site with deactivateable logging
@@ -151,10 +173,12 @@ class Website(server.Site):
     This class will only log http requests if settings.DEBUG is True.
     """
     noisy = False
+
     def log(self, request):
-        "Conditional logging"
+        """Conditional logging"""
         if _DEBUG:
             server.Site.log(self, request)
+
 
 #
 # Threaded Webserver
