@@ -149,12 +149,13 @@ class DjangoWebRoot(resource.Resource):
             pool (ThreadPool): The twisted threadpool.
 
         """
-        self._pool = pool
+        self.pool = pool
+        self._echo_log = True
         self._pending_requests = {}
         resource.Resource.__init__(self)
         self.wsgi_resource = WSGIResource(reactor, pool, WSGIHandler())
 
-    def get_pending_requests(self):
+    def empty_threadpool(self):
         """
         Converts our _pending_requests list of deferreds into a DeferredList
 
@@ -162,6 +163,11 @@ class DjangoWebRoot(resource.Resource):
             deflist (DeferredList): Contains all deferreds of pending requests.
 
         """
+        self.pool.lock()
+        if self._pending_requests and self._echo_log:
+            self._echo_log = False  # just to avoid multiple echoes
+            msg = "Webserver waiting for %i requests ... "
+            logger.log_info(msg % len(self._pending_requests))
         return defer.DeferredList(self._pending_requests, consumeErrors=True)
 
     def _decrement_requests(self, *args, **kwargs):

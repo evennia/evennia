@@ -16,7 +16,7 @@ import os
 from twisted.web import static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
-from twisted.internet.task import LoopingCall
+from twisted.internet.task import LoopingCall, deferLater
 
 import django
 django.setup()
@@ -168,10 +168,18 @@ class Evennia(object):
         # initialize channelhandler
         channelhandler.CHANNELHANDLER.update()
 
-        # set a callback if the server is killed abruptly,
-        # by Ctrl-C, reboot etc.
-        reactor.addSystemEventTrigger('before', 'shutdown',
-                                          self.shutdown, _reactor_stopping=True)
+        # wrap the SIGINT handler to make sure we empty the threadpool
+        # even when we reload and we have long-running requests in queue.
+        # this is necessary over using Twisted's signal handler.
+        # (see https://github.com/evennia/evennia/issues/1128)
+        def _wrap_sigint_handler(*args):
+            from twisted.internet.defer import Deferred
+            d = self.web_root.empty_threadpool()
+            d.addCallback(lambda _: self.shutdown(_reactor_stopping=True))
+            d.addCallback(lambda _: reactor.stop())
+            reactor.callLater(1, d.callback, None)
+        reactor.sigInt = _wrap_sigint_handler
+
         self.game_running = True
 
         # track the server time
@@ -349,9 +357,6 @@ class Evennia(object):
         from evennia.server.models import ServerConfig
         from evennia.utils import gametime as _GAMETIME_MODULE
 
-        # lock the threadpool from accepting more requests
-        self.web_root.pool.lock()
-
         if mode == 'reload':
             # call restart hooks
             ServerConfig.objects.conf("server_restart_mode", "reload")
@@ -387,24 +392,17 @@ class Evennia(object):
         # always called, also for a reload
         self.at_server_stop()
 
-        # if _reactor_stopping is true, reactor does not need to
-        # be stopped again.
         if os.name == 'nt' and os.path.exists(SERVER_PIDFILE):
             # for Windows we need to remove pid files manually
             os.remove(SERVER_PIDFILE)
+
+        if WEBSERVER_ENABLED:
+            yield self.web_root.empty_threadpool()
+
         if not _reactor_stopping:
-            # this will also send a reactor.stop signal, so we set a
-            # flag to avoid loops.
+            # kill the server
             self.shutdown_complete = True
-            if WEBSERVER_ENABLED:
-                # Make sure to not continue until threadpool queue is empty.
-                deferred = self.web_root.get_pending_requests()
-                deferred.addCallback(lambda _: reactor.stop())
-                from twisted.internet import task
-                yield task.deferLater(reactor, 1, deferred.callback, None)
-            else:
-                # kill the server
-                reactor.callLater(1, reactor.stop)
+            reactor.callLater(1, reactor.stop)
 
         # we make sure the proper gametime is saved as late as possible
         ServerConfig.objects.conf("runtime", _GAMETIME_MODULE.runtime())
