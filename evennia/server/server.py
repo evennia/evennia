@@ -349,9 +349,8 @@ class Evennia(object):
         from evennia.server.models import ServerConfig
         from evennia.utils import gametime as _GAMETIME_MODULE
 
-        if WEBSERVER_ENABLED:
-            # finish all pending web requests. Otherwise stopping threadpool will cause deadlock.
-            yield self.web_root.get_pending_requests()
+        # lock the threadpool from accepting more requests
+        self.web_root.pool.lock()
 
         if mode == 'reload':
             # call restart hooks
@@ -398,11 +397,11 @@ class Evennia(object):
             # flag to avoid loops.
             self.shutdown_complete = True
             if WEBSERVER_ENABLED:
-                # Just to be extra sure, get all pending requests that might have occurred after we started
-                d = self.web_root.get_pending_requests()
-                d.addCallback(lambda _: reactor.stop())
+                # Make sure to not continue until threadpool queue is empty.
+                deferred = self.web_root.get_pending_requests()
+                deferred.addCallback(lambda _: reactor.stop())
                 from twisted.internet import task
-                yield task.deferLater(reactor, 1, d.callback, None)
+                yield task.deferLater(reactor, 1, deferred.callback, None)
             else:
                 # kill the server
                 reactor.callLater(1, reactor.stop)
@@ -538,12 +537,12 @@ if WEBSERVER_ENABLED:
 
     # Start a django-compatible webserver.
 
-    from twisted.python import threadpool
-    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, Website
+    #from twisted.python import threadpool
+    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, Website, LockableThreadPool
 
     # start a thread pool and define the root url (/) as a wsgi resource
     # recognized by Django
-    threads = threadpool.ThreadPool(minthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[0]),
+    threads = LockableThreadPool(minthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[0]),
                                     maxthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[1]))
 
     web_root = DjangoWebRoot(threads)

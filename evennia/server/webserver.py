@@ -18,6 +18,8 @@ from twisted.internet import reactor
 from twisted.application import internet
 from twisted.web.proxy import ReverseProxyResource
 from twisted.web.server import NOT_DONE_YET
+from twisted.python import threadpool
+from twisted.internet import defer
 
 from twisted.web.wsgi import WSGIResource
 from django.conf import settings
@@ -27,6 +29,26 @@ from evennia.utils import logger
 
 _UPSTREAM_IPS = settings.UPSTREAM_IPS
 _DEBUG = settings.DEBUG
+
+
+class LockableThreadPool(threadpool.ThreadPool):
+    """
+    Threadpool that can be locked from accepting new requests.
+    """
+    def __init__(self, *args, **kwargs):
+        self._accept_new = True
+        threadpool.ThreadPool.__init__(self, *args, **kwargs)
+
+    def lock(self):
+        self._accept_new = False
+
+    def callInThread(self, func, *args, **kwargs):
+        """
+        called in the main reactor thread. Makes sure the pool
+        is not locked before continuing.
+        """
+        if self._accept_new:
+            threadpool.ThreadPool.callInThread(self, func, *args, **kwargs)
 
 
 #
@@ -116,9 +138,8 @@ class DjangoWebRoot(resource.Resource):
     """
     This creates a web root (/) that Django
     understands by tweaking the way
-    child instancee ars recognized.
+    child instances are recognized.
     """
-    open_requests = []
 
     def __init__(self, pool):
         """
@@ -128,23 +149,23 @@ class DjangoWebRoot(resource.Resource):
             pool (ThreadPool): The twisted threadpool.
 
         """
+        self._pool = pool
+        self._pending_requests = {}
         resource.Resource.__init__(self)
         self.wsgi_resource = WSGIResource(reactor, pool, WSGIHandler())
 
     def get_pending_requests(self):
         """
-        Converts our open_requests list of deferreds into a DeferredList
+        Converts our _pending_requests list of deferreds into a DeferredList
 
         Returns:
-            d_list (deferred): A DeferredList object of all our requests
+            deflist (DeferredList): Contains all deferreds of pending requests.
+
         """
-        from twisted.internet import defer
-        return defer.DeferredList(self.open_requests, consumeErrors=True)
+        return defer.DeferredList(self._pending_requests, consumeErrors=True)
 
     def _decrement_requests(self, *args, **kwargs):
-        deferred = kwargs.get('deferred', None)
-        if deferred in self.open_requests:
-            self.open_requests.remove(deferred)
+        self._pending_requests.pop(kwargs.get('deferred', None), None)
 
     def getChild(self, path, request):
         """
@@ -155,12 +176,19 @@ class DjangoWebRoot(resource.Resource):
             path (str): Url path.
             request (Request object): Incoming request.
 
+        Notes:
+            We make sure to save the request queue so
+            that we can safely kill the threadpool
+            on a server reload.
+
         """
         path0 = request.prepath.pop(0)
         request.postpath.insert(0, path0)
+
         deferred = request.notifyFinish()
-        self.open_requests.append(deferred)
+        self._pending_requests[deferred] = deferred
         deferred.addBoth(self._decrement_requests, deferred=deferred)
+
         return self.wsgi_resource
 
 
