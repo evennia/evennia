@@ -174,8 +174,11 @@ class Evennia(object):
         # (see https://github.com/evennia/evennia/issues/1128)
         def _wrap_sigint_handler(*args):
             from twisted.internet.defer import Deferred
-            d = self.web_root.empty_threadpool()
-            d.addCallback(lambda _: self.shutdown(_reactor_stopping=True))
+            if WEBSERVER_ENABLED:
+                d = self.web_root.empty_threadpool()
+                d.addCallback(lambda _: self.shutdown(_reactor_stopping=True))
+            else:
+                d = Deferred(lambda _: self.shutdown(_reactor_stopping=True))
             d.addCallback(lambda _: reactor.stop())
             reactor.callLater(1, d.callback, None)
         reactor.sigInt = _wrap_sigint_handler
