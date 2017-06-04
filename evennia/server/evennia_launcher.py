@@ -506,7 +506,7 @@ def create_secret_key():
     return secret_key
 
 
-def create_settings_file(init=True):
+def create_settings_file(init=True, secret_settings=False):
     """
     Uses the template settings file to build a working settings file.
 
@@ -514,18 +514,27 @@ def create_settings_file(init=True):
         init (bool): This is part of the normal evennia --init
             operation.  If false, this function will copy a fresh
             template file in (asking if it already exists).
+        secret_settings (bool, optional): If False, create settings.py, otherwise
+            create the secret_settings.py file.
 
     """
-    settings_path = os.path.join(GAMEDIR, "server", "conf", "settings.py")
+    if secret_settings:
+        settings_path = os.path.join(GAMEDIR, "server", "conf", "secret_settings.py")
+        setting_dict = {"secret_key": "\'%s\'" % create_secret_key()}
+    else:
+        settings_path = os.path.join(GAMEDIR, "server", "conf", "settings.py")
+        setting_dict = {
+            "settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
+            "servername": "\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1].capitalize(),
+            "secret_key": "\'%s\'" % create_secret_key()}
 
     if not init:
         # if not --init mode, settings file may already exist from before
         if os.path.exists(settings_path):
-            inp = input("server/conf/settings.py already exists. "
-                            "Do you want to reset it? y/[N]> ")
+            inp = input("%s already exists. Do you want to reset it? y/[N]> " % settings_path)
             if not inp.lower() == 'y':
                 print ("Aborted.")
-                sys.exit()
+                return
             else:
                 print ("Reset the settings file.")
 
@@ -534,12 +543,6 @@ def create_settings_file(init=True):
 
     with open(settings_path, 'r') as f:
         settings_string = f.read()
-
-    # tweak the settings
-    setting_dict = {
-        "settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
-        "servername": "\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1].capitalize(),
-        "secret_key": "\'%s\'" % create_secret_key()}
 
     settings_string = settings_string.format(**setting_dict)
 
@@ -564,8 +567,13 @@ def create_game_directory(dirname):
         sys.exit()
     # copy template directory
     shutil.copytree(EVENNIA_TEMPLATE, GAMEDIR)
+    # rename gitignore to .gitignore
+    os.rename(os.path.join(GAMEDIR, 'gitignore'),
+              os.path.join(GAMEDIR, '.gitignore'))
+
     # pre-build settings file in the new GAMEDIR
     create_settings_file()
+    create_settings_file(secret_settings=True)
 
 
 def create_superuser():

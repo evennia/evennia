@@ -174,7 +174,7 @@ class Evennia(object):
         # (see https://github.com/evennia/evennia/issues/1128)
         def _wrap_sigint_handler(*args):
             from twisted.internet.defer import Deferred
-            if WEBSERVER_ENABLED:
+            if hasattr(self, "webroot"):
                 d = self.web_root.empty_threadpool()
                 d.addCallback(lambda _: self.shutdown(_reactor_stopping=True))
             else:
@@ -399,7 +399,7 @@ class Evennia(object):
             # for Windows we need to remove pid files manually
             os.remove(SERVER_PIDFILE)
 
-        if WEBSERVER_ENABLED:
+        if hasattr(self, "web_root"): # not set very first start
             yield self.web_root.empty_threadpool()
 
         if not _reactor_stopping:
