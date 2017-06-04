@@ -174,7 +174,7 @@ class Evennia(object):
         # (see https://github.com/evennia/evennia/issues/1128)
         def _wrap_sigint_handler(*args):
             from twisted.internet.defer import Deferred
-            if hasattr(self, "webroot"):
+            if hasattr(self, "web_root"):
                 d = self.web_root.empty_threadpool()
                 d.addCallback(lambda _: self.shutdown(_reactor_stopping=True))
             else:
