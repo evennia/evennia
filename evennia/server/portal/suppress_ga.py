@@ -8,7 +8,7 @@ If the client sends no explicit DONT SUPRESS GO-AHEAD,
 Evennia will default to supressing it since many clients
 will fail to use it and has no knowledge of this standard.
 
-It can be activated explicitly with the ADDGOAHEAD option.
+It is set as the NOGOAHEAD protocol_flag option.
 
 http://www.faqs.org/rfcs/rfc858.html
 
