@@ -560,7 +560,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                       "CLIENTNAME": utils.to_str,
                       "ENCODING": validate_encoding,
                       "MCCP": validate_bool,
-                      "MUDPROMPT": validate_bool,
+                      "NOGOAHEAD": validate_bool,
                       "MXP": validate_bool,
                       "NOCOLOR": validate_bool,
                       "NOPKEEPALIVE": validate_bool,

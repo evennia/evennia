@@ -13,7 +13,7 @@ from twisted.conch.telnet import Telnet, StatefulTelnetProtocol
 from twisted.conch.telnet import IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO, NULL
 from django.conf import settings
 from evennia.server.session import Session
-from evennia.server.portal import ttype, mssp, telnet_oob, naws
+from evennia.server.portal import ttype, mssp, telnet_oob, naws, suppress_ga
 from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
 from evennia.utils import ansi
@@ -47,9 +47,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         client_address = client_address[0] if client_address else None
         # this number is counted down for every handshake that completes.
         # when it reaches 0 the portal/server syncs their data
-        self.handshakes = 7  # naws, ttype, mccp, mssp, msdp, gmcp, mxp
+        self.handshakes = 8  # suppress-go-ahead, naws, ttype, mccp, mssp, msdp, gmcp, mxp
         self.init_session(self.protocol_name, client_address, self.factory.sessionhandler)
 
+        # suppress go-ahead
+        self.sga = suppress_ga.SuppressGA(self)
         # negotiate client size
         self.naws = naws.Naws(self)
         # negotiate ttype (client info)
@@ -128,7 +130,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 option == ttype.TTYPE or
                 option == naws.NAWS or
                 option == MCCP or
-                option == mssp.MSSP)
+                option == mssp.MSSP or
+                option == suppress_ga.SUPPRESS_GA)
 
     def enableLocal(self, option):
         """
@@ -141,7 +144,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             enable (bool): If this option should be enabled.
 
         """
-        return option == MCCP or option == ECHO
+        return (option == MCCP or
+                option == ECHO or
+                option ==  suppress_ga.SUPPRESS_GA)
 
     def disableLocal(self, option):
         """
@@ -221,8 +226,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # escape IAC in line mode, and correctly add \r\n
         line += self.delimiter
         line = line.replace(IAC, IAC + IAC).replace('\n', '\r\n')
-        if self.protocol_flags.get("MUDPROMPT", False):
-            line = line + IAC + GA
+        if not self.protocol_flags.get("NOGOAHEAD", True):
+            line += IAC + GA
         return self.transport.write(mccp_compress(self, line))
 
     # Session hooks

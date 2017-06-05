@@ -194,7 +194,7 @@ def client_options(session, *args, **kwargs):
                            "MCCP", "SCREENHEIGHT",
                            "SCREENWIDTH", "INPUTDEBUG",
                            "RAW", "NOCOLOR",
-                           "MUDPROMPT"))
+                           "NOGOAHEAD"))
         session.msg(client_options=options)
         return
 
@@ -245,6 +245,8 @@ def client_options(session, *args, **kwargs):
             flags["NOCOLOR"] = validate_bool(value)
         elif key == "raw":
             flags["RAW"] = validate_bool(value)
+        elif key == "nogoahead":
+            flags["NOGOAHEAD"] = validate_bool(value)
         elif key in ('Char 1', 'Char.Skills 1', 'Char.Items 1',
                 'Room 1', 'IRE.Rift 1', 'IRE.Composer 1'):
             # ignore mudlet's default send (aimed at IRE games)
