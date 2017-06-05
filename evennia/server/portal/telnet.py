@@ -221,7 +221,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # escape IAC in line mode, and correctly add \r\n
         line += self.delimiter
         line = line.replace(IAC, IAC + IAC).replace('\n', '\r\n')
-        return self.transport.write(mccp_compress(self, line + IAC + GA))
+        if self.protocol_flags.get("MUDPROMPT", False):
+            line = line + IAC + GA
+        return self.transport.write(mccp_compress(self, line))
 
     # Session hooks
 

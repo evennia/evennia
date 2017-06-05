@@ -193,7 +193,8 @@ def client_options(session, *args, **kwargs):
                            "UTF-8", "SCREENREADER", "ENCODING",
                            "MCCP", "SCREENHEIGHT",
                            "SCREENWIDTH", "INPUTDEBUG",
-                           "RAW", "NOCOLOR"))
+                           "RAW", "NOCOLOR",
+                           "MUDPROMPT"))
         session.msg(client_options=options)
         return
 
