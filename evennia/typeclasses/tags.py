@@ -107,7 +107,6 @@ class TagHandler(object):
         query = {"%s__id" % self._model : self._objid,
                  "tag__db_model" : self._model,
                  "tag__db_tagtype" : self._tagtype}
-        print("CACHE:", query, self._m2m_fieldname)
         tags = [conn.tag for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
         self._cache = dict(("%s-%s" % (to_str(tag.db_key).lower(),
                                        tag.db_category.lower() if tag.db_category else None),

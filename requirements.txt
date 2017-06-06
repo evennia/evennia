@@ -1,6 +1,6 @@
 # Evennia dependencies, for Linux/Mac platforms
 
-django >= 1.9, < 1.11
+django > 1.9, < 1.11
 twisted >= 16.0.0
 mock >= 1.0.1
 pillow == 2.9.0

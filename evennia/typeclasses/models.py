@@ -95,15 +95,7 @@ class TypeclassBase(SharedMemoryModelBase):
             attrs["Meta"] = Meta
         attrs["Meta"].proxy = True
 
-        # patch for django proxy multi-inheritance
-        # this is a copy of django.db.models.base.__new__
-        # with a few lines changed as per
-        # https://code.djangoproject.com/ticket/11560
-        #new_class = patched_new(cls, name, bases, attrs)
-        #new_class = super(TypeclassBase, cls).__new__(cls, name, bases, attrs)
-        #new_class = patched_new(cls, name, bases, attrs)
-        new_class = super(ModelBase, cls).__new__(cls, name, bases, attrs)
-        print "name:", name, new_class._meta.proxy
+        new_class = ModelBase.__new__(cls, name, bases, attrs)
 
         # attach signals
         signals.post_save.connect(post_save, sender=new_class)
@@ -207,7 +199,7 @@ class TypedObject(SharedMemoryModel):
                         self.__class__ = class_from_module(self.__defaultclasspath__)
                     except Exception:
                         log_trace()
-                        self.__class__ = self._meta.proxy_for_model or self.__class__
+                        self.__class__ = self._meta.concrete_model or self.__class__
             finally:
                 self.db_typeclass_path = typeclass_path
         elif self.db_typeclass_path:
@@ -219,12 +211,12 @@ class TypedObject(SharedMemoryModel):
                     self.__class__ = class_from_module(self.__defaultclasspath__)
                 except Exception:
                     log_trace()
-                    self.__dbclass__ = self._meta.proxy_for_model or self.__class__
+                    self.__dbclass__ = self._meta.concrete_model or self.__class__
         else:
             self.db_typeclass_path = "%s.%s" % (self.__module__, self.__class__.__name__)
         # important to put this at the end since _meta is based on the set __class__
         try:
-            self.__dbclass__ = self._meta.proxy_for_model or self.__class__
+            self.__dbclass__ = self._meta.concrete_model or self.__class__
         except AttributeError:
             err_class = repr(self.__class__)
             self.__class__ = class_from_module("evennia.objects.objects.DefaultObject")
