@@ -195,7 +195,7 @@ class Evennia(object):
         Optimize some SQLite stuff at startup since we
         can't save it to the database.
         """
-        if ((".".join(str(i) for i in django.VERSION) < "1.2" and settings.DATABASE_ENGINE == "sqlite3")
+        if ((".".join(str(i) for i in django.VERSION) < "1.2" and settings.DATABASES.get('default', {}).get('ENGINE') == "sqlite3")
             or (hasattr(settings, 'DATABASES')
                 and settings.DATABASES.get("default", {}).get('ENGINE', None)
                 == 'django.db.backends.sqlite3')):

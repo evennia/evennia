@@ -98,7 +98,9 @@ class TypeclassBase(SharedMemoryModelBase):
         # this is a copy of django.db.models.base.__new__
         # with a few lines changed as per
         # https://code.djangoproject.com/ticket/11560
-        new_class = patched_new(cls, name, bases, attrs)
+        #new_class = patched_new(cls, name, bases, attrs)
+        new_class = super(TypeclassBase, cls).__new__(cls, name, bases, attrs)
+        #new_class = patched_new(cls, name, bases, attrs)
 
         # attach signals
         signals.post_save.connect(post_save, sender=new_class)
