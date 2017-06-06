@@ -64,8 +64,8 @@ ENFORCED_SETTING = False
 # requirements
 PYTHON_MIN = '2.7'
 TWISTED_MIN = '16.0.0'
-DJANGO_MIN = '1.8'
-DJANGO_REC = '1.9'
+DJANGO_MIN = '1.11'
+DJANGO_REC = '1.11'
 
 sys.path[1] = EVENNIA_ROOT
 
