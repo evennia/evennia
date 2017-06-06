@@ -125,7 +125,7 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
         clientFactory.noisy = False
         self.reactor.connectTCP(self.host, self.port, clientFactory)
         # don't trigger traceback if connection is lost before request finish.
-        request.notifyFinish().addErrback(lambda f: f.cancel())
+        request.notifyFinish().addErrback(lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f))
         return NOT_DONE_YET
 
 
