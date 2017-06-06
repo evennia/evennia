@@ -103,6 +103,7 @@ class TypeclassBase(SharedMemoryModelBase):
         #new_class = super(TypeclassBase, cls).__new__(cls, name, bases, attrs)
         #new_class = patched_new(cls, name, bases, attrs)
         new_class = super(ModelBase, cls).__new__(cls, name, bases, attrs)
+        print "name:", name, new_class._meta.proxy
 
         # attach signals
         signals.post_save.connect(post_save, sender=new_class)
