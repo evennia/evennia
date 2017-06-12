@@ -57,6 +57,7 @@ def register_events(path_or_typeclass):
     try:
         storage = ScriptDB.objects.get(db_key="event_handler")
         assert storage.is_active
+        assert storage.ndb.events is not None
     except (ScriptDB.DoesNotExist, AssertionError):
         storage = EVENTS
 
