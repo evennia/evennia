@@ -143,8 +143,8 @@ def _msg_err(receiver, stringtuple):
     Args:
         receiver (Object): object to get the error message.
         stringtuple (tuple): tuple with two strings - one for the
-        _IN_GAME_ERRORS mode (with the traceback) and one with the
-        production string (with a timestamp) to be shown to the user.
+            _IN_GAME_ERRORS mode (with the traceback) and one with the
+            production string (with a timestamp) to be shown to the user.
 
     """
     string = "{traceback}\n{errmsg}\n(Traceback was logged {timestamp})."
