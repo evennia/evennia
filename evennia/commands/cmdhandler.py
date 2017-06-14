@@ -38,6 +38,7 @@ from weakref import WeakValueDictionary
 from traceback import format_exc
 from itertools import chain
 from copy import copy
+import types
 from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
 from evennia.comms.channelhandler import CHANNELHANDLER
@@ -506,7 +507,13 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
 
             # main command code
             # (return value is normally None)
-            ret = yield cmd.func()
+            ret = cmd.func()
+            if isinstance(ret, types.GeneratorType):
+                # cmd.func() is a generator, execute progressively
+                _progressive_cmd_run(cmd, ret)
+                yield None
+            else:
+                ret = yield ret
 
             # post-command hook
             yield cmd.at_post_cmd()
@@ -668,3 +675,56 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
     except Exception:
         # This catches exceptions in cmdhandler exceptions themselves
         _msg_err(error_to, _ERROR_CMDHANDLER)
+
+def _progressive_cmd_run(cmd, generator, response=None):
+    """
+    Progressively call the command that was given in argument.
+
+    Args:
+        cmd (Command): the command itself.
+        generator (GeneratorType): the generator describing the processing.
+        reponse (str, optional): the response to send to the generator.
+
+    Note:
+        This function is responsible for executing the command, if
+        the func() method contains 'yield' instructions.  The yielded
+        value will be accessible at each step and will affect the
+        process.  If the value is a number, just delay the execution
+        of the command.  If it's a string, wait for the user input.
+
+    """
+    try:
+        if response is None:
+            value = generator.next()
+        else:
+            value = generator.send(response)
+    except StopIteration:
+        pass
+    else:
+        if isinstance(value, (int, float)):
+            utils.delay(value, _progressive_cmd_run, cmd, generator)
+        elif isinstance(value, basestring):
+            from evennia.utils.evmenu import get_input
+            get_input(cmd.caller, value, _process_input, cmd=cmd, generator=generator)
+        else:
+            raise ValueError("unknown type for a yielded value in command: {}".format(type(value)))
+
+def _process_input(caller, prompt, result, cmd, generator):
+    """
+    Specifically handle the get_input value to send to _progressive_cmd_run.
+
+    Args:
+        caller (Character, Player or Session): the caller.
+        prompt (basestring): the sent prompt.
+        result (basestring): the unprocessed answer.
+        cmd (Command): the command itself.
+        generator (GeneratorType): the generator.
+
+    Returns:
+        Always False (stop processing).
+
+    """
+    # We call it in a 'utils.delay()' to make sure the input is properly closed.
+    utils.delay(0, _progressive_cmd_run, cmd, generator, response=result)
+
+    return False
