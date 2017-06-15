@@ -6,3 +6,4 @@ mock >= 1.0.1
 pillow == 2.9.0
 pytz
 future >= 0.15.2
+django-sekizai

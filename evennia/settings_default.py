@@ -675,7 +675,9 @@ TEMPLATES = [{
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.media',
                 'django.template.context_processors.debug',
-                'evennia.web.utils.general_context.general_context']
+                'evennia.web.utils.general_context.general_context',
+                'sekizai.context_processors.sekizai',
+                'django.core.context_processors.debug']
             }
         }]
 
