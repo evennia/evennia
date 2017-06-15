@@ -344,10 +344,13 @@ ERROR_DJANGO_MIN = \
     ERROR: Django {dversion} found. Evennia requires version {django_min}
     or higher.
 
-    Install it with for example `pip install --upgrade django`
+    If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
+    `evennia` is the folder to where you cloned the Evennia library. If not
+    in a virtualenv you can install django with for example `pip install --upgrade django`
     or with `pip install django=={django_min}` to get a specific version.
 
-    It's also a good idea to run `evennia migrate` after this upgrade.
+    It's also a good idea to run `evennia migrate` after this upgrade. Ignore
+    any warnings and don't run `makemigrate` even if told to.
     """
 
 NOTE_DJANGO_MIN = \
