@@ -19,12 +19,14 @@ import os
 import time
 from datetime import datetime
 from traceback import format_exc
-from twisted.python import log
+from twisted.python import log, logfile
 from twisted.internet.threads import deferToThread
 
 
 _LOGDIR = None
+_LOG_ROTATE_SIZE = None
 _TIMEZONE = None
+_CHANNEL_LOG_NUM_TAIL_LINES = None
 
 
 def timeformat(when=None):
@@ -153,6 +155,58 @@ log_depmsg = log_dep
 
 # Arbitrary file logger
 
+class EvenniaLogFile(logfile.LogFile):
+    """
+    A rotating logfile based off Twisted's LogFile. It overrides
+    the LogFile's rotate method in order to append some of the last
+    lines of the previous log to the start of the new log, in order
+    to preserve a continuous chat history for channel log files.
+    """
+    # we delay import of settings to keep logger module as free
+    # from django as possible.
+    global _CHANNEL_LOG_NUM_TAIL_LINES
+    if _CHANNEL_LOG_NUM_TAIL_LINES is None:
+        from django.conf import settings
+        _CHANNEL_LOG_NUM_TAIL_LINES = settings.CHANNEL_LOG_NUM_TAIL_LINES
+    num_lines_to_append = _CHANNEL_LOG_NUM_TAIL_LINES
+
+    def rotate(self):
+        """
+        Rotates our log file and appends some number of lines from
+        the previous log to the start of the new one.
+        """
+        append_tail = self.num_lines_to_append > 0
+        if not append_tail:
+            logfile.LogFile.rotate(self)
+            return
+        lines = tail_log_file(self.path, 0, self.num_lines_to_append)
+        logfile.LogFile.rotate(self)
+        for line in lines:
+            self.write(line)
+
+    def seek(self, *args, **kwargs):
+        """
+        Convenience method for accessing our _file attribute's seek method,
+        which is used in tail_log_function.
+        Args:
+            *args: Same args as file.seek
+            **kwargs: Same kwargs as file.seek
+        """
+        return self._file.seek(*args, **kwargs)
+
+    def readlines(self, *args, **kwargs):
+        """
+        Convenience method for accessing our _file attribute's readlines method,
+        which is used in tail_log_function.
+        Args:
+            *args: same args as file.readlines
+            **kwargs: same kwargs as file.readlines
+
+        Returns:
+            lines (list): lines from our _file attribute.
+        """
+        return self._file.readlines(*args, **kwargs)
+
 _LOG_FILE_HANDLES = {}  # holds open log handles
 
 
@@ -162,10 +216,13 @@ def _open_log_file(filename):
     handle.  Will create a new file in the log dir if one didn't
     exist.
     """
-    global _LOG_FILE_HANDLES, _LOGDIR
+    # we delay import of settings to keep logger module as free
+    # from django as possible.
+    global _LOG_FILE_HANDLES, _LOGDIR, _LOG_ROTATE_SIZE
     if not _LOGDIR:
         from django.conf import settings
         _LOGDIR = settings.LOG_DIR
+        _LOG_ROTATE_SIZE = settings.CHANNEL_LOG_ROTATE_SIZE
 
     filename = os.path.join(_LOGDIR, filename)
     if filename in _LOG_FILE_HANDLES:
@@ -173,7 +230,8 @@ def _open_log_file(filename):
         return _LOG_FILE_HANDLES[filename]
     else:
         try:
-            filehandle = open(filename, "a+")  # append mode + reading
+            filehandle = EvenniaLogFile.fromFullPath(filename, rotateLength=_LOG_ROTATE_SIZE)
+            # filehandle = open(filename, "a+")  # append mode + reading
             _LOG_FILE_HANDLES[filename] = filehandle
             return filehandle
         except IOError:

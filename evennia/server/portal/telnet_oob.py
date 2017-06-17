@@ -47,7 +47,11 @@ IAC = chr(255)
 SB = chr(250)
 SE = chr(240)
 
-force_str = lambda inp: to_str(inp, force_string=True)
+
+def force_str(inp):
+    """Helper to shorten code"""
+    return to_str(inp, force_string=True)
+
 
 # pre-compiled regexes
 # returns 2-tuple

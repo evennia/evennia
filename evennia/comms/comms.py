@@ -2,7 +2,6 @@
 Base typeclass for in-game Channels.
 
 """
-
 from evennia.typeclasses.models import TypeclassBase
 from evennia.comms.models import TempMsg, ChannelDB
 from evennia.comms.managers import ChannelManager
@@ -267,7 +266,11 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
         """
         # get all players or objects connected to this channel and send to them
-        for entity in self.subscriptions.all():
+        if online:
+            subs = self.subscriptions.online()
+        else:
+            subs = self.subscriptions.all()
+        for entity in subs:
             # if the entity is muted, we don't send them a message
             if entity in self.mutelist:
                 continue

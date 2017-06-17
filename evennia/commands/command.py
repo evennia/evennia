@@ -429,7 +429,7 @@ class Command(with_metaclass(CommandMeta, object)):
             object, conventionally with a preceding space.
 
         """
-        if hasattr(self, 'obj') and self.obj != caller:
+        if hasattr(self, 'obj') and self.obj and self.obj != caller:
             return " (%s)" % self.obj.get_display_name(caller).strip()
         return ""
 

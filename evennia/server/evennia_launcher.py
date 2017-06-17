@@ -64,8 +64,8 @@ ENFORCED_SETTING = False
 # requirements
 PYTHON_MIN = '2.7'
 TWISTED_MIN = '16.0.0'
-DJANGO_MIN = '1.8'
-DJANGO_REC = '1.9'
+DJANGO_MIN = '1.11'
+DJANGO_REC = '1.11'
 
 sys.path[1] = EVENNIA_ROOT
 
@@ -344,10 +344,13 @@ ERROR_DJANGO_MIN = \
     ERROR: Django {dversion} found. Evennia requires version {django_min}
     or higher.
 
-    Install it with for example `pip install --upgrade django`
+    If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
+    `evennia` is the folder to where you cloned the Evennia library. If not
+    in a virtualenv you can install django with for example `pip install --upgrade django`
     or with `pip install django=={django_min}` to get a specific version.
 
-    It's also a good idea to run `evennia migrate` after this upgrade.
+    It's also a good idea to run `evennia migrate` after this upgrade. Ignore
+    any warnings and don't run `makemigrate` even if told to.
     """
 
 NOTE_DJANGO_MIN = \
@@ -506,7 +509,7 @@ def create_secret_key():
     return secret_key
 
 
-def create_settings_file(init=True):
+def create_settings_file(init=True, secret_settings=False):
     """
     Uses the template settings file to build a working settings file.
 
@@ -514,18 +517,27 @@ def create_settings_file(init=True):
         init (bool): This is part of the normal evennia --init
             operation.  If false, this function will copy a fresh
             template file in (asking if it already exists).
+        secret_settings (bool, optional): If False, create settings.py, otherwise
+            create the secret_settings.py file.
 
     """
-    settings_path = os.path.join(GAMEDIR, "server", "conf", "settings.py")
+    if secret_settings:
+        settings_path = os.path.join(GAMEDIR, "server", "conf", "secret_settings.py")
+        setting_dict = {"secret_key": "\'%s\'" % create_secret_key()}
+    else:
+        settings_path = os.path.join(GAMEDIR, "server", "conf", "settings.py")
+        setting_dict = {
+            "settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
+            "servername": "\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1].capitalize(),
+            "secret_key": "\'%s\'" % create_secret_key()}
 
     if not init:
         # if not --init mode, settings file may already exist from before
         if os.path.exists(settings_path):
-            inp = input("server/conf/settings.py already exists. "
-                            "Do you want to reset it? y/[N]> ")
+            inp = input("%s already exists. Do you want to reset it? y/[N]> " % settings_path)
             if not inp.lower() == 'y':
                 print ("Aborted.")
-                sys.exit()
+                return
             else:
                 print ("Reset the settings file.")
 
@@ -534,12 +546,6 @@ def create_settings_file(init=True):
 
     with open(settings_path, 'r') as f:
         settings_string = f.read()
-
-    # tweak the settings
-    setting_dict = {
-        "settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
-        "servername": "\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1].capitalize(),
-        "secret_key": "\'%s\'" % create_secret_key()}
 
     settings_string = settings_string.format(**setting_dict)
 
@@ -564,8 +570,13 @@ def create_game_directory(dirname):
         sys.exit()
     # copy template directory
     shutil.copytree(EVENNIA_TEMPLATE, GAMEDIR)
+    # rename gitignore to .gitignore
+    os.rename(os.path.join(GAMEDIR, 'gitignore'),
+              os.path.join(GAMEDIR, '.gitignore'))
+
     # pre-build settings file in the new GAMEDIR
     create_settings_file()
+    create_settings_file(secret_settings=True)
 
 
 def create_superuser():

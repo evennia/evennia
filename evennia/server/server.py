@@ -16,7 +16,7 @@ import os
 from twisted.web import static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
-from twisted.internet.task import LoopingCall
+from twisted.internet.task import LoopingCall, deferLater
 
 import django
 django.setup()
@@ -151,7 +151,8 @@ class Evennia(object):
         sys.path.insert(1, '.')
 
         # create a store of services
-        self.services = service.IServiceCollection(application)
+        self.services = service.MultiService()
+        self.services.setServiceParent(application)
         self.amp_protocol = None  # set by amp factory
         self.sessions = SESSIONS
         self.sessions.server = self
@@ -167,10 +168,21 @@ class Evennia(object):
         # initialize channelhandler
         channelhandler.CHANNELHANDLER.update()
 
-        # set a callback if the server is killed abruptly,
-        # by Ctrl-C, reboot etc.
-        reactor.addSystemEventTrigger('before', 'shutdown',
-                                          self.shutdown, _reactor_stopping=True)
+        # wrap the SIGINT handler to make sure we empty the threadpool
+        # even when we reload and we have long-running requests in queue.
+        # this is necessary over using Twisted's signal handler.
+        # (see https://github.com/evennia/evennia/issues/1128)
+        def _wrap_sigint_handler(*args):
+            from twisted.internet.defer import Deferred
+            if hasattr(self, "web_root"):
+                d = self.web_root.empty_threadpool()
+                d.addCallback(lambda _: self.shutdown(_reactor_stopping=True))
+            else:
+                d = Deferred(lambda _: self.shutdown(_reactor_stopping=True))
+            d.addCallback(lambda _: reactor.stop())
+            reactor.callLater(1, d.callback, None)
+        reactor.sigInt = _wrap_sigint_handler
+
         self.game_running = True
 
         # track the server time
@@ -183,7 +195,7 @@ class Evennia(object):
         Optimize some SQLite stuff at startup since we
         can't save it to the database.
         """
-        if ((".".join(str(i) for i in django.VERSION) < "1.2" and settings.DATABASE_ENGINE == "sqlite3")
+        if ((".".join(str(i) for i in django.VERSION) < "1.2" and settings.DATABASES.get('default', {}).get('ENGINE') == "sqlite3")
             or (hasattr(settings, 'DATABASES')
                 and settings.DATABASES.get("default", {}).get('ENGINE', None)
                 == 'django.db.backends.sqlite3')):
@@ -383,16 +395,16 @@ class Evennia(object):
         # always called, also for a reload
         self.at_server_stop()
 
-        # if _reactor_stopping is true, reactor does not need to
-        # be stopped again.
         if os.name == 'nt' and os.path.exists(SERVER_PIDFILE):
             # for Windows we need to remove pid files manually
             os.remove(SERVER_PIDFILE)
+
+        if hasattr(self, "web_root"): # not set very first start
+            yield self.web_root.empty_threadpool()
+
         if not _reactor_stopping:
-            # this will also send a reactor.stop signal, so we set a
-            # flag to avoid loops.
-            self.shutdown_complete = True
             # kill the server
+            self.shutdown_complete = True
             reactor.callLater(1, reactor.stop)
 
         # we make sure the proper gametime is saved as late as possible
@@ -526,18 +538,20 @@ if WEBSERVER_ENABLED:
 
     # Start a django-compatible webserver.
 
-    from twisted.python import threadpool
-    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, Website
+    #from twisted.python import threadpool
+    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, Website, LockableThreadPool
 
     # start a thread pool and define the root url (/) as a wsgi resource
     # recognized by Django
-    threads = threadpool.ThreadPool(minthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[0]),
+    threads = LockableThreadPool(minthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[0]),
                                     maxthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[1]))
+
     web_root = DjangoWebRoot(threads)
     # point our media resources to url /media
     web_root.putChild("media", static.File(settings.MEDIA_ROOT))
     # point our static resources to url /static
     web_root.putChild("static", static.File(settings.STATIC_ROOT))
+    EVENNIA.web_root = web_root
 
     if WEB_PLUGINS_MODULE:
         # custom overloads

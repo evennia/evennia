@@ -125,6 +125,10 @@ LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, 'lockwarnings.log')
 # file sizes down. Turn off to get ever growing log files and never
 # loose log info.
 CYCLE_LOGFILES = True
+# Number of lines to append to rotating channel logs when they rotate
+CHANNEL_LOG_NUM_TAIL_LINES = 20
+# Max size of channel log files before they rotate
+CHANNEL_LOG_ROTATE_SIZE = 1000000
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 TIME_ZONE = 'UTC'
@@ -224,7 +228,7 @@ IN_GAME_ERRORS = True
 # ENGINE - path to the the database backend. Possible choices are:
 #            'django.db.backends.sqlite3', (default)
 #            'django.db.backends.mysql',
-#            'django.db.backends.'postgresql_psycopg2',
+#            'django.db.backends.postgresql_psycopg2',
 #            'django.db.backends.oracle' (untested).
 # NAME - database name, or path to the db file for sqlite3
 # USER - db admin (unused in sqlite3)

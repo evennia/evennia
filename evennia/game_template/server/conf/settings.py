@@ -19,6 +19,9 @@ paths (path.to.module) should be given relative to the game's root
 folder (typeclasses.foo) whereas paths within the Evennia library
 needs to be given explicitly (evennia.foo).
 
+If you want to share your game dir, including its settings, you can
+put secret game- or server-specific settings in secret_settings.py.
+
 """
 
 # Use the defaults from Evennia unless explicitly overridden
@@ -31,13 +34,11 @@ from evennia.settings_default import *
 # This is the name of your game. Make it catchy!
 SERVERNAME = {servername}
 
-######################################################################
-# Django web features
-######################################################################
 
-
-# The secret key is randomly seeded upon creation. It is used to sign
-# Django's cookies. Do not share this with anyone. Changing it will
-# log out all active web browsing sessions. Game web client sessions
-# may survive.
-SECRET_KEY = {secret_key}
+######################################################################
+# Settings given in secret_settings.py override those in this file.
+######################################################################
+try:
+    from server.conf.secret_settings import *
+except ImportError:
+    print "secret_settings.py file not found or failed to import."

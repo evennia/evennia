@@ -1926,6 +1926,10 @@ class CmdExamine(ObjManipCommand):
             string += "\n|wLocation|n: %s" % obj.location
             if obj.location:
                 string += " (#%s)" % obj.location.id
+        if hasattr(obj, "home"):
+            string += "\n|wHome|n: %s" % obj.home
+            if obj.home:
+                string += " (#%s)" % obj.home.id
         if hasattr(obj, "destination") and obj.destination:
             string += "\n|wDestination|n: %s" % obj.destination
             if obj.destination:
@@ -2240,7 +2244,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
                switch is set, <target location> is ignored.
                Note that the only way to retrieve
                an object from a None location is by direct #dbref
-               reference.
+               reference. A puppeted object cannot be moved to None.
 
     Teleports an object somewhere. If no object is given, you yourself
     is teleported to the target location.     """
@@ -2265,19 +2269,21 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             # teleporting to None
             if not args:
                 obj_to_teleport = caller
-                caller.msg("Teleported to None-location.")
-                if caller.location and not tel_quietly:
-                    caller.location.msg_contents("%s teleported into nothingness." % caller, exclude=caller)
             else:
                 obj_to_teleport = caller.search(lhs, global_search=True)
                 if not obj_to_teleport:
                     caller.msg("Did not find object to teleport.")
                     return
-                caller.msg("Teleported %s -> None-location." % obj_to_teleport)
-                if obj_to_teleport.location and not tel_quietly:
-                    obj_to_teleport.location.msg_contents("%s teleported %s into nothingness."
-                                                          % (caller, obj_to_teleport),
-                                                          exclude=caller)
+            if obj_to_teleport.has_player:
+                caller.msg("Cannot teleport a puppeted object "
+                           "(%s, puppeted by %s) to a None-location." % (
+                            obj_to_teleport.key, obj_to_teleport.player))
+                return
+            caller.msg("Teleported %s -> None-location." % obj_to_teleport)
+            if obj_to_teleport.location and not tel_quietly:
+                obj_to_teleport.location.msg_contents("%s teleported %s into nothingness."
+                                                      % (caller, obj_to_teleport),
+                                                      exclude=caller)
             obj_to_teleport.location=None
             return
 

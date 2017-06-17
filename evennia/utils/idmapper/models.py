@@ -77,7 +77,7 @@ class SharedMemoryModelBase(ModelBase):
 
         """
         # the dbmodel is either the proxy base or ourselves
-        dbmodel = cls._meta.proxy_for_model if cls._meta.proxy else cls
+        dbmodel = cls._meta.concrete_model if cls._meta.proxy else cls
         cls.__dbclass__ = dbmodel
         if not hasattr(dbmodel, "__instance_cache__"):
             # we store __instance_cache__ only on the dbmodel base
@@ -572,7 +572,7 @@ def cache_size(mb=True):
             if not subclasses:
                 num = len(submodel.get_all_cached_instances())
                 numtotal[0] += num
-                classdict[submodel.__name__] = num
+                classdict[submodel.__dbclass__.__name__] = num
             else:
                 get_recurse(subclasses)
     get_recurse(SharedMemoryModel.__subclasses__())

@@ -29,6 +29,7 @@ from builtins import object
 
 from django.db.models import signals
 
+from django.db.models.base import ModelBase
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
@@ -94,11 +95,7 @@ class TypeclassBase(SharedMemoryModelBase):
             attrs["Meta"] = Meta
         attrs["Meta"].proxy = True
 
-        # patch for django proxy multi-inheritance
-        # this is a copy of django.db.models.base.__new__
-        # with a few lines changed as per
-        # https://code.djangoproject.com/ticket/11560
-        new_class = patched_new(cls, name, bases, attrs)
+        new_class = ModelBase.__new__(cls, name, bases, attrs)
 
         # attach signals
         signals.post_save.connect(post_save, sender=new_class)
@@ -175,9 +172,9 @@ class TypedObject(SharedMemoryModel):
     db_lock_storage = models.TextField('locks', blank=True,
             help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
     # many2many relationships
-    db_attributes = models.ManyToManyField(Attribute, null=True,
+    db_attributes = models.ManyToManyField(Attribute,
             help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).')
-    db_tags = models.ManyToManyField(Tag, null=True,
+    db_tags = models.ManyToManyField(Tag,
             help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.')
 
     # Database manager
@@ -202,7 +199,7 @@ class TypedObject(SharedMemoryModel):
                         self.__class__ = class_from_module(self.__defaultclasspath__)
                     except Exception:
                         log_trace()
-                        self.__class__ = self._meta.proxy_for_model or self.__class__
+                        self.__class__ = self._meta.concrete_model or self.__class__
             finally:
                 self.db_typeclass_path = typeclass_path
         elif self.db_typeclass_path:
@@ -214,12 +211,12 @@ class TypedObject(SharedMemoryModel):
                     self.__class__ = class_from_module(self.__defaultclasspath__)
                 except Exception:
                     log_trace()
-                    self.__dbclass__ = self._meta.proxy_for_model or self.__class__
+                    self.__dbclass__ = self._meta.concrete_model or self.__class__
         else:
             self.db_typeclass_path = "%s.%s" % (self.__module__, self.__class__.__name__)
         # important to put this at the end since _meta is based on the set __class__
         try:
-            self.__dbclass__ = self._meta.proxy_for_model or self.__class__
+            self.__dbclass__ = self._meta.concrete_model or self.__class__
         except AttributeError:
             err_class = repr(self.__class__)
             self.__class__ = class_from_module("evennia.objects.objects.DefaultObject")

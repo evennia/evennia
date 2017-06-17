@@ -38,6 +38,9 @@ from weakref import WeakValueDictionary
 from traceback import format_exc
 from itertools import chain
 from copy import copy
+import types
+from twisted.internet import reactor
+from twisted.internet.task import deferLater
 from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
 from evennia.comms.channelhandler import CHANNELHANDLER
@@ -127,6 +130,12 @@ _ERROR_RECURSION_LIMIT = "Command recursion limit ({recursion_limit}) " \
                          "reached for '{raw_cmdname}' ({cmdclass})."
 
 
+# delayed imports
+_GET_INPUT = None
+
+
+# helper functions
+
 def _msg_err(receiver, stringtuple):
     """
     Helper function for returning an error to the caller.
@@ -134,8 +143,8 @@ def _msg_err(receiver, stringtuple):
     Args:
         receiver (Object): object to get the error message.
         stringtuple (tuple): tuple with two strings - one for the
-        _IN_GAME_ERRORS mode (with the traceback) and one with the
-        production string (with a timestamp) to be shown to the user.
+            _IN_GAME_ERRORS mode (with the traceback) and one with the
+            production string (with a timestamp) to be shown to the user.
 
     """
     string = "{traceback}\n{errmsg}\n(Traceback was logged {timestamp})."
@@ -151,11 +160,76 @@ def _msg_err(receiver, stringtuple):
                                    errmsg=stringtuple[1].strip(),
                                    timestamp=timestamp).strip())
 
+
+def _progressive_cmd_run(cmd, generator, response=None):
+    """
+    Progressively call the command that was given in argument. Used
+    when `yield` is present in the Command's `func()` method.
+
+    Args:
+        cmd (Command): the command itself.
+        generator (GeneratorType): the generator describing the processing.
+        reponse (str, optional): the response to send to the generator.
+
+    Raises:
+        ValueError: If the func call yields something not identifiable as a
+            time-delay or a string prompt.
+
+    Note:
+        This function is responsible for executing the command, if
+        the func() method contains 'yield' instructions.  The yielded
+        value will be accessible at each step and will affect the
+        process.  If the value is a number, just delay the execution
+        of the command.  If it's a string, wait for the user input.
+
+    """
+    global _GET_INPUT
+    if not _GET_INPUT:
+        from evennia.utils.evmenu import get_input as _GET_INPUT
+
+    try:
+        if response is None:
+            value = generator.next()
+        else:
+            value = generator.send(response)
+    except StopIteration:
+        pass
+    else:
+        if isinstance(value, (int, float)):
+            utils.delay(value, _progressive_cmd_run, cmd, generator)
+        elif isinstance(value, basestring):
+            _GET_INPUT(cmd.caller, value, _process_input, cmd=cmd, generator=generator)
+        else:
+            raise ValueError("unknown type for a yielded value in command: {}".format(type(value)))
+
+
+def _process_input(caller, prompt, result, cmd, generator):
+    """
+    Specifically handle the get_input value to send to _progressive_cmd_run as
+    part of yielding from a Command's `func`.
+
+    Args:
+        caller (Character, Player or Session): the caller.
+        prompt (basestring): The sent prompt.
+        result (basestring): The unprocessed answer.
+        cmd (Command): The command itself.
+        generator (GeneratorType): The generator.
+
+    Returns:
+        result (bool): Always `False` (stop processing).
+
+    """
+    # We call it using a Twisted deferLater to make sure the input is properly closed.
+    deferLater(reactor, 0, _progressive_cmd_run, cmd, generator, response=result)
+    return False
+
+
 # custom Exceptions
 
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."
     pass
+
 
 class ExecSystemCommand(Exception):
     "Run a system command"
@@ -510,7 +584,13 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
 
             # main command code
             # (return value is normally None)
-            ret = yield cmd.func()
+            ret = cmd.func()
+            if isinstance(ret, types.GeneratorType):
+                # cmd.func() is a generator, execute progressively
+                _progressive_cmd_run(cmd, ret)
+                yield None
+            else:
+                ret = yield ret
 
             # post-command hook
             yield cmd.at_post_cmd()
@@ -672,3 +752,4 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
     except Exception:
         # This catches exceptions in cmdhandler exceptions themselves
         _msg_err(error_to, _ERROR_CMDHANDLER)
+

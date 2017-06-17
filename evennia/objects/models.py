@@ -18,6 +18,7 @@ from builtins import object
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import validate_comma_separated_integer_list
 
 from evennia.typeclasses.models import TypedObject
 from evennia.objects.manager import ObjectDBManager
@@ -172,7 +173,8 @@ class ObjectDB(TypedObject):
     db_player = models.ForeignKey("players.PlayerDB", null=True, verbose_name='player', on_delete=models.SET_NULL,
                                   help_text='a Player connected to this object, if any.')
     # the session id associated with this player, if any
-    db_sessid = models.CommaSeparatedIntegerField(null=True, max_length=32, verbose_name="session id",
+    db_sessid = models.CharField(null=True, max_length=32, validators=[validate_comma_separated_integer_list],
+                                                  verbose_name="session id",
                                                   help_text="csv list of session ids of connected Player, if any.")
     # The location in the game world. Since this one is likely
     # to change often, we set this with the 'location' property

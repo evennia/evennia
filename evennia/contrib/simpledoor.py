@@ -101,20 +101,20 @@ class CmdOpen(default_cmds.CmdOpen):
         """
         Simple wrapper for the default CmdOpen.create_exit
         """
+        # create a new exit as normal
+        new_exit = super(CmdOpen, self).create_exit(exit_name, location, destination,
+                                                    exit_aliases=exit_aliases, typeclass=typeclass)
         if hasattr(self, "return_exit_already_created"):
             # we don't create a return exit if it was already created (because
             # we created a door)
             del self.return_exit_already_created
-            return None
-        # create a new exit as normal
-        new_exit = super(CmdOpen, self).create_exit(exit_name, location, destination,
-                                                    exit_aliases=exit_aliases, typeclass=typeclass)
+            return new_exit
         if inherits_from(new_exit, SimpleDoor):
             # a door - create its counterpart and make sure to turn off the default
             # return-exit creation of CmdOpen
             self.caller.msg("Note: A door-type exit was created - ignored eventual custom return-exit type.")
             self.return_exit_already_created = True
-            back_exit = super(CmdOpen, self).create_exit(exit_name, destination, location,
+            back_exit = self.create_exit(exit_name, destination, location,
                                                          exit_aliases=exit_aliases, typeclass=typeclass)
             new_exit.db.return_exit = back_exit
             back_exit.db.return_exit = new_exit

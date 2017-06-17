@@ -58,7 +58,7 @@ class HelpEntry(SharedMemoryModel):
     # lock string storage
     db_lock_storage = models.TextField('locks', blank=True, help_text='normally view:all().')
     # tags are primarily used for permissions
-    db_tags = models.ManyToManyField(Tag, null=True,
+    db_tags = models.ManyToManyField(Tag, blank=True,
             help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.')
     # (deprecated, only here to allow MUX helpfile load (don't use otherwise)).
     # TODO: remove this when not needed anymore.

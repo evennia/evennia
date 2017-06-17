@@ -451,7 +451,97 @@ class TestChargen(CommandTest):
         self.assertTrue(self.player.db._character_dbrefs)
         self.call(chargen.CmdOOCLook(), "", "You, TestPlayer, are an OOC ghost without form.",caller=self.player)
         self.call(chargen.CmdOOCLook(), "testchar", "testchar(", caller=self.player)
+        
+# Testing clothing contrib
+from evennia.contrib import clothing
+from evennia.objects.objects import DefaultRoom
 
+class TestClothingCmd(CommandTest):
+    
+    def test_clothingcommands(self):
+        wearer = create_object(clothing.ClothedCharacter, key="Wearer")
+        friend = create_object(clothing.ClothedCharacter, key="Friend")
+        room = create_object(DefaultRoom, key="room")
+        wearer.location = room
+        friend.location = room
+        # Make a test hat
+        test_hat = create_object(clothing.Clothing, key="test hat")
+        test_hat.db.clothing_type = 'hat'
+        test_hat.location = wearer
+        # Make a test scarf
+        test_scarf = create_object(clothing.Clothing, key="test scarf")
+        test_scarf.db.clothing_type = 'accessory'
+        test_scarf.location = wearer
+        # Test wear command
+        self.call(clothing.CmdWear(), "", "Usage: wear <obj> [wear style]", caller=wearer)
+        self.call(clothing.CmdWear(), "hat", "Wearer puts on test hat.", caller=wearer)
+        self.call(clothing.CmdWear(), "scarf stylishly", "Wearer wears test scarf stylishly.", caller=wearer)
+        # Test cover command.
+        self.call(clothing.CmdCover(), "", "Usage: cover <worn clothing> [with] <clothing object>", caller=wearer)
+        self.call(clothing.CmdCover(), "hat with scarf", "Wearer covers test hat with test scarf.", caller=wearer)
+        # Test remove command.
+        self.call(clothing.CmdRemove(), "", "Could not find ''.", caller=wearer)
+        self.call(clothing.CmdRemove(), "hat", "You have to take off test scarf first.", caller=wearer)
+        self.call(clothing.CmdRemove(), "scarf", "Wearer removes test scarf, revealing test hat.", caller=wearer)
+        # Test uncover command.
+        test_scarf.wear(wearer, True)
+        test_hat.db.covered_by = test_scarf
+        self.call(clothing.CmdUncover(), "", "Usage: uncover <worn clothing object>", caller=wearer)
+        self.call(clothing.CmdUncover(), "hat", "Wearer uncovers test hat.", caller=wearer)
+        # Test drop command.
+        test_hat.db.covered_by = test_scarf
+        self.call(clothing.CmdDrop(), "", "Drop what?", caller=wearer)
+        self.call(clothing.CmdDrop(), "hat", "You can't drop that because it's covered by test scarf.", caller=wearer)
+        self.call(clothing.CmdDrop(), "scarf", "You drop test scarf.", caller=wearer)
+        # Test give command.
+        self.call(clothing.CmdGive(), "", "Usage: give <inventory object> = <target>", caller=wearer)
+        self.call(clothing.CmdGive(), "hat = Friend", "Wearer removes test hat.|You give test hat to Friend.", caller=wearer)
+        # Test inventory command.
+        self.call(clothing.CmdInventory(), "", "You are not carrying or wearing anything.", caller=wearer)
+
+class TestClothingFunc(EvenniaTest):
+    
+    def test_clothingfunctions(self):
+        wearer = create_object(clothing.ClothedCharacter, key="Wearer")
+        room = create_object(DefaultRoom, key="room")
+        wearer.location = room
+        # Make a test hat
+        test_hat = create_object(clothing.Clothing, key="test hat")
+        test_hat.db.clothing_type = 'hat'
+        test_hat.location = wearer
+        # Make a test shirt
+        test_shirt = create_object(clothing.Clothing, key="test shirt")
+        test_shirt.db.clothing_type = 'top'
+        test_shirt.location = wearer
+        # Make a test pants
+        test_pants = create_object(clothing.Clothing, key="test pants")
+        test_pants.db.clothing_type = 'bottom'
+        test_pants.location = wearer
+
+        test_hat.wear(wearer, 'on the head')
+        self.assertEqual(test_hat.db.worn, 'on the head')
+        
+        test_hat.remove(wearer)
+        self.assertEqual(test_hat.db.worn, False)
+        
+        test_hat.worn = True
+        test_hat.at_get(wearer)
+        self.assertEqual(test_hat.db.worn, False)
+        
+        clothes_list = [test_shirt, test_hat, test_pants]
+        self.assertEqual(clothing.order_clothes_list(clothes_list), [test_hat, test_shirt, test_pants])
+        
+        test_hat.wear(wearer, True)
+        test_pants.wear(wearer, True)
+        self.assertEqual(clothing.get_worn_clothes(wearer), [test_hat, test_pants])
+        
+        self.assertEqual(clothing.clothing_type_count(clothes_list), {'hat':1, 'top':1, 'bottom':1})
+        
+        self.assertEqual(clothing.single_type_count(clothes_list, 'hat'), 1)
+        
+
+        
+    
 # Testing custom_gametime
 from evennia.contrib import custom_gametime
 
@@ -754,4 +844,95 @@ class TestTutorialWorldRooms(CommandTest):
     def test_outroroom(self):
         create_object(tutrooms.OutroRoom, key="outroroom")
 
+# test turnbattle
+from evennia.contrib import turnbattle
+from evennia.objects.objects import DefaultRoom
 
+class TestTurnBattleCmd(CommandTest):
+    
+    # Test combat commands
+    def test_turnbattlecmd(self):
+        self.call(turnbattle.CmdFight(), "", "You can't start a fight if you've been defeated!")
+        self.call(turnbattle.CmdAttack(), "", "You can only do that in combat. (see: help fight)")
+        self.call(turnbattle.CmdPass(), "", "You can only do that in combat. (see: help fight)")
+        self.call(turnbattle.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
+        self.call(turnbattle.CmdRest(), "", "Char rests to recover HP.")
+        
+class TestTurnBattleFunc(EvenniaTest):
+    
+    # Test combat functions
+    def test_turnbattlefunc(self):
+        attacker = create_object(turnbattle.BattleCharacter, key="Attacker")
+        defender = create_object(turnbattle.BattleCharacter, key="Defender")
+        testroom = create_object(DefaultRoom, key="Test Room")
+        attacker.location = testroom
+        defender.loaction = testroom
+        # Initiative roll
+        initiative = turnbattle.roll_init(attacker)
+        self.assertTrue(initiative >= 0 and initiative <= 1000)
+        # Attack roll
+        attack_roll = turnbattle.get_attack(attacker, defender)
+        self.assertTrue(attack_roll >= 0 and attack_roll <= 100)
+        # Defense roll
+        defense_roll = turnbattle.get_defense(attacker, defender)
+        self.assertTrue(defense_roll == 50)
+        # Damage roll
+        damage_roll = turnbattle.get_damage(attacker, defender)
+        self.assertTrue(damage_roll >= 15 and damage_roll <= 25)
+        # Apply damage
+        defender.db.hp = 10
+        turnbattle.apply_damage(defender, 3)
+        self.assertTrue(defender.db.hp == 7)
+        # Resolve attack
+        defender.db.hp = 40
+        turnbattle.resolve_attack(attacker, defender, attack_value=20, defense_value=10)
+        self.assertTrue(defender.db.hp < 40)
+        # Combat cleanup
+        attacker.db.Combat_attribute = True
+        turnbattle.combat_cleanup(attacker)
+        self.assertFalse(attacker.db.combat_attribute)
+        # Is in combat
+        self.assertFalse(turnbattle.is_in_combat(attacker))
+        # Set up turn handler script for further tests
+        attacker.location.scripts.add(turnbattle.TurnHandler)
+        turnhandler = attacker.db.combat_TurnHandler
+        self.assertTrue(attacker.db.combat_TurnHandler)
+        # Force turn order
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        # Test is turn
+        self.assertTrue(turnbattle.is_turn(attacker))
+        # Spend actions
+        attacker.db.Combat_ActionsLeft = 1
+        turnbattle.spend_action(attacker, 1, action_name="Test")
+        self.assertTrue(attacker.db.Combat_ActionsLeft == 0)
+        self.assertTrue(attacker.db.Combat_LastAction == "Test")
+        # Initialize for combat
+        attacker.db.Combat_ActionsLeft = 983
+        turnhandler.initialize_for_combat(attacker)
+        self.assertTrue(attacker.db.Combat_ActionsLeft == 0)
+        self.assertTrue(attacker.db.Combat_LastAction == "null")
+        # Start turn
+        defender.db.Combat_ActionsLeft = 0
+        turnhandler.start_turn(defender)
+        self.assertTrue(defender.db.Combat_ActionsLeft == 1)
+        # Next turn
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        turnhandler.next_turn()
+        self.assertTrue(turnhandler.db.turn == 1)
+        # Turn end check
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        attacker.db.Combat_ActionsLeft = 0
+        turnhandler.turn_end_check(attacker)
+        self.assertTrue(turnhandler.db.turn == 1)
+        # Join fight
+        joiner = create_object(turnbattle.BattleCharacter, key="Joiner")
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        turnhandler.join_fight(joiner)
+        self.assertTrue(turnhandler.db.turn == 1)
+        self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
+        # Remove the script at the end
+        turnhandler.stop()

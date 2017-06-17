@@ -881,9 +881,11 @@ class CmdGetInput(Command):
 
             caller.ndb._getinput._session = self.session
             prompt = caller.ndb._getinput._prompt
+            args = caller.ndb._getinput._args
+            kwargs = caller.ndb._getinput._kwargs
             result = self.raw_string.strip()  # we strip the ending line break caused by sending
 
-            ok = not callback(caller, prompt, result)
+            ok = not callback(caller, prompt, result, *args, **kwargs)
             if ok:
                 # only clear the state if the callback does not return
                 # anything
@@ -917,7 +919,7 @@ class _Prompt(object):
     pass
 
 
-def get_input(caller, prompt, callback, session=None):
+def get_input(caller, prompt, callback, session=None, *args, **kwargs):
     """
     This is a helper function for easily request input from
     the caller.
@@ -942,6 +944,13 @@ def get_input(caller, prompt, callback, session=None):
             greater than 2. The session is then updated by the
             command and is available (for example in callbacks)
             through `caller.ndb.getinput._session`.
+        *args, **kwargs (optional): Extra arguments will be
+            passed to the fall back function as a list 'args'
+            and all keyword arguments as a dictionary 'kwargs'.
+            To utilise *args and **kwargs, a value for the
+            session argument must be provided (None by default)
+            and the callback function must take *args and
+            **kwargs as arguments.
 
     Raises:
         RuntimeError: If the given callback is not callable.
@@ -961,6 +970,12 @@ def get_input(caller, prompt, callback, session=None):
         multisession modes), then it is available in the
         callback through `caller.ndb._getinput._session`.
 
+        Chaining get_input functions will result in the caller
+        stacking ever more instances of InputCmdSets. Whilst
+        they will all be cleared on concluding the get_input
+        chain, EvMenu should be considered for anything beyond
+        a single question.
+
     """
     if not callable(callback):
         raise RuntimeError("get_input: input callback is not callable.")
@@ -968,6 +983,8 @@ def get_input(caller, prompt, callback, session=None):
     caller.ndb._getinput._callback = callback
     caller.ndb._getinput._prompt = prompt
     caller.ndb._getinput._session = session
+    caller.ndb._getinput._args = args
+    caller.ndb._getinput._kwargs = kwargs
     caller.cmdset.add(InputCmdSet)
     caller.msg(prompt, session=session)
 
