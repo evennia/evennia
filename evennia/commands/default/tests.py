@@ -20,6 +20,7 @@ from mock import Mock
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
 from evennia.commands.default import help, general, system, admin, player, building, batchprocess, comms
+from evennia.commands.command import Command, InterruptCommand
 from evennia.utils import ansi, utils
 from evennia.server.sessionhandler import SESSIONS
 
@@ -91,6 +92,8 @@ class CommandTest(EvenniaTest):
             else:
                 returned_msg = "\n".join(stored_msg)
                 returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
+        except InterruptCommand:
+            pass
         finally:
             receiver.msg = old_msg
 
@@ -328,3 +331,19 @@ class TestBatchProcess(CommandTest):
         self.call(batchprocess.CmdBatchCommands(), "example_batch_cmds", "Running Batchcommand processor  Automatic mode for example_batch_cmds")
         # we make sure to delete the button again here to stop the running reactor
         self.call(building.CmdDestroy(), "button", "button was destroyed.")
+
+class CmdInterrupt(Command):
+
+    key = "interrupt"
+
+    def parse(self):
+        raise InterruptCommand
+
+    def func(self):
+        self.msg("in func")
+
+
+class TestInterruptCommand(CommandTest):
+    def test_interrupt_command(self):
+        ret = self.call(CmdInterrupt(), "")
+        self.assertEqual(ret, "")

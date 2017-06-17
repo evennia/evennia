@@ -46,6 +46,7 @@ Command = None
 CmdSet = None
 default_cmds = None
 syscmdkeys = None
+InterruptCommand = None
 
 # search functions
 search_object = None
@@ -119,7 +120,7 @@ def _init():
     global DefaultPlayer, DefaultObject, DefaultGuest, DefaultCharacter
     global DefaultRoom, DefaultExit, DefaultChannel, DefaultScript
     global ObjectDB, PlayerDB, ScriptDB, ChannelDB, Msg
-    global Command, CmdSet, default_cmds, syscmdkeys
+    global Command, CmdSet, default_cmds, syscmdkeys, InterruptCommand
     global search_object, search_script, search_player, search_channel, search_help, search_tag
     global create_object, create_script, create_player, create_channel, create_message, create_help_entry
     global settings,lockfuncs, logger, utils, gametime, ansi, spawn, managers
@@ -142,7 +143,7 @@ def _init():
     from .comms.models import Msg
 
     # commands
-    from .commands.command import Command
+    from .commands.command import Command, InterruptCommand
     from .commands.cmdset import CmdSet
 
     # search functions

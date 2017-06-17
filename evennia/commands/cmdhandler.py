@@ -43,6 +43,7 @@ from twisted.internet import reactor
 from twisted.internet.task import deferLater
 from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
+from evennia.commands.command import InterruptCommand
 from evennia.comms.channelhandler import CHANNELHANDLER
 from evennia.utils import logger, utils
 from evennia.utils.utils import string_suggestions, to_unicode
@@ -51,7 +52,7 @@ from django.utils.translation import ugettext as _
 
 _IN_GAME_ERRORS = settings.IN_GAME_ERRORS
 
-__all__ = ("cmdhandler",)
+__all__ = ("cmdhandler", "InterruptCommand")
 _GA = object.__getattribute__
 _CMDSET_MERGE_CACHE = WeakValueDictionary()
 
@@ -605,6 +606,9 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             # return result to the deferred
             returnValue(ret)
 
+        except InterruptCommand:
+            # Do nothing, clean exit
+            pass
         except Exception:
             _msg_err(caller, _ERROR_UNTRAPPED)
             raise ErrorReported(raw_string)
@@ -752,4 +756,3 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
     except Exception:
         # This catches exceptions in cmdhandler exceptions themselves
         _msg_err(error_to, _ERROR_CMDHANDLER)
-
