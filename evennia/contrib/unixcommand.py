@@ -149,7 +149,9 @@ class UnixCommand(Command):
         try:
             self.opts = self.parser.parse_args(shlex.split(self.args))
         except ParseError as err:
-            self.msg(str(err))
+            msg = str(err)
+            if msg:
+                self.msg(msg)
             raise InterruptCommand
 
 
@@ -168,15 +170,16 @@ class EvenniaParser(argparse.ArgumentParser):
         prog = prog or command.key
         super(EvenniaParser, self).__init__(
                 prog=prog, description=description,
-                formatter_class=argparse.RawDescriptionHelpFormatter,
-                conflict_handler='resolve', **kwargs)
+                conflict_handler='resolve', add_help=False, **kwargs)
         self.command = command
         self.post_help = epilog
         def n_exit(code=None, msg=None):
-            if msg:
-                raise ParseError(msg)
+            raise ParseError(msg)
 
         self.exit = n_exit
+
+        # Replace the -h/--help
+        self.add_argument("-h", "--hel", nargs=0, action=HelpAction, help="display heeeelp")
 
     def format_usage(self):
         """Return the usage line."""
@@ -185,18 +188,24 @@ class EvenniaParser(argparse.ArgumentParser):
     def format_help(self):
         """Return the parser help, including its epilog."""
         autohelp = raw(super(EvenniaParser, self).format_help())
-        return autohelp + "\n\n" + self.post_help
+        return "\n" + autohelp + "\n" + self.post_help
 
     def print_usage(self, file=None):
         """Print the usage to the caller."""
         if self.command:
-            self.command.msg(ParseError(self.format_usage()))
-        else:
-            raise ParseError(self.format_usage())
+            self.command.msg(self.format_usage().strip())
 
     def print_help(self, file=None):
         """Print the help to the caller."""
         if self.command:
-            self.command.msg(ParseError(self.format_help()))
-        else:
-            raise ParseError(self.format_help())
+            self.command.msg(self.format_help().strip())
+
+
+class HelpAction(argparse.Action):
+
+    """Override the -h/--he.p."""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        if parser.command:
+            parser.command.msg(parser.format_help().strip())
+            parser.exit(0, "")
