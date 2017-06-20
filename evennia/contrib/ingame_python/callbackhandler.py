@@ -7,9 +7,9 @@ from collections import namedtuple
 class CallbackHandler(object):
 
     """
-    The event handler for a specific object.
+    The callback handler for a specific object.
 
-    The script that contains all events will be reached through this
+    The script that contains all callbacks will be reached through this
     handler.  This handler is therefore a shortcut to be used by
     developers.  This handler (accessible through `obj.callbacks`) is a
     shortcut to manipulating callbacks within this object, getting,
