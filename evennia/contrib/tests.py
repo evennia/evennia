@@ -947,13 +947,13 @@ class CmdDummy(UnixCommand):
 
     """A dummy UnixCommand."""
 
-    def init(self):
+    key = "dummy"
+
+    def init_parser(self):
         """Fill out options."""
         self.parser.add_argument("nb1", type=int, help="the first number")
         self.parser.add_argument("nb2", type=int, help="the second number")
         self.parser.add_argument("-v", "--verbose", action="store_true")
-
-    key = "dummy"
 
     def func(self):
         nb1 = self.opts.nb1
