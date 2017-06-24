@@ -46,7 +46,6 @@ from evennia.utils.utils import (
         is_iter, inherits_from, lazy_property,
         class_from_module)
 from evennia.utils.logger import log_trace
-from evennia.typeclasses.django_new_patch import patched_new
 from .signals import remove_attributes_on_delete, post_save
 
 __all__ = ("TypedObject", )
