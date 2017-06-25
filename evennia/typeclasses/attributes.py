@@ -219,7 +219,7 @@ class AttributeHandler(object):
     def _fullcache(self):
         """Cache all attributes of this object"""
         query = {"%s__id" % self._model: self._objid,
-                 "attribute__db_model": self._model,
+                 "attribute__db_model__iexact": self._model,
                  "attribute__db_attrtype": self._attrtype}
         attrs = [conn.attribute for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
@@ -273,7 +273,7 @@ class AttributeHandler(object):
                     return []  # no such attribute: return an empty list
             else:
                 query = {"%s__id" % self._model: self._objid,
-                         "attribute__db_model": self._model,
+                         "attribute__db_model__iexact": self._model,
                          "attribute__db_attrtype": self._attrtype,
                          "attribute__db_key__iexact": key.lower(),
                          "attribute__db_category__iexact": category.lower() if category else None}
@@ -298,7 +298,7 @@ class AttributeHandler(object):
             else:
                 # we have to query to make this category up-date in the cache
                 query = {"%s__id" % self._model: self._objid,
-                         "attribute__db_model": self._model,
+                         "attribute__db_model__iexact": self._model,
                          "attribute__db_attrtype": self._attrtype,
                          "attribute__db_category__iexact": category.lower() if category else None}
                 attrs = [conn.attribute for conn
