@@ -615,7 +615,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
     def move_to(self, destination, quiet=False,
                 emit_to_obj=None, use_destination=True, to_none=False, move_hooks=True,
-                msg=None, mapping=None):
+                **kwargs):
         """
         Moves this object to a new location.
 
@@ -635,8 +635,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             move_hooks (bool): If False, turn off the calling of move-related hooks
                 (at_before/after_move etc) with quiet=True, this is as quiet a move
                 as can be done.
-            msg (str, optional): a replacement message.
-            mapping (dict, optional): additional mapping objects.
+
+        Kwargs:
+          Passed on to announce_move_to and announce_move_from hooks.
 
         Returns:
             result (bool): True/False depending on if there were problems with the move.
@@ -703,7 +704,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if not quiet:
             # tell the old room we are leaving
             try:
-                self.announce_move_from(destination, msg=msg, mapping=mapping)
+                self.announce_move_from(destination, **kwargs)
             except Exception as err:
                 logerr(errtxt % "at_announce_move()", err)
                 return False
@@ -718,7 +719,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if not quiet:
             # Tell the new room we are there.
             try:
-                self.announce_move_to(source_location, msg=msg, mapping=mapping)
+                self.announce_move_to(source_location, **kwargs)
             except Exception as err:
                 logerr(errtxt % "announce_move_to()", err)
                 return False
