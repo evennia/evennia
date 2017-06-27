@@ -6,14 +6,14 @@ Eventfuncs are just Python functions that can be used inside of calllbacks.
 """
 
 from evennia import ObjectDB, ScriptDB
-from evennia.contrib.events.utils import InterruptEvent
+from evennia.contrib.ingame_python.utils import InterruptEvent
 
 def deny():
     """
-    Deny, that is stop, the event here.
+    Deny, that is stop, the callback here.
 
     Notes:
-        This function will raise an exception to terminate the event
+        This function will raise an exception to terminate the callback
         in a controlled way.  If you use this function in an event called
         prior to a command, the command will be cancelled as well.  Good
         situations to use the `deny()` function are in events that begins
