@@ -82,13 +82,33 @@ class UnixCommandParser(argparse.ArgumentParser):
 
     """
 
-    def __init__(self, prog, description="", epilogue="", command=None, **kwargs):
+    def __init__(self, prog, description="", epilog="", command=None, **kwargs):
+        """
+        Build a UnixCommandParser with a link to the command using it.
+
+        Args:
+            prog (str): the program name (usually the command key).
+            description (str): a very brief line to show in the usage text.
+            epilog (str): the epilog to show below options.
+            command (Command): the command calling the parser.
+
+        Kwargs:
+            Additional keyword arguments are directly sent to
+            `argparse.ArgumentParser`.  You will find them on the
+            [parser's documentation](https://docs.python.org/2/library/argparse.html).
+
+        Note:
+            It's doubtful you would need to create this parser manually.
+            The `UnixCommand` does that automatically.  If you create
+            sub-commands, this class will be used.
+
+        """
         prog = prog or command.key
         super(UnixCommandParser, self).__init__(
                 prog=prog, description=description,
                 conflict_handler='resolve', add_help=False, **kwargs)
         self.command = command
-        self.post_help = epilogue
+        self.post_help = epilog
         def n_exit(code=None, msg=None):
             raise ParseError(msg)
 
@@ -109,12 +129,12 @@ class UnixCommandParser(argparse.ArgumentParser):
         return raw(super(UnixCommandParser, self).format_usage())
 
     def format_help(self):
-        """Return the parser help, including its epilogue.
+        """Return the parser help, including its epilog.
 
         Note:
             This method is present to return the raw-escaped help,
             in order to avoid unintentional color codes.  Color codes
-            in the epilogue (the command docstring) are supported.
+            in the epilog (the command docstring) are supported.
 
         """
         autohelp = raw(super(UnixCommandParser, self).format_help())
@@ -190,7 +210,7 @@ class UnixCommand(Command):
     slightly different way than usual: the first line of the docstring
     is used to represent the program description (the very short
     line at the top of the help message).  The other lines below are
-    used as the program's "epilogue", displayed below the options.  It
+    used as the program's "epilog", displayed below the options.  It
     means in your docstring, you don't have to write the options.
     They will be automatically provided by the parser and displayed
     accordingly.  The `argparse` module provides a default '-h' or
@@ -201,13 +221,19 @@ class UnixCommand(Command):
     """
 
     def __init__(self, **kwargs):
-        super(UnixCommand, self).__init__()
+        """
+        The lockhandler works the same as for objects.
+        optional kwargs will be set as properties on the Command at runtime,
+        overloading evential same-named class properties.
+
+        """
+        super(UnixCommand, self).__init__(**kwargs)
 
         # Create the empty UnixCommandParser, inheriting argparse.ArgumentParser
         lines = dedent(self.__doc__.strip("\n")).splitlines()
         description = lines[0].strip()
-        epilogue = "\n".join(lines[1:]).strip()
-        self.parser = UnixCommandParser(None, description, epilogue, command=self)
+        epilog = "\n".join(lines[1:]).strip()
+        self.parser = UnixCommandParser(None, description, epilog, command=self)
 
         # Fill the argument parser
         self.init_parser()
