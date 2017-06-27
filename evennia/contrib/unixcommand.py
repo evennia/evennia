@@ -1,15 +1,20 @@
 """
-Module containing the UnixCommand class.
+Unix-like Command style parent
 
-This command allows to use unix-like options in game commands.  It is
-not the best parser for players, but can be really useful for builders
-when they need to have a single command to do many things with many
-options.
+Evennia contribution, Vincent Le Geoff 2017
 
-The UnixCommand can be ovverridden to have your commands parsed.
-You will need to override two methods:
-- The `init_parser` method, which adds options to the parser.
-- The `func` method, called to execute the command once parsed.
+This module contains a command class that allows for unix-style command syntax in-game, using
+--options, positional arguments and stuff like -n 10 etc similarly to a unix command. It might not
+the best syntax for the average player but can be really useful for builders when they need to have
+a single command do many things with many options. It uses the ArgumentParser from Python's standard
+library under the hood.
+
+To use, inherit `UnixCommand` from this module from your own commands. You need
+to override two methods:
+
+- The `init_parser` method, which adds options to the parser. Note that you should normally
+    *not* override the normal `parse` method when inheriting from `UnixCommand`.
+- The `func` method, called to execute the command once parsed (like any Command).
 
 Here's a short example:
 
@@ -19,7 +24,7 @@ class CmdPlant(UnixCommand):
     '''
     Plant a tree or plant.
 
-    This command is used to plant a tree or plant in the room you are in.
+    This command is used to plant something in the room you are in.
 
     Examples:
       plant orange -a 8
@@ -61,6 +66,7 @@ from textwrap import dedent
 
 from evennia import Command, InterruptCommand
 from evennia.utils.ansi import raw
+
 
 class ParseError(Exception):
 
@@ -109,6 +115,7 @@ class UnixCommandParser(argparse.ArgumentParser):
                 conflict_handler='resolve', add_help=False, **kwargs)
         self.command = command
         self.post_help = epilog
+
         def n_exit(code=None, msg=None):
             raise ParseError(msg)
 
@@ -116,7 +123,7 @@ class UnixCommandParser(argparse.ArgumentParser):
 
         # Replace the -h/--help
         self.add_argument("-h", "--hel", nargs=0, action=HelpAction,
-                help="display the command help")
+                          help="display the command help")
 
     def format_usage(self):
         """Return the usage line.
