@@ -717,6 +717,7 @@ INSTALLED_APPS = (
     'evennia.server',
     'evennia.typeclasses',
     'evennia.players',
+    'evennia.accounts',
     'evennia.objects',
     'evennia.comms',
     'evennia.help',
