@@ -80,9 +80,6 @@ class Msg(SharedMemoryModel):
     # Sender is either a player, an object or an external sender, like
     # an IRC channel; normally there is only one, but if co-modification of
     # a message is allowed, there may be more than one "author"
-    # TODO Player-Account
-    db_sender_players = models.ManyToManyField("players.PlayerDB", related_name='sender_player_set',
-                                               blank=True, verbose_name='sender(player)', db_index=True)
     db_sender_accounts = models.ManyToManyField("accounts.AccountDB", related_name='sender_account_set',
                                                blank=True, verbose_name='sender(account)', db_index=True)
 
@@ -96,9 +93,6 @@ class Msg(SharedMemoryModel):
     # The destination objects of this message. Stored as a
     # comma-separated string of object dbrefs. Can be defined along
     # with channels below.
-    # TODO Player-Account
-    db_receivers_players = models.ManyToManyField('players.PlayerDB', related_name='receiver_player_set',
-                                                  blank=True, help_text="player receivers")
     db_receivers_accounts = models.ManyToManyField('accounts.AccountDB', related_name='receiver_account_set',
                                                   blank=True, help_text="account receivers")
 
@@ -615,9 +609,6 @@ class ChannelDB(TypedObject):
       - db_object_subscriptions: The Object subscriptions.
 
     """
-    # TODO Player-Account
-    db_subscriptions = models.ManyToManyField("players.PlayerDB",
-                       related_name="subscription_set", blank=True, verbose_name='subscriptions', db_index=True)
     db_account_subscriptions = models.ManyToManyField("accounts.AccountDB",
                        related_name="account_subscription_set", blank=True, verbose_name='account subscriptions', db_index=True)
 
