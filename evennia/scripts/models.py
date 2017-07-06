@@ -86,8 +86,12 @@ class ScriptDB(TypedObject):
     # A reference to the database object affected by this Script, if any.
     db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True, verbose_name='scripted object',
                                help_text='the object to store this script on, if not a global script.')
+    # TODO Player-Account
     db_player = models.ForeignKey("players.PlayerDB", null=True, blank=True, verbose_name="scripted player",
                                help_text='the player to store this script on (should not be set if obj is set)')
+    db_account = models.ForeignKey("accounts.AccountDB", null=True, blank=True, verbose_name="scripted account",
+                               help_text='the account to store this script on (should not be set if db_obj is set)')
+
     # how often to run Script (secs). -1 means there is no timer
     db_interval = models.IntegerField('interval', default=-1, help_text='how often to repeat script, in seconds. -1 means off.')
     # start script right away or wait interval seconds first

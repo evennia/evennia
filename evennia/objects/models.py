@@ -170,8 +170,12 @@ class ObjectDB(TypedObject):
     # will automatically save and cache the data more efficiently.
 
     # If this is a character object, the player is connected here.
+    # TODO Player-Account
     db_player = models.ForeignKey("players.PlayerDB", null=True, verbose_name='player', on_delete=models.SET_NULL,
                                   help_text='a Player connected to this object, if any.')
+    db_account = models.ForeignKey("accounts.AccountDB", null=True, verbose_name='account', on_delete=models.SET_NULL,
+                                  help_text='an Account connected to this object, if any.')
+
     # the session id associated with this player, if any
     db_sessid = models.CharField(null=True, max_length=32, validators=[validate_comma_separated_integer_list],
                                                   verbose_name="session id",

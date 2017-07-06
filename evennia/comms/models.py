@@ -80,8 +80,12 @@ class Msg(SharedMemoryModel):
     # Sender is either a player, an object or an external sender, like
     # an IRC channel; normally there is only one, but if co-modification of
     # a message is allowed, there may be more than one "author"
+    # TODO Player-Account
     db_sender_players = models.ManyToManyField("players.PlayerDB", related_name='sender_player_set',
                                                blank=True, verbose_name='sender(player)', db_index=True)
+    db_sender_accounts = models.ManyToManyField("accounts.AccountDB", related_name='sender_account_set',
+                                               blank=True, verbose_name='sender(account)', db_index=True)
+
     db_sender_objects = models.ManyToManyField("objects.ObjectDB", related_name='sender_object_set',
                                                blank=True, verbose_name='sender(object)', db_index=True)
     db_sender_scripts = models.ManyToManyField("scripts.ScriptDB", related_name='sender_script_set',
@@ -92,8 +96,12 @@ class Msg(SharedMemoryModel):
     # The destination objects of this message. Stored as a
     # comma-separated string of object dbrefs. Can be defined along
     # with channels below.
+    # TODO Player-Account
     db_receivers_players = models.ManyToManyField('players.PlayerDB', related_name='receiver_player_set',
                                                   blank=True, help_text="player receivers")
+    db_receivers_accounts = models.ManyToManyField('accounts.AccountDB', related_name='receiver_account_set',
+                                                  blank=True, help_text="account receivers")
+
     db_receivers_objects = models.ManyToManyField('objects.ObjectDB', related_name='receiver_object_set',
                                                   blank=True, help_text="object receivers")
     db_receivers_scripts = models.ManyToManyField('scripts.ScriptDB', related_name='receiver_script_set',
@@ -114,6 +122,8 @@ class Msg(SharedMemoryModel):
 
     # these can be used to filter/hide a given message from supplied objects/players/channels
     db_hide_from_players = models.ManyToManyField("players.PlayerDB", related_name='hide_from_players_set', blank=True)
+    db_hide_from_accounts = models.ManyToManyField("accounts.AccountDB", related_name='hide_from_accounts_set', blank=True)
+
     db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', blank=True)
     db_hide_from_channels = models.ManyToManyField("ChannelDB", related_name='hide_from_channels_set', blank=True)
 
@@ -605,11 +615,14 @@ class ChannelDB(TypedObject):
       - db_object_subscriptions: The Object subscriptions.
 
     """
+    # TODO Player-Account
     db_subscriptions = models.ManyToManyField("players.PlayerDB",
                        related_name="subscription_set", blank=True, verbose_name='subscriptions', db_index=True)
+    db_account_subscriptions = models.ManyToManyField("accounts.AccountDB",
+                       related_name="account_subscription_set", blank=True, verbose_name='account subscriptions', db_index=True)
 
     db_object_subscriptions = models.ManyToManyField("objects.ObjectDB",
-                       related_name="object_subscription_set", blank=True, verbose_name='subscriptions', db_index=True)
+                       related_name="object_subscription_set", blank=True, verbose_name='object subscriptions', db_index=True)
 
     # Database manager
     objects = managers.ChannelDBManager()
