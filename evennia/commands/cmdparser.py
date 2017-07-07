@@ -22,7 +22,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
     Args:
         raw_string (str): The unparsed text entered by the caller.
         cmdset (CmdSet): The merged, currently valid cmdset
-        caller (Session, Player or Object): The caller triggering this parsing.
+        caller (Session, Account or Object): The caller triggering this parsing.
         match_index (int, optional): Index to pick a given match in a
             list of same-named command matches. If this is given, it suggests
             this is not the first time this function was called: normally

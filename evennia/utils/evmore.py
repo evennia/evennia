@@ -62,8 +62,8 @@ class CmdMore(Command):
         Implement the command
         """
         more = self.caller.ndb._more
-        if not more and hasattr(self.caller, "player"):
-            more = self.caller.player.ndb._more
+        if not more and hasattr(self.caller, "account"):
+            more = self.caller.account.ndb._more
         if not more:
             self.caller.msg("Error in loading the pager. Contact an admin.")
             return
@@ -94,8 +94,8 @@ class CmdMoreLook(Command):
         Implement the command
         """
         more = self.caller.ndb._more
-        if not more and hasattr(self.caller, "player"):
-            more = self.caller.player.ndb._more
+        if not more and hasattr(self.caller, "account"):
+            more = self.caller.account.ndb._more
         if not more:
             self.caller.msg("Error in loading the pager. Contact an admin.")
             return
@@ -124,7 +124,7 @@ class EvMore(object):
         Initialization of the text handler.
 
         Args:
-            caller (Object or Player): Entity reading the text.
+            caller (Object or Account): Entity reading the text.
             text (str): The text to put under paging.
             always_page (bool, optional): If `False`, the
                 pager will only kick in if `text` is too big
@@ -268,7 +268,7 @@ def msg(caller, text="", always_page=False, session=None, justify_kwargs=None, *
     More-supported version of msg, mimicking the normal msg method.
 
     Args:
-        caller (Object or Player): Entity reading the text.
+        caller (Object or Account): Entity reading the text.
         text (str): The text to put under paging.
         always_page (bool, optional): If `False`, the
             pager will only kick in if `text` is too big

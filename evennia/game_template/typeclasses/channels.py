@@ -2,7 +2,7 @@
 Channel
 
 The channel class represents the out-of-character chat-room usable by
-Players in-game. It is mostly overloaded to change its appearance, but
+Accounts in-game. It is mostly overloaded to change its appearance, but
 channels can be used to implement many different forms of message
 distribution systems.
 
@@ -18,9 +18,9 @@ class Channel(DefaultChannel):
     """
     Working methods:
         at_channel_creation() - called once, when the channel is created
-        has_connection(player) - check if the given player listens to this channel
-        connect(player) - connect player to this channel
-        disconnect(player) - disconnect player from channel
+        has_connection(account) - check if the given account listens to this channel
+        connect(account) - connect account to this channel
+        disconnect(account) - disconnect account from channel
         access(access_obj, access_type='listen', default=False) - check the
                     access on this channel (default access_type is listen)
         delete() - delete this channel
@@ -33,8 +33,8 @@ class Channel(DefaultChannel):
         tempmsg(msg, header=None, senders=None) - wrapper for sending non-persistent
                 messages.
         distribute_message(msg, online=False) - send a message to all
-                connected players on channel, optionally sending only
-                to players that are currently online (optimized for very large sends)
+                connected accounts on channel, optionally sending only
+                to accounts that are currently online (optimized for very large sends)
 
     Useful hooks:
         channel_prefix(msg, emit=False) - how the channel should be

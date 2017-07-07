@@ -62,26 +62,26 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
     def has_connection(self, subscriber):
         """
-        Checks so this player is actually listening
+        Checks so this account is actually listening
         to this channel.
 
         Args:
-            subscriber (Player or Object): Entity to check.
+            subscriber (Account or Object): Entity to check.
 
         Returns:
             has_sub (bool): Whether the subscriber is subscribing to
                 this channel or not.
 
         Notes:
-            This will first try Player subscribers and only try Object
-                if the Player fails.
+            This will first try Account subscribers and only try Object
+                if the Account fails.
 
         """
         has_sub = self.subscriptions.has(subscriber)
-        if not has_sub and hasattr(subscriber, "player"):
+        if not has_sub and hasattr(subscriber, "account"):
             # it's common to send an Object when we
-            # by default only allow Players to subscribe.
-            has_sub = self.subscriptions.has(subscriber.player)
+            # by default only allow Accounts to subscribe.
+            has_sub = self.subscriptions.has(subscriber.account)
         return has_sub
 
     @property
@@ -94,7 +94,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         listening = [ob for ob in subs if ob.is_connected and ob not in self.mutelist]
         if subs:
             # display listening subscribers in bold
-            string = ", ".join([player.key if player not in listening else "|w%s|n" % player.key for player in subs])
+            string = ", ".join([account.key if account not in listening else "|w%s|n" % account.key for account in subs])
         else:
             string = "<None>"
         return string
@@ -106,7 +106,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         but may use channel commands.
 
         Args:
-            subscriber (Object or Player): Subscriber to mute.
+            subscriber (Object or Account): Subscriber to mute.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
@@ -124,7 +124,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         but may use channel commands.
 
         Args:
-            subscriber (Object or Player): The subscriber to unmute.
+            subscriber (Object or Account): The subscriber to unmute.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
@@ -141,7 +141,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         Connect the user to this channel. This checks access.
 
         Args:
-            subscriber (Player or Object): the entity to subscribe
+            subscriber (Account or Object): the entity to subscribe
                 to this channel.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
@@ -171,7 +171,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         Disconnect entity from this channel.
 
         Args:
-            subscriber (Player of Object): the
+            subscriber (Account of Object): the
                 entity to disconnect.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
@@ -265,7 +265,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             This is also where logging happens, if enabled.
 
         """
-        # get all players or objects connected to this channel and send to them
+        # get all accounts or objects connected to this channel and send to them
         if online:
             subs = self.subscriptions.online()
         else:
@@ -276,7 +276,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
                 continue
             try:
                 # note our addition of the from_channel keyword here. This could be checked
-                # by a custom player.msg() to treat channel-receives differently.
+                # by a custom account.msg() to treat channel-receives differently.
                 entity.msg(msgobj.message, from_obj=msgobj.senders, options={"from_channel": self.id})
             except AttributeError as e:
                 logger.log_trace("%s\nCannot send msg to '%s'." % (e, entity))
@@ -288,7 +288,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
     def msg(self, msgobj, header=None, senders=None, sender_strings=None,
             keep_log=None, online=False, emit=False, external=False):
         """
-        Send the given message to all players connected to channel. Note that
+        Send the given message to all accounts connected to channel. Note that
         no permission-checking is done here; it is assumed to have been
         done before calling this method. The optional keywords are not used if
         persistent is False.
@@ -300,10 +300,10 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
                 (if persistent=False) or it will be used together with `header`
                 and `senders` keywords to create a Msg instance on the fly.
             header (str, optional): A header for building the message.
-            senders (Object, Player or list, optional): Optional if persistent=False, used
+            senders (Object, Account or list, optional): Optional if persistent=False, used
                 to build senders for the message.
             sender_strings (list, optional): Name strings of senders. Used for external
-                connections where the sender is not a player or object.
+                connections where the sender is not an account or object.
                 When this is defined, external will be assumed.
             keep_log (bool or None, optional): This allows to temporarily change the logging status of
                 this channel message. If `None`, the Channel's `keep_log` Attribute will
@@ -311,8 +311,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
                 message only (note that for unlogged channels, a `True` value here will
                 create a new log file only for this message).
             online (bool, optional) - If this is set true, only messages people who are
-                online. Otherwise, messages all players connected. This can
-                make things faster, but may not trigger listeners on players
+                online. Otherwise, messages all accounts connected. This can
+                make things faster, but may not trigger listeners on accounts
                 that are offline.
             emit (bool, optional) - Signals to the message formatter that this message is
                 not to be directly associated with a name.
@@ -389,7 +389,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         Notes:
             This function exists separately so that external sources
             can use it to format source names in the same manner as
-            normal object/player names.
+            normal object/account names.
 
         """
         if not senders:
@@ -432,7 +432,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         """
         Hook method. Used for formatting external messages. This is
         needed as a separate operation because the senders of external
-        messages may not be in-game objects/players, and so cannot
+        messages may not be in-game objects/accounts, and so cannot
         have things like custom user preferences.
 
         Args:
@@ -495,7 +495,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
     def post_join_channel(self, joiner, **kwargs):
         """
-        Hook method. Runs right after an object or player joins a channel.
+        Hook method. Runs right after an object or account joins a channel.
 
         Args:
             joiner (object): The joining object.
@@ -523,7 +523,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
     def post_leave_channel(self, leaver, **kwargs):
         """
-        Hook method. Runs right after an object or player leaves a channel.
+        Hook method. Runs right after an object or account leaves a channel.
 
         Args:
             leaver (object): The leaving object.

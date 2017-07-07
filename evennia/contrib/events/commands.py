@@ -94,7 +94,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
         on user permission.
 
         Args:
-            caller (Object or Player): the caller asking for help on the command.
+            caller (Object or Account): the caller asking for help on the command.
             cmdset (CmdSet): the command set (if you need additional commands).
 
         Returns:

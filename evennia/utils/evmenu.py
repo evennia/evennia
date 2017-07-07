@@ -242,13 +242,13 @@ class CmdEvMenuNode(Command):
 
         caller = self.caller
         # we store Session on the menu since this can be hard to
-        # get in multisession environemtns if caller is a Player.
+        # get in multisession environemtns if caller is an Account.
         menu = caller.ndb._menutree
         if not menu:
             if _restore(caller):
                 return
             orig_caller = caller
-            caller = caller.player if hasattr(caller, "player") else None
+            caller = caller.account if hasattr(caller, "account") else None
             menu = caller.ndb._menutree if caller else None
             if not menu:
                 if caller and _restore(caller):
@@ -261,7 +261,7 @@ class CmdEvMenuNode(Command):
                     orig_caller.msg(err) # don't give the session as a kwarg here, direct to original
                     raise EvMenuError(err)
         # we must do this after the caller with the menui has been correctly identified since it
-        # can be either Player, Object or Session (in the latter case this info will be superfluous).
+        # can be either Account, Object or Session (in the latter case this info will be superfluous).
         caller.ndb._menutree._session = self.session
         # we have a menu, use it.
         menu.parse_input(self.raw_string)
@@ -309,7 +309,7 @@ class EvMenu(object):
         Initialize the menu tree and start the caller onto the first node.
 
         Args:
-            caller (Object, Player or Session): The user of the menu.
+            caller (Object, Account or Session): The user of the menu.
             menudata (str, module or dict): The full or relative path to the module
                 holding the menu tree data. All global functions in this module
                 whose name doesn't start with '_ ' will be parsed as menu nodes.
@@ -361,7 +361,7 @@ class EvMenu(object):
             startnode_input (str, optional): Send an input text to `startnode` as if
                 a user input text from a fictional previous node. When the server reloads,
                 the latest visited node will be re-run using this kwarg.
-            session (Session, optional): This is useful when calling EvMenu from a player
+            session (Session, optional): This is useful when calling EvMenu from an account
                 in multisession mode > 2. Note that this session only really relevant
                 for the very first display of the first node - after that, EvMenu itself
                 will keep the session updated from the command input. So a persistent
@@ -777,7 +777,7 @@ class EvMenu(object):
         Args:
             optionlist (list): List of (key, description) tuples for every
                 option related to this node.
-            caller (Object, Player or None, optional): The caller of the node.
+            caller (Object, Account or None, optional): The caller of the node.
 
         Returns:
             options (str): The formatted option display.
@@ -841,7 +841,7 @@ class EvMenu(object):
         Args:
             nodetext (str): The node text as returned by `self.nodetext_formatter`.
             optionstext (str): The options display as returned by `self.options_formatter`.
-            caller (Object, Player or None, optional): The caller of the node.
+            caller (Object, Account or None, optional): The caller of the node.
 
         Returns:
             node (str): The formatted node to display.
@@ -874,9 +874,9 @@ class CmdGetInput(Command):
         caller = self.caller
         try:
             getinput = caller.ndb._getinput
-            if not getinput and hasattr(caller, "player"):
-                getinput = caller.player.ndb._getinput
-                caller = caller.player
+            if not getinput and hasattr(caller, "account"):
+                getinput = caller.account.ndb._getinput
+                caller = caller.account
             callback = getinput._callback
 
             caller.ndb._getinput._session = self.session
@@ -925,7 +925,7 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
     the caller.
 
     Args:
-        caller (Player or Object): The entity being asked
+        caller (Account or Object): The entity being asked
             the question. This should usually be an object
             controlled by a user.
         prompt (str): This text will be shown to the user,
@@ -940,7 +940,7 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
             accept input.
         session (Session, optional): This allows to specify the
             session to send the prompt to. It's usually only
-            needed if `caller` is a Player in multisession modes
+            needed if `caller` is an Account in multisession modes
             greater than 2. The session is then updated by the
             command and is available (for example in callbacks)
             through `caller.ndb.getinput._session`.
@@ -966,7 +966,7 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
         `caller.ndb._getinput` is stored; this will be removed
         when the prompt finishes.
         If you need the specific Session of the caller (which
-        may not be easy to get if caller is a player in higher
+        may not be easy to get if caller is an account in higher
         multisession modes), then it is available in the
         callback through `caller.ndb._getinput._session`.
 

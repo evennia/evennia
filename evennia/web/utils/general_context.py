@@ -25,7 +25,7 @@ except AttributeError:
 # Setup lists of the most relevant apps so
 # the adminsite becomes more readable.
 
-PLAYER_RELATED = ['Players']
+ACCOUNT_RELATED = ['Accounts']
 GAME_ENTITIES = ['Objects', 'Scripts', 'Comms', 'Help']
 GAME_SETUP = ['Permissions', 'Config']
 CONNECTIONS = ['Irc']
@@ -46,7 +46,7 @@ def general_context(request):
     return {
         'game_name': GAME_NAME,
         'game_slogan': GAME_SLOGAN,
-        'evennia_userapps': PLAYER_RELATED,
+        'evennia_userapps': ACCOUNT_RELATED,
         'evennia_entityapps': GAME_ENTITIES,
         'evennia_setupapps': GAME_SETUP,
         'evennia_connectapps': CONNECTIONS,

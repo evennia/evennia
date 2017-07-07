@@ -271,10 +271,10 @@ class LockHandler(object):
     def cache_lock_bypass(self, obj):
         """
         We cache superuser bypass checks here for efficiency. This
-        needs to be re-run when a player is assigned to a character.
+        needs to be re-run when an account is assigned to a character.
         We need to grant access to superusers. We need to check both
-        directly on the object (players), through obj.player and using
-        the get_player() method (this sits on serversessions, in some
+        directly on the object (accounts), through obj.account and using
+        the get_account() method (this sits on serversessions, in some
         rare cases where a check is done before the login process has
         yet been fully finalized)
 
@@ -450,8 +450,8 @@ class LockHandler(object):
         except AttributeError:
             # happens before session is initiated.
             if not no_superuser_bypass and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser)
-             or (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser)
-             or (hasattr(accessing_obj, 'get_player') and (not accessing_obj.get_player() or accessing_obj.get_player().is_superuser))):
+             or (hasattr(accessing_obj, 'account') and hasattr(accessing_obj.account, 'is_superuser') and accessing_obj.account.is_superuser)
+             or (hasattr(accessing_obj, 'get_account') and (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
                 return True
 
         # no superuser or bypass -> normal lock operation
@@ -511,8 +511,8 @@ class LockHandler(object):
                 return True
         except AttributeError:
             if no_superuser_bypass and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser)
-             or (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser)
-             or (hasattr(accessing_obj, 'get_player') and (not accessing_obj.get_player() or accessing_obj.get_player().is_superuser))):
+             or (hasattr(accessing_obj, 'account') and hasattr(accessing_obj.account, 'is_superuser') and accessing_obj.account.is_superuser)
+             or (hasattr(accessing_obj, 'get_account') and (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
                 return True
         if not ":" in lockstring:
             lockstring = "%s:%s" % ("_dummy", lockstring)

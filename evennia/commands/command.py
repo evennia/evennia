@@ -152,14 +152,14 @@ class Command(with_metaclass(CommandMeta, object)):
     is_exit = False
     # define the command not only by key but by the regex form of its arguments
     arg_regex = settings.COMMAND_DEFAULT_ARG_REGEX
-    # whether self.msg sends to all sessions of a related player/object (default
+    # whether self.msg sends to all sessions of a related account/object (default
     # is to only send to the session sending the command).
     msg_all_sessions = settings.COMMAND_DEFAULT_MSG_ALL_SESSIONS
 
     # auto-set (by Evennia on command instantiation) are:
     #   obj - which object this command is defined on
     #   session - which session is responsible for triggering this command. Only set
-    #             if triggered by a player.
+    #             if triggered by an account.
 
     def __init__(self, **kwargs):
         """
@@ -307,7 +307,7 @@ class Command(with_metaclass(CommandMeta, object)):
             session=None, **kwargs):
         """
         This is a shortcut instead of calling msg() directly on an
-        object - it will detect if caller is an Object or a Player and
+        object - it will detect if caller is an Object or an Account and
         also appends self.session automatically if self.msg_all_sessions is False.
 
         Args:
@@ -340,7 +340,7 @@ class Command(with_metaclass(CommandMeta, object)):
         Args:
             raw_string (str): Execute this string as a command input.
             session (Session, optional): If not given, the current command's Session will be used.
-            obj (Object or Player, optional): Object or Player on which to call the execute_cmd.
+            obj (Object or Account, optional): Object or Account on which to call the execute_cmd.
                 If not given, self.caller will be used.
 
         Kwargs:
@@ -443,7 +443,7 @@ class Command(with_metaclass(CommandMeta, object)):
         commands the caller can use.
 
         Args:
-            caller (Object or Player): the caller asking for help on the command.
+            caller (Object or Account): the caller asking for help on the command.
             cmdset (CmdSet): the command set (if you need additional commands).
 
         Returns:

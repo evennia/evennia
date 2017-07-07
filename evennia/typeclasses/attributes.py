@@ -868,7 +868,7 @@ class NickHandler(AttributeHandler):
         """
         super(NickHandler, self).remove(key, category=category, **kwargs)
 
-    def nickreplace(self, raw_string, categories=("inputline", "channel"), include_player=True):
+    def nickreplace(self, raw_string, categories=("inputline", "channel"), include_account=True):
         """
         Apply nick replacement of entries in raw_string with nick replacement.
 
@@ -878,8 +878,8 @@ class NickHandler(AttributeHandler):
             categories (tuple, optional): Replacement categories in
                 which to perform the replacement, such as "inputline",
                 "channel" etc.
-            include_player (bool, optional): Also include replacement
-                with nicks stored on the Player level.
+            include_account (bool, optional): Also include replacement
+                with nicks stored on the Account level.
             kwargs (any, optional): Not used.
 
         Returns:
@@ -891,9 +891,9 @@ class NickHandler(AttributeHandler):
         for category in make_iter(categories):
             nicks.update({nick.key: nick for nick in make_iter(
                 self.get(category=category, return_obj=True)) if nick and nick.key})
-        if include_player and self.obj.has_player:
+        if include_account and self.obj.has_account:
             for category in make_iter(categories):
-                nicks.update({nick.key: nick for nick in make_iter(self.obj.player.nicks.get(
+                nicks.update({nick.key: nick for nick in make_iter(self.obj.account.nicks.get(
                     category=category, return_obj=True)) if nick and nick.key})
         for key, nick in nicks.iteritems():
             nick_regex, template, _, _ = nick.value

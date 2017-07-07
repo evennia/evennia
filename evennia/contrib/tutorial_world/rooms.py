@@ -126,7 +126,7 @@ class CmdTutorialLook(default_cmds.CmdLook):
     Usage:
         look <obj>
         look <room detail>
-        look *<player>
+        look *<account>
 
     Observes your location, details at your location or objects
     in your vicinity.
@@ -182,7 +182,7 @@ class CmdTutorialLook(default_cmds.CmdLook):
                 return
 
         if not hasattr(looking_at_obj, 'return_appearance'):
-            # this is likely due to us having a player instead
+            # this is likely due to us having an account instead
             looking_at_obj = looking_at_obj.character
         if not looking_at_obj.access(caller, "view"):
             caller.msg("Could not find '%s'." % args)
@@ -232,7 +232,7 @@ class TutorialRoom(DefaultRoom):
             source_location (Object): the previous location of new_arrival.
 
         """
-        if new_arrival.has_player and not new_arrival.is_superuser:
+        if new_arrival.has_account and not new_arrival.is_superuser:
             # this is a character
             for obj in self.contents_get(exclude=new_arrival):
                 if hasattr(obj, "at_new_arrival"):
@@ -362,7 +362,7 @@ class IntroRoom(TutorialRoom):
         super(IntroRoom, self).at_object_creation()
         self.db.tutorial_info = "The first room of the tutorial. " \
                                 "This assigns the health Attribute to "\
-                                "the player."
+                                "the account."
 
     def at_object_receive(self, character, source_location):
         """
@@ -372,7 +372,7 @@ class IntroRoom(TutorialRoom):
         # setup character for the tutorial
         health = self.db.char_health or 20
 
-        if character.has_player:
+        if character.has_account:
             character.db.health = health
             character.db.health_max = health
 
@@ -388,7 +388,7 @@ class IntroRoom(TutorialRoom):
 # Defines a special west-eastward "bridge"-room, a large room that takes
 # several steps to cross. It is complete with custom commands and a
 # chance of falling off the bridge. This room has no regular exits,
-# instead the exitings are handled by custom commands set on the player
+# instead the exitings are handled by custom commands set on the account
 # upon first entering the room.
 #
 # Since one can enter the bridge room from both ends, it is
@@ -537,7 +537,7 @@ class CmdLookBridge(Command):
                                       BRIDGE_POS_MESSAGES[bridge_position],
                                       random.choice(BRIDGE_MOODS))
 
-        chars = [obj for obj in self.obj.contents_get(exclude=caller) if obj.has_player]
+        chars = [obj for obj in self.obj.contents_get(exclude=caller) if obj.has_account]
         if chars:
             # we create the You see: message manually here
             message += "\n You see: %s" % ", ".join("|c%s|n" % char.key for char in chars)
@@ -606,7 +606,7 @@ class BridgeRoom(WeatherRoom):
     The bridge room implements an unsafe bridge. It also enters the player into
     a state where they get new commands so as to try to cross the bridge.
 
-     We want this to result in the player getting a special set of
+     We want this to result in the account getting a special set of
      commands related to crossing the bridge. The result is that it
      will take several steps to cross it, despite it being represented
      by only a single room.
@@ -659,7 +659,7 @@ class BridgeRoom(WeatherRoom):
         This hook is called by the engine whenever the player is moved
         into this room.
         """
-        if character.has_player:
+        if character.has_account:
             # we only run this if the entered object is indeed a player object.
             # check so our east/west exits are correctly defined.
             wexit = search_object(self.db.west_exit)
@@ -682,7 +682,7 @@ class BridgeRoom(WeatherRoom):
         """
         This is triggered when the player leaves the bridge room.
         """
-        if character.has_player:
+        if character.has_account:
             # clean up the position attribute
             del character.db.tutorial_bridge_position
 
@@ -876,7 +876,7 @@ class DarkRoom(TutorialRoom):
             self.locks.add("view:all()")
             self.cmdset.remove(DarkCmdSet)
             self.db.is_lit = True
-            for char in (obj for obj in self.contents if obj.has_player):
+            for char in (obj for obj in self.contents if obj.has_account):
                 # this won't do anything if it is already removed
                 char.msg("The room is lit up.")
         else:
@@ -884,7 +884,7 @@ class DarkRoom(TutorialRoom):
             self.db.is_lit = False
             self.locks.add("view:false()")
             self.cmdset.add(DarkCmdSet, permanent=True)
-            for char in (obj for obj in self.contents if obj.has_player):
+            for char in (obj for obj in self.contents if obj.has_account):
                 if char.is_superuser:
                     char.msg("You are Superuser, so you are not affected by the dark state.")
                 else:
@@ -895,7 +895,7 @@ class DarkRoom(TutorialRoom):
         """
         Called when an object enters the room.
         """
-        if obj.has_player:
+        if obj.has_account:
             # a puppeted object, that is, a Character
             self._heal(obj)
             # in case the new guy carries light with them
@@ -960,7 +960,7 @@ class TeleportRoom(TutorialRoom):
         This hook is called by the engine whenever the player is moved into
         this room.
         """
-        if not character.has_player:
+        if not character.has_account:
             # only act on player characters.
             return
         # determine if the puzzle is a success or not
@@ -1020,7 +1020,7 @@ class OutroRoom(TutorialRoom):
         """
         Do cleanup.
         """
-        if character.has_player:
+        if character.has_account:
             del character.db.health_max
             del character.db.health
             del character.db.last_climbed

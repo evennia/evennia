@@ -27,7 +27,7 @@ evennia._init()
 from django.db import connection
 from django.conf import settings
 
-from evennia.players.models import PlayerDB
+from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
 from evennia.server.models import ServerConfig
 from evennia.server import initial_setup
@@ -214,8 +214,8 @@ class Evennia(object):
         already existing objects.
         """
         # setting names
-        settings_names = ("CMDSET_CHARACTER", "CMDSET_PLAYER",
-                          "BASE_PLAYER_TYPECLASS", "BASE_OBJECT_TYPECLASS",
+        settings_names = ("CMDSET_CHARACTER", "CMDSET_ACCOUNT",
+                          "BASE_ACCOUNT_TYPECLASS", "BASE_OBJECT_TYPECLASS",
                           "BASE_CHARACTER_TYPECLASS", "BASE_ROOM_TYPECLASS",
                           "BASE_EXIT_TYPECLASS", "BASE_SCRIPT_TYPECLASS",
                           "BASE_CHANNEL_TYPECLASS")
@@ -228,16 +228,16 @@ class Evennia(object):
             # run the update
             from evennia.objects.models import ObjectDB
             from evennia.comms.models import ChannelDB
-            #from evennia.players.models import PlayerDB
+            #from evennia.accounts.models import AccountDB
             for i, prev, curr in ((i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches):
                 # update the database
                 print(" %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..." % (settings_names[i], prev, curr))
                 if i == 0:
                     ObjectDB.objects.filter(db_cmdset_storage__exact=prev).update(db_cmdset_storage=curr)
                 if i == 1:
-                    PlayerDB.objects.filter(db_cmdset_storage__exact=prev).update(db_cmdset_storage=curr)
+                    AccountDB.objects.filter(db_cmdset_storage__exact=prev).update(db_cmdset_storage=curr)
                 if i == 2:
-                    PlayerDB.objects.filter(db_typeclass_path__exact=prev).update(db_typeclass_path=curr)
+                    AccountDB.objects.filter(db_typeclass_path__exact=prev).update(db_typeclass_path=curr)
                 if i in (3, 4, 5, 6):
                     ObjectDB.objects.filter(db_typeclass_path__exact=prev).update(db_typeclass_path=curr)
                 if i == 7:
@@ -247,7 +247,7 @@ class Evennia(object):
                 # store the new default and clean caches
                 ServerConfig.objects.conf(settings_names[i], curr)
                 ObjectDB.flush_instance_cache()
-                PlayerDB.flush_instance_cache()
+                AccountDB.flush_instance_cache()
                 ScriptDB.flush_instance_cache()
                 ChannelDB.flush_instance_cache()
         # if this is the first start we might not have a "previous"
@@ -283,13 +283,13 @@ class Evennia(object):
         Called every server start
         """
         from evennia.objects.models import ObjectDB
-        #from evennia.players.models import PlayerDB
+        #from evennia.accounts.models import AccountDB
 
         #update eventual changed defaults
         self.update_defaults()
 
         [o.at_init() for o in ObjectDB.get_all_cached_instances()]
-        [p.at_init() for p in PlayerDB.get_all_cached_instances()]
+        [p.at_init() for p in AccountDB.get_all_cached_instances()]
 
         mode = self.getset_restart_mode()
 
@@ -356,7 +356,7 @@ class Evennia(object):
         mode = self.getset_restart_mode(mode)
 
         from evennia.objects.models import ObjectDB
-        #from evennia.players.models import PlayerDB
+        #from evennia.accounts.models import AccountDB
         from evennia.server.models import ServerConfig
         from evennia.utils import gametime as _GAMETIME_MODULE
 
@@ -364,7 +364,7 @@ class Evennia(object):
             # call restart hooks
             ServerConfig.objects.conf("server_restart_mode", "reload")
             yield [o.at_server_reload() for o in ObjectDB.get_all_cached_instances()]
-            yield [p.at_server_reload() for p in PlayerDB.get_all_cached_instances()]
+            yield [p.at_server_reload() for p in AccountDB.get_all_cached_instances()]
             yield [(s.pause(manual_pause=False), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances() if s.is_active]
             yield self.sessions.all_sessions_portal_sync()
             self.at_server_reload_stop()
@@ -375,14 +375,14 @@ class Evennia(object):
             if mode == 'reset':
                 # like shutdown but don't unset the is_connected flag and don't disconnect sessions
                 yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
-                yield [p.at_server_shutdown() for p in PlayerDB.get_all_cached_instances()]
+                yield [p.at_server_shutdown() for p in AccountDB.get_all_cached_instances()]
                 if self.amp_protocol:
                     yield self.sessions.all_sessions_portal_sync()
             else:  # shutdown
-                yield [_SA(p, "is_connected", False) for p in PlayerDB.get_all_cached_instances()]
+                yield [_SA(p, "is_connected", False) for p in AccountDB.get_all_cached_instances()]
                 yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
                 yield [(p.unpuppet_all(), p.at_server_shutdown())
-                                       for p in PlayerDB.get_all_cached_instances()]
+                                       for p in AccountDB.get_all_cached_instances()]
                 yield ObjectDB.objects.clear_all_sessids()
             yield [(s.pause(manual_pause=False), s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]
             ServerConfig.objects.conf("server_restart_mode", "reset")
@@ -482,7 +482,7 @@ class Evennia(object):
             script.stop()
 
         if GUEST_ENABLED:
-            for guest in PlayerDB.objects.all().filter(db_typeclass_path=settings.BASE_GUEST_TYPECLASS):
+            for guest in AccountDB.objects.all().filter(db_typeclass_path=settings.BASE_GUEST_TYPECLASS):
                 for character in guest.db._playable_characters:
                     if character: character.delete()
                 guest.delete()

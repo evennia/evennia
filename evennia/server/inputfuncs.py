@@ -23,7 +23,7 @@ from future.utils import viewkeys
 import importlib
 from django.conf import settings
 from evennia.commands.cmdhandler import cmdhandler
-from evennia.players.models import PlayerDB
+from evennia.accounts.models import AccountDB
 from evennia.utils.logger import log_err
 from evennia.utils.utils import to_str, to_unicode
 
@@ -67,15 +67,15 @@ def text(session, *args, **kwargs):
     if txt.strip() in _IDLE_COMMAND:
         session.update_session_counters(idle=True)
         return
-    if session.player:
+    if session.account:
         # nick replacement
         puppet = session.puppet
         if puppet:
             txt = puppet.nicks.nickreplace(txt,
-                          categories=("inputline", "channel"), include_player=True)
+                          categories=("inputline", "channel"), include_account=True)
         else:
-            txt = session.player.nicks.nickreplace(txt,
-                        categories=("inputline", "channel"), include_player=False)
+            txt = session.account.nicks.nickreplace(txt,
+                        categories=("inputline", "channel"), include_account=False)
     kwargs.pop("options", None)
     cmdhandler(session, txt, callertype="session", session=session, **kwargs)
     session.update_session_counters()
@@ -105,7 +105,7 @@ def bot_data_in(session, *args, **kwargs):
         return
     kwargs.pop("options", None)
     # Trigger the execute_cmd method of the corresponding bot.
-    session.player.execute_cmd(session=session, txt=txt, **kwargs)
+    session.account.execute_cmd(session=session, txt=txt, **kwargs)
     session.update_session_counters()
 
 
@@ -153,10 +153,10 @@ def browser_sessid(session, *args, **kwargs):
             uid = browsersession.get("logged_in", None)
             if uid:
                 try:
-                    player =  PlayerDB.objects.get(pk=uid)
+                    account =  AccountDB.objects.get(pk=uid)
                 except Exception:
                     return
-                session.sessionhandler.login(session, player)
+                session.sessionhandler.login(session, account)
 
 
 
@@ -288,15 +288,15 @@ def login(session, *args, **kwargs):
     in. This will also automatically throttle too quick attempts.
 
     Kwargs:
-        name (str): Player name
+        name (str): Account name
         password (str): Plain-text password
 
     """
     if not session.logged_in and "name" in kwargs and "password" in kwargs:
-        from evennia.commands.default.unloggedin import create_normal_player
-        player = create_normal_player(session, kwargs["name"], kwargs["password"])
-        if player:
-            session.sessionhandler.login(session, player)
+        from evennia.commands.default.unloggedin import create_normal_account
+        account = create_normal_account(session, kwargs["name"], kwargs["password"])
+        if account:
+            session.sessionhandler.login(session, account)
 
 _gettable = {
     "name": lambda obj: obj.key,
@@ -308,7 +308,7 @@ _gettable = {
 def get_value(session, *args, **kwargs):
     """
     Return the value of a given attribute or db_property on the
-    session's current player or character.
+    session's current account or character.
 
     Kwargs:
       name (str): Name of info value to return. Only names
@@ -317,7 +317,7 @@ def get_value(session, *args, **kwargs):
 
     """
     name = kwargs.get("name", "")
-    obj = session.puppet or session.player
+    obj = session.puppet or session.account
     if name in _gettable:
         session.msg(get_value={"name": name, "value": _gettable[name](obj)})
 
@@ -428,7 +428,7 @@ def unmonitor(session, *args, **kwargs):
 
 def _on_webclient_options_change(**kwargs):
     """
-    Called when the webclient options stored on the player changes.
+    Called when the webclient options stored on the account changes.
     Inform the interested clients of this change.
     """
     session = kwargs["session"]
@@ -452,15 +452,15 @@ def webclient_options(session, *args, **kwargs):
     that changes.
 
     If kwargs is not empty, the key/values stored in there will be persisted
-    to the player object.
+    to the account object.
 
     Kwargs:
         <option name>: an option to save
     """
-    player = session.player
+    account = session.account
 
     clientoptions = settings.WEBCLIENT_OPTIONS.copy()
-    storedoptions = player.db._saved_webclient_options or {}
+    storedoptions = account.db._saved_webclient_options or {}
     clientoptions.update(storedoptions)
 
     # The webclient adds a cmdid to every kwargs, but we don't need it.
@@ -476,13 +476,13 @@ def webclient_options(session, *args, **kwargs):
         # Create a monitor. If a monitor already exists then it will replace
         # the previous one since it would use the same idstring
         from evennia.scripts.monitorhandler import MONITOR_HANDLER
-        MONITOR_HANDLER.add(player, "_saved_webclient_options",
+        MONITOR_HANDLER.add(account, "_saved_webclient_options",
                             _on_webclient_options_change,
                             idstring=session.sessid, persistent=False,
                             session=session)
     else:
-        # kwargs provided: persist them to the player object
+        # kwargs provided: persist them to the account object
         for key, value in kwargs.iteritems():
             clientoptions[key] = value
 
-        player.db._saved_webclient_options = clientoptions
+        account.db._saved_webclient_options = clientoptions

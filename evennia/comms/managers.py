@@ -10,7 +10,7 @@ from evennia.typeclasses.managers import (TypedObjectManager, TypeclassManager)
 from evennia.utils import logger
 
 _GA = object.__getattribute__
-_PlayerDB = None
+_AccountDB = None
 _ObjectDB = None
 _ChannelDB = None
 _SESSIONS = None
@@ -57,7 +57,7 @@ def dbref(inp, reqhash=True):
 
 def identify_object(inp):
     """
-    Helper function. Identifies if an object is a player or an object;
+    Helper function. Identifies if an object is an account or an object;
     return its database model
 
     Args:
@@ -65,14 +65,14 @@ def identify_object(inp):
 
     Returns:
         identified (tuple): This is a tuple with (`inp`, identifier)
-            where `identifier` is one of "player", "object", "channel",
+            where `identifier` is one of "account", "object", "channel",
             "string", "dbref" or None.
 
     """
     if hasattr(inp, "__dbclass__"):
         clsname = inp.__dbclass__.__name__
-        if clsname == "PlayerDB":
-            return inp, "player"
+        if clsname == "AccountDB":
+            return inp, "account"
         elif clsname == "ObjectDB":
             return inp ,"object"
         elif clsname == "ChannelDB":
@@ -85,14 +85,14 @@ def identify_object(inp):
         return inp, None
 
 
-def to_object(inp, objtype='player'):
+def to_object(inp, objtype='account'):
     """
-    Locates the object related to the given playername or channel key.
+    Locates the object related to the given accountname or channel key.
     If input was already the correct object, return it.
 
     Args:
         inp (any): The input object/string
-        objtype (str): Either 'player' or 'channel'.
+        objtype (str): Either 'account' or 'channel'.
 
     Returns:
         obj (object): The correct object related to `inp`.
@@ -101,17 +101,17 @@ def to_object(inp, objtype='player'):
     obj, typ = identify_object(inp)
     if typ == objtype:
         return obj
-    if objtype == 'player':
+    if objtype == 'account':
         if typ == 'object':
-            return obj.player
+            return obj.account
         if typ == 'string':
-            return _PlayerDB.objects.get(user_username__iexact=obj)
+            return _AccountDB.objects.get(user_username__iexact=obj)
         if typ == 'dbref':
-            return _PlayerDB.objects.get(id=obj)
+            return _AccountDB.objects.get(id=obj)
         logger.log_err("%s %s %s %s %s", objtype, inp, obj, typ, type(inp))
         raise CommError()
     elif objtype == 'object':
-        if typ == 'player':
+        if typ == 'account':
             return obj.obj
         if typ == 'string':
             return _ObjectDB.objects.get(db_key__iexact=obj)
@@ -158,7 +158,7 @@ class MsgManager(TypedObjectManager):
 
         Returns:
             identified (tuple): This is a tuple with (`inp`, identifier)
-                where `identifier` is one of "player", "object", "channel",
+                where `identifier` is one of "account", "object", "channel",
                 "string", "dbref" or None.
 
         """
@@ -183,10 +183,10 @@ class MsgManager(TypedObjectManager):
     def get_messages_by_sender(self, sender, exclude_channel_messages=False):
         """
         Get all messages sent by one entity - this could be either a
-        player or an object
+        account or an object
 
         Args:
-            sender (Player or Object): The sender of the message.
+            sender (Account or Object): The sender of the message.
             exclude_channel_messages (bool, optional): Only return messages
                 not aimed at a channel (that is, private tells for example)
 
@@ -200,9 +200,9 @@ class MsgManager(TypedObjectManager):
         obj, typ = identify_object(sender)
         if exclude_channel_messages:
             # explicitly exclude channel recipients
-            if typ == 'player':
-                return list(self.filter(db_sender_players=obj,
-                            db_receivers_channels__isnull=True).exclude(db_hide_from_players=obj))
+            if typ == 'account':
+                return list(self.filter(db_sender_accounts=obj,
+                            db_receivers_channels__isnull=True).exclude(db_hide_from_accounts=obj))
             elif typ == 'object':
                 return list(self.filter(db_sender_objects=obj,
                             db_receivers_channels__isnull=True).exclude(db_hide_from_objects=obj))
@@ -210,8 +210,8 @@ class MsgManager(TypedObjectManager):
                 raise CommError
         else:
             # get everything, channel or not
-            if typ == 'player':
-                return list(self.filter(db_sender_players=obj).exclude(db_hide_from_players=obj))
+            if typ == 'account':
+                return list(self.filter(db_sender_accounts=obj).exclude(db_hide_from_accounts=obj))
             elif typ == 'object':
                 return list(self.filter(db_sender_objects=obj).exclude(db_hide_from_objects=obj))
             else:
@@ -222,7 +222,7 @@ class MsgManager(TypedObjectManager):
         Get all messages sent to one given recipient.
 
         Args:
-            recipient (Object, Player or Channel): The recipient of the messages to search for.
+            recipient (Object, Account or Channel): The recipient of the messages to search for.
 
         Returns:
             messages (list): Matching messages.
@@ -232,8 +232,8 @@ class MsgManager(TypedObjectManager):
 
         """
         obj, typ = identify_object(recipient)
-        if typ == 'player':
-            return list(self.filter(db_receivers_players=obj).exclude(db_hide_from_players=obj))
+        if typ == 'account':
+            return list(self.filter(db_receivers_accounts=obj).exclude(db_hide_from_accounts=obj))
         elif typ == 'object':
             return list(self.filter(db_receivers_objects=obj).exclude(db_hide_from_objects=obj))
         elif typ == 'channel':
@@ -260,9 +260,9 @@ class MsgManager(TypedObjectManager):
         one of the arguments must be given to do a search.
 
         Args:
-            sender (Object or Player, optional): Get messages sent by a particular player or object
-            receiver (Object, Player or Channel, optional): Get messages
-                received by a certain player,object or channel
+            sender (Object or Account, optional): Get messages sent by a particular account or object
+            receiver (Object, Account or Channel, optional): Get messages
+                received by a certain account,object or channel
             freetext (str): Search for a text string in a message.  NOTE:
                 This can potentially be slow, so make sure to supply one of
                 the other arguments to limit the search.
@@ -287,16 +287,16 @@ class MsgManager(TypedObjectManager):
 
         # filter by sender
         sender, styp = identify_object(sender)
-        if styp == 'player':
-            sender_restrict = Q(db_sender_players=sender) & ~Q(db_hide_from_players=sender)
+        if styp == 'account':
+            sender_restrict = Q(db_sender_accounts=sender) & ~Q(db_hide_from_accounts=sender)
         elif styp == 'object':
             sender_restrict = Q(db_sender_objects=sender) & ~Q(db_hide_from_objects=sender)
         else:
             sender_restrict = Q()
         # filter by receiver
         receiver, rtyp = identify_object(receiver)
-        if rtyp == 'player':
-            receiver_restrict = Q(db_receivers_players=receiver) & ~Q(db_hide_from_players=receiver)
+        if rtyp == 'account':
+            receiver_restrict = Q(db_receivers_accounts=receiver) & ~Q(db_hide_from_accounts=receiver)
         elif rtyp == 'object':
             receiver_restrict = Q(db_receivers_objects=receiver) & ~Q(db_hide_from_objects=receiver)
         elif rtyp == 'channel':
@@ -369,14 +369,14 @@ class ChannelDBManager(TypedObjectManager):
         Return all channels a given entity is subscribed to.
 
         Args:
-            subscriber (Object or Player): The one subscribing.
+            subscriber (Object or Account): The one subscribing.
 
         Returns:
             subscriptions (list): Channel subscribed to.
 
         """
         clsname = subscriber.__dbclass__.__name__
-        if clsname == "PlayerDB":
+        if clsname == "AccountDB":
             return subscriber.subscription_set.all()
         if clsname == "ObjectDB":
             return subscriber.object_subscription_set.all()

@@ -49,20 +49,20 @@ class ScriptDBManager(TypedObjectManager):
         """
         if not obj:
             return []
-        player = _GA(_GA(obj, "__dbclass__"), "__name__") == "PlayerDB"
+        account = _GA(_GA(obj, "__dbclass__"), "__name__") == "AccountDB"
         if key:
             dbref = self.dbref(key)
             if dbref or dbref == 0:
-                if player:
-                    return self.filter(db_player=obj, id=dbref)
+                if account:
+                    return self.filter(db_account=obj, id=dbref)
                 else:
                     return self.filter(db_obj=obj, id=dbref)
-            elif player:
-                return self.filter(db_player=obj, db_key=key)
+            elif account:
+                return self.filter(db_account=obj, db_key=key)
             else:
                 return self.filter(db_obj=obj, db_key=key)
-        elif player:
-            return self.filter(db_player=obj)
+        elif account:
+            return self.filter(db_account=obj)
         else:
             return self.filter(db_obj=obj)
 

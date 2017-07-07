@@ -15,13 +15,13 @@ cleaning whatever effect they have had on the game object.
 
 Common examples of uses of Scripts:
 
-- Load the default cmdset to the player object's cmdhandler
+- Load the default cmdset to the account object's cmdhandler
   when logging in.
 - Switch to a different state, such as entering a text editor,
   start combat or enter a dark room.
 - Merge a new cmdset with the default one for changing which
   commands are available at a particular time
-- Give the player/object a time-limited bonus/effect
+- Give the account/object a time-limited bonus/effect
 
 """
 from builtins import object
@@ -62,7 +62,7 @@ class ScriptDB(TypedObject):
     The ScriptDB adds the following properties:
       desc - optional description of script
       obj - the object the script is linked to, if any
-      player - the player the script is linked to (exclusive with obj)
+      account - the account the script is linked to (exclusive with obj)
       interval - how often script should run
       start_delay - if the script should start repeating right away
       repeats - how many times the script should repeat
@@ -122,18 +122,18 @@ class ScriptDB(TypedObject):
     def __get_obj(self):
         """
         Property wrapper that homogenizes access to either the
-        db_player or db_obj field, using the same object property
+        db_account or db_obj field, using the same object property
         name.
 
         """
-        obj = _GA(self, "db_player")
+        obj = _GA(self, "db_account")
         if not obj:
             obj = _GA(self, "db_obj")
         return obj
 
     def __set_obj(self, value):
         """
-        Set player or obj to their right database field. If
+        Set account or obj to their right database field. If
         a dbref is given, assume ObjectDB.
 
         """
@@ -153,8 +153,8 @@ class ScriptDB(TypedObject):
                     except ObjectDoesNotExist:
                         # maybe it is just a name that happens to look like a dbid
                         pass
-        if value.__class__.__name__ == "PlayerDB":
-            fname = "db_player"
+        if value.__class__.__name__ == "AccountDB":
+            fname = "db_account"
             _SA(self, fname, value)
         else:
             fname = "db_obj"

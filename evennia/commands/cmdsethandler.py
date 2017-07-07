@@ -9,8 +9,8 @@ intelligent container that, when added to other CmdSet make sure that
 same-name commands are treated correctly (usually so there are no
 doublets).  This temporary but up-to-date merger of CmdSet is jointly
 called the Current Cmset. It is this Current CmdSet that the
-commandhandler looks through whenever a player enters a command (it
-also adds CmdSets from objects in the room in real-time). All player
+commandhandler looks through whenever an account enters a command (it
+also adds CmdSets from objects in the room in real-time). All account
 objects have a 'default cmdset' containing all the normal in-game mud
 commands (look etc).
 
@@ -19,12 +19,12 @@ So what is all this cmdset complexity good for?
 In its simplest form, a CmdSet has no commands, only a key name. In
 this case the cmdset's use is up to each individual game - it can be
 used by an AI module for example (mobs in cmdset 'roam' move from room
-to room, in cmdset 'attack' they enter combat with players).
+to room, in cmdset 'attack' they enter combat with accounts).
 
 Defining commands in cmdsets offer some further powerful game-design
 consequences however. Here are some examples:
 
-As mentioned above, all players always have at least the Default
+As mentioned above, all accounts always have at least the Default
 CmdSet.  This contains the set of all normal-use commands in-game,
 stuff like look and @desc etc. Now assume our players end up in a dark
 room. You don't want the player to be able to do much in that dark
@@ -37,7 +37,7 @@ and have this completely replace the default cmdset.
 
 Another example: Say you want your players to be able to go
 fishing. You could implement this as a 'fish' command that fails
-whenever the player has no fishing rod. Easy enough.  But what if you
+whenever the account has no fishing rod. Easy enough.  But what if you
 want to make fishing more complex - maybe you want four-five different
 commands for throwing your line, reeling in, etc? Most players won't
 (we assume) have fishing gear, and having all those detailed commands
@@ -48,7 +48,7 @@ for a minor thing like fishing?
 So instead you put all those detailed fishing commands into their own
 CommandSet called 'Fishing'. Whenever the player gives the command
 'fish' (presumably the code checks there is also water nearby), only
-THEN this CommandSet is added to the Cmdhandler of the player. The
+THEN this CommandSet is added to the Cmdhandler of the account. The
 'throw' command (which normally throws rocks) is replaced by the
 custom 'fishing variant' of throw. What has happened is that the
 Fishing CommandSet was merged on top of the Default ones, and due to
@@ -128,7 +128,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
     Args:
         path (str): The path to the command set to load.
         cmdsetobj (CmdSet): The database object/typeclass on which this cmdset is to be
-            assigned (this can be also channels and exits, as well as players
+            assigned (this can be also channels and exits, as well as accounts
             but there will always be such an object)
         emit_to_obj (Object, optional): If given, error is emitted to
             this object (in addition to logging)

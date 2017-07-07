@@ -1210,7 +1210,7 @@ class ContribRPObject(DefaultObject):
                 otherwise it will return a list of 0, 1 or more matches.
 
         Notes:
-            To find Players, use eg. `evennia.player_search`. If
+            To find Accounts, use eg. `evennia.account_search`. If
             `quiet=False`, error messages will be handled by
             `settings.SEARCH_AT_RESULT` and echoed automatically (on
             error, return will be `None`). If `quiet=True`, the error
@@ -1228,7 +1228,7 @@ class ContribRPObject(DefaultObject):
 
         if use_nicks:
             # do nick-replacement on search
-            searchdata = self.nicks.nickreplace(searchdata, categories=("object", "player"), include_player=True)
+            searchdata = self.nicks.nickreplace(searchdata, categories=("object", "account"), include_account=True)
 
         if(global_search or (is_string and searchdata.startswith("#") and
                     len(searchdata) > 1 and searchdata[1:].isdigit())):
@@ -1296,7 +1296,7 @@ class ContribRPObject(DefaultObject):
         Displays the name of the object in a viewer-aware manner.
 
         Args:
-            looker (TypedObject): The object or player that is looking
+            looker (TypedObject): The object or account that is looking
                 at/getting inforamtion for this object.
 
         Kwargs:
@@ -1342,7 +1342,7 @@ class ContribRPObject(DefaultObject):
             key = con.get_display_name(looker, pose=True)
             if con.destination:
                 exits.append(key)
-            elif con.has_player:
+            elif con.has_account:
                 users.append(key)
             else:
                 things.append(key)
@@ -1383,7 +1383,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         Displays the name of the object in a viewer-aware manner.
 
         Args:
-            looker (TypedObject): The object or player that is looking
+            looker (TypedObject): The object or account that is looking
                 at/getting inforamtion for this object.
 
         Kwargs:

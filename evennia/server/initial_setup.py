@@ -10,7 +10,7 @@ from __future__ import print_function
 import time
 from django.conf import settings
 from django.utils.translation import ugettext as _
-from evennia.players.models import PlayerDB
+from evennia.accounts.models import AccountDB
 from evennia.server.models import ServerConfig
 from evennia.utils import create, logger
 
@@ -28,7 +28,7 @@ ERROR_NO_SUPERUSER = """
 LIMBO_DESC = _("""
 Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if you need
 help, want to contribute, report issues or just join the community.
-As Player #1 you can create a demo/tutorial area with |w@batchcommand tutorial_world.build|n.
+As Account #1 you can create a demo/tutorial area with |w@batchcommand tutorial_world.build|n.
     """)
 
 
@@ -36,55 +36,55 @@ WARNING_POSTGRESQL_FIX = """
     PostgreSQL-psycopg2 compatibility fix:
     The in-game channels {chan1}, {chan2} and {chan3} were created,
     but the superuser was not yet connected to them. Please use in
-    game commands to connect Player #1 to those channels when first
+    game commands to connect Account #1 to those channels when first
     logging in.
     """
 
 
-def get_god_player():
+def get_god_account():
     """
     Creates the god user and don't take no for an answer.
 
     """
     try:
-        god_player = PlayerDB.objects.get(id=1)
-    except PlayerDB.DoesNotExist:
-        raise PlayerDB.DoesNotExist(ERROR_NO_SUPERUSER)
-    return god_player
+        god_account = AccountDB.objects.get(id=1)
+    except AccountDB.DoesNotExist:
+        raise AccountDB.DoesNotExist(ERROR_NO_SUPERUSER)
+    return god_account
 
 
 def create_objects():
     """
-    Creates the #1 player and Limbo room.
+    Creates the #1 account and Limbo room.
 
     """
 
-    logger.log_info("Creating objects (Player #1 and Limbo room) ...")
+    logger.log_info("Creating objects (Account #1 and Limbo room) ...")
 
     # Set the initial User's account object's username on the #1 object.
     # This object is pure django and only holds name, email and password.
-    god_player = get_god_player()
+    god_account = get_god_account()
 
-    # Create a Player 'user profile' object to hold eventual
-    # mud-specific settings for the PlayerDB object.
-    player_typeclass = settings.BASE_PLAYER_TYPECLASS
+    # Create an Account 'user profile' object to hold eventual
+    # mud-specific settings for the AccountDB object.
+    account_typeclass = settings.BASE_ACCOUNT_TYPECLASS
 
-    # run all creation hooks on god_player (we must do so manually
+    # run all creation hooks on god_account (we must do so manually
     # since the manage.py command does not)
-    god_player.swap_typeclass(player_typeclass, clean_attributes=True)
-    god_player.basetype_setup()
-    god_player.at_player_creation()
-    god_player.locks.add("examine:perm(Developer);edit:false();delete:false();boot:false();msg:all()")
+    god_account.swap_typeclass(account_typeclass, clean_attributes=True)
+    god_account.basetype_setup()
+    god_account.at_account_creation()
+    god_account.locks.add("examine:perm(Developer);edit:false();delete:false();boot:false();msg:all()")
     # this is necessary for quelling to work correctly.
-    god_player.permissions.add("Developer")
+    god_account.permissions.add("Developer")
 
     # Limbo is the default "nowhere" starting room
 
-    # Create the in-game god-character for player #1 and set
+    # Create the in-game god-character for account #1 and set
     # it to exist in Limbo.
     character_typeclass = settings.BASE_CHARACTER_TYPECLASS
     god_character = create.create_object(character_typeclass,
-                                         key=god_player.username,
+                                         key=god_account.username,
                                          nohome=True)
 
     god_character.id = 1
@@ -93,13 +93,13 @@ def create_objects():
     god_character.locks.add("examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();puppet:false()")
     god_character.permissions.add("Developer")
 
-    god_player.attributes.add("_first_login", True)
-    god_player.attributes.add("_last_puppet", god_character)
+    god_account.attributes.add("_first_login", True)
+    god_account.attributes.add("_last_puppet", god_character)
 
     try:
-        god_player.db._playable_characters.append(god_character)
+        god_account.db._playable_characters.append(god_character)
     except AttributeError:
-        god_player.db_playable_characters = [god_character]
+        god_account.db_playable_characters = [god_character]
 
     room_typeclass = settings.BASE_ROOM_TYPECLASS
     limbo_obj = create.create_object(room_typeclass, _('Limbo'), nohome=True)
@@ -123,7 +123,7 @@ def create_channels():
     """
     logger.log_info("Creating default channels ...")
 
-    goduser = get_god_player()
+    goduser = get_god_account()
     for channeldict in settings.DEFAULT_CHANNELS:
         channel = create.create_channel(**channeldict)
         channel.connect(goduser)

@@ -4,7 +4,7 @@ A Command Set (CmdSet) holds a set of commands. The Cmdsets can be
 merged and combined to create new sets of commands in a
 non-destructive way. This makes them very powerful for implementing
 custom game states where different commands (or different variations
-of commands) are available to the players depending on circumstance.
+of commands) are available to the accounts depending on circumstance.
 
 The available merge operations are partly borrowed from mathematical
 Set theory.
@@ -110,9 +110,9 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
                  merger (i.e. A above) automatically taking
                  precedence. But if allow_duplicates is true, the
                  result will be a merger with more than one of each
-                 name match.  This will usually lead to the player
+                 name match.  This will usually lead to the account
                  receiving a multiple-match error higher up the road,
-                 but can be good for things like cmdsets on non-player
+                 but can be good for things like cmdsets on non-account
                  objects in a room, to allow the system to warn that
                  more than one 'ball' in the room has the same 'kick'
                  command defined on it, so it may offer a chance to
@@ -134,7 +134,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
                         commands
     no_channels   - ignore the name of channels when matching against
                         commands (WARNING- this is dangerous since the
-                        player can then not even ask staff for help if
+                        account can then not even ask staff for help if
                         something goes wrong)
 
 
@@ -167,9 +167,9 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
         Creates a new CmdSet instance.
 
         Args:
-            cmdsetobj (Session, Player, Object, optional): This is the database object
+            cmdsetobj (Session, Account, Object, optional): This is the database object
                 to which this particular instance of cmdset is related. It
-                is often a character but may also be a regular object, Player
+                is often a character but may also be a regular object, Account
                 or Session.
             key (str, optional): The idenfier for this cmdset. This
                 helps if wanting to selectively remov cmdsets.

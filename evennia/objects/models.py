@@ -141,16 +141,16 @@ class ObjectDB(TypedObject):
 
     The ObjectDB adds the following properties:
 
-      - player - optional connected player (always together with sessid)
-      - sessid - optional connection session id (always together with player)
+      - account - optional connected account (always together with sessid)
+      - sessid - optional connection session id (always together with account)
       - location - in-game location of object
       - home - safety location for object (handler)
       - scripts - scripts assigned to object (handler from typeclass)
       - cmdset - active cmdset on object (handler from typeclass)
       - aliases - aliases for this object (property)
       - nicks - nicknames for *other* things in Evennia (handler)
-      - sessions - sessions connected to this object (see also player)
-      - has_player - bool if an active player is currently connected
+      - sessions - sessions connected to this object (see also account)
+      - has_account - bool if an active account is currently connected
       - contents - other objects having this object as location
       - exits - exits from this object
 
@@ -169,14 +169,14 @@ class ObjectDB(TypedObject):
     # self.key instead). The wrappers are created at the metaclass level and
     # will automatically save and cache the data more efficiently.
 
-    # If this is a character object, the player is connected here.
+    # If this is a character object, the account is connected here.
     db_account = models.ForeignKey("accounts.AccountDB", null=True, verbose_name='account', on_delete=models.SET_NULL,
                                   help_text='an Account connected to this object, if any.')
 
-    # the session id associated with this player, if any
+    # the session id associated with this account, if any
     db_sessid = models.CharField(null=True, max_length=32, validators=[validate_comma_separated_integer_list],
                                                   verbose_name="session id",
-                                                  help_text="csv list of session ids of connected Player, if any.")
+                                                  help_text="csv list of session ids of connected Account, if any.")
     # The location in the game world. Since this one is likely
     # to change often, we set this with the 'location' property
     # to transparently handle Typeclassing.

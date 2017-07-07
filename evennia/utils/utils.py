@@ -1384,12 +1384,12 @@ def class_from_module(path, defaultpaths=None):
 object_from_module = class_from_module
 
 
-def init_new_player(player):
+def init_new_account(account):
     """
     Deprecated.
     """
     from evennia.utils import logger
-    logger.log_dep("evennia.utils.utils.init_new_player is DEPRECATED and should not be used.")
+    logger.log_dep("evennia.utils.utils.init_new_account is DEPRECATED and should not be used.")
 
 
 def string_similarity(string1, string2):

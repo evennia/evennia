@@ -111,7 +111,7 @@ class ChannelCommand(command.Command):
             self.msg(string % channelkey)
             return
         if msg == "on":
-            caller = caller if not hasattr(caller, 'player') else caller.player
+            caller = caller if not hasattr(caller, 'account') else caller.account
             unmuted = channel.unmute(caller)
             if unmuted:
                 self.msg("You start listening to %s." % channel)
@@ -119,7 +119,7 @@ class ChannelCommand(command.Command):
             self.msg("You were already listening to %s." % channel)
             return
         if msg == "off":
-            caller = caller if not hasattr(caller, 'player') else caller.player
+            caller = caller if not hasattr(caller, 'account') else caller.account
             muted = channel.mute(caller)
             if muted:
                 self.msg("You stop listening to %s." % channel)
@@ -133,7 +133,7 @@ class ChannelCommand(command.Command):
                                                     if "[-]" in line else line for line in lines))
             tail_log_file(log_file, self.history_start, 20, callback=send_msg)
         else:
-            caller = caller if not hasattr(caller, 'player') else caller.player
+            caller = caller if not hasattr(caller, 'account') else caller.account
             if caller in channel.mutelist:
                 self.msg("You currently have %s muted." % channel)
                 return
@@ -144,7 +144,7 @@ class ChannelCommand(command.Command):
         Let users know that this command is for communicating on a channel.
 
         Args:
-            caller (TypedObject): A Character or Player who has entered an ambiguous command.
+            caller (TypedObject): A Character or Account who has entered an ambiguous command.
 
         Returns:
             A string with identifying information to disambiguate the object, conventionally with a preceding space.

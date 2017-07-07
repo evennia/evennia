@@ -66,9 +66,9 @@ class ScriptHandler(object):
             autostart (bool, optional): Start the script upon adding it.
 
         """
-        if self.obj.__dbclass__.__name__ == "PlayerDB":
-            # we add to a Player, not an Object
-            script = create.create_script(scriptclass, key=key, player=self.obj,
+        if self.obj.__dbclass__.__name__ == "AccountDB":
+            # we add to an Account, not an Object
+            script = create.create_script(scriptclass, key=key, account=self.obj,
                                           autostart=autostart)
         else:
             # the normal - adding to an Object

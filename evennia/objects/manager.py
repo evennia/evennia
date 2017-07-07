@@ -35,7 +35,7 @@ class ObjectDBManager(TypedObjectManager):
     get_dbref_range
     object_totals
     typeclass_search
-    get_object_with_player
+    get_object_with_account
     get_objs_with_key_and_typeclass
     get_objs_with_attr
     get_objs_with_attr_match
@@ -53,18 +53,18 @@ class ObjectDBManager(TypedObjectManager):
     # ObjectManager Get methods
     #
 
-    # player related
+    # account related
 
-    def get_object_with_player(self, ostring, exact=True, candidates=None):
+    def get_object_with_account(self, ostring, exact=True, candidates=None):
         """
-        Search for an object based on its player's name or dbref.
+        Search for an object based on its account's name or dbref.
 
         Args:
             ostring (str or int): Search criterion or dbref. Searching
-                for a player is sometimes initiated by appending an `*` to
+                for an account is sometimes initiated by appending an `*` to
                 the beginning of the search criterion (e.g. in
                 local_and_global_search). This is stripped here.
-            exact (bool, optional): Require an exact player match.
+            exact (bool, optional): Require an exact account match.
             candidates (list, optional): Only search among this list of possible
                 object candidates.
 
@@ -81,9 +81,9 @@ class ObjectDBManager(TypedObjectManager):
         cand_restriction = candidates is not None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates)
                                                                 if obj]) or Q()
         if exact:
-            return self.filter(cand_restriction & Q(db_player__username__iexact=ostring))
+            return self.filter(cand_restriction & Q(db_account__username__iexact=ostring))
         else:  # fuzzy matching
-            ply_cands = self.filter(cand_restriction & Q(playerdb__username__istartswith=ostring)
+            ply_cands = self.filter(cand_restriction & Q(accountdb__username__istartswith=ostring)
                                     ).values_list("db_key", flat=True)
             if candidates:
                 index_matches = string_partial_matching(ply_cands, ostring, ret_index=True)
@@ -503,7 +503,7 @@ class ObjectDBManager(TypedObjectManager):
     def clear_all_sessids(self):
         """
         Clear the db_sessid field of all objects having also the
-        db_player field set.
+        db_account field set.
         """
         self.filter(db_sessid__isnull=False).update(db_sessid=None)
 

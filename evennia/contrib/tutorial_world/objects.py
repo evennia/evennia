@@ -582,7 +582,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
     The CrumblingWall can be examined in various ways, but only if a
     lit light source is in the room. The traversal itself is blocked
     by a traverse: lock on the exit that only allows passage if a
-    certain attribute is set on the trying player.
+    certain attribute is set on the trying account.
 
     Important attribute
      destination - this property must be set to make this a valid exit
@@ -701,7 +701,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         self.reset()
 
     def at_failed_traverse(self, traverser):
-        """This is called if the player fails to pass the Exit."""
+        """This is called if the account fails to pass the Exit."""
         traverser.msg("No matter how you try, you cannot force yourself through %s." % self.key)
 
     def reset(self):
@@ -868,7 +868,7 @@ class Weapon(TutorialObject):
         When reset, the weapon is simply deleted, unless it has a place
         to return to.
         """
-        if self.location.has_player and self.home == self.location:
+        if self.location.has_account and self.home == self.location:
             self.location.msg_contents("%s suddenly and magically fades into nothingness, as if it was never there ..."
                                        % self.key)
             self.delete()
@@ -1032,7 +1032,7 @@ class WeaponRack(TutorialObject):
     Attributes to set on this object:
         available_weapons: list of prototype-keys from
             WEAPON_PROTOTYPES, the weapons available in this rack.
-        no_more_weapons_msg - error message to return to players
+        no_more_weapons_msg - error message to return to accounts
             who already got one weapon from the rack and tries to
             grab another one.
 

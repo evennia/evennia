@@ -47,7 +47,7 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
     Usage:
       look
       look <obj>
-      look *<player>
+      look *<account>
 
     Observes your location or objects in your vicinity.
     """
@@ -86,7 +86,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
     Switches:
       inputline - replace on the inputline (default)
       object    - replace on object-lookup
-      player    - replace on player-lookup
+      account    - replace on account-lookup
       delete    - remove nick by name or by index given by /list
       clearall  - clear all nicks
       list      - show all defined aliases (also "nicks" works)
@@ -121,7 +121,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
         switches = self.switches
-        nicktypes = [switch for switch in switches if switch in ("object", "player", "inputline")] or ["inputline"]
+        nicktypes = [switch for switch in switches if switch in ("object", "account", "inputline")] or ["inputline"]
 
         nicklist = utils.make_iter(caller.nicks.get(return_obj=True) or [])
 
@@ -441,7 +441,7 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.lhs or not self.rhs:
-            caller.msg("Usage: whisper <player> = <message>")
+            caller.msg("Usage: whisper <account> = <message>")
             return
 
         receiver = caller.search(self.lhs)
@@ -529,15 +529,15 @@ class CmdAccess(COMMAND_DEFAULT_CLASS):
         hierarchy_full = settings.PERMISSION_HIERARCHY
         string = "\n|wPermission Hierarchy|n (climbing):\n %s" % ", ".join(hierarchy_full)
 
-        if self.caller.player.is_superuser:
+        if self.caller.account.is_superuser:
             cperms = "<Superuser>"
             pperms = "<Superuser>"
         else:
             cperms = ", ".join(caller.permissions.all())
-            pperms = ", ".join(caller.player.permissions.all())
+            pperms = ", ".join(caller.account.permissions.all())
 
         string += "\n|wYour access|n:"
         string += "\nCharacter |c%s|n: %s" % (caller.key, cperms)
-        if hasattr(caller, 'player'):
-            string += "\nPlayer |c%s|n: %s" % (caller.player.key, pperms)
+        if hasattr(caller, 'account'):
+            string += "\nAccount |c%s|n: %s" % (caller.account.key, pperms)
         caller.msg(string)

@@ -449,15 +449,15 @@ class TypedObject(SharedMemoryModel):
         """
         This performs an in-situ swap of the typeclass. This means
         that in-game, this object will suddenly be something else.
-        Player will not be affected. To 'move' a player to a different
+        Account will not be affected. To 'move' an account to a different
         object entirely (while retaining this object's type), use
-        self.player.swap_object().
+        self.account.swap_object().
 
         Note that this might be an error prone operation if the
         old/new typeclass was heavily customized - your code
         might expect one and not the other, so be careful to
         bug test your code if using this feature! Often its easiest
-        to create a new object and just swap the player over to
+        to create a new object and just swap the account over to
         that one instead.
 
         Args:
@@ -558,8 +558,8 @@ class TypedObject(SharedMemoryModel):
             result (bool): If the permstring is passed or not.
 
         """
-        if hasattr(self, "player"):
-            if self.player and self.player.is_superuser and not self.player.attributes.get("_quell"):
+        if hasattr(self, "account"):
+            if self.account and self.account.is_superuser and not self.account.attributes.get("_quell"):
                 return True
         else:
             if self.is_superuser and not self.attributes.get("_quell"):
@@ -676,7 +676,7 @@ class TypedObject(SharedMemoryModel):
         Displays the name of the object in a viewer-aware manner.
 
         Args:
-            looker (TypedObject): The object or player that is looking
+            looker (TypedObject): The object or account that is looking
                 at/getting inforamtion for this object.
 
         Returns:
@@ -707,7 +707,7 @@ class TypedObject(SharedMemoryModel):
         not in your normal inventory listing.
 
         Args:
-            looker (TypedObject): The object or player that is looking
+            looker (TypedObject): The object or account that is looking
                 at/getting information for this object.
 
         Returns:

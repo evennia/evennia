@@ -1,6 +1,6 @@
 """
 This module defines the basic `DefaultObject` and its children
-`DefaultCharacter`, `DefaultPlayer`, `DefaultRoom` and `DefaultExit`.
+`DefaultCharacter`, `DefaultAccount`, `DefaultRoom` and `DefaultExit`.
 These are the (default) starting points for all in-game visible
 entities.
 
@@ -205,9 +205,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         return ObjectSessionHandler(self)
 
     @property
-    def has_player(self):
+    def has_account(self):
         """
-        Convenience property for checking if an active player is
+        Convenience property for checking if an active account is
         currently connected to this object.
 
         """
@@ -216,11 +216,11 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     @property
     def is_superuser(self):
         """
-        Check if user has a player, and if so, if it is a superuser.
+        Check if user has an account, and if so, if it is a superuser.
 
         """
-        return self.db_player and self.db_player.is_superuser \
-            and not self.db_player.attributes.get("_quell")
+        return self.db_account and self.db_account.is_superuser \
+            and not self.db_account.attributes.get("_quell")
 
     def contents_get(self, exclude=None):
         """
@@ -259,7 +259,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Displays the name of the object in a viewer-aware manner.
 
         Args:
-            looker (TypedObject): The object or player that is looking
+            looker (TypedObject): The object or account that is looking
                 at/getting inforamtion for this object.
 
         Returns:
@@ -349,7 +349,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 otherwise it will return a list of 0, 1 or more matches.
 
         Notes:
-            To find Players, use eg. `evennia.player_search`. If
+            To find Accounts, use eg. `evennia.account_search`. If
             `quiet=False`, error messages will be handled by
             `settings.SEARCH_AT_RESULT` and echoed automatically (on
             error, return will be `None`). If `quiet=True`, the error
@@ -367,7 +367,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         if use_nicks:
             # do nick-replacement on search
-            searchdata = self.nicks.nickreplace(searchdata, categories=("object", "player"), include_player=True)
+            searchdata = self.nicks.nickreplace(searchdata, categories=("object", "account"), include_account=True)
 
         if (global_search or (is_string and searchdata.startswith("#") and
                               len(searchdata) > 1 and searchdata[1:].isdigit())):
@@ -405,19 +405,19 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         return _AT_SEARCH_RESULT(results, self, query=searchdata,
                                  nofound_string=nofound_string, multimatch_string=multimatch_string)
 
-    def search_player(self, searchdata, quiet=False):
+    def search_account(self, searchdata, quiet=False):
         """
-        Simple shortcut wrapper to search for players, not characters.
+        Simple shortcut wrapper to search for accounts, not characters.
 
         Args:
-            searchdata (str): Search criterion - the key or dbref of the player
+            searchdata (str): Search criterion - the key or dbref of the account
                 to search for. If this is "here" or "me", search
-                for the player connected to this object.
+                for the account connected to this object.
             quiet (bool): Returns the results as a list rather than
                 echo eventual standard error messages. Default `False`.
 
         Returns:
-            result (Player, None or list): Just what is returned depends on
+            result (Account, None or list): Just what is returned depends on
                 the `quiet` setting:
                     - `quiet=True`: No match or multumatch auto-echoes errors
                       to self.msg, then returns `None`. The esults are passed
@@ -426,15 +426,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                       unique match, this will be returned.
                     - `quiet=True`: No automatic error messaging is done, and
                       what is returned is always a list with 0, 1 or more
-                      matching Players.
+                      matching Accounts.
 
         """
         if isinstance(searchdata, basestring):
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("me", "self",):
-                return [self.player] if quiet else self.player
+                return [self.account] if quiet else self.account
 
-        results = self.player.__class__.objects.player_search(searchdata)
+        results = self.account.__class__.objects.account_search(searchdata)
 
         if quiet:
             return results
@@ -445,7 +445,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Do something as this object. This is never called normally,
         it's only used when wanting specifically to let an object be
         the caller of a command. It makes use of nicks of eventual
-        connected players as well.
+        connected accounts as well.
 
         Args:
             raw_string (string): Raw command input
@@ -473,7 +473,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         # nick replacement - we require full-word matching.
         # do text encoding conversion
         raw_string = to_unicode(raw_string)
-        raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_player=True)
+        raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_account=True)
         return cmdhandler.cmdhandler(self, raw_string, callertype="object", session=session, **kwargs)
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
@@ -750,7 +750,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
     def clear_contents(self):
         """
-        Moves all objects (players/things) to their home location or
+        Moves all objects (accounts/things) to their home location or
         to default home.
         """
         # Gather up everything that thinks this is its location.
@@ -781,13 +781,13 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 logger.log_err(string % (obj.name, obj.dbid))
                 return
 
-            if obj.has_player:
+            if obj.has_account:
                 if home:
                     string = "Your current location has ceased to exist,"
                     string += " moving you to %s(#%d)."
                     obj.msg(_(string) % (home.name, home.dbid))
                 else:
-                    # Famous last words: The player should never see this.
+                    # Famous last words: The account should never see this.
                     string = "This place should not exist ... contact an admin."
                     obj.msg(_(string))
             obj.move_to(home)
@@ -853,16 +853,16 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         self.delete_iter += 1
 
-        # See if we need to kick the player off.
+        # See if we need to kick the account off.
 
         for session in self.sessions.all():
             session.msg(_("Your character %s has been destroyed.") % self.key)
-            # no need to disconnect, Player just jumps to OOC mode.
+            # no need to disconnect, Account just jumps to OOC mode.
         # sever the connection (important!)
-        if self.player:
+        if self.account:
             for session in self.sessions.all():
-                self.player.unpuppet_object(session)
-        self.player = None
+                self.account.unpuppet_object(session)
+        self.account = None
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):
             script.stop()
@@ -1042,19 +1042,19 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         have no cmdsets.
 
         Kwargs:
-            caller (Session, Object or Player): The caller requesting
+            caller (Session, Object or Account): The caller requesting
                 this cmdset.
 
         """
         pass
 
-    def at_pre_puppet(self, player, session=None, **kwargs):
+    def at_pre_puppet(self, account, session=None, **kwargs):
         """
-        Called just before a Player connects to this object to puppet
+        Called just before an Account connects to this object to puppet
         it.
 
         Args:
-            player (Player): This is the connecting player.
+            account (Account): This is the connecting account.
             session (Session): Session controlling the connection.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
@@ -1065,44 +1065,44 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     def at_post_puppet(self, **kwargs):
         """
         Called just after puppeting has been completed and all
-        Player<->Object links have been established.
+        Account<->Object links have been established.
 
         Args:
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
         Note:
-            You can use `self.player` and `self.sessions.get()` to get
-            player and sessions at this point; the last entry in the
+            You can use `self.account` and `self.sessions.get()` to get
+            account and sessions at this point; the last entry in the
             list from `self.sessions.get()` is the latest Session
             puppeting this Object.
 
         """
-        self.player.db._last_puppet = self
+        self.account.db._last_puppet = self
 
     def at_pre_unpuppet(self, **kwargs):
         """
         Called just before beginning to un-connect a puppeting from
-        this Player.
+        this Account.
 
         Args:
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
         Note:
-            You can use `self.player` and `self.sessions.get()` to get
-            player and sessions at this point; the last entry in the
+            You can use `self.account` and `self.sessions.get()` to get
+            account and sessions at this point; the last entry in the
             list from `self.sessions.get()` is the latest Session
             puppeting this Object.
 
         """
         pass
 
-    def at_post_unpuppet(self, player, session=None, **kwargs):
+    def at_post_unpuppet(self, account, session=None, **kwargs):
         """
-        Called just after the Player successfully disconnected from
+        Called just after the Account successfully disconnected from
         this object, severing all connections.
 
         Args:
-            player (Player): The player object that just disconnected
+            account (Account): The account object that just disconnected
                 from this object.
             session (Session): Session id controlling the connection that
                 just disconnected.
@@ -1139,7 +1139,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         Args:
             result (bool): The outcome of the access call.
-            accessing_obj (Object or Player): The entity trying to gain access.
+            accessing_obj (Object or Account): The entity trying to gain access.
             access_type (str): The type of access that was requested.
 
         Kwargs:
@@ -1238,8 +1238,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
 
-        if not source_location and self.location.has_player:
-            # This was created from nowhere and added to a player's
+        if not source_location and self.location.has_account:
+            # This was created from nowhere and added to an account's
             # inventory; it's probably the result of a create command.
             string = "You now have %s in your possession." % self.get_display_name(self.location)
             self.location.msg(string)
@@ -1437,7 +1437,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             key = con.get_display_name(looker)
             if con.destination:
                 exits.append(key)
-            elif con.has_player:
+            elif con.has_account:
                 users.append("|c%s|n" % key)
             else:
                 things.append(key)
@@ -1576,7 +1576,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 class DefaultCharacter(DefaultObject):
     """
     This implements an Object puppeted by a Session - that is,
-    a character avatar controlled by a player.
+    a character avatar controlled by an account.
 
     """
 
@@ -1604,11 +1604,11 @@ class DefaultCharacter(DefaultObject):
         if self.location.access(self, "view"):
             self.msg(self.at_look(self.location))
 
-    def at_pre_puppet(self, player, session=None, **kwargs):
+    def at_pre_puppet(self, account, session=None, **kwargs):
         """
         Return the character from storage in None location in `at_post_unpuppet`.
         Args:
-            player (Player): This is the connecting player.
+            account (Account): This is the connecting account.
             session (Session): Session controlling the connection.
         """
         if self.location is None:  # Make sure character's location is never None before being puppeted.
@@ -1618,19 +1618,19 @@ class DefaultCharacter(DefaultObject):
         if self.location:  # If the character is verified to be somewhere,
             self.db.prelogout_location = self.location  # save location again to be sure.
         else:
-            player.msg("|r%s has no location and no home is set.|n" % self, session=session)  # Note to set home.
+            account.msg("|r%s has no location and no home is set.|n" % self, session=session)  # Note to set home.
 
     def at_post_puppet(self, **kwargs):
         """
         Called just after puppeting has been completed and all
-        Player<->Object links have been established.
+        Account<->Object links have been established.
 
         Args:
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
         Note:
-            You can use `self.player` and `self.sessions.get()` to get
-            player and sessions at this point; the last entry in the
+            You can use `self.account` and `self.sessions.get()` to get
+            account and sessions at this point; the last entry in the
             list from `self.sessions.get()` is the latest Session
             puppeting this Object.
 
@@ -1642,14 +1642,14 @@ class DefaultCharacter(DefaultObject):
             obj.msg("%s has entered the game." % self.get_display_name(obj), from_obj=from_obj)
         self.location.for_contents(message, exclude=[self], from_obj=self)
 
-    def at_post_unpuppet(self, player, session=None, **kwargs):
+    def at_post_unpuppet(self, account, session=None, **kwargs):
         """
-        We stove away the character when the player goes ooc/logs off,
+        We stove away the character when the account goes ooc/logs off,
         otherwise the character object will remain in the room also
-        after the player logged off ("headless", so to say).
+        after the account logged off ("headless", so to say).
 
         Args:
-            player (Player): The player object that just disconnected
+            account (Account): The account object that just disconnected
                 from this object.
             session (Session): Session controlling the connection that
                 just disconnected.
@@ -1782,7 +1782,7 @@ class DefaultExit(DefaultObject):
         Helper function for creating an exit command set + command.
 
         The command of this cmdset has the same name as the Exit
-        object and allows the exit to react when the player enter the
+        object and allows the exit to react when the account enter the
         exit's name, triggering the movement between rooms.
 
         Args:

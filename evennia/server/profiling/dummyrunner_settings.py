@@ -2,7 +2,7 @@
 Settings and actions for the dummyrunner
 
 This module defines dummyrunner settings and sets up
-the actions available to dummy players.
+the actions available to dummy accounts.
 
 The settings are global variables:
 
@@ -18,7 +18,7 @@ ACTIONS is a tuple
 
 where the first entry is the function to call on first connect, with a
 chance of occurring given by CHANCE_OF_LOGIN. This function is usually
-responsible for logging in the player. The second entry is always
+responsible for logging in the account. The second entry is always
 called when the dummyrunner disconnects from the server and should
 thus issue a logout command.  The other entries are tuples (chance,
 func). They are picked randomly, their commonality based on the
@@ -61,7 +61,7 @@ TIMESTEP = 2
 CHANCE_OF_ACTION = 0.5
 
 # Chance of a currently unlogged-in dummy performing its login
-# action every tick. This emulates not all players logging in
+# action every tick. This emulates not all accounts logging in
 # at exactly the same time.
 CHANCE_OF_LOGIN = 1.0
 
@@ -234,7 +234,7 @@ def c_moves_s(client):
 #            (0.1, c_creates_obj),
 #            #(0.01, c_creates_button),
 #            (0.2, c_moves))
-## "passive player" definition
+## "passive account" definition
 #ACTIONS = ( c_login,
 #            c_logout,
 #            (0.7, c_looks),
@@ -244,11 +244,11 @@ def c_moves_s(client):
 #            #(0.1, c_creates_obj),
 #            #(0.1, c_creates_button),
 #            #(0.4, c_moves))
-# "inactive player" definition
+# "inactive account" definition
 #ACTIONS = (c_login_nodig,
 #           c_logout,
 #           (1.0, c_idles))
-## "normal player" definition
+## "normal account" definition
 ACTIONS = ( c_login,
             c_logout,
             (0.01, c_digs),

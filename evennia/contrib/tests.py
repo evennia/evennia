@@ -395,13 +395,13 @@ class TestWilderness(EvenniaTest):
         # Pretend that both char1 and char2 are connected...
         self.char1.sessions.add(1)
         self.char2.sessions.add(1)
-        self.assertTrue(self.char1.has_player)
-        self.assertTrue(self.char2.has_player)
+        self.assertTrue(self.char1.has_account)
+        self.assertTrue(self.char2.has_account)
 
         wilderness.create_wilderness()
         w = self.get_wilderness_script()
 
-        # We should have no unused room after moving the first player in.
+        # We should have no unused room after moving the first account in.
         self.assertEquals(len(w.db.unused_rooms), 0)
         w.move_obj(self.char1, (0, 0))
         self.assertEquals(len(w.db.unused_rooms), 0)
@@ -442,15 +442,15 @@ from evennia.contrib import chargen
 class TestChargen(CommandTest):
 
     def test_ooclook(self):
-        self.call(chargen.CmdOOCLook(), "foo", "You have no characters to look at", caller=self.player)
-        self.call(chargen.CmdOOCLook(), "", "You, TestPlayer, are an OOC ghost without form.", caller=self.player)
+        self.call(chargen.CmdOOCLook(), "foo", "You have no characters to look at", caller=self.account)
+        self.call(chargen.CmdOOCLook(), "", "You, TestAccount, are an OOC ghost without form.", caller=self.account)
 
     def test_charcreate(self):
-        self.call(chargen.CmdOOCCharacterCreate(), "testchar", "The character testchar was successfully created!", caller=self.player)
-        self.call(chargen.CmdOOCCharacterCreate(), "testchar", "Character testchar already exists.", caller=self.player)
-        self.assertTrue(self.player.db._character_dbrefs)
-        self.call(chargen.CmdOOCLook(), "", "You, TestPlayer, are an OOC ghost without form.",caller=self.player)
-        self.call(chargen.CmdOOCLook(), "testchar", "testchar(", caller=self.player)
+        self.call(chargen.CmdOOCCharacterCreate(), "testchar", "The character testchar was successfully created!", caller=self.account)
+        self.call(chargen.CmdOOCCharacterCreate(), "testchar", "Character testchar already exists.", caller=self.account)
+        self.assertTrue(self.account.db._character_dbrefs)
+        self.call(chargen.CmdOOCLook(), "", "You, TestAccount, are an OOC ghost without form.",caller=self.account)
+        self.call(chargen.CmdOOCLook(), "testchar", "testchar(", caller=self.account)
         
 # Testing clothing contrib
 from evennia.contrib import clothing
@@ -600,9 +600,9 @@ class TestEmailLogin(CommandTest):
     def test_connect(self):
         self.call(email_login.CmdUnconnectedConnect(), "mytest@test.com test", "The email 'mytest@test.com' does not match any accounts.")
         self.call(email_login.CmdUnconnectedCreate(), '"mytest" mytest@test.com test11111', "A new account 'mytest' was created. Welcome!")
-        self.call(email_login.CmdUnconnectedConnect(), "mytest@test.com test11111", "", caller=self.player.sessions.get()[0])
+        self.call(email_login.CmdUnconnectedConnect(), "mytest@test.com test11111", "", caller=self.account.sessions.get()[0])
     def test_quit(self):
-        self.call(email_login.CmdUnconnectedQuit(), "", "", caller=self.player.sessions.get()[0])
+        self.call(email_login.CmdUnconnectedQuit(), "", "", caller=self.account.sessions.get()[0])
     def test_unconnectedlook(self):
         self.call(email_login.CmdUnconnectedLook(), "", "==========")
     def test_unconnectedhelp(self):
@@ -628,19 +628,19 @@ from evennia.contrib import mail
 
 class TestMail(CommandTest):
     def test_mail(self):
-        self.call(mail.CmdMail(), "2", "'2' is not a valid mail id.", caller=self.player)
-        self.call(mail.CmdMail(), "", "There are no messages in your inbox.", caller=self.player)
+        self.call(mail.CmdMail(), "2", "'2' is not a valid mail id.", caller=self.account)
+        self.call(mail.CmdMail(), "", "There are no messages in your inbox.", caller=self.account)
         self.call(mail.CmdMail(), "Char=Message 1", "You have received a new @mail from Char|You sent your message.", caller=self.char1)
         self.call(mail.CmdMail(), "Char=Message 2", "You sent your message.", caller=self.char2)
-        self.call(mail.CmdMail(), "TestPlayer2=Message 2",
-            "You have received a new @mail from TestPlayer2(player 2)|You sent your message.", caller=self.player2)
-        self.call(mail.CmdMail(), "TestPlayer=Message 1", "You sent your message.", caller=self.player2)
-        self.call(mail.CmdMail(), "TestPlayer=Message 2", "You sent your message.", caller=self.player2)
-        self.call(mail.CmdMail(), "", "| ID:   From:            Subject:", caller=self.player)
-        self.call(mail.CmdMail(), "2", "From: TestPlayer2", caller=self.player)
-        self.call(mail.CmdMail(), "/forward TestPlayer2 = 1/Forward message", "You sent your message.|Message forwarded.", caller=self.player)
-        self.call(mail.CmdMail(), "/reply 2=Reply Message2", "You sent your message.", caller=self.player)
-        self.call(mail.CmdMail(), "/delete 2", "Message 2 deleted", caller=self.player)
+        self.call(mail.CmdMail(), "TestAccount2=Message 2",
+            "You have received a new @mail from TestAccount2(account 2)|You sent your message.", caller=self.account2)
+        self.call(mail.CmdMail(), "TestAccount=Message 1", "You sent your message.", caller=self.account2)
+        self.call(mail.CmdMail(), "TestAccount=Message 2", "You sent your message.", caller=self.account2)
+        self.call(mail.CmdMail(), "", "| ID:   From:            Subject:", caller=self.account)
+        self.call(mail.CmdMail(), "2", "From: TestAccount2", caller=self.account)
+        self.call(mail.CmdMail(), "/forward TestAccount2 = 1/Forward message", "You sent your message.|Message forwarded.", caller=self.account)
+        self.call(mail.CmdMail(), "/reply 2=Reply Message2", "You sent your message.", caller=self.account)
+        self.call(mail.CmdMail(), "/delete 2", "Message 2 deleted", caller=self.account)
 
 # test map builder contrib
 

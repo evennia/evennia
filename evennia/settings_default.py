@@ -151,10 +151,10 @@ IDLE_TIMEOUT = -1
 # command-name is given here; this is because the webclient needs a default
 # to send to avoid proxy timeouts.
 IDLE_COMMAND = "idle"
-# The set of encodings tried. A Player object may set an attribute "encoding" on
+# The set of encodings tried. An Account object may set an attribute "encoding" on
 # itself to match the client used. If not set, or wrong encoding is
 # given, this list is tried, in order, aborting on the first match.
-# Add sets for languages/regions your players are likely to use.
+# Add sets for languages/regions your accounts are likely to use.
 # (see http://en.wikipedia.org/wiki/Character_encoding)
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # Regular expression applied to all output to a given session in order
@@ -314,7 +314,7 @@ SERVER_SERVICES_PLUGIN_MODULES = ["server.conf.server_services_plugins"]
 # It will be called last in the startup sequence.
 PORTAL_SERVICES_PLUGIN_MODULES = ["server.conf.portal_services_plugins"]
 # Module holding MSSP meta data. This is used by MUD-crawlers to determine
-# what type of game you are running, how many players you have etc.
+# what type of game you are running, how many accounts you have etc.
 MSSP_META_MODULE = "server.conf.mssp"
 # Module for web plugins.
 WEB_PLUGINS_MODULE = "server.conf.web_plugins"
@@ -345,14 +345,14 @@ COLOR_ANSI_EXTRA_MAP = []
 # change this, it's recommended you do it before having created a lot of objects
 # (or simply reset the database after the change for simplicity).
 
-# Command set used on session before player has logged in
+# Command set used on session before account has logged in
 CMDSET_UNLOGGEDIN = "commands.default_cmdsets.UnloggedinCmdSet"
 # Command set used on the logged-in session
 CMDSET_SESSION = "commands.default_cmdsets.SessionCmdSet"
-# Default set for logged in player with characters (fallback)
+# Default set for logged in account with characters (fallback)
 CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
-# Command set for players without a character (ooc)
-CMDSET_PLAYER = "commands.default_cmdsets.PlayerCmdSet"
+# Command set for accounts without a character (ooc)
+CMDSET_ACCOUNT = "commands.default_cmdsets.AccountCmdSet"
 # Location to search for cmdsets if full path not given
 CMDSET_PATHS = ["commands", "evennia", "contribs"]
 # Parent class for all default commands. Changing this class will
@@ -365,7 +365,7 @@ COMMAND_DEFAULT_CLASS = "evennia.commands.default.muxcommand.MuxCommand"
 COMMAND_DEFAULT_ARG_REGEX = None
 # By default, Command.msg will only send data to the Session calling
 # the Command in the first place. If set, Command.msg will instead return
-# data to all Sessions connected to the Player/Character associated with
+# data to all Sessions connected to the Account/Character associated with
 # calling the Command. This may be more intuitive for users in certain
 # multisession modes.
 COMMAND_DEFAULT_MSG_ALL_SESSIONS = False
@@ -392,11 +392,11 @@ SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
 # or start from the evennia library.
 TYPECLASS_PATHS = ["typeclasses", "evennia", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 
-# Typeclass for player objects (linked to a character) (fallback)
-BASE_PLAYER_TYPECLASS = "typeclasses.players.Player"
+# Typeclass for account objects (linked to a character) (fallback)
+BASE_ACCOUNT_TYPECLASS = "typeclasses.accounts.Account"
 # Typeclass and base for all objects (fallback)
 BASE_OBJECT_TYPECLASS = "typeclasses.objects.Object"
-# Typeclass for character objects linked to a player (fallback)
+# Typeclass for character objects linked to an account (fallback)
 BASE_CHARACTER_TYPECLASS = "typeclasses.characters.Character"
 # Typeclass for rooms (fallback)
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.Room"
@@ -465,7 +465,7 @@ INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs",
                       "server.conf.inlinefuncs"]
 
 ######################################################################
-# Default Player setup and access
+# Default Account setup and access
 ######################################################################
 
 # Different Multisession modes allow a player (=account) to connect to the
@@ -473,12 +473,12 @@ INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs",
 # only one character created to the same name as the account at first login.
 # In modes 2,3 no default character will be created and the MAX_NR_CHARACTERS
 # value (below) defines how many characters the default char_create command
-# allow per player.
-#  0 - single session, one player, one character, when a new session is
+# allow per account.
+#  0 - single session, one account, one character, when a new session is
 #      connected, the old one is disconnected
-#  1 - multiple sessions, one player, one character, each session getting
+#  1 - multiple sessions, one account, one character, each session getting
 #      the same data
-#  2 - multiple sessions, one player, many characters, one session per
+#  2 - multiple sessions, one account, many characters, one session per
 #      character (disconnects multiplets)
 #  3 - like mode 2, except multiple sessions can puppet one character, each
 #      session getting the same data.
@@ -491,12 +491,12 @@ MAX_NR_CHARACTERS = 1
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()
 # lock functions, which accepts both plural and singular (Admin & Admins)
 PERMISSION_HIERARCHY = ["Guest", # note-only used if GUEST_ENABLED=True
-                        "Player",
+                        "Account",
                         "Helper",
                         "Builder",
                         "Admin",
                         "Developer"]
-# The default permission given to all new players
+# The default permission given to all new accounts
 PERMISSION_PLAYER_DEFAULT = "Player"
 # Default sizes for client window (in number of characters), if client
 # is not supplying this on its own
@@ -511,8 +511,8 @@ CLIENT_DEFAULT_HEIGHT = 45 # telnet standard is 24 but does anyone use such
 # This enables guest logins, by default via "connect guest". Note that
 # you need to edit your login screen to inform about this possibility.
 GUEST_ENABLED = False
-# Typeclass for guest player objects (linked to a character)
-BASE_GUEST_TYPECLASS = "typeclasses.players.Guest"
+# Typeclass for guest account objects (linked to a character)
+BASE_GUEST_TYPECLASS = "typeclasses.accounts.Guest"
 # The permission given to guests
 PERMISSION_GUEST_DEFAULT = "Guests"
 # The default home location used for guests.
@@ -520,7 +520,7 @@ GUEST_HOME = DEFAULT_HOME
 # The start position used for guest characters.
 GUEST_START_LOCATION = START_LOCATION
 # The naming convention used for creating new guest
-# players/characters. The size of this list also determines how many
+# accounts/characters. The size of this list also determines how many
 # guests may be on the game at once. The default is a maximum of nine
 # guests, named Guest1 through Guest9.
 GUEST_LIST = ["Guest" + str(s+1) for s in range(9)]
@@ -551,7 +551,7 @@ DEFAULT_CHANNELS = [
                    "desc": "Connection log",
                    "locks": "control:perm(Developer);listen:perm(Admin);send:false()"}
                   ]
-# Extra optional channel for receiving connection messages ("<player> has (dis)connected").
+# Extra optional channel for receiving connection messages ("<account> has (dis)connected").
 # While the MudInfo channel will also receieve this, this channel is meant for non-staffers.
 CHANNEL_CONNECTINFO = None
 
@@ -716,7 +716,7 @@ INSTALLED_APPS = (
     'evennia.utils.idmapper',
     'evennia.server',
     'evennia.typeclasses',
-    'evennia.players',
+    'evennia.accounts',
     'evennia.accounts',
     'evennia.objects',
     'evennia.comms',
@@ -726,7 +726,7 @@ INSTALLED_APPS = (
     'evennia.web.webclient')
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
-AUTH_USER_MODEL = "players.PlayerDB"
+AUTH_USER_MODEL = "accounts.AccountDB"
 
 # Use a custom test runner that just tests Evennia-specific apps.
 TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'

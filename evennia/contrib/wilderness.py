@@ -341,7 +341,7 @@ class WildernessScript(DefaultScript):
                     old_room.wilderness.at_after_object_leave(obj)
                 else:
                     for item in old_room.contents:
-                        if item.has_player:
+                        if item.has_account:
                             # There is still a player in the old room.
                             # Let's create a new room and not touch that old
                             # room.
@@ -419,7 +419,7 @@ class WildernessScript(DefaultScript):
             return
 
         for item in room.contents:
-            if item.has_player:
+            if item.has_account:
                 # There is still a character in that room. We can't get rid of
                 # it just yet
                 break
@@ -457,7 +457,7 @@ class WildernessScript(DefaultScript):
 class WildernessRoom(DefaultRoom):
     """
     This is a single room inside the wilderness. This room provides a "view"
-    into the wilderness map. When a player moves around, instead of going to
+    into the wilderness map. When an account moves around, instead of going to
     another room as with traditional rooms, they stay in the same room but the
     room itself changes to display another area of the wilderness.
     """
@@ -588,7 +588,7 @@ class WildernessRoom(DefaultRoom):
         Displays the name of the object in a viewer-aware manner.
 
         Args:
-            looker (TypedObject): The object or player that is looking
+            looker (TypedObject): The object or account that is looking
                 at/getting inforamtion for this object.
 
         Returns:

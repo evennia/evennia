@@ -81,7 +81,7 @@ This event is called when another character arrives in the location
 where the current character is.  For instance, a puppeted character
 arrives in the shop of a shopkeeper (assuming the shopkeeper is
 a character).  As its name suggests, this event can be very useful
-to have NPC greeting one another, or players, who come to visit.
+to have NPC greeting one another, or accounts, who come to visit.
 
 Variables you can use in this event:
     character: the character connected to this event.
@@ -100,9 +100,9 @@ Variables you can use in this event:
 """
 
 CHARACTER_PUPPETED = """
-When the character has been puppeted by a player.
-This event is called when a player has just puppeted this character.
-This can commonly happen when a player connects onto this character,
+When the character has been puppeted by an account.
+This event is called when an account has just puppeted this character.
+This can commonly happen when an account connects onto this character,
 or when puppeting to a NPC or free character.
 
 Variables you can use in this event:
@@ -151,8 +151,8 @@ Variables you can use in this event:
 
 CHARACTER_UNPUPPETED = """
 When the character is about to be un-puppeted.
-This event is called when a player is about to un-puppet the
-character, which can happen if the player is disconnecting or
+This event is called when an account is about to un-puppet the
+character, which can happen if the account is disconnecting or
 changing puppets.
 
 Variables you can use in this event:
@@ -244,8 +244,8 @@ class EventCharacter(DefaultCharacter):
 
         """
 
-        if not source_location and self.location.has_player:
-            # This was created from nowhere and added to a player's
+        if not source_location and self.location.has_account:
+            # This was created from nowhere and added to an account's
             # inventory; it's probably the result of a create command.
             string = "You now have %s in your possession." % self.get_display_name(self.location)
             self.location.msg(string)
@@ -357,11 +357,11 @@ class EventCharacter(DefaultCharacter):
     def at_post_puppet(self):
         """
         Called just after puppeting has been completed and all
-        Player<->Object links have been established.
+        Account<->Object links have been established.
 
         Note:
-            You can use `self.player` and `self.sessions.get()` to get
-            player and sessions at this point; the last entry in the
+            You can use `self.account` and `self.sessions.get()` to get
+            account and sessions at this point; the last entry in the
             list from `self.sessions.get()` is the latest Session
             puppeting this Object.
 
@@ -378,11 +378,11 @@ class EventCharacter(DefaultCharacter):
     def at_pre_unpuppet(self):
         """
         Called just before beginning to un-connect a puppeting from
-        this Player.
+        this Account.
 
         Note:
-            You can use `self.player` and `self.sessions.get()` to get
-            player and sessions at this point; the last entry in the
+            You can use `self.account` and `self.sessions.get()` to get
+            account and sessions at this point; the last entry in the
             list from `self.sessions.get()` is the latest Session
             puppeting this Object.
 
@@ -683,7 +683,7 @@ Variables you can use in this event:
 ROOM_PUPPETED_IN = """
 After the character has been puppeted in this room.
 This event is called after a character has been puppeted in this
-room.  This can happen when a player, having connected, begins
+room.  This can happen when an account, having connected, begins
 to puppet a character.  The character's location at this point,
 if it's a room, will see this event fire.
 
@@ -733,7 +733,7 @@ Variables you can use in this event:
 ROOM_UNPUPPETED_IN = """
 Before the character is un-puppeted in this room.
 This event is called before a character is un-puppeted in this
-room.  This can happen when a player, puppeting a character, is
+room.  This can happen when an account, puppeting a character, is
 disconnecting.  The character's location at this point, if it's a
 room, will see this event fire.
 

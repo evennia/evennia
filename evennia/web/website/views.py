@@ -13,7 +13,7 @@ from django.shortcuts import render
 
 from evennia import SESSION_HANDLER
 from evennia.objects.models import ObjectDB
-from evennia.players.models import PlayerDB
+from evennia.accounts.models import AccountDB
 from evennia.utils import logger
 
 from django.contrib.auth import login
@@ -27,22 +27,22 @@ def _shared_login(request):
 
     """
     csession = request.session
-    player = request.user
+    account = request.user
     sesslogin = csession.get("logged_in", None)
 
     if csession.session_key is None:
         # this is necessary to build the sessid key
         csession.save()
-    elif player.is_authenticated():
+    elif account.is_authenticated():
         if not sesslogin:
-            csession["logged_in"] = player.id
+            csession["logged_in"] = account.id
     elif sesslogin:
         # The webclient has previously registered a login to this csession
-        player = PlayerDB.objects.get(id=sesslogin)
+        account = AccountDB.objects.get(id=sesslogin)
         try:
             # calls our custom authenticate, in web/utils/backend.py
-            authenticate(autologin=player)
-            login(request, player)
+            authenticate(autologin=account)
+            login(request, account)
         except AttributeError:
             logger.log_trace()
 
@@ -50,15 +50,15 @@ def _shared_login(request):
 def _gamestats():
     # Some misc. configurable stuff.
     # TODO: Move this to either SQL or settings.py based configuration.
-    fpage_player_limit = 4
+    fpage_account_limit = 4
 
-    # A QuerySet of the most recently connected players.
-    recent_users = PlayerDB.objects.get_recently_connected_players()[:fpage_player_limit]
+    # A QuerySet of the most recently connected accounts.
+    recent_users = AccountDB.objects.get_recently_connected_accounts()[:fpage_account_limit]
     nplyrs_conn_recent = len(recent_users) or "none"
-    nplyrs = PlayerDB.objects.num_total_players() or "none"
-    nplyrs_reg_recent = len(PlayerDB.objects.get_recently_created_players()) or "none"
-    nsess = SESSION_HANDLER.player_count()
-    # nsess = len(PlayerDB.objects.get_connected_players()) or "no one"
+    nplyrs = AccountDB.objects.num_total_accounts() or "none"
+    nplyrs_reg_recent = len(AccountDB.objects.get_recently_created_accounts()) or "none"
+    nsess = SESSION_HANDLER.account_count()
+    # nsess = len(AccountDB.objects.get_connected_accounts()) or "no one"
 
     nobjs = ObjectDB.objects.all().count()
     nrooms = ObjectDB.objects.filter(db_location__isnull=True).exclude(db_typeclass_path=_BASE_CHAR_TYPECLASS).count()
@@ -68,11 +68,11 @@ def _gamestats():
 
     pagevars = {
         "page_title": "Front Page",
-        "players_connected_recent": recent_users,
-        "num_players_connected": nsess or "no one",
-        "num_players_registered": nplyrs or "no",
-        "num_players_connected_recent": nplyrs_conn_recent or "no",
-        "num_players_registered_recent": nplyrs_reg_recent or "no one",
+        "accounts_connected_recent": recent_users,
+        "num_accounts_connected": nsess or "no one",
+        "num_accounts_registered": nplyrs or "no",
+        "num_accounts_connected_recent": nplyrs_conn_recent or "no",
+        "num_accounts_registered_recent": nplyrs_reg_recent or "no one",
         "num_rooms": nrooms or "none",
         "num_exits": nexits or "no",
         "num_objects": nobjs or "none",
@@ -116,7 +116,7 @@ def evennia_admin(request):
     """
     return render(
         request, 'evennia_admin.html', {
-            'playerdb': PlayerDB})
+            'accountdb': AccountDB})
 
 
 def admin_wrapper(request):

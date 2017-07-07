@@ -13,7 +13,7 @@ For non-persistent (and slightly faster) use one can also use the
 TempMsg, which mimics the Msg API but without actually saving to the
 database.
 
-Channels are central objects that act as targets for Msgs. Players can
+Channels are central objects that act as targets for Msgs. Accounts can
 connect to channels by use of a ChannelConnect object (this object is
 necessary to easily be able to delete connections on the fly).
 """
@@ -48,16 +48,16 @@ _CHANNELHANDLER = None
 class Msg(SharedMemoryModel):
     """
     A single message. This model describes all ooc messages
-    sent in-game, both to channels and between players.
+    sent in-game, both to channels and between accounts.
 
     The Msg class defines the following database fields (all
     accessed via specific handler methods):
 
-    - db_sender_players: Player senders
+    - db_sender_accounts: Account senders
     - db_sender_objects: Object senders
     - db_sender_scripts: Script senders
     - db_sender_external: External senders (defined as string names)
-    - db_receivers_players: Receiving players
+    - db_receivers_accounts: Receiving accounts
     - db_receivers_objects: Receiving objects
     - db_receivers_scripts: Receiveing scripts
     - db_receivers_channels: Receiving channels
@@ -77,7 +77,7 @@ class Msg(SharedMemoryModel):
     # These databse fields are all set using their corresponding properties,
     # named same as the field, but withtout the db_* prefix.
 
-    # Sender is either a player, an object or an external sender, like
+    # Sender is either an account, an object or an external sender, like
     # an IRC channel; normally there is only one, but if co-modification of
     # a message is allowed, there may be more than one "author"
     db_sender_accounts = models.ManyToManyField("accounts.AccountDB", related_name='sender_account_set',
@@ -114,8 +114,8 @@ class Msg(SharedMemoryModel):
     db_lock_storage = models.TextField('locks', blank=True,
                                        help_text='access locks on this message.')
 
-    # these can be used to filter/hide a given message from supplied objects/players/channels
-    db_hide_from_players = models.ManyToManyField("players.PlayerDB", related_name='hide_from_players_set', blank=True)
+    # these can be used to filter/hide a given message from supplied objects/accounts/channels
+    db_hide_from_accounts = models.ManyToManyField("accounts.AccountDB", related_name='hide_from_accounts_set', blank=True)
     db_hide_from_accounts = models.ManyToManyField("accounts.AccountDB", related_name='hide_from_accounts_set', blank=True)
 
     db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', blank=True)
@@ -156,7 +156,7 @@ class Msg(SharedMemoryModel):
     #@property
     def __senders_get(self):
         "Getter. Allows for value = self.sender"
-        return  list(self.db_sender_players.all()) + \
+        return  list(self.db_sender_accounts.all()) + \
                 list(self.db_sender_objects.all()) + \
                 list(self.db_sender_scripts.all()) + \
                 self.extra_senders
@@ -177,15 +177,15 @@ class Msg(SharedMemoryModel):
             clsname = sender.__dbclass__.__name__
             if clsname == "ObjectDB":
                 self.db_sender_objects.add(sender)
-            elif clsname == "PlayerDB":
-                self.db_sender_players.add(sender)
+            elif clsname == "AccountDB":
+                self.db_sender_accounts.add(sender)
             elif clsname == "ScriptDB":
                 self.db_sender_scripts.add(sender)
 
     #@sender.deleter
     def __senders_del(self):
         "Deleter. Clears all senders"
-        self.db_sender_players.clear()
+        self.db_sender_accounts.clear()
         self.db_sender_objects.clear()
         self.db_sender_scripts.clear()
         self.db_sender_external = ""
@@ -198,7 +198,7 @@ class Msg(SharedMemoryModel):
         Remove a single sender or a list of senders.
 
         Args:
-            senders (Player, Object, str or list): Senders to remove.
+            senders (Account, Object, str or list): Senders to remove.
 
         """
         for sender in make_iter(senders):
@@ -212,19 +212,19 @@ class Msg(SharedMemoryModel):
             clsname = sender.__dbclass__.__name__
             if clsname == "ObjectDB":
                 self.db_sender_objects.remove(sender)
-            elif clsname == "PlayerDB":
-                self.db_sender_players.remove(sender)
+            elif clsname == "AccountDB":
+                self.db_sender_accounts.remove(sender)
             elif clsname == "ScriptDB":
-                self.db_sender_players.remove(sender)
+                self.db_sender_accounts.remove(sender)
 
     # receivers property
     #@property
     def __receivers_get(self):
         """
         Getter. Allows for value = self.receivers.
-        Returns four lists of receivers: players, objects, scripts and channels.
+        Returns four lists of receivers: accounts, objects, scripts and channels.
         """
-        return list(self.db_receivers_players.all()) + \
+        return list(self.db_receivers_accounts.all()) + \
                list(self.db_receivers_objects.all()) + \
                list(self.db_receivers_scripts.all()) + \
                list(self.db_receivers_channels.all())
@@ -243,8 +243,8 @@ class Msg(SharedMemoryModel):
             clsname = receiver.__dbclass__.__name__
             if clsname == "ObjectDB":
                 self.db_receivers_objects.add(receiver)
-            elif clsname == "PlayerDB":
-                self.db_receivers_players.add(receiver)
+            elif clsname == "AccountDB":
+                self.db_receivers_accounts.add(receiver)
             elif clsname == "ScriptDB":
                 self.db_receivers_scripts.add(receiver)
             elif clsname == "ChannelDB":
@@ -254,7 +254,7 @@ class Msg(SharedMemoryModel):
     #@receivers.deleter
     def __receivers_del(self):
         "Deleter. Clears all receivers"
-        self.db_receivers_players.clear()
+        self.db_receivers_accounts.clear()
         self.db_receivers_objects.clear()
         self.db_receivers_scripts.clear()
         self.db_receivers_channels.clear()
@@ -266,7 +266,7 @@ class Msg(SharedMemoryModel):
         Remove a single receiver or a list of receivers.
 
         Args:
-            receivers (Player, Object, Script, Channel or list): Receiver to remove.
+            receivers (Account, Object, Script, Channel or list): Receiver to remove.
 
         """
         for receiver in make_iter(receivers):
@@ -277,8 +277,8 @@ class Msg(SharedMemoryModel):
             clsname = receiver.__dbclass__.__name__
             if clsname == "ObjectDB":
                 self.db_receivers_objects.remove(receiver)
-            elif clsname == "PlayerDB":
-                self.db_receivers_players.remove(receiver)
+            elif clsname == "AccountDB":
+                self.db_receivers_accounts.remove(receiver)
             elif clsname == "ScriptDB":
                 self.db_receivers_scripts.remove(receiver)
             elif clsname == "ChannelDB":
@@ -309,9 +309,9 @@ class Msg(SharedMemoryModel):
     def __hide_from_get(self):
         """
         Getter. Allows for value = self.hide_from.
-        Returns 3 lists of players, objects and channels
+        Returns 3 lists of accounts, objects and channels
         """
-        return self.db_hide_from_players.all(), self.db_hide_from_objects.all(), self.db_hide_from_channels.all()
+        return self.db_hide_from_accounts.all(), self.db_hide_from_objects.all(), self.db_hide_from_channels.all()
 
     #@hide_from_sender.setter
     def __hide_from_set(self, hiders):
@@ -322,8 +322,8 @@ class Msg(SharedMemoryModel):
             if not hasattr(hider, "__dbclass__"):
                 raise ValueError("This is a not a typeclassed object!")
             clsname = hider.__dbclass__.__name__
-            if clsname == "PlayerDB":
-                self.db_hide_from_players.add(hider.__dbclass__)
+            if clsname == "AccountDB":
+                self.db_hide_from_accounts.add(hider.__dbclass__)
             elif clsname == "ObjectDB":
                 self.db_hide_from_objects.add(hider.__dbclass__)
             elif clsname == "ChannelDB":
@@ -332,7 +332,7 @@ class Msg(SharedMemoryModel):
     #@hide_from_sender.deleter
     def __hide_from_del(self):
         "Deleter. Allows for del self.hide_from_senders"
-        self.db_hide_from_players.clear()
+        self.db_hide_from_accounts.clear()
         self.db_hide_from_objects.clear()
         self.db_hide_from_channels.clear()
         self.save()
@@ -353,7 +353,7 @@ class Msg(SharedMemoryModel):
         Checks lock access.
 
         Args:
-            accessing_obj (Object or Player): The object trying to gain access.
+            accessing_obj (Object or Account): The object trying to gain access.
             access_type (str, optional): The type of lock access to check.
             default (bool): Fallback to use if `access_type` lock is not defined.
 
@@ -383,13 +383,13 @@ class TempMsg(object):
 
         Args:
             senders (any or list, optional): Senders of the message.
-            receivers (Player, Object, Channel or list, optional): Receivers of this message.
+            receivers (Account, Object, Channel or list, optional): Receivers of this message.
             channels  (Channel or list, optional): Channels to send to.
             message (str, optional): Message to send.
             header (str, optional): Header of message.
             type (str, optional): Message class, if any.
             lockstring (str, optional): Lock for the message.
-            hide_from (Player, Object, Channel or list, optional): Entities to hide this message from.
+            hide_from (Account, Object, Channel or list, optional): Entities to hide this message from.
 
         """
         self.senders = senders and make_iter(senders) or []
@@ -419,7 +419,7 @@ class TempMsg(object):
         Remove a sender or a list of senders.
 
         Args:
-            sender (Object, Player, str or list): Senders to remove.
+            sender (Object, Account, str or list): Senders to remove.
 
         """
         for o in make_iter(sender):
@@ -433,7 +433,7 @@ class TempMsg(object):
         Remove a receiver or a list of receivers
 
         Args:
-            receiver (Object, Player, Channel, str or list): Receivers to remove.
+            receiver (Object, Account, Channel, str or list): Receivers to remove.
         """
 
         for o in make_iter(receiver):
@@ -447,7 +447,7 @@ class TempMsg(object):
         Checks lock access.
 
         Args:
-            accessing_obj (Object or Player): The object trying to gain access.
+            accessing_obj (Object or Account): The object trying to gain access.
             access_type (str, optional): The type of lock access to check.
             default (bool): Fallback to use if `access_type` lock is not defined.
 
@@ -469,7 +469,7 @@ class SubscriptionHandler(object):
     """
     This handler manages subscriptions to the
     channel and hides away which type of entity is
-    subscribing (Player or Object)
+    subscribing (Account or Object)
     """
     def __init__(self, obj):
         """
@@ -483,7 +483,7 @@ class SubscriptionHandler(object):
         self._cache = None
 
     def _recache(self):
-        self._cache = {player : True for player in self.obj.db_subscriptions.all()}
+        self._cache = {account : True for account in self.obj.db_subscriptions.all()}
         self._cache.update({obj : True for obj in self.obj.db_object_subscriptions.all()})
 
     def has(self, entity):
@@ -491,12 +491,12 @@ class SubscriptionHandler(object):
         Check if the given entity subscribe to this channel
 
         Args:
-            entity (str, Player or Object): The entity to return. If
+            entity (str, Account or Object): The entity to return. If
                 a string, it assumed to be the key or the #dbref
                 of the entity.
 
         Returns:
-            subscriber (Player, Object or None): The given
+            subscriber (Account, Object or None): The given
                 subscriber.
 
         """
@@ -509,7 +509,7 @@ class SubscriptionHandler(object):
         Subscribe an entity to this channel.
 
         Args:
-            entity (Player, Object or list): The entity or
+            entity (Account, Object or list): The entity or
                 list of entities to subscribe to this channel.
 
         Note:
@@ -527,7 +527,7 @@ class SubscriptionHandler(object):
                 # chooses the right type
                 if clsname == "ObjectDB":
                     self.obj.db_object_subscriptions.add(subscriber)
-                elif clsname == "PlayerDB":
+                elif clsname == "AccountDB":
                     self.obj.db_subscriptions.add(subscriber)
                 _CHANNELHANDLER.cached_cmdsets.pop(subscriber, None)
         self._recache()
@@ -537,7 +537,7 @@ class SubscriptionHandler(object):
         Remove a subscriber from the channel.
 
         Args:
-            entity (Player, Object or list): The entity or
+            entity (Account, Object or list): The entity or
                 entities to un-subscribe from the channel.
 
         """
@@ -548,7 +548,7 @@ class SubscriptionHandler(object):
             if subscriber:
                 clsname = subscriber.__dbclass__.__name__
                 # chooses the right type
-                if clsname == "PlayerDB":
+                if clsname == "AccountDB":
                     self.obj.db_subscriptions.remove(entity)
                 elif clsname == "ObjectDB":
                     self.obj.db_object_subscriptions.remove(entity)
@@ -561,7 +561,7 @@ class SubscriptionHandler(object):
 
         Returns:
             subscribers (list): The subscribers. This
-                may be a mix of Players and Objects!
+                may be a mix of Accounts and Objects!
 
         """
         if self._cache is None:
@@ -570,17 +570,17 @@ class SubscriptionHandler(object):
 
     def online(self):
         """
-        Get all online players from our cache
+        Get all online accounts from our cache
         Returns:
             subscribers (list): Subscribers who are online or
-                are puppeted by an online player.
+                are puppeted by an online account.
         """
         subs = []
         for obj in self.all():
-            if hasattr(obj, 'player'):
-                if not obj.player:
+            if hasattr(obj, 'account'):
+                if not obj.account:
                     continue
-                obj = obj.player
+                obj = obj.account
             if not obj.is_connected:
                 continue
             subs.append(obj)
@@ -604,7 +604,7 @@ class ChannelDB(TypedObject):
     The Channel class defines the following database fields
     beyond the ones inherited from TypedObject:
 
-      - db_subscriptions: The Player subscriptions (this is the most
+      - db_subscriptions: The Account subscriptions (this is the most
         usual case, named this way for legacy.
       - db_object_subscriptions: The Object subscriptions.
 

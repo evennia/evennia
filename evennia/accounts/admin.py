@@ -107,7 +107,7 @@ class AccountForm(forms.ModelForm):
 
     db_typeclass_path = forms.CharField(
         label="Typeclass",
-        initial=settings.BASE_PLAYER_TYPECLASS,
+        initial=settings.BASE_ACCOUNT_TYPECLASS,
         widget=forms.TextInput(
             attrs={'size': '78'}),
         help_text="Required. Defines what 'type' of entity this is. This "
@@ -117,7 +117,7 @@ class AccountForm(forms.ModelForm):
 
     db_permissions = forms.CharField(
         label="Permissions",
-        initial=settings.PERMISSION_PLAYER_DEFAULT,
+        initial=settings.PERMISSION_ACCOUNT_DEFAULT,
         required=False,
         widget=forms.TextInput(
             attrs={'size': '78'}),
@@ -137,7 +137,7 @@ class AccountForm(forms.ModelForm):
                   "<i>type:lockfunction(args);type2:lockfunction2(args);...")
     db_cmdset_storage = forms.CharField(
         label="cmdset",
-        initial=settings.CMDSET_PLAYER,
+        initial=settings.CMDSET_ACCOUNT,
         widget=forms.TextInput(attrs={'size': '78'}),
         required=False,
         help_text="python path to account cmdset class (set in "
@@ -241,7 +241,7 @@ class AccountDBAdmin(BaseUserAdmin):
         obj.save()
         if not change:
             #calling hooks for new account
-            obj.set_class_from_typeclass(typeclass_path=settings.BASE_PLAYER_TYPECLASS)
+            obj.set_class_from_typeclass(typeclass_path=settings.BASE_ACCOUNT_TYPECLASS)
             obj.basetype_setup()
             obj.at_account_creation()
 

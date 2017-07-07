@@ -17,7 +17,7 @@ from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
 from evennia.scripts.models import ScriptDB
 from evennia.objects.models import ObjectDB
-from evennia.players.models import PlayerDB
+from evennia.accounts.models import AccountDB
 from evennia.utils import logger, utils, gametime, create
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
@@ -455,24 +455,24 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         caller.msg(string)
 
 
-class CmdPlayers(COMMAND_DEFAULT_CLASS):
+class CmdAccounts(COMMAND_DEFAULT_CLASS):
     """
-    list all registered players
+    list all registered accounts
 
     Usage:
-      @players [nr]
+      @accounts [nr]
 
-    Lists statistics about the Players registered with the game.
-    It will list the <nr> amount of latest registered players
+    Lists statistics about the Accounts registered with the game.
+    It will list the <nr> amount of latest registered accounts
     If not given, <nr> defaults to 10.
     """
-    key = "@players"
-    aliases = ["@listplayers"]
-    locks = "cmd:perm(listplayers) or perm(Admin)"
+    key = "@accounts"
+    aliases = ["@listaccounts"]
+    locks = "cmd:perm(listaccounts) or perm(Admin)"
     help_category = "System"
 
     def func(self):
-        """List the players"""
+        """List the accounts"""
 
         caller = self.caller
         if self.args and self.args.isdigit():
@@ -480,21 +480,21 @@ class CmdPlayers(COMMAND_DEFAULT_CLASS):
         else:
             nlim = 10
 
-        nplayers = PlayerDB.objects.count()
+        naccounts = AccountDB.objects.count()
 
         # typeclass table
-        dbtotals = PlayerDB.objects.object_totals()
+        dbtotals = AccountDB.objects.object_totals()
         typetable = EvTable("|wtypeclass|n", "|wcount|n", "|w%%|n", border="cells", align="l")
         for path, count in dbtotals.items():
-            typetable.add_row(path, count, "%.2f" % ((float(count) / nplayers) * 100))
+            typetable.add_row(path, count, "%.2f" % ((float(count) / naccounts) * 100))
         # last N table
-        plyrs = PlayerDB.objects.all().order_by("db_date_created")[max(0, nplayers - nlim):]
+        plyrs = AccountDB.objects.all().order_by("db_date_created")[max(0, naccounts - nlim):]
         latesttable = EvTable("|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", border="cells", align="l")
         for ply in plyrs:
             latesttable.add_row(utils.datetime_format(ply.date_created), ply.dbref, ply.key, ply.path)
 
-        string = "\n|wPlayer typeclass distribution:|n\n%s" % typetable
-        string += "\n|wLast %s Players created:|n\n%s" % (min(nplayers, nlim), latesttable)
+        string = "\n|wAccount typeclass distribution:|n\n%s" % typetable
+        string += "\n|wLast %s Accounts created:|n\n%s" % (min(naccounts, nlim), latesttable)
         caller.msg(string)
 
 
@@ -644,7 +644,7 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
     """
     key = "@time"
     aliases = "@uptime"
-    locks = "cmd:perm(time) or perm(Player)"
+    locks = "cmd:perm(time) or perm(Account)"
     help_category = "System"
 
     def func(self):

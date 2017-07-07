@@ -13,7 +13,7 @@ from twisted.web.http_headers import Headers
 from twisted.web.iweb import IBodyProducer
 from zope.interface import implements
 
-from evennia.players.models import PlayerDB
+from evennia.accounts.models import AccountDB
 from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import get_evennia_version, logger
 
@@ -97,8 +97,8 @@ class EvenniaGameIndexClient(object):
             'web_client_url': egi_config.get('web_client_url') or '',
 
             # Game stats
-            'connected_player_count': SESSIONS.player_count(),
-            'total_player_count': PlayerDB.objects.num_total_players() or 0,
+            'connected_account_count': SESSIONS.account_count(),
+            'total_account_count': AccountDB.objects.num_total_accounts() or 0,
 
             # System info
             'evennia_version': get_evennia_version(),

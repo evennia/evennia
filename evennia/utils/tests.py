@@ -386,7 +386,7 @@ class TestEvForm(TestCase):
                          u'|                                                |\n'
                          u'|  Name: \x1b[0m\x1b[1m\x1b[32mTom\x1b[1m\x1b[32m \x1b'
                          u'[1m\x1b[32mthe\x1b[1m\x1b[32m \x1b[0m   \x1b[0m    '
-                         u'Player: \x1b[0m\x1b[1m\x1b[33mGriatch        '
+                         u'Account: \x1b[0m\x1b[1m\x1b[33mGriatch        '
                          u'\x1b[0m\x1b[0m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[0m\x1b[0m  '
                          u'|\n'
                          u'|        \x1b[0m\x1b[1m\x1b[32mBouncer\x1b[0m    \x1b[0m                             |\n'

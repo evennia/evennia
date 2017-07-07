@@ -60,7 +60,7 @@ class CmdHelp(Command):
 
             if self.session.protocol_key in ("websocket", "ajax/comet"):
                 try:
-                    options = self.player.db._saved_webclient_options
+                    options = self.account.db._saved_webclient_options
                     if options and options["helppopup"]:
                         usemore = False
                 except KeyError:
@@ -128,12 +128,12 @@ class CmdHelp(Command):
         Helper method. If this return True, the given cmd
         auto-help will be viewable in the help listing.
         Override this to easily select what is shown to
-        the player. Note that only commands available
+        the account. Note that only commands available
         in the caller's merged cmdset are available.
 
         Args:
             cmd (Command): Command class from the merged cmdset
-            caller (Character, Player or Session): The current caller
+            caller (Character, Account or Session): The current caller
                 executing the help command.
 
         """
