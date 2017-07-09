@@ -491,7 +491,7 @@ MAX_NR_CHARACTERS = 1
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()
 # lock functions, which accepts both plural and singular (Admin & Admins)
 PERMISSION_HIERARCHY = ["Guest", # note-only used if GUEST_ENABLED=True
-                        "Account",
+                        "Player",
                         "Helper",
                         "Builder",
                         "Admin",
