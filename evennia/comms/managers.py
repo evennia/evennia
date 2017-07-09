@@ -377,7 +377,7 @@ class ChannelDBManager(TypedObjectManager):
         """
         clsname = subscriber.__dbclass__.__name__
         if clsname == "AccountDB":
-            return subscriber.subscription_set.all()
+            return subscriber.account_subscription_set.all()
         if clsname == "ObjectDB":
             return subscriber.object_subscription_set.all()
         return []
