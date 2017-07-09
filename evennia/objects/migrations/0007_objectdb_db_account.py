@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0002_copy_player_to_account'),
+        ('accounts', '0007_copy_player_to_account'),
         ('objects', '0006_auto_20170606_1731'),
     ]
 

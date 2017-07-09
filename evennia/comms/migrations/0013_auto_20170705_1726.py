@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0002_copy_player_to_account'),
+        ('accounts', '0007_copy_player_to_account'),
         ('comms', '0012_merge_20170617_2017'),
     ]
 

@@ -47,7 +47,7 @@ def forwards(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0001_initial'),
+        ('accounts', '0006_auto_20170606_1731'),
     ]
 
     operations = [
