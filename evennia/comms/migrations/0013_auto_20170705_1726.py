@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.db import migrations, models, connection
 from django.db import OperationalError
 
+
 def _table_exists(db_cursor, tablename):
     "Returns bool if table exists or not"
     sql_check_exists = "SELECT * from %s;" % tablename
@@ -24,12 +25,48 @@ class Migration(migrations.Migration):
 
     db_cursor = connection.cursor()
 
-    if not _table_exists(db_cursor, 'comms_msg_db_hide_from_players'):
+    operations = [
+            migrations.AddField(
+                model_name='channeldb',
+                name='db_account_subscriptions',
+                field=models.ManyToManyField(blank=True, db_index=True, related_name='account_subscription_set', to='accounts.AccountDB', verbose_name=b'account subscriptions'),
+            ),
+            migrations.AlterField(
+                model_name='channeldb',
+                name='db_object_subscriptions',
+                field=models.ManyToManyField(blank=True, db_index=True, related_name='object_subscription_set', to='objects.ObjectDB', verbose_name=b'object subscriptions'),
+            ),
+            migrations.AlterField(
+                model_name='msg',
+                name='db_receivers_scripts',
+                field=models.ManyToManyField(blank=True, help_text=b'script_receivers', related_name='receiver_script_set', to='scripts.ScriptDB'),
+            ),
+            migrations.AlterField(
+                model_name='msg',
+                name='db_sender_scripts',
+                field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_script_set', to='scripts.ScriptDB', verbose_name=b'sender(script)'),
+            ),
+            migrations.AlterField(
+                model_name='channeldb',
+                name='db_object_subscriptions',
+                field=models.ManyToManyField(blank=True, db_index=True, related_name='object_subscription_set', to='objects.ObjectDB', verbose_name=b'object subscriptions'),
+            ),
+            migrations.AlterField(
+                model_name='msg',
+                name='db_receivers_scripts',
+                field=models.ManyToManyField(blank=True, help_text=b'script_receivers', related_name='receiver_script_set', to='scripts.ScriptDB'),
+            ),
+            migrations.AlterField(
+                model_name='msg',
+                name='db_sender_scripts',
+                field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_script_set', to='scripts.ScriptDB', verbose_name=b'sender(script)'),
+            ),
+    ]
+
+    if _table_exists(db_cursor, 'comms_msg_db_hide_from_players'):
         # OBS - this is run BEFORE migrations are run!
         # not a migration of an existing database
-        operations = []
-    else:
-        operations = [
+        operations += [
             migrations.AddField(
                 model_name='channeldb',
                 name='db_account_subscriptions',
@@ -49,20 +86,5 @@ class Migration(migrations.Migration):
                 model_name='msg',
                 name='db_sender_accounts',
                 field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_account_set', to='accounts.AccountDB', verbose_name=b'sender(account)'),
-            ),
-            migrations.AlterField(
-                model_name='channeldb',
-                name='db_object_subscriptions',
-                field=models.ManyToManyField(blank=True, db_index=True, related_name='object_subscription_set', to='objects.ObjectDB', verbose_name=b'object subscriptions'),
-            ),
-            migrations.AlterField(
-                model_name='msg',
-                name='db_receivers_scripts',
-                field=models.ManyToManyField(blank=True, help_text=b'script_receivers', related_name='receiver_script_set', to='scripts.ScriptDB'),
-            ),
-            migrations.AlterField(
-                model_name='msg',
-                name='db_sender_scripts',
-                field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_script_set', to='scripts.ScriptDB', verbose_name=b'sender(script)'),
             ),
         ]

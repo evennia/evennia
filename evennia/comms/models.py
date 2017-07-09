@@ -483,7 +483,7 @@ class SubscriptionHandler(object):
         self._cache = None
 
     def _recache(self):
-        self._cache = {account : True for account in self.obj.db_subscriptions.all()}
+        self._cache = {account : True for account in self.obj.db_account_subscriptions.all()}
         self._cache.update({obj : True for obj in self.obj.db_object_subscriptions.all()})
 
     def has(self, entity):
@@ -528,7 +528,7 @@ class SubscriptionHandler(object):
                 if clsname == "ObjectDB":
                     self.obj.db_object_subscriptions.add(subscriber)
                 elif clsname == "AccountDB":
-                    self.obj.db_subscriptions.add(subscriber)
+                    self.obj.db_account_subscriptions.add(subscriber)
                 _CHANNELHANDLER.cached_cmdsets.pop(subscriber, None)
         self._recache()
 
@@ -549,7 +549,7 @@ class SubscriptionHandler(object):
                 clsname = subscriber.__dbclass__.__name__
                 # chooses the right type
                 if clsname == "AccountDB":
-                    self.obj.db_subscriptions.remove(entity)
+                    self.obj.db_account_subscriptions.remove(entity)
                 elif clsname == "ObjectDB":
                     self.obj.db_object_subscriptions.remove(entity)
                 _CHANNELHANDLER.cached_cmdsets.pop(subscriber, None)
@@ -591,7 +591,7 @@ class SubscriptionHandler(object):
         Remove all subscribers from channel.
 
         """
-        self.obj.db_subscriptions.clear()
+        self.obj.db_account_subscriptions.clear()
         self.obj.db_object_subscriptions.clear()
         self._cache = None
 
@@ -604,8 +604,7 @@ class ChannelDB(TypedObject):
     The Channel class defines the following database fields
     beyond the ones inherited from TypedObject:
 
-      - db_subscriptions: The Account subscriptions (this is the most
-        usual case, named this way for legacy.
+      - db_account_subscriptions: The Account subscriptions.
       - db_object_subscriptions: The Object subscriptions.
 
     """
