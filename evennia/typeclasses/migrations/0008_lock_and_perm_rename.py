@@ -9,7 +9,7 @@ def update_perms_and_locks(apps, schema_editor):
 
     # update all permissions
     Tag = apps.get_model('typeclasses', 'Tag')
-    perm_map = {"guests": "guest", "players": "player", "playerhelpers":"helper",
+    perm_map = {"guests": "guest", "accounts": "account", "accounthelpers":"helper",
                 "builders": "builder", "wizards":"admin", "immortals": "developer"}
 
     for perm in Tag.objects.filter(db_tagtype="permission"):
@@ -18,7 +18,7 @@ def update_perms_and_locks(apps, schema_editor):
             perm.save(update_fields=("db_key",))
 
     # update all locks on all entities
-    apps_models = [("objects", "ObjectDB"), ("players", "PlayerDB"), ("scripts", "ScriptDB"),
+    apps_models = [("objects", "ObjectDB"), ("accounts", "AccountDB"), ("scripts", "ScriptDB"),
                    ("comms", "ChannelDB")]
     p_reg = re.compile(r"(?<=perm\()(\w+)(?=\))|(?<=perm_above\()(\w+)(?=\))",
                         re.IGNORECASE + re.UNICODE)

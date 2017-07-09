@@ -497,7 +497,7 @@ PERMISSION_HIERARCHY = ["Guest", # note-only used if GUEST_ENABLED=True
                         "Admin",
                         "Developer"]
 # The default permission given to all new accounts
-PERMISSION_PLAYER_DEFAULT = "Player"
+PERMISSION_ACCOUNT_DEFAULT = "Player"
 # Default sizes for client window (in number of characters), if client
 # is not supplying this on its own
 CLIENT_DEFAULT_WIDTH = 78

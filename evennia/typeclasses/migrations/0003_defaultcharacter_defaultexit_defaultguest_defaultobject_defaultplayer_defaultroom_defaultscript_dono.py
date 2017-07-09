@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import evennia.players.manager
+import evennia.accounts.manager
 
 
 class Migration(migrations.Migration):
@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('objects', '0005_auto_20150403_2339'),
         ('scripts', '0007_auto_20150403_2339'),
-        ('players', '0004_auto_20150403_2339'),
+        ('accounts', '0004_auto_20150403_2339'),
         ('typeclasses', '0002_auto_20150109_0913'),
     ]
 
@@ -25,15 +25,15 @@ class Migration(migrations.Migration):
             bases=('objects.objectdb',),
         ),
         migrations.CreateModel(
-            name='DefaultPlayer',
+            name='DefaultAccount',
             fields=[
             ],
             options={
                 'proxy': True,
             },
-            bases=('players.playerdb',),
+            bases=('accounts.accountdb',),
             managers=[
-                (b'objects', evennia.players.manager.PlayerManager()),
+                (b'objects', evennia.accounts.manager.AccountManager()),
             ],
         ),
         migrations.CreateModel(
@@ -70,9 +70,9 @@ class Migration(migrations.Migration):
             options={
                 'proxy': True,
             },
-            bases=('typeclasses.defaultplayer',),
+            bases=('typeclasses.defaultaccount',),
             managers=[
-                (b'objects', evennia.players.manager.PlayerManager()),
+                (b'objects', evennia.accounts.manager.AccountManager()),
             ],
         ),
         migrations.CreateModel(

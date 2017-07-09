@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='objectdb',
             name='db_sessid',
-            field=models.CharField(help_text=b'csv list of session ids of connected Player, if any.', max_length=32, null=True, validators=[django.core.validators.RegexValidator(re.compile('^\\d+(?:\\,\\d+)*\\Z'), code='invalid', message='Enter only digits separated by commas.')], verbose_name=b'session id'),
+            field=models.CharField(help_text=b'csv list of session ids of connected Account, if any.', max_length=32, null=True, validators=[django.core.validators.RegexValidator(re.compile('^\\d+(?:\\,\\d+)*\\Z'), code='invalid', message='Enter only digits separated by commas.')], verbose_name=b'session id'),
         ),
         migrations.AlterField(
             model_name='objectdb',

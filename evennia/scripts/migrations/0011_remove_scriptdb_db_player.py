@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RemoveField(
             model_name='scriptdb',
-            name='db_player',
+            name='db_account',
         ),
     ]

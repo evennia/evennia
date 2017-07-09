@@ -8,16 +8,16 @@ from django.db import migrations
 def forwards(apps, schema_editor):
 
     try:
-        apps.get_model('players', 'PlayerDB')
+        apps.get_model('accounts', 'AccountDB')
     except LookupError:
         return
     AccountDB = apps.get_model('accounts', 'AccountDB')
     ScriptDB = apps.get_model('scripts', 'ScriptDB')
 
     for script in ScriptDB.objects.all():
-        player = script.db_player
-        if player:
-            account = AccountDB.objects.get(id=player.id)
+        account = script.db_account
+        if account:
+            account = AccountDB.objects.get(id=account.id)
             script.db_account = account
             script.save(update_fields=['db_account'])
 

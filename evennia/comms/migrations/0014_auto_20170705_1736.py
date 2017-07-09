@@ -8,27 +8,27 @@ from django.db import migrations
 def forwards(apps, schema_editor):
 
     try:
-        apps.get_model('players', 'PlayerDB')
+        apps.get_model('accounts', 'AccountDB')
     except LookupError:
         return
     AccountDB = apps.get_model('accounts', 'AccountDB')
 
     Msg = apps.get_model('comms', 'Msg')
     for msg in Msg.objects.all():
-        for player in msg.db_sender_players.all():
-            account = AccountDB.objects.get(id=player.id)
+        for account in msg.db_sender_accounts.all():
+            account = AccountDB.objects.get(id=account.id)
             msg.db_sender_accounts.add(account)
-        for player in msg.db_receivers_players.all():
-            account = AccountDB.objects.get(id=player.id)
+        for account in msg.db_receivers_accounts.all():
+            account = AccountDB.objects.get(id=account.id)
             msg.db_receivers_accounts.add(account)
-        for player in msg.db_hide_from_players.all():
-            account = AccountDB.objects.get(id=player.id)
+        for account in msg.db_hide_from_accounts.all():
+            account = AccountDB.objects.get(id=account.id)
             msg.db_hide_from_accounts.add(account)
 
     ChannelDB = apps.get_model('comms', 'ChannelDB')
     for channel in ChannelDB.objects.all():
-        for player in channel.db_subscriptions.all():
-            account = AccountDB.objects.get(id=player.id)
+        for account in channel.db_subscriptions.all():
+            account = AccountDB.objects.get(id=account.id)
             channel.db_account_subscriptions.add(account)
 
 

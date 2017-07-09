@@ -18,10 +18,10 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='msg',
-            name='db_receivers_players',
+            name='db_receivers_accounts',
         ),
         migrations.RemoveField(
             model_name='msg',
-            name='db_sender_players',
+            name='db_sender_accounts',
         ),
     ]
