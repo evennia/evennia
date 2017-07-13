@@ -20,4 +20,44 @@
     .headerLinks {
         position: static;
     }
+
+/* If you for some reason need to override the default sizing model,
+   for instance, if you're using a Google Maps widget, you may need
+   to use the following code, see:
+   http://v4-alpha.getbootstrap.com/getting-started/introduction/#box-sizing */
+/*
+.selector-for-some-widget {
+  -webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+          box-sizing: content-box;
+}
+*/
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 30px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 30px;
+  line-height: 30px; /* Vertically center the text there */
+  background-color: #f5f5f5;
+}
+
+.navbar-brand-logo {
+    height: 50px;
+    width: 50px;
+}
+
+.footer {
+    background-color: lightgrey;
 }
