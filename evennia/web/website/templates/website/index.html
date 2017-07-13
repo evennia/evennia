@@ -46,7 +46,7 @@
     <hr />
     <div class="row">
         <div class="card-deck">
-            <div class="card card-outline-secondary">
+            <div class="card card-outline-secondary text-center">
                 <h3 class="card-header">Players</h3>
                 <div class="card-block"
                     <p>
@@ -56,7 +56,7 @@
             </div>
 
             <div class="card card-outline-secondary">
-                <h3 class="card-header">Recently Connected</h3>
+                <h3 class="card-header text-center">Recently Connected</h3>
                 <div class="card-block">
                     <ul>
                         {% for player in players_connected_recent %}
@@ -67,7 +67,7 @@
             </div>
 
             <div class="card card-outline-secondary">
-                <h3 class="card-header">Database Stats</h3>
+                <h3 class="card-header text-center">Database Stats</h3>
                 <div class="card-block">
                     <ul>
                         <li>{{num_players_registered}} players (+ {{num_characters}} characters)</li>

@@ -17,6 +17,11 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="{% static "website/css/app.css" %}">
 
+    {% comment %}
+    Allows for loading custom styles without overriding the base site styles
+    {% endcomment %}
+    <link rel="stylesheet" type="text/css" href="{% static "website/css/custom.css" %}">
+
     {% block header_ext %}
     {% endblock %}
 
@@ -25,7 +30,7 @@
   <body>
     <div id="top"><a href="#main-content" class="sr-only sr-only-focusable">Skip to main content.</a></div>
 
-    <nav class="navbar navbar-toggleable-sm navbar-light bg-faded">
+    <nav class="navbar navbar-light bg-faded navbar-toggleable-sm">
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#menu-content" aria-controls="menu-content" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -33,11 +38,12 @@
         <a class="navbar-brand" href="/">
             <img class="navbar-brand-logo" src="{% static "website/images/evennia_logo.png" %}" />
                 {{ game_name }}
-                <br /><small class="text-muted">{{game_slogan}}</small>
+                <br /><small>{{game_slogan}}</small>
         </a>
 
         <div class="collapse navbar-collapse" id="menu-content">
             <ul class="navbar-nav">
+                {% block nabvar_left %}
                 <li>
                     <a class="nav-link" href="/">Home</a>
                 </li>
@@ -47,8 +53,12 @@
                 {% if webclient_enabled %}
                 <li><a class="nav-link" href="{% url 'webclient:index' %}">Play Online</a></li>
                 {% endif %}
+                {% endblock %}
             </ul>
             <ul class="nav navbar-nav ml-auto w-120 justify-content-end">
+                {% block navbar_right %}
+                {% endblock %}
+                {% block navbar_user %}
                 {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link">Logged in as {{user.username}}</a>
@@ -64,6 +74,7 @@
                     <a class="nav-link" href="{% url 'to_be_implemented' %}">Register</a>
                 </li>
                 {% endif %}
+                {% endblock %}
             </ul>
         </div>
     </nav>
