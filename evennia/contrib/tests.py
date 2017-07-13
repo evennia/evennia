@@ -451,13 +451,13 @@ class TestChargen(CommandTest):
         self.assertTrue(self.account.db._character_dbrefs)
         self.call(chargen.CmdOOCLook(), "", "You, TestAccount, are an OOC ghost without form.",caller=self.account)
         self.call(chargen.CmdOOCLook(), "testchar", "testchar(", caller=self.account)
-        
+
 # Testing clothing contrib
 from evennia.contrib import clothing
 from evennia.objects.objects import DefaultRoom
 
 class TestClothingCmd(CommandTest):
-    
+
     def test_clothingcommands(self):
         wearer = create_object(clothing.ClothedCharacter, key="Wearer")
         friend = create_object(clothing.ClothedCharacter, key="Friend")
@@ -500,7 +500,7 @@ class TestClothingCmd(CommandTest):
         self.call(clothing.CmdInventory(), "", "You are not carrying or wearing anything.", caller=wearer)
 
 class TestClothingFunc(EvenniaTest):
-    
+
     def test_clothingfunctions(self):
         wearer = create_object(clothing.ClothedCharacter, key="Wearer")
         room = create_object(DefaultRoom, key="room")
@@ -520,28 +520,28 @@ class TestClothingFunc(EvenniaTest):
 
         test_hat.wear(wearer, 'on the head')
         self.assertEqual(test_hat.db.worn, 'on the head')
-        
+
         test_hat.remove(wearer)
         self.assertEqual(test_hat.db.worn, False)
-        
+
         test_hat.worn = True
         test_hat.at_get(wearer)
         self.assertEqual(test_hat.db.worn, False)
-        
+
         clothes_list = [test_shirt, test_hat, test_pants]
         self.assertEqual(clothing.order_clothes_list(clothes_list), [test_hat, test_shirt, test_pants])
-        
+
         test_hat.wear(wearer, True)
         test_pants.wear(wearer, True)
         self.assertEqual(clothing.get_worn_clothes(wearer), [test_hat, test_pants])
-        
-        self.assertEqual(clothing.clothing_type_count(clothes_list), {'hat':1, 'top':1, 'bottom':1})
-        
-        self.assertEqual(clothing.single_type_count(clothes_list, 'hat'), 1)
-        
 
-        
-    
+        self.assertEqual(clothing.clothing_type_count(clothes_list), {'hat':1, 'top':1, 'bottom':1})
+
+        self.assertEqual(clothing.single_type_count(clothes_list, 'hat'), 1)
+
+
+
+
 # Testing custom_gametime
 from evennia.contrib import custom_gametime
 
@@ -849,7 +849,7 @@ from evennia.contrib import turnbattle
 from evennia.objects.objects import DefaultRoom
 
 class TestTurnBattleCmd(CommandTest):
-    
+
     # Test combat commands
     def test_turnbattlecmd(self):
         self.call(turnbattle.CmdFight(), "", "You can't start a fight if you've been defeated!")
@@ -857,9 +857,9 @@ class TestTurnBattleCmd(CommandTest):
         self.call(turnbattle.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(turnbattle.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(turnbattle.CmdRest(), "", "Char rests to recover HP.")
-        
+
 class TestTurnBattleFunc(EvenniaTest):
-    
+
     # Test combat functions
     def test_turnbattlefunc(self):
         attacker = create_object(turnbattle.BattleCharacter, key="Attacker")
@@ -936,3 +936,51 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
         # Remove the script at the end
         turnhandler.stop()
+
+
+# Test of the unixcommand module
+
+from evennia.contrib.unixcommand import UnixCommand
+
+class CmdDummy(UnixCommand):
+
+    """A dummy UnixCommand."""
+
+    key = "dummy"
+
+    def init_parser(self):
+        """Fill out options."""
+        self.parser.add_argument("nb1", type=int, help="the first number")
+        self.parser.add_argument("nb2", type=int, help="the second number")
+        self.parser.add_argument("-v", "--verbose", action="store_true")
+
+    def func(self):
+        nb1 = self.opts.nb1
+        nb2 = self.opts.nb2
+        result = nb1 * nb2
+        verbose = self.opts.verbose
+        if verbose:
+            self.msg("{} times {} is {}".format(nb1, nb2, result))
+        else:
+            self.msg("{} * {} = {}".format(nb1, nb2, result))
+
+
+class TestUnixCommand(CommandTest):
+
+    def test_success(self):
+        """See the command parsing succeed."""
+        self.call(CmdDummy(), "5 10", "5 * 10 = 50")
+        self.call(CmdDummy(), "5 10 -v", "5 times 10 is 50")
+
+    def test_failure(self):
+        """If not provided with the right info, should fail."""
+        ret = self.call(CmdDummy(), "5")
+        lines = ret.splitlines()
+        self.assertTrue(any(l.startswith("usage:") for l in lines))
+        self.assertTrue(any(l.startswith("dummy: error:") for l in lines))
+
+        # If we specify an incorrect number as parameter
+        ret = self.call(CmdDummy(), "five ten")
+        lines = ret.splitlines()
+        self.assertTrue(any(l.startswith("usage:") for l in lines))
+        self.assertTrue(any(l.startswith("dummy: error:") for l in lines))

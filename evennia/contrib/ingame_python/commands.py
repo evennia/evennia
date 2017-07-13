@@ -1,5 +1,5 @@
 """
-Module containing the commands of the callback system.
+Module containing the commands of the in-game Python system.
 """
 
 from datetime import datetime
@@ -10,7 +10,7 @@ from evennia.utils.ansi import raw
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
 from evennia.utils.utils import class_from_module, time_format
-from evennia.contrib.events.utils import get_event_handler
+from evennia.contrib.ingame_python.utils import get_event_handler
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -358,9 +358,6 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
 
         # Open the editor
         callback = dict(callback)
-        callback["obj"] = obj
-        callback["name"] = callback_name
-        callback["number"] = number
         self.caller.db._callback = callback
         EvEditor(self.caller, loadfunc=_ev_load, savefunc=_ev_save,
                  quitfunc=_ev_quit, key="Callback {} of {}".format(

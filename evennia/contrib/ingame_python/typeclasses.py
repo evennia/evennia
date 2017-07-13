@@ -1,5 +1,5 @@
 """
-Typeclasses for the event system.
+Typeclasses for the in-game Python system.
 
 To use thm, one should inherit from these classes (EventObject,
 EventRoom, EventCharacter and EventExit).
@@ -9,8 +9,8 @@ EventRoom, EventCharacter and EventExit).
 from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia import ScriptDB
 from evennia.utils.utils import delay, inherits_from, lazy_property
-from evennia.contrib.events.callbackhandler import CallbackHandler
-from evennia.contrib.events.utils import register_events, time_event, phrase_event
+from evennia.contrib.ingame_python.callbackhandler import CallbackHandler
+from evennia.contrib.ingame_python.utils import register_events, time_event, phrase_event
 
 # Character help
 CHARACTER_CAN_DELETE = """
@@ -121,7 +121,7 @@ parameters that should be present, as separate words, in the
 spoken phrase.  For instance, you can set an event tthat would
 fire if the phrase spoken by the character contains "menu" or
 "dinner" or "lunch":
-    @event/add ... = say menu, dinner, lunch
+    @call/add ... = say menu, dinner, lunch
 Then if one of the words is present in what the character says,
 this event will fire.
 
@@ -135,12 +135,12 @@ CHARACTER_TIME = """
 A repeated event to be called regularly.
 This event is scheduled to repeat at different times, specified
 as parameters.  You can set it to run every day at 8:00 AM (game
-time).  You have to specify the time as an argument to @event/add, like:
-    @event/add here = time 8:00
+time).  You have to specify the time as an argument to @call/add, like:
+    @call/add here = time 8:00
 The parameter (8:00 here) must be a suite of digits separated by
 spaces, colons or dashes.  Keep it as close from a recognizable
 date format, like this:
-    @event/add here = time 06-15 12:20
+    @call/add here = time 06-15 12:20
 This event will fire every year on June the 15th at 12 PM (still
 game time).  Units have to be specified depending on your set calendar
 (ask a developer for more details).
@@ -461,12 +461,12 @@ EXIT_TIME = """
 A repeated event to be called regularly.
 This event is scheduled to repeat at different times, specified
 as parameters.  You can set it to run every day at 8:00 AM (game
-time).  You have to specify the time as an argument to @event/add, like:
-    @event/add north = time 8:00
+time).  You have to specify the time as an argument to @call/add, like:
+    @call/add north = time 8:00
 The parameter (8:00 here) must be a suite of digits separated by
 spaces, colons or dashes.  Keep it as close from a recognizable
 date format, like this:
-    @event/add south = time 06-15 12:20
+    @call/add south = time 06-15 12:20
 This event will fire every year on June the 15th at 12 PM (still
 game time).  Units have to be specified depending on your set calendar
 (ask a developer for more details).
@@ -559,12 +559,12 @@ OBJECT_TIME = """
 A repeated event to be called regularly.
 This event is scheduled to repeat at different times, specified
 as parameters.  You can set it to run every day at 8:00 AM (game
-time).  You have to specify the time as an argument to @event/add, like:
-    @event/add here = time 8:00
+time).  You have to specify the time as an argument to @call/add, like:
+    @call/add here = time 8:00
 The parameter (8:00 here) must be a suite of digits separated by
 spaces, colons or dashes.  Keep it as close from a recognizable
 date format, like this:
-    @event/add here = time 06-15 12:20
+    @call/add here = time 06-15 12:20
 This event will fire every year on June the 15th at 12 PM (still
 game time).  Units have to be specified depending on your set calendar
 (ask a developer for more details).
@@ -702,7 +702,7 @@ specify a list of keywords as parameters that should be present,
 as separate words, in the spoken phrase.  For instance, you can
 set an event tthat would fire if the phrase spoken by the character
 contains "menu" or "dinner" or "lunch":
-    @event/add ... = say menu, dinner, lunch
+    @call/add ... = say menu, dinner, lunch
 Then if one of the words is present in what the character says,
 this event will fire.
 
@@ -716,12 +716,12 @@ ROOM_TIME = """
 A repeated event to be called regularly.
 This event is scheduled to repeat at different times, specified
 as parameters.  You can set it to run every day at 8:00 AM (game
-time).  You have to specify the time as an argument to @event/add, like:
-    @event/add here = time 8:00
+time).  You have to specify the time as an argument to @call/add, like:
+    @call/add here = time 8:00
 The parameter (8:00 here) must be a suite of digits separated by
 spaces, colons or dashes.  Keep it as close from a recognizable
 date format, like this:
-    @event/add here = time 06-15 12:20
+    @call/add here = time 06-15 12:20
 This event will fire every year on June the 15th at 12 PM (still
 game time).  Units have to be specified depending on your set calendar
 (ask a developer for more details).

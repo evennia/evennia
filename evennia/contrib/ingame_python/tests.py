@@ -1,5 +1,5 @@
 ﻿"""
-Module containing the test cases for the event system.
+Module containing the test cases for the in-game Python system.
 """
 
 from mock import Mock
@@ -12,8 +12,8 @@ from evennia.objects.objects import ExitCommand
 from evennia.utils import ansi, utils
 from evennia.utils.create import create_object, create_script
 from evennia.utils.test_resources import EvenniaTest
-from evennia.contrib.events.commands import CmdCallback
-from evennia.contrib.events.callbackhandler import CallbackHandler
+from evennia.contrib.ingame_python.commands import CmdCallback
+from evennia.contrib.ingame_python.callbackhandler import CallbackHandler
 
 # Force settings
 settings.EVENTS_CALENDAR = "standard"
@@ -31,18 +31,18 @@ class TestEventHandler(EvenniaTest):
         """Create the event handler."""
         super(TestEventHandler, self).setUp()
         self.handler = create_script(
-                "evennia.contrib.events.scripts.EventHandler")
+                "evennia.contrib.ingame_python.scripts.EventHandler")
 
         # Copy old events if necessary
         if OLD_EVENTS:
             self.handler.ndb.events = dict(OLD_EVENTS)
 
         # Alter typeclasses
-        self.char1.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
-        self.char2.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
-        self.room1.swap_typeclass("evennia.contrib.events.typeclasses.EventRoom")
-        self.room2.swap_typeclass("evennia.contrib.events.typeclasses.EventRoom")
-        self.exit.swap_typeclass("evennia.contrib.events.typeclasses.EventExit")
+        self.char1.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventCharacter")
+        self.char2.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventCharacter")
+        self.room1.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventRoom")
+        self.room2.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventRoom")
+        self.exit.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventExit")
 
     def tearDown(self):
         """Stop the event handler."""
@@ -249,18 +249,18 @@ class TestCmdCallback(CommandTest):
         """Create the callback handler."""
         super(TestCmdCallback, self).setUp()
         self.handler = create_script(
-                "evennia.contrib.events.scripts.EventHandler")
+                "evennia.contrib.ingame_python.scripts.EventHandler")
 
         # Copy old events if necessary
         if OLD_EVENTS:
             self.handler.ndb.events = dict(OLD_EVENTS)
 
         # Alter typeclasses
-        self.char1.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
-        self.char2.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
-        self.room1.swap_typeclass("evennia.contrib.events.typeclasses.EventRoom")
-        self.room2.swap_typeclass("evennia.contrib.events.typeclasses.EventRoom")
-        self.exit.swap_typeclass("evennia.contrib.events.typeclasses.EventExit")
+        self.char1.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventCharacter")
+        self.char2.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventCharacter")
+        self.room1.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventRoom")
+        self.room2.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventRoom")
+        self.exit.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventExit")
 
     def tearDown(self):
         """Stop the callback handler."""
@@ -268,7 +268,7 @@ class TestCmdCallback(CommandTest):
         OLD_EVENTS.update(self.handler.ndb.events)
         self.handler.stop()
         for script in ScriptDB.objects.filter(
-                db_typeclass_path="evennia.contrib.events.scripts.TimeEventScript"):
+                db_typeclass_path="evennia.contrib.ingame_python.scripts.TimeEventScript"):
             script.stop()
 
         CallbackHandler.script = None
@@ -414,18 +414,18 @@ class TestDefaultCallbacks(CommandTest):
         """Create the callback handler."""
         super(TestDefaultCallbacks, self).setUp()
         self.handler = create_script(
-                "evennia.contrib.events.scripts.EventHandler")
+                "evennia.contrib.ingame_python.scripts.EventHandler")
 
         # Copy old events if necessary
         if OLD_EVENTS:
             self.handler.ndb.events = dict(OLD_EVENTS)
 
         # Alter typeclasses
-        self.char1.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
-        self.char2.swap_typeclass("evennia.contrib.events.typeclasses.EventCharacter")
-        self.room1.swap_typeclass("evennia.contrib.events.typeclasses.EventRoom")
-        self.room2.swap_typeclass("evennia.contrib.events.typeclasses.EventRoom")
-        self.exit.swap_typeclass("evennia.contrib.events.typeclasses.EventExit")
+        self.char1.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventCharacter")
+        self.char2.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventCharacter")
+        self.room1.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventRoom")
+        self.room2.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventRoom")
+        self.exit.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventExit")
 
     def tearDown(self):
         """Stop the callback handler."""

@@ -166,7 +166,7 @@ def time_event(obj, event_name, number, parameters):
 
     """
     seconds, usual, key = get_next_wait(parameters)
-    script = create_script("evennia.contrib.events.scripts.TimeEventScript", interval=seconds, obj=obj)
+    script = create_script("evennia.contrib.ingame_python.scripts.TimeEventScript", interval=seconds, obj=obj)
     script.key = key
     script.desc = "event on {}".format(key)
     script.db.time_format = parameters

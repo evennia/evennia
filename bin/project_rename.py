@@ -25,6 +25,25 @@ FAKE_MODE = False
 # if these words are longer than output word, retain given case
 CASE_WORD_EXCEPTIONS = ('an', )
 
+_HELP_TEXT = """This program interactively renames words in all files of your project. It's
+currently renaming {sources} to {targets}.
+
+If it wants to replace text in a file, it will show all lines (and line numbers) it wants to
+replace, each directly followed by the suggested replacement.
+
+If a rename is not okay, you can de-select it by entering 'i' followed by one or more
+comma-separated line numbers. You cannot ignore partial lines, those you need to remember to change
+manually later.
+
+[q]uit - exits the program immediately.
+[h]elp - this help.
+[s]kip file - make no changes at all in this file, continue on to the next.
+[i]ignore lines - specify line numbers to not change.
+[c]lear ignores - this reverts all your ignores if you make a mistake.
+[a]accept/save file - apply all accepted renames and continue on to the next file.
+
+(return to continue)
+"""
 
 # Helper functions
 
@@ -227,10 +246,11 @@ def rename_in_file(path, in_list, out_list, is_interactive):
 
                 ret = raw_input(_green("Choose: "
                                        "[q]uit, "
+                                       "[h]elp, "
                                        "[s]kip file, "
                                        "[i]gnore lines, "
                                        "[c]lear ignores, "
-                                       "[a]ccept/save file: "))
+                                       "[a]ccept/save file: ".lower()))
 
                 if ret == "s":
                     # skip file entirely
@@ -252,8 +272,10 @@ def rename_in_file(path, in_list, out_list, is_interactive):
                     print("   ... Saved file %s" % path)
                     return
                 elif ret == "q":
-                    print("Quit renaming.")
+                    print("Quit renaming program.")
                     sys.exit()
+                elif ret == "h":
+                    raw_input(_HELP_TEXT.format(sources=in_list, targets=out_list))
                 elif ret.startswith("i"):
                     # ignore one or more lines
                     ignores = [int(ind)-1 for ind in ret[1:].split(',') if ind.strip().isdigit()]
