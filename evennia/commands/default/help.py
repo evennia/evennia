@@ -49,6 +49,12 @@ class CmdHelp(Command):
     # 'help_more' flag to False.
     help_more = True
 
+    # suggestion cutoff, between 0 and 1 (1 => perfect match)
+    suggestion_cutoff = 0.6
+
+    # number of suggestions (set to 0 to remove suggestions from help)
+    suggestion_maxnum = 5
+
     def msg_help(self, text):
         """
         messages text to the caller, adding an extra oob argument to indicate
@@ -178,8 +184,8 @@ class CmdHelp(Command):
         query, cmdset = self.args, self.cmdset
         caller = self.caller
 
-        suggestion_cutoff = 0.6
-        suggestion_maxnum = 5
+        suggestion_cutoff = self.suggestion_cutoff
+        suggestion_maxnum = self.suggestion_maxnum
 
         if not query:
             query = "all"
@@ -211,12 +217,14 @@ class CmdHelp(Command):
         # Try to access a particular command
 
         # build vocabulary of suggestions and rate them by string similarity.
-        vocabulary = [cmd.key for cmd in all_cmds if cmd] + [topic.key for topic in all_topics] + all_categories
-        [vocabulary.extend(cmd.aliases) for cmd in all_cmds]
-        suggestions = [sugg for sugg in string_suggestions(query, set(vocabulary), cutoff=suggestion_cutoff, maxnum=suggestion_maxnum)
-                       if sugg != query]
-        if not suggestions:
-            suggestions = [sugg for sugg in vocabulary if sugg != query and sugg.startswith(query)]
+        suggestions = None
+        if suggestion_maxnum > 0:
+            vocabulary = [cmd.key for cmd in all_cmds if cmd] + [topic.key for topic in all_topics] + all_categories
+            [vocabulary.extend(cmd.aliases) for cmd in all_cmds]
+            suggestions = [sugg for sugg in string_suggestions(query, set(vocabulary), cutoff=suggestion_cutoff, maxnum=suggestion_maxnum)
+                           if sugg != query]
+            if not suggestions:
+                suggestions = [sugg for sugg in vocabulary if sugg != query and sugg.startswith(query)]
 
         # try an exact command auto-help match
         match = [cmd for cmd in all_cmds if cmd == query]

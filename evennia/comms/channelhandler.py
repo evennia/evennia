@@ -66,6 +66,7 @@ class ChannelCommand(command.Command):
     key = "general"
     help_category = "Channel Names"
     obj = None
+    arg_regex = r"\s.*?|/history.*?"
 
     def parse(self):
         """
@@ -212,7 +213,6 @@ class ChannelHandler(object):
                              locks="cmd:all();%s" % channel.locks,
                              help_category="Channel names",
                              obj=channel,
-                             arg_regex=r"\s.*?|/history.*?",
                              is_channel=True)
         # format the help entry
         key = channel.key

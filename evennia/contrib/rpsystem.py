@@ -627,7 +627,7 @@ class SdescHandler(object):
     def get(self):
         """
         Simple getter. The sdesc should never be allowed to
-        be empty, but it is we must fall back to the key.
+        be empty, but if it is we must fall back to the key.
 
         """
         return self.sdesc or self.obj.key
