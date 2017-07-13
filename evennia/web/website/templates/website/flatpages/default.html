@@ -7,6 +7,10 @@
 {% endblock %}
 
 {% block content %}
-<h1 id="alt-layout">{{flatpage.title}}</h1>
+<div class="row">
+    <div class="col">
+        <h1>{{flatpage.title}}</h1>
+    </div>
+</div>
 {{flatpage.content}}
 {% endblock %}
