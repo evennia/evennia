@@ -12,14 +12,15 @@
     <link rel="icon" type="image/x-icon" href="/static/website/images/evennia_logo.png" />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">    <!-- Custom styles -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
-    <!-- Custom CSS -->
+    <!-- Base CSS -->
     <link rel="stylesheet" type="text/css" href="{% static "website/css/app.css" %}">
 
     {% comment %}
     Allows for loading custom styles without overriding the base site styles
     {% endcomment %}
+    <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="{% static "website/css/custom.css" %}">
 
     {% block header_ext %}
@@ -79,7 +80,7 @@
         </div>
     </nav>
 
-    <div class="container" id="main-copy">
+    <div class="container main-content" id="main-copy">
         {% block content %}
         {% endblock %}
     </div>
