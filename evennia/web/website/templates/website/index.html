@@ -9,24 +9,26 @@
 {% block content %}
     <div class="row">
        <div class="col">
-          <h1>Welcome!</h1>
-          <hr />
-          <p>Welcome to your new installation of <a href="http://evennia.com">Evennia</a>, your friendly
-          neighborhood next-generation MUD development system and server. You are looking at Evennia's web
-          presence, which can be expanded to a full-fledged site as
-          needed. Through the <a href="{% url 'admin:index' %}">admin interface</a> you can view and edit the
-          database without logging into the game.
-            {% if webclient_enabled %}
-            You can also connect to the game directly from your browser using our
-            <a href="{% url 'webclient:index' %}">online client</a>!<br></br>
-            {% endif %}
-          For more info, take your time to
-          peruse our extensive online <a href="https://github.com/evennia/evennia/wiki">documentation</a>.
-          <p>
-          Should you have any questions, concerns, bug reports, or
-          if you want to help out, don't hesitate to join the Evennia community to make your voice heard! Drop a mail to the
-          <a href="https://groups.google.com/forum/#!forum/evennia">mailing list</a> or to come say hi in the <a href="http://webchat.freenode.net/?channels=evennia">developer chatroom</a>. If you find bugs, please report them to our <a href="https://github.com/evennia/evennia/issues">Issue tracker</a>.
-          </p>
+           <div class="jumbotron">
+              <h1>Welcome!</h1>
+              <hr />
+              <p>Welcome to your new installation of <a href="http://evennia.com">Evennia</a>, your friendly
+              neighborhood next-generation MUD development system and server. You are looking at Evennia's web
+              presence, which can be expanded to a full-fledged site as
+              needed. Through the <a href="{% url 'admin:index' %}">admin interface</a> you can view and edit the
+              database without logging into the game.
+                {% if webclient_enabled %}
+                You can also connect to the game directly from your browser using our
+                <a href="{% url 'webclient:index' %}">online client</a>!<br>
+                {% endif %}
+              For more info, take your time to
+              peruse our extensive online <a href="https://github.com/evennia/evennia/wiki">documentation</a>.
+              <p>
+              Should you have any questions, concerns, bug reports, or
+              if you want to help out, don't hesitate to join the Evennia community to make your voice heard! Drop a mail to the
+              <a href="https://groups.google.com/forum/#!forum/evennia">mailing list</a> or to come say hi in the <a href="http://webchat.freenode.net/?channels=evennia">developer chatroom</a>. If you find bugs, please report them to our <a href="https://github.com/evennia/evennia/issues">Issue tracker</a>.
+              </p>
+          </div>
        </div>
     </div>
 
@@ -48,7 +50,7 @@
         <div class="card-deck">
             <div class="card card-outline-secondary text-center">
                 <h3 class="card-header">Players</h3>
-                <div class="card-block"
+                <div class="card-block">
                     <p>
                     There's currently <strong>{{num_players_connected}}</strong> connected out of a total of <strong>{{num_players_registered}}</strong> players registered. Of these, <strong>{{num_players_registered_recent}}</strong> were created this week, and <strong>{{num_players_connected_recent}}</strong> have connected within the last seven days.
                     </p>
