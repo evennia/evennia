@@ -206,8 +206,8 @@ class CmdCopy(ObjManipCommand):
         caller = self.caller
         args = self.args
         if not args:
-            caller.msg("Usage: @copy <obj> [=<new_name>[;alias;alias..]]["
-                       ":<new_location>] [, <new_name2>...]")
+            caller.msg("Usage: @copy <obj> [=<new_name>[;alias;alias..]]"
+                       "[:<new_location>] [, <new_name2>...]")
             return
 
         if not self.rhs:
@@ -483,7 +483,7 @@ class CmdCreate(ObjManipCommand):
         caller = self.caller
 
         if not self.args:
-            string = "Usage: @create[/drop] <newname>[;alias;alias...] [:typeclass_path]"
+            string = "Usage: @create[/drop] <newname>[;alias;alias...] [:typeclass.path]"
             caller.msg(string)
             return
 
@@ -720,8 +720,8 @@ class CmdDig(ObjManipCommand):
         caller = self.caller
 
         if not self.lhs:
-            string = "Usage: @dig[/teleport] <roomname>[;alias;alias...][" \
-                     ":parent] [= <exit_there>"
+            string = "Usage: @dig[/teleport] <roomname>[;alias;alias...]" \
+                     "[:parent] [= <exit_there>"
             string += "[;alias;alias..][:parent]] "
             string += "[, <exit_back_here>[;alias;alias..][:parent]]"
             caller.msg(string)
@@ -871,8 +871,8 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
         "Implements the tunnel command"
 
         if not self.args or not self.lhs:
-            string = "Usage: @tunnel[/switch] <direction> [= <roomname>[" \
-                     ";alias;alias;...][:typeclass]]"
+            string = "Usage: @tunnel[/switch] <direction> [= <roomname>" \
+                     "[;alias;alias;...][:typeclass]]"
             self.caller.msg(string)
             return
         if self.lhs not in self.directions:
@@ -1562,7 +1562,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
     set or change an object's typeclass
 
     Usage:
-      @typeclass[/switch] <object> [= typeclass_path]
+      @typeclass[/switch] <object> [= typeclass.path]
       @type                     ''
       @parent                   ''
       @swap - this is a shorthand for using /force/reset flags.
