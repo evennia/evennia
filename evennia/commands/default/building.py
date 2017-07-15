@@ -184,8 +184,8 @@ class CmdCopy(ObjManipCommand):
     copy an object and its properties
 
     Usage:
-      @copy[/reset] <original obj> [= <new_name>][;alias;alias..][
-      :<new_location>] [,<new_name2> ...]
+      @copy[/reset] <original obj> [= <new_name>][;alias;alias..]
+      [:<new_location>] [,<new_name2> ...]
 
     switch:
       reset - make a 'clean' copy off the object, thus
