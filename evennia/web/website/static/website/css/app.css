@@ -44,8 +44,8 @@ html {
 }
 
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 90px;
+  /* Margin bottom by footer height plus padding against main content*/
+  margin-bottom: 92px;
   background-color: #fefefe;
 }
 
@@ -60,13 +60,16 @@ body {
 }
 
 .navbar-brand-logo {
-    height: 50px;
-    width: 50px;
+    height: 64px;
+    width: 64px;
 }
 
 /* Default Colors */
 .main-content {
     margin-top: 32px;
-    margin-bottom: 32px;
     background-color: white;
+}
+
+.navbar {
+  background-color: #3d5c7a;
 }

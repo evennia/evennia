@@ -31,15 +31,19 @@
   <body>
     <div id="top"><a href="#main-content" class="sr-only sr-only-focusable">Skip to main content.</a></div>
 
-    <nav class="navbar navbar-light bg-faded navbar-toggleable-sm">
+    <nav class="navbar navbar-inverse font-weight-bold navbar-toggleable-sm">
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#menu-content" aria-controls="menu-content" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <a class="navbar-brand" href="/">
-            <img class="navbar-brand-logo" src="{% static "website/images/evennia_logo.png" %}" />
-                {{ game_name }}
-                <br /><small>{{game_slogan}}</small>
+          <div class="media">
+            <img class="media-left navbar-brand-logo mx-3" src="{% static "website/images/evennia_logo.png" %}" />
+            <div class="media-body">
+              {{ game_name }}<br />
+              <small>{{game_slogan}}</small>
+            </div>
+          </div>
         </a>
 
         <div class="collapse navbar-collapse" id="menu-content">
@@ -81,8 +85,18 @@
     </nav>
 
     <div class="container main-content" id="main-copy">
-        {% block content %}
-        {% endblock %}
+      <div class="row">
+        {% if sidebar %}
+        <div class="col-4">
+          {% block sidebar %}
+          {% endblock %}
+        </div>
+        {% endif %}
+        <div class="{% if sidebar %}col-8{% else %}col{% endif %}">
+          {% block content %}
+          {% endblock %}
+        </div>
+      </div>
     </div>
 
     <footer class="footer">
