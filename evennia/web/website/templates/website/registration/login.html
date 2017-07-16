@@ -5,11 +5,15 @@ Login
 {% endblock %}
 
 {% block content %}
+
 {% load addclass %}
 
 <div class="row">
-    <div class="col">
-        <h1>Login</h1>
+  <div class="col">
+    <div class="card">
+      <div class="card-block">
+        <h1 class="card-title">Login</h1>
+        <hr />
         {% if user.is_authenticated %}
         <p>You are already logged in!</p>
         {% else %}
@@ -18,21 +22,26 @@ Login
         {% endif %}
 
         <form method="post" action=".">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_username">Username:</label>
-                {{ form.username | addclass:"form-control" }}
-            </div>
-            <div class="form-group">
-                <label for="id_password">Password:</label>
-                {{ form.password | addclass:"form-control" }}
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="submit" value="Login" />
-                <input type="hidden" name="next" value="{{ next }}" />
-            </div>
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label for="id_username">Username:</label>
+            {{ form.username | addclass:"form-control" }}
+          </div>
+
+          <div class="form-group">
+            <label for="id_password">Password:</label>
+            {{ form.password | addclass:"form-control" }}
+          </div>
+
+          <div class="form-group">
+            <input class="form-control" type="submit" value="Login" />
+            <input type="hidden" name="next" value="{{ next }}" />
+          </div>
         </form>
+      </div>
     </div>
+  </div>
 </div>
 {% endif %}
 {% endblock %}
