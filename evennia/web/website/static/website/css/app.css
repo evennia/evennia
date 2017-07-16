@@ -46,7 +46,7 @@ html {
 body {
   /* Margin bottom by footer height plus padding against main content*/
   margin-bottom: 92px;
-  background-color: #fefefe;
+  background-color: #eee;
 }
 
 .footer {
@@ -65,10 +65,6 @@ body {
 }
 
 /* Default Colors */
-.main-content {
-    margin-top: 32px;
-    background-color: white;
-}
 
 .navbar {
   background-color: #3d5c7a;
