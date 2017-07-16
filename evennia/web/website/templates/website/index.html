@@ -67,7 +67,7 @@
     <div class="card">
       <h4 class="card-header text-center">Recently Connected</h4>
 
-      <div class="card-block">
+      <div class="card-block px-0 py-0">
         <ul class="list-group">
           {% for player in players_connected_recent %}
             <li class="list-group-item">{{player.username}} -- <em>{{player.last_login|timesince}} ago</em></li>
@@ -81,7 +81,7 @@
     <div class="card">
       <h4 class="card-header text-center">Database Stats</h4>
 
-      <div class="card-block">
+      <div class="card-block py-0 px-0">
         <ul class="list-group">
           <li class="list-group-item">{{num_players_registered}} players (+ {{num_characters}} characters)</li>
           <li class="list-group-item">{{num_rooms}} rooms (+ {{num_exits}} exits)</li>
