@@ -38,7 +38,7 @@
 
         <a class="navbar-brand" href="/">
           <div class="media">
-            <img class="media-left navbar-brand-logo mx-3" src="{% static "website/images/evennia_logo.png" %}" />
+            <img class="d-flex navbar-brand-logo mx-3" src="{% static "website/images/evennia_logo.png" %}" alt="{{game_name}} logo" />
             <div class="media-body">
               {{ game_name }}<br />
               <small>{{game_slogan}}</small>
@@ -52,7 +52,9 @@
                 <li>
                     <a class="nav-link" href="/">Home</a>
                 </li>
-                <li><a class="nav-link" href="https://github.com/evennia/evennia/wiki/Evennia-Introduction/">About</a></li>
+                <li>
+                  <a class="nav-link" href="https://github.com/evennia/evennia/wiki/Evennia-Introduction/">About</a>
+                </li>
                 <li><a class="nav-link" href="https://github.com/evennia/evennia/wiki">Documentation</a></li>
                 <li><a class="nav-link" href="{% url 'admin:index' %}">Admin Interface</a></li>
                 {% if webclient_enabled %}
@@ -84,7 +86,7 @@
         </div>
     </nav>
 
-    <div class="container main-content" id="main-copy">
+    <div class="container main-content mt-4" id="main-copy">
       <div class="row">
         {% if sidebar %}
         <div class="col-4">
