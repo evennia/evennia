@@ -3,7 +3,7 @@
 
 This runner is controlled by the evennia launcher and should normally
 not be launched directly.  It manages the two main Evennia processes
-(Server and Portal) and most importanly runs a passive, threaded loop
+(Server and Portal) and most importantly runs a passive, threaded loop
 that makes sure to restart Server whenever it shuts down.
 
 Since twistd does not allow for returning an optional exit code we
@@ -137,7 +137,7 @@ def cycle_logfile(logfile):
 
 def start_services(server_argv, portal_argv, doexit=False):
     """
-    This calls a threaded loop that launces the Portal and Server
+    This calls a threaded loop that launches the Portal and Server
     and then restarts them when they finish.
     """
     global SERVER, PORTAL
