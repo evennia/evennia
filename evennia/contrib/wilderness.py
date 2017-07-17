@@ -88,7 +88,7 @@ Customisation example:
         def at_prepare_room(self, coordinates, caller, room):
             "Any other changes done to the room before showing it"
             x, y = coordinates
-            desc = "This is a room in the pyramid.
+            desc = "This is a room in the pyramid."
             if y == 3 :
                 desc = "You can see far and wide from the top of the pyramid."
             room.db.desc = desc
@@ -157,7 +157,7 @@ def enter_wilderness(obj, coordinates=(0, 0), name="default"):
             default one
 
     Returns:
-        bool: True if obj succesfully moved into the wilderness.
+        bool: True if obj successfully moved into the wilderness.
     """
     if not WildernessScript.objects.filter(db_key=name).exists():
         return False
@@ -253,6 +253,11 @@ class WildernessScript(DefaultScript):
             room.ndb.wildernessscript = self
             room.ndb.active_coordinates = coordinates
         for item in self.db.itemcoordinates.keys():
+            # Items deleted from the wilderness leave None type 'ghosts'
+            # that must be cleaned out
+            if item is None:
+                del self.db.itemcoordinates[item]
+                continue
             item.ndb.wilderness = self
 
     def is_valid_coordinates(self, coordinates):
@@ -298,6 +303,11 @@ class WildernessScript(DefaultScript):
         """
         result = []
         for item, item_coordinates in self.itemcoordinates.items():
+            # Items deleted from the wilderness leave None type 'ghosts'
+            # that must be cleaned out
+            if item is None:
+                del self.db.itemcoordinates[item]
+                continue
             if coordinates == item_coordinates:
                 result.append(item)
         return result
