@@ -230,7 +230,6 @@ class TestMLen(TestCase):
         self.assertEqual(utils.m_len(ANSIString('|lcl|gook|ltat|le|n')), 2)
 
     def test_non_mxp_ansi_string(self):
-        self.assertEqual(utils.m_len(ANSIString('{gHello{n')), 5)  # TODO - cause this to fail by default.
         self.assertEqual(utils.m_len(ANSIString('|gHello|n')), 5)
 
     def test_list(self):
