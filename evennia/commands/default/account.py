@@ -716,10 +716,10 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
             ap = ansi.ANSI_PARSER
             # ansi colors
             # show all ansi color-related codes
-            col1 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[48:56]]
-            col2 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[56:64]]
+            col1 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ansi_map[48:56]]
+            col2 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ansi_map[56:64]]
             col3 = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
-                    for code, _ in ap.ext_ansi_map[-8:]]
+                    for code, _ in ap.ansi_map[-8:]]
             col4 = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
                     for code, _ in ap.ansi_bright_bgs[-8:]]
             col2.extend(["" for _ in range(len(col1)-len(col2))])

@@ -6,9 +6,6 @@ to apply colour to text according to the ANSI standard.
 
 Examples:
  This is |rRed text|n and this is normal again.
- This is {rRed text{n and this is normal again.   # soon to be depreciated
- This is %crRed text%cn and this is normal again. # depreciated
-
 
 Mostly you should not need to call parse_ansi() explicitly;
 it is run by Evennia just before returning data to/from the
@@ -19,12 +16,16 @@ the ansi mapping.
 from builtins import object, range
 
 import re
+from collections import OrderedDict
 
 from django.conf import settings
 
 from evennia.utils import utils
+from evennia.utils import logger
+
 from evennia.utils.utils import to_str, to_unicode
 from future.utils import with_metaclass
+
 
 # ANSI definitions
 
@@ -70,9 +71,10 @@ ANSI_SPACE = " "
 # Escapes
 ANSI_ESCAPES = ("{{", "\\\\", "\|\|")
 
-from collections import OrderedDict
 _PARSE_CACHE = OrderedDict()
 _PARSE_CACHE_SIZE = 10000
+
+_COLOR_NO_DEFAULT = settings.COLOR_NO_DEFAULT
 
 
 class ANSIParser(object):
@@ -97,7 +99,7 @@ class ANSIParser(object):
             processed (str): The processed match string.
 
         """
-        return self.ansi_map.get(ansimatch.group(), "")
+        return self.ansi_map_dict.get(ansimatch.group(), "")
 
     def sub_brightbg(self, ansimatch):
         """
@@ -113,7 +115,7 @@ class ANSIParser(object):
         """
         return self.ansi_bright_bgs_map.get(ansimatch.group(), "")
 
-    def sub_xterm256(self, rgbmatch, use_xterm256=False):
+    def sub_xterm256(self, rgbmatch, use_xterm256=False, color_type="fg"):
         """
         This is a replacer method called by `re.sub` with the matched
         tag. It must return the correct ansi sequence.
@@ -124,6 +126,7 @@ class ANSIParser(object):
         Args:
             rgbmatch (re.matchobject): The match.
             use_xterm256 (bool, optional): Don't convert 256-colors to 16.
+            color_type (str): One of 'fg', 'bg', 'gfg', 'gbg'.
 
         Returns:
             processed (str): The processed match string.
@@ -133,19 +136,26 @@ class ANSIParser(object):
             return ""
 
         # get tag, stripping the initial marker
-        rgbtag = rgbmatch.group()[1:]
+        #rgbtag = rgbmatch.group()[1:]
 
-        background = rgbtag[0] == '['
-        grayscale = rgbtag[0 + int(background)] == '='
+        background = color_type in ("bg", "gbg")
+        grayscale = color_type in ("gfg", "gbg")
+
         if not grayscale:
             # 6x6x6 color-cube (xterm indexes 16-231)
-            if background:
-                red, green, blue = int(rgbtag[1]), int(rgbtag[2]), int(rgbtag[3])
-            else:
-                red, green, blue = int(rgbtag[0]), int(rgbtag[1]), int(rgbtag[2])
+            try:
+                red, green, blue = [int(val) for val in rgbmatch.groups() if val is not None]
+            except (IndexError, ValueError):
+                logger.log_trace()
+                return rgbmatch.group(0)
         else:
             # grayscale values (xterm indexes 0, 232-255, 15) for full spectrum
-            letter = rgbtag[int(background) + 1]
+            try:
+                letter = [val for val in rgbmatch.groups() if val is not None][0]
+            except IndexError:
+                logger.log_trace()
+                return rgbmatch.group(0)
+
             if letter == 'a':
                 colval = 16     # pure black @ index 16 (first color cube entry)
             elif letter == 'z':
@@ -286,8 +296,17 @@ class ANSIParser(object):
         # pre-convert bright colors to xterm256 color tags
         string = self.brightbg_sub.sub(self.sub_brightbg, string)
 
-        def do_xterm256(part):
-            return self.sub_xterm256(part, xterm256)
+        def do_xterm256_fg(part):
+            return self.sub_xterm256(part, xterm256, "fg")
+
+        def do_xterm256_bg(part):
+            return self.sub_xterm256(part, xterm256, "bg")
+
+        def do_xterm256_gfg(part):
+            return self.sub_xterm256(part, xterm256, "gfg")
+
+        def do_xterm256_gbg(part):
+            return self.sub_xterm256(part, xterm256, "gbg")
 
         in_string = utils.to_str(string)
 
@@ -295,7 +314,10 @@ class ANSIParser(object):
         parsed_string = ""
         parts = self.ansi_escapes.split(in_string) + [" "]
         for part, sep in zip(parts[::2], parts[1::2]):
-            pstring = self.xterm256_sub.sub(do_xterm256, part)
+            pstring = self.xterm256_fg_sub.sub(do_xterm256_fg, part)
+            pstring = self.xterm256_bg_sub.sub(do_xterm256_bg, pstring)
+            pstring = self.xterm256_gfg_sub.sub(do_xterm256_gfg, pstring)
+            pstring = self.xterm256_gbg_sub.sub(do_xterm256_gbg, pstring)
             pstring = self.ansi_sub.sub(self.sub_ansi, pstring)
             parsed_string += "%s%s" % (pstring, sep[0].strip())
 
@@ -319,55 +341,7 @@ class ANSIParser(object):
     hilite = ANSI_HILITE
     unhilite = ANSI_UNHILITE
 
-    ext_ansi_map = [
-        (r'{n', ANSI_NORMAL),          # reset
-        (r'{/', ANSI_RETURN),          # line break
-        (r'{-', ANSI_TAB),             # tab
-        (r'{_', ANSI_SPACE),           # space
-        (r'{*', ANSI_INVERSE),         # invert
-        (r'{^', ANSI_BLINK),           # blinking text (very annoying and not supported by all clients)
-        (r'{u', ANSI_UNDERLINE),       # underline
-
-        (r'{r', hilite + ANSI_RED),
-        (r'{g', hilite + ANSI_GREEN),
-        (r'{y', hilite + ANSI_YELLOW),
-        (r'{b', hilite + ANSI_BLUE),
-        (r'{m', hilite + ANSI_MAGENTA),
-        (r'{c', hilite + ANSI_CYAN),
-        (r'{w', hilite + ANSI_WHITE),  # pure white
-        (r'{x', hilite + ANSI_BLACK),  # dark grey
-
-        (r'{R', unhilite + ANSI_RED),
-        (r'{G', unhilite + ANSI_GREEN),
-        (r'{Y', unhilite + ANSI_YELLOW),
-        (r'{B', unhilite + ANSI_BLUE),
-        (r'{M', unhilite + ANSI_MAGENTA),
-        (r'{C', unhilite + ANSI_CYAN),
-        (r'{W', unhilite + ANSI_WHITE),  # light grey
-        (r'{X', unhilite + ANSI_BLACK),  # pure black
-
-        # hilight-able colors
-        (r'{h', hilite),
-        (r'{H', unhilite),
-
-        (r'{!R', ANSI_RED),
-        (r'{!G', ANSI_GREEN),
-        (r'{!Y', ANSI_YELLOW),
-        (r'{!B', ANSI_BLUE),
-        (r'{!M', ANSI_MAGENTA),
-        (r'{!C', ANSI_CYAN),
-        (r'{!W', ANSI_WHITE),  # light grey
-        (r'{!X', ANSI_BLACK),  # pure black
-
-        # normal ANSI backgrounds
-        (r'{[R', ANSI_BACK_RED),
-        (r'{[G', ANSI_BACK_GREEN),
-        (r'{[Y', ANSI_BACK_YELLOW),
-        (r'{[B', ANSI_BACK_BLUE),
-        (r'{[M', ANSI_BACK_MAGENTA),
-        (r'{[C', ANSI_BACK_CYAN),
-        (r'{[W', ANSI_BACK_WHITE),    # light grey background
-        (r'{[X', ANSI_BACK_BLACK),     # pure black background
+    ansi_map = [
 
         # alternative |-format
 
@@ -420,21 +394,12 @@ class ANSIParser(object):
         (r'|[W', ANSI_BACK_WHITE),    # light grey background
         (r'|[X', ANSI_BACK_BLACK)     # pure black background
         ]
-    ext_ansi_map += settings.COLOR_ANSI_EXTRA_MAP
 
     ansi_bright_bgs = [
         # "bright" ANSI backgrounds using xterm256 since ANSI
         # standard does not support it (will
         # fallback to dark ANSI background colors if xterm256
         # is not supported by client)
-        (r'{[r', r'{[500'),
-        (r'{[g', r'{[050'),
-        (r'{[y', r'{[550'),
-        (r'{[b', r'{[005'),
-        (r'{[m', r'{[505'),
-        (r'{[c', r'{[055'),
-        (r'{[w', r'{[555'),     # white background
-        (r'{[x', r'{[222'),     # dark grey background
 
         # |-style variations
         (r'|[r', r'|[500'),
@@ -446,33 +411,43 @@ class ANSIParser(object):
         (r'|[w', r'|[555'),     # white background
         (r'|[x', r'|[222')]     # dark grey background
 
-    # xterm256 {123, %c134. These are replaced directly by
+    # xterm256. These are replaced directly by
     # the sub_xterm256 method
 
-    xterm256_map = [
-        (r'\{[0-5]{3}', ""),     # {123 - foreground colour
-        (r'\{\[[0-5]{3}', ""),   # {[123 - background colour
-        # |-style
-        (r'\|[0-5]{3}', ""),     # |123 - foreground colour
-        (r'\|\[[0-5]{3}', ""),   # |[123 - background colour
-
-        # grayscale entries including ansi extremes: {=a .. {=z
-        (r'\{=[a-z]', ""),
-        (r'\{\[=[a-z]', ""),
-        (r'\|=[a-z]', ""),
-        (r'\|\[=[a-z]', ""),
-        ]
+    if settings.COLOR_NO_DEFAULT:
+        ansi_map = settings.COLOR_ANSI_EXTRA_MAP
+        xterm256_fg = settings.COLOR_XTERM256_EXTRA_FG
+        xterm256_bg = settings.COLOR_XTERM256_EXTRA_BG
+        xterm256_gfg = settings.COLOR_XTERM256_EXTRA_GFG
+        xterm256_gbg = settings.COLOR_XTERM256_EXTRA_GBG
+        ansi_bright_bgs = settings.COLOR_ANSI_BRIGHT_BG_EXTRA_MAP
+    else:
+        xterm256_fg = [r'\|([0-5])([0-5])([0-5])']     # |123 - foreground colour
+        xterm256_bg = [r'\|\[([0-5])([0-5])([0-5])']   # |[123 - background colour
+        xterm256_gfg = [r'\|=([a-z])']      # |=a - greyscale foreground
+        xterm256_gbg = [r'\|\[=([a-z])']      # |[=a - greyscale background
+        ansi_map += settings.COLOR_ANSI_EXTRA_MAP
+        xterm256_fg += settings.COLOR_XTERM256_EXTRA_FG
+        xterm256_bg += settings.COLOR_XTERM256_EXTRA_BG
+        xterm256_gfg += settings.COLOR_XTERM256_EXTRA_GFG
+        xterm256_gbg += settings.COLOR_XTERM256_EXTRA_GBG
+        ansi_bright_bgs += settings.COLOR_ANSI_BRIGHT_BG_EXTRA_MAP
 
     mxp_re = r'\|lc(.*?)\|lt(.*?)\|le'
 
     # prepare regex matching
     brightbg_sub = re.compile(r"|".join([r"(?<!\|)%s" % re.escape(tup[0]) for tup in ansi_bright_bgs]), re.DOTALL)
-    xterm256_sub = re.compile(r"|".join([tup[0] for tup in xterm256_map]), re.DOTALL)
-    ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ext_ansi_map]), re.DOTALL)
+    xterm256_fg_sub = re.compile(r"|".join(xterm256_fg), re.DOTALL)
+    xterm256_bg_sub = re.compile(r"|".join(xterm256_bg), re.DOTALL)
+    xterm256_gfg_sub = re.compile(r"|".join(xterm256_gfg), re.DOTALL)
+    xterm256_gbg_sub = re.compile(r"|".join(xterm256_gbg), re.DOTALL)
+
+    # xterm256_sub = re.compile(r"|".join([tup[0] for tup in xterm256_map]), re.DOTALL)
+    ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ansi_map]), re.DOTALL)
     mxp_sub = re.compile(mxp_re, re.DOTALL)
 
     # used by regex replacer to correctly map ansi sequences
-    ansi_map = dict(ext_ansi_map)
+    ansi_map_dict = dict(ansi_map)
     ansi_bright_bgs_map = dict(ansi_bright_bgs)
 
     # prepare matching ansi codes overall
