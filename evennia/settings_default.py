@@ -354,7 +354,7 @@ COLOR_XTERM256_EXTRA_GBG = []
 # ANSI does not support bright backgrounds, so Evennia fakes this by mapping it to
 # XTERM256 backgrounds where supported. This is a list of tuples that maps the wanted
 # regex to a valid XTERM256 background tag, such as `(r'{[r', r'{[500')`.
-COLOR_ANSI_BRIGHT_BG_EXTRA_MAP = []
+COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = []
 # If set True, the above color settings *replace* the default |-style color markdown
 # rather than extend it.
 COLOR_NO_DEFAULT = False

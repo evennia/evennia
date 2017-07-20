@@ -691,6 +691,14 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     # this is used by the parent
     account_caller = True
 
+    # the slices of the ANSI_PARSER lists to use for retrieving the
+    # relevant color tags to display. Replace if using another schema.
+    # This command can only show one set of markup.
+    slice_bright_fg = slice(7, 15)  # from ANSI_PARSER.ansi_map
+    slice_dark_fg = slice(15, 23)   # from ANSI_PARSER.ansi_map
+    slice_dark_bg = slice(-8, None)  # from ANSI_PARSER.ansi_map
+    slice_bright_bg = slice(None, None)  # from ANSI_PARSER.ansi_xterm256_bright_bg_map
+
     def table_format(self, table):
         """
         Helper method to format the ansi/xterm256 tables.
@@ -716,14 +724,16 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
             ap = ansi.ANSI_PARSER
             # ansi colors
             # show all ansi color-related codes
-            col1 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ansi_map[48:56]]
-            col2 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ansi_map[56:64]]
-            col3 = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
-                    for code, _ in ap.ansi_map[-8:]]
-            col4 = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
-                    for code, _ in ap.ansi_bright_bgs[-8:]]
-            col2.extend(["" for _ in range(len(col1)-len(col2))])
-            table = utils.format_table([col1, col2, col4, col3])
+            bright_fg = ["%s%s|n" % (code, code.replace("|", "||"))
+                         for code, _ in ap.ansi_map[self.slice_bright_fg]]
+            dark_fg = ["%s%s|n" % (code, code.replace("|", "||"))
+                       for code, _ in ap.ansi_map[self.slice_dark_fg]]
+            dark_bg = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
+                       for code, _ in ap.ansi_map[self.slice_dark_bg]]
+            bright_bg = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
+                         for code, _ in ap.ansi_xterm256_bright_bg_map[self.slice_bright_bg]]
+            dark_fg.extend(["" for _ in range(len(bright_fg)-len(dark_fg))])
+            table = utils.format_table([bright_fg, dark_fg, bright_bg, dark_bg])
             string = "ANSI colors:"
             for row in table:
                 string += "\n " + " ".join(row)

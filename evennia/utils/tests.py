@@ -10,6 +10,7 @@ except ImportError:
 from .ansi import ANSIString
 from evennia import utils
 
+from django.conf import settings
 
 class ANSIStringTestCase(TestCase):
     def checker(self, ansi, raw, clean):

@@ -992,69 +992,77 @@ from evennia.contrib import color_markups
 from evennia.utils import ansi
 
 
-#class TestColorMarkup(EvenniaTest):
-#
-#    def test_default_markup(self):
-#        reload(ansi)
-#        self.assertEqual(ansi.parse_ansi("A |rred test"), 'A \x1b[1m\x1b[31mred test')
-#        self.assertEqual(ansi.parse_ansi("A {rred test"), 'A {rred test')
-#        self.assertEqual(ansi.parse_ansi("A %crred test"), "A %crred test")
-#
-#    def tearDown(self):
-#        reload(ansi)
-#
-#    @override_settings(
-#        COLOR_ANSI_EXTRA_MAP=color_markups.CURLY_COLOR_ANSI_EXTRA_MAP,
-#        COLOR_XTERM256_EXTRA_FG=color_markups.CURLY_COLOR_XTERM256_EXTRA_FG,
-#        COLOR_XTERM256_EXTRA_BG=color_markups.CURLY_COLOR_XTERM256_EXTRA_BG,
-#        COLOR_XTERM256_EXTRA_GFG=color_markups.CURLY_COLOR_XTERM256_EXTRA_GFG,
-#        COLOR_XTERM256_EXTRA_GBG=color_markups.CURLY_COLOR_XTERM256_EXTRA_GBG,
-#        COLOR_ANSI_BRIGHT_BG_EXTRA_MAP=color_markups.CURLY_COLOR_ANSI_BRIGHT_BG_EXTRA_MAP)
-#    def test_curly_markup(self):
-#        reload(ansi)  # this is important since the module is initialized
-#        self.assertEqual(ansi.parse_ansi("A |rred test"), 'A \x1b[1m\x1b[31mred test')
-#        self.assertEqual(ansi.parse_ansi("A {rred test"), 'A \x1b[1m\x1b[31mred test')
-#        self.assertEqual(ansi.parse_ansi("A {[Rred test"), 'A \x1b[41mred test')
-#        self.assertEqual(ansi.parse_ansi("A |500red test"), 'A \x1b[1m\x1b[31mred test')
-#        self.assertEqual(ansi.parse_ansi("A {500red test"), 'A \x1b[1m\x1b[31mred test')
-#        self.assertEqual(ansi.parse_ansi("A {[500red test"), 'A \x1b[41mred test')
-#        self.assertEqual(ansi.parse_ansi("A {=hgray test"), 'A \x1b[1m\x1b[30mgray test')
-#        self.assertEqual(ansi.parse_ansi("A {[=hgray test"), 'A \x1b[40mgray test')
-#        self.assertEqual(ansi.parse_ansi("A %crred test"), "A %crred test")
-#        # fake ansi bright background
-#        self.assertEqual(ansi.parse_ansi("A {[rred test"), 'A \x1b[41mred test')
-#
-#    @override_settings(
-#        COLOR_ANSI_EXTRA_MAP=color_markups.MUX_COLOR_ANSI_EXTRA_MAP,
-#        COLOR_XTERM256_EXTRA_FG=color_markups.MUX_COLOR_XTERM256_EXTRA_FG,
-#        COLOR_XTERM256_EXTRA_BG=color_markups.MUX_COLOR_XTERM256_EXTRA_BG,
-#        COLOR_XTERM256_EXTRA_GFG=color_markups.MUX_COLOR_XTERM256_EXTRA_GFG,
-#        COLOR_XTERM256_EXTRA_GBG=color_markups.MUX_COLOR_XTERM256_EXTRA_GBG,
-#        COLOR_ANSI_BRIGHT_BG_EXTRA_MAP=color_markups.MUX_COLOR_ANSI_BRIGHT_BG_EXTRA_MAP)
-#    def test_mux_markup(self):
-#        reload(ansi)
-#        self.assertEqual(ansi.parse_ansi("A |rred test"), 'A \x1b[1m\x1b[31mred test')
-#        self.assertEqual(ansi.parse_ansi("A %ch%crred test"), 'A \x1b[1m\x1b[31mred test')
-#        self.assertEqual(ansi.parse_ansi("A %ch%crred test"), 'A \x1b[1m\x1b[31mred test')
-#        self.assertEqual(ansi.parse_ansi("A |500red test"), 'A \x1b[1m\x1b[31mred test')
-#        self.assertEqual(ansi.parse_ansi("A %c500red test"), 'A \x1b[1m\x1b[31mred test')
-#        self.assertEqual(ansi.parse_ansi("A %c[500red test"), 'A \x1b[41mred test')
-#        self.assertEqual(ansi.parse_ansi("A %c=hgray test"), 'A \x1b[1m\x1b[30mgray test')
-#        self.assertEqual(ansi.parse_ansi("A %c[=hgray test"), 'A \x1b[40mgray test')
-#        self.assertEqual(ansi.parse_ansi("A {rred test"), "A {rred test")
-#        # fake ansi bright background
-#        self.assertEqual(ansi.parse_ansi("A %ch%cRred test"), 'A \x1b[41mred test')
-#
-#    @override_settings(
-#        COLOR_ANSI_EXTRA_MAP=color_markups.MUX_COLOR_ANSI_EXTRA_MAP,
-#        COLOR_XTERM256_EXTRA_FG=color_markups.MUX_COLOR_XTERM256_EXTRA_FG,
-#        COLOR_XTERM256_EXTRA_BG=color_markups.MUX_COLOR_XTERM256_EXTRA_BG,
-#        COLOR_XTERM256_EXTRA_GFG=color_markups.MUX_COLOR_XTERM256_EXTRA_GFG,
-#        COLOR_XTERM256_EXTRA_GBG=color_markups.MUX_COLOR_XTERM256_EXTRA_GBG,
-#        COLOR_ANSI_BRIGHT_BG_EXTRA_MAP=color_markups.MUX_COLOR_ANSI_BRIGHT_BG_EXTRA_MAP,
-#        COLOR_NO_DEFAULT=True)
-#    def test_override(self):
-#        reload(ansi)
-#        self.assertEqual(ansi.parse_ansi("A |rred test"), "A |rred test")
-#        self.assertEqual(ansi.parse_ansi("A {rred test"), "A {rred test")
-#        self.assertEqual(ansi.parse_ansi("A %ch%crred test"), 'A \x1b[1m\x1b[31mred test')
+class TestColorMarkup(EvenniaTest):
+
+    def test_default_markup(self):
+        reload(ansi)
+        self.assertEqual(ansi.parse_ansi("A |rred test"), 'A \x1b[1m\x1b[31mred test')
+        self.assertEqual(ansi.parse_ansi("A {rred test"), 'A {rred test')
+        self.assertEqual(ansi.parse_ansi("A %crred test"), "A %crred test")
+
+    @override_settings(
+        COLOR_ANSI_EXTRA_MAP=[],
+        COLOR_XTERM256_EXTRA_FG=[],
+        COLOR_XTERM256_EXTRA_BG=[],
+        COLOR_XTERM256_EXTRA_GFG=[],
+        COLOR_XTERM256_EXTRA_GBG=[],
+        COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP=[],
+        COLOR_NO_DEFAULT=False)
+    def tearDown(self):
+        reload(ansi)
+
+    @override_settings(
+        COLOR_ANSI_EXTRA_MAP=color_markups.CURLY_COLOR_ANSI_EXTRA_MAP,
+        COLOR_XTERM256_EXTRA_FG=color_markups.CURLY_COLOR_XTERM256_EXTRA_FG,
+        COLOR_XTERM256_EXTRA_BG=color_markups.CURLY_COLOR_XTERM256_EXTRA_BG,
+        COLOR_XTERM256_EXTRA_GFG=color_markups.CURLY_COLOR_XTERM256_EXTRA_GFG,
+        COLOR_XTERM256_EXTRA_GBG=color_markups.CURLY_COLOR_XTERM256_EXTRA_GBG,
+        COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP=color_markups.CURLY_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP)
+    def test_curly_markup(self):
+        reload(ansi)  # this is important since the module is initialized
+        self.assertEqual(ansi.parse_ansi("A |rred test"), 'A \x1b[1m\x1b[31mred test')
+        self.assertEqual(ansi.parse_ansi("A {rred test"), 'A \x1b[1m\x1b[31mred test')
+        self.assertEqual(ansi.parse_ansi("A {[Rred test"), 'A \x1b[41mred test')
+        self.assertEqual(ansi.parse_ansi("A |500red test"), 'A \x1b[1m\x1b[31mred test')
+        self.assertEqual(ansi.parse_ansi("A {500red test"), 'A \x1b[1m\x1b[31mred test')
+        self.assertEqual(ansi.parse_ansi("A {[500red test"), 'A \x1b[41mred test')
+        self.assertEqual(ansi.parse_ansi("A {=hgray test"), 'A \x1b[1m\x1b[30mgray test')
+        self.assertEqual(ansi.parse_ansi("A {[=hgray test"), 'A \x1b[40mgray test')
+        self.assertEqual(ansi.parse_ansi("A %crred test"), "A %crred test")
+        # fake ansi bright background
+        self.assertEqual(ansi.parse_ansi("A {[rred test"), 'A \x1b[41mred test')
+
+    @override_settings(
+        COLOR_ANSI_EXTRA_MAP=color_markups.MUX_COLOR_ANSI_EXTRA_MAP,
+        COLOR_XTERM256_EXTRA_FG=color_markups.MUX_COLOR_XTERM256_EXTRA_FG,
+        COLOR_XTERM256_EXTRA_BG=color_markups.MUX_COLOR_XTERM256_EXTRA_BG,
+        COLOR_XTERM256_EXTRA_GFG=color_markups.MUX_COLOR_XTERM256_EXTRA_GFG,
+        COLOR_XTERM256_EXTRA_GBG=color_markups.MUX_COLOR_XTERM256_EXTRA_GBG,
+        COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP=color_markups.MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP)
+    def test_mux_markup(self):
+        reload(ansi)
+        self.assertEqual(ansi.parse_ansi("A |rred test"), 'A \x1b[1m\x1b[31mred test')
+        self.assertEqual(ansi.parse_ansi("A %ch%crred test"), 'A \x1b[1m\x1b[31mred test')
+        self.assertEqual(ansi.parse_ansi("A %ch%crred test"), 'A \x1b[1m\x1b[31mred test')
+        self.assertEqual(ansi.parse_ansi("A |500red test"), 'A \x1b[1m\x1b[31mred test')
+        self.assertEqual(ansi.parse_ansi("A %c500red test"), 'A \x1b[1m\x1b[31mred test')
+        self.assertEqual(ansi.parse_ansi("A %c[500red test"), 'A \x1b[41mred test')
+        self.assertEqual(ansi.parse_ansi("A %c=hgray test"), 'A \x1b[1m\x1b[30mgray test')
+        self.assertEqual(ansi.parse_ansi("A %c[=hgray test"), 'A \x1b[40mgray test')
+        self.assertEqual(ansi.parse_ansi("A {rred test"), "A {rred test")
+        # fake ansi bright background
+        self.assertEqual(ansi.parse_ansi("A %ch%cRred test"), 'A \x1b[41mred test')
+
+    @override_settings(
+        COLOR_ANSI_EXTRA_MAP=color_markups.MUX_COLOR_ANSI_EXTRA_MAP,
+        COLOR_XTERM256_EXTRA_FG=color_markups.MUX_COLOR_XTERM256_EXTRA_FG,
+        COLOR_XTERM256_EXTRA_BG=color_markups.MUX_COLOR_XTERM256_EXTRA_BG,
+        COLOR_XTERM256_EXTRA_GFG=color_markups.MUX_COLOR_XTERM256_EXTRA_GFG,
+        COLOR_XTERM256_EXTRA_GBG=color_markups.MUX_COLOR_XTERM256_EXTRA_GBG,
+        COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP=color_markups.MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP,
+        COLOR_NO_DEFAULT=True)
+    def test_override(self):
+        reload(ansi)
+        self.assertEqual(ansi.parse_ansi("A |rred test"), "A |rred test")
+        self.assertEqual(ansi.parse_ansi("A {rred test"), "A {rred test")
+        self.assertEqual(ansi.parse_ansi("A %ch%crred test"), 'A \x1b[1m\x1b[31mred test')
