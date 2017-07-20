@@ -44,7 +44,6 @@ _DA = object.__delattr__
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
-
 def is_iter(iterable):
     """
     Checks if an object behaves iterably.
@@ -920,6 +919,8 @@ def uses_database(name="sqlite3"):
     return engine == "django.db.backends.%s" % name
 
 
+_PERSISTENT_TASKS = None
+
 def delay(timedelay, callback, *args, **kwargs):
     """
     Delay the return of a value.
@@ -930,6 +931,8 @@ def delay(timedelay, callback, *args, **kwargs):
         arguments after `timedelay` seconds.
       args (any, optional): Will be used as arguments to callback
     Kwargs:
+        persistent (bool, optional): should make the delay persistent
+            over a reboot or reload
         any (any): Will be used to call the callback.
 
     Returns:
@@ -939,7 +942,26 @@ def delay(timedelay, callback, *args, **kwargs):
             defined directly in the command body and don't need to be
             specified here.
 
+    Note:
+        If persistent is set to True, the callback, its arguments
+        and other keyword arguments will be saved in the database,
+        assuming they can be.  The callback will be executed even after
+        a server restart/reload, taking into account the specified delay
+        (and server down time).
+
     """
+    global _PERSISTENT_TASKS
+    persistent = kwargs.get("persistent", False)
+    if persistent:
+        del kwargs["persistent"]
+        # Do some imports here to avoid circular import and speed things up
+        if _PERSISTENT_TASKS is None:
+            from evennia.utils.persistent import PERSISTENT_TASKS as _PERSISTENT_TASKS
+        task_id = _PERSISTENT_TASKS.add(timedelay, callback, *args, **kwargs)
+        callback = _PERSISTENT_TASKS.do_task
+        args = [task_id]
+        kwargs = {}
+
     return task.deferLater(reactor, timedelay, callback, *args, **kwargs)
 
 
