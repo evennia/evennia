@@ -331,9 +331,9 @@ PROTOTYPE_MODULES = ["world.prototypes"]
 # dummyrunner for more information)
 DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
 # Mapping to extend Evennia's normal ANSI color tags. The mapping is a list of
-# tuples mapping the tag to the ANSI convertion, like `(r"%c%r", ansi.ANSI_RED)`
-# (the evennia.utils.ansi module contains all ANSI escape sequences). Default
-# is to use `|` and `|[` prefixes.
+# tuples mapping the exact tag (not a regex!) to the ANSI convertion, like
+# `(r"%c%r", ansi.ANSI_RED)` (the evennia.utils.ansi module contains all
+# ANSI escape sequences). Default is to use `|` and `|[` -prefixes.
 COLOR_ANSI_EXTRA_MAP = []
 # Extend the available regexes for adding XTERM256 colors in-game. This is given
 # as a list of regexes, where each regex must contain three anonymous groups for
@@ -353,7 +353,7 @@ COLOR_XTERM256_EXTRA_GFG = []
 COLOR_XTERM256_EXTRA_GBG = []
 # ANSI does not support bright backgrounds, so Evennia fakes this by mapping it to
 # XTERM256 backgrounds where supported. This is a list of tuples that maps the wanted
-# regex to a valid XTERM256 background tag, such as `(r'{[r', r'{[500')`.
+# ansi tag (not a regex!) to a valid XTERM256 background tag, such as `(r'{[r', r'{[500')`.
 COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = []
 # If set True, the above color settings *replace* the default |-style color markdown
 # rather than extend it.
