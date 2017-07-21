@@ -528,7 +528,7 @@ def create_settings_file(init=True, secret_settings=False):
         settings_path = os.path.join(GAMEDIR, "server", "conf", "settings.py")
         setting_dict = {
             "settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
-            "servername": "\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1].capitalize(),
+            "servername": "\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1],
             "secret_key": "\'%s\'" % create_secret_key()}
 
     if not init:

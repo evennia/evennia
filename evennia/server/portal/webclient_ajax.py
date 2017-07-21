@@ -4,8 +4,8 @@ AJAX/COMET fallback webclient
 The AJAX/COMET web client consists of two components running on
 twisted and django. They are both a part of the Evennia website url
 tree (so the testing website might be located on
-http://localhost:8000/, whereas the webclient can be found on
-http://localhost:8000/webclient.)
+http://localhost:4001/, whereas the webclient can be found on
+http://localhost:4001/webclient.)
 
 /webclient - this url is handled through django's template
              system and serves the html page for the client
@@ -33,7 +33,7 @@ from evennia.server import session
 _CLIENT_SESSIONS = utils.mod_import(settings.SESSION_ENGINE).SessionStore
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 _SERVERNAME = settings.SERVERNAME
-_KEEPALIVE = 30 # how often to check keepalive
+_KEEPALIVE = 30  # how often to check keepalive
 
 # defining a simple json encoder for returning
 # django data to the client. Might need to
