@@ -27,6 +27,7 @@ class PersistentTasks(object):
 
     def __init__(self):
         self.tasks = {}
+        self.to_save = {}
 
     def load(self):
         """Load from the ServerConfig.
@@ -42,8 +43,9 @@ class PersistentTasks(object):
         else:
             tasks = value
 
-        # At this point, `tasks` contains a unserialized dictionary of tasks
-        for task_id, (date, callback, args, kwargs) in tasks.items():
+        # At this point, `tasks` contains a dictionary of still-serialized tasks
+        for task_id, value in tasks.items():
+            date, callback, args, kwargs = dbunserialize(value)
             if isinstance(callback, tuple):
                 # `callback` can be an object and name for instance methods
                 obj, method = callback
@@ -52,8 +54,10 @@ class PersistentTasks(object):
 
     def save(self):
         """Save the tasks in ServerConfig."""
-        to_save = {}
         for task_id, (date, callback, args, kwargs) in self.tasks.items():
+            if task_id in self.to_save:
+                continue
+
             if getattr(callback, "__self__", None):
                 # `callback` is an instance method
                 obj = callback.__self__
@@ -72,9 +76,8 @@ class PersistentTasks(object):
             else:
                 safe_callback = callback
 
-            to_save[task_id] = (date, safe_callback, args, kwargs)
-        to_save = dbserialize(to_save)
-        ServerConfig.objects.conf("delayed_tasks", to_save)
+            self.to_save[task_id] = dbserialize((date, safe_callback, args, kwargs))
+        ServerConfig.objects.conf("delayed_tasks", self.to_save)
 
     def add(self, timedelay, callback, *args, **kwargs):
         """Add a new persistent task in the configuration.
@@ -137,6 +140,9 @@ class PersistentTasks(object):
 
         """
         del self.tasks[task_id]
+        if task_id in self.to_save:
+            del self.to_save[task_id]
+
         self.save()
 
     def do_task(self, task_id):
@@ -150,6 +156,9 @@ class PersistentTasks(object):
 
         """
         date, callback, args, kwargs = self.tasks.pop(task_id)
+        if task_id in self.to_save:
+            del self.to_save[task_id]
+
         self.save()
         callback(*args, **kwargs)
 
