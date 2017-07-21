@@ -409,17 +409,15 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
 
         speech = self.args
 
-        # calling the speech hook on the location
-        speech = caller.location.at_say(caller, speech)
+        # Calling the at_before_say hook on the character
+        speech = caller.at_before_say(speech)
 
-        # Feedback for the object doing the talking.
-        caller.msg('You say, "%s|n"' % speech)
+        # If speech is empty, stop here
+        if not speech:
+            return
 
-        # Build the string to emit to neighbors.
-        emit_string = '%s says, "%s|n"' % (caller.name, speech)
-        caller.location.msg_contents(text=(emit_string, {"type": "say"}),
-                                     exclude=caller, from_obj=caller)
-
+        # Call the at_after_say hook on the character
+        caller.at_after_say(speech)
 
 class CmdWhisper(COMMAND_DEFAULT_CLASS):
     """
@@ -454,13 +452,15 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
             return
 
         speech = self.rhs
+        # Call a hook to change the speech before whispering
+        speech = caller.at_before_whisper(receiver, speech)
 
-        # Feedback for the object doing the talking.
-        caller.msg('You whisper to %s, "%s|n"' % (receiver.key, speech))
+        # If the speech is empty, abort the command
+        if not speech:
+            return
 
-        # Build the string to emit to receiver.
-        emit_string = '%s whispers, "%s|n"' % (caller.name, speech)
-        receiver.msg(text=(emit_string, {"type": "whisper"}), from_obj=caller)
+        # Call the at_after_whisper hook for feedback
+        caller.at_after_whisper(receiver, speech)
 
 
 class CmdPose(COMMAND_DEFAULT_CLASS):
