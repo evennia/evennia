@@ -1,13 +1,13 @@
 """
 The command template for the default MUX-style command set. There
-is also an Player/OOC version that makes sure caller is a Player object.
+is also an Account/OOC version that makes sure caller is an Account object.
 """
 
 from evennia.utils import utils
 from evennia.commands.command import Command
 
 # limit symbol import for API
-__all__ = ("MuxCommand", "MuxPlayerCommand")
+__all__ = ("MuxCommand", "MuxAccountCommand")
 
 
 class MuxCommand(Command):
@@ -128,17 +128,17 @@ class MuxCommand(Command):
         self.rhs = rhs
         self.rhslist = rhslist
 
-        # if the class has the player_caller property set on itself, we make
-        # sure that self.caller is always the player if possible. We also create
+        # if the class has the account_caller property set on itself, we make
+        # sure that self.caller is always the account if possible. We also create
         # a special property "character" for the puppeted object, if any. This
-        # is convenient for commands defined on the Player only.
-        if hasattr(self, "player_caller") and self.player_caller:
+        # is convenient for commands defined on the Account only.
+        if hasattr(self, "account_caller") and self.account_caller:
             if utils.inherits_from(self.caller, "evennia.objects.objects.DefaultObject"):
                 # caller is an Object/Character
                 self.character = self.caller
-                self.caller = self.caller.player
-            elif utils.inherits_from(self.caller, "evennia.players.players.DefaultPlayer"):
-                # caller was already a Player
+                self.caller = self.caller.account
+            elif utils.inherits_from(self.caller, "evennia.accounts.accounts.DefaultAccount"):
+                # caller was already an Account
                 self.character = self.caller.get_puppet(self.session)
             else:
                 self.character = None
@@ -177,32 +177,32 @@ class MuxCommand(Command):
         self.caller.msg(string)
 
 
-class MuxPlayerCommand(MuxCommand):
+class MuxAccountCommand(MuxCommand):
     """
-    This is an on-Player version of the MuxCommand. Since these commands sit
-    on Players rather than on Characters/Objects, we need to check
+    This is an on-Account version of the MuxCommand. Since these commands sit
+    on Accounts rather than on Characters/Objects, we need to check
     this in the parser.
 
-    Player commands are available also when puppeting a Character, it's
+    Account commands are available also when puppeting a Character, it's
     just that they are applied with a lower priority and are always
     available, also when disconnected from a character (i.e. "ooc").
 
-    This class makes sure that caller is always a Player object, while
+    This class makes sure that caller is always an Account object, while
     creating a new property "character" that is set only if a
-    character is actually attached to this Player and Session.
+    character is actually attached to this Account and Session.
     """
     def parse(self):
         """
         We run the parent parser as usual, then fix the result
         """
-        super(MuxPlayerCommand, self).parse()
+        super(MuxAccountCommand, self).parse()
 
         if utils.inherits_from(self.caller, "evennia.objects.objects.DefaultObject"):
             # caller is an Object/Character
             self.character = self.caller
-            self.caller = self.caller.player
-        elif utils.inherits_from(self.caller, "evennia.players.players.DefaultPlayer"):
-            # caller was already a Player
+            self.caller = self.caller.account
+        elif utils.inherits_from(self.caller, "evennia.accounts.accounts.DefaultAccount"):
+            # caller was already an Account
             self.character = self.caller.get_puppet(self.session)
         else:
             self.character = None

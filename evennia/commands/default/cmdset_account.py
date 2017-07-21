@@ -1,8 +1,8 @@
 """
 
-This is the cmdset for Player (OOC) commands.  These are
-stored on the Player object and should thus be able to handle getting
-a Player object as caller rather than a Character.
+This is the cmdset for Account (OOC) commands.  These are
+stored on the Account object and should thus be able to handle getting
+an Account object as caller rather than a Character.
 
 Note - in order for session-rerouting (in MULTISESSION_MODE=2) to
 function, all commands in this cmdset should use the self.msg()
@@ -11,33 +11,33 @@ command method rather than caller.msg().
 
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.default import help, comms, admin, system
-from evennia.commands.default import building, player
+from evennia.commands.default import building, account
 
 
-class PlayerCmdSet(CmdSet):
+class AccountCmdSet(CmdSet):
     """
-    Implements the player command set.
+    Implements the account command set.
     """
 
-    key = "DefaultPlayer"
+    key = "DefaultAccount"
     priority = -10
 
     def at_cmdset_creation(self):
         "Populates the cmdset"
 
-        # Player-specific commands
-        self.add(player.CmdOOCLook())
-        self.add(player.CmdIC())
-        self.add(player.CmdOOC())
-        self.add(player.CmdCharCreate())
-        self.add(player.CmdCharDelete())
-        #self.add(player.CmdSessions())
-        self.add(player.CmdWho())
-        self.add(player.CmdOption())
-        self.add(player.CmdQuit())
-        self.add(player.CmdPassword())
-        self.add(player.CmdColorTest())
-        self.add(player.CmdQuell())
+        # Account-specific commands
+        self.add(account.CmdOOCLook())
+        self.add(account.CmdIC())
+        self.add(account.CmdOOC())
+        self.add(account.CmdCharCreate())
+        self.add(account.CmdCharDelete())
+        #self.add(account.CmdSessions())
+        self.add(account.CmdWho())
+        self.add(account.CmdOption())
+        self.add(account.CmdQuit())
+        self.add(account.CmdPassword())
+        self.add(account.CmdColorTest())
+        self.add(account.CmdQuell())
 
         # testing
         self.add(building.CmdExamine())
@@ -52,7 +52,7 @@ class PlayerCmdSet(CmdSet):
         self.add(system.CmdPy())
 
         # Admin commands
-        self.add(admin.CmdDelPlayer())
+        self.add(admin.CmdDelAccount())
         self.add(admin.CmdNewPassword())
 
         # Comm commands

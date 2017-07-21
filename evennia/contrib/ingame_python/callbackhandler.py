@@ -88,7 +88,7 @@ class CallbackHandler(object):
         Args:
             callback_name (str): the name of the callback to add.
             code (str): the Python code associated with this callback.
-            author (Character or Player, optional): the author of the callback.
+            author (Character or Account, optional): the author of the callback.
             valid (bool, optional): should the callback be connected?
             parameters (str, optional): optional parameters.
 
@@ -109,7 +109,7 @@ class CallbackHandler(object):
             callback_name (str): the name of the callback to edit.
             number (int): the callback number to be changed.
             code (str): the Python code associated with this callback.
-            author (Character or Player, optional): the author of the callback.
+            author (Character or Account, optional): the author of the callback.
             valid (bool, optional): should the callback be connected?
 
         Returns:

@@ -28,38 +28,38 @@ MUX Name:      Affects:        Effect:
 DefaultLock:   Exits:          controls who may traverse the exit to
                                its destination.
                                  Evennia: "traverse:<lockfunc()>"
-               Rooms:          controls whether the player sees the
+               Rooms:          controls whether the account sees the
                                SUCC or FAIL message for the room
                                following the room description when
                                looking at the room.
                                  Evennia: Custom typeclass
-               Players/Things: controls who may GET the object.
+               Accounts/Things: controls who may GET the object.
                                  Evennia: "get:<lockfunc()"
- EnterLock:    Players/Things: controls who may ENTER the object
+ EnterLock:    Accounts/Things: controls who may ENTER the object
                                  Evennia:
  GetFromLock:  All but Exits:  controls who may gets things from a
                                given location.
                                  Evennia:
- GiveLock:     Players/Things: controls who may give the object.
+ GiveLock:     Accounts/Things: controls who may give the object.
                                  Evennia:
- LeaveLock:    Players/Things: controls who may LEAVE the object.
+ LeaveLock:    Accounts/Things: controls who may LEAVE the object.
                                  Evennia:
  LinkLock:     All but Exits:  controls who may link to the location
                                if the location is LINK_OK (for linking
                                exits or setting drop-tos) or ABODE (for
                                setting homes)
                                  Evennia:
- MailLock:     Players:        controls who may @mail the player.
+ MailLock:     Accounts:        controls who may @mail the account.
                                Evennia:
  OpenLock:     All but Exits:  controls who may open an exit.
                                  Evennia:
- PageLock:     Players:        controls who may page the player.
+ PageLock:     Accounts:        controls who may page the account.
                                  Evennia: "send:<lockfunc()>"
  ParentLock:   All:            controls who may make @parent links to
                                the object.
                                  Evennia: Typeclasses and
                                "puppet:<lockstring()>"
- ReceiveLock:  Players/Things: controls who may give things to the
+ ReceiveLock:  Accounts/Things: controls who may give things to the
                                object.
                                  Evennia:
  SpeechLock:   All but Exits:  controls who may speak in that location
@@ -95,11 +95,11 @@ from evennia.utils import utils
 _PERMISSION_HIERARCHY = [pe.lower() for pe in settings.PERMISSION_HIERARCHY]
 
 
-def _to_player(accessing_obj):
-    "Helper function. Makes sure an accessing object is a player object"
+def _to_account(accessing_obj):
+    "Helper function. Makes sure an accessing object is an account object"
     if utils.inherits_from(accessing_obj, "evennia.objects.objects.DefaultObject"):
-        # an object. Convert to player.
-        accessing_obj = accessing_obj.player
+        # an object. Convert to account.
+        accessing_obj = accessing_obj.account
     return accessing_obj
 
 
@@ -149,11 +149,11 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     If the given permission is part of settings.PERMISSION_HIERARCHY,
     permission is also granted to all ranks higher up in the hierarchy.
 
-    If accessing_object is an Object controlled by a Player, the
-    permissions of the Player is used unless the Attribute _quell
+    If accessing_object is an Object controlled by an Account, the
+    permissions of the Account is used unless the Attribute _quell
     is set to True on the Object. In this case however, the
-    LOWEST hieararcy-permission of the Player/Object-pair will be used
-    (this is order to avoid Players potentially escalating their own permissions
+    LOWEST hieararcy-permission of the Account/Object-pair will be used
+    (this is order to avoid Accounts potentially escalating their own permissions
     by use of a higher-level Object)
 
     """
@@ -166,29 +166,30 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     except (AttributeError, IndexError):
         return False
 
-    if utils.inherits_from(accessing_obj, "evennia.objects.objects.DefaultObject") and accessing_obj.player:
-        player = accessing_obj.player
-        perms_player = [p.lower() for p in player.permissions.all()]
-        is_quell = player.attributes.get("_quell")
+    if utils.inherits_from(accessing_obj, "evennia.objects.objects.DefaultObject") and accessing_obj.account:
+        account = accessing_obj.account
+        # we strip eventual plural forms, so Builders == Builder
+        perms_account = [p.lower().rstrip("s") for p in account.permissions.all()]
+        is_quell = account.attributes.get("_quell")
 
         if permission in _PERMISSION_HIERARCHY:
-            # check hierarchy without allowing escalation obj->player
+            # check hierarchy without allowing escalation obj->account
             hpos_target = _PERMISSION_HIERARCHY.index(permission)
-            hpos_player = [hpos for hpos, hperm in enumerate(_PERMISSION_HIERARCHY) if hperm in perms_player]
-            hpos_player = hpos_player and hpos_player[-1] or -1
+            hpos_account = [hpos for hpos, hperm in enumerate(_PERMISSION_HIERARCHY) if hperm in perms_account]
+            hpos_account = hpos_account and hpos_account[-1] or -1
             if is_quell:
                 hpos_object = [hpos for hpos, hperm in enumerate(_PERMISSION_HIERARCHY) if hperm in perms_object]
                 hpos_object = hpos_object and hpos_object[-1] or -1
                 if gtmode:
-                    return hpos_target < min(hpos_player, hpos_object)
+                    return hpos_target < min(hpos_account, hpos_object)
                 else:
-                    return hpos_target <= min(hpos_player, hpos_object)
+                    return hpos_target <= min(hpos_account, hpos_object)
             elif gtmode:
-                return hpos_target < hpos_player
+                return hpos_target < hpos_account
             else:
-                return hpos_target <= hpos_player
-        elif not is_quell and permission in perms_player:
-            # if we get here, check player perms first, otherwise
+                return hpos_target <= hpos_account
+        elif not is_quell and permission in perms_account:
+            # if we get here, check account perms first, otherwise
             # continue as normal
             return True
 
@@ -216,7 +217,7 @@ def perm_above(accessing_obj, accessed_obj, *args, **kwargs):
 
 def pperm(accessing_obj, accessed_obj, *args, **kwargs):
     """
-    The basic permission-checker only for Player objects. Ignores case.
+    The basic permission-checker only for Account objects. Ignores case.
 
     Usage:
        pperm(<permission>)
@@ -226,17 +227,17 @@ def pperm(accessing_obj, accessed_obj, *args, **kwargs):
     is part of _PERMISSION_HIERARCHY, permission is also granted
     to all ranks higher up in the hierarchy.
     """
-    return perm(_to_player(accessing_obj), accessed_obj, *args, **kwargs)
+    return perm(_to_account(accessing_obj), accessed_obj, *args, **kwargs)
 
 
 def pperm_above(accessing_obj, accessed_obj, *args, **kwargs):
     """
-    Only allow Player objects with a permission *higher* in the permission
+    Only allow Account objects with a permission *higher* in the permission
     hierarchy than the one given. If there is no such higher rank,
     it's assumed we refer to superuser. If no hierarchy is defined,
     this function has no meaning and returns False.
     """
-    return perm_above(_to_player(accessing_obj), accessed_obj, *args, **kwargs)
+    return perm_above(_to_account(accessing_obj), accessed_obj, *args, **kwargs)
 
 
 def dbref(accessing_obj, accessed_obj, *args, **kwargs):
@@ -262,9 +263,9 @@ def dbref(accessing_obj, accessed_obj, *args, **kwargs):
 
 def pdbref(accessing_obj, accessed_obj, *args, **kwargs):
     """
-    Same as dbref, but making sure accessing_obj is a player.
+    Same as dbref, but making sure accessing_obj is an account.
     """
-    return dbref(_to_player(accessing_obj), accessed_obj, *args, **kwargs)
+    return dbref(_to_account(accessing_obj), accessed_obj, *args, **kwargs)
 
 
 def id(accessing_obj, accessed_obj, *args, **kwargs):
@@ -273,8 +274,8 @@ def id(accessing_obj, accessed_obj, *args, **kwargs):
 
 
 def pid(accessing_obj, accessed_obj, *args, **kwargs):
-    "Alias to dbref, for Players"
-    return dbref(_to_player(accessing_obj), accessed_obj, *args, **kwargs)
+    "Alias to dbref, for Accounts"
+    return dbref(_to_account(accessing_obj), accessed_obj, *args, **kwargs)
 
 
 # this is more efficient than multiple if ... elif statments
@@ -565,15 +566,15 @@ def superuser(*args, **kwargs):
     """
     return False
 
-def has_player(accessing_obj, accessed_obj, *args, **kwargs):
+def has_account(accessing_obj, accessed_obj, *args, **kwargs):
     """
-    Only returns true if accessing_obj has_player is true, that is,
-    this is a player-controlled object. It fails on actual players!
+    Only returns true if accessing_obj has_account is true, that is,
+    this is an account-controlled object. It fails on actual accounts!
 
     This is a useful lock for traverse-locking Exits to restrain NPC
     mobiles from moving outside their areas.
     """
-    return hasattr(accessing_obj, "has_player") and accessing_obj.has_player
+    return hasattr(accessing_obj, "has_account") and accessing_obj.has_account
 
 def serversetting(accessing_obj, accessed_obj, *args, **kwargs):
     """

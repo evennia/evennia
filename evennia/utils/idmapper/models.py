@@ -77,7 +77,7 @@ class SharedMemoryModelBase(ModelBase):
 
         """
         # the dbmodel is either the proxy base or ourselves
-        dbmodel = cls._meta.proxy_for_model if cls._meta.proxy else cls
+        dbmodel = cls._meta.concrete_model if cls._meta.proxy else cls
         cls.__dbclass__ = dbmodel
         if not hasattr(dbmodel, "__instance_cache__"):
             # we store __instance_cache__ only on the dbmodel base

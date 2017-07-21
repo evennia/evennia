@@ -4,7 +4,9 @@ Testing suite for contrib folder
 
 """
 
+import sys
 import datetime
+from django.test import override_settings
 from evennia.commands.default.tests import CommandTest
 from evennia.utils.test_resources import EvenniaTest
 from mock import Mock, patch
@@ -219,13 +221,12 @@ class TestExtendedRoom(CommandTest):
         self.call(extended_room.CmdExtendedLook(), "nonexistent", "Could not find 'nonexistent'.")
 
     def test_cmdextendeddesc(self):
-        self.call(extended_room.CmdExtendedDesc(), "", "Details on Room", cmdstring="@detail")
+        self.call(extended_room.CmdExtendedDesc(), "", "Details on Room", cmdstring="detail")
         self.call(extended_room.CmdExtendedDesc(), "thingie = newdetail with spaces",
-                  "Set Detail thingie to 'newdetail with spaces'.", cmdstring="@detail")
-        self.call(extended_room.CmdExtendedDesc(), "thingie", "Detail 'thingie' on Room:\n", cmdstring="@detail")
-        self.call(extended_room.CmdExtendedDesc(), "/del thingie",
-                  "Detail thingie deleted, if it existed.", cmdstring="@detail")
-        self.call(extended_room.CmdExtendedDesc(), "thingie", "Detail 'thingie' not found.", cmdstring="@detail")
+                                                 "Set Detail thingie to 'newdetail with spaces'.", cmdstring="detail")
+        self.call(extended_room.CmdExtendedDesc(), "thingie", "Detail 'thingie' on Room:\n", cmdstring="detail")
+        self.call(extended_room.CmdExtendedDesc(), "/del thingie", "Detail thingie deleted, if it existed.", cmdstring="detail")
+        self.call(extended_room.CmdExtendedDesc(), "thingie", "Detail 'thingie' not found.", cmdstring="detail")
         self.call(extended_room.CmdExtendedDesc(), "", "Descriptions on Room:")
 
     def test_cmdgametime(self):
@@ -396,13 +397,13 @@ class TestWilderness(EvenniaTest):
         # Pretend that both char1 and char2 are connected...
         self.char1.sessions.add(1)
         self.char2.sessions.add(1)
-        self.assertTrue(self.char1.has_player)
-        self.assertTrue(self.char2.has_player)
+        self.assertTrue(self.char1.has_account)
+        self.assertTrue(self.char2.has_account)
 
         wilderness.create_wilderness()
         w = self.get_wilderness_script()
 
-        # We should have no unused room after moving the first player in.
+        # We should have no unused room after moving the first account in.
         self.assertEquals(len(w.db.unused_rooms), 0)
         w.move_obj(self.char1, (0, 0))
         self.assertEquals(len(w.db.unused_rooms), 0)
@@ -443,15 +444,15 @@ from evennia.contrib import chargen
 class TestChargen(CommandTest):
 
     def test_ooclook(self):
-        self.call(chargen.CmdOOCLook(), "foo", "You have no characters to look at", caller=self.player)
-        self.call(chargen.CmdOOCLook(), "", "You, TestPlayer, are an OOC ghost without form.", caller=self.player)
+        self.call(chargen.CmdOOCLook(), "foo", "You have no characters to look at", caller=self.account)
+        self.call(chargen.CmdOOCLook(), "", "You, TestAccount, are an OOC ghost without form.", caller=self.account)
 
     def test_charcreate(self):
-        self.call(chargen.CmdOOCCharacterCreate(), "testchar", "The character testchar was successfully created!", caller=self.player)
-        self.call(chargen.CmdOOCCharacterCreate(), "testchar", "Character testchar already exists.", caller=self.player)
-        self.assertTrue(self.player.db._character_dbrefs)
-        self.call(chargen.CmdOOCLook(), "", "You, TestPlayer, are an OOC ghost without form.",caller=self.player)
-        self.call(chargen.CmdOOCLook(), "testchar", "testchar(", caller=self.player)
+        self.call(chargen.CmdOOCCharacterCreate(), "testchar", "The character testchar was successfully created!", caller=self.account)
+        self.call(chargen.CmdOOCCharacterCreate(), "testchar", "Character testchar already exists.", caller=self.account)
+        self.assertTrue(self.account.db._character_dbrefs)
+        self.call(chargen.CmdOOCLook(), "", "You, TestAccount, are an OOC ghost without form.",caller=self.account)
+        self.call(chargen.CmdOOCLook(), "testchar", "testchar(", caller=self.account)
 
 # Testing clothing contrib
 from evennia.contrib import clothing
@@ -601,9 +602,9 @@ class TestEmailLogin(CommandTest):
     def test_connect(self):
         self.call(email_login.CmdUnconnectedConnect(), "mytest@test.com test", "The email 'mytest@test.com' does not match any accounts.")
         self.call(email_login.CmdUnconnectedCreate(), '"mytest" mytest@test.com test11111', "A new account 'mytest' was created. Welcome!")
-        self.call(email_login.CmdUnconnectedConnect(), "mytest@test.com test11111", "", caller=self.player.sessions.get()[0])
+        self.call(email_login.CmdUnconnectedConnect(), "mytest@test.com test11111", "", caller=self.account.sessions.get()[0])
     def test_quit(self):
-        self.call(email_login.CmdUnconnectedQuit(), "", "", caller=self.player.sessions.get()[0])
+        self.call(email_login.CmdUnconnectedQuit(), "", "", caller=self.account.sessions.get()[0])
     def test_unconnectedlook(self):
         self.call(email_login.CmdUnconnectedLook(), "", "==========")
     def test_unconnectedhelp(self):
@@ -629,19 +630,19 @@ from evennia.contrib import mail
 
 class TestMail(CommandTest):
     def test_mail(self):
-        self.call(mail.CmdMail(), "2", "'2' is not a valid mail id.", caller=self.player)
-        self.call(mail.CmdMail(), "", "There are no messages in your inbox.", caller=self.player)
+        self.call(mail.CmdMail(), "2", "'2' is not a valid mail id.", caller=self.account)
+        self.call(mail.CmdMail(), "", "There are no messages in your inbox.", caller=self.account)
         self.call(mail.CmdMail(), "Char=Message 1", "You have received a new @mail from Char|You sent your message.", caller=self.char1)
         self.call(mail.CmdMail(), "Char=Message 2", "You sent your message.", caller=self.char2)
-        self.call(mail.CmdMail(), "TestPlayer2=Message 2",
-            "You have received a new @mail from TestPlayer2(player 2)|You sent your message.", caller=self.player2)
-        self.call(mail.CmdMail(), "TestPlayer=Message 1", "You sent your message.", caller=self.player2)
-        self.call(mail.CmdMail(), "TestPlayer=Message 2", "You sent your message.", caller=self.player2)
-        self.call(mail.CmdMail(), "", "| ID:   From:            Subject:", caller=self.player)
-        self.call(mail.CmdMail(), "2", "From: TestPlayer2", caller=self.player)
-        self.call(mail.CmdMail(), "/forward TestPlayer2 = 1/Forward message", "You sent your message.|Message forwarded.", caller=self.player)
-        self.call(mail.CmdMail(), "/reply 2=Reply Message2", "You sent your message.", caller=self.player)
-        self.call(mail.CmdMail(), "/delete 2", "Message 2 deleted", caller=self.player)
+        self.call(mail.CmdMail(), "TestAccount2=Message 2",
+            "You have received a new @mail from TestAccount2(account 2)|You sent your message.", caller=self.account2)
+        self.call(mail.CmdMail(), "TestAccount=Message 1", "You sent your message.", caller=self.account2)
+        self.call(mail.CmdMail(), "TestAccount=Message 2", "You sent your message.", caller=self.account2)
+        self.call(mail.CmdMail(), "", "| ID:   From:            Subject:", caller=self.account)
+        self.call(mail.CmdMail(), "2", "From: TestAccount2", caller=self.account)
+        self.call(mail.CmdMail(), "/forward TestAccount2 = 1/Forward message", "You sent your message.|Message forwarded.", caller=self.account)
+        self.call(mail.CmdMail(), "/reply 2=Reply Message2", "You sent your message.", caller=self.account)
+        self.call(mail.CmdMail(), "/delete 2", "Message 2 deleted", caller=self.account)
 
 # test map builder contrib
 
@@ -985,3 +986,63 @@ class TestUnixCommand(CommandTest):
         lines = ret.splitlines()
         self.assertTrue(any(l.startswith("usage:") for l in lines))
         self.assertTrue(any(l.startswith("dummy: error:") for l in lines))
+
+
+import re
+from evennia.contrib import color_markups
+
+class TestColorMarkup(EvenniaTest):
+    """
+    Note: Normally this would be tested by importing the ansi parser and run
+    the mappings through it. This is not possible since the ansi module creates
+    its mapping at the module/class level; since the ansi module is used by so
+    many other modules it appears that trying to overload
+    settings to test it causes issues with unrelated tests.
+    """
+    def test_curly_markup(self):
+        ansi_map = color_markups.CURLY_COLOR_ANSI_EXTRA_MAP
+        self.assertIsNotNone(re.match(re.escape(ansi_map[7][0]), '{r'))
+        self.assertIsNotNone(re.match(re.escape(ansi_map[-1][0]), '{[X'))
+        xterm_fg = color_markups.CURLY_COLOR_XTERM256_EXTRA_FG
+        self.assertIsNotNone(re.match(xterm_fg[0], '{001'))
+        self.assertIsNotNone(re.match(xterm_fg[0], '{123'))
+        self.assertIsNotNone(re.match(xterm_fg[0], '{455'))
+        xterm_bg = color_markups.CURLY_COLOR_XTERM256_EXTRA_BG
+        self.assertIsNotNone(re.match(xterm_bg[0], '{[001'))
+        self.assertIsNotNone(re.match(xterm_bg[0], '{[123'))
+        self.assertIsNotNone(re.match(xterm_bg[0], '{[455'))
+        xterm_gfg = color_markups.CURLY_COLOR_XTERM256_EXTRA_GFG
+        self.assertIsNotNone(re.match(xterm_gfg[0], '{=h'))
+        self.assertIsNotNone(re.match(xterm_gfg[0], '{=e'))
+        self.assertIsNotNone(re.match(xterm_gfg[0], '{=w'))
+        xterm_gbg = color_markups.CURLY_COLOR_XTERM256_EXTRA_GBG
+        self.assertIsNotNone(re.match(xterm_gbg[0], '{[=a'))
+        self.assertIsNotNone(re.match(xterm_gbg[0], '{[=k'))
+        self.assertIsNotNone(re.match(xterm_gbg[0], '{[=z'))
+        bright_map = color_markups.CURLY_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
+        self.assertEqual(bright_map[0][1], '{[500')
+        self.assertEqual(bright_map[-1][1], '{[222')
+
+    def test_mux_markup(self):
+        ansi_map = color_markups.MUX_COLOR_ANSI_EXTRA_MAP
+        self.assertIsNotNone(re.match(re.escape(ansi_map[10][0]), '%cr'))
+        self.assertIsNotNone(re.match(re.escape(ansi_map[-1][0]), '%cX'))
+        xterm_fg = color_markups.MUX_COLOR_XTERM256_EXTRA_FG
+        self.assertIsNotNone(re.match(xterm_fg[0], '%c001'))
+        self.assertIsNotNone(re.match(xterm_fg[0], '%c123'))
+        self.assertIsNotNone(re.match(xterm_fg[0], '%c455'))
+        xterm_bg = color_markups.MUX_COLOR_XTERM256_EXTRA_BG
+        self.assertIsNotNone(re.match(xterm_bg[0], '%c[001'))
+        self.assertIsNotNone(re.match(xterm_bg[0], '%c[123'))
+        self.assertIsNotNone(re.match(xterm_bg[0], '%c[455'))
+        xterm_gfg = color_markups.MUX_COLOR_XTERM256_EXTRA_GFG
+        self.assertIsNotNone(re.match(xterm_gfg[0], '%c=h'))
+        self.assertIsNotNone(re.match(xterm_gfg[0], '%c=e'))
+        self.assertIsNotNone(re.match(xterm_gfg[0], '%c=w'))
+        xterm_gbg = color_markups.MUX_COLOR_XTERM256_EXTRA_GBG
+        self.assertIsNotNone(re.match(xterm_gbg[0], '%c[=a'))
+        self.assertIsNotNone(re.match(xterm_gbg[0], '%c[=k'))
+        self.assertIsNotNone(re.match(xterm_gbg[0], '%c[=z'))
+        bright_map = color_markups.MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
+        self.assertEqual(bright_map[0][1], '%c[500')
+        self.assertEqual(bright_map[-1][1], '%c[222')

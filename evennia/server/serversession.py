@@ -152,18 +152,18 @@ class NAttributeHandler(object):
 
 class ServerSession(Session):
     """
-    This class represents a player's session and is a template for
+    This class represents an account's session and is a template for
     individual protocols to communicate with Evennia.
 
-    Each player gets a session assigned to them whenever they connect
-    to the game server. All communication between game and player goes
+    Each account gets a session assigned to them whenever they connect
+    to the game server. All communication between game and account goes
     through their session.
 
     """
     def __init__(self):
         """Initiate to avoid AttributeErrors down the line"""
         self.puppet = None
-        self.player = None
+        self.account = None
         self.cmdset_storage_string = ""
         self.cmdset = CmdSetHandler(self, True)
 
@@ -178,7 +178,7 @@ class ServerSession(Session):
         """
         This is called whenever a session has been resynced with the
         portal.  At this point all relevant attributes have already
-        been set and self.player been assigned (if applicable).
+        been set and self.account been assigned (if applicable).
 
         Since this is often called after a server restart we need to
         set up the session as it was.
@@ -201,23 +201,23 @@ class ServerSession(Session):
             # hooks, echoes or access checks.
             obj = _ObjectDB.objects.get(id=self.puid)
             obj.sessions.add(self)
-            obj.player = self.player
+            obj.account = self.account
             self.puid = obj.id
             self.puppet = obj
             # obj.scripts.validate()
             obj.locks.cache_lock_bypass(obj)
 
-    def at_login(self, player):
+    def at_login(self, account):
         """
         Hook called by sessionhandler when the session becomes authenticated.
 
         Args:
-            player (Player): The player associated with the session.
+            account (Account): The account associated with the session.
 
         """
-        self.player = player
-        self.uid = self.player.id
-        self.uname = self.player.username
+        self.account = account
+        self.uid = self.account.id
+        self.uname = self.account.username
         self.logged_in = True
         self.conn_time = time.time()
         self.puid = None
@@ -230,12 +230,12 @@ class ServerSession(Session):
             # can also see we are logged in.
             csession = ClientSessionStore(session_key=self.csessid)
             if not csession.get("logged_in"):
-                csession["logged_in"] = player.id
+                csession["logged_in"] = account.id
                 csession.save()
 
         # Update account's last login time.
-        self.player.last_login = timezone.now()
-        self.player.save()
+        self.account.last_login = timezone.now()
+        self.account.save()
 
         # add the session-level cmdset
         self.cmdset = CmdSetHandler(self, True)
@@ -246,34 +246,34 @@ class ServerSession(Session):
 
         """
         if self.logged_in:
-            player = self.player
+            account = self.account
             if self.puppet:
-                player.unpuppet_object(self)
-            uaccount = player
+                account.unpuppet_object(self)
+            uaccount = account
             uaccount.last_login = timezone.now()
             uaccount.save()
-            # calling player hook
-            player.at_disconnect()
+            # calling account hook
+            account.at_disconnect()
             self.logged_in = False
-            if not self.sessionhandler.sessions_from_player(player):
-                # no more sessions connected to this player
-                player.is_connected = False
-            # this may be used to e.g. delete player after disconnection etc
-            player.at_post_disconnect()
+            if not self.sessionhandler.sessions_from_account(account):
+                # no more sessions connected to this account
+                account.is_connected = False
+            # this may be used to e.g. delete account after disconnection etc
+            account.at_post_disconnect()
             # remove any webclient settings monitors associated with this
             # session
-            MONITOR_HANDLER.remove(player, "_saved_webclient_options",
+            MONITOR_HANDLER.remove(account, "_saved_webclient_options",
                                    self.sessid)
 
-    def get_player(self):
+    def get_account(self):
         """
-        Get the player associated with this session
+        Get the account associated with this session
 
         Returns:
-            player (Player): The associated Player.
+            account (Account): The associated Account.
 
         """
-        return self.logged_in and self.player
+        return self.logged_in and self.account
 
     def get_puppet(self):
         """
@@ -286,17 +286,17 @@ class ServerSession(Session):
         return self.logged_in and self.puppet
     get_character = get_puppet
 
-    def get_puppet_or_player(self):
+    def get_puppet_or_account(self):
         """
-        Get puppet or player.
+        Get puppet or account.
 
         Returns:
-            controller (Object or Player): The puppet if one exists,
-                otherwise return the player.
+            controller (Object or Account): The puppet if one exists,
+                otherwise return the account.
 
         """
         if self.logged_in:
-            return self.puppet if self.puppet else self.player
+            return self.puppet if self.puppet else self.account
         return None
 
     def log(self, message, channel=True):
@@ -343,7 +343,7 @@ class ServerSession(Session):
         if not idle:
             # Increment the user's command counter.
             self.cmd_total += 1
-            # Player-visible idle time, not used in idle timeout calcs.
+            # Account-visible idle time, not used in idle timeout calcs.
             self.cmd_last_visible = self.cmd_last
 
     def update_flags(self, **kwargs):
@@ -395,7 +395,7 @@ class ServerSession(Session):
 
     def msg(self, text=None, **kwargs):
         """
-        Wrapper to mimic msg() functionality of Objects and Players.
+        Wrapper to mimic msg() functionality of Objects and Accounts.
 
         Args:
             text (str): String input.
@@ -449,8 +449,8 @@ class ServerSession(Session):
 
         """
         symbol = ""
-        if self.logged_in and hasattr(self, "player") and self.player:
-            symbol = "(#%s)" % self.player.id
+        if self.logged_in and hasattr(self, "account") and self.account:
+            symbol = "(#%s)" % self.account.id
         try:
             if hasattr(self.address, '__iter__'):
                 address = ":".join([str(part) for part in self.address])

@@ -7,7 +7,7 @@ from collections import defaultdict
 from random import getrandbits
 from django.conf import settings
 from django.contrib.auth import authenticate
-from evennia.players.models import PlayerDB
+from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
 from evennia.server.models import ServerConfig
 from evennia.comms.models import ChannelDB
@@ -25,7 +25,7 @@ MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 
 # Helper function to throttle failed connection attempts.
-# This can easily be used to limit player creation too,
+# This can easily be used to limit account creation too,
 # (just supply a different storage dictionary), but this
 # would also block dummyrunner, so it's not added as default.
 
@@ -77,17 +77,17 @@ def _throttle(session, maxlim=None, timeout=None, storage=_LATEST_FAILED_LOGINS)
         return False
 
 
-def create_guest_player(session):
+def create_guest_account(session):
     """
-    Creates a guest player/character for this session, if one is available.
+    Creates a guest account/character for this session, if one is available.
 
     Args:
-        session (Session): the session which will use the guest player/character.
+        session (Session): the session which will use the guest account/character.
 
     Returns:
-        GUEST_ENABLED (boolean), player (Player):
+        GUEST_ENABLED (boolean), account (Account):
             the boolean is whether guest accounts are enabled at all.
-            the Player which was created from an available guest name.
+            the Account which was created from an available guest name.
     """
     # check if guests are enabled.
     if not settings.GUEST_ENABLED:
@@ -105,25 +105,25 @@ def create_guest_player(session):
 
     try:
         # Find an available guest name.
-        playername = None
+        accountname = None
         for name in settings.GUEST_LIST:
-            if not PlayerDB.objects.filter(username__iexact=playername).count():
-                playername = name
+            if not AccountDB.objects.filter(username__iexact=accountname).count():
+                accountname = name
                 break
-        if not playername:
+        if not accountname:
             session.msg("All guest accounts are in use. Please try again later.")
             return True, None
         else:
-            # build a new player with the found guest playername
+            # build a new account with the found guest accountname
             password = "%016x" % getrandbits(64)
             home = ObjectDB.objects.get_id(settings.GUEST_HOME)
             permissions = settings.PERMISSION_GUEST_DEFAULT
             typeclass = settings.BASE_CHARACTER_TYPECLASS
             ptypeclass = settings.BASE_GUEST_TYPECLASS
-            new_player = _create_player(session, playername, password, permissions, ptypeclass)
-            if new_player:
-                _create_character(session, new_player, typeclass, home, permissions)
-            return True, new_player
+            new_account = _create_account(session, accountname, password, permissions, ptypeclass)
+            if new_account:
+                _create_character(session, new_account, typeclass, home, permissions)
+            return True, new_account
 
     except Exception:
         # We are in the middle between logged in and -not, so we have
@@ -134,17 +134,17 @@ def create_guest_player(session):
         raise
 
 
-def create_normal_player(session, name, password):
+def create_normal_account(session, name, password):
     """
-    Creates a player with the given name and password.
+    Creates an account with the given name and password.
 
     Args:
-        session (Session): the session which is requesting to create a player.
-        name (str): the name that the player wants to use for login.
-        password (str): the password desired by this player, for login.
+        session (Session): the session which is requesting to create an account.
+        name (str): the name that the account wants to use for login.
+        password (str): the password desired by this account, for login.
 
     Returns:
-        player (Player): the player which was created from the name and password.
+        account (Account): the account which was created from the name and password.
     """
     # check for too many login errors too quick.
     if _throttle(session, maxlim=5, timeout=5*60):
@@ -153,22 +153,22 @@ def create_normal_player(session, name, password):
         return None
 
     # Match account name and check password
-    player = authenticate(username=name, password=password)
+    account = authenticate(username=name, password=password)
 
-    if not player:
-        # No playername or password match
+    if not account:
+        # No accountname or password match
         session.msg("Incorrect login information given.")
         # this just updates the throttle
         _throttle(session)
-        # calls player hook for a failed login if possible.
-        player = PlayerDB.objects.get_player_from_name(name)
-        if player:
-            player.at_failed_login(session)
+        # calls account hook for a failed login if possible.
+        account = AccountDB.objects.get_account_from_name(name)
+        if account:
+            account.at_failed_login(session)
         return None
 
     # Check IP and/or name bans
     bans = ServerConfig.objects.conf("server_bans")
-    if bans and (any(tup[0] == player.name.lower() for tup in bans)
+    if bans and (any(tup[0] == account.name.lower() for tup in bans)
                  or
                  any(tup[2].match(session.address) for tup in bans if tup[2])):
         # this is a banned IP or name!
@@ -178,7 +178,7 @@ def create_normal_player(session, name, password):
         session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
         return None
 
-    return player
+    return account
 
 
 class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
@@ -186,8 +186,8 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
     connect to the game
 
     Usage (at login screen):
-      connect playername password
-      connect "player name" "pass word"
+      connect accountname password
+      connect "account name" "pass word"
 
     Use the create command to first create an account before logging in.
 
@@ -204,7 +204,7 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
         have a unique position in that their func() receives
         a session object instead of a source_object like all
         other types of logged-in commands (this is because
-        there is no object yet before the player has logged in)
+        there is no object yet before the account has logged in)
         """
         session = self.caller
 
@@ -222,9 +222,9 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
             parts = parts[0].split(None, 1)
             # Guest login
             if len(parts) == 1 and parts[0].lower() == "guest":
-                enabled, new_player = create_guest_player(session)
-                if new_player:
-                    session.sessionhandler.login(session, new_player)
+                enabled, new_account = create_guest_account(session)
+                if new_account:
+                    session.sessionhandler.login(session, new_account)
                 if enabled:
                     return
 
@@ -233,20 +233,20 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
             return
 
         name, password = parts
-        player = create_normal_player(session, name, password)
-        if player:
-            session.sessionhandler.login(session, player)
+        account = create_normal_account(session, name, password)
+        if account:
+            session.sessionhandler.login(session, account)
 
 
 class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
     """
-    create a new player account
+    create a new account account
 
     Usage (at login screen):
-      create <playername> <password>
-      create "player name" "pass word"
+      create <accountname> <password>
+      create "account name" "pass word"
 
-    This creates a new player account.
+    This creates a new account account.
 
     If you have spaces in your name, enclose it in double quotes.
     """
@@ -271,25 +271,25 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
                      "\nIf <name> or <password> contains spaces, enclose it in double quotes."
             session.msg(string)
             return
-        playername, password = parts
+        accountname, password = parts
 
         # sanity checks
-        if not re.findall(r"^[\w. @+\-']+$", playername) or not (0 < len(playername) <= 30):
+        if not re.findall(r"^[\w. @+\-']+$", accountname) or not (0 < len(accountname) <= 30):
             # this echoes the restrictions made by django's auth
             # module (except not allowing spaces, for convenience of
             # logging in).
-            string = "\n\r Playername can max be 30 characters or fewer. Letters, spaces, digits and @/./+/-/_/' only."
+            string = "\n\r Accountname can max be 30 characters or fewer. Letters, spaces, digits and @/./+/-/_/' only."
             session.msg(string)
             return
-        # strip excessive spaces in playername
-        playername = re.sub(r"\s+", " ", playername).strip()
-        if PlayerDB.objects.filter(username__iexact=playername):
-            # player already exists (we also ignore capitalization here)
-            session.msg("Sorry, there is already a player with the name '%s'." % playername)
+        # strip excessive spaces in accountname
+        accountname = re.sub(r"\s+", " ", accountname).strip()
+        if AccountDB.objects.filter(username__iexact=accountname):
+            # account already exists (we also ignore capitalization here)
+            session.msg("Sorry, there is already an account with the name '%s'." % accountname)
             return
-        # Reserve playernames found in GUEST_LIST
-        if settings.GUEST_LIST and playername.lower() in (guest.lower() for guest in settings.GUEST_LIST):
-            string = "\n\r That name is reserved. Please choose another Playername."
+        # Reserve accountnames found in GUEST_LIST
+        if settings.GUEST_LIST and accountname.lower() in (guest.lower() for guest in settings.GUEST_LIST):
+            string = "\n\r That name is reserved. Please choose another Accountname."
             session.msg(string)
             return
         if not re.findall(r"^[\w. @+\-']+$", password) or not (3 < len(password)):
@@ -301,7 +301,7 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
 
         # Check IP and/or name bans
         bans = ServerConfig.objects.conf("server_bans")
-        if bans and (any(tup[0] == playername.lower() for tup in bans)
+        if bans and (any(tup[0] == accountname.lower() for tup in bans)
                      or
                      any(tup[2].match(session.address) for tup in bans if tup[2])):
             # this is a banned IP or name!
@@ -311,22 +311,22 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
             session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
             return
 
-        # everything's ok. Create the new player account.
+        # everything's ok. Create the new account account.
         try:
-            permissions = settings.PERMISSION_PLAYER_DEFAULT
+            permissions = settings.PERMISSION_ACCOUNT_DEFAULT
             typeclass = settings.BASE_CHARACTER_TYPECLASS
-            new_player = _create_player(session, playername, password, permissions)
-            if new_player:
+            new_account = _create_account(session, accountname, password, permissions)
+            if new_account:
                 if MULTISESSION_MODE < 2:
                     default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-                    _create_character(session, new_player, typeclass, default_home, permissions)
+                    _create_character(session, new_account, typeclass, default_home, permissions)
                 # tell the caller everything went well.
                 string = "A new account '%s' was created. Welcome!"
-                if " " in playername:
+                if " " in accountname:
                     string += "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
                 else:
                     string += "\n\nYou can now log with the command 'connect %s <your password>'."
-                session.msg(string % (playername, playername))
+                session.msg(string % (accountname, accountname))
 
         except Exception:
             # We are in the middle between logged in and -not, so we have
@@ -344,7 +344,7 @@ class CmdUnconnectedQuit(COMMAND_DEFAULT_CLASS):
       quit
 
     We maintain a different version of the quit command
-    here for unconnected players for the sake of simplicity. The logged in
+    here for unconnected accounts for the sake of simplicity. The logged in
     version is a bit more complicated.
     """
     key = "quit"
@@ -516,50 +516,50 @@ class CmdUnconnectedScreenreader(COMMAND_DEFAULT_CLASS):
         self.session.sessionhandler.session_portal_sync(self.session)
 
 
-def _create_player(session, playername, password, permissions, typeclass=None, email=None):
+def _create_account(session, accountname, password, permissions, typeclass=None, email=None):
     """
-    Helper function, creates a player of the specified typeclass.
+    Helper function, creates an account of the specified typeclass.
     """
     try:
-        new_player = create.create_player(playername, email, password, permissions=permissions, typeclass=typeclass)
+        new_account = create.create_account(accountname, email, password, permissions=permissions, typeclass=typeclass)
 
     except Exception as e:
-        session.msg("There was an error creating the Player:\n%s\n If this problem persists, contact an admin." % e)
+        session.msg("There was an error creating the Account:\n%s\n If this problem persists, contact an admin." % e)
         logger.log_trace()
         return False
 
-    # This needs to be set so the engine knows this player is
+    # This needs to be set so the engine knows this account is
     # logging in for the first time. (so it knows to call the right
     # hooks during login later)
-    new_player.db.FIRST_LOGIN = True
+    new_account.db.FIRST_LOGIN = True
 
-    # join the new player to the public channel
+    # join the new account to the public channel
     pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
-    if not pchannel or not pchannel.connect(new_player):
-        string = "New player '%s' could not connect to public channel!" % new_player.key
+    if not pchannel or not pchannel.connect(new_account):
+        string = "New account '%s' could not connect to public channel!" % new_account.key
         logger.log_err(string)
-    return new_player
+    return new_account
 
 
-def _create_character(session, new_player, typeclass, home, permissions):
+def _create_character(session, new_account, typeclass, home, permissions):
     """
-    Helper function, creates a character based on a player's name.
+    Helper function, creates a character based on an account's name.
     This is meant for Guest and MULTISESSION_MODE < 2 situations.
     """
     try:
-        new_character = create.create_object(typeclass, key=new_player.key, home=home, permissions=permissions)
+        new_character = create.create_object(typeclass, key=new_account.key, home=home, permissions=permissions)
         # set playable character list
-        new_player.db._playable_characters.append(new_character)
+        new_account.db._playable_characters.append(new_character)
 
-        # allow only the character itself and the player to puppet this character (and Immortals).
-        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
-                                (new_character.id, new_player.id))
+        # allow only the character itself and the account to puppet this character (and Developers).
+        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
+                                (new_character.id, new_account.id))
 
         # If no description is set, set a default description
         if not new_character.db.desc:
-            new_character.db.desc = "This is a Player."
+            new_character.db.desc = "This is an Account."
         # We need to set this to have @ic auto-connect to this character
-        new_player.db._last_puppet = new_character
+        new_account.db._last_puppet = new_character
     except Exception as e:
         session.msg("There was an error creating the Character:\n%s\n If this problem persists, contact an admin." % e)
         logger.log_trace()

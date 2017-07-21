@@ -9,12 +9,12 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('players', '0004_auto_20150403_2339'),
+        ('accounts', '0004_auto_20150403_2339'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='playerdb',
+            model_name='accountdb',
             name='username',
             field=models.CharField(error_messages={'unique': 'A user with that username already exists.'}, help_text='Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=30, unique=True, validators=[django.core.validators.RegexValidator('^[\\w.@+-]+$', 'Enter a valid username. This value may contain only letters, numbers and @/./+/-/_ characters.')], verbose_name='username'),
         ),

@@ -32,7 +32,7 @@ called and so on until the map is completed. Building instructions are passed
 the following arguments:
     x         - The rooms position on the maps x axis
     y         - The rooms position on the maps y axis
-    caller    - The player calling the command
+    caller    - The account calling the command
     iteration - The current iterations number (0, 1 or 2)
     room_dict - A dictionary containing room references returned by build
                 functions where tuple coordinates are the keys (x, y).
@@ -119,7 +119,7 @@ def example1_build_forest(x, y, **kwargs):
     room = create_object(rooms.Room, key="forest" + str(x) + str(y))
     room.db.desc = "Basic forest room."
 
-    # Send a message to the player
+    # Send a message to the account
     kwargs["caller"].msg(room.key + " " + room.dbref)
 
     # This is generally mandatory.
@@ -143,7 +143,7 @@ def example1_build_mountains(x, y, **kwargs):
         rock = create_object(key="Rock", location=room)
         rock.db.desc = "An ordinary rock."
 
-    # Send a message to the player
+    # Send a message to the account
     kwargs["caller"].msg(room.key + " " + room.dbref)
 
     # This is generally mandatory.
@@ -167,7 +167,7 @@ def example1_build_temple(x, y, **kwargs):
                     "keeping the sound level only just below thunderous. "
                     "This is a rare spot of mirth on this dread moor.")
 
-    # Send a message to the player
+    # Send a message to the account
     kwargs["caller"].msg(room.key + " " + room.dbref)
 
     # This is generally mandatory.

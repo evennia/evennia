@@ -100,17 +100,17 @@ class BlindedState(DefaultScript):
     """
     This is a timed state.
 
-    This adds a (very limited) cmdset TO THE PLAYER, during a certain time,
+    This adds a (very limited) cmdset TO THE ACCOUNT, during a certain time,
     after which the script will close and all functions are
     restored. It's up to the function starting the script to actually
-    set it on the right player object.
+    set it on the right account object.
     """
     def at_script_creation(self):
         """
         We set up the script here.
         """
         self.key = "temporary_blinder"
-        self.desc = "Temporarily blinds the player for a little while."
+        self.desc = "Temporarily blinds the account for a little while."
         self.interval = 20  # seconds
         self.start_delay = True  # we don't want it to stop until after 20s.
         self.repeats = 1  # this will go away after interval seconds.
@@ -123,7 +123,7 @@ class BlindedState(DefaultScript):
         Note that the RedButtonBlind cmdset is defined to completly
         replace the other cmdsets on the stack while it is active
         (this means that while blinded, only operations in this cmdset
-        will be possible for the player to perform). It is however
+        will be possible for the account to perform). It is however
         not persistent, so should there be a bug in it, we just need
         to restart the server to clear out of it during development.
         """
@@ -228,7 +228,7 @@ class DeactivateButtonEvent(DefaultScript):
     This deactivates the button for a short while (it won't blink, won't
     close its lid etc). It is meant to be called when the button is pushed
     and run as long as the blinded effect lasts. We cannot put these methods
-    in the AddBlindedCmdSet script since that script is defined on the *player*
+    in the AddBlindedCmdSet script since that script is defined on the *account*
     whereas this one must be defined on the *button*.
     """
     def at_script_creation(self):
@@ -250,7 +250,7 @@ class DeactivateButtonEvent(DefaultScript):
         """
         # closing the lid will also add the ClosedState script
         self.obj.close_lid()
-        # lock the lid so other players can't access it until the
+        # lock the lid so other accounts can't access it until the
         # first one's effect has worn off.
         self.obj.db.lid_locked = True
         # breaking the lamp also sets a correct desc

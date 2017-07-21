@@ -1,19 +1,19 @@
 """
-Player (OOC) commands. These are stored on the Player object
-and self.caller is thus always a Player, not an Object/Character.
+Account (OOC) commands. These are stored on the Account object
+and self.caller is thus always an Account, not an Object/Character.
 
-These commands go in the PlayerCmdset and are accessible also
+These commands go in the AccountCmdset and are accessible also
 when puppeting a Character (although with lower priority)
 
-These commands use the player_caller property which tells the command
+These commands use the account_caller property which tells the command
 parent (MuxCommand, usually) to setup caller correctly. They use
-self.player to make sure to always use the player object rather than
+self.account to make sure to always use the account object rather than
 self.caller (which change depending on the level you are calling from)
 The property self.character can be used to access the character when
 these commands are triggered with a connected character (such as the
 case of the @ooc command), it is None if we are OOC.
 
-Note that under MULTISESSION_MODE > 2, Player commands should use
+Note that under MULTISESSION_MODE > 2, Account commands should use
 self.msg() and similar methods to reroute returns to the correct
 method. Otherwise all text will be returned to all connected sessions.
 
@@ -36,7 +36,7 @@ __all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit",
            "CmdColorTest", "CmdQuell")
 
 
-class MuxPlayerLookCommand(COMMAND_DEFAULT_CLASS):
+class MuxAccountLookCommand(COMMAND_DEFAULT_CLASS):
     """
     Custom parent (only) parsing for OOC looking, sets a "playable"
     property on the command based on the parsing.
@@ -46,19 +46,19 @@ class MuxPlayerLookCommand(COMMAND_DEFAULT_CLASS):
     def parse(self):
         """Custom parsing"""
 
-        super(MuxPlayerLookCommand, self).parse()
+        super(MuxAccountLookCommand, self).parse()
 
         if _MULTISESSION_MODE < 2:
             # only one character allowed - not used in this mode
             self.playable = None
             return
 
-        playable = self.player.db._playable_characters
+        playable = self.account.db._playable_characters
         if playable is not None:
             # clean up list if character object was deleted in between
             if None in playable:
                 playable = [character for character in playable if character]
-                self.player.db._playable_characters = playable
+                self.account.db._playable_characters = playable
         # store playable property
         if self.args:
             self.playable = dict((utils.to_str(char.key.lower()), char)
@@ -67,13 +67,13 @@ class MuxPlayerLookCommand(COMMAND_DEFAULT_CLASS):
             self.playable = playable
 
 
-# Obs - these are all intended to be stored on the Player, and as such,
-# use self.player instead of self.caller, just to be sure. Also self.msg()
+# Obs - these are all intended to be stored on the Account, and as such,
+# use self.account instead of self.caller, just to be sure. Also self.msg()
 # is used to make sure returns go to the right session
 
-# note that this is inheriting from MuxPlayerLookCommand,
+# note that this is inheriting from MuxAccountLookCommand,
 # and has the .playable property.
-class CmdOOCLook(MuxPlayerLookCommand):
+class CmdOOCLook(MuxAccountLookCommand):
     """
     look while out-of-character
 
@@ -84,7 +84,7 @@ class CmdOOCLook(MuxPlayerLookCommand):
     """
 
     # This is an OOC version of the look command. Since a
-    # Player doesn't have an in-game existence, there is no
+    # Account doesn't have an in-game existence, there is no
     # concept of location or "self". If we are controlling
     # a character, pass control over to normal look.
 
@@ -94,7 +94,7 @@ class CmdOOCLook(MuxPlayerLookCommand):
     help_category = "General"
 
     # this is used by the parent
-    player_caller = True
+    account_caller = True
 
     def func(self):
         """implement the ooc look command"""
@@ -104,8 +104,8 @@ class CmdOOCLook(MuxPlayerLookCommand):
             self.msg("You are out-of-character (OOC).\nUse |w@ic|n to get back into the game.")
             return
 
-        # call on-player look helper method
-        self.msg(self.player.at_look(target=self.playable, session=self.session))
+        # call on-account look helper method
+        self.msg(self.account.at_look(target=self.playable, session=self.session))
 
 
 class CmdCharCreate(COMMAND_DEFAULT_CLASS):
@@ -121,15 +121,15 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
     if you want.
     """
     key = "@charcreate"
-    locks = "cmd:pperm(Players)"
+    locks = "cmd:pperm(Account)"
     help_category = "General"
 
     # this is used by the parent
-    player_caller = True
+    account_caller = True
 
     def func(self):
         """create the new character"""
-        player = self.player
+        account = self.account
         if not self.args:
             self.msg("Usage: @charcreate <charname> [= description]")
             return
@@ -138,9 +138,9 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
 
         charmax = _MAX_NR_CHARACTERS if _MULTISESSION_MODE > 1 else 1
 
-        if not player.is_superuser and \
-                (player.db._playable_characters and
-                 len(player.db._playable_characters) >= charmax):
+        if not account.is_superuser and \
+                (account.db._playable_characters and
+                 len(account.db._playable_characters) >= charmax):
             self.msg("You may only create a maximum of %i characters." % charmax)
             return
         from evennia.objects.models import ObjectDB
@@ -156,19 +156,19 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         # create the character
         start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
         default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-        permissions = settings.PERMISSION_PLAYER_DEFAULT
+        permissions = settings.PERMISSION_ACCOUNT_DEFAULT
         new_character = create.create_object(typeclass, key=key,
                                              location=start_location,
                                              home=default_home,
                                              permissions=permissions)
-        # only allow creator (and immortals) to puppet this char
-        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
-                                (new_character.id, player.id))
-        player.db._playable_characters.append(new_character)
+        # only allow creator (and developers) to puppet this char
+        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
+                                (new_character.id, account.id))
+        account.db._playable_characters.append(new_character)
         if desc:
             new_character.db.desc = desc
         elif not new_character.db.desc:
-            new_character.db.desc = "This is a Player."
+            new_character.db.desc = "This is an Account."
         self.msg("Created new character %s. Use |w@ic %s|n to enter the game as this character."
                  % (new_character.key, new_character.key))
 
@@ -183,19 +183,19 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
     Permanently deletes one of your characters.
     """
     key = "@chardelete"
-    locks = "cmd:pperm(Players)"
+    locks = "cmd:pperm(Account)"
     help_category = "General"
 
     def func(self):
         """delete the character"""
-        player = self.player
+        account = self.account
 
         if not self.args:
             self.msg("Usage: @chardelete <charactername>")
             return
 
         # use the playable_characters list to search
-        match = [char for char in utils.make_iter(player.db._playable_characters)
+        match = [char for char in utils.make_iter(account.db._playable_characters)
                  if char.key.lower() == self.args.lower()]
         if not match:
             self.msg("You have no such character to delete.")
@@ -219,9 +219,9 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
                 del caller.ndb._char_to_delete
 
             match = match[0]
-            player.ndb._char_to_delete = match
+            account.ndb._char_to_delete = match
             prompt = "|rThis will permanently destroy '%s'. This cannot be undone.|n Continue yes/[no]?"
-            get_input(player, prompt % match.key, _callback)
+            get_input(account, prompt % match.key, _callback)
 
 
 class CmdIC(COMMAND_DEFAULT_CLASS):
@@ -234,12 +234,12 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
     Go in-character (IC) as a given Character.
 
     This will attempt to "become" a different object assuming you have
-    the right to do so. Note that it's the PLAYER character that puppets
+    the right to do so. Note that it's the ACCOUNT character that puppets
     characters/objects and which needs to have the correct permission!
 
     You cannot become an object that is already controlled by another
-    player. In principle <character> can be any in-game object as long
-    as you the player have access right to puppet it.
+    account. In principle <character> can be any in-game object as long
+    as you the account have access right to puppet it.
     """
 
     key = "@ic"
@@ -249,24 +249,24 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
     help_category = "General"
 
     # this is used by the parent
-    player_caller = True
+    account_caller = True
 
     def func(self):
         """
         Main puppet method
         """
-        player = self.player
+        account = self.account
         session = self.session
 
         new_character = None
         if not self.args:
-            new_character = player.db._last_puppet
+            new_character = account.db._last_puppet
             if not new_character:
                 self.msg("Usage: @ic <character>")
                 return
         if not new_character:
             # search for a matching character
-            new_character = [char for char in search.object_search(self.args) if char.access(player, "puppet")]
+            new_character = [char for char in search.object_search(self.args) if char.access(account, "puppet")]
             if not new_character:
                 self.msg("That is not a valid character choice.")
                 return
@@ -277,15 +277,15 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
             else:
                 new_character = new_character[0]
         try:
-            player.puppet_object(session, new_character)
-            player.db._last_puppet = new_character
+            account.puppet_object(session, new_character)
+            account.db._last_puppet = new_character
         except RuntimeError as exc:
             self.msg("|rYou cannot become |C%s|n: %s" % (new_character.name, exc))
 
 
-# note that this is inheriting from MuxPlayerLookCommand,
+# note that this is inheriting from MuxAccountLookCommand,
 # and as such has the .playable property.
-class CmdOOC(MuxPlayerLookCommand):
+class CmdOOC(MuxAccountLookCommand):
     """
     stop puppeting and go ooc
 
@@ -298,30 +298,30 @@ class CmdOOC(MuxPlayerLookCommand):
     """
 
     key = "@ooc"
-    locks = "cmd:pperm(Players)"
+    locks = "cmd:pperm(Account)"
     aliases = "@unpuppet"
     help_category = "General"
 
     # this is used by the parent
-    player_caller = True
+    account_caller = True
 
     def func(self):
         """Implement function"""
 
-        player = self.player
+        account = self.account
         session = self.session
 
-        old_char = player.get_puppet(session)
+        old_char = account.get_puppet(session)
         if not old_char:
             string = "You are already OOC."
             self.msg(string)
             return
 
-        player.db._last_puppet = old_char
+        account.db._last_puppet = old_char
 
         # disconnect
         try:
-            player.unpuppet_object(session)
+            account.unpuppet_object(session)
             self.msg("\n|GYou go OOC.|n\n")
 
             if _MULTISESSION_MODE < 2:
@@ -329,7 +329,7 @@ class CmdOOC(MuxPlayerLookCommand):
                 self.msg("You are out-of-character (OOC).\nUse |w@ic|n to get back into the game.")
                 return
 
-            self.msg(player.at_look(target=self.playable, session=session))
+            self.msg(account.at_look(target=self.playable, session=session))
 
         except RuntimeError as exc:
             self.msg("|rCould not unpuppet from |c%s|n: %s" % (old_char, exc))
@@ -350,19 +350,19 @@ class CmdSessions(COMMAND_DEFAULT_CLASS):
     help_category = "General"
 
     # this is used by the parent
-    player_caller = True
+    account_caller = True
 
     def func(self):
         """Implement function"""
-        player = self.player
-        sessions = player.sessions.all()
+        account = self.account
+        sessions = account.sessions.all()
         table = evtable.EvTable("|wsessid",
                                 "|wprotocol",
                                 "|whost",
                                 "|wpuppet/character",
                                 "|wlocation")
         for sess in sorted(sessions, key=lambda x: x.sessid):
-            char = player.get_puppet(sess)
+            char = account.get_puppet(sess)
             table.add_row(str(sess.sessid), str(sess.protocol_key),
                           type(sess.address) == tuple and sess.address[0] or sess.address,
                           char and str(char) or "None",
@@ -387,27 +387,27 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
     locks = "cmd:all()"
 
     # this is used by the parent
-    player_caller = True
+    account_caller = True
 
     def func(self):
         """
-        Get all connected players by polling session.
+        Get all connected accounts by polling session.
         """
 
-        player = self.player
+        account = self.account
         session_list = SESSIONS.get_sessions()
 
-        session_list = sorted(session_list, key=lambda o: o.player.key)
+        session_list = sorted(session_list, key=lambda o: o.account.key)
 
         if self.cmdstring == "doing":
             show_session_data = False
         else:
-            show_session_data = player.check_permstring("Immortals") or player.check_permstring("Wizards")
+            show_session_data = account.check_permstring("Developer") or account.check_permstring("Admins")
 
-        nplayers = (SESSIONS.player_count())
+        naccounts = (SESSIONS.account_count())
         if show_session_data:
             # privileged info
-            table = evtable.EvTable("|wPlayer Name",
+            table = evtable.EvTable("|wAccount Name",
                                     "|wOn for",
                                     "|wIdle",
                                     "|wPuppeting",
@@ -420,10 +420,10 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                     continue
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
-                player = session.get_player()
+                account = session.get_account()
                 puppet = session.get_puppet()
                 location = puppet.location.key if puppet and puppet.location else "None"
-                table.add_row(utils.crop(player.name, width=25),
+                table.add_row(utils.crop(account.name, width=25),
                               utils.time_format(delta_conn, 0),
                               utils.time_format(delta_cmd, 1),
                               utils.crop(puppet.key if puppet else "None", width=25),
@@ -433,19 +433,19 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                               isinstance(session.address, tuple) and session.address[0] or session.address)
         else:
             # unprivileged
-            table = evtable.EvTable("|wPlayer name", "|wOn for", "|wIdle")
+            table = evtable.EvTable("|wAccount name", "|wOn for", "|wIdle")
             for session in session_list:
                 if not session.logged_in:
                     continue
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
-                player = session.get_player()
-                table.add_row(utils.crop(player.key, width=25),
+                account = session.get_account()
+                table.add_row(utils.crop(account.key, width=25),
                               utils.time_format(delta_conn, 0),
                               utils.time_format(delta_cmd, 1))
-        is_one = nplayers == 1
-        self.msg("|wPlayers:|n\n%s\n%s unique account%s logged in."
-                 % (table, "One" if is_one else nplayers, "" if is_one else "s"))
+        is_one = naccounts == 1
+        self.msg("|wAccounts:|n\n%s\n%s unique account%s logged in."
+                 % (table, "One" if is_one else naccounts, "" if is_one else "s"))
 
 
 class CmdOption(COMMAND_DEFAULT_CLASS):
@@ -470,7 +470,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
     locks = "cmd:all()"
 
     # this is used by the parent
-    player_caller = True
+    account_caller = True
 
     def func(self):
         """
@@ -585,15 +585,15 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             # a valid setting
             if "save" in self.switches:
                 # save this option only
-                saved_options = self.player.attributes.get("_saved_protocol_flags", default={})
+                saved_options = self.account.attributes.get("_saved_protocol_flags", default={})
                 saved_options.update(optiondict)
-                self.player.attributes.add("_saved_protocol_flags", saved_options)
+                self.account.attributes.add("_saved_protocol_flags", saved_options)
                 for key in optiondict:
                     self.msg("|gSaved option %s.|n" % key)
             if "clear" in self.switches:
                 # clear this save
                 for key in optiondict:
-                    self.player.attributes.get("_saved_protocol_flags", {}).pop(key, None)
+                    self.account.attributes.get("_saved_protocol_flags", {}).pop(key, None)
                     self.msg("|gCleared saved %s." % key)
             self.session.update_flags(**optiondict)
 
@@ -608,27 +608,27 @@ class CmdPassword(COMMAND_DEFAULT_CLASS):
     Changes your password. Make sure to pick a safe one.
     """
     key = "@password"
-    locks = "cmd:pperm(Players)"
+    locks = "cmd:pperm(Account)"
 
     # this is used by the parent
-    player_caller = True
+    account_caller = True
 
     def func(self):
         """hook function."""
 
-        player = self.player
+        account = self.account
         if not self.rhs:
             self.msg("Usage: @password <oldpass> = <newpass>")
             return
         oldpass = self.lhslist[0]  # Both of these are
         newpass = self.rhslist[0]  # already stripped by parse()
-        if not player.check_password(oldpass):
+        if not account.check_password(oldpass):
             self.msg("The specified old password isn't correct.")
         elif len(newpass) < 3:
             self.msg("Passwords must be at least three characters long.")
         else:
-            player.set_password(newpass)
-            player.save()
+            account.set_password(newpass)
+            account.save()
             self.msg("Password changed.")
 
 
@@ -646,30 +646,29 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
     game. Use the /all switch to disconnect from all sessions.
     """
     key = "@quit"
-    aliases = "quit"
     locks = "cmd:all()"
 
     # this is used by the parent
-    player_caller = True
+    account_caller = True
 
     def func(self):
         """hook function"""
-        player = self.player
+        account = self.account
 
         if 'all' in self.switches:
-            player.msg("|RQuitting|n all sessions. Hope to see you soon again.", session=self.session)
-            for session in player.sessions.all():
-                player.disconnect_session_from_player(session)
+            account.msg("|RQuitting|n all sessions. Hope to see you soon again.", session=self.session)
+            for session in account.sessions.all():
+                account.disconnect_session_from_account(session)
         else:
-            nsess = len(player.sessions.all())
+            nsess = len(account.sessions.all())
             if nsess == 2:
-                player.msg("|RQuitting|n. One session is still connected.", session=self.session)
+                account.msg("|RQuitting|n. One session is still connected.", session=self.session)
             elif nsess > 2:
-                player.msg("|RQuitting|n. %i sessions are still connected." % (nsess-1), session=self.session)
+                account.msg("|RQuitting|n. %i sessions are still connected." % (nsess-1), session=self.session)
             else:
                 # we are quitting the last available session
-                player.msg("|RQuitting|n. Hope to see you again, soon.", session=self.session)
-            player.disconnect_session_from_player(self.session)
+                account.msg("|RQuitting|n. Hope to see you again, soon.", session=self.session)
+            account.disconnect_session_from_account(self.session)
 
 
 class CmdColorTest(COMMAND_DEFAULT_CLASS):
@@ -686,12 +685,19 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     color - if not you will see rubbish appear.
     """
     key = "@color"
-    aliases = "color"
     locks = "cmd:all()"
     help_category = "General"
 
     # this is used by the parent
-    player_caller = True
+    account_caller = True
+
+    # the slices of the ANSI_PARSER lists to use for retrieving the
+    # relevant color tags to display. Replace if using another schema.
+    # This command can only show one set of markup.
+    slice_bright_fg = slice(7, 15)  # from ANSI_PARSER.ansi_map
+    slice_dark_fg = slice(15, 23)   # from ANSI_PARSER.ansi_map
+    slice_dark_bg = slice(-8, None)  # from ANSI_PARSER.ansi_map
+    slice_bright_bg = slice(None, None)  # from ANSI_PARSER.ansi_xterm256_bright_bg_map
 
     def table_format(self, table):
         """
@@ -718,14 +724,16 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
             ap = ansi.ANSI_PARSER
             # ansi colors
             # show all ansi color-related codes
-            col1 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[48:56]]
-            col2 = ["%s%s|n" % (code, code.replace("|", "||")) for code, _ in ap.ext_ansi_map[56:64]]
-            col3 = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
-                    for code, _ in ap.ext_ansi_map[-8:]]
-            col4 = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
-                    for code, _ in ap.ansi_bright_bgs[-8:]]
-            col2.extend(["" for _ in range(len(col1)-len(col2))])
-            table = utils.format_table([col1, col2, col4, col3])
+            bright_fg = ["%s%s|n" % (code, code.replace("|", "||"))
+                         for code, _ in ap.ansi_map[self.slice_bright_fg]]
+            dark_fg = ["%s%s|n" % (code, code.replace("|", "||"))
+                       for code, _ in ap.ansi_map[self.slice_dark_fg]]
+            dark_bg = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
+                       for code, _ in ap.ansi_map[self.slice_dark_bg]]
+            bright_bg = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
+                         for code, _ in ap.ansi_xterm256_bright_bg_map[self.slice_bright_bg]]
+            dark_fg.extend(["" for _ in range(len(bright_fg)-len(dark_fg))])
+            table = utils.format_table([bright_fg, dark_fg, bright_bg, dark_bg])
             string = "ANSI colors:"
             for row in table:
                 string += "\n " + " ".join(row)
@@ -776,30 +784,30 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
 
 class CmdQuell(COMMAND_DEFAULT_CLASS):
     """
-    use character's permissions instead of player's
+    use character's permissions instead of account's
 
     Usage:
       quell
       unquell
 
-    Normally the permission level of the Player is used when puppeting a
+    Normally the permission level of the Account is used when puppeting a
     Character/Object to determine access. This command will switch the lock
     system to make use of the puppeted Object's permissions instead. This is
     useful mainly for testing.
-    Hierarchical permission quelling only work downwards, thus a Player cannot
+    Hierarchical permission quelling only work downwards, thus an Account cannot
     use a higher-permission Character to escalate their permission level.
     Use the unquell command to revert back to normal operation.
     """
 
     key = "@quell"
     aliases = ["@unquell"]
-    locks = "cmd:pperm(Players)"
+    locks = "cmd:pperm(Account)"
     help_category = "General"
 
     # this is used by the parent
-    player_caller = True
+    account_caller = True
 
-    def _recache_locks(self, player):
+    def _recache_locks(self, account):
         """Helper method to reset the lockhandler on an already puppeted object"""
         if self.session:
             char = self.session.puppet
@@ -808,31 +816,31 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
                 # the lock caches (otherwise the superuser status change
                 # won't be visible until repuppet)
                 char.locks.reset()
-        player.locks.reset()
+        account.locks.reset()
 
     def func(self):
         """Perform the command"""
-        player = self.player
-        permstr = player.is_superuser and " (superuser)" or "(%s)" % (", ".join(player.permissions.all()))
+        account = self.account
+        permstr = account.is_superuser and " (superuser)" or "(%s)" % (", ".join(account.permissions.all()))
         if self.cmdstring == '@unquell':
-            if not player.attributes.get('_quell'):
-                self.msg("Already using normal Player permissions %s." % permstr)
+            if not account.attributes.get('_quell'):
+                self.msg("Already using normal Account permissions %s." % permstr)
             else:
-                player.attributes.remove('_quell')
-                self.msg("Player permissions %s restored." % permstr)
+                account.attributes.remove('_quell')
+                self.msg("Account permissions %s restored." % permstr)
         else:
-            if player.attributes.get('_quell'):
-                self.msg("Already quelling Player %s permissions." % permstr)
+            if account.attributes.get('_quell'):
+                self.msg("Already quelling Account %s permissions." % permstr)
                 return
-            player.attributes.add('_quell', True)
+            account.attributes.add('_quell', True)
             puppet = self.session.puppet
             if puppet:
                 cpermstr = "(%s)" % ", ".join(puppet.permissions.all())
                 cpermstr = "Quelling to current puppet's permissions %s." % cpermstr
-                cpermstr += "\n(Note: If this is higher than Player permissions %s," \
+                cpermstr += "\n(Note: If this is higher than Account permissions %s," \
                             " the lowest of the two will be used.)" % permstr
                 cpermstr += "\nUse @unquell to return to normal permission usage."
                 self.msg(cpermstr)
             else:
-                self.msg("Quelling Player permissions%s. Use @unquell to get them back." % permstr)
-        self._recache_locks(player)
+                self.msg("Quelling Account permissions%s. Use @unquell to get them back." % permstr)
+        self._recache_locks(account)

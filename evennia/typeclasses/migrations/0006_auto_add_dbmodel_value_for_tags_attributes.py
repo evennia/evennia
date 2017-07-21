@@ -11,10 +11,10 @@ def update_tags_with_dbmodel(apps, schema_editor):
         obj.db_attributes.all().update(db_model="objectdb")
         obj.db_tags.all().update(db_model="objectdb")
 
-    PlayerDB = apps.get_model('players', 'PlayerDB')
-    for obj in PlayerDB.objects.all():
-        obj.db_attributes.all().update(db_model="playerdb")
-        obj.db_tags.all().update(db_model="playerdb")
+    AccountDB = apps.get_model('accounts', 'AccountDB')
+    for obj in AccountDB.objects.all():
+        obj.db_attributes.all().update(db_model="accountdb")
+        obj.db_tags.all().update(db_model="accountdb")
 
     ScriptDB = apps.get_model('scripts', 'ScriptDB')
     for obj in ScriptDB.objects.all():

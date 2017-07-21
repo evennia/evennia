@@ -6,12 +6,12 @@ Both sides use this same protocol.
 The separation works like this:
 
 Portal - (AMP client) handles protocols. It contains a list of connected
-         sessions in a dictionary for identifying the respective player
+         sessions in a dictionary for identifying the respective account
          connected. If it loses the AMP connection it will automatically
          try to reconnect.
 
 Server - (AMP server) Handles all mud operations. The server holds its own list
-         of sessions tied to player objects. This is synced against the portal
+         of sessions tied to account objects. This is synced against the portal
          at startup and when a session connects/disconnects
 
 """

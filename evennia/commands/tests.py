@@ -266,15 +266,15 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         deferred.addCallback(_callback)
         return deferred
 
-    def test_from_player(self):
-        from evennia.commands.default.cmdset_player import PlayerCmdSet
+    def test_from_account(self):
+        from evennia.commands.default.cmdset_account import AccountCmdSet
         a = self.cmdset_a
         a.no_channels = True
-        self.set_cmdsets(self.player, a)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.player, None, self.player, None, "player", "")
+        self.set_cmdsets(self.account, a)
+        deferred = cmdhandler.get_and_merge_cmdsets(self.account, None, self.account, None, "account", "")
         # get_and_merge_cmdsets converts  to lower-case internally.
         def _callback(cmdset):
-            pcmdset = PlayerCmdSet()
+            pcmdset = AccountCmdSet()
             pcmdset.at_cmdset_creation()
             pcmds = [cmd.key for cmd in pcmdset.commands] + ["a", "b", "c", "d"]
             self.assertTrue(all(cmd.key in pcmds for cmd in cmdset.commands))
@@ -305,18 +305,18 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
 
     def test_autocmdsets(self):
         import evennia
-        from evennia.commands.default.cmdset_player import PlayerCmdSet
+        from evennia.commands.default.cmdset_account import AccountCmdSet
         from evennia.comms.channelhandler import CHANNEL_HANDLER
         testchannel = evennia.create_channel("channeltest", locks="listen:all();send:all()")
         CHANNEL_HANDLER.add(testchannel)
         CHANNEL_HANDLER.update()
-        self.assertTrue(testchannel.connect(self.player))
-        self.assertTrue(testchannel.has_connection(self.player))
+        self.assertTrue(testchannel.connect(self.account))
+        self.assertTrue(testchannel.has_connection(self.account))
         a, b, c, d = self.cmdset_a, self.cmdset_b, self.cmdset_c, self.cmdset_d
-        self.set_cmdsets(self.player, a, b, c, d)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.session, self.session, self.player, self.char1, "session", "")
+        self.set_cmdsets(self.account, a, b, c, d)
+        deferred = cmdhandler.get_and_merge_cmdsets(self.session, self.session, self.account, self.char1, "session", "")
         def _callback(cmdset):
-            pcmdset = PlayerCmdSet()
+            pcmdset = AccountCmdSet()
             pcmdset.at_cmdset_creation()
             pcmds = [cmd.key for cmd in pcmdset.commands] + ["a", "b", "c", "d"] + ["out"]
             self.assertTrue(all(cmd.key or hasattr(cmd, "is_channel") in pcmds for cmd in cmdset.commands))

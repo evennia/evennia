@@ -297,17 +297,17 @@ class LidOpenCmdSet(CmdSet):
 
 class BlindCmdSet(CmdSet):
     """
-    This is the cmdset added to the *player* when
+    This is the cmdset added to the *account* when
     the button is pushed.
     """
     key = "BlindCmdSet"
     # we want it to completely replace all normal commands
     # until the timed script removes it again.
     mergetype = "Replace"
-    # we want to stop the player from walking around
+    # we want to stop the account from walking around
     # in this blinded state, so we hide all exits too.
     # (channel commands will still work).
-    no_exits = True  # keep player in the same room
+    no_exits = True  # keep account in the same room
     no_objs = True  # don't allow object commands
 
     def at_cmdset_creation(self):

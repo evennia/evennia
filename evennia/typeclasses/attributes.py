@@ -10,6 +10,7 @@ which is a non-db version of Attributes.
 """
 from builtins import object
 import re
+import fnmatch
 import weakref
 
 from django.db import models
@@ -20,7 +21,7 @@ from evennia.locks.lockhandler import LockHandler
 from evennia.utils.idmapper.models import SharedMemoryModel
 from evennia.utils.dbserialize import to_pickle, from_pickle
 from evennia.utils.picklefield import PickledObjectField
-from evennia.utils.utils import lazy_property, to_str, make_iter
+from evennia.utils.utils import lazy_property, to_str, make_iter, is_iter
 
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 
@@ -221,7 +222,11 @@ class AttributeHandler(object):
         query = {"%s__id" % self._model: self._objid,
                  "attribute__db_model__iexact": self._model,
                  "attribute__db_attrtype": self._attrtype}
-        attrs = [conn.attribute for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
+        attrs = [
+            conn.attribute for conn in getattr(
+                self.obj,
+                self._m2m_fieldname).through.objects.filter(
+                **query)]
         self._cache = dict(("%s-%s" % (to_str(attr.db_key).lower(),
                                        attr.db_category.lower() if attr.db_category else None),
                             attr) for attr in attrs)
@@ -421,6 +426,7 @@ class AttributeHandler(object):
 
         class RetDefault(object):
             """Holds default values"""
+
             def __init__(self):
                 self.key = None
                 self.value = default
@@ -441,7 +447,8 @@ class AttributeHandler(object):
 
         if accessing_obj:
             # check 'attrread' locks
-            ret = [attr for attr in ret if attr.access(accessing_obj, self._attrread, default=default_access)]
+            ret = [attr for attr in ret if attr.access(accessing_obj,
+                                                       self._attrread, default=default_access)]
         if strattr:
             ret = ret if return_obj else [attr.strvalue for attr in ret if attr]
         else:
@@ -473,7 +480,8 @@ class AttributeHandler(object):
                 `attrcreate` is defined on the Attribute in question.
 
         """
-        if accessing_obj and not self.obj.access(accessing_obj, self._attrcreate, default=default_access):
+        if accessing_obj and not self.obj.access(accessing_obj, self._attrcreate,
+                                                 default=default_access):
             # check create access
             return
 
@@ -508,53 +516,56 @@ class AttributeHandler(object):
             # update cache
             self._setcache(keystr, category, new_attr)
 
-    def batch_add(self, key, value, category=None, lockstring="",
-                  strattr=False, accessing_obj=None, default_access=True):
+    def batch_add(self, *args, **kwargs):
         """
         Batch-version of `add()`. This is more efficient than
         repeat-calling add when having many Attributes to add.
 
         Args:
-            key (list): A list of Attribute names to add.
-            value (list): A list of values. It must match the `key`
-                list.  If `strattr` keyword is set, all entries *must* be
-                strings.
-            category (str, optional): The category for the Attribute.
-                The default `None` is the normal category used.
-            lockstring (str, optional): A lock string limiting access
-                to the attribute.
-            strattr (bool, optional): Make this a string-only Attribute.
-                This is only ever useful for optimization purposes.
-            accessing_obj (object, optional): An entity to check for
-                the `attrcreate` access-type. If not passing, this method
-                will be exited.
-            default_access (bool, optional): What access to grant if
-                `accessing_obj` is given but no lock of the type
-                `attrcreate` is defined on the Attribute in question.
+            indata (tuple): Tuples of varying length representing the
+                Attribute to add to this object.
+                    - `(key, value)`
+                    - `(key, value, category)`
+                    - `(key, value, category, lockstring)`
+                    - `(key, value, category, lockstring, default_access)`
+
+        Kwargs:
+            strattr (bool): If `True`, value must be a string. This
+                will save the value without pickling which is less
+                flexible but faster to search (not often used except
+                internally).
 
         Raises:
-            RuntimeError: If `key` and `value` lists are not of the
-                same lengths.
+            RuntimeError: If trying to pass a non-iterable as argument.
+
+        Notes:
+            The indata tuple order matters, so if you want a lockstring
+            but no category, set the category to `None`. This method
+            does not have the ability to check editing permissions like
+            normal .add does, and is mainly used internally. It does not
+            use the normal self.add but apply the Attributes directly
+            to the database.
+
         """
-        if accessing_obj and not self.obj.access(accessing_obj, self._attrcreate, default=default_access):
-            # check create access
-            return
-
-        keys, values = make_iter(key), make_iter(value)
-
-        if len(keys) != len(values):
-            raise RuntimeError("AttributeHandler.add(): key and value lists of different length: %s vs %s" % key, value)
-        category = category.strip().lower() if category is not None else None
         new_attrobjs = []
-        for ikey, keystr in enumerate(keys):
-            keystr = keystr.strip().lower()
-            new_value = values[ikey]
+        strattr = kwargs.get('strattr', False)
+        for tup in args:
+            if not is_iter(tup) or len(tup) < 2:
+                raise RuntimeError("batch_add requires iterables as arguments (got %r)." % tup)
+            ntup = len(tup)
+            keystr = str(tup[0]).strip().lower()
+            new_value = tup[1]
+            category = str(tup[2]).strip().lower() if ntup > 2 else None
+            lockstring = tup[3] if ntup > 3 else ""
 
             attr_objs = self._getcache(keystr, category)
 
             if attr_objs:
                 attr_obj = attr_objs[0]
                 # update an existing attribute object
+                attr_obj.db_category = category
+                attr_obj.db_lock_storage = lockstring
+                attr_obj.save(update_fields=["db_category", "db_lock_storage"])
                 if strattr:
                     # store as a simple string (will not notify OOB handlers)
                     attr_obj.db_strvalue = new_value
@@ -569,7 +580,8 @@ class AttributeHandler(object):
                           "db_model": self._model,
                           "db_attrtype": self._attrtype,
                           "db_value": None if strattr else to_pickle(new_value),
-                          "db_strvalue": value if strattr else None}
+                          "db_strvalue": new_value if strattr else None,
+                          "db_lock_storage": lockstring}
                 new_attr = Attribute(**kwargs)
                 new_attr.save()
                 new_attrobjs.append(new_attr)
@@ -605,8 +617,11 @@ class AttributeHandler(object):
         for keystr in make_iter(key):
             attr_objs = self._getcache(keystr, category)
             for attr_obj in attr_objs:
-                if not (accessing_obj and not attr_obj.access(accessing_obj,
-                        self._attredit, default=default_access)):
+                if not (
+                    accessing_obj and not attr_obj.access(
+                        accessing_obj,
+                        self._attredit,
+                        default=default_access)):
                     try:
                         attr_obj.delete()
                     except AssertionError:
@@ -698,7 +713,6 @@ Custom arg markers
    $N      argument position (1-99)
 
 """
-import fnmatch
 _RE_NICK_ARG = re.compile(r"\\(\$)([1-9][0-9]?)")
 _RE_NICK_TEMPLATE_ARG = re.compile(r"(\$)([1-9][0-9]?)")
 _RE_NICK_SPACE = re.compile(r"\\ ")
@@ -816,7 +830,8 @@ class NickHandler(AttributeHandler):
         else:
             retval = super(NickHandler, self).get(key=key, category=category, **kwargs)
             if retval:
-                return retval[3] if isinstance(retval, tuple) else [tup[3] for tup in make_iter(retval)]
+                return retval[3] if isinstance(retval, tuple) else \
+                    [tup[3] for tup in make_iter(retval)]
             return None
 
     def add(self, key, replacement, category="inputline", **kwargs):
@@ -836,7 +851,8 @@ class NickHandler(AttributeHandler):
             nick_regex, nick_template = initialize_nick_templates(key + " $1", replacement + " $1")
         else:
             nick_regex, nick_template = initialize_nick_templates(key, replacement)
-        super(NickHandler, self).add(key, (nick_regex, nick_template, key, replacement), category=category, **kwargs)
+        super(NickHandler, self).add(key, (nick_regex, nick_template, key, replacement),
+                                     category=category, **kwargs)
 
     def remove(self, key, category="inputline", **kwargs):
         """
@@ -852,7 +868,7 @@ class NickHandler(AttributeHandler):
         """
         super(NickHandler, self).remove(key, category=category, **kwargs)
 
-    def nickreplace(self, raw_string, categories=("inputline", "channel"), include_player=True):
+    def nickreplace(self, raw_string, categories=("inputline", "channel"), include_account=True):
         """
         Apply nick replacement of entries in raw_string with nick replacement.
 
@@ -862,8 +878,8 @@ class NickHandler(AttributeHandler):
             categories (tuple, optional): Replacement categories in
                 which to perform the replacement, such as "inputline",
                 "channel" etc.
-            include_player (bool, optional): Also include replacement
-                with nicks stored on the Player level.
+            include_account (bool, optional): Also include replacement
+                with nicks stored on the Account level.
             kwargs (any, optional): Not used.
 
         Returns:
@@ -873,13 +889,12 @@ class NickHandler(AttributeHandler):
         """
         nicks = {}
         for category in make_iter(categories):
-            nicks.update({nick.key: nick
-                          for nick in make_iter(self.get(category=category, return_obj=True)) if nick and nick.key})
-        if include_player and self.obj.has_player:
+            nicks.update({nick.key: nick for nick in make_iter(
+                self.get(category=category, return_obj=True)) if nick and nick.key})
+        if include_account and self.obj.has_account:
             for category in make_iter(categories):
-                nicks.update({nick.key: nick
-                              for nick in make_iter(self.obj.player.nicks.get(category=category, return_obj=True))
-                              if nick and nick.key})
+                nicks.update({nick.key: nick for nick in make_iter(self.obj.account.nicks.get(
+                    category=category, return_obj=True)) if nick and nick.key})
         for key, nick in nicks.iteritems():
             nick_regex, template, _, _ = nick.value
             regex = self._regex_cache.get(nick_regex)
@@ -900,6 +915,7 @@ class NAttributeHandler(object):
     by the `.ndb` handler in the same way as `.db` does
     for the `AttributeHandler`.
     """
+
     def __init__(self, obj):
         """
         Initialized on the object

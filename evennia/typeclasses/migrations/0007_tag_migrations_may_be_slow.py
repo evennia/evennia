@@ -17,12 +17,12 @@ def update_tags_with_dbmodel(apps, schema_editor):
             newtag.save()
             obj.db_tags.add(newtag)
 
-    PlayerDB = apps.get_model('players', 'PlayerDB')
-    for obj in PlayerDB.objects.all().exclude(db_tags__db_model="playerdb"):
-        for tag in obj.db_tags.all().exclude(db_model="playerdb"):
+    AccountDB = apps.get_model('accounts', 'AccountDB')
+    for obj in AccountDB.objects.all().exclude(db_tags__db_model="accountdb"):
+        for tag in obj.db_tags.all().exclude(db_model="accountdb"):
             obj.db_tags.remove(tag)
             newtag = Tag(db_key=tag.db_key, db_category=tag.db_category,
-                         db_data=tag.db_data, db_tagtype=tag.db_tagtype, db_model="playerdb")
+                         db_data=tag.db_data, db_tagtype=tag.db_tagtype, db_model="accountdb")
             newtag.save()
             obj.db_tags.add(newtag)
 

@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='msg',
-            name='db_hide_from_players',
-            field=models.ManyToManyField(related_name=b'hide_from_players_set', null=True, to=settings.AUTH_USER_MODEL),
+            name='db_hide_from_accounts',
+            field=models.ManyToManyField(related_name=b'hide_from_accounts_set', null=True, to=settings.AUTH_USER_MODEL),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -35,8 +35,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='msg',
-            name='db_receivers_players',
-            field=models.ManyToManyField(help_text=b'player receivers', related_name=b'receiver_player_set', null=True, to=settings.AUTH_USER_MODEL),
+            name='db_receivers_accounts',
+            field=models.ManyToManyField(help_text=b'account receivers', related_name=b'receiver_account_set', null=True, to=settings.AUTH_USER_MODEL),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -47,8 +47,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='msg',
-            name='db_sender_players',
-            field=models.ManyToManyField(related_name=b'sender_player_set', null=True, verbose_name=b'sender(player)', to=settings.AUTH_USER_MODEL, db_index=True),
+            name='db_sender_accounts',
+            field=models.ManyToManyField(related_name=b'sender_account_set', null=True, verbose_name=b'sender(account)', to=settings.AUTH_USER_MODEL, db_index=True),
             preserve_default=True,
         ),
         migrations.AddField(

@@ -64,8 +64,8 @@ ENFORCED_SETTING = False
 # requirements
 PYTHON_MIN = '2.7'
 TWISTED_MIN = '16.0.0'
-DJANGO_MIN = '1.8'
-DJANGO_REC = '1.9'
+DJANGO_MIN = '1.11'
+DJANGO_REC = '1.11'
 
 sys.path[1] = EVENNIA_ROOT
 
@@ -132,15 +132,15 @@ ERROR_NO_GAMEDIR = \
 
 WARNING_MOVING_SUPERUSER = \
     """
-    WARNING: Evennia expects a Player superuser with id=1. No such
-    Player was found. However, another superuser ('{other_key}',
+    WARNING: Evennia expects an Account superuser with id=1. No such
+    Account was found. However, another superuser ('{other_key}',
     id={other_id}) was found in the database. If you just created this
     superuser and still see this text it is probably due to the
     database being flushed recently - in this case the database's
     internal auto-counter might just start from some value higher than
     one.
 
-    We will fix this by assigning the id 1 to Player '{other_key}'.
+    We will fix this by assigning the id 1 to Account '{other_key}'.
     Please confirm this is acceptable before continuing.
     """
 
@@ -182,7 +182,7 @@ RECREATED_SETTINGS = \
 
     Note that if you were using an existing database, the password
     salt of this new settings file will be different from the old one.
-    This means that any existing players may not be able to log in to
+    This means that any existing accounts may not be able to log in to
     their accounts with their old passwords.
     """
 
@@ -270,7 +270,7 @@ HELP_ENTRY = \
     adding new protocols or are debugging Evennia itself.
 
     Reload with (5) to update the server with your changes without
-    disconnecting any players.
+    disconnecting any accounts.
 
     Note: Reload and stop are sometimes poorly supported in Windows. If you
     have issues, log into the game to stop or restart the server instead.
@@ -344,10 +344,13 @@ ERROR_DJANGO_MIN = \
     ERROR: Django {dversion} found. Evennia requires version {django_min}
     or higher.
 
-    Install it with for example `pip install --upgrade django`
+    If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
+    `evennia` is the folder to where you cloned the Evennia library. If not
+    in a virtualenv you can install django with for example `pip install --upgrade django`
     or with `pip install django=={django_min}` to get a specific version.
 
-    It's also a good idea to run `evennia migrate` after this upgrade.
+    It's also a good idea to run `evennia migrate` after this upgrade. Ignore
+    any warnings and don't run `makemigrate` even if told to.
     """
 
 NOTE_DJANGO_MIN = \
@@ -578,11 +581,11 @@ def create_game_directory(dirname):
 
 def create_superuser():
     """
-    Create the superuser player
+    Create the superuser account
 
     """
     print(
-        "\nCreate a superuser below. The superuser is Player #1, the 'owner' "
+        "\nCreate a superuser below. The superuser is Account #1, the 'owner' "
         "account of the server.\n")
     django.core.management.call_command("createsuperuser", interactive=True)
 
@@ -599,20 +602,20 @@ def check_database():
     tables = connection.introspection.get_table_list(connection.cursor())
     if not tables or not isinstance(tables[0], basestring): # django 1.8+
         tables = [tableinfo.name for tableinfo in tables]
-    if tables and u'players_playerdb' in tables:
+    if tables and u'accounts_accountdb' in tables:
         # database exists and seems set up. Initialize evennia.
         evennia._init()
-    # Try to get Player#1
-    from evennia.players.models import PlayerDB
+    # Try to get Account#1
+    from evennia.accounts.models import AccountDB
     try:
-        PlayerDB.objects.get(id=1)
+        AccountDB.objects.get(id=1)
     except django.db.utils.OperationalError as e:
         print(ERROR_DATABASE.format(traceback=e))
         sys.exit()
-    except PlayerDB.DoesNotExist:
+    except AccountDB.DoesNotExist:
         # no superuser yet. We need to create it.
 
-        other_superuser = PlayerDB.objects.filter(is_superuser=True)
+        other_superuser = AccountDB.objects.filter(is_superuser=True)
         if other_superuser:
             # Another superuser was found, but not with id=1. This may
             # happen if using flush (the auto-id starts at a higher
@@ -808,10 +811,10 @@ def error_check_python_modules():
         print("Warning: CMDSET_UNLOGGED failed to load!")
     if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None):
         print("Warning: CMDSET_CHARACTER failed to load")
-    if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None):
-        print("Warning: CMDSET_PLAYER failed to load")
+    if not cmdsethandler.import_cmdset(settings.CMDSET_ACCOUNT, None):
+        print("Warning: CMDSET_ACCOUNT failed to load")
     # typeclasses
-    _imp(settings.BASE_PLAYER_TYPECLASS)
+    _imp(settings.BASE_ACCOUNT_TYPECLASS)
     _imp(settings.BASE_OBJECT_TYPECLASS)
     _imp(settings.BASE_CHARACTER_TYPECLASS)
     _imp(settings.BASE_ROOM_TYPECLASS)
@@ -942,10 +945,10 @@ def run_dummyrunner(number_of_dummies):
     Start an instance of the dummyrunner
 
     Args:
-        number_of_dummies (int): The number of dummy players to start.
+        number_of_dummies (int): The number of dummy accounts to start.
 
     Notes:
-        The dummy players' behavior can be customized by adding a
+        The dummy accounts' behavior can be customized by adding a
         `dummyrunner_settings.py` config file in the game's conf/
         directory.
 
@@ -1212,7 +1215,7 @@ def main():
     parser.add_argument(
         '--dummyrunner', nargs=1, action='store', dest='dummyrunner',
         metavar="N",
-        help="Test a running server by connecting N dummy players to it.")
+        help="Test a running server by connecting N dummy accounts to it.")
     parser.add_argument(
         '--settings', nargs=1, action='store', dest='altsettings',
         default=None, metavar="filename.py",

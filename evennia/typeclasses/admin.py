@@ -113,13 +113,13 @@ class TagInline(admin.TabularInline):
     and the 'model' and 'related_field' class attributes must be set. model should be the
     through model (ObjectDB_db_tag', for example), while related field should be the name
     of the field on that through model which points to the model being used: 'objectdb',
-    'msg', 'playerdb', etc.
+    'msg', 'accountdb', etc.
     """
     # Set this to the through model of your desired M2M when subclassing.
     model = None
     form = TagForm
     formset = TagFormSet
-    related_field = None  # Must be 'objectdb', 'playerdb', 'msg', etc. Set when subclassing
+    related_field = None  # Must be 'objectdb', 'accountdb', 'msg', etc. Set when subclassing
     raw_id_fields = ('tag',)
     readonly_fields = ('tag',)
     extra = 0
@@ -253,13 +253,13 @@ class AttributeInline(admin.TabularInline):
     and the 'model' and 'related_field' class attributes must be set. model should be the
     through model (ObjectDB_db_tag', for example), while related field should be the name
     of the field on that through model which points to the model being used: 'objectdb',
-    'msg', 'playerdb', etc.
+    'msg', 'accountdb', etc.
     """
     # Set this to the through model of your desired M2M when subclassing.
     model = None
     form = AttributeForm
     formset = AttributeFormSet
-    related_field = None  # Must be 'objectdb', 'playerdb', 'msg', etc. Set when subclassing
+    related_field = None  # Must be 'objectdb', 'accountdb', 'msg', etc. Set when subclassing
     raw_id_fields = ('attribute',)
     readonly_fields = ('attribute',)
     extra = 0

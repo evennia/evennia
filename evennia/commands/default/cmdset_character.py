@@ -1,8 +1,8 @@
 """
 This module ties together all the commands default Character objects have
 available (i.e. IC commands). Note that some commands, such as
-communication-commands are instead put on the player level, in the
-Player cmdset. Player commands remain available also to Characters.
+communication-commands are instead put on the account level, in the
+Account cmdset. Account commands remain available also to Characters.
 """
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.default import general, help, admin, system
@@ -25,7 +25,7 @@ class CharacterCmdSet(CmdSet):
         self.add(general.CmdInventory())
         self.add(general.CmdPose())
         self.add(general.CmdNick())
-        self.add(general.CmdDesc())
+        self.add(general.CmdSetDesc())
         self.add(general.CmdGet())
         self.add(general.CmdDrop())
         self.add(general.CmdGive())
@@ -41,7 +41,7 @@ class CharacterCmdSet(CmdSet):
         self.add(system.CmdPy())
         self.add(system.CmdScripts())
         self.add(system.CmdObjects())
-        self.add(system.CmdPlayers())
+        self.add(system.CmdAccounts())
         self.add(system.CmdService())
         self.add(system.CmdAbout())
         self.add(system.CmdTime())

@@ -24,7 +24,7 @@ def check_errors(settings):
         raise DeprecationWarning(deprstring % (
             "CMDSET_DEFAULT", "CMDSET_CHARACTER"))
     if hasattr(settings, "CMDSET_OOC"):
-        raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_PLAYER"))
+        raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_ACCOUNT"))
     if settings.WEBSERVER_ENABLED and not isinstance(settings.WEBSERVER_PORTS[0], tuple):
         raise DeprecationWarning(
             "settings.WEBSERVER_PORTS must be on the form "
@@ -46,8 +46,8 @@ def check_errors(settings):
         raise DeprecationWarning(deprstring % "OBJECT_TYPECLASS_PATHS")
     if hasattr(settings, "SCRIPT_TYPECLASS_PATHS"):
         raise DeprecationWarning(deprstring % "SCRIPT_TYPECLASS_PATHS")
-    if hasattr(settings, "PLAYER_TYPECLASS_PATHS"):
-        raise DeprecationWarning(deprstring % "PLAYER_TYPECLASS_PATHS")
+    if hasattr(settings, "ACCOUNT_TYPECLASS_PATHS"):
+        raise DeprecationWarning(deprstring % "ACCOUNT_TYPECLASS_PATHS")
     if hasattr(settings, "CHANNEL_TYPECLASS_PATHS"):
         raise DeprecationWarning(deprstring % "CHANNEL_TYPECLASS_PATHS")
     if hasattr(settings, "SEARCH_MULTIMATCH_SEPARATOR"):

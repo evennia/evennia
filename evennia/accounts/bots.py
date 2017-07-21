@@ -1,12 +1,12 @@
 """
 Bots are a special child typeclasses of
-Player that are  controlled by the server.
+Account that are  controlled by the server.
 
 """
 from __future__ import print_function
 import time
 from django.conf import settings
-from evennia.players.players import DefaultPlayer
+from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import search
 from evennia.utils import utils
@@ -48,7 +48,7 @@ class BotStarter(DefaultScript):
 
         """
         if not self.db.started:
-            self.player.start()
+            self.account.start()
             self.db.started = True
 
     def at_repeat(self):
@@ -63,7 +63,7 @@ class BotStarter(DefaultScript):
         global _SESSIONS
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-        for session in _SESSIONS.sessions_from_player(self.player):
+        for session in _SESSIONS.sessions_from_account(self.account):
             session.update_session_counters(idle=True)
 
     def at_server_reload(self):
@@ -85,7 +85,7 @@ class BotStarter(DefaultScript):
 # Bot base class
 
 
-class Bot(DefaultPlayer):
+class Bot(DefaultAccount):
     """
     A Bot will start itself when the server starts (it will generally
     not do so on a reload - that will be handled by the normal Portal
@@ -101,7 +101,7 @@ class Bot(DefaultPlayer):
         # the text encoding to use.
         self.db.encoding = "utf-8"
         # A basic security setup
-        lockstring = "examine:perm(Wizards);edit:perm(Wizards);delete:perm(Wizards);boot:perm(Wizards);msg:false()"
+        lockstring = "examine:perm(Admin);edit:perm(Admin);delete:perm(Admin);boot:perm(Admin);msg:false()"
         self.locks.add(lockstring)
         # set the basics of being a bot
         script_key = "%s" % self.key
@@ -211,7 +211,7 @@ class IRCBot(Bot):
         Retrive the nick list from the connected channel.
 
         Args:
-            caller (Object or Player): The requester of the list. This will
+            caller (Object or Account): The requester of the list. This will
                 be stored and echoed to when the irc network replies with the
                 requested info.
 
@@ -231,7 +231,7 @@ class IRCBot(Bot):
         Fire a ping to the IRC server.
 
         Args:
-            caller (Object or Player): The requester of the ping.
+            caller (Object or Account): The requester of the ping.
 
         """
         if not hasattr(self, "_ping_callers"):
@@ -242,7 +242,7 @@ class IRCBot(Bot):
     def reconnect(self):
         """
         Force a protocol-side reconnect of the client without
-        having to destroy/recreate the bot "player".
+        having to destroy/recreate the bot "account".
 
         """
         super(IRCBot, self).msg(reconnect="")
@@ -323,8 +323,8 @@ class IRCBot(Bot):
                 for sess in _SESSIONS.get_sessions():
                     delta_cmd = t0 - sess.cmd_last_visible
                     delta_conn = t0 - session.conn_time
-                    player = sess.get_player()
-                    whos.append("%s (%s/%s)" % (utils.crop("|w%s|n" % player.name, width=25),
+                    account = sess.get_account()
+                    whos.append("%s (%s/%s)" % (utils.crop("|w%s|n" % account.name, width=25),
                                                 utils.time_format(delta_conn, 0),
                                                 utils.time_format(delta_cmd, 1)))
                 text = "Who list (online/idle): %s" % ", ".join(sorted(whos, key=lambda w: w.lower()))

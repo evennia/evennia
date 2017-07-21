@@ -17,8 +17,8 @@ COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # Permissions
 WITH_VALIDATION = getattr(settings, "callbackS_WITH_VALIDATION", None)
 WITHOUT_VALIDATION = getattr(settings, "callbackS_WITHOUT_VALIDATION",
-        "immortals")
-VALIDATING = getattr(settings, "callbackS_VALIDATING", "immortals")
+        "developer")
+VALIDATING = getattr(settings, "callbackS_VALIDATING", "developer")
 
 # Split help text
 BASIC_HELP = "Add, edit or delete callbacks."
@@ -94,7 +94,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
         on user permission.
 
         Args:
-            caller (Object or Player): the caller asking for help on the command.
+            caller (Object or Account): the caller asking for help on the command.
             cmdset (CmdSet): the command set (if you need additional commands).
 
         Returns:
@@ -360,8 +360,8 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
         callback = dict(callback)
         self.caller.db._callback = callback
         EvEditor(self.caller, loadfunc=_ev_load, savefunc=_ev_save,
-                quitfunc=_ev_quit, key="Callback {} of {}".format(
-                callback_name, obj), persistent=True, codefunc=_ev_save)
+                 quitfunc=_ev_quit, key="Callback {} of {}".format(
+                 callback_name, obj), persistent=True, codefunc=_ev_save)
 
     def del_callback(self):
         """Delete a callback."""

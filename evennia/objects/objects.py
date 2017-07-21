@@ -1,6 +1,6 @@
 """
 This module defines the basic `DefaultObject` and its children
-`DefaultCharacter`, `DefaultPlayer`, `DefaultRoom` and `DefaultExit`.
+`DefaultCharacter`, `DefaultAccount`, `DefaultRoom` and `DefaultExit`.
 These are the (default) starting points for all in-game visible
 entities.
 
@@ -21,7 +21,8 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
-                                 make_iter, to_unicode, calledby, is_iter)
+                                 make_iter, to_unicode, is_iter)
+from django.utils.translation import ugettext as _
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
@@ -31,8 +32,6 @@ _SESSIONS = None
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 # the sessid_max is based on the length of the db_sessid csv field (excluding commas)
 _SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
-
-from django.utils.translation import ugettext as _
 
 
 class ObjectSessionHandler(object):
@@ -206,9 +205,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         return ObjectSessionHandler(self)
 
     @property
-    def has_player(self):
+    def has_account(self):
         """
-        Convenience property for checking if an active player is
+        Convenience property for checking if an active account is
         currently connected to this object.
 
         """
@@ -217,11 +216,11 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     @property
     def is_superuser(self):
         """
-        Check if user has a player, and if so, if it is a superuser.
+        Check if user has an account, and if so, if it is a superuser.
 
         """
-        return self.db_player and self.db_player.is_superuser \
-            and not self.db_player.attributes.get("_quell")
+        return self.db_account and self.db_account.is_superuser \
+            and not self.db_account.attributes.get("_quell")
 
     def contents_get(self, exclude=None):
         """
@@ -260,7 +259,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Displays the name of the object in a viewer-aware manner.
 
         Args:
-            looker (TypedObject): The object or player that is looking
+            looker (TypedObject): The object or account that is looking
                 at/getting inforamtion for this object.
 
         Returns:
@@ -276,7 +275,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             builders.
 
         """
-        if self.locks.check_lockstring(looker, "perm(Builders)"):
+        if self.locks.check_lockstring(looker, "perm(Builder)"):
             return "{}(#{})".format(self.name, self.id)
         return self.name
 
@@ -350,7 +349,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 otherwise it will return a list of 0, 1 or more matches.
 
         Notes:
-            To find Players, use eg. `evennia.player_search`. If
+            To find Accounts, use eg. `evennia.account_search`. If
             `quiet=False`, error messages will be handled by
             `settings.SEARCH_AT_RESULT` and echoed automatically (on
             error, return will be `None`). If `quiet=True`, the error
@@ -368,7 +367,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         if use_nicks:
             # do nick-replacement on search
-            searchdata = self.nicks.nickreplace(searchdata, categories=("object", "player"), include_player=True)
+            searchdata = self.nicks.nickreplace(searchdata, categories=("object", "account"), include_account=True)
 
         if (global_search or (is_string and searchdata.startswith("#") and
                               len(searchdata) > 1 and searchdata[1:].isdigit())):
@@ -406,19 +405,19 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         return _AT_SEARCH_RESULT(results, self, query=searchdata,
                                  nofound_string=nofound_string, multimatch_string=multimatch_string)
 
-    def search_player(self, searchdata, quiet=False):
+    def search_account(self, searchdata, quiet=False):
         """
-        Simple shortcut wrapper to search for players, not characters.
+        Simple shortcut wrapper to search for accounts, not characters.
 
         Args:
-            searchdata (str): Search criterion - the key or dbref of the player
+            searchdata (str): Search criterion - the key or dbref of the account
                 to search for. If this is "here" or "me", search
-                for the player connected to this object.
+                for the account connected to this object.
             quiet (bool): Returns the results as a list rather than
                 echo eventual standard error messages. Default `False`.
 
         Returns:
-            result (Player, None or list): Just what is returned depends on
+            result (Account, None or list): Just what is returned depends on
                 the `quiet` setting:
                     - `quiet=True`: No match or multumatch auto-echoes errors
                       to self.msg, then returns `None`. The esults are passed
@@ -427,15 +426,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                       unique match, this will be returned.
                     - `quiet=True`: No automatic error messaging is done, and
                       what is returned is always a list with 0, 1 or more
-                      matching Players.
+                      matching Accounts.
 
         """
         if isinstance(searchdata, basestring):
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("me", "self",):
-                return [self.player] if quiet else self.player
+                return [self.account] if quiet else self.account
 
-        results = self.player.__class__.objects.player_search(searchdata)
+        results = self.account.__class__.objects.account_search(searchdata)
 
         if quiet:
             return results
@@ -446,7 +445,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Do something as this object. This is never called normally,
         it's only used when wanting specifically to let an object be
         the caller of a command. It makes use of nicks of eventual
-        connected players as well.
+        connected accounts as well.
 
         Args:
             raw_string (string): Raw command input
@@ -474,7 +473,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         # nick replacement - we require full-word matching.
         # do text encoding conversion
         raw_string = to_unicode(raw_string)
-        raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_player=True)
+        raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_account=True)
         return cmdhandler.cmdhandler(self, raw_string, callertype="object", session=session, **kwargs)
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
@@ -755,7 +754,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
     def clear_contents(self):
         """
-        Moves all objects (players/things) to their home location or
+        Moves all objects (accounts/things) to their home location or
         to default home.
         """
         # Gather up everything that thinks this is its location.
@@ -786,13 +785,13 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 logger.log_err(string % (obj.name, obj.dbid))
                 return
 
-            if obj.has_player:
+            if obj.has_account:
                 if home:
                     string = "Your current location has ceased to exist,"
                     string += " moving you to %s(#%d)."
                     obj.msg(_(string) % (home.name, home.dbid))
                 else:
-                    # Famous last words: The player should never see this.
+                    # Famous last words: The account should never see this.
                     string = "This place should not exist ... contact an admin."
                     obj.msg(_(string))
             obj.move_to(home)
@@ -820,8 +819,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             """
             key = self.key
             num = 1
-            for _ in (obj for obj in self.location.contents
-                      if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()):
+            for inum in (obj for obj in self.location.contents
+                         if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()):
                 num += 1
             return "%s%03i" % (key, num)
         new_key = new_key or find_clone_key()
@@ -858,16 +857,16 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         self.delete_iter += 1
 
-        # See if we need to kick the player off.
+        # See if we need to kick the account off.
 
         for session in self.sessions.all():
             session.msg(_("Your character %s has been destroyed.") % self.key)
-            # no need to disconnect, Player just jumps to OOC mode.
+            # no need to disconnect, Account just jumps to OOC mode.
         # sever the connection (important!)
-        if self.player:
+        if self.account:
             for session in self.sessions.all():
-                self.player.unpuppet_object(session)
-        self.player = None
+                self.account.unpuppet_object(session)
+        self.account = None
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):
             script.stop()
@@ -948,21 +947,20 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 self.save(update_fields=updates)
 
             if cdict.get("permissions"):
-                self.permissions.add(cdict["permissions"])
+                self.permissions.batch_add(*cdict["permissions"])
             if cdict.get("locks"):
                 self.locks.add(cdict["locks"])
             if cdict.get("aliases"):
-                self.aliases.add(cdict["aliases"])
+                self.aliases.batch_add(*cdict["aliases"])
             if cdict.get("location"):
                 cdict["location"].at_object_receive(self, None)
                 self.at_after_move(None)
             if cdict.get("tags"):
                 # this should be a list of tags
-                self.tags.add(cdict["tags"])
+                self.tags.batch_add(*cdict["tags"])
             if cdict.get("attributes"):
                 # this should be a dict of attrname:value
-                keys, values = list(cdict["attributes"]), listvalues(cdict["attributes"])
-                self.attributes.batch_add(keys, values)
+                self.attributes.batch_add(*cdict["attributes"])
             if cdict.get("nattributes"):
                 # this should be a dict of nattrname:value
                 for key, value in cdict["nattributes"].items():
@@ -989,15 +987,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         # controller, for example)
 
         self.locks.add(";".join([
-            "control:perm(Immortals)",    # edit locks/permissions, delete
-            "examine:perm(Builders)",     # examine properties
-            "view:all()",                 # look at object (visibility)
-            "edit:perm(Wizards)",         # edit properties/attributes
-            "delete:perm(Wizards)",       # delete object
-            "get:all()",                  # pick up object
-            "call:true()",                # allow to call commands on this object
-            "tell:perm(Wizards)",         # allow emits to this object
-            "puppet:pperm(Immortals)"]))  # lock down puppeting only to staff by default
+            "control:perm(Developer)",  # edit locks/permissions, delete
+            "examine:perm(Builder)",   # examine properties
+            "view:all()",               # look at object (visibility)
+            "edit:perm(Admin)",       # edit properties/attributes
+            "delete:perm(Admin)",     # delete object
+            "get:all()",                # pick up object
+            "call:true()",              # allow to call commands on this object
+            "tell:perm(Admin)",        # allow emits to this object
+            "puppet:pperm(Developer)"]))  # lock down puppeting only to staff by default
 
     def basetype_posthook_setup(self):
         """
@@ -1048,61 +1046,72 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         have no cmdsets.
 
         Kwargs:
-            caller (Session, Object or Player): The caller requesting
+            caller (Session, Object or Account): The caller requesting
                 this cmdset.
 
         """
         pass
 
-    def at_pre_puppet(self, player, session=None):
+    def at_pre_puppet(self, account, session=None, **kwargs):
         """
-        Called just before a Player connects to this object to puppet
+        Called just before an Account connects to this object to puppet
         it.
 
         Args:
-            player (Player): This is the connecting player.
+            account (Account): This is the connecting account.
             session (Session): Session controlling the connection.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         pass
 
-    def at_post_puppet(self):
+    def at_post_puppet(self, **kwargs):
         """
         Called just after puppeting has been completed and all
-        Player<->Object links have been established.
+        Account<->Object links have been established.
 
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
         Note:
-            You can use `self.player` and `self.sessions.get()` to get
-            player and sessions at this point; the last entry in the
+            You can use `self.account` and `self.sessions.get()` to get
+            account and sessions at this point; the last entry in the
             list from `self.sessions.get()` is the latest Session
             puppeting this Object.
 
         """
-        self.player.db._last_puppet = self
+        self.account.db._last_puppet = self
 
-    def at_pre_unpuppet(self):
+    def at_pre_unpuppet(self, **kwargs):
         """
         Called just before beginning to un-connect a puppeting from
-        this Player.
+        this Account.
 
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
         Note:
-            You can use `self.player` and `self.sessions.get()` to get
-            player and sessions at this point; the last entry in the
+            You can use `self.account` and `self.sessions.get()` to get
+            account and sessions at this point; the last entry in the
             list from `self.sessions.get()` is the latest Session
             puppeting this Object.
 
         """
         pass
 
-    def at_post_unpuppet(self, player, session=None):
+    def at_post_unpuppet(self, account, session=None, **kwargs):
         """
-        Called just after the Player successfully disconnected from
+        Called just after the Account successfully disconnected from
         this object, severing all connections.
 
         Args:
-            player (Player): The player object that just disconnected
+            account (Account): The account object that just disconnected
                 from this object.
             session (Session): Session id controlling the connection that
                 just disconnected.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
@@ -1134,7 +1143,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         Args:
             result (bool): The outcome of the access call.
-            accessing_obj (Object or Player): The entity trying to gain access.
+            accessing_obj (Object or Account): The entity trying to gain access.
             access_type (str): The type of access that was requested.
 
         Kwargs:
@@ -1146,13 +1155,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
     # hooks called when moving the object
 
-    def at_before_move(self, destination):
+    def at_before_move(self, destination, **kwargs):
         """
         Called just before starting to move this object to
         destination.
 
         Args:
             destination (Object): The object we are moving to
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             shouldmove (bool): If we should move or not.
@@ -1165,7 +1176,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         # return has_perm(self, destination, "can_move")
         return True
 
-    def announce_move_from(self, destination, msg=None, mapping=None):
+    def announce_move_from(self, destination, msg=None, mapping=None, **kwargs):
         """
         Called if the move is to be announced. This is
         called while we are still standing in the old
@@ -1175,6 +1186,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             destination (Object): The place we are going to.
             msg (str, optional): a replacement message.
             mapping (dict, optional): additional mapping objects.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         You can override this method and call its parent with a
         message to simply change the default message.  In the string,
@@ -1206,7 +1219,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         location.msg_contents(string, exclude=(self, ), mapping=mapping)
 
-    def announce_move_to(self, source_location, msg=None, mapping=None):
+    def announce_move_to(self, source_location, msg=None, mapping=None, **kwargs):
         """
         Called after the move if the move was not quiet. At this point
         we are standing in the new location.
@@ -1215,19 +1228,22 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             source_location (Object): The place we came from
             msg (str, optional): the replacement message if location.
             mapping (dict, optional): additional mapping objects.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
-        You can override this method and call its parent with a
-        message to simply change the default message.  In the string,
-        you can use the following as mappings (between braces):
-            object: the object which is moving.
-            exit: the exit from which the object is moving (if found).
-            origin: the location of the object before the move.
-            destination: the location of the object after moving.
+        Notes:
+            You can override this method and call its parent with a
+            message to simply change the default message.  In the string,
+            you can use the following as mappings (between braces):
+                object: the object which is moving.
+                exit: the exit from which the object is moving (if found).
+                origin: the location of the object before the move.
+                destination: the location of the object after moving.
 
         """
 
-        if not source_location and self.location.has_player:
-            # This was created from nowhere and added to a player's
+        if not source_location and self.location.has_account:
+            # This was created from nowhere and added to an account's
             # inventory; it's probably the result of a create command.
             string = "You now have %s in your possession." % self.get_display_name(self.location)
             self.location.msg(string)
@@ -1259,7 +1275,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         destination.msg_contents(string, exclude=(self, ), mapping=mapping)
 
-    def at_after_move(self, source_location):
+    def at_after_move(self, source_location, **kwargs):
         """
         Called after move has completed, regardless of quiet mode or
         not.  Allows changes to the object due to the location it is
@@ -1267,22 +1283,26 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         Args:
             source_location (Object): Wwhere we came from. This may be `None`.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def at_object_leave(self, moved_obj, target_location):
+    def at_object_leave(self, moved_obj, target_location, **kwargs):
         """
         Called just before an object leaves from inside this object
 
         Args:
             moved_obj (Object): The object leaving
             target_location (Object): Where `moved_obj` is going.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def at_object_receive(self, moved_obj, source_location):
+    def at_object_receive(self, moved_obj, source_location, **kwargs):
         """
         Called after an object has been moved into this object.
 
@@ -1290,11 +1310,13 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             moved_obj (Object): The object moved into this one
             source_location (Object): Where `moved_object` came from.
                 Note that this could be `None`.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def at_traverse(self, traversing_object, target_location):
+    def at_traverse(self, traversing_object, target_location, **kwargs):
         """
         This hook is responsible for handling the actual traversal,
         normally by calling
@@ -1307,11 +1329,13 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             traversing_object (Object): Object traversing us.
             target_location (Object): Where target is going.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def at_after_traverse(self, traversing_object, source_location):
+    def at_after_traverse(self, traversing_object, source_location, **kwargs):
         """
         Called just after an object successfully used this object to
         traverse to another object (i.e. this object is a type of
@@ -1320,19 +1344,23 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             traversing_object (Object): The object traversing us.
             source_location (Object): Where `traversing_object` came from.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             The target location should normally be available as `self.destination`.
         """
         pass
 
-    def at_failed_traverse(self, traversing_object):
+    def at_failed_traverse(self, traversing_object, **kwargs):
         """
         This is called if an object fails to traverse this object for
         some reason.
 
         Args:
             traversing_object (Object): The object that failed traversing us.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             Using the default exits, this hook will not be called if an
@@ -1393,13 +1421,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
     # hooks called by the default cmdset.
 
-    def return_appearance(self, looker):
+    def return_appearance(self, looker, **kwargs):
         """
         This formats a description. It is the hook a 'look' command
         should call.
 
         Args:
             looker (Object): Object doing the looking.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
         """
         if not looker:
             return ""
@@ -1411,7 +1441,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             key = con.get_display_name(looker)
             if con.destination:
                 exits.append(key)
-            elif con.has_player:
+            elif con.has_account:
                 users.append("|c%s|n" % key)
             else:
                 things.append(key)
@@ -1426,7 +1456,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             string += "\n|wYou see:|n " + ", ".join(users + things)
         return string
 
-    def at_look(self, target):
+    def at_look(self, target, **kwargs):
         """
         Called when this object performs a look. It allows to
         customize just what this means. It will not itself
@@ -1436,6 +1466,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             target (Object): The target being looked at. This is
                 commonly an object or the current location. It will
                 be checked for the "view" type access.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             lookstring (str): A ready-processed look string
@@ -1456,22 +1488,27 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         return description
 
-    def at_desc(self, looker=None):
+    def at_desc(self, looker=None, **kwargs):
         """
         This is called whenever someone looks at this object.
 
-        looker (Object): The object requesting the description.
+        Args:
+            looker (Object, optional): The object requesting the description.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def at_get(self, getter):
+    def at_get(self, getter, **kwargs):
         """
         Called by the default `get` command when this object has been
         picked up.
 
         Args:
             getter (Object): The object getting this object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             This hook cannot stop the pickup from happening. Use
@@ -1480,7 +1517,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
-    def at_give(self, giver, getter):
+    def at_give(self, giver, getter, **kwargs):
         """
         Called by the default `give` command when this object has been
         given.
@@ -1488,6 +1525,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             giver (Object): The object giving this object.
             getter (Object): The object getting this object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             This hook cannot stop the give from happening. Use
@@ -1496,13 +1535,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
-    def at_drop(self, dropper):
+    def at_drop(self, dropper, **kwargs):
         """
         Called by the default `drop` command when this object has been
         dropped.
 
         Args:
             dropper (Object): The object which just dropped this object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             This hook cannot stop the drop from happening. Use
@@ -1511,149 +1552,103 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
-    def at_before_say(self, speech):
+    def at_before_say(self, message, **kwargs):
         """
         Before the object says something.
 
-        This hook is called by the 'say' command on the object itself
-        (probably a character).  It is called before the actual say,
-        and can be used to control the content of the text to be said,
-        prevent saying altogether or perform some alternative checks.
-        This hook should return the modified speech.  If this return
-        value is empty (like ""  or None), the command is aborted.
+        This hook is by default used by the 'say' and 'whisper'
+        commands as used by this command it is called before the text
+        is said/whispered and can be used to customize the outgoing
+        text from the object. Returning `None` aborts the command.
 
         Args:
-            speech (str): the text to be said by self.
+            message (str): The suggested say/whisper text spoken by self.
+        Kwargs:
+            whisper (bool): If True, this is a whisper rather than
+                a say. This is sent by the whisper command by default.
+                Other verbal commands could use this hook in similar
+                ways.
+            receiver (Object): If set, this is a target for the say/whisper.
 
         Returns:
-            speech (str): the text to be said (can be modified).
+            message (str): The (possibly modified) text to be spoken.
 
         """
-        return speech
+        return message
 
-    def at_after_say(self, speech, msg_self=None, msg_location=None,
-            mapping=None):
+    def at_say(self, message, msg_self=None, msg_location=None,
+               receiver=None, msg_receiver=None, mapping=None, **kwargs):
         """
-        Display the actual say of self.
+        Display the actual say (or whisper) of self.
 
-        This hook should display the actual say of the object in its
+        This hook should display the actual say/whisper of the object in its
         location.  It should both alert the object (self) and its
         location that some text is spoken.  The overriding of messages or
         `mapping` allows for simple customization of the hook without
         re-writing it completely.
 
         Args:
-            speech (str): the text to be said by self.
-            msg_self (str, optional): the replacement message to say to self.
-            msg_location (str, optional): the replacement message to say
-                    to the location.
+            message (str): The text to be conveyed by self.
+            msg_self (str, optional): The message to echo to self.
+            msg_location (str, optional): The message to echo to self's location.
+            receiver (Object, optional): An eventual receiver of the message
+                (by default only used by whispers).
+            msg_receiver(str, optional): Specific message for receiver only.
             mapping (dict, optional): Additional mapping in messages.
+        Kwargs:
+            whisper (bool): If this is a whisper rather than a say. Kwargs
+                can be used by other verbal commands in a similar way.
 
-        Both `msg_self` and `msg_location` should contain references
-        to other objects between braces, the way `locaiton.msg_contents`
-        would allow.  For instance:
-            msg_self = 'You say: "{speech}"'
-            msg_location = '{object} says: "{speech}"'
+        Notes:
 
-        The following mappings can be used in both messages:
-            object: the object speaking.
-            location: the location where object is.
-            speech: the text spoken by self.
+            Messages can contain {} markers, which must
+            If used, `msg_self`, `msg_receiver`  and `msg_location` should contain
+            references to other objects between braces, the way `location.msg_contents`
+            would allow.  For instance:
+                msg_self = 'You say: "{speech}"'
+                msg_location = '{object} says: "{speech}"'
+                msg_receiver = '{object} whispers: "{speech}"'
 
-        You can use additional mappings if you want to add other
-        information in your messages.
+            The following mappings can be used in both messages:
+                object: the object speaking.
+                location: the location where object is.
+                speech: the text spoken by self.
+
+            You can use additional mappings if you want to add other
+            information in your messages.
 
         """
-        if self.location is None:
-            self.msg("You can't utter a sound in the void.")
-            return
+        if kwargs.get("whisper", False):
+            # whisper mode
+            msg_self = msg_self or 'You whisper to {receiver}, "{speech}"|n'
+            msg_receiver = msg_receiver or '{object} whispers: "{speech}"|n'
+            msg_location = None
+        else:
+            msg_self = msg_self or 'You say, "{speech}"|n'
+            msg_receiver = None
+            msg_location = msg_location or '{object} says, "{speech}"|n'
 
-        msg_self = msg_self or 'You say, "{speech}"|n'
-        msg_location = msg_location or '{object} says, "{speech}"|n'
         mapping = mapping or {}
         mapping.update({
                 "object": self,
                 "location": self.location,
-                "speech": speech,
-        })
-        self_mapping = {k: v.get_display_name(self) if hasattr(
-                v, "get_display_name") else str(v) for k, v in mapping.items()}
-        self.msg(msg_self.format(**self_mapping))
-        self.location.msg_contents(msg_location, exclude=(self, ),
-                mapping=mapping)
+                "speech": message,
+                "receiver": receiver
+                })
 
-    def at_before_whisper(self, receiver, speech):
-        """
-        Before the object whispers something to receiver.
+        if msg_self:
+            self_mapping = {k: v.get_display_name(self) if hasattr(
+                    v, "get_display_name") else str(v) for k, v in mapping.items()}
+            self.msg(msg_self.format(**self_mapping))
 
-        This hook is called by the 'whisper' command on the object itself
-        (probably a character).  It is called before the actual whisper,
-        and can be used to control the content of the text to be whispered,
-        prevent whispering altogether or perform some alternative checks.
-        This hook should return the modified speech.  If this return
-        value is empty (like ""  or None), the command is aborted.
+        if receiver and msg_receiver:
+            receiver_mapping = {k: v.get_display_name(receiver) if hasattr(
+                    v, "get_display_name") else str(v) for k, v in mapping.items()}
+            receiver.msg(msg_receiver.format(**receiver_mapping))
 
-        Args:
-            receiver (Object): the object to whisper to.
-            speech (str): the text to be whispered by self.
-
-        Returns:
-            speech (str): the text to be whispered (can be modified).
-
-        """
-        return speech
-
-    def at_after_whisper(self, receiver, speech, msg_self=None,
-            msg_receiver=None, mapping=None):
-        """
-        Display the actual whisper of self.
-
-        This hook should display the actual whisper of the object to
-        receiver.  It should both alert the object (self) and the
-        receiver.  You can also notify the location if you want to,
-        to indicate to others that a message was whispered but you
-        can't hear it.  The overriding of messages or
-        `mapping` allows for simple customization of the hook without
-        re-writing it completely.
-
-        Args:
-            receiver (Objecvt): the object to whisper to.
-            speech (str): the text to be said by self.
-            msg_self (str, optional): the replacement message to say to self.
-            msg_receiver (str, optional): the replacement message to say
-                    to receiver.
-            mapping (dict, optional): Additional mapping in messages.
-
-        Both `msg_self` and `msg_receiver` should contain references
-        to other objects between braces, the way `locaiton.msg_contents`
-        would allow.  For instance:
-            msg_self = 'You whisper to {receiver}, "{speech}"|n'
-            msg_receiver = '{object} whispers: "{speech}"|n'
-
-        The following mappings can be used in both messages:
-            object: the object whispering.
-            receiver: the object whispered to.
-            speech: the text spoken by self.
-
-        You can use additional mappings if you want to add other
-        information in your messages.
-
-        """
-        msg_self = msg_self or 'You whisper to {receiver}, "{speech}"|n'
-        msg_receiver = msg_receiver or '{object} whispers: "{speech}"|n'
-        mapping = mapping or {}
-        mapping.update({
-                "object": self,
-                "receiver": receiver,
-                "speech": speech,
-        })
-        self_mapping = {k: v.get_display_name(self) if hasattr(
-                v, "get_display_name") else str(v) for k, v in mapping.items()}
-        receiver_mapping = {k: v.get_display_name(receiver) if hasattr(
-                v, "get_display_name") else str(v) for k, v in mapping.items()}
-        self.msg(msg_self.format(**self_mapping))
-        receiver.msg(msg_receiver.format(**receiver_mapping))
-
+        if self.location and msg_location:
+            self.location.msg_contents(msg_location, exclude=(self, ),
+                                       mapping=mapping)
 
 
 #
@@ -1663,7 +1658,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 class DefaultCharacter(DefaultObject):
     """
     This implements an Object puppeted by a Session - that is,
-    a character avatar controlled by a player.
+    a character avatar controlled by an account.
 
     """
 
@@ -1683,7 +1678,7 @@ class DefaultCharacter(DefaultObject):
         # add the default cmdset
         self.cmdset.add_default(settings.CMDSET_CHARACTER, permanent=True)
 
-    def at_after_move(self, source_location):
+    def at_after_move(self, source_location, **kwargs):
         """
         We make sure to look around after a move.
 
@@ -1691,11 +1686,11 @@ class DefaultCharacter(DefaultObject):
         if self.location.access(self, "view"):
             self.msg(self.at_look(self.location))
 
-    def at_pre_puppet(self, player, session=None):
+    def at_pre_puppet(self, account, session=None, **kwargs):
         """
         Return the character from storage in None location in `at_post_unpuppet`.
         Args:
-            player (Player): This is the connecting player.
+            account (Account): This is the connecting account.
             session (Session): Session controlling the connection.
         """
         if self.location is None:  # Make sure character's location is never None before being puppeted.
@@ -1705,16 +1700,19 @@ class DefaultCharacter(DefaultObject):
         if self.location:  # If the character is verified to be somewhere,
             self.db.prelogout_location = self.location  # save location again to be sure.
         else:
-            player.msg("|r%s has no location and no home is set.|n" % self, session=session)  # Note to set home.
+            account.msg("|r%s has no location and no home is set.|n" % self, session=session)  # Note to set home.
 
-    def at_post_puppet(self):
+    def at_post_puppet(self, **kwargs):
         """
         Called just after puppeting has been completed and all
-        Player<->Object links have been established.
+        Account<->Object links have been established.
 
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
         Note:
-            You can use `self.player` and `self.sessions.get()` to get
-            player and sessions at this point; the last entry in the
+            You can use `self.account` and `self.sessions.get()` to get
+            account and sessions at this point; the last entry in the
             list from `self.sessions.get()` is the latest Session
             puppeting this Object.
 
@@ -1726,17 +1724,19 @@ class DefaultCharacter(DefaultObject):
             obj.msg("%s has entered the game." % self.get_display_name(obj), from_obj=from_obj)
         self.location.for_contents(message, exclude=[self], from_obj=self)
 
-    def at_post_unpuppet(self, player, session=None):
+    def at_post_unpuppet(self, account, session=None, **kwargs):
         """
-        We stove away the character when the player goes ooc/logs off,
+        We stove away the character when the account goes ooc/logs off,
         otherwise the character object will remain in the room also
-        after the player logged off ("headless", so to say).
+        after the account logged off ("headless", so to say).
 
         Args:
-            player (Player): The player object that just disconnected
+            account (Account): The account object that just disconnected
                 from this object.
             session (Session): Session controlling the connection that
                 just disconnected.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
         """
         if not self.sessions.count():
             # only remove this char from grid if no sessions control it anymore.
@@ -1826,6 +1826,8 @@ class ExitCommand(command.Command):
 
         Args:
             caller (Object): The object (usually a character) that entered an ambiguous command.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             A string with identifying information to disambiguate the command, conventionally with a preceding space.
@@ -1862,7 +1864,7 @@ class DefaultExit(DefaultObject):
         Helper function for creating an exit command set + command.
 
         The command of this cmdset has the same name as the Exit
-        object and allows the exit to react when the player enter the
+        object and allows the exit to react when the account enter the
         exit's name, triggering the movement between rooms.
 
         Args:
@@ -1936,7 +1938,7 @@ class DefaultExit(DefaultObject):
         """
         self.cmdset.remove_default()
 
-    def at_traverse(self, traversing_object, target_location):
+    def at_traverse(self, traversing_object, target_location, **kwargs):
         """
         This implements the actual traversal. The traverse lock has
         already been checked (in the Exit command) at this point.
@@ -1944,6 +1946,8 @@ class DefaultExit(DefaultObject):
         Args:
             traversing_object (Object): Object traversing us.
             target_location (Object): Where target is going.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         source_location = traversing_object.location
@@ -1957,12 +1961,14 @@ class DefaultExit(DefaultObject):
                 # No shorthand error message. Call hook.
                 self.at_failed_traverse(traversing_object)
 
-    def at_failed_traverse(self, traversing_object):
+    def at_failed_traverse(self, traversing_object, **kwargs):
         """
         Overloads the default hook to implement a simple default error message.
 
         Args:
             traversing_object (Object): The object that failed traversing us.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             Using the default exits, this hook will not be called if an

@@ -10,6 +10,7 @@ except ImportError:
 from .ansi import ANSIString
 from evennia import utils
 
+from django.conf import settings
 
 class ANSIStringTestCase(TestCase):
     def checker(self, ansi, raw, clean):
@@ -230,7 +231,6 @@ class TestMLen(TestCase):
         self.assertEqual(utils.m_len(ANSIString('|lcl|gook|ltat|le|n')), 2)
 
     def test_non_mxp_ansi_string(self):
-        self.assertEqual(utils.m_len(ANSIString('{gHello{n')), 5)  # TODO - cause this to fail by default.
         self.assertEqual(utils.m_len(ANSIString('|gHello|n')), 5)
 
     def test_list(self):
@@ -325,6 +325,20 @@ class TestTextToHTMLparser(TestCase):
                          '</span><a href="http://example.com/" target="_blank">'
                          'http://example.com/</a><span class="red">')
 
+from evennia.utils import evmenu
+from mock import Mock
+class TestEvMenu(TestCase):
+    "Run the EvMenu test."
+    def setUp(self):
+        self.caller = Mock()
+        self.caller.msg = Mock()
+        self.menu = evmenu.EvMenu(self.caller, "evennia.utils.evmenu", startnode="test_start_node",
+                persistent=True, cmdset_mergetype="Replace", testval="val", testval2="val2")
+
+    def test_kwargsave(self):
+        self.assertTrue(hasattr(self.menu, "testval"))
+        self.assertTrue(hasattr(self.menu, "testval2"))
+
 
 from evennia.utils import inlinefuncs
 
@@ -372,8 +386,8 @@ class TestEvForm(TestCase):
                          u'|                                                |\n'
                          u'|  Name: \x1b[0m\x1b[1m\x1b[32mTom\x1b[1m\x1b[32m \x1b'
                          u'[1m\x1b[32mthe\x1b[1m\x1b[32m \x1b[0m   \x1b[0m    '
-                         u'Player: \x1b[0m\x1b[1m\x1b[33mGriatch        '
-                         u'\x1b[0m\x1b[0m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[0m\x1b[0m  '
+                         u'Account: \x1b[0m\x1b[1m\x1b[33mGriatch        '
+                         u'\x1b[0m\x1b[0m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[0m\x1b[0m '
                          u'|\n'
                          u'|        \x1b[0m\x1b[1m\x1b[32mBouncer\x1b[0m    \x1b[0m                             |\n'
                          u'|                                                |\n'

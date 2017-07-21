@@ -373,7 +373,7 @@ def unpack_dbobj(item):
 def pack_session(item):
     """
     Handle the safe serializion of Sessions objects (these contain
-    hidden references to database objects (players, puppets) so they
+    hidden references to database objects (accounts, puppets) so they
     can't be safely serialized).
 
     Args:

@@ -13,7 +13,7 @@ command line. The processing of a command works as follows:
    - object cmdsets: all objects at caller's location are scanned for non-empty
      cmdsets. This includes cmdsets on exits.
    - caller: the caller is searched for its own currently active cmdset.
-   - player: lastly the cmdsets defined on caller.player are added.
+   - account: lastly the cmdsets defined on caller.account are added.
 3. The collected cmdsets are merged together to a combined, current cmdset.
 4. If the input string is empty -> check for CMD_NOINPUT command in
    current cmdset or fallback to error message. Exit.
@@ -85,7 +85,7 @@ CMD_LOGINSTART = "__unloggedin_look_command"
 _SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
 # Output strings. The first is the IN_GAME_ERRORS return, the second
-# is the normal "production message to echo to the player.
+# is the normal "production message to echo to the account.
 
 _ERROR_UNTRAPPED = (
 """
@@ -128,7 +128,7 @@ likely file a bug report with the Evennia project.
 """)
 
 _ERROR_RECURSION_LIMIT = "Command recursion limit ({recursion_limit}) " \
-                         "reached for '{raw_string}' ({cmdclass})."
+                         "reached for '{raw_cmdname}' ({cmdclass})."
 
 
 # delayed imports
@@ -210,7 +210,7 @@ def _process_input(caller, prompt, result, cmd, generator):
     part of yielding from a Command's `func`.
 
     Args:
-        caller (Character, Player or Session): the caller.
+        caller (Character, Account or Session): the caller.
         prompt (basestring): The sent prompt.
         result (basestring): The unprocessed answer.
         cmd (Command): The command itself.
@@ -248,20 +248,20 @@ class ErrorReported(Exception):
 # Helper function
 
 @inlineCallbacks
-def get_and_merge_cmdsets(caller, session, player, obj, callertype, raw_string):
+def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string):
     """
     Gather all relevant cmdsets and merge them.
 
     Args:
-        caller (Session, Player or Object): The entity executing the command. Which
+        caller (Session, Account or Object): The entity executing the command. Which
             type of object this is depends on the current game state; for example
             when the user is not logged in, this will be a Session, when being OOC
-            it will be a Player and when puppeting an object this will (often) be
+            it will be an Account and when puppeting an object this will (often) be
             a Character Object. In the end it depends on where the cmdset is stored.
         session (Session or None): The Session associated with caller, if any.
-        player (Player or None): The calling Player associated with caller, if any.
+        account (Account or None): The calling Account associated with caller, if any.
         obj (Object or None): The Object associated with caller, if any.
-        callertype (str): This identifies caller as either "player", "object" or "session"
+        callertype (str): This identifies caller as either "account", "object" or "session"
             to avoid having to do this check internally.
         raw_string (str): The input string. This is only used for error reporting.
 
@@ -272,18 +272,18 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, raw_string):
     Notes:
         The cdmsets are merged in order or generality, so that the
         Object's cmdset is merged last (and will thus take precedence
-        over same-named and same-prio commands on Player and Session).
+        over same-named and same-prio commands on Account and Session).
 
     """
     try:
         @inlineCallbacks
-        def _get_channel_cmdset(player_or_obj):
+        def _get_channel_cmdset(account_or_obj):
             """
             Helper-method; Get channel-cmdsets
             """
-            # Create cmdset for all player's available channels
+            # Create cmdset for all account's available channels
             try:
-                channel_cmdset = yield CHANNELHANDLER.get_cmdset(player_or_obj)
+                channel_cmdset = yield CHANNELHANDLER.get_cmdset(account_or_obj)
                 returnValue([channel_cmdset])
             except Exception:
                 _msg_err(caller, _ERROR_CMDSETS)
@@ -313,8 +313,8 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, raw_string):
                             _GA(lobj, "at_cmdset_get")(caller=caller)
                         except Exception:
                             logger.log_trace()
-                    # the call-type lock is checked here, it makes sure a player
-                    # is not seeing e.g. the commands on a fellow player (which is why
+                    # the call-type lock is checked here, it makes sure an account
+                    # is not seeing e.g. the commands on a fellow account (which is why
                     # the no_superuser_bypass must be True)
                     local_obj_cmdsets = \
                         yield list(chain.from_iterable(
@@ -355,9 +355,9 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, raw_string):
             # we are calling the command from the session level
             report_to = session
             current, cmdsets = yield _get_cmdsets(session)
-            if player:  # this automatically implies logged-in
-                pcurrent, player_cmdsets = yield _get_cmdsets(player)
-                cmdsets += player_cmdsets
+            if account:  # this automatically implies logged-in
+                pcurrent, account_cmdsets = yield _get_cmdsets(account)
+                cmdsets += account_cmdsets
                 current = current + pcurrent
                 if obj:
                     ocurrent, obj_cmdsets = yield _get_cmdsets(obj)
@@ -374,13 +374,13 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, raw_string):
                         channel_cmdsets = yield _get_channel_cmdset(obj)
                         cmdsets += channel_cmdsets
                 if not current.no_channels:
-                    channel_cmdsets = yield _get_channel_cmdset(player)
+                    channel_cmdsets = yield _get_channel_cmdset(account)
                     cmdsets += channel_cmdsets
 
-        elif callertype == "player":
-            # we are calling the command from the player level
-            report_to = player
-            current, cmdsets = yield _get_cmdsets(player)
+        elif callertype == "account":
+            # we are calling the command from the account level
+            report_to = account
+            current, cmdsets = yield _get_cmdsets(account)
             if obj:
                 ocurrent, obj_cmdsets = yield _get_cmdsets(obj)
                 current = current + ocurrent
@@ -395,7 +395,7 @@ def get_and_merge_cmdsets(caller, session, player, obj, callertype, raw_string):
                     # also objs may have channels
                     cmdsets += yield _get_channel_cmdset(obj)
             if not current.no_channels:
-                cmdsets += yield _get_channel_cmdset(player)
+                cmdsets += yield _get_channel_cmdset(account)
 
         elif callertype == "object":
             # we are calling the command from the object level
@@ -472,22 +472,22 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
     This is the main mechanism that handles any string sent to the engine.
 
     Args:
-        called_by (Session, Player or Object): Object from which this
+        called_by (Session, Account or Object): Object from which this
             command was called. which this was called from.  What this is
             depends on the game state.
         raw_string (str): The command string as given on the command line.
         _testing (bool, optional): Used for debug purposes and decides if we
             should actually execute the command or not. If True, the
             command instance will be returned.
-        callertype (str, optional): One of "session", "player" or
+        callertype (str, optional): One of "session", "account" or
             "object". These are treated in decending order, so when the
             Session is the caller, it will merge its own cmdset into
-            cmdsets from both Player and eventual puppeted Object (and
-            cmdsets in its room etc). A Player will only include its own
+            cmdsets from both Account and eventual puppeted Object (and
+            cmdsets in its room etc). An Account will only include its own
             cmdset and the Objects and so on. Merge order is the same
             order, so that Object cmdsets are merged in last, giving them
             precendence for same-name and same-prio commands.
-        session (Session, optional): Relevant if callertype is "player" - the session will help
+        session (Session, optional): Relevant if callertype is "account" - the session will help
             retrieve the correct cmdsets from puppeted objects.
         cmdobj (Command, optional): If given a command instance, this will be executed using
             `called_by` as the caller, `raw_string` representing its arguments and (optionally)
@@ -513,20 +513,22 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
     """
 
     @inlineCallbacks
-    def _run_command(cmd, cmdname, args, raw_string, cmdset, session, player):
+    def _run_command(cmd, cmdname, args, raw_cmdname, cmdset, session, account):
         """
         Helper function: This initializes and runs the Command
         instance once the parser has identified it as either a normal
         command or one of the system commands.
 
         Args:
-            cmd (Command): Command object.
-            cmdname (str): Name of command.
-            args (str): Extra text entered after the identified command.
-            raw_string (str): Full input string.
+            cmd (Command): Command object
+            cmdname (str): Name of command
+            args (str): extra text entered after the identified command
+            raw_cmdname (str): Name of Command, unaffected by eventual
+                prefix-stripping (if no prefix-stripping, this is the same
+                as cmdname).
             cmdset (CmdSet): Command sert the command belongs to (if any)..
             session (Session): Session of caller (if any).
-            player (Player): Player of caller (if any).
+            account (Account): Account of caller (if any).
 
         Returns:
             deferred (Deferred): this will fire with the return of the
@@ -540,12 +542,14 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
         try:
             # Assign useful variables to the instance
             cmd.caller = caller
-            cmd.cmdstring = cmdname
+            cmd.cmdname = cmdname
+            cmd.raw_cmdname = raw_cmdname
+            cmd.cmdstring = cmdname  # deprecated
             cmd.args = args
             cmd.cmdset = cmdset
             cmd.session = session
-            cmd.player = player
-            cmd.raw_string = raw_string
+            cmd.account = account
+            cmd.raw_string = unformatted_raw_string
             #cmd.obj  # set via on-object cmdset handler for each command,
                       # since this may be different for every command when
                       # merging multuple cmdsets
@@ -566,7 +570,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             _COMMAND_NESTING[called_by] += 1
             if _COMMAND_NESTING[called_by] > _COMMAND_RECURSION_LIMIT:
                 err = _ERROR_RECURSION_LIMIT.format(recursion_limit=_COMMAND_RECURSION_LIMIT,
-                                                    raw_string=raw_string,
+                                                    raw_cmdname=raw_cmdname,
                                                     cmdclass=cmd.__class__)
                 raise RuntimeError(err)
 
@@ -614,13 +618,13 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
 
     raw_string = to_unicode(raw_string, force_string=True)
 
-    session, player, obj = session, None, None
+    session, account, obj = session, None, None
     if callertype == "session":
         session = called_by
-        player = session.player
+        account = session.account
         obj = session.puppet
-    elif callertype == "player":
-        player = called_by
+    elif callertype == "account":
+        account = called_by
         if session:
             obj = yield session.puppet
     elif callertype == "object":
@@ -629,32 +633,32 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
         raise RuntimeError("cmdhandler: callertype %s is not valid." % callertype)
     # the caller will be the one to receive messages and excert its permissions.
     # we assign the caller with preference 'bottom up'
-    caller = obj or player or session
-    # The error_to is the default recipient for errors. Tries to make sure a player
+    caller = obj or account or session
+    # The error_to is the default recipient for errors. Tries to make sure an account
     # does not get spammed for errors while preserving character mirroring.
-    error_to = obj or session or player
+    error_to = obj or session or account
 
     try:  # catch bugs in cmdhandler itself
         try:  # catch special-type commands
             if cmdobj:
                 # the command object is already given
-
                 cmd = cmdobj() if callable(cmdobj) else cmdobj
                 cmdname = cmdobj_key if cmdobj_key else cmd.key
                 args = raw_string
                 unformatted_raw_string = "%s%s" % (cmdname, args)
                 cmdset = None
                 session = session
-                player = player
+                account = account
 
             else:
                 # no explicit cmdobject given, figure it out
-
-                cmdset = yield get_and_merge_cmdsets(caller, session, player, obj,
+                cmdset = yield get_and_merge_cmdsets(caller, session, account, obj,
                                                       callertype, raw_string)
                 if not cmdset:
                     # this is bad and shouldn't happen.
                     raise NoCmdSets
+                # store the completely unmodified raw string - including
+                # whitespace and eventual prefixes-to-be-stripped.
                 unformatted_raw_string = raw_string
                 raw_string = raw_string.strip()
                 if not raw_string:
@@ -685,7 +689,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 if len(matches) == 1:
                     # We have a unique command match. But it may still be invalid.
                     match = matches[0]
-                    cmdname, args, cmd = match[0], match[1], match[2]
+                    cmdname, args, cmd, raw_cmdname = match[0], match[1], match[2], match[5]
 
                 if not matches:
                     # No commands match our entered command
@@ -718,7 +722,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                     raise ExecSystemCommand(cmd, sysarg)
 
             # A normal command.
-            ret = yield _run_command(cmd, cmdname, args, unformatted_raw_string, cmdset, session, player)
+            ret = yield _run_command(cmd, cmdname, args, raw_cmdname, cmdset, session, account)
             returnValue(ret)
 
         except ErrorReported as exc:
@@ -734,7 +738,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
 
             if syscmd:
                 ret = yield _run_command(syscmd, syscmd.key, sysarg,
-                                         unformatted_raw_string, cmdset, session, player)
+                                         unformatted_raw_string, cmdset, session, account)
                 returnValue(ret)
             elif sysarg:
                 # return system arg

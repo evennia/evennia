@@ -8,6 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('typeclasses', '0001_initial'),
+        ('auth', '0007_alter_validators_add_error_messages')
     ]
 
     operations = [

@@ -7,18 +7,18 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('players', '0002_move_defaults'),
+        ('accounts', '0002_move_defaults'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DefaultPlayer',
+            name='DefaultAccount',
             fields=[
             ],
             options={
                 'proxy': True,
             },
-            bases=('players.playerdb',),
+            bases=('accounts.accountdb',),
         ),
         migrations.CreateModel(
             name='DefaultGuest',
@@ -27,10 +27,10 @@ class Migration(migrations.Migration):
             options={
                 'proxy': True,
             },
-            bases=('players.defaultplayer',),
+            bases=('accounts.defaultaccount',),
         ),
         migrations.AlterModelOptions(
-            name='playerdb',
-            options={'verbose_name': 'Player'},
+            name='accountdb',
+            options={'verbose_name': 'Account'},
         ),
     ]

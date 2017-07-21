@@ -206,7 +206,7 @@ class Mob(tut_objects.TutorialObject):
 
         """
         targets = [obj for obj in location.contents_get(exclude=self)
-                    if obj.has_player and not obj.is_superuser]
+                    if obj.has_account and not obj.is_superuser]
         return targets[0] if targets else None
 
     def set_alive(self, *args, **kwargs):
@@ -290,9 +290,9 @@ class Mob(tut_objects.TutorialObject):
         """
         Called repeatedly during patrolling mode.  In this mode, the
         mob scans its surroundings and randomly chooses a viable exit.
-        One should lock exits with the traverse:has_player() lock in
+        One should lock exits with the traverse:has_account() lock in
         order to block the mob from moving outside its area while
-        allowing player-controlled characters to move normally.
+        allowing account-controlled characters to move normally.
         """
         if random.random() < 0.01 and self.db.irregular_msgs:
             self.location.msg_contents(random.choice(self.db.irregular_msgs))

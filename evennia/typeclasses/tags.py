@@ -10,6 +10,7 @@ respective handlers.
 
 """
 from builtins import object
+from collections import defaultdict
 
 from django.conf import settings
 from django.db import models
@@ -239,7 +240,7 @@ class TagHandler(object):
             category (str, optional): Category of Tag. `None` is the default category.
             data (str, optional): Info text about the tag(s) added.
                 This can not be used to store object-unique info but only
-                eventual info about the text itself.
+                eventual info about the tag itself.
 
         Notes:
             If the tag + category combination matches an already
@@ -355,6 +356,36 @@ class TagHandler(object):
             return [(to_str(tag.db_key), to_str(tag.db_category)) for tag in tags]
         else:
             return [to_str(tag.db_key) for tag in tags]
+
+    def batch_add(self, *args):
+        """
+        Batch-add tags from a list of tuples.
+
+        Args:
+            tuples (tuple or str): Any number of `tagstr` keys, `(keystr, category)` or
+                `(keystr, category, data)` tuples.
+
+        Notes:
+            This will generate a mimimal number of self.add calls,
+            based on the number of categories involved (including
+            `None`) (data is not unique and may be overwritten by the content
+            of a latter tuple with the same category).
+
+        """
+        keys = defaultdict(list)
+        data = {}
+        for tup in args:
+            tup = make_iter(tup)
+            nlen = len(tup)
+            if nlen == 1:  # just a key
+                keys[None].append(tup[0])
+            elif nlen == 2:
+                keys[tup[1]].append(tup[0])
+            else:
+                keys[tup[1]].append(tup[0])
+                data[tup[1]] = tup[2]  # overwrite previous
+        for category, key in keys.iteritems():
+            self.add(tag=key, category=category, data=data.get(category, None))
 
     def __str__(self):
         return ",".join(self.all())

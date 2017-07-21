@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
     fig = pp.figure()
     ax1 = fig.add_subplot(111)
-    ax1.set_title("1000 bots (normal players with light building)")
+    ax1.set_title("1000 bots (normal accounts with light building)")
     ax1.set_xlabel("Time (mins)")
     ax1.set_ylabel("Memory usage (MB)")
     ax1.plot(secs, rmem, "r", label="RMEM", lw=2)
