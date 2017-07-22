@@ -30,8 +30,8 @@ things you want from here into your game folder and change them there.
   multiple descriptions for time and season as well as details.
 * GenderSub (Griatch 2015) - Simple example (only) of storing gender
   on a character and access it in an emote with a custom marker.
-* In-game Python (Vincent Le Geoff 2017) - Allow trusted builders to script
-  objects and events using Python from in-game.
+* Generator (Vincent Le Goff 2017) - Simple pseudo-random generator of
+  strings with rules, avoiding repetitions.
 * Mail (grungies1138 2016) - An in-game mail system for communication.
 * Menu login (Griatch 2011) - A login system using menus asking
   for name/password rather than giving them as one command
@@ -59,6 +59,8 @@ things you want from here into your game folder and change them there.
 
 * EGI_Client (gtaylor 2016) - Client for reporting game status
   to the Evennia game index (games.evennia.com)
+* In-game Python (Vincent Le Goff 2017) - Allow trusted builders to script
+  objects and events using Python from in-game.
 * Tutorial examples (Griatch 2011, 2015) - A folder of basic
   example objects, commands and scripts.
 * Tutorial world (Griatch 2011, 2015) - A folder containing the
