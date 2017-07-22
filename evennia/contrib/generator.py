@@ -1,7 +1,7 @@
 """
 Pseudo-random generator and registry
 
-Evennia contribution - Vincent-lg 2017
+Evennia contribution - Vincent Le Goff 2017
 
 This contrib can be used to generate pseudo-random strings of information
 with specific criteria.  You could, for instance, use it to generate
@@ -14,14 +14,14 @@ Here's a very simple example:
 from evennia.contrib.generator import Generator
 # Create a generator for phone numbers
 phone_generator = Generator("phone number", r"555-\d{3}-\d{4}")
-# Generate a phone number
+# Generate a phone number (555-XXX-XXXX with X as numbers)
 number = phone_generator.generate()
 # `number` will contain something like: "555-981-2207"
 # If you call `phone_generator.generate`, it won't give the same anymore.
 phone_generator.all()
 # Will return a list of all currently-used phone numbers
 phone_generator.free("555-981-2207")
-# The number can be generated again.
+# The number can be generated again
 ```
 
 To use it, you will need to:
@@ -107,8 +107,16 @@ class Generator(object):
     to remove a generated string, or the `clear` method to remove all
     generated strings.
 
+    Bear in mind, however, that while the generated strings will be
+    stored to avoid repetition, the generator will not concern itself
+    with how the string is stored on the object you use.  You probably
+    want to create a tag to mark this object.  This is outside of the scope
+    of this class.
+
     """
 
+    # We keep the script as a class variable to optimize querying
+    # with multiple instandces
     script = None
 
     def __init__(self, name, regex):
@@ -142,7 +150,7 @@ class Generator(object):
 
         # Analyze the regex if any
         if regex:
-            self.find_elements(regex)
+            self._find_elements(regex)
 
     def __repr__(self):
         return "<evennia.contrib.generator.Generator for {}>".format(self.name)
@@ -166,7 +174,7 @@ class Generator(object):
 
         Args:
             store (bool, optional): store the generated string in the script.
-            keep_trying (bool, optional): keep on trying if the string already exists.
+            keep_trying (bool, optional): keep on trying if the string is already used.
 
         Returns:
             The newly-generated string.
@@ -212,7 +220,7 @@ class Generator(object):
 
     def free(self, element):
         """
-        Removes a generated string from the list of stored strings.
+        Remove a generated string from the list of stored strings.
 
         Args:
             element (str): the string to remove from the list of generated strings.
@@ -254,7 +262,7 @@ class Generator(object):
         type(self).script = script
         return script
 
-    def find_elements(self, regex):
+    def _find_elements(self, regex):
         """
         Find the elements described in the regular expression.  This will
         analyze the provided regular expression and try to find elements.
