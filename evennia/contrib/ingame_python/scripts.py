@@ -10,7 +10,7 @@ import traceback
 
 from django.conf import settings
 from evennia import DefaultObject, DefaultScript, ChannelDB, ScriptDB
-from evennia import logger
+from evennia import logger, ObjectDB
 from evennia.utils.ansi import raw
 from evennia.utils.create import create_channel
 from evennia.utils.dbserialize import dbserialize
@@ -101,7 +101,7 @@ class EventHandler(DefaultScript):
         Return a dictionary of events on this object.
 
         Args:
-            obj (Object): the connected object.
+            obj (Object or typeclass): the connected object or typeclass.
 
         Returns:
             A dictionary of the object's events.
@@ -115,7 +115,11 @@ class EventHandler(DefaultScript):
         events = {}
         all_events = self.ndb.events
         classes = Queue()
-        classes.put(type(obj))
+        if isinstance(obj, ObjectDB):
+            classes.put(type(obj))
+        else:
+            classes.put(obj)
+
         invalid = []
         while not classes.empty():
             typeclass = classes.get()
