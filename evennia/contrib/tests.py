@@ -987,11 +987,11 @@ class TestUnixCommand(CommandTest):
         self.assertTrue(any(l.startswith("dummy: error:") for l in lines))
 
 
-from evennia.contrib import generator
+from evennia.contrib import random_string_generator
 
-SIMPLE_GENERATOR = generator.Generator("simple", "[01]{2}")
+SIMPLE_GENERATOR = random_string_generator.Generator("simple", "[01]{2}")
 
-class TestGenerator(EvenniaTest):
+class TestRandomStringGenerator(EvenniaTest):
 
     def test_generate(self):
         """Generate and fail when exhausted."""
@@ -1004,5 +1004,5 @@ class TestGenerator(EvenniaTest):
 
         # At this point, we have generated 4 strings.
         # We can't generate one more
-        with self.assertRaises(generator.ExhaustedGenerator):
+        with self.assertRaises(random_string_generator.ExhaustedGenerator):
             SIMPLE_GENERATOR.get()
