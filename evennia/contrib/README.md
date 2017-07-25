@@ -30,8 +30,6 @@ things you want from here into your game folder and change them there.
   multiple descriptions for time and season as well as details.
 * GenderSub (Griatch 2015) - Simple example (only) of storing gender
   on a character and access it in an emote with a custom marker.
-* Generator (Vincent Le Goff 2017) - Simple pseudo-random generator of
-  strings with rules, avoiding repetitions.
 * Mail (grungies1138 2016) - An in-game mail system for communication.
 * Menu login (Griatch 2011) - A login system using menus asking
   for name/password rather than giving them as one command
@@ -40,6 +38,8 @@ things you want from here into your game folder and change them there.
 * Menu Login (Vincent-lg 2016) - Alternate login system using EvMenu.
 * Multidescer (Griatch 2016) - Advanced descriptions combined from
   many separate description components, inspired by MUSH.
+* Random_string_generator (Vincent Le Goff 2017) - Simple pseudo-random
+  gereator of strings with rules, avoiding repetitions.
 * RPLanguage (Griatch 2015) - Dynamic obfuscation of emotes when
   speaking unfamiliar languages. Also obfuscates whispers.
 * RPSystem (Griatch 2015) - Full director-style emoting system
