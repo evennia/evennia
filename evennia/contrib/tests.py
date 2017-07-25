@@ -997,7 +997,7 @@ class TestGenerator(EvenniaTest):
         """Generate and fail when exhausted."""
         generated = []
         for i in range(4):
-            generated.append(SIMPLE_GENERATOR.generate())
+            generated.append(SIMPLE_GENERATOR.get())
 
         generated.sort()
         self.assertEqual(generated, ["00", "01", "10", "11"])
@@ -1005,4 +1005,4 @@ class TestGenerator(EvenniaTest):
         # At this point, we have generated 4 strings.
         # We can't generate one more
         with self.assertRaises(generator.ExhaustedGenerator):
-            SIMPLE_GENERATOR.generate()
+            SIMPLE_GENERATOR.get()
