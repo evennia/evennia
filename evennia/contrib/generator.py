@@ -28,7 +28,7 @@ To use it, you will need to:
 
 1. Import the `Generator` class from the contrib.
 2. Create an instance of this class taking two arguments:
-   - Tje name of tje gemerator (like "phone number", "license plate"...).
+   - The name of tje gemerator (like "phone number", "license plate"...).
    - The regular expression representing the expected results.
 3. Use the generator's `all`, `get` and `remove` methods as shown above.
 
