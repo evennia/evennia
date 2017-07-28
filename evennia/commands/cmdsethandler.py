@@ -351,6 +351,14 @@ class CmdSetHandler(object):
                     elif path:
                         cmdset = self._import_cmdset(path)
                         if cmdset:
+                            if cmdset.key == '_CMDSET_ERROR':
+                                # If a cmdset fails to load, check if we have a fallback path to use
+                                fallback_path = settings.CMDSET_FALLBACKS.get(path, None)
+                                if fallback_path:
+                                    cmdset = self._import_cmdset(fallback_path)
+                                # If no cmdset is returned from the fallback, we can't go further
+                                if not cmdset:
+                                    continue
                             cmdset.permanent = cmdset.key != '_CMDSET_ERROR'
                             self.cmdset_stack.append(cmdset)
 
