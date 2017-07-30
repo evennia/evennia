@@ -453,8 +453,10 @@ class SubscriptionHandler(object):
         self._cache = None
 
     def _recache(self):
-        self._cache = {player : True for player in self.obj.db_subscriptions.all()}
-        self._cache.update({obj : True for obj in self.obj.db_object_subscriptions.all()})
+        self._cache = {player: True for player in self.obj.db_subscriptions.all()
+                       if hasattr(player, 'pk') and player.pk}
+        self._cache.update({obj: True for obj in self.obj.db_object_subscriptions.all()
+                            if hasattr(obj, 'pk') and obj.pk})
 
     def has(self, entity):
         """
@@ -546,14 +548,23 @@ class SubscriptionHandler(object):
                 are puppeted by an online player.
         """
         subs = []
+        recache_needed = False
         for obj in self.all():
-            if hasattr(obj, 'player'):
-                if not obj.player:
+            from django.core.exceptions import ObjectDoesNotExist
+            try:
+                if hasattr(obj, 'player'):
+                    if not obj.player:
+                        continue
+                    obj = obj.player
+                if not obj.is_connected:
                     continue
-                obj = obj.player
-            if not obj.is_connected:
+            except ObjectDoesNotExist:
+                # a subscribed object has already been deleted. Mark that we need a recache and ignore it
+                recache_needed = True
                 continue
             subs.append(obj)
+        if recache_needed:
+            self._recache()
         return subs
 
     def clear(self):
