@@ -72,10 +72,24 @@ def getRegExFlagsFromStr( strflags = None ):
                     r |= re_flag[0]
     return r
 
+def getIntFromStr( strint = 0 ):
+    """
+    Given a string representation of an integer value, for example '0' or '1', converts it to an int value.
+
+    :param strint: {str} The string representation of an int value.
+    :return: {int} The translated integer
+    """
+    r = 0
+    if isinstance( strint, ( str, unicode ) ) or isinstance( strint, float ):
+        r = int( strint )
+    elif isinstance( strint, int ):
+        r = strint
+    return r
+
 def getBoolFromStr( strbool = False ):
     """
-    Given a string representation of a boolean value, for example 'true' or 'false'.  The string representation of the
-    boolean is not case sensitive (ie it could be True or TRUE or FaLSe)
+    Given a string representation of a boolean value, for example 'true' or 'false', converts it to a bool value.  The
+    string representation of the boolean is not case sensitive (ie it could be True or TRUE or FaLSe)
 
     :param strBool: {str} The string representation of a boolean value.
     :return: {bool} The translated boolean.
@@ -488,6 +502,44 @@ class ansiStringClass:
                 r += ansi_tag.ansiTag
         r += ansitext[r_begin:r_end]
         # the consumer may want/need to add a |n to return to normal coloration after this slice
+        return r
+
+    def rawRegexSearch( self, regex_pattern = "", regex_flags = 0 ):
+        """
+        Performs a standard re.search against the internal raw text (with the ANSI/XTERM tags stripped and formatting
+        tags converted to actual format characters) and returns the Match Object.  To work with the Match object
+        returned, consumers should import re
+
+        :param regex_pattern: {str} The regular expression pattern to use in the search operation.
+        :param regex_flags: {int} The regular expression flags to use in the search.  These may be any combination of
+                                  flag values ORed together from re.IGNORE and other standard flags.  Flags are also
+                                  included such as stringExtends.re_IGNORE or stringExtends.re_I for convenience.
+        :return: {MatchObject} A regular expression MatchObject instance.
+        """
+        striptext = self.rawTextFormat()
+        r_pattern = ""
+        if isinstance( regex_pattern, (str, unicode ) ):
+            r_pattern = regex_pattern
+        r_flags = 0
+        if isinstance( regex_flags, ( int, float ) ):
+            r_flags = int( regex_flags )
+        r = re.search( r_pattern, striptext, r_flags )
+        return r
+
+    def ansiRegexSearch( self, regex_pattern = "", regex_flags = 0  ):
+        """
+        Performs a standard re.search against the internal ansi text (with the ANSI/XTERM tags ignored and formatting
+        tags converted to actual format characters) and returns the Match Object.  To work with the Match object
+        returned, consumers should import re
+
+        :param regex_pattern: {str} The regular expression pattern to use in the search operation.
+        :param regex_flags: {int} The regular expression flags to use in the search.  These may be any combination of
+                                  flag values ORed together from re.IGNORE and other standard flags.  Flags are also
+                                  included such as stringExtends.re_IGNORE or stringExtends.re_I for convenience.
+        :return: {MatchObject} A regular expression MatchObject instance.
+        """
+        raw_match = self.rawRegexSearch( regex_pattern, regex_flags )
+
         return r
 
     def rawTextWrap( self, linelength ):

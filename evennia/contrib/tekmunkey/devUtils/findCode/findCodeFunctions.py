@@ -1056,9 +1056,9 @@ def findCode( topdir = None, subdirs = False, filename = None, matchinclassname 
 
     return r
 
-#dir_path = "../pyenv" # my particular virtual environment path for Python 2.7
-#with open("./outfile.txt", "w+") as outfile:
-#    rep = findCode( topdir = dir_path, subdirs = True, matchinclassname = None, matchindefname = "msg", clearemptyblocks = True )
+#dir_path = r"X:\MUSH\pyenv" # my particular virtual environment path for Python 2.7
+#with open(r"X:\MUSH\findCode_outfile.txt", r"w+") as outfile:
+#    rep = findCode( topdir = dir_path, subdirs = True, matchinclassname = r"MatchObject", matchindefname = None, clearemptyblocks = True )
 #    rep = findCode( topdir = dir_path, subdirs=True, clearemptyblocks = False )
 #    outfile.write(rep)
 

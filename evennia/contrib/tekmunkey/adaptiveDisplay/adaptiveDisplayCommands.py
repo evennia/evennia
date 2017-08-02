@@ -1,6 +1,46 @@
 import random
 from evennia import default_cmds
+from tekmunkey.devUtils import stringExtends
 from tekmunkey.adaptiveDisplay import adaptiveDisplayFunctions
+
+
+class cmdTestAnsiSlice( default_cmds.MuxCommand ):
+    """
+    +testAnsiSlice
+
+    Demonstrates the stringExtends.ansiSlice function based on your input.  Requires start index as its first parameter,
+    end index as its second parameter, and text as its third parameter.  These parameters are not named.
+
+    Note that Start index and End index refer to character indices in the string itself, ignoring the presence of any
+    ANSI/XTERM tags.  ANSI/XTERM tags are metadata which describe the characters in the string, they are not part of
+    the string itself.
+
+    ie:
+    +testAnsiSlice 3 10 ||h||rmy tes||yting string!||n
+    +testAnsiSlice -15 -8 ||h||rmy t||ces||yti||gng string!||n
+    ( yes, both of the above equate to the same indices - you can change them up yourself in further tests )
+    """
+    key = "+testAnsiSlice"
+
+    def parse(self):
+        if ( self.args is None ) or ( len( self.args.strip( r" " ) ) == 0 ):
+            # op code indicating no arguments provided
+            self.opCode = -255
+        else:
+            stripargs = self.args.strip( r" " )
+            # specifying 2 for split count actually results in 3 array elements O.o
+            args = stripargs.split( r" ", 2 )
+            self.opCode = 0
+            self.sliceStartIndex = stringExtends.getIntFromStr( args[0] )
+            self.sliceStopIndex = stringExtends.getIntFromStr( args[1] )
+            self.sliceAnsiString = args[2]
+
+    def func(self):
+        if self.opCode == 0:
+            ansistring_test = stringExtends.ansiStringClass( self.sliceAnsiString )
+            self.caller.msg( ansistring_test.ansiSlice( self.sliceStartIndex, self.sliceStopIndex ) )
+        elif self.opCode == -255:
+            self.caller.msg( r"You must supply a start index, an end index, and a string to test against." )
 
 
 #

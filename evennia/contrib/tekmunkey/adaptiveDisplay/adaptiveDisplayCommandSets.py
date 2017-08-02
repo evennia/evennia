@@ -12,3 +12,4 @@ class PlayerCmdSet(CmdSet):
         "Populates the cmdset"
         self.add( adaptiveDisplayCommands.cmdSetScreenWidth() )
         self.add( adaptiveDisplayCommands.cmdTestDisplay() )
+        self.add( adaptiveDisplayCommands.cmdTestAnsiSlice() )
