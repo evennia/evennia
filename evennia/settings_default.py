@@ -496,7 +496,7 @@ PERMISSION_PLAYER_DEFAULT = "Players"
 CLIENT_DEFAULT_WIDTH = 78
 # telnet standard height is 24; does anyone use such low-res displays anymore?
 CLIENT_DEFAULT_HEIGHT = 45
-# Help output from CmdHELP are wrapped in an EvMore call
+# Help output from CmdHelp are wrapped in an EvMore call
 # (excluding webclient with separate help popups). If continuous scroll
 # is preferred, change 'HELP_MORE' to False. EvMORE uses CLIENT_DEFAULT_HEIGHT
 HELP_MORE = True
