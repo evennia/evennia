@@ -16,6 +16,7 @@ from evennia.utils.eveditor import EvEditor
 from evennia.utils.utils import string_suggestions, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
+HELP_MORE = settings.HELP_MORE
 
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")
@@ -45,9 +46,9 @@ class CmdHelp(Command):
     return_cmdset = True
 
     # Help messages are wrapped in an EvMore call (unless using the webclient
-    # with separate help popups) If you want to avoid this, simply set the
-    # 'help_more' flag to False.
-    help_more = True
+    # with separate help popups) If you want to avoid this, simply add
+    # 'HELP_MORE = False' in your settings/conf/settings.py
+    help_more = HELP_MORE
 
     # suggestion cutoff, between 0 and 1 (1 => perfect match)
     suggestion_cutoff = 0.6
