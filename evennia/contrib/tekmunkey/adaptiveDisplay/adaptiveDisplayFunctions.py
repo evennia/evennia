@@ -235,10 +235,10 @@ def ljustText( text = "", fillchar= " ", fieldwidth = 78 ):
         padding_length = int( math.floor( ( return_fieldwidth - ansistring_text.rawTextLen() ) / ansistring_fillchar.rawTextLen() ) )
         r.Text = ansistring_text.ansiTextFormat() + ( ansistring_fillchar.ansiTextFormat() * padding_length )
         if r.rawTextLen() < return_fieldwidth:
-            r.Text += ansistring_fillchar.ansislice( 0, ( return_fieldwidth - r.rawTextLen() ) )
+            r.Text += ansistring_fillchar.ansiSlice( 0, ( return_fieldwidth - r.rawTextLen() ) )
     else:
         # we have to slice into the original text since it's longer than the fieldwidth
-        r.Text = ansistring_text.ansislice( 0, return_fieldwidth )
+        r.Text = ansistring_text.ansiSlice( 0, return_fieldwidth )
 
     return r.Text
 
@@ -273,11 +273,11 @@ def rjustText( text = "", fillchar= " ", fieldwidth = 78 ):
         padding_length = int( math.floor( ( return_fieldwidth - ansistring_text.rawTextLen() ) / ansistring_fillchar.rawTextLen() ) )
         r.Text = ( ansistring_fillchar.ansiTextFormat() * padding_length )
         if ( ansistring_text.rawTextLen() + r.rawTextLen() ) < return_fieldwidth:
-            r.Text += ansistring_fillchar.ansislice( 0, ( return_fieldwidth - ( r.rawTextLen( ) + ansistring_text.rawTextLen( ) )  ) )
+            r.Text += ansistring_fillchar.ansiSlice( 0, ( return_fieldwidth - ( r.rawTextLen( ) + ansistring_text.rawTextLen( ) )  ) )
         r.Text += ansistring_text.ansiTextFormat()
     else:
         # we have to slice into the original text since it's longer than the fieldwidth
-        r.Text = ansistring_text.ansislice( 0, return_fieldwidth )
+        r.Text = ansistring_text.ansiSlice( 0, return_fieldwidth )
 
     return r.Text
 
