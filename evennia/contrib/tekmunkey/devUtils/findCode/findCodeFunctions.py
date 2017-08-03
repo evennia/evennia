@@ -15,7 +15,7 @@ from tekmunkey.devUtils import stringExtends
 #   \3 = MyClass
 #   \4 = (baseClass)
 #
-regExPattern_CodeDeclaration = "^(\s*)(class|def)\s+([A-Z|a-z|0-9|_]+)?(\(.*\))*?:\s*$"
+regExPattern_CodeDeclaration = "^(\s*)(class|def)+\s+([A-Z|a-z|0-9|_]+)?.*$"
 
 #
 # If you're developing/debugging on Windows but hosting your development environment on Linux, this value MUST be True.
@@ -847,7 +847,7 @@ class codeFileClass:
             with open(filename) as file:
                 for line in file:
                     line_num += 1
-                    match = re.match(regExPattern_CodeDeclaration, line, re.IGNORECASE)
+                    match = re.match( regExPattern_CodeDeclaration, line, re.IGNORECASE )
                     if (match is not None) and ((match.group(1) is None) or (len(match.group(1)) == 0)):
                         last_top_level = line_num
                     if line_num == linenumber:
@@ -888,7 +888,7 @@ class codeFileClass:
             curClass = None
             for line in file:
                 line_num += 1
-                match = re.match(regExPattern_CodeDeclaration, line, re.IGNORECASE)
+                match = re.match( regExPattern_CodeDeclaration, line, re.IGNORECASE )
                 if match is not None:
                     if match.group(1) is not None:
                         cur_indent_len = len(match.group(1))
@@ -1057,8 +1057,11 @@ def findCode( topdir = None, subdirs = False, filename = None, matchinclassname 
     return r
 
 #dir_path = r"X:\MUSH\pyenv" # my particular virtual environment path for Python 2.7
+#dir_path = r"X:\MUSH\evennia" # my particular virtual environment path for evennia package
+#dir_path = r"X:\MUSH\evennia\evennia\objects"
 #with open(r"X:\MUSH\findCode_outfile.txt", r"w+") as outfile:
 #    rep = findCode( topdir = dir_path, subdirs = True, matchinclassname = r"MatchObject", matchindefname = None, clearemptyblocks = True )
+#    rep = findCode( topdir = dir_path, subdirs = True, matchinclassname = None, matchindefname = r"search", clearemptyblocks = True )
 #    rep = findCode( topdir = dir_path, subdirs=True, clearemptyblocks = False )
 #    outfile.write(rep)
 
