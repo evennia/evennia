@@ -222,13 +222,14 @@ class stringMatchClass:
             self.stringMatch = matchvalue
         else:
             self.stringMatch = ''
+
         self.isRegEx = useregex
         if useregex and isinstance( regexflags, int ):
             self.reFlags = regexflags
         else:
             self.reFlags = 0
 
-    def isMatch( self, text = None ):
+    def isRawMatch( self, text = None ):
         """
         Tests the supplied variable string text against the stringMatchClass instance's stringMatch value and
         returns True if they match according to the instance's specified options.  Otherwise False.
@@ -243,7 +244,7 @@ class stringMatchClass:
         if self.isRegEx:
             r = re.match( self.stringMatch, text, self.reFlags )
         else:
-            r = (text == self.stringMatch)
+            r = ( text == self.stringMatch )
 
         return r
 

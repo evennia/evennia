@@ -431,7 +431,7 @@ class codeBlockClass(codeLineClass):
         #
         # Now perform the meat and potatoes
         #
-        if r_namematch.isMatch(self.getCodeName()):
+        if r_namematch.isRawMatch( self.getCodeName( ) ):
             r = self
         if r is None:
             for cb in self.codeBlocks:
@@ -471,7 +471,7 @@ class codeFileClass:
     cataloguing operations are performed by this codeFileClass instance.
     
     Any time a class definition is found during a cataloguing operation, it will only be catalogued (added to the 
-    codeFileClass instance's codeBlocks array) if the classNameFilter.isMatch( codeBlock.getCodeName() ) operation 
+    codeFileClass instance's codeBlocks array) if the classNameFilter.isRawMatch( codeBlock.getCodeName() ) operation 
     returns True.
     
     * If a classNameFilter is in place, then only functions found in classes matching the classNameFilter will be 
@@ -489,7 +489,7 @@ class codeFileClass:
     cataloguing operations are performed by this codeFileClass instance.
     
     Any time a function definition is found during a cataloguing operation, it will only be catalogued (added to the 
-    codeFileClass instance's codeBlocks array) if the defNameFilter.isMatch( codeBlock.getCodeName() ) operation 
+    codeFileClass instance's codeBlocks array) if the defNameFilter.isRawMatch( codeBlock.getCodeName() ) operation 
     returns True.
 
     * See starred notes under classNameFilter
@@ -754,7 +754,7 @@ class codeFileClass:
                             # current indent is less than original indent - WE ARE DONE!
                             #
                             break
-                        elif match.group(2) == "class" and ( (self.classNameFilter is None) or ( ( self.classNameFilter is not None ) and self.classNameFilter.isMatch( match.group(3) ) ) ):
+                        elif match.group(2) == "class" and ((self.classNameFilter is None) or (( self.classNameFilter is not None ) and self.classNameFilter.isRawMatch( match.group( 3 ) ))):
                             codeblock = codeBlockClass( line=line_num, code=line )
                             if ( cur_indent_len == 0 ) or ( curClass is None ):
                                 #
@@ -781,7 +781,7 @@ class codeFileClass:
                                 curClass.ownerClass = classatindent.getCodeName()
                                 classatindent.append( codeblock )
                                 # either
-                        elif (match.group(2) == "def") and ( ( self.classNameFilter is None ) or ( ( self.classNameFilter is not None) and ( curClass is not None ) ) ) and ( (self.defNameFilter is None) or ( ( self.defNameFilter is not None ) and self.defNameFilter.isMatch( match.group(3) ) ) ):
+                        elif (match.group(2) == "def") and ( ( self.classNameFilter is None ) or ( ( self.classNameFilter is not None) and ( curClass is not None ) ) ) and ((self.defNameFilter is None) or (( self.defNameFilter is not None ) and self.defNameFilter.isRawMatch( match.group( 3 ) ))):
                             codeline = codeBlockClass(line=line_num, code=line)
                             if ( curClass is not None ) and ( cur_indent_len > curClass.getIndent_Len() ):
                                 #
@@ -897,7 +897,7 @@ class codeFileClass:
 
                     codeblock = codeBlockClass(line=line_num, code=line)
 
-                    if ( match.group(2) == "class" ) and ( ( self.classNameFilter is None ) or ( ( self.classNameFilter is not None ) and self.classNameFilter.isMatch( match.group(3) ) ) ):
+                    if ( match.group(2) == "class" ) and (( self.classNameFilter is None ) or (( self.classNameFilter is not None ) and self.classNameFilter.isRawMatch( match.group( 3 ) ))):
                         if ( curClass is not None ):
                             if ( cur_indent_len > curClass.getIndent_Len() ):
                                 #
@@ -925,7 +925,7 @@ class codeFileClass:
                             #
                             curClass = codeblock
                             self.codeBlocks.append( codeblock )
-                    elif ( match.group(2) == "def" ) and ( ( self.classNameFilter is None ) or ( ( self.classNameFilter is not None) and ( curClass is not None ) ) ) and ( ( self.defNameFilter is None ) or ( ( self.defNameFilter is not None ) and self.defNameFilter.isMatch( match.group(3) ) ) ):
+                    elif ( match.group(2) == "def" ) and ( ( self.classNameFilter is None ) or ( ( self.classNameFilter is not None) and ( curClass is not None ) ) ) and (( self.defNameFilter is None ) or (( self.defNameFilter is not None ) and self.defNameFilter.isRawMatch( match.group( 3 ) ))):
                         if (curClass is not None):
                             if (cur_indent_len > curClass.getIndent_Len()):
                                 #

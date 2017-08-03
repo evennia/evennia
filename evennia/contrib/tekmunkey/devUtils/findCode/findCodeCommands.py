@@ -85,13 +85,13 @@ class cmdFindCode( default_cmds.MuxCommand ):
                     # user could put in dir=a/al/all or dir=e/ev/eve/evennia or dir=m/my/mygam/mygame etc
                     #
                     argmatch = stringExtends.stringMatchClass( matchvalue = "^" + arg_val + ".*$", useregex = True, regexflags = stringExtends.re_IGNORECASE )
-                    if argmatch.isMatch( "all" ):
+                    if argmatch.isRawMatch( "all" ):
                         self.trgDirs = [ self.evBaseDir, self.evGameDir ]
                         pass
-                    elif argmatch.isMatch( "evennia" ):
+                    elif argmatch.isRawMatch( "evennia" ):
                         self.trgDirs = [ self.evBaseDir ]
                         pass
-                    elif argmatch.isMatch( "mygame" ):
+                    elif argmatch.isRawMatch( "mygame" ):
                         self.trgDirs = [ self.evGameDir ]
                         pass
                 elif ( arg_nam == 'class' ):
@@ -103,7 +103,7 @@ class cmdFindCode( default_cmds.MuxCommand ):
                     for av in arg_val:
                         av = av.split(":")
                         if av[0].lower() == "matchvalue":
-                            self.classNameFilter.stringMatch = av[1]
+                            self.classNameFilter.stringMatch = av[1 ]
                         elif av[0].lower() == "useregex":
                             self.classNameFilter.isRegEx = stringExtends.getBoolFromStr( av[1 ] )
                         elif av[0].lower() == "regexflags":
@@ -117,7 +117,7 @@ class cmdFindCode( default_cmds.MuxCommand ):
                     for av in arg_val:
                         av = av.split( ":" )
                         if av[0].lower() == "matchvalue":
-                            self.defNameFilter.stringMatch = av[1]
+                            self.defNameFilter.stringMatch = av[1 ]
                         elif av[0].lower() == "useregex":
                             self.defNameFilter.isRegEx = stringExtends.getBoolFromStr( av[1 ] )
                         elif av[0].lower() == "regexflags":
