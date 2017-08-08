@@ -513,7 +513,7 @@ class WildernessRoom(DefaultRoom):
             moved_obj (Object): The object moved into this one.
             source_location (Object): Where `moved_obj` came from.
         """
-        if moved_obj.destination and moved_obj.destination == moved_obj.location:
+        if isinstance(moved_obj, WildernessExit):
             # Ignore exits looping back to themselves: those are the regular
             # n, ne, ... exits.
             return
