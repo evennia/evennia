@@ -855,6 +855,8 @@ class EvMenu(object):
             self.helptext = _HELP_NO_OPTIONS if self.auto_quit else _HELP_NO_OPTIONS_NO_QUIT
 
         self.display_nodetext()
+        if not options:
+            self.close_menu()
 
     def close_menu(self):
         """
