@@ -100,7 +100,7 @@ EVENNIA_ADMIN = True
 EVENNIA_DIR = os.path.dirname(os.path.abspath(__file__))
 # Path to the game directory (containing the server/conf/settings.py file)
 # This is dynamically created- there is generally no need to change this!
-if sys.argv[1] == 'test' if len(sys.argv)>1 else False:
+if sys.argv[1] == 'test' if len(sys.argv) > 1 else False:
     # unittesting mode
     GAME_DIR = os.getcwd()
 else:
@@ -206,14 +206,14 @@ MAX_CONNECTION_RATE = 2
 # from the client! To turn the limiter off, set to <= 0.
 MAX_COMMAND_RATE = 80
 # The warning to echo back to users if they send commands too fast
-COMMAND_RATE_WARNING ="You entered commands too fast. Wait a moment and try again."
+COMMAND_RATE_WARNING = "You entered commands too fast. Wait a moment and try again."
 # Determine how large of a string can be sent to the server in number
 # of characters. If they attempt to enter a string over this character
 # limit, we stop them and send a message. To make unlimited, set to
 # 0 or less.
 MAX_CHAR_LIMIT = 6000
 # The warning to echo back to users if they enter a very large string
-MAX_CHAR_LIMIT_WARNING="You entered a string that was too long. Please break it up into multiple parts."
+MAX_CHAR_LIMIT_WARNING = "You entered a string that was too long. Please break it up into multiple parts."
 # If this is true, errors and tracebacks from the engine will be
 # echoed as text in-game as well as to the log. This can speed up
 # debugging. OBS: Showing full tracebacks to regular users could be a
@@ -483,7 +483,7 @@ MAX_NR_CHARACTERS = 1
 # The access hierarchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()
 # lock functions.
-PERMISSION_HIERARCHY = ["Guests", # note-only used if GUEST_ENABLED=True
+PERMISSION_HIERARCHY = ["Guests",  # note-only used if GUEST_ENABLED=True
                         "Players",
                         "PlayerHelpers",
                         "Builders",
@@ -494,8 +494,12 @@ PERMISSION_PLAYER_DEFAULT = "Players"
 # Default sizes for client window (in number of characters), if client
 # is not supplying this on its own
 CLIENT_DEFAULT_WIDTH = 78
-CLIENT_DEFAULT_HEIGHT = 45 # telnet standard is 24 but does anyone use such
-                           # low-res displays anymore?
+# telnet standard height is 24; does anyone use such low-res displays anymore?
+CLIENT_DEFAULT_HEIGHT = 45
+# Help output from CmdHelp are wrapped in an EvMore call
+# (excluding webclient with separate help popups). If continuous scroll
+# is preferred, change 'HELP_MORE' to False. EvMORE uses CLIENT_DEFAULT_HEIGHT
+HELP_MORE = True
 
 ######################################################################
 # Guest accounts
@@ -533,17 +537,17 @@ GUEST_LIST = ["Guest" + str(s+1) for s in range(9)]
 # general "mud info" channel. Other channels beyond that
 # are up to the admin to design and call appropriately.
 DEFAULT_CHANNELS = [
-                  # public channel
-                  {"key": "Public",
-                  "aliases": ('ooc', 'pub'),
-                  "desc": "Public discussion",
-                  "locks": "control:perm(Wizards);listen:all();send:all()"},
-                  # connection/mud info
-                  {"key": "MudInfo",
-                   "aliases": "",
-                   "desc": "Connection log",
-                   "locks": "control:perm(Immortals);listen:perm(Wizards);send:false()"}
-                  ]
+                    # public channel
+                    {"key": "Public",
+                     "aliases": ('ooc', 'pub'),
+                     "desc": "Public discussion",
+                     "locks": "control:perm(Wizards);listen:all();send:all()"},
+                    #  connection/mud info
+                    {"key": "MudInfo",
+                     "aliases": "",
+                     "desc": "Connection log",
+                     "locks": "control:perm(Immortals);listen:perm(Wizards);send:false()"}
+                   ]
 # Extra optional channel for receiving connection messages ("<player> has (dis)connected").
 # While the MudInfo channel will also receieve this, this channel is meant for non-staffers.
 CHANNEL_CONNECTINFO = None
@@ -569,8 +573,8 @@ IRC_ENABLED = False
 # active. OBS: RSS support requires the python-feedparser package to
 # be installed (through package manager or from the website
 # http://code.google.com/p/feedparser/)
-RSS_ENABLED=False
-RSS_UPDATE_INTERVAL = 60*10 # 10 minutes
+RSS_ENABLED = False
+RSS_UPDATE_INTERVAL = 60*10  # 10 minutes
 
 ######################################################################
 # Django web features
@@ -586,7 +590,7 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 # Emails are sent to these people if the above DEBUG value is False. If you'd
 # rather prefer nobody receives emails, leave this commented out or empty.
-ADMINS = () #'Your Name', 'your_email@domain.com'),)
+ADMINS = ()  # 'Your Name', 'your_email@domain.com'),)
 # These guys get broken link notifications when SEND_BROKEN_LINK_EMAILS is True.
 MANAGERS = ADMINS
 # Absolute path to the directory that holds file uploads from web apps.
@@ -647,13 +651,13 @@ WEBSITE_TEMPLATE = 'website'
 WEBCLIENT_TEMPLATE = 'webclient'
 # The default options used by the webclient
 WEBCLIENT_OPTIONS = {
-        "gagprompt": True, # Gags prompt from the output window and keep them
-                           # together with the input bar
-        "helppopup": True, # Shows help files in a new popup window
-        "notification_popup": False, # Shows notifications of new messages as
-                                     # popup windows
-        "notification_sound": False # Plays a sound for notifications of new
-                                    # messages
+        "gagprompt": True,  # Gags prompt from the output window and keep them
+                            # together with the input bar
+        "helppopup": True,  # Shows help files in a new popup window
+        "notification_popup": False,  # Shows notifications of new messages as
+                                      # popup windows
+        "notification_sound": False   # Plays a sound for notifications of new
+                                      # messages
     }
 
 # We setup the location of the website template as well as the admin site.
