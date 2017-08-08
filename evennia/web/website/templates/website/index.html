@@ -52,14 +52,14 @@
 <div class="row">
   <div class="col-12 col-md-4 mb-3">
     <div class="card">
-      <h4 class="card-header">Players</h4>
+      <h4 class="card-header">Accounts</h4>
 
       <div class="card-block">
         <p>
-          There's currently <strong>{{num_players_connected}}</strong> connected out of a total of <strong>{{num_players_registered}}</strong> players registered.
+          There's currently <strong>{{num_accounts_connected}}</strong> connected out of a total of <strong>{{num_accounts_registered}}</strong> account{{num_accounts_registered|pluralize}} registered.
         </p>
         <p>
-          Of these, <strong>{{num_players_registered_recent}}</strong> were created this week, and <strong>{{num_players_connected_recent}}</strong> have connected within the last seven days.
+          Of these, <strong>{{num_accounts_registered_recent}}</strong> were created this week, and <strong>{{num_accounts_connected_recent}}</strong> have connected within the last seven days.
         </p>
       </div>
     </div>
@@ -71,8 +71,8 @@
 
       <div class="card-block px-0 py-0">
         <ul class="list-group">
-          {% for player in players_connected_recent %}
-            <li class="list-group-item">{{player.username}} -- <em>{{player.last_login|timesince}} ago</em></li>
+          {% for account in accounts_connected_recent %}
+            <li class="list-group-item">{{account.username}}&mdash;<em>{{account.last_login|timesince}} ago</em></li>
           {% endfor %}
         </ul>
       </div>
@@ -85,8 +85,8 @@
 
       <div class="card-block py-0 px-0">
         <ul class="list-group">
-          <li class="list-group-item">{{num_players_registered}} players (+ {{num_characters}} characters)</li>
-          <li class="list-group-item">{{num_rooms}} rooms (+ {{num_exits}} exits)</li>
+          <li class="list-group-item">{{num_accounts_registered}} account{{num_accounts_registered|pluralize}} (+ {{num_characters}} character{{num_characters|pluralize}})</li>
+          <li class="list-group-item">{{num_rooms}} room{{num_rooms|pluralize}} (+ {{num_exits}} exits)</li>
           <li class="list-group-item">{{num_others}} other objects</li>
         </ul>
       </div>
