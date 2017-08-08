@@ -455,10 +455,10 @@ class Evennia(object):
         # (this also starts any that didn't yet start)
         ScriptDB.objects.validate(init_mode=mode)
 
-        # start the persistent tasks
-        from evennia.utils.persistent import PERSISTENT_TASKS
-        PERSISTENT_TASKS.load()
-        PERSISTENT_TASKS.create_delays()
+        # start the task handler
+        from evennia.scripts.taskhandler import TASK_HANDLER
+        TASK_HANDLER.load()
+        TASK_HANDLER.create_delays()
 
         # delete the temporary setting
         ServerConfig.objects.conf("server_restart_mode", delete=True)
