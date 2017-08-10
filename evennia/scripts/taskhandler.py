@@ -179,10 +179,7 @@ class TaskHandler(object):
         """
         now = datetime.now()
         for task_id, (date, callbac, args, kwargs) in self.tasks.items():
-            seconds = (date - now).total_seconds()
-            if seconds < 0:
-                seconds = 0
-
+            seconds = max(0, (date - now).total_seconds())
             task.deferLater(reactor, seconds, self.do_task, task_id)
 
 
