@@ -985,3 +985,35 @@ class TestUnixCommand(CommandTest):
         lines = ret.splitlines()
         self.assertTrue(any(l.startswith("usage:") for l in lines))
         self.assertTrue(any(l.startswith("dummy: error:") for l in lines))
+
+
+# Plural contrib
+from evennia import DefaultRoom
+from evennia.utils.create import create_object
+from evennia.contrib.plural import PluralNames
+
+class _RoomWithPlural(PluralNames, DefaultRoom):
+
+    pass
+
+class TestPlural(CommandTest):
+
+    def setUp(self):
+        """Setting up a custom room."""
+        super(TestPlural, self).setUp()
+        self.room2 = create_object(_RoomWithPlural, "A new room")
+
+    def test_singular(self):
+        """Test to display objects with a singular name."""
+        # Create one rock
+        create_object("evennia.objects.objects.DefaultObject", "rock", location=self.room2)
+        seen = self.room2.return_appearance(self.char1)
+        self.assertIn(" rock(", seen)
+
+    def test_plural(self):
+        """Test to display objects with plural names."""
+        # Create 2 rocks
+        create_object("evennia.objects.objects.DefaultObject", "rock", location=self.room2)
+        create_object("evennia.objects.objects.DefaultObject", "rock", location=self.room2)
+        seen = self.room2.return_appearance(self.char1)
+        self.assertIn(" rock X 2(", seen)
