@@ -101,24 +101,28 @@ class EventHandler(DefaultScript):
         Return a dictionary of events on this object.
 
         Args:
-            obj (Object or typeclass): the connected object or typeclass.
+            obj (Object or typeclass): the connected object or a general typeclass.
 
         Returns:
             A dictionary of the object's events.
 
-        Note:
+        Notes:
             Events would define what the object can have as
             callbacks.  Note, however, that chained callbacks will not
             appear in events and are handled separately.
+
+            You can also request the events of a typeclass, not a
+            connected object.  This is useful to get the global list
+            of events for a typeclass that has no object yet.
 
         """
         events = {}
         all_events = self.ndb.events
         classes = Queue()
-        if isinstance(obj, ObjectDB):
-            classes.put(type(obj))
-        else:
+        if isinstance(obj, type):
             classes.put(obj)
+        else:
+            classes.put(type(obj))
 
         invalid = []
         while not classes.empty():
