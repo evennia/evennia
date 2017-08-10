@@ -181,6 +181,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
     # Tag manager methods
 
+
     def get_tag(self, key=None, category=None, obj=None, tagtype=None, global_search=False):
         """
         Return Tag objects by key, by category, by object (it is
@@ -256,28 +257,83 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         return self.get_tag(key=key, category=category, obj=obj, tagtype="alias")
 
+#    @returns_typeclass_list
+#    def get_by_tag(self, key=None, category=None, tagtype=None):
+#        """
+#        Return objects having tags with a given key or category or
+#        combination of the two.
+#
+#        Args:
+#            key (str, optional): Tag key. Not case sensitive.
+#            category (str, optional): Tag category. Not case sensitive.
+#            tagtype (str or None, optional): 'type' of Tag, by default
+#                this is either `None` (a normal Tag), `alias` or
+#                `permission`.
+#        Returns:
+#            objects (list): Objects with matching tag.
+#        """
+#        dbmodel = self.model.__dbclass__.__name__.lower()
+#        query = [("db_tags__db_tagtype", tagtype), ("db_tags__db_model", dbmodel)]
+#        if key:
+#            query.append(("db_tags__db_key", key.lower()))
+#        if category:
+#            query.append(("db_tags__db_category", category.lower()))
+#        return self.filter(**dict(query))
+
     @returns_typeclass_list
     def get_by_tag(self, key=None, category=None, tagtype=None):
         """
-        Return objects having tags with a given key or category or
-        combination of the two.
+        Return objects having tags with a given key or category or combination of the two.
+        Also accepts multiple tags/category/tagtype
 
         Args:
-            key (str, optional): Tag key. Not case sensitive.
-            category (str, optional): Tag category. Not case sensitive.
-            tagtype (str or None, optional): 'type' of Tag, by default
+            key (str or list, optional): Tag key or list of keys. Not case sensitive.
+            category (str or list, optional): Tag category. Not case sensitive. If `key` is
+                a list, a single category can either apply to all keys in that list or this
+                must be a list matching the `key` list element by element.
+            tagtype (str, optional): 'type' of Tag, by default
                 this is either `None` (a normal Tag), `alias` or
-                `permission`.
+                `permission`. This always apply to all queried tags.
+
         Returns:
             objects (list): Objects with matching tag.
+
+        Raises:
+            IndexError: If `key` and `category` are both lists and `category` is shorter
+                than `key`.
+
         """
+        keys = make_iter(key)
+        categories = make_iter(category)
+        n_keys = len(keys)
+        n_categories = len(categories)
+
         dbmodel = self.model.__dbclass__.__name__.lower()
-        query = [("db_tags__db_tagtype", tagtype), ("db_tags__db_model", dbmodel)]
-        if key:
-            query.append(("db_tags__db_key", key.lower()))
-        if category:
-            query.append(("db_tags__db_category", category.lower()))
-        return self.filter(**dict(query))
+        if n_keys > 1:
+            if n_categories == 1:
+                category = categories[0]
+                query = Q(db_tags__db_tagtype=tagtype.lower() if tagtype else tagtype,
+                          db_tags__db_category=category.lower() if category else category,
+                          db_tags__db_model=dbmodel)
+                for key in keys:
+                    query = query & Q(db_tags__db_key=key.lower())
+                print "Query:", query
+            else:
+                query = Q(db_tags__db_tagtype=tagtype.lower(),
+                          db_tags__db_model=dbmodel)
+                for ikey, key in keys:
+                    category = categories[ikey]
+                    category = category.lower() if category else category
+                    query = query & Q(db_tags__db_key=key.lower(),
+                                      db_tags__db_category=category)
+            return self.filter(query)
+        else:
+            query = [("db_tags__db_tagtype", tagtype), ("db_tags__db_model", dbmodel)]
+            if key:
+                query.append(("db_tags__db_key", keys[0].lower()))
+            if category:
+                query.append(("db_tags__db_category", categories[0].lower()))
+            return self.filter(**dict(query))
 
     def get_by_permission(self, key=None, category=None):
         """
