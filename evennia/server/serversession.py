@@ -13,8 +13,10 @@ import importlib
 import time
 from django.utils import timezone
 from django.conf import settings
+from evennia import settings as ev_settings
 from evennia.comms.models import ChannelDB
 from evennia.utils import logger
+from evennia.utils.logger import log_err, log_file
 from evennia.utils.utils import make_iter, lazy_property
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
@@ -149,7 +151,59 @@ class NAttributeHandler(object):
 # -------------------------------------------------------------
 # Server Session
 # -------------------------------------------------------------
+class ServerAuditor(object):
+    """
+    Logs select auditing-related events occurring within the
+    ServerSessionHandler.
+    """
+    def __init__(self, session):
+        self.session = session
+    
+    def log(self, msg, **kwargs):
+        # Mask any passwords included in a connection attempt!
+        tokens = msg.strip().split(" ")
+        cmd = tokens[0].lower()
+        
+        if cmd in ("connect", "create", "@password"):
+            token_len = 2
+            # If @password was issued, mask everything after the command
+            if cmd == "@password":
+                token_len = 1
 
+            msg = " ".join(tokens[:token_len]) + " ********"
+            
+        # If this is a user command, flag it via kwarg to
+        # prevent users from spoofing log events in-game.
+        if kwargs.get('user'):
+            msg = "RawCmd( %s )" % msg
+        
+        # Get the current session's IP address
+        ip = self.session.address
+        
+        # Log both the Player name and its dbref
+        player = self.session.get_player()
+        if player: player = "%s#%i" % (player.name, player.id)
+        
+        # Log both the Character name and its dbref
+        character = None
+        char_obj = self.session.get_puppet()
+        if char_obj: character = "%s#%i" % (char_obj.name, char_obj.id)
+        
+        # Log both the Room name and its dbref
+        room = None
+        if char_obj:
+            room = char_obj.location
+            if room: room = "%s#%i" % (room.key, room.id)
+        
+        # Log the IP, Player (if available), Character (if available),
+        # Room (if available) and what they're trying to do
+        message = "%s :: %s\n" % (unicode(tuple(x for x in (ip, player, character, room) if x)), msg)
+        
+        # Rotate this log; too voluminous to make optional.
+        date = timezone.now().strftime("%Y-%m-%d")
+        log_file(message, '%s_audit.log' % date)
+        return True
+        
 class ServerSession(Session):
     """
     This class represents a player's session and is a template for
@@ -166,6 +220,8 @@ class ServerSession(Session):
         self.player = None
         self.cmdset_storage_string = ""
         self.cmdset = CmdSetHandler(self, True)
+        
+        self.audit = ServerAuditor(self)
 
     def __cmdset_storage_get(self):
         return [path.strip() for path in self.cmdset_storage_string.split(',')]
@@ -375,6 +431,9 @@ class ServerSession(Session):
                 for the protocol(s).
 
         """
+        # Be careful about enabling auditing of responses here--
+        # a single broadcast-type message will create one log entry per recipient!
+        
         self.sessionhandler.data_out(self, **kwargs)
 
     def data_in(self, **kwargs):
@@ -391,6 +450,20 @@ class ServerSession(Session):
             the client. It should usually always end by sending
             this data off to `self.sessionhandler.call_inputfuncs(self, **kwargs)`.
         """
+        if ev_settings.INPUT_AUDITING:
+            try:
+                text = unicode(kwargs.get('text')[0][0]).strip()
+            except IndexError as e:
+                text = kwargs.get('text', '')
+                if text: text = unicode(text)
+                
+            # Log commands only if they are greater than 2 characters long--
+            # We don't want to log every movement in a cardinal direction.
+            if len(text) > 2:
+                # Make sure to denote that this is a user-entered command,
+                # otherwise users can spoof log messages
+                self.audit.log(text, user=True)
+
         self.sessionhandler.call_inputfuncs(self, **kwargs)
 
     def msg(self, text=None, **kwargs):

@@ -219,6 +219,13 @@ MAX_CHAR_LIMIT_WARNING = "You entered a string that was too long. Please break i
 # debugging. OBS: Showing full tracebacks to regular users could be a
 # security problem -turn this off in a production game!
 IN_GAME_ERRORS = True
+# If this is true, all strings entered by all players will be logged to disk
+# (in the audit.log file) regardless of whether or not the string resulted 
+# in a valid or successful command being executed.
+# Passwords are masked but if mistyped, could still get logged
+# in cleartext. Be ethical, and understand the danger concerning this file
+# getting stolen.
+INPUT_AUDITING = False
 
 ######################################################################
 # Evennia Database config
