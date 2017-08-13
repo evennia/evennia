@@ -348,6 +348,12 @@ CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
 CMDSET_PLAYER = "commands.default_cmdsets.PlayerCmdSet"
 # Location to search for cmdsets if full path not given
 CMDSET_PATHS = ["commands", "evennia", "contribs"]
+# Fallbacks for cmdset paths that fail to load. Note that if you change the path for your default cmdsets,
+# you will also need to copy CMDSET_FALLBACKS after your change in your settings file for it to detect the change.
+CMDSET_FALLBACKS = {CMDSET_CHARACTER: 'evennia.commands.default.cmdset_character.CharacterCmdSet',
+                    CMDSET_PLAYER: 'evennia.commands.default.cmdset_player.PlayerCmdSet',
+                    CMDSET_SESSION: 'evennia.commands.default.cmdset_session.SessionCmdSet',
+                    CMDSET_UNLOGGEDIN: 'evennia.commands.default.cmdset_unloggedin.UnloggedinCmdSet'}
 # Parent class for all default commands. Changing this class will
 # modify all default commands, so do so carefully.
 COMMAND_DEFAULT_CLASS = "evennia.commands.default.muxcommand.MuxCommand"
