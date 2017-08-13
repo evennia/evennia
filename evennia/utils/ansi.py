@@ -553,13 +553,6 @@ def raw(string):
     return string.replace('{', '{{').replace('|', '||')
 
 
-def group(lst, n):
-    for i in range(0, len(lst), n):
-        val = lst[i:i+n]
-        if len(val) == n:
-            yield tuple(val)
-
-
 def _spacing_preflight(func):
     """
     This wrapper function is used to do some preflight checks on
@@ -573,10 +566,10 @@ def _spacing_preflight(func):
             raise TypeError("must be char, not %s" % type(fillchar))
         if not isinstance(width, int):
             raise TypeError("integer argument expected, got %s" % type(width))
-        difference = width - len(self)
-        if difference <= 0:
+        _difference = width - len(self)
+        if _difference <= 0:
             return self
-        return func(self, width, fillchar, difference)
+        return func(self, width, fillchar, _difference)
     return wrapped
 
 
@@ -934,6 +927,9 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         """
         Return a unicode object without the ANSI escapes.
 
+        Returns:
+            clean_string (unicode): A unicode object with no ANSI escapes.
+
         """
         return self._clean_string
 
@@ -941,19 +937,30 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         """
         Return a unicode object with the ANSI escapes.
 
+        Returns:
+            raw (unicode): A unicode object with the raw ANSI escape sequences.
+
         """
         return self._raw_string
 
     def partition(self, sep, reverse=False):
         """
-        Similar to split, but always creates a tuple with three items:
-
-        1. The part before the separator
-        2. The separator itself.
-        3. The part after.
+        Splits once into three sections (with the separator being the middle section)
 
         We use the same techniques we used in split() to make sure each are
         colored.
+
+        Args:
+            sep (str): The separator to split the string on.
+            reverse (boolean): Whether to split the string on the last
+                occurrence of the separator rather than the first.
+        Returns:
+            result (tuple):
+               prefix (ANSIString): The part of the string before the
+                   separator
+               sep (ANSIString): The separator itself
+               postfix (ANSIString): The part of the string after the
+                   separator.
 
         """
         if hasattr(sep, '_clean_string'):
@@ -1044,11 +1051,25 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
 
     def split(self, by=None, maxsplit=-1):
         """
+        Splits a string based on a separator.
+
         Stolen from PyPy's pure Python string implementation, tweaked for
         ANSIString.
 
         PyPy is distributed under the MIT licence.
         http://opensource.org/licenses/MIT
+
+        Args:
+            by (str): A string to search for which will be used to split
+                the string. For instance, ',' for 'Hello,world' would
+                result in ['Hello', 'world']
+            maxsplit (int): The maximum number of times to split the string.
+                For example, a maxsplit of 2 with a by of ',' on the string
+                'Hello,world,test,string' would result in
+                ['Hello', 'world', 'test,string']
+        Returns:
+            result (list of ANSIStrings): A list of ANSIStrings derived from
+                this string.
 
         """
         drop_spaces = by is None
@@ -1077,11 +1098,26 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
 
     def rsplit(self, by=None, maxsplit=-1):
         """
+        Like split, but starts from the end of the string rather than the
+        beginning.
+
         Stolen from PyPy's pure Python string implementation, tweaked for
         ANSIString.
 
         PyPy is distributed under the MIT licence.
         http://opensource.org/licenses/MIT
+
+        Args:
+            by (str): A string to search for which will be used to split
+                the string. For instance, ',' for 'Hello,world' would
+                result in ['Hello', 'world']
+            maxsplit (int): The maximum number of times to split the string.
+                For example, a maxsplit of 2 with a by of ',' on the string
+                'Hello,world,test,string' would result in
+                ['Hello,world', 'test', 'string']
+        Returns:
+            result (list of ANSIStrings): A list of ANSIStrings derived from
+                this string.
 
         """
         res = []
@@ -1111,6 +1147,14 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
     def strip(self, chars=None):
         """
         Strip from both ends, taking ANSI markers into account.
+
+        Args:
+            chars (str, optional): A string containing individual characters
+                to strip off of both ends of the string. By default, any blank
+                spaces are trimmed.
+        Returns:
+            result (ANSIString): A new ANSIString with the ends trimmed of the
+                relevant characters.
 
         """
         clean = self._clean_string
@@ -1150,6 +1194,14 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         """
         Strip from the left, taking ANSI markers into account.
 
+        Args:
+            chars (str, optional): A string containing individual characters
+                to strip off of the left end of the string. By default, any
+                blank spaces are trimmed.
+        Returns:
+            result (ANSIString): A new ANSIString with the left end trimmed of
+                the relevant characters.
+
         """
         clean = self._clean_string
         raw = self._raw_string
@@ -1175,6 +1227,14 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         """
         Strip from the right, taking ANSI markers into account.
 
+        Args:
+            chars (str, optional): A string containing individual characters
+                to strip off of the right end of the string. By default, any
+                blank spaces are trimmed.
+        Returns:
+            result (ANSIString): A new ANSIString with the right end trimmed of
+                the relevant characters.
+
         """
         clean = self._clean_string
         raw = self._raw_string
@@ -1195,7 +1255,22 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
 
     def join(self, iterable):
         """
-        Joins together strings in an iterable.
+        Joins together strings in an iterable, using this string between each
+        one.
+
+        NOTE: This should always be used for joining strings when ANSIStrings
+            are involved. Otherwise color information will be discarded by
+            python, due to details in the C implementation of unicode strings.
+
+        Args:
+            iterable (list of strings): A list of strings to join together
+        Returns:
+            result (ANSIString): A single string with all of the iterable's
+                contents concatenated, with this string between each. For
+                example:
+                    ANSIString(', ').join(['up', 'right', 'left', 'down'])
+                ...Would return:
+                    ANSIString('up, right, left, down')
 
         """
         result = ANSIString('')
@@ -1237,32 +1312,53 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
             raw_string, clean_string=line, char_indexes=char_indexes,
             code_indexes=code_indexes)
 
-    # The following methods should not be called with the 'difference' argument explicitly. This is
+    # The following methods should not be called with the '_difference' argument explicitly. This is
     # data provided by the wrapper _spacing_preflight.
     @_spacing_preflight
-    def center(self, width, fillchar, difference):
+    def center(self, width, fillchar, _difference):
         """
         Center some text with some spaces padding both sides.
 
+        Args:
+            width (int): The target width of the output string.
+            fillchar (str): A single character string to pad the output string
+                with.
+        Returns:
+            result (ANSIString): A string padded on both ends with fillchar.
+
         """
-        remainder = difference % 2
-        difference /= 2
-        spacing = self._filler(fillchar, difference)
+        remainder = _difference % 2
+        _difference /= 2
+        spacing = self._filler(fillchar, _difference)
         result = spacing + self + spacing + self._filler(fillchar, remainder)
         return result
 
     @_spacing_preflight
-    def ljust(self, width, fillchar, difference):
+    def ljust(self, width, fillchar, _difference):
         """
         Left justify some text.
 
+        Args:
+            width (int): The target width of the output string.
+            fillchar (str): A single character string to pad the output string
+                with.
+        Returns:
+            result (ANSIString): A string padded on the right with fillchar.
+
         """
-        return self + self._filler(fillchar, difference)
+        return self + self._filler(fillchar, _difference)
 
     @_spacing_preflight
-    def rjust(self, width, fillchar, difference):
+    def rjust(self, width, fillchar, _difference):
         """
         Right justify some text.
 
+        Args:
+            width (int): The target width of the output string.
+            fillchar (str): A single character string to pad the output string
+                with.
+        Returns:
+            result (ANSIString): A string padded on the left with fillchar.
+
         """
-        return self._filler(fillchar, difference) + self
+        return self._filler(fillchar, _difference) + self
