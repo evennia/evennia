@@ -323,7 +323,8 @@ class ANSIParser(object):
     ext_ansi_map = [
         (r'{n', ANSI_NORMAL),          # reset
         (r'{/', ANSI_RETURN),          # line break
-        (r'{-', ANSI_TAB),             # tab
+        (r'{-', 4*ANSI_SPACE),         # "fixed" tab
+        (r'{t', ANSI_TAB),             # tab
         (r'{_', ANSI_SPACE),           # space
         (r'{*', ANSI_INVERSE),         # invert
         (r'{^', ANSI_BLINK),           # blinking text (very annoying and not supported by all clients)
@@ -374,7 +375,8 @@ class ANSIParser(object):
 
         (r'|n', ANSI_NORMAL),          # reset
         (r'|/', ANSI_RETURN),          # line break
-        (r'|-', ANSI_TAB),             # tab
+        (r'|-', 4*ANSI_SPACE),         # "fixed" tab, for indentation
+        (r'|t', ANSI_TAB),             # tab
         (r'|_', ANSI_SPACE),           # space
         (r'|*', ANSI_INVERSE),         # invert
         (r'|^', ANSI_BLINK),           # blinking text (very annoying and not supported by all clients)
