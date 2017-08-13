@@ -83,6 +83,7 @@ class ANSIParser(object):
     We also allow to escape colour codes
     by prepending with a \ for xterm256,
     an extra | for Merc-style codes
+
     """
 
     def sub_ansi(self, ansimatch):
@@ -461,7 +462,7 @@ class ANSIParser(object):
         (r'\{\[=[a-z]', ""),
         (r'\|=[a-z]', ""),
         (r'\|\[=[a-z]', ""),
-        ]
+    ]
 
     mxp_re = r'\|lc(.*?)\|lt(.*?)\|le'
 
@@ -535,6 +536,7 @@ def strip_raw_ansi(string, parser=ANSI_PARSER):
 
     Returns:
         string (str): the stripped string.
+
     """
     return parser.strip_raw_codes(string)
 
@@ -661,19 +663,29 @@ class ANSIMeta(type):
 
 class ANSIString(with_metaclass(ANSIMeta, unicode)):
     """
-    String-like object that is aware of ANSI codes.
+    Unicode-like object that is aware of ANSI codes.
 
-    This isn't especially efficient, as it doesn't really have an
+    This class can be used nearly identically to unicode, in that it will
+    report string length, handle slices, etc, much like a unicode or
+    string object would. The methods should be used identically as unicode
+    methods are.
+
+    There is at least one exception to this (and there may be more, though
+    they have not come up yet). When using ''.join() or u''.join() on an
+    ANSIString, color information will get lost. You must use
+    ANSIString('').join() to preserve color information.
+
+    This implementation isn't perfectly clean, as it doesn't really have an
     understanding of what the codes mean in order to eliminate
-    redundant characters. This could be made as an enhancement to ANSI_PARSER.
+    redundant characters-- though cleaning up the strings might end up being
+    inefficient and slow without some C code when dealing with larger values.
+    Such enhancements could be made as an enhancement to ANSI_PARSER
+    if needed, however.
 
     If one is going to use ANSIString, one should generally avoid converting
     away from it until one is about to send information on the wire. This is
     because escape sequences in the string may otherwise already be decoded,
     and taken literally the second time around.
-
-    Please refer to the Metaclass, ANSIMeta, which is used to apply wrappers
-    for several of the methods that need not be defined directly here.
 
     """
 
@@ -1099,6 +1111,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
     def strip(self, chars=None):
         """
         Strip from both ends, taking ANSI markers into account.
+
         """
         clean = self._clean_string
         raw = self._raw_string
@@ -1136,6 +1149,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
     def lstrip(self, chars=None):
         """
         Strip from the left, taking ANSI markers into account.
+
         """
         clean = self._clean_string
         raw = self._raw_string
@@ -1160,6 +1174,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
     def rstrip(self, chars=None):
         """
         Strip from the right, taking ANSI markers into account.
+
         """
         clean = self._clean_string
         raw = self._raw_string
@@ -1222,6 +1237,8 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
             raw_string, clean_string=line, char_indexes=char_indexes,
             code_indexes=code_indexes)
 
+    # The following methods should not be called with the 'difference' argument explicitly. This is
+    # data provided by the wrapper _spacing_preflight.
     @_spacing_preflight
     def center(self, width, fillchar, difference):
         """
