@@ -989,7 +989,7 @@ class TestUnixCommand(CommandTest):
 
 from evennia.contrib import random_string_generator
 
-SIMPLE_GENERATOR = random_string_generator.Generator("simple", "[01]{2}")
+SIMPLE_GENERATOR = random_string_generator.RandomStringGenerator("simple", "[01]{2}")
 
 class TestRandomStringGenerator(EvenniaTest):
 

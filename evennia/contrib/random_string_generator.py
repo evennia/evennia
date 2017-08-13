@@ -11,14 +11,13 @@ stored and won't be available again in order to avoid repetition.
 Here's a very simple example:
 
 ```python
-from evennia.contrib.random_string_generator import Generator
+from evennia.contrib.random_string_generator import RandomStringGenerator
 # Create a generator for phone numbers
-phone_generator = Generator("phone number", r"555-\d{3}-\d{4}")
+phone_generator = RandomStringGenerator("phone number", r"555-[0-9]{3}-[0-9]{4}")
 # Generate a phone number (555-XXX-XXXX with X as numbers)
 number = phone_generator.get()
 # `number` will contain something like: "555-981-2207"
-# If you call `phone_generator.get`, it won't give the same anymore.
-phone_generator.all()
+# If you call `phone_generator.get`, it won't give the same anymore.phone_generator.all()
 # Will return a list of all currently-used phone numbers
 phone_generator.remove("555-981-2207")
 # The number can be generated again
@@ -26,12 +25,14 @@ phone_generator.remove("555-981-2207")
 
 To use it, you will need to:
 
-1. Import the `Generator` class from the contrib.
+1. Import the `RandomStringGenerator` class from the contrib.
 2. Create an instance of this class taking two arguments:
-   - The name of tje gemerator (like "phone number", "license plate"...).
+   - The name of the gemerator (like "phone number", "license plate"...).
    - The regular expression representing the expected results.
 3. Use the generator's `all`, `get` and `remove` methods as shown above.
 
+To understand how to read and create regular expressions, you can refer to
+[the documentation on the re module](https://docs.python.org/2/library/re.html).
 Some examples of regular expressions you could use:
 
 - `r"555-\d{3}-\d{4}"`: 555, a dash, 3 digits, another dash, 4 digits.
@@ -40,10 +41,11 @@ Some examples of regular expressions you could use:
 - ...
 
 Behind the scenes, a script is created to store the generated information
-for a single generator.  The `Generator` object will also read the regular
-expression you give to it to see what information is required (letters,
-digits, a more restricted class, simple characters...).  More complex
-regular expressions (with branches for instance) might not be available.
+for a single generator.  The `RandomStringGenerator` object will also
+read the regular expression you give to it to see what information is
+required (letters, digits, a more restricted class, simple characters...)...
+More complex regular expressions (with branches for instance) might not be
+available.
 
 """
 
@@ -75,13 +77,13 @@ class ExhaustedGenerator(RuntimeError):
     pass
 
 
-class GeneratorScript(DefaultScript):
+class RandomStringGeneratorScript(DefaultScript):
 
     """
     The global script to hold all generators.
 
     It will be automatically created the first time `generate` is called
-    on a Generator object.
+    on a RandomStringGenerator object.
 
     """
 
@@ -95,7 +97,7 @@ class GeneratorScript(DefaultScript):
         self.db.generated = {}
 
 
-class Generator(object):
+class RandomStringGenerator(object):
 
     """
     A generator class to generate pseudo-random strings with a rule.
@@ -153,7 +155,7 @@ class Generator(object):
             self._find_elements(regex)
 
     def __repr__(self):
-        return "<evennia.contrib.generator.Generator for {}>".format(self.name)
+        return "<evennia.contrib.random_string_generator.RandomStringGenerator for {}>".format(self.name)
 
     def _get_script(self):
         """Get or create the script."""
@@ -163,7 +165,7 @@ class Generator(object):
         try:
             script = ScriptDB.objects.get(db_key="generator_script")
         except ScriptDB.DoesNotExist:
-            script = create_script("contrib.random_string_generator.GeneratorScript")
+            script = create_script("contrib.random_string_generator.RandomStringGeneratorScript")
 
         type(self).script = script
         return script
@@ -258,13 +260,13 @@ class Generator(object):
         generated = list(script.db.generated.get(self.name, []))
         return generated
 
-    def get(self, store=True, keep_trying=True):
+    def get(self, store=True, unique=True):
         """
         Generate a pseudo-random string according to the regular expression.
 
         Args:
             store (bool, optional): store the generated string in the script.
-            keep_trying (bool, optional): keep on trying if the string is already used.
+            unique (bool, optional): keep on trying if the string is already used.
 
         Returns:
             The newly-generated string.
@@ -295,13 +297,13 @@ class Generator(object):
                 result += char
 
         # If the string has already been generated, try again
-        if result in generated and keep_trying:
+        if result in generated and unique:
             # Change the random seed, incrementing it slowly
             epoch = time.time()
             while result in generated:
                 epoch += 1
                 seed(epoch)
-                result = self.get(store=False, keep_trying=False)
+                result = self.get(store=False, unique=False)
 
         if store:
             generated.append(result)
@@ -314,6 +316,9 @@ class Generator(object):
 
         Args:
             element (str): the string to remove from the list of generated strings.
+
+        Raises:
+            ValueError: the specified value hasn't been generated and is not present.
 
         Note:
             The specified string has to be present in the script (so
