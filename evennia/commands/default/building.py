@@ -184,7 +184,8 @@ class CmdCopy(ObjManipCommand):
     copy an object and its properties
 
     Usage:
-      @copy[/reset] <original obj> [= new_name][;alias;alias..][:new_location] [,new_name2 ...]
+      @copy[/reset] <original obj> [= <new_name>][;alias;alias..]
+      [:<new_location>] [,<new_name2> ...]
 
     switch:
       reset - make a 'clean' copy off the object, thus
@@ -205,7 +206,8 @@ class CmdCopy(ObjManipCommand):
         caller = self.caller
         args = self.args
         if not args:
-            caller.msg("Usage: @copy <obj> [=new_name[;alias;alias..]][:new_location] [, new_name2...]")
+            caller.msg("Usage: @copy <obj> [=<new_name>[;alias;alias..]]"
+                       "[:<new_location>] [, <new_name2>...]")
             return
 
         if not self.rhs:
@@ -446,7 +448,7 @@ class CmdCreate(ObjManipCommand):
     create new objects
 
     Usage:
-      @create[/drop] objname[;alias;alias...][:typeclass], objname...
+      @create[/drop] <objname>[;alias;alias...][:typeclass], <objname>...
 
     switch:
        drop - automatically drop the new object into your current
@@ -481,7 +483,7 @@ class CmdCreate(ObjManipCommand):
         caller = self.caller
 
         if not self.args:
-            string = "Usage: @create[/drop] <newname>[;alias;alias...] [:typeclass_path]"
+            string = "Usage: @create[/drop] <newname>[;alias;alias...] [:typeclass.path]"
             caller.msg(string)
             return
 
@@ -684,9 +686,9 @@ class CmdDig(ObjManipCommand):
     build new rooms and connect them to the current location
 
     Usage:
-      @dig[/switches] roomname[;alias;alias...][:typeclass]
-            [= exit_to_there[;alias][:typeclass]]
-               [, exit_to_here[;alias][:typeclass]]
+      @dig[/switches] <roomname>[;alias;alias...][:typeclass]
+            [= <exit_to_there>[;alias][:typeclass]]
+               [, <exit_to_here>[;alias][:typeclass]]
 
     Switches:
        tel or teleport - move yourself to the new room
@@ -718,9 +720,10 @@ class CmdDig(ObjManipCommand):
         caller = self.caller
 
         if not self.lhs:
-            string = "Usage: @dig[/teleport] roomname[;alias;alias...][:parent] [= exit_there"
+            string = "Usage: @dig[/teleport] <roomname>[;alias;alias...]" \
+                     "[:parent] [= <exit_there>"
             string += "[;alias;alias..][:parent]] "
-            string += "[, exit_back_here[;alias;alias..][:parent]]"
+            string += "[, <exit_back_here>[;alias;alias..][:parent]]"
             caller.msg(string)
             return
 
@@ -823,7 +826,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
     create new rooms in cardinal directions only
 
     Usage:
-      @tunnel[/switch] <direction> [= roomname[;alias;alias;...][:typeclass]]
+      @tunnel[/switch] <direction> [= <roomname>[;alias;alias;...][:typeclass]]
 
     Switches:
       oneway - do not create an exit back to the current location
@@ -868,7 +871,8 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
         "Implements the tunnel command"
 
         if not self.args or not self.lhs:
-            string = "Usage: @tunnel[/switch] <direction> [= roomname[;alias;alias;...][:typeclass]]"
+            string = "Usage: @tunnel[/switch] <direction> [= <roomname>" \
+                     "[;alias;alias;...][:typeclass]]"
             self.caller.msg(string)
             return
         if self.lhs not in self.directions:
@@ -1025,7 +1029,7 @@ class CmdSetHome(CmdLink):
     set an object's home location
 
     Usage:
-      @home <obj> [= home_location]
+      @home <obj> [= <home_location>]
 
     The "home" location is a "safety" location for objects; they
     will be moved there if their current location ceases to exist. All
@@ -1042,7 +1046,7 @@ class CmdSetHome(CmdLink):
     def func(self):
         "implement the command"
         if not self.args:
-            string = "Usage: @home <obj> [= home_location]"
+            string = "Usage: @home <obj> [= <home_location>]"
             self.caller.msg(string)
             return
 
@@ -1076,7 +1080,7 @@ class CmdListCmdSets(COMMAND_DEFAULT_CLASS):
     list command sets defined on an object
 
     Usage:
-      @cmdsets [obj]
+      @cmdsets <obj>
 
     This displays all cmdsets assigned
     to a user. Defaults to yourself.
@@ -1105,7 +1109,7 @@ class CmdName(ObjManipCommand):
     change the name and/or aliases of an object
 
     Usage:
-      @name obj = name;alias1;alias2
+      @name <obj> = <newname>;alias1;alias2
 
     Rename an object to something new. Use *obj to
     rename an account.
@@ -1322,7 +1326,7 @@ def _convert_from_string(cmd, strobj):
      Python 2.6 and later:
     Supports all Python structures through literal_eval as long as they
     are valid Python syntax. If they are not (such as [test, test2], ie
-    withtout the quotes around the strings), the entire structure will
+    without the quotes around the strings), the entire structure will
     be converted to a string and a warning will be given.
 
     We need to convert like this since all data being sent over the
@@ -1379,6 +1383,7 @@ def _convert_from_string(cmd, strobj):
         # nested lists/dicts)
         return rec_convert(strobj.strip())
 
+
 class CmdSetAttribute(ObjManipCommand):
     """
     set attribute on an object or account
@@ -1398,7 +1403,7 @@ class CmdSetAttribute(ObjManipCommand):
     (if any).
 
     The most common data to save with this command are strings and
-    numbers. You can however also set Python primities such as lists,
+    numbers. You can however also set Python primitives such as lists,
     dictionaries and tuples on objects (this might be important for
     the functionality of certain custom objects).  This is indicated
     by you starting your value with one of |c'|n, |c"|n, |c(|n, |c[|n
@@ -1557,7 +1562,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
     set or change an object's typeclass
 
     Usage:
-      @typclass[/switch] <object> [= <typeclass.path>]
+      @typeclass[/switch] <object> [= typeclass.path]
       @type                     ''
       @parent                   ''
       @swap - this is a shorthand for using /force/reset flags.
@@ -1574,7 +1579,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
     Example:
       @type button = examples.red_button.RedButton
 
-    If the typeclass.path is not given, the current object's
+    If the typeclass_path is not given, the current object's
     typeclass is assumed.
 
     View or set an object's typeclass. If setting, the creation hooks
@@ -1603,7 +1608,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.args:
-            caller.msg("Usage: %s <object> [=<typeclass]" % self.cmdstring)
+            caller.msg("Usage: %s <object> [= typeclass]" % self.cmdstring)
             return
 
         # get object to swap on
@@ -1674,7 +1679,7 @@ class CmdWipe(ObjManipCommand):
     clear all attributes from an object
 
     Usage:
-      @wipe <object>[/attribute[/attribute...]]
+      @wipe <object>[/<attr>[/<attr>...]]
 
     Example:
       @wipe box
@@ -1695,7 +1700,7 @@ class CmdWipe(ObjManipCommand):
         caller = self.caller
 
         if not self.args:
-            caller.msg("Usage: @wipe <object>[/attribute/attribute...]")
+            caller.msg("Usage: @wipe <object>[/<attr>/<attr>...]")
             return
 
         # get the attributes set by our custom parser
@@ -1727,7 +1732,7 @@ class CmdLock(ObjManipCommand):
     Usage:
       @lock <object>[ = <lockstring>]
       or
-      @lock[/switch] object/<access_type>
+      @lock[/switch] <object>/<access_type>
 
     Switch:
       del - delete given access type
@@ -1747,7 +1752,7 @@ class CmdLock(ObjManipCommand):
     an object locked with this string will only be possible to
     pick up by Admins or by object with id=25.
 
-    You can add several access_types after oneanother by separating
+    You can add several access_types after one another by separating
     them by ';', i.e:
        'get:id(25);delete:perm(Builder)'
     """
@@ -1761,7 +1766,8 @@ class CmdLock(ObjManipCommand):
 
         caller = self.caller
         if not self.args:
-            string = "@lock <object>[ = <lockstring>] or @lock[/switch] object/<access_type>"
+            string = "@lock <object>[ = <lockstring>] or @lock[/switch] " \
+                     "<object>/<access_type>"
             caller.msg(string)
             return
 
@@ -2334,7 +2340,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
     attach a script to an object
 
     Usage:
-      @script[/switch] <obj> [= <script.path or scriptkey>]
+      @script[/switch] <obj> [= script_path or <scriptkey>]
 
     Switches:
       start - start all non-running scripts on object, or a given script only
@@ -2360,7 +2366,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.args:
-            string = "Usage: @script[/switch] <obj> [= <script.path or script key>]"
+            string = "Usage: @script[/switch] <obj> [= script_path or <script key>]"
             caller.msg(string)
             return
 
@@ -2561,7 +2567,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
     Usage:
       @spawn
-      @spawn[/switch] prototype_name
+      @spawn[/switch] <prototype_name>
       @spawn[/switch] {prototype dictionary}
 
     Switch:

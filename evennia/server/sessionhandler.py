@@ -201,7 +201,12 @@ class SessionHandler(dict):
                 if _INLINEFUNC_ENABLED and not raw and isinstance(self, ServerSessionHandler):
                     # only parse inlinefuncs on the outgoing path (sessionhandler->)
                     data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session)
-                return data
+                # At this point the object is certainly the right encoding, but may still be a unicode object--
+                # to_str does not actually force objects to become bytestrings.
+                # If the unicode object is a subclass of unicode, such as ANSIString, this can cause a problem,
+                # as special behavior for that class will still be in play. Since we're now transferring raw data,
+                # we must now force this to be a proper bytestring.
+                return str(data)
             elif hasattr(data, "id") and hasattr(data, "db_date_created") \
                     and hasattr(data, '__dbclass__'):
                 # convert database-object to their string representation.

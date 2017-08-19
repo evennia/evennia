@@ -428,7 +428,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
             if self.switches and self.switches[0] in ("spring", "summer", "autumn", "winter"):
                 # a seasonal switch was given
                 if self.rhs:
-                    caller.msg("Seasonal descs only works with rooms, not objects.")
+                    caller.msg("Seasonal descs only work with rooms, not objects.")
                     return
                 switch = self.switches[0]
                 if not location:

@@ -161,7 +161,7 @@ ERROR_SETTINGS = \
         1) You are not running this command from your game directory.
            Change directory to your game directory and try again (or
            create a new game directory using evennia --init <dirname>)
-        2) The ettings file contains a syntax error. If you see a
+        2) The settings file contains a syntax error. If you see a
            traceback above, review it, resolve the problem and try again.
         3) Django is not correctly installed. This usually shows as
            errors mentioning 'DJANGO_SETTINGS_MODULE'. If you run a
@@ -315,7 +315,7 @@ ERROR_LOGDIR_MISSING = \
     will be created automatically).
 
     (Explanation: Evennia creates the log directory automatically when
-    initializating a new game directory. This error usually happens if
+    initializing a new game directory. This error usually happens if
     you used git to clone a pre-created game directory - since log
     files are in .gitignore they will not be cloned, which leads to
     the log directory also not being created.)
@@ -1329,7 +1329,7 @@ def main():
                         arg, value = [p.strip() for p in arg.split("=", 1)]
                     else:
                         value = True
-                    kwargs[arg.lstrip("--")] = [value]
+                    kwargs[arg.lstrip("--")] = value
                 else:
                     args.append(arg)
         try:
