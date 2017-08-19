@@ -1326,7 +1326,7 @@ def main():
                         arg, value = [p.strip() for p in arg.split("=", 1)]
                     else:
                         value = True
-                    kwargs[arg.lstrip("--")] = [value]
+                    kwargs[arg.lstrip("--")] = value
                 else:
                     args.append(arg)
         try:
