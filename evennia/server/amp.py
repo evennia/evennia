@@ -319,8 +319,12 @@ class FunctionCall(amp.Command):
 
 # Helper functions for pickling.
 
-dumps = lambda data: to_str(pickle.dumps(to_str(data), pickle.HIGHEST_PROTOCOL))
-loads = lambda data: pickle.loads(to_str(data))
+def dumps(data):
+    return to_str(pickle.dumps(to_str(data), pickle.HIGHEST_PROTOCOL))
+
+
+def loads(data):
+    return pickle.loads(to_str(data))
 
 
 # -------------------------------------------------------------

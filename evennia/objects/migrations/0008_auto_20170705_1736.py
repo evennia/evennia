@@ -21,6 +21,7 @@ def forwards(apps, schema_editor):
             object.db_account = account
             object.save(update_fields=['db_account'])
 
+
 class Migration(migrations.Migration):
 
     dependencies = [

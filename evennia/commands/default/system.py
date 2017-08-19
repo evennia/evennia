@@ -133,11 +133,11 @@ def _py_code(caller, buf):
     """
     measure_time = caller.db._py_measure_time
     string = "Executing code%s ..." % (
-                " (measure timing)" if measure_time else "")
+        " (measure timing)" if measure_time else "")
     caller.msg(string)
     _run_code_snippet(caller, buf, mode="exec",
-                 measure_time=measure_time,
-                 show_input=False)
+                      measure_time=measure_time,
+                      show_input=False)
     return True
 
 
@@ -147,7 +147,7 @@ def _py_quit(caller):
 
 
 def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
-        show_input=True):
+                      show_input=True):
     """
     Run code and try to display information to the caller.
 
@@ -166,18 +166,18 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
     # import useful variables
     import evennia
     available_vars = {
-            'self': caller,
-            'me': caller,
-            'here': getattr(caller, "location", None),
-            'evennia': evennia,
-            'ev': evennia,
-            'inherits_from': utils.inherits_from,
+        'self': caller,
+        'me': caller,
+        'here': getattr(caller, "location", None),
+        'evennia': evennia,
+        'ev': evennia,
+        'inherits_from': utils.inherits_from,
     }
 
     if show_input:
         try:
             caller.msg(">>> %s" % pycode, session=session,
-                    options={"raw": True})
+                       options={"raw": True})
         except TypeError:
             caller.msg(">>> %s" % pycode, options={"raw": True})
 
@@ -256,8 +256,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
         if "edit" in self.switches:
             caller.db._py_measure_time = "time" in self.switches
             EvEditor(self.caller, loadfunc=_py_load, savefunc=_py_code,
-                    quitfunc=_py_quit, key="Python exec: :w  or :!", persistent=True,
-                    codefunc=_py_code)
+                     quitfunc=_py_quit, key="Python exec: :w  or :!", persistent=True,
+                     codefunc=_py_code)
             return
 
         if not pycode:
@@ -719,7 +719,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
             now, _ = _IDMAPPER.cache_size()
             string = "The Idmapper cache freed |w{idmapper}|n database objects.\n" \
                      "The Python garbage collector freed |w{gc}|n Python instances total."
-            self.caller.msg(string.format(idmapper=(prev-now), gc=nflushed))
+            self.caller.msg(string.format(idmapper=(prev - now), gc=nflushed))
             return
 
         # display active processes

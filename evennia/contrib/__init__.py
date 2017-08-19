@@ -14,7 +14,7 @@ See README.md for more info.
 # own code, so somthing needs to be done here. See issue #766. /Griatch
 
 #import evennia
-#evennia._init()
+# evennia._init()
 #import barter, dice, extended_room, menu_login, talking_npc
 #import chargen, email_login, gendersub, menusystem, slow_exit
 #import tutorial_world, tutorial_examples

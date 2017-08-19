@@ -13,11 +13,13 @@ from evennia.utils import logger
 
 from django.utils.translation import ugettext as _
 
+
 class ScriptHandler(object):
     """
     Implements the handler.  This sits on each game object.
 
     """
+
     def __init__(self, obj):
         """
         Set up internal state.
@@ -49,8 +51,8 @@ class ScriptHandler(object):
                 except Exception:
                     next_repeat = "?"
             string += _("\n '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s") % \
-              {"key": script.key, "next_repeat": next_repeat,
-               "interval": interval, "repeats": repeats, "desc": script.desc}
+                {"key": script.key, "next_repeat": next_repeat,
+                 "interval": interval, "repeats": repeats, "desc": script.desc}
         return string.strip()
 
     def add(self, scriptclass, key=None, autostart=True):
@@ -73,7 +75,7 @@ class ScriptHandler(object):
         else:
             # the normal - adding to an Object
             script = create.create_script(scriptclass, key=key, obj=self.obj,
-                                      autostart=autostart)
+                                          autostart=autostart)
         if not script:
             logger.log_err("Script %s could not be created and/or started." % scriptclass)
             return False

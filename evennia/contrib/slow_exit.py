@@ -42,10 +42,12 @@ MOVE_DELAY = {"stroll": 6,
               "run": 2,
               "sprint": 1}
 
+
 class SlowExit(DefaultExit):
     """
     This overloads the way moving happens.
     """
+
     def at_traverse(self, traversing_object, target_location):
         """
         Implements the actual traversal, using utils.delay to delay the move_to.
@@ -86,6 +88,7 @@ SPEED_DESCS = {"stroll": "strolling",
                "walk": "walking",
                "run": "running",
                "sprint": "sprinting"}
+
 
 class CmdSetSpeed(Command):
     """

@@ -24,7 +24,7 @@ import django
 
 # Signal processing
 SIG = signal.SIGINT
-CTRL_C_EVENT = 0 # Windows SIGINT-like signal
+CTRL_C_EVENT = 0  # Windows SIGINT-like signal
 
 # Set up the main python paths to Evennia
 EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -101,7 +101,7 @@ CREATED_NEW_GAMEDIR = \
     """
 
 ERROR_INPUT = \
-"""
+    """
     Command
       {args} {kwargs}
     raised an error: '{traceback}'.
@@ -419,6 +419,7 @@ def evennia_version():
         pass
     return version
 
+
 EVENNIA_VERSION = evennia_version()
 
 
@@ -434,7 +435,7 @@ def check_main_evennia_dependencies():
     error = False
 
     # Python
-    pversion = ".".join(str(num) for num in sys.version_info if type(num) == int)
+    pversion = ".".join(str(num) for num in sys.version_info if isinstance(num, int))
     if LooseVersion(pversion) < LooseVersion(PYTHON_MIN):
         print(ERROR_PYTHON_VERSION.format(pversion=pversion, python_min=PYTHON_MIN))
         error = True
@@ -451,7 +452,7 @@ def check_main_evennia_dependencies():
         error = True
     # Django
     try:
-        dversion = ".".join(str(num) for num in django.VERSION if type(num) == int)
+        dversion = ".".join(str(num) for num in django.VERSION if isinstance(num, int))
         # only the main version (1.5, not 1.5.4.0)
         dversion_main = ".".join(dversion.split(".")[:2])
         if LooseVersion(dversion) < LooseVersion(DJANGO_MIN):
@@ -502,8 +503,8 @@ def create_secret_key():
     import random
     import string
     secret_key = list((string.letters +
-        string.digits + string.punctuation).replace("\\", "")\
-                .replace("'", '"').replace("{","_").replace("}","-"))
+                       string.digits + string.punctuation).replace("\\", "")
+                      .replace("'", '"').replace("{", "_").replace("}", "-"))
     random.shuffle(secret_key)
     secret_key = "".join(secret_key[:40])
     return secret_key
@@ -600,7 +601,7 @@ def check_database():
     # Check so a database exists and is accessible
     from django.db import connection
     tables = connection.introspection.get_table_list(connection.cursor())
-    if not tables or not isinstance(tables[0], basestring): # django 1.8+
+    if not tables or not isinstance(tables[0], basestring):  # django 1.8+
         tables = [tableinfo.name for tableinfo in tables]
     if tables and u'accounts_accountdb' in tables:
         # database exists and seems set up. Initialize evennia.
@@ -741,8 +742,8 @@ def kill(pidfile, killsignal=SIG, succmsg="", errmsg="",
                 os.kill(int(pid), killsignal)
 
         except OSError:
-            print("Process %(pid)s cannot be stopped. "\
-                  "The PID file 'server/%(pidfile)s' seems stale. "\
+            print("Process %(pid)s cannot be stopped. "
+                  "The PID file 'server/%(pidfile)s' seems stale. "
                   "Try removing it." % {'pid': pid, 'pidfile': pidfile})
             return
         print("Evennia:", succmsg)
@@ -782,6 +783,7 @@ def error_check_python_modules():
     """
 
     from django.conf import settings
+
     def _imp(path, split=True):
         "helper method"
         mod, fromlist = path, "None"
@@ -820,6 +822,7 @@ def error_check_python_modules():
     _imp(settings.BASE_ROOM_TYPECLASS)
     _imp(settings.BASE_EXIT_TYPECLASS)
     _imp(settings.BASE_SCRIPT_TYPECLASS)
+
 
 def init_game_directory(path, check_db=True):
     """
@@ -888,10 +891,10 @@ def init_game_directory(path, check_db=True):
     # verify existence of log file dir (this can be missing e.g.
     # if the game dir itself was cloned since log files are in .gitignore)
     logdirs = [logfile.rsplit(os.path.sep, 1)
-                for logfile in (SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE)]
+               for logfile in (SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE)]
     if not all(os.path.isdir(pathtup[0]) for pathtup in logdirs):
         errstr = "\n    ".join("%s (log file %s)" % (pathtup[0], pathtup[1]) for pathtup in logdirs
-                if not os.path.isdir(pathtup[0]))
+                               if not os.path.isdir(pathtup[0]))
         print(ERROR_LOGDIR_MISSING.format(logfiles=errstr))
         sys.exit()
 
@@ -985,7 +988,7 @@ def list_settings(keys):
         table = evtable.EvTable()
         confs = [key for key in sorted(evsettings.__dict__) if key.isupper()]
         for i in range(0, len(confs), 4):
-            table.add_row(*confs[i:i+4])
+            table.add_row(*confs[i:i + 4])
     else:
         # a specific key
         table = evtable.EvTable(width=131)
@@ -1165,8 +1168,8 @@ def server_operation(mode, service, interactive, profiler, logserver=False, doex
     elif mode == 'stop':
         if os.name == "nt":
             print (
-                    "(Obs: You can use a single Ctrl-C to skip "
-                    "Windows' annoying 'Terminate batch job (Y/N)?' prompts.)")
+                "(Obs: You can use a single Ctrl-C to skip "
+                "Windows' annoying 'Terminate batch job (Y/N)?' prompts.)")
         # stop processes, avoiding reload
         if service == 'server':
             kill(SERVER_PIDFILE, SIG,
@@ -1237,7 +1240,7 @@ def main():
         help=("Which component to operate on: "
               "'server', 'portal' or 'all' (default if not set)."))
     parser.epilog = (
-            "Common usage: evennia start|stop|reload. Django-admin database commands:"
+        "Common usage: evennia start|stop|reload. Django-admin database commands:"
         "evennia migration|flush|shell|dbshell (see the django documentation for more django-admin commands.)")
 
     args, unknown_args = parser.parse_known_args()
@@ -1274,7 +1277,6 @@ def main():
         SETTINGS_DOTPATH = "server.conf.%s" % sfile.rstrip(".py")
         print("Using settings file '%s' (%s)." % (
             SETTINGSFILE, SETTINGS_DOTPATH))
-
 
     if args.initsettings:
         # create new settings file

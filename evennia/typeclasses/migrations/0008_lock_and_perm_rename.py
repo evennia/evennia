@@ -5,12 +5,13 @@ from __future__ import unicode_literals
 import re
 from django.db import migrations
 
+
 def update_perms_and_locks(apps, schema_editor):
 
     # update all permissions
     Tag = apps.get_model('typeclasses', 'Tag')
-    perm_map = {"guests": "guest", "players": "player", "playerhelpers":"helper",
-                "builders": "builder", "wizards":"admin", "immortals": "developer"}
+    perm_map = {"guests": "guest", "players": "player", "playerhelpers": "helper",
+                "builders": "builder", "wizards": "admin", "immortals": "developer"}
 
     for perm in Tag.objects.filter(db_tagtype="permission"):
         if perm.db_key in perm_map:
@@ -21,7 +22,8 @@ def update_perms_and_locks(apps, schema_editor):
     apps_models = [("objects", "ObjectDB"), ("accounts", "AccountDB"), ("scripts", "ScriptDB"),
                    ("comms", "ChannelDB")]
     p_reg = re.compile(r"(?<=perm\()(\w+)(?=\))|(?<=perm_above\()(\w+)(?=\))",
-                        re.IGNORECASE + re.UNICODE)
+                       re.IGNORECASE + re.UNICODE)
+
     def _sub(match):
         perm = match.group(1)
         return perm_map[perm.lower()].capitalize() if perm.lower() in perm_map else perm
@@ -34,6 +36,7 @@ def update_perms_and_locks(apps, schema_editor):
             if repl_lock != orig_lock:
                 obj.db_lock_storage = repl_lock
                 obj.save(update_fields=('db_lock_storage',))
+
 
 class Migration(migrations.Migration):
 

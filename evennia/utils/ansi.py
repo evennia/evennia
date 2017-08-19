@@ -142,7 +142,7 @@ class ANSIParser(object):
         (r'|[C', ANSI_BACK_CYAN),
         (r'|[W', ANSI_BACK_WHITE),    # light grey background
         (r'|[X', ANSI_BACK_BLACK)     # pure black background
-        ]
+    ]
 
     ansi_xterm256_bright_bg_map = [
         # "bright" ANSI backgrounds using xterm256 since ANSI
@@ -186,7 +186,7 @@ class ANSIParser(object):
 
     # prepare regex matching
     brightbg_sub = re.compile(r"|".join([r"(?<!\|)%s" % re.escape(tup[0])
-        for tup in ansi_xterm256_bright_bg_map]), re.DOTALL)
+                                         for tup in ansi_xterm256_bright_bg_map]), re.DOTALL)
     xterm256_fg_sub = re.compile(r"|".join(xterm256_fg), re.DOTALL)
     xterm256_bg_sub = re.compile(r"|".join(xterm256_bg), re.DOTALL)
     xterm256_gfg_sub = re.compile(r"|".join(xterm256_gfg), re.DOTALL)
@@ -207,6 +207,7 @@ class ANSIParser(object):
     # escapes - these double-chars will be replaced with a single
     # instance of each
     ansi_escapes = re.compile(r"(%s)" % "|".join(ANSI_ESCAPES), re.DOTALL)
+
     def sub_ansi(self, ansimatch):
         """
         Replacer used by `re.sub` to replace ANSI
@@ -285,7 +286,7 @@ class ANSIParser(object):
                 colval = 134 + ord(letter)
 
             # ansi fallback logic expects r,g,b values in [0..5] range
-            gray = (ord(letter)-97)/5.0
+            gray = (ord(letter) - 97) / 5.0
             red, green, blue = gray, gray, gray
 
         if use_xterm256:
@@ -532,6 +533,7 @@ def _spacing_preflight(func):
     functions used for padding ANSIStrings.
 
     """
+
     def wrapped(self, width, fillchar=None):
         if fillchar is None:
             fillchar = " "
@@ -552,6 +554,7 @@ def _query_super(func_name):
     of ANSIString.
 
     """
+
     def wrapped(self, *args, **kwargs):
         return getattr(self.clean(), func_name)(*args, **kwargs)
     return wrapped
@@ -562,6 +565,7 @@ def _on_raw(func_name):
     Like query_super, but makes the operation run on the raw string.
 
     """
+
     def wrapped(self, *args, **kwargs):
         args = list(args)
         try:
@@ -588,6 +592,7 @@ def _transform(func_name):
     with the resulting string.
 
     """
+
     def wrapped(self, *args, **kwargs):
         replacement_string = _query_super(func_name)(self, *args, **kwargs)
         to_string = []
@@ -1107,7 +1112,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
             if next < 0:
                 break
             # Get character codes after the index as well.
-            res.append(self[next+bylen:end])
+            res.append(self[next + bylen:end])
             end = next
             maxsplit -= 1   # NB. if it's already < 0, it stays < 0
 
@@ -1151,7 +1156,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
                 ic += 1
             ir1 += 1
         rstripped = ""
-        ic, ir2 = nlen-1, len(raw)-1
+        ic, ir2 = nlen - 1, len(raw) - 1
         while nrstripped:
             if nlen - ic > nrstripped:
                 break
@@ -1161,7 +1166,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
                 ic -= 1
             ir2 -= 1
         rstripped = rstripped[::-1]
-        return ANSIString(lstripped + raw[ir1:ir2+1] + rstripped)
+        return ANSIString(lstripped + raw[ir1:ir2 + 1] + rstripped)
 
     def lstrip(self, chars=None):
         """
@@ -1214,7 +1219,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         nlen = len(clean)
         nrstripped = nlen - len(clean.rstrip(chars))
         rstripped = ""
-        ic, ir2 = nlen-1, len(raw)-1
+        ic, ir2 = nlen - 1, len(raw) - 1
         while nrstripped:
             if nlen - ic > nrstripped:
                 break
@@ -1224,7 +1229,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
                 ic -= 1
             ir2 -= 1
         rstripped = rstripped[::-1]
-        return ANSIString(raw[:ir2+1] + rstripped)
+        return ANSIString(raw[:ir2 + 1] + rstripped)
 
     def join(self, iterable):
         """

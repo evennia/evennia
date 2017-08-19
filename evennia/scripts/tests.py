@@ -7,6 +7,7 @@ from evennia.scripts.scripts import DoNothing
 
 class TestScriptDB(TestCase):
     "Check the singleton/static ScriptDB object works correctly"
+
     def setUp(self):
         self.scr = create_script(DoNothing)
 

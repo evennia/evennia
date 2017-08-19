@@ -97,18 +97,18 @@ class ObjectDBAdmin(admin.ModelAdmin):
     form = ObjectEditForm
     fieldsets = (
         (None, {
-                'fields': (('db_key', 'db_typeclass_path'), ('db_lock_storage', ),
-                           ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
-                           )}),
-        )
+            'fields': (('db_key', 'db_typeclass_path'), ('db_lock_storage', ),
+                       ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
+                       )}),
+    )
 
     add_form = ObjectCreateForm
     add_fieldsets = (
         (None, {
-                'fields': (('db_key', 'db_typeclass_path'),
-                           ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
-                           )}),
-        )
+            'fields': (('db_key', 'db_typeclass_path'),
+                       ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
+                       )}),
+    )
 
     def get_fieldsets(self, request, obj=None):
         """

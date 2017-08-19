@@ -66,6 +66,7 @@ class SshProtocol(Manhole, session.Session):
     here.
 
     """
+
     def __init__(self, starttuple):
         """
         For setting up the account.  If account is not None then we'll
@@ -310,7 +311,7 @@ class ExtraInfoAuthServer(SSHUserAuthServer):
         c = credentials.UsernamePassword(self.user, password)
         c.transport = self.transport
         return self.portal.login(c, None, IConchUser).addErrback(
-                                                        self._ebPassword)
+            self._ebPassword)
 
 
 class AccountDBPasswordChecker(object):
@@ -375,6 +376,7 @@ class TerminalSessionTransport_getPeer(object):
     provide getPeer to the transport.  This one does.
 
     """
+
     def __init__(self, proto, chainedProtocol, avatar, width, height):
         self.proto = proto
         self.avatar = avatar

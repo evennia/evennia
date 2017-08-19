@@ -6,6 +6,7 @@ from django.db import migrations
 
 # Migration of old nick format to new
 
+
 def update_nicks(apps, schema_editor):
     Attribute = apps.get_model("typeclasses", "Attribute")
     for nick in Attribute.objects.filter(db_attrtype="nick"):

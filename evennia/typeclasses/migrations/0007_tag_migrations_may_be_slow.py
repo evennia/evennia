@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
+
 def update_tags_with_dbmodel(apps, schema_editor):
 
     Tag = apps.get_model('typeclasses', 'Tag')

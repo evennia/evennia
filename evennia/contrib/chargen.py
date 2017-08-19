@@ -102,7 +102,7 @@ class CmdOOCLook(default_cmds.CmdLook):
             else:
                 charlist = "You have no Characters."
             string = \
-"""   You, %s, are an |wOOC ghost|n without form. The world is hidden
+                """   You, %s, are an |wOOC ghost|n without form. The world is hidden
    from you and besides chatting on channels your options are limited.
    You need to have a Character in order to interact with the world.
 
@@ -179,6 +179,7 @@ class OOCCmdSetCharGen(default_cmds.AccountCmdSet):
     """
     Extends the default OOC cmdset.
     """
+
     def at_cmdset_creation(self):
         """Install everything from the default set, then overload"""
         self.add(CmdOOCLook())

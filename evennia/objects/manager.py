@@ -261,7 +261,7 @@ class ObjectDBManager(TypedObjectManager):
         if exact:
             # exact match - do direct search
             return self.filter(cand_restriction & type_restriction & (Q(db_key__iexact=ostring) |
-                               Q(db_tags__db_key__iexact=ostring) & Q(db_tags__db_tagtype__iexact="alias"))).distinct()
+                                                                      Q(db_tags__db_key__iexact=ostring) & Q(db_tags__db_tagtype__iexact="alias"))).distinct()
         elif candidates:
             # fuzzy with candidates
             search_candidates = self.filter(cand_restriction & type_restriction)

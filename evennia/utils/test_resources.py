@@ -53,8 +53,8 @@ class EvenniaTest(TestCase):
         dummysession = ServerSession()
         dummysession.init_session("telnet", ("localhost", "testmode"), SESSIONS)
         dummysession.sessid = 1
-        SESSIONS.portal_connect(dummysession.get_sync_data()) # note that this creates a new Session!
-        session = SESSIONS.session_from_sessid(1) # the real session
+        SESSIONS.portal_connect(dummysession.get_sync_data())  # note that this creates a new Session!
+        session = SESSIONS.session_from_sessid(1)  # the real session
         SESSIONS.login(session, self.account, testmode=True)
         self.session = session
 

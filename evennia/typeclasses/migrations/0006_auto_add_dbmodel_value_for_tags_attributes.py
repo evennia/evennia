@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
+
 def update_tags_with_dbmodel(apps, schema_editor):
 
     ObjectDB = apps.get_model('objects', 'ObjectDB')
@@ -42,5 +43,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-            migrations.RunPython(update_tags_with_dbmodel)
+        migrations.RunPython(update_tags_with_dbmodel)
     ]

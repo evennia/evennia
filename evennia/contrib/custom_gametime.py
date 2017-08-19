@@ -45,15 +45,15 @@ TIMEFACTOR = settings.TIME_FACTOR
 # Each unit must be consistent and expressed in seconds.
 UNITS = getattr(settings, "TIME_UNITS", {
     # default custom calendar
-        "sec": 1,
-        "min": 60,
-        "hr": 60 * 60,
-        "hour": 60 * 60,
-        "day": 60 * 60 * 24,
-        "week": 60 * 60 * 24 * 7,
-        "month": 60 * 60 * 24 * 7 * 4,
-        "yr": 60 * 60 * 24 * 7 * 4 * 12,
-        "year": 60 * 60 * 24 * 7 * 4 * 12, })
+    "sec": 1,
+    "min": 60,
+    "hr": 60 * 60,
+    "hour": 60 * 60,
+    "day": 60 * 60 * 24,
+    "week": 60 * 60 * 24 * 7,
+    "month": 60 * 60 * 24 * 7 * 4,
+    "yr": 60 * 60 * 24 * 7 * 4 * 12,
+    "year": 60 * 60 * 24 * 7 * 4 * 12, })
 
 
 def time_to_tuple(seconds, *divisors):
@@ -111,8 +111,8 @@ def gametime_to_realtime(format=False, **kwargs):
             name = name[:-1]
 
         if name not in UNITS:
-            raise ValueError("the unit {} isn't defined as a valid " \
-                    "game time unit".format(name))
+            raise ValueError("the unit {} isn't defined as a valid "
+                             "game time unit".format(name))
         rtime += value * UNITS[name]
     rtime /= TIMEFACTOR
     if format:
@@ -121,7 +121,7 @@ def gametime_to_realtime(format=False, **kwargs):
 
 
 def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0, weeks=0,
-        months=0, yrs=0, format=False):
+                         months=0, yrs=0, format=False):
     """
     This method calculates how much in-game time a real-world time
     interval would correspond to. This is usually a lot less
@@ -140,7 +140,7 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0, weeks=0,
 
     """
     gtime = TIMEFACTOR * (secs + mins * 60 + hrs * 3600 + days * 86400 +
-                             weeks * 604800 + months * 2628000 + yrs * 31536000)
+                          weeks * 604800 + months * 2628000 + yrs * 31536000)
     if format:
         units = sorted(set(UNITS.values()), reverse=True)
         # Remove seconds from the tuple
@@ -148,6 +148,7 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0, weeks=0,
 
         return time_to_tuple(gtime, *units)
     return gtime
+
 
 def custom_gametime(absolute=False):
     """
@@ -167,6 +168,7 @@ def custom_gametime(absolute=False):
     units = sorted(set(UNITS.values()), reverse=True)
     del units[-1]
     return time_to_tuple(current, *units)
+
 
 def real_seconds_until(**kwargs):
     """
@@ -228,6 +230,7 @@ def real_seconds_until(**kwargs):
 
     return (projected - current) / TIMEFACTOR
 
+
 def schedule(callback, repeat=False, **kwargs):
     """
     Call the callback when the game time is up.
@@ -256,14 +259,16 @@ def schedule(callback, repeat=False, **kwargs):
     """
     seconds = real_seconds_until(**kwargs)
     script = create_script("evennia.contrib.custom_gametime.GametimeScript",
-            key="GametimeScript", desc="A timegame-sensitive script",
-            interval=seconds, start_delay=True,
-            repeats=-1 if repeat else 1)
+                           key="GametimeScript", desc="A timegame-sensitive script",
+                           interval=seconds, start_delay=True,
+                           repeats=-1 if repeat else 1)
     script.db.callback = callback
     script.db.gametime = kwargs
     return script
 
 # Scripts dealing in gametime (use `schedule`  to create it)
+
+
 class GametimeScript(DefaultScript):
 
     """Gametime-sensitive script."""

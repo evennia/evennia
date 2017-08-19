@@ -26,12 +26,14 @@ from evennia.contrib.tutorial_examples import cmdset_red_button as cmdsetexample
 # a bright light. The last one also has a timer component that allows it
 # to remove itself after a while (and the player recovers their eyesight).
 
+
 class ClosedLidState(DefaultScript):
     """
     This manages the cmdset for the "closed" button state. What this
     means is that while this script is valid, we add the RedButtonClosed
     cmdset to it (with commands like open, nudge lid etc)
     """
+
     def at_script_creation(self):
         "Called when script first created."
         self.desc = "Script that manages the closed-state cmdsets for red button."
@@ -44,7 +46,7 @@ class ClosedLidState(DefaultScript):
         checked so we don't need to worry about adding the script to an
         open lid.
         """
-        #All we do is add the cmdset for the closed state.
+        # All we do is add the cmdset for the closed state.
         self.obj.cmdset.add(cmdsetexamples.LidClosedCmdSet)
 
     def is_valid(self):
@@ -67,6 +69,7 @@ class OpenLidState(DefaultScript):
     This manages the cmdset for the "open" button state. This will add
     the RedButtonOpen
     """
+
     def at_script_creation(self):
         "Called when script first created."
         self.desc = "Script that manages the opened-state cmdsets for red button."
@@ -105,6 +108,7 @@ class BlindedState(DefaultScript):
     restored. It's up to the function starting the script to actually
     set it on the right account object.
     """
+
     def at_script_creation(self):
         """
         We set up the script here.
@@ -139,7 +143,7 @@ class BlindedState(DefaultScript):
                                        % self.obj.name,
                                        exclude=self.obj)
         self.obj.cmdset.delete()  # this will clear the latest added cmdset,
-                                  # (which is the blinded one).
+        # (which is the blinded one).
 
 
 #
@@ -158,6 +162,7 @@ class CloseLidEvent(DefaultScript):
     script that should be started/created when the
     lid is opened.
     """
+
     def at_script_creation(self):
         """
         Called when script object is first created. Sets things up.
@@ -172,7 +177,7 @@ class CloseLidEvent(DefaultScript):
         self.start_delay = True  # we want to pospone the launch.
         self.repeats = 1  # we only close the lid once
         self.persistent = True  # even if the server crashes in those 20 seconds,
-                                # the lid will still close once the game restarts.
+        # the lid will still close once the game restarts.
 
     def is_valid(self):
         """
@@ -194,10 +199,12 @@ class CloseLidEvent(DefaultScript):
         """
         self.obj.close_lid()
 
+
 class BlinkButtonEvent(DefaultScript):
     """
     This timed script lets the button flash at regular intervals.
     """
+
     def at_script_creation(self):
         """
         Sets things up. We want the button's lamp to blink at
@@ -206,9 +213,9 @@ class BlinkButtonEvent(DefaultScript):
         """
         self.key = "blink_button"
         self.desc = "Blinks red buttons"
-        self.interval = 35  #seconds
-        self.start_delay = False  #blink right away
-        self.persistent = True  #keep blinking also after server reboot
+        self.interval = 35  # seconds
+        self.start_delay = False  # blink right away
+        self.persistent = True  # keep blinking also after server reboot
 
     def is_valid(self):
         """
@@ -223,6 +230,7 @@ class BlinkButtonEvent(DefaultScript):
         """
         self.obj.blink()
 
+
 class DeactivateButtonEvent(DefaultScript):
     """
     This deactivates the button for a short while (it won't blink, won't
@@ -231,13 +239,14 @@ class DeactivateButtonEvent(DefaultScript):
     in the AddBlindedCmdSet script since that script is defined on the *account*
     whereas this one must be defined on the *button*.
     """
+
     def at_script_creation(self):
         """
         Sets things up.
         """
         self.key = "deactivate_button"
         self.desc = "Deactivate red button temporarily"
-        self.interval = 21  #seconds
+        self.interval = 21  # seconds
         self.start_delay = True  # wait with the first repeat for self.interval seconds.
         self.persistent = True
         self.repeats = 1  # only do this once

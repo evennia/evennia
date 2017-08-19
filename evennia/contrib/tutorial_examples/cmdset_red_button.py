@@ -119,7 +119,7 @@ class CmdSmashGlass(Command):
             string += " you should just try to open the lid instead?"
         self.caller.msg(string)
         self.caller.location.msg_contents("%s tries to smash the glass of the button." %
-                                    (self.caller.name), exclude=self.caller)
+                                          (self.caller.name), exclude=self.caller)
 
 
 class CmdOpenLid(Command):
@@ -146,7 +146,7 @@ class CmdOpenLid(Command):
         string += "the lid will soon close again."
         self.caller.msg(string)
         self.caller.location.msg_contents("%s opens the lid of the button." %
-                                        (self.caller.name), exclude=self.caller)
+                                          (self.caller.name), exclude=self.caller)
         # add the relevant cmdsets to button
         self.obj.cmdset.add(LidClosedCmdSet)
         # call object method
@@ -213,7 +213,7 @@ class CmdBlindLook(Command):
             string += "Until it wears off, all you can do is feel around blindly."
         self.caller.msg(string)
         self.caller.location.msg_contents("%s stumbles around, blinded." %
-                                    (self.caller.name), exclude=self.caller)
+                                          (self.caller.name), exclude=self.caller)
 
 
 class CmdBlindHelp(Command):

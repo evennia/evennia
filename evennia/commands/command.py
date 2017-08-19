@@ -60,7 +60,7 @@ def _init_command(cls, **kwargs):
     if "cmd:" not in cls.locks:
         cls.locks = "cmd:all();" + cls.locks
     for lockstring in cls.locks.split(';'):
-        if lockstring and not ':' in lockstring:
+        if lockstring and ':' not in lockstring:
             lockstring = "cmd:%s" % lockstring
         temp.append(lockstring)
     cls.lock_storage = ";".join(temp)

@@ -24,6 +24,7 @@ several more options for customizing the Guest account system.
 
 from evennia import DefaultAccount, DefaultGuest
 
+
 class Account(DefaultAccount):
     """
     This class describes the actual OOC account (i.e. the user connecting

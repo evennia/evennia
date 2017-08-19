@@ -59,7 +59,7 @@ class CommandTest(EvenniaTest):
         cmdobj.caller = caller
         cmdobj.cmdname = cmdstring if cmdstring else cmdobj.key
         cmdobj.raw_cmdname = cmdobj.cmdname
-        cmdobj.cmdstring = cmdobj.cmdname # deprecated
+        cmdobj.cmdstring = cmdobj.cmdname  # deprecated
         cmdobj.args = args
         cmdobj.cmdset = cmdset
         cmdobj.session = SESSIONS.session_from_sessid(1)
@@ -79,17 +79,17 @@ class CommandTest(EvenniaTest):
             pass
         finally:
             # clean out evtable sugar. We only operate on text-type
-            stored_msg = [args[0] if args and args[0] else kwargs.get("text",utils.to_str(kwargs, force_string=True))
-                    for name, args, kwargs in receiver.msg.mock_calls]
+            stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs, force_string=True))
+                          for name, args, kwargs in receiver.msg.mock_calls]
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
             if msg is not None:
                 returned_msg = "||".join(_RE.sub("", mess) for mess in stored_msg)
                 returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
                 if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
-                    sep1 = "\n" + "="*30 + "Wanted message" + "="*34 + "\n"
-                    sep2 = "\n" + "="*30 + "Returned message" + "="*32 + "\n"
-                    sep3 = "\n" + "="*78
+                    sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
+                    sep2 = "\n" + "=" * 30 + "Returned message" + "=" * 32 + "\n"
+                    sep3 = "\n" + "=" * 78
                     retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
                     raise AssertionError(retval)
             else:
@@ -271,7 +271,7 @@ class TestBuilding(CommandTest):
 
     def test_typeclass(self):
         self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultExit",
-                "Obj changed typeclass from evennia.objects.objects.DefaultObject to evennia.objects.objects.DefaultExit.")
+                  "Obj changed typeclass from evennia.objects.objects.DefaultObject to evennia.objects.objects.DefaultExit.")
 
     def test_lock(self):
         self.call(building.CmdLock(), "Obj = test:perm(Developer)", "Added lock 'test:perm(Developer)' to Obj.")
@@ -294,10 +294,10 @@ class TestComms(CommandTest):
 
     def test_toggle_com(self):
         self.call(comms.CmdAddCom(), "tc = testchan", "You are already connected to channel testchan. You can now", receiver=self.account)
-        self.call(comms.CmdDelCom(), "tc",  "Your alias 'tc' for channel testchan was cleared.", receiver=self.account)
+        self.call(comms.CmdDelCom(), "tc", "Your alias 'tc' for channel testchan was cleared.", receiver=self.account)
 
     def test_channels(self):
-        self.call(comms.CmdChannels(), "" ,"Available channels (use comlist,addcom and delcom to manage", receiver=self.account)
+        self.call(comms.CmdChannels(), "", "Available channels (use comlist,addcom and delcom to manage", receiver=self.account)
 
     def test_all_com(self):
         self.call(comms.CmdAllCom(), "", "Available channels (use comlist,addcom and delcom to manage", receiver=self.account)
@@ -322,7 +322,7 @@ class TestComms(CommandTest):
         self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <account> [:reason]", receiver=self.account)
 
     def test_cdestroy(self):
-        self.call(comms.CmdCdestroy(), "testchan" ,"[testchan] TestAccount: testchan is being destroyed. Make sure to change your aliases.|Channel 'testchan' was destroyed.", receiver=self.account)
+        self.call(comms.CmdCdestroy(), "testchan", "[testchan] TestAccount: testchan is being destroyed. Make sure to change your aliases.|Channel 'testchan' was destroyed.", receiver=self.account)
 
 
 class TestBatchProcess(CommandTest):
@@ -331,6 +331,7 @@ class TestBatchProcess(CommandTest):
         self.call(batchprocess.CmdBatchCommands(), "example_batch_cmds", "Running Batchcommand processor  Automatic mode for example_batch_cmds")
         # we make sure to delete the button again here to stop the running reactor
         self.call(building.CmdDestroy(), "button", "button was destroyed.")
+
 
 class CmdInterrupt(Command):
 

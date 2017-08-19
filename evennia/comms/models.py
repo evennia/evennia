@@ -81,27 +81,27 @@ class Msg(SharedMemoryModel):
     # an IRC channel; normally there is only one, but if co-modification of
     # a message is allowed, there may be more than one "author"
     db_sender_accounts = models.ManyToManyField("accounts.AccountDB", related_name='sender_account_set',
-                                               blank=True, verbose_name='sender(account)', db_index=True)
+                                                blank=True, verbose_name='sender(account)', db_index=True)
 
     db_sender_objects = models.ManyToManyField("objects.ObjectDB", related_name='sender_object_set',
                                                blank=True, verbose_name='sender(object)', db_index=True)
     db_sender_scripts = models.ManyToManyField("scripts.ScriptDB", related_name='sender_script_set',
                                                blank=True, verbose_name='sender(script)', db_index=True)
     db_sender_external = models.CharField('external sender', max_length=255, null=True, blank=True, db_index=True,
-          help_text="identifier for external sender, for example a sender over an "
-                    "IRC connection (i.e. someone who doesn't have an exixtence in-game).")
+                                          help_text="identifier for external sender, for example a sender over an "
+                                          "IRC connection (i.e. someone who doesn't have an exixtence in-game).")
     # The destination objects of this message. Stored as a
     # comma-separated string of object dbrefs. Can be defined along
     # with channels below.
     db_receivers_accounts = models.ManyToManyField('accounts.AccountDB', related_name='receiver_account_set',
-                                                  blank=True, help_text="account receivers")
+                                                   blank=True, help_text="account receivers")
 
     db_receivers_objects = models.ManyToManyField('objects.ObjectDB', related_name='receiver_object_set',
                                                   blank=True, help_text="object receivers")
     db_receivers_scripts = models.ManyToManyField('scripts.ScriptDB', related_name='receiver_script_set',
                                                   blank=True, help_text="script_receivers")
     db_receivers_channels = models.ManyToManyField("ChannelDB", related_name='channel_set',
-                                                  blank=True, help_text="channel recievers")
+                                                   blank=True, help_text="channel recievers")
 
     # header could be used for meta-info about the message if your system needs
     # it, or as a separate store for the mail subject line maybe.
@@ -122,7 +122,7 @@ class Msg(SharedMemoryModel):
     db_hide_from_channels = models.ManyToManyField("ChannelDB", related_name='hide_from_channels_set', blank=True)
 
     db_tags = models.ManyToManyField(Tag, blank=True,
-            help_text='tags on this message. Tags are simple string markers to identify, group and alias messages.')
+                                     help_text='tags on this message. Tags are simple string markers to identify, group and alias messages.')
 
     # Database manager
     objects = managers.MsgManager()
@@ -156,10 +156,10 @@ class Msg(SharedMemoryModel):
     #@property
     def __senders_get(self):
         "Getter. Allows for value = self.sender"
-        return  list(self.db_sender_accounts.all()) + \
-                list(self.db_sender_objects.all()) + \
-                list(self.db_sender_scripts.all()) + \
-                self.extra_senders
+        return list(self.db_sender_accounts.all()) + \
+            list(self.db_sender_objects.all()) + \
+            list(self.db_sender_scripts.all()) + \
+            self.extra_senders
 
     #@sender.setter
     def __senders_set(self, senders):
@@ -225,9 +225,9 @@ class Msg(SharedMemoryModel):
         Returns four lists of receivers: accounts, objects, scripts and channels.
         """
         return list(self.db_receivers_accounts.all()) + \
-               list(self.db_receivers_objects.all()) + \
-               list(self.db_receivers_scripts.all()) + \
-               list(self.db_receivers_channels.all())
+            list(self.db_receivers_objects.all()) + \
+            list(self.db_receivers_scripts.all()) + \
+            list(self.db_receivers_channels.all())
 
     #@receivers.setter
     def __receivers_set(self, receivers):
@@ -249,7 +249,6 @@ class Msg(SharedMemoryModel):
                 self.db_receivers_scripts.add(receiver)
             elif clsname == "ChannelDB":
                 self.db_receivers_channels.add(receiver)
-
 
     #@receivers.deleter
     def __receivers_del(self):
@@ -370,6 +369,7 @@ class Msg(SharedMemoryModel):
 #
 #------------------------------------------------------------
 
+
 class TempMsg(object):
     """
     This is a non-persistent object for sending temporary messages
@@ -377,6 +377,7 @@ class TempMsg(object):
     doesn't require sender to be given.
 
     """
+
     def __init__(self, senders=None, receivers=None, channels=None, message="", header="", type="", lockstring="", hide_from=None):
         """
         Creates the temp message.
@@ -471,6 +472,7 @@ class SubscriptionHandler(object):
     channel and hides away which type of entity is
     subscribing (Account or Object)
     """
+
     def __init__(self, obj):
         """
         Initialize the handler
@@ -620,10 +622,10 @@ class ChannelDB(TypedObject):
 
     """
     db_account_subscriptions = models.ManyToManyField("accounts.AccountDB",
-                       related_name="account_subscription_set", blank=True, verbose_name='account subscriptions', db_index=True)
+                                                      related_name="account_subscription_set", blank=True, verbose_name='account subscriptions', db_index=True)
 
     db_object_subscriptions = models.ManyToManyField("objects.ObjectDB",
-                       related_name="object_subscription_set", blank=True, verbose_name='object subscriptions', db_index=True)
+                                                     related_name="object_subscription_set", blank=True, verbose_name='object subscriptions', db_index=True)
 
     # Database manager
     objects = managers.ChannelDBManager()

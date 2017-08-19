@@ -147,7 +147,7 @@ def create_normal_account(session, name, password):
         account (Account): the account which was created from the name and password.
     """
     # check for too many login errors too quick.
-    if _throttle(session, maxlim=5, timeout=5*60):
+    if _throttle(session, maxlim=5, timeout=5 * 60):
         # timeout is 5 minutes.
         session.msg("|RYou made too many connection attempts. Try again in a few minutes.|n")
         return None
@@ -168,8 +168,8 @@ def create_normal_account(session, name, password):
 
     # Check IP and/or name bans
     bans = ServerConfig.objects.conf("server_bans")
-    if bans and (any(tup[0] == account.name.lower() for tup in bans)
-                 or
+    if bans and (any(tup[0] == account.name.lower() for tup in bans) or
+
                  any(tup[2].match(session.address) for tup in bans if tup[2])):
         # this is a banned IP or name!
         string = "|rYou have been banned and cannot continue from here." \
@@ -209,7 +209,7 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
         session = self.caller
 
         # check for too many login errors too quick.
-        if _throttle(session, maxlim=5, timeout=5*60, storage=_LATEST_FAILED_LOGINS):
+        if _throttle(session, maxlim=5, timeout=5 * 60, storage=_LATEST_FAILED_LOGINS):
             # timeout is 5 minutes.
             session.msg("|RYou made too many connection attempts. Try again in a few minutes.|n")
             return
@@ -301,8 +301,8 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
 
         # Check IP and/or name bans
         bans = ServerConfig.objects.conf("server_bans")
-        if bans and (any(tup[0] == accountname.lower() for tup in bans)
-                     or
+        if bans and (any(tup[0] == accountname.lower() for tup in bans) or
+
                      any(tup[2].match(session.address) for tup in bans if tup[2])):
             # this is a banned IP or name!
             string = "|rYou have been banned and cannot continue from here." \

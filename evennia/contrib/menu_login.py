@@ -276,7 +276,7 @@ def create_password(caller, string_input):
             permissions = settings.PERMISSION_ACCOUNT_DEFAULT
             typeclass = settings.BASE_CHARACTER_TYPECLASS
             new_account = unloggedin._create_account(caller, accountname,
-                                                   password, permissions)
+                                                     password, permissions)
             if new_account:
                 if settings.MULTISESSION_MODE < 2:
                     default_home = ObjectDB.objects.get_id(

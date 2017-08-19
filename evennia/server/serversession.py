@@ -35,6 +35,7 @@ from django.utils.translation import ugettext as _
 
 class NDbHolder(object):
     """Holder for allowing property access of attributes"""
+
     def __init__(self, obj, name, manager_name='attributes'):
         _SA(self, name, _GA(obj, manager_name))
         _SA(self, 'name', name)
@@ -65,6 +66,7 @@ class NAttributeHandler(object):
     by the `.ndb` handler in the same way as `.db` does
     for the `AttributeHandler`.
     """
+
     def __init__(self, obj):
         """
         Initialized on the object
@@ -160,6 +162,7 @@ class ServerSession(Session):
     through their session.
 
     """
+
     def __init__(self):
         """Initiate to avoid AttributeErrors down the line"""
         self.puppet = None

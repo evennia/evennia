@@ -28,6 +28,7 @@ class BotStarter(DefaultScript):
     into gear when it is initialized.
 
     """
+
     def at_script_creation(self):
         """
         Called once, when script is created.
@@ -148,6 +149,7 @@ class IRCBot(Bot):
     Bot for handling IRC connections.
 
     """
+
     def start(self, ev_channel=None, irc_botname=None, irc_channel=None, irc_network=None, irc_port=None, irc_ssl=None):
         """
         Start by telling the portal to start a new session.
@@ -359,6 +361,7 @@ class RSSBot(Bot):
     its feed at regular intervals.
 
     """
+
     def start(self, ev_channel=None, rss_url=None, rss_rate=None):
         """
         Start by telling the portal to start a new RSS session

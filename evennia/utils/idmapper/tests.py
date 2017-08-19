@@ -6,21 +6,26 @@ from django.test import TestCase
 from .models import SharedMemoryModel
 from django.db import models
 
+
 class Category(SharedMemoryModel):
     name = models.CharField(max_length=32)
 
+
 class RegularCategory(models.Model):
     name = models.CharField(max_length=32)
+
 
 class Article(SharedMemoryModel):
     name = models.CharField(max_length=32)
     category = models.ForeignKey(Category)
     category2 = models.ForeignKey(RegularCategory)
 
+
 class RegularArticle(models.Model):
     name = models.CharField(max_length=32)
     category = models.ForeignKey(Category)
     category2 = models.ForeignKey(RegularCategory)
+
 
 class SharedMemorysTest(TestCase):
     # TODO: test for cross model relation (singleton to regular)
@@ -58,7 +63,7 @@ class SharedMemorysTest(TestCase):
 
         #article_list = Article.objects.all().select_related('category')
         #last_article = article_list[0]
-        #for article in article_list[1:]:
+        # for article in article_list[1:]:
         #    self.assertEquals(article.category2 is last_article.category2, False)
         #    last_article = article
 
@@ -70,5 +75,3 @@ class SharedMemorysTest(TestCase):
         pk = article.pk
         article.delete()
         self.assertEquals(pk not in Article.__instance_cache__, True)
-
-

@@ -71,7 +71,6 @@ class ScriptDB(TypedObject):
 
     """
 
-
     #
     # ScriptDB Database Model setup
     #
@@ -87,7 +86,7 @@ class ScriptDB(TypedObject):
     db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True, verbose_name='scripted object',
                                help_text='the object to store this script on, if not a global script.')
     db_account = models.ForeignKey("accounts.AccountDB", null=True, blank=True, verbose_name="scripted account",
-                               help_text='the account to store this script on (should not be set if db_obj is set)')
+                                   help_text='the account to store this script on (should not be set if db_obj is set)')
 
     # how often to run Script (secs). -1 means there is no timer
     db_interval = models.IntegerField('interval', default=-1, help_text='how often to repeat script, in seconds. -1 means off.')

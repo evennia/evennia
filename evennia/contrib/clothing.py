@@ -88,11 +88,11 @@ CLOTHING_TYPE_ORDER = ['hat', 'jewelry', 'top', 'undershirt', 'gloves', 'fullbod
                        'underpants', 'socks', 'shoes', 'accessory']
 # The maximum number of each type of clothes that can be worn. Unlimited if untyped or not specified.
 CLOTHING_TYPE_LIMIT = {
-                    'hat': 1,
-                    'gloves': 1,
-                    'socks': 1,
-                    'shoes': 1
-                    }
+    'hat': 1,
+    'gloves': 1,
+    'socks': 1,
+    'shoes': 1
+}
 # The maximum number of clothing items that can be worn, or None for unlimited.
 CLOTHING_OVERALL_LIMIT = 20
 # What types of clothes will automatically cover what other types of clothes when worn.
@@ -100,11 +100,11 @@ CLOTHING_OVERALL_LIMIT = 20
 # on that auto-covers it - for example, it's perfectly possible to have your underpants
 # showing if you put them on after your pants!
 CLOTHING_TYPE_AUTOCOVER = {
-                        'top': ['undershirt'],
-                        'bottom': ['underpants'],
-                        'fullbody': ['undershirt', 'underpants'],
-                        'shoes': ['socks']
-                        }
+    'top': ['undershirt'],
+    'bottom': ['underpants'],
+    'fullbody': ['undershirt', 'underpants'],
+    'shoes': ['socks']
+}
 # Types of clothes that can't be used to cover other clothes.
 CLOTHING_TYPE_CANT_COVER_WITH = ['jewelry']
 
@@ -295,6 +295,7 @@ class ClothedCharacter(DefaultCharacter):
     just copy the return_appearance hook defined below to your own game's
     character typeclass.
     """
+
     def return_appearance(self, looker):
         """
         This formats a description. It is the hook a 'look' command

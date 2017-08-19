@@ -41,12 +41,12 @@ def _case_sensitive_replace(string, old, new):
                     all_upper = False
             # special cases - keep remaing case)
             if new_word.lower() in CASE_WORD_EXCEPTIONS:
-                result.append(new_word[ind+1:])
+                result.append(new_word[ind + 1:])
             # append any remaining characters from new
             elif all_upper:
-                result.append(new_word[ind+1:].upper())
+                result.append(new_word[ind + 1:].upper())
             else:
-                result.append(new_word[ind+1:].lower())
+                result.append(new_word[ind + 1:].lower())
             out.append("".join(result))
         # if we have more new words than old ones, just add them verbatim
         out.extend([new_word for ind, new_word in enumerate(new_words) if ind >= len(old_words)])

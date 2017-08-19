@@ -88,41 +88,41 @@ _SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit
 # is the normal "production message to echo to the account.
 
 _ERROR_UNTRAPPED = (
-"""
+    """
 An untrapped error occurred.
 """,
-"""
+    """
 An untrapped error occurred. Please file a bug report detailing the steps to reproduce.
 """)
 
 _ERROR_CMDSETS = (
-"""
+    """
 A cmdset merger-error occurred. This is often due to a syntax
 error in one of the cmdsets to merge.
 """,
-"""
+    """
 A cmdset merger-error occurred. Please file a bug report detailing the
 steps to reproduce.
 """)
 
 _ERROR_NOCMDSETS = (
-"""
+    """
 No command sets found! This is a critical bug that can have
 multiple causes.
 """,
-"""
+    """
 No command sets found! This is a sign of a critical bug.  If
 disconnecting/reconnecting doesn't" solve the problem, try to contact
 the server admin through" some other means for assistance.
 """)
 
 _ERROR_CMDHANDLER = (
-"""
+    """
 A command handler bug occurred. If this is not due to a local change,
 please file a bug report with the Evennia project, including the
 traceback and steps to reproduce.
 """,
-"""
+    """
 A command handler bug occurred. Please notify staff - they should
 likely file a bug report with the Evennia project.
 """)
@@ -234,18 +234,22 @@ class NoCmdSets(Exception):
 
 class ExecSystemCommand(Exception):
     "Run a system command"
+
     def __init__(self, syscmd, sysarg):
         self.args = (syscmd, sysarg)  # needed by exception error handling
         self.syscmd = syscmd
         self.sysarg = sysarg
 
+
 class ErrorReported(Exception):
     "Re-raised when a subsructure already reported the error"
+
     def __init__(self, raw_string):
         self.args = (raw_string,)
         self.raw_string = raw_string
 
 # Helper function
+
 
 @inlineCallbacks
 def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string):
@@ -318,11 +322,11 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                     # the no_superuser_bypass must be True)
                     local_obj_cmdsets = \
                         yield list(chain.from_iterable(
-                                lobj.cmdset.cmdset_stack for lobj in local_objlist
-                                if (lobj.cmdset.current and
+                            lobj.cmdset.cmdset_stack for lobj in local_objlist
+                            if (lobj.cmdset.current and
                                 lobj.access(caller, access_type='call', no_superuser_bypass=True))))
                     for cset in local_obj_cmdsets:
-                        #This is necessary for object sets, or we won't be able to
+                        # This is necessary for object sets, or we won't be able to
                         # separate the command sets from each other in a busy room. We
                         # only keep the setting if duplicates were set to False/True
                         # explicitly.
@@ -332,7 +336,6 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
             except Exception:
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported(raw_string)
-
 
         @inlineCallbacks
         def _get_cmdsets(obj):
@@ -346,7 +349,7 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported(raw_string)
             try:
-                returnValue((obj.cmdset.current,  list(obj.cmdset.cmdset_stack)))
+                returnValue((obj.cmdset.current, list(obj.cmdset.cmdset_stack)))
             except AttributeError:
                 returnValue(((None, None, None), []))
 
@@ -550,9 +553,9 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             cmd.session = session
             cmd.account = account
             cmd.raw_string = unformatted_raw_string
-            #cmd.obj  # set via on-object cmdset handler for each command,
-                      # since this may be different for every command when
-                      # merging multuple cmdsets
+            # cmd.obj  # set via on-object cmdset handler for each command,
+            # since this may be different for every command when
+            # merging multuple cmdsets
 
             if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):
                 # cmd.obj is automatically made available by the cmdhandler.
@@ -615,7 +618,6 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
         finally:
             _COMMAND_NESTING[called_by] -= 1
 
-
     raw_string = to_unicode(raw_string, force_string=True)
 
     session, account, obj = session, None, None
@@ -653,7 +655,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             else:
                 # no explicit cmdobject given, figure it out
                 cmdset = yield get_and_merge_cmdsets(caller, session, account, obj,
-                                                      callertype, raw_string)
+                                                     callertype, raw_string)
                 if not cmdset:
                     # this is bad and shouldn't happen.
                     raise NoCmdSets
@@ -701,8 +703,8 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                         # fallback to default error text
                         sysarg = _("Command '%s' is not available.") % raw_string
                         suggestions = string_suggestions(raw_string,
-                                        cmdset.get_all_cmd_keys_and_aliases(caller),
-                                        cutoff=0.7, maxnum=3)
+                                                         cmdset.get_all_cmd_keys_and_aliases(caller),
+                                                         cutoff=0.7, maxnum=3)
                         if suggestions:
                             sysarg += _(" Maybe you meant %s?") % utils.list_to_string(suggestions, _('or'), addquote=True)
                         else:

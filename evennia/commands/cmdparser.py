@@ -14,6 +14,7 @@ from evennia.utils.logger import log_trace
 _MULTIMATCH_REGEX = re.compile(settings.SEARCH_MULTIMATCH_REGEX, re.I + re.U)
 _CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 
+
 def cmdparser(raw_string, cmdset, caller, match_index=None):
     """
     This function is called by the cmdhandler once it has
@@ -82,10 +83,10 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
                 # use the cmdname as-is
                 for cmd in cmdset:
                     matches.extend([create_match(cmdname, raw_string, cmd, cmdname)
-                              for cmdname in [cmd.key] + cmd.aliases
-                                if cmdname and l_raw_string.startswith(cmdname.lower())
-                                   and (not cmd.arg_regex or
-                                     cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
+                                    for cmdname in [cmd.key] + cmd.aliases
+                                    if cmdname and l_raw_string.startswith(cmdname.lower()) and
+                                    (not cmd.arg_regex or
+                                        cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
             else:
                 # strip prefixes set in settings
                 for cmd in cmdset:
@@ -133,7 +134,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         # See if it helps to analyze the match with preserved case but only if
         # it leaves at least one match.
         trimmed = [match for match in matches
-                     if raw_string.startswith(match[0])]
+                   if raw_string.startswith(match[0])]
         if trimmed:
             matches = trimmed
 
@@ -151,10 +152,10 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         quality = [mat[4] for mat in matches]
         matches = matches[-quality.count(quality[-1]):]
 
-    if len(matches) > 1 and match_index != None and 0 < match_index <= len(matches):
+    if len(matches) > 1 and match_index is not None and 0 < match_index <= len(matches):
         # We couldn't separate match by quality, but we have an
         # index argument to tell us which match to use.
-        matches = [matches[match_index-1]]
+        matches = [matches[match_index - 1]]
 
     # no matter what we have at this point, we have to return it.
     return matches

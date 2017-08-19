@@ -47,6 +47,7 @@ manually later.
 
 # Helper functions
 
+
 def _green(string):
     if USE_COLOR:
         return "%s%s%s" % (ANSI_GREEN, string, ANSI_NORMAL)
@@ -98,12 +99,12 @@ def _case_sensitive_replace(string, old, new):
                     all_upper = False
             # special cases - keep remaing case)
             if new_word.lower() in CASE_WORD_EXCEPTIONS:
-                result.append(new_word[ind+1:])
+                result.append(new_word[ind + 1:])
             # append any remaining characters from new
             elif all_upper:
-                result.append(new_word[ind+1:].upper())
+                result.append(new_word[ind + 1:].upper())
             else:
-                result.append(new_word[ind+1:].lower())
+                result.append(new_word[ind + 1:].lower())
             out.append("".join(result))
         # if we have more new words than old ones, just add them verbatim
         out.extend([new_word for ind, new_word in enumerate(new_words) if ind >= len(old_words)])
@@ -278,7 +279,7 @@ def rename_in_file(path, in_list, out_list, is_interactive):
                     raw_input(_HELP_TEXT.format(sources=in_list, targets=out_list))
                 elif ret.startswith("i"):
                     # ignore one or more lines
-                    ignores = [int(ind)-1 for ind in ret[1:].split(',') if ind.strip().isdigit()]
+                    ignores = [int(ind) - 1 for ind in ret[1:].split(',') if ind.strip().isdigit()]
                     if not ignores:
                         raw_input("Ignore example: i 2,7,34,133\n (return to continue)")
                         continue
@@ -287,12 +288,11 @@ def rename_in_file(path, in_list, out_list, is_interactive):
                     continue
 
 
-
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-            description="Rename text in a source tree, or a single file")
+        description="Rename text in a source tree, or a single file")
 
     parser.add_argument('-i', '--input', action='append',
                         help="Source word to rename (quote around multiple words)")

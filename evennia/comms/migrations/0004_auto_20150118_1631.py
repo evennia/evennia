@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 
+
 def convert_defaults(apps, schema_editor):
     ChannelDB = apps.get_model("comms", "ChannelDB")
     for channel in ChannelDB.objects.filter(db_typeclass_path="src.comms.comms.Channel"):
         channel.db_typeclass_path = "typeclasses.channels.Channel"
         channel.save()
+
 
 class Migration(migrations.Migration):
 
@@ -16,5 +18,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-            migrations.RunPython(convert_defaults),
+        migrations.RunPython(convert_defaults),
     ]

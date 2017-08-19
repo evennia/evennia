@@ -155,7 +155,7 @@ class AccountInline(admin.StackedInline):
     fieldsets = (
         ("In-game Permissions and Locks",
          {'fields': ('db_lock_storage',),
-         #{'fields': ('db_permissions', 'db_lock_storage'),
+          #{'fields': ('db_permissions', 'db_lock_storage'),
           'description': "<i>These are permissions/locks for in-game use. "
                          "They are unrelated to website access rights.</i>"}),
         ("In-game Account data",
@@ -215,11 +215,11 @@ class AccountDBAdmin(BaseUserAdmin):
                        'db_lock_storage'),
             'description': '<i>These are attributes that are more relevant '
                            'to gameplay.</i>'}))
-        # ('Game Options', {'fields': (
-        #     'db_typeclass_path', 'db_cmdset_storage',
-        #     'db_permissions', 'db_lock_storage'),
-        #     'description': '<i>These are attributes that are '
-        #                    'more relevant to gameplay.</i>'}))
+    # ('Game Options', {'fields': (
+    #     'db_typeclass_path', 'db_cmdset_storage',
+    #     'db_permissions', 'db_lock_storage'),
+    #     'description': '<i>These are attributes that are '
+    #                    'more relevant to gameplay.</i>'}))
 
     add_fieldsets = (
         (None,
@@ -240,7 +240,7 @@ class AccountDBAdmin(BaseUserAdmin):
         """
         obj.save()
         if not change:
-            #calling hooks for new account
+            # calling hooks for new account
             obj.set_class_from_typeclass(typeclass_path=settings.BASE_ACCOUNT_TYPECLASS)
             obj.basetype_setup()
             obj.at_account_creation()
@@ -251,5 +251,6 @@ class AccountDBAdmin(BaseUserAdmin):
         if '_continue' in request.POST:
             return HttpResponseRedirect(reverse("admin:accounts_accountdb_change", args=[obj.id]))
         return HttpResponseRedirect(reverse("admin:accounts_accountdb_change", args=[obj.id]))
+
 
 admin.site.register(AccountDB, AccountDBAdmin)

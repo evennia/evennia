@@ -12,6 +12,7 @@ make sure to put it on yourself or you won't see any messages!
 import random
 from evennia import DefaultScript
 
+
 class BodyFunctions(DefaultScript):
     """
     This class defines the script itself
@@ -21,7 +22,7 @@ class BodyFunctions(DefaultScript):
         self.key = "bodyfunction"
         self.desc = "Adds various timed events to a character."
         self.interval = 20  # seconds
-        #self.repeats = 5  # repeat only a certain number of times
+        # self.repeats = 5  # repeat only a certain number of times
         self.start_delay = True  # wait self.interval until first call
         #self.persistent = True
 

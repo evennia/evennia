@@ -44,6 +44,7 @@ _DA = object.__delattr__
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
+
 def is_iter(iterable):
     """
     Checks if an object behaves iterably.
@@ -96,6 +97,8 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
     text = to_unicode(text)
     indent = " " * indent
     return to_str(textwrap.fill(text, width, initial_indent=indent, subsequent_indent=indent))
+
+
 # alias - fill
 fill = wrap
 
@@ -437,27 +440,27 @@ def time_format(seconds, style=0):
         """
         Only return the highest unit.
         """
-        if days >= 730: # Several years
+        if days >= 730:  # Several years
             return "{} years".format(days // 365)
-        elif days >= 365: # One year
+        elif days >= 365:  # One year
             return "a year"
-        elif days >= 62: # Several months
+        elif days >= 62:  # Several months
             return "{} months".format(days // 31)
-        elif days >= 31: # One month
+        elif days >= 31:  # One month
             return "a month"
-        elif days >= 2: # Several days
+        elif days >= 2:  # Several days
             return "{} days".format(days)
         elif days > 0:
             return "a day"
-        elif hours >= 2: # Several hours
+        elif hours >= 2:  # Several hours
             return "{} hours".format(hours)
-        elif hours > 0: # One hour
+        elif hours > 0:  # One hour
             return "an hour"
-        elif minutes >= 2: # Several minutes
+        elif minutes >= 2:  # Several minutes
             return "{} minutes".format(minutes)
-        elif minutes > 0: # One minute
+        elif minutes > 0:  # One minute
             return "a minute"
-        elif seconds >= 2: # Several seconds
+        elif seconds >= 2:  # Several seconds
             return "{} seconds".format(seconds)
         elif seconds == 1:
             return "a second"
@@ -593,9 +596,9 @@ def dbref(inp, reqhash=True):
     """
     if reqhash:
         num = (int(inp.lstrip('#')) if (isinstance(inp, basestring) and
-                                           inp.startswith("#") and
-                                           inp.lstrip('#').isdigit())
-                                       else None)
+                                        inp.startswith("#") and
+                                        inp.lstrip('#').isdigit())
+               else None)
         return num if num > 0 else None
     elif isinstance(inp, basestring):
         inp = inp.lstrip('#')
@@ -640,6 +643,7 @@ def dbref_to_obj(inp, objclass, raise_errors=True):
         if raise_errors:
             raise
         return inp
+
 
 # legacy alias
 dbid_to_obj = dbref_to_obj
@@ -788,7 +792,7 @@ def to_str(obj, encoding='utf-8', force_string=False):
         # if we get to this point we have not found any way to convert this string. Try to parse it manually,
         try:
             return latinify(obj, '?')
-        except Exception, err:
+        except Exception as err:
             raise Exception("%s, Error: Unicode could not encode unicode string '%s'(%s) to a bytestring. " % (err, obj, encoding))
     return obj
 
@@ -921,6 +925,7 @@ def uses_database(name="sqlite3"):
 
 _TASK_HANDLER = None
 
+
 def delay(timedelay, callback, *args, **kwargs):
     """
     Delay the return of a value.
@@ -989,7 +994,7 @@ def clean_object_caches(obj):
 
     # on-object property cache
     [_DA(obj, cname) for cname in viewkeys(obj.__dict__)
-                     if cname.startswith("_cached_db_")]
+     if cname.startswith("_cached_db_")]
     try:
         hashid = _GA(obj, "hashid")
         _TYPECLASSMODELS._ATTRIBUTE_CACHE[hashid] = {}
@@ -1001,6 +1006,8 @@ def clean_object_caches(obj):
 _PPOOL = None
 _PCMD = None
 _PROC_ERR = "A process has ended with a probable error condition: process ended by signal 9."
+
+
 def run_async(to_execute, *args, **kwargs):
     """
     Runs a function or executes a code snippet asynchronously.
@@ -1094,7 +1101,7 @@ def check_evennia_dependencies():
     errstring = errstring.strip()
     if errstring:
         mlen = max(len(line) for line in errstring.split("\n"))
-        logger.log_err("%s\n%s\n%s" % ("-"*mlen, errstring, '-'*mlen))
+        logger.log_err("%s\n%s\n%s" % ("-" * mlen, errstring, '-' * mlen))
     return not_error
 
 
@@ -1333,7 +1340,7 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
         try:
             mod = import_module(modpath)
         except ImportError as ex:
-            if not str(ex).startswith ("No module named %s" % modpath):
+            if not str(ex).startswith("No module named %s" % modpath):
                 # this means the module was found but it
                 # triggers an ImportError on import.
                 raise ex
@@ -1396,6 +1403,8 @@ def class_from_module(path, defaultpaths=None):
             err += "."
         raise ImportError(err)
     return cls
+
+
 # alias
 object_from_module = class_from_module
 
@@ -1430,7 +1439,7 @@ def string_similarity(string1, string2):
     vec2 = [string2.count(v) for v in vocabulary]
     try:
         return float(sum(vec1[i] * vec2[i] for i in range(len(vocabulary)))) / \
-               (math.sqrt(sum(v1**2 for v1 in vec1)) * math.sqrt(sum(v2**2 for v2 in vec2)))
+            (math.sqrt(sum(v1**2 for v1 in vec1)) * math.sqrt(sum(v2**2 for v2 in vec2)))
     except ZeroDivisionError:
         # can happen if empty-string cmdnames appear for some reason.
         # This is a no-match.
@@ -1456,9 +1465,9 @@ def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
 
     """
     return [tup[1] for tup in sorted([(string_similarity(string, sugg), sugg)
-                                       for sugg in vocabulary],
-                                           key=lambda tup: tup[0], reverse=True)
-                                           if tup[0] >= cutoff][:maxnum]
+                                      for sugg in vocabulary],
+                                     key=lambda tup: tup[0], reverse=True)
+            if tup[0] >= cutoff][:maxnum]
 
 
 def string_partial_matching(alternatives, inp, ret_index=True):
@@ -1589,6 +1598,7 @@ def get_evennia_pids():
         return int(server_pid), int(portal_pid)
     return None, None
 
+
 from gc import get_referents
 from sys import getsizeof
 
@@ -1622,11 +1632,12 @@ def deepsize(obj, max_depth=4):
             idr = id(ref)
             if idr not in dct:
                 dct[idr] = (ref, getsizeof(ref, default=0))
-                _recurse(ref, dct, depth+1)
+                _recurse(ref, dct, depth + 1)
     sizedict = {}
     _recurse(obj, sizedict, 0)
     size = getsizeof(obj) + sum([p[1] for p in sizedict.values()])
     return size
+
 
 # lazy load handler
 _missing = object()
@@ -1651,6 +1662,7 @@ class lazy_property(object):
     property "attributes" on the object.
 
     """
+
     def __init__(self, func, name=None, doc=None):
         """Store all properties for now"""
         self.__name__ = name or func.__name__
@@ -1667,6 +1679,7 @@ class lazy_property(object):
             value = self.func(obj)
         obj.__dict__[self.__name__] = value
         return value
+
 
 _STRIP_ANSI = None
 _RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([unichr(c) for c in range(0, 32)])))  # + range(127,160)])))
@@ -1707,7 +1720,7 @@ def calledby(callerdepth=1):
     stack = inspect.stack()
     # we must step one extra level back in stack since we don't want
     # to include the call of this function itself.
-    callerdepth = min(max(2, callerdepth + 1), len(stack)-1)
+    callerdepth = min(max(2, callerdepth + 1), len(stack) - 1)
     frame = inspect.stack()[callerdepth]
     path = os.path.sep.join(frame[1].rsplit(os.path.sep, 2)[-2:])
     return "[called by '%s': %s:%s %s]" % (frame[3], path, frame[2], frame[4])
@@ -1774,15 +1787,15 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         matches = None
     elif len(matches) > 1:
         error = kwargs.get("multimatch_string") or \
-                _("More than one match for '%s' (please narrow target):\n" % query)
+            _("More than one match for '%s' (please narrow target):\n" % query)
         for num, result in enumerate(matches):
             # we need to consider Commands, where .aliases is a list
             aliases = result.aliases.all() if hasattr(result.aliases, "all") else result.aliases
             error += _MULTIMATCH_TEMPLATE.format(
-                 number=num + 1,
-                 name=result.get_display_name(caller) if hasattr(result, "get_display_name") else query,
-                 aliases=" [%s]" % ";".join(aliases) if aliases else "",
-                 info=result.get_extra_info(caller))
+                number=num + 1,
+                name=result.get_display_name(caller) if hasattr(result, "get_display_name") else query,
+                aliases=" [%s]" % ";".join(aliases) if aliases else "",
+                info=result.get_extra_info(caller))
         matches = None
     else:
         # exactly one match
@@ -1800,6 +1813,7 @@ class LimitedSizeOrderedDict(OrderedDict):
     grow out of bounds.
 
     """
+
     def __init__(self, *args, **kwargs):
         """
         Limited-size ordered dict.
@@ -1814,7 +1828,7 @@ class LimitedSizeOrderedDict(OrderedDict):
         """
         super(LimitedSizeOrderedDict, self).__init__()
         self.size_limit = kwargs.get("size_limit", None)
-        self.filo = not kwargs.get("fifo", True) # FIFO inverse of FILO
+        self.filo = not kwargs.get("fifo", True)  # FIFO inverse of FILO
         self._check_size()
 
     def _check_size(self):
@@ -1850,7 +1864,3 @@ def get_game_dir_path():
         else:
             os.chdir(os.pardir)
     raise RuntimeError("server/conf/settings.py not found: Must start from inside game dir.")
-
-
-
-

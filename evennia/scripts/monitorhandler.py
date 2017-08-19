@@ -23,11 +23,13 @@ _SA = object.__setattr__
 _GA = object.__getattribute__
 _DA = object.__delattr__
 
+
 class MonitorHandler(object):
     """
     This is a resource singleton that allows for registering
     callbacks for when a field or Attribute is updated (saved).
     """
+
     def __init__(self):
         """
         Initialize the handler.
@@ -148,7 +150,6 @@ class MonitorHandler(object):
             logger.log_trace(err)
         else:
             self.monitors[obj][fieldname][idstring] = (callback, persistent, kwargs)
-
 
     def remove(self, obj, fieldname, idstring=""):
         """

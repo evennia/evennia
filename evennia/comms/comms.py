@@ -357,7 +357,6 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
     # hooks
 
     def channel_prefix(self, msg=None, emit=False, **kwargs):
-
         """
         Hook method. How the channel should prefix itself for users.
 

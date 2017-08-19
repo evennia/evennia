@@ -280,8 +280,8 @@ def pid(accessing_obj, accessed_obj, *args, **kwargs):
 
 # this is more efficient than multiple if ... elif statments
 CF_MAPPING = {'eq': lambda val1, val2: val1 == val2 or str(val1) == str(val2) or float(val1) == float(val2),
-              'gt': lambda val1, val2: float(val1) >  float(val2),
-              'lt': lambda val1, val2: float(val1) <  float(val2),
+              'gt': lambda val1, val2: float(val1) > float(val2),
+              'lt': lambda val1, val2: float(val1) < float(val2),
               'ge': lambda val1, val2: float(val1) >= float(val2),
               'le': lambda val1, val2: float(val1) <= float(val2),
               'ne': lambda val1, val2: float(val1) != float(val2),
@@ -346,8 +346,8 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
     # check attributes, if they exist
     if (hasattr(accessing_obj, 'attributes') and accessing_obj.attributes.has(attrname)):
         if value:
-            return (hasattr(accessing_obj, 'attributes')
-                    and valcompare(accessing_obj.attributes.get(attrname), value, compare))
+            return (hasattr(accessing_obj, 'attributes') and
+                    valcompare(accessing_obj.attributes.get(attrname), value, compare))
         # fails on False/None values
         return bool(accessing_obj.attributes.get(attrname))
     return False
@@ -365,6 +365,7 @@ def objattr(accessing_obj, accessed_obj, *args, **kwargs):
 
     """
     return attr(accessed_obj, accessed_obj, *args, **kwargs)
+
 
 def locattr(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -385,6 +386,7 @@ def locattr(accessing_obj, accessed_obj, *args, **kwargs):
     if hasattr(accessing_obj, "location"):
         return attr(accessing_obj.location, accessed_obj, *args, **kwargs)
     return False
+
 
 def objlocattr(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -464,6 +466,7 @@ def attr_ne(accessing_obj, accessed_obj, *args, **kwargs):
     """
     return attr(accessing_obj, accessed_obj, *args, **{'compare': 'ne'})
 
+
 def tag(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
@@ -481,6 +484,7 @@ def tag(accessing_obj, accessed_obj, *args, **kwargs):
     category = args[1] if len(args) > 1 else None
     return accessing_obj.tags.get(tagkey, category=category)
 
+
 def objtag(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
@@ -491,6 +495,7 @@ def objtag(accessing_obj, accessed_obj, *args, **kwargs):
     category.
     """
     return accessed_obj.tags.get(*args)
+
 
 def inside(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -548,7 +553,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
     if len(args) == 1:
         # command is holds(dbref/key) - check if given objname/dbref is held by accessing_ob
         return check_holds(args[0])
-    elif len(args = 2):
+    elif len(args=2):
         # command is holds(attrname, value) check if any held object has the given attribute and value
         for obj in contents:
             if obj.attributes.get(args[0]) == args[1]:
@@ -566,6 +571,7 @@ def superuser(*args, **kwargs):
     """
     return False
 
+
 def has_account(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Only returns true if accessing_obj has_account is true, that is,
@@ -575,6 +581,7 @@ def has_account(accessing_obj, accessed_obj, *args, **kwargs):
     mobiles from moving outside their areas.
     """
     return hasattr(accessing_obj, "has_account") and accessing_obj.has_account
+
 
 def serversetting(accessing_obj, accessed_obj, *args, **kwargs):
     """

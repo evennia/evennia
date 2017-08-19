@@ -24,6 +24,7 @@ class EvenniaGameIndexClient(object):
     Evennia Game Index. Since EGI is in the early goings, this isn't
     incredibly configurable as far as what is being sent.
     """
+
     def __init__(self, on_bad_request=None):
         """
         :param on_bad_request: Optional callable to trigger when a bad request
@@ -131,6 +132,7 @@ class SimpleResponseReceiver(protocol.Protocol):
     """
     Used for pulling the response body out of an HTTP response.
     """
+
     def __init__(self, status_code, d):
         self.status_code = status_code
         self.buf = ''

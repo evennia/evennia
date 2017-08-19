@@ -35,7 +35,11 @@ _IDLE_COMMAND = settings.IDLE_COMMAND
 _IDLE_COMMAND = (_IDLE_COMMAND, ) if _IDLE_COMMAND == "idle" else (_IDLE_COMMAND, "idle")
 _GA = object.__getattribute__
 _SA = object.__setattr__
-_NA = lambda o: "N/A"
+
+
+def _NA(o):
+    return "N/A"
+
 
 _ERROR_INPUT = "Inputfunc {name}({session}): Wrong/unrecognized input: {inp}"
 
@@ -58,8 +62,8 @@ def text(session, *args, **kwargs):
 
     txt = args[0] if args else None
 
-    #explicitly check for None since text can be an empty string, which is
-    #also valid
+    # explicitly check for None since text can be an empty string, which is
+    # also valid
     if txt is None:
         return
     # this is treated as a command input
@@ -72,10 +76,10 @@ def text(session, *args, **kwargs):
         puppet = session.puppet
         if puppet:
             txt = puppet.nicks.nickreplace(txt,
-                          categories=("inputline", "channel"), include_account=True)
+                                           categories=("inputline", "channel"), include_account=True)
         else:
             txt = session.account.nicks.nickreplace(txt,
-                        categories=("inputline", "channel"), include_account=False)
+                                                    categories=("inputline", "channel"), include_account=False)
     kwargs.pop("options", None)
     cmdhandler(session, txt, callertype="session", session=session, **kwargs)
     session.update_session_counters()
@@ -123,11 +127,11 @@ def default(session, cmdname, *args, **kwargs):
 
     """
     err = "Session {sessid}: Input command not recognized:\n" \
-            " name: '{cmdname}'\n" \
-            " args, kwargs: {args}, {kwargs}".format(sessid=session.sessid,
-                                                     cmdname=cmdname,
-                                                     args=args,
-                                                     kwargs=kwargs)
+        " name: '{cmdname}'\n" \
+        " args, kwargs: {args}, {kwargs}".format(sessid=session.sessid,
+                                                 cmdname=cmdname,
+                                                 args=args,
+                                                 kwargs=kwargs)
     if session.protocol_flags.get("INPUTDEBUG", False):
         session.msg(err)
     log_err(err)
@@ -153,13 +157,10 @@ def browser_sessid(session, *args, **kwargs):
             uid = browsersession.get("logged_in", None)
             if uid:
                 try:
-                    account =  AccountDB.objects.get(pk=uid)
+                    account = AccountDB.objects.get(pk=uid)
                 except Exception:
                     return
                 session.sessionhandler.login(session, account)
-
-
-
 
 
 def client_options(session, *args, **kwargs):
@@ -189,12 +190,12 @@ def client_options(session, *args, **kwargs):
     if not kwargs or kwargs.get("get", False):
         # return current settings
         options = dict((key, flags[key]) for key in flags
-                if key.upper() in ("ANSI", "XTERM256", "MXP",
-                           "UTF-8", "SCREENREADER", "ENCODING",
-                           "MCCP", "SCREENHEIGHT",
-                           "SCREENWIDTH", "INPUTDEBUG",
-                           "RAW", "NOCOLOR",
-                           "NOGOAHEAD"))
+                       if key.upper() in ("ANSI", "XTERM256", "MXP",
+                                          "UTF-8", "SCREENREADER", "ENCODING",
+                                          "MCCP", "SCREENHEIGHT",
+                                          "SCREENWIDTH", "INPUTDEBUG",
+                                          "RAW", "NOCOLOR",
+                                          "NOGOAHEAD"))
         session.msg(client_options=options)
         return
 
@@ -248,16 +249,17 @@ def client_options(session, *args, **kwargs):
         elif key == "nogoahead":
             flags["NOGOAHEAD"] = validate_bool(value)
         elif key in ('Char 1', 'Char.Skills 1', 'Char.Items 1',
-                'Room 1', 'IRE.Rift 1', 'IRE.Composer 1'):
+                     'Room 1', 'IRE.Rift 1', 'IRE.Composer 1'):
             # ignore mudlet's default send (aimed at IRE games)
             pass
-        elif not key in ("options", "cmdid"):
+        elif key not in ("options", "cmdid"):
             err = _ERROR_INPUT.format(
-                    name="client_settings", session=session, inp=key)
+                name="client_settings", session=session, inp=key)
             session.msg(text=err)
     session.protocol_flags = flags
     # we must update the portal as well
     session.sessionhandler.session_portal_sync(session)
+
 
 # GMCP alias
 hello = client_options
@@ -298,12 +300,14 @@ def login(session, *args, **kwargs):
         if account:
             session.sessionhandler.login(session, account)
 
+
 _gettable = {
     "name": lambda obj: obj.key,
     "key": lambda obj: obj.key,
     "location": lambda obj: obj.location.key if obj.location else "None",
     "servername": lambda obj: settings.SERVERNAME
 }
+
 
 def get_value(session, *args, **kwargs):
     """
@@ -335,7 +339,7 @@ def _testrepeat(**kwargs):
 
 
 _repeatable = {"test1": _testrepeat,  # example only
-               "test2": _testrepeat}  #      "
+               "test2": _testrepeat}  # "
 
 
 def repeat(session, *args, **kwargs):
@@ -366,7 +370,6 @@ def repeat(session, *args, **kwargs):
             TICKER_HANDLER.add(interval, _repeatable[name], idstring=session.sessid, persistent=False, session=session)
     else:
         session.msg("Allowed repeating functions are: %s" % (", ".join(_repeatable)))
-
 
 
 def unrepeat(session, *args, **kwargs):
@@ -415,7 +418,7 @@ def monitor(session, *args, **kwargs):
         else:
             # the handler will add fieldname and obj to the kwargs automatically
             MONITOR_HANDLER.add(obj, field_name, _on_monitor_change, idstring=session.sessid,
-                            persistent=False, name=name, session=session)
+                                persistent=False, name=name, session=session)
 
 
 def unmonitor(session, *args, **kwargs):

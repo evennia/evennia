@@ -83,6 +83,7 @@ class TagFormSet(forms.BaseInlineFormSet):
     Object, where the handler is an AliasHandler, PermissionsHandler, or TagHandler, based on the
     type of tag.
     """
+
     def save(self, commit=True):
         def get_handler(finished_object):
             related = getattr(finished_object, self.related_field)

@@ -122,6 +122,7 @@ def create_object(typeclass=None, key=None, location=None, home=None,
     new_object.save()
     return new_object
 
+
 # alias for create_object
 object = create_object
 
@@ -179,14 +180,22 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
 
     # validate input
     kwarg = {}
-    if key: kwarg["db_key"] = key
-    if account: kwarg["db_account"] = dbid_to_obj(account, _ScriptDB)
-    if obj: kwarg["db_obj"] = dbid_to_obj(obj, _ScriptDB)
-    if interval: kwarg["db_interval"] = interval
-    if start_delay: kwarg["db_start_delay"] = start_delay
-    if repeats: kwarg["db_repeats"] = repeats
-    if persistent: kwarg["db_persistent"] = persistent
-    if desc: kwarg["db_desc"] = desc
+    if key:
+        kwarg["db_key"] = key
+    if account:
+        kwarg["db_account"] = dbid_to_obj(account, _ScriptDB)
+    if obj:
+        kwarg["db_obj"] = dbid_to_obj(obj, _ScriptDB)
+    if interval:
+        kwarg["db_interval"] = interval
+    if start_delay:
+        kwarg["db_start_delay"] = start_delay
+    if repeats:
+        kwarg["db_repeats"] = repeats
+    if persistent:
+        kwarg["db_persistent"] = persistent
+    if desc:
+        kwarg["db_desc"] = desc
 
     # create new instance
     new_script = typeclass(**kwarg)
@@ -200,6 +209,7 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
     # can be used.
     new_script.save()
     return new_script
+
 
 # alias
 script = create_script
@@ -250,6 +260,8 @@ def create_help_entry(key, entrytext, category="General", locks=None, aliases=No
     except Exception:
         logger.log_trace()
         return None
+
+
 # alias
 help_entry = create_help_entry
 
@@ -301,6 +313,8 @@ def create_message(senderobj, message, channels=None, receivers=None, locks=None
         new_message.locks.add(locks)
     new_message.save()
     return new_message
+
+
 message = create_message
 
 
@@ -348,6 +362,7 @@ def create_channel(key, aliases=None, desc=None,
     new_channel.save()
     return new_channel
 
+
 channel = create_channel
 
 
@@ -357,11 +372,10 @@ channel = create_channel
 
 
 def create_account(key, email, password,
-                  typeclass=None,
-                  is_superuser=False,
-                  locks=None, permissions=None,
-                  report_to=None):
-
+                   typeclass=None,
+                   is_superuser=False,
+                   locks=None, permissions=None,
+                   report_to=None):
     """
     This creates a new account.
 
@@ -416,8 +430,8 @@ def create_account(key, email, password,
     now = timezone.now()
     email = typeclass.objects.normalize_email(email)
     new_account = typeclass(username=key, email=email,
-                           is_staff=is_superuser, is_superuser=is_superuser,
-                           last_login=now, date_joined=now)
+                            is_staff=is_superuser, is_superuser=is_superuser,
+                            last_login=now, date_joined=now)
     new_account.set_password(password)
     new_account._createdict = dict(locks=locks, permissions=permissions, report_to=report_to)
     # saving will trigger the signal that calls the
@@ -425,6 +439,7 @@ def create_account(key, email, password,
     # can be used.
     new_account.save()
     return new_account
+
 
 # alias
 account = create_account

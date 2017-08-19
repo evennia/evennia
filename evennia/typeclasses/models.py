@@ -43,8 +43,8 @@ from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBa
 from evennia.typeclasses import managers
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import (
-        is_iter, inherits_from, lazy_property,
-        class_from_module)
+    is_iter, inherits_from, lazy_property,
+    class_from_module)
 from evennia.utils.logger import log_trace
 from .signals import remove_attributes_on_delete, post_save
 
@@ -84,10 +84,10 @@ class TypeclassBase(SharedMemoryModelBase):
 
         # storage of stats
         attrs["typename"] = name
-        attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
+        attrs["path"] = "%s.%s" % (attrs["__module__"], name)
 
         # typeclass proxy setup
-        if not "Meta" in attrs:
+        if "Meta" not in attrs:
             class Meta(object):
                 proxy = True
                 app_label = attrs.get("__applabel__", "typeclasses")
@@ -104,6 +104,7 @@ class TypeclassBase(SharedMemoryModelBase):
 
 class DbHolder(object):
     "Holder for allowing property access of attributes"
+
     def __init__(self, obj, name, manager_name='attributes'):
         _SA(self, name, _GA(obj, manager_name))
         _SA(self, 'name', name)
@@ -164,17 +165,17 @@ class TypedObject(SharedMemoryModel):
     # This is the python path to the type class this object is tied to. The
     # typeclass is what defines what kind of Object this is)
     db_typeclass_path = models.CharField('typeclass', max_length=255, null=True,
-            help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
+                                         help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
     # Creation date. This is not changed once the object is created.
     db_date_created = models.DateTimeField('creation date', editable=False, auto_now_add=True)
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True,
-            help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
+                                       help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
     # many2many relationships
     db_attributes = models.ManyToManyField(Attribute,
-            help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).')
+                                           help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).')
     db_tags = models.ManyToManyField(Tag,
-            help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.')
+                                     help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.')
 
     # Database manager
     objects = managers.TypedObjectManager()
@@ -258,7 +259,6 @@ class TypedObject(SharedMemoryModel):
         super(TypedObject, self).__init__(*args, **kwargs)
         self.set_class_from_typeclass(typeclass_path=typeclass_path)
 
-
     # initialize all handlers in a lazy fashion
     @lazy_property
     def attributes(self):
@@ -283,7 +283,6 @@ class TypedObject(SharedMemoryModel):
     @lazy_property
     def nattributes(self):
         return NAttributeHandler(self)
-
 
     class Meta(object):
         """
@@ -488,11 +487,10 @@ class TypedObject(SharedMemoryModel):
 
         # if we get to this point, the class is ok.
 
-
         if inherits_from(self, "evennia.scripts.models.ScriptDB"):
             if self.interval > 0:
-                raise RuntimeError("Cannot use swap_typeclass on time-dependent " \
-                                   "Script '%s'.\nStop and start a new Script of the " \
+                raise RuntimeError("Cannot use swap_typeclass on time-dependent "
+                                   "Script '%s'.\nStop and start a new Script of the "
                                    "right type instead." % self.key)
 
         self.typeclass_path = new_typeclass.path

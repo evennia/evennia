@@ -38,6 +38,7 @@ class AccountDBManager(TypedObjectManager, UserManager):
     #swap_character
 
     """
+
     def num_total_accounts(self):
         """
         Get total number of accounts.
@@ -91,7 +92,7 @@ class AccountDBManager(TypedObjectManager, UserManager):
         tdelta = datetime.timedelta(days)
         start_date = end_date - tdelta
         return self.filter(last_login__range=(
-                start_date, end_date)).order_by('-last_login')
+            start_date, end_date)).order_by('-last_login')
 
     def get_account_from_email(self, uemail):
         """

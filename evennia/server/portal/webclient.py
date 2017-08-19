@@ -104,7 +104,7 @@ class WebSocketClient(Protocol, Session):
         """
         cmdarray = json.loads(string)
         if cmdarray:
-            self.data_in(**{cmdarray[0]:[cmdarray[1], cmdarray[2]]})
+            self.data_in(**{cmdarray[0]: [cmdarray[1], cmdarray[2]]})
 
     def sendLine(self, line):
         """
@@ -198,7 +198,6 @@ class WebSocketClient(Protocol, Session):
 
         # send to client on required form [cmdname, args, kwargs]
         self.sendLine(json.dumps([cmd, args, kwargs]))
-
 
     def send_prompt(self, *args, **kwargs):
         kwargs["options"].update({"send_prompt": True})

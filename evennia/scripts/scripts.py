@@ -201,8 +201,8 @@ class DefaultScript(ScriptBase):
         """
         cname = self.__class__.__name__
         estring = _("Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'.") % \
-                          {"key": self.key, "dbid": self.dbid, "cname": cname,
-                           "err": e.getErrorMessage()}
+            {"key": self.key, "dbid": self.dbid, "cname": cname,
+             "err": e.getErrorMessage()}
         try:
             self.db_obj.msg(estring)
         except Exception:
@@ -596,6 +596,7 @@ class DoNothing(DefaultScript):
     """
     A script that does nothing. Used as default fallback.
     """
+
     def at_script_creation(self):
         """
         Setup the script
@@ -608,6 +609,7 @@ class Store(DefaultScript):
     """
     Simple storage script
     """
+
     def at_script_creation(self):
         """
         Setup the script

@@ -35,6 +35,7 @@ class LockableThreadPool(threadpool.ThreadPool):
     """
     Threadpool that can be locked from accepting new requests.
     """
+
     def __init__(self, *args, **kwargs):
         self._accept_new = True
         threadpool.ThreadPool.__init__(self, *args, **kwargs)
@@ -60,6 +61,7 @@ class HTTPChannelWithXForwardedFor(http.HTTPChannel):
     HTTP xforward class
 
     """
+
     def allHeadersReceived(self):
         """
         Check to see if this is a reverse proxied connection.
@@ -227,6 +229,7 @@ class WSGIWebServer(internet.TCPServer):
     call with WSGIWebServer(threadpool, port, wsgi_resource)
 
     """
+
     def __init__(self, pool, *args, **kwargs):
         """
         This just stores the threadpool.

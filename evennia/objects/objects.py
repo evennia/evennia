@@ -39,6 +39,7 @@ class ObjectSessionHandler(object):
     Handles the get/setting of the sessid
     comma-separated integer field
     """
+
     def __init__(self, obj):
         """
         Initializes the handler.
@@ -1211,10 +1212,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             mapping = {}
 
         mapping.update({
-                "object": self,
-                "exit": exits[0] if exits else "somwhere",
-                "origin": location or "nowhere",
-                "destination": destination or "nowhere",
+            "object": self,
+            "exit": exits[0] if exits else "somwhere",
+            "origin": location or "nowhere",
+            "destination": destination or "nowhere",
         })
 
         location.msg_contents(string, exclude=(self, ), mapping=mapping)
@@ -1267,10 +1268,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             mapping = {}
 
         mapping.update({
-                "object": self,
-                "exit": exits[0] if exits else "somewhere",
-                "origin": origin or "nowhere",
-                "destination": destination or "nowhere",
+            "object": self,
+            "exit": exits[0] if exits else "somewhere",
+            "origin": origin or "nowhere",
+            "destination": destination or "nowhere",
         })
 
         destination.msg_contents(string, exclude=(self, ), mapping=mapping)
@@ -1630,20 +1631,20 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         mapping = mapping or {}
         mapping.update({
-                "object": self,
-                "location": self.location,
-                "speech": message,
-                "receiver": receiver
-                })
+            "object": self,
+            "location": self.location,
+            "speech": message,
+            "receiver": receiver
+        })
 
         if msg_self:
             self_mapping = {k: v.get_display_name(self) if hasattr(
-                    v, "get_display_name") else str(v) for k, v in mapping.items()}
+                v, "get_display_name") else str(v) for k, v in mapping.items()}
             self.msg(msg_self.format(**self_mapping))
 
         if receiver and msg_receiver:
             receiver_mapping = {k: v.get_display_name(receiver) if hasattr(
-                    v, "get_display_name") else str(v) for k, v in mapping.items()}
+                v, "get_display_name") else str(v) for k, v in mapping.items()}
             receiver.msg(msg_receiver.format(**receiver_mapping))
 
         if self.location and msg_location:
@@ -1778,6 +1779,7 @@ class DefaultRoom(DefaultObject):
     This is the base room object. It's just like any Object except its
     location is always `None`.
     """
+
     def basetype_setup(self):
         """
         Simple room setup setting locks to make sure the room

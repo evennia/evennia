@@ -83,7 +83,7 @@ class Session(object):
         self.cmd_total = 0
 
         self.protocol_flags = {"ENCODING": "utf-8",
-                               "SCREENREADER":False,
+                               "SCREENREADER": False,
                                "INPUTDEBUG": False,
                                "RAW": False,
                                "NOCOLOR": False}
@@ -106,7 +106,7 @@ class Session(object):
 
         """
         return dict((key, value) for key, value in self.__dict__.items()
-                                                  if key in self._attrs_to_sync)
+                    if key in self._attrs_to_sync)
 
     def load_sync_data(self, sessdata):
         """

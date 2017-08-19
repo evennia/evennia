@@ -364,7 +364,7 @@ class CmdSessions(COMMAND_DEFAULT_CLASS):
         for sess in sorted(sessions, key=lambda x: x.sessid):
             char = account.get_puppet(sess)
             table.add_row(str(sess.sessid), str(sess.protocol_key),
-                          type(sess.address) == tuple and sess.address[0] or sess.address,
+                          isinstance(sess.address, tuple) and sess.address[0] or sess.address,
                           char and str(char) or "None",
                           char and str(char.location) or "N/A")
             self.msg("|wYour current session(s):|n\n%s" % table)
@@ -508,7 +508,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     options["SCREENHEIGHT"] = options["SCREENHEIGHT"][0]
                 else:
                     options["SCREENHEIGHT"] = "  \n".join("%s : %s" % (screenid, size)
-                        for screenid, size in options["SCREENHEIGHT"].iteritems())
+                                                          for screenid, size in options["SCREENHEIGHT"].iteritems())
             options.pop("TTYPE", None)
 
             header = ("Name", "Value", "Saved") if saved_options else ("Name", "Value")
@@ -552,7 +552,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                 flags[new_name] = new_val
                 self.msg("Option |w%s|n was changed from '|w%s|n' to '|w%s|n'." % (new_name, old_val, new_val))
                 return {new_name: new_val}
-            except Exception, err:
+            except Exception as err:
                 self.msg("|rCould not set option |w%s|r:|n %s" % (new_name, err))
                 return False
 
@@ -578,7 +578,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
         val = self.rhs.strip()
         optiondict = False
         if val and name in validators:
-            optiondict = update(name,  val, validators[name])
+            optiondict = update(name, val, validators[name])
         else:
             self.msg("|rNo option named '|w%s|r'." % name)
         if optiondict:
@@ -664,7 +664,7 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
             if nsess == 2:
                 account.msg("|RQuitting|n. One session is still connected.", session=self.session)
             elif nsess > 2:
-                account.msg("|RQuitting|n. %i sessions are still connected." % (nsess-1), session=self.session)
+                account.msg("|RQuitting|n. %i sessions are still connected." % (nsess - 1), session=self.session)
             else:
                 # we are quitting the last available session
                 account.msg("|RQuitting|n. Hope to see you again, soon.", session=self.session)
@@ -732,7 +732,7 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                        for code, _ in ap.ansi_map[self.slice_dark_bg]]
             bright_bg = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
                          for code, _ in ap.ansi_xterm256_bright_bg_map[self.slice_bright_bg]]
-            dark_fg.extend(["" for _ in range(len(bright_fg)-len(dark_fg))])
+            dark_fg.extend(["" for _ in range(len(bright_fg) - len(dark_fg))])
             table = utils.format_table([bright_fg, dark_fg, bright_bg, dark_bg])
             string = "ANSI colors:"
             for row in table:
@@ -751,16 +751,16 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                         # foreground table
                         table[ir].append("|%i%i%i%s|n" % (ir, ig, ib, "||%i%i%i" % (ir, ig, ib)))
                         # background table
-                        table[6+ir].append("|%i%i%i|[%i%i%i%s|n"
-                                           % (5 - ir, 5 - ig, 5 - ib, ir, ig, ib, "||[%i%i%i" % (ir, ig, ib)))
+                        table[6 + ir].append("|%i%i%i|[%i%i%i%s|n"
+                                             % (5 - ir, 5 - ig, 5 - ib, ir, ig, ib, "||[%i%i%i" % (ir, ig, ib)))
             table = self.table_format(table)
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
             string += "\n" + "\n".join("".join(row) for row in table)
             table = [[], [], [], [], [], [], [], [], [], [], [], []]
             for ibatch in range(4):
                 for igray in range(6):
-                    letter = chr(97 + (ibatch*6 + igray))
-                    inverse = chr(122 - (ibatch*6 + igray))
+                    letter = chr(97 + (ibatch * 6 + igray))
+                    inverse = chr(122 - (ibatch * 6 + igray))
                     table[0 + igray].append("|=%s%s |n" % (letter, "||=%s" % letter))
                     table[6 + igray].append("|=%s|[=%s%s |n" % (inverse, letter, "||[=%s" % letter))
             for igray in range(6):

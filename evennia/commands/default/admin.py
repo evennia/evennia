@@ -171,9 +171,9 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
         if not banlist:
             banlist = []
 
-        if not self.args or (self.switches
-                             and not any(switch in ('ip', 'name')
-                                         for switch in self.switches)):
+        if not self.args or (self.switches and
+                             not any(switch in ('ip', 'name')
+                                     for switch in self.switches)):
             self.caller.msg(list_bans(banlist))
             return
 
@@ -430,7 +430,7 @@ class CmdNewPassword(COMMAND_DEFAULT_CLASS):
         self.msg("%s - new password set to '%s'." % (account.name, self.rhs))
         if account.character != caller:
             account.msg("%s has changed your password to '%s'." % (caller.name,
-                                                                  self.rhs))
+                                                                   self.rhs))
 
 
 class CmdPerm(COMMAND_DEFAULT_CLASS):

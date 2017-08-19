@@ -50,7 +50,7 @@ from evennia.utils import mod_import, time_format
 DUMMYRUNNER_SETTINGS = mod_import(settings.DUMMYRUNNER_SETTINGS_MODULE)
 if not DUMMYRUNNER_SETTINGS:
     raise IOError("Error: Dummyrunner could not find settings file at %s" %
-                    settings.DUMMYRUNNER_SETTINGS_MODULE)
+                  settings.DUMMYRUNNER_SETTINGS_MODULE)
 
 DATESTRING = "%Y%m%d%H%M%S"
 
@@ -177,6 +177,8 @@ until you see the initial login slows things too much.
 
 
 ICOUNT = 0
+
+
 def idcounter():
     """
     Makes unique ids.
@@ -191,6 +193,8 @@ def idcounter():
 
 
 GCOUNT = 0
+
+
 def gidcounter():
     """
     Makes globally unique ids.
@@ -220,6 +224,7 @@ def makeiter(obj):
 # Client classes
 #------------------------------------------------------------
 
+
 class DummyClient(telnet.StatefulTelnetProtocol):
     """
     Handles connection to a running Evennia server,
@@ -238,14 +243,14 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         self.key = "Dummy-%s" % self.cid
         self.gid = "%s-%s" % (time.strftime(DATESTRING), self.cid)
         self.istep = 0
-        self.exits = [] # exit names created
-        self.objs = [] # obj names created
+        self.exits = []  # exit names created
+        self.objs = []  # obj names created
 
         self._connected = False
         self._loggedin = False
         self._logging_out = False
         self._report = ""
-        self._cmdlist = [] # already stepping in a cmd definition
+        self._cmdlist = []  # already stepping in a cmd definition
         self._login = self.factory.actions[0]
         self._logout = self.factory.actions[1]
         self._actions = self.factory.actions[2:]
@@ -268,7 +273,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
             # start client tick
             d = LoopingCall(self.step)
             # dissipate exact step by up to +/- 0.5 second
-            timestep = TIMESTEP + (-0.5 + (random.random()*1.0))
+            timestep = TIMESTEP + (-0.5 + (random.random() * 1.0))
             d.start(timestep, now=True).addErrback(self.error)
 
     def connectionLost(self, reason):
@@ -329,7 +334,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
                 if rand < CHANCE_OF_LOGIN:
                     # get the login commands
                     self._cmdlist = list(makeiter(self._login(self)))
-                    NLOGGED_IN += 1 # this is for book-keeping
+                    NLOGGED_IN += 1  # this is for book-keeping
                     print("connecting client %s (%i/%i)..." % (self.key, NLOGGED_IN, NCLIENTS))
                     self._loggedin = True
                 else:
@@ -350,6 +355,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
 
 class DummyFactory(protocol.ClientFactory):
     protocol = DummyClient
+
     def __init__(self, actions):
         "Setup the factory base (shared by all clients)"
         self.actions = actions
@@ -358,6 +364,7 @@ class DummyFactory(protocol.ClientFactory):
 # Access method:
 # Starts clients and connects them to a running server.
 #------------------------------------------------------------
+
 
 def start_all_dummy_clients(nclients):
     """
@@ -379,7 +386,7 @@ def start_all_dummy_clients(nclients):
     pratio = 1.0 / sum(tup[0] for tup in actions[2:])
     flogin, flogout, probs, cfuncs = actions[0], actions[1], [tup[0] * pratio for tup in actions[2:]], [tup[1] for tup in actions[2:]]
     # create cumulative probabilies for the random actions
-    cprobs = [sum(v for i,v in enumerate(probs) if i<=k) for k in range(len(probs))]
+    cprobs = [sum(v for i, v in enumerate(probs) if i <= k) for k in range(len(probs))]
     # rebuild a new, optimized action structure
     actions = (flogin, flogout) + tuple(zip(cprobs, cfuncs))
 
@@ -393,6 +400,7 @@ def start_all_dummy_clients(nclients):
 #------------------------------------------------------------
 # Command line interface
 #------------------------------------------------------------
+
 
 if __name__ == '__main__':
 

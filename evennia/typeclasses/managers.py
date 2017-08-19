@@ -412,7 +412,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         typeclass_paths = set(self.values_list('db_typeclass_path', flat=True))
         for typeclass_path in typeclass_paths:
             dbtotals[typeclass_path] = \
-               self.filter(db_typeclass_path=typeclass_path).count()
+                self.filter(db_typeclass_path=typeclass_path).count()
         return dbtotals
 
     def typeclass_search(self, typeclass, include_children=False, include_parents=False):
@@ -523,7 +523,7 @@ class TypeclassManager(TypedObjectManager):
             queries.append(part)
         # build query from components
         query = ' '.join(queries)
-        #TODO
+        # TODO
 
     def get(self, *args, **kwargs):
         """

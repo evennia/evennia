@@ -31,7 +31,7 @@ class AccountCmdSet(CmdSet):
         self.add(account.CmdOOC())
         self.add(account.CmdCharCreate())
         self.add(account.CmdCharDelete())
-        #self.add(account.CmdSessions())
+        # self.add(account.CmdSessions())
         self.add(account.CmdWho())
         self.add(account.CmdOption())
         self.add(account.CmdQuit())

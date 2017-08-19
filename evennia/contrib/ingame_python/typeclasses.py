@@ -159,6 +159,7 @@ Variables you can use in this event:
     character: the character connected to this event.
 """
 
+
 @register_events
 class EventCharacter(DefaultCharacter):
 
@@ -208,12 +209,12 @@ class EventCharacter(DefaultCharacter):
         exits = [o for o in location.contents if o.location is location and o.destination is destination]
         mapping = mapping or {}
         mapping.update({
-                "character": self,
+            "character": self,
         })
 
         if exits:
             exits[0].callbacks.call("msg_leave", self, exits[0],
-                    location, destination, string, mapping)
+                                    location, destination, string, mapping)
             string = exits[0].callbacks.get_variable("message")
             mapping = exits[0].callbacks.get_variable("mapping")
 
@@ -261,14 +262,14 @@ class EventCharacter(DefaultCharacter):
         exits = []
         mapping = mapping or {}
         mapping.update({
-                "character": self,
+            "character": self,
         })
 
         if origin:
             exits = [o for o in destination.contents if o.location is destination and o.destination is origin]
             if exits:
                 exits[0].callbacks.call("msg_arrive", self, exits[0],
-                        origin, destination, string, mapping)
+                                        origin, destination, string, mapping)
                 string = exits[0].callbacks.get_variable("message")
                 mapping = exits[0].callbacks.get_variable("mapping")
 
@@ -299,7 +300,7 @@ class EventCharacter(DefaultCharacter):
         Room = DefaultRoom
         if isinstance(origin, Room) and isinstance(destination, Room):
             can = self.callbacks.call("can_move", self,
-                    origin, destination)
+                                      origin, destination)
             if can:
                 can = origin.callbacks.call("can_move", self, origin)
                 if can:
@@ -489,6 +490,7 @@ Variables you can use in this event:
     destination: the character's location after moving.
 """
 
+
 @register_events
 class EventExit(DefaultExit):
 
@@ -520,7 +522,7 @@ class EventExit(DefaultExit):
         is_character = inherits_from(traversing_object, DefaultCharacter)
         if is_character:
             allow = self.callbacks.call("can_traverse", traversing_object,
-                    self, self.location)
+                                        self, self.location)
             if not allow:
                 return
 
@@ -529,7 +531,7 @@ class EventExit(DefaultExit):
         # After traversing
         if is_character:
             self.callbacks.call("traverse", traversing_object,
-                    self, self.location, self.destination)
+                                self, self.location, self.destination)
 
 
 # Object help
@@ -572,6 +574,7 @@ game time).  Units have to be specified depending on your set calendar
 Variables you can use in this event:
     object: the object connected to this event.
 """
+
 
 @register_events
 class EventObject(DefaultObject):
@@ -620,6 +623,7 @@ class EventObject(DefaultObject):
         """
         super(EventObject, self).at_drop(dropper)
         self.callbacks.call("drop", dropper, self)
+
 
 # Room help
 ROOM_CAN_DELETE = """
@@ -742,6 +746,7 @@ Variables you can use in this event:
     room: the room connected to this event.
 """
 
+
 @register_events
 class EventRoom(DefaultRoom):
 
@@ -792,7 +797,7 @@ class EventRoom(DefaultRoom):
 
         """
         allow = self.callbacks.call("can_say", speaker, self, message,
-                parameters=message)
+                                    parameters=message)
         if not allow:
             return
 
@@ -802,7 +807,7 @@ class EventRoom(DefaultRoom):
         for present in [o for o in self.contents if isinstance(
                 o, DefaultCharacter) and o is not speaker]:
             allow = present.callbacks.call("can_say", speaker, present,
-                    message, parameters=message)
+                                           message, parameters=message)
             if not allow:
                 return
 
@@ -811,10 +816,10 @@ class EventRoom(DefaultRoom):
         # We force the next event to be called after the message
         # This will have to change when the Evennia API adds new hooks
         delay(0, self.callbacks.call, "say", speaker, self, message,
-                parameters=message)
+              parameters=message)
         for present in [o for o in self.contents if isinstance(
                 o, DefaultCharacter) and o is not speaker]:
             delay(0, present.callbacks.call, "say", speaker, present, message,
-                    parameters=message)
+                  parameters=message)
 
         return message

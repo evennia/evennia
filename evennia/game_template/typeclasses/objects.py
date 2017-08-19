@@ -12,6 +12,7 @@ inheritance.
 """
 from evennia import DefaultObject
 
+
 class Object(DefaultObject):
     """
     This is the root typeclass object, implementing an in-game Evennia

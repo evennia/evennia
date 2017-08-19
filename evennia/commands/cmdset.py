@@ -51,7 +51,7 @@ class _CmdSetMeta(type):
             cls.key = cls.__name__
         cls.path = "%s.%s" % (cls.__module__, cls.__name__)
 
-        if not type(cls.key_mergetypes) == dict:
+        if not isinstance(cls.key_mergetypes, dict):
             cls.key_mergetypes = {}
 
         super(_CmdSetMeta, cls).__init__(*args, **kwargs)
@@ -188,7 +188,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
 
         # initialize system
         self.at_cmdset_creation()
-        self._contains_cache = WeakKeyDictionary()#{}
+        self._contains_cache = WeakKeyDictionary()  # {}
 
     # Priority-sensitive merge operations for cmdsets
 
@@ -214,7 +214,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
             cmdset_c.commands.extend(cmdset_b.commands)
         else:
             cmdset_c.commands.extend([cmd for cmd in cmdset_b
-                                      if not cmd in cmdset_a])
+                                      if cmd not in cmdset_a])
         return cmdset_c
 
     def _intersect(self, cmdset_a, cmdset_b):
@@ -280,7 +280,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
         """
 
         cmdset_c = cmdset_a._duplicate()
-        cmdset_c.commands = [cmd for cmd in cmdset_b if not cmd in cmdset_a]
+        cmdset_c.commands = [cmd for cmd in cmdset_b if cmd not in cmdset_a]
         return cmdset_c
 
     def _instantiate(self, cmd):
@@ -411,7 +411,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
                 cmdset_c = self._replace(self, cmdset_a)
             elif mergetype == "Remove":
                 cmdset_c = self._remove(self, cmdset_a)
-            else: # Union
+            else:  # Union
                 cmdset_c = self._union(self, cmdset_a)
 
             # pass through options whenever they are set, unless the higher-prio
@@ -426,7 +426,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
         # This is used for diagnosis.
         cmdset_c.actual_mergetype = mergetype
 
-        #print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority, cmdset_a.key, cmdset_a.priority)
+        # print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority, cmdset_a.key, cmdset_a.priority)
 
         # return the system commands to the cmdset
         cmdset_c.add(sys_commands)
@@ -604,7 +604,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
         names = []
         if caller:
             [names.extend(cmd._keyaliases) for cmd in self.commands
-                           if cmd.access(caller)]
+             if cmd.access(caller)]
         else:
             [names.extend(cmd._keyaliases) for cmd in self.commands]
         return names

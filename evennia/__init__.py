@@ -109,8 +109,10 @@ def _create_version():
         pass
     return version
 
+
 __version__ = _create_version()
 del _create_version
+
 
 def _init():
     """
@@ -124,7 +126,7 @@ def _init():
     global Command, CmdSet, default_cmds, syscmdkeys, InterruptCommand
     global search_object, search_script, search_account, search_channel, search_help, search_tag
     global create_object, create_script, create_account, create_channel, create_message, create_help_entry
-    global settings,lockfuncs, logger, utils, gametime, ansi, spawn, managers
+    global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER, TASK_HANDLER
 
     from .accounts.accounts import DefaultAccount
@@ -191,13 +193,13 @@ def _init():
         Parent for other containers
 
         """
+
         def _help(self):
             "Returns list of contents"
             names = [name for name in self.__class__.__dict__ if not name.startswith('_')]
             names += [name for name in self.__dict__ if not name.startswith('_')]
             print(self.__doc__ + "-" * 60 + "\n" + ", ".join(names))
         help = property(_help)
-
 
     class DBmanagers(_EvContainer):
         """
@@ -241,7 +243,6 @@ def _init():
     managers = DBmanagers()
     del DBmanagers
 
-
     class DefaultCmds(_EvContainer):
         """
         This container holds direct shortcuts to all default commands in Evennia.
@@ -266,8 +267,8 @@ def _init():
                 self.__dict__.update(dict([(c.__name__, c) for c in cmdlist]))
 
             from .commands.default import (admin, batchprocess,
-                                              building, comms, general,
-                                              account, help, system, unloggedin)
+                                           building, comms, general,
+                                           account, help, system, unloggedin)
             add_cmds(admin)
             add_cmds(building)
             add_cmds(batchprocess)
@@ -281,7 +282,6 @@ def _init():
 
     default_cmds = DefaultCmds()
     del DefaultCmds
-
 
     class SystemCmds(_EvContainer):
         """
@@ -312,6 +312,7 @@ def _init():
     syscmdkeys = SystemCmds()
     del SystemCmds
     del _EvContainer
+
 
 del object
 del absolute_import

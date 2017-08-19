@@ -245,7 +245,7 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': '',
         'PORT': ''
-        }}
+    }}
 # How long the django-database connection should be kept open, in seconds.
 # If you get errors about the database having gone away after long idle
 # periods, shorten this value (e.g. MySQL defaults to a timeout of 8 hrs)
@@ -522,7 +522,7 @@ MAX_NR_CHARACTERS = 1
 # The access hierarchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()
 # lock functions, which accepts both plural and singular (Admin & Admins)
-PERMISSION_HIERARCHY = ["Guest", # note-only used if GUEST_ENABLED=True
+PERMISSION_HIERARCHY = ["Guest",  # note-only used if GUEST_ENABLED=True
                         "Player",
                         "Helper",
                         "Builder",
@@ -559,7 +559,7 @@ GUEST_START_LOCATION = START_LOCATION
 # accounts/characters. The size of this list also determines how many
 # guests may be on the game at once. The default is a maximum of nine
 # guests, named Guest1 through Guest9.
-GUEST_LIST = ["Guest" + str(s+1) for s in range(9)]
+GUEST_LIST = ["Guest" + str(s + 1) for s in range(9)]
 
 ######################################################################
 # In-game Channels created from server start
@@ -576,17 +576,17 @@ GUEST_LIST = ["Guest" + str(s+1) for s in range(9)]
 # general "mud info" channel. Other channels beyond that
 # are up to the admin to design and call appropriately.
 DEFAULT_CHANNELS = [
-                  # public channel
-                  {"key": "Public",
-                  "aliases": ('ooc', 'pub'),
-                  "desc": "Public discussion",
-                  "locks": "control:perm(Admin);listen:all();send:all()"},
-                  # connection/mud info
-                  {"key": "MudInfo",
-                   "aliases": "",
-                   "desc": "Connection log",
-                   "locks": "control:perm(Developer);listen:perm(Admin);send:false()"}
-                  ]
+    # public channel
+    {"key": "Public",
+     "aliases": ('ooc', 'pub'),
+     "desc": "Public discussion",
+     "locks": "control:perm(Admin);listen:all();send:all()"},
+    # connection/mud info
+    {"key": "MudInfo",
+     "aliases": "",
+     "desc": "Connection log",
+     "locks": "control:perm(Developer);listen:perm(Admin);send:false()"}
+]
 # Extra optional channel for receiving connection messages ("<account> has (dis)connected").
 # While the MudInfo channel will also receieve this, this channel is meant for non-staffers.
 CHANNEL_CONNECTINFO = None
@@ -613,7 +613,7 @@ IRC_ENABLED = False
 # be installed (through package manager or from the website
 # http://code.google.com/p/feedparser/)
 RSS_ENABLED = False
-RSS_UPDATE_INTERVAL = 60*10  # 10 minutes
+RSS_UPDATE_INTERVAL = 60 * 10  # 10 minutes
 
 ######################################################################
 # Django web features
@@ -690,37 +690,37 @@ WEBSITE_TEMPLATE = 'website'
 WEBCLIENT_TEMPLATE = 'webclient'
 # The default options used by the webclient
 WEBCLIENT_OPTIONS = {
-        "gagprompt": True,  # Gags prompt from the output window and keep them
-                            # together with the input bar
-        "helppopup": True,  # Shows help files in a new popup window
-        "notification_popup": False,  # Shows notifications of new messages as
-                                      # popup windows
-        "notification_sound": False   # Plays a sound for notifications of new
-                                      # messages
-    }
+    "gagprompt": True,  # Gags prompt from the output window and keep them
+    # together with the input bar
+    "helppopup": True,  # Shows help files in a new popup window
+    "notification_popup": False,  # Shows notifications of new messages as
+    # popup windows
+    "notification_sound": False   # Plays a sound for notifications of new
+    # messages
+}
 
 # We setup the location of the website template as well as the admin site.
 TEMPLATES = [{
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(GAME_DIR, "web", "template_overrides", WEBSITE_TEMPLATE),
-            os.path.join(GAME_DIR, "web", "template_overrides", WEBCLIENT_TEMPLATE),
-            os.path.join(GAME_DIR, "web", "template_overrides"),
-            os.path.join(EVENNIA_DIR, "web", "website", "templates", WEBSITE_TEMPLATE),
-            os.path.join(EVENNIA_DIR, "web", "website", "templates"),
-            os.path.join(EVENNIA_DIR, "web", "webclient", "templates", WEBCLIENT_TEMPLATE),
-            os.path.join(EVENNIA_DIR, "web", "webclient", "templates")],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            "context_processors": [
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.media',
-                'django.template.context_processors.debug',
-                'evennia.web.utils.general_context.general_context']
-            }
-        }]
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': [
+        os.path.join(GAME_DIR, "web", "template_overrides", WEBSITE_TEMPLATE),
+        os.path.join(GAME_DIR, "web", "template_overrides", WEBCLIENT_TEMPLATE),
+        os.path.join(GAME_DIR, "web", "template_overrides"),
+        os.path.join(EVENNIA_DIR, "web", "website", "templates", WEBSITE_TEMPLATE),
+        os.path.join(EVENNIA_DIR, "web", "website", "templates"),
+        os.path.join(EVENNIA_DIR, "web", "webclient", "templates", WEBCLIENT_TEMPLATE),
+        os.path.join(EVENNIA_DIR, "web", "webclient", "templates")],
+    'APP_DIRS': True,
+    'OPTIONS': {
+        "context_processors": [
+            'django.template.context_processors.i18n',
+            'django.template.context_processors.request',
+            'django.contrib.auth.context_processors.auth',
+            'django.template.context_processors.media',
+            'django.template.context_processors.debug',
+            'evennia.web.utils.general_context.general_context']
+    }
+}]
 
 # MiddleWare are semi-transparent extensions to Django's functionality.
 # see http://www.djangoproject.com/documentation/middleware/ for a more detailed

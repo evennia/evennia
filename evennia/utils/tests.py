@@ -12,6 +12,7 @@ from evennia import utils
 
 from django.conf import settings
 
+
 class ANSIStringTestCase(TestCase):
     def checker(self, ansi, raw, clean):
         """
@@ -209,6 +210,7 @@ class TestListToString(TestCase):
      with addquote and endsep
         [1,2,3] -> '"1", "2" and "3"'
     """
+
     def test_list_to_string(self):
         self.assertEqual('1, 2, 3', utils.list_to_string([1, 2, 3], endsep=""))
         self.assertEqual('"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep="", addquote=True))
@@ -221,6 +223,7 @@ class TestMLen(TestCase):
     Verifies that m_len behaves like len in all situations except those
     where MXP may be involved.
     """
+
     def test_non_mxp_string(self):
         self.assertEqual(utils.m_len('Test_string'), 11)
 
@@ -325,15 +328,19 @@ class TestTextToHTMLparser(TestCase):
                          '</span><a href="http://example.com/" target="_blank">'
                          'http://example.com/</a><span class="red">')
 
+
 from evennia.utils import evmenu
 from mock import Mock
+
+
 class TestEvMenu(TestCase):
     "Run the EvMenu test."
+
     def setUp(self):
         self.caller = Mock()
         self.caller.msg = Mock()
         self.menu = evmenu.EvMenu(self.caller, "evennia.utils.evmenu", startnode="test_start_node",
-                persistent=True, cmdset_mergetype="Replace", testval="val", testval2="val2")
+                                  persistent=True, cmdset_mergetype="Replace", testval="val", testval2="val2")
 
     def test_kwargsave(self):
         self.assertTrue(hasattr(self.menu, "testval"))
@@ -345,6 +352,7 @@ from evennia.utils import inlinefuncs
 
 class TestInlineFuncs(TestCase):
     """Test the nested inlinefunc module"""
+
     def test_nofunc(self):
         self.assertEqual(inlinefuncs.parse_inlinefunc(
             "as$382ewrw w we w werw,|44943}"),
@@ -374,6 +382,7 @@ class TestInlineFuncs(TestCase):
         self.assertEqual(inlinefuncs.parse_inlinefunc(
             'this should be $pad("""escaped,""" and """instead,""" cropped $crop(with a long,5) text., 80)'),
             "this should be                    escaped, and instead, cropped with  text.                    ")
+
 
 from evennia.utils import evform
 
@@ -424,7 +433,8 @@ class TestEvForm(TestCase):
     def test_ansi_escape(self):
         # note that in a msg() call, the result would be the  correct |-----,
         # in a print, ansi only gets called once, so ||----- is the result
-        self.assertEqual(unicode(evform.EvForm(form={"FORM":"\n||-----"})), "||-----")
+        self.assertEqual(unicode(evform.EvForm(form={"FORM": "\n||-----"})), "||-----")
+
 
 class TestTimeformat(TestCase):
     """
@@ -472,11 +482,11 @@ class TestTimeformat(TestCase):
         self.assertEqual(utils.time_format(3725, 2), "1 hour, 2 minutes")
         self.assertEqual(utils.time_format(86350, 2), "23 hours, 59 minutes")
         self.assertEqual(utils.time_format(86800, 2),
-                "1 day, 0 hours, 6 minutes")
+                         "1 day, 0 hours, 6 minutes")
         self.assertEqual(utils.time_format(130800, 2),
-                "1 day, 12 hours, 20 minutes")
+                         "1 day, 12 hours, 20 minutes")
         self.assertEqual(utils.time_format(530800, 2),
-                "6 days, 3 hours, 26 minutes")
+                         "6 days, 3 hours, 26 minutes")
 
     def test_style_3(self):
         """Test the style 3 of time_format."""
@@ -486,17 +496,17 @@ class TestTimeformat(TestCase):
         self.assertEqual(utils.time_format(300, 3), "5 minutes 0 seconds")
         self.assertEqual(utils.time_format(660, 3), "11 minutes 0 seconds")
         self.assertEqual(utils.time_format(3600, 3),
-                "1 hour, 0 minutes")
+                         "1 hour, 0 minutes")
         self.assertEqual(utils.time_format(3725, 3),
-                "1 hour, 2 minutes 5 seconds")
+                         "1 hour, 2 minutes 5 seconds")
         self.assertEqual(utils.time_format(86350, 3),
-                "23 hours, 59 minutes 10 seconds")
+                         "23 hours, 59 minutes 10 seconds")
         self.assertEqual(utils.time_format(86800, 3),
-                "1 day, 0 hours, 6 minutes 40 seconds")
+                         "1 day, 0 hours, 6 minutes 40 seconds")
         self.assertEqual(utils.time_format(130800, 3),
-                "1 day, 12 hours, 20 minutes 0 seconds")
+                         "1 day, 12 hours, 20 minutes 0 seconds")
         self.assertEqual(utils.time_format(530800, 3),
-                "6 days, 3 hours, 26 minutes 40 seconds")
+                         "6 days, 3 hours, 26 minutes 40 seconds")
 
     def test_style_4(self):
         """Test the style 4 of time_format."""

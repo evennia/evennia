@@ -89,6 +89,7 @@ _FLUSH_CACHE = None
 _IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
 _GAMETIME_MODULE = None
 
+
 def _server_maintenance():
     """
     This maintenance function handles repeated checks and updates that
@@ -122,17 +123,20 @@ def _server_maintenance():
     if _MAINTENANCE_COUNT % 3700 == 0:
         # validate channels off-sync with scripts
         evennia.CHANNEL_HANDLER.update()
-    ## Commenting this out, it is probably not needed
-    ## with CONN_MAX_AGE set. Keeping it as a reminder
-    ## if database-gone-away errors appears again /Griatch
-    #if _MAINTENANCE_COUNT % 18000 == 0:
+
+    # Commenting this out, it is probably not needed
+    # with CONN_MAX_AGE set. Keeping it as a reminder
+    # if database-gone-away errors appears again /Griatch
+    # if _MAINTENANCE_COUNT % 18000 == 0:
     #    connection.close()
 maintenance_task = LoopingCall(_server_maintenance)
-maintenance_task.start(60, now=True) # call every minute
+maintenance_task.start(60, now=True)  # call every minute
 
 #------------------------------------------------------------
 # Evennia Main Server object
 #------------------------------------------------------------
+
+
 class Evennia(object):
 
     """
@@ -195,10 +199,10 @@ class Evennia(object):
         Optimize some SQLite stuff at startup since we
         can't save it to the database.
         """
-        if ((".".join(str(i) for i in django.VERSION) < "1.2" and settings.DATABASES.get('default', {}).get('ENGINE') == "sqlite3")
-            or (hasattr(settings, 'DATABASES')
-                and settings.DATABASES.get("default", {}).get('ENGINE', None)
-                == 'django.db.backends.sqlite3')):
+        if ((".".join(str(i) for i in django.VERSION) < "1.2" and settings.DATABASES.get('default', {}).get('ENGINE') == "sqlite3") or
+            (hasattr(settings, 'DATABASES') and
+             settings.DATABASES.get("default", {}).get('ENGINE', None) ==
+             'django.db.backends.sqlite3')):
             cursor = connection.cursor()
             cursor.execute("PRAGMA cache_size=10000")
             cursor.execute("PRAGMA synchronous=OFF")
@@ -253,7 +257,7 @@ class Evennia(object):
         # if this is the first start we might not have a "previous"
         # setup saved. Store it now.
         [ServerConfig.objects.conf(settings_names[i], tup[1])
-                        for i, tup in enumerate(settings_compare) if not tup[0]]
+         for i, tup in enumerate(settings_compare) if not tup[0]]
 
     def run_initial_setup(self):
         """
@@ -273,8 +277,8 @@ class Evennia(object):
             # modules and setup will resume from this step, retrying
             # the last failed module. When all are finished, the step
             # is set to -1 to show it does not need to be run again.
-            print(' Resuming initial setup from step %(last)s.' % \
-                {'last': last_initial_setup_step})
+            print(' Resuming initial setup from step %(last)s.' %
+                  {'last': last_initial_setup_step})
             initial_setup.handle_setup(int(last_initial_setup_step))
             print('-' * 50)
 
@@ -285,7 +289,7 @@ class Evennia(object):
         from evennia.objects.models import ObjectDB
         #from evennia.accounts.models import AccountDB
 
-        #update eventual changed defaults
+        # update eventual changed defaults
         self.update_defaults()
 
         [o.at_init() for o in ObjectDB.get_all_cached_instances()]
@@ -382,7 +386,7 @@ class Evennia(object):
                 yield [_SA(p, "is_connected", False) for p in AccountDB.get_all_cached_instances()]
                 yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
                 yield [(p.unpuppet_all(), p.at_server_shutdown())
-                                       for p in AccountDB.get_all_cached_instances()]
+                       for p in AccountDB.get_all_cached_instances()]
                 yield ObjectDB.objects.clear_all_sessids()
             yield [(s.pause(manual_pause=False), s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]
             ServerConfig.objects.conf("server_restart_mode", "reset")
@@ -399,7 +403,7 @@ class Evennia(object):
             # for Windows we need to remove pid files manually
             os.remove(SERVER_PIDFILE)
 
-        if hasattr(self, "web_root"): # not set very first start
+        if hasattr(self, "web_root"):  # not set very first start
             yield self.web_root.empty_threadpool()
 
         if not _reactor_stopping:
@@ -420,7 +424,6 @@ class Evennia(object):
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_start()
 
-
     def at_server_stop(self):
         """
         This is called just before a server is shut down, regardless
@@ -428,7 +431,6 @@ class Evennia(object):
         """
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_stop()
-
 
     def at_server_reload_start(self):
         """
@@ -470,7 +472,6 @@ class Evennia(object):
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_reload_stop()
 
-
     def at_server_cold_start(self):
         """
         This is called only when the server starts "cold", i.e. after a
@@ -489,7 +490,8 @@ class Evennia(object):
         if GUEST_ENABLED:
             for guest in AccountDB.objects.all().filter(db_typeclass_path=settings.BASE_GUEST_TYPECLASS):
                 for character in guest.db._playable_characters:
-                    if character: character.delete()
+                    if character:
+                        character.delete()
                 guest.delete()
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_cold_start()
@@ -506,6 +508,7 @@ class Evennia(object):
 # Start the Evennia game server and add all active services
 #
 #------------------------------------------------------------
+
 
 # Tell the system the server is starting up; some things are not available yet
 ServerConfig.objects.conf("server_starting_mode", True)
@@ -549,7 +552,7 @@ if WEBSERVER_ENABLED:
     # start a thread pool and define the root url (/) as a wsgi resource
     # recognized by Django
     threads = LockableThreadPool(minthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[0]),
-                                    maxthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[1]))
+                                 maxthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[1]))
 
     web_root = DjangoWebRoot(threads)
     # point our media resources to url /media
@@ -597,4 +600,3 @@ if os.name == 'nt':
     # Windows only: Set PID file manually
     with open(SERVER_PIDFILE, 'w') as f:
         f.write(str(os.getpid()))
-

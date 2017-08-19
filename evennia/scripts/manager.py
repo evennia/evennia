@@ -34,6 +34,7 @@ class ScriptDBManager(TypedObjectManager):
     copy_script
 
     """
+
     def get_all_scripts_on_obj(self, obj, key=None):
         """
         Find all Scripts related to a particular object.

@@ -3,6 +3,7 @@ IDmapper extension to the default manager.
 """
 from django.db.models.manager import Manager
 
+
 class SharedMemoryManager(Manager):
     # CL: this ensures our manager is used when accessing instances via
     # ForeignKey etc. (see docs)

@@ -40,6 +40,7 @@ _KEEPALIVE = 30  # how often to check keepalive
 # extend this if one wants to send more
 # complex database objects too.
 
+
 class LazyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Promise):
@@ -86,7 +87,7 @@ class WebClient(resource.Resource):
         now = time.time()
         to_remove = []
         keep_alives = ((csessid, remove) for csessid, (t, remove)
-                        in self.last_alive.iteritems() if now - t > _KEEPALIVE)
+                       in self.last_alive.iteritems() if now - t > _KEEPALIVE)
         for csessid, remove in keep_alives:
             if remove:
                 # keepalive timeout. Line is dead.
@@ -203,7 +204,7 @@ class WebClient(resource.Resource):
         if sess:
             sess = sess[0]
             cmdarray = json.loads(request.args.get('data')[0])
-            sess.sessionhandler.data_in(sess, **{cmdarray[0]:[cmdarray[1], cmdarray[2]]})
+            sess.sessionhandler.data_in(sess, **{cmdarray[0]: [cmdarray[1], cmdarray[2]]})
         return '""'
 
     def mode_receive(self, request):
@@ -381,5 +382,5 @@ class WebClientSession(session.Session):
 
         """
         if not cmdname == "options":
-            #print "ajax.send_default", cmdname, args, kwargs
+            # print "ajax.send_default", cmdname, args, kwargs
             self.client.lineSend(self.csessid, [cmdname, args, kwargs])

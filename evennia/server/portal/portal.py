@@ -93,6 +93,7 @@ def _portal_maintenance():
         session.disconnect(reason=reason)
         PORTAL_SESSIONS.disconnect(session)
 
+
 if _IDLE_TIMEOUT > 0:
     # only start the maintenance task if we care about idling.
     _maintenance_task = LoopingCall(_portal_maintenance)
@@ -187,6 +188,7 @@ class Portal(object):
 # Start the Portal proxy server and add all active services
 #
 # -------------------------------------------------------------
+
 
 # twistd requires us to define the variable 'application' so it knows
 # what to execute from.

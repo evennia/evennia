@@ -297,7 +297,7 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                 clower = chan.key.lower()
                 nicks = caller.nicks.get(category="channel", return_obj=True)
                 comtable.add_row(*["%s%s" % (chan.key, chan.aliases.all() and
-                                   "(%s)" % ",".join(chan.aliases.all()) or ""),
+                                             "(%s)" % ",".join(chan.aliases.all()) or ""),
                                    "%s" % ",".join(nick.db_key for nick in make_iter(nicks)
                                                    if nick and nick.value[3].lower() == clower),
                                    chan.db.desc])
@@ -614,7 +614,7 @@ class CmdClock(COMMAND_DEFAULT_CLASS):
         # Try to add the lock
         try:
             channel.locks.add(self.rhs)
-        except LockException, err:
+        except LockException as err:
             self.msg(err)
             return
         string = "Lock(s) applied. "
@@ -890,7 +890,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
         self.rhs = self.rhs.replace('#', ' ')  # to avoid Python comment issues
         try:
             irc_network, irc_port, irc_channel, irc_botname = \
-                       [part.strip() for part in self.rhs.split(None, 4)]
+                [part.strip() for part in self.rhs.split(None, 4)]
             irc_channel = "#%s" % irc_channel
         except Exception:
             string = "IRC bot definition '%s' is not valid." % self.rhs

@@ -215,6 +215,7 @@ class TutorialRoom(DefaultRoom):
     This is the base room type for all rooms in the tutorial world.
     It defines a cmdset on itself for reading tutorial info about the location.
     """
+
     def at_object_creation(self):
         """Called when room is first created"""
         self.db.tutorial_info = "This is a tutorial room. It allows you to use the 'tutorial' command."
@@ -278,17 +279,17 @@ class TutorialRoom(DefaultRoom):
 
 # These are rainy weather strings
 WEATHER_STRINGS = (
-        "The rain coming down from the iron-grey sky intensifies.",
-        "A gust of wind throws the rain right in your face. Despite your cloak you shiver.",
-        "The rainfall eases a bit and the sky momentarily brightens.",
-        "For a moment it looks like the rain is slowing, then it begins anew with renewed force.",
-        "The rain pummels you with large, heavy drops. You hear the rumble of thunder in the distance.",
-        "The wind is picking up, howling around you, throwing water droplets in your face. It's cold.",
-        "Bright fingers of lightning flash over the sky, moments later followed by a deafening rumble.",
-        "It rains so hard you can hardly see your hand in front of you. You'll soon be drenched to the bone.",
-        "Lightning strikes in several thundering bolts, striking the trees in the forest to your west.",
-        "You hear the distant howl of what sounds like some sort of dog or wolf.",
-        "Large clouds rush across the sky, throwing their load of rain over the world.")
+    "The rain coming down from the iron-grey sky intensifies.",
+    "A gust of wind throws the rain right in your face. Despite your cloak you shiver.",
+    "The rainfall eases a bit and the sky momentarily brightens.",
+    "For a moment it looks like the rain is slowing, then it begins anew with renewed force.",
+    "The rain pummels you with large, heavy drops. You hear the rumble of thunder in the distance.",
+    "The wind is picking up, howling around you, throwing water droplets in your face. It's cold.",
+    "Bright fingers of lightning flash over the sky, moments later followed by a deafening rumble.",
+    "It rains so hard you can hardly see your hand in front of you. You'll soon be drenched to the bone.",
+    "Lightning strikes in several thundering bolts, striking the trees in the forest to your west.",
+    "You hear the distant howl of what sounds like some sort of dog or wolf.",
+    "Large clouds rush across the sky, throwing their load of rain over the world.")
 
 
 class WeatherRoom(TutorialRoom):
@@ -300,6 +301,7 @@ class WeatherRoom(TutorialRoom):
     inherit from this.
 
     """
+
     def at_object_creation(self):
         """
         Called when object is first created.
@@ -355,6 +357,7 @@ class IntroRoom(TutorialRoom):
     properties to customize:
      char_health - integer > 0 (default 20)
     """
+
     def at_object_creation(self):
         """
         Called when the room is first created.
@@ -377,7 +380,7 @@ class IntroRoom(TutorialRoom):
             character.db.health_max = health
 
         if character.is_superuser:
-            string = "-"*78 + SUPERUSER_WARNING + "-"*78
+            string = "-" * 78 + SUPERUSER_WARNING + "-" * 78
             character.msg("|r%s|n" % string.format(name=character.key, quell="|w@quell|r"))
 
 
@@ -589,16 +592,16 @@ class BridgeCmdSet(CmdSet):
 
 
 BRIDGE_WEATHER = (
-        "The rain intensifies, making the planks of the bridge even more slippery.",
-        "A gust of wind throws the rain right in your face.",
-        "The rainfall eases a bit and the sky momentarily brightens.",
-        "The bridge shakes under the thunder of a closeby thunder strike.",
-        "The rain pummels you with large, heavy drops. You hear the distinct howl of a large hound in the distance.",
-        "The wind is picking up, howling around you and causing the bridge to sway from side to side.",
-        "Some sort of large bird sweeps by overhead, giving off an eery screech. Soon it has disappeared in the gloom.",
-        "The bridge sways from side to side in the wind.",
-        "Below you a particularly large wave crashes into the rocks.",
-        "From the ruin you hear a distant, otherwordly howl. Or maybe it was just the wind.")
+    "The rain intensifies, making the planks of the bridge even more slippery.",
+    "A gust of wind throws the rain right in your face.",
+    "The rainfall eases a bit and the sky momentarily brightens.",
+    "The bridge shakes under the thunder of a closeby thunder strike.",
+    "The rain pummels you with large, heavy drops. You hear the distinct howl of a large hound in the distance.",
+    "The wind is picking up, howling around you and causing the bridge to sway from side to side.",
+    "Some sort of large bird sweeps by overhead, giving off an eery screech. Soon it has disappeared in the gloom.",
+    "The bridge sways from side to side in the wind.",
+    "Below you a particularly large wave crashes into the rocks.",
+    "From the ruin you hear a distant, otherwordly howl. Or maybe it was just the wind.")
 
 
 class BridgeRoom(WeatherRoom):
@@ -625,6 +628,7 @@ class BridgeRoom(WeatherRoom):
      the CmdLookBridge command).
 
     """
+
     def at_object_creation(self):
         """Setups the room"""
         # this will start the weather room's ticker and tell
@@ -827,6 +831,7 @@ class DarkRoom(TutorialRoom):
     may have been beaten up by the ghostly apparition at this point.
 
     """
+
     def at_object_creation(self):
         """
         Called when object is first created.
@@ -942,6 +947,7 @@ class TeleportRoom(TutorialRoom):
       failure_teleport_msg - message to echo while teleporting to failure
 
     """
+
     def at_object_creation(self):
         """Called at first creation"""
         super(TeleportRoom, self).at_object_creation()

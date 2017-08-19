@@ -33,6 +33,7 @@ class ContentsHandler(object):
     for object-cmdsets). It is stored on the 'contents_cache' property
     of the ObjectDB.
     """
+
     def __init__(self, obj):
         """
         Sets up the contents handler.
@@ -171,12 +172,12 @@ class ObjectDB(TypedObject):
 
     # If this is a character object, the account is connected here.
     db_account = models.ForeignKey("accounts.AccountDB", null=True, verbose_name='account', on_delete=models.SET_NULL,
-                                  help_text='an Account connected to this object, if any.')
+                                   help_text='an Account connected to this object, if any.')
 
     # the session id associated with this account, if any
     db_sessid = models.CharField(null=True, max_length=32, validators=[validate_comma_separated_integer_list],
-                                                  verbose_name="session id",
-                                                  help_text="csv list of session ids of connected Account, if any.")
+                                 verbose_name="session id",
+                                 help_text="csv list of session ids of connected Account, if any.")
     # The location in the game world. Since this one is likely
     # to change often, we set this with the 'location' property
     # to transparently handle Typeclassing.

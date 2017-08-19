@@ -22,6 +22,7 @@ _HEAD_CHAR = "|015-|n"
 _SUB_HEAD_CHAR = "-"
 _WIDTH = 78
 
+
 class CmdMail(default_cmds.MuxCommand):
     """
     Commands that allow either IC or OOC communications
@@ -253,4 +254,3 @@ class CmdMail(default_cmds.MuxCommand):
                 self.caller.msg(_HEAD_CHAR * _WIDTH)
             else:
                 self.caller.msg("There are no messages in your inbox.")
-

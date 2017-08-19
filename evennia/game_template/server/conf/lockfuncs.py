@@ -20,7 +20,7 @@ lock functions from evennia.locks.lockfuncs.
 
 """
 
-#def myfalse(accessing_obj, accessed_obj, *args, **kwargs):
+# def myfalse(accessing_obj, accessed_obj, *args, **kwargs):
 #    """
 #    called in lockstring with myfalse().
 #    A simple logger that always returns false. Prints to stdout

@@ -25,6 +25,7 @@ _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 #
 #------------------------------------------------------------
 
+
 class Tag(models.Model):
     """
     Tags are quick markers for objects in-game. An typeobject can have
@@ -105,9 +106,9 @@ class TagHandler(object):
 
     def _fullcache(self):
         "Cache all tags of this object"
-        query = {"%s__id" % self._model : self._objid,
-                 "tag__db_model" : self._model,
-                 "tag__db_tagtype" : self._tagtype}
+        query = {"%s__id" % self._model: self._objid,
+                 "tag__db_model": self._model,
+                 "tag__db_tagtype": self._tagtype}
         tags = [conn.tag for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)]
         self._cache = dict(("%s-%s" % (to_str(tag.db_key).lower(),
                                        tag.db_category.lower() if tag.db_category else None),
@@ -149,11 +150,11 @@ class TagHandler(object):
             if tag:
                 return [tag]  # return cached entity
             else:
-                query = {"%s__id" % self._model : self._objid,
-                         "tag__db_model" : self._model,
-                         "tag__db_tagtype" : self._tagtype,
-                         "tag__db_key__iexact" : key.lower(),
-                         "tag__db_category__iexact" : category.lower() if category else None}
+                query = {"%s__id" % self._model: self._objid,
+                         "tag__db_model": self._model,
+                         "tag__db_tagtype": self._tagtype,
+                         "tag__db_key__iexact": key.lower(),
+                         "tag__db_category__iexact": category.lower() if category else None}
                 conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
                 if conn:
                     tag = conn[0].tag
@@ -168,12 +169,12 @@ class TagHandler(object):
                 return [tag for key, tag in self._cache.items() if key.endswith(catkey)]
             else:
                 # we have to query to make this category up-date in the cache
-                query = {"%s__id" % self._model : self._objid,
-                         "tag__db_model" : self._model,
-                         "tag__db_tagtype" : self._tagtype,
-                         "tag__db_category__iexact" : category.lower() if category else None}
+                query = {"%s__id" % self._model: self._objid,
+                         "tag__db_model": self._model,
+                         "tag__db_tagtype": self._tagtype,
+                         "tag__db_category__iexact": category.lower() if category else None}
                 tags = [conn.tag for conn in getattr(self.obj,
-                            self._m2m_fieldname).through.objects.filter(**query)]
+                                                     self._m2m_fieldname).through.objects.filter(**query)]
                 for tag in tags:
                     cachekey = "%s-%s" % (tag.db_key, category)
                     self._cache[cachekey] = tag
@@ -192,7 +193,7 @@ class TagHandler(object):
             tag_obj (tag): The newly saved tag
 
         """
-        if not key: # don't allow an empty key in cache
+        if not key:  # don't allow an empty key in cache
             return
         key, category = key.strip().lower(), category.strip().lower() if category else category
         cachekey = "%s-%s" % (key, category)
@@ -260,7 +261,7 @@ class TagHandler(object):
             # will overload data on an existing tag since that is not
             # considered part of making the tag unique)
             tagobj = self.obj.__class__.objects.create_tag(key=tagstr, category=category, data=data,
-                                            tagtype=self._tagtype)
+                                                           tagtype=self._tagtype)
             getattr(self.obj, self._m2m_fieldname).add(tagobj)
             self._setcache(tagstr, category, tagobj)
 
@@ -287,7 +288,7 @@ class TagHandler(object):
         for keystr in make_iter(key):
             # note - the _getcache call removes case sensitivity for us
             ret.extend([tag if return_tagobj else to_str(tag.db_key)
-                            for tag in self._getcache(keystr, category)])
+                        for tag in self._getcache(keystr, category)])
         return ret[0] if len(ret) == 1 else (ret if ret else default)
 
     def remove(self, key, category=None):
@@ -311,7 +312,7 @@ class TagHandler(object):
             # that when no objects reference the tag anymore (but how to check)?
             # For now, tags are never deleted, only their connection to objects.
             tagobj = getattr(self.obj, self._m2m_fieldname).filter(db_key=tagstr, db_category=category,
-                                             db_model=self._model, db_tagtype=self._tagtype)
+                                                                   db_model=self._model, db_tagtype=self._tagtype)
             if tagobj:
                 getattr(self.obj, self._m2m_fieldname).remove(tagobj[0])
             self._delcache(key, category)
@@ -326,7 +327,7 @@ class TagHandler(object):
                 category.
 
         """
-        query = {"%s__id" % self._model : self._objid, "tag__db_model": self._model, "tag__db_tagtype": self._tagtype}
+        query = {"%s__id" % self._model: self._objid, "tag__db_model": self._model, "tag__db_tagtype": self._tagtype}
         if category:
             query["tag__db_category"] = category.strip().lower()
         getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query).delete()
@@ -408,4 +409,3 @@ class PermissionHandler(TagHandler):
 
     """
     _tagtype = "permission"
-

@@ -105,6 +105,7 @@ class TradeTimeout(DefaultScript):
     """
     This times out the trade request, in case player B did not reply in time.
     """
+
     def at_script_creation(self):
         """
         Called when script is first created
@@ -136,6 +137,7 @@ class TradeHandler(object):
     Objects of this class handles the ongoing trade, notably storing the current
     offers from each side and wether both have accepted or not.
     """
+
     def __init__(self, part_a, part_b):
         """
         Initializes the trade. This is called when part A tries to
@@ -391,6 +393,7 @@ class CmdTradeBase(Command):
     Base command for Trade commands to inherit from. Implements the
     custom parsing.
     """
+
     def parse(self):
         """
         Parse the relevant parts and make it easily

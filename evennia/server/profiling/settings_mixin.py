@@ -15,7 +15,7 @@ DUMMYRUNNER_MIXIN = True
 # account creations. The default one is safer but deliberately
 # very slow to make cracking harder.
 PASSWORD_HASHERS = (
-            'django.contrib.auth.hashers.MD5PasswordHasher',
-            )
+    'django.contrib.auth.hashers.MD5PasswordHasher',
+)
 # make dummy clients able to test all commands
 PERMISSION_ACCOUNT_DEFAULT = "Developer"

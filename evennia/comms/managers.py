@@ -74,7 +74,7 @@ def identify_object(inp):
         if clsname == "AccountDB":
             return inp, "account"
         elif clsname == "ObjectDB":
-            return inp ,"object"
+            return inp, "object"
         elif clsname == "ChannelDB":
             return inp, "channel"
     if isinstance(inp, basestring):
@@ -202,10 +202,10 @@ class MsgManager(TypedObjectManager):
             # explicitly exclude channel recipients
             if typ == 'account':
                 return list(self.filter(db_sender_accounts=obj,
-                            db_receivers_channels__isnull=True).exclude(db_hide_from_accounts=obj))
+                                        db_receivers_channels__isnull=True).exclude(db_hide_from_accounts=obj))
             elif typ == 'object':
                 return list(self.filter(db_sender_objects=obj,
-                            db_receivers_channels__isnull=True).exclude(db_hide_from_objects=obj))
+                                        db_receivers_channels__isnull=True).exclude(db_hide_from_objects=obj))
             else:
                 raise CommError
         else:
@@ -332,6 +332,7 @@ class ChannelDBManager(TypedObjectManager):
     subscribed to the Channel.
 
     """
+
     def get_all_channels(self):
         """
         Get all channels.

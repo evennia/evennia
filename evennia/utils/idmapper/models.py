@@ -10,7 +10,10 @@ from __future__ import absolute_import, division
 from builtins import object
 from future.utils import listitems, listvalues, with_metaclass
 
-import os, threading, gc, time
+import os
+import threading
+import gc
+import time
 from weakref import WeakValueDictionary
 from twisted.internet.reactor import callFromThread
 from django.core.exceptions import ObjectDoesNotExist, FieldError
@@ -22,7 +25,7 @@ from evennia.utils.utils import dbref, get_evennia_pids, to_str
 
 from .manager import SharedMemoryManager
 
-AUTO_FLUSH_MIN_INTERVAL = 60.0 * 5 # at least 5 mins between cache flushes
+AUTO_FLUSH_MIN_INTERVAL = 60.0 * 5  # at least 5 mins between cache flushes
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -39,8 +42,9 @@ PROC_MODIFIED_OBJS = WeakValueDictionary()
 # subprocess or not)
 _SELF_PID = os.getpid()
 _SERVER_PID, _PORTAL_PID = get_evennia_pids()
-_IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and not _SELF_PID in (_SERVER_PID, _PORTAL_PID)
+_IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and _SELF_PID not in (_SERVER_PID, _PORTAL_PID)
 _IS_MAIN_THREAD = threading.currentThread().getName() == "MainThread"
+
 
 class SharedMemoryModelBase(ModelBase):
     # CL: upstream had a __new__ method that skipped ModelBase's __new__ if
@@ -68,7 +72,6 @@ class SharedMemoryModelBase(ModelBase):
             cached_instance = new_instance()
             cls.cache_instance(cached_instance, new=True)
         return cached_instance
-
 
     def _prepare(cls):
         """
@@ -102,7 +105,7 @@ class SharedMemoryModelBase(ModelBase):
         """
 
         attrs["typename"] = cls.__name__
-        attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
+        attrs["path"] = "%s.%s" % (attrs["__module__"], name)
         attrs["_is_deleted"] = False
 
         # set up the typeclass handling only if a variable _is_typeclass is set on the class
@@ -113,14 +116,17 @@ class SharedMemoryModelBase(ModelBase):
                 if _GA(cls, "_is_deleted"):
                     raise ObjectDoesNotExist("Cannot access %s: Hosting object was already deleted." % fname)
                 return _GA(cls, fieldname)
+
             def _get_foreign(cls, fname):
                 "Wrapper for returning foreignkey fields"
                 if _GA(cls, "_is_deleted"):
                     raise ObjectDoesNotExist("Cannot access %s: Hosting object was already deleted." % fname)
                 return _GA(cls, fieldname)
+
             def _set_nonedit(cls, fname, value):
                 "Wrapper for blocking editing of field"
                 raise FieldError("Field %s cannot be edited." % fname)
+
             def _set(cls, fname, value):
                 "Wrapper for setting database field"
                 if _GA(cls, "_is_deleted"):
@@ -130,6 +136,7 @@ class SharedMemoryModelBase(ModelBase):
                 # primary key assigned already (won't be set when first creating object)
                 update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
                 _GA(cls, "save")(update_fields=update_fields)
+
             def _set_foreign(cls, fname, value):
                 "Setter only used on foreign key relations, allows setting with #dbref"
                 if _GA(cls, "_is_deleted"):
@@ -153,9 +160,11 @@ class SharedMemoryModelBase(ModelBase):
                 # primary key assigned already (won't be set when first creating object)
                 update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
                 _GA(cls, "save")(update_fields=update_fields)
+
             def _del_nonedit(cls, fname):
                 "wrapper for not allowing deletion"
                 raise FieldError("Field %s cannot be edited." % fname)
+
             def _del(cls, fname):
                 "Wrapper for clearing database field - sets it to None"
                 _SA(cls, fname, None)
@@ -163,29 +172,31 @@ class SharedMemoryModelBase(ModelBase):
                 _GA(cls, "save")(update_fields=update_fields)
 
             # wrapper factories
-            fget = lambda cls: _get(cls, fieldname)
+            def fget(cls): return _get(cls, fieldname)
             if not editable:
-                fset = lambda cls, val: _set_nonedit(cls, fieldname, val)
+                def fset(cls, val): return _set_nonedit(cls, fieldname, val)
             elif foreignkey:
-                fget = lambda cls: _get_foreign(cls, fieldname)
-                fset = lambda cls, val: _set_foreign(cls, fieldname, val)
+                def fget(cls): return _get_foreign(cls, fieldname)
+
+                def fset(cls, val): return _set_foreign(cls, fieldname, val)
             else:
-                fset = lambda cls, val: _set(cls, fieldname, val)
-            fdel = lambda cls: _del(cls, fieldname) if editable else _del_nonedit(cls,fieldname)
+                def fset(cls, val): return _set(cls, fieldname, val)
+
+            def fdel(cls): return _del(cls, fieldname) if editable else _del_nonedit(cls, fieldname)
             # set docstrings for auto-doc
             fget.__doc__ = "A wrapper for getting database field `%s`." % fieldname
             fset.__doc__ = "A wrapper for setting (and saving) database field `%s`." % fieldname
             fdel.__doc__ = "A wrapper for deleting database field `%s`." % fieldname
             # assigning
             attrs[wrappername] = property(fget, fset, fdel)
-            #type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel))#, doc))
+            # type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel))#, doc))
 
         # exclude some models that should not auto-create wrapper fields
         if cls.__name__ in ("ServerConfig", "TypeNick"):
             return
         # dynamically create the wrapper properties for all fields not already handled (manytomanyfields are always handlers)
         for fieldname, field in ((fname, field) for fname, field in listitems(attrs)
-                                  if fname.startswith("db_") and type(field).__name__ != "ManyToManyField"):
+                                 if fname.startswith("db_") and type(field).__name__ != "ManyToManyField"):
             foreignkey = type(field).__name__ == "ForeignKey"
             wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "", 1)
             if wrappername not in attrs:
@@ -394,7 +405,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
                              for fieldname in kwargs.get("update_fields"))
         else:
             # meta.fields are already field objects; get them all
-            new =True
+            new = True
             update_fields = self._meta.fields
         for field in update_fields:
             fieldname = field.name
@@ -454,7 +465,9 @@ def flush_cache(**kwargs):
         cls.flush_instance_cache()
     # run the python garbage collector
     return gc.collect()
-#request_finished.connect(flush_cache)
+
+
+# request_finished.connect(flush_cache)
 post_migrate.connect(flush_cache)
 
 
@@ -467,6 +480,8 @@ def flush_cached_instance(sender, instance, **kwargs):
     if not hasattr(instance, 'flush_cached_instance'):
         return
     sender.flush_cached_instance(instance, force=True)
+
+
 pre_delete.connect(flush_cached_instance)
 
 
@@ -478,10 +493,14 @@ def update_cached_instance(sender, instance, **kwargs):
     if not hasattr(instance, 'cache_instance'):
         return
     sender.cache_instance(instance)
+
+
 post_save.connect(update_cached_instance)
 
 
 LAST_FLUSH = None
+
+
 def conditional_flush(max_rmem, force=False):
     """
     Flush the cache if the estimated memory usage exceeds `max_rmem`.
@@ -530,8 +549,8 @@ def conditional_flush(max_rmem, force=False):
 
     if ((now - LAST_FLUSH) < AUTO_FLUSH_MIN_INTERVAL) and not force:
         # too soon after last flush.
-        logger.log_warn("Warning: Idmapper flush called more than "\
-                        "once in %s min interval. Check memory usage." % (AUTO_FLUSH_MIN_INTERVAL/60.0))
+        logger.log_warn("Warning: Idmapper flush called more than "
+                        "once in %s min interval. Check memory usage." % (AUTO_FLUSH_MIN_INTERVAL / 60.0))
         return
 
     if os.name == "nt":
@@ -549,6 +568,7 @@ def conditional_flush(max_rmem, force=False):
         flush_cache()
         LAST_FLUSH = now
 
+
 def cache_size(mb=True):
     """
     Calculate statistics about the cache.
@@ -564,8 +584,9 @@ def cache_size(mb=True):
       total_num, {objclass:total_num, ...}
 
     """
-    numtotal = [0] # use mutable to keep reference through recursion
+    numtotal = [0]  # use mutable to keep reference through recursion
     classdict = {}
+
     def get_recurse(submodels):
         for submodel in submodels:
             subclasses = submodel.__subclasses__()

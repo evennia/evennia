@@ -170,7 +170,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     # we are given a index in nicklist
                     delindex = int(arg)
                     if 0 < delindex <= len(nicklist):
-                        oldnick = nicklist[delindex-1]
+                        oldnick = nicklist[delindex - 1]
                         _, _, old_nickstring, old_replstring = oldnick.value
                     else:
                         errstring += "Not a valid nick index."
@@ -418,6 +418,7 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
 
         # Call the at_after_say hook on the character
         caller.at_say(speech)
+
 
 class CmdWhisper(COMMAND_DEFAULT_CLASS):
     """

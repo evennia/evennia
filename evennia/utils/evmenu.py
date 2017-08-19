@@ -258,7 +258,7 @@ class CmdEvMenuNode(Command):
                 if not menu:
                     # can't restore from a session
                     err = "Menu object not found as %s.ndb._menutree!" % orig_caller
-                    orig_caller.msg(err) # don't give the session as a kwarg here, direct to original
+                    orig_caller.msg(err)  # don't give the session as a kwarg here, direct to original
                     raise EvMenuError(err)
         # we must do this after the caller with the menui has been correctly identified since it
         # can be either Account, Object or Session (in the latter case this info will be superfluous).
@@ -299,6 +299,7 @@ class EvMenu(object):
     a menufile.py instruction.
 
     """
+
     def __init__(self, caller, menudata, startnode="start",
                  cmdset_mergetype="Replace", cmdset_priority=1,
                  auto_quit=True, auto_look=True, auto_help=True,
@@ -419,8 +420,8 @@ class EvMenu(object):
 
         # assign kwargs as initialization vars on ourselves.
         if set(("_startnode", "_menutree", "_session", "_persistent",
-            "cmd_on_exit", "default", "nodetext", "helptext",
-            "options", "cmdset_mergetype", "auto_quit")).intersection(set(kwargs.keys())):
+                "cmd_on_exit", "default", "nodetext", "helptext",
+                "options", "cmdset_mergetype", "auto_quit")).intersection(set(kwargs.keys())):
             raise RuntimeError("One or more of the EvMenu `**kwargs` is reserved by EvMenu for internal use.")
         for key, val in kwargs.iteritems():
             setattr(self, key, val)
@@ -686,7 +687,7 @@ class EvMenu(object):
                     goto, execute = dic.get("goto", None), dic.get("exec", None)
                     self.default = (goto, execute)
                 else:
-                    keys = list(make_iter(dic.get("key", str(inum+1).strip())))
+                    keys = list(make_iter(dic.get("key", str(inum + 1).strip())))
                     desc = dic.get("desc", dic.get("text", _ERR_NO_OPTION_DESC).strip())
                     goto, execute = dic.get("goto", None), dic.get("exec", None)
                 if keys:
@@ -810,14 +811,14 @@ class EvMenu(object):
                 # add a default white color to key
                 table.append(" |lc%s|lt|w%s|n|le: %s" % (raw_key, raw_key, desc))
 
-        ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1 # number of ncols
+        ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1  # number of ncols
 
         # get the amount of rows needed (start with 4 rows)
         nrows = 4
         while nrows * ncols < nlist:
             nrows += 1
-        ncols = nlist // nrows # number of full columns
-        nlastcol = nlist % nrows # number of elements in last column
+        ncols = nlist // nrows  # number of full columns
+        nlastcol = nlist % nrows  # number of elements in last column
 
         # get the final column count
         ncols = ncols + 1 if nlastcol > 0 else ncols
@@ -826,7 +827,7 @@ class EvMenu(object):
             table.extend([" " for i in range(nrows - nlastcol)])
 
         # build the actual table grid
-        table = [table[icol * nrows : (icol * nrows) + nrows] for icol in range(0, ncols)]
+        table = [table[icol * nrows: (icol * nrows) + nrows] for icol in range(0, ncols)]
 
         # adjust the width of each column
         for icol in range(len(table)):
@@ -855,7 +856,6 @@ class EvMenu(object):
         separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
         separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
         return separator1 + "|n" + nodetext + "|n" + separator2 + "|n" + optionstext
-
 
 
 # -------------------------------------------------------------------------------------------------

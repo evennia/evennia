@@ -22,6 +22,7 @@ class MuxCommand(Command):
     used by Evennia to create the automatic help entry for
     the command, so make sure to document consistently here.
     """
+
     def has_perm(self, srcobj):
         """
         This is called by the cmdhandler to determine
@@ -191,6 +192,7 @@ class MuxAccountCommand(MuxCommand):
     creating a new property "character" that is set only if a
     character is actually attached to this Account and Session.
     """
+
     def parse(self):
         """
         We run the parent parser as usual, then fix the result

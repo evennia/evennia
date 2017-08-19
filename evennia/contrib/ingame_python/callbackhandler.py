@@ -4,6 +4,7 @@ Module containing the CallbackHandler for individual objects.
 
 from collections import namedtuple
 
+
 class CallbackHandler(object):
 
     """
@@ -99,7 +100,7 @@ class CallbackHandler(object):
         handler = type(self).script
         if handler:
             return self.format_callback(handler.add_callback(self.obj, callback_name, code,
-                    author=author, valid=valid, parameters=parameters))
+                                                             author=author, valid=valid, parameters=parameters))
 
     def edit(self, callback_name, number, code, author=None, valid=False):
         """
@@ -122,7 +123,7 @@ class CallbackHandler(object):
         handler = type(self).script
         if handler:
             return self.format_callback(handler.edit_callback(self.obj, callback_name,
-                    number, code, author=author, valid=valid))
+                                                              number, code, author=author, valid=valid))
 
     def remove(self, callback_name, number):
         """
@@ -200,5 +201,6 @@ class CallbackHandler(object):
 
         return Callback(**callback)
 
+
 Callback = namedtuple("Callback", ("obj", "name", "number", "code", "author",
-        "valid", "parameters", "created_on", "updated_by", "updated_on"))
+                                   "valid", "parameters", "created_on", "updated_by", "updated_on"))

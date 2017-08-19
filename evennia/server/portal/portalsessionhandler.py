@@ -9,7 +9,7 @@ from collections import deque, namedtuple
 from twisted.internet import reactor
 from django.conf import settings
 from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, \
-                                          PCONNSYNC, PDISCONNALL
+    PCONNSYNC, PDISCONNALL
 from evennia.utils.logger import log_trace
 
 # module import
@@ -97,7 +97,7 @@ class PortalSessionHandler(SessionHandler):
             if len(_CONNECTION_QUEUE) > 1:
                 session.data_out(text=[["%s DoS protection is active. You are queued to connect in %g seconds ..." % (
                                  settings.SERVERNAME,
-                                 len(_CONNECTION_QUEUE)*_MIN_TIME_BETWEEN_CONNECTS)], {}])
+                                 len(_CONNECTION_QUEUE) * _MIN_TIME_BETWEEN_CONNECTS)], {}])
         now = time.time()
         if (now - self.connection_last < _MIN_TIME_BETWEEN_CONNECTS) or not self.portal.amp_protocol:
             if not session or not self.connection_task:
@@ -427,5 +427,6 @@ class PortalSessionHandler(SessionHandler):
                         session.send_default(cmdname, *cmdargs, **cmdkwargs)
                     except Exception:
                         log_trace()
+
 
 PORTAL_SESSIONS = PortalSessionHandler()

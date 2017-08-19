@@ -121,7 +121,7 @@ IRC_COLOR_MAP = dict([
     (r'|[c', IRC_COLOR + IRC_NORMAL + "," + IRC_DCYAN),
     (r'|[w', IRC_COLOR + IRC_NORMAL + "," + IRC_GRAY),    # light grey background
     (r'|[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK)    # pure black background
-    ])
+])
 RE_IRC_COLOR = re.compile(r"|".join([re.escape(key) for key in viewkeys(IRC_COLOR_MAP)]), re.DOTALL)
 RE_MXP = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
 RE_ANSI_ESCAPES = re.compile(r"(%s)" % "|".join(("{{", "%%", "\\\\")), re.DOTALL)

@@ -106,6 +106,7 @@ class CmdSetReadable(CmdSet):
     """
     A CmdSet for readables.
     """
+
     def at_cmdset_creation(self):
         """
         Called when the cmdset is created.
@@ -117,6 +118,7 @@ class Readable(TutorialObject):
     """
     This simple object defines some attributes and
     """
+
     def at_object_creation(self):
         """
         Called when object is created. We make sure to set the needed
@@ -176,6 +178,7 @@ class CmdClimb(Command):
 
 class CmdSetClimbable(CmdSet):
     """Climbing cmdset"""
+
     def at_cmdset_creation(self):
         """populate set"""
         self.add(CmdClimb())
@@ -303,6 +306,7 @@ class LightSource(TutorialObject):
 
     When burned out, the object will be deleted.
     """
+
     def at_init(self):
         """
         If this is called with the Attribute is_giving_light already
@@ -589,6 +593,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
                    whenever the button is pushed (this hides it as an exit
                    until it actually is)
     """
+
     def at_init(self):
         """
         Called when object is recalled from cache.
@@ -838,6 +843,7 @@ class CmdAttack(Command):
 
 class CmdSetWeapon(CmdSet):
     """Holds the attack command."""
+
     def at_cmdset_creation(self):
         """called at first object creation."""
         self.add(CmdAttack())
@@ -854,6 +860,7 @@ class Weapon(TutorialObject):
                type of attack) (0-10)
 
     """
+
     def at_object_creation(self):
         """Called at first creation of the object"""
         super(Weapon, self).at_object_creation()
@@ -987,7 +994,7 @@ WEAPON_PROTOTYPES = {
         "hit": 0.85,
         "parry": 0.7,
         "damage": 11}
-    }
+}
 
 
 class CmdGetWeapon(Command):
@@ -1037,6 +1044,7 @@ class WeaponRack(TutorialObject):
             grab another one.
 
     """
+
     def at_object_creation(self):
         """
         called at creation

@@ -34,6 +34,7 @@ class Ttype(object):
     telnet protocol.
 
     """
+
     def __init__(self, protocol):
         """
         Initialize ttype by storing protocol on ourselves and calling
@@ -132,8 +133,8 @@ class Ttype(object):
             term = option
             tupper = term.upper()
             # identify xterm256 based on flag
-            xterm256 = (tupper.endswith("-256COLOR")         # Apple Terminal, old Tintin
-                        or tupper.endswith("XTERM") and      # old Tintin, Putty
+            xterm256 = (tupper.endswith("-256COLOR")         # Apple Terminal, old Tintin or
+                        tupper.endswith("XTERM") and      # old Tintin, Putty
                         not tupper.endswith("-COLOR"))
             if xterm256:
                 self.protocol.protocol_flags['ANSI'] = True

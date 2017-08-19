@@ -89,7 +89,7 @@ class AccountDB(TypedObject, AbstractUser):
                                           help_text="If player is connected to game or not")
     # database storage of persistant cmdsets.
     db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True,
-        help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_CHARACTER.")
+                                         help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_CHARACTER.")
     # marks if this is a "virtual" bot account object
     db_is_bot = models.BooleanField(default=False, verbose_name="is_bot", help_text="Used to identify irc/rss bots")
 

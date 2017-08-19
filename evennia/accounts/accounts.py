@@ -528,7 +528,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         """
         result = super(DefaultAccount, self).access(accessing_obj, access_type=access_type,
-                                                   default=default, no_superuser_bypass=no_superuser_bypass)
+                                                    default=default, no_superuser_bypass=no_superuser_bypass)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 
@@ -879,10 +879,10 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             result.append(nsess == 1 and "\n\n|wConnected session:|n" or "\n\n|wConnected sessions (%i):|n" % nsess)
             for isess, sess in enumerate(sessions):
                 csessid = sess.sessid
-                addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple)
-                                    and str(sess.address[0]) or str(sess.address))
-                result.append("\n %s %s" % (session.sessid == csessid and "|w* %s|n" % (isess + 1)
-                                            or "  %s" % (isess + 1), addr))
+                addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple) and
+                                    str(sess.address[0]) or str(sess.address))
+                result.append("\n %s %s" % (session.sessid == csessid and "|w* %s|n" % (isess + 1) or
+                                            "  %s" % (isess + 1), addr))
             result.append("\n\n |whelp|n - more commands")
             result.append("\n |wooc <Text>|n - talk on public channel")
 
@@ -928,6 +928,7 @@ class DefaultGuest(DefaultAccount):
     This class is used for guest logins. Unlike Accounts, Guests and
     their characters are deleted after disconnection.
     """
+
     def at_post_login(self, session=None, **kwargs):
         """
         In theory, guests only have one character regardless of which

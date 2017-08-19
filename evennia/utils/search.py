@@ -212,6 +212,7 @@ def search_script_attribute(key=None, category=None, value=None, strvalue=None):
 def search_channel_attribute(key=None, category=None, value=None, strvalue=None):
     return Channel.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
 
+
 # search for attribute objects
 search_attribute_object = ObjectDB.objects.get_attribute
 
@@ -243,6 +244,8 @@ def search_object_by_tag(key=None, category=None):
 
     """
     return ObjectDB.objects.get_by_tag(key=key, category=category)
+
+
 search_tag = search_object_by_tag  # this is the most common case
 
 
@@ -301,6 +304,7 @@ def search_channel_tag(key=None, category=None):
 
     """
     return Channel.objects.get_by_tag(key=key, category=category)
+
 
 # search for tag objects (not the objects they are attached to
 search_tag_object = ObjectDB.objects.get_tag

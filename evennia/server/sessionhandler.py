@@ -39,8 +39,11 @@ _ServerConfig = None
 _ScriptDB = None
 _OOB_HANDLER = None
 
+
 class DummySession(object):
     sessid = 0
+
+
 DUMMYSESSION = DummySession()
 
 # AMP signals
@@ -54,7 +57,7 @@ SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server session sync
 SCONN = chr(11)        # server portal connection (for bots)
 PCONNSYNC = chr(12)   # portal post-syncing session
-PDISCONNALL = chr(13) # portal session discnnect all
+PDISCONNALL = chr(13)  # portal session discnnect all
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -71,6 +74,7 @@ _MODEL_MAP = None
 _INPUT_FUNCS = {}
 for modname in make_iter(settings.INPUT_FUNC_MODULES):
     _INPUT_FUNCS.update(callables_from_module(modname))
+
 
 def delayed_import():
     """
@@ -222,9 +226,9 @@ class SessionHandler(dict):
                     # we don't allow sending text = None, this must mean
                     # that the text command is not to be used.
                     continue
-                rkwargs[key] = [ [], {} ]
+                rkwargs[key] = [[], {}]
             elif isinstance(data, dict):
-                rkwargs[key] = [ [], _validate(data) ]
+                rkwargs[key] = [[], _validate(data)]
             elif hasattr(data, "__iter__"):
                 if isinstance(data[-1], dict):
                     if len(data) == 2:
@@ -233,11 +237,11 @@ class SessionHandler(dict):
                         else:
                             rkwargs[key] = [[_validate(data[0])], _validate(data[1])]
                     else:
-                        rkwargs[key] = [ _validate(data[:-1]), _validate(data[-1]) ]
+                        rkwargs[key] = [_validate(data[:-1]), _validate(data[-1])]
                 else:
-                    rkwargs[key] = [ _validate(data), {} ]
+                    rkwargs[key] = [_validate(data), {}]
             else:
-                rkwargs[key] = [ [_validate(data)], {} ]
+                rkwargs[key] = [[_validate(data)], {}]
             rkwargs[key][1]["options"] = options
         return rkwargs
 
@@ -306,7 +310,7 @@ class ServerSessionHandler(SessionHandler):
                 sess.uid = None
 
         # show the first login command
-        self.data_in(sess, text=[[CMD_LOGINSTART],{}])
+        self.data_in(sess, text=[[CMD_LOGINSTART], {}])
 
     def portal_session_sync(self, portalsessiondata):
         """
@@ -362,7 +366,6 @@ class ServerSessionHandler(SessionHandler):
         # announce the reconnection
         self.announce_all(_(" ... Server restarted."))
 
-
     def portal_disconnect(self, session):
         """
         Called from Portal when Portal session closed from the portal
@@ -415,7 +418,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SCONN,
-                                protocol_path=protocol_path, config=configdict)
+                                                         protocol_path=protocol_path, config=configdict)
 
     def portal_shutdown(self):
         """
@@ -466,14 +469,14 @@ class ServerSessionHandler(SessionHandler):
 
         nsess = len(self.sessions_from_account(account))
         string = "Logged in: {account} {address} ({nsessions} session(s) total)"
-        string = string.format(account=account,address=session.address, nsessions=nsess)
+        string = string.format(account=account, address=session.address, nsessions=nsess)
         session.log(string)
         session.logged_in = True
         # sync the portal to the session
         if not testmode:
             self.server.amp_protocol.send_AdminServer2Portal(session,
-                                                         operation=SLOGIN,
-                                                         sessiondata={"logged_in": True})
+                                                             operation=SLOGIN,
+                                                             sessiondata={"logged_in": True})
         account.at_post_login(session=session)
 
     def disconnect(self, session, reason="", sync_portal=True):
@@ -518,8 +521,8 @@ class ServerSessionHandler(SessionHandler):
         """
         sessdata = self.get_all_sync_data()
         return self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
-                                                         operation=SSYNC,
-                                                         sessiondata=sessdata)
+                                                                operation=SSYNC,
+                                                                sessiondata=sessdata)
 
     def session_portal_sync(self, session):
         """
@@ -550,7 +553,7 @@ class ServerSessionHandler(SessionHandler):
                                                          reason=reason)
 
     def disconnect_duplicate_sessions(self, curr_session,
-                      reason=_("Logged in from elsewhere. Disconnecting.")):
+                                      reason=_("Logged in from elsewhere. Disconnecting.")):
         """
         Disconnects any existing sessions with the same user.
 
@@ -561,9 +564,9 @@ class ServerSessionHandler(SessionHandler):
         """
         uid = curr_session.uid
         doublet_sessions = [sess for sess in self.values()
-                            if sess.logged_in
-                            and sess.uid == uid
-                            and sess != curr_session]
+                            if sess.logged_in and
+                            sess.uid == uid and
+                            sess != curr_session]
         for session in doublet_sessions:
             self.disconnect(session, reason)
 
@@ -576,8 +579,8 @@ class ServerSessionHandler(SessionHandler):
         tcurr = time.time()
         reason = _("Idle timeout exceeded, disconnecting.")
         for session in (session for session in self.values()
-                        if session.logged_in and _IDLE_TIMEOUT > 0
-                        and (tcurr - session.cmd_last) > _IDLE_TIMEOUT):
+                        if session.logged_in and _IDLE_TIMEOUT > 0 and
+                        (tcurr - session.cmd_last) > _IDLE_TIMEOUT):
             self.disconnect(session, reason=reason)
 
     def account_count(self):
@@ -757,10 +760,11 @@ class ServerSessionHandler(SessionHandler):
                         _INPUT_FUNCS[cname](session, *cmdargs, **cmdkwargs)
                     else:
                         _INPUT_FUNCS["default"](session, cname, *cmdargs, **cmdkwargs)
-                except Exception, err:
+                except Exception as err:
                     if input_debug:
                         session.msg(err)
                     log_trace()
 
+
 SESSION_HANDLER = ServerSessionHandler()
-SESSIONS = SESSION_HANDLER # legacy
+SESSIONS = SESSION_HANDLER  # legacy
