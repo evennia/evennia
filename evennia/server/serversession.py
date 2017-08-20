@@ -20,8 +20,6 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.server.session import Session
 from evennia.scripts.monitorhandler import MONITOR_HANDLER
 
-ClientSessionStore = importlib.import_module(settings.SESSION_ENGINE).SessionStore
-
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _ObjectDB = None
@@ -226,15 +224,6 @@ class ServerSession(Session):
         self.puid = None
         self.puppet = None
         self.cmdset_storage = settings.CMDSET_SESSION
-
-        if self.csessid:
-            # An existing client sessid is registered, thus a matching
-            # Client Session must also exist. Update it so the website
-            # can also see we are logged in.
-            csession = ClientSessionStore(session_key=self.csessid)
-            if not csession.get("logged_in"):
-                csession["logged_in"] = account.id
-                csession.save()
 
         # Update account's last login time.
         self.account.last_login = timezone.now()

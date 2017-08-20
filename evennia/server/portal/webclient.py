@@ -42,7 +42,7 @@ class WebSocketClient(Protocol, Session):
         client_address = client_address[0] if client_address else None
         self.init_session("websocket", client_address, self.factory.sessionhandler)
 
-    def get_browser_session(self):
+    def get_client_session(self):
         """
         Get the Client browser session (used for auto-login based on browser session)
 
@@ -67,9 +67,8 @@ class WebSocketClient(Protocol, Session):
         the ws handshake and validation has completed fully.
 
         """
-        csession = self.get_browser_session()
+        csession = self.get_client_session()
         uid = csession and csession.get("webclient_authenticated_uid", None)
-        print("In validationMade csession uid=", uid)
         if uid:
             # the client session is already logged in.
             self.uid = uid
@@ -95,8 +94,8 @@ class WebSocketClient(Protocol, Session):
 
         if csession:
             print("In disconnect: csession uid=%s" % csession.get("webclient_authenticated_uid", None))
-            #csession["webclient_authenticated_uid"] = None
-            #csession.save()
+            csession["webclient_authenticated_uid"] = None
+            csession.save()
             self.logged_in = False
         self.connectionLost(reason)
 
@@ -138,8 +137,7 @@ class WebSocketClient(Protocol, Session):
         return self.transport.write(line)
 
     def at_login(self):
-        csession = self.get_browser_session()
-        print("Weblient at_login. Session: %s" % csession.session_key)
+        csession = self.get_client_session()
         if csession:
             csession["webclient_authenticated_uid"] = self.uid
             csession.save()

@@ -28,17 +28,11 @@ def _shared_login(request):
     """
     csession = request.session
     account = request.user
-    # these can have 3 values:
-    #   None - previously unused (auto-login)
-    #   False - actively logged out (don't auto-login)
-    #   <uid> - logged in User/Account id
     website_uid = csession.get("website_authenticated_uid", None)
     webclient_uid = csession.get("webclient_authenticated_uid", None)
-    print("website website_uid=%s, webclient_uid=%s, session_key=%s" % (website_uid, webclient_uid, csession.session_key))
 
-    if csession.session_key is None:
+    if not csession.session_key:
         # this is necessary to build the sessid key
-        print("Website created a new browser session key")
         csession.save()
 
     if account.is_authenticated():

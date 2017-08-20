@@ -26,26 +26,22 @@ def _shared_login(request):
     website_uid = csession.get("website_authenticated_uid", None)
     webclient_uid = csession.get("webclient_authenticated_uid", None)
 
-    print("webclient website_uid=%s, webclient_uid=%s, session_key=%s" % (website_uid, webclient_uid, csession.session_key))
     # check if user has authenticated to website
-    if csession.session_key is None:
+    if not csession.session_key:
         # this is necessary to build the sessid key
-        print("Webclient created a new browser session key")
         csession.save()
 
     if webclient_uid:
         # The webclient has previously registered a login to this browser_session
-        if not account.is_authenticated():
-            # not logged into website
-            if website_uid is None:
-                account = AccountDB.objects.get(id=webclient_uid)
-                try:
-                    # calls our custom authenticate in web/utils/backends.py
-                    account = authenticate(autologin=account)
-                    login(request, account)
-                    csession["website_authenticated_uid"] = webclient_uid
-                except AttributeError:
-                    logger.log_trace()
+        if not account.is_authenticated() and not website_uid:
+            account = AccountDB.objects.get(id=webclient_uid)
+            try:
+                # calls our custom authenticate in web/utils/backends.py
+                account = authenticate(autologin=account)
+                login(request, account)
+                csession["website_authenticated_uid"] = webclient_uid
+            except AttributeError:
+                logger.log_trace()
 
 
 def webclient(request):

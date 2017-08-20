@@ -476,7 +476,8 @@ class ServerSessionHandler(SessionHandler):
         if not testmode:
             self.server.amp_protocol.send_AdminServer2Portal(session,
                                                              operation=SLOGIN,
-                                                             sessiondata={"logged_in": True})
+                                                             sessiondata={"logged_in": True,
+                                                                          "uid": session.uid})
         account.at_post_login(session=session)
 
     def disconnect(self, session, reason="", sync_portal=True):

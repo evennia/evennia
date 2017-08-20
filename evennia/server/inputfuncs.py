@@ -137,32 +137,6 @@ def default(session, cmdname, *args, **kwargs):
     log_err(err)
 
 
-def browser_sessid(session, *args, **kwargs):
-    """
-    This is a utility function for the webclient (only) to communicate its
-    current browser session hash. This is important in order to link
-    the browser session to the evennia session. Only the very first
-    storage request will be accepted, the following ones will be ignored.
-
-    Args:
-        browserid (str): Browser session hash
-
-    """
-    if not session.browserid:
-        print "stored browserid:", session, args[0]
-        session.browserid = args[0]
-        if not session.logged_in:
-            # automatic log in if the django browser session already authenticated.
-            browsersession = BrowserSessionStore(session_key=args[0])
-            uid = browsersession.get("logged_in", None)
-            if uid:
-                try:
-                    account = AccountDB.objects.get(pk=uid)
-                except Exception:
-                    return
-                session.sessionhandler.login(session, account)
-
-
 def client_options(session, *args, **kwargs):
     """
     This allows the client an OOB way to inform us about its name and capabilities.
