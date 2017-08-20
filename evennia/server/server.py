@@ -133,7 +133,7 @@ def _server_maintenance():
     for session in (sess for sess in SESSIONS.values()
                     if (now - sess.cmd_last) > _IDLE_TIMEOUT):
         if not session.account or not \
-                session.account.access(session.account, "no_idle_disconnect", default=False):
+                session.account.access(session.account, "noidletimeout", default=False):
             SESSIONS.disconnect(session, reason=reason)
 
     # Commenting this out, it is probably not needed

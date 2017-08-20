@@ -565,7 +565,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         """
         # A basic security setup
         lockstring = "examine:perm(Admin);edit:perm(Admin);" \
-                     "delete:perm(Admin);boot:perm(Admin);msg:all()"
+                     "delete:perm(Admin);boot:perm(Admin);msg:all();" \
+                     "noidletimeout:perm(Builder) or perm(noidletimeout)"
         self.locks.add(lockstring)
 
         # The ooc account cmdset
