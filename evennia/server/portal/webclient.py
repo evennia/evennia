@@ -42,26 +42,38 @@ class WebSocketClient(Protocol, Session):
         client_address = client_address[0] if client_address else None
         self.init_session("websocket", client_address, self.factory.sessionhandler)
 
-    def validationMade(self):
+    def get_browser_session(self):
         """
-        This is called from the (modified) txws websocket library when
-        the ws handshake and validation has completed fully.
+        Get the Client browser session (used for auto-login based on browser session)
+
+        Returns:
+            csession (ClientSession): This is a django-specific internal representation
+                of the browser session.
 
         """
-
         try:
             self.csessid = self.transport.location.split("?", 1)[1]
         except IndexError:
             # this may happen for custom webclients not caring for the
             # browser session.
             self.csessid = None
+            return None
         if self.csessid:
-            csession = _CLIENT_SESSIONS(session_key=self.csessid)
-            uid = csession and csession.get("logged_in", False)
-            if uid:
-                # the client session is already logged in.
-                self.uid = uid
-                self.logged_in = True
+            return _CLIENT_SESSIONS(session_key=self.csessid)
+
+    def validationMade(self):
+        """
+        This is called from the (modified) txws websocket library when
+        the ws handshake and validation has completed fully.
+
+        """
+        csession = self.get_browser_session()
+        uid = csession and csession.get("webclient_authenticated_uid", None)
+        print("In validationMade csession uid=", uid)
+        if uid:
+            # the client session is already logged in.
+            self.uid = uid
+            self.logged_in = True
 
         # watch for dead links
         self.transport.setTcpKeepAlive(1)
@@ -78,6 +90,14 @@ class WebSocketClient(Protocol, Session):
 
         """
         self.data_out(text=((reason or "",), {}))
+
+        csession = self.get_client_session()
+
+        if csession:
+            print("In disconnect: csession uid=%s" % csession.get("webclient_authenticated_uid", None))
+            #csession["webclient_authenticated_uid"] = None
+            #csession.save()
+            self.logged_in = False
         self.connectionLost(reason)
 
     def connectionLost(self, reason):
@@ -90,6 +110,7 @@ class WebSocketClient(Protocol, Session):
             reason (str): Motivation for the lost connection.
 
         """
+        print("In connectionLost of webclient")
         self.sessionhandler.disconnect(self)
         self.transport.close()
 
@@ -115,6 +136,13 @@ class WebSocketClient(Protocol, Session):
 
         """
         return self.transport.write(line)
+
+    def at_login(self):
+        csession = self.get_browser_session()
+        print("Weblient at_login. Session: %s" % csession.session_key)
+        if csession:
+            csession["webclient_authenticated_uid"] = self.uid
+            csession.save()
 
     def data_in(self, **kwargs):
         """

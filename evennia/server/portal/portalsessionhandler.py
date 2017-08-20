@@ -268,6 +268,7 @@ class PortalSessionHandler(SessionHandler):
             data (dict): The session sync data.
 
         """
+        session.at_login()
         session.load_sync_data(data)
 
     def server_session_sync(self, serversessions, clean=True):
