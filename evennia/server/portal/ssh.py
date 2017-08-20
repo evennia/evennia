@@ -213,6 +213,12 @@ class SshProtocol(Manhole, session.Session):
 
     # session-general method hooks
 
+    def at_login(self):
+        """
+        Called when this session gets authenticated by the server.
+        """
+        pass
+
     def disconnect(self, reason="Connection closed. Goodbye for now."):
         """
         Disconnect from server.

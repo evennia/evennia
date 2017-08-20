@@ -9,7 +9,6 @@ are stored on the Portal side)
 from builtins import object
 
 import weakref
-import importlib
 import time
 from django.utils import timezone
 from django.conf import settings
@@ -232,7 +231,7 @@ class ServerSession(Session):
         # add the session-level cmdset
         self.cmdset = CmdSetHandler(self, True)
 
-    def at_disconnect(self):
+    def at_disconnect(self, reason=None):
         """
         Hook called by sessionhandler when disconnecting this session.
 
@@ -245,7 +244,7 @@ class ServerSession(Session):
             uaccount.last_login = timezone.now()
             uaccount.save()
             # calling account hook
-            account.at_disconnect()
+            account.at_disconnect(reason)
             self.logged_in = False
             if not self.sessionhandler.sessions_from_account(account):
                 # no more sessions connected to this account

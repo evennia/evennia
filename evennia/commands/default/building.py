@@ -1735,9 +1735,9 @@ class CmdLock(ObjManipCommand):
     assign a lock definition to an object
 
     Usage:
-      @lock <object>[ = <lockstring>]
+      @lock <object or *account>[ = <lockstring>]
       or
-      @lock[/switch] <object>/<access_type>
+      @lock[/switch] <object or *account>/<access_type>
 
     Switch:
       del - delete given access type
@@ -1779,16 +1779,19 @@ class CmdLock(ObjManipCommand):
         if '/' in self.lhs:
             # call on the form @lock obj/access_type
             objname, access_type = [p.strip() for p in self.lhs.split('/', 1)]
-            obj = caller.search(objname)
-            if not obj:
+            if objname.startswith("*"):
+                obj = caller.search_account(objname.lstrip('*'))
+                if not obj:
+                    obj = caller.search(objname)
+                    if not obj:
+                        return
+            if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
+                caller.msg("You are not allowed to do that.")
                 return
             lockdef = obj.locks.get(access_type)
             string = ""
             if lockdef:
                 if 'del' in self.switches:
-                    if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
-                        caller.msg("You are not allowed to do that.")
-                        return
                     obj.locks.delete(access_type)
                     string = "deleted lock %s" % lockdef
                 else:
@@ -1808,9 +1811,12 @@ class CmdLock(ObjManipCommand):
                 return
 
             objname, lockdef = self.lhs, self.rhs
-            obj = caller.search(objname)
-            if not obj:
-                return
+            if objname.startswith("*"):
+                obj = caller.search_account(objname.lstrip('*'))
+                if not obj:
+                    obj = caller.search(objname)
+                    if not obj:
+                        return
             if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
                 caller.msg("You are not allowed to do that.")
                 return

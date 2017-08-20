@@ -500,11 +500,12 @@ class ServerSessionHandler(SessionHandler):
         if hasattr(session, "account") and session.account:
             # only log accounts logging off
             nsess = len(self.sessions_from_account(session.account)) - 1
-            string = "Logged out: {account} {address} ({nsessions} sessions(s) remaining)"
-            string = string.format(account=session.account, address=session.address, nsessions=nsess)
+            sreason = " ({})".format(reason) if reason else ""
+            string = "Logged out: {account} {address} ({nsessions} sessions(s) remaining){reason}"
+            string = string.format(reason=sreason, account=session.account, address=session.address, nsessions=nsess)
             session.log(string)
 
-        session.at_disconnect()
+        session.at_disconnect(reason)
         sessid = session.sessid
         if sessid in self and not hasattr(self, "_disconnect_all"):
             del self[sessid]

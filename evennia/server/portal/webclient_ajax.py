@@ -107,6 +107,12 @@ class WebClient(resource.Resource):
                 self.keep_alive.stop()
                 self.keep_alive = None
 
+    def at_login(self):
+        """
+        Called when this session gets authenticated by the server.
+        """
+        pass
+
     def lineSend(self, csessid, data):
         """
         This adds the data to the buffer and/or sends it to the client

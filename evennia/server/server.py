@@ -16,7 +16,7 @@ import os
 from twisted.web import static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
-from twisted.internet.task import LoopingCall, deferLater
+from twisted.internet.task import LoopingCall
 
 import django
 django.setup()
@@ -35,6 +35,8 @@ from evennia.server import initial_setup
 from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.comms import channelhandler
 from evennia.server.sessionhandler import SESSIONS
+
+from django.utils.translation import ugettext as _
 
 _SA = object.__setattr__
 
@@ -89,11 +91,13 @@ _FLUSH_CACHE = None
 _IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
 _GAMETIME_MODULE = None
 
+_IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+
 
 def _server_maintenance():
     """
     This maintenance function handles repeated checks and updates that
-    the server needs to do. It is called every 5 minutes.
+    the server needs to do. It is called every minute.
     """
     global EVENNIA, _MAINTENANCE_COUNT, _FLUSH_CACHE, _GAMETIME_MODULE
     if not _FLUSH_CACHE:
@@ -123,6 +127,14 @@ def _server_maintenance():
     if _MAINTENANCE_COUNT % 3700 == 0:
         # validate channels off-sync with scripts
         evennia.CHANNEL_HANDLER.update()
+
+    # handle idle timeouts
+    reason = _("idle timeout exceeded")
+    for session in (sess for sess in SESSIONS.values()
+                    if (now - sess.cmd_last) > _IDLE_TIMEOUT):
+        if not session.account or not \
+                session.account.access(session.account, "no_idle_disconnect", default=False):
+            SESSIONS.disconnect(session, reason=reason)
 
     # Commenting this out, it is probably not needed
     # with CONN_MAX_AGE set. Keeping it as a reminder

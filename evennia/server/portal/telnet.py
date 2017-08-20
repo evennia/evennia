@@ -116,6 +116,12 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 # do the sync
                 self.sessionhandler.sync(self)
 
+    def at_login(self):
+        """
+        Called when this session gets authenticated by the server.
+        """
+        pass
+
     def enableRemote(self, option):
         """
         This sets up the remote-activated options we allow for this protocol.

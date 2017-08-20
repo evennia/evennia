@@ -657,10 +657,12 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
 
         if 'all' in self.switches:
             account.msg("|RQuitting|n all sessions. Hope to see you soon again.", session=self.session)
+            reason = "quit/all"
             for session in account.sessions.all():
-                account.disconnect_session_from_account(session)
+                account.disconnect_session_from_account(session, reason)
         else:
             nsess = len(account.sessions.all())
+            reason = "quit"
             if nsess == 2:
                 account.msg("|RQuitting|n. One session is still connected.", session=self.session)
             elif nsess > 2:
@@ -668,7 +670,7 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
             else:
                 # we are quitting the last available session
                 account.msg("|RQuitting|n. Hope to see you again, soon.", session=self.session)
-            account.disconnect_session_from_account(self.session)
+            account.disconnect_session_from_account(self.session, reason)
 
 
 class CmdColorTest(COMMAND_DEFAULT_CLASS):

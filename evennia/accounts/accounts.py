@@ -190,7 +190,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
     # session-related methods
 
-    def disconnect_session_from_account(self, session):
+    def disconnect_session_from_account(self, session, reason=None):
         """
         Access method for disconnecting a given session from the
         account (connection happens automatically in the
@@ -198,12 +198,13 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         Args:
             session (Session): Session to disconnect.
+            reason (str, optional): Eventual reason for the disconnect.
 
         """
         global _SESSIONS
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-        _SESSIONS.disconnect(session)
+        _SESSIONS.disconnect(session, reason)
 
     # puppeting operations
 
@@ -789,8 +790,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
 
         """
-        reason = reason and "(%s)" % reason or ""
-        self._send_to_connect_channel("|R%s disconnected %s|n" % (self.key, reason))
+        reason = " (%s)" % reason if reason else ""
+        self._send_to_connect_channel("|R%s disconnected%s|n" % (self.key, reason))
 
     def at_post_disconnect(self, **kwargs):
         """
