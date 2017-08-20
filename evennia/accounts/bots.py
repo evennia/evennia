@@ -38,10 +38,6 @@ class BotStarter(DefaultScript):
         self.desc = "bot start/keepalive"
         self.persistent = True
         self.db.started = False
-        if _IDLE_TIMEOUT > 0:
-            # call before idle_timeout triggers
-            self.interval = int(max(60, _IDLE_TIMEOUT * 0.90))
-            self.start_delay = True
 
     def at_start(self):
         """
@@ -101,8 +97,9 @@ class Bot(DefaultAccount):
         """
         # the text encoding to use.
         self.db.encoding = "utf-8"
-        # A basic security setup
-        lockstring = "examine:perm(Admin);edit:perm(Admin);delete:perm(Admin);boot:perm(Admin);msg:false()"
+        # A basic security setup (also avoid idle disconnects)
+        lockstring = "examine:perm(Admin);edit:perm(Admin);delete:perm(Admin);" \
+                     "boot:perm(Admin);msg:false();noidletimeout:true()"
         self.locks.add(lockstring)
         # set the basics of being a bot
         script_key = "%s" % self.key

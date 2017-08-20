@@ -1779,12 +1779,13 @@ class CmdLock(ObjManipCommand):
         if '/' in self.lhs:
             # call on the form @lock obj/access_type
             objname, access_type = [p.strip() for p in self.lhs.split('/', 1)]
+            obj = None
             if objname.startswith("*"):
                 obj = caller.search_account(objname.lstrip('*'))
+            if not obj:
+                obj = caller.search(objname)
                 if not obj:
-                    obj = caller.search(objname)
-                    if not obj:
-                        return
+                    return
             if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
                 caller.msg("You are not allowed to do that.")
                 return
@@ -1811,12 +1812,13 @@ class CmdLock(ObjManipCommand):
                 return
 
             objname, lockdef = self.lhs, self.rhs
+            obj = None
             if objname.startswith("*"):
                 obj = caller.search_account(objname.lstrip('*'))
+            if not obj:
+                obj = caller.search(objname)
                 if not obj:
-                    obj = caller.search(objname)
-                    if not obj:
-                        return
+                    return
             if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
                 caller.msg("You are not allowed to do that.")
                 return
