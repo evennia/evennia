@@ -34,6 +34,7 @@ from django.utils.translation import ugettext as _
 _CHANNEL_COMMAND_CLASS = None
 _CHANNELDB = None
 
+
 class ChannelCommand(command.Command):
     """
     {channelkey} channel
@@ -112,7 +113,7 @@ class ChannelCommand(command.Command):
             self.msg(string % channelkey)
             return
         if msg == "on":
-            caller = caller if not hasattr(caller, 'player') else caller.player
+            caller = caller if not hasattr(caller, 'account') else caller.account
             unmuted = channel.unmute(caller)
             if unmuted:
                 self.msg("You start listening to %s." % channel)
@@ -120,7 +121,7 @@ class ChannelCommand(command.Command):
             self.msg("You were already listening to %s." % channel)
             return
         if msg == "off":
-            caller = caller if not hasattr(caller, 'player') else caller.player
+            caller = caller if not hasattr(caller, 'account') else caller.account
             muted = channel.mute(caller)
             if muted:
                 self.msg("You stop listening to %s." % channel)
@@ -130,11 +131,12 @@ class ChannelCommand(command.Command):
         if self.history_start is not None:
             # Try to view history
             log_file = channel.attributes.get("log_file", default="channel_%s.log" % channel.key)
-            send_msg = lambda lines: self.msg("".join(line.split("[-]", 1)[1]
-                                                    if "[-]" in line else line for line in lines))
+
+            def send_msg(lines): return self.msg("".join(line.split("[-]", 1)[1]
+                                                         if "[-]" in line else line for line in lines))
             tail_log_file(log_file, self.history_start, 20, callback=send_msg)
         else:
-            caller = caller if not hasattr(caller, 'player') else caller.player
+            caller = caller if not hasattr(caller, 'account') else caller.account
             if caller in channel.mutelist:
                 self.msg("You currently have %s muted." % channel)
                 return
@@ -145,7 +147,7 @@ class ChannelCommand(command.Command):
         Let users know that this command is for communicating on a channel.
 
         Args:
-            caller (TypedObject): A Character or Player who has entered an ambiguous command.
+            caller (TypedObject): A Character or Account who has entered an ambiguous command.
 
         Returns:
             A string with identifying information to disambiguate the object, conventionally with a preceding space.
@@ -164,6 +166,7 @@ class ChannelHandler(object):
     evennia.create_channel())
 
     """
+
     def __init__(self):
         """
         Initializes the channel handler's internal state.
@@ -208,12 +211,12 @@ class ChannelHandler(object):
 
         # map the channel to a searchable command
         cmd = _CHANNEL_COMMAND_CLASS(
-                             key=channel.key.strip().lower(),
-                             aliases=channel.aliases.all(),
-                             locks="cmd:all();%s" % channel.locks,
-                             help_category="Channel names",
-                             obj=channel,
-                             is_channel=True)
+            key=channel.key.strip().lower(),
+            aliases=channel.aliases.all(),
+            locks="cmd:all();%s" % channel.locks,
+            help_category="Channel names",
+            obj=channel,
+            is_channel=True)
         # format the help entry
         key = channel.key
         cmd.__doc__ = cmd.__doc__.format(channelkey=key,
@@ -221,7 +224,7 @@ class ChannelHandler(object):
                                          channeldesc=channel.attributes.get("desc", default="").strip())
         self.cached_channel_cmds[channel] = cmd
         self.cached_cmdsets = {}
-    add_channel = add # legacy alias
+    add_channel = add  # legacy alias
 
     def remove(self, channel):
         """
@@ -269,8 +272,8 @@ class ChannelHandler(object):
             # create a new cmdset holding all viable channels
             chan_cmdset = None
             chan_cmds = [channelcmd for channel, channelcmd in self.cached_channel_cmds.iteritems()
-                                if channel.subscriptions.has(source_object) and
-                                channelcmd.access(source_object, 'send')]
+                         if channel.subscriptions.has(source_object) and
+                         channelcmd.access(source_object, 'send')]
             if chan_cmds:
                 chan_cmdset = cmdset.CmdSet()
                 chan_cmdset.key = 'ChannelCmdSet'
@@ -281,5 +284,6 @@ class ChannelHandler(object):
             self.cached_cmdsets[source_object] = chan_cmdset
             return chan_cmdset
 
+
 CHANNEL_HANDLER = ChannelHandler()
-CHANNELHANDLER = CHANNEL_HANDLER # legacy
+CHANNELHANDLER = CHANNEL_HANDLER  # legacy

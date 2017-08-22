@@ -1,25 +1,22 @@
 """
-The managers for the custom Player object and permissions.
+The managers for the custom Account object and permissions.
 """
 
 import datetime
 from django.utils import timezone
 from django.contrib.auth.models import UserManager
-#from functools import update_wrapper
-from evennia.typeclasses.managers import (returns_typeclass_list, returns_typeclass,
-                                      TypedObjectManager, TypeclassManager)
-from evennia.utils.utils import make_iter
-__all__ = ("PlayerManager",)
+from evennia.typeclasses.managers import (TypedObjectManager, TypeclassManager)
+__all__ = ("AccountManager",)
 
 
 #
-# Player Manager
+# Account Manager
 #
 
-class PlayerDBManager(TypedObjectManager, UserManager):
+class AccountDBManager(TypedObjectManager, UserManager):
     """
-    This PlayerManager implements methods for searching
-    and manipulating Players directly from the database.
+    This AccountManager implements methods for searching
+    and manipulating Accounts directly from the database.
 
     Evennia-specific search methods (will return Characters if
     possible or a Typeclass/list of Typeclassed objects, whereas
@@ -30,49 +27,48 @@ class PlayerDBManager(TypedObjectManager, UserManager):
     get_dbref_range
     object_totals
     typeclass_search
-    num_total_players
-    get_connected_players
-    get_recently_created_players
-    get_recently_connected_players
-    get_player_from_email
-    get_player_from_uid
-    get_player_from_name
-    player_search (equivalent to evennia.search_player)
+    num_total_accounts
+    get_connected_accounts
+    get_recently_created_accounts
+    get_recently_connected_accounts
+    get_account_from_email
+    get_account_from_uid
+    get_account_from_name
+    account_search (equivalent to evennia.search_account)
     #swap_character
 
     """
-    def num_total_players(self):
+
+    def num_total_accounts(self):
         """
-        Get total number of players.
+        Get total number of accounts.
 
         Returns:
-            count (int): The total number of registered players.
+            count (int): The total number of registered accounts.
 
         """
         return self.count()
 
-    @returns_typeclass_list
-    def get_connected_players(self):
+    def get_connected_accounts(self):
         """
-        Get all currently connected players.
+        Get all currently connected accounts.
 
         Returns:
-            count (list): Player objects with currently
+            count (list): Account objects with currently
                 connected sessions.
 
         """
         return self.filter(db_is_connected=True)
 
-    @returns_typeclass_list
-    def get_recently_created_players(self, days=7):
+    def get_recently_created_accounts(self, days=7):
         """
-        Get players recently created.
+        Get accounts recently created.
 
         Args:
             days (int, optional): How many days in the past "recently" means.
 
         Returns:
-            players (list): The Players created the last `days` interval.
+            accounts (list): The Accounts created the last `days` interval.
 
         """
         end_date = timezone.now()
@@ -80,16 +76,15 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         start_date = end_date - tdelta
         return self.filter(date_joined__range=(start_date, end_date))
 
-    @returns_typeclass_list
-    def get_recently_connected_players(self, days=7):
+    def get_recently_connected_accounts(self, days=7):
         """
-        Get players recently connected to the game.
+        Get accounts recently connected to the game.
 
         Args:
             days (int, optional): Number of days backwards to check
 
         Returns:
-            players (list): The Players connected to the game in the
+            accounts (list): The Accounts connected to the game in the
                 last `days` interval.
 
         """
@@ -97,33 +92,31 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         tdelta = datetime.timedelta(days)
         start_date = end_date - tdelta
         return self.filter(last_login__range=(
-                start_date, end_date)).order_by('-last_login')
+            start_date, end_date)).order_by('-last_login')
 
-    @returns_typeclass
-    def get_player_from_email(self, uemail):
+    def get_account_from_email(self, uemail):
         """
-        Search player by
-        Returns a player object based on email address.
+        Search account by
+        Returns an account object based on email address.
 
         Args:
             uemail (str): An email address to search for.
 
         Returns:
-            player (Player): A found player, if found.
+            account (Account): A found account, if found.
 
         """
         return self.filter(email__iexact=uemail)
 
-    @returns_typeclass
-    def get_player_from_uid(self, uid):
+    def get_account_from_uid(self, uid):
         """
-        Get a player by id.
+        Get an account by id.
 
         Args:
-            uid (int): Player database id.
+            uid (int): Account database id.
 
         Returns:
-            player (Player): The result.
+            account (Account): The result.
 
         """
         try:
@@ -131,16 +124,15 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         except self.model.DoesNotExist:
             return None
 
-    @returns_typeclass
-    def get_player_from_name(self, uname):
+    def get_account_from_name(self, uname):
         """
-        Get player object based on name.
+        Get account object based on name.
 
         Args:
-            uname (str): The Player name to search for.
+            uname (str): The Account name to search for.
 
         Returns:
-            player (Player): The found player.
+            account (Account): The found account.
 
         """
         try:
@@ -148,10 +140,9 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         except self.model.DoesNotExist:
             return None
 
-    @returns_typeclass_list
-    def search_player(self, ostring, exact=True, typeclass=None):
+    def search_account(self, ostring, exact=True, typeclass=None):
         """
-        Searches for a particular player by name or
+        Searches for a particular account by name or
         database id.
 
         Args:
@@ -161,7 +152,7 @@ class PlayerDBManager(TypedObjectManager, UserManager):
                 otherwise also match also keys containing the `ostring`
                 (non-case-sensitive fuzzy match).
             typeclass (str or Typeclass, optional): Limit the search only to
-                players of this typeclass.
+                accounts of this typeclass.
 
         """
         dbref = self.dbref(ostring)
@@ -183,7 +174,8 @@ class PlayerDBManager(TypedObjectManager, UserManager):
         else:
             return self.filter(**query)
     # back-compatibility alias
-    player_search = search_player
+    account_search = search_account
 
-class PlayerManager(PlayerDBManager, TypeclassManager):
+
+class AccountManager(AccountDBManager, TypeclassManager):
     pass

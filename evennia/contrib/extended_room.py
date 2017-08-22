@@ -108,6 +108,7 @@ class ExtendedRoom(DefaultRoom):
     time. It also allows for "details", together with a slightly modified
     look command.
     """
+
     def at_object_creation(self):
         """Called when room is first created only."""
         self.db.spring_desc = ""
@@ -277,10 +278,11 @@ class CmdExtendedLook(default_cmds.CmdLook):
       look
       look <obj>
       look <room detail>
-      look *<player>
+      look *<account>
 
     Observes your location, details at your location or objects in your vicinity.
     """
+
     def func(self):
         """
         Handle the looking - add fallback to details.
@@ -315,7 +317,7 @@ class CmdExtendedLook(default_cmds.CmdLook):
                 return
 
         if not hasattr(looking_at_obj, 'return_appearance'):
-            # this is likely due to us having a player instead
+            # this is likely due to us having an account instead
             looking_at_obj = looking_at_obj.character
         if not looking_at_obj.access(caller, "view"):
             caller.msg("Could not find '%s'." % args)
@@ -377,7 +379,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
         """Define extended command"""
         caller = self.caller
         location = caller.location
-        if self.cmdstring == '@detail':
+        if self.cmdname == 'detail':
             # switch to detailing mode. This operates only on current location
             if not location:
                 caller.msg("No location to detail!")

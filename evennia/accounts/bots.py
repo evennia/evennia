@@ -1,12 +1,12 @@
 """
 Bots are a special child typeclasses of
-Player that are  controlled by the server.
+Account that are  controlled by the server.
 
 """
 from __future__ import print_function
 import time
 from django.conf import settings
-from evennia.players.players import DefaultPlayer
+from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import search
 from evennia.utils import utils
@@ -28,6 +28,7 @@ class BotStarter(DefaultScript):
     into gear when it is initialized.
 
     """
+
     def at_script_creation(self):
         """
         Called once, when script is created.
@@ -37,10 +38,6 @@ class BotStarter(DefaultScript):
         self.desc = "bot start/keepalive"
         self.persistent = True
         self.db.started = False
-        if _IDLE_TIMEOUT > 0:
-            # call before idle_timeout triggers
-            self.interval = int(max(60, _IDLE_TIMEOUT * 0.90))
-            self.start_delay = True
 
     def at_start(self):
         """
@@ -48,7 +45,7 @@ class BotStarter(DefaultScript):
 
         """
         if not self.db.started:
-            self.player.start()
+            self.account.start()
             self.db.started = True
 
     def at_repeat(self):
@@ -63,7 +60,7 @@ class BotStarter(DefaultScript):
         global _SESSIONS
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-        for session in _SESSIONS.sessions_from_player(self.player):
+        for session in _SESSIONS.sessions_from_account(self.account):
             session.update_session_counters(idle=True)
 
     def at_server_reload(self):
@@ -85,7 +82,7 @@ class BotStarter(DefaultScript):
 # Bot base class
 
 
-class Bot(DefaultPlayer):
+class Bot(DefaultAccount):
     """
     A Bot will start itself when the server starts (it will generally
     not do so on a reload - that will be handled by the normal Portal
@@ -100,8 +97,9 @@ class Bot(DefaultPlayer):
         """
         # the text encoding to use.
         self.db.encoding = "utf-8"
-        # A basic security setup
-        lockstring = "examine:perm(Wizards);edit:perm(Wizards);delete:perm(Wizards);boot:perm(Wizards);msg:false()"
+        # A basic security setup (also avoid idle disconnects)
+        lockstring = "examine:perm(Admin);edit:perm(Admin);delete:perm(Admin);" \
+                     "boot:perm(Admin);msg:false();noidletimeout:true()"
         self.locks.add(lockstring)
         # set the basics of being a bot
         script_key = "%s" % self.key
@@ -148,6 +146,7 @@ class IRCBot(Bot):
     Bot for handling IRC connections.
 
     """
+
     def start(self, ev_channel=None, irc_botname=None, irc_channel=None, irc_network=None, irc_port=None, irc_ssl=None):
         """
         Start by telling the portal to start a new session.
@@ -211,7 +210,7 @@ class IRCBot(Bot):
         Retrive the nick list from the connected channel.
 
         Args:
-            caller (Object or Player): The requester of the list. This will
+            caller (Object or Account): The requester of the list. This will
                 be stored and echoed to when the irc network replies with the
                 requested info.
 
@@ -231,7 +230,7 @@ class IRCBot(Bot):
         Fire a ping to the IRC server.
 
         Args:
-            caller (Object or Player): The requester of the ping.
+            caller (Object or Account): The requester of the ping.
 
         """
         if not hasattr(self, "_ping_callers"):
@@ -242,7 +241,7 @@ class IRCBot(Bot):
     def reconnect(self):
         """
         Force a protocol-side reconnect of the client without
-        having to destroy/recreate the bot "player".
+        having to destroy/recreate the bot "account".
 
         """
         super(IRCBot, self).msg(reconnect="")
@@ -323,8 +322,8 @@ class IRCBot(Bot):
                 for sess in _SESSIONS.get_sessions():
                     delta_cmd = t0 - sess.cmd_last_visible
                     delta_conn = t0 - session.conn_time
-                    player = sess.get_player()
-                    whos.append("%s (%s/%s)" % (utils.crop("|w%s|n" % player.name, width=25),
+                    account = sess.get_account()
+                    whos.append("%s (%s/%s)" % (utils.crop("|w%s|n" % account.name, width=25),
                                                 utils.time_format(delta_conn, 0),
                                                 utils.time_format(delta_cmd, 1)))
                 text = "Who list (online/idle): %s" % ", ".join(sorted(whos, key=lambda w: w.lower()))
@@ -359,6 +358,7 @@ class RSSBot(Bot):
     its feed at regular intervals.
 
     """
+
     def start(self, ev_channel=None, rss_url=None, rss_rate=None):
         """
         Start by telling the portal to start a new RSS session

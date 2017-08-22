@@ -1,5 +1,5 @@
 """
-Typeclass for Player objects
+Typeclass for Account objects
 
 Note that this object is primarily intended to
 store OOC information, not game info! This
@@ -15,8 +15,8 @@ import time
 from django.conf import settings
 from django.utils import timezone
 from evennia.typeclasses.models import TypeclassBase
-from evennia.players.manager import PlayerManager
-from evennia.players.models import PlayerDB
+from evennia.accounts.manager import AccountManager
+from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
@@ -31,32 +31,32 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from django.utils.translation import ugettext as _
 from future.utils import with_metaclass
 
-__all__ = ("DefaultPlayer",)
+__all__ = ("DefaultAccount",)
 
 _SESSIONS = None
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
-_CMDSET_PLAYER = settings.CMDSET_PLAYER
+_CMDSET_ACCOUNT = settings.CMDSET_ACCOUNT
 _CONNECT_CHANNEL = None
 
 
-class PlayerSessionHandler(object):
+class AccountSessionHandler(object):
     """
-    Manages the session(s) attached to a player.
+    Manages the session(s) attached to an account.
 
     """
 
-    def __init__(self, player):
+    def __init__(self, account):
         """
         Initializes the handler.
 
         Args:
-            player (Player): The Player on which this handler is defined.
+            account (Account): The Account on which this handler is defined.
 
         """
-        self.player = player
+        self.account = account
 
     def get(self, sessid=None):
         """
@@ -75,9 +75,9 @@ class PlayerSessionHandler(object):
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         if sessid:
-            return make_iter(_SESSIONS.session_from_player(self.player, sessid))
+            return make_iter(_SESSIONS.session_from_account(self.account, sessid))
         else:
-            return _SESSIONS.sessions_from_player(self.player)
+            return _SESSIONS.sessions_from_account(self.account)
 
     def all(self):
         """
@@ -100,19 +100,19 @@ class PlayerSessionHandler(object):
         return len(self.get())
 
 
-class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
+class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     """
-    This is the base Typeclass for all Players. Players represent
+    This is the base Typeclass for all Accounts. Accounts represent
     the person playing the game and tracks account info, password
-    etc. They are OOC entities without presence in-game. A Player
+    etc. They are OOC entities without presence in-game. An Account
     can connect to a Character Object in order to "enter" the
     game.
 
-    Player Typeclass API:
+    Account Typeclass API:
 
     * Available properties (only available on initiated typeclass objects)
 
-     - key (string) - name of player
+     - key (string) - name of account
      - name (string)- wrapper for user.username
      - aliases (list of strings) - aliases to the object. Will be saved to
             database as AliasDB entries but returned as strings.
@@ -120,9 +120,9 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
      - date_created (string) - time stamp of object creation
      - permissions (list of strings) - list of permission strings
      - user (User, read-only) - django User authorization object
-     - obj (Object) - game object controlled by player. 'character' can also
+     - obj (Object) - game object controlled by account. 'character' can also
                      be used.
-     - sessions (list of Sessions) - sessions connected to this player
+     - sessions (list of Sessions) - sessions connected to this account
      - is_superuser (bool, read-only) - if the connected user is a superuser
 
     * Handlers
@@ -142,7 +142,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
      - execute_cmd(raw_string)
      - search(ostring, global_search=False, attribute_name=None,
                       use_nicks=False, location=None,
-                      ignore_errors=False, player=False)
+                      ignore_errors=False, account=False)
      - is_typeclass(typeclass, exact=False)
      - swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
      - access(accessing_obj, access_type='read', default=False, no_superuser_bypass=False)
@@ -151,7 +151,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
     * Hook methods
 
      basetype_setup()
-     at_player_creation()
+     at_account_creation()
 
      > note that the following hooks are also found on Objects and are
        usually handled on the character level:
@@ -169,7 +169,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
      """
 
-    objects = PlayerManager()
+    objects = AccountManager()
 
     # properties
     @lazy_property
@@ -186,24 +186,25 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
     @lazy_property
     def sessions(self):
-        return PlayerSessionHandler(self)
+        return AccountSessionHandler(self)
 
     # session-related methods
 
-    def disconnect_session_from_player(self, session):
+    def disconnect_session_from_account(self, session, reason=None):
         """
         Access method for disconnecting a given session from the
-        player (connection happens automatically in the
+        account (connection happens automatically in the
         sessionhandler)
 
         Args:
             session (Session): Session to disconnect.
+            reason (str, optional): Eventual reason for the disconnect.
 
         """
         global _SESSIONS
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-        _SESSIONS.disconnect(session)
+        _SESSIONS.disconnect(session, reason)
 
     # puppeting operations
 
@@ -235,9 +236,9 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             # no access
             self.msg("You don't have permission to puppet '%s'." % obj.key)
             return
-        if obj.player:
+        if obj.account:
             # object already puppeted
-            if obj.player == self:
+            if obj.account == self:
                 if obj.sessions.count():
                     # we may take over another of our sessions
                     # output messages to the affected sessions
@@ -252,9 +253,9 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                         self.msg(txt1 % obj.name, session=session)
                         self.msg(txt2 % obj.name, session=obj.sessions.all())
                         self.unpuppet_object(obj.sessions.get())
-            elif obj.player.is_connected:
-                # controlled by another player
-                self.msg("|c%s|R is already puppeted by another Player." % obj.key)
+            elif obj.account.is_connected:
+                # controlled by another account
+                self.msg("|c%s|R is already puppeted by another Account." % obj.key)
                 return
 
         # do the puppeting
@@ -262,14 +263,14 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             # cleanly unpuppet eventual previous object puppeted by this session
             self.unpuppet_object(session)
         # if we get to this point the character is ready to puppet or it
-        # was left with a lingering player/session reference from an unclean
+        # was left with a lingering account/session reference from an unclean
         # server kill or similar
 
         obj.at_pre_puppet(self, session=session)
 
         # do the connection
         obj.sessions.add(session)
-        obj.player = self
+        obj.account = self
         session.puid = obj.id
         session.puppet = obj
         # validate/start persistent scripts on object
@@ -299,7 +300,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                 obj.at_pre_unpuppet()
                 obj.sessions.remove(session)
                 if not obj.sessions.count():
-                    del obj.player
+                    del obj.account
                 obj.at_post_unpuppet(self, session=session)
             # Just to be sure we're always clear.
             session.puppet = None
@@ -314,9 +315,9 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
     def get_puppet(self, session):
         """
-        Get an object puppeted by this session through this player. This is
+        Get an object puppeted by this session through this account. This is
         the main method for retrieving the puppeted object from the
-        player's end.
+        account's end.
 
         Args:
             session (Session): Find puppeted object based on this session
@@ -333,7 +334,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
         Returns:
             puppets (list): All puppeted objects currently controlled
-                by this Player.
+                by this Account.
 
         """
         return list(set(session.puppet for session in self.sessions.all() if session.puppet))
@@ -359,7 +360,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
     def delete(self, *args, **kwargs):
         """
-        Deletes the player permanently.
+        Deletes the account permanently.
 
         Notes:
             `*args` and `**kwargs` are passed on to the base delete
@@ -375,12 +376,12 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             except RuntimeError:
                 # no puppet to disconnect from
                 pass
-            session.sessionhandler.disconnect(session, reason=_("Player being deleted."))
+            session.sessionhandler.disconnect(session, reason=_("Account being deleted."))
         self.scripts.stop()
         self.attributes.clear()
         self.nicks.clear()
         self.aliases.clear()
-        super(DefaultPlayer, self).delete(*args, **kwargs)
+        super(DefaultAccount, self).delete(*args, **kwargs)
     # methods inherited from database model
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
@@ -391,7 +392,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
         Args:
             text (str, optional): text data to send
-            from_obj (Object or Player, optional): Object sending. If given,
+            from_obj (Object or Account, optional): Object sending. If given,
                 its at_msg_send() hook will be called.
             session (Session or list, optional): Session object or a list of
                 Sessions to receive this send. If given, overrules the
@@ -411,7 +412,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                 pass
         try:
             if not self.at_msg_receive(text=text, **kwargs):
-                # abort message to this player
+                # abort message to this account
                 return
         except Exception:
             # this may not be assigned.
@@ -426,9 +427,9 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
     def execute_cmd(self, raw_string, session=None, **kwargs):
         """
-        Do something as this player. This method is never called normally,
-        but only when the player object itself is supposed to execute the
-        command. It takes player nicks into account, but not nicks of
+        Do something as this account. This method is never called normally,
+        but only when the account object itself is supposed to execute the
+        command. It takes account nicks into account, but not nicks of
         eventual puppets.
 
         Args:
@@ -445,33 +446,33 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
         """
         raw_string = to_unicode(raw_string)
-        raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_player=False)
+        raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_account=False)
         if not session and _MULTISESSION_MODE in (0, 1):
             # for these modes we use the first/only session
             sessions = self.sessions.get()
             session = sessions[0] if sessions else None
 
         return cmdhandler.cmdhandler(self, raw_string,
-                                     callertype="player", session=session, **kwargs)
+                                     callertype="account", session=session, **kwargs)
 
     def search(self, searchdata, return_puppet=False, search_object=False,
                typeclass=None, nofound_string=None, multimatch_string=None, **kwargs):
         """
         This is similar to `DefaultObject.search` but defaults to searching
-        for Players only.
+        for Accounts only.
 
         Args:
-            searchdata (str or int): Search criterion, the Player's
+            searchdata (str or int): Search criterion, the Account's
                 key or dbref to search for.
             return_puppet (bool, optional): Instructs the method to
-                return matches as the object the Player controls rather
-                than the Player itself (or None) if nothing is puppeted).
+                return matches as the object the Account controls rather
+                than the Account itself (or None) if nothing is puppeted).
             search_object (bool, optional): Search for Objects instead of
-                Players. This is used by e.g. the @examine command when
+                Accounts. This is used by e.g. the @examine command when
                 wanting to examine Objects while OOC.
-            typeclass (Player typeclass, optional): Limit the search
+            typeclass (Account typeclass, optional): Limit the search
                 only to this particular typeclass. This can be used to
-                limit to specific player typeclasses or to limit the search
+                limit to specific account typeclasses or to limit the search
                 to a particular Object typeclass if `search_object` is True.
             nofound_string (str, optional): A one-time error message
                 to echo if `searchdata` leads to no matches. If not given,
@@ -481,7 +482,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                 If not given, will fall back to the default handler.
 
         Return:
-            match (Player, Object or None): A single Player or Object match.
+            match (Account, Object or None): A single Account or Object match.
         Notes:
             Extra keywords are ignored, but are allowed in call in
             order to make API more consistent with
@@ -496,7 +497,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         if search_object:
             matches = ObjectDB.objects.object_search(searchdata, typeclass=typeclass)
         else:
-            matches = PlayerDB.objects.player_search(searchdata, typeclass=typeclass)
+            matches = AccountDB.objects.account_search(searchdata, typeclass=typeclass)
         matches = _AT_SEARCH_RESULT(matches, self, query=searchdata,
                                     nofound_string=nofound_string,
                                     multimatch_string=multimatch_string)
@@ -527,8 +528,8 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             result (bool): Result of access check.
 
         """
-        result = super(DefaultPlayer, self).access(accessing_obj, access_type=access_type,
-                                                   default=default, no_superuser_bypass=no_superuser_bypass)
+        result = super(DefaultAccount, self).access(accessing_obj, access_type=access_type,
+                                                    default=default, no_superuser_bypass=no_superuser_bypass)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 
@@ -554,33 +555,34 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             return time.time() - float(min(conn))
         return None
 
-    # player hooks
+    # account hooks
 
     def basetype_setup(self):
         """
-        This sets up the basic properties for a player. Overload this
-        with at_player_creation rather than changing this method.
+        This sets up the basic properties for an account. Overload this
+        with at_account_creation rather than changing this method.
 
         """
         # A basic security setup
-        lockstring = "examine:perm(Wizards);edit:perm(Wizards);" \
-                     "delete:perm(Wizards);boot:perm(Wizards);msg:all()"
+        lockstring = "examine:perm(Admin);edit:perm(Admin);" \
+                     "delete:perm(Admin);boot:perm(Admin);msg:all()"
         self.locks.add(lockstring)
 
-        # The ooc player cmdset
-        self.cmdset.add_default(_CMDSET_PLAYER, permanent=True)
+        # The ooc account cmdset
+        self.cmdset.add_default(_CMDSET_ACCOUNT, permanent=True)
 
-    def at_player_creation(self):
+    def at_account_creation(self):
         """
-        This is called once, the very first time the player is created
+        This is called once, the very first time the account is created
         (i.e. first time they register with the game). It's a good
-        place to store attributes all players should have, like
+        place to store attributes all accounts should have, like
         configuration values etc.
 
         """
-        # set an (empty) attribute holding the characters this player has
+        # set an (empty) attribute holding the characters this account has
         lockstring = "attrread:perm(Admins);attredit:perm(Admins);" \
-                     "attrcreate:perm(Admins)"
+                     "attrcreate:perm(Admins);" \
+                     "noidletimeout:perm(Builder) or perm(noidletimeout)"
         self.attributes.add("_playable_characters", [], lockstring=lockstring)
         self.attributes.add("_saved_protocol_flags", {}, lockstring=lockstring)
 
@@ -590,8 +592,8 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         that is, whenever it its typeclass is cached from memory. This
         happens on-demand first time the object is used or activated
         in some way after being created but also after each server
-        restart or reload. In the case of player objects, this usually
-        happens the moment the player logs in or reconnects after a
+        restart or reload. In the case of account objects, this usually
+        happens the moment the account logs in or reconnects after a
         reload.
 
         """
@@ -601,7 +603,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
     # typeclass. You can often ignore these and rely on the character
     # ones instead, unless you are implementing a multi-character game
     # and have some things that should be done regardless of which
-    # character is currently connected to this player.
+    # character is currently connected to this account.
 
     def at_first_save(self):
         """
@@ -611,11 +613,11 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
         """
         self.basetype_setup()
-        self.at_player_creation()
+        self.at_account_creation()
 
-        permissions = settings.PERMISSION_PLAYER_DEFAULT
+        permissions = settings.PERMISSION_ACCOUNT_DEFAULT
         if hasattr(self, "_createdict"):
-            # this will only be set if the utils.create_player
+            # this will only be set if the utils.create_account
             # function was used to create the object.
             cdict = self._createdict
             if cdict.get("locks"):
@@ -624,11 +626,11 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                 permissions = cdict["permissions"]
             del self._createdict
 
-        self.permissions.add(permissions)
+        self.permissions.batch_add(*permissions)
 
     def at_access(self, result, accessing_obj, access_type, **kwargs):
         """
-        This is triggered after an access-call on this Player has
+        This is triggered after an access-call on this Account has
             completed.
 
         Args:
@@ -653,32 +655,40 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
     def at_cmdset_get(self, **kwargs):
         """
-        Called just *before* cmdsets on this player are requested by
+        Called just *before* cmdsets on this account are requested by
         the command handler. The cmdsets are available as
         `self.cmdset`. If changes need to be done on the fly to the
         cmdset before passing them on to the cmdhandler, this is the
-        place to do it.  This is called also if the player currently
+        place to do it.  This is called also if the account currently
         have no cmdsets. kwargs are usually not used unless the
         cmdset is generated dynamically.
 
         """
         pass
 
-    def at_first_login(self):
+    def at_first_login(self, **kwargs):
         """
-        Called the very first time this player logs into the game.
+        Called the very first time this account logs into the game.
         Note that this is called *before* at_pre_login, so no session
         is established and usually no character is yet assigned at
-        this point. This hook is intended for player-specific setup
+        this point. This hook is intended for account-specific setup
         like configurations.
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
 
-    def at_pre_login(self):
+    def at_pre_login(self, **kwargs):
         """
         Called every time the user logs in, just before the actual
         login-state is set.
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
@@ -706,13 +716,15 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         else:
             logger.log_info("[%s]: %s" % (now, message))
 
-    def at_post_login(self, session=None):
+    def at_post_login(self, session=None, **kwargs):
         """
         Called at the end of the login process, just before letting
-        the player loose.
+        the account loose.
 
         Args:
             session (Session, optional): Session logging in, if any.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Notes:
             This is called *before* an eventual Character's
@@ -747,14 +759,14 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
                 return
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
-            # screen. We execute look on the player.
+            # screen. We execute look on the account.
             # we make sure to clean up the _playable_characers list in case
             # any was deleted in the interim.
             self.db._playable_characters = [char for char in self.db._playable_characters if char]
             self.msg(self.at_look(target=self.db._playable_characters,
                                   session=session))
 
-    def at_failed_login(self, session):
+    def at_failed_login(self, session, **kwargs):
         """
         Called by the login process if a user account is targeted correctly
         but provided with an invalid password. By default it does nothing,
@@ -762,41 +774,59 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
 
         Args:
             session (session): Session logging in.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
         """
         pass
 
-    def at_disconnect(self, reason=None):
+    def at_disconnect(self, reason=None, **kwargs):
         """
         Called just before user is disconnected.
 
         Args:
             reason (str, optional): The reason given for the disconnect,
                 (echoed to the connection channel by default).
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
 
         """
-        reason = reason and "(%s)" % reason or ""
-        self._send_to_connect_channel("|R%s disconnected %s|n" % (self.key, reason))
+        reason = " (%s)" % reason if reason else ""
+        self._send_to_connect_channel("|R%s disconnected%s|n" % (self.key, reason))
 
-    def at_post_disconnect(self):
+    def at_post_disconnect(self, **kwargs):
         """
         This is called *after* disconnection is complete. No messages
-        can be relayed to the player from here. After this call, the
-        player should not be accessed any more, making this a good
-        spot for deleting it (in the case of a guest player account,
+        can be relayed to the account from here. After this call, the
+        account should not be accessed any more, making this a good
+        spot for deleting it (in the case of a guest account account,
         for example).
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         pass
 
-    def at_message_receive(self, message, from_obj=None):
+    def at_message_receive(self, message, from_obj=None, **kwargs):
         """
         This is currently unused.
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         return True
 
-    def at_message_send(self, message, to_object):
+    def at_message_send(self, message, to_object, **kwargs):
         """
         This is currently unused.
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         pass
@@ -817,7 +847,7 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
         """
         pass
 
-    def at_look(self, target=None, session=None):
+    def at_look(self, target=None, session=None, **kwargs):
         """
         Called when this object executes a look. It allows to customize
         just what this means.
@@ -826,6 +856,8 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             target (Object or list, optional): An object or a list
                 objects to inspect.
             session (Session, optional): The session doing this look.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             look_string (str): A prepared look string, ready to send
@@ -849,10 +881,10 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             result.append(nsess == 1 and "\n\n|wConnected session:|n" or "\n\n|wConnected sessions (%i):|n" % nsess)
             for isess, sess in enumerate(sessions):
                 csessid = sess.sessid
-                addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple)
-                                    and str(sess.address[0]) or str(sess.address))
-                result.append("\n %s %s" % (session.sessid == csessid and "|w* %s|n" % (isess + 1)
-                                            or "  %s" % (isess + 1), addr))
+                addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple) and
+                                    str(sess.address[0]) or str(sess.address))
+                result.append("\n %s %s" % (session.sessid == csessid and "|w* %s|n" % (isess + 1) or
+                                            "  %s" % (isess + 1), addr))
             result.append("\n\n |whelp|n - more commands")
             result.append("\n |wooc <Text>|n - talk on public channel")
 
@@ -893,18 +925,21 @@ class DefaultPlayer(with_metaclass(TypeclassBase, PlayerDB)):
             return look_string
 
 
-class DefaultGuest(DefaultPlayer):
+class DefaultGuest(DefaultAccount):
     """
-    This class is used for guest logins. Unlike Players, Guests and
+    This class is used for guest logins. Unlike Accounts, Guests and
     their characters are deleted after disconnection.
     """
-    def at_post_login(self, session=None):
+
+    def at_post_login(self, session=None, **kwargs):
         """
         In theory, guests only have one character regardless of which
         MULTISESSION_MODE we're in. They don't get a choice.
 
         Args:
             session (Session, optional): Session connecting.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         """
         self._send_to_connect_channel("|G%s connected|n" % self.key)
@@ -922,9 +957,14 @@ class DefaultGuest(DefaultPlayer):
                 print "deleting Character:", character
                 character.delete()
 
-    def at_post_disconnect(self):
+    def at_post_disconnect(self, **kwargs):
         """
         Once having disconnected, destroy the guest's characters and
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
         """
         super(DefaultGuest, self).at_post_disconnect()
         characters = self.db._playable_characters

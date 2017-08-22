@@ -118,6 +118,7 @@ def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=F
         else:
             return result
 
+
 RE_PARTS = re.compile(r"(d|\+|-|/|\*|<|>|<=|>=|!=|==)")
 RE_MOD = re.compile(r"(\+|-|/|\*)")
 RE_COND = re.compile(r"(<|>|<=|>=|!=|==)")
@@ -255,6 +256,7 @@ class DiceCmdSet(CmdSet):
     a small cmdset for testing purposes.
     Add with @py self.cmdset.add("contrib.dice.DiceCmdSet")
     """
+
     def at_cmdset_creation(self):
         """Called when set is created"""
         self.add(CmdDice())

@@ -248,6 +248,7 @@ class BatchCommandProcessor(object):
     This class implements a batch-command processor.
 
     """
+
     def parse_file(self, pythonpath):
         """
         This parses the lines of a batchfile according to the following
@@ -412,6 +413,7 @@ class BatchCodeProcessor(object):
             err += "\n".join(traceback.format_exception(etype, value, tb))
             return err
         return None
+
 
 BATCHCMD = BatchCommandProcessor()
 BATCHCODE = BatchCodeProcessor()

@@ -1,10 +1,23 @@
 {% extends "base.html" %}
-{% block sidebar %}
-{% endblock %}
+
+{% block titleblock %}500 - Internal Server Error{% endblock %}
 
 {% block header_ext %}
+<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 {% endblock %}
 
 {% block content %}
-<h1>Error 500 - A Server Error was encountered.</h1>
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-block">
+        <h1 class="card-title">Error 500</h1>
+        <h4 class="card-subtitle">Internal Server Error</h2>
+        <hr />
+        <p>If this result is unexpected, please contact the server administrator</p>
+        <p><a href="/">Back to the home page</a></p>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -34,7 +34,7 @@ from ast import literal_eval
 from copy import deepcopy
 from base64 import b64encode, b64decode
 from zlib import compress, decompress
-#import six # this is actually a pypy component, not in default syslib
+# import six # this is actually a pypy component, not in default syslib
 import django
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -54,11 +54,12 @@ except ImportError:
 
 # python 3.x does not have cPickle module
 try:
-    from cPickle import loads, dumps # cpython 2.x
+    from cPickle import loads, dumps  # cpython 2.x
 except ImportError:
-    from pickle import loads, dumps # cpython 3.x, other interpreters
+    from pickle import loads, dumps  # cpython 3.x, other interpreters
 
 DEFAULT_PROTOCOL = 2
+
 
 class PickledObject(str):
     """
@@ -105,12 +106,12 @@ def dbsafe_encode(value, compress_object=False, pickle_protocol=DEFAULT_PROTOCOL
     value = dumps(deepcopy(value), protocol=pickle_protocol)
     if compress_object:
         value = compress(value)
-    value = b64encode(value).decode() # decode bytes to str
+    value = b64encode(value).decode()  # decode bytes to str
     return PickledObject(value)
 
 
 def dbsafe_decode(value, compress_object=False):
-    value = value.encode() # encode str to bytes
+    value = value.encode()  # encode str to bytes
     value = b64decode(value)
     if compress_object:
         value = decompress(value)
@@ -198,7 +199,7 @@ class PickledObjectField(models.Field):
         # If the field doesn't have a default, then we punt to models.Field.
         return super(PickledObjectField, self).get_default()
 
-    #def to_python(self, value):
+    # def to_python(self, value):
     def from_db_value(self, value, *args):
         """
         B64decode and unpickle the object, optionally decompressing it.

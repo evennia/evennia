@@ -56,21 +56,21 @@ Example:
 
  We want to limit who may edit a particular object (let's call this access_type
 for 'edit', it depends on what the command is looking for). We want this to
-only work for those with the Permission 'Builders'. So we use our lock
+only work for those with the Permission 'Builder'. So we use our lock
 function above and define it like this:
 
-  'edit:perm(Builders)'
+  'edit:perm(Builder)'
 
 Here, the lock-function perm() will be called with the string
-'Builders' (accessing_obj and accessed_obj are added automatically,
+'Builder' (accessing_obj and accessed_obj are added automatically,
 you only need to add the args/kwargs, if any).
 
-If we wanted to make sure the accessing object was BOTH a Builders and a
+If we wanted to make sure the accessing object was BOTH a Builder and a
 GoodGuy, we could use AND:
 
-  'edit:perm(Builders) AND perm(GoodGuy)'
+  'edit:perm(Builder) AND perm(GoodGuy)'
 
-To allow EITHER Builders and GoodGuys, we replace AND with OR. perm() is just
+To allow EITHER Builder and GoodGuys, we replace AND with OR. perm() is just
 one example, the lock function can do anything and compare any properties of
 the calling object to decide if the lock is passed or not.
 
@@ -79,7 +79,7 @@ the calling object to decide if the lock is passed or not.
 To make these work, add the string to the lockhandler of the object you want
 to apply the lock to:
 
-  obj.lockhandler.add('edit:perm(Builders)')
+  obj.lockhandler.add('edit:perm(Builder)')
 
 From then on, a command that wants to check for 'edit' access on this
 object would do something like this:
@@ -121,6 +121,7 @@ WARNING_LOG = settings.LOCKWARNING_LOG_FILE
 # by errors in lock definitions.
 #
 
+
 class LockException(Exception):
     """
     Raised during an error in a lock.
@@ -133,6 +134,8 @@ class LockException(Exception):
 #
 
 _LOCKFUNCS = {}
+
+
 def _cache_lockfuncs():
     """
     Updates the cache.
@@ -145,6 +148,7 @@ def _cache_lockfuncs():
 #
 # pre-compiled regular expressions
 #
+
 
 _RE_FUNCS = re.compile(r"\w+\([^)]*\)")
 _RE_SEPS = re.compile(r"(?<=[ )])AND(?=\s)|(?<=[ )])OR(?=\s)|(?<=[ )])NOT(?=\s)")
@@ -229,7 +233,7 @@ class LockHandler(object):
                 if not callable(func):
                     elist.append(_("Lock: lock-function '%s' is not available.") % funcstring)
                     continue
-                args = list(arg.strip() for arg in rest.split(',') if arg and not '=' in arg)
+                args = list(arg.strip() for arg in rest.split(',') if arg and '=' not in arg)
                 kwargs = dict([arg.split('=', 1) for arg in rest.split(',') if arg and '=' in arg])
                 lock_funcs.append((func, args, kwargs))
                 evalstring = evalstring.replace(funcstring, '%s')
@@ -244,8 +248,8 @@ class LockHandler(object):
                 continue
             if access_type in locks:
                 duplicates += 1
-                wlist.append(_("LockHandler on %(obj)s: access type '%(access_type)s' changed from '%(source)s' to '%(goal)s' " % \
-                        {"obj":self.obj, "access_type":access_type, "source":locks[access_type][2], "goal":raw_lockstring}))
+                wlist.append(_("LockHandler on %(obj)s: access type '%(access_type)s' changed from '%(source)s' to '%(goal)s' " %
+                               {"obj": self.obj, "access_type": access_type, "source": locks[access_type][2], "goal": raw_lockstring}))
             locks[access_type] = (evalstring, tuple(lock_funcs), raw_lockstring)
         if wlist and WARNING_LOG:
             # a warning text was set, it's not an error, so only report
@@ -271,10 +275,10 @@ class LockHandler(object):
     def cache_lock_bypass(self, obj):
         """
         We cache superuser bypass checks here for efficiency. This
-        needs to be re-run when a player is assigned to a character.
+        needs to be re-run when an account is assigned to a character.
         We need to grant access to superusers. We need to check both
-        directly on the object (players), through obj.player and using
-        the get_player() method (this sits on serversessions, in some
+        directly on the object (accounts), through obj.account and using
+        the get_account() method (this sits on serversessions, in some
         rare cases where a check is done before the login process has
         yet been fully finalized)
 
@@ -300,7 +304,7 @@ class LockHandler(object):
         """
         # sanity checks
         for lockdef in lockstring.split(';'):
-            if not ':' in lockstring:
+            if ':' not in lockstring:
                 self._log_error(_("Lock: '%s' contains no colon (:).") % lockdef)
                 return False
             access_type, rhs = [part.strip() for part in lockdef.split(':', 1)]
@@ -391,7 +395,7 @@ class LockHandler(object):
             self._save_locks()
             return True
         return False
-    delete = remove # alias for historical reasons
+    delete = remove  # alias for historical reasons
 
     def clear(self):
         """
@@ -449,9 +453,9 @@ class LockHandler(object):
                 return True
         except AttributeError:
             # happens before session is initiated.
-            if not no_superuser_bypass and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser)
-             or (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser)
-             or (hasattr(accessing_obj, 'get_player') and (not accessing_obj.get_player() or accessing_obj.get_player().is_superuser))):
+            if not no_superuser_bypass and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser) or
+                                            (hasattr(accessing_obj, 'account') and hasattr(accessing_obj.account, 'is_superuser') and accessing_obj.account.is_superuser) or
+                                            (hasattr(accessing_obj, 'get_account') and (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
                 return True
 
         # no superuser or bypass -> normal lock operation
@@ -510,17 +514,17 @@ class LockHandler(object):
             if accessing_obj.locks.lock_bypass and not no_superuser_bypass:
                 return True
         except AttributeError:
-            if no_superuser_bypass and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser)
-             or (hasattr(accessing_obj, 'player') and hasattr(accessing_obj.player, 'is_superuser') and accessing_obj.player.is_superuser)
-             or (hasattr(accessing_obj, 'get_player') and (not accessing_obj.get_player() or accessing_obj.get_player().is_superuser))):
+            if no_superuser_bypass and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser) or
+                                        (hasattr(accessing_obj, 'account') and hasattr(accessing_obj.account, 'is_superuser') and accessing_obj.account.is_superuser) or
+                                        (hasattr(accessing_obj, 'get_account') and (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
                 return True
-        if not ":" in lockstring:
+        if ":" not in lockstring:
             lockstring = "%s:%s" % ("_dummy", lockstring)
 
         locks = self._parse_lockstring(lockstring)
 
         if access_type:
-            if not access_type in locks:
+            if access_type not in locks:
                 return default
             else:
                 return self._eval_access_type(
@@ -541,16 +545,16 @@ def _test():
     obj1 = TestObj()
     obj2 = TestObj()
 
-    #obj1.lock_storage = "owner:dbref(#4);edit:dbref(#5) or perm(Wizards);examine:perm(Builders);delete:perm(Wizards);get:all()"
+    # obj1.lock_storage = "owner:dbref(#4);edit:dbref(#5) or perm(Admin);examine:perm(Builder);delete:perm(Admin);get:all()"
     #obj1.lock_storage = "cmd:all();admin:id(1);listen:all();send:all()"
-    obj1.lock_storage = "listen:perm(Immortals)"
+    obj1.lock_storage = "listen:perm(Developer)"
 
     pdb.set_trace()
     obj1.locks = LockHandler(obj1)
-    obj2.permissions.add("Immortals")
+    obj2.permissions.add("Developer")
     obj2.id = 4
 
-    #obj1.locks.add("edit:attr(test)")
+    # obj1.locks.add("edit:attr(test)")
 
     print("comparing obj2.permissions (%s) vs obj1.locks (%s)" % (obj2.permissions, obj1.locks))
     print(obj1.locks.check(obj2, 'owner'))

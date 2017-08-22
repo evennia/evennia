@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 
+
 def convert_defaults(apps, schema_editor):
     ScriptDB = apps.get_model("scripts", "ScriptDB")
     for script in ScriptDB.objects.filter(db_typeclass_path="src.scripts.scripts.Script"):
@@ -12,6 +13,7 @@ def convert_defaults(apps, schema_editor):
         script.db_typeclass_path = "evennia.utils.gametime.GameTime"
         script.save()
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -19,5 +21,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-            migrations.RunPython(convert_defaults),
+        migrations.RunPython(convert_defaults),
     ]

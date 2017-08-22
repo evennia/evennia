@@ -40,6 +40,7 @@ class SimpleDoor(DefaultExit):
     sides using `exitname.setlock("traverse:false())`
 
     """
+
     def at_object_creation(self):
         """
         Called the very first time the door is created.
@@ -115,7 +116,7 @@ class CmdOpen(default_cmds.CmdOpen):
             self.caller.msg("Note: A door-type exit was created - ignored eventual custom return-exit type.")
             self.return_exit_already_created = True
             back_exit = self.create_exit(exit_name, destination, location,
-                                                         exit_aliases=exit_aliases, typeclass=typeclass)
+                                         exit_aliases=exit_aliases, typeclass=typeclass)
             new_exit.db.return_exit = back_exit
             back_exit.db.return_exit = new_exit
         return new_exit
@@ -159,10 +160,9 @@ class CmdOpenCloseDoor(default_cmds.MuxCommand):
             else:
                 door.setlock("traverse:true()")
                 self.caller.msg("You open %s." % door.key)
-        else: # close
+        else:  # close
             if not door.locks.check(self.caller, "traverse"):
                 self.caller.msg("%s is already closed." % door.key)
             else:
                 door.setlock("traverse:false()")
                 self.caller.msg("You close %s." % door.key)
-

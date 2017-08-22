@@ -44,7 +44,7 @@ _SCREEN_HEIGHT = settings.CLIENT_DEFAULT_HEIGHT
 # text
 
 _DISPLAY = \
-"""{text}
+    """{text}
 (|wmore|n [{pageno}/{pagemax}] retur|wn|n|||wb|nack|||wt|nop|||we|nnd|||wq|nuit)"""
 
 
@@ -62,8 +62,8 @@ class CmdMore(Command):
         Implement the command
         """
         more = self.caller.ndb._more
-        if not more and hasattr(self.caller, "player"):
-            more = self.caller.player.ndb._more
+        if not more and hasattr(self.caller, "account"):
+            more = self.caller.account.ndb._more
         if not more:
             self.caller.msg("Error in loading the pager. Contact an admin.")
             return
@@ -82,6 +82,7 @@ class CmdMore(Command):
             # return or n, next
             more.page_next()
 
+
 class CmdMoreLook(Command):
     """
     Override look to display window and prevent OOCLook from firing
@@ -89,13 +90,14 @@ class CmdMoreLook(Command):
     key = "look"
     aliases = ["l"]
     auto_help = False
+
     def func(self):
         """
         Implement the command
         """
         more = self.caller.ndb._more
-        if not more and hasattr(self.caller, "player"):
-            more = self.caller.player.ndb._more
+        if not more and hasattr(self.caller, "account"):
+            more = self.caller.account.ndb._more
         if not more:
             self.caller.msg("Error in loading the pager. Contact an admin.")
             return
@@ -118,13 +120,14 @@ class EvMore(object):
     """
     The main pager object
     """
+
     def __init__(self, caller, text, always_page=False, session=None,
-                justify_kwargs=None, exit_on_lastpage=False, **kwargs):
+                 justify_kwargs=None, exit_on_lastpage=False, **kwargs):
         """
         Initialization of the text handler.
 
         Args:
-            caller (Object or Player): Entity reading the text.
+            caller (Object or Account): Entity reading the text.
             text (str): The text to put under paging.
             always_page (bool, optional): If `False`, the
                 pager will only kick in if `text` is too big
@@ -159,8 +162,8 @@ class EvMore(object):
         self._session = session
 
         # set up individual pages for different sessions
-        height = max(4, session.protocol_flags.get("SCREENHEIGHT", {0:_SCREEN_HEIGHT})[0] - 4)
-        width = session.protocol_flags.get("SCREENWIDTH", {0:_SCREEN_WIDTH})[0]
+        height = max(4, session.protocol_flags.get("SCREENHEIGHT", {0: _SCREEN_HEIGHT})[0] - 4)
+        width = session.protocol_flags.get("SCREENWIDTH", {0: _SCREEN_WIDTH})[0]
 
         if justify_kwargs is False:
             # no justification. Simple division by line
@@ -183,7 +186,7 @@ class EvMore(object):
         # always limit number of chars to 10 000 per page
         height = min(10000 // max(1, width), height)
 
-        self._pages = ["\n".join(lines[i:i+height]) for i in range(0, len(lines), height)]
+        self._pages = ["\n".join(lines[i:i + height]) for i in range(0, len(lines), height)]
         self._npages = len(self._pages)
         self._npos = 0
 
@@ -246,7 +249,6 @@ class EvMore(object):
             if self.exit_on_lastpage and self._pos == self._pos >= self._npages - 1:
                 self.page_quit()
 
-
     def page_back(self):
         """
         Scroll the text back up, at the most to the top.
@@ -268,7 +270,7 @@ def msg(caller, text="", always_page=False, session=None, justify_kwargs=None, *
     More-supported version of msg, mimicking the normal msg method.
 
     Args:
-        caller (Object or Player): Entity reading the text.
+        caller (Object or Account): Entity reading the text.
         text (str): The text to put under paging.
         always_page (bool, optional): If `False`, the
             pager will only kick in if `text` is too big
@@ -283,5 +285,4 @@ def msg(caller, text="", always_page=False, session=None, justify_kwargs=None, *
 
     """
     EvMore(caller, text, always_page=always_page, session=session,
-                justify_kwargs=justify_kwargs, **kwargs)
-
+           justify_kwargs=justify_kwargs, **kwargs)

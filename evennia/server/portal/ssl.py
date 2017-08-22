@@ -50,6 +50,7 @@ class SSLProtocol(TelnetProtocol):
     Communication is the same as telnet, except data transfer
     is done with encryption.
     """
+
     def __init__(self, *args, **kwargs):
         super(SSLProtocol, self).__init__(*args, **kwargs)
         self.protocol_name = "ssl"

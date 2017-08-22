@@ -5,28 +5,43 @@ Login
 {% endblock %}
 
 {% block content %}
-<h1 id="alt-layout">Login</h1>
-{% if user.is_authenticated %}
-   <p>You are already logged in!</p>
-{% else %}
-   {% if form.has_errors %}
-      <p>Your username and password didn't match. Please try again.</p>
-   {% endif %}
 
-   <form method="post" action=".">
-      {% csrf_token %}
-      <table>
-         <tr>
-            <td><label for="id_username">Username:</label></td>
-            <td>{{ form.username }}</td>
-         </tr>
-         <tr>
-            <td><label for="id_password">Password:</label></td>
-            <td>{{ form.password }}</td>
-         </tr>
-      </table>
-      <input type="submit" value="Login" />
-      <input type="hidden" name="next" value="{{ next }}" />
-   </form>
+{% load addclass %}
+
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-block">
+        <h1 class="card-title">Login</h1>
+        <hr />
+        {% if user.is_authenticated %}
+        <p>You are already logged in!</p>
+        {% else %}
+        {% if form.has_errors %}
+        <p>Your username and password didn't match. Please try again.</p>
+        {% endif %}
+
+        <form method="post" action=".">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label for="id_username">Username:</label>
+            {{ form.username | addclass:"form-control" }}
+          </div>
+
+          <div class="form-group">
+            <label for="id_password">Password:</label>
+            {{ form.password | addclass:"form-control" }}
+          </div>
+
+          <div class="form-group">
+            <input class="form-control" type="submit" value="Login" />
+            <input type="hidden" name="next" value="{{ next }}" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endif %}
 {% endblock %}

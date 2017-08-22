@@ -81,7 +81,7 @@ This event is called when another character arrives in the location
 where the current character is.  For instance, a puppeted character
 arrives in the shop of a shopkeeper (assuming the shopkeeper is
 a character).  As its name suggests, this event can be very useful
-to have NPC greeting one another, or players, who come to visit.
+to have NPC greeting one another, or accounts, who come to visit.
 
 Variables you can use in this event:
     character: the character connected to this event.
@@ -100,9 +100,9 @@ Variables you can use in this event:
 """
 
 CHARACTER_PUPPETED = """
-When the character has been puppeted by a player.
-This event is called when a player has just puppeted this character.
-This can commonly happen when a player connects onto this character,
+When the character has been puppeted by an account.
+This event is called when an account has just puppeted this character.
+This can commonly happen when an account connects onto this character,
 or when puppeting to a NPC or free character.
 
 Variables you can use in this event:
@@ -151,13 +151,14 @@ Variables you can use in this event:
 
 CHARACTER_UNPUPPETED = """
 When the character is about to be un-puppeted.
-This event is called when a player is about to un-puppet the
-character, which can happen if the player is disconnecting or
+This event is called when an account is about to un-puppet the
+character, which can happen if the account is disconnecting or
 changing puppets.
 
 Variables you can use in this event:
     character: the character connected to this event.
 """
+
 
 @register_events
 class EventCharacter(DefaultCharacter):
@@ -208,12 +209,12 @@ class EventCharacter(DefaultCharacter):
         exits = [o for o in location.contents if o.location is location and o.destination is destination]
         mapping = mapping or {}
         mapping.update({
-                "character": self,
+            "character": self,
         })
 
         if exits:
             exits[0].callbacks.call("msg_leave", self, exits[0],
-                    location, destination, string, mapping)
+                                    location, destination, string, mapping)
             string = exits[0].callbacks.get_variable("message")
             mapping = exits[0].callbacks.get_variable("mapping")
 
@@ -244,8 +245,8 @@ class EventCharacter(DefaultCharacter):
 
         """
 
-        if not source_location and self.location.has_player:
-            # This was created from nowhere and added to a player's
+        if not source_location and self.location.has_account:
+            # This was created from nowhere and added to an account's
             # inventory; it's probably the result of a create command.
             string = "You now have %s in your possession." % self.get_display_name(self.location)
             self.location.msg(string)
@@ -261,14 +262,14 @@ class EventCharacter(DefaultCharacter):
         exits = []
         mapping = mapping or {}
         mapping.update({
-                "character": self,
+            "character": self,
         })
 
         if origin:
             exits = [o for o in destination.contents if o.location is destination and o.destination is origin]
             if exits:
                 exits[0].callbacks.call("msg_arrive", self, exits[0],
-                        origin, destination, string, mapping)
+                                        origin, destination, string, mapping)
                 string = exits[0].callbacks.get_variable("message")
                 mapping = exits[0].callbacks.get_variable("mapping")
 
@@ -299,7 +300,7 @@ class EventCharacter(DefaultCharacter):
         Room = DefaultRoom
         if isinstance(origin, Room) and isinstance(destination, Room):
             can = self.callbacks.call("can_move", self,
-                    origin, destination)
+                                      origin, destination)
             if can:
                 can = origin.callbacks.call("can_move", self, origin)
                 if can:
@@ -357,11 +358,11 @@ class EventCharacter(DefaultCharacter):
     def at_post_puppet(self):
         """
         Called just after puppeting has been completed and all
-        Player<->Object links have been established.
+        Account<->Object links have been established.
 
         Note:
-            You can use `self.player` and `self.sessions.get()` to get
-            player and sessions at this point; the last entry in the
+            You can use `self.account` and `self.sessions.get()` to get
+            account and sessions at this point; the last entry in the
             list from `self.sessions.get()` is the latest Session
             puppeting this Object.
 
@@ -378,11 +379,11 @@ class EventCharacter(DefaultCharacter):
     def at_pre_unpuppet(self):
         """
         Called just before beginning to un-connect a puppeting from
-        this Player.
+        this Account.
 
         Note:
-            You can use `self.player` and `self.sessions.get()` to get
-            player and sessions at this point; the last entry in the
+            You can use `self.account` and `self.sessions.get()` to get
+            account and sessions at this point; the last entry in the
             list from `self.sessions.get()` is the latest Session
             puppeting this Object.
 
@@ -489,6 +490,7 @@ Variables you can use in this event:
     destination: the character's location after moving.
 """
 
+
 @register_events
 class EventExit(DefaultExit):
 
@@ -520,7 +522,7 @@ class EventExit(DefaultExit):
         is_character = inherits_from(traversing_object, DefaultCharacter)
         if is_character:
             allow = self.callbacks.call("can_traverse", traversing_object,
-                    self, self.location)
+                                        self, self.location)
             if not allow:
                 return
 
@@ -529,7 +531,7 @@ class EventExit(DefaultExit):
         # After traversing
         if is_character:
             self.callbacks.call("traverse", traversing_object,
-                    self, self.location, self.destination)
+                                self, self.location, self.destination)
 
 
 # Object help
@@ -572,6 +574,7 @@ game time).  Units have to be specified depending on your set calendar
 Variables you can use in this event:
     object: the object connected to this event.
 """
+
 
 @register_events
 class EventObject(DefaultObject):
@@ -620,6 +623,7 @@ class EventObject(DefaultObject):
         """
         super(EventObject, self).at_drop(dropper)
         self.callbacks.call("drop", dropper, self)
+
 
 # Room help
 ROOM_CAN_DELETE = """
@@ -683,7 +687,7 @@ Variables you can use in this event:
 ROOM_PUPPETED_IN = """
 After the character has been puppeted in this room.
 This event is called after a character has been puppeted in this
-room.  This can happen when a player, having connected, begins
+room.  This can happen when an account, having connected, begins
 to puppet a character.  The character's location at this point,
 if it's a room, will see this event fire.
 
@@ -733,7 +737,7 @@ Variables you can use in this event:
 ROOM_UNPUPPETED_IN = """
 Before the character is un-puppeted in this room.
 This event is called before a character is un-puppeted in this
-room.  This can happen when a player, puppeting a character, is
+room.  This can happen when an account, puppeting a character, is
 disconnecting.  The character's location at this point, if it's a
 room, will see this event fire.
 
@@ -741,6 +745,7 @@ Variables you can use in this event:
     character: the character who is about to be un-puppeted in this room.
     room: the room connected to this event.
 """
+
 
 @register_events
 class EventRoom(DefaultRoom):
@@ -792,7 +797,7 @@ class EventRoom(DefaultRoom):
 
         """
         allow = self.callbacks.call("can_say", speaker, self, message,
-                parameters=message)
+                                    parameters=message)
         if not allow:
             return
 
@@ -802,7 +807,7 @@ class EventRoom(DefaultRoom):
         for present in [o for o in self.contents if isinstance(
                 o, DefaultCharacter) and o is not speaker]:
             allow = present.callbacks.call("can_say", speaker, present,
-                    message, parameters=message)
+                                           message, parameters=message)
             if not allow:
                 return
 
@@ -811,10 +816,10 @@ class EventRoom(DefaultRoom):
         # We force the next event to be called after the message
         # This will have to change when the Evennia API adds new hooks
         delay(0, self.callbacks.call, "say", speaker, self, message,
-                parameters=message)
+              parameters=message)
         for present in [o for o in self.contents if isinstance(
                 o, DefaultCharacter) and o is not speaker]:
             delay(0, present.callbacks.call, "say", speaker, present, message,
-                    parameters=message)
+                  parameters=message)
 
         return message

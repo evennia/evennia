@@ -111,8 +111,8 @@ class UnixCommandParser(argparse.ArgumentParser):
         """
         prog = prog or command.key
         super(UnixCommandParser, self).__init__(
-                prog=prog, description=description,
-                conflict_handler='resolve', add_help=False, **kwargs)
+            prog=prog, description=description,
+            conflict_handler='resolve', add_help=False, **kwargs)
         self.command = command
         self.post_help = epilog
 

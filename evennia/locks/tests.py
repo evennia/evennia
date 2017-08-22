@@ -25,8 +25,8 @@ from evennia.locks import lockfuncs
 class TestLockCheck(EvenniaTest):
     def testrun(self):
         dbref = self.obj2.dbref
-        self.obj1.locks.add("owner:dbref(%s);edit:dbref(%s) or perm(Wizards);examine:perm(Builders) and id(%s);delete:perm(Wizards);get:all()" % (dbref, dbref, dbref))
-        self.obj2.permissions.add('Wizards')
+        self.obj1.locks.add("owner:dbref(%s);edit:dbref(%s) or perm(Admin);examine:perm(Builder) and id(%s);delete:perm(Admin);get:all()" % (dbref, dbref, dbref))
+        self.obj2.permissions.add('Admin')
         self.assertEquals(True, self.obj1.locks.check(self.obj2, 'owner'))
         self.assertEquals(True, self.obj1.locks.check(self.obj2, 'edit'))
         self.assertEquals(True, self.obj1.locks.check(self.obj2, 'examine'))
@@ -39,11 +39,11 @@ class TestLockCheck(EvenniaTest):
 
 class TestLockfuncs(EvenniaTest):
     def testrun(self):
-        self.obj2.permissions.add('Wizards')
+        self.obj2.permissions.add('Admin')
         self.assertEquals(True, lockfuncs.true(self.obj2, self.obj1))
         self.assertEquals(False, lockfuncs.false(self.obj2, self.obj1))
-        self.assertEquals(True, lockfuncs.perm(self.obj2, self.obj1, 'Wizards'))
-        self.assertEquals(True, lockfuncs.perm_above(self.obj2, self.obj1, 'Builders'))
+        self.assertEquals(True, lockfuncs.perm(self.obj2, self.obj1, 'Admin'))
+        self.assertEquals(True, lockfuncs.perm_above(self.obj2, self.obj1, 'Builder'))
         dbref = self.obj2.dbref
         self.assertEquals(True, lockfuncs.dbref(self.obj2, self.obj1, '%s' % dbref))
         self.obj2.db.testattr = 45

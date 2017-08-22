@@ -9,8 +9,8 @@ intelligent container that, when added to other CmdSet make sure that
 same-name commands are treated correctly (usually so there are no
 doublets).  This temporary but up-to-date merger of CmdSet is jointly
 called the Current Cmset. It is this Current CmdSet that the
-commandhandler looks through whenever a player enters a command (it
-also adds CmdSets from objects in the room in real-time). All player
+commandhandler looks through whenever an account enters a command (it
+also adds CmdSets from objects in the room in real-time). All account
 objects have a 'default cmdset' containing all the normal in-game mud
 commands (look etc).
 
@@ -19,12 +19,12 @@ So what is all this cmdset complexity good for?
 In its simplest form, a CmdSet has no commands, only a key name. In
 this case the cmdset's use is up to each individual game - it can be
 used by an AI module for example (mobs in cmdset 'roam' move from room
-to room, in cmdset 'attack' they enter combat with players).
+to room, in cmdset 'attack' they enter combat with accounts).
 
 Defining commands in cmdsets offer some further powerful game-design
 consequences however. Here are some examples:
 
-As mentioned above, all players always have at least the Default
+As mentioned above, all accounts always have at least the Default
 CmdSet.  This contains the set of all normal-use commands in-game,
 stuff like look and @desc etc. Now assume our players end up in a dark
 room. You don't want the player to be able to do much in that dark
@@ -37,7 +37,7 @@ and have this completely replace the default cmdset.
 
 Another example: Say you want your players to be able to go
 fishing. You could implement this as a 'fish' command that fails
-whenever the player has no fishing rod. Easy enough.  But what if you
+whenever the account has no fishing rod. Easy enough.  But what if you
 want to make fishing more complex - maybe you want four-five different
 commands for throwing your line, reeling in, etc? Most players won't
 (we assume) have fishing gear, and having all those detailed commands
@@ -48,7 +48,7 @@ for a minor thing like fishing?
 So instead you put all those detailed fishing commands into their own
 CommandSet called 'Fishing'. Whenever the player gives the command
 'fish' (presumably the code checks there is also water nearby), only
-THEN this CommandSet is added to the Cmdhandler of the player. The
+THEN this CommandSet is added to the Cmdhandler of the account. The
 'throw' command (which normally throws rocks) is replaced by the
 custom 'fishing variant' of throw. What has happened is that the
 Fishing CommandSet was merged on top of the Default ones, and due to
@@ -86,32 +86,32 @@ _CMDSET_FALLBACKS = settings.CMDSET_FALLBACKS
 # Output strings
 
 _ERROR_CMDSET_IMPORT = _(
-"""{traceback}
+    """{traceback}
 Error loading cmdset '{path}'
 (Traceback was logged {timestamp})""")
 
 _ERROR_CMDSET_KEYERROR = _(
-"""Error loading cmdset: No cmdset class '{classname}' in '{path}'.
+    """Error loading cmdset: No cmdset class '{classname}' in '{path}'.
 (Traceback was logged {timestamp})""")
 
 _ERROR_CMDSET_SYNTAXERROR = _(
-"""{traceback}
+    """{traceback}
 SyntaxError encountered when loading cmdset '{path}'.
 (Traceback was logged {timestamp})""")
 
 _ERROR_CMDSET_EXCEPTION = _(
-"""{traceback}
+    """{traceback}
 Compile/Run error when loading cmdset '{path}'.",
 (Traceback was logged {timestamp})""")
 
 _ERROR_CMDSET_FALLBACK = _(
-"""
+    """
 Error encountered for cmdset at path '{path}'.
 Replacing with fallback '{fallback_path}'.
 """)
 
 _ERROR_CMDSET_NO_FALLBACK = _(
-"""Fallback path '{fallback_path}' failed to generate a cmdset."""
+    """Fallback path '{fallback_path}' failed to generate a cmdset."""
 )
 
 
@@ -122,6 +122,7 @@ class _ErrorCmdSet(CmdSet):
     key = "_CMDSET_ERROR"
     errmessage = "Error when loading cmdset."
 
+
 class _EmptyCmdSet(CmdSet):
     """
     This cmdset represents an empty cmdset
@@ -129,6 +130,7 @@ class _EmptyCmdSet(CmdSet):
     key = "_EMPTY_CMDSET"
     priority = -101
     mergetype = "Union"
+
 
 def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
     """
@@ -140,7 +142,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
     Args:
         path (str): The path to the command set to load.
         cmdsetobj (CmdSet): The database object/typeclass on which this cmdset is to be
-            assigned (this can be also channels and exits, as well as players
+            assigned (this can be also channels and exits, as well as accounts
             but there will always be such an object)
         emit_to_obj (Object, optional): If given, error is emitted to
             this object (in addition to logging)
@@ -154,11 +156,11 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
 
     """
     python_paths = [path] + ["%s.%s" % (prefix, path)
-                                    for prefix in _CMDSET_PATHS if not path.startswith(prefix)]
+                             for prefix in _CMDSET_PATHS if not path.startswith(prefix)]
     errstring = ""
     for python_path in python_paths:
 
-        if "." in  path:
+        if "." in path:
             modpath, classname = python_path.rsplit(".", 1)
         else:
             raise ImportError("The path '%s' is not on the form modulepath.ClassName" % path)
@@ -191,7 +193,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
                         continue
                 _CACHED_CMDSETS[python_path] = cmdsetclass
 
-            #instantiate the cmdset (and catch its errors)
+            # instantiate the cmdset (and catch its errors)
             if callable(cmdsetclass):
                 cmdsetclass = cmdsetclass(cmdsetobj)
             return cmdsetclass
@@ -235,7 +237,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
         err_cmdset = _ErrorCmdSet()
         err_cmdset.errmessage = errstring
         return err_cmdset
-    return None # undefined error
+    return None  # undefined error
 
 # classes
 
@@ -278,7 +280,7 @@ class CmdSetHandler(object):
         self.permanent_paths = [""]
 
         if init_true:
-            self.update(init_mode=True) #is then called from the object __init__.
+            self.update(init_mode=True)  # is then called from the object __init__.
 
     def __str__(self):
         """
@@ -311,8 +313,8 @@ class CmdSetHandler(object):
         if mergelist:
             tmpstring = _(" <Merged {mergelist} {mergetype}, prio {prio}>: {current}")
             string += tmpstring.format(mergelist="+".join(mergelist),
-                                      mergetype=mergetype, prio=self.current.priority,
-                                      current=self.current)
+                                       mergetype=mergetype, prio=self.current.priority,
+                                       current=self.current)
         else:
             permstring = "non-perm"
             if self.current.permanent:
@@ -322,7 +324,7 @@ class CmdSetHandler(object):
                                        prio=self.current.priority,
                                        permstring=permstring,
                                        keylist=", ".join(cmd.key for
-                                           cmd in sorted(self.current, key=lambda o: o.key)))
+                                                         cmd in sorted(self.current, key=lambda o: o.key)))
         return string.strip()
 
     def _import_cmdset(self, cmdset_path, emit_to_obj=None):
@@ -542,7 +544,6 @@ class CmdSetHandler(object):
     # legacy alias
     delete_default = remove_default
 
-
     def all(self):
         """
         Show all cmdsets.
@@ -588,16 +589,16 @@ class CmdSetHandler(object):
             else:
                 print [cset.path for cset in self.cmdset_stack], cmdset.path
                 return any([cset for cset in self.cmdset_stack
-                                        if cset.path == cmdset.path])
+                            if cset.path == cmdset.path])
         else:
             # try it as a path or key
             if must_be_default:
                 return self.cmdset_stack and (
-                        self.cmdset_stack[0].key == cmdset or
-                        self.cmdset_stack[0].path == cmdset)
+                    self.cmdset_stack[0].key == cmdset or
+                    self.cmdset_stack[0].path == cmdset)
             else:
                 return any([cset for cset in self.cmdset_stack
-                              if cset.path == cmdset or cset.key == cmdset])
+                            if cset.path == cmdset or cset.key == cmdset])
 
     # backwards-compatability alias
     has_cmdset = has

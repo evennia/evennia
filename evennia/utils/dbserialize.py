@@ -56,13 +56,22 @@ def _get_mysql_db_version():
 
 # initialization and helpers
 
+
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _FROM_MODEL_MAP = None
 _TO_MODEL_MAP = None
 _SESSION_HANDLER = None
-_IS_PACKED_DBOBJ = lambda o: type(o) == tuple and len(o) == 4 and o[0] == '__packed_dbobj__'
-_IS_PACKED_SESSION = lambda o: type(o) == tuple and len(o) == 3 and o[0] == '__packed_session__'
+
+
+def _IS_PACKED_DBOBJ(o):
+    return isinstance(o, tuple) and len(o) == 4 and o[0] == '__packed_dbobj__'
+
+
+def _IS_PACKED_SESSION(o):
+    return isinstance(o, tuple) and len(o) == 3 and o[0] == '__packed_session__'
+
+
 if uses_database("mysql") and _get_mysql_db_version() < '5.6.4':
     # mysql <5.6.4 don't support millisecond precision
     _DATESTRING = "%Y:%m:%d-%H:%M:%S:000000"
@@ -112,6 +121,7 @@ def _init_globals():
 
 def _save(method):
     """method decorator that saves data to Attribute"""
+
     def save_wrapper(self, *args, **kwargs):
         self.__doc__ = method.__doc__
         ret = method(self, *args, **kwargs)
@@ -127,6 +137,7 @@ class _SaverMutable(object):
      obj.db.mylist[1][2] = "test" (allocation to a nested list)
     will not save the updated value to the database.
     """
+
     def __init__(self, *args, **kwargs):
         """store all properties for tracking the tree"""
         self._parent = kwargs.pop("_parent", None)
@@ -142,6 +153,12 @@ class _SaverMutable(object):
         if self._parent:
             self._parent._save_tree()
         elif self._db_obj:
+            if not self._db_obj.pk:
+                cls_name = self.__class__.__name__
+                non_saver_name = cls_name.lstrip("_Saver")
+                err_msg = "%s %s has had its root Attribute deleted." % (cls_name, self)
+                err_msg += " It must be cast to a %s before it can be modified further." % non_saver_name
+                raise ValueError(err_msg)
             self._db_obj.value = self
         else:
             logger.log_err("_SaverMutable %s has no root Attribute to save to." % self)
@@ -196,6 +213,7 @@ class _SaverList(_SaverMutable, MutableSequence):
     """
     A list that saves itself to an Attribute when updated.
     """
+
     def __init__(self, *args, **kwargs):
         super(_SaverList, self).__init__(*args, **kwargs)
         self._data = list()
@@ -223,6 +241,7 @@ class _SaverDict(_SaverMutable, MutableMapping):
     """
     A dict that stores changes to an Attribute when updated
     """
+
     def __init__(self, *args, **kwargs):
         super(_SaverDict, self).__init__(*args, **kwargs)
         self._data = dict()
@@ -235,6 +254,7 @@ class _SaverSet(_SaverMutable, MutableSet):
     """
     A set that saves to an Attribute when updated
     """
+
     def __init__(self, *args, **kwargs):
         super(_SaverSet, self).__init__(*args, **kwargs)
         self._data = set()
@@ -255,6 +275,7 @@ class _SaverOrderedDict(_SaverMutable, MutableMapping):
     """
     An ordereddict that can be saved and operated on.
     """
+
     def __init__(self, *args, **kwargs):
         super(_SaverOrderedDict, self).__init__(*args, **kwargs)
         self._data = OrderedDict()
@@ -267,6 +288,7 @@ class _SaverDeque(_SaverMutable):
     """
     A deque that can be saved and operated on.
     """
+
     def __init__(self, *args, **kwargs):
         super(_SaverDeque, self).__init__(*args, **kwargs)
         self._data = deque()
@@ -373,7 +395,7 @@ def unpack_dbobj(item):
 def pack_session(item):
     """
     Handle the safe serializion of Sessions objects (these contain
-    hidden references to database objects (players, puppets) so they
+    hidden references to database objects (accounts, puppets) so they
     can't be safely serialized).
 
     Args:

@@ -11,6 +11,7 @@ from evennia.utils.dbserialize import dbserialize, dbunserialize
 
 TASK_HANDLER = None
 
+
 class TaskHandler(object):
 
     """
@@ -71,9 +72,9 @@ class TaskHandler(object):
             try:
                 dbserialize(callback)
             except (TypeError, AttributeError):
-                raise ValueError("the specified callback {} cannot be pickled. " \
-                        "It must be a top-level function in a module or an " \
-                        "instance method.".format(callback))
+                raise ValueError("the specified callback {} cannot be pickled. "
+                                 "It must be a top-level function in a module or an "
+                                 "instance method.".format(callback))
             else:
                 safe_callback = callback
 
@@ -112,9 +113,9 @@ class TaskHandler(object):
                 try:
                     dbserialize(arg)
                 except (TypeError, AttributeError):
-                    logger.log_err("The positional argument {} cannot be " \
-                            "pickled and will not be present in the arguments " \
-                            "fed to the callback {}".format(arg, callback))
+                    logger.log_err("The positional argument {} cannot be "
+                                   "pickled and will not be present in the arguments "
+                                   "fed to the callback {}".format(arg, callback))
                 else:
                     safe_args.append(arg)
 
@@ -122,9 +123,9 @@ class TaskHandler(object):
                 try:
                     dbserialize(value)
                 except (TypeError, AttributeError):
-                    logger.log_err("The {} keyword argument {} cannot be " \
-                            "pickled and will not be present in the arguments " \
-                            "fed to the callback {}".format(key, value, callback))
+                    logger.log_err("The {} keyword argument {} cannot be "
+                                   "pickled and will not be present in the arguments "
+                                   "fed to the callback {}".format(key, value, callback))
                 else:
                     safe_kwargs[key] = value
 
@@ -185,4 +186,3 @@ class TaskHandler(object):
 
 # Create the soft singleton
 TASK_HANDLER = TaskHandler()
-

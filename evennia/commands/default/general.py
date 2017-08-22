@@ -9,7 +9,7 @@ COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # limit symbol import for API
 __all__ = ("CmdHome", "CmdLook", "CmdNick",
-           "CmdInventory", "CmdGet", "CmdDrop", "CmdGive",
+           "CmdInventory", "CmdSetDesc", "CmdGet", "CmdDrop", "CmdGive",
            "CmdSay", "CmdWhisper", "CmdPose", "CmdAccess")
 
 
@@ -24,7 +24,7 @@ class CmdHome(COMMAND_DEFAULT_CLASS):
     """
 
     key = "home"
-    locks = "cmd:perm(home) or perm(Builders)"
+    locks = "cmd:perm(home) or perm(Builder)"
     arg_regex = r"$"
 
     def func(self):
@@ -47,7 +47,7 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
     Usage:
       look
       look <obj>
-      look *<player>
+      look *<account>
 
     Observes your location or objects in your vicinity.
     """
@@ -86,7 +86,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
     Switches:
       inputline - replace on the inputline (default)
       object    - replace on object-lookup
-      player    - replace on player-lookup
+      account    - replace on account-lookup
       delete    - remove nick by name or by index given by /list
       clearall  - clear all nicks
       list      - show all defined aliases (also "nicks" works)
@@ -113,7 +113,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
     """
     key = "nick"
-    aliases = ["nickname", "nicks", "@nick", "@nicks", "alias"]
+    aliases = ["nickname", "nicks", "alias"]
     locks = "cmd:all()"
 
     def func(self):
@@ -121,7 +121,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
         switches = self.switches
-        nicktypes = [switch for switch in switches if switch in ("object", "player", "inputline")] or ["inputline"]
+        nicktypes = [switch for switch in switches if switch in ("object", "account", "inputline")] or ["inputline"]
 
         nicklist = utils.make_iter(caller.nicks.get(return_obj=True) or [])
 
@@ -170,7 +170,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     # we are given a index in nicklist
                     delindex = int(arg)
                     if 0 < delindex <= len(nicklist):
-                        oldnick = nicklist[delindex-1]
+                        oldnick = nicklist[delindex - 1]
                         _, _, old_nickstring, old_replstring = oldnick.value
                     else:
                         errstring += "Not a valid nick index."
@@ -358,18 +358,18 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         to_give.at_give(caller, target)
 
 
-class CmdDesc(COMMAND_DEFAULT_CLASS):
+class CmdSetDesc(COMMAND_DEFAULT_CLASS):
     """
     describe yourself
 
     Usage:
-      desc <description>
+      setdesc <description>
 
     Add a description to yourself. This
     will be visible to people when they
     look at you.
     """
-    key = "desc"
+    key = "setdesc"
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 
@@ -409,16 +409,15 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
 
         speech = self.args
 
-        # calling the speech hook on the location
-        speech = caller.location.at_say(caller, speech)
+        # Calling the at_before_say hook on the character
+        speech = caller.at_before_say(speech)
 
-        # Feedback for the object doing the talking.
-        caller.msg('You say, "%s|n"' % speech)
+        # If speech is empty, stop here
+        if not speech:
+            return
 
-        # Build the string to emit to neighbors.
-        emit_string = '%s says, "%s|n"' % (caller.name, speech)
-        caller.location.msg_contents(text=(emit_string, {"type": "say"}),
-                                     exclude=caller, from_obj=caller)
+        # Call the at_after_say hook on the character
+        caller.at_say(speech)
 
 
 class CmdWhisper(COMMAND_DEFAULT_CLASS):
@@ -441,7 +440,7 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.lhs or not self.rhs:
-            caller.msg("Usage: whisper <player> = <message>")
+            caller.msg("Usage: whisper <account> = <message>")
             return
 
         receiver = caller.search(self.lhs)
@@ -454,13 +453,15 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
             return
 
         speech = self.rhs
+        # Call a hook to change the speech before whispering
+        speech = caller.at_before_say(speech, whisper=True, receiver=receiver)
 
-        # Feedback for the object doing the talking.
-        caller.msg('You whisper to %s, "%s|n"' % (receiver.key, speech))
+        # If the speech is empty, abort the command
+        if not speech:
+            return
 
-        # Build the string to emit to receiver.
-        emit_string = '%s whispers, "%s|n"' % (caller.name, speech)
-        receiver.msg(text=(emit_string, {"type": "whisper"}), from_obj=caller)
+        # Call the at_after_whisper hook for feedback
+        caller.at_say(speech, receiver=receiver, whisper=True)
 
 
 class CmdPose(COMMAND_DEFAULT_CLASS):
@@ -529,15 +530,15 @@ class CmdAccess(COMMAND_DEFAULT_CLASS):
         hierarchy_full = settings.PERMISSION_HIERARCHY
         string = "\n|wPermission Hierarchy|n (climbing):\n %s" % ", ".join(hierarchy_full)
 
-        if self.caller.player.is_superuser:
+        if self.caller.account.is_superuser:
             cperms = "<Superuser>"
             pperms = "<Superuser>"
         else:
             cperms = ", ".join(caller.permissions.all())
-            pperms = ", ".join(caller.player.permissions.all())
+            pperms = ", ".join(caller.account.permissions.all())
 
         string += "\n|wYour access|n:"
         string += "\nCharacter |c%s|n: %s" % (caller.key, cperms)
-        if hasattr(caller, 'player'):
-            string += "\nPlayer |c%s|n: %s" % (caller.player.key, pperms)
+        if hasattr(caller, 'account'):
+            string += "\nAccount |c%s|n: %s" % (caller.account.key, pperms)
         caller.msg(string)

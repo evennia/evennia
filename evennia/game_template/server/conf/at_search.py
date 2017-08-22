@@ -25,6 +25,7 @@ line to your settings file:
 
 """
 
+
 def at_search_result(matches, caller, query="", quiet=False, **kwargs):
     """
     This is a generic hook for handling all processing of a search

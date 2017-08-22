@@ -7,8 +7,8 @@ necessary anymore - the ooclook and @charcreate commands in that mode
 replaces this module with better functionality. This remains here for
 inspiration.
 
-This is a simple character creation commandset for the Player level.
-It shows some more info and gives the Player the option to create a
+This is a simple character creation commandset for the Account level.
+It shows some more info and gives the Account the option to create a
 character without any more customizations than their name (further
 options are unique for each game anyway).
 
@@ -19,7 +19,7 @@ cmdset.
 Installation:
 
 Import this module to `mygame/commands/default_cmdsets.py` and
-add `chargen.OOCCMdSetCharGen` to the `PlayerCmdSet` class
+add `chargen.OOCCMdSetCharGen` to the `AccountCmdSet` class
 (it says where to add it). Reload.
 
 """
@@ -39,7 +39,7 @@ class CmdOOCLook(default_cmds.CmdLook):
       look
       look <character>
 
-    This is an OOC version of the look command. Since a Player doesn't
+    This is an OOC version of the look command. Since an Account doesn't
     have an in-game existence, there is no concept of location or
     "self".
 
@@ -56,24 +56,24 @@ class CmdOOCLook(default_cmds.CmdLook):
         """
         Implements the ooc look command
 
-        We use an attribute _character_dbrefs on the player in order
+        We use an attribute _character_dbrefs on the account in order
         to figure out which characters are "theirs". A drawback of this
         is that only the CmdCharacterCreate command adds this attribute,
-        and thus e.g. player #1 will not be listed (although it will work).
+        and thus e.g. account #1 will not be listed (although it will work).
         Existence in this list does not depend on puppeting rights though,
         that is checked by the @ic command directly.
         """
 
-        # making sure caller is really a player
+        # making sure caller is really an account
         self.character = None
         if utils.inherits_from(self.caller, "evennia.objects.objects.Object"):
-            # An object of some type is calling. Convert to player.
+            # An object of some type is calling. Convert to account.
             self.character = self.caller
-            if hasattr(self.caller, "player"):
-                self.caller = self.caller.player
+            if hasattr(self.caller, "account"):
+                self.caller = self.caller.account
 
         if not self.character:
-            # ooc mode, we are players
+            # ooc mode, we are accounts
 
             avail_chars = self.caller.db._character_dbrefs
             if self.args:
@@ -102,7 +102,7 @@ class CmdOOCLook(default_cmds.CmdLook):
             else:
                 charlist = "You have no Characters."
             string = \
-"""   You, %s, are an |wOOC ghost|n without form. The world is hidden
+                """   You, %s, are an |wOOC ghost|n without form. The world is hidden
    from you and besides chatting on channels your options are limited.
    You need to have a Character in order to interact with the world.
 
@@ -139,13 +139,13 @@ class CmdOOCCharacterCreate(Command):
         attribute on ourselves to remember it.
         """
 
-        # making sure caller is really a player
+        # making sure caller is really an account
         self.character = None
         if utils.inherits_from(self.caller, "evennia.objects.objects.Object"):
-            # An object of some type is calling. Convert to player.
+            # An object of some type is calling. Convert to account.
             self.character = self.caller
-            if hasattr(self.caller, "player"):
-                self.caller = self.caller.player
+            if hasattr(self.caller, "account"):
+                self.caller = self.caller.account
 
         if not self.args:
             self.caller.msg("Usage: create <character name>")
@@ -161,8 +161,8 @@ class CmdOOCCharacterCreate(Command):
         if not new_character:
             self.caller.msg("|rThe Character couldn't be created. This is a bug. Please contact an admin.")
             return
-        # make sure to lock the character to only be puppeted by this player
-        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
+        # make sure to lock the character to only be puppeted by this account
+        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
                                 (new_character.id, self.caller.id))
 
         # save dbref
@@ -175,10 +175,11 @@ class CmdOOCCharacterCreate(Command):
         self.caller.msg("|gThe character |c%s|g was successfully created!" % charname)
 
 
-class OOCCmdSetCharGen(default_cmds.PlayerCmdSet):
+class OOCCmdSetCharGen(default_cmds.AccountCmdSet):
     """
     Extends the default OOC cmdset.
     """
+
     def at_cmdset_creation(self):
         """Install everything from the default set, then overload"""
         self.add(CmdOOCLook())

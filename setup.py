@@ -64,6 +64,7 @@ def package_data():
             file_set.append(file_name)
     return file_set
 
+
 # setup the package
 setup(
     name='evennia',

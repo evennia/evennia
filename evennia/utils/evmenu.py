@@ -232,22 +232,23 @@ class CmdEvMenuNode(Command):
                 except ValueError:  # old form of startnode store
                     startnode, startnode_input = startnode_tuple, ""
                 if startnode:
-                    saved_options[1]["startnode"] = startnode
-                    saved_options[1]["startnode_input"] = startnode_input
+                    saved_options[2]["startnode"] = startnode
+                    saved_options[2]["startnode_input"] = startnode_input
+                MenuClass = saved_options[0]
                 # this will create a completely new menu call
-                EvMenu(caller, *saved_options[0], **saved_options[1])
+                MenuClass(caller, *saved_options[1], **saved_options[2])
                 return True
             return None
 
         caller = self.caller
         # we store Session on the menu since this can be hard to
-        # get in multisession environemtns if caller is a Player.
+        # get in multisession environemtns if caller is an Account.
         menu = caller.ndb._menutree
         if not menu:
             if _restore(caller):
                 return
             orig_caller = caller
-            caller = caller.player if hasattr(caller, "player") else None
+            caller = caller.account if hasattr(caller, "account") else None
             menu = caller.ndb._menutree if caller else None
             if not menu:
                 if caller and _restore(caller):
@@ -257,13 +258,13 @@ class CmdEvMenuNode(Command):
                 if not menu:
                     # can't restore from a session
                     err = "Menu object not found as %s.ndb._menutree!" % orig_caller
-                    orig_caller.msg(err) # don't give the session as a kwarg here, direct to original
+                    orig_caller.msg(err)  # don't give the session as a kwarg here, direct to original
                     raise EvMenuError(err)
         # we must do this after the caller with the menui has been correctly identified since it
-        # can be either Player, Object or Session (in the latter case this info will be superfluous).
+        # can be either Account, Object or Session (in the latter case this info will be superfluous).
         caller.ndb._menutree._session = self.session
         # we have a menu, use it.
-        menu._input_parser(menu, self.raw_string, caller)
+        menu.parse_input(self.raw_string)
 
 
 class EvMenuCmdSet(CmdSet):
@@ -285,131 +286,7 @@ class EvMenuCmdSet(CmdSet):
         self.add(CmdEvMenuNode())
 
 
-# These are default node formatters
-def dedent_strip_nodetext_formatter(nodetext, has_options, caller=None):
-    """
-    Simple dedent formatter that also strips text
-    """
-    return dedent(nodetext).strip()
-
-
-def dedent_nodetext_formatter(nodetext, has_options, caller=None):
-    """
-    Just dedent text.
-    """
-    return dedent(nodetext)
-
-
-def evtable_options_formatter(optionlist, caller=None):
-    """
-    Formats the option list display.
-    """
-    if not optionlist:
-        return ""
-
-    # column separation distance
-    colsep = 4
-
-    nlist = len(optionlist)
-
-    # get the widest option line in the table.
-    table_width_max = -1
-    table = []
-    for key, desc in optionlist:
-        if not (key or desc):
-            continue
-        table_width_max = max(table_width_max,
-                              max(m_len(p) for p in key.split("\n")) +
-                              max(m_len(p) for p in desc.split("\n")) + colsep)
-        raw_key = strip_ansi(key)
-        if raw_key != key:
-            # already decorations in key definition
-            table.append(" |lc%s|lt%s|le: %s" % (raw_key, key, desc))
-        else:
-            # add a default white color to key
-            table.append(" |lc%s|lt|w%s|n|le: %s" % (raw_key, raw_key, desc))
-
-    ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1  # number of ncols
-
-    # get the amount of rows needed (start with 4 rows)
-    nrows = 4
-    while nrows * ncols < nlist:
-        nrows += 1
-    ncols = nlist // nrows  # number of full columns
-    nlastcol = nlist % nrows  # number of elements in last column
-
-    # get the final column count
-    ncols = ncols + 1 if nlastcol > 0 else ncols
-    if ncols > 1:
-        # only extend if longer than one column
-        table.extend([" " for _ in range(nrows - nlastcol)])
-
-    # build the actual table grid
-    table = [table[icol * nrows: (icol * nrows) + nrows] for icol in range(0, ncols)]
-
-    # adjust the width of each column
-    for icol in range(len(table)):
-        col_width = max(max(m_len(p) for p in part.split("\n")) for part in table[icol]) + colsep
-        table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
-
-    # format the table into columns
-    return unicode(EvTable(table=table, border="none"))
-
-
-def underline_node_formatter(nodetext, optionstext, caller=None):
-    """
-    Draws a node with underlines '_____' around it.
-    """
-    nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
-    options_width_max = max(m_len(line) for line in optionstext.split("\n"))
-    total_width = max(options_width_max, nodetext_width_max)
-    separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
-    separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
-    return separator1 + "|n" + nodetext + "|n" + separator2 + "|n" + optionstext
-
-
-def null_node_formatter(nodetext, optionstext, caller=None):
-    """
-    A minimalistic node formatter, no lines or frames.
-    """
-    return nodetext + "\n\n" + optionstext
-
-
-def evtable_parse_input(menuobject, raw_string, caller):
-    """
-    Processes the user's node inputs.
-
-    Args:
-        menuobject (EvMenu): The EvMenu instance
-        raw_string (str): The incoming raw_string from the menu
-            command.
-        caller (Object, Player or Session): The entity using
-            the menu.
-    """
-    cmd = raw_string.strip().lower()
-
-    if cmd in menuobject.options:
-        # this will take precedence over the default commands
-        # below
-        goto, callback = menuobject.options[cmd]
-        menuobject.callback_goto(callback, goto, raw_string)
-    elif menuobject.auto_look and cmd in ("look", "l"):
-        menuobject.display_nodetext()
-    elif menuobject.auto_help and cmd in ("help", "h"):
-        menuobject.display_helptext()
-    elif menuobject.auto_quit and cmd in ("quit", "q", "exit"):
-        menuobject.close_menu()
-    elif menuobject.default:
-        goto, callback = menuobject.default
-        menuobject.callback_goto(callback, goto, raw_string)
-    else:
-        caller.msg(_HELP_NO_OPTION_MATCH, session=menuobject._session)
-
-    if not (menuobject.options or menuobject.default):
-        # no options - we are at the end of the menu.
-        menuobject.close_menu()
-
-# -------------------------------------------------------------
+#------------------------------------------------------------
 #
 # Menu main class
 #
@@ -422,21 +299,18 @@ class EvMenu(object):
     a menufile.py instruction.
 
     """
+
     def __init__(self, caller, menudata, startnode="start",
                  cmdset_mergetype="Replace", cmdset_priority=1,
                  auto_quit=True, auto_look=True, auto_help=True,
                  cmd_on_exit="look",
-                 nodetext_formatter=dedent_strip_nodetext_formatter,
-                 options_formatter=evtable_options_formatter,
-                 node_formatter=underline_node_formatter,
-                 input_parser=evtable_parse_input,
                  persistent=False, startnode_input="", session=None,
                  **kwargs):
         """
         Initialize the menu tree and start the caller onto the first node.
 
         Args:
-            caller (Object, Player or Session): The user of the menu.
+            caller (Object, Account or Session): The user of the menu.
             menudata (str, module or dict): The full or relative path to the module
                 holding the menu tree data. All global functions in this module
                 whose name doesn't start with '_ ' will be parsed as menu nodes.
@@ -476,38 +350,6 @@ class EvMenu(object):
                 The callback function takes two parameters, the caller then the
                 EvMenu object. This is called after cleanup is complete.
                 Set to None to not call any command.
-            nodetext_formatter (callable, optional): This callable should be on
-                the form `function(nodetext, has_options, caller=None)`, where `nodetext` is the
-                node text string and `has_options` a boolean specifying if there
-                are options associated with this node. It must return a formatted
-                string. `caller` is optionally a reference to the user of the menu.
-                `caller` is optionally a reference to the user of the menu.
-            options_formatter (callable, optional): This callable should be on
-                the form `function(optionlist, caller=None)`, where ` optionlist is a list
-                of option dictionaries, like
-                [{"key":..., "desc",..., "goto": ..., "exec",...}, ...]
-                Each dictionary describes each possible option. Note that this
-                will also be called if there are no options, and so should be
-                able to handle an empty list. This should
-                be formatted into an options list and returned as a string,
-                including the required separator to use between the node text
-                and the options. If not given the default EvMenu style will be used.
-                `caller` is optionally a reference to the user of the menu.
-            node_formatter (callable, optional): This callable should be on the
-                form `func(nodetext, optionstext, caller=None)` where the arguments are strings
-                representing the node text and options respectively (possibly prepared
-                by `nodetext_formatter`/`options_formatter` or by the default styles).
-                It should return a string representing the final look of the node. This
-                can e.g. be used to create line separators that take into account the
-                dynamic width of the parts. `caller` is optionally a reference to the
-                user of the menu.
-            input_parser (callable, optional): This callable is responsible for parsing the
-                options dict from a node and has the form `func(menuobject, raw_string, caller)`,
-                where menuobject is the active `EvMenu` instance, `input_string` is the
-                incoming text from the caller and `caller` is the user of the menu.
-                It should use the helper method of the menuobject to goto new nodes, show
-                help texts etc. See the default `evtable_parse_input` function for help
-                with parsing.
             persistent (bool, optional): Make the Menu persistent (i.e. it will
                 survive a reload. This will make the Menu cmdset persistent. Use
                 with caution - if your menu is buggy you may end up in a state
@@ -520,7 +362,7 @@ class EvMenu(object):
             startnode_input (str, optional): Send an input text to `startnode` as if
                 a user input text from a fictional previous node. When the server reloads,
                 the latest visited node will be re-run using this kwarg.
-            session (Session, optional): This is useful when calling EvMenu from a player
+            session (Session, optional): This is useful when calling EvMenu from an account
                 in multisession mode > 2. Note that this session only really relevant
                 for the very first display of the first node - after that, EvMenu itself
                 will keep the session updated from the command input. So a persistent
@@ -548,11 +390,6 @@ class EvMenu(object):
         """
         self._startnode = startnode
         self._menutree = self._parse_menudata(menudata)
-
-        self._nodetext_formatter = nodetext_formatter
-        self._options_formatter = options_formatter
-        self._node_formatter = node_formatter
-        self._input_parser = input_parser
         self._persistent = persistent
 
         if startnode not in self._menutree:
@@ -561,6 +398,8 @@ class EvMenu(object):
         # public variables made available to the command
 
         self.caller = caller
+
+        # track EvMenu kwargs
         self.auto_quit = auto_quit
         self.auto_look = auto_look
         self.auto_help = auto_help
@@ -573,15 +412,16 @@ class EvMenu(object):
             self.cmd_on_exit = cmd_on_exit
         else:
             self.cmd_on_exit = None
+        # current menu state
         self.default = None
         self.nodetext = None
         self.helptext = None
         self.options = None
 
         # assign kwargs as initialization vars on ourselves.
-        if set(("_startnode", "_menutree", "_nodetext_formatter", "_options_formatter",
-                "node_formatter", "_input_parser", "_peristent", "cmd_on_exit", "default",
-                "nodetext", "helptext", "options")).intersection(set(kwargs.keys())):
+        if set(("_startnode", "_menutree", "_session", "_persistent",
+                "cmd_on_exit", "default", "nodetext", "helptext",
+                "options", "cmdset_mergetype", "auto_quit")).intersection(set(kwargs.keys())):
             raise RuntimeError("One or more of the EvMenu `**kwargs` is reserved by EvMenu for internal use.")
         for key, val in kwargs.iteritems():
             setattr(self, key, val)
@@ -591,6 +431,15 @@ class EvMenu(object):
 
         if persistent:
             # save the menu to the database
+            calldict = {"startnode": startnode,
+                        "cmdset_mergetype": cmdset_mergetype,
+                        "cmdset_priority": cmdset_priority,
+                        "auto_quit": auto_quit,
+                        "auto_look": auto_look,
+                        "auto_help": auto_help,
+                        "cmd_on_exit": cmd_on_exit,
+                        "persistent": persistent}
+            calldict.update(kwargs)
             try:
                 caller.attributes.add("_menutree_saved",
                                       ((menudata, ),
@@ -663,13 +512,13 @@ class EvMenu(object):
         """
 
         # handle the node text
-        nodetext = self._nodetext_formatter(nodetext, len(optionlist), self.caller)
+        nodetext = self.nodetext_formatter(nodetext)
 
         # handle the options
-        optionstext = self._options_formatter(optionlist, self.caller)
+        optionstext = self.options_formatter(optionlist)
 
         # format the entire node
-        return self._node_formatter(nodetext, optionstext, self.caller)
+        return self.node_formatter(nodetext, optionstext)
 
     def _execute_node(self, nodename, raw_string):
         """
@@ -771,7 +620,10 @@ class EvMenu(object):
             try:
                 # execute the node
                 ret = self._execute_node(nodename, raw_string)
-            except EvMenuError:
+            except EvMenuError as err:
+                errmsg = "Error in exec '%s' (input: '%s'): %s" % (nodename, raw_string, err)
+                self.caller.msg("|r%s|n" % errmsg)
+                logger.log_trace(errmsg)
                 return
         if isinstance(ret, basestring):
             # only return a value if a string (a goto target), ignore all other returns
@@ -835,7 +687,7 @@ class EvMenu(object):
                     goto, execute = dic.get("goto", None), dic.get("exec", None)
                     self.default = (goto, execute)
                 else:
-                    keys = list(make_iter(dic.get("key", str(inum+1).strip())))
+                    keys = list(make_iter(dic.get("key", str(inum + 1).strip())))
                     desc = dic.get("desc", dic.get("text", _ERR_NO_OPTION_DESC).strip())
                     goto, execute = dic.get("goto", None), dic.get("exec", None)
                 if keys:
@@ -870,6 +722,141 @@ class EvMenu(object):
         if self.cmd_on_exit is not None:
             self.cmd_on_exit(self.caller, self)
 
+    def parse_input(self, raw_string):
+        """
+        Parses the incoming string from the menu user.
+
+        Args:
+            raw_string (str): The incoming, unmodified string
+                from the user.
+        Notes:
+            This method is expected to parse input and use the result
+            to relay execution to the relevant methods of the menu. It
+            should also report errors directly to the user.
+
+        """
+        cmd = raw_string.strip().lower()
+
+        if cmd in self.options:
+            # this will take precedence over the default commands
+            # below
+            goto, callback = self.options[cmd]
+            self.callback_goto(callback, goto, raw_string)
+        elif self.auto_look and cmd in ("look", "l"):
+            self.display_nodetext()
+        elif self.auto_help and cmd in ("help", "h"):
+            self.display_helptext()
+        elif self.auto_quit and cmd in ("quit", "q", "exit"):
+            self.close_menu()
+        elif self.default:
+            goto, callback = self.default
+            self.callback_goto(callback, goto, raw_string)
+        else:
+            self.caller.msg(_HELP_NO_OPTION_MATCH, session=self._session)
+
+        if not (self.options or self.default):
+            # no options - we are at the end of the menu.
+            self.close_menu()
+
+    # formatters - override in a child class
+
+    def nodetext_formatter(self, nodetext):
+        """
+        Format the node text itself.
+
+        Args:
+            nodetext (str): The full node text (the text describing the node).
+
+        Returns:
+            nodetext (str): The formatted node text.
+
+        """
+        return dedent(nodetext).strip()
+
+    def options_formatter(self, optionlist):
+        """
+        Formats the option block.
+
+        Args:
+            optionlist (list): List of (key, description) tuples for every
+                option related to this node.
+            caller (Object, Account or None, optional): The caller of the node.
+
+        Returns:
+            options (str): The formatted option display.
+
+        """
+        if not optionlist:
+            return ""
+
+        # column separation distance
+        colsep = 4
+
+        nlist = len(optionlist)
+
+        # get the widest option line in the table.
+        table_width_max = -1
+        table = []
+        for key, desc in optionlist:
+            if not (key or desc):
+                continue
+            table_width_max = max(table_width_max,
+                                  max(m_len(p) for p in key.split("\n")) +
+                                  max(m_len(p) for p in desc.split("\n")) + colsep)
+            raw_key = strip_ansi(key)
+            if raw_key != key:
+                # already decorations in key definition
+                table.append(" |lc%s|lt%s|le: %s" % (raw_key, key, desc))
+            else:
+                # add a default white color to key
+                table.append(" |lc%s|lt|w%s|n|le: %s" % (raw_key, raw_key, desc))
+
+        ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1  # number of ncols
+
+        # get the amount of rows needed (start with 4 rows)
+        nrows = 4
+        while nrows * ncols < nlist:
+            nrows += 1
+        ncols = nlist // nrows  # number of full columns
+        nlastcol = nlist % nrows  # number of elements in last column
+
+        # get the final column count
+        ncols = ncols + 1 if nlastcol > 0 else ncols
+        if ncols > 1:
+            # only extend if longer than one column
+            table.extend([" " for i in range(nrows - nlastcol)])
+
+        # build the actual table grid
+        table = [table[icol * nrows: (icol * nrows) + nrows] for icol in range(0, ncols)]
+
+        # adjust the width of each column
+        for icol in range(len(table)):
+            col_width = max(max(m_len(p) for p in part.split("\n")) for part in table[icol]) + colsep
+            table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
+
+        # format the table into columns
+        return unicode(EvTable(table=table, border="none"))
+
+    def node_formatter(self, nodetext, optionstext):
+        """
+        Formats the entirety of the node.
+
+        Args:
+            nodetext (str): The node text as returned by `self.nodetext_formatter`.
+            optionstext (str): The options display as returned by `self.options_formatter`.
+            caller (Object, Account or None, optional): The caller of the node.
+
+        Returns:
+            node (str): The formatted node to display.
+
+        """
+        nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
+        options_width_max = max(m_len(line) for line in optionstext.split("\n"))
+        total_width = max(options_width_max, nodetext_width_max)
+        separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
+        separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
+        return separator1 + "|n" + nodetext + "|n" + separator2 + "|n" + optionstext
+
 
 # -------------------------------------------------------------------------------------------------
 #
@@ -889,9 +876,9 @@ class CmdGetInput(Command):
         caller = self.caller
         try:
             getinput = caller.ndb._getinput
-            if not getinput and hasattr(caller, "player"):
-                getinput = caller.player.ndb._getinput
-                caller = caller.player
+            if not getinput and hasattr(caller, "account"):
+                getinput = caller.account.ndb._getinput
+                caller = caller.account
             callback = getinput._callback
 
             caller.ndb._getinput._session = self.session
@@ -940,7 +927,7 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
     the caller.
 
     Args:
-        caller (Player or Object): The entity being asked
+        caller (Account or Object): The entity being asked
             the question. This should usually be an object
             controlled by a user.
         prompt (str): This text will be shown to the user,
@@ -955,7 +942,7 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
             accept input.
         session (Session, optional): This allows to specify the
             session to send the prompt to. It's usually only
-            needed if `caller` is a Player in multisession modes
+            needed if `caller` is an Account in multisession modes
             greater than 2. The session is then updated by the
             command and is available (for example in callbacks)
             through `caller.ndb.getinput._session`.
@@ -981,7 +968,7 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
         `caller.ndb._getinput` is stored; this will be removed
         when the prompt finishes.
         If you need the specific Session of the caller (which
-        may not be easy to get if caller is a player in higher
+        may not be easy to get if caller is an account in higher
         multisession modes), then it is available in the
         callback through `caller.ndb._getinput._session`.
 

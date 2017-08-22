@@ -2,7 +2,7 @@
 # Evennia installation
 
 The latest and more detailed installation instructions can be found
-[here](https://github.com/evennia/evennia/wiki/Getting-Started). 
+[here](https://github.com/evennia/evennia/wiki/Getting-Started).
 
 ## Installing Python
 
@@ -37,7 +37,7 @@ virtualenv vienv
 ```
 
 A new folder `vienv` will be created (you could also name it something
-else if you prefer). Activate the virtual environment like this: 
+else if you prefer). Activate the virtual environment like this:
 
 ```
 # for Linux/Unix/Mac:
@@ -64,13 +64,13 @@ git clone https://github.com/evennia/evennia.git
 
 If you have a github account and have [set up SSH
 keys](https://help.github.com/articles/generating-ssh-keys/), you want
-to use this instead: 
+to use this instead:
 
 ```
 git clone git@github.com:evennia/evennia.git
 ```
 
-In the future you just enter the new `evennia` folder and do 
+In the future you just enter the new `evennia` folder and do
 
 ```
 git pull
@@ -78,7 +78,7 @@ git pull
 
 to get the latest Evennia updates.
 
-## Evennia package install 
+## Evennia package install
 
 Stand at the root of your new `evennia` directory and run
 
@@ -90,12 +90,12 @@ pip install -e .
 current directory). This will install Evennia and all its dependencies
 (into your virtualenv if you are using that) and make the `evennia`
 command available on the command line. You can find Evennia's
-dependencies in `evennia/requirements.txt`. 
+dependencies in `evennia/requirements.txt`.
 
 ## Creating your game project
 
 To create your new game you need to initialize a new game project.
-This should be done somewhere *outside* of your `evennia` folder. 
+This should be done somewhere *outside* of your `evennia` folder.
 
 
 ```
@@ -118,10 +118,10 @@ evennia start
 
 Follow the instructions to create your superuser account. A lot of
 information will scroll past as the database is created and the server
-initializes. After this Evennia will be running. Use 
+initializes. After this Evennia will be running. Use
 
 ```
-evennia -h 
+evennia -h
 ```
 
 for help with starting, stopping and other operations.
@@ -131,7 +131,7 @@ port *4000*.  If you are just running locally the server name is
 *localhost*.
 
 Alternatively, you can find the web interface and webclient by
-pointing your web browser to *http://localhost:8000*.
+pointing your web browser to *http://localhost:4001*.
 
 Finally, login with the superuser account and password you provided
 earlier.  Welcome to Evennia!

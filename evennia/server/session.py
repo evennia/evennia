@@ -25,7 +25,7 @@ class Session(object):
         respective hook methods should be connected to the methods unique
         for the respective protocol so that there is a unified interface
         to Evennia.
-     2. A Server session. This is the same for all connected players,
+     2. A Server session. This is the same for all connected accounts,
         regardless of how they connect.
 
     The Portal and Server have their own respective sessionhandlers. These
@@ -83,7 +83,7 @@ class Session(object):
         self.cmd_total = 0
 
         self.protocol_flags = {"ENCODING": "utf-8",
-                               "SCREENREADER":False,
+                               "SCREENREADER": False,
                                "INPUTDEBUG": False,
                                "RAW": False,
                                "NOCOLOR": False}
@@ -106,7 +106,7 @@ class Session(object):
 
         """
         return dict((key, value) for key, value in self.__dict__.items()
-                                                  if key in self._attrs_to_sync)
+                    if key in self._attrs_to_sync)
 
     def load_sync_data(self, sessdata):
         """
@@ -123,11 +123,11 @@ class Session(object):
     def at_sync(self):
         """
         Called after a session has been fully synced (including
-        secondary operations such as setting self.player based
+        secondary operations such as setting self.account based
         on uid etc).
 
         """
-        self.protocol_flags.update(self.player.attributs.get("_saved_protocol_flags"), {})
+        self.protocol_flags.update(self.account.attributs.get("_saved_protocol_flags"), {})
 
     # access hooks
 

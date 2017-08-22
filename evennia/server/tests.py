@@ -37,6 +37,7 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
     This test runner only runs tests on the apps specified in evennia/
      avoid running the large number of tests defined by Django
     """
+
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
         """
         Build a test suite for Evennia. test_labels is a list of apps to test.

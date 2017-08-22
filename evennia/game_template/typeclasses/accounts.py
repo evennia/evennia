@@ -1,15 +1,15 @@
 """
-Player
+Account
 
-The Player represents the game "account" and each login has only one
-Player object. A Player is what chats on default channels but has no
-other in-game-world existence. Rather the Player puppets Objects (such
+The Account represents the game "account" and each login has only one
+Account object. An Account is what chats on default channels but has no
+other in-game-world existence. Rather the Account puppets Objects (such
 as Characters) in order to actually participate in the game world.
 
 
 Guest
 
-Guest players are simple low-level accounts that are created/deleted
+Guest accounts are simple low-level accounts that are created/deleted
 on the fly and allows users to test the game without the commitment
 of a full registration. Guest accounts are deactivated by default; to
 activate them, add the following line to your settings file:
@@ -22,11 +22,12 @@ several more options for customizing the Guest account system.
 
 """
 
-from evennia import DefaultPlayer, DefaultGuest
+from evennia import DefaultAccount, DefaultGuest
 
-class Player(DefaultPlayer):
+
+class Account(DefaultAccount):
     """
-    This class describes the actual OOC player (i.e. the user connecting
+    This class describes the actual OOC account (i.e. the user connecting
     to the MUD). It does NOT have visual appearance in the game world (that
     is handled by the character which is connected to this). Comm channels
     are attended/joined using this object.
@@ -35,12 +36,12 @@ class Player(DefaultPlayer):
     should generally not hold any character-related info (that's best handled
     on the character level).
 
-    Can be set using BASE_PLAYER_TYPECLASS.
+    Can be set using BASE_ACCOUNT_TYPECLASS.
 
 
     * available properties
 
-     key (string) - name of player
+     key (string) - name of account
      name (string)- wrapper for user.username
      aliases (list of strings) - aliases to the object. Will be saved to database as AliasDB entries but returned as strings.
      dbref (int, read-only) - unique #id-number. Also "id" can be used.
@@ -48,8 +49,8 @@ class Player(DefaultPlayer):
      permissions (list of strings) - list of permission strings
 
      user (User, read-only) - django User authorization object
-     obj (Object) - game object controlled by player. 'character' can also be used.
-     sessions (list of Sessions) - sessions connected to this player
+     obj (Object) - game object controlled by account. 'character' can also be used.
+     sessions (list of Sessions) - sessions connected to this account
      is_superuser (bool, read-only) - if the connected user is a superuser
 
     * Handlers
@@ -66,7 +67,7 @@ class Player(DefaultPlayer):
      msg(text=None, **kwargs)
      swap_character(new_character, delete_old_character=False)
      execute_cmd(raw_string, session=None)
-     search(ostring, global_search=False, attribute_name=None, use_nicks=False, location=None, ignore_errors=False, player=False)
+     search(ostring, global_search=False, attribute_name=None, use_nicks=False, location=None, ignore_errors=False, account=False)
      is_typeclass(typeclass, exact=False)
      swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
      access(accessing_obj, access_type='read', default=False)
@@ -75,7 +76,7 @@ class Player(DefaultPlayer):
     * Hook methods (when re-implementation, remember methods need to have self as first arg)
 
      basetype_setup()
-     at_player_creation()
+     at_account_creation()
 
      - note that the following hooks are also found on Objects and are
        usually handled on the character level:
@@ -96,7 +97,7 @@ class Player(DefaultPlayer):
 
 class Guest(DefaultGuest):
     """
-    This class is used for guest logins. Unlike Players, Guests and their
+    This class is used for guest logins. Unlike Accounts, Guests and their
     characters are deleted after disconnection.
     """
     pass

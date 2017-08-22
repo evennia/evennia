@@ -41,6 +41,7 @@ _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 _PROTOTYPE_PARENTS = None
 
+
 class ObjManipCommand(COMMAND_DEFAULT_CLASS):
     """
     This is a parent class for some of the defining objmanip commands
@@ -73,7 +74,7 @@ class ObjManipCommand(COMMAND_DEFAULT_CLASS):
         super(ObjManipCommand, self).parse()
 
         obj_defs = ([], [])    # stores left- and right-hand side of '='
-        obj_attrs = ([], [])  #                   "
+        obj_attrs = ([], [])  # "
 
         for iside, arglist in enumerate((self.lhslist, self.rhslist)):
             # lhslist/rhslist is already split by ',' at this point
@@ -88,8 +89,8 @@ class ObjManipCommand(COMMAND_DEFAULT_CLASS):
                     objdef, attrs = [part.strip() for part in objdef.split('/', 1)]
                     attrs = [part.strip().lower() for part in attrs.split('/') if part.strip()]
                 # store data
-                obj_defs[iside].append({"name":objdef, 'option':option, 'aliases':aliases})
-                obj_attrs[iside].append({"name":objdef, 'attrs':attrs})
+                obj_defs[iside].append({"name": objdef, 'option': option, 'aliases': aliases})
+                obj_attrs[iside].append({"name": objdef, 'attrs': attrs})
 
         # store for future access
         self.lhs_objs = obj_defs[0]
@@ -117,7 +118,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
 
     key = "@alias"
     aliases = "@setobjalias"
-    locks = "cmd:perm(setobjalias) or perm(Builders)"
+    locks = "cmd:perm(setobjalias) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -197,7 +198,7 @@ class CmdCopy(ObjManipCommand):
     """
 
     key = "@copy"
-    locks = "cmd:perm(copy) or perm(Builders)"
+    locks = "cmd:perm(copy) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -242,9 +243,9 @@ class CmdCopy(ObjManipCommand):
                         return
 
                 copiedobj = ObjectDB.objects.copy_object(from_obj,
-                                                        new_key=to_obj_name,
-                                                        new_location=to_obj_location,
-                                                        new_aliases=to_obj_aliases)
+                                                         new_key=to_obj_name,
+                                                         new_location=to_obj_location,
+                                                         new_aliases=to_obj_aliases)
                 if copiedobj:
                     string = "Copied %s to '%s' (aliases: %s)." % (from_obj_name, to_obj_name,
                                                                    to_obj_aliases)
@@ -278,7 +279,7 @@ class CmdCpAttr(ObjManipCommand):
     If you don't supply a source object, yourself is used.
     """
     key = "@cpattr"
-    locks = "cmd:perm(cpattr) or perm(Builders)"
+    locks = "cmd:perm(cpattr) or perm(Builder)"
     help_category = "Building"
 
     def check_from_attr(self, obj, attr, clear=False):
@@ -350,7 +351,7 @@ class CmdCpAttr(ObjManipCommand):
         if not from_obj or not to_objs:
             caller.msg("You have to supply both source object and target(s).")
             return
-        #copy to all to_obj:ects
+        # copy to all to_obj:ects
         if "move" in self.switches:
             clear = True
         else:
@@ -387,7 +388,7 @@ class CmdCpAttr(ObjManipCommand):
                 value = self.get_attr(from_obj, from_attr)
                 to_obj.attributes.add(to_attr, value)
                 if (clear and not (from_obj == to_obj and
-                                                     from_attr == to_attr)):
+                                   from_attr == to_attr)):
                     from_obj.attributes.remove(from_attr)
                     result.append("\nMoved %s.%s -> %s.%s. (value: %s)" % (from_obj.name,
                                                                            from_attr,
@@ -420,7 +421,7 @@ class CmdMvAttr(ObjManipCommand):
     object. If you don't supply a source object, yourself is used.
     """
     key = "@mvattr"
-    locks = "cmd:perm(mvattr) or perm(Builders)"
+    locks = "cmd:perm(mvattr) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -468,12 +469,12 @@ class CmdCreate(ObjManipCommand):
     """
 
     key = "@create"
-    locks = "cmd:perm(create) or perm(Builders)"
+    locks = "cmd:perm(create) or perm(Builder)"
     help_category = "Building"
 
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the {id} of the creating object.
-    new_obj_lockstring = "control:id({id}) or perm(Wizards);delete:id({id}) or perm(Wizards)"
+    new_obj_lockstring = "control:id({id}) or perm(Admin);delete:id({id}) or perm(Admin)"
 
     def func(self):
         """
@@ -522,6 +523,7 @@ class CmdCreate(ObjManipCommand):
 def _desc_load(caller):
     return caller.db.evmenu_target.db.desc or ""
 
+
 def _desc_save(caller, buf):
     """
     Save line buffer to the desc prop. This should
@@ -531,16 +533,18 @@ def _desc_save(caller, buf):
     caller.msg("Saved.")
     return True
 
+
 def _desc_quit(caller):
     caller.attributes.remove("evmenu_target")
     caller.msg("Exited editor.")
 
+
 class CmdDesc(COMMAND_DEFAULT_CLASS):
     """
-    describe an object
+    describe an object or the current room.
 
     Usage:
-      @desc [<obj> =] <description>
+      @setdesc [<obj> =] <description>
 
     Switches:
       edit - Open up a line editor for more advanced editing.
@@ -548,9 +552,9 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     Sets the "desc" attribute on an object. If an object is not given,
     describe the current room.
     """
-    key = "@desc"
+    key = "@setdesc"
     aliases = "@describe"
-    locks = "cmd:perm(desc) or perm(Builders)"
+    locks = "cmd:perm(desc) or perm(Builder)"
     help_category = "Building"
 
     def edit_handler(self):
@@ -609,7 +613,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
 
     switches:
        override - The @destroy command will usually avoid accidentally
-                  destroying player objects. This switch overrides this safety.
+                  destroying account objects. This switch overrides this safety.
     examples:
        @destroy house, roof, door, 44-78
        @destroy 5-10, flower, 45
@@ -620,7 +624,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
 
     key = "@destroy"
     aliases = ["@delete", "@del"]
-    locks = "cmd:perm(destroy) or perm(Builders)"
+    locks = "cmd:perm(destroy) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -642,12 +646,12 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
             objname = obj.name
             if not (obj.access(caller, "control") or obj.access(caller, 'delete')):
                 return "\nYou don't have permission to delete %s." % objname
-            if obj.player and not 'override' in self.switches:
-                return "\nObject %s is controlled by an active player. Use /override to delete anyway." % objname
+            if obj.account and 'override' not in self.switches:
+                return "\nObject %s is controlled by an active account. Use /override to delete anyway." % objname
             if obj.dbid == int(settings.DEFAULT_HOME.lstrip("#")):
                 return "\nYou are trying to delete |c%s|n, which is set as DEFAULT_HOME. " \
-                        "Re-point settings.DEFAULT_HOME to another " \
-                        "object before continuing." % objname
+                    "Re-point settings.DEFAULT_HOME to another " \
+                    "object before continuing." % objname
 
             had_exits = hasattr(obj, "exits") and obj.exits
             had_objs = hasattr(obj, "contents") and any(obj for obj in obj.contents
@@ -705,14 +709,14 @@ class CmdDig(ObjManipCommand):
     would be 'north;no;n'.
     """
     key = "@dig"
-    locks = "cmd:perm(dig) or perm(Builders)"
+    locks = "cmd:perm(dig) or perm(Builder)"
     help_category = "Building"
 
     # lockstring of newly created rooms, for easy overloading.
     # Will be formatted with the {id} of the creating object.
-    new_room_lockstring = "control:id({id}) or perm(Wizards); " \
-                          "delete:id({id}) or perm(Wizards); " \
-                          "edit:id({id}) or perm(Wizards)"
+    new_room_lockstring = "control:id({id}) or perm(Admin); " \
+                          "delete:id({id}) or perm(Admin); " \
+                          "edit:id({id}) or perm(Admin)"
 
     def func(self):
         "Do the digging. Inherits variables from ObjManipCommand.parse()"
@@ -749,7 +753,7 @@ class CmdDig(ObjManipCommand):
         if new_room.aliases.all():
             alias_string = " (%s)" % ", ".join(new_room.aliases.all())
         room_string = "Created room %s(%s)%s of type %s." % (new_room,
-                                        new_room.dbref, alias_string, typeclass)
+                                                             new_room.dbref, alias_string, typeclass)
 
         # create exit to room
 
@@ -763,7 +767,7 @@ class CmdDig(ObjManipCommand):
                     "\nNo exit created to new room."
             elif not location:
                 exit_to_string = \
-                  "\nYou cannot create an exit from a None-location."
+                    "\nYou cannot create an exit from a None-location."
             else:
                 # Build the exit to the new room from the current one
                 typeclass = to_exit["option"]
@@ -796,18 +800,18 @@ class CmdDig(ObjManipCommand):
                     "\nNo back exit created."
             elif not location:
                 exit_back_string = \
-                   "\nYou cannot create an exit back to a None-location."
+                    "\nYou cannot create an exit back to a None-location."
             else:
                 typeclass = back_exit["option"]
                 if not typeclass:
                     typeclass = settings.BASE_EXIT_TYPECLASS
                 new_back_exit = create.create_object(typeclass,
-                                                   back_exit["name"],
-                                                   new_room,
-                                                   aliases=back_exit["aliases"],
-                                                   locks=lockstring,
-                                                   destination=location,
-                                                   report_to=caller)
+                                                     back_exit["name"],
+                                                     new_room,
+                                                     aliases=back_exit["aliases"],
+                                                     locks=lockstring,
+                                                     destination=location,
+                                                     report_to=caller)
                 alias_string = ""
                 if new_back_exit.aliases.all():
                     alias_string = " (%s)" % ", ".join(new_back_exit.aliases.all())
@@ -820,6 +824,7 @@ class CmdDig(ObjManipCommand):
         caller.msg("%s%s%s" % (room_string, exit_to_string, exit_back_string))
         if new_room and ('teleport' in self.switches or "tel" in self.switches):
             caller.move_to(new_room)
+
 
 class CmdTunnel(COMMAND_DEFAULT_CLASS):
     """
@@ -850,7 +855,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
 
     key = "@tunnel"
     aliases = ["@tun"]
-    locks = "cmd: perm(tunnel) or perm(Builders)"
+    locks = "cmd: perm(tunnel) or perm(Builder)"
     help_category = "Building"
 
     # store the direction, full name and its opposite
@@ -893,7 +898,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
         if "tel" in self.switches:
             telswitch = "/teleport"
         backstring = ""
-        if not "oneway" in self.switches:
+        if "oneway" not in self.switches:
             backstring = ", %s;%s" % (backname, backshort)
 
         # build the string we will use to call @dig
@@ -924,7 +929,7 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@link"
-    locks = "cmd:perm(link) or perm(Builders)"
+    locks = "cmd:perm(link) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -951,7 +956,7 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
 
             string = ""
             if not obj.destination:
-                string += "Note: %s(%s) did not have a destination set before. Make sure you linked the right thing." % (obj.name,obj.dbref)
+                string += "Note: %s(%s) did not have a destination set before. Make sure you linked the right thing." % (obj.name, obj.dbref)
             if "twoway" in self.switches:
                 if not (target.location and obj.location):
                     string = "To create a two-way link, %s and %s must both have a location" % (obj, target)
@@ -1002,7 +1007,7 @@ class CmdUnLink(CmdLink):
     # this is just a child of CmdLink
 
     key = "@unlink"
-    locks = "cmd:perm(unlink) or perm(Builders)"
+    locks = "cmd:perm(unlink) or perm(Builder)"
     help_key = "Building"
 
     def func(self):
@@ -1039,9 +1044,8 @@ class CmdSetHome(CmdLink):
     If no location is given, just view the object's home location.
     """
 
-    key = "@home"
-    aliases = "@sethome"
-    locks = "cmd:perm(@home) or perm(Builders)"
+    key = "@sethome"
+    locks = "cmd:perm(@home) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -1088,7 +1092,7 @@ class CmdListCmdSets(COMMAND_DEFAULT_CLASS):
     """
     key = "@cmdsets"
     aliases = "@listcmsets"
-    locks = "cmd:perm(listcmdsets) or perm(Builders)"
+    locks = "cmd:perm(listcmdsets) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -1113,13 +1117,13 @@ class CmdName(ObjManipCommand):
       @name <obj> = <newname>;alias1;alias2
 
     Rename an object to something new. Use *obj to
-    rename a player.
+    rename an account.
 
     """
 
     key = "@name"
     aliases = ["@rename"]
-    locks = "cmd:perm(rename) or perm(Builders)"
+    locks = "cmd:perm(rename) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -1134,22 +1138,22 @@ class CmdName(ObjManipCommand):
         if self.lhs_objs:
             objname = self.lhs_objs[0]['name']
             if objname.startswith("*"):
-                # player mode
-                obj = caller.player.search(objname.lstrip("*"))
+                # account mode
+                obj = caller.account.search(objname.lstrip("*"))
                 if obj:
                     if self.rhs_objs[0]['aliases']:
-                        caller.msg("Players can't have aliases.")
+                        caller.msg("Accounts can't have aliases.")
                         return
                     newname = self.rhs
                     if not newname:
                         caller.msg("No name defined!")
                         return
                     if not (obj.access(caller, "control") or obj.access(caller, "edit")):
-                        caller.msg("You don't have right to edit this player %s." % obj)
+                        caller.msg("You don't have right to edit this account %s." % obj)
                         return
                     obj.username = newname
                     obj.save()
-                    caller.msg("Player's name changed to '%s'." % newname)
+                    caller.msg("Account's name changed to '%s'." % newname)
                     return
             # object search, also with *
             obj = caller.search(objname)
@@ -1195,12 +1199,12 @@ class CmdOpen(ObjManipCommand):
 
     """
     key = "@open"
-    locks = "cmd:perm(open) or perm(Builders)"
+    locks = "cmd:perm(open) or perm(Builder)"
     help_category = "Building"
 
     # a custom member method to chug out exits and do checks
     def create_exit(self, exit_name, location, destination,
-                                    exit_aliases=None, typeclass=None):
+                    exit_aliases=None, typeclass=None):
         """
         Helper function to avoid code duplication.
         At this point we know destination is a valid location
@@ -1331,7 +1335,7 @@ def _convert_from_string(cmd, strobj):
     be converted to a string and a warning will be given.
 
     We need to convert like this since all data being sent over the
-    telnet connection by the Player is text - but we will want to
+    telnet connection by the Account is text - but we will want to
     store it as the "real" python type so we can do convenient
     comparisons later (e.g.  obj.db.value = 2, if value is stored as a
     string this will always fail).
@@ -1384,15 +1388,16 @@ def _convert_from_string(cmd, strobj):
         # nested lists/dicts)
         return rec_convert(strobj.strip())
 
+
 class CmdSetAttribute(ObjManipCommand):
     """
-    set attribute on an object or player
+    set attribute on an object or account
 
     Usage:
       @set <obj>/<attr> = <value>
       @set <obj>/<attr> =
       @set <obj>/<attr>
-      @set *<player>/<attr> = <value>
+      @set *<account>/attr = <value>
 
     Switch:
         edit: Open the line editor (string values only)
@@ -1417,14 +1422,14 @@ class CmdSetAttribute(ObjManipCommand):
     """
 
     key = "@set"
-    locks = "cmd:perm(set) or perm(Builders)"
+    locks = "cmd:perm(set) or perm(Builder)"
     help_category = "Building"
 
     def check_obj(self, obj):
         """
         This may be overridden by subclasses in case restrictions need to be
         placed on whether certain objects can have attributes set by certain
-        players.
+        accounts.
 
         This function is expected to display its own error message.
 
@@ -1484,17 +1489,17 @@ class CmdSetAttribute(ObjManipCommand):
             old_value = obj.attributes.get(attr)
             if old_value is not None and not isinstance(old_value, basestring):
                 typ = type(old_value).__name__
-                self.caller.msg("|RWARNING! Saving this buffer will overwrite the "\
+                self.caller.msg("|RWARNING! Saving this buffer will overwrite the "
                                 "current attribute (of type %s) with a string!|n" % typ)
                 return str(old_value)
             return old_value
+
         def save(caller, buf):
             "Called when editor saves its buffer."
             obj.attributes.add(attr, buf)
             caller.msg("Saved Attribute %s." % attr)
         # start the editor
         EvEditor(self.caller, load, save, key="%s/%s" % (obj, attr))
-
 
     def func(self):
         "Implement the set attribute - a limited form of @py."
@@ -1510,7 +1515,7 @@ class CmdSetAttribute(ObjManipCommand):
         attrs = self.lhs_objattr[0]['attrs']
 
         if objname.startswith('*'):
-            obj = caller.search_player(objname.lstrip('*'))
+            obj = caller.search_account(objname.lstrip('*'))
         else:
             obj = caller.search(objname)
         if not obj:
@@ -1523,7 +1528,7 @@ class CmdSetAttribute(ObjManipCommand):
         if "edit" in self.switches:
             # edit in the line editor
             if len(attrs) > 1:
-                caller.msg("The Line editor can only be applied " \
+                caller.msg("The Line editor can only be applied "
                            "to one attribute at a time.")
                 return
             self.edit_handler(obj, attrs[0])
@@ -1538,7 +1543,7 @@ class CmdSetAttribute(ObjManipCommand):
                         continue
                     result.append(self.view_attr(obj, attr))
                 # we view it without parsing markup.
-                self.caller.msg("".join(result).strip(), options={"raw":True})
+                self.caller.msg("".join(result).strip(), options={"raw": True})
                 return
             else:
                 # deleting the attribute(s)
@@ -1599,7 +1604,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
     key = "@typeclass"
     aliases = ["@type", "@parent", "@swap", "@update"]
-    locks = "cmd:perm(typeclass) or perm(Builders)"
+    locks = "cmd:perm(typeclass) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -1644,7 +1649,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             return
 
         is_same = obj.is_typeclass(new_typeclass, exact=True)
-        if is_same and not 'force' in self.switches:
+        if is_same and 'force' not in self.switches:
             string = "%s already has the typeclass '%s'. Use /force to override." % (obj.name, new_typeclass)
         else:
             update = "update" in self.switches
@@ -1654,14 +1659,14 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
             # we let this raise exception if needed
             obj.swap_typeclass(new_typeclass, clean_attributes=reset,
-                    clean_cmdsets=reset, run_start_hooks=hooks)
+                               clean_cmdsets=reset, run_start_hooks=hooks)
 
             if is_same:
                 string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.path)
             else:
                 string = "%s changed typeclass from %s to %s.\n" % (obj.name,
-                                                         old_typeclass_path,
-                                                         obj.typeclass_path)
+                                                                    old_typeclass_path,
+                                                                    obj.typeclass_path)
             if update:
                 string += "Only the at_object_creation hook was run (update mode)."
             else:
@@ -1689,7 +1694,7 @@ class CmdWipe(ObjManipCommand):
     matching the given attribute-wildcard search string.
     """
     key = "@wipe"
-    locks = "cmd:perm(wipe) or perm(Builders)"
+    locks = "cmd:perm(wipe) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -1730,9 +1735,9 @@ class CmdLock(ObjManipCommand):
     assign a lock definition to an object
 
     Usage:
-      @lock <object>[ = <lockstring>]
+      @lock <object or *account>[ = <lockstring>]
       or
-      @lock[/switch] <object>/<access_type>
+      @lock[/switch] <object or *account>/<access_type>
 
     Switch:
       del - delete given access type
@@ -1747,18 +1752,18 @@ class CmdLock(ObjManipCommand):
     Separator expressions need not be capitalized.
 
     For example:
-       'get: id(25) or perm(Wizards)'
+       'get: id(25) or perm(Admin)'
     The 'get' access_type is checked by the get command and will
     an object locked with this string will only be possible to
-    pick up by Wizards or by object with id 25.
+    pick up by Admins or by object with id=25.
 
     You can add several access_types after one another by separating
     them by ';', i.e:
-       'get:id(25);delete:perm(Builders)'
+       'get:id(25);delete:perm(Builder)'
     """
     key = "@lock"
-    aliases = ["@locks", "lock", "locks"]
-    locks = "cmd: perm(locks) or perm(Builders)"
+    aliases = ["@locks"]
+    locks = "cmd: perm(locks) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -1774,16 +1779,20 @@ class CmdLock(ObjManipCommand):
         if '/' in self.lhs:
             # call on the form @lock obj/access_type
             objname, access_type = [p.strip() for p in self.lhs.split('/', 1)]
-            obj = caller.search(objname)
+            obj = None
+            if objname.startswith("*"):
+                obj = caller.search_account(objname.lstrip('*'))
             if not obj:
+                obj = caller.search(objname)
+                if not obj:
+                    return
+            if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
+                caller.msg("You are not allowed to do that.")
                 return
             lockdef = obj.locks.get(access_type)
             string = ""
             if lockdef:
                 if 'del' in self.switches:
-                    if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
-                        caller.msg("You are not allowed to do that.")
-                        return
                     obj.locks.delete(access_type)
                     string = "deleted lock %s" % lockdef
                 else:
@@ -1797,15 +1806,19 @@ class CmdLock(ObjManipCommand):
             # we have a = separator, so we are assigning a new lock
             if self.switches:
                 swi = ", ".join(self.switches)
-                caller.msg("Switch(es) |w%s|n can not be used with a "\
-                           "lock assignment. Use e.g. " \
+                caller.msg("Switch(es) |w%s|n can not be used with a "
+                           "lock assignment. Use e.g. "
                            "|w@lock/del objname/locktype|n instead." % swi)
                 return
 
             objname, lockdef = self.lhs, self.rhs
-            obj = caller.search(objname)
+            obj = None
+            if objname.startswith("*"):
+                obj = caller.search_account(objname.lstrip('*'))
             if not obj:
-                return
+                obj = caller.search(objname)
+                if not obj:
+                    return
             if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
                 caller.msg("You are not allowed to do that.")
                 return
@@ -1837,26 +1850,26 @@ class CmdExamine(ObjManipCommand):
 
     Usage:
       examine [<object>[/attrname]]
-      examine [*<player>[/attrname]]
+      examine [*<account>[/attrname]]
 
     Switch:
-      player - examine a Player (same as adding *)
+      account - examine an Account (same as adding *)
       object - examine an Object (useful when OOC)
 
     The examine command shows detailed game info about an
     object and optionally a specific attribute on it.
     If object is not specified, the current location is examined.
 
-    Append a * before the search string to examine a player.
+    Append a * before the search string to examine an account.
 
     """
     key = "@examine"
-    aliases = ["@ex","ex", "exam", "examine"]
-    locks = "cmd:perm(examine) or perm(Builders)"
+    aliases = ["@ex", "exam"]
+    locks = "cmd:perm(examine) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
-    player_mode = False
+    account_mode = False
 
     def list_attribute(self, crop, attr, value):
         """
@@ -1913,18 +1926,18 @@ class CmdExamine(ObjManipCommand):
             string += "\n|wAliases|n: %s" % (", ".join(utils.make_iter(str(obj.aliases))))
         if hasattr(obj, "sessions") and obj.sessions.all():
             string += "\n|wSession id(s)|n: %s" % (", ".join("#%i" % sess.sessid
-                                                for sess in obj.sessions.all()))
+                                                             for sess in obj.sessions.all()))
         if hasattr(obj, "email") and obj.email:
             string += "\n|wEmail|n: |c%s|n" % obj.email
-        if hasattr(obj, "has_player") and obj.has_player:
-            string += "\n|wPlayer|n: |c%s|n" % obj.player.name
-            perms = obj.player.permissions.all()
-            if obj.player.is_superuser:
+        if hasattr(obj, "has_account") and obj.has_account:
+            string += "\n|wAccount|n: |c%s|n" % obj.account.name
+            perms = obj.account.permissions.all()
+            if obj.account.is_superuser:
                 perms = ["<Superuser>"]
             elif not perms:
                 perms = ["<None>"]
-            string += "\n|wPlayer Perms|n: %s" % (", ".join(perms))
-            if obj.player.attributes.has("_quell"):
+            string += "\n|wAccount Perms|n: %s" % (", ".join(perms))
+            if obj.account.attributes.has("_quell"):
                 string += " |r(quelled)|n"
         string += "\n|wTypeclass|n: %s (%s)" % (obj.typename,
                                                 obj.typeclass_path)
@@ -1957,26 +1970,25 @@ class CmdExamine(ObjManipCommand):
             locks_string = " Default"
         string += "\n|wLocks|n:%s" % locks_string
 
-
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
             # all() returns a 'stack', so make a copy to sort.
             stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
-            string += "\n|wStored Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" % \
-                                      (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
-                                       for cmdset in stored_cmdsets if cmdset.key != "_EMPTY_CMDSET"))
+            string += "\n|wStored Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" %
+                                                                   (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
+                                                                   for cmdset in stored_cmdsets if cmdset.key != "_EMPTY_CMDSET"))
 
             # this gets all components of the currently merged set
             all_cmdsets = [(cmdset.key, cmdset) for cmdset in avail_cmdset.merged_from]
-            # we always at least try to add player- and session sets since these are ignored
+            # we always at least try to add account- and session sets since these are ignored
             # if we merge on the object level.
-            if hasattr(obj, "player") and obj.player:
-                all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in  obj.player.cmdset.all()])
+            if hasattr(obj, "account") and obj.account:
+                all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.account.cmdset.all()])
                 if obj.sessions.count():
                     # if there are more sessions than one on objects it's because of multisession mode 3.
                     # we only show the first session's cmdset here (it is -in principle- possible that
                     # different sessions have different cmdsets but for admins who want such madness
                     # it is better that they overload with their own CmdExamine to handle it).
-                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.player.sessions.all()[0].cmdset.all()])
+                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.account.sessions.all()[0].cmdset.all()])
             else:
                 try:
                     # we have to protect this since many objects don't have sessions.
@@ -1986,14 +1998,13 @@ class CmdExamine(ObjManipCommand):
                     pass
             all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
             all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
-            string += "\n|wMerged Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" % \
-                                      (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
-                                       for cmdset in all_cmdsets))
-
+            string += "\n|wMerged Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" %
+                                                                   (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
+                                                                   for cmdset in all_cmdsets))
 
             # list the commands available to this object
             avail_cmdset = sorted([cmd.key for cmd in avail_cmdset
-                                    if cmd.access(obj, "cmd")])
+                                   if cmd.access(obj, "cmd")])
 
             cmdsetstr = utils.fill(", ".join(avail_cmdset), indent=2)
             string += "\n|wCommands available to %s (result of Merged CmdSets)|n:\n %s" % (obj.key, cmdsetstr)
@@ -2005,7 +2016,7 @@ class CmdExamine(ObjManipCommand):
 
         # display Tags
         tags_string = utils.fill(", ".join("%s[%s]" % (tag, category)
-            for tag, category in obj.tags.all(return_key_and_category=True)), indent=5)
+                                           for tag, category in obj.tags.all(return_key_and_category=True)), indent=5)
         if tags_string:
             string += "\n|wTags[category]|n: %s" % tags_string.strip()
 
@@ -2017,7 +2028,7 @@ class CmdExamine(ObjManipCommand):
             for content in obj.contents:
                 if content.destination:
                     exits.append(content)
-                elif content.player:
+                elif content.account:
                     pobjs.append(content)
                 else:
                     things.append(content)
@@ -2029,7 +2040,7 @@ class CmdExamine(ObjManipCommand):
                 string += "\n|wContents|n: %s" % ", ".join(["%s(%s)" % (cont.name, cont.dbref) for cont in obj.contents
                                                             if cont not in exits and cont not in pobjs])
         separator = "-" * _DEFAULT_WIDTH
-        #output info
+        # output info
         return '%s\n%s\n%s' % (separator, string.strip(), separator)
 
     def func(self):
@@ -2053,11 +2064,11 @@ class CmdExamine(ObjManipCommand):
             if hasattr(caller, "location"):
                 obj = caller.location
                 if not obj.access(caller, 'examine'):
-                #If we don't have special info access, just look at the object instead.
+                    # If we don't have special info access, just look at the object instead.
                     self.msg(caller.at_look(obj))
                     return
                 # using callback for printing result whenever function returns.
-                get_and_merge_cmdsets(obj, self.session, self.player, obj, "object", self.raw_string).addCallback(get_cmdset_callback)
+                get_and_merge_cmdsets(obj, self.session, self.account, obj, "object", self.raw_string).addCallback(get_cmdset_callback)
             else:
                 self.msg("You need to supply a target to examine.")
             return
@@ -2069,21 +2080,21 @@ class CmdExamine(ObjManipCommand):
             obj_name = objdef['name']
             obj_attrs = objdef['attrs']
 
-            self.player_mode = utils.inherits_from(caller, "evennia.players.players.DefaultPlayer") or \
-                               "player" in self.switches or obj_name.startswith('*')
-            if self.player_mode:
+            self.account_mode = utils.inherits_from(caller, "evennia.accounts.accounts.DefaultAccount") or \
+                "account" in self.switches or obj_name.startswith('*')
+            if self.account_mode:
                 try:
-                    obj = caller.search_player(obj_name.lstrip('*'))
+                    obj = caller.search_account(obj_name.lstrip('*'))
                 except AttributeError:
-                    # this means we are calling examine from a player object
-                    obj = caller.search(obj_name.lstrip('*'), search_object = 'object' in self.switches)
+                    # this means we are calling examine from an account object
+                    obj = caller.search(obj_name.lstrip('*'), search_object='object' in self.switches)
             else:
                 obj = caller.search(obj_name)
             if not obj:
                 continue
 
             if not obj.access(caller, 'examine'):
-                #If we don't have special info access, just look
+                # If we don't have special info access, just look
                 # at the object instead.
                 self.msg(caller.at_look(obj))
                 continue
@@ -2095,12 +2106,12 @@ class CmdExamine(ObjManipCommand):
             else:
                 if obj.sessions.count():
                     mergemode = "session"
-                elif self.player_mode:
-                    mergemode = "player"
+                elif self.account_mode:
+                    mergemode = "account"
                 else:
                     mergemode = "object"
                 # using callback to print results whenever function returns.
-                get_and_merge_cmdsets(obj, self.session, self.player, obj, mergemode, self.raw_string).addCallback(get_cmdset_callback)
+                get_and_merge_cmdsets(obj, self.session, self.account, obj, mergemode, self.raw_string).addCallback(get_cmdset_callback)
 
 
 class CmdFind(COMMAND_DEFAULT_CLASS):
@@ -2108,7 +2119,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
     search the database for objects
 
     Usage:
-      @find[/switches] <name or dbref or *player> [= dbrefmin[-dbrefmax]]
+      @find[/switches] <name or dbref or *account> [= dbrefmin[-dbrefmax]]
 
     Switches:
       room - only look for rooms (location=None)
@@ -2117,15 +2128,15 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
       exact- only exact matches are returned.
 
     Searches the database for an object of a particular name or exact #dbref.
-    Use *playername to search for a player. The switches allows for
+    Use *accountname to search for an account. The switches allows for
     limiting object matches to certain game entities. Dbrefmin and dbrefmax
     limits matches to within the given dbrefs range, or above/below if only
     one is given.
     """
 
     key = "@find"
-    aliases = "find, @search, search, @locate, locate"
-    locks = "cmd:perm(find) or perm(Builders)"
+    aliases = "@search, @locate"
+    locks = "cmd:perm(find) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -2154,22 +2165,22 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
         high = max(low, high)
 
         is_dbref = utils.dbref(searchstring)
-        is_player = searchstring.startswith("*")
+        is_account = searchstring.startswith("*")
 
         restrictions = ""
         if self.switches:
             restrictions = ", %s" % (",".join(self.switches))
 
-        if is_dbref or is_player:
+        if is_dbref or is_account:
 
             if is_dbref:
                 # a dbref search
                 result = caller.search(searchstring, global_search=True, quiet=True)
                 string = "|wExact dbref match|n(#%i-#%i%s):" % (low, high, restrictions)
             else:
-                # a player search
+                # an account search
                 searchstring = searchstring.lstrip("*")
-                result = caller.search_player(searchstring, quiet=True)
+                result = caller.search_account(searchstring, quiet=True)
                 string = "|wMatch|n(#%i-#%i%s):" % (low, high, restrictions)
 
             if "room" in switches:
@@ -2184,15 +2195,15 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             elif not low <= int(result[0].id) <= high:
                 string += "\n   |RNo match found for '%s' in #dbref interval.|n" % (searchstring)
             else:
-                result=result[0]
+                result = result[0]
                 string += "\n|g   %s - %s|n" % (result.get_display_name(caller), result.path)
         else:
-            # Not a player/dbref search but a wider search; build a queryset.
+            # Not an account/dbref search but a wider search; build a queryset.
             # Searchs for key and aliases
             if "exact" in switches:
                 keyquery = Q(db_key__iexact=searchstring, id__gte=low, id__lte=high)
                 aliasquery = Q(db_tags__db_key__iexact=searchstring,
-                               db_tags__db_tagtype__iexact="alias",id__gte=low, id__lte=high)
+                               db_tags__db_tagtype__iexact="alias", id__gte=low, id__lte=high)
             else:
                 keyquery = Q(db_key__istartswith=searchstring, id__gte=low, id__lte=high)
                 aliasquery = Q(db_tags__db_key__istartswith=searchstring,
@@ -2256,7 +2267,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     is teleported to the target location.     """
     key = "@tel"
     aliases = "@teleport"
-    locks = "cmd:perm(teleport) or perm(Builders)"
+    locks = "cmd:perm(teleport) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -2280,17 +2291,17 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
                 if not obj_to_teleport:
                     caller.msg("Did not find object to teleport.")
                     return
-            if obj_to_teleport.has_player:
+            if obj_to_teleport.has_account:
                 caller.msg("Cannot teleport a puppeted object "
                            "(%s, puppeted by %s) to a None-location." % (
-                            obj_to_teleport.key, obj_to_teleport.player))
+                               obj_to_teleport.key, obj_to_teleport.account))
                 return
             caller.msg("Teleported %s -> None-location." % obj_to_teleport)
             if obj_to_teleport.location and not tel_quietly:
                 obj_to_teleport.location.msg_contents("%s teleported %s into nothingness."
                                                       % (caller, obj_to_teleport),
                                                       exclude=caller)
-            obj_to_teleport.location=None
+            obj_to_teleport.location = None
             return
 
         # not teleporting to None location
@@ -2357,7 +2368,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
 
     key = "@script"
     aliases = "@addscript"
-    locks = "cmd:perm(script) or perm(Builders)"
+    locks = "cmd:perm(script) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -2397,7 +2408,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
                                                                  obj.get_display_name(caller)))
                     script.stop()
             obj.scripts.validate()
-        else: # rhs exists
+        else:  # rhs exists
             if not self.switches:
                 # adding a new script, and starting it
                 ok = obj.scripts.add(self.rhs, autostart=True)
@@ -2458,7 +2469,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
 
     key = "@tag"
     aliases = ["@tags"]
-    locks = "cmd:perm(tag) or perm(Builders)"
+    locks = "cmd:perm(tag) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
@@ -2478,16 +2489,16 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
             nobjs = len(objs)
             if nobjs > 0:
                 catstr = " (category: '|w%s|n')" % category if category else \
-                                ("" if nobjs == 1 else " (may have different tag categories)")
+                    ("" if nobjs == 1 else " (may have different tag categories)")
                 matchstr = ", ".join(o.get_display_name(self.caller) for o in objs)
 
                 string = "Found |w%i|n object%s with tag '|w%s|n'%s:\n %s" % (nobjs,
-                                                       "s" if nobjs > 1 else "",
-                                                       tag,
-                                                       catstr, matchstr)
+                                                                              "s" if nobjs > 1 else "",
+                                                                              tag,
+                                                                              catstr, matchstr)
             else:
                 string = "No objects found with tag '%s%s'." % (tag,
-                                                        " (category: %s)" % category if category else "")
+                                                                " (category: %s)" % category if category else "")
             self.caller.msg(string)
             return
         if "del" in self.switches:
@@ -2504,14 +2515,14 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
                 if obj.tags.get(tag, category=category):
                     obj.tags.remove(tag, category=category)
                     string = "Removed tag '%s'%s from %s." % (
-                                            tag,
-                                            " (category: %s)" % category if category else "",
-                                            obj)
+                        tag,
+                        " (category: %s)" % category if category else "",
+                        obj)
                 else:
                     string = "No tag '%s'%s to delete on %s." % (
-                                            tag,
-                                            " (category: %s)" % category if category else "",
-                                            obj)
+                        tag,
+                        " (category: %s)" % category if category else "",
+                        obj)
             else:
                 # no tag specified, clear all tags
                 old_tags = ["%s%s" % (tag, " (category: %s" % category if category else "")
@@ -2550,7 +2561,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
             categories = [" (category: %s)" % tup[1] if tup[1] else "" for tup in tagtuples]
             if ntags:
                 string = "Tag%s on %s: %s" % ("s" if ntags > 1 else "", obj,
-                                        ", ".join("'%s'%s" % (tags[i], categories[i]) for i in range(ntags)))
+                                              ", ".join("'%s'%s" % (tags[i], categories[i]) for i in range(ntags)))
             else:
                 string = "No tags attached to %s." % obj
             self.caller.msg(string)
@@ -2560,6 +2571,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
 #   PROTOTYPE_MODULES = ["commands.prototypes"]
 # Reload the server and the prototypes should be available.
 #
+
 
 class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
@@ -2598,8 +2610,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@spawn"
-    aliases = ["spawn"]
-    locks = "cmd:perm(spawn) or perm(Builders)"
+    locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
@@ -2609,7 +2620,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             "Helper to show a list of available prototypes"
             prots = ", ".join(sorted(prototypes.keys()))
             return "\nAvailable prototypes (case sensistive): %s" % \
-                    ("\n" + utils.fill(prots) if prots else "None")
+                ("\n" + utils.fill(prots) if prots else "None")
 
         prototypes = spawn(return_prototypes=True)
         if not self.args:
@@ -2629,7 +2640,6 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             self.caller.msg(string)
             return
 
-
         if isinstance(prototype, basestring):
             # A prototype key
             keystr = prototype
@@ -2640,17 +2650,16 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
         elif isinstance(prototype, dict):
             # we got the prototype on the command line. We must make sure to not allow
-            # the 'exec' key unless we are immortals or higher.
-            if "exec" in prototype and not self.caller.check_permstring("Immortals"):
+            # the 'exec' key unless we are developers or higher.
+            if "exec" in prototype and not self.caller.check_permstring("Developer"):
                 self.caller.msg("Spawn aborted: You don't have access to use the 'exec' prototype key.")
                 return
         else:
             self.caller.msg("The prototype must be a prototype key or a Python dictionary.")
             return
 
-        if not "noloc" in self.switches and not "location" in prototype:
+        if "noloc" in self.switches and not "location" not in prototype:
             prototype["location"] = self.caller.location
 
         for obj in spawn(prototype):
             self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
-

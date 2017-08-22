@@ -161,7 +161,7 @@ def clr(*args, **kwargs):
 # found. This will be overloaded by any nomatch function defined in
 # the imported modules.
 _INLINE_FUNCS = {"nomatch": lambda *args, **kwargs: "<UKNOWN>",
-        "stackfull": lambda *args, **kwargs: "\n (not parsed: inlinefunc stack size exceeded.)"}
+                 "stackfull": lambda *args, **kwargs: "\n (not parsed: inlinefunc stack size exceeded.)"}
 
 
 # load custom inline func modules.
@@ -172,7 +172,7 @@ for module in utils.make_iter(settings.INLINEFUNC_MODULES):
         if module == "server.conf.inlinefuncs":
             # a temporary warning since the default module changed name
             raise ImportError("Error: %s\nPossible reason: mygame/server/conf/inlinefunc.py should "
-                  "be renamed to mygame/server/conf/inlinefuncs.py (note the S at the end)." % err)
+                              "be renamed to mygame/server/conf/inlinefuncs.py (note the S at the end)." % err)
         else:
             raise
 
@@ -189,7 +189,7 @@ except AttributeError:
 
 # regex definitions
 
-_RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\(") # unescaped $funcname{ (start of function call)
+_RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\(")  # unescaped $funcname{ (start of function call)
 
 _RE_TOKEN = re.compile(r"""
                         (?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'| # unescaped single-triples (escapes all inside them)
@@ -199,11 +199,12 @@ _RE_TOKEN = re.compile(r"""
                         (?P<start>(?<!\\)\$\w+\()|                      # unescaped $funcname( (start of function call)
                         (?P<escaped>\\'|\\"|\\\)|\\$\w+\()|             # escaped tokens should re-appear in text
                         (?P<rest>[\w\s.-\/#!%\^&\*;:=\-_`~\|\(}{\[\]]+|\"{1}|\'{1}) # everything else should also be included""",
-                        re.UNICODE + re.IGNORECASE + re.VERBOSE + re.DOTALL)
+                       re.UNICODE + re.IGNORECASE + re.VERBOSE + re.DOTALL)
 
 
 # Cache for function lookups.
 _PARSING_CACHE = utils.LimitedSizeOrderedDict(size_limit=1000)
+
 
 class ParseStack(list):
     """
@@ -221,6 +222,7 @@ class ParseStack(list):
     string + string]
 
     """
+
     def __init__(self, *args, **kwargs):
         super(ParseStack, self).__init__(*args, **kwargs)
         # always start stack with the empty string
@@ -246,6 +248,7 @@ class ParseStack(list):
 
 class InlinefuncError(RuntimeError):
     pass
+
 
 def parse_inlinefunc(string, strip=False, **kwargs):
     """
@@ -347,7 +350,7 @@ def parse_inlinefunc(string, strip=False, **kwargs):
                         args.append("")
                     else:
                         # all other args should merge into one string
-                        args[-1] += _run_stack(arg, depth=depth+1)
+                        args[-1] += _run_stack(arg, depth=depth + 1)
                 # execute the inlinefunc at this point or strip it.
                 kwargs["inlinefunc_stack_depth"] = depth
                 retval = "" if strip else func(*args, **kwargs)
@@ -359,6 +362,7 @@ def parse_inlinefunc(string, strip=False, **kwargs):
 #
 # Nick templating
 #
+
 
 """
 This supports the use of replacement templates in nicks:
@@ -451,5 +455,3 @@ def parse_nick_template(string, template_regex, outtemplate):
     if match:
         return outtemplate.format(**match.groupdict())
     return string
-
-
