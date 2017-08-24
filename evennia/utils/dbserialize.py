@@ -38,6 +38,12 @@ __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle",
 PICKLE_PROTOCOL = 2
 
 
+# message to send if editing an already deleted Attribute in a savermutable
+_ERROR_DELETED_ATTR = (
+    "{cls_name} {obj} has had its root Attribute deleted. "
+    "It must be cast to a {non_saver_name} before it can be modified further.")
+
+
 def _get_mysql_db_version():
     """
     This is a helper method for specifically getting the version
@@ -155,10 +161,13 @@ class _SaverMutable(object):
         elif self._db_obj:
             if not self._db_obj.pk:
                 cls_name = self.__class__.__name__
-                non_saver_name = cls_name.lstrip("_Saver")
-                err_msg = "%s %s has had its root Attribute deleted." % (cls_name, self)
-                err_msg += " It must be cast to a %s before it can be modified further." % non_saver_name
-                raise ValueError(err_msg)
+                try:
+                    non_saver_name = cls_name.split("_Saver", 1)[1].lower()
+                except IndexError:
+                    non_saver_name = cls_name
+                raise ValueError(_ERROR_DELETED_ATTR.format(cls_name=cls_name, obj=self,
+                                                            non_saver_name=non_saver_name))
+            print("self._db_obj.pk")
             self._db_obj.value = self
         else:
             logger.log_err("_SaverMutable %s has no root Attribute to save to." % self)
