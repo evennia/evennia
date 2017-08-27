@@ -90,6 +90,13 @@ def create_object(typeclass=None, key=None, location=None, home=None,
 
     typeclass = typeclass if typeclass else settings.BASE_OBJECT_TYPECLASS
 
+    # convenience converters to avoid common usage mistake
+    permissions = make_iter(permissions) if permissions is not None else None
+    locks = make_iter(locks) if locks is not None else None
+    aliases = make_iter(aliases) if aliases is not None else None
+    tags = make_iter(tags) if tags is not None else None
+
+
     if isinstance(typeclass, basestring):
         # a path is given. Load the actual typeclass
         typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
@@ -408,6 +415,8 @@ def create_account(key, email, password,
         from evennia.accounts.models import AccountDB as _AccountDB
 
     typeclass = typeclass if typeclass else settings.BASE_ACCOUNT_TYPECLASS
+    locks = make_iter(locks) if locks is not None else None
+    permissions = make_iter(permissions) if permissions is not None else None
 
     if isinstance(typeclass, basestring):
         # a path is given. Load the actual typeclass.
