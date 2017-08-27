@@ -129,12 +129,13 @@ def _server_maintenance():
         evennia.CHANNEL_HANDLER.update()
 
     # handle idle timeouts
-    reason = _("idle timeout exceeded")
-    for session in (sess for sess in SESSIONS.values()
-                    if (now - sess.cmd_last) > _IDLE_TIMEOUT):
-        if not session.account or not \
-                session.account.access(session.account, "noidletimeout", default=False):
-            SESSIONS.disconnect(session, reason=reason)
+    if _IDLE_TIMEOUT > 0:
+        reason = _("idle timeout exceeded")
+        for session in (sess for sess in SESSIONS.values()
+                        if (now - sess.cmd_last) > _IDLE_TIMEOUT):
+            if not session.account or not \
+                    session.account.access(session.account, "noidletimeout", default=False):
+                SESSIONS.disconnect(session, reason=reason)
 
     # Commenting this out, it is probably not needed
     # with CONN_MAX_AGE set. Keeping it as a reminder
