@@ -28,6 +28,14 @@ evennia._init()
 from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
 from evennia.server.webserver import EvenniaReverseProxyResource
+from django.db import connection
+
+
+# we don't need a connection to the database so close it right away
+try:
+    connection.close()
+except Exception:
+    pass
 
 PORTAL_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)]
 LOCKDOWN_MODE = settings.LOCKDOWN_MODE

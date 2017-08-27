@@ -36,6 +36,7 @@ class ClosedLidState(DefaultScript):
 
     def at_script_creation(self):
         "Called when script first created."
+        self.key = "closed_lid_script"
         self.desc = "Script that manages the closed-state cmdsets for red button."
         self.persistent = True
 
@@ -72,6 +73,7 @@ class OpenLidState(DefaultScript):
 
     def at_script_creation(self):
         "Called when script first created."
+        self.key = "open_lid_script"
         self.desc = "Script that manages the opened-state cmdsets for red button."
         self.persistent = True
 
