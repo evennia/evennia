@@ -432,7 +432,7 @@ class ANSIParser(object):
         in_string = utils.to_str(string)
 
         # do string replacement
-        parsed_string = ""
+        parsed_string = []
         parts = self.ansi_escapes.split(in_string) + [" "]
         for part, sep in zip(parts[::2], parts[1::2]):
             pstring = self.xterm256_fg_sub.sub(do_xterm256_fg, part)
@@ -440,7 +440,8 @@ class ANSIParser(object):
             pstring = self.xterm256_gfg_sub.sub(do_xterm256_gfg, pstring)
             pstring = self.xterm256_gbg_sub.sub(do_xterm256_gbg, pstring)
             pstring = self.ansi_sub.sub(self.sub_ansi, pstring)
-            parsed_string += "%s%s" % (pstring, sep[0].strip())
+            parsed_string.append("%s%s" % (pstring, sep[0].strip()))
+        parsed_string = "".join(parsed_string)
 
         if not mxp:
             parsed_string = self.strip_mxp(parsed_string)
