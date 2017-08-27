@@ -121,7 +121,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
     if you want.
     """
     key = "@charcreate"
-    locks = "cmd:pperm(Account)"
+    locks = "cmd:pperm(Player)"
     help_category = "General"
 
     # this is used by the parent
@@ -183,7 +183,7 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
     Permanently deletes one of your characters.
     """
     key = "@chardelete"
-    locks = "cmd:pperm(Account)"
+    locks = "cmd:pperm(Player)"
     help_category = "General"
 
     def func(self):
@@ -298,7 +298,7 @@ class CmdOOC(MuxAccountLookCommand):
     """
 
     key = "@ooc"
-    locks = "cmd:pperm(Account)"
+    locks = "cmd:pperm(Player)"
     aliases = "@unpuppet"
     help_category = "General"
 
@@ -608,7 +608,7 @@ class CmdPassword(COMMAND_DEFAULT_CLASS):
     Changes your password. Make sure to pick a safe one.
     """
     key = "@password"
-    locks = "cmd:pperm(Account)"
+    locks = "cmd:pperm(Player)"
 
     # this is used by the parent
     account_caller = True
@@ -803,7 +803,7 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
 
     key = "@quell"
     aliases = ["@unquell"]
-    locks = "cmd:pperm(Account)"
+    locks = "cmd:pperm(Player)"
     help_category = "General"
 
     # this is used by the parent

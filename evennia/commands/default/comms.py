@@ -453,7 +453,7 @@ class CmdCemit(COMMAND_DEFAULT_CLASS):
 
     key = "@cemit"
     aliases = ["@cmsg"]
-    locks = "cmd: not pperm(channel_banned) and pperm(Account)"
+    locks = "cmd: not pperm(channel_banned) and pperm(Player)"
     help_category = "Comms"
 
     # this is used by the COMMAND_DEFAULT_CLASS parent
@@ -530,7 +530,7 @@ class CmdChannelCreate(COMMAND_DEFAULT_CLASS):
 
     key = "@ccreate"
     aliases = "channelcreate"
-    locks = "cmd:not pperm(channel_banned) and pperm(Account)"
+    locks = "cmd:not pperm(channel_banned) and pperm(Player)"
     help_category = "Comms"
 
     # this is used by the COMMAND_DEFAULT_CLASS parent
