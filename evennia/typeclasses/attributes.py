@@ -646,6 +646,8 @@ class AttributeHandler(object):
                 type `attredit` on the Attribute in question.
 
         """
+        if not self._cache_complete:
+            self._fullcache()
         if accessing_obj:
             [attr.delete() for attr in self._cache.values()
              if attr and attr.access(accessing_obj, self._attredit, default=default_access)]
