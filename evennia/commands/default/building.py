@@ -1841,7 +1841,7 @@ class CmdLock(ObjManipCommand):
         obj = caller.search(self.lhs)
         if not obj:
             return
-        caller.msg(obj.locks.all())
+        caller.msg("\n".join(obj.locks.all()))
 
 
 class CmdExamine(ObjManipCommand):

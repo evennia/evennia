@@ -544,15 +544,18 @@ class CmdSetHandler(object):
     # legacy alias
     delete_default = remove_default
 
-    def all(self):
+    def get(self):
         """
-        Show all cmdsets.
+        Get all cmdsets.
 
         Returns:
             cmdsets (list): All the command sets currently in the handler.
 
         """
         return self.cmdset_stack
+
+    # backwards-compatible alias
+    all = get
 
     def clear(self):
         """

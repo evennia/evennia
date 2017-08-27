@@ -167,7 +167,6 @@ class _SaverMutable(object):
                     non_saver_name = cls_name
                 raise ValueError(_ERROR_DELETED_ATTR.format(cls_name=cls_name, obj=self,
                                                             non_saver_name=non_saver_name))
-            print("self._db_obj.pk")
             self._db_obj.value = self
         else:
             logger.log_err("_SaverMutable %s has no root Attribute to save to." % self)

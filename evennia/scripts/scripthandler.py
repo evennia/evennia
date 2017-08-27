@@ -109,7 +109,7 @@ class ScriptHandler(object):
             scripts (list): The found scripts matching `key`.
 
         """
-        return ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=key)
+        return list(ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=key))
 
     def delete(self, key=None):
         """

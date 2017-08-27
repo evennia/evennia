@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from twisted.internet import reactor, task
 from evennia.server.models import ServerConfig
-from evennia.utils.logger import log_trace, log_err
+from evennia.utils.logger import log_err
 from evennia.utils.dbserialize import dbserialize, dbunserialize
 
 TASK_HANDLER = None
@@ -113,9 +113,9 @@ class TaskHandler(object):
                 try:
                     dbserialize(arg)
                 except (TypeError, AttributeError):
-                    logger.log_err("The positional argument {} cannot be "
-                                   "pickled and will not be present in the arguments "
-                                   "fed to the callback {}".format(arg, callback))
+                    log_err("The positional argument {} cannot be "
+                            "pickled and will not be present in the arguments "
+                            "fed to the callback {}".format(arg, callback))
                 else:
                     safe_args.append(arg)
 
@@ -123,9 +123,9 @@ class TaskHandler(object):
                 try:
                     dbserialize(value)
                 except (TypeError, AttributeError):
-                    logger.log_err("The {} keyword argument {} cannot be "
-                                   "pickled and will not be present in the arguments "
-                                   "fed to the callback {}".format(key, value, callback))
+                    log_err("The {} keyword argument {} cannot be "
+                            "pickled and will not be present in the arguments "
+                            "fed to the callback {}".format(key, value, callback))
                 else:
                     safe_kwargs[key] = value
 

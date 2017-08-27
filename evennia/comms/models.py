@@ -533,7 +533,7 @@ class SubscriptionHandler(object):
                     self.obj.db_object_subscriptions.add(subscriber)
                 elif clsname == "AccountDB":
                     self.obj.db_account_subscriptions.add(subscriber)
-                _CHANNELHANDLER.cached_cmdsets.pop(subscriber, None)
+                _CHANNELHANDLER._cached_cmdsets.pop(subscriber, None)
         self._recache()
 
     def remove(self, entity):
@@ -556,7 +556,7 @@ class SubscriptionHandler(object):
                     self.obj.db_account_subscriptions.remove(entity)
                 elif clsname == "ObjectDB":
                     self.obj.db_object_subscriptions.remove(entity)
-                _CHANNELHANDLER.cached_cmdsets.pop(subscriber, None)
+                _CHANNELHANDLER._cached_cmdsets.pop(subscriber, None)
         self._recache()
 
     def all(self):
@@ -571,6 +571,7 @@ class SubscriptionHandler(object):
         if self._cache is None:
             self._recache()
         return self._cache
+    get = all  # alias
 
     def online(self):
         """

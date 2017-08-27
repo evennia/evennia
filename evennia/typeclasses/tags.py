@@ -251,6 +251,8 @@ class TagHandler(object):
         """
         if not tag:
             return
+        if not self._cache_complete:
+            self._fullcache()
         for tagstr in make_iter(tag):
             if not tagstr:
                 continue
@@ -265,7 +267,7 @@ class TagHandler(object):
             getattr(self.obj, self._m2m_fieldname).add(tagobj)
             self._setcache(tagstr, category, tagobj)
 
-    def get(self, key=None, default=None, category=None, return_tagobj=False):
+    def get(self, key=None, default=None, category=None, return_tagobj=False, return_list=False):
         """
         Get the tag for the given key or list of tags.
 
@@ -277,11 +279,14 @@ class TagHandler(object):
                 category.
             return_tagobj (bool, optional): Return the Tag object itself
                 instead of a string representation of the Tag.
+            return_list (bool, optional): Always return a list, regardless
+                of number of matches.
 
         Returns:
-            tags (str, TagObject or list): The matches, either string
+            tags (list): The matches, either string
                 representations of the tags or the Tag objects themselves
-                depending on `return_tagobj`.
+                depending on `return_tagobj`. If 'default' is set, this
+                will be a list with the default value as its only element.
 
         """
         ret = []
@@ -289,6 +294,8 @@ class TagHandler(object):
             # note - the _getcache call removes case sensitivity for us
             ret.extend([tag if return_tagobj else to_str(tag.db_key)
                         for tag in self._getcache(keystr, category)])
+        if return_list:
+            return ret if ret else [default] if default is not None else []
         return ret[0] if len(ret) == 1 else (ret if ret else default)
 
     def remove(self, key, category=None):
@@ -327,6 +334,8 @@ class TagHandler(object):
                 category.
 
         """
+        if not self._cache_complete:
+            self._fullcache()
         query = {"%s__id" % self._model: self._objid, "tag__db_model": self._model, "tag__db_tagtype": self._tagtype}
         if category:
             query["tag__db_category"] = category.strip().lower()

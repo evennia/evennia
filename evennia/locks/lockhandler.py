@@ -107,7 +107,6 @@ from __future__ import print_function
 from builtins import object
 
 import re
-import inspect
 from django.conf import settings
 from evennia.utils import logger, utils
 from django.utils.translation import ugettext as _
@@ -370,13 +369,13 @@ class LockHandler(object):
 
     def all(self):
         """
-        Return all lockstrings.
+        Return all lockstrings
 
         Returns:
-            lockstring (str): The full lockstring
+            lockstrings (list): All separate lockstrings
 
         """
-        return self.get()
+        return str(self).split(';')
 
     def remove(self, access_type):
         """

@@ -7,7 +7,7 @@ entities.
 """
 import time
 from builtins import object
-from future.utils import listvalues, with_metaclass
+from future.utils import with_metaclass
 
 from django.conf import settings
 

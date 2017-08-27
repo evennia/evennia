@@ -93,6 +93,7 @@ class MonitorHandler(object):
     def at_update(self, obj, fieldname):
         """
         Called by the field as it saves.
+
         """
         to_delete = []
         if obj in self.monitors and fieldname in self.monitors[obj]:
@@ -174,6 +175,9 @@ class MonitorHandler(object):
     def all(self):
         """
         List all monitors.
+
+        Returns:
+            monitors (list): The handled monitors.
 
         """
         output = []
