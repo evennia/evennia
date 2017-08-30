@@ -86,6 +86,9 @@ situation.  Both signals and actions can be extended to a great extent.  The cyc
     opposite direction if such a signal should be thrown.  So it adds the action "flee to the north"  to its action queue.
 3. The action queue will be executed, making this character start to flee to the north.
 
+It is often necessary to add several actions in a given order to react to the signal.  It can also
+be necessary to set actions with different priorities, so that fleeing from gunfire may be higher in priority than walking casually about.
+
 ## List of actions
 ## Example 1: an idle citizen
 ## Actions with priorities
