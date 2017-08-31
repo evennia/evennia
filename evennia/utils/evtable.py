@@ -525,10 +525,14 @@ class EvCell(object):
             # don't allow too high cells
             excess = len(adjusted_data) - self.height
             if excess > 0:
-                # too many lines. Crop and mark last line with ...
+                # too many lines. Crop and mark last line with crop_string
+                crop_string = self.crop_string
                 adjusted_data = adjusted_data[:-excess]
-                if len(adjusted_data[-1]) > 3:
-                    adjusted_data[-1] = adjusted_data[-1][:-2] + ".."
+                crop_string_length = len(crop_string)
+                if len(adjusted_data[-1]) > crop_string_length:
+                    adjusted_data[-1] = adjusted_data[-1][:-crop_string_length] + crop_string
+                else:
+                    adjusted_data[-1] += crop_string
             elif excess < 0:
                 # too few lines. Fill to height.
                 adjusted_data.extend(["" for _ in range(excess)])
