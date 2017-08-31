@@ -39,6 +39,7 @@ class TaskHandler(object):
             It populates `self.tasks` according to the ServerConfig.
 
         """
+        to_save = False
         value = ServerConfig.objects.conf("delayed_tasks", default={})
         if isinstance(value, basestring):
             tasks = dbunserialize(value)
@@ -51,8 +52,15 @@ class TaskHandler(object):
             if isinstance(callback, tuple):
                 # `callback` can be an object and name for instance methods
                 obj, method = callback
+                if obj is None:
+                    to_save = True
+                    continue
+
                 callback = getattr(obj, method)
             self.tasks[task_id] = (date, callback, args, kwargs)
+
+        if to_save:
+            self.save()
 
     def save(self):
         """Save the tasks in ServerConfig."""
