@@ -614,35 +614,37 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
     switches:
        override - The @destroy command will usually avoid accidentally
                   destroying account objects. This switch overrides this safety.
+       force - destroy without confirmation.
     examples:
        @destroy house, roof, door, 44-78
        @destroy 5-10, flower, 45
+       @destroy/force north
 
     Destroys one or many objects. If dbrefs are used, a range to delete can be
-    given, e.g. 4-10. Also the end points will be deleted.
+    given, e.g. 4-10. Also the end points will be deleted. This command
+    displays a confirmation before destroying, to make sure of your choice.
+    You can specify the /force switch to bypass this confirmation.
     """
 
     key = "@destroy"
     aliases = ["@delete", "@del"]
     locks = "cmd:perm(destroy) or perm(Builder)"
     help_category = "Building"
+    confirm = True # set to False to always bypass confirmation
 
     def func(self):
         "Implements the command."
 
         caller = self.caller
+        delete = True
 
         if not self.args or not self.lhslist:
             caller.msg("Usage: @destroy[/switches] [obj, obj2, obj3, [dbref-dbref],...]")
-            return ""
+            delete = False
 
-        def delobj(objname, byref=False):
+        def delobj(obj):
             # helper function for deleting a single object
             string = ""
-            obj = caller.search(objname)
-            if not obj:
-                self.caller.msg(" (Objects to destroy must either be local or specified with a unique #dbref.)")
-                return ""
             objname = obj.name
             if not (obj.access(caller, "control") or obj.access(caller, 'delete')):
                 return "\nYou don't have permission to delete %s." % objname
@@ -668,21 +670,55 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                     string += " Objects inside %s were moved to their homes." % objname
             return string
 
-        result = []
+        objs = []
         for objname in self.lhslist:
+            if not delete:
+                continue
+
             if '-' in objname:
                 # might be a range of dbrefs
                 dmin, dmax = [utils.dbref(part, reqhash=False)
                               for part in objname.split('-', 1)]
                 if dmin and dmax:
                     for dbref in range(int(dmin), int(dmax + 1)):
-                        result.append(delobj("#" + str(dbref), True))
+                        obj = caller.search("#" + str(dbref))
+                        if obj:
+                            objs.append(obj)
+                    continue
                 else:
-                    result.append(delobj(objname))
+                    obj = caller.search(objname)
             else:
-                result.append(delobj(objname, True))
-        if result:
-            caller.msg("".join(result).strip())
+                obj = caller.search(objname)
+
+            if obj is None:
+                self.caller.msg(" (Objects to destroy must either be local or specified with a unique #dbref.)")
+            elif obj not in objs:
+                objs.append(obj)
+
+        if objs and ("force" not in self.switches and type(self).confirm):
+            confirm = "Are you sure you want to destroy "
+            if len(objs) == 1:
+                confirm += objs[0].get_display_name(caller)
+            elif len(objs) < 5:
+                confirm += ", ".join([obj.get_display_name(caller) for obj in objs])
+            else:
+                confirm += ", ".join(["#{}".format(obj.id) for obj in objs])
+            confirm += " (yes/no)?"
+            answer = yield(confirm)
+            while answer.strip().lower() not in ("y", "yes", "n", "no"):
+                answer = yield(confirm)
+
+            if answer.strip().lower() in ("n", "no"):
+                caller.msg("Cancelled: no object was destroyed.")
+                delete = False
+
+        if delete:
+            results = []
+            for obj in objs:
+                results.append(delobj(obj))
+
+            if results:
+                caller.msg("".join(results).strip())
 
 
 class CmdDig(ObjManipCommand):
