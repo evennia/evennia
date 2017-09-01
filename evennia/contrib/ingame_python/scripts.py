@@ -454,7 +454,7 @@ class EventHandler(DefaultScript):
                 continue
 
             try:
-                exec(callback["code"], locals, locals)
+                exec callback["code"] in {}, locals
             except InterruptEvent:
                 return False
             except Exception:

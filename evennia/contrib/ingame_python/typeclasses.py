@@ -397,6 +397,104 @@ class EventCharacter(DefaultCharacter):
 
         super(EventCharacter, self).at_pre_unpuppet()
 
+    def at_before_say(self, message, **kwargs):
+        """
+        Before the object says something.
+
+        This hook is by default used by the 'say' and 'whisper'
+        commands as used by this command it is called before the text
+        is said/whispered and can be used to customize the outgoing
+        text from the object. Returning `None` aborts the command.
+
+        Args:
+            message (str): The suggested say/whisper text spoken by self.
+        Kwargs:
+            whisper (bool): If True, this is a whisper rather than
+                a say. This is sent by the whisper command by default.
+                Other verbal commands could use this hook in similar
+                ways.
+            receiver (Object): If set, this is a target for the say/whisper.
+
+        Returns:
+            message (str): The (possibly modified) text to be spoken.
+
+        """
+        # First, try the location
+        location = getattr(self, "location", None)
+        location = location if location and inherits_from(location, "evennia.objects.objects.DefaultRoom") else None
+        if location and not kwargs.get("whisper", False):
+            allow = location.callbacks.call("can_say", self, location, message, parameters=message)
+            message = location.callbacks.get_variable("message")
+            if not allow or not message:
+                return
+
+            # Browse all the room's other characters
+            for obj in location.contents:
+                if obj is self or not inherits_from(obj, "objects.objects.DefaultCharacter"):
+                    continue
+
+                allow = obj.callbacks.call("can_say", self, obj, message, parameters=message)
+                message = obj.callbacks.get_variable("message")
+                if not allow or not message:
+                    return
+
+        return message
+
+    def at_say(self, message, **kwargs):
+        """
+        Display the actual say (or whisper) of self.
+
+        This hook should display the actual say/whisper of the object in its
+        location.  It should both alert the object (self) and its
+        location that some text is spoken.  The overriding of messages or
+        `mapping` allows for simple customization of the hook without
+        re-writing it completely.
+
+        Args:
+            message (str): The text to be conveyed by self.
+            msg_self (str, optional): The message to echo to self.
+            msg_location (str, optional): The message to echo to self's location.
+            receiver (Object, optional): An eventual receiver of the message
+                (by default only used by whispers).
+            msg_receiver(str, optional): Specific message for receiver only.
+            mapping (dict, optional): Additional mapping in messages.
+        Kwargs:
+            whisper (bool): If this is a whisper rather than a say. Kwargs
+                can be used by other verbal commands in a similar way.
+
+        Notes:
+
+            Messages can contain {} markers, which must
+            If used, `msg_self`, `msg_receiver`  and `msg_location` should contain
+            references to other objects between braces, the way `location.msg_contents`
+            would allow.  For instance:
+                msg_self = 'You say: "{speech}"'
+                msg_location = '{object} says: "{speech}"'
+                msg_receiver = '{object} whispers: "{speech}"'
+
+            The following mappings can be used in both messages:
+                object: the object speaking.
+                location: the location where object is.
+                speech: the text spoken by self.
+
+            You can use additional mappings if you want to add other
+            information in your messages.
+
+        """
+
+        super(EventCharacter, self).at_say(message, **kwargs)
+        location = getattr(self, "location", None)
+        location = location if location and inherits_from(location, "evennia.objects.objects.DefaultRoom") else None
+
+        if location and not kwargs.get("whisper", False):
+            location.callbacks.call("say", self, location, message,
+                  parameters=message)
+
+            # Call the other characters' "say" event
+            presents = [obj for obj in location.contents if obj is not self and inherits_from(obj, "objects.objects.DefaultCharacter")]
+            for present in presents:
+                present.callbacks.call("say", self, present, message, parameters=message)
+
 
 # Exit help
 EXIT_CAN_TRAVERSE = """
@@ -776,50 +874,3 @@ class EventRoom(DefaultRoom):
 
         self.callbacks.call("delete", self)
         return True
-
-    def at_say(self, speaker, message):
-        """
-        Called on this object if an object inside this object speaks.
-        The string returned from this method is the final form of the
-        speech.
-
-        Args:
-            speaker (Object): The object speaking.
-            message (str): The words spoken.
-
-        Returns:
-            The message to be said (str) or None.
-
-        Notes:
-            You should not need to add things like 'you say: ' or
-            similar here, that should be handled by the say command before
-            this.
-
-        """
-        allow = self.callbacks.call("can_say", speaker, self, message,
-                                    parameters=message)
-        if not allow:
-            return
-
-        message = self.callbacks.get_variable("message")
-
-        # Call the event "can_say" of other characters in the location
-        for present in [o for o in self.contents if isinstance(
-                o, DefaultCharacter) and o is not speaker]:
-            allow = present.callbacks.call("can_say", speaker, present,
-                                           message, parameters=message)
-            if not allow:
-                return
-
-            message = present.callbacks.get_variable("message")
-
-        # We force the next event to be called after the message
-        # This will have to change when the Evennia API adds new hooks
-        delay(0, self.callbacks.call, "say", speaker, self, message,
-              parameters=message)
-        for present in [o for o in self.contents if isinstance(
-                o, DefaultCharacter) and o is not speaker]:
-            delay(0, present.callbacks.call, "say", speaker, present, message,
-                  parameters=message)
-
-        return message
