@@ -183,7 +183,7 @@ _ENCODINGS = settings.ENCODINGS
 _RE_INSERT = re.compile(r"^\#INSERT (.*)", re.MULTILINE)
 _RE_CLEANBLOCK = re.compile(r"^\#.*?$|^\s*$", re.MULTILINE)
 _RE_CMD_SPLIT = re.compile(r"^\#.*?$", re.MULTILINE)
-_RE_CODE_OR_HEADER = re.compile(r"(\A|^\#CODE|^\#HEADER).*?$(.*?)(?=^#CODE.*?$|^#HEADER.*?$|\Z)",
+_RE_CODE_OR_HEADER = re.compile(r"((?:\A|^)#CODE|(?:/A|^)#HEADER|\A)(.*?)$(.*?)(?=^#CODE.*?$|^#HEADER.*?$|\Z)",
                                 re.MULTILINE + re.DOTALL)
 
 
@@ -352,8 +352,10 @@ class BatchCodeProcessor(object):
         headers = []
         codes = []
         for imatch, match in enumerate(list(_RE_CODE_OR_HEADER.finditer(text))):
-            mtype = match.group(1)
-            istart, iend = match.span(2)
+            mtype = match.group(1).strip()
+            # we need to handle things differently at the start of the file
+            mgroup = 3 if mtype else 2
+            istart, iend = match.span(mgroup)
             code = text[istart:iend]
             if mtype == "#HEADER":
                 headers.append(code)
