@@ -448,10 +448,6 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
         if not receiver:
             return
 
-        if caller == receiver:
-            caller.msg("You can't whisper to yourself.")
-            return
-
         speech = self.rhs
         # Call a hook to change the speech before whispering
         speech = caller.at_before_say(speech, whisper=True, receiver=receiver)

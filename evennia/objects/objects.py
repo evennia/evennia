@@ -1638,13 +1638,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         })
 
         if msg_self:
-            self_mapping = {k: v.get_display_name(self) if hasattr(
-                v, "get_display_name") else str(v) for k, v in mapping.items()}
+            self_mapping = {key: "yourself" if key == "receiver" and val is self
+                            else val.get_display_name(self) if hasattr(val, "get_display_name")
+                            else str(val) for key, val in mapping.items()}
             self.msg(msg_self.format(**self_mapping))
 
         if receiver and msg_receiver:
-            receiver_mapping = {k: v.get_display_name(receiver) if hasattr(
-                v, "get_display_name") else str(v) for k, v in mapping.items()}
+            receiver_mapping = {key: val.get_display_name(receiver)
+                                if hasattr(val, "get_display_name")
+                                else str(val) for key, val in mapping.items()}
             receiver.msg(msg_receiver.format(**receiver_mapping))
 
         if self.location and msg_location:
