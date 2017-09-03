@@ -610,25 +610,25 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
         """Display information about server or target"""
 
         string = """
-         |cEvennia|n %s|n
-         MUD/MUX/MU* development system
+         |cEvennia|n {version}|n
+         MU* development system
 
          |wLicence|n https://opensource.org/licenses/BSD-3-Clause
          |wWeb|n http://www.evennia.com
-         |wIrc|n #evennia on FreeNode
+         |wIrc|n #evennia on irc.freenode.net:6667
          |wForum|n http://www.evennia.com/discussions
          |wMaintainer|n (2010-)   Griatch (griatch AT gmail DOT com)
          |wMaintainer|n (2006-10) Greg Taylor
 
-         |wOS|n %s
-         |wPython|n %s
-         |wTwisted|n %s
-         |wDjango|n %s
-        """ % (utils.get_evennia_version(),
-               os.name,
-               sys.version.split()[0],
-               twisted.version.short(),
-               django.get_version())
+         |wOS|n {os}
+         |wPython|n {python}
+         |wTwisted|n {twisted}
+         |wDjango|n {django}
+        """.format(version=utils.get_evennia_version(),
+                   os=os.name,
+                   python=sys.version.split()[0],
+                   twisted=twisted.version.short(),
+                   django=django.get_version())
         self.caller.msg(string)
 
 
