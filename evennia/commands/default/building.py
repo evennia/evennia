@@ -122,7 +122,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
     help_category = "Building"
 
     def func(self):
-        "Set the aliases."
+        """Set the aliases."""
 
         caller = self.caller
 
@@ -202,7 +202,7 @@ class CmdCopy(ObjManipCommand):
     help_category = "Building"
 
     def func(self):
-        "Uses ObjManipCommand.parse()"
+        """Uses ObjManipCommand.parse()"""
 
         caller = self.caller
         args = self.args
@@ -309,8 +309,7 @@ class CmdCpAttr(ObjManipCommand):
         """
         if not obj.attributes.has(attr):
             self.caller.msg(
-                "%s doesn't have an attribute %s."
-                % (obj.name, attr))
+                "%s doesn't have an attribute %s." % (obj.name, attr))
             return False
         return True
 
@@ -571,11 +570,12 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
 
         self.caller.db.evmenu_target = obj
         # launch the editor
-        EvEditor(self.caller, loadfunc=_desc_load, savefunc=_desc_save, quitfunc=_desc_quit, key="desc", persistent=True)
+        EvEditor(self.caller, loadfunc=_desc_load, savefunc=_desc_save,
+                 quitfunc=_desc_quit, key="desc", persistent=True)
         return
 
     def func(self):
-        "Define command"
+        """Define command"""
 
         caller = self.caller
         if not self.args and 'edit' not in self.switches:
@@ -628,7 +628,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
     help_category = "Building"
 
     def func(self):
-        "Implements the command."
+        """Implements the command."""
 
         caller = self.caller
 
@@ -719,7 +719,7 @@ class CmdDig(ObjManipCommand):
                           "edit:id({id}) or perm(Admin)"
 
     def func(self):
-        "Do the digging. Inherits variables from ObjManipCommand.parse()"
+        """Do the digging. Inherits variables from ObjManipCommand.parse()"""
 
         caller = self.caller
 
@@ -752,8 +752,8 @@ class CmdDig(ObjManipCommand):
         alias_string = ""
         if new_room.aliases.all():
             alias_string = " (%s)" % ", ".join(new_room.aliases.all())
-        room_string = "Created room %s(%s)%s of type %s." % (new_room,
-                                                             new_room.dbref, alias_string, typeclass)
+        room_string = "Created room %s(%s)%s of type %s." %\
+                      (new_room, new_room.dbref, alias_string, typeclass)
 
         # create exit to room
 
@@ -873,7 +873,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
                   "o": ("out", "i")}
 
     def func(self):
-        "Implements the tunnel command"
+        """Implements the tunnel command"""
 
         if not self.args or not self.lhs:
             string = "Usage: @tunnel[/switch] <direction> [= <roomname>" \
@@ -933,7 +933,7 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
     help_category = "Building"
 
     def func(self):
-        "Perform the link"
+        """Perform the link"""
         caller = self.caller
 
         if not self.args:
@@ -947,7 +947,6 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
         if not obj:
             return
 
-        string = ""
         if self.rhs:
             # this means a target name was given
             target = caller.search(self.rhs, global_search=True)
@@ -956,7 +955,8 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
 
             string = ""
             if not obj.destination:
-                string += "Note: %s(%s) did not have a destination set before. Make sure you linked the right thing." % (obj.name, obj.dbref)
+                string += "Note: %s(%s) did not have a destination set before." \
+                          " Make sure you linked the right thing." % (obj.name, obj.dbref)
             if "twoway" in self.switches:
                 if not (target.location and obj.location):
                     string = "To create a two-way link, %s and %s must both have a location" % (obj, target)
@@ -964,10 +964,12 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
                     self.caller.msg(string)
                     return
                 if not target.destination:
-                    string += "\nNote: %s(%s) did not have a destination set before. Make sure you linked the right thing." % (target.name, target.dbref)
+                    string += "\nNote: %s(%s) did not have a destination set before." \
+                              " Make sure you linked the right thing." % (target.name, target.dbref)
                 obj.destination = target.location
                 target.destination = obj.location
-                string += "\nLink created %s (in %s) <-> %s (in %s) (two-way)." % (obj.name, obj.location, target.name, target.location)
+                string += "\nLink created %s (in %s) <-> %s (in %s) (two-way)." %\
+                          (obj.name, obj.location, target.name, target.location)
             else:
                 obj.destination = target
                 string += "\nLink created %s -> %s (one way)." % (obj.name, target)
@@ -1049,7 +1051,7 @@ class CmdSetHome(CmdLink):
     help_category = "Building"
 
     def func(self):
-        "implement the command"
+        """implement the command"""
         if not self.args:
             string = "Usage: @home <obj> [= <home_location>]"
             self.caller.msg(string)
@@ -1074,7 +1076,8 @@ class CmdSetHome(CmdLink):
             old_home = obj.home
             obj.home = new_home
             if old_home:
-                string = "%s's home location was changed from %s(%s) to %s(%s)." % (obj, old_home, old_home.dbref, new_home, new_home.dbref)
+                string = "%s's home location was changed from %s(%s) to %s(%s)." %\
+                         (obj, old_home, old_home.dbref, new_home, new_home.dbref)
             else:
                 string = "%s' home location was set to %s(%s)." % (obj, new_home, new_home.dbref)
         self.caller.msg(string)
@@ -1096,7 +1099,7 @@ class CmdListCmdSets(COMMAND_DEFAULT_CLASS):
     help_category = "Building"
 
     def func(self):
-        "list the cmdsets"
+        """list the cmdsets"""
 
         caller = self.caller
         if self.arglist:
@@ -1127,7 +1130,7 @@ class CmdName(ObjManipCommand):
     help_category = "Building"
 
     def func(self):
-        "change the name"
+        """change the name"""
 
         caller = self.caller
         if not self.args:
@@ -1237,8 +1240,8 @@ class CmdOpen(ObjManipCommand):
                     exit_obj.destination = destination
                     if exit_aliases:
                         [exit_obj.aliases.add(alias) for alias in exit_aliases]
-                    string += " Rerouted its old destination '%s' to '%s' and changed aliases." % \
-                        (old_destination.name, destination.name)
+                    string += " Rerouted its old destination '%s' to '%s' and changed aliases." %\
+                              (old_destination.name, destination.name)
                 else:
                     string += " It already points to the correct place."
 
@@ -1259,7 +1262,7 @@ class CmdOpen(ObjManipCommand):
                 string = "Created new Exit '%s' from %s to %s%s." % (
                     exit_name, location.name, destination.name, string)
             else:
-                string = "Error: Exit '%s' not created." % (exit_name)
+                string = "Error: Exit '%s' not created." % exit_name
         # emit results
         caller.msg(string)
         return exit_obj
@@ -1483,9 +1486,9 @@ class CmdSetAttribute(ObjManipCommand):
                     "dicts.|n")
 
     def edit_handler(self, obj, attr):
-        "Activate the line editor"
+        """Activate the line editor"""
         def load(caller):
-            "Called for the editor to load the buffer"
+            """Called for the editor to load the buffer"""
             old_value = obj.attributes.get(attr)
             if old_value is not None and not isinstance(old_value, basestring):
                 typ = type(old_value).__name__
@@ -1495,14 +1498,14 @@ class CmdSetAttribute(ObjManipCommand):
             return old_value
 
         def save(caller, buf):
-            "Called when editor saves its buffer."
+            """Called when editor saves its buffer."""
             obj.attributes.add(attr, buf)
             caller.msg("Saved Attribute %s." % attr)
         # start the editor
         EvEditor(self.caller, load, save, key="%s/%s" % (obj, attr))
 
     def func(self):
-        "Implement the set attribute - a limited form of @py."
+        """Implement the set attribute - a limited form of @py."""
 
         caller = self.caller
         if not self.args:
@@ -1608,7 +1611,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
     help_category = "Building"
 
     def func(self):
-        "Implements command"
+        """Implements command"""
 
         caller = self.caller
 
@@ -1746,7 +1749,7 @@ class CmdLock(ObjManipCommand):
     If no lockstring is given, shows all locks on
     object.
 
-    Lockstring is on the form
+    Lockstring is of the form
        access_type:[NOT] func1(args)[ AND|OR][ NOT] func2(args) ...]
     Where func1, func2 ... valid lockfuncs with or without arguments.
     Separator expressions need not be capitalized.
@@ -1767,7 +1770,7 @@ class CmdLock(ObjManipCommand):
     help_category = "Building"
 
     def func(self):
-        "Sets up the command"
+        """Sets up the command"""
 
         caller = self.caller
         if not self.args:
@@ -1777,7 +1780,7 @@ class CmdLock(ObjManipCommand):
             return
 
         if '/' in self.lhs:
-            # call on the form @lock obj/access_type
+            # call of the form @lock obj/access_type
             objname, access_type = [p.strip() for p in self.lhs.split('/', 1)]
             obj = None
             if objname.startswith("*"):
@@ -1790,7 +1793,7 @@ class CmdLock(ObjManipCommand):
                 caller.msg("You are not allowed to do that.")
                 return
             lockdef = obj.locks.get(access_type)
-            string = ""
+
             if lockdef:
                 if 'del' in self.switches:
                     obj.locks.delete(access_type)
@@ -1973,9 +1976,9 @@ class CmdExamine(ObjManipCommand):
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
             # all() returns a 'stack', so make a copy to sort.
             stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
-            string += "\n|wStored Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" %
-                                                                   (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
-                                                                   for cmdset in stored_cmdsets if cmdset.key != "_EMPTY_CMDSET"))
+            string += "\n|wStored Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" % (
+                cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority) for cmdset in stored_cmdsets
+                                                                   if cmdset.key != "_EMPTY_CMDSET"))
 
             # this gets all components of the currently merged set
             all_cmdsets = [(cmdset.key, cmdset) for cmdset in avail_cmdset.merged_from]
@@ -1992,15 +1995,15 @@ class CmdExamine(ObjManipCommand):
             else:
                 try:
                     # we have to protect this since many objects don't have sessions.
-                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.get_session(obj.sessions.get()).cmdset.all()])
+                    all_cmdsets.extend([(cmdset.key, cmdset)
+                                        for cmdset in obj.get_session(obj.sessions.get()).cmdset.all()])
                 except (TypeError, AttributeError):
                     # an error means we are merging an object without a session
                     pass
             all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
             all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
-            string += "\n|wMerged Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" %
-                                                                   (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
-                                                                   for cmdset in all_cmdsets))
+            string += "\n|wMerged Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" % (
+                cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority) for cmdset in all_cmdsets))
 
             # list the commands available to this object
             avail_cmdset = sorted([cmd.key for cmd in avail_cmdset
@@ -2044,7 +2047,7 @@ class CmdExamine(ObjManipCommand):
         return '%s\n%s\n%s' % (separator, string.strip(), separator)
 
     def func(self):
-        "Process command"
+        """Process command"""
         caller = self.caller
 
         def get_cmdset_callback(cmdset):
@@ -2068,7 +2071,8 @@ class CmdExamine(ObjManipCommand):
                     self.msg(caller.at_look(obj))
                     return
                 # using callback for printing result whenever function returns.
-                get_and_merge_cmdsets(obj, self.session, self.account, obj, "object", self.raw_string).addCallback(get_cmdset_callback)
+                get_and_merge_cmdsets(obj, self.session, self.account, obj, "object",
+                                      self.raw_string).addCallback(get_cmdset_callback)
             else:
                 self.msg("You need to supply a target to examine.")
             return
@@ -2140,7 +2144,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
     help_category = "Building"
 
     def func(self):
-        "Search functionality"
+        """Search functionality"""
         caller = self.caller
         switches = self.switches
 
@@ -2193,7 +2197,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             if not result:
                 string += "\n   |RNo match found.|n"
             elif not low <= int(result[0].id) <= high:
-                string += "\n   |RNo match found for '%s' in #dbref interval.|n" % (searchstring)
+                string += "\n   |RNo match found for '%s' in #dbref interval.|n" % searchstring
             else:
                 result = result[0]
                 string += "\n|g   %s - %s|n" % (result.get_display_name(caller), result.path)
@@ -2271,7 +2275,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     help_category = "Building"
 
     def func(self):
-        "Performs the teleport"
+        """Performs the teleport"""
 
         caller = self.caller
         args = self.args
@@ -2372,7 +2376,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
     help_category = "Building"
 
     def func(self):
-        "Do stuff"
+        """Do stuff"""
 
         caller = self.caller
 
@@ -2474,7 +2478,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
-        "Implement the @tag functionality"
+        """Implement the @tag functionality"""
 
         if not self.args:
             self.caller.msg("Usage: @tag[/switches] <obj> [= <tag>[:<category>]]")
@@ -2536,7 +2540,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
             return
         # no search/deletion
         if self.rhs:
-            # = is found, so we are on the form obj = tag
+            # = is found; command args are of the form obj = tag
             obj = self.caller.search(self.lhs, global_search=True)
             if not obj:
                 return
@@ -2614,10 +2618,10 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     help_category = "Building"
 
     def func(self):
-        "Implements the spawner"
+        """Implements the spawner"""
 
         def _show_prototypes(prototypes):
-            "Helper to show a list of available prototypes"
+            """Helper to show a list of available prototypes"""
             prots = ", ".join(sorted(prototypes.keys()))
             return "\nAvailable prototypes (case sensistive): %s" % \
                 ("\n" + utils.fill(prots) if prots else "None")
