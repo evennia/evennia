@@ -954,9 +954,9 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
                 return
 
             string = ""
+            note = "Note: %s(%s) did not have a destination set before. Make sure you linked the right thing."
             if not obj.destination:
-                string += "Note: %s(%s) did not have a destination set before." \
-                          " Make sure you linked the right thing." % (obj.name, obj.dbref)
+                string = note % (obj.name, obj.dbref)
             if "twoway" in self.switches:
                 if not (target.location and obj.location):
                     string = "To create a two-way link, %s and %s must both have a location" % (obj, target)
@@ -964,8 +964,7 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
                     self.caller.msg(string)
                     return
                 if not target.destination:
-                    string += "\nNote: %s(%s) did not have a destination set before." \
-                              " Make sure you linked the right thing." % (target.name, target.dbref)
+                    string += note % (target.name, target.dbref)
                 obj.destination = target.location
                 target.destination = obj.location
                 string += "\nLink created %s (in %s) <-> %s (in %s) (two-way)." %\
