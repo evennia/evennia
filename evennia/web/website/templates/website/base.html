@@ -1,4 +1,4 @@
-{% load staticfiles %}<!DOCTYPE HTML>
+{% load staticfiles sekizai_tags %}<!DOCTYPE HTML>
 <html>
   <head>
     <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
@@ -17,6 +17,8 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="{% static "website/css/app.css" %}">
+
+    {% render_block "css" %}
 
     {% block header_ext %}
     {% endblock %}
