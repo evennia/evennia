@@ -1577,8 +1577,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         return message
 
-    def at_say(self, message, msg_self=True, msg_location=None,
-               receiver=None, msg_receiver=None, msg_type="say", mapping=None, **kwargs):
+    def at_say(self, message, msg_self, msg_location=None, receiver=None,
+               msg_receiver=None, msg_type="say", mapping=None, **kwargs):
         """
         Display the actual say (or whisper) of self.
 
