@@ -1,5 +1,5 @@
 """
-Scripts for the event system.
+Scripts for the in-game Python system.
 """
 
 from datetime import datetime, timedelta
@@ -10,13 +10,13 @@ import traceback
 
 from django.conf import settings
 from evennia import DefaultObject, DefaultScript, ChannelDB, ScriptDB
-from evennia import logger
+from evennia import logger, ObjectDB
 from evennia.utils.ansi import raw
 from evennia.utils.create import create_channel
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.utils import all_from_module, delay, pypath_to_realpath
-from evennia.contrib.events.callbackhandler import CallbackHandler
-from evennia.contrib.events.utils import get_next_wait, EVENTS, InterruptEvent
+from evennia.contrib.ingame_python.callbackhandler import CallbackHandler
+from evennia.contrib.ingame_python.utils import get_next_wait, EVENTS, InterruptEvent
 
 # Constants
 RE_LINE_ERROR = re.compile(r'^  File "\<string\>", line (\d+)')
@@ -29,7 +29,7 @@ class EventHandler(DefaultScript):
     This script shouldn't be created more than once.  It contains
     event (in a non-persistent attribute) and callbacks (in a
     persistent attribute).  The script method would help adding,
-    editing and deleting these events.
+    editing and deleting these events and callbacks.
 
     """
 
@@ -68,7 +68,7 @@ class EventHandler(DefaultScript):
         # Generate locals
         self.ndb.current_locals = {}
         self.ndb.fresh_locals = {}
-        addresses = ["evennia.contrib.events.eventfuncs"]
+        addresses = ["evennia.contrib.ingame_python.eventfuncs"]
         addresses.extend(getattr(settings, "EVENTFUNCS_LOCATIONS", ["world.eventfuncs"]))
         for address in addresses:
             if pypath_to_realpath(address):
@@ -85,7 +85,7 @@ class EventHandler(DefaultScript):
             delay(seconds, complete_task, task_id)
 
         # Place the script in the CallbackHandler
-        from evennia.contrib.events import typeclasses
+        from evennia.contrib.ingame_python import typeclasses
         CallbackHandler.script = self
         DefaultObject.callbacks = typeclasses.EventObject.callbacks
 
@@ -101,21 +101,29 @@ class EventHandler(DefaultScript):
         Return a dictionary of events on this object.
 
         Args:
-            obj (Object): the connected object.
+            obj (Object or typeclass): the connected object or a general typeclass.
 
         Returns:
             A dictionary of the object's events.
 
-        Note:
+        Notes:
             Events would define what the object can have as
             callbacks.  Note, however, that chained callbacks will not
             appear in events and are handled separately.
+
+            You can also request the events of a typeclass, not a
+            connected object.  This is useful to get the global list
+            of events for a typeclass that has no object yet.
 
         """
         events = {}
         all_events = self.ndb.events
         classes = Queue()
-        classes.put(type(obj))
+        if isinstance(obj, type):
+            classes.put(obj)
+        else:
+            classes.put(type(obj))
+
         invalid = []
         while not classes.empty():
             typeclass = classes.get()

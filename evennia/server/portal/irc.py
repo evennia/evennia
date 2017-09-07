@@ -93,6 +93,7 @@ IRC_COLOR_MAP = dict([
     (r'|_', " "),         # space
     (r'|*', ""),          # invert
     (r'|^', ""),          # blinking text
+    (r'|h', IRC_BOLD),    # highlight, use bold instead
 
     (r'|r', IRC_COLOR + IRC_RED),
     (r'|g', IRC_COLOR + IRC_GREEN),

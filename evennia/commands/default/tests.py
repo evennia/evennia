@@ -20,6 +20,7 @@ from mock import Mock
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
 from evennia.commands.default import help, general, system, admin, player, building, batchprocess, comms
+from evennia.commands.command import Command, InterruptCommand
 from evennia.utils import ansi, utils
 from evennia.server.sessionhandler import SESSIONS
 
@@ -72,6 +73,9 @@ class CommandTest(EvenniaTest):
             cmdobj.parse()
             cmdobj.func()
             cmdobj.at_post_cmd()
+        except InterruptCommand:
+            pass
+        finally:
             # clean out prettytable sugar. We only operate on text-type
             stored_msg = [args[0] if args and args[0] else kwargs.get("text",utils.to_str(kwargs, force_string=True))
                     for name, args, kwargs in receiver.msg.mock_calls]
@@ -87,9 +91,8 @@ class CommandTest(EvenniaTest):
                     retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
                     raise AssertionError(retval)
             else:
-                returned_msg = "\n".join(stored_msg)
+                returned_msg = "\n".join(str(msg) for msg in stored_msg)
                 returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
-        finally:
             receiver.msg = old_msg
 
         return returned_msg
@@ -326,3 +329,19 @@ class TestBatchProcess(CommandTest):
         self.call(batchprocess.CmdBatchCommands(), "example_batch_cmds", "Running Batchcommand processor  Automatic mode for example_batch_cmds")
         # we make sure to delete the button again here to stop the running reactor
         self.call(building.CmdDestroy(), "button", "button was destroyed.")
+
+class CmdInterrupt(Command):
+
+    key = "interrupt"
+
+    def parse(self):
+        raise InterruptCommand
+
+    def func(self):
+        self.msg("in func")
+
+
+class TestInterruptCommand(CommandTest):
+    def test_interrupt_command(self):
+        ret = self.call(CmdInterrupt(), "")
+        self.assertEqual(ret, "")

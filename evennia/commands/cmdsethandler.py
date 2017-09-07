@@ -80,6 +80,8 @@ __all__ = ("import_cmdset", "CmdSetHandler")
 _CACHED_CMDSETS = {}
 _CMDSET_PATHS = utils.make_iter(settings.CMDSET_PATHS)
 _IN_GAME_ERRORS = settings.IN_GAME_ERRORS
+_CMDSET_FALLBACKS = settings.CMDSET_FALLBACKS
+
 
 # Output strings
 
@@ -101,6 +103,16 @@ _ERROR_CMDSET_EXCEPTION = _(
 """{traceback}
 Compile/Run error when loading cmdset '{path}'.",
 (Traceback was logged {timestamp})""")
+
+_ERROR_CMDSET_FALLBACK = _(
+"""
+Error encountered for cmdset at path '{path}'.
+Replacing with fallback '{fallback_path}'.
+""")
+
+_ERROR_CMDSET_NO_FALLBACK = _(
+"""Fallback path '{fallback_path}' failed to generate a cmdset."""
+)
 
 
 class _ErrorCmdSet(CmdSet):
@@ -351,6 +363,22 @@ class CmdSetHandler(object):
                     elif path:
                         cmdset = self._import_cmdset(path)
                         if cmdset:
+                            if cmdset.key == '_CMDSET_ERROR':
+                                # If a cmdset fails to load, check if we have a fallback path to use
+                                fallback_path = _CMDSET_FALLBACKS.get(path, None)
+                                if fallback_path:
+                                    err = _ERROR_CMDSET_FALLBACK.format(path=path, fallback_path=fallback_path)
+                                    logger.log_err(err)
+                                    if _IN_GAME_ERRORS:
+                                        self.obj.msg(err)
+                                    cmdset = self._import_cmdset(fallback_path)
+                                # If no cmdset is returned from the fallback, we can't go further
+                                if not cmdset:
+                                    err = _ERROR_CMDSET_NO_FALLBACK.format(fallback_path=fallback_path)
+                                    logger.log_err(err)
+                                    if _IN_GAME_ERRORS:
+                                        self.obj.msg(err)
+                                    continue
                             cmdset.permanent = cmdset.key != '_CMDSET_ERROR'
                             self.cmdset_stack.append(cmdset)
 

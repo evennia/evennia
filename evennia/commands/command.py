@@ -451,3 +451,10 @@ class Command(with_metaclass(CommandMeta, object)):
 
         """
         return self.__doc__
+
+
+class InterruptCommand(Exception):
+
+    """Cleanly interrupt a command."""
+
+    pass

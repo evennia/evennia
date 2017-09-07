@@ -1,9 +1,9 @@
-# Evennia event system
+# Evennia in-game Python system
 
 Vincent Le Goff 2017
 
-This contrib adds the system of events in Evennia, allowing immortals (or other trusted builders) to
-dynamically add features to individual objects.  Using events, every immortal or privileged users
+This contrib adds the system of in-game Python in Evennia, allowing immortals (or other trusted builders) to
+dynamically add features to individual objects.  Using custom Python set in-game, every immortal or privileged users
 could have a specific room, exit, character, object or something else behave differently from its
 "cousins".  For these familiar with the use of softcode in MU`*`, like SMAUG MudProgs, the ability to
 add arbitrary behavior to individual objects is a step toward freedom.  Keep in mind, however, the
@@ -11,26 +11,26 @@ warning below, and read it carefully before the rest of the documentation.
 
 ## A WARNING REGARDING SECURITY
 
-Evennia's event system will run arbitrary Python code without much restriction.  Such a system is as
+Evennia's in-game Python system will run arbitrary Python code without much restriction.  Such a system is as
 powerful as potentially dangerous, and you will have to keep in mind these points before deciding to
 install it:
 
 1. Untrusted people can run Python code on your game server with this system.  Be careful about who
    can use this system (see the permissions below).
-2. You can do all of this in Python outside the game.  The event system is not to replace all your
+2. You can do all of this in Python outside the game.  The in-game Python system is not to replace all your
    game feature.
 
 ## Basic structure and vocabulary
 
-- At the basis of the event system are **events**.  An **event** defines the context in which we
-  would like to call some arbitrary code.  For instance, one event is defined on exits and will fire
-every time a character traverses through this exit.  Events are described on a
-[typeclass](https://github.com/evennia/evennia/wiki/Typeclasses) (like
-[exits](https://github.com/evennia/evennia/wiki/Objects#exits) in our example).  All objects
-inheriting from this typeclass will have access to this event.
+- At the basis of the in-game Python system are **events**.  An **event** defines the context in which we
+  would like to call some arbitrary code.  For instance, one event is
+  defined on exits and will fire every time a character traverses through this exit.  Events are described
+  on a [typeclass](https://github.com/evennia/evennia/wiki/Typeclasses) (like
+  [exits](https://github.com/evennia/evennia/wiki/Objects#exits) in our example).  All objects inheriting
+  from this typeclass will have access to this event.
 - **Callbacks** can be set on individual objects, on events defined in code.  These **callbacks**
   can contain arbitrary code and describe a specific behavior for an object.  When the event fires,
-all callbacks connected to this object's event are executed.
+  all callbacks connected to this object's event are executed.
 
 To see the system in context, when an object is picked up (using the default `get` command), a
 specific event is fired:
@@ -41,10 +41,10 @@ specific event is fired:
    the "get" event on this object.
 4. All callbacks tied to this object's "get" event will be executed in order.  These callbacks act
    as functions containing Python code that you can write in-game, using specific variables that
-will be listed when you edit the callback itself.
+   will be listed when you edit the callback itself.
 5. In individual callbacks, you can add multiple lines of Python code that will be fired at this
    point.  In this example, the `character` variable will contain the character who has picked up
-the object, while `obj` will contain the object that was picked up.
+   the object, while `obj` will contain the object that was picked up.
 
 Following this example, if you create a callback "get" on the object "a sword", and put in it:
 
@@ -59,11 +59,11 @@ When you pick up this object you should see something like:
 
 ## Installation
 
-Being in a separate contrib, the event system isn't installed by default.  You need to do it
+Being in a separate contrib, the in-game Python system isn't installed by default.  You need to do it
 manually, following these steps:
 
 1. Launch the main script (important!):
-   ```@py evennia.create_script("evennia.contrib.events.scripts.EventHandler")```
+   ```@py evennia.create_script("evennia.contrib.ingame_python.scripts.EventHandler")```
 2. Set the permissions (optional):
    - `EVENTS_WITH_VALIDATION`: a group that can edit callbacks, but will need approval (default to
      `None`).
@@ -73,23 +73,23 @@ manually, following these steps:
    - `EVENTS_CALENDAR`: type of the calendar to be used (either `None`, `"standard"` or `"custom"`,
      default to `None`).
 3. Add the `@call` command.
-4. Inherit from the custom typeclasses of the event system.
-   - `evennia.contrib.events.typeclasses.EventCharacter`: to replace `DefaultCharacter`.
-   - `evennia.contrib.events.typeclasses.EventExit`: to replace `DefaultExit`.
-   - `evennia.contrib.events.typeclasses.EventObject`: to replace `DefaultObject`.
-   - `evennia.contrib.events.typeclasses.EventRoom`: to replace `DefaultRoom`.
+4. Inherit from the custom typeclasses of the in-game Python system.
+   - `evennia.contrib.ingame_python.typeclasses.EventCharacter`: to replace `DefaultCharacter`.
+   - `evennia.contrib.ingame_python.typeclasses.EventExit`: to replace `DefaultExit`.
+   - `evennia.contrib.ingame_python.typeclasses.EventObject`: to replace `DefaultObject`.
+   - `evennia.contrib.ingame_python.typeclasses.EventRoom`: to replace `DefaultRoom`.
 
 The following sections describe in details each step of the installation.
 
-> Note: If you were to start the game without having started the main script (such as when 
+> Note: If you were to start the game without having started the main script (such as when
 resetting your database) you will most likely face a traceback when logging in, telling you
-that a 'callback' property is not defined. After performing step `1` the error will go away. 
+that a 'callback' property is not defined. After performing step `1` the error will go away.
 
 ### Starting the event script
 
 To start the event script, you only need a single command, using `@py`.
 
-    @py evennia.create_script("evennia.contrib.events.scripts.EventHandler")
+    @py evennia.create_script("evennia.contrib.ingame_python.scripts.EventHandler")
 
 This command will create a global script (that is, a script independent from any object).  This
 script will hold basic configuration, individual callbacks and so on.  You may access it directly,
@@ -174,7 +174,7 @@ this:
 
 ```python
 from evennia import default_cmds
-from evennia.contrib.events.commands import CmdCallback
+from evennia.contrib.ingame_python.commands import CmdCallback
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -194,25 +194,25 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 
 ### Changing parent classes of typeclasses
 
-Finally, to use the event system, you need to have your typeclasses inherit from the modified event
+Finally, to use the in-game Python system, you need to have your typeclasses inherit from the modified event
 classes.  For instance, in your `typeclasses/characters.py` module, you should change inheritance
 like this:
 
 ```python
-from evennia.contrib.events.typeclasses import EventCharacter
+from evennia.contrib.ingame_python.typeclasses import EventCharacter
 
 class Character(EventCharacter):
 
     # ...
 ```
 
-You should do the same thing for your rooms, exits and objects.  Note that the event system works by
+You should do the same thing for your rooms, exits and objects.  Note that the in-game Python system works by
 overriding some hooks.  Some of these features might not be accessible in your game if you don't
 call the parent methods when overriding hooks.
 
 ## Using the `@call` command
 
-The event system relies, to a great extent, on its `@call` command.  Who can execute this command,
+The in-game Python system relies, to a great extent, on its `@call` command.  Who can execute this command,
 and who can do what with it, will depend on your set of permissions.
 
 The `@call` command allows to add, edit and delete callbacks on specific objects' events.  The event
@@ -383,7 +383,7 @@ most complex.
 
 ### The eventfuncs
 
-In order to make development a little easier, the event system provides eventfuncs to be used in
+In order to make development a little easier, the in-game Python system provides eventfuncs to be used in
 callbacks themselves.  You don't have to use them, they are just shortcuts.  An eventfunc is just a
 simple function that can be used inside of your callback code.
 
@@ -473,7 +473,7 @@ And if the character Wilfred takes this exit, others in the room will see:
 
     Wildred falls into a hole in the ground!
 
-In this case, the event system placed the variable "message" in the callback locals, but will read
+In this case, the in-game Python system placed the variable "message" in the callback locals, but will read
 from it when the event has been executed.
 
 ### Callbacks with parameters
@@ -661,15 +661,15 @@ specific events fired.
 
 Adding new events should be done in your typeclasses.  Events are contained in the `_events` class
 variable, a dictionary of event names as keys, and tuples to describe these events as values.  You
-also need to register this class, to tell the event system that it contains events to be added to
+also need to register this class, to tell the in-game Python system that it contains events to be added to
 this typeclass.
 
 Here, we want to add a "push" event on objects.  In your `typeclasses/objects.py` file, you should
 write something like:
 
 ```python
-from evennia.contrib.events.utils import register_events
-from evennia.contrib.events.typeclasses import EventObject
+from evennia.contrib.ingame_python.utils import register_events
+from evennia.contrib.ingame_python.typeclasses import EventObject
 
 EVENT_PUSH = """
 A character push the object.
@@ -692,7 +692,7 @@ class Object(EventObject):
     }
 ```
 
-- Line 1-2: we import several things we will need from the event system.  Note that we use
+- Line 1-2: we import several things we will need from the in-game Python system.  Note that we use
   `EventObject` as a parent instead of `DefaultObject`, as explained in the installation.
 - Line 4-12: we usually define the help of the event in a separate variable, this is more readable,
   though there's no rule against doing it another way.  Usually, the help should contain a short
@@ -714,7 +714,7 @@ fired.
 
 ### Calling an event in code
 
-The event system is accessible through a handler on all objects.  This handler is named `callbacks`
+The in-game Python system is accessible through a handler on all objects.  This handler is named `callbacks`
 and can be accessed from any typeclassed object (your character, a room, an exit...).  This handler
 offers several methods to examine and call an event or callback on this object.
 
@@ -825,7 +825,7 @@ this is out of the scope of this documentation).
   The "say" command uses phrase parameters (you can set a "say" callback to fires if a phrase
 contains one specific word).
 
-In both cases, you need to import a function from `evennia.contrib.events.utils` and use it as third
+In both cases, you need to import a function from `evennia.contrib.ingame_python.utils` and use it as third
 parameter in your event definition.
 
 - `keyword_event` should be used for keyword parameters.
@@ -834,7 +834,7 @@ parameter in your event definition.
 For example, here is the definition of the "say" event:
 
 ```python
-from evennia.contrib.events.utils import register_events, phrase_event
+from evennia.contrib.ingame_python.utils import register_events, phrase_event
 # ...
 @register_events
 class SomeTypeclass:
@@ -865,5 +865,5 @@ The best way to do this is to use a custom setting, in your setting file
 EVENTS_DISABLED = True
 ```
 
-The event system will still be accessible (you will have access to the `@call` command, to debug),
+The in-game Python system will still be accessible (you will have access to the `@call` command, to debug),
 but no event will be called automatically.

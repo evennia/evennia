@@ -38,6 +38,8 @@ things you want from here into your game folder and change them there.
 * Menu Login (Vincent-lg 2016) - Alternate login system using EvMenu.
 * Multidescer (Griatch 2016) - Advanced descriptions combined from
   many separate description components, inspired by MUSH.
+* Random String Generator (Vincent Le Goff 2017) - Simple pseudo-random
+  generator of strings with rules, avoiding repetitions.
 * RPLanguage (Griatch 2015) - Dynamic obfuscation of emotes when
   speaking unfamiliar languages. Also obfuscates whispers.
 * RPSystem (Griatch 2015) - Full director-style emoting system
@@ -51,11 +53,14 @@ things you want from here into your game folder and change them there.
   as a start to build from. Has attack/disengage and turn timeouts.
 * Wilderness (titeuf87 2017) - Make infinitely large wilderness areas
   with dynamically created locations.
+* UnixCommand (Vincent Le Geoff 2017) - Add commands with UNIX-style syntax.
 
 ## Contrib packages
 
 * EGI_Client (gtaylor 2016) - Client for reporting game status
   to the Evennia game index (games.evennia.com)
+* In-game Python (Vincent Le Goff 2017) - Allow trusted builders to script
+  objects and events using Python from in-game.
 * Tutorial examples (Griatch 2011, 2015) - A folder of basic
   example objects, commands and scripts.
 * Tutorial world (Griatch 2011, 2015) - A folder containing the
