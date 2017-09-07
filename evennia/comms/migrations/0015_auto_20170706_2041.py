@@ -18,7 +18,7 @@ def _table_exists(db_cursor, tablename):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('comms', '0014_auto_20170705_1736'),
+        ('comms', '0014_convert_msgs_may_be_slow'),
     ]
 
     db_cursor = connection.cursor()

@@ -117,6 +117,8 @@ def _init_globals():
     if not _TO_MODEL_MAP:
         _TO_MODEL_MAP = defaultdict(str)
         _TO_MODEL_MAP.update(dict((c.natural_key(), c.model_class()) for c in ContentType.objects.all()))
+        # handle old player models by converting them to accounts
+        _TO_MODEL_MAP[(u"players", u"playerdb")] = _TO_MODEL_MAP[(u"accounts", u"accountdb")]
     if not _SESSION_HANDLER:
         from evennia.server.sessionhandler import SESSION_HANDLER as _SESSION_HANDLER
 

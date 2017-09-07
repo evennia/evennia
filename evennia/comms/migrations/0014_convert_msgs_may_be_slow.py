@@ -8,10 +8,9 @@ from django.db import migrations
 def forwards(apps, schema_editor):
 
     try:
-        apps.get_model('accounts', 'AccountDB')
+        AccountDB = apps.get_model('accounts', 'AccountDB')
     except LookupError:
         return
-    AccountDB = apps.get_model('accounts', 'AccountDB')
 
     Msg = apps.get_model('comms', 'Msg')
     for msg in Msg.objects.all():
