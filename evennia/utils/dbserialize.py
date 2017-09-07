@@ -115,12 +115,17 @@ def _init_globals():
         _FROM_MODEL_MAP = defaultdict(str)
         _FROM_MODEL_MAP.update(dict((c.model, c.natural_key()) for c in ContentType.objects.all()))
     if not _TO_MODEL_MAP:
+        from django.conf import settings
         _TO_MODEL_MAP = defaultdict(str)
         _TO_MODEL_MAP.update(dict((c.natural_key(), c.model_class()) for c in ContentType.objects.all()))
+        for src_key, dst_key in settings.ATTRIBUTE_STORED_MODEL_RENAME:
+            _TO_MODEL_MAP[src_key] = _TO_MODEL_MAP.get(dst_key, None)
         # handle old player models by converting them to accounts
         _TO_MODEL_MAP[(u"players", u"playerdb")] = _TO_MODEL_MAP[(u"accounts", u"accountdb")]
+        _TO_MODEL_MAP[(u"typeclasses", u"defaultplayer")] = _TO_MODEL_MAP[(u"typeclasses", u"defaultaccount")]
     if not _SESSION_HANDLER:
         from evennia.server.sessionhandler import SESSION_HANDLER as _SESSION_HANDLER
+
 
 #
 # SaverList, SaverDict, SaverSet - Attribute-specific helper classes and functions

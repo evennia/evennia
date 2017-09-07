@@ -250,6 +250,17 @@ DATABASES = {
 # If you get errors about the database having gone away after long idle
 # periods, shorten this value (e.g. MySQL defaults to a timeout of 8 hrs)
 CONN_MAX_AGE = 3600 * 7
+# When removing or renaming models, such models stored in Attributes may
+# become orphaned and will return as None. If the change is a rename (that
+# is, there is a 1:1 pk mapping between the old and the new), the unserializer
+# can convert old to new when retrieving them. This is a list of tuples
+# (old_natural_key, new_natural_key). Note that Django ContentTypes'
+# natural_keys are themselves tuples (appname, modelname). If new_natural_key
+# does not exist, `None` will be returned and stored back as if no replacement
+# was set.
+ATTRIBUTE_STORED_MODEL_RENAME = [
+        ((u"players", u"playerdb"), (u"accounts", u"accountdb")),
+        ((u"typeclasses", u"defaultplayer"), (u"typeclasses", u"defaultaccount"))]
 
 
 ######################################################################
