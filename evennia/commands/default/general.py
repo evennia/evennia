@@ -416,8 +416,9 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
         if not speech:
             return
 
-        # Call the at_after_say hook on the character
-        caller.at_say(speech)
+        # Call the at_after_say hook on the character, setting
+        # msg_self True to send default message to caller
+        caller.at_say(speech, msg_self=True)
 
 
 class CmdWhisper(COMMAND_DEFAULT_CLASS):
