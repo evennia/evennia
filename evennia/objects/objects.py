@@ -1623,7 +1623,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             msg_type = "whisper"
         if msg_type == "whisper":
             # whisper mode
-            msg_self = msg_self or 'You whisper "{speech}" to {receiver}.'
+            msg_self = 'You whisper "{speech}" to {receiver}.' if msg_self is True else msg_self
             msg_receiver = msg_receiver or '{object} whispers: "{speech}"'
             msg_location = None
         else:
