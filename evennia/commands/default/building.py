@@ -630,7 +630,9 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
     aliases = ["@delete", "@del"]
     locks = "cmd:perm(destroy) or perm(Builder)"
     help_category = "Building"
-    confirm = True # set to False to always bypass confirmation
+
+    confirm = True  # set to False to always bypass confirmation
+    default_confirm = 'yes'  # what to assume if just pressing enter (yes/no)
 
     def func(self):
         "Implements the command."
@@ -703,8 +705,9 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                 confirm += ", ".join([obj.get_display_name(caller) for obj in objs])
             else:
                 confirm += ", ".join(["#{}".format(obj.id) for obj in objs])
-            confirm += " (yes/no)?"
+            confirm += " [yes]/no?" if self.default_confirm == 'yes' else " yes/[no]"
             answer = yield(confirm)
+            answer = self.default_confirm if answer == '' else answer
             while answer.strip().lower() not in ("y", "yes", "n", "no"):
                 answer = yield(confirm)
 
