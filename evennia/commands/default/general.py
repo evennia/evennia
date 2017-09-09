@@ -458,7 +458,8 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
             return
 
         # Call the at_after_whisper hook for feedback
-        caller.at_say(speech, receiver=receiver, whisper=True)
+        msg_self = None if receiver is caller else True
+        caller.at_say(speech, msg_self=msg_self, receiver=receiver, whisper=True)
 
 
 class CmdPose(COMMAND_DEFAULT_CLASS):
