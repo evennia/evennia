@@ -791,8 +791,8 @@ class CmdDig(ObjManipCommand):
         alias_string = ""
         if new_room.aliases.all():
             alias_string = " (%s)" % ", ".join(new_room.aliases.all())
-        room_string = "Created room %s(%s)%s of type %s." %\
-                      (new_room, new_room.dbref, alias_string, typeclass)
+        room_string = "Created room %s(%s)%s of type %s." % (
+                new_room, new_room.dbref, alias_string, typeclass)
 
         # create exit to room
 
@@ -802,11 +802,9 @@ class CmdDig(ObjManipCommand):
         if self.rhs_objs:
             to_exit = self.rhs_objs[0]
             if not to_exit["name"]:
-                exit_to_string = \
-                    "\nNo exit created to new room."
+                exit_to_string = "\nNo exit created to new room."
             elif not location:
-                exit_to_string = \
-                    "\nYou cannot create an exit from a None-location."
+                exit_to_string = "\nYou cannot create an exit from a None-location."
             else:
                 # Build the exit to the new room from the current one
                 typeclass = to_exit["option"]
@@ -835,11 +833,9 @@ class CmdDig(ObjManipCommand):
             # Building the exit back to the current room
             back_exit = self.rhs_objs[1]
             if not back_exit["name"]:
-                exit_back_string = \
-                    "\nNo back exit created."
+                exit_back_string = "\nNo back exit created."
             elif not location:
-                exit_back_string = \
-                    "\nYou cannot create an exit back to a None-location."
+                exit_back_string = "\nYou cannot create an exit back to a None-location."
             else:
                 typeclass = back_exit["option"]
                 if not typeclass:
@@ -920,7 +916,8 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
             self.caller.msg(string)
             return
         if self.lhs not in self.directions:
-            string = "@tunnel can only understand the following directions: %s." % ",".join(sorted(self.directions.keys()))
+            string = "@tunnel can only understand the following directions: %s." % ",".join(
+                    sorted(self.directions.keys()))
             string += "\n(use @dig for more freedom)"
             self.caller.msg(string)
             return
@@ -1006,8 +1003,8 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
                     string += note % (target.name, target.dbref)
                 obj.destination = target.location
                 target.destination = obj.location
-                string += "\nLink created %s (in %s) <-> %s (in %s) (two-way)." %\
-                          (obj.name, obj.location, target.name, target.location)
+                string += "\nLink created %s (in %s) <-> %s (in %s) (two-way)." % (
+                        obj.name, obj.location, target.name, target.location)
             else:
                 obj.destination = target
                 string += "\nLink created %s -> %s (one way)." % (obj.name, target)
@@ -1114,8 +1111,8 @@ class CmdSetHome(CmdLink):
             old_home = obj.home
             obj.home = new_home
             if old_home:
-                string = "%s's home location was changed from %s(%s) to %s(%s)." %\
-                         (obj, old_home, old_home.dbref, new_home, new_home.dbref)
+                string = "%s's home location was changed from %s(%s) to %s(%s)." % (
+                        obj, old_home, old_home.dbref, new_home, new_home.dbref)
             else:
                 string = "%s' home location was set to %s(%s)." % (obj, new_home, new_home.dbref)
         self.caller.msg(string)
@@ -1278,8 +1275,8 @@ class CmdOpen(ObjManipCommand):
                     exit_obj.destination = destination
                     if exit_aliases:
                         [exit_obj.aliases.add(alias) for alias in exit_aliases]
-                    string += " Rerouted its old destination '%s' to '%s' and changed aliases." %\
-                              (old_destination.name, destination.name)
+                    string += " Rerouted its old destination '%s' to '%s' and changed aliases." % (
+                            old_destination.name, destination.name)
                 else:
                     string += " It already points to the correct place."
 
@@ -2456,12 +2453,10 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
                 ok = obj.scripts.add(self.rhs, autostart=True)
                 if not ok:
                     result.append("\nScript %s could not be added and/or started on %s." % (
-                        self.rhs, obj.get_display_name(caller)
-                    ))
+                        self.rhs, obj.get_display_name(caller)))
                 else:
                     result.append("Script |w%s|n successfully added and started on %s." % (
-                        self.rhs, obj.get_display_name(caller)
-                    ))
+                        self.rhs, obj.get_display_name(caller)))
 
             else:
                 paths = [self.rhs] + ["%s.%s" % (prefix, self.rhs)
@@ -2661,8 +2656,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         def _show_prototypes(prototypes):
             """Helper to show a list of available prototypes"""
             prots = ", ".join(sorted(prototypes.keys()))
-            return "\nAvailable prototypes (case sensistive): %s" % \
-                ("\n" + utils.fill(prots) if prots else "None")
+            return "\nAvailable prototypes (case sensistive): %s" % (
+                    "\n" + utils.fill(prots) if prots else "None")
 
         prototypes = spawn(return_prototypes=True)
         if not self.args:
