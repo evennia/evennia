@@ -1875,9 +1875,16 @@ class CmdLock(ObjManipCommand):
                 caller.msg("Added lock '%s' to %s." % (lockdef, obj))
             return
 
-        # if we get here, we are just viewing all locks
-        obj = caller.search(self.lhs)
+        # if we get here, we are just viewing all locks on obj
+        obj = None
+        if self.lhs.startswith("*"):
+            obj = caller.search_account(self.lhs.lstrip("*"))
         if not obj:
+            obj = caller.search(self.lhs)
+        if not obj:
+            return
+        if not (obj.access(caller, 'control') or obj.access(caller, "edit")):
+            caller.msg("You are not allowed to do that.")
             return
         caller.msg("\n".join(obj.locks.all()))
 

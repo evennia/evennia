@@ -19,6 +19,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands import cmdset, command
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
+from evennia.utils import search
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
                                  make_iter, to_unicode, is_iter)
@@ -435,7 +436,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             if searchdata.lower() in ("me", "self",):
                 return [self.account] if quiet else self.account
 
-        results = self.account.__class__.objects.account_search(searchdata)
+        results = search.search_account(searchdata)
 
         if quiet:
             return results
