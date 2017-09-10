@@ -392,8 +392,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         Args:
             text (str, optional): text data to send
-            from_obj (Object or Account, optional): Object sending. If given,
-                its at_msg_send() hook will be called.
+            from_obj (Object or Account or list, optional): Object sending. If given, its
+                at_msg_send() hook will be called. If iterable, call on all entities.
             session (Session or list, optional): Session object or a list of
                 Sessions to receive this send. If given, overrules the
                 default send behavior for the current
@@ -405,11 +405,12 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         """
         if from_obj:
             # call hook
-            try:
-                from_obj.at_msg_send(text=text, to_obj=self, **kwargs)
-            except Exception:
-                # this may not be assigned.
-                pass
+            for obj in make_iter(from_obj):
+                try:
+                    obj.at_msg_send(text=text, to_obj=self, **kwargs)
+                except Exception:
+                    # this may not be assigned.
+                    logger.log_trace()
         try:
             if not self.at_msg_receive(text=text, **kwargs):
                 # abort message to this account

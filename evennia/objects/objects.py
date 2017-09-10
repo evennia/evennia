@@ -487,9 +487,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 is treated internally like any send-command, so its
                 value can be a tuple if sending multiple arguments to
                 the `text` oob command.
-            from_obj (obj, optional): object that is sending. If
+            from_obj (obj or list, optional): object that is sending. If
                 given, at_msg_send will be called. This value will be
-                passed on to the protocol.
+                passed on to the protocol. If iterable, will execute hook
+                on all entities in it.
             session (Session or list, optional): Session or list of
                 Sessions to relay data to, if any. If set, will force send
                 to these sessions. If unset, who receives the message
@@ -508,10 +509,11 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         # try send hooks
         if from_obj:
-            try:
-                from_obj.at_msg_send(text=text, to_obj=self, **kwargs)
-            except Exception:
-                logger.log_trace()
+            for obj in make_iter(from_obj):
+                try:
+                    obj.at_msg_send(text=text, to_obj=self, **kwargs)
+                except Exception:
+                    logger.log_trace()
         try:
             if not self.at_msg_receive(text=text, **kwargs):
                 # if at_msg_receive returns false, we abort message to this object
