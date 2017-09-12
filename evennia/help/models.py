@@ -52,14 +52,14 @@ class HelpEntry(SharedMemoryModel):
     db_key = models.CharField('help key', max_length=255, unique=True, help_text='key to search for')
     # help category
     db_help_category = models.CharField("help category", max_length=255, default="General",
-        help_text='organizes help entries in lists')
+                                        help_text='organizes help entries in lists')
     # the actual help entry text, in any formatting.
     db_entrytext = models.TextField('help entry', blank=True, help_text='the main body of help text')
     # lock string storage
     db_lock_storage = models.TextField('locks', blank=True, help_text='normally view:all().')
     # tags are primarily used for permissions
-    db_tags = models.ManyToManyField(Tag, null=True,
-            help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.')
+    db_tags = models.ManyToManyField(Tag, blank=True,
+                                     help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.')
     # (deprecated, only here to allow MUX helpfile load (don't use otherwise)).
     # TODO: remove this when not needed anymore.
     db_staff_only = models.BooleanField(default=False)

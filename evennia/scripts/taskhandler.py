@@ -6,10 +6,11 @@ from datetime import datetime, timedelta
 
 from twisted.internet import reactor, task
 from evennia.server.models import ServerConfig
-from evennia.utils.logger import log_trace, log_err
+from evennia.utils.logger import log_err
 from evennia.utils.dbserialize import dbserialize, dbunserialize
 
 TASK_HANDLER = None
+
 
 class TaskHandler(object):
 
@@ -38,6 +39,7 @@ class TaskHandler(object):
             It populates `self.tasks` according to the ServerConfig.
 
         """
+        to_save = False
         value = ServerConfig.objects.conf("delayed_tasks", default={})
         if isinstance(value, basestring):
             tasks = dbunserialize(value)
@@ -50,8 +52,15 @@ class TaskHandler(object):
             if isinstance(callback, tuple):
                 # `callback` can be an object and name for instance methods
                 obj, method = callback
+                if obj is None:
+                    to_save = True
+                    continue
+
                 callback = getattr(obj, method)
             self.tasks[task_id] = (date, callback, args, kwargs)
+
+        if to_save:
+            self.save()
 
     def save(self):
         """Save the tasks in ServerConfig."""
@@ -71,9 +80,9 @@ class TaskHandler(object):
             try:
                 dbserialize(callback)
             except (TypeError, AttributeError):
-                raise ValueError("the specified callback {} cannot be pickled. " \
-                        "It must be a top-level function in a module or an " \
-                        "instance method.".format(callback))
+                raise ValueError("the specified callback {} cannot be pickled. "
+                                 "It must be a top-level function in a module or an "
+                                 "instance method.".format(callback))
             else:
                 safe_callback = callback
 
@@ -112,8 +121,8 @@ class TaskHandler(object):
                 try:
                     dbserialize(arg)
                 except (TypeError, AttributeError):
-                    logger.log_err("The positional argument {} cannot be " \
-                            "pickled and will not be present in the arguments " \
+                    log_err("The positional argument {} cannot be "
+                            "pickled and will not be present in the arguments "
                             "fed to the callback {}".format(arg, callback))
                 else:
                     safe_args.append(arg)
@@ -122,8 +131,8 @@ class TaskHandler(object):
                 try:
                     dbserialize(value)
                 except (TypeError, AttributeError):
-                    logger.log_err("The {} keyword argument {} cannot be " \
-                            "pickled and will not be present in the arguments " \
+                    log_err("The {} keyword argument {} cannot be "
+                            "pickled and will not be present in the arguments "
                             "fed to the callback {}".format(key, value, callback))
                 else:
                     safe_kwargs[key] = value
@@ -185,4 +194,3 @@ class TaskHandler(object):
 
 # Create the soft singleton
 TASK_HANDLER = TaskHandler()
-

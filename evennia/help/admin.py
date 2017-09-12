@@ -8,10 +8,10 @@ from django.contrib import admin
 from evennia.help.models import HelpEntry
 from evennia.typeclasses.admin import TagInline
 
+
 class HelpTagInline(TagInline):
     model = HelpEntry.db_tags.through
     related_field = "helpentry"
-
 
 
 class HelpEntryForm(forms.ModelForm):
@@ -22,8 +22,9 @@ class HelpEntryForm(forms.ModelForm):
 
     db_help_category = forms.CharField(label="Help category", initial='General',
                                        help_text="organizes help entries in lists")
-    db_lock_storage = forms.CharField(label="Locks", initial='view:all()',required=False,
-                                      widget=forms.TextInput(attrs={'size':'40'}),)
+    db_lock_storage = forms.CharField(label="Locks", initial='view:all()', required=False,
+                                      widget=forms.TextInput(attrs={'size': '40'}),)
+
 
 class HelpEntryAdmin(admin.ModelAdmin):
     "Sets up the admin manaager for help entries"
@@ -38,9 +39,9 @@ class HelpEntryAdmin(admin.ModelAdmin):
 
     form = HelpEntryForm
     fieldsets = (
-        (None, {'fields':(('db_key', 'db_help_category'),
+        (None, {'fields': (('db_key', 'db_help_category'),
                            'db_entrytext', 'db_lock_storage'),
-                'description':"Sets a Help entry. Set lock to <i>view:all()</I> unless you want to restrict it."}),)
+                'description': "Sets a Help entry. Set lock to <i>view:all()</I> unless you want to restrict it."}),)
 
 
 admin.site.register(HelpEntry, HelpEntryAdmin)

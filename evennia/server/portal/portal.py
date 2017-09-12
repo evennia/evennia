@@ -28,6 +28,14 @@ evennia._init()
 from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
 from evennia.server.webserver import EvenniaReverseProxyResource
+from django.db import connection
+
+
+# we don't need a connection to the database so close it right away
+try:
+    connection.close()
+except Exception:
+    pass
 
 PORTAL_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)]
 LOCKDOWN_MODE = settings.LOCKDOWN_MODE
@@ -71,32 +79,6 @@ AMP_HOST = settings.AMP_HOST
 AMP_PORT = settings.AMP_PORT
 AMP_INTERFACE = settings.AMP_INTERFACE
 AMP_ENABLED = AMP_HOST and AMP_PORT and AMP_INTERFACE
-
-
-# Maintenance function - this is called repeatedly by the portal.
-
-_IDLE_TIMEOUT = settings.IDLE_TIMEOUT
-
-
-def _portal_maintenance():
-    """
-    The maintenance function handles repeated checks and updates that
-    the server needs to do. It is called every minute.
-
-    """
-    # check for idle sessions
-    now = time.time()
-
-    reason = "Idle timeout exceeded, disconnecting."
-    for session in [sess for sess in PORTAL_SESSIONS.values()
-                    if (now - sess.cmd_last) > _IDLE_TIMEOUT]:
-        session.disconnect(reason=reason)
-        PORTAL_SESSIONS.disconnect(session)
-
-if _IDLE_TIMEOUT > 0:
-    # only start the maintenance task if we care about idling.
-    _maintenance_task = LoopingCall(_portal_maintenance)
-    _maintenance_task.start(60)  # called every minute
 
 
 # -------------------------------------------------------------
@@ -187,6 +169,7 @@ class Portal(object):
 # Start the Portal proxy server and add all active services
 #
 # -------------------------------------------------------------
+
 
 # twistd requires us to define the variable 'application' so it knows
 # what to execute from.

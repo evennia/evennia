@@ -12,10 +12,10 @@ servers!
 # the mixin is present
 DUMMYRUNNER_MIXIN = True
 # a faster password hasher suitable for multiple simultaneous
-# player creations. The default one is safer but deliberately
+# account creations. The default one is safer but deliberately
 # very slow to make cracking harder.
 PASSWORD_HASHERS = (
-            'django.contrib.auth.hashers.MD5PasswordHasher',
-            )
+    'django.contrib.auth.hashers.MD5PasswordHasher',
+)
 # make dummy clients able to test all commands
-PERMISSION_PLAYER_DEFAULT = "Immortals"
+PERMISSION_ACCOUNT_DEFAULT = "Developer"

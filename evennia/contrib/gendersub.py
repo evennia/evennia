@@ -38,21 +38,22 @@ _GENDER_PRONOUN_MAP = {"male": {"s": "he",
                                 "p": "his",
                                 "a": "his"},
                        "female": {"s": "she",
-                                   "o": "her",
-                                   "p": "her",
-                                   "a": "hers"},
+                                  "o": "her",
+                                  "p": "her",
+                                  "a": "hers"},
                        "neutral": {"s": "it",
-                                    "o": "it",
-                                    "p": "its",
-                                    "a": "its"},
+                                   "o": "it",
+                                   "p": "its",
+                                   "a": "its"},
                        "ambiguous": {"s": "they",
                                      "o": "them",
                                      "p": "their",
                                      "a": "theirs"}
-                                     }
+                       }
 _RE_GENDER_PRONOUN = re.compile(r'(?<!\|)\|(?!\|)[sSoOpPaA]')
 
 # in-game command for setting the gender
+
 
 class SetGender(Command):
     """
@@ -72,7 +73,7 @@ class SetGender(Command):
         """
         caller = self.caller
         arg = self.args.strip().lower()
-        if not arg in ("male", "female", "neutral", "ambiguous"):
+        if arg not in ("male", "female", "neutral", "ambiguous"):
             caller.msg("Usage: @gender male||female||neutral||ambiguous")
             return
         caller.db.gender = arg
@@ -109,7 +110,7 @@ class GenderCharacter(DefaultCharacter):
             - `|a`, `|A`: Absolute Possessive form: his, hers, its, His, Hers, Its, Theirs
 
         """
-        typ = regex_match.group()[1] # "s", "O" etc
+        typ = regex_match.group()[1]  # "s", "O" etc
         gender = self.attributes.get("gender", default="ambiguous")
         gender = gender if gender in ("male", "female", "neutral") else "ambiguous"
         pronoun = _GENDER_PRONOUN_MAP[gender][typ.lower()]

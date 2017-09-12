@@ -21,6 +21,7 @@ from evennia.contrib.ingame_python.utils import get_next_wait, EVENTS, Interrupt
 # Constants
 RE_LINE_ERROR = re.compile(r'^  File "\<string\>", line (\d+)')
 
+
 class EventHandler(DefaultScript):
 
     """
@@ -94,7 +95,7 @@ class EventHandler(DefaultScript):
             self.ndb.channel = ChannelDB.objects.get(db_key="everror")
         except ChannelDB.DoesNotExist:
             self.ndb.channel = create_channel("everror", desc="Event errors",
-                    locks="control:false();listen:perm(Builders);send:false()")
+                                              locks="control:false();listen:perm(Builders);send:false()")
 
     def get_events(self, obj):
         """
@@ -131,7 +132,7 @@ class EventHandler(DefaultScript):
             for key, etype in all_events.get(typeclass_name, {}).items():
                 if key in invalid:
                     continue
-                if etype[0] is None: # Invalidate
+                if etype[0] is None:  # Invalidate
                     invalid.append(key)
                     continue
                 if key not in events:
@@ -200,7 +201,7 @@ class EventHandler(DefaultScript):
         return callbacks
 
     def add_callback(self, obj, callback_name, code, author=None, valid=False,
-            parameters=""):
+                     parameters=""):
         """
         Add the specified callback.
 
@@ -208,7 +209,7 @@ class EventHandler(DefaultScript):
             obj (Object): the Evennia typeclassed object to be extended.
             callback_name (str): the name of the callback to add.
             code (str): the Python code associated with this callback.
-            author (Character or Player, optional): the author of the callback.
+            author (Character or Account, optional): the author of the callback.
             valid (bool, optional): should the callback be connected?
             parameters (str, optional): optional parameters.
 
@@ -228,11 +229,11 @@ class EventHandler(DefaultScript):
 
         # Add the callback in the list
         callbacks.append({
-                "created_on": datetime.now(),
-                "author": author,
-                "valid": valid,
-                "code": code,
-                "parameters": parameters,
+            "created_on": datetime.now(),
+            "author": author,
+            "valid": valid,
+            "code": code,
+            "parameters": parameters,
         })
 
         # If not valid, set it in 'to_valid'
@@ -241,7 +242,7 @@ class EventHandler(DefaultScript):
 
         # Call the custom_add if needed
         custom_add = self.get_events(obj).get(
-                callback_name, [None, None, None, None])[3]
+            callback_name, [None, None, None, None])[3]
         if custom_add:
             custom_add(obj, callback_name, len(callbacks) - 1, parameters)
 
@@ -253,7 +254,7 @@ class EventHandler(DefaultScript):
         return definition
 
     def edit_callback(self, obj, callback_name, number, code, author=None,
-            valid=False):
+                      valid=False):
         """
         Edit the specified callback.
 
@@ -262,7 +263,7 @@ class EventHandler(DefaultScript):
             callback_name (str): the name of the callback to edit.
             number (int): the callback number to be changed.
             code (str): the Python code associated with this callback.
-            author (Character or Player, optional): the author of the callback.
+            author (Character or Account, optional): the author of the callback.
             valid (bool, optional): should the callback be connected?
 
         Raises:
@@ -288,10 +289,10 @@ class EventHandler(DefaultScript):
 
         # Edit the callback
         callbacks[number].update({
-                "updated_on": datetime.now(),
-                "updated_by": author,
-                "valid": valid,
-                "code": code,
+            "updated_on": datetime.now(),
+            "updated_by": author,
+            "valid": valid,
+            "code": code,
         })
 
         # If not valid, set it in 'to_valid'
@@ -334,7 +335,7 @@ class EventHandler(DefaultScript):
             return
         else:
             logger.log_info("Deleting callback {} {} of {}:\n{}".format(
-                    callback_name, number, obj, code))
+                callback_name, number, obj, code))
             del callbacks[number]
 
         # Change IDs of callbacks to be validated
@@ -349,7 +350,7 @@ class EventHandler(DefaultScript):
                 elif t_number > number:
                     # Change the ID for this callback
                     self.db.to_valid.insert(i, (t_obj, t_callback_name,
-                            t_number - 1))
+                                                t_number - 1))
                     del self.db.to_valid[i + 1]
             i += 1
 
@@ -414,13 +415,13 @@ class EventHandler(DefaultScript):
         # Errors should not pass silently
         allowed = ("number", "parameters", "locals")
         if any(k for k in kwargs if k not in allowed):
-            raise TypeError("Unknown keyword arguments were specified " \
-                    "to call callbacks: {}".format(kwargs))
+            raise TypeError("Unknown keyword arguments were specified "
+                            "to call callbacks: {}".format(kwargs))
 
         event = self.get_events(obj).get(callback_name)
         if locals is None and not event:
-            logger.log_err("The callback {} for the object {} (typeclass " \
-                    "{}) can't be found".format(callback_name, obj, type(obj)))
+            logger.log_err("The callback {} for the object {} (typeclass "
+                           "{}) can't be found".format(callback_name, obj, type(obj)))
             return False
 
         # Prepare the locals if necessary
@@ -430,9 +431,9 @@ class EventHandler(DefaultScript):
                 try:
                     locals[variable] = args[i]
                 except IndexError:
-                    logger.log_trace("callback {} of {} ({}): need variable " \
-                            "{} in position {}".format(callback_name, obj,
-                            type(obj), variable, i))
+                    logger.log_trace("callback {} of {} ({}): need variable "
+                                     "{} in position {}".format(callback_name, obj,
+                                                                type(obj), variable, i))
                     return False
         else:
             locals = {key: value for key, value in locals.items()}
@@ -482,9 +483,9 @@ class EventHandler(DefaultScript):
         number = callback["number"]
         obj = callback["obj"]
         oid = obj.id
-        logger.log_err("An error occurred during the callback {} of " \
-                "{} (#{}), number {}\n{}".format(callback_name, obj,
-                oid, number + 1, "\n".join(trace)))
+        logger.log_err("An error occurred during the callback {} of "
+                       "{} (#{}), number {}\n{}".format(callback_name, obj,
+                                                        oid, number + 1, "\n".join(trace)))
 
         # Create the error message
         line = "|runknown|n"
@@ -505,8 +506,8 @@ class EventHandler(DefaultScript):
 
         exc = raw(trace[-1].strip("\n").splitlines()[-1])
         err_msg = "Error in {} of {} (#{})[{}], line {}:" \
-                " {}\n{}".format(callback_name, obj,
-                oid, number + 1, lineno, line, exc)
+            " {}\n{}".format(callback_name, obj,
+                             oid, number + 1, lineno, line, exc)
 
         # Inform the last updater if connected
         updater = callback.get("updated_by")
@@ -517,8 +518,8 @@ class EventHandler(DefaultScript):
             updater.msg(err_msg)
         else:
             err_msg = "Error in {} of {} (#{})[{}], line {}:" \
-                    " {}\n          {}".format(callback_name, obj,
-                    oid, number + 1, lineno, line, exc)
+                " {}\n          {}".format(callback_name, obj,
+                                           oid, number + 1, lineno, line, exc)
             self.ndb.channel.msg(err_msg)
 
     def add_event(self, typeclass, name, variables, help_text, custom_call, custom_add):
@@ -655,8 +656,8 @@ def complete_task(task_id):
         return
 
     if task_id not in script.db.tasks:
-        logger.log_err("The task #{} was scheduled, but it cannot be " \
-                "found".format(task_id))
+        logger.log_err("The task #{} was scheduled, but it cannot be "
+                       "found".format(task_id))
         return
 
     delta, obj, callback_name, locals = script.db.tasks.pop(task_id)

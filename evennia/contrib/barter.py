@@ -105,6 +105,7 @@ class TradeTimeout(DefaultScript):
     """
     This times out the trade request, in case player B did not reply in time.
     """
+
     def at_script_creation(self):
         """
         Called when script is first created
@@ -136,6 +137,7 @@ class TradeHandler(object):
     Objects of this class handles the ongoing trade, notably storing the current
     offers from each side and wether both have accepted or not.
     """
+
     def __init__(self, part_a, part_b):
         """
         Initializes the trade. This is called when part A tries to
@@ -391,6 +393,7 @@ class CmdTradeBase(Command):
     Base command for Trade commands to inherit from. Implements the
     custom parsing.
     """
+
     def parse(self):
         """
         Parse the relevant parts and make it easily
@@ -411,7 +414,7 @@ class CmdTradeBase(Command):
         if ':' in self.args:
             self.args, self.emote = [part.strip() for part in self.args.rsplit(":", 1)]
             self.str_caller = 'You say, "' + self.emote + '"\n  [%s]'
-            if self.caller.has_player:
+            if self.caller.has_account:
                 self.str_other = '|c%s|n says, "' % self.caller.key + self.emote + '"\n  [%s]'
             else:
                 self.str_other = '%s says, "' % self.caller.key + self.emote + '"\n  [%s]'
@@ -766,7 +769,7 @@ class CmdTrade(Command):
         if ':' in self.args:
             self.args, emote = [part.strip() for part in self.args.rsplit(":", 1)]
             selfemote = 'You say, "%s"\n  ' % emote
-            if self.caller.has_player:
+            if self.caller.has_account:
                 theiremote = '|c%s|n says, "%s"\n  ' % (self.caller.key, emote)
             else:
                 theiremote = '%s says, "%s"\n  ' % (self.caller.key, emote)

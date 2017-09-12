@@ -32,6 +32,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     clients) gets a telnet protocol instance assigned to them.  All
     communication between game and player goes through here.
     """
+
     def __init__(self, *args, **kwargs):
         self.protocol_name = "telnet"
         super(TelnetProtocol, self).__init__(*args, **kwargs)
@@ -115,6 +116,12 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 # do the sync
                 self.sessionhandler.sync(self)
 
+    def at_login(self):
+        """
+        Called when this session gets authenticated by the server.
+        """
+        pass
+
     def enableRemote(self, option):
         """
         This sets up the remote-activated options we allow for this protocol.
@@ -146,7 +153,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         return (option == MCCP or
                 option == ECHO or
-                option ==  suppress_ga.SUPPRESS_GA)
+                option == suppress_ga.SUPPRESS_GA)
 
     def disableLocal(self, option):
         """
@@ -332,11 +339,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                     # by telling the client that WE WON'T echo, the client knows
                     # that IT should echo. This is the expected behavior from
                     # our perspective.
-                    self.transport.write(mccp_compress(self, IAC+WONT+ECHO))
+                    self.transport.write(mccp_compress(self, IAC + WONT + ECHO))
                 else:
                     # by telling the client that WE WILL echo, the client can
                     # safely turn OFF its OWN echo.
-                    self.transport.write(mccp_compress(self, IAC+WILL+ECHO))
+                    self.transport.write(mccp_compress(self, IAC + WILL + ECHO))
             if raw:
                 # no processing
                 self.sendLine(text)

@@ -81,9 +81,9 @@ class ObjectDBAdmin(admin.ModelAdmin):
     """
 
     inlines = [ObjectTagInline, ObjectAttributeInline]
-    list_display = ('id', 'db_key', 'db_player', 'db_typeclass_path')
+    list_display = ('id', 'db_key', 'db_account', 'db_typeclass_path')
     list_display_links = ('id', 'db_key')
-    ordering = ['db_player', 'db_typeclass_path', 'id']
+    ordering = ['db_account', 'db_typeclass_path', 'id']
     search_fields = ['^db_key', 'db_typeclass_path']
     raw_id_fields = ('db_destination', 'db_location', 'db_home')
 
@@ -97,18 +97,18 @@ class ObjectDBAdmin(admin.ModelAdmin):
     form = ObjectEditForm
     fieldsets = (
         (None, {
-                'fields': (('db_key', 'db_typeclass_path'), ('db_lock_storage', ),
-                           ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
-                           )}),
-        )
+            'fields': (('db_key', 'db_typeclass_path'), ('db_lock_storage', ),
+                       ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
+                       )}),
+    )
 
     add_form = ObjectCreateForm
     add_fieldsets = (
         (None, {
-                'fields': (('db_key', 'db_typeclass_path'),
-                           ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
-                           )}),
-        )
+            'fields': (('db_key', 'db_typeclass_path'),
+                       ('db_location', 'db_home'), 'db_destination', 'db_cmdset_storage'
+                       )}),
+    )
 
     def get_fieldsets(self, request, obj=None):
         """

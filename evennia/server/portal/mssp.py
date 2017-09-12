@@ -22,12 +22,14 @@ MSSP_VAL = chr(2)
 # try to get the customized mssp info, if it exists.
 MSSPTable_CUSTOM = utils.variable_from_module(settings.MSSP_META_MODULE, "MSSPTable", default={})
 
+
 class Mssp(object):
     """
     Implements the MSSP protocol. Add this to a variable on the telnet
     protocol to set it up.
 
     """
+
     def __init__(self, protocol):
         """
         initialize MSSP by storing protocol on ourselves and calling
@@ -80,108 +82,108 @@ class Mssp(object):
 
         """
 
-        self.mssp_table =  {
+        self.mssp_table = {
 
-        # Required fields
+            # Required fields
 
-        "NAME":               "Evennia",
-        "PLAYERS":            self.get_player_count,
-        "UPTIME" :            self.get_uptime,
+            "NAME": "Evennia",
+            "PLAYERS": self.get_player_count,
+            "UPTIME": self.get_uptime,
 
-        # Generic
+            # Generic
 
-        "CRAWL DELAY":        "-1",
+            "CRAWL DELAY": "-1",
 
-        "HOSTNAME":           "",       # current or new hostname
-        "PORT":               ["4000"], # most important port should be last in list
-        "CODEBASE":           "Evennia",
-        "CONTACT":            "",       # email for contacting the mud
-        "CREATED":            "",       # year MUD was created
-        "ICON":               "",       # url to icon 32x32 or larger; <32kb.
-        "IP":                 "",       # current or new IP address
-        "LANGUAGE":           "",       # name of language used, e.g. English
-        "LOCATION":           "",       # full English name of server country
-        "MINIMUM AGE":        "0",      # set to 0 if not applicable
-        "WEBSITE":            "www.evennia.com",
+            "HOSTNAME": "",       # current or new hostname
+            "PORT": ["4000"],  # most important port should be last in list
+            "CODEBASE": "Evennia",
+            "CONTACT": "",       # email for contacting the mud
+            "CREATED": "",       # year MUD was created
+            "ICON": "",       # url to icon 32x32 or larger; <32kb.
+            "IP": "",       # current or new IP address
+            "LANGUAGE": "",       # name of language used, e.g. English
+            "LOCATION": "",       # full English name of server country
+            "MINIMUM AGE": "0",      # set to 0 if not applicable
+            "WEBSITE": "www.evennia.com",
 
-        # Categorisation
+            # Categorisation
 
-        "FAMILY":             "Custom", # evennia goes under 'Custom'
-        "GENRE":              "None",   # Adult, Fantasy, Historical, Horror, Modern, None, or Science Fiction
-        "GAMEPLAY":           "None",   # Adventure, Educational, Hack and Slash, None,
-                                        # Player versus Player, Player versus Environment,
-                                        # Roleplaying, Simulation, Social or Strategy
-        "STATUS":             "Open Beta",  # Alpha, Closed Beta, Open Beta, Live
-        "GAMESYSTEM":         "Custom", # D&D, d20 System, World of Darkness, etc. Use Custom if homebrew
-        "SUBGENRE":           "None",   # LASG, Medieval Fantasy, World War II, Frankenstein,
-                                        # Cyberpunk, Dragonlance, etc. Or None if not available.
+            "FAMILY": "Custom",  # evennia goes under 'Custom'
+            "GENRE": "None",   # Adult, Fantasy, Historical, Horror, Modern, None, or Science Fiction
+            "GAMEPLAY": "None",   # Adventure, Educational, Hack and Slash, None,
+            # Player versus Player, Player versus Environment,
+            # Roleplaying, Simulation, Social or Strategy
+            "STATUS": "Open Beta",  # Alpha, Closed Beta, Open Beta, Live
+            "GAMESYSTEM": "Custom",  # D&D, d20 System, World of Darkness, etc. Use Custom if homebrew
+            "SUBGENRE": "None",   # LASG, Medieval Fantasy, World War II, Frankenstein,
+            # Cyberpunk, Dragonlance, etc. Or None if not available.
 
-        # World
+            # World
 
-        "AREAS":              "0",
-        "HELPFILES":          "0",
-        "MOBILES":            "0",
-        "OBJECTS":            "0",
-        "ROOMS":              "0",      # use 0 if room-less
-        "CLASSES":            "0",      # use 0 if class-less
-        "LEVELS":             "0",      # use 0 if level-less
-        "RACES":              "0",      # use 0 if race-less
-        "SKILLS":             "0",      # use 0 if skill-less
+            "AREAS": "0",
+            "HELPFILES": "0",
+            "MOBILES": "0",
+            "OBJECTS": "0",
+            "ROOMS": "0",      # use 0 if room-less
+            "CLASSES": "0",      # use 0 if class-less
+            "LEVELS": "0",      # use 0 if level-less
+            "RACES": "0",      # use 0 if race-less
+            "SKILLS": "0",      # use 0 if skill-less
 
-        # Protocols set to 1 or 0)
+            # Protocols set to 1 or 0)
 
-        "ANSI":               "1",
-        "GMCP":               "0",
-        "ATCP":               "0",
-        "MCCP":               "0",
-        "MCP":                "0",
-        "MSDP":               "0",
-        "MSP":                "0",
-        "MXP":                "0",
-        "PUEBLO":             "0",
-        "SSL":                "1",
-        "UTF-8":              "1",
-        "ZMP":                "0",
-        "VT100":              "0",
-        "XTERM 256 COLORS":   "0",
+            "ANSI": "1",
+            "GMCP": "0",
+            "ATCP": "0",
+            "MCCP": "0",
+            "MCP": "0",
+            "MSDP": "0",
+            "MSP": "0",
+            "MXP": "0",
+            "PUEBLO": "0",
+            "SSL": "1",
+            "UTF-8": "1",
+            "ZMP": "0",
+            "VT100": "0",
+            "XTERM 256 COLORS": "0",
 
-        # Commercial set to 1 or 0)
+            # Commercial set to 1 or 0)
 
-        "PAY TO PLAY":        "0",
-        "PAY FOR PERKS":      "0",
+            "PAY TO PLAY": "0",
+            "PAY FOR PERKS": "0",
 
-        # Hiring  set to 1 or 0)
+            # Hiring  set to 1 or 0)
 
-        "HIRING BUILDERS":    "0",
-        "HIRING CODERS":      "0",
+            "HIRING BUILDERS": "0",
+            "HIRING CODERS": "0",
 
-        # Extended variables
+            # Extended variables
 
-        # World
+            # World
 
-        "DBSIZE":             "0",
-        "EXITS":              "0",
-        "EXTRA DESCRIPTIONS": "0",
-        "MUDPROGS":           "0",
-        "MUDTRIGS":           "0",
-        "RESETS":             "0",
+            "DBSIZE": "0",
+            "EXITS": "0",
+            "EXTRA DESCRIPTIONS": "0",
+            "MUDPROGS": "0",
+            "MUDTRIGS": "0",
+            "RESETS": "0",
 
-        # Game (set to 1, 0 or one of the given alternatives)
+            # Game (set to 1, 0 or one of the given alternatives)
 
-        "ADULT MATERIAL":     "0",
-        "MULTICLASSING":      "0",
-        "NEWBIE FRIENDLY":    "0",
-        "PLAYER CITIES":      "0",
-        "PLAYER CLANS":       "0",
-        "PLAYER CRAFTING":    "0",
-        "PLAYER GUILDS":      "0",
-        "EQUIPMENT SYSTEM":   "None",  # "None", "Level", "Skill", "Both"
-        "MULTIPLAYING":       "None",  # "None", "Restricted", "Full"
-        "PLAYERKILLING":      "None",  # "None", "Restricted", "Full"
-        "QUEST SYSTEM":       "None",  # "None", "Immortal Run", "Automated", "Integrated"
-        "ROLEPLAYING":        "None",  # "None", "Accepted", "Encouraged", "Enforced"
-        "TRAINING SYSTEM":    "None",  # "None", "Level", "Skill", "Both"
-        "WORLD ORIGINALITY":  "None",  # "All Stock", "Mostly Stock", "Mostly Original", "All Original"
+            "ADULT MATERIAL": "0",
+            "MULTICLASSING": "0",
+            "NEWBIE FRIENDLY": "0",
+            "PLAYER CITIES": "0",
+            "PLAYER CLANS": "0",
+            "PLAYER CRAFTING": "0",
+            "PLAYER GUILDS": "0",
+            "EQUIPMENT SYSTEM": "None",  # "None", "Level", "Skill", "Both"
+            "MULTIPLAYING": "None",  # "None", "Restricted", "Full"
+            "PLAYERKILLING": "None",  # "None", "Restricted", "Full"
+            "QUEST SYSTEM": "None",  # "None", "Immortal Run", "Automated", "Integrated"
+            "ROLEPLAYING": "None",  # "None", "Accepted", "Encouraged", "Enforced"
+            "TRAINING SYSTEM": "None",  # "None", "Level", "Skill", "Both"
+            "WORLD ORIGINALITY": "None",  # "All Stock", "Mostly Stock", "Mostly Original", "All Original"
         }
 
         # update the static table with the custom one

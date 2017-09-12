@@ -86,7 +86,7 @@ def server_epoch():
     global _SERVER_EPOCH
     if not _SERVER_EPOCH:
         _SERVER_EPOCH = ServerConfig.objects.conf("server_epoch", default=None) \
-                        or time.time() - runtime()
+            or time.time() - runtime()
     return _SERVER_EPOCH
 
 
@@ -224,12 +224,12 @@ def schedule(callback, repeat=False, sec=None, min=None,
                            repeats=-1 if repeat else 1)
     script.db.callback = callback
     script.db.gametime = {
-            "sec": sec,
-            "min": min,
-            "hour": hour,
-            "day": day,
-            "month": month,
-            "year": year,
+        "sec": sec,
+        "min": min,
+        "hour": hour,
+        "day": day,
+        "month": month,
+        "year": year,
     }
     return script
 

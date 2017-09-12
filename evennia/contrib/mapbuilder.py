@@ -32,7 +32,7 @@ called and so on until the map is completed. Building instructions are passed
 the following arguments:
     x         - The rooms position on the maps x axis
     y         - The rooms position on the maps y axis
-    caller    - The player calling the command
+    caller    - The account calling the command
     iteration - The current iterations number (0, 1 or 2)
     room_dict - A dictionary containing room references returned by build
                 functions where tuple coordinates are the keys (x, y).
@@ -119,7 +119,7 @@ def example1_build_forest(x, y, **kwargs):
     room = create_object(rooms.Room, key="forest" + str(x) + str(y))
     room.db.desc = "Basic forest room."
 
-    # Send a message to the player
+    # Send a message to the account
     kwargs["caller"].msg(room.key + " " + room.dbref)
 
     # This is generally mandatory.
@@ -143,7 +143,7 @@ def example1_build_mountains(x, y, **kwargs):
         rock = create_object(key="Rock", location=room)
         rock.db.desc = "An ordinary rock."
 
-    # Send a message to the player
+    # Send a message to the account
     kwargs["caller"].msg(room.key + " " + room.dbref)
 
     # This is generally mandatory.
@@ -167,11 +167,12 @@ def example1_build_temple(x, y, **kwargs):
                     "keeping the sound level only just below thunderous. "
                     "This is a rare spot of mirth on this dread moor.")
 
-    # Send a message to the player
+    # Send a message to the account
     kwargs["caller"].msg(room.key + " " + room.dbref)
 
     # This is generally mandatory.
     return room
+
 
 # Include your trigger characters and build functions in a legend dict.
 EXAMPLE1_LEGEND = {("♣", "♠"): example1_build_forest,
@@ -225,17 +226,17 @@ def example2_build_verticle_exit(x, y, **kwargs):
     if kwargs["iteration"] == 0:
         return
 
-    north_room = kwargs["room_dict"][(x, y-1)]
-    south_room = kwargs["room_dict"][(x, y+1)]
+    north_room = kwargs["room_dict"][(x, y - 1)]
+    south_room = kwargs["room_dict"][(x, y + 1)]
 
     # create exits in the rooms
     create_object(exits.Exit, key="south",
-                          aliases=["s"], location=north_room,
-                          destination=south_room)
+                  aliases=["s"], location=north_room,
+                  destination=south_room)
 
     create_object(exits.Exit, key="north",
-                          aliases=["n"], location=south_room,
-                          destination=north_room)
+                  aliases=["n"], location=south_room,
+                  destination=north_room)
 
     kwargs["caller"].msg("Connected: " + north_room.key +
                          " & " + south_room.key)
@@ -247,19 +248,20 @@ def example2_build_horizontal_exit(x, y, **kwargs):
     if kwargs["iteration"] == 0:
         return
 
-    west_room = kwargs["room_dict"][(x-1, y)]
-    east_room = kwargs["room_dict"][(x+1, y)]
+    west_room = kwargs["room_dict"][(x - 1, y)]
+    east_room = kwargs["room_dict"][(x + 1, y)]
 
     create_object(exits.Exit, key="east",
-                         aliases=["e"], location=west_room,
-                         destination=east_room)
+                  aliases=["e"], location=west_room,
+                  destination=east_room)
 
     create_object(exits.Exit, key="west",
-                         aliases=["w"], location=east_room,
-                         destination=west_room)
+                  aliases=["w"], location=east_room,
+                  destination=west_room)
 
     kwargs["caller"].msg("Connected: " + west_room.key +
                          " & " + east_room.key)
+
 
 # Include your trigger characters and build functions in a legend dict.
 EXAMPLE2_LEGEND = {("♣", "♠"): example2_build_forest,
@@ -339,36 +341,37 @@ def build_map(caller, game_map, legend, iterations=1, build_exits=True):
             y = loc_key[1]
 
             # north
-            if (x, y-1) in room_dict:
-                if room_dict[(x, y-1)]:
+            if (x, y - 1) in room_dict:
+                if room_dict[(x, y - 1)]:
                     create_object(exits.Exit, key="north",
                                   aliases=["n"], location=location,
-                                  destination=room_dict[(x, y-1)])
+                                  destination=room_dict[(x, y - 1)])
 
             # east
-            if (x+1, y) in room_dict:
-                if room_dict[(x+1, y)]:
+            if (x + 1, y) in room_dict:
+                if room_dict[(x + 1, y)]:
                     create_object(exits.Exit, key="east",
                                   aliases=["e"], location=location,
-                                  destination=room_dict[(x+1, y)])
+                                  destination=room_dict[(x + 1, y)])
 
             # south
-            if (x, y+1) in room_dict:
-                if room_dict[(x, y+1)]:
+            if (x, y + 1) in room_dict:
+                if room_dict[(x, y + 1)]:
                     create_object(exits.Exit, key="south",
                                   aliases=["s"], location=location,
-                                  destination=room_dict[(x, y+1)])
+                                  destination=room_dict[(x, y + 1)])
 
             # west
-            if (x-1, y) in room_dict:
-                if room_dict[(x-1, y)]:
+            if (x - 1, y) in room_dict:
+                if room_dict[(x - 1, y)]:
                     create_object(exits.Exit, key="west",
                                   aliases=["w"], location=location,
-                                  destination=room_dict[(x-1, y)])
+                                  destination=room_dict[(x - 1, y)])
 
     caller.msg("Map Created.")
 
 # access command
+
 
 class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
     """
@@ -478,4 +481,3 @@ class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
 
         # Pass map and legend to the build function.
         build_map(caller, game_map, legend, iterations, build_exits)
-

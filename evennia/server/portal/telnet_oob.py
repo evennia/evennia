@@ -175,7 +175,7 @@ class TelnetOOB(object):
 
         """
         msdp_cmdname = "{msdp_var}{msdp_cmdname}{msdp_val}".format(
-                    msdp_var=MSDP_VAR, msdp_cmdname=cmdname, msdp_val=MSDP_VAL)
+            msdp_var=MSDP_VAR, msdp_cmdname=cmdname, msdp_val=MSDP_VAL)
 
         if not (args or kwargs):
             return msdp_cmdname
@@ -191,11 +191,11 @@ class TelnetOOB(object):
                 msdp_args += "{msdp_array_open}" \
                              "{msdp_args}" \
                              "{msdp_array_close}".format(
-                                                         msdp_array_open=MSDP_ARRAY_OPEN,
-                                                         msdp_array_close=MSDP_ARRAY_CLOSE,
-                                                         msdp_args="".join("%s%s"
-                                                                           % (MSDP_VAL, json.dumps(val))
-                                                                           for val in args))
+                                 msdp_array_open=MSDP_ARRAY_OPEN,
+                                 msdp_array_close=MSDP_ARRAY_CLOSE,
+                                 msdp_args="".join("%s%s"
+                                                   % (MSDP_VAL, json.dumps(val))
+                                                   for val in args))
 
         msdp_kwargs = ""
         if kwargs:
@@ -203,12 +203,12 @@ class TelnetOOB(object):
             msdp_kwargs += "{msdp_table_open}" \
                            "{msdp_kwargs}" \
                            "{msdp_table_close}".format(
-                                                       msdp_table_open=MSDP_TABLE_OPEN,
-                                                       msdp_table_close=MSDP_TABLE_CLOSE,
-                                                       msdp_kwargs="".join("%s%s%s%s"
-                                                                           % (MSDP_VAR, key, MSDP_VAL,
-                                                                              json.dumps(val))
-                                                                           for key, val in kwargs.iteritems()))
+                               msdp_table_open=MSDP_TABLE_OPEN,
+                               msdp_table_close=MSDP_TABLE_CLOSE,
+                               msdp_kwargs="".join("%s%s%s%s"
+                                                   % (MSDP_VAR, key, MSDP_VAL,
+                                                      json.dumps(val))
+                                                   for key, val in kwargs.iteritems()))
 
         msdp_string = msdp_args + msdp_kwargs
 

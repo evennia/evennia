@@ -38,6 +38,12 @@ __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle",
 PICKLE_PROTOCOL = 2
 
 
+# message to send if editing an already deleted Attribute in a savermutable
+_ERROR_DELETED_ATTR = (
+    "{cls_name} {obj} has had its root Attribute deleted. "
+    "It must be cast to a {non_saver_name} before it can be modified further.")
+
+
 def _get_mysql_db_version():
     """
     This is a helper method for specifically getting the version
@@ -56,13 +62,22 @@ def _get_mysql_db_version():
 
 # initialization and helpers
 
+
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _FROM_MODEL_MAP = None
 _TO_MODEL_MAP = None
 _SESSION_HANDLER = None
-_IS_PACKED_DBOBJ = lambda o: type(o) == tuple and len(o) == 4 and o[0] == '__packed_dbobj__'
-_IS_PACKED_SESSION = lambda o: type(o) == tuple and len(o) == 3 and o[0] == '__packed_session__'
+
+
+def _IS_PACKED_DBOBJ(o):
+    return isinstance(o, tuple) and len(o) == 4 and o[0] == '__packed_dbobj__'
+
+
+def _IS_PACKED_SESSION(o):
+    return isinstance(o, tuple) and len(o) == 3 and o[0] == '__packed_session__'
+
+
 if uses_database("mysql") and _get_mysql_db_version() < '5.6.4':
     # mysql <5.6.4 don't support millisecond precision
     _DATESTRING = "%Y:%m:%d-%H:%M:%S:000000"
@@ -100,10 +115,17 @@ def _init_globals():
         _FROM_MODEL_MAP = defaultdict(str)
         _FROM_MODEL_MAP.update(dict((c.model, c.natural_key()) for c in ContentType.objects.all()))
     if not _TO_MODEL_MAP:
+        from django.conf import settings
         _TO_MODEL_MAP = defaultdict(str)
         _TO_MODEL_MAP.update(dict((c.natural_key(), c.model_class()) for c in ContentType.objects.all()))
+        for src_key, dst_key in settings.ATTRIBUTE_STORED_MODEL_RENAME:
+            _TO_MODEL_MAP[src_key] = _TO_MODEL_MAP.get(dst_key, None)
+        # handle old player models by converting them to accounts
+        _TO_MODEL_MAP[(u"players", u"playerdb")] = _TO_MODEL_MAP[(u"accounts", u"accountdb")]
+        _TO_MODEL_MAP[(u"typeclasses", u"defaultplayer")] = _TO_MODEL_MAP[(u"typeclasses", u"defaultaccount")]
     if not _SESSION_HANDLER:
         from evennia.server.sessionhandler import SESSION_HANDLER as _SESSION_HANDLER
+
 
 #
 # SaverList, SaverDict, SaverSet - Attribute-specific helper classes and functions
@@ -112,6 +134,7 @@ def _init_globals():
 
 def _save(method):
     """method decorator that saves data to Attribute"""
+
     def save_wrapper(self, *args, **kwargs):
         self.__doc__ = method.__doc__
         ret = method(self, *args, **kwargs)
@@ -127,6 +150,7 @@ class _SaverMutable(object):
      obj.db.mylist[1][2] = "test" (allocation to a nested list)
     will not save the updated value to the database.
     """
+
     def __init__(self, *args, **kwargs):
         """store all properties for tracking the tree"""
         self._parent = kwargs.pop("_parent", None)
@@ -142,6 +166,14 @@ class _SaverMutable(object):
         if self._parent:
             self._parent._save_tree()
         elif self._db_obj:
+            if not self._db_obj.pk:
+                cls_name = self.__class__.__name__
+                try:
+                    non_saver_name = cls_name.split("_Saver", 1)[1].lower()
+                except IndexError:
+                    non_saver_name = cls_name
+                raise ValueError(_ERROR_DELETED_ATTR.format(cls_name=cls_name, obj=self,
+                                                            non_saver_name=non_saver_name))
             self._db_obj.value = self
         else:
             logger.log_err("_SaverMutable %s has no root Attribute to save to." % self)
@@ -196,6 +228,7 @@ class _SaverList(_SaverMutable, MutableSequence):
     """
     A list that saves itself to an Attribute when updated.
     """
+
     def __init__(self, *args, **kwargs):
         super(_SaverList, self).__init__(*args, **kwargs)
         self._data = list()
@@ -223,6 +256,7 @@ class _SaverDict(_SaverMutable, MutableMapping):
     """
     A dict that stores changes to an Attribute when updated
     """
+
     def __init__(self, *args, **kwargs):
         super(_SaverDict, self).__init__(*args, **kwargs)
         self._data = dict()
@@ -235,6 +269,7 @@ class _SaverSet(_SaverMutable, MutableSet):
     """
     A set that saves to an Attribute when updated
     """
+
     def __init__(self, *args, **kwargs):
         super(_SaverSet, self).__init__(*args, **kwargs)
         self._data = set()
@@ -255,6 +290,7 @@ class _SaverOrderedDict(_SaverMutable, MutableMapping):
     """
     An ordereddict that can be saved and operated on.
     """
+
     def __init__(self, *args, **kwargs):
         super(_SaverOrderedDict, self).__init__(*args, **kwargs)
         self._data = OrderedDict()
@@ -267,6 +303,7 @@ class _SaverDeque(_SaverMutable):
     """
     A deque that can be saved and operated on.
     """
+
     def __init__(self, *args, **kwargs):
         super(_SaverDeque, self).__init__(*args, **kwargs)
         self._data = deque()
@@ -373,7 +410,7 @@ def unpack_dbobj(item):
 def pack_session(item):
     """
     Handle the safe serializion of Sessions objects (these contain
-    hidden references to database objects (players, puppets) so they
+    hidden references to database objects (accounts, puppets) so they
     can't be safely serialized).
 
     Args:

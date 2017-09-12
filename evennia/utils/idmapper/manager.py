@@ -3,6 +3,7 @@ IDmapper extension to the default manager.
 """
 from django.db.models.manager import Manager
 
+
 class SharedMemoryManager(Manager):
     # CL: this ensures our manager is used when accessing instances via
     # ForeignKey etc. (see docs)
@@ -24,8 +25,8 @@ class SharedMemoryManager(Manager):
             if key.endswith('__exact'):
                 key = key[:-len('__exact')]
             if key in ('pk', self.model._meta.pk.attname):
-                inst = self.model.get_cached_instance(kwargs[items[0]])
                 try:
+                    inst = self.model.get_cached_instance(kwargs[items[0]])
                     # we got the item from cache, but if this is a fk, check it's ours
                     if getattr(inst, str(self.field).split(".")[-1]) != self.instance:
                         inst = None

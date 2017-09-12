@@ -19,7 +19,8 @@ import os
 import sys
 from argparse import ArgumentParser
 from subprocess import Popen
-import Queue, thread
+import Queue
+import thread
 import evennia
 
 try:
@@ -35,7 +36,7 @@ EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EVENNIA_BIN = os.path.join(EVENNIA_ROOT, "bin")
 EVENNIA_LIB = os.path.dirname(evennia.__file__)
 
-SERVER_PY_FILE = os.path.join(EVENNIA_LIB,'server', 'server.py')
+SERVER_PY_FILE = os.path.join(EVENNIA_LIB, 'server', 'server.py')
 PORTAL_PY_FILE = os.path.join(EVENNIA_LIB, 'server', 'portal', 'portal.py')
 
 GAMEDIR = None
@@ -78,6 +79,7 @@ PROCESS_RESTART = "{component} restarting ..."
 PROCESS_DOEXIT = "Deferring to external runner."
 
 # Functions
+
 
 def set_restart_mode(restart_file, flag="reload"):
     """
@@ -203,14 +205,14 @@ def start_services(server_argv, portal_argv, doexit=False):
 
             # restart only if process stopped cleanly
             if (message == "server_stopped" and int(rc) == 0 and
-                 get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
+                    get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
                 print(PROCESS_RESTART.format(component="Server"))
                 SERVER = thread.start_new_thread(server_waiter, (processes, ))
                 continue
 
             # normally the portal is not reloaded since it's run as a daemon.
             if (message == "portal_stopped" and int(rc) == 0 and
-                  get_restart_mode(PORTAL_RESTART) == "True"):
+                    get_restart_mode(PORTAL_RESTART) == "True"):
                 print(PROCESS_RESTART.format(component="Portal"))
                 PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
                 continue
@@ -296,8 +298,8 @@ def main():
 
     pid = get_pid(SERVER_PIDFILE)
     if pid and not args.noserver:
-            print("\nEvennia Server is already running as process %(pid)s. Not restarted." % {'pid': pid})
-            args.noserver = True
+        print("\nEvennia Server is already running as process %(pid)s. Not restarted." % {'pid': pid})
+        args.noserver = True
     if args.noserver:
         server_argv = None
     else:
@@ -349,6 +351,7 @@ def main():
 
     # Start processes
     start_services(server_argv, portal_argv, doexit=args.doexit)
+
 
 if __name__ == '__main__':
     main()

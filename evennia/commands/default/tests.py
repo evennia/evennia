@@ -13,13 +13,14 @@ main test suite started with
 """
 
 import re
+import types
 
 from django.conf import settings
 from mock import Mock
 
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
-from evennia.commands.default import help, general, system, admin, player, building, batchprocess, comms
+from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms
 from evennia.commands.command import Command, InterruptCommand
 from evennia.utils import ansi, utils
 from evennia.server.sessionhandler import SESSIONS
@@ -57,11 +58,13 @@ class CommandTest(EvenniaTest):
         caller = caller if caller else self.char1
         receiver = receiver if receiver else caller
         cmdobj.caller = caller
-        cmdobj.cmdstring = cmdstring if cmdstring else cmdobj.key
+        cmdobj.cmdname = cmdstring if cmdstring else cmdobj.key
+        cmdobj.raw_cmdname = cmdobj.cmdname
+        cmdobj.cmdstring = cmdobj.cmdname  # deprecated
         cmdobj.args = args
         cmdobj.cmdset = cmdset
         cmdobj.session = SESSIONS.session_from_sessid(1)
-        cmdobj.player = self.player
+        cmdobj.account = self.account
         cmdobj.raw_string = cmdobj.key + " " + args
         cmdobj.obj = obj or (caller if caller else self.char1)
         # test
@@ -71,23 +74,27 @@ class CommandTest(EvenniaTest):
             receiver.msg = Mock()
             cmdobj.at_pre_cmd()
             cmdobj.parse()
-            cmdobj.func()
+            ret = cmdobj.func()
+            if isinstance(ret, types.GeneratorType):
+                ret.next()
             cmdobj.at_post_cmd()
+        except StopIteration:
+            pass
         except InterruptCommand:
             pass
         finally:
-            # clean out prettytable sugar. We only operate on text-type
-            stored_msg = [args[0] if args and args[0] else kwargs.get("text",utils.to_str(kwargs, force_string=True))
-                    for name, args, kwargs in receiver.msg.mock_calls]
+            # clean out evtable sugar. We only operate on text-type
+            stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs, force_string=True))
+                          for name, args, kwargs in receiver.msg.mock_calls]
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
             if msg is not None:
                 returned_msg = "||".join(_RE.sub("", mess) for mess in stored_msg)
                 returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
                 if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
-                    sep1 = "\n" + "="*30 + "Wanted message" + "="*34 + "\n"
-                    sep2 = "\n" + "="*30 + "Returned message" + "="*32 + "\n"
-                    sep3 = "\n" + "="*78
+                    sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
+                    sep2 = "\n" + "=" * 30 + "Returned message" + "=" * 32 + "\n"
+                    sep3 = "\n" + "=" * 78
                     retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
                     raise AssertionError(retval)
             else:
@@ -117,10 +124,10 @@ class TestGeneral(CommandTest):
 
     def test_nick(self):
         self.call(general.CmdNick(), "testalias = testaliasedstring1", "Nick 'testalias' mapped to 'testaliasedstring1'.")
-        self.call(general.CmdNick(), "/player testalias = testaliasedstring2", "Nick 'testalias' mapped to 'testaliasedstring2'.")
+        self.call(general.CmdNick(), "/account testalias = testaliasedstring2", "Nick 'testalias' mapped to 'testaliasedstring2'.")
         self.call(general.CmdNick(), "/object testalias = testaliasedstring3", "Nick 'testalias' mapped to 'testaliasedstring3'.")
         self.assertEqual(u"testaliasedstring1", self.char1.nicks.get("testalias"))
-        self.assertEqual(u"testaliasedstring2", self.char1.nicks.get("testalias", category="player"))
+        self.assertEqual(u"testaliasedstring2", self.char1.nicks.get("testalias", category="account"))
         self.assertEqual(u"testaliasedstring3", self.char1.nicks.get("testalias", category="object"))
 
     def test_get_and_drop(self):
@@ -131,7 +138,7 @@ class TestGeneral(CommandTest):
         self.call(general.CmdSay(), "Testing", "You say, \"Testing\"")
 
     def test_whisper(self):
-        self.call(general.CmdWhisper(), "Obj = Testing", "You whisper to Obj, \"Testing\"")
+        self.call(general.CmdWhisper(), "Obj = Testing", "You whisper to Obj, \"Testing\"", caller=self.char2)
 
     def test_access(self):
         self.call(general.CmdAccess(), "", "Permission Hierarchy (climbing):")
@@ -170,54 +177,54 @@ class TestAdmin(CommandTest):
         self.call(admin.CmdEmit(), "Char2 = Test", "Emitted to Char2:\nTest")
 
     def test_perm(self):
-        self.call(admin.CmdPerm(), "Obj = Builders", "Permission 'Builders' given to Obj (the Object/Character).")
-        self.call(admin.CmdPerm(), "Char2 = Builders", "Permission 'Builders' given to Char2 (the Object/Character).")
+        self.call(admin.CmdPerm(), "Obj = Builder", "Permission 'Builder' given to Obj (the Object/Character).")
+        self.call(admin.CmdPerm(), "Char2 = Builder", "Permission 'Builder' given to Char2 (the Object/Character).")
 
     def test_wall(self):
-        self.call(admin.CmdWall(), "Test", "Announcing to all connected players ...")
+        self.call(admin.CmdWall(), "Test", "Announcing to all connected accounts ...")
 
     def test_ban(self):
         self.call(admin.CmdBan(), "Char", "NameBan char was added.")
 
 
-class TestPlayer(CommandTest):
+class TestAccount(CommandTest):
 
     def test_ooc_look(self):
         if settings.MULTISESSION_MODE < 2:
-            self.call(player.CmdOOCLook(), "", "You are outofcharacter (OOC).", caller=self.player)
+            self.call(account.CmdOOCLook(), "", "You are outofcharacter (OOC).", caller=self.account)
         if settings.MULTISESSION_MODE == 2:
-            self.call(player.CmdOOCLook(), "", "Account TestPlayer (you are OutofCharacter)", caller=self.player)
+            self.call(account.CmdOOCLook(), "", "Account TestAccount (you are OutofCharacter)", caller=self.account)
 
     def test_ooc(self):
-        self.call(player.CmdOOC(), "", "You go OOC.", caller=self.player)
+        self.call(account.CmdOOC(), "", "You go OOC.", caller=self.account)
 
     def test_ic(self):
-        self.player.unpuppet_object(self.session)
-        self.call(player.CmdIC(), "Char", "You become Char.", caller=self.player, receiver=self.char1)
+        self.account.unpuppet_object(self.session)
+        self.call(account.CmdIC(), "Char", "You become Char.", caller=self.account, receiver=self.char1)
 
     def test_password(self):
-        self.call(player.CmdPassword(), "testpassword = testpassword", "Password changed.", caller=self.player)
+        self.call(account.CmdPassword(), "testpassword = testpassword", "Password changed.", caller=self.account)
 
     def test_option(self):
-        self.call(player.CmdOption(), "", "Client settings", caller=self.player)
+        self.call(account.CmdOption(), "", "Client settings", caller=self.account)
 
     def test_who(self):
-        self.call(player.CmdWho(), "", "Players:", caller=self.player)
+        self.call(account.CmdWho(), "", "Accounts:", caller=self.account)
 
     def test_quit(self):
-        self.call(player.CmdQuit(), "", "Quitting. Hope to see you again, soon.", caller=self.player)
+        self.call(account.CmdQuit(), "", "Quitting. Hope to see you again, soon.", caller=self.account)
 
     def test_sessions(self):
-        self.call(player.CmdSessions(), "", "Your current session(s):", caller=self.player)
+        self.call(account.CmdSessions(), "", "Your current session(s):", caller=self.account)
 
     def test_color_test(self):
-        self.call(player.CmdColorTest(), "ansi", "ANSI colors:", caller=self.player)
+        self.call(account.CmdColorTest(), "ansi", "ANSI colors:", caller=self.account)
 
     def test_char_create(self):
-        self.call(player.CmdCharCreate(), "Test1=Test char", "Created new character Test1. Use @ic Test1 to enter the game", caller=self.player)
+        self.call(account.CmdCharCreate(), "Test1=Test char", "Created new character Test1. Use @ic Test1 to enter the game", caller=self.account)
 
     def test_quell(self):
-        self.call(player.CmdQuell(), "", "Quelling to current puppet's permissions (immortals).", caller=self.player)
+        self.call(account.CmdQuell(), "", "Quelling to current puppet's permissions (developer).", caller=self.account)
 
 
 class TestBuilding(CommandTest):
@@ -248,7 +255,10 @@ class TestBuilding(CommandTest):
         self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#5).")
 
     def test_wipe(self):
+        confirm = building.CmdDestroy.confirm
+        building.CmdDestroy.confirm = False
         self.call(building.CmdDestroy(), "Obj", "Obj was destroyed.")
+        building.CmdDestroy.confirm = confirm
 
     def test_dig(self):
         self.call(building.CmdDig(), "TestRoom1=testroom;tr,back;b", "Created room TestRoom1")
@@ -269,10 +279,10 @@ class TestBuilding(CommandTest):
 
     def test_typeclass(self):
         self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultExit",
-                "Obj changed typeclass from evennia.objects.objects.DefaultObject to evennia.objects.objects.DefaultExit.")
+                  "Obj changed typeclass from evennia.objects.objects.DefaultObject to evennia.objects.objects.DefaultExit.")
 
     def test_lock(self):
-        self.call(building.CmdLock(), "Obj = test:perm(Immortals)", "Added lock 'test:perm(Immortals)' to Obj.")
+        self.call(building.CmdLock(), "Obj = test:perm(Developer)", "Added lock 'test:perm(Developer)' to Obj.")
 
     def test_find(self):
         self.call(building.CmdFind(), "Room2", "One Match")
@@ -288,39 +298,39 @@ class TestComms(CommandTest):
 
     def setUp(self):
         super(CommandTest, self).setUp()
-        self.call(comms.CmdChannelCreate(), "testchan;test=Test Channel", "Created channel testchan and connected to it.", receiver=self.player)
+        self.call(comms.CmdChannelCreate(), "testchan;test=Test Channel", "Created channel testchan and connected to it.", receiver=self.account)
 
     def test_toggle_com(self):
-        self.call(comms.CmdAddCom(), "tc = testchan", "You are already connected to channel testchan. You can now", receiver=self.player)
-        self.call(comms.CmdDelCom(), "tc",  "Your alias 'tc' for channel testchan was cleared.", receiver=self.player)
+        self.call(comms.CmdAddCom(), "tc = testchan", "You are already connected to channel testchan. You can now", receiver=self.account)
+        self.call(comms.CmdDelCom(), "tc", "Your alias 'tc' for channel testchan was cleared.", receiver=self.account)
 
     def test_channels(self):
-        self.call(comms.CmdChannels(), "" ,"Available channels (use comlist,addcom and delcom to manage", receiver=self.player)
+        self.call(comms.CmdChannels(), "", "Available channels (use comlist,addcom and delcom to manage", receiver=self.account)
 
     def test_all_com(self):
-        self.call(comms.CmdAllCom(), "", "Available channels (use comlist,addcom and delcom to manage", receiver=self.player)
+        self.call(comms.CmdAllCom(), "", "Available channels (use comlist,addcom and delcom to manage", receiver=self.account)
 
     def test_clock(self):
-        self.call(comms.CmdClock(), "testchan=send:all()", "Lock(s) applied. Current locks on testchan:", receiver=self.player)
+        self.call(comms.CmdClock(), "testchan=send:all()", "Lock(s) applied. Current locks on testchan:", receiver=self.account)
 
     def test_cdesc(self):
-        self.call(comms.CmdCdesc(), "testchan = Test Channel", "Description of channel 'testchan' set to 'Test Channel'.", receiver=self.player)
+        self.call(comms.CmdCdesc(), "testchan = Test Channel", "Description of channel 'testchan' set to 'Test Channel'.", receiver=self.account)
 
     def test_cemit(self):
-        self.call(comms.CmdCemit(), "testchan = Test Message", "[testchan] Test Message|Sent to channel testchan: Test Message", receiver=self.player)
+        self.call(comms.CmdCemit(), "testchan = Test Message", "[testchan] Test Message|Sent to channel testchan: Test Message", receiver=self.account)
 
     def test_cwho(self):
-        self.call(comms.CmdCWho(), "testchan", "Channel subscriptions\ntestchan:\n  TestPlayer", receiver=self.player)
+        self.call(comms.CmdCWho(), "testchan", "Channel subscriptions\ntestchan:\n  TestAccount", receiver=self.account)
 
     def test_page(self):
-        self.call(comms.CmdPage(), "TestPlayer2 = Test", "TestPlayer2 is offline. They will see your message if they list their pages later.|You paged TestPlayer2 with: 'Test'.", receiver=self.player)
+        self.call(comms.CmdPage(), "TestAccount2 = Test", "TestAccount2 is offline. They will see your message if they list their pages later.|You paged TestAccount2 with: 'Test'.", receiver=self.account)
 
     def test_cboot(self):
         # No one else connected to boot
-        self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <player> [:reason]", receiver=self.player)
+        self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <account> [:reason]", receiver=self.account)
 
     def test_cdestroy(self):
-        self.call(comms.CmdCdestroy(), "testchan" ,"[testchan] TestPlayer: testchan is being destroyed. Make sure to change your aliases.|Channel 'testchan' was destroyed.", receiver=self.player)
+        self.call(comms.CmdCdestroy(), "testchan", "[testchan] TestAccount: testchan is being destroyed. Make sure to change your aliases.|Channel 'testchan' was destroyed.", receiver=self.account)
 
 
 class TestBatchProcess(CommandTest):
@@ -328,7 +338,11 @@ class TestBatchProcess(CommandTest):
         # cannot test batchcode here, it must run inside the server process
         self.call(batchprocess.CmdBatchCommands(), "example_batch_cmds", "Running Batchcommand processor  Automatic mode for example_batch_cmds")
         # we make sure to delete the button again here to stop the running reactor
+        confirm = building.CmdDestroy.confirm
+        building.CmdDestroy.confirm = False
         self.call(building.CmdDestroy(), "button", "button was destroyed.")
+        building.CmdDestroy.confirm = confirm
+
 
 class CmdInterrupt(Command):
 

@@ -33,6 +33,7 @@ class RedButton(DefaultObject):
      desc_lamp_broken - description when lamp is broken
 
     """
+
     def at_object_creation(self):
         """
         This function is called when object is created. Use this

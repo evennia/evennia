@@ -148,12 +148,12 @@ class LanguageHandler(DefaultScript):
     don't know the language well enough).
 
     """
+
     def at_script_creation(self):
         "Called when script is first started"
         self.key = "language_handler"
         self.persistent = True
         self.db.language_storage = {}
-
 
     def add(self, key="default", phonemes=_PHONEMES,
             grammar=_GRAMMAR, word_length_variance=0, noun_prefix="",
@@ -240,8 +240,8 @@ class LanguageHandler(DefaultScript):
                 word = word.strip()
                 lword = len(word)
                 new_word = ""
-                wlen = max(0, lword + sum(randint(-1,1) for i
-                            in range(word_length_variance)))
+                wlen = max(0, lword + sum(randint(-1, 1) for i
+                                          in range(word_length_variance)))
                 if wlen not in grammar:
                     # always create a translation, use random length
                     structure = choice(grammar[choice(list(grammar))])
@@ -257,7 +257,7 @@ class LanguageHandler(DefaultScript):
             translation.update(dict((key.lower(), value.lower()) for key, value in manual_translations.items()))
 
         # store data
-        storage = {"translation" : translation,
+        storage = {"translation": translation,
                    "grammar": grammar,
                    "grammar2phonemes": dict(grammar2phonemes),
                    "word_length_variance": word_length_variance,
@@ -296,8 +296,8 @@ class LanguageHandler(DefaultScript):
                 else:
                     # make up translation on the fly. Length can
                     # vary from un-translated word.
-                    wlen = max(0, lword + sum(randint(-1,1) for i
-                                in range(self.language["word_length_variance"])))
+                    wlen = max(0, lword + sum(randint(-1, 1) for i
+                                              in range(self.language["word_length_variance"])))
                     grammar = self.language["grammar"]
                     if wlen not in grammar:
                         # this word has no direct translation!
@@ -347,6 +347,8 @@ class LanguageHandler(DefaultScript):
 # Language access functions
 
 _LANGUAGE_HANDLER = None
+
+
 def obfuscate_language(text, level=0.0, language="default"):
     """
     Main access method for the language parser.
@@ -412,7 +414,6 @@ def available_languages():
     return list(_LANGUAGE_HANDLER.attributes.get("language_storage", {}))
 
 
-
 #------------------------------------------------------------
 #
 # Whisper obscuration
@@ -427,6 +428,7 @@ def available_languages():
 #
 #------------------------------------------------------------
 
+
 _RE_WHISPER_OBSCURE = [
     re.compile(r"^$", _RE_FLAGS),                   # This is a Test! #0 full whisper
     re.compile(r"[ae]", _RE_FLAGS),                 # This -s - Test! #1 add uy
@@ -434,7 +436,7 @@ _RE_WHISPER_OBSCURE = [
     re.compile(r"[aeiouy]", _RE_FLAGS),             # Th-s -s - T-st! #3 add all consonants
     re.compile(r"[aeiouybdhjlmnpqrv]", _RE_FLAGS),  # T--s -s - T-st! #4 add hard consonants
     re.compile(r"[a-eg-rt-z]", _RE_FLAGS),          # T--s -s - T-s-! #5 add all capitals
-    re.compile(r"[A-EG-RT-Za-eg-rt-z]", _RE_FLAGS), # ---s -s - --s-! #6 add f
+    re.compile(r"[A-EG-RT-Za-eg-rt-z]", _RE_FLAGS),  # ---s -s - --s-! #6 add f
     re.compile(r"[A-EG-RT-Za-rt-z]", _RE_FLAGS),    # ---s -s - --s-! #7 add s
     re.compile(r"[A-EG-RT-Za-z]", _RE_FLAGS),       # ---- -- - ----! #8 add capital F
     re.compile(r"[A-RT-Za-z]", _RE_FLAGS),          # ---- -- - ----! #9 add capital S
@@ -460,4 +462,3 @@ def obfuscate_whisper(whisper, level=0.0):
     level = min(max(0.0, level), 1.0)
     olevel = int(13.0 * level)
     return _RE_WHISPER_OBSCURE[olevel].sub('...' if olevel == 13.0 else '-', whisper)
-

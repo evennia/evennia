@@ -20,6 +20,7 @@ from evennia.contrib.custom_gametime import real_seconds_until as custom_rsu
 # Temporary storage for events waiting for the script to be started
 EVENTS = []
 
+
 def get_event_handler():
     """Return the event handler or None."""
     try:
@@ -29,6 +30,7 @@ def get_event_handler():
         script = None
 
     return script
+
 
 def register_events(path_or_typeclass):
     """
@@ -84,6 +86,8 @@ def register_events(path_or_typeclass):
     return typeclass
 
 # Custom callbacks for specific event types
+
+
 def get_next_wait(format):
     """
     Get the length of time in seconds before format.
@@ -104,8 +108,8 @@ def get_next_wait(format):
     """
     calendar = getattr(settings, "EVENTS_CALENDAR", None)
     if calendar is None:
-        logger.log_err("A time-related event has been set whereas " \
-                "the gametime calendar has not been set in the settings.")
+        logger.log_err("A time-related event has been set whereas "
+                       "the gametime calendar has not been set in the settings.")
         return
     elif calendar == "standard":
         rsu = standard_rsu
@@ -131,8 +135,8 @@ def get_next_wait(format):
             break
 
         if not piece.isdigit():
-            logger.log_trace("The time specified '{}' in {} isn't " \
-                    "a valid number".format(piece, format))
+            logger.log_trace("The time specified '{}' in {} isn't "
+                             "a valid number".format(piece, format))
             return
 
         # Convert the piece to int
@@ -154,6 +158,7 @@ def get_next_wait(format):
         usual = gametime_to_realtime(**kwargs)
     return until, usual, details
 
+
 def time_event(obj, event_name, number, parameters):
     """
     Create a time-related event.
@@ -172,6 +177,7 @@ def time_event(obj, event_name, number, parameters):
     script.db.time_format = parameters
     script.db.number = number
     script.ndb.usual = usual
+
 
 def keyword_event(callbacks, parameters):
     """
@@ -200,6 +206,7 @@ def keyword_event(callbacks, parameters):
             to_call.append(callback)
 
     return to_call
+
 
 def phrase_event(callbacks, parameters):
     """
@@ -235,6 +242,7 @@ def phrase_event(callbacks, parameters):
             to_call.append(callback)
 
     return to_call
+
 
 class InterruptEvent(RuntimeError):
 

@@ -322,6 +322,7 @@ class EvCell(object):
     and resize as needed.
 
     """
+
     def __init__(self, data, **kwargs):
         """
         Args:
@@ -472,7 +473,7 @@ class EvCell(object):
         """
         if m_len(text) > width:
             crop_string = self.crop_string
-            return text[:width-m_len(crop_string)] + crop_string
+            return text[:width - m_len(crop_string)] + crop_string
         return text
 
     def _reformat(self):
@@ -524,10 +525,14 @@ class EvCell(object):
             # don't allow too high cells
             excess = len(adjusted_data) - self.height
             if excess > 0:
-                # too many lines. Crop and mark last line with ...
+                # too many lines. Crop and mark last line with crop_string
+                crop_string = self.crop_string
                 adjusted_data = adjusted_data[:-excess]
-                if len(adjusted_data[-1]) > 3:
-                    adjusted_data[-1] = adjusted_data[-1][:-2] + ".."
+                crop_string_length = len(crop_string)
+                if len(adjusted_data[-1]) > crop_string_length:
+                    adjusted_data[-1] = adjusted_data[-1][:-crop_string_length] + crop_string
+                else:
+                    adjusted_data[-1] += crop_string
             elif excess < 0:
                 # too few lines. Fill to height.
                 adjusted_data.extend(["" for _ in range(excess)])
@@ -661,7 +666,7 @@ class EvCell(object):
         left = self.border_left_char * self.border_left + ANSIString('|n')
         right = ANSIString('|n') + self.border_right_char * self.border_right
 
-        cwidth = self.width + self.pad_left + self.pad_right + max(0, self.border_left-1) + max(0, self.border_right-1)
+        cwidth = self.width + self.pad_left + self.pad_right + max(0, self.border_left - 1) + max(0, self.border_right - 1)
 
         vfill = self.corner_top_left_char if left else ""
         vfill += cwidth * self.border_top_char
@@ -849,7 +854,7 @@ class EvCell(object):
         return unicode(ANSIString("\n").join(self.formatted))
 
 
-## EvColumn class
+# EvColumn class
 
 class EvColumn(object):
     """
@@ -861,7 +866,8 @@ class EvColumn(object):
     incorporated into an EvTable (like EvCells)
 
     """
-    def __init__(self, *args,  **kwargs):
+
+    def __init__(self, *args, **kwargs):
         """
         Args:
             Text for each row in the column
@@ -918,7 +924,7 @@ class EvColumn(object):
             self.column.extend([EvCell(data, **self.options) for data in args])
         else:
             # insert cells before given index
-            ypos = min(len(self.column)-1, max(0, int(ypos)))
+            ypos = min(len(self.column) - 1, max(0, int(ypos)))
             new_cells = [EvCell(data, **self.options) for data in args]
             self.column = self.column[:ypos] + new_cells + self.column[ypos:]
         # self._balance(**kwargs)
@@ -1223,7 +1229,7 @@ class EvTable(object):
         """
         Add borders to table. This is called from self._balance.
         """
-        nx, ny = self.ncols-1, self.nrows-1
+        nx, ny = self.ncols - 1, self.nrows - 1
         options = self.options
         for ix, col in enumerate(self.worktable):
             for iy, cell in enumerate(col):
@@ -1254,7 +1260,7 @@ class EvTable(object):
             self.worktable[icol].reformat(**options)
             if nrow < nrowmax:
                 # add more rows to too-short columns
-                empty_rows = ["" for _ in range(nrowmax-nrow)]
+                empty_rows = ["" for _ in range(nrowmax - nrow)]
                 self.worktable[icol].add_rows(*empty_rows)
         self.ncols = ncols
         self.nrows = nrowmax
@@ -1441,7 +1447,7 @@ class EvTable(object):
             self.table.append(column)
         else:
             # insert column
-            xpos = min(wtable-1, max(0, int(xpos)))
+            xpos = min(wtable - 1, max(0, int(xpos)))
             self.table.insert(xpos, column)
         self.ncols += 1
         # self._balance()
@@ -1491,7 +1497,7 @@ class EvTable(object):
                 col.add_rows(row[icol], **options)
         else:
             # insert row elsewhere
-            ypos = min(htable-1, max(0, int(ypos)))
+            ypos = min(htable - 1, max(0, int(ypos)))
             for icol, col in enumerate(self.table):
                 col.add_rows(row[icol], ypos=ypos, **options)
         self.nrows += 1
@@ -1575,9 +1581,9 @@ def _test():
     print(unicode(table))
     return table
 
+
 def _test2():
     table = EvTable("|yHeading1|n", "|B|[GHeading2|n", "Heading3")
     for i in range(100):
         table.add_row("This is col 0, row %i" % i, "|gThis is col 1, row |w%i|n|g.|n" % i, "This is col 2, row %i" % i)
     return table
-

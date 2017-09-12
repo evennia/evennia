@@ -11,6 +11,3 @@ def post_save(sender, instance, created, **kwargs):
 
 def remove_attributes_on_delete(sender, instance, **kwargs):
     instance.db_attributes.all().delete()
-
-
-

@@ -59,7 +59,7 @@ class ChannelAdmin(admin.ModelAdmin):
     list_select_related = True
     fieldsets = (
         (None, {'fields': (('db_key',), 'db_lock_storage', 'db_subscriptions')}),
-        )
+    )
 
     def subscriptions(self, obj):
         """

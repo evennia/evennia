@@ -2,7 +2,7 @@
 Settings and actions for the dummyrunner
 
 This module defines dummyrunner settings and sets up
-the actions available to dummy players.
+the actions available to dummy accounts.
 
 The settings are global variables:
 
@@ -18,7 +18,7 @@ ACTIONS is a tuple
 
 where the first entry is the function to call on first connect, with a
 chance of occurring given by CHANCE_OF_LOGIN. This function is usually
-responsible for logging in the player. The second entry is always
+responsible for logging in the account. The second entry is always
 called when the dummyrunner disconnects from the server and should
 thus issue a logout command.  The other entries are tuples (chance,
 func). They are picked randomly, their commonality based on the
@@ -61,7 +61,7 @@ TIMESTEP = 2
 CHANCE_OF_ACTION = 0.5
 
 # Chance of a currently unlogged-in dummy performing its login
-# action every tick. This emulates not all players logging in
+# action every tick. This emulates not all accounts logging in
 # at exactly the same time.
 CHANCE_OF_LOGIN = 1.0
 
@@ -103,12 +103,13 @@ def c_login(client):
     client.exits.extend([exitname1, exitname2])
 
     cmds = ('create %s %s' % (cname, cpwd),
-           'connect %s %s' % (cname, cpwd),
-           '@dig %s' % START_ROOM % client.gid,
-           '@teleport %s' % START_ROOM % client.gid,
-           '@dig %s = %s, %s' % (roomname, exitname1, exitname2)
-           )
+            'connect %s %s' % (cname, cpwd),
+            '@dig %s' % START_ROOM % client.gid,
+            '@teleport %s' % START_ROOM % client.gid,
+            '@dig %s = %s, %s' % (roomname, exitname1, exitname2)
+            )
     return cmds
+
 
 def c_login_nodig(client):
     "logins, don't dig its own room"
@@ -119,11 +120,13 @@ def c_login_nodig(client):
             'connect %s %s' % (cname, cpwd))
     return cmds
 
+
 def c_logout(client):
     "logouts of the game"
     return "@quit"
 
 # random commands
+
 
 def c_looks(client):
     "looks at various objects"
@@ -134,6 +137,7 @@ def c_looks(client):
             cmds = "look"
     return cmds
 
+
 def c_examines(client):
     "examines various objects"
     cmds = ["examine %s" % obj for obj in client.objs]
@@ -143,19 +147,22 @@ def c_examines(client):
         cmds = "examine me"
     return cmds
 
+
 def c_idles(client):
     "idles"
-    cmds = ('idle','idle')
+    cmds = ('idle', 'idle')
     return cmds
+
 
 def c_help(client):
     "reads help files"
     cmds = ('help',
-           'help @teleport',
-           'help look',
-           'help @tunnel',
-           'help @dig')
+            'help @teleport',
+            'help look',
+            'help @tunnel',
+            'help @dig')
     return cmds
+
 
 def c_digs(client):
     "digs a new room, storing exit names on client"
@@ -165,41 +172,47 @@ def c_digs(client):
     client.exits.extend([exitname1, exitname2])
     return '@dig/tel %s = %s, %s' % (roomname, exitname1, exitname2)
 
+
 def c_creates_obj(client):
     "creates normal objects, storing their name on client"
     objname = OBJ_TEMPLATE % client.counter()
     client.objs.append(objname)
     cmds = ('@create %s' % objname,
-           '@desc %s = "this is a test object' % objname,
-           '@set %s/testattr = this is a test attribute value.' % objname,
-           '@set %s/testattr2 = this is a second test attribute.' % objname)
+            '@desc %s = "this is a test object' % objname,
+            '@set %s/testattr = this is a test attribute value.' % objname,
+            '@set %s/testattr2 = this is a second test attribute.' % objname)
     return cmds
+
 
 def c_creates_button(client):
     "creates example button, storing name on client"
     objname = TOBJ_TEMPLATE % client.counter()
     client.objs.append(objname)
     cmds = ('@create %s:%s' % (objname, TOBJ_TYPECLASS),
-           '@desc %s = test red button!' % objname)
+            '@desc %s = test red button!' % objname)
     return cmds
+
 
 def c_socialize(client):
     "socializechats on channel"
     cmds = ('ooc Hello!',
-          'ooc Testing ...',
-          'ooc Testing ... times 2',
-          'say Yo!',
-          'emote stands looking around.')
+            'ooc Testing ...',
+            'ooc Testing ... times 2',
+            'say Yo!',
+            'emote stands looking around.')
     return cmds
+
 
 def c_moves(client):
     "moves to a previously created room, using the stored exits"
-    cmds = client.exits # try all exits - finally one will work
+    cmds = client.exits  # try all exits - finally one will work
     return "look" if not cmds else cmds
+
 
 def c_moves_n(client):
     "move through north exit if available"
     return "north"
+
 
 def c_moves_s(client):
     "move through south exit if available"
@@ -215,8 +228,9 @@ def c_moves_s(client):
 # otherwise the system will normalize them.
 #
 
-## "normal builder" definitionj
-#ACTIONS = ( c_login,
+
+# "normal builder" definitionj
+# ACTIONS = ( c_login,
 #            c_logout,
 #            (0.5, c_looks),
 #            (0.08, c_examines),
@@ -224,8 +238,8 @@ def c_moves_s(client):
 #            (0.01, c_digs),
 #            (0.01, c_creates_obj),
 #            (0.3, c_moves))
-## "heavy" builder definition
-#ACTIONS = ( c_login,
+# "heavy" builder definition
+# ACTIONS = ( c_login,
 #            c_logout,
 #            (0.2, c_looks),
 #            (0.1, c_examines),
@@ -234,8 +248,8 @@ def c_moves_s(client):
 #            (0.1, c_creates_obj),
 #            #(0.01, c_creates_button),
 #            (0.2, c_moves))
-## "passive player" definition
-#ACTIONS = ( c_login,
+# "passive account" definition
+# ACTIONS = ( c_login,
 #            c_logout,
 #            (0.7, c_looks),
 #            #(0.1, c_examines),
@@ -244,25 +258,25 @@ def c_moves_s(client):
 #            #(0.1, c_creates_obj),
 #            #(0.1, c_creates_button),
 #            #(0.4, c_moves))
-# "inactive player" definition
-#ACTIONS = (c_login_nodig,
+# "inactive account" definition
+# ACTIONS = (c_login_nodig,
 #           c_logout,
 #           (1.0, c_idles))
-## "normal player" definition
-ACTIONS = ( c_login,
-            c_logout,
-            (0.01, c_digs),
-            (0.39, c_looks),
-            (0.2, c_help),
-            (0.4, c_moves))
+# "normal account" definition
+ACTIONS = (c_login,
+           c_logout,
+           (0.01, c_digs),
+           (0.39, c_looks),
+           (0.2, c_help),
+           (0.4, c_moves))
 # walking tester. This requires a pre-made
 # "loop" of multiple rooms that ties back
 # to limbo (using @tunnel and @open)
-#ACTIONS = (c_login_nodig,
+# ACTIONS = (c_login_nodig,
 #           c_logout,
 #           (1.0, c_moves_n))
-## "socializing heavy builder" definition
-#ACTIONS = (c_login,
+# "socializing heavy builder" definition
+# ACTIONS = (c_login,
 #           c_logout,
 #           (0.1, c_socialize),
 #           (0.1, c_looks),
@@ -270,7 +284,7 @@ ACTIONS = ( c_login,
 #           (0.1, c_creates_obj),
 #           (0.2, c_digs),
 #           (0.3, c_moves))
-## "heavy digger memory tester" definition
-#ACTIONS = (c_login,
+# "heavy digger memory tester" definition
+# ACTIONS = (c_login,
 #           c_logout,
 #           (1.0, c_digs))

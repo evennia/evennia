@@ -5,6 +5,7 @@ checks for.
 These all print to the terminal.
 """
 
+
 def check_errors(settings):
     """
     Check for deprecations that are critical errors and should stop
@@ -24,7 +25,7 @@ def check_errors(settings):
         raise DeprecationWarning(deprstring % (
             "CMDSET_DEFAULT", "CMDSET_CHARACTER"))
     if hasattr(settings, "CMDSET_OOC"):
-        raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_PLAYER"))
+        raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_ACCOUNT"))
     if settings.WEBSERVER_ENABLED and not isinstance(settings.WEBSERVER_PORTS[0], tuple):
         raise DeprecationWarning(
             "settings.WEBSERVER_PORTS must be on the form "
@@ -46,16 +47,16 @@ def check_errors(settings):
         raise DeprecationWarning(deprstring % "OBJECT_TYPECLASS_PATHS")
     if hasattr(settings, "SCRIPT_TYPECLASS_PATHS"):
         raise DeprecationWarning(deprstring % "SCRIPT_TYPECLASS_PATHS")
-    if hasattr(settings, "PLAYER_TYPECLASS_PATHS"):
-        raise DeprecationWarning(deprstring % "PLAYER_TYPECLASS_PATHS")
+    if hasattr(settings, "ACCOUNT_TYPECLASS_PATHS"):
+        raise DeprecationWarning(deprstring % "ACCOUNT_TYPECLASS_PATHS")
     if hasattr(settings, "CHANNEL_TYPECLASS_PATHS"):
         raise DeprecationWarning(deprstring % "CHANNEL_TYPECLASS_PATHS")
     if hasattr(settings, "SEARCH_MULTIMATCH_SEPARATOR"):
         raise DeprecationWarning(
-        "settings.SEARCH_MULTIMATCH_SEPARATOR was replaced by "
-        "SEARCH_MULTIMATCH_REGEX and SEARCH_MULTIMATCH_TEMPLATE. "
-        "Update your settings file (see evennia/settings_default.py "
-        "for more info).")
+            "settings.SEARCH_MULTIMATCH_SEPARATOR was replaced by "
+            "SEARCH_MULTIMATCH_REGEX and SEARCH_MULTIMATCH_TEMPLATE. "
+            "Update your settings file (see evennia/settings_default.py "
+            "for more info).")
 
     gametime_deprecation = ("The settings TIME_SEC_PER_MIN, TIME_MIN_PER_HOUR,"
                             "TIME_HOUR_PER_DAY, TIME_DAY_PER_WEEK, \n"
@@ -65,8 +66,8 @@ def check_errors(settings):
                             "and manipulate these time units, the tools from utils.gametime "
                             "are now found in contrib/convert_gametime.py instead.")
     if any(hasattr(settings, value) for value in ("TIME_SEC_PER_MIN", "TIME_MIN_PER_HOUR",
-                        "TIME_HOUR_PER_DAY", "TIME_DAY_PER_WEEK", "TIME_WEEK_PER_MONTH",
-                        "TIME_MONTH_PER_YEAR")):
+                                                  "TIME_HOUR_PER_DAY", "TIME_DAY_PER_WEEK", "TIME_WEEK_PER_MONTH",
+                                                  "TIME_MONTH_PER_YEAR")):
         raise DeprecationWarning(gametime_deprecation)
 
 

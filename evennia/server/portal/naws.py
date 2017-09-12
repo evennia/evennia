@@ -20,12 +20,14 @@ DEFAULT_HEIGHT = settings.CLIENT_DEFAULT_HEIGHT
 
 # try to get the customized mssp info, if it exists.
 
+
 class Naws(object):
     """
     Implements the NAWS protocol. Add this to a variable on the telnet
     protocol to set it up.
 
     """
+
     def __init__(self, protocol):
         """
         initialize NAWS by storing protocol on ourselves and calling
@@ -37,8 +39,8 @@ class Naws(object):
         """
         self.naws_step = 0
         self.protocol = protocol
-        self.protocol.protocol_flags['SCREENWIDTH'] = {0: DEFAULT_WIDTH} # windowID (0 is root):width
-        self.protocol.protocol_flags['SCREENHEIGHT'] = {0: DEFAULT_HEIGHT} # windowID:width
+        self.protocol.protocol_flags['SCREENWIDTH'] = {0: DEFAULT_WIDTH}  # windowID (0 is root):width
+        self.protocol.protocol_flags['SCREENHEIGHT'] = {0: DEFAULT_HEIGHT}  # windowID:width
         self.protocol.negotiationMap[NAWS] = self.negotiate_sizes
         self.protocol.do(NAWS).addCallbacks(self.do_naws, self.no_naws)
 
@@ -72,9 +74,8 @@ class Naws(object):
 
         """
         if len(options) == 4:
-           # NAWS is negotiated with 16bit words
-           width = options[0] + options[1]
-           self.protocol.protocol_flags['SCREENWIDTH'][0] = int(width.encode('hex'), 16)
-           height = options[2] + options[3]
-           self.protocol.protocol_flags['SCREENHEIGHT'][0] = int(height.encode('hex'), 16)
-
+            # NAWS is negotiated with 16bit words
+            width = options[0] + options[1]
+            self.protocol.protocol_flags['SCREENWIDTH'][0] = int(width.encode('hex'), 16)
+            height = options[2] + options[3]
+            self.protocol.protocol_flags['SCREENHEIGHT'][0] = int(height.encode('hex'), 16)

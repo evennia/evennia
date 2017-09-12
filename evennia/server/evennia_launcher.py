@@ -24,7 +24,7 @@ import django
 
 # Signal processing
 SIG = signal.SIGINT
-CTRL_C_EVENT = 0 # Windows SIGINT-like signal
+CTRL_C_EVENT = 0  # Windows SIGINT-like signal
 
 # Set up the main python paths to Evennia
 EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -64,8 +64,8 @@ ENFORCED_SETTING = False
 # requirements
 PYTHON_MIN = '2.7'
 TWISTED_MIN = '16.0.0'
-DJANGO_MIN = '1.8'
-DJANGO_REC = '1.9'
+DJANGO_MIN = '1.11'
+DJANGO_REC = '1.11'
 
 sys.path[1] = EVENNIA_ROOT
 
@@ -101,7 +101,7 @@ CREATED_NEW_GAMEDIR = \
     """
 
 ERROR_INPUT = \
-"""
+    """
     Command
       {args} {kwargs}
     raised an error: '{traceback}'.
@@ -132,15 +132,15 @@ ERROR_NO_GAMEDIR = \
 
 WARNING_MOVING_SUPERUSER = \
     """
-    WARNING: Evennia expects a Player superuser with id=1. No such
-    Player was found. However, another superuser ('{other_key}',
+    WARNING: Evennia expects an Account superuser with id=1. No such
+    Account was found. However, another superuser ('{other_key}',
     id={other_id}) was found in the database. If you just created this
     superuser and still see this text it is probably due to the
     database being flushed recently - in this case the database's
     internal auto-counter might just start from some value higher than
     one.
 
-    We will fix this by assigning the id 1 to Player '{other_key}'.
+    We will fix this by assigning the id 1 to Account '{other_key}'.
     Please confirm this is acceptable before continuing.
     """
 
@@ -182,7 +182,7 @@ RECREATED_SETTINGS = \
 
     Note that if you were using an existing database, the password
     salt of this new settings file will be different from the old one.
-    This means that any existing players may not be able to log in to
+    This means that any existing accounts may not be able to log in to
     their accounts with their old passwords.
     """
 
@@ -270,7 +270,7 @@ HELP_ENTRY = \
     adding new protocols or are debugging Evennia itself.
 
     Reload with (5) to update the server with your changes without
-    disconnecting any players.
+    disconnecting any accounts.
 
     Note: Reload and stop are sometimes poorly supported in Windows. If you
     have issues, log into the game to stop or restart the server instead.
@@ -344,10 +344,13 @@ ERROR_DJANGO_MIN = \
     ERROR: Django {dversion} found. Evennia requires version {django_min}
     or higher.
 
-    Install it with for example `pip install --upgrade django`
+    If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
+    `evennia` is the folder to where you cloned the Evennia library. If not
+    in a virtualenv you can install django with for example `pip install --upgrade django`
     or with `pip install django=={django_min}` to get a specific version.
 
-    It's also a good idea to run `evennia migrate` after this upgrade.
+    It's also a good idea to run `evennia migrate` after this upgrade. Ignore
+    any warnings and don't run `makemigrate` even if told to.
     """
 
 NOTE_DJANGO_MIN = \
@@ -416,6 +419,7 @@ def evennia_version():
         pass
     return version
 
+
 EVENNIA_VERSION = evennia_version()
 
 
@@ -431,7 +435,7 @@ def check_main_evennia_dependencies():
     error = False
 
     # Python
-    pversion = ".".join(str(num) for num in sys.version_info if type(num) == int)
+    pversion = ".".join(str(num) for num in sys.version_info if isinstance(num, int))
     if LooseVersion(pversion) < LooseVersion(PYTHON_MIN):
         print(ERROR_PYTHON_VERSION.format(pversion=pversion, python_min=PYTHON_MIN))
         error = True
@@ -448,7 +452,7 @@ def check_main_evennia_dependencies():
         error = True
     # Django
     try:
-        dversion = ".".join(str(num) for num in django.VERSION if type(num) == int)
+        dversion = ".".join(str(num) for num in django.VERSION if isinstance(num, int))
         # only the main version (1.5, not 1.5.4.0)
         dversion_main = ".".join(dversion.split(".")[:2])
         if LooseVersion(dversion) < LooseVersion(DJANGO_MIN):
@@ -499,8 +503,8 @@ def create_secret_key():
     import random
     import string
     secret_key = list((string.letters +
-        string.digits + string.punctuation).replace("\\", "")\
-                .replace("'", '"').replace("{","_").replace("}","-"))
+                       string.digits + string.punctuation).replace("\\", "")
+                      .replace("'", '"').replace("{", "_").replace("}", "-"))
     random.shuffle(secret_key)
     secret_key = "".join(secret_key[:40])
     return secret_key
@@ -525,7 +529,7 @@ def create_settings_file(init=True, secret_settings=False):
         settings_path = os.path.join(GAMEDIR, "server", "conf", "settings.py")
         setting_dict = {
             "settings_default": os.path.join(EVENNIA_LIB, "settings_default.py"),
-            "servername": "\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1].capitalize(),
+            "servername": "\"%s\"" % GAMEDIR.rsplit(os.path.sep, 1)[1],
             "secret_key": "\'%s\'" % create_secret_key()}
 
     if not init:
@@ -578,11 +582,11 @@ def create_game_directory(dirname):
 
 def create_superuser():
     """
-    Create the superuser player
+    Create the superuser account
 
     """
     print(
-        "\nCreate a superuser below. The superuser is Player #1, the 'owner' "
+        "\nCreate a superuser below. The superuser is Account #1, the 'owner' "
         "account of the server.\n")
     django.core.management.call_command("createsuperuser", interactive=True)
 
@@ -597,22 +601,22 @@ def check_database():
     # Check so a database exists and is accessible
     from django.db import connection
     tables = connection.introspection.get_table_list(connection.cursor())
-    if not tables or not isinstance(tables[0], basestring): # django 1.8+
+    if not tables or not isinstance(tables[0], basestring):  # django 1.8+
         tables = [tableinfo.name for tableinfo in tables]
-    if tables and u'players_playerdb' in tables:
+    if tables and u'accounts_accountdb' in tables:
         # database exists and seems set up. Initialize evennia.
         evennia._init()
-    # Try to get Player#1
-    from evennia.players.models import PlayerDB
+    # Try to get Account#1
+    from evennia.accounts.models import AccountDB
     try:
-        PlayerDB.objects.get(id=1)
+        AccountDB.objects.get(id=1)
     except django.db.utils.OperationalError as e:
         print(ERROR_DATABASE.format(traceback=e))
         sys.exit()
-    except PlayerDB.DoesNotExist:
+    except AccountDB.DoesNotExist:
         # no superuser yet. We need to create it.
 
-        other_superuser = PlayerDB.objects.filter(is_superuser=True)
+        other_superuser = AccountDB.objects.filter(is_superuser=True)
         if other_superuser:
             # Another superuser was found, but not with id=1. This may
             # happen if using flush (the auto-id starts at a higher
@@ -738,8 +742,8 @@ def kill(pidfile, killsignal=SIG, succmsg="", errmsg="",
                 os.kill(int(pid), killsignal)
 
         except OSError:
-            print("Process %(pid)s cannot be stopped. "\
-                  "The PID file 'server/%(pidfile)s' seems stale. "\
+            print("Process %(pid)s cannot be stopped. "
+                  "The PID file 'server/%(pidfile)s' seems stale. "
                   "Try removing it." % {'pid': pid, 'pidfile': pidfile})
             return
         print("Evennia:", succmsg)
@@ -779,6 +783,7 @@ def error_check_python_modules():
     """
 
     from django.conf import settings
+
     def _imp(path, split=True):
         "helper method"
         mod, fromlist = path, "None"
@@ -808,15 +813,16 @@ def error_check_python_modules():
         print("Warning: CMDSET_UNLOGGED failed to load!")
     if not cmdsethandler.import_cmdset(settings.CMDSET_CHARACTER, None):
         print("Warning: CMDSET_CHARACTER failed to load")
-    if not cmdsethandler.import_cmdset(settings.CMDSET_PLAYER, None):
-        print("Warning: CMDSET_PLAYER failed to load")
+    if not cmdsethandler.import_cmdset(settings.CMDSET_ACCOUNT, None):
+        print("Warning: CMDSET_ACCOUNT failed to load")
     # typeclasses
-    _imp(settings.BASE_PLAYER_TYPECLASS)
+    _imp(settings.BASE_ACCOUNT_TYPECLASS)
     _imp(settings.BASE_OBJECT_TYPECLASS)
     _imp(settings.BASE_CHARACTER_TYPECLASS)
     _imp(settings.BASE_ROOM_TYPECLASS)
     _imp(settings.BASE_EXIT_TYPECLASS)
     _imp(settings.BASE_SCRIPT_TYPECLASS)
+
 
 def init_game_directory(path, check_db=True):
     """
@@ -885,10 +891,10 @@ def init_game_directory(path, check_db=True):
     # verify existence of log file dir (this can be missing e.g.
     # if the game dir itself was cloned since log files are in .gitignore)
     logdirs = [logfile.rsplit(os.path.sep, 1)
-                for logfile in (SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE)]
+               for logfile in (SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE)]
     if not all(os.path.isdir(pathtup[0]) for pathtup in logdirs):
         errstr = "\n    ".join("%s (log file %s)" % (pathtup[0], pathtup[1]) for pathtup in logdirs
-                if not os.path.isdir(pathtup[0]))
+                               if not os.path.isdir(pathtup[0]))
         print(ERROR_LOGDIR_MISSING.format(logfiles=errstr))
         sys.exit()
 
@@ -942,10 +948,10 @@ def run_dummyrunner(number_of_dummies):
     Start an instance of the dummyrunner
 
     Args:
-        number_of_dummies (int): The number of dummy players to start.
+        number_of_dummies (int): The number of dummy accounts to start.
 
     Notes:
-        The dummy players' behavior can be customized by adding a
+        The dummy accounts' behavior can be customized by adding a
         `dummyrunner_settings.py` config file in the game's conf/
         directory.
 
@@ -982,7 +988,7 @@ def list_settings(keys):
         table = evtable.EvTable()
         confs = [key for key in sorted(evsettings.__dict__) if key.isupper()]
         for i in range(0, len(confs), 4):
-            table.add_row(*confs[i:i+4])
+            table.add_row(*confs[i:i + 4])
     else:
         # a specific key
         table = evtable.EvTable(width=131)
@@ -1162,8 +1168,8 @@ def server_operation(mode, service, interactive, profiler, logserver=False, doex
     elif mode == 'stop':
         if os.name == "nt":
             print (
-                    "(Obs: You can use a single Ctrl-C to skip "
-                    "Windows' annoying 'Terminate batch job (Y/N)?' prompts.)")
+                "(Obs: You can use a single Ctrl-C to skip "
+                "Windows' annoying 'Terminate batch job (Y/N)?' prompts.)")
         # stop processes, avoiding reload
         if service == 'server':
             kill(SERVER_PIDFILE, SIG,
@@ -1212,7 +1218,7 @@ def main():
     parser.add_argument(
         '--dummyrunner', nargs=1, action='store', dest='dummyrunner',
         metavar="N",
-        help="Test a running server by connecting N dummy players to it.")
+        help="Test a running server by connecting N dummy accounts to it.")
     parser.add_argument(
         '--settings', nargs=1, action='store', dest='altsettings',
         default=None, metavar="filename.py",
@@ -1234,7 +1240,7 @@ def main():
         help=("Which component to operate on: "
               "'server', 'portal' or 'all' (default if not set)."))
     parser.epilog = (
-            "Common usage: evennia start|stop|reload. Django-admin database commands:"
+        "Common usage: evennia start|stop|reload. Django-admin database commands:"
         "evennia migration|flush|shell|dbshell (see the django documentation for more django-admin commands.)")
 
     args, unknown_args = parser.parse_known_args()
@@ -1272,7 +1278,6 @@ def main():
         print("Using settings file '%s' (%s)." % (
             SETTINGSFILE, SETTINGS_DOTPATH))
 
-
     if args.initsettings:
         # create new settings file
         global GAMEDIR
@@ -1305,9 +1310,9 @@ def main():
         check_db = False
         if option in ('runserver', 'testserver'):
             print(WARNING_RUNSERVER)
-        if option == "shell":
-            # to use the shell we need to initialize it first,
-            # and this only works if the database is set up
+        if option in ("shell", "check"):
+            # some django commands requires the database to exist,
+            # or evennia._init to have run before they work right.
             check_db = True
         if option == "test":
             global TEST_MODE

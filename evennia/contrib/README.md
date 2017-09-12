@@ -21,6 +21,7 @@ things you want from here into your game folder and change them there.
   Meant as a starting point for a more fleshed-out system.
 * Clothing (BattleJenkins 2017) - A layered clothing system with
   slots for different types of garments auto-showing in description.
+* Color-markups (Griatch, 2017) - Alternative in-game color markups.
 * Custom gametime (Griatch, vlgeoff 2017) - Implements Evennia's
   gametime module but for custom game world-specific calendars.
 * Dice (Griatch 2012) - A fully featured dice rolling system.

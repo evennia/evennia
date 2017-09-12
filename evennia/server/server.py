@@ -16,7 +16,7 @@ import os
 from twisted.web import static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
-from twisted.internet.task import LoopingCall, deferLater
+from twisted.internet.task import LoopingCall
 
 import django
 django.setup()
@@ -27,7 +27,7 @@ evennia._init()
 from django.db import connection
 from django.conf import settings
 
-from evennia.players.models import PlayerDB
+from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
 from evennia.server.models import ServerConfig
 from evennia.server import initial_setup
@@ -35,6 +35,8 @@ from evennia.server import initial_setup
 from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.comms import channelhandler
 from evennia.server.sessionhandler import SESSIONS
+
+from django.utils.translation import ugettext as _
 
 _SA = object.__setattr__
 
@@ -89,10 +91,13 @@ _FLUSH_CACHE = None
 _IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
 _GAMETIME_MODULE = None
 
+_IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+
+
 def _server_maintenance():
     """
     This maintenance function handles repeated checks and updates that
-    the server needs to do. It is called every 5 minutes.
+    the server needs to do. It is called every minute.
     """
     global EVENNIA, _MAINTENANCE_COUNT, _FLUSH_CACHE, _GAMETIME_MODULE
     if not _FLUSH_CACHE:
@@ -122,17 +127,29 @@ def _server_maintenance():
     if _MAINTENANCE_COUNT % 3700 == 0:
         # validate channels off-sync with scripts
         evennia.CHANNEL_HANDLER.update()
-    ## Commenting this out, it is probably not needed
-    ## with CONN_MAX_AGE set. Keeping it as a reminder
-    ## if database-gone-away errors appears again /Griatch
-    #if _MAINTENANCE_COUNT % 18000 == 0:
+
+    # handle idle timeouts
+    if _IDLE_TIMEOUT > 0:
+        reason = _("idle timeout exceeded")
+        for session in (sess for sess in SESSIONS.values()
+                        if (now - sess.cmd_last) > _IDLE_TIMEOUT):
+            if not session.account or not \
+                    session.account.access(session.account, "noidletimeout", default=False):
+                SESSIONS.disconnect(session, reason=reason)
+
+    # Commenting this out, it is probably not needed
+    # with CONN_MAX_AGE set. Keeping it as a reminder
+    # if database-gone-away errors appears again /Griatch
+    # if _MAINTENANCE_COUNT % 18000 == 0:
     #    connection.close()
 maintenance_task = LoopingCall(_server_maintenance)
-maintenance_task.start(60, now=True) # call every minute
+maintenance_task.start(60, now=True)  # call every minute
 
 #------------------------------------------------------------
 # Evennia Main Server object
 #------------------------------------------------------------
+
+
 class Evennia(object):
 
     """
@@ -195,10 +212,10 @@ class Evennia(object):
         Optimize some SQLite stuff at startup since we
         can't save it to the database.
         """
-        if ((".".join(str(i) for i in django.VERSION) < "1.2" and settings.DATABASE_ENGINE == "sqlite3")
-            or (hasattr(settings, 'DATABASES')
-                and settings.DATABASES.get("default", {}).get('ENGINE', None)
-                == 'django.db.backends.sqlite3')):
+        if ((".".join(str(i) for i in django.VERSION) < "1.2" and settings.DATABASES.get('default', {}).get('ENGINE') == "sqlite3") or
+            (hasattr(settings, 'DATABASES') and
+             settings.DATABASES.get("default", {}).get('ENGINE', None) ==
+             'django.db.backends.sqlite3')):
             cursor = connection.cursor()
             cursor.execute("PRAGMA cache_size=10000")
             cursor.execute("PRAGMA synchronous=OFF")
@@ -214,8 +231,8 @@ class Evennia(object):
         already existing objects.
         """
         # setting names
-        settings_names = ("CMDSET_CHARACTER", "CMDSET_PLAYER",
-                          "BASE_PLAYER_TYPECLASS", "BASE_OBJECT_TYPECLASS",
+        settings_names = ("CMDSET_CHARACTER", "CMDSET_ACCOUNT",
+                          "BASE_ACCOUNT_TYPECLASS", "BASE_OBJECT_TYPECLASS",
                           "BASE_CHARACTER_TYPECLASS", "BASE_ROOM_TYPECLASS",
                           "BASE_EXIT_TYPECLASS", "BASE_SCRIPT_TYPECLASS",
                           "BASE_CHANNEL_TYPECLASS")
@@ -228,16 +245,16 @@ class Evennia(object):
             # run the update
             from evennia.objects.models import ObjectDB
             from evennia.comms.models import ChannelDB
-            #from evennia.players.models import PlayerDB
+            #from evennia.accounts.models import AccountDB
             for i, prev, curr in ((i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches):
                 # update the database
                 print(" %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..." % (settings_names[i], prev, curr))
                 if i == 0:
                     ObjectDB.objects.filter(db_cmdset_storage__exact=prev).update(db_cmdset_storage=curr)
                 if i == 1:
-                    PlayerDB.objects.filter(db_cmdset_storage__exact=prev).update(db_cmdset_storage=curr)
+                    AccountDB.objects.filter(db_cmdset_storage__exact=prev).update(db_cmdset_storage=curr)
                 if i == 2:
-                    PlayerDB.objects.filter(db_typeclass_path__exact=prev).update(db_typeclass_path=curr)
+                    AccountDB.objects.filter(db_typeclass_path__exact=prev).update(db_typeclass_path=curr)
                 if i in (3, 4, 5, 6):
                     ObjectDB.objects.filter(db_typeclass_path__exact=prev).update(db_typeclass_path=curr)
                 if i == 7:
@@ -247,13 +264,13 @@ class Evennia(object):
                 # store the new default and clean caches
                 ServerConfig.objects.conf(settings_names[i], curr)
                 ObjectDB.flush_instance_cache()
-                PlayerDB.flush_instance_cache()
+                AccountDB.flush_instance_cache()
                 ScriptDB.flush_instance_cache()
                 ChannelDB.flush_instance_cache()
         # if this is the first start we might not have a "previous"
         # setup saved. Store it now.
         [ServerConfig.objects.conf(settings_names[i], tup[1])
-                        for i, tup in enumerate(settings_compare) if not tup[0]]
+         for i, tup in enumerate(settings_compare) if not tup[0]]
 
     def run_initial_setup(self):
         """
@@ -273,8 +290,8 @@ class Evennia(object):
             # modules and setup will resume from this step, retrying
             # the last failed module. When all are finished, the step
             # is set to -1 to show it does not need to be run again.
-            print(' Resuming initial setup from step %(last)s.' % \
-                {'last': last_initial_setup_step})
+            print(' Resuming initial setup from step %(last)s.' %
+                  {'last': last_initial_setup_step})
             initial_setup.handle_setup(int(last_initial_setup_step))
             print('-' * 50)
 
@@ -283,13 +300,13 @@ class Evennia(object):
         Called every server start
         """
         from evennia.objects.models import ObjectDB
-        #from evennia.players.models import PlayerDB
+        #from evennia.accounts.models import AccountDB
 
-        #update eventual changed defaults
+        # update eventual changed defaults
         self.update_defaults()
 
         [o.at_init() for o in ObjectDB.get_all_cached_instances()]
-        [p.at_init() for p in PlayerDB.get_all_cached_instances()]
+        [p.at_init() for p in AccountDB.get_all_cached_instances()]
 
         mode = self.getset_restart_mode()
 
@@ -356,7 +373,7 @@ class Evennia(object):
         mode = self.getset_restart_mode(mode)
 
         from evennia.objects.models import ObjectDB
-        #from evennia.players.models import PlayerDB
+        #from evennia.accounts.models import AccountDB
         from evennia.server.models import ServerConfig
         from evennia.utils import gametime as _GAMETIME_MODULE
 
@@ -364,7 +381,7 @@ class Evennia(object):
             # call restart hooks
             ServerConfig.objects.conf("server_restart_mode", "reload")
             yield [o.at_server_reload() for o in ObjectDB.get_all_cached_instances()]
-            yield [p.at_server_reload() for p in PlayerDB.get_all_cached_instances()]
+            yield [p.at_server_reload() for p in AccountDB.get_all_cached_instances()]
             yield [(s.pause(manual_pause=False), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances() if s.is_active]
             yield self.sessions.all_sessions_portal_sync()
             self.at_server_reload_stop()
@@ -375,14 +392,14 @@ class Evennia(object):
             if mode == 'reset':
                 # like shutdown but don't unset the is_connected flag and don't disconnect sessions
                 yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
-                yield [p.at_server_shutdown() for p in PlayerDB.get_all_cached_instances()]
+                yield [p.at_server_shutdown() for p in AccountDB.get_all_cached_instances()]
                 if self.amp_protocol:
                     yield self.sessions.all_sessions_portal_sync()
             else:  # shutdown
-                yield [_SA(p, "is_connected", False) for p in PlayerDB.get_all_cached_instances()]
+                yield [_SA(p, "is_connected", False) for p in AccountDB.get_all_cached_instances()]
                 yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
                 yield [(p.unpuppet_all(), p.at_server_shutdown())
-                                       for p in PlayerDB.get_all_cached_instances()]
+                       for p in AccountDB.get_all_cached_instances()]
                 yield ObjectDB.objects.clear_all_sessids()
             yield [(s.pause(manual_pause=False), s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]
             ServerConfig.objects.conf("server_restart_mode", "reset")
@@ -399,7 +416,7 @@ class Evennia(object):
             # for Windows we need to remove pid files manually
             os.remove(SERVER_PIDFILE)
 
-        if hasattr(self, "web_root"): # not set very first start
+        if hasattr(self, "web_root"):  # not set very first start
             yield self.web_root.empty_threadpool()
 
         if not _reactor_stopping:
@@ -420,7 +437,6 @@ class Evennia(object):
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_start()
 
-
     def at_server_stop(self):
         """
         This is called just before a server is shut down, regardless
@@ -428,7 +444,6 @@ class Evennia(object):
         """
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_stop()
-
 
     def at_server_reload_start(self):
         """
@@ -470,7 +485,6 @@ class Evennia(object):
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_reload_stop()
 
-
     def at_server_cold_start(self):
         """
         This is called only when the server starts "cold", i.e. after a
@@ -487,9 +501,10 @@ class Evennia(object):
             script.stop()
 
         if GUEST_ENABLED:
-            for guest in PlayerDB.objects.all().filter(db_typeclass_path=settings.BASE_GUEST_TYPECLASS):
+            for guest in AccountDB.objects.all().filter(db_typeclass_path=settings.BASE_GUEST_TYPECLASS):
                 for character in guest.db._playable_characters:
-                    if character: character.delete()
+                    if character:
+                        character.delete()
                 guest.delete()
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_cold_start()
@@ -506,6 +521,7 @@ class Evennia(object):
 # Start the Evennia game server and add all active services
 #
 #------------------------------------------------------------
+
 
 # Tell the system the server is starting up; some things are not available yet
 ServerConfig.objects.conf("server_starting_mode", True)
@@ -549,7 +565,7 @@ if WEBSERVER_ENABLED:
     # start a thread pool and define the root url (/) as a wsgi resource
     # recognized by Django
     threads = LockableThreadPool(minthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[0]),
-                                    maxthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[1]))
+                                 maxthreads=max(1, settings.WEBSERVER_THREADPOOL_LIMITS[1]))
 
     web_root = DjangoWebRoot(threads)
     # point our media resources to url /media
@@ -597,4 +613,3 @@ if os.name == 'nt':
     # Windows only: Set PID file manually
     with open(SERVER_PIDFILE, 'w') as f:
         f.write(str(os.getpid()))
-

@@ -45,7 +45,7 @@ from twisted.python import components
 from django.conf import settings
 
 from evennia.server import session
-from evennia.players.models import PlayerDB
+from evennia.accounts.models import AccountDB
 from evennia.utils import ansi
 from evennia.utils.utils import to_str
 
@@ -61,21 +61,22 @@ CTRL_L = '\x0c'
 
 class SshProtocol(Manhole, session.Session):
     """
-    Each player connecting over ssh gets this protocol assigned to
-    them.  All communication between game and player goes through
+    Each account connecting over ssh gets this protocol assigned to
+    them.  All communication between game and account goes through
     here.
 
     """
+
     def __init__(self, starttuple):
         """
-        For setting up the player.  If player is not None then we'll
+        For setting up the account.  If account is not None then we'll
         login automatically.
 
         Args:
-            starttuple (tuple): A (player, factory) tuple.
+            starttuple (tuple): A (account, factory) tuple.
 
         """
-        self.authenticated_player = starttuple[0]
+        self.authenticated_account = starttuple[0]
         # obs must not be called self.factory, that gets overwritten!
         self.cfactory = starttuple[1]
 
@@ -101,9 +102,9 @@ class SshProtocol(Manhole, session.Session):
         self.init_session("ssh", client_address, self.cfactory.sessionhandler)
 
         # since we might have authenticated already, we might set this here.
-        if self.authenticated_player:
+        if self.authenticated_account:
             self.logged_in = True
-            self.uid = self.authenticated_player.user.id
+            self.uid = self.authenticated_account.user.id
         self.sessionhandler.connect(self)
 
     def connectionMade(self):
@@ -212,6 +213,12 @@ class SshProtocol(Manhole, session.Session):
 
     # session-general method hooks
 
+    def at_login(self):
+        """
+        Called when this session gets authenticated by the server.
+        """
+        pass
+
     def disconnect(self, reason="Connection closed. Goodbye for now."):
         """
         Disconnect from server.
@@ -310,13 +317,13 @@ class ExtraInfoAuthServer(SSHUserAuthServer):
         c = credentials.UsernamePassword(self.user, password)
         c.transport = self.transport
         return self.portal.login(c, None, IConchUser).addErrback(
-                                                        self._ebPassword)
+            self._ebPassword)
 
 
-class PlayerDBPasswordChecker(object):
+class AccountDBPasswordChecker(object):
     """
     Checks the django db for the correct credentials for
-    username/password otherwise it returns the player or None which is
+    username/password otherwise it returns the account or None which is
     useful for the Realm.
 
     """
@@ -331,7 +338,7 @@ class PlayerDBPasswordChecker(object):
 
         """
         self.factory = factory
-        super(PlayerDBPasswordChecker, self).__init__()
+        super(AccountDBPasswordChecker, self).__init__()
 
     def requestAvatarId(self, c):
         """
@@ -341,10 +348,10 @@ class PlayerDBPasswordChecker(object):
         up = credentials.IUsernamePassword(c, None)
         username = up.username
         password = up.password
-        player = PlayerDB.objects.get_player_from_name(username)
+        account = AccountDB.objects.get_account_from_name(username)
         res = (None, self.factory)
-        if player and player.check_password(password):
-            res = (player, self.factory)
+        if account and account.check_password(password):
+            res = (account, self.factory)
         return defer.succeed(res)
 
 
@@ -375,6 +382,7 @@ class TerminalSessionTransport_getPeer(object):
     provide getPeer to the transport.  This one does.
 
     """
+
     def __init__(self, proto, chainedProtocol, avatar, width, height):
         self.proto = proto
         self.avatar = avatar
@@ -462,6 +470,6 @@ def makeFactory(configdict):
     factory.services = factory.services.copy()
     factory.services['ssh-userauth'] = ExtraInfoAuthServer
 
-    factory.portal.registerChecker(PlayerDBPasswordChecker(factory))
+    factory.portal.registerChecker(AccountDBPasswordChecker(factory))
 
     return factory

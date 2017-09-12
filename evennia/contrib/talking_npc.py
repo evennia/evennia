@@ -48,6 +48,7 @@ def info1(caller):
 
     return text, options
 
+
 def info2(caller):
     text = "'My name is not really important ... I'm just an NPC after all.'"
 
@@ -67,7 +68,6 @@ def info3(caller):
                {"desc": "Wait, why don't you tell me your name first?",
                 "goto": "info2"})
 
-
     return text, options
 
 
@@ -81,6 +81,7 @@ def END(caller):
 #
 # The talk command (sits on the NPC)
 #
+
 
 class CmdTalk(default_cmds.MuxCommand):
     """
@@ -112,6 +113,7 @@ class CmdTalk(default_cmds.MuxCommand):
 class TalkingCmdSet(CmdSet):
     "Stores the talk command."
     key = "talkingcmdset"
+
     def at_cmdset_creation(self):
         "populates the cmdset"
         self.add(CmdTalk())
@@ -122,6 +124,7 @@ class TalkingNPC(DefaultObject):
     This implements a simple Object using the talk command and using
     the conversation defined above.
     """
+
     def at_object_creation(self):
         "This is called when object is first created."
         self.db.desc = "This is a talkative NPC."

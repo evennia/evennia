@@ -1,16 +1,16 @@
 """
-Player
+Account
 
-The player class is an extension of the default Django user class,
+The account class is an extension of the default Django user class,
 and is customized for the needs of Evennia.
 
-We use the Player to store a more mud-friendly style of permission
+We use the Account to store a more mud-friendly style of permission
 system as well as to allow the admin more flexibility by storing
-attributes on the Player.  Within the game we should normally use the
-Player manager's methods to create users so that permissions are set
+attributes on the Account.  Within the game we should normally use the
+Account manager's methods to create users so that permissions are set
 correctly.
 
-To make the Player model more flexible for your own game, it can also
+To make the Account model more flexible for your own game, it can also
 persistently store attributes of its own. This is ideal for extra
 account info and OOC account configuration variables etc.
 
@@ -22,11 +22,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.encoding import smart_str
 
-from evennia.players.manager import PlayerDBManager
+from evennia.accounts.manager import AccountDBManager
 from evennia.typeclasses.models import TypedObject
 from evennia.utils.utils import make_iter
 
-__all__ = ("PlayerDB",)
+__all__ = ("AccountDB",)
 
 #_ME = _("me")
 #_SELF = _("self")
@@ -42,11 +42,11 @@ _TYPECLASS = None
 
 #------------------------------------------------------------
 #
-# PlayerDB
+# AccountDB
 #
 #------------------------------------------------------------
 
-class PlayerDB(TypedObject, AbstractUser):
+class AccountDB(TypedObject, AbstractUser):
     """
     This is a special model using Django's 'profile' functionality
     and extends the default Django User model. It is defined as such
@@ -66,18 +66,18 @@ class PlayerDB(TypedObject, AbstractUser):
       - db - persistent attribute storage
       - ndb - non-persistent attribute storage
 
-    The PlayerDB adds the following properties:
+    The AccountDB adds the following properties:
 
-      - is_connected - If any Session is currently connected to this Player
+      - is_connected - If any Session is currently connected to this Account
       - name - alias for user.username
-      - sessions - sessions connected to this player
-      - is_superuser - bool if this player is a superuser
-      - is_bot - bool if this player is a bot and not a real player
+      - sessions - sessions connected to this account
+      - is_superuser - bool if this account is a superuser
+      - is_bot - bool if this account is a bot and not a real account
 
     """
 
     #
-    # PlayerDB Database model setup
+    # AccountDB Database model setup
     #
     # inherited fields (from TypedObject):
     # db_key, db_typeclass_path, db_date_created, db_permissions
@@ -89,20 +89,20 @@ class PlayerDB(TypedObject, AbstractUser):
                                           help_text="If player is connected to game or not")
     # database storage of persistant cmdsets.
     db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True,
-        help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_CHARACTER.")
-    # marks if this is a "virtual" bot player object
+                                         help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_CHARACTER.")
+    # marks if this is a "virtual" bot account object
     db_is_bot = models.BooleanField(default=False, verbose_name="is_bot", help_text="Used to identify irc/rss bots")
 
     # Database manager
-    objects = PlayerDBManager()
+    objects = AccountDBManager()
 
     # defaults
     __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
-    __defaultclasspath__ = "evennia.players.players.DefaultPlayer"
-    __applabel__ = "players"
+    __defaultclasspath__ = "evennia.accounts.accounts.DefaultAccount"
+    __applabel__ = "accounts"
 
     class Meta(object):
-        verbose_name = 'Player'
+        verbose_name = 'Account'
 
     # cmdset_storage property
     # This seems very sensitive to caching, so leaving it be for now /Griatch
@@ -136,10 +136,10 @@ class PlayerDB(TypedObject, AbstractUser):
     #
 
     def __str__(self):
-        return smart_str("%s(player %s)" % (self.name, self.dbid))
+        return smart_str("%s(account %s)" % (self.name, self.dbid))
 
     def __unicode__(self):
-        return u"%s(player#%s)" % (self.name, self.dbid)
+        return u"%s(account#%s)" % (self.name, self.dbid)
 
     #@property
     def __username_get(self):

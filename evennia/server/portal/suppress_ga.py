@@ -20,12 +20,14 @@ SUPPRESS_GA = chr(3)
 
 # try to get the customized mssp info, if it exists.
 
+
 class SuppressGA(object):
     """
     Implements the SUPRESS-GO-AHEAD protocol. Add this to a variable on the telnet
     protocol to set it up.
 
     """
+
     def __init__(self, protocol):
         """
         Initialize suppression of GO-AHEADs.

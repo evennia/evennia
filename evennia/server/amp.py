@@ -6,12 +6,12 @@ Both sides use this same protocol.
 The separation works like this:
 
 Portal - (AMP client) handles protocols. It contains a list of connected
-         sessions in a dictionary for identifying the respective player
+         sessions in a dictionary for identifying the respective account
          connected. If it loses the AMP connection it will automatically
          try to reconnect.
 
 Server - (AMP server) Handles all mud operations. The server holds its own list
-         of sessions tied to player objects. This is synced against the portal
+         of sessions tied to account objects. This is synced against the portal
          at startup and when a session connects/disconnects
 
 """
@@ -319,8 +319,12 @@ class FunctionCall(amp.Command):
 
 # Helper functions for pickling.
 
-dumps = lambda data: to_str(pickle.dumps(to_str(data), pickle.HIGHEST_PROTOCOL))
-loads = lambda data: pickle.loads(to_str(data))
+def dumps(data):
+    return to_str(pickle.dumps(to_str(data), pickle.HIGHEST_PROTOCOL))
+
+
+def loads(data):
+    return pickle.loads(to_str(data))
 
 
 # -------------------------------------------------------------

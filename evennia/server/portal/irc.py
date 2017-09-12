@@ -4,7 +4,7 @@ The bot then pipes what is being said between the IRC channel and one or
 more Evennia channels.
 """
 from __future__ import print_function
-from future.utils import viewkeys
+from future.utils import viewkeys, viewvalues, viewitems
 
 import re
 from twisted.application import internet
@@ -41,55 +41,21 @@ IRC_DGREY = "14"
 IRC_GRAY = "15"
 
 # obsolete test:
-# {rred {ggreen {yyellow {bblue {mmagenta {ccyan {wwhite {xdgrey
-# {Rdred {Gdgreen {Ydyellow {Bdblue {Mdmagenta {Cdcyan {Wlgrey {Xblack
-# {[rredbg {[ggreenbg {[yyellowbg {[bbluebg {[mmagentabg {[ccyanbg {[wlgreybg {[xblackbg
 
-# test:
+# test evennia->irc:
 # |rred |ggreen |yyellow |bblue |mmagenta |ccyan |wwhite |xdgrey
 # |Rdred |Gdgreen |Ydyellow |Bdblue |Mdmagenta |Cdcyan |Wlgrey |Xblack
 # |[rredbg |[ggreenbg |[yyellowbg |[bbluebg |[mmagentabg |[ccyanbg |[wlgreybg |[xblackbg
 
-IRC_COLOR_MAP = dict([
-    # obs - {-type colors are deprecated but still used in many places.
-    (r'{n', IRC_RESET),   # reset
-    (r'{/', ""),          # line break
-    (r'{-', " "),         # tab
-    (r'{_', " "),         # space
-    (r'{*', ""),          # invert
-    (r'{^', ""),          # blinking text
+# test irc->evennia
+# Use Ctrl+C <num> to produce mIRC colors in e.g. irssi
 
-    (r'{r', IRC_COLOR + IRC_RED),
-    (r'{g', IRC_COLOR + IRC_GREEN),
-    (r'{y', IRC_COLOR + IRC_YELLOW),
-    (r'{b', IRC_COLOR + IRC_BLUE),
-    (r'{m', IRC_COLOR + IRC_MAGENTA),
-    (r'{c', IRC_COLOR + IRC_CYAN),
-    (r'{w', IRC_COLOR + IRC_WHITE),  # pure white
-    (r'{x', IRC_COLOR + IRC_DGREY),  # dark grey
-
-    (r'{R', IRC_COLOR + IRC_DRED),
-    (r'{G', IRC_COLOR + IRC_DGREEN),
-    (r'{Y', IRC_COLOR + IRC_DYELLOW),
-    (r'{B', IRC_COLOR + IRC_DBLUE),
-    (r'{M', IRC_COLOR + IRC_DMAGENTA),
-    (r'{C', IRC_COLOR + IRC_DCYAN),
-    (r'{W', IRC_COLOR + IRC_GRAY),   # light grey
-    (r'{X', IRC_COLOR + IRC_BLACK),  # pure black
-
-    (r'{[r', IRC_COLOR + IRC_NORMAL + "," + IRC_DRED),
-    (r'{[g', IRC_COLOR + IRC_NORMAL + "," + IRC_DGREEN),
-    (r'{[y', IRC_COLOR + IRC_NORMAL + "," + IRC_DYELLOW),
-    (r'{[b', IRC_COLOR + IRC_NORMAL + "," + IRC_DBLUE),
-    (r'{[m', IRC_COLOR + IRC_NORMAL + "," + IRC_DMAGENTA),
-    (r'{[c', IRC_COLOR + IRC_NORMAL + "," + IRC_DCYAN),
-    (r'{[w', IRC_COLOR + IRC_NORMAL + "," + IRC_GRAY),    # light grey background
-    (r'{[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK),   # pure black background
-
-    # |-type formatting is the thing to use.
-    (r'|n', IRC_RESET),   # reset
-    (r'|/', ""),          # line break
-    (r'|-', " "),         # tab
+IRC_COLOR_MAP = dict((
+    (r'|n', IRC_COLOR + IRC_NORMAL),  # normal mode
+    (r'|H', IRC_RESET),   # un-highlight
+    (r'|/', "\n"),        # line break
+    (r'|t', "    "),      # tab
+    (r'|-', "    "),      # fixed tab
     (r'|_', " "),         # space
     (r'|*', ""),          # invert
     (r'|^', ""),          # blinking text
@@ -121,29 +87,49 @@ IRC_COLOR_MAP = dict([
     (r'|[c', IRC_COLOR + IRC_NORMAL + "," + IRC_DCYAN),
     (r'|[w', IRC_COLOR + IRC_NORMAL + "," + IRC_GRAY),    # light grey background
     (r'|[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK)    # pure black background
-    ])
-RE_IRC_COLOR = re.compile(r"|".join([re.escape(key) for key in viewkeys(IRC_COLOR_MAP)]), re.DOTALL)
+))
+# ansi->irc
+RE_ANSI_COLOR = re.compile(r"|".join(
+    [re.escape(key) for key in viewkeys(IRC_COLOR_MAP)]), re.DOTALL)
 RE_MXP = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
 RE_ANSI_ESCAPES = re.compile(r"(%s)" % "|".join(("{{", "%%", "\\\\")), re.DOTALL)
+# irc->ansi
+_CLR_LIST = [re.escape(val)
+             for val in sorted(viewvalues(IRC_COLOR_MAP), key=len, reverse=True) if val.strip()]
+_CLR_LIST = _CLR_LIST[-2:] + _CLR_LIST[:-2]
+RE_IRC_COLOR = re.compile(r"|".join(_CLR_LIST), re.DOTALL)
+ANSI_COLOR_MAP = dict((tup[1], tup[0]) for tup in viewitems(IRC_COLOR_MAP) if tup[1].strip())
 
 
-def sub_irc(ircmatch):
+def parse_ansi_to_irc(string):
     """
-    Substitute irc color info. Used by re.sub.
+    Parse |-type syntax and replace with IRC color markers
 
     Args:
-        ircmatch (Match): The match from regex.
+        string (str): String to parse for ANSI colors.
 
     Returns:
-        colored (str): A string with converted IRC colors.
+        parsed_string (str): String with replaced ANSI colors.
 
     """
-    return IRC_COLOR_MAP.get(ircmatch.group(), "")
+
+    def _sub_to_irc(ansi_match):
+        return IRC_COLOR_MAP.get(ansi_match.group(), "")
+
+    in_string = utils.to_str(string)
+    parsed_string = []
+    parts = RE_ANSI_ESCAPES.split(in_string) + [" "]
+    for part, sep in zip(parts[::2], parts[1::2]):
+        pstring = RE_ANSI_COLOR.sub(_sub_to_irc, part)
+        parsed_string.append("%s%s" % (pstring, sep[0].strip()))
+    # strip mxp
+    parsed_string = RE_MXP.sub(r'\2', "".join(parsed_string))
+    return parsed_string
 
 
-def parse_irc_colors(string):
+def parse_irc_to_ansi(string):
     """
-    Parse {-type syntax and replace with IRC color markers
+    Parse IRC mIRC color syntax and replace with Evennia ANSI color markers
 
     Args:
         string (str): String to parse for IRC colors.
@@ -152,18 +138,18 @@ def parse_irc_colors(string):
         parsed_string (str): String with replaced IRC colors.
 
     """
+
+    def _sub_to_ansi(irc_match):
+        return ANSI_COLOR_MAP.get(irc_match.group(), "")
+
     in_string = utils.to_str(string)
-    parsed_string = ""
-    parts = RE_ANSI_ESCAPES.split(in_string) + [" "]
-    for part, sep in zip(parts[::2], parts[1::2]):
-        pstring = RE_IRC_COLOR.sub(sub_irc, part)
-        parsed_string += "%s%s" % (pstring, sep[0].strip())
-    # strip mxp
-    parsed_string = RE_MXP.sub(r'\2', parsed_string)
-    return parsed_string
+    print("parse_irc_to_ansi (before): %s" % in_string)
+    pstring = RE_IRC_COLOR.sub(_sub_to_ansi, in_string)
+    print("parse_irc_to_ansi (after): %s" % pstring)
+    return pstring
+
 
 # IRC bot
-
 
 class IRCBot(irc.IRCClient, Session):
     """
@@ -210,6 +196,9 @@ class IRCBot(irc.IRCClient, Session):
         self.sessionhandler.disconnect(self)
         self.stopping = True
         self.transport.loseConnection()
+
+    def at_login(self):
+        pass
 
     def privmsg(self, user, channel, msg):
         """
@@ -289,7 +278,7 @@ class IRCBot(irc.IRCClient, Session):
             kwargs (any): Other data from protocol.
 
         """
-        self.sessionhandler.data_in(self, bot_data_in=[text, kwargs])
+        self.sessionhandler.data_in(self, bot_data_in=[parse_irc_to_ansi(text), kwargs])
 
     def send_channel(self, *args, **kwargs):
         """
@@ -305,7 +294,7 @@ class IRCBot(irc.IRCClient, Session):
         """
         text = args[0] if args else ""
         if text:
-            text = parse_irc_colors(text)
+            text = parse_ansi_to_irc(text)
             self.say(self.channel, text)
 
     def send_privmsg(self, *args, **kwargs):
@@ -323,7 +312,7 @@ class IRCBot(irc.IRCClient, Session):
         text = args[0] if args else ""
         user = kwargs.get("user", None)
         if text and user:
-            text = parse_irc_colors(text)
+            text = parse_ansi_to_irc(text)
             self.msg(user, text)
 
     def send_request_nicklist(self, *args, **kwargs):

@@ -16,7 +16,8 @@ GOBLIN = {
  "resists": ["cold", "poison"],
  "attacks": ["fists"],
  "weaknesses": ["fire", "light"]
- "tags:": ["mob", "evil"]
+ "tags": ["mob", "evil", ('greenskin','mob')]
+ "args": [("weapon", "sword")]
  }
 ```
 
@@ -31,21 +32,28 @@ Possible keywords are:
     permissions - string or list of permission strings
     locks - a lock-string
     aliases - string or list of strings
-    tags - string or list of strings
-    ndb_<name> - value of a nattribute (ndb_ is stripped)
     exec - this is a string of python code to execute or a list of such codes.
         This can be used e.g. to trigger custom handlers on the object. The
-        execution environment contains 'evennia' for the library and 'obj'
-        for accessing the just created object.
-    any other keywords are interpreted as Attributes and their values.
+        execution namespace contains 'evennia' for the library and 'obj'
+    tags - string or list of strings or tuples `(tagstr, category)`. Plain
+        strings will be result in tags with no category (default tags).
+    attrs - tuple or list of tuples of Attributes to add. This form allows
+    more complex Attributes to be set. Tuples at least specify `(key, value)`
+        but can also specify up to `(key, value, category, lockstring)`. If
+        you want to specify a lockstring but not a category, set the category
+        to `None`.
+    ndb_<name> - value of a nattribute (ndb_ is stripped)
+    other - any other name is interpreted as the key of an Attribute with
+        its value. Such Attributes have no categories.
 
 Each value can also be a callable that takes no arguments. It should
 return the value to enter into the field and will be called every time
-the prototype is used to spawn an object.
+the prototype is used to spawn an object. Note, if you want to store
+a callable in an Attribute, embed it in a tuple to the `args` keyword.
 
-By specifying a prototype, the child will inherit all prototype slots
-it does not explicitly define itself, while overloading those that it
-does specify.
+By specifying the "prototype" key, the prototype becomes a child of
+that prototype, inheritng all prototype slots it does not explicitly
+define itself, while overloading those that it does specify.
 
 ```python
 GOBLIN_WIZARD = {
@@ -82,10 +90,6 @@ many traits with a normal *goblin*.
 from __future__ import print_function
 
 import copy
-# TODO
-# sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-# os.environ['DJANGO_SETTINGS_MODULE'] = 'game.settings'
-
 from django.conf import settings
 from random import randint
 import evennia
@@ -94,7 +98,9 @@ from evennia.utils.utils import make_iter, all_from_module, dbid_to_obj
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 
-_handle_dbref = lambda inp: dbid_to_obj(inp, ObjectDB)
+
+def _handle_dbref(inp):
+    dbid_to_obj(inp, ObjectDB)
 
 
 def _validate_prototype(key, prototype, protparents, visited):
@@ -142,12 +148,34 @@ def _batch_create_object(*objparams):
     so make sure the spawned Typeclass works before using this!
 
     Args:
-        objsparams (any): Each argument should be a tuple of arguments
+        objsparams (tuple): Parameters for the respective creation/add
+            handlers in the following order:
+                - `create_kwargs` (dict): For use as new_obj = `ObjectDB(**create_kwargs)`.
+                - `permissions` (str): Permission string used with `new_obj.batch_add(permission)`.
+                - `lockstring` (str): Lockstring used with `new_obj.locks.add(lockstring)`.
+                - `aliases` (list): A list of alias strings for
+                    adding with `new_object.aliases.batch_add(*aliases)`.
+                - `nattributes` (list): list of tuples `(key, value)` to be loop-added to
+                    add with `new_obj.nattributes.add(*tuple)`.
+                - `attributes` (list): list of tuples `(key, value[,category[,lockstring]])` for
+                    adding with `new_obj.attributes.batch_add(*attributes)`.
+                - `tags` (list): list of tuples `(key, category)` for adding
+                    with `new_obj.tags.batch_add(*tags)`.
+                - `execs` (list): Code strings to execute together with the creation
+                    of each object. They will be executed with `evennia` and `obj`
+                        (the newly created object) available in the namespace. Execution
+                        will happend after all other properties have been assigned and
+                        is intended for calling custom handlers etc.
             for the respective creation/add handlers in the following
-            order: (create, permissions, locks, aliases, nattributes,
-            attributes)
+            order: (create_kwargs, permissions, locks, aliases, nattributes,
+            attributes, tags, execs)
+
     Returns:
         objects (list): A list of created objects
+
+    Notes:
+        The `exec` list will execute arbitrary python code so don't allow this to be availble to
+        unprivileged users!
 
     """
 
@@ -182,9 +210,11 @@ def _batch_create_object(*objparams):
 
 def spawn(*prototypes, **kwargs):
     """
-    Spawn a number of prototyped objects. Each argument should be a
-    prototype dictionary.
+    Spawn a number of prototyped objects.
 
+    Args:
+        prototypes (dict): Each argument should be a prototype
+            dictionary.
     Kwargs:
         prototype_modules (str or list): A python-path to a prototype
             module, or a list of such paths. These will be used to build
@@ -196,6 +226,7 @@ def spawn(*prototypes, **kwargs):
             prototypes from prototype_modules.
         return_prototypes (bool): Only return a list of the
             prototype-parents (no object creation happens)
+
     """
 
     protparents = {}
@@ -241,14 +272,17 @@ def spawn(*prototypes, **kwargs):
         create_kwargs["db_typeclass_path"] = typval() if callable(typval) else typval
 
         # extract calls to handlers
-        permval = prot.pop("permissions", "")
+        permval = prot.pop("permissions", [])
         permission_string = permval() if callable(permval) else permval
         lockval = prot.pop("locks", "")
         lock_string = lockval() if callable(lockval) else lockval
         aliasval = prot.pop("aliases", "")
         alias_string = aliasval() if callable(aliasval) else aliasval
-        tagval = prot.pop("tags", "")
+        tagval = prot.pop("tags", [])
         tags = tagval() if callable(tagval) else tagval
+        attrval = prot.pop("attrs", [])
+        attributes = attrval() if callable(tagval) else attrval
+
         exval = prot.pop("exec", "")
         execs = make_iter(exval() if callable(exval) else exval)
 
@@ -257,9 +291,10 @@ def spawn(*prototypes, **kwargs):
                            for key, value in prot.items() if key.startswith("ndb_"))
 
         # the rest are attributes
-        attributes = dict((key, value() if callable(value) else value)
-                          for key, value in prot.items()
-                          if not (key in _CREATE_OBJECT_KWARGS or key.startswith("ndb_")))
+        simple_attributes = [(key, value()) if callable(value) else (key, value)
+                             for key, value in prot.items() if not key.startswith("ndb_")]
+        attributes = attributes + simple_attributes
+        attributes = [tup for tup in attributes if not tup[0] in _CREATE_OBJECT_KWARGS]
 
         # pack for call into _batch_create_object
         objsparams.append((create_kwargs, permission_string, lock_string,
@@ -272,35 +307,35 @@ if __name__ == "__main__":
     # testing
 
     protparents = {
-            "NOBODY": {},
-            # "INFINITE" : {
-            #     "prototype":"INFINITE"
-            # },
-            "GOBLIN": {
-             "key": "goblin grunt",
-             "health": lambda: randint(20, 30),
-             "resists": ["cold", "poison"],
-             "attacks": ["fists"],
-             "weaknesses": ["fire", "light"]
-             },
-            "GOBLIN_WIZARD": {
-             "prototype": "GOBLIN",
-             "key": "goblin wizard",
-             "spells": ["fire ball", "lighting bolt"]
-             },
-            "GOBLIN_ARCHER": {
-             "prototype": "GOBLIN",
-             "key": "goblin archer",
-             "attacks": ["short bow"]
-            },
-            "ARCHWIZARD": {
-             "attacks": ["archwizard staff"],
-            },
-            "GOBLIN_ARCHWIZARD": {
-             "key": "goblin archwizard",
-             "prototype": ("GOBLIN_WIZARD", "ARCHWIZARD")
-            }
+        "NOBODY": {},
+        # "INFINITE" : {
+        #     "prototype":"INFINITE"
+        # },
+        "GOBLIN": {
+            "key": "goblin grunt",
+            "health": lambda: randint(20, 30),
+            "resists": ["cold", "poison"],
+            "attacks": ["fists"],
+            "weaknesses": ["fire", "light"]
+        },
+        "GOBLIN_WIZARD": {
+            "prototype": "GOBLIN",
+            "key": "goblin wizard",
+            "spells": ["fire ball", "lighting bolt"]
+        },
+        "GOBLIN_ARCHER": {
+            "prototype": "GOBLIN",
+            "key": "goblin archer",
+            "attacks": ["short bow"]
+        },
+        "ARCHWIZARD": {
+            "attacks": ["archwizard staff"],
+        },
+        "GOBLIN_ARCHWIZARD": {
+            "key": "goblin archwizard",
+            "prototype": ("GOBLIN_WIZARD", "ARCHWIZARD")
         }
+    }
     # test
     print([o.key for o in spawn(protparents["GOBLIN"],
                                 protparents["GOBLIN_ARCHWIZARD"],

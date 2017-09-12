@@ -33,14 +33,17 @@ except ImportError:
 _INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
 
 # delayed imports
-_PlayerDB = None
+_AccountDB = None
 _ServerSession = None
 _ServerConfig = None
 _ScriptDB = None
 _OOB_HANDLER = None
 
+
 class DummySession(object):
     sessid = 0
+
+
 DUMMYSESSION = DummySession()
 
 # AMP signals
@@ -54,7 +57,7 @@ SSHUTD = chr(7)       # server shutdown
 SSYNC = chr(8)        # server session sync
 SCONN = chr(11)        # server portal connection (for bots)
 PCONNSYNC = chr(12)   # portal post-syncing session
-PDISCONNALL = chr(13) # portal session discnnect all
+PDISCONNALL = chr(13)  # portal session discnnect all
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -72,25 +75,26 @@ _INPUT_FUNCS = {}
 for modname in make_iter(settings.INPUT_FUNC_MODULES):
     _INPUT_FUNCS.update(callables_from_module(modname))
 
+
 def delayed_import():
     """
     Helper method for delayed import of all needed entities.
 
     """
-    global _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
+    global _ServerSession, _AccountDB, _ServerConfig, _ScriptDB
     if not _ServerSession:
         # we allow optional arbitrary serversession class for overloading
         modulename, classname = settings.SERVER_SESSION_CLASS.rsplit(".", 1)
         _ServerSession = variable_from_module(modulename, classname)
-    if not _PlayerDB:
-        from evennia.players.models import PlayerDB as _PlayerDB
+    if not _AccountDB:
+        from evennia.accounts.models import AccountDB as _AccountDB
     if not _ServerConfig:
         from evennia.server.models import ServerConfig as _ServerConfig
     if not _ScriptDB:
         from evennia.scripts.models import ScriptDB as _ScriptDB
     # including once to avoid warnings in Python syntax checkers
     assert(_ServerSession)
-    assert(_PlayerDB)
+    assert(_AccountDB)
     assert(_ServerConfig)
     assert(_ScriptDB)
 
@@ -222,9 +226,9 @@ class SessionHandler(dict):
                     # we don't allow sending text = None, this must mean
                     # that the text command is not to be used.
                     continue
-                rkwargs[key] = [ [], {} ]
+                rkwargs[key] = [[], {}]
             elif isinstance(data, dict):
-                rkwargs[key] = [ [], _validate(data) ]
+                rkwargs[key] = [[], _validate(data)]
             elif hasattr(data, "__iter__"):
                 if isinstance(data[-1], dict):
                     if len(data) == 2:
@@ -233,11 +237,11 @@ class SessionHandler(dict):
                         else:
                             rkwargs[key] = [[_validate(data[0])], _validate(data[1])]
                     else:
-                        rkwargs[key] = [ _validate(data[:-1]), _validate(data[-1]) ]
+                        rkwargs[key] = [_validate(data[:-1]), _validate(data[-1])]
                 else:
-                    rkwargs[key] = [ _validate(data), {} ]
+                    rkwargs[key] = [_validate(data), {}]
             else:
-                rkwargs[key] = [ [_validate(data)], {} ]
+                rkwargs[key] = [[_validate(data)], {}]
             rkwargs[key][1]["options"] = options
         return rkwargs
 
@@ -254,7 +258,7 @@ class ServerSessionHandler(SessionHandler):
     A session register with the handler in two steps, first by
     registering itself with the connect() method. This indicates an
     non-authenticated session. Whenever the session is authenticated
-    the session together with the related player is sent to the login()
+    the session together with the related account is sent to the login()
     method.
 
     """
@@ -282,7 +286,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         delayed_import()
-        global _ServerSession, _PlayerDB, _ScriptDB
+        global _ServerSession, _AccountDB, _ScriptDB
 
         sess = _ServerSession()
         sess.sessionhandler = self
@@ -296,17 +300,17 @@ class ServerSessionHandler(SessionHandler):
             # Session is already logged in. This can happen in the
             # case of auto-authenticating protocols like SSH or
             # webclient's session sharing
-            player = _PlayerDB.objects.get_player_from_uid(sess.uid)
-            if player:
-                # this will set player.is_connected too
-                self.login(sess, player, force=True)
+            account = _AccountDB.objects.get_account_from_uid(sess.uid)
+            if account:
+                # this will set account.is_connected too
+                self.login(sess, account, force=True)
                 return
             else:
                 sess.logged_in = False
                 sess.uid = None
 
         # show the first login command
-        self.data_in(sess, text=[[CMD_LOGINSTART],{}])
+        self.data_in(sess, text=[[CMD_LOGINSTART], {}])
 
     def portal_session_sync(self, portalsessiondata):
         """
@@ -341,7 +345,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         delayed_import()
-        global _ServerSession, _PlayerDB, _ServerConfig, _ScriptDB
+        global _ServerSession, _AccountDB, _ServerConfig, _ScriptDB
 
         for sess in self.values():
             # we delete the old session to make sure to catch eventual
@@ -353,7 +357,7 @@ class ServerSessionHandler(SessionHandler):
             sess.sessionhandler = self
             sess.load_sync_data(sessdict)
             if sess.uid:
-                sess.player = _PlayerDB.objects.get_player_from_uid(sess.uid)
+                sess.account = _AccountDB.objects.get_account_from_uid(sess.uid)
             self[sessid] = sess
             sess.at_sync()
 
@@ -361,7 +365,6 @@ class ServerSessionHandler(SessionHandler):
         self.server.at_post_portal_sync()
         # announce the reconnection
         self.announce_all(_(" ... Server restarted."))
-
 
     def portal_disconnect(self, session):
         """
@@ -408,14 +411,14 @@ class ServerSessionHandler(SessionHandler):
                                "network:"irc.freenode.net", "port": 6667})
 
         Notes:
-            The new session will use the supplied player-bot uid to
+            The new session will use the supplied account-bot uid to
             initiate an already logged-in connection. The Portal will
             treat this as a normal connection and henceforth so will
             the Server.
 
         """
         self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SCONN,
-                                protocol_path=protocol_path, config=configdict)
+                                                         protocol_path=protocol_path, config=configdict)
 
     def portal_shutdown(self):
         """
@@ -425,15 +428,15 @@ class ServerSessionHandler(SessionHandler):
         self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
                                                          operation=SSHUTD)
 
-    def login(self, session, player, force=False, testmode=False):
+    def login(self, session, account, force=False, testmode=False):
         """
-        Log in the previously unloggedin session and the player we by
+        Log in the previously unloggedin session and the account we by
         now should know is connected to it. After this point we assume
         the session to be logged in one way or another.
 
         Args:
             session (Session): The Session to authenticate.
-            player (Player): The Player identified as associated with this Session.
+            account (Account): The Account identified as associated with this Session.
             force (bool): Login also if the session thinks it's already logged in
                 (this can happen for auto-authenticating protocols)
             testmode (bool, optional): This is used by unittesting for
@@ -445,36 +448,37 @@ class ServerSessionHandler(SessionHandler):
             # don't log in a session that is already logged in.
             return
 
-        player.is_connected = True
+        account.is_connected = True
 
         # sets up and assigns all properties on the session
-        session.at_login(player)
+        session.at_login(account)
 
-        # player init
-        player.at_init()
+        # account init
+        account.at_init()
 
-        # Check if this is the first time the *player* logs in
-        if player.db.FIRST_LOGIN:
-            player.at_first_login()
-            del player.db.FIRST_LOGIN
+        # Check if this is the first time the *account* logs in
+        if account.db.FIRST_LOGIN:
+            account.at_first_login()
+            del account.db.FIRST_LOGIN
 
-        player.at_pre_login()
+        account.at_pre_login()
 
         if _MULTISESSION_MODE == 0:
             # disconnect all previous sessions.
             self.disconnect_duplicate_sessions(session)
 
-        nsess = len(self.sessions_from_player(player))
-        string = "Logged in: {player} {address} ({nsessions} session(s) total)"
-        string = string.format(player=player,address=session.address, nsessions=nsess)
+        nsess = len(self.sessions_from_account(account))
+        string = "Logged in: {account} {address} ({nsessions} session(s) total)"
+        string = string.format(account=account, address=session.address, nsessions=nsess)
         session.log(string)
         session.logged_in = True
         # sync the portal to the session
         if not testmode:
             self.server.amp_protocol.send_AdminServer2Portal(session,
-                                                         operation=SLOGIN,
-                                                         sessiondata={"logged_in": True})
-        player.at_post_login(session=session)
+                                                             operation=SLOGIN,
+                                                             sessiondata={"logged_in": True,
+                                                                          "uid": session.uid})
+        account.at_post_login(session=session)
 
     def disconnect(self, session, reason="", sync_portal=True):
         """
@@ -493,14 +497,15 @@ class ServerSessionHandler(SessionHandler):
         if not session:
             return
 
-        if hasattr(session, "player") and session.player:
+        if hasattr(session, "account") and session.account:
             # only log accounts logging off
-            nsess = len(self.sessions_from_player(session.player)) - 1
-            string = "Logged out: {player} {address} ({nsessions} sessions(s) remaining)"
-            string = string.format(player=session.player, address=session.address, nsessions=nsess)
+            nsess = len(self.sessions_from_account(session.account)) - 1
+            sreason = " ({})".format(reason) if reason else ""
+            string = "Logged out: {account} {address} ({nsessions} sessions(s) remaining){reason}"
+            string = string.format(reason=sreason, account=session.account, address=session.address, nsessions=nsess)
             session.log(string)
 
-        session.at_disconnect()
+        session.at_disconnect(reason)
         sessid = session.sessid
         if sessid in self and not hasattr(self, "_disconnect_all"):
             del self[sessid]
@@ -518,8 +523,8 @@ class ServerSessionHandler(SessionHandler):
         """
         sessdata = self.get_all_sync_data()
         return self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
-                                                         operation=SSYNC,
-                                                         sessiondata=sessdata)
+                                                                operation=SSYNC,
+                                                                sessiondata=sessdata)
 
     def session_portal_sync(self, session):
         """
@@ -550,7 +555,7 @@ class ServerSessionHandler(SessionHandler):
                                                          reason=reason)
 
     def disconnect_duplicate_sessions(self, curr_session,
-                      reason=_("Logged in from elsewhere. Disconnecting.")):
+                                      reason=_("Logged in from elsewhere. Disconnecting.")):
         """
         Disconnects any existing sessions with the same user.
 
@@ -561,9 +566,9 @@ class ServerSessionHandler(SessionHandler):
         """
         uid = curr_session.uid
         doublet_sessions = [sess for sess in self.values()
-                            if sess.logged_in
-                            and sess.uid == uid
-                            and sess != curr_session]
+                            if sess.logged_in and
+                            sess.uid == uid and
+                            sess != curr_session]
         for session in doublet_sessions:
             self.disconnect(session, reason)
 
@@ -576,32 +581,32 @@ class ServerSessionHandler(SessionHandler):
         tcurr = time.time()
         reason = _("Idle timeout exceeded, disconnecting.")
         for session in (session for session in self.values()
-                        if session.logged_in and _IDLE_TIMEOUT > 0
-                        and (tcurr - session.cmd_last) > _IDLE_TIMEOUT):
+                        if session.logged_in and _IDLE_TIMEOUT > 0 and
+                        (tcurr - session.cmd_last) > _IDLE_TIMEOUT):
             self.disconnect(session, reason=reason)
 
-    def player_count(self):
+    def account_count(self):
         """
-        Get the number of connected players (not sessions since a
-        player may have more than one session depending on settings).
-        Only logged-in players are counted here.
+        Get the number of connected accounts (not sessions since a
+        account may have more than one session depending on settings).
+        Only logged-in accounts are counted here.
 
         Returns:
-            nplayer (int): Number of connected players
+            naccount (int): Number of connected accounts
 
         """
         return len(set(session.uid for session in self.values() if session.logged_in))
 
-    def all_connected_players(self):
+    def all_connected_accounts(self):
         """
-        Get a unique list of connected and logged-in Players.
+        Get a unique list of connected and logged-in Accounts.
 
         Returns:
-            players (list): All conected Players (which may be fewer than the
+            accounts (list): All conected Accounts (which may be fewer than the
                 amount of Sessions due to multi-playing).
 
         """
-        return list(set(session.player for session in self.values() if session.logged_in and session.player))
+        return list(set(session.account for session in self.values() if session.logged_in and session.account))
 
     def session_from_sessid(self, sessid):
         """
@@ -619,13 +624,13 @@ class ServerSessionHandler(SessionHandler):
             return [self.get(sid) for sid in sessid if sid in self]
         return self.get(sessid)
 
-    def session_from_player(self, player, sessid):
+    def session_from_account(self, account, sessid):
         """
-        Given a player and a session id, return the actual session
+        Given an account and a session id, return the actual session
         object.
 
         Args:
-            player (Player): The Player to get the Session from.
+            account (Account): The Account to get the Session from.
             sessid (int or list): Session id(s).
 
         Returns:
@@ -633,21 +638,21 @@ class ServerSessionHandler(SessionHandler):
 
         """
         sessions = [self[sid] for sid in make_iter(sessid)
-                    if sid in self and self[sid].logged_in and player.uid == self[sid].uid]
+                    if sid in self and self[sid].logged_in and account.uid == self[sid].uid]
         return sessions[0] if len(sessions) == 1 else sessions
 
-    def sessions_from_player(self, player):
+    def sessions_from_account(self, account):
         """
-        Given a player, return all matching sessions.
+        Given an account, return all matching sessions.
 
         Args:
-            player (Player): Player to get sessions from.
+            account (Account): Account to get sessions from.
 
         Returns:
-            sessions (list): All Sessions associated with this player.
+            sessions (list): All Sessions associated with this account.
 
         """
-        uid = player.uid
+        uid = account.uid
         return [session for session in self.values() if session.logged_in and session.uid == uid]
 
     def sessions_from_puppet(self, puppet):
@@ -757,10 +762,11 @@ class ServerSessionHandler(SessionHandler):
                         _INPUT_FUNCS[cname](session, *cmdargs, **cmdkwargs)
                     else:
                         _INPUT_FUNCS["default"](session, cname, *cmdargs, **cmdkwargs)
-                except Exception, err:
+                except Exception as err:
                     if input_debug:
                         session.msg(err)
                     log_trace()
 
+
 SESSION_HANDLER = ServerSessionHandler()
-SESSIONS = SESSION_HANDLER # legacy
+SESSIONS = SESSION_HANDLER  # legacy

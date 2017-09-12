@@ -83,6 +83,8 @@ def log_trace(errmsg=None):
                 log.msg('[EE] %s' % line)
     except Exception:
         log.msg('[EE] %s' % errmsg)
+
+
 log_tracemsg = log_trace
 
 
@@ -100,6 +102,8 @@ def log_err(errmsg):
         errmsg = str(e)
     for line in errmsg.splitlines():
         log.msg('[EE] %s' % line)
+
+
     # log.err('ERROR: %s' % (errmsg,))
 log_errmsg = log_err
 
@@ -118,6 +122,8 @@ def log_warn(warnmsg):
         warnmsg = str(e)
     for line in warnmsg.splitlines():
         log.msg('[WW] %s' % line)
+
+
     # log.msg('WARNING: %s' % (warnmsg,))
 log_warnmsg = log_warn
 
@@ -134,6 +140,8 @@ def log_info(infomsg):
         infomsg = str(e)
     for line in infomsg.splitlines():
         log.msg('[..] %s' % line)
+
+
 log_infomsg = log_info
 
 
@@ -150,6 +158,8 @@ def log_dep(depmsg):
         depmsg = str(e)
     for line in depmsg.splitlines():
         log.msg('[DP] %s' % line)
+
+
 log_depmsg = log_dep
 
 
@@ -206,6 +216,7 @@ class EvenniaLogFile(logfile.LogFile):
             lines (list): lines from our _file attribute.
         """
         return self._file.readlines(*args, **kwargs)
+
 
 _LOG_FILE_HANDLES = {}  # holds open log handles
 
@@ -307,7 +318,7 @@ def tail_log_file(filename, offset, nlines, callback=None):
             lines_found = filehandle.readlines()
             block_count -= 1
         # return the right number of lines
-        lines_found = lines_found[-nlines-offset:-offset if offset else None]
+        lines_found = lines_found[-nlines - offset:-offset if offset else None]
         if callback:
             callback(lines_found)
             return None
