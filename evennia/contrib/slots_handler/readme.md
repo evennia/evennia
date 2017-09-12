@@ -41,6 +41,16 @@ This format is used to target specific slots. If numerical values are included, 
 
 **Nesting:** The system is designed with simplicity in mind. You should not try to force individual slot attributes to be more than a basic `dict`. However, since we're storing objects in these slots, it's perfectly possible to store one slot attribute inside a slot in a different attribute. Your code just has to know to look for that, because `SlotsHandler` does not. The individual building blocks are simple, but they may be assembled in more complicated ways than they can achieve on their own.
 
+### How do I use it?
+The first way is just to record how many of a thing a character has. One object can be stored in multiple slots for systems where one mechanic might fill more than one requirement. The handler doesn't support querying for specific slots, because I feel like `.all()` is sufficient for those purposes. To retrieve a specific slot, it's easy enough to use syntax like the following:
+```python
+spells = obj.slots.all()['spells']
+weapon = obj.slots.all()['equipped']['weapon']
+```
+
+### What's next?
+While I consider `SlotsHandler` complete as-is, there is room for sample commands that interact with the handler and a set of classes that a new user can plug into their game to instantly see how it works without altering their own typeclasses.
+
 ## SlottedObject.slots.add
 ```
 add(self, slots)
