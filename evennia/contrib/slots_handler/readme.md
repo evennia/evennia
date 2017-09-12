@@ -51,7 +51,6 @@ add(self, slots)
 
 ## SlottedObject.slots.delete
 ```
-# I feel like I need to change this syntax to conform with the dict model.
 delete(self, slots)
 ```
 > Delete the named category or slots.
@@ -60,7 +59,6 @@ delete(self, slots)
 
 ## SlottedObject.slots.attach
 ```
-# I feel like I need to change this syntax to conform with the dict model.
 attach(self, target, slots=None)
 ```
 > Attempt to attach the target in all slots it consumes. Optionally, the target's slots may be overridden.
@@ -70,14 +68,26 @@ attach(self, target, slots=None)
 
 ## SlottedObject.slots.drop
 ```
-# I feel like I need to change this syntax to conform with the dict model.
-attach(self, target=None, slots=None)
+drop(self, target=None, slots=None)
 ```
 > Attempt to drop the target from all slots it occupies. Optionally, you may choose to drop only specific slots. This function is messy in that it doesn't care if the slots exist or not, it just tries to drop everything it is given. This function will return a dict of any emptied slots, so it can act as a pop(), but if you don't catch that data, it WILL be lost.
 **Args:**
 * **target (object):** The object being dropped.
 * **slots (list or dict, optional):** Slot categories or individual slots to drop from.
 
+## SlottedObject.slots.replace
+```
+replace(self, target, slots=None)
+```
+> Works exactly like `.slots.attach`, but first invokes `.slots.drop` on all requested slots. The results of both commands are returned as a tuple in the form `(drop, attach)`.
+**Args:**
+* **target (object):** The object being attached.
+* **slots (list or dict, optional):** Slot categories or individual slots to drop from.
+
+## SlottedObject.slots.where
+```
+where(self, target=None)
+```
 > Return a dict of slots representing where target is attached.
 
 **Args:**
