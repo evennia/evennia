@@ -7,6 +7,7 @@ from evennia.utils.idmapper.models import flush_cache
 from evennia.utils.utils import lazy_property
 from sr5.utils import *
 
+
 class SlottedObject(DefaultObject):
     """
     This is a test object for SlotsHandler tests. All typeclassed objects
@@ -17,6 +18,7 @@ class SlottedObject(DefaultObject):
     def slots(self):
         return SlotsHandler(self)
 
+
 class SlottableObjectOne(DefaultObject):
     """
     This is a test object for SlotsHandler tests. All typeclassed objects
@@ -25,6 +27,7 @@ class SlottableObjectOne(DefaultObject):
 
     def at_object_creation(self):
         self.slots = {"addons": ["left"]}
+
 
 class SlottableObjectTwo(DefaultObject):
     """
@@ -35,6 +38,7 @@ class SlottableObjectTwo(DefaultObject):
     def at_object_creation(self):
         self.slots = {"addons": [1, "right"]}
 
+
 class SlottableObjectThree(DefaultObject):
     """
     This is a test object for SlotsHandler tests. All typeclassed objects
@@ -43,6 +47,7 @@ class SlottableObjectThree(DefaultObject):
 
     def at_object_creation(self):
         self.slots = {"addons": ["left"]}
+
 
 class TestSlotsHandler(EvenniaTest):
     "Test the class SlotsHandler."
@@ -59,23 +64,24 @@ class TestSlotsHandler(EvenniaTest):
                                          location=self.obj, home=self.obj)
 
     def test_add(self):
-        add = self.obj.slots.add("addons", 0, ["left", "right"])
+        add = self.obj.slots.add({"addons": ["left", "right"]})
         self.assertTrue(add)
 
         with self.assertRaises(ValueError):
-            add = self.obj.slots.add("add-ons", 0, ["left", "right"])
+            add = self.obj.slots.add({"add-ons": ["left", "right"]})
 
-        self.obj.slots.add("addons", 2)
+        self.obj.slots.add({"addons": [3, "y"]})
         self.assertEqual(self.obj.attributes.get("addons", category="slots"),
-                         {1: "", 2: "", "left": "", "right": ""})
+                         {1: "", 2: "", 3: "",
+                         "left": "", "right": "", "y": ""})
 
     def test_delete(self):
-        add = self.obj.slots.add("addons", 2, ["left", "right"])
+        self.test_add()
 
-        delete = self.obj.slots.delete("addons", 1, ["right"])
+        delete = self.obj.slots.delete({"addons": [1, "right"]})
         self.assertIsInstance(delete, dict)
         self.assertEqual(self.obj.attributes.get("addons", category="slots"),
-                         {1: "", "left": ""})
+                         {1: "", 2: "", "left": "", "y": ""})
 
     def test_attach(self):
         # When no slots have been added first.
@@ -83,12 +89,17 @@ class TestSlotsHandler(EvenniaTest):
         self.assertIsInstance(attach, StatMsg)
 
         # Add the slots.
-        add = self.obj.slots.add("addons", 2, ["left", "right"])
+        self.test_add()
 
         # Successful attachment.
         attach = self.obj.slots.attach(self.slo1)
-        expected = {"addons": {"left": self.slo1}}
-        self.assertEqual(attach, expected)
+        self.assertEqual(attach, {"addons": {"left": self.slo1}})
+
+        # What does the attribute look like?
+        real = self.obj.attributes.get("addons", category="slots")
+        expected = {1: "", 2: "", 3: "",
+                    "left": self.slo1, "right": "", "y": ""}
+        self.assertEqual(expected, real)
 
         # Successful attachment in multiple slots.
         attach = self.obj.slots.attach(self.slo2)
@@ -100,25 +111,72 @@ class TestSlotsHandler(EvenniaTest):
         self.assertIsInstance(attach, StatMsg)
 
         # Successful attachment while overriding slots.
-        attach = self.obj.slots.attach(self.slo3, {"addons": [1]})
-        expected = {"addons": {2: self.slo3}}
+        attach = self.obj.slots.attach(self.slo3, {"addons": [2, "y"]})
+        expected = {"addons": {2: self.slo3, 3: self.slo3, "y": self.slo3}}
         self.assertEqual(attach, expected)
+
+    def test_attach_extended(self):
+        self.test_attach()
+
+        # Attach to all open slots in category
+        drop = self.obj.slots.drop(self.slo2, {"addons": ["right"]})
+        attach = self.obj.slots.attach(self.slo1, ["addons"])
+        self.assertEqual(attach, {"addons": {"right": self.slo1}})
+
+        # Check the end result.
+        real = self.obj.attributes.get("addons", category="slots")
+        expected = {1: self.slo2, 2: self.slo3, 3: self.slo3,
+                    "left": self.slo1, "right": self.slo1, "y": self.slo3}
+        self.assertEqual(real, expected)
 
     def test_drop(self):
         self.test_attach()
 
+        # Drop a specific object from all slots.
         drop = self.obj.slots.drop(self.slo3)
-        expected = {"addons": [2]}
+        expected = {"addons": {2: self.slo3, 3: self.slo3,
+                    "y": self.slo3}}
         self.assertEqual(drop, expected)
 
+        # Drop a specific object from specific slots.
         drop = self.obj.slots.drop(self.slo2, {"addons": ["right"]})
-        expected = {"addons": ["right"]}
-        self.assertEqual(drop, expected)
+        self.assertEqual(drop, {"addons": {"right": self.slo2}})
         self.assertEqual(self.obj.slots.where(self.slo2),
                          {"addons": [1]})
 
+        # Try to drop an object with improper input.
         drop = self.obj.slots.drop(self.slo3, "not here")
         self.assertIsInstance(drop, StatMsg)
+
+        # Drop any objects from specific slots.
+        drop = self.obj.slots.drop(None, {"addons": ["left"]})
+        self.assertEqual(drop, {"addons": {"left": self.slo1}})
+
+    def test_replace(self):
+        self.test_attach()
+
+        # Try to replace the contents of a specific slot.
+        drop, attach = self.obj.slots.replace(self.slo1, {"addons": ["y"]})
+        self.assertEqual(drop, {"addons": {"y": self.slo3}})
+        self.assertEqual(attach, {"addons": {"y": self.slo1}})
+
+        # Try to replace the contents of all slots.
+        self.obj.slots.replace(self.slo2, ["addons"])
+        where = self.obj.slots.where(self.slo2)
+        where = {"addons": {n: self.slo2 for n in where['addons']}}
+        self.assertEqual(where, self.obj.slots.all())
+
+    def test_defrag(self):
+        self.test_add()
+
+        # Set up a situation where there are non-contiguous numbered slots.
+        attach_1 = self.obj.slots.attach(self.slo1, {"addons": [1]})
+        attach_2 = self.obj.slots.attach(self.slo2, {"addons": [1]})
+        drop = self.obj.slots.drop(self.slo1)
+
+        self.obj.slots.defrag_nums("addons")
+        self.assertEqual(self.obj.slots.where(self.slo2),
+                         {"addons": [1]})
 
     def test_where(self):
         self.test_attach()
