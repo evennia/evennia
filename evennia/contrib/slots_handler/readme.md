@@ -46,6 +46,7 @@ This format is used to target specific slots. If numerical values are included, 
 add(self, slots)
 ```
 > Create an array of slots, or add additional slots to an existing array.
+
 **Args:**
 * **slots (dict):** A dict of slots to add. Since you can't add empty categories, it would be pointless to pass a list to this function, and so it doesn't accept lists for input.
 
@@ -54,6 +55,8 @@ add(self, slots)
 delete(self, slots)
 ```
 > Delete the named category or slots.
+> WARNING: If you have anything attached in slots when they are removed, the slots' contents will also be removed. This function will return a dict of any removed slots and their contents, so it can act as a pop(), but if you don't catch that data, it WILL be lost.
+
 **Args:**
 * **slots (list or dict):** Slot categories or individual slots to delete.
 
@@ -62,6 +65,7 @@ delete(self, slots)
 attach(self, target, slots=None)
 ```
 > Attempt to attach the target in all slots it consumes. Optionally, the target's slots may be overridden.
+
 **Args:**
 * **target (object):** The object being attached.
 * **slots (list or dict, optional):** Slot categories or individual slots to drop from.
@@ -71,6 +75,7 @@ attach(self, target, slots=None)
 drop(self, target=None, slots=None)
 ```
 > Attempt to drop the target from all slots it occupies. Optionally, you may choose to drop only specific slots. This function is messy in that it doesn't care if the slots exist or not, it just tries to drop everything it is given. This function will return a dict of any emptied slots, so it can act as a pop(), but if you don't catch that data, it WILL be lost.
+
 **Args:**
 * **target (object):** The object being dropped.
 * **slots (list or dict, optional):** Slot categories or individual slots to drop from.
@@ -80,6 +85,7 @@ drop(self, target=None, slots=None)
 replace(self, target, slots=None)
 ```
 > Works exactly like `.slots.attach`, but first invokes `.slots.drop` on all requested slots. The results of both commands are returned as a tuple in the form `(drop, attach)`.
+
 **Args:**
 * **target (object):** The object being attached.
 * **slots (list or dict, optional):** Slot categories or individual slots to drop from.
