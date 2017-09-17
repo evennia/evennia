@@ -90,7 +90,7 @@ def _case_sensitive_replace(string, old, new):
             result = []
             all_upper = True
             for ind, chr in enumerate(old_word):
-                if ind >= len(new):
+                if ind >= len(new_word):
                     break
                 if chr.isupper():
                     result.append(new_word[ind].upper())
