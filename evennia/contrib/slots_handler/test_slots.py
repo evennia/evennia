@@ -26,7 +26,7 @@ class SlottableObjectOne(DefaultObject):
     """
 
     def at_object_creation(self):
-        self.slots = {"addons": ["left"]}
+        self.db.slots = {"addons": ["left"]}
 
 
 class SlottableObjectTwo(DefaultObject):
@@ -36,7 +36,7 @@ class SlottableObjectTwo(DefaultObject):
     """
 
     def at_object_creation(self):
-        self.slots = {"addons": [1, "right"]}
+        self.db.slots = {"addons": [1, "right"]}
 
 
 class SlottableObjectThree(DefaultObject):
@@ -46,7 +46,7 @@ class SlottableObjectThree(DefaultObject):
     """
 
     def at_object_creation(self):
-        self.slots = {"addons": ["left"]}
+        self.db.slots = {"addons": ["left"]}
 
 
 class TestSlotsHandler(EvenniaTest):

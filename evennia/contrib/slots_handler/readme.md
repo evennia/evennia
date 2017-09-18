@@ -1,7 +1,19 @@
 # Slots Handler
+DamnedScholar 2017
+
 It's pretty common for RPG systems to have mechanics where a character is limited to, or must choose, a specific number of items. This contrib is designed to be adaptable to handle as many permutations of this style of mechanic as possible.
 
 ## How to use
+### Simple walkthrough
+This walkthrough will help you get started with `SlotsHandler` right away. First, create an object. For the sake of simplicity, we're using a newly created object, but the slots can exist on anything as long as it has a typeclass.
+```
+@py from evennia.utils import create;self.ndb.spells = create.create_object(typeclass="evennia.contrib.slots_handler.slots.SlottedObject", location=self, key="spellbook")
+```
+This gives you an object in your inventory, and a temporary shortcut to it: `self.ndb.spells` (which will disappear when the server restarts). You now need to configure the kinds and number of slots:
+```python
+@py self.ndb.spells.slots.add({"ready": [2, "bonus"], "known": [4, "fire", "air"]})
+```
+
 ### Slotted object example
 The `@lazy_property` declaration below can be put on any typeclass parent. The functionality of `SlotsHandler` relies on the `AttributesHandler`, so any deviations from the standard typeclass system have to at least include that. This document will assume that you're using the name `slots` for the property.
 ```python
@@ -22,7 +34,7 @@ class SlottableObject(DefaultObject):
     "This is a test object for SlotsHandler."
 
     def at_object_creation(self):
-        self.slots = {"addons": ["left"]}
+        self.db.slots = {"addons": ["left"]}
 ```
 ### Concepts
 **Slots format:** In this contrib, all arguments and attributes labeled slots are intended to come in one of two formats:
