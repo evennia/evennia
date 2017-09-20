@@ -866,7 +866,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
     create new rooms in cardinal directions only
 
     Usage:
-      @tunnel[/switch] <direction> [= <roomname>[;alias;alias;...][:typeclass]]
+      @tunnel[/switch] <direction>[:typeclass] [= <roomname>[;alias;alias;...][:typeclass]]
 
     Switches:
       oneway - do not create an exit back to the current location
@@ -911,20 +911,33 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
         """Implements the tunnel command"""
 
         if not self.args or not self.lhs:
-            string = "Usage: @tunnel[/switch] <direction> [= <roomname>" \
+            string = "Usage: @tunnel[/switch] <direction>[:typeclass] [= <roomname>" \
                      "[;alias;alias;...][:typeclass]]"
             self.caller.msg(string)
             return
-        if self.lhs not in self.directions:
+
+        # If we get a typeclass, we need to get just the exitname
+        exitshort = self.lhs.split(":")[0]
+
+        if exitshort not in self.directions:
             string = "@tunnel can only understand the following directions: %s." % ",".join(
                     sorted(self.directions.keys()))
             string += "\n(use @dig for more freedom)"
             self.caller.msg(string)
             return
+
         # retrieve all input and parse it
-        exitshort = self.lhs
         exitname, backshort = self.directions[exitshort]
         backname = self.directions[backshort][0]
+
+        # if we recieved a typeclass for the exit, add it to the alias(short name)
+        if ":" in self.lhs:
+            # limit to only the first : character
+            exit_typeclass = ":" + self.lhs.split(":", 1)[-1]
+            # exitshort and backshort are the last part of the exit strings,
+            # so we add our typeclass argument after
+            exitshort += exit_typeclass
+            backshort += exit_typeclass
 
         roomname = "Some place"
         if self.rhs:
