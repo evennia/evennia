@@ -14,7 +14,7 @@ from evennia.objects.objects import DefaultObject
 from evennia.utils.dbserialize import _SaverDict, _SaverList, _SaverSet
 
 
-class SlotsHandler:
+class SlotsHandler(object):
     """
     Handler for the slots system. This handler is designed to be attached to
     objects with a particular @lazy-property name, so it will be referred to as
@@ -72,6 +72,8 @@ class SlotsHandler:
     # Public methods
     def all(self, obj=False):
         """
+        Return all slots.
+
         Args:
             obj (bool): Whether or not to return the attribute objects.
                 (Default: False)
@@ -111,10 +113,13 @@ class SlotsHandler:
             raise Exception("You have to declare slots in the form "
                             "`{key: [values]}`.")
 
+        wiz.msg("Gonna add some slots! Yeah!")
+
         arrays = {a.key: a for a in self.obj.slots.all(obj=True)}
         modified = {}
         for name in slots:
             existing = arrays.get(name, False)
+            wiz.msg("-> Inspecting {}: {}".format(name, existing))
             # Add all string values to the slot list.
             to_add = [k for k in slots[name] if isinstance(k, str)]
             # Iterate through numerical values in the input and store the sum.
@@ -132,10 +137,10 @@ class SlotsHandler:
             if not existing:
                 self.obj.attributes.add(name, to_add, category="slots")
                 new = self.obj.attributes.get(name, category="slots")
-                modified.update(new)
+                modified.update({name: new})
             else:
                 array.update(to_add)
-                modified.update(array)
+                modified.update({name: array})
 
         return modified
 
@@ -175,7 +180,7 @@ class SlotsHandler:
                 # If the input is a list, it is interpreted as a list of
                 # category names and all slots are deleted.
                 deleted.update({name: array})
-                self.obj.attributes.delete(name, category="slots")
+                self.obj.attributes.remove(name, category="slots")
             elif isinstance(slots, (dict, _SaverDict)):
                 # If the input is a dict, only the specific slots indicated
                 # will be deleted.
@@ -221,6 +226,15 @@ class SlotsHandler:
 
         modified = {}
 
+        # If this is an object attached to the database, store a reference to
+        # the slotted object.
+        if target.dbid:
+            holders = target.attributes.get("slots_holders")
+            if not holders:
+                holders = target.attributes.add("slots_holders", [self.obj])
+            else:
+                holders.append([self.obj])
+
         if not isinstance(slots, (dict, _SaverDict, list, _SaverList)):
             raise Exception("You have to declare slots in the form "
                             "`{key: [values]}`, or categories in the form "
@@ -230,7 +244,7 @@ class SlotsHandler:
         for name in slots:
             array = arrays.get(name, False)
             if not array:
-                raise Exception("You need to add slots before you can "
+                raise Exception("You need to add slot arrays before you can "
                                 "attach things to them.")
             else:
                 array = array.value
@@ -322,7 +336,7 @@ class SlotsHandler:
                 # If the input is a list, it is interpreted as a list of
                 # category names and all slots are emptied of the target.
                 for slot, contents in array.items():
-                    if (target and contents is target) or not target:
+                    if (target and contents == target) or not target:
                         new.update({slot: ''})
                         mod.update({slot: contents})
             elif isinstance(slots, (dict, _SaverDict)):
@@ -331,16 +345,18 @@ class SlotsHandler:
                 i = 0
                 numbered = [k for k in slots[name] if isinstance(k, int)]
                 numbered = [i + 1 for k in numbered for i in range(i, k)]
+                wiz.msg("Numbered slots: {}".format(numbered))
                 named = [k for k in slots[name] if isinstance(k, str)]
                 for slot in named:
-                    if (target and array[slot] is target) or not target:
+                    if (target and array[slot] == target) or not target:
                         new.update({slot: ''})
                         mod.update({slot: array[slot]})
                 for i in range(0, len(numbered)):
                     for check in array:
-                        if isinstance(check, int) and array[check] is target:
+                        if isinstance(check, int) and array[check] == target:
                             new.update({check: ''})
                             mod.update({check: array[check]})
+                            break
 
             else:
                 raise Exception("The slots requested are not in an "
@@ -351,6 +367,10 @@ class SlotsHandler:
             modified.update({name: mod})
 
         self.__defrag_nums(modified.keys())
+        if not self.where(target):
+            holders = target.attributes.get("slots_holders")
+            if holders:
+                holders = [h for h in holders if h is not self.obj]
         return {k: v for k, v in modified.items() if v}
 
     def replace(self, target, slots=None):
@@ -419,3 +439,17 @@ class SlottableObject(DefaultObject):
     def at_object_creation(self):
         "Called at object creation."
         self.db.slots = {"addons": ["left"]}
+
+    def at_object_deletion(self):
+        "Called at object deletion."
+        # It's necessary to clean up typeclassed objects from slots they
+        # occupied, since they don't get completely deleted when `.delete()`
+        # is invoked.
+        if self.db.slots_holders:
+            for h in self.db.slots_holders:
+                try:
+                    h.slots.drop(self)
+                except Exception:
+                    raise Exception("This object can't be deleted because the "
+                                    "attempt to remove it from slots it was "
+                                    "attached to resulted in an error.")

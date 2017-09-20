@@ -8,7 +8,7 @@ from evennia.utils.utils import lazy_property
 from sr5.utils import *
 
 
-class SlottedObject(DefaultObject):
+class ContribSHSlottedObject(DefaultObject):
     """
     This is a test object for SlotsHandler tests. All typeclassed objects
     *should* play nicely with SlotsHandler.
@@ -19,7 +19,7 @@ class SlottedObject(DefaultObject):
         return SlotsHandler(self)
 
 
-class SlottableObjectOne(DefaultObject):
+class ContribSHSlottableObjectOne(DefaultObject):
     """
     This is a test object for SlotsHandler tests. All typeclassed objects
     *should* play nicely with SlotsHandler.
@@ -29,7 +29,7 @@ class SlottableObjectOne(DefaultObject):
         self.db.slots = {"addons": ["left"]}
 
 
-class SlottableObjectTwo(DefaultObject):
+class ContribSHSlottableObjectTwo(DefaultObject):
     """
     This is a test object for SlotsHandler tests. All typeclassed objects
     *should* play nicely with SlotsHandler.
@@ -39,7 +39,7 @@ class SlottableObjectTwo(DefaultObject):
         self.db.slots = {"addons": [1, "right"]}
 
 
-class SlottableObjectThree(DefaultObject):
+class ContribSHSlottableObjectThree(DefaultObject):
     """
     This is a test object for SlotsHandler tests. All typeclassed objects
     *should* play nicely with SlotsHandler.
@@ -54,13 +54,17 @@ class TestSlotsHandler(EvenniaTest):
 
     def setUp(self):
         super(TestSlotsHandler, self).setUp()
-        self.obj = create.create_object(SlottedObject, key="slotted",
+        self.obj = create.create_object(ContribSHSlottedObject,
+                                        key="slotted",
                                         location=self.room1, home=self.room1)
-        self.slo1 = create.create_object(SlottableObjectOne, key="item 1",
+        self.slo1 = create.create_object(ContribSHSlottableObjectOne,
+                                         key="item 1",
                                          location=self.obj, home=self.obj)
-        self.slo2 = create.create_object(SlottableObjectTwo, key="item 2",
+        self.slo2 = create.create_object(ContribSHSlottableObjectTwo,
+                                         key="item 2",
                                          location=self.obj, home=self.obj)
-        self.slo3 = create.create_object(SlottableObjectThree, key="item 3",
+        self.slo3 = create.create_object(ContribSHSlottableObjectThree,
+                                         key="item 3",
                                          location=self.obj, home=self.obj)
 
     def test_add(self):
@@ -139,10 +143,10 @@ class TestSlotsHandler(EvenniaTest):
         self.assertEqual(drop, expected)
 
         # Drop a specific object from specific slots.
-        drop = self.obj.slots.drop(self.slo2, {"addons": ["right"]})
-        self.assertEqual(drop, {"addons": {"right": self.slo2}})
+        attach = self.obj.slots.attach(self.slo2, {"addons": [2]})
+        drop = self.obj.slots.drop(self.slo2, {"addons": [1, "right"]})
         self.assertEqual(self.obj.slots.where(self.slo2),
-                         {"addons": [1]})
+                         {"addons": [1, 2]})
 
         # Try to drop an object with improper input.
         drop = self.obj.slots.drop(self.slo3, "not here")

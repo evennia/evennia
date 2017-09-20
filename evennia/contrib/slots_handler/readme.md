@@ -6,13 +6,69 @@ It's pretty common for RPG systems to have mechanics where a character is limite
 ## How to use
 ### Simple walkthrough
 This walkthrough will help you get started with `SlotsHandler` right away. First, create an object. For the sake of simplicity, we're using a newly created object, but the slots can exist on anything as long as it has a typeclass.
-```
-@py from evennia.utils import create;self.ndb.spells = create.create_object(typeclass="evennia.contrib.slots_handler.slots.SlottedObject", location=self, key="spellbook")
+```python
+> @py from evennia.utils import create;self.ndb.spells = create.create_object(typeclass="evennia.contrib.slots_handler.slots.SlottedObject", location=self, key="spellbook")
 ```
 This gives you an object in your inventory, and a temporary shortcut to it: `self.ndb.spells` (which will disappear when the server restarts). You now need to configure the kinds and number of slots:
 ```python
-@py self.ndb.spells.slots.add({"ready": [2, "bonus"], "known": [4, "fire", "air"]})
+> @py self.ndb.spells.slots.add({"ready": [2, "bonus"], "known": [4, "fire", "air"]})
 ```
+If the handler is behaving itself, you will see it return a dict of all current slots on the object. At this point, that should read as follows:
+```python
+{
+    'ready': {1: '', 2: '', 'bonus': ''},
+    'known': {1: '', 2: '', 3: '', 4: '', 'air': '', 'fire': ''}
+}
+```
+You can see that numbers and strings are handled a bit differently. Numerical arguments are summed and an equal number of numbered slots are added to the slot array. Let's try attaching an object.
+```python
+> @py self.ndb.spells.slots.attach("Fireball", {"ready": [2], "known": ["fire"]})
+```
+You can use `self.ndb.spells.slots.all()` at this point to see that the contents have changed.
+```python
+{
+    'ready': {1: 'Fireball', 2: 'Fireball', 'bonus': ''},
+    'known': {1: '', 2: '', 3: '', 4: '', 'air': '', 'fire': 'Fireball'}
+}
+```
+Our hypothetical probably mage (but definite pyromaniac) has the "fireball" spell as both of their ready slots and also the known spell they get because it has something to do with fire. As with attributes, you can store any kind of object in a slot. So if you want to store a complex dict of information about the item, go for it. The system was built with the intent of keeping track of external objects in the Evennia typeclass sense, but we'll get to more of that later.
+
+Now, let's say our mage casts one of fireball spells they had prepared. We can represent that with a simple drop command. We need to indicate the slot to make sure that the spell isn't removed from everywhere.
+```python
+> @py self.ndb.spells.slots.drop('Fireball', {'ready': [1]})
+```
+The results show that one of the instances of `"Fireball"` has been removed.
+```python
+{
+    'ready': {1: 'Fireball', 2: '', 'bonus': ''},
+    'known': {1: '', 2: '', 3: '', 4: '', 'air': '', 'fire': 'Fireball'}
+}
+```
+When attaching objects, `SlotsHandler` checks them for an attribute called `.db.slots`, `.ndb.slots`, or `.slots` (in that order of preference), which is expected to contain a slot dict in the same format that we've been using. You can also look at the second object example below.
+```python
+> @py from evennia.utils import create;self.ndb.summon_elemental = create.create_object(typeclass="evennia.contrib.slots_handler.slots.SlottableObject", location=self, key="Summon Elemental")
+> @py self.ndb.summon_elemental.db.slots={'known': ['air']}
+```
+Pretend that this object, `Summon Elemental`, represents a spell, but also contains the information for the elemental being conjured and so the developer has decided to use a database-connected object to store the summon stats. You can add the object like so:
+```python
+> @py self.ndb.spells.slots.attach(self.ndb.summon_elemental)
+```
+And our dict changes as we would expect:
+```python
+{
+    'ready': {1: 'Fireball', 2: '', 'bonus': ''},
+    'known': {1: '', 2: '', 3: '', 4: '', 'air': <SlottableObject: Summon Elemental>, 'fire': 'Fireball'}
+}
+```
+Note that the default (no slots specified) behaviors of `.attach()` and `.drop()` differ fundamentally in whether they care about the object being targeted. `.drop()` does not pay attention to the list of slots on the object. Instead, it tries to remove that object from *every* slot.
+
+Finally, if an object has a `dbid`, it will remember objects of slots it's attached to and will run a `.slots.drop(self)` command on each of them if you delete it. So for cleanup, this is all we have to do:
+```python
+> @py self.ndb.summon_elemental.delete()
+```
+
+#### A note on data safety
+All commands in this contrib return some form of useful information, either about all slots or just about the ones that have been modified, so the best way to guard against accidentally removing the wrong slot is to catch that information. The commands here are pretty straightforward, so there also aren't any safeguards against developers telling the handler something other than what they wanted to tell it.
 
 ### Slotted object example
 The `@lazy_property` declaration below can be put on any typeclass parent. The functionality of `SlotsHandler` relies on the `AttributesHandler`, so any deviations from the standard typeclass system have to at least include that. This document will assume that you're using the name `slots` for the property.
@@ -27,6 +83,7 @@ class SlottedObject(DefaultObject):
         return SlotsHandler(self)
 ```
 ### Slottable object example
+By giving a typeclass to slottable objects, the system has additional options. Objects can define their own slots, and typeclassed objects specifically are able to remember all of the objects to which they're attached, and then automate their own dropping when deleted.
 ```python
 from evennia.objects.objects import DefaultObject
 
@@ -35,6 +92,20 @@ class SlottableObject(DefaultObject):
 
     def at_object_creation(self):
         self.db.slots = {"addons": ["left"]}
+
+    def at_object_deletion(self):
+        "Called at object deletion."
+        # It's necessary to clean up typeclassed objects from slots they
+        # occupied, since they don't get completely deleted when `.delete()`
+        # is invoked.
+        if self.db.slots_holders:
+            for h in self.db.slots_holders:
+                try:
+                    h.slots.drop(self)
+                except Exception:
+                    raise Exception("This object can't be deleted because the "
+                                    "attempt to remove it from slots it was "
+                                    "attached to resulted in an error.")
 ```
 ### Concepts
 **Slots format:** In this contrib, all arguments and attributes labeled slots are intended to come in one of two formats:
