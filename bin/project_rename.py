@@ -305,7 +305,7 @@ if __name__ == "__main__":
     parser.add_argument('-r', '--recursive', action='store_true',
                         help="Recurse subdirs")
     parser.add_argument('-f', '--fileending', action='append',
-                        help="Change which file endings to allow (default .py)")
+                        help="Change which file endings to allow (default .py and .html)")
     parser.add_argument('--nocolor', action='store_true',
                         help="Turn off in-program color")
     parser.add_argument('--fake', action='store_true',
@@ -325,7 +325,7 @@ if __name__ == "__main__":
         sys.exit()
 
     exc_list = exc_list or []
-    fileend_list = fileend_list or [".py"]
+    fileend_list = fileend_list or [".py", ".html"]
     is_interactive = not args.auto
     is_recursive = args.recursive
 

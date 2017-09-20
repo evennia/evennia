@@ -1,4 +1,9 @@
 # Evennia Changelog
+
+# Sept 2017:
+Release of Evennia 0.7; upgrade to Django 1.11, change 'Player' to 
+'Account', rework the website template and a slew of other updates.
+
 ## Feb 2017:
 New devel branch created, to lead up to Evennia 0.7.
 
