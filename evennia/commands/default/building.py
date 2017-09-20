@@ -916,6 +916,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
             self.caller.msg(string)
             return
 
+        # If we get a typeclass, we need to get just the exitname
         exitshort = self.lhs.split(":")[0]
 
         if exitshort not in self.directions:
@@ -929,8 +930,12 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
         exitname, backshort = self.directions[exitshort]
         backname = self.directions[backshort][0]
 
+        # if we recieved a typeclass for the exit, add it to the alias(short name)
         if ":" in self.lhs:
-            exit_typeclass = ":" + self.lhs.split(":")[-1]
+            # limit to only the first : character
+            exit_typeclass = ":" + self.lhs.split(":", 1)[-1]
+            # exitshort and backshort are the last part of the exit strings,
+            # so we add our typeclass argument after
             exitshort += exit_typeclass
             backshort += exit_typeclass
 
