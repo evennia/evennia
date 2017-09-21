@@ -810,7 +810,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         """
         pass
 
-    def at_message_receive(self, message, from_obj=None, **kwargs):
+    def at_msg_receive(self, message, from_obj=None, **kwargs):
         """
         This is currently unused.
 
@@ -821,7 +821,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         """
         return True
 
-    def at_message_send(self, message, to_object, **kwargs):
+    def at_msg_send(self, message, to_object, **kwargs):
         """
         This is currently unused.
 
