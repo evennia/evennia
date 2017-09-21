@@ -716,6 +716,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
+    'sekizai',
     'evennia.utils.idmapper',
     'evennia.server',
     'evennia.typeclasses',
