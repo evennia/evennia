@@ -546,7 +546,7 @@ if AMP_ENABLED:
     ifacestr = ""
     if AMP_INTERFACE != '127.0.0.1':
         ifacestr = "-%s" % AMP_INTERFACE
-    print('  amp (to Portal)%s: %s' % (ifacestr, AMP_PORT))
+    print('  amp (to Portal)%s: %s (internal)' % (ifacestr, AMP_PORT))
 
     from evennia.server import amp
 
@@ -586,7 +586,7 @@ if WEBSERVER_ENABLED:
         webserver.setName('EvenniaWebServer%s' % serverport)
         EVENNIA.services.addService(webserver)
 
-        print("  webserver: %s" % serverport)
+        print("  webserver: %s (internal)" % serverport)
 
 ENABLED = []
 if IRC_ENABLED:
