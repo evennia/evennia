@@ -215,6 +215,9 @@ class _SaverMutable(object):
     def __eq__(self, other):
         return self._data == other
 
+    def __ne__(self, other):
+        return self._data != other
+
     @_save
     def __setitem__(self, key, value):
         self._data.__setitem__(key, self._convert_mutables(value))
@@ -247,6 +250,13 @@ class _SaverList(_SaverMutable, MutableSequence):
             return list(self._data) == list(other)
         except TypeError:
             return False
+
+    def __ne__(self, other):
+        try:
+            return list(self._data) != list(other)
+        except TypeError:
+            return True
+
 
     def index(self, value, *args):
         return self._data.index(value, *args)

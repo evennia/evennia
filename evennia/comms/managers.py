@@ -108,7 +108,7 @@ def to_object(inp, objtype='account'):
             return _AccountDB.objects.get(user_username__iexact=obj)
         if typ == 'dbref':
             return _AccountDB.objects.get(id=obj)
-        logger.log_err("%s %s %s %s %s", objtype, inp, obj, typ, type(inp))
+        logger.log_err("%s %s %s %s %s" % (objtype, inp, obj, typ, type(inp)))
         raise CommError()
     elif objtype == 'object':
         if typ == 'account':
@@ -117,14 +117,14 @@ def to_object(inp, objtype='account'):
             return _ObjectDB.objects.get(db_key__iexact=obj)
         if typ == 'dbref':
             return _ObjectDB.objects.get(id=obj)
-        logger.log_err("%s %s %s %s %s", objtype, inp, obj, typ, type(inp))
+        logger.log_err("%s %s %s %s %s" % (objtype, inp, obj, typ, type(inp)))
         raise CommError()
     elif objtype == 'channel':
         if typ == 'string':
             return _ChannelDB.objects.get(db_key__iexact=obj)
         if typ == 'dbref':
             return _ChannelDB.objects.get(id=obj)
-        logger.log_err("%s %s %s %s %s", objtype, inp, obj, typ, type(inp))
+        logger.log_err("%s %s %s %s %s" % (objtype, inp, obj, typ, type(inp)))
         raise CommError()
     # an unknown
     return None

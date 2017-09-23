@@ -494,7 +494,7 @@ class TypeclassManager(TypedObjectManager):
 
         """
         # shlex splits by spaces unless escaped by quotes
-        querysplit = shlex.split(to_unicode(query, force=True))
+        querysplit = shlex.split(to_unicode(query, force_string=True))
         queries, plustags, plusattrs, negtags, negattrs = [], [], [], [], []
         for ipart, part in enumerate(querysplit):
             key, rest = part, ""

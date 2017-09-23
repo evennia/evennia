@@ -246,7 +246,7 @@ class EvMore(object):
         else:
             self._pos += 1
             self.display()
-            if self.exit_on_lastpage and self._pos == self._pos >= self._npages - 1:
+            if self.exit_on_lastpage and self._pos >= self._npages - 1:
                 self.page_quit()
 
     def page_back(self):
