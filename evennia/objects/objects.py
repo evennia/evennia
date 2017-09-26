@@ -1374,7 +1374,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
-    def at_msg_receive(self, text=None, from_obj=None, **kwargs):
+    def at_msg_receive(self, text=None, **kwargs):
         """
         This hook is called whenever someone sends a message to this
         object using the `msg` method.
@@ -1389,7 +1389,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         Args:
             text (str, optional): The message received.
-            from_obj (any, optional): The object sending the message.
 
         Kwargs:
             This includes any keywords sent to the `msg` method.
@@ -1410,14 +1409,14 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         message to another object with `obj.msg(text, to_obj=obj)`.
 
         Args:
-            text (str, optional): Text to send.
-            to_obj (any, optional): The object to send to.
+            text (str): Text to send.
+            to_obj (Object): The object to send to.
 
         Kwargs:
             Keywords passed from msg()
 
         Notes:
-            Since this method is executed by `from_obj`, if no `from_obj`
+            Since this method is executed `from_obj`, if no `from_obj`
             was passed to `DefaultCharacter.msg` this hook will never
             get called.
 
