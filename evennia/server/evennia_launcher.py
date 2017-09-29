@@ -95,7 +95,7 @@ CREATED_NEW_GAMEDIR = \
     Make sure to create a superuser when asked for it (the email can
     be blank if you want). You should now be able to (by default)
     connect to your server on 'localhost', port 4000 using a
-    telnet/mud client or http://localhost:8000 using your web browser.
+    telnet/mud client or http://localhost:4001 using your web browser.
     If things don't work, check so those ports are open.
 
     """
@@ -1310,9 +1310,9 @@ def main():
         check_db = False
         if option in ('runserver', 'testserver'):
             print(WARNING_RUNSERVER)
-        if option == "shell":
-            # to use the shell we need to initialize it first,
-            # and this only works if the database is set up
+        if option in ("shell", "check"):
+            # some django commands requires the database to exist,
+            # or evennia._init to have run before they work right.
             check_db = True
         if option == "test":
             global TEST_MODE

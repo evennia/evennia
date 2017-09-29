@@ -433,6 +433,12 @@ class ServerSession(Session):
         except AttributeError:
             return False
 
+    def __ne__(self, other):
+        try:
+            return self.address != other.address
+        except AttributeError:
+            return True
+
     def __str__(self):
         """
         String representation of the user session class. We use

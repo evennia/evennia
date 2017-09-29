@@ -13,6 +13,7 @@ main test suite started with
 """
 
 import re
+import types
 
 from django.conf import settings
 from mock import Mock
@@ -73,8 +74,12 @@ class CommandTest(EvenniaTest):
             receiver.msg = Mock()
             cmdobj.at_pre_cmd()
             cmdobj.parse()
-            cmdobj.func()
+            ret = cmdobj.func()
+            if isinstance(ret, types.GeneratorType):
+                ret.next()
             cmdobj.at_post_cmd()
+        except StopIteration:
+            pass
         except InterruptCommand:
             pass
         finally:
@@ -250,13 +255,19 @@ class TestBuilding(CommandTest):
         self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#5).")
 
     def test_wipe(self):
+        confirm = building.CmdDestroy.confirm
+        building.CmdDestroy.confirm = False
         self.call(building.CmdDestroy(), "Obj", "Obj was destroyed.")
+        building.CmdDestroy.confirm = confirm
 
     def test_dig(self):
         self.call(building.CmdDig(), "TestRoom1=testroom;tr,back;b", "Created room TestRoom1")
 
     def test_tunnel(self):
         self.call(building.CmdTunnel(), "n = TestRoom2;test2", "Created room TestRoom2")
+
+    def test_tunnel_exit_typeclass(self):
+        self.call(building.CmdTunnel(), "n:evennia.objects.objects.DefaultExit = TestRoom3", "Created room TestRoom3")
 
     def test_exit_commands(self):
         self.call(building.CmdOpen(), "TestExit1=Room2", "Created new Exit 'TestExit1' from Room to Room2")
@@ -330,7 +341,10 @@ class TestBatchProcess(CommandTest):
         # cannot test batchcode here, it must run inside the server process
         self.call(batchprocess.CmdBatchCommands(), "example_batch_cmds", "Running Batchcommand processor  Automatic mode for example_batch_cmds")
         # we make sure to delete the button again here to stop the running reactor
+        confirm = building.CmdDestroy.confirm
+        building.CmdDestroy.confirm = False
         self.call(building.CmdDestroy(), "button", "button was destroyed.")
+        building.CmdDestroy.confirm = confirm
 
 
 class CmdInterrupt(Command):

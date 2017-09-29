@@ -292,18 +292,25 @@ class LockHandler(object):
         Add a new lockstring to handler.
 
         Args:
-            lockstring (str): A string on the form
+            lockstring (str or list): A string on the form
                 `"<access_type>:<functions>"`.  Multiple access types
-                should be separated by semicolon (`;`).
+                should be separated by semicolon (`;`). Alternatively,
+                a list with lockstrings.
 
         Returns:
             success (bool): The outcome of the addition, `False` on
                 error.
 
         """
+        if isinstance(lockstring, basestring):
+            lockdefs = lockstring.split(";")
+        else:
+            lockdefs = [lockdef for locks in lockstring for lockdef in locks.split(";")]
+            lockstring = ";".join(lockdefs)
+
         # sanity checks
-        for lockdef in lockstring.split(';'):
-            if ':' not in lockstring:
+        for lockdef in lockdefs:
+            if ':' not in lockdef:
                 self._log_error(_("Lock: '%s' contains no colon (:).") % lockdef)
                 return False
             access_type, rhs = [part.strip() for part in lockdef.split(':', 1)]

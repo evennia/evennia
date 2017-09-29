@@ -205,6 +205,10 @@ class IRCBot(Bot):
                       "ssl": self.db.irc_ssl}
         _SESSIONS.start_bot_session("evennia.server.portal.irc.IRCBotFactory", configdict)
 
+    def at_msg_send(self, **kwargs):
+        "Shortcut here or we can end up in infinite loop"
+        pass
+
     def get_nicklist(self, caller):
         """
         Retrive the nick list from the connected channel.
@@ -256,7 +260,7 @@ class IRCBot(Bot):
         Kwargs:
             options (dict): Options dict with the following allowed keys:
                 - from_channel (str): dbid of a channel this text originated from.
-                - from_obj (list): list of objects this text.
+                - from_obj (list): list of objects sending this text.
 
         """
         from_obj = kwargs.get("from_obj", None)
@@ -265,7 +269,7 @@ class IRCBot(Bot):
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
         if "from_channel" in options and text and self.ndb.ev_channel.dbid == options["from_channel"]:
-            if not from_obj or from_obj != [self.id]:
+            if not from_obj or from_obj != [self]:
                 super(IRCBot, self).msg(channel=text)
 
     def execute_cmd(self, session=None, txt=None, **kwargs):
@@ -346,7 +350,7 @@ class IRCBot(Bot):
                 # cache channel lookup
                 self.ndb.ev_channel = self.db.ev_channel
             if self.ndb.ev_channel:
-                self.ndb.ev_channel.msg(text, senders=self.id)
+                self.ndb.ev_channel.msg(text, senders=self)
 
 #
 # RSS

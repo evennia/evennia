@@ -90,7 +90,7 @@ def _case_sensitive_replace(string, old, new):
             result = []
             all_upper = True
             for ind, chr in enumerate(old_word):
-                if ind >= len(new):
+                if ind >= len(new_word):
                     break
                 if chr.isupper():
                     result.append(new_word[ind].upper())
@@ -173,7 +173,6 @@ def rename_in_tree(path, in_list, out_list, excl_list, fileend_list, is_interact
         if new_root != root:
             inp = raw_input(_green("Dir Rename %s\n       ->  %s\n Y/[N]? > " % (root, new_root)))
             if inp.upper() == 'Y':
-                new_full_path = os.path.join(root, new_file)
                 try:
                     os.rename(root, new_root)
                 except OSError as err:
@@ -305,7 +304,7 @@ if __name__ == "__main__":
     parser.add_argument('-r', '--recursive', action='store_true',
                         help="Recurse subdirs")
     parser.add_argument('-f', '--fileending', action='append',
-                        help="Change which file endings to allow (default .py)")
+                        help="Change which file endings to allow (default .py and .html)")
     parser.add_argument('--nocolor', action='store_true',
                         help="Turn off in-program color")
     parser.add_argument('--fake', action='store_true',
@@ -325,7 +324,7 @@ if __name__ == "__main__":
         sys.exit()
 
     exc_list = exc_list or []
-    fileend_list = fileend_list or [".py"]
+    fileend_list = fileend_list or [".py", ".html"]
     is_interactive = not args.auto
     is_recursive = args.recursive
 

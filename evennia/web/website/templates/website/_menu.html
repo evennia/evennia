@@ -1,0 +1,60 @@
+{% comment %}
+Allow to customize the menu that appears at the top of every Evennia
+webpage. Copy this file to your game dir's web/template_overrides/website
+folder and edit it to add/remove links to the menu.
+{% endcomment %}
+{% load staticfiles %}
+<nav class="navbar navbar-dark font-weight-bold navbar-expand-md">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#menu-content" aria-controls="menu-content" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <a class="navbar-brand" href="/">
+      <div class="media">
+        <img class="d-flex navbar-brand-logo mx-3" src="{% static "website/images/evennia_logo.png" %}" alt="{{game_name}} logo" />
+        <div class="media-body">
+          {{ game_name }}<br />
+          <small>{{game_slogan}}</small>
+        </div>
+      </div>
+    </a>
+
+    <div class="collapse navbar-collapse" id="menu-content">
+        <ul class="navbar-nav">
+            {% block nabvar_left %}
+            <li>
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            <li>
+              <a class="nav-link" href="https://github.com/evennia/evennia/wiki/Evennia-Introduction/">About</a>
+            </li>
+            <li><a class="nav-link" href="https://github.com/evennia/evennia/wiki">Documentation</a></li>
+            <li><a class="nav-link" href="{% url 'admin:index' %}">Admin Interface</a></li>
+            {% if webclient_enabled %}
+            <li><a class="nav-link" href="{% url 'webclient:index' %}">Play Online</a></li>
+            {% endif %}
+            {% endblock %}
+        </ul>
+        <ul class="nav navbar-nav ml-auto w-120 justify-content-end">
+            {% block navbar_right %}
+            {% endblock %}
+            {% block navbar_user %}
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link">Logged in as {{user.username}}</a>
+            </li>
+            <li>
+                <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+            </li>
+            {% else %}
+            <li>
+                <a class="nav-link" href="{% url 'login' %}">Log In</a>
+            </li>
+            <li>
+                <a class="nav-link" href="{% url 'to_be_implemented' %}">Register</a>
+            </li>
+            {% endif %}
+            {% endblock %}
+        </ul>
+    </div>
+</nav>

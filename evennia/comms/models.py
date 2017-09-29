@@ -116,7 +116,6 @@ class Msg(SharedMemoryModel):
 
     # these can be used to filter/hide a given message from supplied objects/accounts/channels
     db_hide_from_accounts = models.ManyToManyField("accounts.AccountDB", related_name='hide_from_accounts_set', blank=True)
-    db_hide_from_accounts = models.ManyToManyField("accounts.AccountDB", related_name='hide_from_accounts_set', blank=True)
 
     db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', blank=True)
     db_hide_from_channels = models.ManyToManyField("ChannelDB", related_name='hide_from_channels_set', blank=True)

@@ -19,6 +19,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands import cmdset, command
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
+from evennia.utils import search
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
                                  make_iter, to_unicode, is_iter)
@@ -435,7 +436,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             if searchdata.lower() in ("me", "self",):
                 return [self.account] if quiet else self.account
 
-        results = self.account.__class__.objects.account_search(searchdata)
+        results = search.search_account(searchdata)
 
         if quiet:
             return results
@@ -486,9 +487,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 is treated internally like any send-command, so its
                 value can be a tuple if sending multiple arguments to
                 the `text` oob command.
-            from_obj (obj, optional): object that is sending. If
+            from_obj (obj or list, optional): object that is sending. If
                 given, at_msg_send will be called. This value will be
-                passed on to the protocol.
+                passed on to the protocol. If iterable, will execute hook
+                on all entities in it.
             session (Session or list, optional): Session or list of
                 Sessions to relay data to, if any. If set, will force send
                 to these sessions. If unset, who receives the message
@@ -507,10 +509,11 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         # try send hooks
         if from_obj:
-            try:
-                from_obj.at_msg_send(text=text, to_obj=self, **kwargs)
-            except Exception:
-                logger.log_trace()
+            for obj in make_iter(from_obj):
+                try:
+                    obj.at_msg_send(text=text, to_obj=self, **kwargs)
+                except Exception:
+                    logger.log_trace()
         try:
             if not self.at_msg_receive(text=text, **kwargs):
                 # if at_msg_receive returns false, we abort message to this object
@@ -1371,7 +1374,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
-    def at_msg_receive(self, text=None, **kwargs):
+    def at_msg_receive(self, text=None, from_obj=None, **kwargs):
         """
         This hook is called whenever someone sends a message to this
         object using the `msg` method.
@@ -1386,6 +1389,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         Args:
             text (str, optional): The message received.
+            from_obj (any, optional): The object sending the message.
 
         Kwargs:
             This includes any keywords sent to the `msg` method.
@@ -1406,14 +1410,14 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         message to another object with `obj.msg(text, to_obj=obj)`.
 
         Args:
-            text (str): Text to send.
-            to_obj (Object): The object to send to.
+            text (str, optional): Text to send.
+            to_obj (any, optional): The object to send to.
 
         Kwargs:
             Keywords passed from msg()
 
         Notes:
-            Since this method is executed `from_obj`, if no `from_obj`
+            Since this method is executed by `from_obj`, if no `from_obj`
             was passed to `DefaultCharacter.msg` this hook will never
             get called.
 
@@ -1638,13 +1642,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         })
 
         if msg_self:
-            self_mapping = {k: v.get_display_name(self) if hasattr(
-                v, "get_display_name") else str(v) for k, v in mapping.items()}
+            self_mapping = {key: "yourself" if key == "receiver" and val is self
+                            else val.get_display_name(self) if hasattr(val, "get_display_name")
+                            else str(val) for key, val in mapping.items()}
             self.msg(msg_self.format(**self_mapping))
 
         if receiver and msg_receiver:
-            receiver_mapping = {k: v.get_display_name(receiver) if hasattr(
-                v, "get_display_name") else str(v) for k, v in mapping.items()}
+            receiver_mapping = {key: val.get_display_name(receiver)
+                                if hasattr(val, "get_display_name")
+                                else str(val) for key, val in mapping.items()}
             receiver.msg(msg_receiver.format(**receiver_mapping))
 
         if self.location and msg_location:

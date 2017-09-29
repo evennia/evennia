@@ -392,8 +392,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         Args:
             text (str, optional): text data to send
-            from_obj (Object or Account, optional): Object sending. If given,
-                its at_msg_send() hook will be called.
+            from_obj (Object or Account or list, optional): Object sending. If given, its
+                at_msg_send() hook will be called. If iterable, call on all entities.
             session (Session or list, optional): Session object or a list of
                 Sessions to receive this send. If given, overrules the
                 default send behavior for the current
@@ -405,11 +405,12 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         """
         if from_obj:
             # call hook
-            try:
-                from_obj.at_msg_send(text=text, to_obj=self, **kwargs)
-            except Exception:
-                # this may not be assigned.
-                pass
+            for obj in make_iter(from_obj):
+                try:
+                    obj.at_msg_send(text=text, to_obj=self, **kwargs)
+                except Exception:
+                    # this may not be assigned.
+                    logger.log_trace()
         try:
             if not self.at_msg_receive(text=text, **kwargs):
                 # abort message to this account
@@ -809,24 +810,52 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         """
         pass
 
-    def at_message_receive(self, message, from_obj=None, **kwargs):
+    def at_msg_receive(self, text=None, from_obj=None, **kwargs):
         """
-        This is currently unused.
+        This hook is called whenever someone sends a message to this
+        object using the `msg` method.
+
+        Note that from_obj may be None if the sender did not include
+        itself as an argument to the obj.msg() call - so you have to
+        check for this. .
+
+        Consider this a pre-processing method before msg is passed on
+        to the user session. If this method returns False, the msg
+        will not be passed on.
 
         Args:
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
+            text (str, optional): The message received.
+            from_obj (any, optional): The object sending the message.
+
+        Kwargs:
+            This includes any keywords sent to the `msg` method.
+
+        Returns:
+            receive (bool): If this message should be received.
+
+        Notes:
+            If this method returns False, the `msg` operation
+            will abort without sending the message.
 
         """
         return True
 
-    def at_message_send(self, message, to_object, **kwargs):
+    def at_msg_send(self, text=None, to_obj=None, **kwargs):
         """
-        This is currently unused.
+        This is a hook that is called when *this* object sends a
+        message to another object with `obj.msg(text, to_obj=obj)`.
 
         Args:
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
+            text (str, optional): Text to send.
+            to_obj (any, optional): The object to send to.
+
+        Kwargs:
+            Keywords passed from msg()
+
+        Notes:
+            Since this method is executed by `from_obj`, if no `from_obj`
+            was passed to `DefaultCharacter.msg` this hook will never
+            get called.
 
         """
         pass

@@ -3,17 +3,11 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, connection
-from django.db import OperationalError
 
 
 def _table_exists(db_cursor, tablename):
     "Returns bool if table exists or not"
-    sql_check_exists = "SELECT * from %s;" % tablename
-    try:
-        db_cursor.execute(sql_check_exists)
-        return True
-    except OperationalError:
-        return False
+    return tablename in connection.introspection.table_names()
 
 
 class Migration(migrations.Migration):

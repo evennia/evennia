@@ -265,12 +265,3 @@ class PickledObjectField(models.Field):
         # actual lookup, so all we need to do is limit the lookup types.
         return super(PickledObjectField, self).get_db_prep_lookup(
             lookup_type, value, connection=connection, prepared=prepared)
-
-
-# South support; see http://south.aeracode.org/docs/tutorial/part4.html#simple-inheritance
-try:
-    from south.modelsinspector import add_introspection_rules
-except ImportError:
-    pass
-else:
-    add_introspection_rules([], [r"^evennia\.utils\.picklefield\.PickledObjectField"])

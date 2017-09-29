@@ -67,6 +67,7 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _FROM_MODEL_MAP = None
 _TO_MODEL_MAP = None
+_IGNORE_DATETIME_MODELS = None
 _SESSION_HANDLER = None
 
 
@@ -110,15 +111,21 @@ def _TO_DATESTRING(obj):
 
 def _init_globals():
     """Lazy importing to avoid circular import issues"""
-    global _FROM_MODEL_MAP, _TO_MODEL_MAP, _SESSION_HANDLER
+    global _FROM_MODEL_MAP, _TO_MODEL_MAP, _SESSION_HANDLER, _IGNORE_DATETIME_MODELS
     if not _FROM_MODEL_MAP:
         _FROM_MODEL_MAP = defaultdict(str)
         _FROM_MODEL_MAP.update(dict((c.model, c.natural_key()) for c in ContentType.objects.all()))
     if not _TO_MODEL_MAP:
+        from django.conf import settings
         _TO_MODEL_MAP = defaultdict(str)
         _TO_MODEL_MAP.update(dict((c.natural_key(), c.model_class()) for c in ContentType.objects.all()))
+        _IGNORE_DATETIME_MODELS = []
+        for src_key, dst_key in settings.ATTRIBUTE_STORED_MODEL_RENAME:
+            _TO_MODEL_MAP[src_key] = _TO_MODEL_MAP.get(dst_key, None)
+            _IGNORE_DATETIME_MODELS.append(src_key)
     if not _SESSION_HANDLER:
         from evennia.server.sessionhandler import SESSION_HANDLER as _SESSION_HANDLER
+
 
 #
 # SaverList, SaverDict, SaverSet - Attribute-specific helper classes and functions
@@ -208,6 +215,9 @@ class _SaverMutable(object):
     def __eq__(self, other):
         return self._data == other
 
+    def __ne__(self, other):
+        return self._data != other
+
     @_save
     def __setitem__(self, key, value):
         self._data.__setitem__(key, self._convert_mutables(value))
@@ -240,6 +250,13 @@ class _SaverList(_SaverMutable, MutableSequence):
             return list(self._data) == list(other)
         except TypeError:
             return False
+
+    def __ne__(self, other):
+        try:
+            return list(self._data) != list(other)
+        except TypeError:
+            return True
+
 
     def index(self, value, *args):
         return self._data.index(value, *args)
@@ -395,9 +412,13 @@ def unpack_dbobj(item):
             # this happens if item is already an obj
             return item
         return None
-    # even if we got back a match, check the sanity of the date (some
-    # databases may 're-use' the id)
-    return _TO_DATESTRING(obj) == item[2] and obj or None
+    if item[1] in _IGNORE_DATETIME_MODELS:
+        # if we are replacing models we ignore the datatime
+        return obj
+    else:
+        # even if we got back a match, check the sanity of the date (some
+        # databases may 're-use' the id)
+        return _TO_DATESTRING(obj) == item[2] and obj or None
 
 
 def pack_session(item):
