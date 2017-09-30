@@ -858,7 +858,7 @@ class CmdSay(RPCommand):  # replaces standard say
             return
 
         # calling the speech hook on the location
-        speech = caller.location.at_say(caller, self.args)
+        speech = self.args
         # preparing the speech with sdesc/speech parsing.
         speech = "/me says, \"{speech}\"".format(speech=speech)
         targets = self.caller.location.contents
