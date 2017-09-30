@@ -674,8 +674,9 @@ class TypedObject(SharedMemoryModel):
         Displays the name of the object in a viewer-aware manner.
 
         Args:
-            looker (TypedObject): The object or account that is looking
-                at/getting inforamtion for this object.
+            looker (TypedObject, optional): The object or account that is looking
+                at/getting inforamtion for this object. If not given, some
+                'safe' minimum level should be returned.
 
         Returns:
             name (str): A string containing the name of the object,
