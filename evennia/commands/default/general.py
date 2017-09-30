@@ -417,7 +417,7 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
             return
 
         # Call the at_after_say hook on the character
-        caller.at_say(speech)
+        caller.at_say(speech, msg_self=True)
 
 
 class CmdWhisper(COMMAND_DEFAULT_CLASS):
@@ -425,10 +425,11 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
     Speak privately as your character to another
 
     Usage:
-      whisper <player> = <message>
+      whisper <character> = <message>
+      whisper <char1>, <char2> = <message?
 
-    Talk privately to those in your current location, without
-    others being informed.
+    Talk privately to one or more characters in your current location, without
+    others in the room being informed.
     """
 
     key = "whisper"
@@ -440,24 +441,25 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.lhs or not self.rhs:
-            caller.msg("Usage: whisper <account> = <message>")
+            caller.msg("Usage: whisper <character> = <message>")
             return
 
-        receiver = caller.search(self.lhs)
+        receivers = [recv.strip() for recv in self.lhs.split(",")]
 
-        if not receiver:
-            return
+        receivers = [caller.search(receiver) for receiver in receivers]
+        receivers = [recv for recv in receivers if recv]
 
         speech = self.rhs
-        # Call a hook to change the speech before whispering
-        speech = caller.at_before_say(speech, whisper=True, receiver=receiver)
-
         # If the speech is empty, abort the command
-        if not speech:
+        if not speech or not receivers:
             return
 
-        # Call the at_after_whisper hook for feedback
-        caller.at_say(speech, receiver=receiver, whisper=True)
+        # Call a hook to change the speech before whispering
+        speech = caller.at_before_say(speech, whisper=True, receivers=receivers)
+
+        # no need for self-message if we are whispering to ourselves (for some reason)
+        msg_self = None if caller in receivers else True
+        caller.at_say(speech, msg_self=msg_self, receivers=receivers, whisper=True)
 
 
 class CmdPose(COMMAND_DEFAULT_CLASS):
