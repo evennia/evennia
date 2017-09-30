@@ -649,8 +649,8 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 args = raw_string
                 unformatted_raw_string = "%s%s" % (cmdname, args)
                 cmdset = None
-                session = session
-                account = account
+                # session = session
+                # account = account
 
             else:
                 # no explicit cmdobject given, figure it out
@@ -687,7 +687,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                         sysarg = yield _SEARCH_AT_RESULT([match[2] for match in matches], caller, query=matches[0][0])
                     raise ExecSystemCommand(syscmd, sysarg)
 
-                cmdname, args, cmd = "", "", None
+                cmdname, args, cmd, raw_cmdname = "", "", None, ""
                 if len(matches) == 1:
                     # We have a unique command match. But it may still be invalid.
                     match = matches[0]

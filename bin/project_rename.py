@@ -173,7 +173,6 @@ def rename_in_tree(path, in_list, out_list, excl_list, fileend_list, is_interact
         if new_root != root:
             inp = raw_input(_green("Dir Rename %s\n       ->  %s\n Y/[N]? > " % (root, new_root)))
             if inp.upper() == 'Y':
-                new_full_path = os.path.join(root, new_file)
                 try:
                     os.rename(root, new_root)
                 except OSError as err:

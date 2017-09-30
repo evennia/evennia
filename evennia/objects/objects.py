@@ -830,8 +830,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         new_key = new_key or find_clone_key()
         return ObjectDB.objects.copy_object(self, new_key=new_key)
 
-    delete_iter = 0
-
     def delete(self):
         """
         Deletes this object.  Before deletion, this method makes sure
@@ -847,19 +845,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if not _ScriptDB:
             from evennia.scripts.models import ScriptDB as _ScriptDB
 
-        if self.delete_iter > 0:
-            # make sure to only call delete once on this object
-            # (avoid recursive loops)
+        if not self.pk or not self.at_object_delete():
+            # This object has already been deleted,
+            # or the pre-delete check return False
             return False
-
-        if not self.at_object_delete():
-            # this is an extra pre-check
-            # run before deletion field-related properties
-            # is kicked into gear.
-            self.delete_iter = 0
-            return False
-
-        self.delete_iter += 1
 
         # See if we need to kick the account off.
 

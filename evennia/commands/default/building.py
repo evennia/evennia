@@ -543,7 +543,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     describe an object or the current room.
 
     Usage:
-      @setdesc [<obj> =] <description>
+      @desc [<obj> =] <description>
 
     Switches:
       edit - Open up a line editor for more advanced editing.
@@ -551,7 +551,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     Sets the "desc" attribute on an object. If an object is not given,
     describe the current room.
     """
-    key = "@setdesc"
+    key = "@desc"
     aliases = "@describe"
     locks = "cmd:perm(desc) or perm(Builder)"
     help_category = "Building"
@@ -647,29 +647,32 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
         def delobj(obj):
             # helper function for deleting a single object
             string = ""
-            objname = obj.name
-            if not (obj.access(caller, "control") or obj.access(caller, 'delete')):
-                return "\nYou don't have permission to delete %s." % objname
-            if obj.account and 'override' not in self.switches:
-                return "\nObject %s is controlled by an active account. Use /override to delete anyway." % objname
-            if obj.dbid == int(settings.DEFAULT_HOME.lstrip("#")):
-                return "\nYou are trying to delete |c%s|n, which is set as DEFAULT_HOME. " \
-                    "Re-point settings.DEFAULT_HOME to another " \
-                    "object before continuing." % objname
-
-            had_exits = hasattr(obj, "exits") and obj.exits
-            had_objs = hasattr(obj, "contents") and any(obj for obj in obj.contents
-                                                        if not (hasattr(obj, "exits") and obj not in obj.exits))
-            # do the deletion
-            okay = obj.delete()
-            if not okay:
-                string += "\nERROR: %s not deleted, probably because delete() returned False." % objname
+            if not obj.pk:
+                string = "\nObject %s was already deleted." % obj.db_key
             else:
-                string += "\n%s was destroyed." % objname
-                if had_exits:
-                    string += " Exits to and from %s were destroyed as well." % objname
-                if had_objs:
-                    string += " Objects inside %s were moved to their homes." % objname
+                objname = obj.name
+                if not (obj.access(caller, "control") or obj.access(caller, 'delete')):
+                    return "\nYou don't have permission to delete %s." % objname
+                if obj.account and 'override' not in self.switches:
+                    return "\nObject %s is controlled by an active account. Use /override to delete anyway." % objname
+                if obj.dbid == int(settings.DEFAULT_HOME.lstrip("#")):
+                    return "\nYou are trying to delete |c%s|n, which is set as DEFAULT_HOME. " \
+                        "Re-point settings.DEFAULT_HOME to another " \
+                        "object before continuing." % objname
+
+                had_exits = hasattr(obj, "exits") and obj.exits
+                had_objs = hasattr(obj, "contents") and any(obj for obj in obj.contents
+                                                            if not (hasattr(obj, "exits") and obj not in obj.exits))
+                # do the deletion
+                okay = obj.delete()
+                if not okay:
+                    string += "\nERROR: %s not deleted, probably because delete() returned False." % objname
+                else:
+                    string += "\n%s was destroyed." % objname
+                    if had_exits:
+                        string += " Exits to and from %s were destroyed as well." % objname
+                    if had_objs:
+                        string += " Objects inside %s were moved to their homes." % objname
             return string
 
         objs = []
@@ -706,10 +709,10 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
             else:
                 confirm += ", ".join(["#{}".format(obj.id) for obj in objs])
             confirm += " [yes]/no?" if self.default_confirm == 'yes' else " yes/[no]"
-            answer = yield(confirm)
-            answer = self.default_confirm if answer == '' else answer
+            answer = ""
             while answer.strip().lower() not in ("y", "yes", "n", "no"):
                 answer = yield(confirm)
+                answer = self.default_confirm if answer == '' else answer
 
             if answer.strip().lower() in ("n", "no"):
                 caller.msg("Cancelled: no object was destroyed.")

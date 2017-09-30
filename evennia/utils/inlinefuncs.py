@@ -230,6 +230,13 @@ class ParseStack(list):
         # indicates if the top of the stack is a string or not
         self._string_last = True
 
+    def __eq__(self, other):
+        return (super(ParseStack).__eq__(other) and
+                hasattr(other, "_string_last") and self._string_last == other._string_last)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def append(self, item):
         """
         The stack will merge strings, add other things as normal

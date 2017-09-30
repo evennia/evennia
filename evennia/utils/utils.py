@@ -1831,6 +1831,17 @@ class LimitedSizeOrderedDict(OrderedDict):
         self.filo = not kwargs.get("fifo", True)  # FIFO inverse of FILO
         self._check_size()
 
+    def __eq__(self, other):
+        ret = super(LimitedSizeOrderedDict, self).__eq__(other)
+        if ret:
+            return (ret and
+                    hasattr(other, 'size_limit') and self.size_limit == other.size_limit and
+                    hasattr(other, 'fifo') and self.fifo == other.fifo)
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def _check_size(self):
         filo = self.filo
         if self.size_limit is not None:
