@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, connection
 
+_ENGINE = None
 
 def _table_exists(db_cursor, tablename):
     "Returns bool if table exists or not"
@@ -11,8 +12,26 @@ def _table_exists(db_cursor, tablename):
 
 
 def _drop_table(db_cursor, table_name):
+    global _ENGINE
+    if not _ENGINE:
+        from django.conf import settings
+        try:
+            _ENGINE = settings.DATABASES["default"]["ENGINE"]
+        except KeyError:
+            _ENGINE = settings.DATABASE_ENGINE
+
     if _table_exists(db_cursor, table_name):
-        sql_drop = "DROP TABLE %s;" % table_name
+        if _ENGINE == "django.db.backends.mysql":
+            sql_drop = "SET FOREIGN_KEY_CHECKS=0;"\
+                       "DROP TABLE {table};"\
+                       "SET FOREIGN_KEY_CHECKS=1;".format(table=table_name)
+        elif _ENGINE == "postgresql_psycopg2":
+            sql_drop = "ALTER TABLE {table} DISABLE TRIGGER ALL;"\
+                       "DROP TABLE {table};"\
+                       "ALTER TABLE {table} ENABLE TRIGGER ALL;".format(table=table_name)
+        else:  # sqlite3, other databases
+            sql_drop = "DROP TABLE {table};".format(table=table_name)
+
         db_cursor.execute(sql_drop)
 
 
