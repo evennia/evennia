@@ -40,6 +40,9 @@ def drop_tables(apps, schema_migrator):
     _drop_table(db_cursor, "players_playerdb_db_tags")
     _drop_table(db_cursor, "players_playerdb_groups")
     _drop_table(db_cursor, "players_playerdb_user_permissions")
+    _drop_table(db_cursor, "comms_msg_db_sender_players")
+    _drop_table(db_cursor, "comms_msg_db_receivers_players")
+    _drop_table(db_cursor, "comms_msg_db_hide_from_players")
 
 
 class Migration(migrations.Migration):
