@@ -22,17 +22,15 @@ def _drop_table(db_cursor, table_name):
 
     if _table_exists(db_cursor, table_name):
         if _ENGINE == "django.db.backends.mysql":
-            sql_drop = "SET FOREIGN_KEY_CHECKS=0;"\
-                       "DROP TABLE {table};"\
-                       "SET FOREIGN_KEY_CHECKS=1;".format(table=table_name)
+            db_cursor.execute("SET FOREIGN_KEY_CHECKS=0;")
+            db_cursor.execute("DROP TABLE {table};".format(table=table_name))
+            db_cursor.execute("SET FOREIGN_KEY_CHECKS=1;")
         elif _ENGINE == "postgresql_psycopg2":
-            sql_drop = "ALTER TABLE {table} DISABLE TRIGGER ALL;"\
-                       "DROP TABLE {table};"\
-                       "ALTER TABLE {table} ENABLE TRIGGER ALL;".format(table=table_name)
+            db_cursor.execute("ALTER TABLE {table} DISABLE TRIGGER ALL;".format(table=table_name))
+            db_cursor.execute("DROP TABLE {table};".format(table=table_name))
+            db_cursor.execute("ALTER TABLE {table} ENABLE TRIGGER ALL;".format(table=table_name))
         else:  # sqlite3, other databases
-            sql_drop = "DROP TABLE {table};".format(table=table_name)
-
-        db_cursor.execute(sql_drop)
+            db_cursor.execute("DROP TABLE {table};".format(table=table_name))
 
 
 def drop_tables(apps, schema_migrator):
