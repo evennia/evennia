@@ -553,7 +553,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     """
     key = "@setdesc"
     aliases = "@describe"
-    locks = "cmd:perm(desc) or perm(Builder)"
+    locks = "cmd:perm(desc) or perm(Builders)"
     help_category = "Building"
 
     def edit_handler(self):
