@@ -100,7 +100,7 @@ _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 
 
 def _handle_dbref(inp):
-    dbid_to_obj(inp, ObjectDB)
+    return dbid_to_obj(inp, ObjectDB)
 
 
 def _validate_prototype(key, prototype, protparents, visited):
