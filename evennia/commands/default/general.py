@@ -266,6 +266,10 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
             else:
                 caller.msg("You can't get that.")
             return
+            
+        # calling at_before_get hook method
+        if not obj.at_before_get(caller):
+            return
 
         obj.move_to(caller, quiet=True)
         caller.msg("You pick up %s." % obj.name)
@@ -273,7 +277,7 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
                                      (caller.name,
                                       obj.name),
                                      exclude=caller)
-        # calling hook method
+        # calling at_get hook method
         obj.at_get(caller)
 
 
@@ -306,6 +310,10 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
                             nofound_string="You aren't carrying %s." % self.args,
                             multimatch_string="You carry more than one %s:" % self.args)
         if not obj:
+            return
+            
+        # Call the object script's at_before_drop() method.
+        if not obj.at_before_drop(caller):
             return
 
         obj.move_to(caller.location, quiet=True)
@@ -350,6 +358,11 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         if not to_give.location == caller:
             caller.msg("You are not holding %s." % to_give.key)
             return
+            
+        # calling at_before_give hook method
+        if not to_give.at_before_give(caller, target):
+            return
+        
         # give object
         caller.msg("You give %s to %s." % (to_give.key, target.key))
         to_give.move_to(target, quiet=True)
