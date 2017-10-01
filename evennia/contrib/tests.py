@@ -661,6 +661,7 @@ from evennia.contrib import mail
 class TestMail(CommandTest):
     def test_mail(self):
         self.call(mail.CmdMail(), "2", "'2' is not a valid mail id.", caller=self.account)
+        self.call(mail.CmdMail(), "test", "'test' is not a valid mail id.")
         self.call(mail.CmdMail(), "", "There are no messages in your inbox.", caller=self.account)
         self.call(mail.CmdMail(), "Char=Message 1", "You have received a new @mail from Char|You sent your message.", caller=self.char1)
         self.call(mail.CmdMail(), "Char=Message 2", "You sent your message.", caller=self.char2)

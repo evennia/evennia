@@ -133,7 +133,7 @@ class CmdMail(default_cmds.MuxCommand):
                         return
                     else:
                         all_mail = self.get_all_mail()
-                        mind_max = all_mail.count() - 1
+                        mind_max = max(0, all_mail.count() - 1)
                         mind = max(0, min(mind_max, int(self.lhs) - 1))
                         if all_mail[mind]:
                             all_mail[mind].delete()
@@ -154,7 +154,7 @@ class CmdMail(default_cmds.MuxCommand):
                         return
                     else:
                         all_mail = self.get_all_mail()
-                        mind_max = all_mail.count() - 1
+                        mind_max = max(0, all_mail.count() - 1)
                         if "/" in self.rhs:
                             message_number, message = self.rhs.split("/", 1)
                             mind = max(0, min(mind_max, int(message_number) - 1))
@@ -193,7 +193,7 @@ class CmdMail(default_cmds.MuxCommand):
                         return
                     else:
                         all_mail = self.get_all_mail()
-                        mind_max = all_mail.count() - 1
+                        mind_max = max(0, all_mail.count() - 1)
                         mind = max(0, min(mind_max, int(self.lhs) - 1))
                         if all_mail[mind]:
                             old_message = all_mail[mind]
@@ -218,9 +218,9 @@ class CmdMail(default_cmds.MuxCommand):
                     self.send_mail(self.search_targets(self.lhslist), subject, body, self.caller)
                 else:
                     all_mail = self.get_all_mail()
-                    mind_max = all_mail.count() - 1
+                    mind_max = max(0, all_mail.count() - 1)
                     try:
-                        mind = max(0, min(mind_max, self.lhs - 1))
+                        mind = max(0, min(mind_max, int(self.lhs) - 1))
                         message = all_mail[mind]
                     except (ValueError, IndexError):
                         self.caller.msg("'%s' is not a valid mail id." % self.lhs)
