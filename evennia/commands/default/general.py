@@ -67,7 +67,7 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
                 caller.msg("You have no location to look at!")
                 return
         else:
-            target = caller.search(self.args, use_dbref=caller.check_permstring("Builders"))
+            target = caller.search(self.args)
             if not target:
                 return
         self.msg(caller.at_look(target))
