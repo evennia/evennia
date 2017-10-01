@@ -2718,7 +2718,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             self.caller.msg("The prototype must be a prototype key or a Python dictionary.")
             return
 
-        if "noloc" in self.switches and not "location" not in prototype:
+        if "noloc" not in self.switches and "location" not in prototype:
             prototype["location"] = self.caller.location
 
         for obj in spawn(prototype):
