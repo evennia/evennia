@@ -292,7 +292,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                candidates=None,
                nofound_string=None,
                multimatch_string=None,
-               use_dbref=True):
+               use_dbref=None):
         """
         Returns an Object matching a search string/condition
 
@@ -343,8 +343,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 caller's contents (inventory).
             nofound_string (str):  optional custom string for not-found error message.
             multimatch_string (str): optional custom string for multimatch error header.
-            use_dbref (bool, optional): if False, treat a given #dbref strings as a
-                normal string rather than database ids.
+            use_dbref (bool or None, optional): if True/False, active/deactivate the use of
+                #dbref as valid global search arguments. If None, check against a permission
+                ('Builder' by default).
 
         Returns:
             match (Object, None or list): will return an Object/None if `quiet=False`,
@@ -360,12 +361,16 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         is_string = isinstance(searchdata, basestring)
 
+
         if is_string:
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("here", ):
                 return [self.location] if quiet else self.location
             if searchdata.lower() in ("me", "self",):
                 return [self] if quiet else self
+
+        if use_dbref is None:
+            use_dbref = self.locks.check_lockstring(self, "_dummy:perm(Builder)")
 
         if use_nicks:
             # do nick-replacement on search
@@ -1495,7 +1500,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     def at_before_get(self, getter, **kwargs):
         """
         Called by the default `get` command before this object has been
-        picked up. 
+        picked up.
 
         Args:
             getter (Object): The object about to get this object.
@@ -1509,8 +1514,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             If this method returns False/None, the getting is cancelled
             before it is even started.
         """
-        return True    
-    
+        return True
+
     def at_get(self, getter, **kwargs):
         """
         Called by the default `get` command when this object has been
@@ -1545,10 +1550,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Notes:
             If this method returns False/None, the giving is cancelled
             before it is even started.
-        
+
         """
-        return True    
-    
+        return True
+
     def at_give(self, giver, getter, **kwargs):
         """
         Called by the default `give` command when this object has been
@@ -1586,7 +1591,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         """
         return True
-        
+
     def at_drop(self, dropper, **kwargs):
         """
         Called by the default `drop` command when this object has been

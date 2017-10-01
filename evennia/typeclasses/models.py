@@ -575,6 +575,10 @@ class TypedObject(SharedMemoryModel):
             ppos = _PERMISSION_HIERARCHY.index(perm)
             return any(True for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
                        if hperm in perms and hpos > ppos)
+        # we ignore pluralization (english only)
+        if perm.endswith("s"):
+            return self.check_permstring(perm[:-1])
+
         return False
 
     #

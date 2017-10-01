@@ -824,7 +824,7 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
         """Perform the command"""
         account = self.account
         permstr = account.is_superuser and " (superuser)" or "(%s)" % (", ".join(account.permissions.all()))
-        if self.cmdstring == '@unquell':
+        if self.cmdstring in ('unquell', '@unquell'):
             if not account.attributes.get('_quell'):
                 self.msg("Already using normal Account permissions %s." % permstr)
             else:

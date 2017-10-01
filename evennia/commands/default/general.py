@@ -67,7 +67,7 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
                 caller.msg("You have no location to look at!")
                 return
         else:
-            target = caller.search(self.args, use_dbref=caller.check_permstring("Builders"))
+            target = caller.search(self.args)
             if not target:
                 return
         self.msg(caller.at_look(target))
@@ -266,7 +266,7 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
             else:
                 caller.msg("You can't get that.")
             return
-            
+
         # calling at_before_get hook method
         if not obj.at_before_get(caller):
             return
@@ -311,7 +311,7 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
                             multimatch_string="You carry more than one %s:" % self.args)
         if not obj:
             return
-            
+
         # Call the object script's at_before_drop() method.
         if not obj.at_before_drop(caller):
             return
@@ -358,11 +358,11 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         if not to_give.location == caller:
             caller.msg("You are not holding %s." % to_give.key)
             return
-            
+
         # calling at_before_give hook method
         if not to_give.at_before_give(caller, target):
             return
-        
+
         # give object
         caller.msg("You give %s to %s." % (to_give.key, target.key))
         to_give.move_to(target, quiet=True)
