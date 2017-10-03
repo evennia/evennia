@@ -566,7 +566,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         """
         # A basic security setup
         lockstring = "examine:perm(Admin);edit:perm(Admin);" \
-                     "delete:perm(Admin);boot:perm(Admin);msg:all()"
+                     "delete:perm(Admin);boot:perm(Admin);msg:all();" \
+                     "noidletimeout:perm(Builder) or perm(noidletimeout)"
         self.locks.add(lockstring)
 
         # The ooc account cmdset
@@ -582,8 +583,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         """
         # set an (empty) attribute holding the characters this account has
         lockstring = "attrread:perm(Admins);attredit:perm(Admins);" \
-                     "attrcreate:perm(Admins);" \
-                     "noidletimeout:perm(Builder) or perm(noidletimeout)"
+                     "attrcreate:perm(Admins);"
         self.attributes.add("_playable_characters", [], lockstring=lockstring)
         self.attributes.add("_saved_protocol_flags", {}, lockstring=lockstring)
 

@@ -525,13 +525,13 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                     return
 
                 if perm in permissions:
-                    caller_result.append("\nPermission '%s' is already defined on %s." % (rhs, obj.name))
+                    caller_result.append("\nPermission '%s' is already defined on %s." % (perm, obj.name))
                 else:
                     obj.permissions.add(perm)
                     plystring = "the Account" if accountmode else "the Object/Character"
-                    caller_result.append("\nPermission '%s' given to %s (%s)." % (rhs, obj.name, plystring))
+                    caller_result.append("\nPermission '%s' given to %s (%s)." % (perm, obj.name, plystring))
                     target_result.append("\n%s gives you (%s, %s) the permission '%s'."
-                                         % (caller.name, obj.name, plystring, rhs))
+                                         % (caller.name, obj.name, plystring, perm))
         caller.msg("".join(caller_result).strip())
         if target_result:
             obj.msg("".join(target_result).strip())
