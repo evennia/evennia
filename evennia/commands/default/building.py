@@ -2324,6 +2324,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
                Note that the only way to retrieve
                an object from a None location is by direct #dbref
                reference. A puppeted object cannot be moved to None.
+      loc - teleport object to the target's location instead of its contents
 
     Teleports an object somewhere. If no object is given, you yourself
     is teleported to the target location.     """
@@ -2343,6 +2344,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
         # setting switches
         tel_quietly = "quiet" in switches
         to_none = "tonone" in switches
+        to_loc = "loc" in switches
 
         if to_none:
             # teleporting to None
@@ -2368,7 +2370,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
 
         # not teleporting to None location
         if not args and not to_none:
-            caller.msg("Usage: teleport[/switches] [<obj> =] <target_loc>|home")
+            caller.msg("Usage: teleport[/switches] [<obj> =] <target_loc>||home")
             return
 
         if rhs:
@@ -2384,6 +2386,11 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
         if not destination:
             caller.msg("Destination not found.")
             return
+        if to_loc:
+            destination = destination.location
+            if not destination:
+                caller.msg("Destination has no location.")
+                return
         if obj_to_teleport == destination:
             caller.msg("You can't teleport an object inside of itself!")
             return
