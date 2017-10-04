@@ -10,17 +10,16 @@
 #
 # https://github.com/evennia/evennia/wiki/Running%20Evennia%20in%20Docker
 #
-FROM python:2.7-alpine
-MAINTAINER Dan Feeney "feend78@gmail.com"
+FROM alpine
 
 # install compilation environment
-RUN apk update && apk add gcc musl-dev
+RUN apk update && apk add python py-pip python-dev py-setuptools gcc musl-dev jpeg-dev zlib-dev
 
 # add the project source
 ADD . /usr/src/evennia
 
 # install dependencies
-RUN pip install -e /usr/src/evennia
+RUN pip install -e /usr/src/evennia --index-url=http://pypi.python.org/simple/ --trusted-host pypi.python.org
 
 # add the game source during game builds
 ONBUILD ADD . /usr/src/game
@@ -31,10 +30,16 @@ ONBUILD ADD . /usr/src/game
 VOLUME /usr/src/game
 
 # set the working directory
-WORKDIR /usr/src/game
+WORKDIR /usr/src
+
+# init evennia
+RUN evennia --init mygame
+
+WORKDIR /usr/src/mygame
+RUN evennia migrate
 
 # startup command
-CMD ["evennia", "-i", "start"]
+# ENTRYPOINT  ["evennia",  "start"]
 
 # expose the telnet, webserver and websocket client ports
 EXPOSE 4000 4001 4005
