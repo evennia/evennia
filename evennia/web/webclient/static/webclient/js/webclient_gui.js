@@ -369,28 +369,29 @@ function onNewLine(text, originator) {
     unread++;
     favico.badge(unread);
     document.title = "(" + unread + ") " + originalTitle;
+    if ("Notification" in window){
+      if (("notification_popup" in options) && (options["notification_popup"])) {
+          Notification.requestPermission().then(function(result) {
+              if(result === "granted") {
+              var title = originalTitle === "" ? "Evennia" : originalTitle;
+              var options = {
+                  body: text.replace(/(<([^>]+)>)/ig,""),
+                  icon: "/static/website/images/evennia_logo.png"
+              }
 
-    if (("notification_popup" in options) && (options["notification_popup"])) {
-        Notification.requestPermission().then(function(result) {
-            if(result === "granted") {
-            var title = originalTitle === "" ? "Evennia" : originalTitle;
-            var options = {
-                body: text.replace(/(<([^>]+)>)/ig,""),
-                icon: "/static/website/images/evennia_logo.png"
+              var n = new Notification(title, options);
+              n.onclick = function(e) {
+                  e.preventDefault();
+                   window.focus();
+                   this.close();
+              }
             }
-
-            var n = new Notification(title, options);
-            n.onclick = function(e) {
-                e.preventDefault();
-                 window.focus();
-                 this.close();
-            }
-          }
-        });
-    }
-    if (("notification_sound" in options) && (options["notification_sound"])) {
-        var audio = new Audio("/static/webclient/media/notification.wav");
-        audio.play();
+          });
+      }
+      if (("notification_sound" in options) && (options["notification_sound"])) {
+          var audio = new Audio("/static/webclient/media/notification.wav");
+          audio.play();
+      }
     }
   }
 }
@@ -427,7 +428,9 @@ function doStartDragDialog(event) {
 // Event when client finishes loading
 $(document).ready(function() {
 
-    Notification.requestPermission();
+    if ("Notification" in window) {
+      Notification.requestPermission();
+    }
 
     favico = new Favico({
       animation: 'none'
