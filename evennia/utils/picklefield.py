@@ -126,7 +126,13 @@ class PickledWidget(Textarea):
         except ValueError:
             return value
 
-        final_attrs = self.build_attrs(attrs, name=name)
+        # fix since the signature of build_attrs changed in Django 1.11
+        if attrs is not None:
+            attrs["name"] = name
+        else:
+            attrs = {"name": name}
+
+        final_attrs = self.build_attrs(attrs)
         return format_html('<textarea{0}>\r\n{1}</textarea>',
                            flatatt(final_attrs),
                            value)

@@ -293,9 +293,9 @@ if WEBSERVER_ENABLED:
                 # create ajax client processes at /webclientdata
                 from evennia.server.portal import webclient_ajax
 
-                webclient = webclient_ajax.WebClient()
-                webclient.sessionhandler = PORTAL_SESSIONS
-                web_root.putChild("webclientdata", webclient)
+                ajax_webclient = webclient_ajax.AjaxWebClient()
+                ajax_webclient.sessionhandler = PORTAL_SESSIONS
+                web_root.putChild("webclientdata", ajax_webclient)
                 webclientstr = "\n   + webclient (ajax only)"
 
                 if WEBSOCKET_CLIENT_ENABLED and not websocket_started:

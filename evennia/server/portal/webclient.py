@@ -93,7 +93,6 @@ class WebSocketClient(Protocol, Session):
         csession = self.get_client_session()
 
         if csession:
-            print("In disconnect: csession uid=%s" % csession.get("webclient_authenticated_uid", None))
             csession["webclient_authenticated_uid"] = None
             csession.save()
             self.logged_in = False
