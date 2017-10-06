@@ -8,21 +8,25 @@
 
 
 {% block client %}
-
-<div id="wrapper">
+<div id="a" class="split content">
+  <div id="wrapper">
     <div id="toolbar">
-        <button id="optionsbutton" type="button">&#x2699;</button>
+      <button id="optionsbutton" type="button">&#x2699;</button>
     </div>
     <div id="messagewindow" role="log"></div>
-    <div id="inputform">
-        <div id="prompt"></div>
-        <div id="inputcontrol">
-            <textarea id="inputfield" type="text"></textarea>
-            <input id="inputsend" type="button" value="&gt;"/>
-        </div>
-    </div>
-    <div id="inputsizer"></div>
+  </div>
 </div>
+<div id="b" class="split content">
+  <div id="inputform">
+    <div id="prompt"></div>
+    <div id="inputcontrol">
+      <textarea id="inputfield" type="text"></textarea>
+      <input id="inputsend" type="button" value="&gt;"/>
+    </div>
+  </div>
+  <div id="inputsizer"></div>
+</div>
+
 
 <div id="optionsdialog" class="dialog">
     <div class="dialogtitle">Options<span class="dialogclose">&times;</span></div>
@@ -48,4 +52,8 @@
 </div>
 
 {% endblock %}
-
+{% block scripts %}
+{% load staticfiles %}
+  <script src="https://unpkg.com/split.js/split.min.js"></script>
+  <script src={% static "webclient/js/splithandler.js" %} language="javascript"></script>
+{% endblock %}
