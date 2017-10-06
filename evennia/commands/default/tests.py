@@ -24,6 +24,8 @@ from evennia.commands.default import help, general, system, admin, account, buil
 from evennia.commands.command import Command, InterruptCommand
 from evennia.utils import ansi, utils
 from evennia.server.sessionhandler import SESSIONS
+from evennia import search_object
+from evennia import DefaultObject, DefaultCharacter
 
 
 # set up signal here since we are not starting the server
@@ -295,6 +297,73 @@ class TestBuilding(CommandTest):
 
     def test_teleport(self):
         self.call(building.CmdTeleport(), "Room2", "Room2(#2)\n|Teleported to Room2.")
+
+    def test_spawn(self):
+        def getObject(commandTest, objKeyStr):
+            # A helper function to get a spawned object and
+            # check that it exists in the process.
+            query = search_object(objKeyStr)
+            commandTest.assertIsNotNone(query)
+            obj = query[0]
+            commandTest.assertIsNotNone(obj)
+            return obj
+
+        # Tests "@spawn" without any arguments.
+        self.call(building.CmdSpawn(), " ", "Usage: @spawn")
+
+        # Tests "@spawn <prototype_dictionary>" without specifying location.
+        self.call(building.CmdSpawn(), \
+                  "{'key':'goblin', 'typeclass':'evennia.DefaultCharacter'}", "Spawned goblin")
+        goblin = getObject(self, "goblin")
+
+        # Tests that the spawned object's type is a DefaultCharacter.
+        self.assertIsInstance(goblin, DefaultCharacter)
+
+        # Tests that the spawned object's location is the same as the caharacter's location, since
+        # we did not specify it.
+        self.assertEqual(goblin.location, self.char1.location)
+        goblin.delete()
+
+        # Test "@spawn <prototype_dictionary>" with a location other than the character's.
+        spawnLoc = self.room2
+        if spawnLoc == self.char1.location:
+            # Just to make sure we use a different location, in case someone changes
+            # char1's default location in the future...
+            spawnLoc = self.room1
+
+        self.call(building.CmdSpawn(), \
+                  "{'prototype':'GOBLIN', 'key':'goblin', 'location':'%s'}" \
+                  % spawnLoc.dbref, "Spawned goblin")
+        goblin = getObject(self, "goblin")
+        self.assertEqual(goblin.location, spawnLoc)
+        goblin.delete()
+
+        # Tests "@spawn <prototype_name>"
+        self.call(building.CmdSpawn(), "'BALL'", "Spawned Ball")
+        ball = getObject(self, "Ball")
+        self.assertEqual(ball.location, self.char1.location)
+        self.assertIsInstance(ball, DefaultObject)
+        ball.delete()
+
+        # Tests "@spawn/noloc ..." without specifying a location.
+        # Location should be "None".
+        self.call(building.CmdSpawn(), "/noloc 'BALL'", "Spawned Ball")
+        ball = getObject(self, "Ball")
+        self.assertIsNone(ball.location)
+        ball.delete()
+
+        # Tests "@spawn/noloc ...", but DO specify a location.
+        # Location should be the specified location.
+        self.call(building.CmdSpawn(),  \
+                  "/noloc {'prototype':'BALL', 'location':'%s'}" \
+                  % spawnLoc.dbref, "Spawned Ball")
+        ball = getObject(self, "Ball")
+        self.assertEqual(ball.location, spawnLoc)
+        ball.delete()
+
+        # test calling spawn with an invalid prototype.
+        self.call(building.CmdSpawn(), \
+                  "'NO_EXIST'", "No prototype named 'NO_EXIST'")
 
 
 class TestComms(CommandTest):
