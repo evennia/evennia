@@ -247,7 +247,7 @@ function doWindowResize() {
     var formh = $('#inputform').outerHeight(true);
     var message_scrollh = $("#messagewindow").prop("scrollHeight");
     $("#messagewindow")
-        .css({"bottom": formh}) // leave space for the input form
+        //.css({"bottom": formh}) // leave space for the input form
         .scrollTop(message_scrollh); // keep the output window scrolled to the bottom
 }
 
@@ -264,10 +264,11 @@ function onText(args, kwargs) {
 
     if (renderto == "main") {
         var mwin = $("#messagewindow");
+        var parent = mwin.closest(".split")
         var cls = kwargs == null ? 'out' : kwargs['cls'];
         mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
-        mwin.animate({
-            scrollTop: document.getElementById("messagewindow").scrollHeight
+        parent.animate({
+            scrollTop: parent.prop("scrollHeight")
         }, 0);
 
         onNewLine(args[0], null);
