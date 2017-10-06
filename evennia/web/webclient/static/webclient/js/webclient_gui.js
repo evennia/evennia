@@ -221,12 +221,11 @@ var resizeInputField = function () {
 
 // Handle resizing of client
 function doWindowResize() {
-      resizeInputField();
-      var resizable = $("[data-update-append]");
-      var parents = resizable.closest(".split")
-      parents.animate({
-          scrollTop: parents.prop("scrollHeight")
-      }, 0);
+    var formh = $('#inputform').outerHeight(true);
+    var message_scrollh = $("#messagewindow").prop("scrollHeight");
+    $("#messagewindow")
+        //.css({"bottom": formh}) // leave space for the input form
+        .scrollTop(message_scrollh); // keep the output window scrolled to the bottom
 }
 
 // Handle text coming from the server
@@ -250,15 +249,14 @@ function onText(args, kwargs) {
     }
 
     if (renderto == "main") {
-        for (var i = 0; i < tags.length; i++) {
-          var mwin = $("[data-role-output][data-tags*='" + tags[i] + "\"']");//this monster here makes sure the tag ends with "
-          var parent = mwin.closest(".split")
-          var cls = kwargs == null ? 'out' : kwargs['cls'];
-          mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
-          parent.animate({
-              scrollTop: parent.prop("scrollHeight")
-          }, 0);
-        }
+        var mwin = $("#messagewindow");
+        var parent = mwin.closest(".split")
+        var cls = kwargs == null ? 'out' : kwargs['cls'];
+        mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
+        parent.animate({
+            scrollTop: parent.prop("scrollHeight")
+        }, 0);
+
         onNewLine(args[0], null);
     } else {
         openPopup(renderto, args[0]);

@@ -91,6 +91,18 @@ div {margin:0px;}
 }
 
 /* Main scrolling message area */
+#messagewindow {
+    position: absolute;
+    overflow: auto;
+    padding: 1em;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+    right: 0;
+    /*bottom: 70px;*/
+}
 
 #messagewindow {
     overflow-y: auto;
@@ -249,7 +261,7 @@ body {
 .content {
     border: 1px solid #C0C0C0;
     box-shadow: inset 0 1px 2px #e4e4e4;
-    background-color: #fff;
+    background-color: black;
 }
 
 .gutter {
