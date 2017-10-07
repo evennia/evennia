@@ -159,6 +159,10 @@ function onKeydown (event) {
     var code = event.which;
     var history_entry = null;
     var inputfield = $("[data-evennia-input]");
+    if (code === 9) {
+      return;
+    }
+
     inputfield.focus();
 
     if (code === 13) { // Enter key sends text
