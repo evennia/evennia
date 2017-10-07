@@ -210,10 +210,32 @@ function onKeyPress (event) {
 }
 
 var resizeInputField = function () {
-    return function() {
-      var wrapper = $("#inputform")
-      var input = $("#inputcontrol")
-      var prompt = $("#prompt")
+    return
+    var min_height = 50;
+    var max_height = 300;
+    var prev_text_len = 0;
+
+    // Check to see if we should change the height of the input area
+    return function () {
+        var inputfield = $("#inputfield");
+        var scrollh = inputfield.prop("scrollHeight");
+        var clienth = inputfield.prop("clientHeight");
+        var newh = 0;
+        var curr_text_len = inputfield.val().length;
+
+        if (scrollh > clienth && scrollh <= max_height) {
+            // Need to make it bigger
+            newh = scrollh;
+        }
+        else if (curr_text_len < prev_text_len) {
+            // There is less text in the field; try to make it smaller
+            // To avoid repaints, we draw the text in an offscreen element and
+            // determine its dimensions.
+            var sizer = $('#inputsizer')
+                .css("width", inputfield.prop("clientWidth"))
+                .text(inputfield.val());
+            newh = sizer.prop("scrollHeight");
+        }
 
       input.height(wrapper.height() - (input.offset().top - wrapper.offset().top));
     }
