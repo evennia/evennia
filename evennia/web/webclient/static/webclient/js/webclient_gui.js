@@ -205,6 +205,7 @@ function onKeyPress (event) {
 }
 
 var resizeInputField = function () {
+    return
     var min_height = 50;
     var max_height = 300;
     var prev_text_len = 0;
