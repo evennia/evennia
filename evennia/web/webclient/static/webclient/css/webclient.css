@@ -81,17 +81,9 @@ div {margin:0px;}
 }
 
 /* Main scrolling message area */
+
 #messagewindow {
-    position: absolute;
     overflow: auto;
-    padding: 1em;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    top: 0;
-    left: 0;
-    right: 0;
-    /*bottom: 70px;*/
 }
 
 /* Input area containing input field and button */
@@ -112,11 +104,7 @@ div {margin:0px;}
 
 /* Input field */
 #inputfield, #inputsend, #inputsizer {
-    display: block;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    height: 50px;
+    height: 100%;
     background: #000;
     color: #fff;
     padding: 0 .45em;
@@ -134,10 +122,6 @@ div {margin:0px;}
 
 #inputfield:focus {
     outline: 0;
-}
-
-#inputsizer {
-    margin-left: -9999px;
 }
 
 /* Input 'send' button */
@@ -260,15 +244,6 @@ div {margin:0px;}
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
-}
-html, body {
-    height: 100%;
-}
-
-body {
-    padding: 8px;
-    background-color: #F6F6F6;
-    box-sizing: border-box;
 }
 
 .split {
