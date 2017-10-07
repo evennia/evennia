@@ -429,7 +429,7 @@ class EvForm(object):
 
 def _test():
     "test evform. This is used by the unittest system."
-    form = EvForm("evennia.utils.evform_test")
+    form = EvForm("evennia.utils.tests.data.evform_example")
 
     # add data to each tagged form cell
     form.map(cells={"AA": "|gTom the Bouncer",

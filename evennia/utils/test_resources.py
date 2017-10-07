@@ -35,7 +35,7 @@ class EvenniaTest(TestCase):
         self.room1.db.desc = "room_desc"
         settings.DEFAULT_HOME = "#%i" % self.room1.id  # we must have a default home
         # Set up fake prototype module for allowing tests to use named prototypes.
-        settings.PROTOTYPE_MODULES = "evennia.utils.test_prototypes"
+        settings.PROTOTYPE_MODULES = "evennia.utils.tests.data.prototypes_example"
         self.room2 = create.create_object(self.room_typeclass, key="Room2")
         self.exit = create.create_object(self.exit_typeclass, key='out', location=self.room1, destination=self.room2)
         self.obj1 = create.create_object(self.object_typeclass, key="Obj", location=self.room1, home=self.room1)
