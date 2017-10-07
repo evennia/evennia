@@ -116,7 +116,7 @@ function doSendText() {
         // Don't try to send anything until the connection is back.
         return;
     }
-    var inputfield = $("#inputfield");
+    var inputfield = $("[data-evennia-input]");
     var outtext = inputfield.val();
     var lines = outtext.trim().replace(/[\r]+/,"\n").replace(/[\n]+/, "\n").split("\n");
     for (var i = 0; i < lines.length; i++) {
@@ -158,11 +158,7 @@ function doCloseDialog(event) {
 function onKeydown (event) {
     var code = event.which;
     var history_entry = null;
-    var inputfield = $("#inputfield");
-    if (code === 9) {
-      return;
-    }
-
+    var inputfield = $("[data-evennia-input]");
     inputfield.focus();
 
     if (code === 13) { // Enter key sends text
@@ -217,7 +213,7 @@ var resizeInputField = function () {
 
     // Check to see if we should change the height of the input area
     return function () {
-        var inputfield = $("#inputfield");
+        var inputfield = $("[data-evennia-input]");
         var scrollh = inputfield.prop("scrollHeight");
         var clienth = inputfield.prop("clientHeight");
         var newh = 0;
@@ -462,7 +458,7 @@ $(document).ready(function() {
 
     //$(document).on("visibilitychange", onVisibilityChange);
 
-    $("[data-role-input]").bind("resize", doWindowResize)
+    $("[data-evennia-input]").bind("resize", doWindowResize)
         .keypress(onKeyPress)
         .bind("paste", resizeInputField)
         .bind("cut", resizeInputField);
