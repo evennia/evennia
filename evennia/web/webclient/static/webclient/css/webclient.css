@@ -83,7 +83,9 @@ strong {font-weight: bold;}
 /* Main scrolling message area */
 
 #messagewindow {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
 }
 
 /* Input field */
