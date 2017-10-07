@@ -113,8 +113,8 @@ strong {font-weight: bold;}
 }
 
 #optionsbutton {
-    width: 40px;
-    font-size: 20px;
+    width: 2rem;
+    font-size: 2rem;
     color: #a6a6a6;
     background-color: transparent;
     border: 0px;
@@ -127,8 +127,8 @@ strong {font-weight: bold;}
 
 #toolbar {
     position: fixed;
-    top: 0;
-    right: 5px;
+    top: .5rem;
+    right: .5rem;
     z-index: 1;
 }
 
