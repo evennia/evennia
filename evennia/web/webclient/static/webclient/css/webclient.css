@@ -87,7 +87,9 @@ div {margin:0px;}
 /* Main scrolling message area */
 
 #messagewindow {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
 }
 
 /* Input field */
