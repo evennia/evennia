@@ -91,13 +91,16 @@ div {margin:0px;}
 }
 
 /* Input field */
-#inputfield, #inputsend, #inputsizer {
+#inputfield, #inputsizer {
     height: 100%;
     background: #000;
     color: #fff;
     padding: 0 .45em;
     font-size: 1.1em;
     font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
+}
+#inputsend {
+  height: 100%;
 }
 #inputcontrol {
   height: calc(100% - 1rem);
