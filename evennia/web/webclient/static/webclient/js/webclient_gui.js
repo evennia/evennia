@@ -243,11 +243,11 @@ var resizeInputField = function () {
 
 // Handle resizing of client
 function doWindowResize() {
-    var formh = $('#inputform').outerHeight(true);
-    var message_scrollh = $("#messagewindow").prop("scrollHeight");
-    $("#messagewindow")
-        //.css({"bottom": formh}) // leave space for the input form
-        .scrollTop(message_scrollh); // keep the output window scrolled to the bottom
+      var mwin = $("#messagewindow");
+      var parent = mwin.closest(".split")
+      parent.animate({
+          scrollTop: parent.prop("scrollHeight")
+      }, 0);
 }
 
 // Handle text coming from the server
