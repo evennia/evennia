@@ -103,7 +103,7 @@ div {margin:0px;}
 }
 
 /* Input field */
-#inputfield, #inputsend, #inputsizer {
+#inputfield, #inputsizer {
     height: 100%;
     background: #000;
     color: #fff;
@@ -113,6 +113,9 @@ div {margin:0px;}
 }
 #inputsend {
   height: 100%;
+}
+#inputcontrol {
+  height: calc(100% - 1rem);
 }
 
 /* Input 'send' button */
