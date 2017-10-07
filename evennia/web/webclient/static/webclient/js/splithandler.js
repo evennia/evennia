@@ -3,7 +3,7 @@ var SplitHandler = (function () {
   var init = function(settings) {
     Split(['#a', '#b'], {
       direction: 'vertical',
-      sizes: [75, 25],
+      sizes: [90, 10],
       gutterSize: 8,
       cursor: 'row-resize'
     })
