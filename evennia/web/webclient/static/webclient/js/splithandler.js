@@ -1,7 +1,7 @@
 var SplitHandler = (function () {
 
   var init = function(settings) {
-    Split(['#a', '#b'], {
+    Split(['#main', '#input'], {
       direction: 'vertical',
       sizes: [90, 10],
       gutterSize: 8,
