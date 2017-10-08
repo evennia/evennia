@@ -105,15 +105,16 @@ div {margin:0px;}
   height: 100%;
 }
 #inputcontrol {
-  height: calc(100% - 1rem);
+  height: calc(100% - 3rem);
 }
 
 #inputfield:focus {
 }
 
 /* prompt area above input field */
-#prompt {
-  height: 1rem;
+.prompt {
+  height: 2rem;
+  margin-bottom: 1rem;
 }
 
 #optionsbutton {

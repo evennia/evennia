@@ -8,27 +8,13 @@
 
 
 {% block client %}
-<div id="main" class="split content">
-  <div id="toolbar">
-    <button id="optionsbutton" type="button" aria-haspopup="true" aria-owns="#optionsdialog">&#x2699;<span class="sr-only sr-only-focusable">Settings</span></button>
-  </div>
-  <div id="wrapper">
-    <div id="toolbar">
-        <button id="optionsbutton" type="button" class="hidden">&#x2699;</button>
-    </div>
-    <div id="messagewindow" role="log"></div>
-  </div>
+<div id="toolbar">
+  <button id="optionsbutton" type="button" aria-haspopup="true" aria-owns="#optionsdialog">&#x2699;<span class="sr-only sr-only-focusable">Settings</span></button>
 </div>
-<div id="input" class="split content">
-  <div id="inputform" class="wrapper">
-    <div id="prompt"></div>
-    <div id="inputcontrol" class="input-group">
-      <textarea id="inputfield" type="text" class="form-control" data-evennia-input></textarea>
-      <span class="input-group-btn">
-        <button class="btn btn-large btn-outline-primary" id="inputsend" type="button" value="">&gt;</button>
-      </span>
-    </div>
-  </div>
+<div id="main" class="split content">
+  <div id="messagewindow" role="log" data-role-output data-tag="all"></div>
+</div>
+<div id="input" class="split content" data-role-input>
 </div>
 
 
@@ -55,9 +41,31 @@
     </div>
 </div>
 
+<script type="text/html" id="split-template">
+  <div class="split content<%#horizontal%> split-horizontal<%/horizontal%>" id='<%id%>'>
+
+  </div>
+</script>
+
+<script type="text/html" id="output-template">
+  <div id="<%id%>" role="log" data-role-output data-tag="<%tag%>"></div>
+</script>
+
+<script type="text/html" id="input-template">
+  <div id="inputform" class="wrapper">
+    <div class="prompt">
+      <div id="prompt">
+      </div>
+    </div>
+    <div id="inputcontrol" class="input-group">
+      <textarea id="inputfield" type="text" class="form-control"></textarea>
+      <span class="input-group-btn">
+        <button class="btn btn-large btn-outline-primary" id="inputsend" type="button" value="">&gt;</button>
+      </span>
+    </div>
+  </div>
+</script>
+
 {% endblock %}
 {% block scripts %}
-{% load staticfiles %}
-  <script src="https://unpkg.com/split.js/split.min.js"></script>
-  <script src={% static "webclient/js/splithandler.js" %} language="javascript"></script>
 {% endblock %}
