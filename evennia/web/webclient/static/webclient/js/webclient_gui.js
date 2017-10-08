@@ -106,6 +106,7 @@ function togglePopup(dialogname, content) {
 
 // Grab text from inputline and send to Evennia
 function doSendText() {
+  console.log("sending text");
     if (!Evennia.isConnected()) {
         var reconnect = confirm("Not currently connected. Reconnect?");
         if (reconnect) {
@@ -115,7 +116,7 @@ function doSendText() {
         // Don't try to send anything until the connection is back.
         return;
     }
-    var inputfield = $("[data-evennia-input]");
+    var inputfield = $("#inputfield");
     var outtext = inputfield.val();
     var lines = outtext.trim().replace(/[\r]+/,"\n").replace(/[\n]+/, "\n").split("\n");
     for (var i = 0; i < lines.length; i++) {
@@ -157,7 +158,7 @@ function doCloseDialog(event) {
 function onKeydown (event) {
     var code = event.which;
     var history_entry = null;
-    var inputfield = $("[data-evennia-input]");
+    var inputfield = $("[data-role-input]");
     if (code === 9) {
       return;
     }
@@ -213,7 +214,7 @@ var resizeInputField = function () {
 
     // Check to see if we should change the height of the input area
     return function () {
-        var inputfield = $("[data-evennia-input]");
+        var inputfield = $("[data-role-input]");
         var scrollh = inputfield.prop("scrollHeight");
         var clienth = inputfield.prop("clientHeight");
         var newh = 0;
@@ -258,6 +259,12 @@ function onText(args, kwargs) {
     // append message to previous ones, then scroll so latest is at
     // the bottom. Send 'cls' kwarg to modify the output class.
     var renderto = "main";
+    if ("tags" in kwargs) {
+      var tags = kwargs['tags'];
+    }
+    else {
+      var tags = ['all'];
+    }
     if (kwargs["type"] == "help") {
         if (("helppopup" in options) && (options["helppopup"])) {
             renderto = "#helpdialog";
@@ -265,14 +272,15 @@ function onText(args, kwargs) {
     }
 
     if (renderto == "main") {
-        var mwin = $("#messagewindow");
-        var parent = mwin.closest(".split")
-        var cls = kwargs == null ? 'out' : kwargs['cls'];
-        mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
-        parent.animate({
-            scrollTop: parent.prop("scrollHeight")
-        }, 0);
-
+        for (var i = 0; i < tags.length; i++) {
+          var mwin = $("[data-role-output][data-tag='" + tags[i] + "']");
+          var parent = mwin.closest(".split")
+          var cls = kwargs == null ? 'out' : kwargs['cls'];
+          mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
+          parent.animate({
+              scrollTop: parent.prop("scrollHeight")
+          }, 0);
+        }
         onNewLine(args[0], null);
     } else {
         openPopup(renderto, args[0]);
@@ -450,7 +458,7 @@ $(document).ready(function() {
 
     //$(document).on("visibilitychange", onVisibilityChange);
 
-    $("[data-evennia-input]").bind("resize", doWindowResize)
+    $("[data-role-input]").bind("resize", doWindowResize)
         .keypress(onKeyPress)
         .bind("paste", resizeInputField)
         .bind("cut", resizeInputField);
@@ -503,6 +511,7 @@ $(document).ready(function() {
     },
     60000*3
     );
+    console.log("Completed GUI setup");
 
 
 });
