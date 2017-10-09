@@ -20,6 +20,7 @@ IRC_BOLD = "\002"
 IRC_COLOR = "\003"
 IRC_RESET = "\017"
 IRC_ITALIC = "\026"
+IRC_INVERT = "\x16"
 IRC_NORMAL = "99"
 IRC_UNDERLINE = "37"
 
@@ -57,7 +58,7 @@ IRC_COLOR_MAP = dict((
     (r'|t', "    "),      # tab
     (r'|-', "    "),      # fixed tab
     (r'|_', " "),         # space
-    (r'|*', ""),          # invert
+    (r'|*', IRC_INVERT),          # invert
     (r'|^', ""),          # blinking text
     (r'|h', IRC_BOLD),    # highlight, use bold instead
 
