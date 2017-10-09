@@ -16,15 +16,15 @@ is easily extensible and can be used as the foundation for implementing
 the rules from your turn-based tabletop game of choice or making your
 own battle system.
 
-To install and test, import this module's BattleCharacter object into
+To install and test, import this module's TBBasicCharacter object into
 your game's character.py module:
 
-    from evennia.contrib.turnbattle.tb_basic import BattleCharacter
+    from evennia.contrib.turnbattle.tb_basic import TBBasicCharacter
 
-And change your game's character typeclass to inherit from BattleCharacter
+And change your game's character typeclass to inherit from TBBasicCharacter
 instead of the default:
 
-    class Character(BattleCharacter):
+    class Character(TBBasicCharacter):
 
 Next, import this module into your default_cmdsets.py module:
 
@@ -278,7 +278,7 @@ CHARACTER TYPECLASS
 """
 
 
-class BattleCharacter(DefaultCharacter):
+class TBBasicCharacter(DefaultCharacter):
     """
     A character able to participate in turn-based combat. Has attributes for current
     and maximum HP, and access to combat commands.
@@ -371,7 +371,7 @@ class CmdFight(Command):
             return
         here.msg_contents("%s starts a fight!" % self.caller)
         # Add a turn handler script to the room, which starts combat.
-        here.scripts.add("contrib.turnbattle.tb_basic.TurnHandler")
+        here.scripts.add("contrib.turnbattle.tb_basic.TBBasicTurnHandler")
         # Remember you'll have to change the path to the script if you copy this code to your own modules!
 
 
@@ -569,7 +569,7 @@ SCRIPTS START HERE
 """
 
 
-class TurnHandler(DefaultScript):
+class TBBasicTurnHandler(DefaultScript):
     """
     This is the script that handles the progression of combat through turns.
     On creation (when a fight is started) it adds all combat-ready characters
