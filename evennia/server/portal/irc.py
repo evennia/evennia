@@ -38,7 +38,7 @@ IRC_CYAN = "11"
 IRC_BLUE = "12"
 IRC_MAGENTA = "13"
 IRC_DGREY = "14"
-IRC_GRAY = "15"
+IRC_GREY = "15"
 
 # obsolete test:
 
@@ -76,7 +76,7 @@ IRC_COLOR_MAP = dict((
     (r'|B', IRC_COLOR + IRC_DBLUE),
     (r'|M', IRC_COLOR + IRC_DMAGENTA),
     (r'|C', IRC_COLOR + IRC_DCYAN),
-    (r'|W', IRC_COLOR + IRC_GRAY),   # light grey
+    (r'|W', IRC_COLOR + IRC_GREY),   # light grey
     (r'|X', IRC_COLOR + IRC_BLACK),  # pure black
 
     (r'|[r', IRC_COLOR + IRC_NORMAL + "," + IRC_DRED),
@@ -85,7 +85,7 @@ IRC_COLOR_MAP = dict((
     (r'|[b', IRC_COLOR + IRC_NORMAL + "," + IRC_DBLUE),
     (r'|[m', IRC_COLOR + IRC_NORMAL + "," + IRC_DMAGENTA),
     (r'|[c', IRC_COLOR + IRC_NORMAL + "," + IRC_DCYAN),
-    (r'|[w', IRC_COLOR + IRC_NORMAL + "," + IRC_GRAY),    # light grey background
+    (r'|[w', IRC_COLOR + IRC_NORMAL + "," + IRC_GREY),    # light grey background
     (r'|[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK)    # pure black background
 ))
 # ansi->irc
