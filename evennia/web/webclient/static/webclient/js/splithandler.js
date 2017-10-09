@@ -28,6 +28,7 @@ var SplitHandler = (function () {
       sizes: sizes,
       gutterSize: 8,
       cursor: 'row-resize',
+      minSize: [100,150],
       onDragEnd: function () {
         localStorage.setItem('split-sizes', JSON.stringify(initial_split.getSizes()));
       }
@@ -42,6 +43,17 @@ var SplitHandler = (function () {
     var id = "split_" + lastID;
     lastID += 1;
     return id
+  }
+
+  var swapContent = function(move_from_selector, move_to_selector) {
+    //Swap content between HTML items
+    var move_from = $(move_from_selector);
+    var move_to = $(move_to_selector);
+    var move_from_children = move_from.children().detach();
+    var move_to_children = move_to.children().detach();
+
+    move_from.append(move_to_children);
+    move_to.append(move_from_children);
   }
 
   var split = function(selector, direction) {
@@ -78,16 +90,18 @@ var SplitHandler = (function () {
         cursor: cursor
       })
 
-      $('#'+first_id).append(children);
-      $('#'+second_id).append(output_panel);
+      $('#'+first_id).append(output_panel);
+      $('#'+second_id).append(children);
     }
     else {
       console.log("No element found")
     }
   }
+
   return {
     init: init,
-    split: split
+    split: split,
+    swapContent: swapContent
   }
 })();
 
