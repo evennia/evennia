@@ -907,7 +907,7 @@ class TestTutorialWorldRooms(CommandTest):
 
 
 # test turnbattle
-from evennia.contrib.turnbattle import tb_basic
+from evennia.contrib.turnbattle import tb_basic, tb_equip
 from evennia.objects.objects import DefaultRoom
 
 
@@ -920,13 +920,32 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_basic.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_basic.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_basic.CmdRest(), "", "Char rests to recover HP.")
+        
+    # Test equipment commands
+    def test_turnbattleequipcmd(self):
+        # Start with equip module specific commands.
+        testweapon = create_object(tb_equip.TBEWeapon, key="test weapon")
+        testarmor = create_object(tb_equip.TBEArmor, key="test armor")
+        testweapon.move_to(self.char1)
+        testarmor.move_to(self.char1)
+        self.call(tb_equip.CmdWield(), "weapon", "Char wields test weapon.")
+        self.call(tb_equip.CmdUnwield(), "", "Char lowers test weapon.")
+        self.call(tb_equip.CmdDon(), "armor", "Char dons test armor.")
+        self.call(tb_equip.CmdDoff(), "", "Char removes test armor.")
+        # Also test the commands that are the same in the basic module
+        self.call(tb_equip.CmdFight(), "", "You can't start a fight if you've been defeated!")
+        self.call(tb_equip.CmdAttack(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_equip.CmdPass(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_equip.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_equip.CmdRest(), "", "Char rests to recover HP.")
+        
 
 class TestTurnBattleFunc(EvenniaTest):
 
     # Test combat functions
     def test_turnbattlefunc(self):
-        attacker = create_object(tb_basic.BattleCharacter, key="Attacker")
-        defender = create_object(tb_basic.BattleCharacter, key="Defender")
+        attacker = create_object(tb_basic.TBBasicCharacter, key="Attacker")
+        defender = create_object(tb_basic.TBBasicCharacter, key="Defender")
         testroom = create_object(DefaultRoom, key="Test Room")
         attacker.location = testroom
         defender.loaction = testroom
@@ -957,7 +976,7 @@ class TestTurnBattleFunc(EvenniaTest):
         # Is in combat
         self.assertFalse(tb_basic.is_in_combat(attacker))
         # Set up turn handler script for further tests
-        attacker.location.scripts.add(tb_basic.TurnHandler)
+        attacker.location.scripts.add(tb_basic.TBBasicTurnHandler)
         turnhandler = attacker.db.combat_TurnHandler
         self.assertTrue(attacker.db.combat_TurnHandler)
         # Force turn order
@@ -991,7 +1010,7 @@ class TestTurnBattleFunc(EvenniaTest):
         turnhandler.turn_end_check(attacker)
         self.assertTrue(turnhandler.db.turn == 1)
         # Join fight
-        joiner = create_object(tb_basic.BattleCharacter, key="Joiner")
+        joiner = create_object(tb_basic.TBBasicCharacter, key="Joiner")
         turnhandler.db.fighters = [attacker, defender]
         turnhandler.db.turn = 0
         turnhandler.join_fight(joiner)
@@ -999,6 +1018,7 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
         # Remove the script at the end
         turnhandler.stop()
+
 
 # Test of the unixcommand module
 
