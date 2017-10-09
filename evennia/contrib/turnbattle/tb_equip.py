@@ -28,15 +28,15 @@ expanded to fit your game - weapon and armor slots, damage types and
 damage bonuses, etc. should be fairly simple to implement according to
 the rules of your preferred system or the needs of your own game.
 
-To install and test, import this module's BattleCharacter object into
+To install and test, import this module's TBEquipCharacter object into
 your game's character.py module:
 
-    from evennia.contrib.turnbattle.tb_equip import BattleCharacter
+    from evennia.contrib.turnbattle.tb_equip import TBEquipCharacter
 
-And change your game's character typeclass to inherit from BattleCharacter
+And change your game's character typeclass to inherit from TBEquipCharacter
 instead of the default:
 
-    class Character(BattleCharacter):
+    class Character(TBEquipCharacter):
 
 Next, import this module into your default_cmdsets.py module:
 
@@ -321,7 +321,7 @@ TYPECLASSES START HERE
 ----------------------------------------------------------------------------
 """
 
-class TB_Weapon(DefaultObject):
+class TBEWeapon(DefaultObject):
     """
     A weapon which can be wielded in combat with the 'wield' command.
     """
@@ -348,7 +348,7 @@ class TB_Weapon(DefaultObject):
             giver.db.wielded_weapon = None
             giver.location.msg_contents("%s stops wielding %s." % (giver, self))
         
-class TB_Armor(DefaultObject):
+class TBEArmor(DefaultObject):
     """
     A set of armor which can be worn with the 'don' command.
     """
@@ -390,7 +390,7 @@ class TB_Armor(DefaultObject):
             giver.db.worn_armor = None
             giver.location.msg_contents("%s removes %s." % (giver, self))
 
-class BattleCharacter(DefaultCharacter):
+class TBEquipCharacter(DefaultCharacter):
     """
     A character able to participate in turn-based combat. Has attributes for current
     and maximum HP, and access to combat commands.
@@ -488,7 +488,7 @@ class CmdFight(Command):
             return
         here.msg_contents("%s starts a fight!" % self.caller)
         # Add a turn handler script to the room, which starts combat.
-        here.scripts.add("contrib.turnbattle_equip.TurnHandler")
+        here.scripts.add("contrib.turnbattle.tb_equip.TBEquipTurnHandler")
         # Remember you'll have to change the path to the script if you copy this code to your own modules!
 
 
@@ -693,7 +693,7 @@ class CmdWield(Command):
         weapon = self.caller.search(self.args, candidates=self.caller.contents)
         if not weapon:
             return
-        if not weapon.is_typeclass("evennia.contrib.turnbattle.tb_equip.TB_Weapon"):
+        if not weapon.is_typeclass("evennia.contrib.turnbattle.tb_equip.TBEWeapon"):
             self.caller.msg("That's not a weapon!")
             # Remember to update the path to the weapon typeclass if you move this module!
             return
@@ -768,7 +768,7 @@ class CmdDon(Command):
         armor = self.caller.search(self.args, candidates=self.caller.contents)
         if not armor:
             return
-        if not armor.is_typeclass("evennia.contrib.turnbattle.tb_equip.TB_Armor"):
+        if not armor.is_typeclass("evennia.contrib.turnbattle.tb_equip.TBEArmor"):
             self.caller.msg("That's not armor!")
             # Remember to update the path to the armor typeclass if you move this module!
             return
@@ -842,7 +842,7 @@ SCRIPTS START HERE
 """
 
 
-class TurnHandler(DefaultScript):
+class TBEquipTurnHandler(DefaultScript):
     """
     This is the script that handles the progression of combat through turns.
     On creation (when a fight is started) it adds all combat-ready characters
@@ -882,6 +882,9 @@ class TurnHandler(DefaultScript):
 
         # Announce the turn order.
         self.obj.msg_contents("Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters))
+        
+        # Start first fighter's turn.
+        self.start_turn(self.db.fighters[0])
 
         # Set up the current turn and turn timeout delay.
         self.db.turn = 0
@@ -1014,11 +1017,11 @@ PROTOTYPES START HERE
 """
         
 BASEWEAPON = {
- "typeclass": "evennia.contrib.turnbattle.tb_equip.TB_Weapon",
+ "typeclass": "evennia.contrib.turnbattle.tb_equip.TBEWeapon",
 }
 
 BASEARMOR = {
- "typeclass": "evennia.contrib.turnbattle.tb_equip.TB_Armor",
+ "typeclass": "evennia.contrib.turnbattle.tb_equip.TBEArmor",
 }
 
 DAGGER = {
